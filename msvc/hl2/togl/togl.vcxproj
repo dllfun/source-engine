@@ -161,17 +161,6 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\togl\linuxwin\asanstubs.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\cglmbuffer.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\cglmfbo.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\cglmprogram.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\cglmquery.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\cglmtex.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\dx9asmtogl2.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\dxabstract.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\glentrypoints.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\glmgr.cpp" />
-    <ClCompile Include="..\..\..\togl\linuxwin\glmgrbasics.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
