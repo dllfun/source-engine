@@ -77,7 +77,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..\..\vphysics;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\ivp\ivp_intern;..\..\..\ivp\ivp_collision;..\..\..\ivp\ivp_physics;..\..\..\ivp\ivp_surface_manager;..\..\..\ivp\ivp_utility;..\..\..\ivp\ivp_controller;..\..\..\ivp\ivp_compact_builder;..\..\..\ivp\havana\havok;..\..\..\ivp\havana;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -92,7 +92,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..\..\vphysics;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\ivp\ivp_intern;..\..\..\ivp\ivp_collision;..\..\..\ivp\ivp_physics;..\..\..\ivp\ivp_surface_manager;..\..\..\ivp\ivp_utility;..\..\..\ivp\ivp_controller;..\..\..\ivp\ivp_compact_builder;..\..\..\ivp\havana\havok;..\..\..\ivp\havana;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

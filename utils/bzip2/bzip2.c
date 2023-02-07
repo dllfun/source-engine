@@ -238,7 +238,7 @@
 
 #   define SET_BINARY_MODE(fd)                        \
       do {                                            \
-         int retVal = setmode ( fileno ( fd ),        \
+         int retVal = _setmode ( _fileno ( fd ),        \
                                 O_BINARY );           \
          ERROR_IF_MINUS_ONE ( retVal );               \
       } while ( 0 )
@@ -1299,7 +1299,7 @@ void compress ( Char *name )
       case SM_I2O:
          inStr = stdin;
          outStr = stdout;
-         if ( isatty ( fileno ( stdout ) ) ) {
+         if ( _isatty ( _fileno ( stdout ) ) ) {
             fprintf ( stderr,
                       "%s: I won't write compressed data to a terminal.\n",
                       progName );
@@ -1313,7 +1313,7 @@ void compress ( Char *name )
       case SM_F2O:
          inStr = fopen ( inName, "rb" );
          outStr = stdout;
-         if ( isatty ( fileno ( stdout ) ) ) {
+         if ( _isatty ( _fileno ( stdout ) ) ) {
             fprintf ( stderr,
                       "%s: I won't write compressed data to a terminal.\n",
                       progName );
@@ -1485,7 +1485,7 @@ void uncompress ( Char *name )
       case SM_I2O:
          inStr = stdin;
          outStr = stdout;
-         if ( isatty ( fileno ( stdin ) ) ) {
+         if ( _isatty ( _fileno ( stdin ) ) ) {
             fprintf ( stderr,
                       "%s: I won't read compressed data from a terminal.\n",
                       progName );
@@ -1626,7 +1626,7 @@ void testf ( Char *name )
    switch ( srcMode ) {
 
       case SM_I2O:
-         if ( isatty ( fileno ( stdin ) ) ) {
+         if ( _isatty ( _fileno ( stdin ) ) ) {
             fprintf ( stderr,
                       "%s: I won't read compressed data from a terminal.\n",
                       progName );

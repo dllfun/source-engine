@@ -19,7 +19,7 @@ void __cdecl srand(unsigned int)
 {
 }
 
-int __cdecl rand()
+int __cdecl _rand()
 {
 	return RandomInt( 0, VALVE_RAND_MAX );
 }

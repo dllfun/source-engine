@@ -81,10 +81,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;HKMATH_EXPORTS;_WINDOWS;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;HKMATH_EXPORTS;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\ivp\havana\havok\hk_math;..\..\..\ivp\havana\havok;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ivp\havana\havok\hk_math;..\..\..\ivp\havana\havok;..\..\..\ivp\ivp_utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -99,10 +99,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;HKMATH_EXPORTS;_WINDOWS;NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;VPHYSICS_EXPORTS;HAVANA_CONSTRAINTS;HAVOK_MOPP;HKMATH_EXPORTS;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\ivp\havana\havok\hk_math;..\..\..\ivp\havana\havok;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\ivp\havana\havok\hk_math;..\..\..\ivp\havana\havok;..\..\..\ivp\ivp_utility;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
