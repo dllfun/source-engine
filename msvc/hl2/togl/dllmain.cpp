@@ -1,4 +1,4 @@
-// dllmain.cpp : 瀹氫箟 DLL 搴旂敤绋嬪簭鐨勫叆鍙ｇ偣銆?
+// dllmain.cpp : 鐎规矮绠?DLL 鎼存梻鏁ょ粙瀣碍閻ㄥ嫬鍙嗛崣锝囧仯閵?
 #include "pch.h"
 
 //BOOL APIENTRY DllMain( HMODULE hModule,
