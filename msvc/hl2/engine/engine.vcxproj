@@ -412,7 +412,6 @@
     <ClCompile Include="..\..\..\public\vgui_controls\vgui_controls.cpp" />
     <ClCompile Include="..\..\..\public\XUnzip.cpp" />
     <ClCompile Include="..\..\..\public\XZip.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

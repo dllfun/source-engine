@@ -169,7 +169,6 @@
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_physics\constraint\stiff_spring\stiff_spring_constraint.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_physics\core\rigid_body_core.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_physics\effector\rigid_body_binary_effector.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

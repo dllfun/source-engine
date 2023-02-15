@@ -160,7 +160,6 @@
     <ClCompile Include="..\..\..\materialsystem\shaderapidx9\wmi.cpp" />
     <ClCompile Include="..\..\..\public\filesystem_helpers.cpp" />
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -154,7 +154,6 @@
     <ClCompile Include="..\..\..\vguimatsurface\MatSystemSurface.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\memorybitmap.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\TextureDictionary.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

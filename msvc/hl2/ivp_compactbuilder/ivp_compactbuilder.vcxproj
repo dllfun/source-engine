@@ -197,7 +197,6 @@
     <ClCompile Include="..\..\..\ivp\ivp_compact_builder\qhull_qset.cxx" />
     <ClCompile Include="..\..\..\ivp\ivp_compact_builder\qhull_stat.cxx" />
     <ClCompile Include="..\..\..\ivp\ivp_compact_builder\qhull_user.cxx" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

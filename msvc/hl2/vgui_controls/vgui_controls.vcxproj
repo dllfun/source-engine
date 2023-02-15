@@ -232,7 +232,6 @@
     <ClCompile Include="..\..\..\vgui2\vgui_controls\URLLabel.cpp" />
     <ClCompile Include="..\..\..\vgui2\vgui_controls\WizardPanel.cpp" />
     <ClCompile Include="..\..\..\vgui2\vgui_controls\WizardSubPanel.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

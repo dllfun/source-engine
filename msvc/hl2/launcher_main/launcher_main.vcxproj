@@ -135,7 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\launcher_main\main.cpp" />
-    <ClCompile Include="launcher_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\launcher_main\launcher_main.rc" />

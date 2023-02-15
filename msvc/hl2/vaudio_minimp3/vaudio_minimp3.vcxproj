@@ -144,7 +144,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\engine\voice_codecs\minimp3\mp3codecs.cpp" />
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

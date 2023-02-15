@@ -172,7 +172,6 @@
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_math\transform.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_math\vector3\vector3.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_math\vector3\vector3_util.cpp" />
-    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
