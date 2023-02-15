@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+
 #if _DEBUG
 extern bool g_bRenderingCameraView;		// For debugging (frustum fix for cameras)...
 #endif
@@ -67,7 +68,7 @@ static inline int WireFrameMode( void )
 {
 	if ( !sv_cheats )
 	{
-		sv_cheats = cvar->FindVar( "sv_cheats" );
+		sv_cheats = g_pCVar->FindVar( "sv_cheats" );
 	}
 
 	if ( sv_cheats && sv_cheats->GetBool() )
@@ -80,7 +81,7 @@ static inline bool ShouldDrawInWireFrameMode( void )
 {
 	if ( !sv_cheats )
 	{
-		sv_cheats = cvar->FindVar( "sv_cheats" );
+		sv_cheats = g_pCVar->FindVar( "sv_cheats" );
 	}
 
 	if ( sv_cheats && sv_cheats->GetBool() )

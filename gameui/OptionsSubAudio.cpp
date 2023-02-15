@@ -224,7 +224,7 @@ void COptionsSubAudio::OnApplyChanges()
 	// Tracker 28933:  Note we can't do this because closecaption is marked
 	//  FCVAR_USERINFO and it won't get sent to server is we direct set it, we
 	//  need to pass it along to the engine parser!!!
-	// ConVar *closecaption = (ConVar *)cvar->FindVar("closecaption");
+	// ConVar *closecaption = (ConVar *)g_pCVar->FindVar("closecaption");
 	int closecaption_value = 0;
 
 	ConVarRef cc_subtitles( "cc_subtitles" );

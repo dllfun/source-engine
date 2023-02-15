@@ -67,10 +67,10 @@ public:
 		}
 
 		// Link to engine's list instead
-		cvar->RegisterConCommand( pCommand );
+		g_pCVar->RegisterConCommand( pCommand );
 
 		// Apply any command-line values.
-		const char *pValue = cvar->GetCommandLineValue( pCommand->GetName() );
+		const char *pValue = g_pCVar->GetCommandLineValue( pCommand->GetName() );
 		if( pValue )
 		{
 			if ( !pCommand->IsCommand() )
@@ -106,6 +106,6 @@ void InitializeCvars( void )
 	// Register cvars here:
 	ConVar_Register( FCVAR_GAMEDLL, &g_ConVarAccessor ); 
 
-	g_pDeveloper	= cvar->FindVar( "developer" );
+	g_pDeveloper	= g_pCVar->FindVar( "developer" );
 }
 

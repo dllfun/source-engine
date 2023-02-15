@@ -3682,7 +3682,7 @@ bool CAI_BaseNPC::PreNPCThink()
 
 	if ( frameTimeLimit == FLT_MAX )
 	{
-		pHostTimescale = cvar->FindVar( "host_timescale" );
+		pHostTimescale = g_pCVar->FindVar( "host_timescale" );
 	}
 
 	bool bUseThinkLimits = ( !m_bInChoreo && ShouldUseFrameThinkLimits() );

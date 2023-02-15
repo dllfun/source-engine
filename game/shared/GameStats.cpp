@@ -855,8 +855,8 @@ void CBaseGameStats_Driver::LevelInitPreEntity()
 		// "unknown" means this is a dedicated server and we weren't able to generate a unique ID (e.g. Linux server).
 		// Change the unique ID to be a hash of IP & port.  We couldn't do this earlier because IP is not known until level
 		// init time.
-		ConVar *hostip = cvar->FindVar( "hostip" );
-		ConVar *hostport = cvar->FindVar( "hostport" );
+		ConVar *hostip = g_pCVar->FindVar( "hostip" );
+		ConVar *hostport = g_pCVar->FindVar( "hostport" );
 		if ( hostip && hostport )
 		{
 			int crcInput[2];

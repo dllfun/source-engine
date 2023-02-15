@@ -1155,7 +1155,7 @@ void CBasePanel::SetBackgroundRenderState(EBackgroundState state)
 
 	if ( m_eBackgroundState == BACKGROUND_INITIAL && ( state == BACKGROUND_DISCONNECTED || state == BACKGROUND_MAINMENU ) )
 	{
-		ConVar* dev_loadtime_mainmenu = cvar->FindVar( "dev_loadtime_mainmenu" );
+		ConVar* dev_loadtime_mainmenu = g_pCVar->FindVar( "dev_loadtime_mainmenu" );
 		if (dev_loadtime_mainmenu) {
 			dev_loadtime_mainmenu->SetValue( frametime );
 		}

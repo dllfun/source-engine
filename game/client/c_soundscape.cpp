@@ -108,11 +108,11 @@ public:
 	{
 		if ( !m_pSoundMixerVar )
 		{
-			m_pSoundMixerVar = (ConVar *)cvar->FindVar( "snd_soundmixer" );
+			m_pSoundMixerVar = (ConVar *)g_pCVar->FindVar( "snd_soundmixer" );
 		}
 		if ( !m_pDSPVolumeVar )
 		{
-			m_pDSPVolumeVar = (ConVar *)cvar->FindVar( "dsp_volume" );
+			m_pDSPVolumeVar = (ConVar *)g_pCVar->FindVar( "dsp_volume" );
 		}
 	}
 

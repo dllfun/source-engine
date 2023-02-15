@@ -579,7 +579,7 @@ public:
 	void InitCommentary( void )
 	{
 		// Install the global cvar callback
-		cvar->InstallGlobalChangeCallback( CV_GlobalChange_Commentary );
+		g_pCVar->InstallGlobalChangeCallback( CV_GlobalChange_Commentary );
 
 		m_flNextTeleportTime = 0;
 		m_iTeleportStage = TELEPORT_NONE;
@@ -692,12 +692,12 @@ public:
 		}
 
 		// Remove our global convar callback
-		cvar->RemoveGlobalChangeCallback( CV_GlobalChange_Commentary );
+		g_pCVar->RemoveGlobalChangeCallback( CV_GlobalChange_Commentary );
 
 		// Reset any convars that have been changed by the commentary
 		for ( int i = 0; i < m_ModifiedConvars.Count(); i++ )
 		{
-			ConVar *pConVar = (ConVar *)cvar->FindVar( m_ModifiedConvars[i].pszConvar );
+			ConVar *pConVar = (ConVar *)g_pCVar->FindVar( m_ModifiedConvars[i].pszConvar );
 			if ( pConVar )
 			{
 				pConVar->SetValue( m_ModifiedConvars[i].pszOrgValue );
@@ -731,7 +731,7 @@ public:
 
 	void OnRestore( void )
 	{
-		cvar->RemoveGlobalChangeCallback( CV_GlobalChange_Commentary );
+		g_pCVar->RemoveGlobalChangeCallback( CV_GlobalChange_Commentary );
 
 		if ( !IsInCommentaryMode() )
 			return;
@@ -739,7 +739,7 @@ public:
 		// Set any convars that have already been changed by the commentary before the save
 		for ( int i = 0; i < m_ModifiedConvars.Count(); i++ )
 		{
-			ConVar *pConVar = (ConVar *)cvar->FindVar( m_ModifiedConvars[i].pszConvar );
+			ConVar *pConVar = (ConVar *)g_pCVar->FindVar( m_ModifiedConvars[i].pszConvar );
 			if ( pConVar )
 			{
 				//Msg("    Restoring Convar %s: value %s (org %s)\n", m_ModifiedConvars[i].pszConvar, m_ModifiedConvars[i].pszCurrentValue, m_ModifiedConvars[i].pszOrgValue );
@@ -748,7 +748,7 @@ public:
 		}
 
 		// Install the global cvar callback
-		cvar->InstallGlobalChangeCallback( CV_GlobalChange_Commentary );
+		g_pCVar->InstallGlobalChangeCallback( CV_GlobalChange_Commentary );
 	}
 
 	bool CommentaryWasEnabledMidGame( void ) 

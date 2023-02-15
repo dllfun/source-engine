@@ -78,7 +78,7 @@ public:
 	const char		*GetClientName() const { return m_Name; };
 	INetChannel		*GetNetChannel() { return m_NetChannel; };
 	IServer			*GetServer() { return (IServer*)m_Server; };
-	const char		*GetUserSetting(const char *cvar) const;
+	const char		*GetUserSetting(const char *pchCvar) const;
 	const char		*GetNetworkIDString() const;
 	uint			GetFriendsID() const { return m_nFriendsID; }
 	const char		*GetFriendsName() const { return m_FriendsName; }
@@ -164,7 +164,7 @@ public:
 	virtual void	SpawnPlayer( void );
 	virtual void	ActivatePlayer( void );
 	virtual void	SetName( const char * playerName );
-	virtual void	SetUserCVar( const char *cvar, const char *value);
+	virtual void	SetUserCVar( const char *pchCvar, const char *value);
 	virtual void	FreeBaselines();
 	virtual bool	IgnoreTempEntity( CEventInfo *event );
 	

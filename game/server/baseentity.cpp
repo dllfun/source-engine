@@ -6999,7 +6999,7 @@ void CBaseEntity::RemoveRecipientsIfNotCloseCaptioning( CRecipientFilter& filter
 		static ConVar *s_pCloseCaption = NULL;
 		if ( !s_pCloseCaption )
 		{
-			s_pCloseCaption = cvar->FindVar( "closecaption" );
+			s_pCloseCaption = g_pCVar->FindVar( "closecaption" );
 			if ( !s_pCloseCaption )
 			{
 				Error( "XBOX couldn't find closecaption convar!!!" );

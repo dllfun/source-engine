@@ -668,7 +668,7 @@ public:
 
 	void ApplyChangesToConVar( const char *pConVarName, int value )
 	{
-		Assert( cvar->FindVar( pConVarName ) );
+		Assert(g_pCVar->FindVar( pConVarName ) );
 		char szCmd[256];
 		Q_snprintf( szCmd, sizeof(szCmd), "%s %d\n", pConVarName, value );
 		engine->ClientCmd_Unrestricted( szCmd );

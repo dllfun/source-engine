@@ -625,7 +625,7 @@ void CCvar::RevertFlaggedConVars( int nFlag )
 
 		pCvar->Revert();
 
-		// DevMsg( "%s = \"%s\" (reverted)\n", cvar->GetName(), cvar->GetString() );
+		// DevMsg( "%s = \"%s\" (reverted)\n", g_pCVar->GetName(), g_pCVar->GetString() );
 	}
 }
 

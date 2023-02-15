@@ -16,7 +16,7 @@
 // It is hoped that setting this, and using this library will be the common mechanism for
 // allowing link libraries to access tier1 library interfaces
 //-----------------------------------------------------------------------------
-ICvar *cvar = 0;
+//ICvar *cvar = 0;
 ICvar *g_pCVar = 0;
 IProcessUtils *g_pProcessUtils = 0;
 static bool s_bConnected = false;
@@ -43,7 +43,7 @@ void ConnectTier1Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
 	{
 		if ( !g_pCVar )
 		{
-			cvar = g_pCVar = ( ICvar * )pFactoryList[i]( CVAR_INTERFACE_VERSION, NULL );
+			g_pCVar = ( ICvar * )pFactoryList[i]( CVAR_INTERFACE_VERSION, NULL );//cvar = 
 		}
 		if ( !g_pProcessUtils )
 		{
@@ -57,7 +57,7 @@ void DisconnectTier1Libraries()
 	if ( !s_bConnected )
 		return;
 
-	g_pCVar = cvar = 0;
+	g_pCVar = 0;//cvar = 
 	g_pProcessUtils = NULL;
 	s_bConnected = false;
 }

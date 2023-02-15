@@ -769,7 +769,7 @@ CSceneEntity::CSceneEntity( void )
 	m_bCompletedEarly	= false;
 
 	if ( !m_pcvSndMixahead )
-		m_pcvSndMixahead	= cvar->FindVar( "snd_mixahead" );
+		m_pcvSndMixahead	= g_pCVar->FindVar( "snd_mixahead" );
 
 	m_BusyActor			= SCENE_BUSYACTOR_DEFAULT;
 }

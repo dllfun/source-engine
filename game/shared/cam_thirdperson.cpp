@@ -75,7 +75,7 @@ void CThirdPersonManager::Update( void )
 #ifdef CLIENT_DLL
 	if ( !sv_cheats )
 	{
-		sv_cheats = cvar->FindVar( "sv_cheats" );
+		sv_cheats = g_pCVar->FindVar( "sv_cheats" );
 	}
 
 	// If cheats have been disabled, pull us back out of third-person view.

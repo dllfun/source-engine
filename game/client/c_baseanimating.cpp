@@ -4684,7 +4684,7 @@ bool C_BaseAnimating::InitAsClientRagdoll( const matrix3x4_t *pDeltaBones0, cons
 
 #if defined( REPLAY_ENABLED )
 	// If Replay is enabled on server, add an entry to the ragdoll recorder for this entity
-	ConVar* pReplayEnable = (ConVar*)cvar->FindVar( "replay_enable" );
+	ConVar* pReplayEnable = (ConVar*)g_pCVar->FindVar( "replay_enable" );
 	if ( m_pRagdoll && pReplayEnable && pReplayEnable->GetInt() && !engine->IsPlayingDemo() && !engine->IsPlayingTimeDemo() )
 	{
 		CReplayRagdollRecorder& RagdollRecorder = CReplayRagdollRecorder::Instance();
@@ -5639,7 +5639,7 @@ void C_BaseAnimating::ClearRagdoll()
 
 #if defined( REPLAY_ENABLED )
 		// Delete entry from ragdoll recorder if Replay is enabled on server
-		ConVar* pReplayEnable = (ConVar*)cvar->FindVar( "replay_enable" );
+		ConVar* pReplayEnable = (ConVar*)g_pCVar->FindVar( "replay_enable" );
 		if ( pReplayEnable && pReplayEnable->GetInt() && !engine->IsPlayingDemo() && !engine->IsPlayingTimeDemo() )
 		{
 			CReplayRagdollRecorder& RagdollRecorder = CReplayRagdollRecorder::Instance();

@@ -301,8 +301,8 @@ void CViewRender::Init( void )
 
 	m_bDrawOverlay = false;
 
-	m_pDrawEntities		= cvar->FindVar( "r_drawentities" );
-	m_pDrawBrushModels	= cvar->FindVar( "r_drawbrushmodels" );
+	m_pDrawEntities		= g_pCVar->FindVar( "r_drawentities" );
+	m_pDrawBrushModels	= g_pCVar->FindVar( "r_drawbrushmodels" );
 
 	beams->InitBeams();
 	tempents->Init();

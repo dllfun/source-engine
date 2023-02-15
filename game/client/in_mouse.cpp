@@ -61,7 +61,7 @@ public:
 	virtual float GetFloat() const
 	{
 		if ( !sv_cheats )
-			sv_cheats = cvar->FindVar( "sv_cheats" );
+			sv_cheats = g_pCVar->FindVar( "sv_cheats" );
 
 		// If sv_cheats is on then it can be anything.
 		float flBaseValue = GetBaseFloatValue();

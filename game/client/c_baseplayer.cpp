@@ -803,7 +803,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 
 			// Reset our sound mixed in case we were in a freeze cam when we
 			// changed level, which would cause the snd_soundmixer to be left modified.
-			ConVar *pVar = (ConVar *)cvar->FindVar( "snd_soundmixer" );
+			ConVar *pVar = (ConVar *)g_pCVar->FindVar( "snd_soundmixer" );
 			pVar->Revert();
 		}
 	}
@@ -878,7 +878,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 			}
 
 			// Force the sound mixer to the freezecam mixer
-			ConVar *pVar = (ConVar *)cvar->FindVar( "snd_soundmixer" );
+			ConVar *pVar = (ConVar *)g_pCVar->FindVar( "snd_soundmixer" );
 			pVar->SetValue( "FreezeCam_Only" );
 		}
 		else if ( m_bWasFreezeFraming && GetObserverMode() != OBS_MODE_FREEZECAM )
@@ -891,7 +891,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 
 			view->FreezeFrame(0);
 
-			ConVar *pVar = (ConVar *)cvar->FindVar( "snd_soundmixer" );
+			ConVar *pVar = (ConVar *)g_pCVar->FindVar( "snd_soundmixer" );
 			pVar->Revert();
 
 			m_nForceVisionFilterFlags = 0;

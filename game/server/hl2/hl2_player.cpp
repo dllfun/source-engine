@@ -261,7 +261,7 @@ void CC_ToggleDuck( void )
 	if ( !bChecked )
 	{
 		bChecked = true;
-		pCVcl_forwardspeed = ( ConVar * )cvar->FindVar( "cl_forwardspeed" );
+		pCVcl_forwardspeed = ( ConVar * )g_pCVar->FindVar( "cl_forwardspeed" );
 	}
 
 

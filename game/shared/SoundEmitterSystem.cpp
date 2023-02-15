@@ -222,7 +222,7 @@ public:
 #if !defined( CLIENT_DLL )
 		m_bLogPrecache = CommandLine()->CheckParm( "-makereslists" ) ? true : false;
 #endif
-		g_pClosecaption = cvar->FindVar("closecaption");
+		g_pClosecaption = g_pCVar->FindVar("closecaption");
 		Assert(g_pClosecaption);
 		return soundemitterbase->ModInit();
 	}

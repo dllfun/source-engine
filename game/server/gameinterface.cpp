@@ -574,7 +574,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	ConnectTier3Libraries( &appSystemFactory, 1 );
 
 	// Connected in ConnectTier1Libraries
-	if ( cvar == NULL )
+	if ( g_pCVar == NULL )
 		return false;
 
 #if !defined _X360 && !defined NO_STEAM

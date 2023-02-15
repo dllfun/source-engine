@@ -195,7 +195,7 @@ inline ConCommandBase * ICvar::Iterator::Get( void )
 // don't have to include tier1.h
 //-----------------------------------------------------------------------------
 
-extern ICvar *cvar;
+//extern ICvar *cvar;
 extern ICvar *g_pCVar;
 
 #endif // ICVAR_H

@@ -215,7 +215,7 @@ BEGIN_VS_SHADER( color_projection, "Help for deferred color correction" )
 	{
 		if ( mat_color_projection == NULL )
 		{
-			mat_color_projection = cvar->FindVar( "mat_color_projection" );
+			mat_color_projection = g_pCVar->FindVar( "mat_color_projection" );
 		}
 
 		if ( params[ FRAME_TEXTURE ]->IsDefined() == false )

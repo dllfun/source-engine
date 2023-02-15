@@ -148,7 +148,7 @@ void CCvarToggleCheckButton::ApplySettings( KeyValues *inResourceData )
 	else
 		m_bStartValue = false;
 
-	const ConVar *var = cvar->FindVar( m_pszCvarName );
+	const ConVar *var = g_pCVar->FindVar( m_pszCvarName );
 	if ( var )
 	{
 		if( var->GetBool() )

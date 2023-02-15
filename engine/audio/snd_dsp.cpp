@@ -8468,7 +8468,7 @@ static bool g_bNeedPresetRestore = false;
 //-----------------------------------------------------------------------------
 struct PreserveDSP_t
 {
-	ConVar *cvar;
+	ConVar *convar;
 	float	oldvalue;
 };
 
@@ -8501,7 +8501,7 @@ void DSP_CheckRestorePresets()
 	{
 		PreserveDSP_t& slot = g_PreserveDSP[ i ];
 
-		ConVar *cv = slot.cvar;
+		ConVar *cv = slot.convar;
 		Assert( cv );
 		if ( cv->GetFloat() != 0.0f )
 		{
@@ -8546,7 +8546,7 @@ void DSP_ClearState()
 	{
 		PreserveDSP_t& slot = g_PreserveDSP[ i ];
 
-		ConVar *cv = slot.cvar;
+		ConVar *cv = slot.convar;
 		Assert( cv );
 		slot.oldvalue = cv->GetFloat();
 		cv->SetValue( 0 );
@@ -9281,7 +9281,7 @@ void DSP_FastReset( int dspType )
 	{
 		PreserveDSP_t& slot = g_PreserveDSP[ i ];
 
-		if ( slot.cvar == &dsp_player )
+		if ( slot.convar == &dsp_player )
 		{
 			slot.oldvalue = dspType;
 			return;
