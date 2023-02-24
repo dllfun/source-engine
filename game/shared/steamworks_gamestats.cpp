@@ -104,15 +104,19 @@ void ServerSessionIDChangeCallback( IConVar *pConVar, const char *pOldString, fl
 //-----------------------------------------------------------------------------
 time_t CSteamWorksGameStatsUploader::GetTimeSinceEpoch( void )
 {
+#ifndef	NO_STEAM
 	if ( steamapicontext && steamapicontext->SteamUtils() )
 		return steamapicontext->SteamUtils()->GetServerRealTime();
 	else
 	{
+#endif
 		// Default to system time.
 		time_t aclock;
 		time( &aclock );
 		return aclock;
+#ifndef	NO_STEAM
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -590,24 +594,27 @@ void CSteamWorksGameStatsUploader::Steam_OnSteamSessionInfoClosed( GameStatsSess
 	m_UploadedStats = false;
 }
 
+
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: Per frame think. Used to periodically check if we have queued operations.
 // For example: we may request a session id before steam is ready.
 //-----------------------------------------------------------------------------
 void CSteamWorksGameStatsUploader::FrameUpdatePostEntityThink()
 {
-	if ( !m_ServiceTicking )
+	if (!m_ServiceTicking)
 		return;
 
-	if ( gpGlobals->realtime - m_LastServiceTick < 3 )
+	if (gpGlobals->realtime - m_LastServiceTick < 3)
 		return;
 	m_LastServiceTick = gpGlobals->realtime;
 
-	if ( !AccessToSteamAPI() )
+	if (!AccessToSteamAPI())
 		return;
 
 	// Try to resend our request.
-	if ( m_SessionIDRequestUnsent )
+	if (m_SessionIDRequestUnsent)
 	{
 		RequestSessionID();
 		return;
@@ -617,7 +624,6 @@ void CSteamWorksGameStatsUploader::FrameUpdatePostEntityThink()
 	m_ServiceTicking = false;
 }
 
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Opens a session: requests the session id, etc.
@@ -820,8 +826,10 @@ EResult	CSteamWorksGameStatsUploader::WriteOptionalIntToTable( KeyValues *pKV, c
 //-----------------------------------------------------------------------------
 bool CSteamWorksGameStatsUploader::AccessToSteamAPI( void )
 {
-#ifdef	GAME_DLL
+#ifdef	GAME_DLL 
+#ifndef	NO_STEAM
 	return ( steamgameserverapicontext && steamgameserverapicontext->SteamGameServer() && g_pSteamClientGameServer && steamgameserverapicontext->SteamGameServerUtils() );
+#endif
 #elif	CLIENT_DLL
 	return ( steamapicontext && steamapicontext->SteamUser() && steamapicontext->SteamUser()->BLoggedOn() && steamapicontext->SteamFriends() && steamapicontext->SteamMatchmaking() );
 #endif
@@ -838,6 +846,7 @@ ISteamGameStats* CSteamWorksGameStatsUploader::GetInterface( void )
 	HSteamPipe hSteamPipe = 0;
 
 #ifdef	GAME_DLL
+#ifndef	NO_STEAM
 	if ( steamgameserverapicontext && steamgameserverapicontext->SteamGameServer() && steamgameserverapicontext->SteamGameServerUtils() )
 	{
 		m_UserID = steamgameserverapicontext->SteamGameServer()->GetSteamID().ConvertToUint64();
@@ -850,7 +859,8 @@ ISteamGameStats* CSteamWorksGameStatsUploader::GetInterface( void )
 	if ( g_pSteamClientGameServer && engine && (/*engine->IsDedicatedServerForXbox() ||*/ engine->IsDedicatedServer()) )
 	{
 		return (ISteamGameStats*)g_pSteamClientGameServer->GetISteamGenericInterface( hSteamUser, hSteamPipe, STEAMGAMESTATS_INTERFACE_VERSION );
-	}	
+	}
+#endif
 #elif	CLIENT_DLL
 	if ( steamapicontext && steamapicontext->SteamUser() && steamapicontext->SteamUtils() )
 	{

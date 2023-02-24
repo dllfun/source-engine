@@ -347,6 +347,7 @@ void CGame::HandleMsg_ActivateApp( const InputEvent_t &event )
 
 void CGame::HandleMsg_Close( const InputEvent_t &event )
 {
+	IEngine* eng = GetEngineInstance();
 	if ( eng->GetState() == IEngine::DLL_ACTIVE )
 	{
 		eng->SetQuitting( IEngine::QUIT_TODESKTOP );
@@ -593,6 +594,7 @@ LRESULT CGame::WindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	// reproduce the calls to the wndproc.
 	//
 
+	IEngine* eng = GetEngineInstance();
 	if ( eng->GetQuitting() != IEngine::QUIT_NOTQUITTING )
 		return CallWindowProc( m_ChainedWindowProc, hWnd, uMsg, wParam, lParam );
 

@@ -833,7 +833,7 @@ void CC4::ItemPostFrame()
 		return BaseClass::OnFireEvent( pViewModel, origin, angles, event, options );
 	}
 
-	char *CC4::GetScreenText( void )
+	const char *CC4::GetScreenText( void )
 	{
 		if( m_bStartedArming )
 			return m_szScreenText;

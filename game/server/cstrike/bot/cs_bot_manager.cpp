@@ -1650,7 +1650,7 @@ void CCSBotManager::OnServerShutdown( IGameEvent *event )
 				const char *varName = botVars[i];
 				if ( varName )
 				{
-					ConVar *var = cvar->FindVar( varName );
+					ConVar *var = g_pCVar->FindVar( varName );
 					if ( var )
 					{
 						data->SetString( varName, var->GetString() );

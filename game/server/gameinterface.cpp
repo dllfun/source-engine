@@ -768,7 +768,7 @@ void CServerGameDLL::DLLShutdown( void )
 	char *pFilename = g_TextStatsMgr.GetStatsFilename();
 	if ( !pFilename || !pFilename[0] )
 	{
-		g_TextStatsMgr.SetStatsFilename( "stats.txt" );
+		g_TextStatsMgr.SetStatsFilename((char*)"stats.txt" );
 	}
 	g_TextStatsMgr.WriteFile( filesystem );
 

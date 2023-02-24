@@ -31,7 +31,7 @@
 // allowing link libraries to access tier3 library interfaces
 //-----------------------------------------------------------------------------
 IStudioRender *g_pStudioRender = 0;
-IStudioRender *studiorender = 0;
+//IStudioRender *studiorender = 0;
 IMatSystemSurface *g_pMatSystemSurface = 0;
 vgui::IInput *g_pVGuiInput = 0;
 vgui::ISurface *g_pVGuiSurface = 0;
@@ -57,7 +57,7 @@ IVTex *g_pVTex = 0;
 void ConnectTier3Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
 {
 	// Don't connect twice..
-	Assert( !g_pStudioRender && !studiorender && !g_pMatSystemSurface && !g_pVGui && !g_pVGuiPanel && !g_pVGuiInput &&
+	Assert( !g_pStudioRender && !g_pMatSystemSurface && !g_pVGui && !g_pVGuiPanel && !g_pVGuiInput &&//&& !studiorender 
 		!g_pVGuiSurface && !g_pDataCache && !g_pMDLCache && !mdlcache && !g_pVideo &&
 		!g_pDmeMakefileUtils && !g_pPhysicsCollision && !g_pVGuiLocalize && !g_pSoundEmitterSystem &&
 		!g_pVGuiSchemeManager && !g_pVGuiSystem );
@@ -66,7 +66,7 @@ void ConnectTier3Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
 	{
 		if ( !g_pStudioRender )
 		{
-			g_pStudioRender = studiorender = ( IStudioRender * )pFactoryList[i]( STUDIO_RENDER_INTERFACE_VERSION, NULL );
+			g_pStudioRender = ( IStudioRender * )pFactoryList[i]( STUDIO_RENDER_INTERFACE_VERSION, NULL );//studiorender = 
 		}
 		if ( !g_pVGui )
 		{
@@ -134,7 +134,7 @@ void ConnectTier3Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
 void DisconnectTier3Libraries()
 {
 	g_pStudioRender = 0;
-	studiorender = 0;
+	//studiorender = 0;
 	g_pVGui = 0;
 	g_pVGuiInput = 0;
 	g_pVGuiPanel = 0;

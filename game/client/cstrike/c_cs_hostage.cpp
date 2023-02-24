@@ -207,7 +207,7 @@ C_CHostage::C_CHostage()
 	m_EntClientFlags |= ENTCLIENTFLAG_DONTUSEIK;
 
 	// set the model so the PlayerAnimState uses the Hostage activities/sequences
-	SetModelName( "models/Characters/Hostage_01.mdl" );
+	SetModelName( MAKE_STRING("models/Characters/Hostage_01.mdl") );
 
 	m_PlayerAnimState = CreateHostageAnimState( this, this, LEGANIM_8WAY, false );
 	
@@ -441,7 +441,7 @@ void C_CHostage::UpdateClientSideAnimation()
 	m_PlayerAnimState->Update( GetAbsAngles()[YAW], GetAbsAngles()[PITCH] );
 
 	// initialize pose parameters
-	char *setToZero[] =
+	const char *setToZero[] =
 	{
 		"spine_yaw",
 		"head_roll"
@@ -509,7 +509,7 @@ void C_CHostage::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void C_CHostage::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
 {
-	static ConVar *violence_hblood = cvar->FindVar( "violence_hblood" );
+	static ConVar *violence_hblood = g_pCVar->FindVar( "violence_hblood" );
 	if ( violence_hblood && !violence_hblood->GetBool() )
 		return;
 

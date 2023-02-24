@@ -44,7 +44,7 @@ enum
 
 void CSurroundTest::FireCorrectOutput( inputdata_t &inputdata )
 {
-	ConVar const *pSurroundCVar = cvar->FindVar( "snd_surround_speakers" );
+	ConVar const *pSurroundCVar = g_pCVar->FindVar( "snd_surround_speakers" );
 
 	if ( pSurroundCVar )
 	{

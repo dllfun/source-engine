@@ -4807,7 +4807,7 @@ void CCSGameRules::UploadGameStats( void )
 		Q_strncpy( stats.header.szGameName, "cstrike", sizeof(stats.header.szGameName) );
 		Q_strncpy( stats.header.szMapName, STRING( gpGlobals->mapname ), sizeof( stats.header.szMapName ) );
 
-		ConVar *hostip = cvar->FindVar( "hostip" );
+		ConVar *hostip = g_pCVar->FindVar( "hostip" );
 		if ( hostip )
 		{
 			int ip = hostip->GetInt();
@@ -4817,7 +4817,7 @@ void CCSGameRules::UploadGameStats( void )
 			stats.header.ipAddr[3] = ( ip ) & MY_UCHAR_MAX;
 		}			
 
-		ConVar *hostport = cvar->FindVar( "hostip" );
+		ConVar *hostport = g_pCVar->FindVar( "hostip" );
 		if ( hostport )
 		{
 			stats.header.port = hostport->GetInt();

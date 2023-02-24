@@ -25,6 +25,7 @@
 #include "vprof_engine.h"
 #include "server.h"
 #include "cl_demo.h"
+#include "tier3/tier3.h"
 #include "toolframework/itoolframework.h"
 #include "toolframework/itoolsystem.h"
 #include "inputsystem/iinputsystem.h"
@@ -60,6 +61,23 @@ ConVar engine_no_focus_sleep( "engine_no_focus_sleep", "50", FCVAR_ARCHIVE );
 #define DEFAULT_FPS_MAX_S "300"
 static int s_nDesiredFPSMax = DEFAULT_FPS_MAX;
 static bool s_bFPSMaxDrivenByPowerSavings = false;
+
+static IEngine* g_eng;
+void SetEngineInstance(IEngine* eng) {
+	if (g_eng) {
+		Sys_Error("IEngine* eng can`t be set twice\n");
+		return;
+	}
+	g_eng = eng;
+}
+
+IEngine* GetEngineInstance() {
+	if (!g_eng) {
+		Sys_Error("IEngine* eng has not been set\n");
+		return NULL;
+	}
+	return g_eng;
+}
 
 //-----------------------------------------------------------------------------
 // ConVars and ConCommands
@@ -116,9 +134,17 @@ ConVar cpu_frequency_monitoring( "cpu_frequency_monitoring", "0", 0, "Set CPU fr
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class CEngine : public IEngine
+class CEngine : public CTier3AppSystem <IEngine>
 {
+	typedef CTier3AppSystem< IEngine > BaseClass;
 public:
+
+	virtual bool Connect(CreateInterfaceFn factory);
+	virtual void Disconnect();
+	virtual void* QueryInterface(const char* pInterfaceName);
+	virtual InitReturnVal_t Init();
+	virtual void Shutdown();
+
 					CEngine( void );
 	virtual			~CEngine( void );
 
@@ -161,8 +187,10 @@ private:
 };
 
 static CEngine g_Engine;
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CEngine, IEngine, VENGINE_VERSION, g_Engine);
 
-IEngine *eng = ( IEngine * )&g_Engine;
+
+//IEngine *eng = ( IEngine * )&g_Engine;
 //IEngineAPI *engine = NULL;
 
 
@@ -183,6 +211,8 @@ CEngine::CEngine( void )
 	m_bCatchupTime		= false;
 
 	m_nQuitting			= QUIT_NOTQUITTING;
+
+	SetEngineInstance(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -190,6 +220,45 @@ CEngine::CEngine( void )
 //-----------------------------------------------------------------------------
 CEngine::~CEngine( void )
 {
+}
+
+//-----------------------------------------------------------------------------
+// Connect, disconnect
+//-----------------------------------------------------------------------------
+bool CEngine::Connect(CreateInterfaceFn factory)
+{
+	// Store off the app system factory...
+	
+	return true;
+}
+
+void CEngine::Disconnect()
+{
+	
+}
+
+//-----------------------------------------------------------------------------
+// Query interface
+//-----------------------------------------------------------------------------
+void* CEngine::QueryInterface(const char* pInterfaceName)
+{
+	// Loading the engine DLL mounts *all* engine interfaces
+	CreateInterfaceFn factory = Sys_GetFactoryThis();	// This silly construction is necessary
+	return factory(pInterfaceName, NULL);				// to prevent the LTCG compiler from crashing.
+}
+
+//-----------------------------------------------------------------------------
+// Init, shutdown
+//-----------------------------------------------------------------------------
+InitReturnVal_t CEngine::Init()
+{
+	
+	return INIT_OK;
+}
+
+void CEngine::Shutdown()
+{
+	BaseClass::Shutdown();
 }
 
 //-----------------------------------------------------------------------------
@@ -391,7 +460,7 @@ void CEngine::Frame( void )
 	}
 
 #ifdef VPROF_ENABLED
-	PreUpdateProfile( m_flFrameTime );
+	PreUpdateProfile(this, m_flFrameTime );
 #endif
 	
 	// Reset swallowed time...

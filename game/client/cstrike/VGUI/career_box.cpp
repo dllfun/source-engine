@@ -114,7 +114,7 @@ void ConVarToggleCheckButton::Paint()
 	}
 
 	// Look up current value
-	ConVar const *var = cvar->FindVar( m_pszCvarName );
+	ConVar const *var = g_pCVar->FindVar( m_pszCvarName );
 	if ( !var )
 		return;
 	bool value = var->GetBool();
@@ -132,7 +132,7 @@ void ConVarToggleCheckButton::Paint()
 void ConVarToggleCheckButton::ApplyChanges()
 {
 	m_bStartValue = IsSelected();
-	ConVar *var = (ConVar *)cvar->FindVar( m_pszCvarName );
+	ConVar *var = (ConVar *)g_pCVar->FindVar( m_pszCvarName );
 	if ( !var )
 		return;
 	var->SetValue(m_bStartValue);
@@ -143,7 +143,7 @@ void ConVarToggleCheckButton::ApplyChanges()
 //--------------------------------------------------------------------------------------------------------------
 void ConVarToggleCheckButton::Reset()
 {
-	ConVar const *var = cvar->FindVar( m_pszCvarName );
+	ConVar const *var = g_pCVar->FindVar( m_pszCvarName );
 	if ( !var )
 		return;
 	m_bStartValue = var->GetBool();

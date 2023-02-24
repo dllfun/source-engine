@@ -32,7 +32,7 @@ void KnifeSlash( const CEffectData &data )
 	Vector vecPerp;
 	AngleVectors( data.m_vAngles, NULL, &vecPerp, NULL );
 
-	const ConVar *decals =cvar->FindVar( "r_decals" );
+	const ConVar *decals = g_pCVar->FindVar( "r_decals" );
 
 	if ( decals && decals->GetInt() )
 	{

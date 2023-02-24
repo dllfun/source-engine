@@ -29,7 +29,7 @@ class CHudTextMessage : public IHudTextMessage
 public:
 	virtual char *LocaliseTextString( const char *msg, char *dst_buffer, int buffer_size );
 	virtual char *BufferedLocaliseTextString( const char *msg );
-	virtual char *LookupString( const char *msg_name, int *msg_dest = NULL );
+	virtual char *LookupString(const char *msg_name, int *msg_dest = NULL );
 };
 
 // Singleton
@@ -121,7 +121,7 @@ char *CHudTextMessage::BufferedLocaliseTextString( const char *msg )
 char *CHudTextMessage::LookupString( const char *msg, int *msg_dest )
 {
 	if ( !msg )
-		return "";
+		return (char*)msg;
 
 	// '#' character indicates this is a reference to a string in titles.txt, and not the string itself
 	if ( msg[0] == '#' ) 

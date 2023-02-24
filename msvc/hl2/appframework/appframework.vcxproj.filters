@@ -65,5 +65,8 @@
     <ClCompile Include="..\..\..\public\vgui_controls\vgui_controls.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\appframework\sdlmgr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -529,7 +529,7 @@ void CAchievementsPage::CreateOrUpdateComboItems( bool bCreate )
 		int achievementRangeStart = (m_AchievementGroups[i].m_iMinRange / 1000) * 1000;
         Q_snprintf( buf, sizeof(buf), "#Achievement_Group_%d", achievementRangeStart );
 
-        wchar_t *wzGroupName = g_pVGuiLocalize->Find( buf );
+        const wchar_t *wzGroupName = g_pVGuiLocalize->Find( buf );
 
         if ( !wzGroupName )
         {
@@ -875,7 +875,7 @@ void CAchievementsPageGroupPanel::UpdateAchievementInfo( vgui::IScheme* pScheme 
         int achievementRangeStart = (m_iFirstAchievementID / 1000) * 1000;
         Q_snprintf( buf, sizeof(buf), "#Achievement_Group_%d", achievementRangeStart );
 
-        wchar_t *wzGroupName = g_pVGuiLocalize->Find( buf );
+        const wchar_t *wzGroupName = g_pVGuiLocalize->Find( buf );
 
         if ( !wzGroupName )
         {

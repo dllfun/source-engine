@@ -154,7 +154,7 @@ public:
 	#ifdef CLIENT_DLL
 
 		virtual bool OnFireEvent( C_BaseViewModel *pViewModel, const Vector& origin, const QAngle& angles, int event, const char *options );
-		char *GetScreenText( void );
+		const char *GetScreenText( void );
 		char m_szScreenText[32];
 		
 	#else

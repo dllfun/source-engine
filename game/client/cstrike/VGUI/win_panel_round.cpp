@@ -348,7 +348,7 @@ void WinPanel_Round::SetMVP( C_CSPlayer* pPlayer, CSMvpReason_t reason )
 		wchar_t wszBuf[256], wszPlayerName[64];
 		g_pVGuiLocalize->ConvertANSIToUnicode(UTIL_SafeName(pPlayer->GetPlayerName()), wszPlayerName, sizeof(wszPlayerName));
 
-		wchar_t *pReason = (wchar_t *)LocalizeFindSafe( mvpReasonToken );
+		const wchar_t *pReason = (wchar_t *)LocalizeFindSafe( mvpReasonToken );
 		if ( !pReason )
 		{
 			pReason = L"%s1";

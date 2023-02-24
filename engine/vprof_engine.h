@@ -9,12 +9,13 @@
 #define __VPROF_ENGINE_H__
 
 #include "igameserverdata.h"
+#include "iengine.h"
 
 class IVProfExport;
 class CVProfile;
 
 
-void PreUpdateProfile( float filteredtime );
+void PreUpdateProfile(IEngine* eng, float filteredtime );
 void PostUpdateProfile();
 void UpdateVXConsoleProfile();
 

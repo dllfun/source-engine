@@ -69,7 +69,7 @@ void CCSViewRender::Init( void )
 {
 	for ( int i=0; i<ARRAYSIZE( s_flaggedConVars ); ++i )
 	{
-		ConVar *flaggedConVar = cvar->FindVar( s_flaggedConVars[i].name );
+		ConVar *flaggedConVar = g_pCVar->FindVar( s_flaggedConVars[i].name );
 		if ( flaggedConVar )
 		{
 			flaggedConVar->AddFlags( s_flaggedConVars[i].flags );

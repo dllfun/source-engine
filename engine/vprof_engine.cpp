@@ -122,7 +122,7 @@ int ConsoleLogger::m_index = 0;
 
 static float s_flIntervalStartTime = 0.0f;
 
-void PreUpdateProfile( float filteredtime )
+void PreUpdateProfile(IEngine* eng, float filteredtime )
 {
 	Assert( g_VProfCurrentProfile.AtRoot() );
 

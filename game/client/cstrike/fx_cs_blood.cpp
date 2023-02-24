@@ -317,7 +317,7 @@ void FX_CS_BloodSpray( const Vector &origin, const Vector &normal, float flDamag
 	if ( UTIL_IsLowViolence() )
 		return;
 
-	static ConVar *violence_hblood = cvar->FindVar( "violence_hblood" );
+	static ConVar *violence_hblood = g_pCVar->FindVar( "violence_hblood" );
 	if ( violence_hblood && !violence_hblood->GetBool() )
 		return;
 

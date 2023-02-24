@@ -47,7 +47,7 @@ namespace vgui
 // allowing link libraries to access tier3 library interfaces
 //-----------------------------------------------------------------------------
 extern IStudioRender *g_pStudioRender;
-extern IStudioRender *studiorender;
+//extern IStudioRender *studiorender;
 extern IMatSystemSurface *g_pMatSystemSurface;
 extern vgui::ISurface *g_pVGuiSurface;
 extern vgui::IInput *g_pVGuiInput;

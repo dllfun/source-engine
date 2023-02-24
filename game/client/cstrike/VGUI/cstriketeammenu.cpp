@@ -48,7 +48,7 @@ void CCSTeamMenu::Update( void )
 {
 	BaseClass::Update();
 
-	const ConVar *allowspecs =  cvar->FindVar( "mp_allowspectators" );
+	const ConVar *allowspecs = g_pCVar->FindVar( "mp_allowspectators" );
 
 	C_CSPlayer *pPlayer = C_CSPlayer::GetLocalCSPlayer();
 	

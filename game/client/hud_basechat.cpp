@@ -102,7 +102,7 @@ wchar_t* ConvertCRtoNL( wchar_t *str )
 	return str;
 }
 
-void StripEndNewlineFromString( char *str )
+void StripEndNewlineFromString(char *str )
 {
 	int s = strlen( str ) - 1;
 	if ( s >= 0 )

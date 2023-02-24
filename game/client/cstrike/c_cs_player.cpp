@@ -2096,7 +2096,7 @@ void C_CSPlayer::PlayReloadEffect()
 				if ( pEvent->event == CL_EVENT_SOUND )
 				{
 					CCSSoundEvent event;
-					event.m_SoundName = pEvent->options;
+					event.m_SoundName = MAKE_STRING( pEvent->options);
 					event.m_flEventTime = gpGlobals->curtime + pEvent->cycle / cyclesPerSecond;
 					m_SoundEvents.AddToTail( event );
 				}
@@ -2316,7 +2316,7 @@ bool C_CSPlayer::HasC4( void )
 
 void C_CSPlayer::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
 {
-	static ConVar *violence_hblood = cvar->FindVar( "violence_hblood" );
+	static ConVar *violence_hblood = g_pCVar->FindVar( "violence_hblood" );
 	if ( violence_hblood && !violence_hblood->GetBool() )
 		return;
 

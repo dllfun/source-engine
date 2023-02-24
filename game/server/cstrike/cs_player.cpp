@@ -5281,7 +5281,7 @@ void CCSPlayer::State_Enter_WELCOME()
 
 	PhysObjectSleep();
 
-	const ConVar *hostname = cvar->FindVar( "hostname" );
+	const ConVar *hostname = g_pCVar->FindVar( "hostname" );
 	const char *title = (hostname) ? hostname->GetString() : "MESSAGE OF THE DAY";
 
 	// Show info panel (if it's not a simple demo map).

@@ -139,7 +139,7 @@ bool CValveVideoServices::Connect( CreateInterfaceFn factory )
 		return false;
 	}
 
-#if defined( USE_SDL )
+#if defined(OSX) || defined(LINUX) || defined(PLATFORM_BSD)//if defined( USE_SDL )
 	g_pLauncherMgr = (ILauncherMgr *)factory( SDLMGR_INTERFACE_VERSION, NULL );
 #endif
 	

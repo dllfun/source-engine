@@ -107,7 +107,7 @@ void CViewC4Panel::OnTick()
 
 	if( pViewC4 )
 	{
-		char *display = pViewC4->GetScreenText();
+		const char *display = pViewC4->GetScreenText();
 
 		if( display )
 		{

@@ -456,7 +456,7 @@ private:
 };
 
 CWin32Surface g_Surface;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CWin32Surface, ISurface, VGUI_SURFACE_INTERFACE_VERSION, g_Surface);
+//EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CWin32Surface, ISurface, VGUI_SURFACE_INTERFACE_VERSION, g_Surface);
 
 //!! these defines duplicated in Surface_Win32.cpp
 #define WM_MY_TRAY_NOTIFICATION (WM_USER+1)

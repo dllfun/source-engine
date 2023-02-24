@@ -96,7 +96,7 @@ void WeaponImageInfo::SetWeapon( const BuyPresetWeapon *pWeapon, bool isPrimary,
 	if ( !pWeapon )
 		return;
 
-	wchar_t *multiplierString = g_pVGuiLocalize->Find("#Cstrike_BuyMenuPresetMultiplier");
+	const wchar_t *multiplierString = g_pVGuiLocalize->Find("#Cstrike_BuyMenuPresetMultiplier");
 	if ( !multiplierString )
 		multiplierString = L"";
 	const int BufLen = 32;
@@ -358,7 +358,7 @@ void ItemImageInfo::SetItem( const char *imageFname, int count )
 
 	if ( count > 1 )
 	{
-		wchar_t *multiplierString = g_pVGuiLocalize->Find("#Cstrike_BuyMenuPresetMultiplier");
+		const wchar_t *multiplierString = g_pVGuiLocalize->Find("#Cstrike_BuyMenuPresetMultiplier");
 		if ( !multiplierString )
 			multiplierString = L"";
 		const int BufLen = 32;

@@ -80,7 +80,7 @@
       <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;__USEA3D;_ADD_EAX_;ENGINE_DLL;VERSION_SAFE_STEAM_API_INTERFACES;USE_BREAKPAD_HANDLER;USE_CONVARS;VOICE_OVER_IP;MEM_OVERRIDE_ON;HAVE_JPEG;ENGINE_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;..\..\..\thirdparty\SDL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -95,7 +95,7 @@
       <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;__USEA3D;_ADD_EAX_;ENGINE_DLL;VERSION_SAFE_STEAM_API_INTERFACES;USE_BREAKPAD_HANDLER;USE_CONVARS;VOICE_OVER_IP;MEM_OVERRIDE_ON;HAVE_JPEG;ENGINE_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;..\..\..\thirdparty\SDL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -158,6 +158,7 @@
     <ClCompile Include="..\..\..\engine\audio\MPAHeader.cpp" />
     <ClCompile Include="..\..\..\engine\audio\snd_dev_common.cpp" />
     <ClCompile Include="..\..\..\engine\audio\snd_dev_direct.cpp" />
+    <ClCompile Include="..\..\..\engine\audio\snd_dev_sdl.cpp" />
     <ClCompile Include="..\..\..\engine\audio\snd_dev_wave.cpp" />
     <ClCompile Include="..\..\..\engine\audio\snd_dma.cpp" />
     <ClCompile Include="..\..\..\engine\audio\snd_dsp.cpp" />

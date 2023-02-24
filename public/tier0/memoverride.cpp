@@ -815,7 +815,7 @@ _CRT_REPORT_HOOK __cdecl _CrtSetReportHook( _CRT_REPORT_HOOK pfnNewHook )
 }
 
 int __cdecl _CrtDbgReport( int nRptType, const char * szFile,
-        int nLine, const char * szModule, const char * szFormat, ... )
+	int nLine, const char * szModule, const char * szFormat, ... )
 {
 	static char output[1024];
 	va_list args;

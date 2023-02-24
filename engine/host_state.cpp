@@ -583,6 +583,7 @@ void CHostState::State_Shutdown()
 	CL_EndMovie();
 #endif
 
+	IEngine* eng = GetEngineInstance();
 	eng->SetNextState( IEngine::DLL_CLOSE );
 }
 
@@ -595,6 +596,7 @@ void CHostState::State_Restart( void )
 	// Just like a regular shutdown
 	State_Shutdown();
 
+	IEngine* eng = GetEngineInstance();
 	// But signal launcher/front end to restart engine
 	eng->SetNextState( IEngine::DLL_RESTART );
 }

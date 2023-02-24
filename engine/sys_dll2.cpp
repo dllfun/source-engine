@@ -995,6 +995,8 @@ private:
 	bool m_bRunningSimulation;
 	bool m_bSupportsVR;
 	StartupInfo_t m_StartupInfo;
+	//static CEngine g_Engine;
+	IEngine* eng = NULL;// (IEngine*)&g_Engine;
 };
 
 
@@ -1044,6 +1046,13 @@ bool CEngineAPI::Connect( CreateInterfaceFn factory )
 #if defined( USE_SDL )
 	g_pLauncherMgr = (ILauncherMgr *)factory( SDLMGR_INTERFACE_VERSION, NULL );
 #endif
+
+	eng = (IEngine*)factory(VENGINE_VERSION, NULL);
+	if (!eng)
+	{
+		Sys_Error("Unable to init engine system version %s\n", VENGINE_VERSION);
+		return false;
+	}
 	
 	ConnectMDLCacheNotify();
 
@@ -2085,6 +2094,12 @@ int CModAppSystemGroup::Main()
 
 	if ( IsServerOnly() )
 	{
+		IEngine* eng = (IEngine*)FindSystem(VENGINE_VERSION);
+		if (!eng)
+		{
+			Sys_Error("Unable to init engine system version %s\n", VENGINE_VERSION);
+			return false;
+		}
 		// Start up the game engine
 		if ( eng->Load( true, host_parms.basedir ) )
 		{
@@ -2097,6 +2112,13 @@ int CModAppSystemGroup::Main()
 	}
 	else
 	{
+		IEngine* eng = (IEngine*)FindSystem(VENGINE_VERSION);
+		if (!eng)
+		{
+			Sys_Error("Unable to init engine system version %s\n", VENGINE_VERSION);
+			return false;
+		}
+
 		eng->SetQuitting( IEngine::QUIT_NOTQUITTING );
 
 		COM_TimestampedLog( "eng->Load" );
@@ -2171,6 +2193,9 @@ public:
 	virtual void UpdateHostname(char *pszHostname, int maxlen);
 
 	CModAppSystemGroup *m_pDedicatedServer;
+
+private:
+	IEngine* eng = NULL;
 };
 
 //-----------------------------------------------------------------------------
@@ -2194,6 +2219,7 @@ DWORD __stdcall LongTickWatcherThread( void *voidPtr )
 	double flNextPossibleDumpTime = Plat_FloatTime() + MIN_TIME_BETWEEN_DUMPED_TICKS;
 	int nNumDumpsThisTick = 0;
 
+	IEngine* eng = GetEngineInstance();
 	while ( eng->GetQuitting() == IEngine::QUIT_NOTQUITTING && !g_bQuitLongTickWatcherThread )
 	{
 		if ( sv.m_State == ss_active && sv.m_bSimulatingTicks )
@@ -2326,6 +2352,13 @@ bool CDedicatedServerAPI::Connect( CreateInterfaceFn factory )
 	if ( !g_pDataCache || !g_pPhysics || !g_pMDLCache )
 	{
 		Warning( "Engine wasn't able to acquire required interfaces!\n" );
+		return false;
+	}
+
+	eng = (IEngine*)factory(VENGINE_VERSION, NULL);
+	if (!eng)
+	{
+		Sys_Error("Unable to init engine system version %s\n", VENGINE_VERSION);
 		return false;
 	}
 

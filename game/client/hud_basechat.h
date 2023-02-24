@@ -92,7 +92,7 @@ struct TextRange
 	bool preserveAlpha;
 };
 
-void StripEndNewlineFromString( char *str );
+void StripEndNewlineFromString(char *str );
 void StripEndNewlineFromString( wchar_t *str );
 
 char* ConvertCRtoNL( char *str );

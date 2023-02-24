@@ -98,8 +98,11 @@ void CCSBaseAchievement::ApplySettings( /* const */ KeyValues* pNodeIn )
 /**
 * Meta Achievement base class methods
 */
-CAchievement_Meta::CAchievement_Meta() :
+CAchievement_Meta::CAchievement_Meta() 
+#if !defined(NO_STEAM)
+	:
 	m_CallbackUserAchievement( this, &CAchievement_Meta::Steam_OnUserAchievementStored )
+#endif	
 {
 }
 
@@ -108,6 +111,8 @@ void CAchievement_Meta::Init()
 	SetFlags( ACH_SAVE_GLOBAL );
 	SetGoal( 1 );
 }
+
+#if !defined(NO_STEAM)
 
 void CAchievement_Meta::Steam_OnUserAchievementStored( UserAchievementStored_t *pUserAchievementStored )
 {
@@ -132,6 +137,7 @@ void CAchievement_Meta::Steam_OnUserAchievementStored( UserAchievementStored_t *
 		AwardAchievement();
 	}
 }
+#endif
 
 void CAchievement_Meta::AddRequirement( int nAchievementId )
 {
