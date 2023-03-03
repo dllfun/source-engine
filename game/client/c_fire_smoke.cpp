@@ -95,6 +95,7 @@ END_RECV_TABLE()
 
 C_FireSmoke::C_FireSmoke()
 {
+	SetClassname("C_FireSmoke");
 }
 
 C_FireSmoke::~C_FireSmoke()

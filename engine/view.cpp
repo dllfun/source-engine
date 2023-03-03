@@ -274,15 +274,15 @@ public:
 		}
 	}
 
-	void DrawBrushModel( 
-		IClientEntity *baseentity, 
-		model_t *model, 
-		const Vector& origin, 
-		const QAngle& angles, 
-		bool bUnused )
-	{
-		R_DrawBrushModel( baseentity, model, origin, angles, DEPTH_MODE_NORMAL, true, true );
-	}
+	//void DrawBrushModel( 
+	//	IClientEntity *baseentity, 
+	//	model_t *model, 
+	//	const Vector& origin, 
+	//	const QAngle& angles, 
+	//	bool bUnused )
+	//{
+	//	R_DrawBrushModel( baseentity, model, origin, angles, DEPTH_MODE_NORMAL, true, true );
+	//}
 
 	virtual void DrawBrushModelEx( IClientEntity *baseentity, model_t *model, const Vector& origin, const QAngle& angles, DrawBrushModelMode_t mode )
 	{

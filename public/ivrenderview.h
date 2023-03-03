@@ -188,12 +188,12 @@ public:
 	// Draw normal brush model.
 	// If pMaterialOverride is non-null, then all the faces of the bmodel will
 	// set this material rather than their regular material.
-	virtual void			DrawBrushModel( 
-		IClientEntity *baseentity, 
-		model_t *model, 
-		const Vector& origin, 
-		const QAngle& angles, 
-		bool bUnused ) = 0;
+	//virtual void			DrawBrushModel( 
+	//	IClientEntity *baseentity, 
+	//	model_t *model, 
+	//	const Vector& origin, 
+	//	const QAngle& angles, 
+	//	bool bUnused ) = 0;
 	
 	// Draw brush model that has no origin/angles change ( uses identity transform )
 	// FIXME, Material proxy IClientEntity *baseentity is unused right now, use DrawBrushModel for brushes with

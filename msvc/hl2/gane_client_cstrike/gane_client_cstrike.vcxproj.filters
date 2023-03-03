@@ -59,9 +59,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\game\client\game_controls\basemodelpanel.cpp">
       <Filter>源文件\game_controls</Filter>
     </ClCompile>

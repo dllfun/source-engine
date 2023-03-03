@@ -23,9 +23,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\materialsystem\shaderapidx9\colorformatdx8.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

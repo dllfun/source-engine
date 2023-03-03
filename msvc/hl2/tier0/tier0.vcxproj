@@ -215,7 +215,6 @@
     <ClCompile Include="..\..\..\tier0\memvalidate.cpp" />
     <ClCompile Include="..\..\..\tier0\mem_helpers.cpp" />
     <ClCompile Include="..\..\..\tier0\minidump.cpp" />
-    <ClCompile Include="..\..\..\tier0\pch_tier0.cpp" />
     <ClCompile Include="..\..\..\tier0\platform.cpp" />
     <ClCompile Include="..\..\..\tier0\pme.cpp" />
     <ClCompile Include="..\..\..\tier0\PMELib.cpp" />
@@ -230,12 +229,6 @@
     <ClCompile Include="..\..\..\tier0\vcrmode.cpp" />
     <ClCompile Include="..\..\..\tier0\vprof.cpp" />
     <ClCompile Include="..\..\..\tier0\win32consoleio.cpp" />
-    <ClCompile Include="pch.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\..\tier0\assert_dialog.rc" />

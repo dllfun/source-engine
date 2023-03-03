@@ -23,9 +23,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\ivp\ivp_compact_builder\3dsimport_co.cxx">
       <Filter>源文件</Filter>
     </ClCompile>

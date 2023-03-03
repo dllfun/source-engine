@@ -23,9 +23,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\engine\voice_codecs\minimp3\mp3codecs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

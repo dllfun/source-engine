@@ -40,4 +40,5 @@ END_RECV_TABLE()
 //-----------------------------------------------------------------------------
 C_FuncRotating::C_FuncRotating()
 {
+	SetClassname("C_FuncRotating");
 }
