@@ -273,6 +273,7 @@ void CServerBrowser::SetParent(vgui::VPANEL parent)
 	if (m_hInternetDlg.Get())
 	{
 		m_hInternetDlg->SetParent(parent);
+		m_hInternetDlg->SetMouseInputEnabled(true);
 	}
 }
 

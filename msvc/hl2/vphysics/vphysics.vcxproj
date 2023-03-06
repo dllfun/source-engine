@@ -82,6 +82,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..\..\vphysics;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\ivp\ivp_intern;..\..\..\ivp\ivp_collision;..\..\..\ivp\ivp_physics;..\..\..\ivp\ivp_surface_manager;..\..\..\ivp\ivp_utility;..\..\..\ivp\ivp_controller;..\..\..\ivp\ivp_compact_builder;..\..\..\ivp\havana\havok;..\..\..\ivp\havana;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\</AdditionalLibraryDirectories>
@@ -97,6 +98,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..\..\vphysics;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\ivp\ivp_intern;..\..\..\ivp\ivp_collision;..\..\..\ivp\ivp_physics;..\..\..\ivp\ivp_surface_manager;..\..\..\ivp\ivp_utility;..\..\..\ivp\ivp_controller;..\..\..\ivp\ivp_compact_builder;..\..\..\ivp\havana\havok;..\..\..\ivp\havana;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;havana_constraints.lib;hk_math.lib;hk_base.lib;ivp_compactbuilder.lib;ivp_physics.lib;vstdlib.lib;mathlib.lib;%(AdditionalDependencies)</AdditionalDependencies>

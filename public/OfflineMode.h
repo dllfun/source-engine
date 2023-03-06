@@ -13,17 +13,26 @@
 
 inline bool IsSteamInOfflineMode()
 {
+#ifndef NO_STEAM
 	int offline = 0;
 	vgui::system()->GetRegistryInteger( STEAM_OFFLINE_MODE, offline );
 	return ( offline == 1 );
+#else
+	return true;
+#endif
 }inline bool IsSteamInAuthenticationFailSafeMode()
 {
+#ifndef NO_STEAM
 	int offline = 0;
 	vgui::system()->GetRegistryInteger( STEAM_AFS_MODE, offline );
 	return ( offline == 1 );
+#else
+	return true;
+#endif
 }
 
 inline bool IsSteamGameServerBrowsingEnabled()
 {
+
 	return (IsSteamInAuthenticationFailSafeMode() || !IsSteamInOfflineMode());
 }

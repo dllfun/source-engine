@@ -87,6 +87,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..\..\bitmap;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\thirdparty\stb;..\..\..\common;..\..\..\dx9sdk\include;..\..\..\utils\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -106,6 +107,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..\..\bitmap;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\thirdparty\stb;..\..\..\common;..\..\..\dx9sdk\include;..\..\..\utils\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
