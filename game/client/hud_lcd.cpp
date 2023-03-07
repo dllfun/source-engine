@@ -1001,11 +1001,11 @@ void CDescribeData::DescribeString( const string_t *instring, int count )
 	{
 		if ( count == 1 )
 		{
-			Describe( " string (%s)\n", instring[ i ].ToCStr() ? instring[ i ].ToCStr()  : "" );
+			Describe( " string (%s)\n", STRING( instring[ i ] ) ? STRING( instring[ i ] )  : "" );
 		}
 		else
 		{
-			Describe( "[%i] string (%s)\n", i, instring[ i ].ToCStr() ? instring[ i ].ToCStr()  : "" );
+			Describe( "[%i] string (%s)\n", i,STRING( instring[ i ] ) ? STRING( instring[ i ] )  : "" );
 		}
 	}
 }

@@ -240,7 +240,7 @@ void CCSGameStats::UploadRoundStats( void )
 	totalTimer.Start();
 	purchasesAndDeathsStatTimer.Start();
 
-	const char *pzMapName = gpGlobals->mapname.ToCStr();
+	const char *pzMapName = STRING( gpGlobals->mapname );
 	pKV->SetString( "MapID", pzMapName );
 
 	for ( int k=0 ; k < m_MarketPurchases.Count() ; ++k )
@@ -552,9 +552,9 @@ void CCSGameStats::Event_BreakProp( CCSPlayer* pPlayer, CBreakableProp *pProp )
 	if (!pPlayer)
 		return;
 
-	DevMsg("Player %s broke a %s (%i)\n", pPlayer->GetPlayerName(), pProp->GetModelName().ToCStr(), pProp->entindex());
+	DevMsg("Player %s broke a %s (%i)\n", pPlayer->GetPlayerName(),STRING( pProp->GetModelName() ), pProp->entindex());
 
-	int iIndex = m_PropStatTable.Find(pProp->GetModelName().ToCStr());
+	int iIndex = m_PropStatTable.Find(STRING( pProp->GetModelName() ));
 	if (m_PropStatTable.IsValidIndex(iIndex))
 	{
 		IncrementStat(pPlayer, m_PropStatTable[iIndex], 1);
@@ -569,7 +569,7 @@ void CCSGameStats::Event_BreakProp( CCSPlayer* pPlayer, CBreakableProp *pProp )
 //-----------------------------------------------------------------------------
 void CCSGameStats::UpdatePlayerRoundStats(int winner)
 {	
-    int mapIndex = GetCSLevelIndex(gpGlobals->mapname.ToCStr());
+    int mapIndex = GetCSLevelIndex(STRING( gpGlobals->mapname ));
     CSStatType_t mapStatWinIndex  = CSSTAT_UNDEFINED, mapStatRoundIndex = CSSTAT_UNDEFINED;
 
     if ( mapIndex != -1 )
@@ -843,7 +843,7 @@ void CCSGameStats::DumpMatchWeaponMetrics()
 
 	//char filename[ 128 ];
 	//Q_snprintf( filename, sizeof(filename), "wm_%4d%02d%02d_%02d%02d%02d_%s.csv", 
-	//	year, month, day, hour, minute, second, gpGlobals->mapname.ToCStr());
+	//	year, month, day, hour, minute, second, STRING( gpGlobals->mapname ));
 
 	//FileHandle_t hLogFile = filesystem->Open( filename, "wt" );
 
@@ -955,7 +955,7 @@ void CCSGameStats::Event_PlayerKilledOther( CBasePlayer *pAttacker, CBaseEntity 
 		else
 		{
 			//In the case of grenades, the inflictor is the spawned grenade entity.
-			if ( V_strcmp(pInflictor->m_iClassname.ToCStr(), "hegrenade_projectile") == 0 )
+			if ( V_strcmp(STRING( pInflictor->m_iClassname ), "hegrenade_projectile") == 0 )
 				weaponId = WEAPON_HEGRENADE;
 		}
 	}
@@ -1411,7 +1411,7 @@ void CCSGameStats::IncrementStat( CCSPlayer* pPlayer, CSStatType_t statId, int i
 		    if (ServerStatBasedAchievements[i].statId == statId)
 		    {
 			    // skip this if there is a map filter and it doesn't match
-			    if (ServerStatBasedAchievements[i].mapFilter != NULL && V_strcmp(gpGlobals->mapname.ToCStr(), ServerStatBasedAchievements[i].mapFilter) != 0)
+			    if (ServerStatBasedAchievements[i].mapFilter != NULL && V_strcmp(STRING( gpGlobals->mapname ), ServerStatBasedAchievements[i].mapFilter) != 0)
 				    continue;
 
 			    bool bWasMet = ServerStatBasedAchievements[i].IsMet(stats.statsCurrentRound[statId] - iDelta, stats.statsCurrentMatch[statId] - iDelta);
@@ -1447,7 +1447,7 @@ void CCSGameStats::SetStat( CCSPlayer *pPlayer, CSStatType_t statId, int iValue 
 			if (ServerStatBasedAchievements[i].statId == statId)
 			{
 				// skip this if there is a map filter and it doesn't match
-				if (ServerStatBasedAchievements[i].mapFilter != NULL && V_strcmp(gpGlobals->mapname.ToCStr(), ServerStatBasedAchievements[i].mapFilter) != 0)
+				if (ServerStatBasedAchievements[i].mapFilter != NULL && V_strcmp(STRING( gpGlobals->mapname ), ServerStatBasedAchievements[i].mapFilter) != 0)
 					continue;
 
 				bool bWasMet = ServerStatBasedAchievements[i].IsMet(oldRoundValue, oldMatchValue);

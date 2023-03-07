@@ -775,7 +775,7 @@ void CAI_ScriptedSequence::ScriptThink( void )
 	else if (FindEntity())
 	{
 		StartScript( );
-		DevMsg( 2,  "scripted_sequence %d:\"%s\" using NPC %d:\"%s\"(%s)\n", entindex(), GetDebugName(), GetTarget()->entindex(), GetTarget()->GetEntityName().ToCStr(), STRING( m_iszEntity ) );
+		DevMsg( 2,  "scripted_sequence %d:\"%s\" using NPC %d:\"%s\"(%s)\n", entindex(), GetDebugName(), GetTarget()->entindex(), STRING( GetTarget()->GetEntityName() ), STRING( m_iszEntity ) );
 	}
 	else
 	{
@@ -863,7 +863,7 @@ void CAI_ScriptedSequence::SynchronizeSequence( CAI_BaseNPC *pNPC )
 	float flCycleRate = pNPC->GetSequenceCycleRate( pNPC->GetSequence() );
 	float flInterval = gpGlobals->curtime - m_startTime;
 
-	// Msg("%.2f \"%s\"  %s : %f (%f): interval %f\n", gpGlobals->curtime, GetEntityName().ToCStr(), pNPC->GetClassname(), pNPC->m_flAnimTime.Get(), m_startTime, flInterval );
+	// Msg("%.2f \"%s\"  %s : %f (%f): interval %f\n", gpGlobals->curtime, STRING( GetEntityName() ),  pNPC->GetClassname(), pNPC->m_flAnimTime.Get(), m_startTime, flInterval );
 	//Assert( flInterval >= 0.0 && flInterval <= 0.15 );
 	flInterval = clamp( flInterval, 0.f, 0.15f );
 
@@ -1660,7 +1660,7 @@ void CAI_ScriptedSchedule::ScriptThink( void )
 		pTarget = FindScriptEntity( (m_spawnflags & SF_SCRIPT_SEARCH_CYCLICALLY) != 0 );
 		if ( pTarget )
 		{
-			DevMsg( 2,  "scripted_schedule \"%s\" using NPC \"%s\"(%s)\n", GetDebugName(), STRING( m_iszEntity ), pTarget->GetEntityName().ToCStr() );
+			DevMsg( 2,  "scripted_schedule \"%s\" using NPC \"%s\"(%s)\n", GetDebugName(), STRING( m_iszEntity ), STRING( pTarget->GetEntityName() ) );
 			StartSchedule( pTarget );
 			success = true;
 		}
@@ -1670,7 +1670,7 @@ void CAI_ScriptedSchedule::ScriptThink( void )
 		m_hLastFoundEntity = NULL;
 		while ( ( pTarget = FindScriptEntity( true ) ) != NULL )
 		{
-			DevMsg( 2,  "scripted_schedule \"%s\" using NPC \"%s\"(%s)\n", GetDebugName(), pTarget->GetEntityName().ToCStr(), STRING( m_iszEntity ) );
+			DevMsg( 2,  "scripted_schedule \"%s\" using NPC \"%s\"(%s)\n", GetDebugName(), STRING( pTarget->GetEntityName() ), STRING( m_iszEntity ) );
 			StartSchedule( pTarget );
 			success = true;
 		}

@@ -639,7 +639,7 @@ void CNavArea::ConnectElevators( void )
 						{
 							Warning( "Floor %d ('%s') of elevator at ( %3.2f, %3.2f, %3.2f ) has no matching navigation areas\n", 
 									 of, 
-									 otherFloor->name.ToCStr(),
+									 STRING( otherFloor->name ),
 									 elevator->GetAbsOrigin().x, elevator->GetAbsOrigin().y, elevator->GetAbsOrigin().z );
 						}
 					}

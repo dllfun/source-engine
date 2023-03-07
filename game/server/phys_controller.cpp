@@ -969,7 +969,7 @@ void CKeepUpright::Activate()
 		if ( m_angularLimit == 150.0f )
 		{
 			CBaseEntity *pEntity = static_cast<CBaseEntity *>(pPhys->GetGameData());
-			if ( pEntity && pEntity->GetServerVehicle() && Q_stristr( gpGlobals->mapname.ToCStr(), "d2_coast_01" ) )
+			if ( pEntity && pEntity->GetServerVehicle() && Q_stristr(STRING( gpGlobals->mapname ), "d2_coast_01" ) )
 			{
 				m_bDampAllRotation = true;
 			}

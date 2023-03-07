@@ -134,7 +134,7 @@ void CFish::Initialize( CFishPool *pool, unsigned int id )
 	m_y = deltaPos.y;
 	m_z = m_poolOrigin->z;
 
-	SetModel( pool->GetModelName().ToCStr() );
+	SetModel( STRING( pool->GetModelName() ) );
 }
 
 

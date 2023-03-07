@@ -170,7 +170,7 @@ void CGameUI::Deactivate( CBaseEntity *pActivator )
 	}
 	else
 	{
-		Warning("%s Deactivate(): I have no player when called by %s!\n", GetEntityName().ToCStr(), pActivator->GetEntityName().ToCStr());
+		Warning("%s Deactivate(): I have no player when called by %s!\n",STRING( GetEntityName() ), STRING( pActivator->GetEntityName() ));
 	}
 	
 	// Stop thinking
@@ -191,7 +191,7 @@ void CGameUI::InputActivate( inputdata_t &inputdata )
 		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, inputdata.value.String(), this, inputdata.pActivator, inputdata.pCaller );
 		if ( pEntity == NULL || pEntity->IsPlayer() == false )
 		{
-			Warning( "%s InputActivate: entity %s not found or is not a player!\n", GetEntityName().ToCStr(), inputdata.value.String() );
+			Warning( "%s InputActivate: entity %s not found or is not a player!\n", STRING( GetEntityName() ), inputdata.value.String() );
 			return;
 		}
 
@@ -202,7 +202,7 @@ void CGameUI::InputActivate( inputdata_t &inputdata )
 		// Otherwise try to use the activator
 		if ( inputdata.pActivator == NULL || inputdata.pActivator->IsPlayer() == false )
 		{
-			Warning( "%s InputActivate: invalid or missing !activator!\n", GetEntityName().ToCStr() );
+			Warning( "%s InputActivate: invalid or missing !activator!\n", STRING( GetEntityName() ) );
 			return;
 		}
 

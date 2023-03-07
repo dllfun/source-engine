@@ -1009,7 +1009,7 @@ void CAI_AssaultBehavior::SetParameters( string_t rallypointname, AssaultCue_t a
 
 	if( !pBest )
 	{
-		DevMsg("%s Didn't find a best rally point!\n", GetOuter()->GetEntityName().ToCStr() );
+		DevMsg("%s Didn't find a best rally point!\n", STRING( GetOuter()->GetEntityName() ) );
 		return;
 	}
 

@@ -1619,7 +1619,7 @@ void CAI_BaseActor::MaintainLookTargets( float flInterval )
 	{
 		if (active[i]->IsThis( this ))
 		{
-			// DevMsg( "eyes (%d) %s\n", i, STRING( active[i]->m_hTarget->GetEntityName().ToCStr() ) );
+			// DevMsg( "eyes (%d) %s\n", i, STRING( active[i]->m_hTarget->GetEntityName() ) );
 			bFoundTarget = true;
 			hTarget = this;
 			SetViewtarget( vEyePosition + HeadDirection3D() * 100 );
@@ -1631,7 +1631,7 @@ void CAI_BaseActor::MaintainLookTargets( float flInterval )
 			// E3 Hack
 			if (ValidEyeTarget(active[i]->GetPosition()))
 			{
-				// DevMsg( "eyes (%d) %s\n", i, STRING( pTarget->GetEntityName().ToCStr() ) );
+				// DevMsg( "eyes (%d) %s\n", i, STRING( pTarget->GetEntityName() ) );
 
 				bFoundTarget = true;
 				hTarget = active[i]->m_hTarget;

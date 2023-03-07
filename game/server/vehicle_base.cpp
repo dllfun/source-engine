@@ -450,7 +450,7 @@ void CPropVehicleDriveable::Spawn( void )
 	// Initialize our vehicle via script
 	if ( m_pServerVehicle->Initialize( STRING(m_vehicleScript) ) == false )
 	{
-		Warning( "Vehicle (%s) unable to properly initialize due to script error in (%s)!\n", GetEntityName().ToCStr(), STRING( m_vehicleScript ) );
+		Warning( "Vehicle (%s) unable to properly initialize due to script error in (%s)!\n", STRING( GetEntityName() ), STRING( m_vehicleScript ) );
 		SetThink( &CBaseEntity::SUB_Remove );
 		SetNextThink( gpGlobals->curtime + 0.1f );
 		return;

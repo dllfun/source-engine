@@ -2097,11 +2097,11 @@ void CRestore::ReadGameField( const SaveRestoreRecordHeader_t &header, void *pDe
 			{
 #if !defined( CLIENT_DLL )
 				// HACKHACK: Rewrite the .bsp models to match the map name in case the bugreporter renamed it
-				if ( pField->fieldType == FIELD_MODELNAME && Q_stristr(pStringDest->ToCStr(), ".bsp") )
+				if ( pField->fieldType == FIELD_MODELNAME && Q_stristr(STRING( *pStringDest ), ".bsp") )
 				{
 					char buf[MAX_PATH];
 					Q_strncpy( buf, "maps/", sizeof(buf) );
-					Q_strncat( buf, gpGlobals->mapname.ToCStr(), sizeof(buf) );
+					Q_strncat( buf, STRING( gpGlobals->mapname ), sizeof(buf) );
 					Q_strncat( buf, ".bsp", sizeof(buf) );
 					*pStringDest = AllocPooledString( buf );
 				}

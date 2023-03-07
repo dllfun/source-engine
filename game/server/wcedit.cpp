@@ -790,7 +790,7 @@ CON_COMMAND( hammer_update_safe_entities, "Updates entities in the map that can 
 		{
 			if (!!piglist->GetName(ii))  // if not null
 			{	// add to symtab
-				ignoredNames.AddString(piglist->GetName(ii).ToCStr());
+				ignoredNames.AddString(STRING( piglist->GetName(ii) ));
 			}
 		}
 	}
@@ -826,7 +826,7 @@ CON_COMMAND( hammer_update_safe_entities, "Updates entities in the map that can 
 			continue;
 
 		// explicitly excluded by designer?
-		if ( ignoredNames.Find(pEnt->GetEntityName().ToCStr()).IsValid() )
+		if ( ignoredNames.Find(STRING( pEnt->GetEntityName() )).IsValid() )
 			continue;
 
 		NWCEdit::UpdateEntityPosition( pEnt );

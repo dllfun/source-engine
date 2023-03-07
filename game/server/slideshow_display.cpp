@@ -228,7 +228,7 @@ void CSlideshowDisplay::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 
 void CSlideshowDisplay::Spawn( void )
 {
-	Q_strcpy( m_szSlideshowDirectory.GetForModify(), m_String_tSlideshowDirectory.ToCStr() );
+	Q_strcpy( m_szSlideshowDirectory.GetForModify(), STRING( m_String_tSlideshowDirectory ) );
 	Precache();
 
 	BaseClass::Spawn();

@@ -190,7 +190,7 @@ struct SCSSDeathData : public BaseStatData
 			m_uiDeathParam = AliasToWeaponID( pszWeaponName );
 		}
 
-		const char *pszMapName = gpGlobals->mapname.ToCStr() ? gpGlobals->mapname.ToCStr() : "unknown";
+		const char *pszMapName = STRING( gpGlobals->mapname ) ? STRING( gpGlobals->mapname ) : "unknown";
 		Q_strncpy( m_szMapName, pszMapName, ARRAYSIZE(m_szMapName) );
 	}
 	Vector	m_DeathPos;

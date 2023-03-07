@@ -139,14 +139,14 @@ const char *C_PlayerResource::GetPlayerName( int iIndex )
 		return PLAYER_UNCONNECTED_NAME;
 
 	// X360TBD: Network - figure out why the name isn't set
-	if ( !m_szName[ iIndex ] || !Q_stricmp( m_szName[ iIndex ].ToCStr(), PLAYER_UNCONNECTED_NAME ) )
+	if ( !m_szName[ iIndex ] || !Q_stricmp( STRING( m_szName[ iIndex ] ), PLAYER_UNCONNECTED_NAME ) )
 	{
 		// If you get a full "reset" uncompressed update from server, then you can have NULLNAME show up in the scoreboard
 		UpdatePlayerName( iIndex );
 	}
 
 	// This gets updated in ClientThink, so it could be up to 1 second out of date, oh well.
-	return m_szName[iIndex].ToCStr();
+	return STRING( m_szName[iIndex] );
 }
 
 bool C_PlayerResource::IsAlive(int iIndex )

@@ -995,7 +995,7 @@ void CBaseGameStats_Driver::CollectData( StatSendType_t sendType )
 #ifdef CLIENT_DLL	
 			Q_FileBase( MapName(), szMap, ARRAYSIZE( szMap ) );
 #else
-			Q_strncpy( szMap, gpGlobals->mapname.ToCStr(), ARRAYSIZE( szMap ) );
+			Q_strncpy( szMap, STRING( gpGlobals->mapname ), ARRAYSIZE( szMap ) );
 #endif // CLIENT_DLL
 			if ( !szMap[0] )
 				return;

@@ -86,13 +86,13 @@ void CBaseButton::Precache( void )
 	if (m_bLockedSound)
 	{
 		m_ls.sLockedSound = MakeButtonSound( (int)m_bLockedSound );
-		PrecacheScriptSound(m_ls.sLockedSound.ToCStr());
+		PrecacheScriptSound(STRING( m_ls.sLockedSound ));
 	}
 
 	if (m_bUnlockedSound)
 	{
 		m_ls.sUnlockedSound = MakeButtonSound( (int)m_bUnlockedSound );
-		PrecacheScriptSound(m_ls.sUnlockedSound.ToCStr());
+		PrecacheScriptSound(STRING( m_ls.sUnlockedSound ));
 	}
 
 	// get sentence group names, for doors which are directly 'touched' to open
@@ -365,7 +365,7 @@ void CBaseButton::Spawn( )
 	if ( m_sounds )
 	{
 		m_sNoise = MakeButtonSound( m_sounds );
-		PrecacheScriptSound(m_sNoise.ToCStr());
+		PrecacheScriptSound(STRING( m_sNoise ));
 	}
 	else
 	{
@@ -846,7 +846,7 @@ void CRotButton::Spawn( void )
 	if ( m_sounds )
 	{
 		m_sNoise = MakeButtonSound( m_sounds );
-		PrecacheScriptSound(m_sNoise.ToCStr());
+		PrecacheScriptSound(STRING( m_sNoise ));
 	}
 	else
 	{
@@ -1030,7 +1030,7 @@ void CMomentaryRotButton::Spawn( void )
 		if ( m_sounds )
 		{
 			m_sNoise = MakeButtonSound( m_sounds );
-			PrecacheScriptSound(m_sNoise.ToCStr());
+			PrecacheScriptSound(STRING( m_sNoise ));
 		}
 		else
 		{

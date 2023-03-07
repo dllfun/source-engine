@@ -9088,7 +9088,7 @@ const char *CPlayerInfo::GetWeaponName()
 const char *CPlayerInfo::GetModelName() 
 { 
 	Assert( m_pParent );
-	return m_pParent->GetModelName().ToCStr(); 
+	return STRING( m_pParent->GetModelName() ); 
 }
 
 const int CPlayerInfo::GetHealth() 

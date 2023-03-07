@@ -122,7 +122,7 @@ void CPoseController::BuildPropList( void )
 			}
 
 			// Update the pose parameter index
-			SetPoseIndex( iPropNum, pProp->LookupPoseParameter( m_iszPoseParameterName.ToCStr() ) );
+			SetPoseIndex( iPropNum, pProp->LookupPoseParameter( STRING( m_iszPoseParameterName ) ) );
 			
 			++iPropNum;
 		}
@@ -152,7 +152,7 @@ void CPoseController::BuildPoseIndexList( void )
 		if ( pProp )
 		{
 			// Update the pose parameter index
-			SetPoseIndex( iPropNum, pProp->LookupPoseParameter( m_iszPoseParameterName.ToCStr() ) );
+			SetPoseIndex( iPropNum, pProp->LookupPoseParameter( STRING( m_iszPoseParameterName ) ) );
 		}
 	}
 }
@@ -187,7 +187,7 @@ void CPoseController::SetProp( CBaseAnimating *pProp )
 	}
 
 	// Update the pose parameter index
-	SetPoseIndex( 0, pProp->LookupPoseParameter( m_iszPoseParameterName.ToCStr() ) );
+	SetPoseIndex( 0, pProp->LookupPoseParameter( STRING( m_iszPoseParameterName ) ) );
 
 	// Nullify the remaining handles
 	for ( int iPropNum = 1; iPropNum < MAX_POSE_CONTROLLED_PROPS; ++iPropNum )

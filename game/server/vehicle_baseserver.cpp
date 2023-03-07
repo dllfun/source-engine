@@ -1806,8 +1806,8 @@ void CBaseServerVehicle::PlayLoopingSound( const char *pSoundName )
 	}
 	else if ( g_debug_vehiclesound.GetInt() )
 	{
-		const char *pStopSound = m_pStateSound ?  controller.SoundGetName( m_pStateSound ).ToCStr() : "NULL";
-		const char *pStartSound = pNewSound ?  controller.SoundGetName( pNewSound ).ToCStr() : "NULL";
+		const char *pStopSound = m_pStateSound ? STRING( controller.SoundGetName( m_pStateSound ) ) : "NULL";
+		const char *pStartSound = pNewSound ? STRING( controller.SoundGetName( pNewSound ) ) : "NULL";
 		Msg("Stop %s, start %s\n", pStopSound, pStartSound );
 	}
 
@@ -1877,7 +1877,7 @@ bool CBaseServerVehicle::PlayCrashSound( float speed )
 		{
 			if ( delta > crash.flMinDeltaSpeed && absLastSpeed > crash.flMinSpeed )
 			{
-				PlaySound( crash.iszCrashSound.ToCStr() );
+				PlaySound( STRING( crash.iszCrashSound ) );
 				return true;
 			}
 		}
@@ -1888,7 +1888,7 @@ bool CBaseServerVehicle::PlayCrashSound( float speed )
 		const vehicle_crashsound_t &crash = m_vehicleSounds.crashSounds[i];
 		if ( delta > crash.flMinDeltaSpeed && absLastSpeed > crash.flMinSpeed )
 		{
-			PlaySound( crash.iszCrashSound.ToCStr() );
+			PlaySound( STRING( crash.iszCrashSound ) );
 			return true;
 		}
 	}
@@ -2094,7 +2094,7 @@ sound_states CBaseServerVehicle::SoundState_ChooseState( vbs_sound_update_t &par
 
 const char *CBaseServerVehicle::StateSoundName( sound_states state )
 {
-	return m_vehicleSounds.iszStateSounds[state].ToCStr();
+	return STRING( m_vehicleSounds.iszStateSounds[state] );
 }
 
 void CBaseServerVehicle::SoundState_OnNewState( sound_states lastState )
@@ -2563,7 +2563,7 @@ void CBaseServerVehicle::ReloadScript()
 		string_t script = m_pDrivableVehicle->GetVehicleScriptName();
 		IPhysicsVehicleController *pController = GetVehicleController();
 		vehicleparams_t *pVehicleParams = pController ? &(pController->GetVehicleParamsForChange()) : NULL;
-		PhysFindOrAddVehicleScript( script.ToCStr(), pVehicleParams, &m_vehicleSounds );
+		PhysFindOrAddVehicleScript( STRING( script ), pVehicleParams, &m_vehicleSounds );
 		if ( pController )
 		{
 			pController->VehicleDataReload();

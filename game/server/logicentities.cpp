@@ -2430,10 +2430,10 @@ IPhysicsObject *FindPhysicsObjectByNameOrWorld( string_t name, CBaseEntity *pErr
 	if ( !name )
 		return g_PhysWorldObject;
 
-	IPhysicsObject *pPhysics = FindPhysicsObjectByName( name.ToCStr(), pErrorEntity );
+	IPhysicsObject *pPhysics = FindPhysicsObjectByName(STRING( name ), pErrorEntity );
 	if ( !pPhysics )
 	{
-		DevWarning("%s: can't find %s\n", pErrorEntity->GetClassname(), name.ToCStr());
+		DevWarning("%s: can't find %s\n", pErrorEntity->GetClassname(), STRING( name ));
 	}
 	return pPhysics;
 }

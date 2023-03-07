@@ -1334,7 +1334,7 @@ void CBaseEntity::Activate( void )
 	// Add any non-null context strings to our context vector
 	if ( m_iszResponseContext != NULL_STRING ) 
 	{
-		AddContext( m_iszResponseContext.ToCStr() );
+		AddContext( STRING( m_iszResponseContext ) );
 	}
 
 #ifdef HL1_DLL
@@ -3250,7 +3250,7 @@ void CBaseEntity::OnRestore()
 	if ( GetFlags() & FL_FAKECLIENT )
 	{
 		char szMsg[256];
-		V_snprintf( szMsg, sizeof(szMsg), "\nInvalid save, unable to load. Please run \"map %s\" to restart this level manually\n\n", gpGlobals->mapname.ToCStr() );
+		V_snprintf( szMsg, sizeof(szMsg), "\nInvalid save, unable to load. Please run \"map %s\" to restart this level manually\n\n",STRING( gpGlobals->mapname ) );
 		Msg( "%s", szMsg );
 		
 		engine->ServerCommand("wait;wait;disconnect;showconsole\n");
@@ -5196,7 +5196,7 @@ void CC_Find_Ent( const CCommand& args )
 		if ( bMatches )
 		{
  			iCount++;
-			Msg("   '%s' : '%s' (entindex %d) \n", ent->GetClassname(), ent->GetEntityName().ToCStr(), ent->entindex() );
+			Msg("   '%s' : '%s' (entindex %d) \n", ent->GetClassname(), STRING( ent->GetEntityName() ), ent->entindex() );
 		}
 	}
 
@@ -5217,7 +5217,7 @@ void CC_Find_Ent_Index( const CCommand& args )
 	CBaseEntity	*pEnt = UTIL_EntityByIndex( iIndex );
 	if ( pEnt )
 	{
-		Msg("   '%s' : '%s' (entindex %d) \n", pEnt->GetClassname(), pEnt->GetEntityName().ToCStr(), iIndex );
+		Msg("   '%s' : '%s' (entindex %d) \n", pEnt->GetClassname(), STRING( pEnt->GetEntityName() ), iIndex );
 	}
 	else
 	{
@@ -6294,10 +6294,10 @@ void CBaseEntity::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 
 	set.AppendCriteria( "randomnum", UTIL_VarArgs("%d", RandomInt(0,100)) );
 	// Append map name
-	set.AppendCriteria( "map", gpGlobals->mapname.ToCStr() );
+	set.AppendCriteria( "map", STRING( gpGlobals->mapname ) );
 	// Append our classname and game name
 	set.AppendCriteria( "classname", GetClassname() );
-	set.AppendCriteria( "name", GetEntityName().ToCStr() );
+	set.AppendCriteria( "name", STRING( GetEntityName() ) );
 
 	// Append our health
 	set.AppendCriteria( "health", UTIL_VarArgs( "%i", GetHealth() ) );
@@ -6402,7 +6402,7 @@ const char *CBaseEntity::GetContextName( int index ) const
 		return "";
 	}
 
-	return  m_ResponseContexts[ index ].m_iszName.ToCStr();
+	return STRING( m_ResponseContexts[ index ].m_iszName );
 }
 
 //-----------------------------------------------------------------------------
@@ -6418,7 +6418,7 @@ const char *CBaseEntity::GetContextValue( int index ) const
 		return "";
 	}
 
-	return  m_ResponseContexts[ index ].m_iszValue.ToCStr();
+	return STRING( m_ResponseContexts[ index ].m_iszValue );
 }
 
 //-----------------------------------------------------------------------------

@@ -4375,7 +4375,7 @@ void AddTransitionResources( CSaveRestoreData *pSaveData, const char *pLevelName
 			// this entity will cross the transition and needs to be preserved
 			// add to the next map's resource list which effectively keeps it from being purged
 			// only care about the actual mdl and not any of its dependants
-			pModelName = pSaveData->GetEntityInfo(i)->modelname.ToCStr();
+			pModelName = STRING( pSaveData->GetEntityInfo(i)->modelname );
 			g_pQueuedLoader->AddMapResource( pModelName );
 
 			// humans require a post pass

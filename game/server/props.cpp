@@ -3384,7 +3384,7 @@ public:
 
 	static bool BreakLessFunc( breakable_precache_t const &lhs, breakable_precache_t const &rhs )
 	{
-		return ( lhs.iszModelName.ToCStr() < rhs.iszModelName.ToCStr() );
+		return ( STRING( lhs.iszModelName ) < STRING( rhs.iszModelName ) );
 	}
 
 	bool IsInList( string_t modelName, int *iBreakableCount )

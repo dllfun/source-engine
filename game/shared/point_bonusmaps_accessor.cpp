@@ -67,14 +67,14 @@ void CPointBonusMapsAccessor::Activate( void )
 void CPointBonusMapsAccessor::InputUnlock( inputdata_t& inputdata )
 {
 	if ( m_pGameUI )
-		m_pGameUI->BonusMapUnlock( m_String_tFileName.ToCStr(), m_String_tMapName.ToCStr() );	
+		m_pGameUI->BonusMapUnlock( STRING( m_String_tFileName ), STRING( m_String_tMapName ) );	
 }
 
 void CPointBonusMapsAccessor::InputComplete( inputdata_t& inputdata )
 {
 	if ( m_pGameUI )
 	{
-		m_pGameUI->BonusMapComplete( m_String_tFileName.ToCStr(), m_String_tMapName.ToCStr() );
+		m_pGameUI->BonusMapComplete( STRING( m_String_tFileName ),STRING( m_String_tMapName ) );
 
 		int iNumAdvancedComplete = m_pGameUI->BonusMapNumAdvancedCompleted();
 

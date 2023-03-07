@@ -1155,7 +1155,7 @@ void CAI_BaseNPC::StartScriptMoveToTargetTask( int task )
 					}
 					else
 					{
-						goal.arrivalSequence = LookupSequence( m_strScriptArrivalSequence.ToCStr() );
+						goal.arrivalSequence = LookupSequence( STRING( m_strScriptArrivalSequence ) );
 					}
 				}
 					

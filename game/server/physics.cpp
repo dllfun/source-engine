@@ -308,7 +308,7 @@ bool CPhysicsHook::FindOrAddVehicleScript( const char *pScriptName, vehicleparam
 	int index = -1;
 	for ( int i = 0; i < m_vehicleScripts.Count(); i++ )
 	{
-		if ( !Q_stricmp(m_vehicleScripts[i].scriptName.ToCStr(), pScriptName) )
+		if ( !Q_stricmp(STRING( m_vehicleScripts[i].scriptName ), pScriptName) )
 		{
 			index = i;
 			bLoadedSounds = true;

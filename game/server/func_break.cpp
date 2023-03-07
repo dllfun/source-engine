@@ -666,7 +666,7 @@ void CBreakable::InputSetMass( inputdata_t &inputdata )
 	}
 	else
 	{
-		Warning( "Tried to call SetMass() on %s but it has no physics.\n", GetEntityName().ToCStr() );
+		Warning( "Tried to call SetMass() on %s but it has no physics.\n", STRING( GetEntityName() ) );
 	}
 }
 

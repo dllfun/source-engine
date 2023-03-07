@@ -703,7 +703,7 @@ void CRagdollProp::InitRagdoll( const Vector &forceVector, int forceBone, const 
 	params.fixedConstraints = false;
 	RagdollCreate( m_ragdoll, params, physenv );
 	RagdollApplyAnimationAsVelocity( m_ragdoll, pPrevBones, pBoneToWorld, dt );
-	if ( m_anglesOverrideString != NULL_STRING && Q_strlen(m_anglesOverrideString.ToCStr()) > 0 )
+	if ( m_anglesOverrideString != NULL_STRING && Q_strlen(STRING( m_anglesOverrideString )) > 0 )
 	{
 		char szToken[2048];
 		const char *pStr = nexttoken(szToken, STRING(m_anglesOverrideString), ',');
@@ -717,7 +717,7 @@ void CRagdollProp::InitRagdoll( const Vector &forceVector, int forceBone, const 
 			Assert( szToken[0] );
 			if ( objectIndex >= m_ragdoll.listCount )
 			{
-				Warning("Bad ragdoll pose in entity %s, model (%s) at %s, model changed?\n", GetDebugName(), GetModelName().ToCStr(), VecToString(GetAbsOrigin()) );
+				Warning("Bad ragdoll pose in entity %s, model (%s) at %s, model changed?\n", GetDebugName(), STRING( GetModelName() ), VecToString(GetAbsOrigin()) );
 			}
 			else if ( szToken[0] != 0 )
 			{

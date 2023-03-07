@@ -546,12 +546,12 @@ void CBaseAnimating::SetLightingOriginRelative( string_t strLightingOriginRelati
 		{
 			if( !pLightingOrigin )
 			{
-				DevWarning( "%s: Cannot find Lighting Origin named: %s\n", GetEntityName().ToCStr(), STRING(strLightingOriginRelative) );
+				DevWarning( "%s: Cannot find Lighting Origin named: %s\n", STRING( GetEntityName() ), STRING(strLightingOriginRelative) );
 			}
 			else
 			{
 				DevWarning( "%s: Specified entity '%s' must be a info_lighting_relative!\n", 
-					pLightingOrigin->GetClassname(), pLightingOrigin->GetEntityName().ToCStr() );
+					pLightingOrigin->GetClassname(), STRING( pLightingOrigin->GetEntityName() ) );
 			}
 			return;
 		}
@@ -1803,7 +1803,7 @@ void CBaseAnimating::SetupBones( matrix3x4_t *pBoneToWorld, int boneMask )
 	{
 		IBoneSetup boneSetup( pStudioHdr, boneMask, GetPoseParameterArray() );
 		boneSetup.InitPose( pos, q );
-		// Msg( "%.03f : %s:%s not in pvs\n", gpGlobals->curtime, GetClassname(), GetEntityName().ToCStr() );
+		// Msg( "%.03f : %s:%s not in pvs\n", gpGlobals->curtime, GetClassname(), STRING( GetEntityName() ) );
 	}
 	else 
 	{
@@ -1821,7 +1821,7 @@ void CBaseAnimating::SetupBones( matrix3x4_t *pBoneToWorld, int boneMask )
 		}
 		else
 		{
-			// Msg( "%.03f : %s:%s\n", gpGlobals->curtime, GetClassname(), GetEntityName().ToCStr() );
+			// Msg( "%.03f : %s:%s\n", gpGlobals->curtime, GetClassname(), STRING( GetEntityName() ) );
 			GetSkeleton( pStudioHdr, pos, q, boneMask );
 		}
 	}

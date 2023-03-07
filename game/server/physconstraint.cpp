@@ -1728,7 +1728,7 @@ int VelocitySampler::HasReversed(const Vector &relativeVelocity, const float thr
 /// small helper function used just below (technique copy-pasted  from sound.cpp)
 inline static bool IsEmpty (const string_t &str)
 {
-	return (!str || strlen(str.ToCStr()) < 1 );
+	return (!str || strlen(STRING( str )) < 1 );
 }
 
 void ConstraintSoundInfo::OnActivate( CPhysConstraint *pOuter )
@@ -1778,11 +1778,11 @@ void ConstraintSoundInfo::ValidateInternals( CPhysConstraint *pOuter )
 
 void ConstraintSoundInfo::OnPrecache( CPhysConstraint *pOuter )
 {
-	pOuter->PrecacheScriptSound( m_iszTravelSoundFwd.ToCStr() ); 
-	pOuter->PrecacheScriptSound( m_iszTravelSoundBack.ToCStr() ); 
+	pOuter->PrecacheScriptSound(STRING( m_iszTravelSoundFwd ) ); 
+	pOuter->PrecacheScriptSound(STRING( m_iszTravelSoundBack ) ); 
 	for (int i = 0 ; i < SimpleConstraintSoundProfile::kREVERSAL_SOUND_ARRAY_SIZE; ++i )
 	{
-		pOuter->PrecacheScriptSound( m_iszReversalSounds[i].ToCStr() );
+		pOuter->PrecacheScriptSound(STRING( m_iszReversalSounds[i] ) );
 	}
 }
 
@@ -1830,7 +1830,7 @@ void ConstraintSoundInfo::OnThink( CPhysConstraint *pOuter, const Vector &relati
 				CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 				CPASAttenuationFilter filter( pChildEntity );
 				m_pTravelSound = controller.SoundCreate( filter, pChildEntity->entindex(), 
-					(travellingForward ? m_iszTravelSoundFwd : m_iszTravelSoundBack).ToCStr() );
+					(travellingForward ? m_iszTravelSoundFwd : STRING( m_iszTravelSoundBack) ) );
 				controller.Play( m_pTravelSound, soundVol, 100 );
 			}
 		}
@@ -1847,7 +1847,7 @@ void ConstraintSoundInfo::OnThink( CPhysConstraint *pOuter, const Vector &relati
 
 	if (m_bPlayReversalSound && (playReversal >= 0))
 	{
-		pChildEntity->EmitSound(m_iszReversalSounds[playReversal].ToCStr());
+		pChildEntity->EmitSound(STRING( m_iszReversalSounds[playReversal]));
 	}
 
 	m_vSampler.AddSample( relativeVelocity );

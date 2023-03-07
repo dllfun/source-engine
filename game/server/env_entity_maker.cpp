@@ -113,7 +113,7 @@ void CEnvEntityMaker::Activate( void )
 	// check for valid template
 	if ( m_iszTemplate == NULL_STRING )
 	{
-		Warning( "env_entity_maker %s has no template entity!\n", GetEntityName().ToCStr() );
+		Warning( "env_entity_maker %s has no template entity!\n", STRING( GetEntityName() ) );
 		UTIL_Remove( this );
 		return;
 	}
@@ -135,7 +135,7 @@ CPointTemplate *CEnvEntityMaker::FindTemplate()
 	CPointTemplate *pTemplate = dynamic_cast<CPointTemplate *>(gEntList.FindEntityByName( NULL, STRING(m_iszTemplate) ));
 	if ( !pTemplate )
 	{
-		Warning( "env_entity_maker %s failed to find template %s.\n", GetEntityName().ToCStr(), STRING(m_iszTemplate) );
+		Warning( "env_entity_maker %s failed to find template %s.\n", STRING( GetEntityName() ), STRING(m_iszTemplate) );
 	}
 
 	return pTemplate;

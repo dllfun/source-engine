@@ -517,7 +517,7 @@ void CAchievementMgr::LevelInitPreEntity()
 #ifdef CLIENT_DLL	
 	Q_FileBase( engine->GetLevelName(), m_szMap, ARRAYSIZE( m_szMap ) );
 #else
-	Q_strncpy( m_szMap, gpGlobals->mapname.ToCStr(), ARRAYSIZE( m_szMap ) );
+	Q_strncpy( m_szMap, STRING( gpGlobals->mapname ), ARRAYSIZE( m_szMap ) );
 #endif // CLIENT_DLL
 
 	if ( IsX360() )

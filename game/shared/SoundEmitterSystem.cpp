@@ -194,7 +194,7 @@ public:
 
 		// open the new level reslist
 		char path[_MAX_PATH];
-		Q_snprintf(path, sizeof(path), "reslists\\%s.snd", gpGlobals->mapname.ToCStr() );
+		Q_snprintf(path, sizeof(path), "reslists\\%s.snd", STRING( gpGlobals->mapname ) );
 		m_hPrecacheLogFile = filesystem->Open(path, "wt", "GAME");
 	}
 

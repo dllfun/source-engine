@@ -513,8 +513,8 @@ void CBaseTrigger::EndTouch(CBaseEntity *pOther)
 			else if ( hOther->IsPlayer() && !hOther->IsAlive() )
 			{
 #ifdef STAGING_ONLY
-				AssertMsg( 0, CFmtStr( "Dead player [%s] is still touching this trigger at [%f %f %f]", hOther->GetEntityName().ToCStr(), XYZ( hOther->GetAbsOrigin() ) ) );
-				Warning( "Dead player [%s] is still touching this trigger at [%f %f %f]", hOther->GetEntityName().ToCStr(), XYZ( hOther->GetAbsOrigin() ) );
+				AssertMsg( 0, CFmtStr( "Dead player [%s] is still touching this trigger at [%f %f %f]", STRING( hOther->GetEntityName() ), XYZ( hOther->GetAbsOrigin() ) ) );
+				Warning( "Dead player [%s] is still touching this trigger at [%f %f %f]", STRING( hOther->GetEntityName() ), XYZ( hOther->GetAbsOrigin() ) );
 #endif
 				m_hTouchingEntities.Remove( i );
 			}
