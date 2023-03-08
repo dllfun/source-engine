@@ -605,9 +605,9 @@ int CAI_ScriptConditions::AddNewElement( CBaseEntity *pActor )
 
 void CAI_ScriptConditions::Enable( void )
 {
-	m_hTarget = gEntList.FindEntityByName( NULL, m_target );
+	m_hTarget = gEntList.FindEntityByName( NULL, STRING( m_target ));
 
-	CBaseEntity *pActor = gEntList.FindEntityByName( NULL, m_Actor );
+	CBaseEntity *pActor = gEntList.FindEntityByName( NULL, STRING( m_Actor ));
 	if ( m_ElementList.Count() == 0 )
 	{
 		if ( m_Actor != NULL_STRING && pActor == NULL )
@@ -633,7 +633,7 @@ void CAI_ScriptConditions::Enable( void )
 			AddNewElement( pActor );
 		}
 
-		pActor = gEntList.FindEntityByName( pActor, m_Actor );
+		pActor = gEntList.FindEntityByName( pActor, STRING( m_Actor ) );
 	}
 
 	//If we are hitting this it means we are using a Target->Player condition
@@ -829,7 +829,7 @@ void CAI_ScriptConditions::OnEntitySpawned( CBaseEntity *pEntity )
 	if ( pEntity->MyNPCPointer() == NULL )
 		 return;
 
-	if ( pEntity->NameMatches( m_Actor ) )
+	if ( pEntity->NameMatches( STRING( m_Actor ) ) )
 	{
 		if ( ActorInList( pEntity ) == false )
 		{

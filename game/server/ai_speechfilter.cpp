@@ -96,7 +96,7 @@ void CAI_SpeechFilter::PopulateSubjectList( bool purge )
 	int iNumSubjects = 0;
 	do
 	{
-		pSearch = gEntList.FindEntityByName( pSearch, m_iszSubject );
+		pSearch = gEntList.FindEntityByName( pSearch, STRING( m_iszSubject ) );
 		if ( pSearch )
 		{
 #ifndef CSTRIKE_DLL
@@ -175,7 +175,7 @@ void CAI_SpeechFilter::PopulateSubjectList( bool purge )
 //-----------------------------------------------------------------------------
 void CAI_SpeechFilter::OnEntityCreated( CBaseEntity *pEntity )
 {
-	if ( !m_bDisabled && ( pEntity->NameMatches( m_iszSubject ) || pEntity->ClassMatches( m_iszSubject ) ) )
+	if ( !m_bDisabled && ( pEntity->NameMatches( STRING( m_iszSubject ) ) || pEntity->ClassMatches( STRING( m_iszSubject ) ) ) )
 	{
 #ifndef CSTRIKE_DLL
 		CAI_PlayerAlly *pAlly = dynamic_cast<CAI_PlayerAlly *>(pEntity);

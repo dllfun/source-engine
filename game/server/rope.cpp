@@ -344,7 +344,7 @@ void CRopeKeyframe::Activate()
 		m_iRopeMaterialModelIndex = PrecacheModel( "cable/cable.vmt" );
 
 	// Find the next entity in our chain.
-	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, m_iNextLinkName );
+	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, STRING( m_iNextLinkName ) );
 	if( pEnt && pEnt->edict() )
 	{
 		SetEndPoint( pEnt );

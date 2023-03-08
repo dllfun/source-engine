@@ -97,7 +97,7 @@ void CPathTrack::Link( void  )
 
 	if ( m_target != NULL_STRING )
 	{
-		pTarget = gEntList.FindEntityByName( NULL, m_target );
+		pTarget = gEntList.FindEntityByName( NULL, STRING( m_target ) );
 
 		if ( pTarget == this)
 		{
@@ -127,7 +127,7 @@ void CPathTrack::Link( void  )
 	// Find "alternate" path
 	if ( m_altName != NULL_STRING )
 	{
-		pTarget = gEntList.FindEntityByName( NULL, m_altName );
+		pTarget = gEntList.FindEntityByName( NULL, STRING( m_altName ) );
 		if ( pTarget )
 		{
 			m_paltpath = dynamic_cast<CPathTrack*>( pTarget );

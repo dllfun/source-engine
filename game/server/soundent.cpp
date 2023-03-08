@@ -769,7 +769,7 @@ void CAISound::InputInsertSound( inputdata_t &inputdata )
 
 	if( m_iszProxyEntityName != NULL_STRING )
 	{
-		CBaseEntity *pProxy = gEntList.FindEntityByName( NULL, m_iszProxyEntityName );
+		CBaseEntity *pProxy = gEntList.FindEntityByName( NULL, STRING( m_iszProxyEntityName ) );
 
 		if( pProxy )
 		{
@@ -790,7 +790,7 @@ void CAISound::InputEmitAISound( inputdata_t &inputdata )
 
 	if( m_iszProxyEntityName != NULL_STRING )
 	{
-		CBaseEntity *pProxy = gEntList.FindEntityByName( NULL, m_iszProxyEntityName );
+		CBaseEntity *pProxy = gEntList.FindEntityByName( NULL, STRING( m_iszProxyEntityName ) );
 
 		if( pProxy )
 		{

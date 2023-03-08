@@ -101,7 +101,7 @@ void CAI_GoalEntity::ResolveNames()
 		{
 			case ST_ENTNAME:
 			{
-				pEntity = gEntList.FindEntityByName( pEntity, m_iszActor );
+				pEntity = gEntList.FindEntityByName( pEntity, STRING( m_iszActor ) );
 				break;
 			}
 			
@@ -125,7 +125,7 @@ void CAI_GoalEntity::ResolveNames()
 		}
 	}
 		
-	m_hGoalEntity = gEntList.FindEntityByName( NULL, m_iszGoal );
+	m_hGoalEntity = gEntList.FindEntityByName( NULL, STRING( m_iszGoal ) );
 }
 
 //-------------------------------------

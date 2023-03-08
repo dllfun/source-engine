@@ -255,7 +255,7 @@ float CAI_BaseNPC::OpenDoorAndWait( CBaseEntity *pDoor )
 			CBaseEntity *pTarget = NULL;
 			for (;;)
 			{
-				pTarget = gEntList.FindEntityByName( pTarget, pDoor->GetEntityName() );
+				pTarget = gEntList.FindEntityByName( pTarget, STRING( pDoor->GetEntityName() ) );
 
 				if ( pTarget != pDoor )
 				{

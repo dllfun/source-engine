@@ -289,7 +289,7 @@ void CEnvTracer::Activate( void )
 {
 	BaseClass::Activate();
 
-	CBaseEntity *pEnd = gEntList.FindEntityByName( NULL, m_target );
+	CBaseEntity *pEnd = gEntList.FindEntityByName( NULL, STRING( m_target ) );
 	if (pEnd != NULL)
 	{
 		m_vecEnd = pEnd->GetLocalOrigin();
@@ -2147,7 +2147,7 @@ void CEnvGunfire::Activate( void )
 	// Find my target
 	if (m_target != NULL_STRING)
 	{
-		m_hTarget = gEntList.FindEntityByName( NULL, m_target );
+		m_hTarget = gEntList.FindEntityByName( NULL, STRING( m_target ) );
 	}
 
 	BaseClass::Activate();

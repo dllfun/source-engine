@@ -134,11 +134,11 @@ public:
 	// search functions
 	bool		 IsEntityPtr( void *pTest );
 	CBaseEntity *FindEntityByClassname( CBaseEntity *pStartEntity, const char *szName );
-	CBaseEntity *FindEntityByName( CBaseEntity *pStartEntity, const char *szName, CBaseEntity *pSearchingEntity = NULL, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL, IEntityFindFilter *pFilter = NULL );
-	CBaseEntity *FindEntityByName( CBaseEntity *pStartEntity, string_t iszName, CBaseEntity *pSearchingEntity = NULL, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL, IEntityFindFilter *pFilter = NULL )
+	CBaseEntity *FindEntityByName( CBaseEntity *pStartEntity, const char* szName, CBaseEntity *pSearchingEntity = NULL, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL, IEntityFindFilter *pFilter = NULL );
+	/*CBaseEntity *FindEntityByName( CBaseEntity *pStartEntity, string_t iszName, CBaseEntity *pSearchingEntity = NULL, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL, IEntityFindFilter *pFilter = NULL )
 	{
 		return FindEntityByName( pStartEntity, STRING(iszName), pSearchingEntity, pActivator, pCaller, pFilter );
-	}
+	}*/
 	CBaseEntity *FindEntityInSphere( CBaseEntity *pStartEntity, const Vector &vecCenter, float flRadius );
 	CBaseEntity *FindEntityByTarget( CBaseEntity *pStartEntity, const char *szName );
 	CBaseEntity *FindEntityByModel( CBaseEntity *pStartEntity, const char *szModelName );

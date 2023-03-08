@@ -514,7 +514,7 @@ void CLogicLineToEntity::Activate(void)
 
 	if (m_target != NULL_STRING)
 	{
-		m_EndEntity = gEntList.FindEntityByName( NULL, m_target );
+		m_EndEntity = gEntList.FindEntityByName( NULL, STRING( m_target ) );
 
 		//
 		// If we were given a bad measure target, just measure sound where we are.
@@ -532,7 +532,7 @@ void CLogicLineToEntity::Activate(void)
 
 	if (m_SourceName != NULL_STRING)
 	{
-		m_StartEntity = gEntList.FindEntityByName( NULL, m_SourceName );
+		m_StartEntity = gEntList.FindEntityByName( NULL, STRING( m_SourceName ) );
 
 		//
 		// If we were given a bad measure target, just measure sound where we are.
@@ -926,14 +926,14 @@ void CEnvGlobal::Spawn( void )
 
 	if ( FBitSet( m_spawnflags, SF_GLOBAL_SET ) )
 	{
-		if ( !GlobalEntity_IsInTable( m_globalstate ) )
+		if ( !GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 		{
-			GlobalEntity_Add( m_globalstate, gpGlobals->mapname, (GLOBALESTATE)m_initialstate );
+			GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname ), (GLOBALESTATE)m_initialstate );
 		}
 		
 		if ( m_counter != 0 )
 		{
-			GlobalEntity_SetCounter( m_globalstate, m_counter );
+			GlobalEntity_SetCounter( STRING( m_globalstate ), m_counter );
 		}
 	}
 }
@@ -944,13 +944,13 @@ void CEnvGlobal::Spawn( void )
 //------------------------------------------------------------------------------
 void CEnvGlobal::InputTurnOn( inputdata_t &inputdata )
 {
-	if ( GlobalEntity_IsInTable( m_globalstate ) )
+	if ( GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 	{
-		GlobalEntity_SetState( m_globalstate, GLOBAL_ON );
+		GlobalEntity_SetState( STRING( m_globalstate ), GLOBAL_ON );
 	}
 	else
 	{
-		GlobalEntity_Add( m_globalstate, gpGlobals->mapname, GLOBAL_ON );
+		GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname ), GLOBAL_ON );
 	}
 }
 
@@ -960,13 +960,13 @@ void CEnvGlobal::InputTurnOn( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CEnvGlobal::InputTurnOff( inputdata_t &inputdata )
 {
-	if ( GlobalEntity_IsInTable( m_globalstate ) )
+	if ( GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 	{
-		GlobalEntity_SetState( m_globalstate, GLOBAL_OFF );
+		GlobalEntity_SetState( STRING( m_globalstate ), GLOBAL_OFF );
 	}
 	else
 	{
-		GlobalEntity_Add( m_globalstate, gpGlobals->mapname, GLOBAL_OFF );
+		GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname) , GLOBAL_OFF );
 	}
 }
 
@@ -976,13 +976,13 @@ void CEnvGlobal::InputTurnOff( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CEnvGlobal::InputRemove( inputdata_t &inputdata )
 {
-	if ( GlobalEntity_IsInTable( m_globalstate ) )
+	if ( GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 	{
-		GlobalEntity_SetState( m_globalstate, GLOBAL_DEAD );
+		GlobalEntity_SetState( STRING( m_globalstate ), GLOBAL_DEAD );
 	}
 	else
 	{
-		GlobalEntity_Add( m_globalstate, gpGlobals->mapname, GLOBAL_DEAD );
+		GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname) , GLOBAL_DEAD );
 	}
 }
 
@@ -991,12 +991,12 @@ void CEnvGlobal::InputRemove( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CEnvGlobal::InputSetCounter( inputdata_t &inputdata )
 {
-	if ( !GlobalEntity_IsInTable( m_globalstate ) )
+	if ( !GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 	{
-		GlobalEntity_Add( m_globalstate, gpGlobals->mapname, GLOBAL_ON );
+		GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname ), GLOBAL_ON );
 	}
 
-	GlobalEntity_SetCounter( m_globalstate, inputdata.value.Int() );
+	GlobalEntity_SetCounter( STRING( m_globalstate ), inputdata.value.Int() );
 }
 
 
@@ -1004,12 +1004,12 @@ void CEnvGlobal::InputSetCounter( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CEnvGlobal::InputAddToCounter( inputdata_t &inputdata )
 {
-	if ( !GlobalEntity_IsInTable( m_globalstate ) )
+	if ( !GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 	{
-		GlobalEntity_Add( m_globalstate, gpGlobals->mapname, GLOBAL_ON );
+		GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname ), GLOBAL_ON );
 	}
 
-	GlobalEntity_AddToCounter( m_globalstate, inputdata.value.Int() );
+	GlobalEntity_AddToCounter( STRING( m_globalstate ), inputdata.value.Int() );
 }
 
 
@@ -1017,12 +1017,12 @@ void CEnvGlobal::InputAddToCounter( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CEnvGlobal::InputGetCounter( inputdata_t &inputdata )
 {
-	if ( !GlobalEntity_IsInTable( m_globalstate ) )
+	if ( !GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 	{
-		GlobalEntity_Add( m_globalstate, gpGlobals->mapname, GLOBAL_ON );
+		GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname ), GLOBAL_ON );
 	}
 
-	m_outCounter.Set( GlobalEntity_GetCounter( m_globalstate ), inputdata.pActivator, this );
+	m_outCounter.Set( GlobalEntity_GetCounter( STRING( m_globalstate ) ), inputdata.pActivator, this );
 }
 
 
@@ -1031,7 +1031,7 @@ void CEnvGlobal::InputGetCounter( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CEnvGlobal::InputToggle( inputdata_t &inputdata )
 {
-	GLOBALESTATE oldState = GlobalEntity_GetState( m_globalstate );
+	GLOBALESTATE oldState = GlobalEntity_GetState( STRING( m_globalstate ) );
 	GLOBALESTATE newState;
 
 	if ( oldState == GLOBAL_ON )
@@ -1047,13 +1047,13 @@ void CEnvGlobal::InputToggle( inputdata_t &inputdata )
 		return;
 	}
 
-	if ( GlobalEntity_IsInTable( m_globalstate ) )
+	if ( GlobalEntity_IsInTable( STRING( m_globalstate ) ) )
 	{
-		GlobalEntity_SetState( m_globalstate, newState );
+		GlobalEntity_SetState( STRING( m_globalstate ), newState );
 	}
 	else
 	{
-		GlobalEntity_Add( m_globalstate, gpGlobals->mapname, newState );
+		GlobalEntity_Add( STRING( m_globalstate ), STRING( gpGlobals->mapname ), newState );
 	}
 }
 
@@ -1075,7 +1075,7 @@ int CEnvGlobal::DrawDebugTextOverlays(void)
 		EntityText(text_offset,tempstr,0);
 		text_offset++;
 
-		GLOBALESTATE nState = GlobalEntity_GetState( m_globalstate );
+		GLOBALESTATE nState = GlobalEntity_GetState( STRING( m_globalstate ) );
 
 		switch( nState )
 		{
@@ -1245,7 +1245,7 @@ bool CMultiSource::IsTriggered( CBaseEntity * )
 
 	if (i == m_iTotal)
 	{
-		if ( !m_globalstate || GlobalEntity_GetState( m_globalstate ) == GLOBAL_ON )
+		if ( !m_globalstate || GlobalEntity_GetState( STRING( m_globalstate ) ) == GLOBAL_ON )
 			return 1;
 	}
 	

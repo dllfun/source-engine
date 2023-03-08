@@ -131,7 +131,7 @@ void CLogicNavigation::UpdateOnRemove()
 //-----------------------------------------------------------------------------
 void CLogicNavigation::OnEntitySpawned( CBaseEntity *pEntity )
 {
-	if ( m_isOn && ( m_navProperty & NAV_IGNORE ) && pEntity->NameMatches( m_target ) )
+	if ( m_isOn && ( m_navProperty & NAV_IGNORE ) && pEntity->NameMatches( STRING( m_target ) ) )
 	{
 		pEntity->SetNavIgnore();
 	}

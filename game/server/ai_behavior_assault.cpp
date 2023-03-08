@@ -251,12 +251,12 @@ CAssaultPoint *CAI_AssaultBehavior::FindAssaultPoint( string_t iszAssaultPointNa
 	CUtlVector<CAssaultPoint*>pAssaultPoints;
 	CUtlVector<CAssaultPoint*>pClearAssaultPoints;
 
-	CAssaultPoint *pAssaultEnt = (CAssaultPoint *)gEntList.FindEntityByName( NULL, iszAssaultPointName );
+	CAssaultPoint *pAssaultEnt = (CAssaultPoint *)gEntList.FindEntityByName( NULL, STRING( iszAssaultPointName ) );
 
 	while( pAssaultEnt != NULL )
 	{
 		pAssaultPoints.AddToTail( pAssaultEnt );
-		pAssaultEnt = (CAssaultPoint *)gEntList.FindEntityByName( pAssaultEnt, iszAssaultPointName );
+		pAssaultEnt = (CAssaultPoint *)gEntList.FindEntityByName( pAssaultEnt, STRING( iszAssaultPointName ) );
 	}
 
 	// Didn't find any?!
@@ -935,7 +935,7 @@ void CAI_AssaultBehavior::SetParameters( string_t rallypointname, AssaultCue_t a
 	UnlockRallyPoint();
 
 	// Firstly, find a rally point. 
-	CRallyPoint *pRallyEnt = dynamic_cast<CRallyPoint *>(gEntList.FindEntityByName( NULL, rallypointname ) );
+	CRallyPoint *pRallyEnt = dynamic_cast<CRallyPoint *>(gEntList.FindEntityByName( NULL, STRING( rallypointname ) ) );
 
 	CRallyPoint *pBest = NULL;
 	int iBestPriority = -1;
@@ -974,7 +974,7 @@ void CAI_AssaultBehavior::SetParameters( string_t rallypointname, AssaultCue_t a
 					}
 				}
 
-				pRallyEnt = dynamic_cast<CRallyPoint *>(gEntList.FindEntityByName( pRallyEnt, rallypointname, NULL ) );
+				pRallyEnt = dynamic_cast<CRallyPoint *>(gEntList.FindEntityByName( pRallyEnt, STRING( rallypointname ), NULL ) );
 			}
 		}
 		break;
@@ -992,7 +992,7 @@ void CAI_AssaultBehavior::SetParameters( string_t rallypointname, AssaultCue_t a
 					rallyPoints.AddToTail( pRallyEnt );
 				}
 
-				pRallyEnt = dynamic_cast<CRallyPoint *>(gEntList.FindEntityByName( pRallyEnt, rallypointname ) );
+				pRallyEnt = dynamic_cast<CRallyPoint *>(gEntList.FindEntityByName( pRallyEnt, STRING( rallypointname ) ) );
 			}
 
 			if( rallyPoints.Count() > 0 )

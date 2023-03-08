@@ -575,7 +575,7 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 //			pActivator - Activator entity if this was called from an input
 //				handler or Use handler.
 //-----------------------------------------------------------------------------
-CBaseEntity *CGlobalEntityList::FindEntityByName( CBaseEntity *pStartEntity, const char *szName, CBaseEntity *pSearchingEntity, CBaseEntity *pActivator, CBaseEntity *pCaller, IEntityFindFilter *pFilter )
+CBaseEntity *CGlobalEntityList::FindEntityByName( CBaseEntity *pStartEntity, const char* szName, CBaseEntity *pSearchingEntity, CBaseEntity *pActivator, CBaseEntity *pCaller, IEntityFindFilter *pFilter )
 {
 	if ( !szName || szName[0] == 0 )
 		return NULL;

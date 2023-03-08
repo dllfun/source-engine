@@ -131,7 +131,7 @@ static int ComputeSpawnHierarchyDepth_r( CBaseEntity *pEntity )
 	if (pEntity->m_iParent == NULL_STRING)
 		return 1;
 
-	CBaseEntity *pParent = gEntList.FindEntityByName( NULL, ExtractParentName(pEntity->m_iParent) );
+	CBaseEntity *pParent = gEntList.FindEntityByName( NULL, STRING( ExtractParentName(pEntity->m_iParent) ) );
 	if (!pParent)
 		return 1;
 	
@@ -205,12 +205,12 @@ void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t *pSpawnList )
 		CBaseEntity *pEntity = pSpawnList[nEntity].m_pEntity;
 		if ( pEntity )
 		{
-			if ( strchr(STRING(pEntity->m_iParent), ',') )
+			if (pEntity->m_iParent != NULL_STRING && strchr(STRING(pEntity->m_iParent), ',') )
 			{
 				char szToken[256];
 				const char *pAttachmentName = nexttoken(szToken, STRING(pEntity->m_iParent), ',');
 				pEntity->m_iParent = AllocPooledString(szToken);
-				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, pEntity->m_iParent );
+				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, STRING( pEntity->m_iParent ) );
 
 				// setparent in the spawn pass instead - so the model will have been set & loaded
 				pSpawnList[nEntity].m_pDeferredParent = pParent;
@@ -218,7 +218,7 @@ void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t *pSpawnList )
 			}
 			else
 			{
-				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, pEntity->m_iParent );
+				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, STRING( pEntity->m_iParent ) );
 
 				if ((pParent != NULL) && (pParent->edict() != NULL))
 				{

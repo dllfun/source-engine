@@ -1369,7 +1369,7 @@ bool UTIL_IsMasterTriggered(string_t sMaster, CBaseEntity *pActivator)
 {
 	if (sMaster != NULL_STRING)
 	{
-		CBaseEntity *pMaster = gEntList.FindEntityByName( NULL, sMaster, NULL, pActivator );
+		CBaseEntity *pMaster = gEntList.FindEntityByName( NULL, STRING( sMaster ), NULL, pActivator );
 	
 		if ( pMaster && (pMaster->ObjectCaps() & FCAP_MASTER) )
 		{
@@ -1926,7 +1926,7 @@ int DispatchSpawn( CBaseEntity *pEntity )
 		if ( pEntity->m_iGlobalname != NULL_STRING ) 
 		{
 			// Handle global stuff here
-			int globalIndex = GlobalEntity_GetIndex( pEntity->m_iGlobalname );
+			int globalIndex = GlobalEntity_GetIndex( STRING( pEntity->m_iGlobalname ) );
 			if ( globalIndex >= 0 )
 			{
 				// Already dead? delete
@@ -1944,7 +1944,7 @@ int DispatchSpawn( CBaseEntity *pEntity )
 			else
 			{
 				// Spawned entities default to 'On'
-				GlobalEntity_Add( pEntity->m_iGlobalname, gpGlobals->mapname, GLOBAL_ON );
+				GlobalEntity_Add( STRING( pEntity->m_iGlobalname ), STRING( gpGlobals->mapname ), GLOBAL_ON );
 //					Msg( "Added global entity %s (%s)\n", pEntity->GetClassname(), STRING(pEntity->m_iGlobalname) );
 			}
 		}
@@ -2488,7 +2488,7 @@ bool UTIL_PointAtEntity( CBaseEntity *pDest, CBaseEntity *pTarget )
 void UTIL_PointAtNamedEntity( CBaseEntity *pDest, string_t strTarget )
 {
 	//Attempt to find the entity
-	if ( !UTIL_PointAtEntity( pDest, gEntList.FindEntityByName( NULL, strTarget ) ) )
+	if ( !UTIL_PointAtEntity( pDest, gEntList.FindEntityByName( NULL, STRING( strTarget ) ) ) )
 	{
 		DevMsg( 1, "%s (%s) was unable to point at an entity named: %s\n", pDest->GetClassname(), pDest->GetDebugName(), STRING( strTarget ) );
 	}

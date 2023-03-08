@@ -4850,7 +4850,7 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 	}
 	else
 	{
-		pSpot = gEntList.FindEntityByName( NULL, gpGlobals->startspot );
+		pSpot = gEntList.FindEntityByName( NULL, STRING( gpGlobals->startspot ) );
 		if ( pSpot )
 			goto ReturnSpot;
 	}

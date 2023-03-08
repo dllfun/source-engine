@@ -113,7 +113,7 @@ public:
 			int result = 0;
 			for ( intp i = pGroup->followers.Head(); i != pGroup->followers.InvalidIndex(); i = pGroup->followers.Next( i ) )
 			{
-				if ( pGroup->followers[i].hFollower && pGroup->followers[i].hFollower->ClassMatches( iszClassname ) )
+				if ( pGroup->followers[i].hFollower && pGroup->followers[i].hFollower->ClassMatches( STRING( iszClassname ) ) )
 				{
 					result++;
 				}

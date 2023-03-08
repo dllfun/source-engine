@@ -1111,7 +1111,7 @@ void CNPC_VehicleDriver::InputGotoPathCorner( inputdata_t &inputdata )
 	string_t iszPathName = inputdata.value.StringID();
 	if ( iszPathName != NULL_STRING )
 	{
-		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, iszPathName );
+		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, STRING( iszPathName ) );
 		if ( !pEntity )
 		{
 			Warning("npc_vehicledriver %s couldn't find entity named %s\n", STRING(GetEntityName()), STRING(iszPathName) );

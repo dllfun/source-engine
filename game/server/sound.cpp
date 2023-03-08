@@ -453,7 +453,7 @@ void CAmbientGeneric::Activate( void )
 	{
 		if (m_sSourceEntName != NULL_STRING)
 		{
-			m_hSoundSource = gEntList.FindEntityByName( NULL, m_sSourceEntName );
+			m_hSoundSource = gEntList.FindEntityByName( NULL, STRING( m_sSourceEntName ) );
 			if ( m_hSoundSource != NULL )
 			{
 				m_nSoundSourceEntIndex = m_hSoundSource->entindex();

@@ -915,7 +915,7 @@ void CPointCommentaryNode::Activate( void )
 
 	if ( m_iszViewTarget != NULL_STRING )
 	{
-		m_hViewTarget = gEntList.FindEntityByName( NULL, m_iszViewTarget );
+		m_hViewTarget = gEntList.FindEntityByName( NULL, STRING( m_iszViewTarget ) );
 		if ( !m_hViewTarget )
 		{
 			Warning("%s: %s could not find viewtarget %s.\n", GetClassname(), GetDebugName(), STRING(m_iszViewTarget) );
@@ -924,7 +924,7 @@ void CPointCommentaryNode::Activate( void )
 
 	if ( m_iszViewPosition != NULL_STRING )
 	{
-		m_hViewPosition = gEntList.FindEntityByName( NULL, m_iszViewPosition );
+		m_hViewPosition = gEntList.FindEntityByName( NULL, STRING( m_iszViewPosition ) );
 		if ( !m_hViewPosition.Get() )
 		{
 			Warning("%s: %s could not find viewposition %s.\n", GetClassname(), GetDebugName(), STRING(m_iszViewPosition) );

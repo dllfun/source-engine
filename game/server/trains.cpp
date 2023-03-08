@@ -1019,7 +1019,7 @@ void CFuncTrain::SetupTarget( void )
 	// Find our target whenever we don't have one (level transition)
 	if ( !m_hCurrentTarget )
 	{
-		CBaseEntity	*pTarg = gEntList.FindEntityByName( NULL, m_target );
+		CBaseEntity	*pTarg = gEntList.FindEntityByName( NULL, STRING( m_target ) );
 
 		if ( pTarg == NULL )
 		{
@@ -2516,7 +2516,7 @@ bool CFuncTrackTrain::OnControls( CBaseEntity *pTest )
 
 void CFuncTrackTrain::Find( void )
 {
-	m_ppath = (CPathTrack *)gEntList.FindEntityByName( NULL, m_target );
+	m_ppath = (CPathTrack *)gEntList.FindEntityByName( NULL, STRING( m_target ) );
 	if ( !m_ppath )
 		return;
 
@@ -2811,7 +2811,7 @@ void CFuncTrainControls::Find( void )
 
 	do 
 	{
-		pTarget = gEntList.FindEntityByName( pTarget, m_target );
+		pTarget = gEntList.FindEntityByName( pTarget, STRING( m_target ) );
 	} while ( pTarget && !FClassnameIs(pTarget, "func_tracktrain") );
 
 	if ( !pTarget )
@@ -2965,18 +2965,18 @@ void CFuncTrackChange::Find( void )
 	// Find track entities
 	CBaseEntity *target;
 
-	target = gEntList.FindEntityByName( NULL, m_trackTopName );
+	target = gEntList.FindEntityByName( NULL, STRING( m_trackTopName ) );
 	if ( target )
 	{
 		m_trackTop = (CPathTrack*) target;
-		target = gEntList.FindEntityByName( NULL, m_trackBottomName );
+		target = gEntList.FindEntityByName( NULL, STRING( m_trackBottomName ) );
 		if ( target )
 		{
 			m_trackBottom = (CPathTrack*) target;
-			target = gEntList.FindEntityByName( NULL, m_trainName );
+			target = gEntList.FindEntityByName( NULL, STRING( m_trainName ) );
 			if ( target )
 			{
-				m_train = (CFuncTrackTrain *)gEntList.FindEntityByName( NULL, m_trainName );
+				m_train = (CFuncTrackTrain *)gEntList.FindEntityByName( NULL, STRING( m_trainName ) );
 				if ( !m_train )
 				{
 					Warning( "Can't find train for track change! %s\n", STRING(m_trainName) );
@@ -2994,7 +2994,7 @@ void CFuncTrackChange::Find( void )
 			{
 				Warning( "Can't find train for track change! %s\n", STRING(m_trainName) );
 				Assert(0);
-				target = gEntList.FindEntityByName( NULL, m_trainName );
+				target = gEntList.FindEntityByName( NULL, STRING( m_trainName ) );
 			}
 		}
 		else

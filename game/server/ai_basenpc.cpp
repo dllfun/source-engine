@@ -1948,7 +1948,7 @@ bool CAI_BaseNPC::QueryHearSound( CSound *pSound )
 	// Disregard footsteps from our own class type
 	if ( pSound->IsSoundType( SOUND_COMBAT ) && pSound->SoundChannel() == SOUNDENT_CHANNEL_NPC_FOOTSTEP )
 	{
-		if ( pSound->m_hOwner && pSound->m_hOwner->ClassMatches( m_iClassname ) )
+		if ( pSound->m_hOwner && pSound->m_hOwner->ClassMatches( STRING( m_iClassname ) ) )
 				return false;
 	}
 
@@ -7333,7 +7333,7 @@ void CAI_BaseNPC::StartNPC( void )
 	if ( m_target != NULL_STRING )// this npc has a target
 	{
 		// Find the npc's initial target entity, stash it
-		SetGoalEnt( gEntList.FindEntityByName( NULL, m_target ) );
+		SetGoalEnt( gEntList.FindEntityByName( NULL, STRING( m_target ) ) );
 
 		if ( !GetGoalEnt() )
 		{
@@ -10855,7 +10855,7 @@ void CAI_BaseNPC::Activate( void )
 	// Get a handle to my enemy filter entity if there is one.
 	if ( m_iszEnemyFilterName != NULL_STRING )
 	{
-		CBaseEntity *pFilter = gEntList.FindEntityByName( NULL, m_iszEnemyFilterName );
+		CBaseEntity *pFilter = gEntList.FindEntityByName( NULL, STRING( m_iszEnemyFilterName ) );
 		if ( pFilter != NULL )
 		{
 			m_hEnemyFilter = dynamic_cast<CBaseFilter*>(pFilter);
@@ -11537,7 +11537,7 @@ void CAI_BaseNPC::InputSetRelationship( inputdata_t &inputdata )
 void CAI_BaseNPC::InputSetEnemyFilter( inputdata_t &inputdata )
 {
 	// Get a handle to my enemy filter entity if there is one.
-	CBaseEntity *pFilter = gEntList.FindEntityByName( NULL, inputdata.value.StringID() );
+	CBaseEntity *pFilter = gEntList.FindEntityByName( NULL, STRING( inputdata.value.StringID() ) );
 	m_hEnemyFilter = dynamic_cast<CBaseFilter*>(pFilter);
 }
 
@@ -11606,7 +11606,7 @@ void CAI_BaseNPC::InputWake( inputdata_t &inputdata )
 	if ( m_target != NULL_STRING )// this npc has a target
 	{
 		// Find the npc's initial target entity, stash it
-		SetGoalEnt( gEntList.FindEntityByName( NULL, m_target ) );
+		SetGoalEnt( gEntList.FindEntityByName( NULL, STRING( m_target ) ) );
 
 		if ( !GetGoalEnt() )
 		{

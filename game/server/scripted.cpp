@@ -977,7 +977,7 @@ void CAI_ScriptedSequence::SynchNewSequence( CAI_BaseNPC::SCRIPTSTATE newState, 
 	{
 		//Msg("%s (for %s) forcing synch of %s at %0.2f\n", GetTarget()->GetDebugName(), GetDebugName(), iszSequence, gpGlobals->curtime);
 
- 		CBaseEntity *pentCine = gEntList.FindEntityByName( NULL, GetEntityName(), NULL );
+ 		CBaseEntity *pentCine = gEntList.FindEntityByName( NULL, STRING( GetEntityName() ), NULL );
 		while ( pentCine )
 		{
 			CAI_ScriptedSequence *pScene = dynamic_cast<CAI_ScriptedSequence *>(pentCine);
@@ -985,7 +985,7 @@ void CAI_ScriptedSequence::SynchNewSequence( CAI_BaseNPC::SCRIPTSTATE newState, 
 			{
 				pScene->SynchNewSequence( newState, iszSequence, false );
 			}
-			pentCine = gEntList.FindEntityByName( pentCine, GetEntityName(), NULL );
+			pentCine = gEntList.FindEntityByName( pentCine, STRING( GetEntityName() ), NULL );
 		}
 	}
 
@@ -1216,7 +1216,7 @@ void CAI_ScriptedSequence::StopActionLoop( bool bStopSynchronizedScenes )
 	if ( !bStopSynchronizedScenes || GetEntityName() == NULL_STRING )
 		return;
 
-	CBaseEntity *pentCine = gEntList.FindEntityByName( NULL, GetEntityName(), NULL );
+	CBaseEntity *pentCine = gEntList.FindEntityByName( NULL, STRING( GetEntityName() ), NULL );
 	while ( pentCine )
 	{
 		CAI_ScriptedSequence *pScene = dynamic_cast<CAI_ScriptedSequence *>(pentCine);
@@ -1225,7 +1225,7 @@ void CAI_ScriptedSequence::StopActionLoop( bool bStopSynchronizedScenes )
 			pScene->StopActionLoop( false );
 		}
 
-		pentCine = gEntList.FindEntityByName( pentCine, GetEntityName(), NULL );
+		pentCine = gEntList.FindEntityByName( pentCine, STRING( GetEntityName() ), NULL );
 	}
 }
 
@@ -1346,12 +1346,12 @@ void CAI_ScriptedSequence::CancelScript( void )
 		return;
 	}
 
-	CBaseEntity *pentCineTarget = gEntList.FindEntityByName( NULL, GetEntityName() );
+	CBaseEntity *pentCineTarget = gEntList.FindEntityByName( NULL, STRING( GetEntityName() ) );
 
 	while ( pentCineTarget )
 	{
 		ScriptEntityCancel( pentCineTarget );
-		pentCineTarget = gEntList.FindEntityByName( pentCineTarget, GetEntityName() );
+		pentCineTarget = gEntList.FindEntityByName( pentCineTarget, STRING( GetEntityName() ) );
 	}
 }
 
@@ -1388,7 +1388,7 @@ void CAI_ScriptedSequence::DelayStart( bool bDelay )
 		return;
 	}
 
-	CBaseEntity *pentCine = gEntList.FindEntityByName( NULL, GetEntityName() );
+	CBaseEntity *pentCine = gEntList.FindEntityByName( NULL, STRING( GetEntityName() ) );
 
 	while ( pentCine )
 	{
@@ -1419,7 +1419,7 @@ void CAI_ScriptedSequence::DelayStart( bool bDelay )
 				}
 			}
 		}
-		pentCine = gEntList.FindEntityByName( pentCine, GetEntityName() );
+		pentCine = gEntList.FindEntityByName( pentCine, STRING( GetEntityName() ) );
 	}
 
 	//Msg("SSEQ: Exited DelayStart() with m_iDelay of: %d.\n", m_iDelay );
@@ -1437,7 +1437,7 @@ void CAI_ScriptedSequence::Activate( void )
 	//
 	// See if there is another script specified to run immediately after this one.
 	//
-	m_hNextCine = gEntList.FindEntityByName( NULL, m_iszNextScript );
+	m_hNextCine = gEntList.FindEntityByName( NULL, STRING( m_iszNextScript ) );
 	if ( m_hNextCine == NULL )
 	{
 		m_iszNextScript = NULL_STRING;
@@ -2150,7 +2150,7 @@ CAI_BaseNPC *CAI_ScriptedSentence::FindEntity( void )
 	CBaseEntity *pentTarget;
 	CAI_BaseNPC *pNPC;
 
-	pentTarget = gEntList.FindEntityByName( NULL, m_iszEntity );
+	pentTarget = gEntList.FindEntityByName( NULL, STRING( m_iszEntity ) );
 	pNPC = NULL;
 
 	while (pentTarget)
@@ -2162,7 +2162,7 @@ CAI_BaseNPC *CAI_ScriptedSentence::FindEntity( void )
 				return pNPC;
 			//Msg( "%s (%s), not acceptable\n", pNPC->GetClassname(), pNPC->GetDebugName() );
 		}
-		pentTarget = gEntList.FindEntityByName( pentTarget, m_iszEntity );
+		pentTarget = gEntList.FindEntityByName( pentTarget, STRING( m_iszEntity ) );
 	}
 	
 	CBaseEntity *pEntity = NULL;

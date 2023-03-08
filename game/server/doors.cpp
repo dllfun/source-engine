@@ -772,7 +772,7 @@ void CBaseDoor::ChainUse( void )
 		return;
 
 	CBaseEntity *ent = NULL;
-	while ( ( ent = gEntList.FindEntityByName( ent, m_ChainTarget, NULL ) ) != NULL )
+	while ( ( ent = gEntList.FindEntityByName( ent, STRING( m_ChainTarget ), NULL ) ) != NULL )
 	{
 		if ( ent == this )
 			continue;
@@ -797,7 +797,7 @@ void CBaseDoor::ChainTouch( CBaseEntity *pOther )
 		return;
 
 	CBaseEntity *ent = NULL;
-	while ( ( ent = gEntList.FindEntityByName( ent, m_ChainTarget, NULL ) ) != NULL )
+	while ( ( ent = gEntList.FindEntityByName( ent, STRING( m_ChainTarget ), NULL ) ) != NULL )
 	{
 		if ( ent == this )
 			continue;
@@ -1142,7 +1142,7 @@ int CBaseDoor::GetDoorMovementGroup( CBaseDoor *pDoorList[], int listMax )
 	{
 		for (;;)
 		{
-			pTarget = gEntList.FindEntityByName( pTarget, GetEntityName(), NULL );
+			pTarget = gEntList.FindEntityByName( pTarget, STRING( GetEntityName() ), NULL );
 
 			if ( pTarget != this )
 			{

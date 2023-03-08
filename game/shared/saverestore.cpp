@@ -2922,7 +2922,7 @@ int CEntitySaveRestoreBlockHandler::RestoreEntity( CBaseEntity *pEntity, IRestor
 #if !defined( CLIENT_DLL )		
 	if ( pEntity->m_iGlobalname != NULL_STRING ) 
 	{
-		int globalIndex = GlobalEntity_GetIndex( pEntity->m_iGlobalname );
+		int globalIndex = GlobalEntity_GetIndex( STRING( pEntity->m_iGlobalname ) );
 		if ( globalIndex >= 0 )
 		{
 			// Already dead? delete
@@ -2938,7 +2938,7 @@ int CEntitySaveRestoreBlockHandler::RestoreEntity( CBaseEntity *pEntity, IRestor
 		{
 			Warning( "Global Entity %s (%s) not in table!!!\n", STRING(pEntity->m_iGlobalname), STRING(pEntity->m_iClassname) );
 			// Spawned entities default to 'On'
-			GlobalEntity_Add( pEntity->m_iGlobalname, gpGlobals->mapname, GLOBAL_ON );
+			GlobalEntity_Add( STRING( pEntity->m_iGlobalname ), STRING( gpGlobals->mapname ), GLOBAL_ON );
 		}
 	}
 #endif
@@ -2963,7 +2963,7 @@ int CEntitySaveRestoreBlockHandler::RestoreGlobalEntity( CBaseEntity *pEntity, C
 
 	// -------------------
 
-	int globalIndex = GlobalEntity_GetIndex( globalName );
+	int globalIndex = GlobalEntity_GetIndex( STRING( globalName ) );
 	
 	// Don't overlay any instance of the global that isn't the latest
 	// pSaveData->szCurrentMapName is the level this entity is coming from
@@ -2991,7 +2991,7 @@ int CEntitySaveRestoreBlockHandler::RestoreGlobalEntity( CBaseEntity *pEntity, C
 		pEntity->VPhysicsDestroyObject();
 		Assert( pEntInfo->edictindex == -1 );
 		// Update the global table to say that the global definition of this entity should come from this level
-		GlobalEntity_SetMap( globalIndex, gpGlobals->mapname );
+		GlobalEntity_SetMap( globalIndex, STRING( gpGlobals->mapname ) );
 	}
 	else
 	{

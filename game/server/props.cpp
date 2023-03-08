@@ -3696,7 +3696,7 @@ void CBasePropDoor::Activate( void )
 			}
 		}
 
-		while ( ( pTarget = gEntList.FindEntityByName( pTarget, iszSearchName ) ) != NULL )
+		while ( ( pTarget = gEntList.FindEntityByName( pTarget, STRING( iszSearchName ) ) ) != NULL )
 		{
 			if ( pTarget != this )
 			{

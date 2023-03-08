@@ -618,7 +618,7 @@ void CPhysConstraint::Activate( void )
 
 IPhysicsConstraintGroup *GetConstraintGroup( string_t systemName )
 {
-	CBaseEntity *pMachine = gEntList.FindEntityByName( NULL, systemName );
+	CBaseEntity *pMachine = gEntList.FindEntityByName( NULL, STRING( systemName ) );
 
 	if ( pMachine )
 	{

@@ -3577,10 +3577,10 @@ CBaseEntity *CSceneEntity::FindNamedTarget( string_t iszTarget, bool bBaseFlexOn
 
 	// If we don't have a wildcard in the target, just return the first entity found
 	if ( !strchr( STRING(iszTarget), '*' ) )
-		return gEntList.FindEntityByName( NULL, iszTarget );
+		return gEntList.FindEntityByName( NULL, STRING( iszTarget ) );
 
 	CBaseEntity *pTarget = NULL;
-	while ( (pTarget = gEntList.FindEntityByName( pTarget, iszTarget )) != NULL )
+	while ( (pTarget = gEntList.FindEntityByName( pTarget, STRING( iszTarget ) )) != NULL )
 	{
 		if ( bBaseFlexOnly )
 		{

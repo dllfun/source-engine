@@ -1043,7 +1043,7 @@ int CBaseEntity::DrawDebugTextOverlays(void)
 void CBaseEntity::SetParent( string_t newParent, CBaseEntity *pActivator, int iAttachment )
 {
 	// find and notify the new parent
-	CBaseEntity *pParent = gEntList.FindEntityByName( NULL, newParent, NULL, pActivator );
+	CBaseEntity *pParent = gEntList.FindEntityByName( NULL, STRING( newParent ), NULL, pActivator );
 
 	// debug check
 	if ( newParent != NULL_STRING && pParent == NULL )
@@ -1053,7 +1053,7 @@ void CBaseEntity::SetParent( string_t newParent, CBaseEntity *pActivator, int iA
 	else
 	{
 		// make sure there isn't any ambiguity
-		if ( gEntList.FindEntityByName( pParent, newParent, NULL, pActivator ) )
+		if ( gEntList.FindEntityByName( pParent, STRING( newParent ), NULL, pActivator ) )
 		{
 			Msg( "Entity %s(%s) has ambigious parent %s\n", STRING(m_iClassname), GetDebugName(), STRING(newParent) );
 		}
@@ -1328,7 +1328,7 @@ void CBaseEntity::Activate( void )
 	// Get a handle to my damage filter entity if there is one.
 	if ( m_iszDamageFilterName != NULL_STRING )
 	{
-		m_hDamageFilter = gEntList.FindEntityByName( NULL, m_iszDamageFilterName );
+		m_hDamageFilter = gEntList.FindEntityByName( NULL, STRING( m_iszDamageFilterName ) );
 	}
 
 	// Add any non-null context strings to our context vector
@@ -1655,7 +1655,7 @@ CBaseEntity *CBaseEntity::GetNextTarget( void )
 {
 	if ( !m_target )
 		return NULL;
-	return gEntList.FindEntityByName( NULL, m_target );
+	return gEntList.FindEntityByName( NULL, STRING( m_target ) );
 }
 
 class CThinkContextsSaveDataOps : public CDefSaveRestoreOps
@@ -2017,7 +2017,7 @@ void CBaseEntity::UpdateOnRemove( void )
 		// NOTE: During level shutdown the global list will suppress this
 		// it assumes your changing levels or the game will end
 		// causing the whole list to be flushed
-		GlobalEntity_SetState( m_iGlobalname, GLOBAL_DEAD );
+		GlobalEntity_SetState( STRING( m_iGlobalname ), GLOBAL_DEAD );
 	}
 
 	VPhysicsDestroyObject();
@@ -4064,7 +4064,7 @@ void CBaseEntity::InputSetDamageFilter( inputdata_t &inputdata )
 	m_iszDamageFilterName = inputdata.value.StringID();
 	if ( m_iszDamageFilterName != NULL_STRING )
 	{
-		m_hDamageFilter = gEntList.FindEntityByName( NULL, m_iszDamageFilterName );
+		m_hDamageFilter = gEntList.FindEntityByName( NULL, STRING( m_iszDamageFilterName ) );
 	}
 	else
 	{

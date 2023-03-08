@@ -903,7 +903,7 @@ CBaseEntity *CPhysExplosion::FindEntity( CBaseEntity *pEntity, CBaseEntity *pAct
 	if ( m_targetEntityName != NULL_STRING )
 	{
 		// Try an explicit name first
-		CBaseEntity *pTarget = gEntList.FindEntityByName( pEntity, m_targetEntityName, NULL, pActivator, pCaller );
+		CBaseEntity *pTarget = gEntList.FindEntityByName( pEntity, STRING( m_targetEntityName ), NULL, pActivator, pCaller );
 		if ( pTarget != NULL )
 			return pTarget;
 
@@ -1392,11 +1392,11 @@ void CPhysConvert::InputConvertTarget( inputdata_t &inputdata )
 	m_OnConvert.FireOutput( inputdata.pActivator, this );
 
 	CBaseEntity *entlist[512];
-	CBaseEntity *pSwap = gEntList.FindEntityByName( NULL, m_swapModel, NULL, inputdata.pActivator, inputdata.pCaller );
+	CBaseEntity *pSwap = gEntList.FindEntityByName( NULL, STRING( m_swapModel ), NULL, inputdata.pActivator, inputdata.pCaller );
 	CBaseEntity *pEntity = NULL;
 	
 	int count = 0;
-	while ( (pEntity = gEntList.FindEntityByName( pEntity, m_target, NULL, inputdata.pActivator, inputdata.pCaller )) != NULL )
+	while ( (pEntity = gEntList.FindEntityByName( pEntity, STRING( m_target ), NULL, inputdata.pActivator, inputdata.pCaller )) != NULL )
 	{
 		entlist[count++] = pEntity;
 		if ( count >= ARRAYSIZE(entlist) )

@@ -925,7 +925,7 @@ void CEventQueue::ServiceEvents( void )
 			CBaseEntity *target = NULL;
 			while ( 1 )
 			{
-				target = gEntList.FindEntityByName( target, pe->m_iTarget, pSearchingEntity, pe->m_pActivator, pe->m_pCaller );
+				target = gEntList.FindEntityByName( target, STRING( pe->m_iTarget ), pSearchingEntity, pe->m_pActivator, pe->m_pCaller );
 				if ( !target )
 					break;
 
@@ -1442,7 +1442,7 @@ bool variant_t::Convert( fieldtype_t newType )
 					if ( iszVal != NULL_STRING )
 					{
 						// FIXME: do we need to pass an activator in here?
-						ent = gEntList.FindEntityByName( NULL, iszVal );
+						ent = gEntList.FindEntityByName( NULL, STRING( iszVal ) );
 					}
 					SetEntity( ent );
 					return true;

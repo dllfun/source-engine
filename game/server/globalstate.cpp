@@ -88,11 +88,11 @@ public:
 		return m_list[globalIndex].counter;
 	}
 
-	void SetMap( int globalIndex, string_t mapname )
+	void SetMap( int globalIndex, const char* mapname )
 	{
 		if ( !m_list.IsValidIndex(globalIndex) )
 			return;
-		m_list[globalIndex].levelName = m_nameList.AddString( STRING(mapname) );
+		m_list[globalIndex].levelName = m_nameList.AddString( mapname );
 	}
 
 	const char *GetMap( int globalIndex )
@@ -185,17 +185,17 @@ void GlobalEntity_EnableStateUpdates( bool bEnable )
 }
 
 
-void GlobalEntity_SetMap( int globalIndex, string_t mapname )
+void GlobalEntity_SetMap( int globalIndex, const char* mapname )
 {
 	gGlobalState.SetMap( globalIndex, mapname );
 }
 
-int GlobalEntity_Add( const char *pGlobalname, const char *pMapName, GLOBALESTATE state )
+int GlobalEntity_Add(const char* pGlobalname, const char* pMapName, GLOBALESTATE state )
 {
 	return gGlobalState.AddEntity( pGlobalname, pMapName, state );
 }
 
-int GlobalEntity_GetIndex( const char *pGlobalname )
+int GlobalEntity_GetIndex(const char* pGlobalname )
 {
 	return gGlobalState.GetIndex( pGlobalname );
 }

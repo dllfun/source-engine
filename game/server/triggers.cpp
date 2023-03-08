@@ -217,7 +217,7 @@ void CBaseTrigger::Activate( void )
 	// Get a handle to my filter entity if there is one
 	if (m_iFilterName != NULL_STRING)
 	{
-		m_hFilter = dynamic_cast<CBaseFilter *>(gEntList.FindEntityByName( NULL, m_iFilterName ));
+		m_hFilter = dynamic_cast<CBaseFilter *>(gEntList.FindEntityByName( NULL, STRING( m_iFilterName ) ));
 	}
 
 	BaseClass::Activate();
@@ -2354,7 +2354,7 @@ void CTriggerTeleport::Touch( CBaseEntity *pOther )
 	}
 
 	// The activator and caller are the same
-	pentTarget = gEntList.FindEntityByName( pentTarget, m_target, NULL, pOther, pOther );
+	pentTarget = gEntList.FindEntityByName( pentTarget, STRING( m_target ), NULL, pOther, pOther );
 	if (!pentTarget)
 	{
 	   return;
@@ -2368,7 +2368,7 @@ void CTriggerTeleport::Touch( CBaseEntity *pOther )
 	if (m_iLandmark != NULL_STRING)
 	{
 		// The activator and caller are the same
-		pentLandmark = gEntList.FindEntityByName(pentLandmark, m_iLandmark, NULL, pOther, pOther );
+		pentLandmark = gEntList.FindEntityByName(pentLandmark, STRING( m_iLandmark ), NULL, pOther, pOther );
 		if (pentLandmark)
 		{
 			vecLandmarkOffset = pOther->GetAbsOrigin() - pentLandmark->GetAbsOrigin();
@@ -2646,7 +2646,7 @@ void CAI_ChangeTarget::InputActivate( inputdata_t &inputdata )
 {
 	CBaseEntity *pTarget = NULL;
 
-	while ((pTarget = gEntList.FindEntityByName( pTarget, m_target, NULL, inputdata.pActivator, inputdata.pCaller )) != NULL)
+	while ((pTarget = gEntList.FindEntityByName( pTarget, STRING( m_target ), NULL, inputdata.pActivator, inputdata.pCaller )) != NULL)
 	{
 		pTarget->m_target = m_iszNewTarget;
 		CAI_BaseNPC *pNPC = pTarget->MyNPCPointer( );
@@ -3073,7 +3073,7 @@ void CTriggerCamera::Enable( void )
 
 	if ( m_sPath != NULL_STRING )
 	{
-		m_pPath = gEntList.FindEntityByName( NULL, m_sPath, NULL, m_hPlayer );
+		m_pPath = gEntList.FindEntityByName( NULL, STRING( m_sPath ), NULL, m_hPlayer );
 	}
 	else
 	{
@@ -3551,7 +3551,7 @@ void CTriggerProximity::Spawn(void)
 void CTriggerProximity::Activate(void)
 {
 	BaseClass::Activate();
-	m_hMeasureTarget = gEntList.FindEntityByName(NULL, m_iszMeasureTarget );
+	m_hMeasureTarget = gEntList.FindEntityByName(NULL, STRING( m_iszMeasureTarget ) );
 
 	//
 	// Disable our Touch function if we were given a bad measure target.
@@ -4313,7 +4313,7 @@ void CBaseVPhysicsTrigger::Activate( void )
 	// Get a handle to my filter entity if there is one
 	if (m_iFilterName != NULL_STRING)
 	{
-		m_hFilter = dynamic_cast<CBaseFilter *>(gEntList.FindEntityByName( NULL, m_iFilterName ));
+		m_hFilter = dynamic_cast<CBaseFilter *>(gEntList.FindEntityByName( NULL, STRING( m_iFilterName ) ));
 	}
 
 	BaseClass::Activate();

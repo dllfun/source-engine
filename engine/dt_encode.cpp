@@ -791,14 +791,17 @@ void Quaternion_SkipProp( const SendProp *pProp, bf_read *pIn )
 void String_Encode( const unsigned char *pStruct, DVariant *pVar, const SendProp *pProp, bf_write *pOut, int objectID )
 {
 	// First count the string length, then do one WriteBits call.
-	int len;
-	for ( len=0; len < DT_MAX_STRING_BUFFERSIZE-1; len++ )
+	int len = pVar->m_pString == 0? 0 : strlen(pVar->m_pString);
+	if (len > DT_MAX_STRING_BUFFERSIZE - 1) {
+		len = DT_MAX_STRING_BUFFERSIZE - 1;
+	}
+	/*for ( len=0; len < DT_MAX_STRING_BUFFERSIZE-1; len++ )
 	{
 		if( pVar->m_pString[len] == 0 )
 		{
 			break;
 		}
-	}	
+	}	*/
 		
 	// Optionally write the length here so deltas can be compared faster.
 	pOut->WriteUBitLong( len, DT_MAX_STRING_BITS );

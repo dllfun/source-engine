@@ -98,7 +98,7 @@ void CInfoLightingRelative::Activate()
 	}
 	else
 	{
-		m_hLightingLandmark = gEntList.FindEntityByName( NULL, m_strLightingLandmark );
+		m_hLightingLandmark = gEntList.FindEntityByName( NULL, STRING( m_strLightingLandmark ) );
 		if ( !m_hLightingLandmark )
 		{
 			DevWarning( "%s: Could not find lighting landmark '%s'!\n", GetClassname(), STRING( m_strLightingLandmark ) );
@@ -532,11 +532,11 @@ void CBaseAnimating::SetLightingOriginRelative( string_t strLightingOriginRelati
 {
 	if ( strLightingOriginRelative == NULL_STRING )
 	{
-		SetLightingOriginRelative( NULL );
+		SetLightingOriginRelative( (CBaseEntity*)NULL );
 	}
 	else
 	{
-		CBaseEntity *pLightingOrigin = gEntList.FindEntityByName( NULL, strLightingOriginRelative );
+		CBaseEntity *pLightingOrigin = gEntList.FindEntityByName( NULL, STRING( strLightingOriginRelative ) );
 		if ( !pLightingOrigin )
 		{
 			DevWarning( "%s: Could not find info_lighting_relative '%s'!\n", GetClassname(), STRING( strLightingOriginRelative ) );
@@ -570,11 +570,11 @@ void CBaseAnimating::SetLightingOrigin( string_t strLightingOrigin )
 {
 	if ( strLightingOrigin == NULL_STRING )
 	{
-		SetLightingOrigin( NULL );
+		SetLightingOrigin( (CBaseEntity*)NULL );
 	}
 	else
 	{
-		CBaseEntity *pLightingOrigin = gEntList.FindEntityByName( NULL, strLightingOrigin );
+		CBaseEntity *pLightingOrigin = gEntList.FindEntityByName( NULL, STRING( strLightingOrigin ) );
 		if ( !pLightingOrigin )
 		{
 			DevWarning( "%s: Could not find lighting origin entity named '%s'!\n", GetClassname(), STRING( strLightingOrigin ) );

@@ -14,6 +14,7 @@
 #pragma once
 #endif
 
+//#define NO_STRING_T
 #ifndef NO_STRING_T
 
 #ifdef WEAK_STRING_T

@@ -202,7 +202,7 @@ void CPhysForce::Activate( void )
 
 	if ( m_attachedObject == NULL )
 	{
-		m_attachedObject = gEntList.FindEntityByName( NULL, m_nameAttach );
+		m_attachedObject = gEntList.FindEntityByName( NULL, STRING( m_nameAttach ) );
 	}
 	
 	// Let the derived class set up before we throw the switch
@@ -751,7 +751,7 @@ void CPhysMotor::Activate( void )
 	// This gets called after all objects spawn and after all objects restore
 	if ( m_attachedObject == NULL )
 	{
-		CBaseEntity *pAttach = gEntList.FindEntityByName( NULL, m_nameAttach );
+		CBaseEntity *pAttach = gEntList.FindEntityByName( NULL, STRING( m_nameAttach ) );
 		if ( pAttach && pAttach->GetMoveType() == MOVETYPE_VPHYSICS )
 		{
 			m_attachedObject = pAttach;
