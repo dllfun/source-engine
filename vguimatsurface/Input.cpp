@@ -30,12 +30,13 @@
 #include "xbox/xbox_win32stubs.h"
 #endif
 #include "MatSystemSurface.h"
+#include "vgui_internal.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 using namespace vgui;
-extern CMatSystemSurface g_MatSystemSurface;
+//extern CMatSystemSurface g_MatSystemSurface;
 
 //-----------------------------------------------------------------------------
 // Vgui input events
@@ -385,19 +386,19 @@ bool InputHandleInputEvent( const InputEvent_t &event )
 			if ( IsKeyCode( code ) || IsJoystickCode( code ) )
 			{
 				vgui::KeyCode keyCode = ButtonCodeToKeyCode( code );
-				return g_pIInput->InternalKeyCodePressed( keyCode );
+				return g_pInput->InternalKeyCodePressed( keyCode );
 			}
 
 			if ( IsJoystickCode( code ) )
 			{
 				vgui::KeyCode keyCode = ButtonCodeToKeyCode( code );
-				return g_pIInput->InternalKeyCodePressed( keyCode );
+				return g_pInput->InternalKeyCodePressed( keyCode );
 			}
 
 			if ( IsMouseCode( code ) )
 			{
 				vgui::MouseCode mouseCode = ButtonCodeToMouseCode( code );
-				return g_pIInput->InternalMousePressed( mouseCode );
+				return g_pInput->InternalMousePressed( mouseCode );
 			}
 		}
 		break;
@@ -409,51 +410,51 @@ bool InputHandleInputEvent( const InputEvent_t &event )
 			if ( IsKeyCode( code ) || IsJoystickCode( code ) )
 			{
 				vgui::KeyCode keyCode = ButtonCodeToKeyCode( code );
-				return g_pIInput->InternalKeyCodeReleased( keyCode );
+				return g_pInput->InternalKeyCodeReleased( keyCode );
 			}
 
 			if ( IsJoystickCode( code ) )
 			{
 				vgui::KeyCode keyCode = ButtonCodeToKeyCode( code );
-				return g_pIInput->InternalKeyCodeReleased( keyCode );
+				return g_pInput->InternalKeyCodeReleased( keyCode );
 			}
 
 			if ( IsMouseCode( code ) )
 			{
 				vgui::MouseCode mouseCode = ButtonCodeToMouseCode( code );
-				return g_pIInput->InternalMouseReleased( mouseCode );
+				return g_pInput->InternalMouseReleased( mouseCode );
 			}
 		}
 		break;
 	case IE_FingerDown:
 		{
-			int w,h,x,y; g_MatSystemSurface.GetScreenSize(w, h);
+			int w,h,x,y; g_pSurface->GetScreenSize(w, h);
 			uint data = (uint)event.m_nData;
 			x = w*((double)((data >> 16) & 0xFFFF) / 0xFFFF);
 			y = h*((double)(data & 0xFFFF) / 0xFFFF);
-			g_pIInput->UpdateCursorPosInternal( x, y );
-			g_pIInput->SetMouseCodeState( MOUSE_LEFT, vgui::BUTTON_PRESSED );
-			g_pIInput->InternalMousePressed( MOUSE_LEFT );
+			g_pInput->UpdateCursorPosInternal( x, y );
+			g_pInput->SetMouseCodeState( MOUSE_LEFT, vgui::BUTTON_PRESSED );
+			g_pInput->InternalMousePressed( MOUSE_LEFT );
 		}
 		return true;
 	case IE_FingerUp:
 		{
-			int w,h,x,y; g_MatSystemSurface.GetScreenSize(w, h);
+			int w,h,x,y; g_pSurface->GetScreenSize(w, h);
 			uint data = (uint)event.m_nData;
 			x = w*((double)((data >> 16) & 0xFFFF) / 0xFFFF);
 			y = h*((double)(data & 0xFFFF) / 0xFFFF);
-			g_pIInput->UpdateCursorPosInternal( x, y );
-			g_pIInput->SetMouseCodeState( MOUSE_LEFT, vgui::BUTTON_RELEASED );
-			g_pIInput->InternalMouseReleased( MOUSE_LEFT );
+			g_pInput->UpdateCursorPosInternal( x, y );
+			g_pInput->SetMouseCodeState( MOUSE_LEFT, vgui::BUTTON_RELEASED );
+			g_pInput->InternalMouseReleased( MOUSE_LEFT );
 		}
 		return true;
 	case IE_FingerMotion:
 		{
-			int w,h,x,y; g_MatSystemSurface.GetScreenSize(w, h);
+			int w,h,x,y; g_pSurface->GetScreenSize(w, h);
 			uint data = (uint)event.m_nData;
 			x = w*((double)((data >> 16) & 0xFFFF) / 0xFFFF);
 			y = h*((double)(data & 0xFFFF) / 0xFFFF);
-			g_pIInput->InternalCursorMoved( x, y );
+			g_pInput->InternalCursorMoved( x, y );
 		}
 		return true;
 	case IE_ButtonDoubleClicked:
@@ -463,7 +464,7 @@ bool InputHandleInputEvent( const InputEvent_t &event )
 			if ( IsMouseCode( code ) )
 			{
 				vgui::MouseCode mouseCode = ButtonCodeToMouseCode( code );
-				return g_pIInput->InternalMouseDoublePressed( mouseCode );
+				return g_pInput->InternalMouseDoublePressed( mouseCode );
 			}
 		}
 		break;
@@ -471,23 +472,23 @@ bool InputHandleInputEvent( const InputEvent_t &event )
 	case IE_AnalogValueChanged:
 		{
 			if ( event.m_nData == MOUSE_WHEEL )
-				return g_pIInput->InternalMouseWheeled( event.m_nData3 );
+				return g_pInput->InternalMouseWheeled( event.m_nData3 );
 			if ( event.m_nData == MOUSE_XY )
-				return g_pIInput->InternalCursorMoved( event.m_nData2, event.m_nData3 );
+				return g_pInput->InternalCursorMoved( event.m_nData2, event.m_nData3 );
 		}
 		break;
 
 	case IE_KeyCodeTyped:
 		{
 			vgui::KeyCode code = (vgui::KeyCode)event.m_nData;
-			g_pIInput->InternalKeyCodeTyped( code );
+			g_pInput->InternalKeyCodeTyped( code );
 		}
 		return true;
 
 	case IE_KeyTyped:
 		{
 			vgui::KeyCode code = (vgui::KeyCode)event.m_nData;
-			g_pIInput->InternalKeyTyped( code );
+			g_pInput->InternalKeyTyped( code );
 		}
 		return true;
 
@@ -509,43 +510,43 @@ bool InputHandleInputEvent( const InputEvent_t &event )
 		return true;
 
 	case IE_IMESetWindow:
-		g_pIInput->SetIMEWindow( (void *)(intp)event.m_nData );
+		g_pInput->SetIMEWindow( (void *)(intp)event.m_nData );
 		return true;
 
 	case IE_LocateMouseClick:
-		g_pIInput->InternalCursorMoved( event.m_nData, event.m_nData2 );
+		g_pInput->InternalCursorMoved( event.m_nData, event.m_nData2 );
 		return true;
 
 	case IE_InputLanguageChanged:
-		g_pIInput->OnInputLanguageChanged();
+		g_pInput->OnInputLanguageChanged();
 		return true;
 
 	case IE_IMEStartComposition:
-		g_pIInput->OnIMEStartComposition();
+		g_pInput->OnIMEStartComposition();
 		return true;
 
 	case IE_IMEComposition:
-		g_pIInput->OnIMEComposition( event.m_nData );
+		g_pInput->OnIMEComposition( event.m_nData );
 		return true;
 
 	case IE_IMEEndComposition:
-		g_pIInput->OnIMEEndComposition();
+		g_pInput->OnIMEEndComposition();
 		return true;
 
 	case IE_IMEShowCandidates:
-		g_pIInput->OnIMEShowCandidates();
+		g_pInput->OnIMEShowCandidates();
 		return true;
 
 	case IE_IMEChangeCandidates:
-		g_pIInput->OnIMEChangeCandidates();
+		g_pInput->OnIMEChangeCandidates();
 		return true;
 
 	case IE_IMECloseCandidates:
-		g_pIInput->OnIMECloseCandidates();
+		g_pInput->OnIMECloseCandidates();
 		return true;
 
 	case IE_IMERecomputeModes:
-		g_pIInput->OnIMERecomputeModes();
+		g_pInput->OnIMERecomputeModes();
 		return true;
 	}
 

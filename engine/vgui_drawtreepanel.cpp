@@ -486,10 +486,10 @@ bool WillPanelBeVisible( vgui::VPANEL hPanel )
 void VGui_AddPopupsToKeyValues( KeyValues *pCurrentParent )
 {
 	// 'twould be nice if we could get the Panel* from the VPANEL, but we can't.
-	int count = vgui::surface()->GetPopupCount();
+	int count = vgui::ivgui()->GetPopupCount();
 	for ( int i=0; i < count; i++ )
 	{
-		vgui::VPANEL vPopup = vgui::surface()->GetPopup( i );
+		vgui::VPANEL vPopup = vgui::ivgui()->GetPopup( i );
 		if ( vgui_drawtree_hidden.GetInt() || WillPanelBeVisible( vPopup ) )
 		{
 			VGui_RecursivePrintTree( 

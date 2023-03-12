@@ -188,6 +188,7 @@ bool CVguiMatSysApp::PreInit( )
 	if ( !m_HWnd )
 		return false;
 
+	g_pVGui->AttachToWindow(m_HWnd, true);
 	g_pInputSystem->AttachToWindow( m_HWnd );
 	g_pMatSystemSurface->AttachToWindow( m_HWnd );
 
@@ -219,8 +220,9 @@ bool CVguiMatSysApp::PreInit( )
 
 void CVguiMatSysApp::PostShutdown()
 {
-	if ( g_pMatSystemSurface && g_pInputSystem )
+	if (g_pVGui && g_pMatSystemSurface && g_pInputSystem )
 	{
+		g_pVGui->AttachToWindow( NULL ,true);
 		g_pMatSystemSurface->AttachToWindow( NULL );
 		g_pInputSystem->DetachFromWindow( );
 	}

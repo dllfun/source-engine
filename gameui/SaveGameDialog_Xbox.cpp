@@ -260,7 +260,7 @@ void CSaveGameDialogXbox::OnCommand( const char *command )
 	}
 	else if ( !Q_stricmp( command, "ReleaseModalWindow" ) )
 	{
-		vgui::surface()->RestrictPaintToSinglePanel( NULL );
+		vgui::ivgui()->RestrictPaintToSinglePanel( NULL );
 	}
 	else if ( !m_bGameSaving )
 	{

@@ -363,7 +363,7 @@ void CDebugSystemPanel::SetVisible( bool state )
 	BaseClass::SetVisible( state );
 	if ( state )
 	{
-		surface()->SetCursor( GetCursor() );
+		ivgui()->SetCursor( GetCursor() );
 	}
 }
 

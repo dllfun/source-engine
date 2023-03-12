@@ -25,6 +25,7 @@
 #include "vguimatsurface.h"
 #include "MatSystemSurface.h"
 #include "filesystem.h"
+#include "vgui_internal.h"
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
 #endif
@@ -58,7 +59,7 @@ static int	s_rnSoftwareCursorID[20];
 static float s_rfSoftwareCursorOffset[20][2];
 static bool s_bSoftwareCursorsInitialized = false;
 
-extern CMatSystemSurface g_MatSystemSurface;
+//extern CMatSystemSurface g_MatSystemSurface;
 
 //-----------------------------------------------------------------------------
 // Initializes cursors
@@ -207,11 +208,11 @@ int InitSoftwareCursorTexture( const char *pchFilename )
 	if( !pchFilename || !*pchFilename )
 		return -1;
 
-	int nTextureID = g_MatSystemSurface.DrawGetTextureId( pchFilename );
+	int nTextureID = g_pSurface->DrawGetTextureId( pchFilename );
 	if( nTextureID == -1 )
 	{
-		nTextureID = g_MatSystemSurface.CreateNewTextureID();
-		g_MatSystemSurface.DrawSetTextureFile( nTextureID, pchFilename, true, false );
+		nTextureID = g_pSurface->CreateNewTextureID();
+		g_pSurface->DrawSetTextureFile( nTextureID, pchFilename, true, false );
 	}
 	return nTextureID;
 }

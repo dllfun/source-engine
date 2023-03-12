@@ -11,6 +11,8 @@
 #include <windows.h>
 #endif
 
+#include "Cursor.h"
+#include "Input.h"
 #include "VGuiMatSurface/IMatSystemSurface.h"
 #include <vgui/VGUI.h>
 #include <vgui/Dar.h>
@@ -21,6 +23,7 @@
 #include <vgui/IVGui.h>
 #include <vgui/IClientPanel.h>
 #include <vgui/IScheme.h>
+#include <vgui/IHTML.h>
 #include <KeyValues.h>
 #include <string.h>
 #include <assert.h>
@@ -36,12 +39,14 @@
 #include "vgui_internal.h"
 #include "VPanel.h"
 #include "IMessageListener.h"
+#include "tier2/tier2.h"
 #include "tier3/tier3.h"
 #include "utllinkedlist.h"
 #include "utlpriorityqueue.h"
 #include "utlvector.h"
 #include "tier0/vprof.h"
 #include "tier0/icommandline.h"
+#include "inputsystem/iinputsystem.h"
 
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -52,10 +57,13 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
+#define VPANEL_NORMAL	((vgui::SurfacePlat *) NULL)
+#define VPANEL_MINIMIZED ((vgui::SurfacePlat *) 0x00000001)
 
 using namespace vgui;
 static const int WARN_PANEL_NUMBER = 32768; // in DEBUG if more panels than this are created then throw an Assert, helps catch panel leaks
 
+static bool g_bSpewFocus = false;
 
 //-----------------------------------------------------------------------------
 // Purpose: Single item in the message queue
@@ -92,7 +100,34 @@ bool PriorityQueueComp(const MessageItem_t& x, const MessageItem_t& y)
 }
 
 
+// returns true if the specified panel is a child of the current modal panel
+// if no modal panel is set, then this always returns TRUE
+static bool IsChildOfModalSubTree(VPANEL panel)
+{
+	if (!panel)
+		return true;
 
+	VPANEL modalSubTree = g_pInput->GetModalSubTree();
+
+	if (modalSubTree)
+	{
+		bool restrictMessages = g_pInput->ShouldModalSubTreeReceiveMessages();
+
+		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
+		bool isChildOfModal = g_pVGui->HasParent(panel, modalSubTree);
+		if (isChildOfModal)
+		{
+			return restrictMessages;
+		}
+		// If panel is not a child of modal subtree, then only allow messages if we're not restricting them to the modal subtree
+		else
+		{
+			return !restrictMessages;
+		}
+	}
+
+	return true;
+}
 //-----------------------------------------------------------------------------
 // Purpose: Implementation of core vgui functionality
 //-----------------------------------------------------------------------------
@@ -523,6 +558,110 @@ public:
 		return ((VPanel*)vguiPanel)->SetSiblingPin((VPanel*)newSibling, iMyCornerToPin, iSiblingCornerToPinTo);
 	}
 
+	// windows stuff
+	virtual void CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon = true, bool disabled = false, bool mouseInput = true, bool kbInput = true);
+
+	virtual void MovePopupToFront(vgui::VPANEL panel);
+
+	virtual void MovePopupToBack(VPANEL panel);
+
+	void RemovePopup(vgui::VPANEL panel);
+
+	virtual int GetPopupCount();
+
+	virtual vgui::VPANEL GetPopup(int index);
+
+	void ResetPopupList();
+
+	void AddPopup(vgui::VPANEL panel);
+
+	void AddPopupsToList(vgui::VPANEL panel);
+
+	virtual void AddPanel(vgui::VPANEL panel);
+	virtual void ReleasePanel(vgui::VPANEL panel);
+
+	virtual void SetTitle(vgui::VPANEL panel, const wchar_t* title);
+	virtual const wchar_t* GetTitle(vgui::VPANEL panel);
+
+	virtual void BringToFront(vgui::VPANEL panel);
+
+	virtual void SetForegroundWindow(vgui::VPANEL panel);
+
+	virtual void SetTopLevelFocus(vgui::VPANEL panel);
+
+	virtual void SetPanelVisible(vgui::VPANEL panel, bool state);
+	virtual void SetMinimized(vgui::VPANEL panel, bool state);
+	// returns true if a panel is minimzed
+	bool IsMinimized(vgui::VPANEL panel);
+	virtual void FlashWindow(vgui::VPANEL panel, bool state);
+
+	virtual void SwapBuffers(vgui::VPANEL panel);
+	virtual void Invalidate(vgui::VPANEL panel);
+
+	virtual void ApplyChanges();
+	virtual bool IsWithin(int x, int y);
+	virtual bool HasFocus();
+
+	virtual bool RecreateContext(vgui::VPANEL panel);
+
+	// notify icons?!?
+	virtual vgui::VPANEL GetNotifyPanel();
+	virtual void SetNotifyIcon(vgui::VPANEL context, vgui::HTexture icon, vgui::VPANEL panelToReceiveMessages, const char* text);
+
+	virtual void SetAsTopMost(vgui::VPANEL panel, bool state);
+
+	virtual void SetAsToolBar(vgui::VPANEL panel, bool state);
+
+	virtual void SolveTraverse(vgui::VPANEL panel, bool forceApplySchemeSettings);
+
+	virtual vgui::IHTML* CreateHTMLWindow(vgui::IHTMLEvents* events, vgui::VPANEL context);
+	virtual void PaintHTMLWindow(vgui::IHTML* htmlwin);
+	virtual void DeleteHTMLWindow(vgui::IHTML* htmlwin);
+	virtual bool BHTMLWindowNeedsPaint(IHTML* htmlwin);
+
+	virtual void SetModalPanel(VPANEL);
+	virtual VPANEL GetModalPanel();
+
+	virtual VPANEL GetTopmostPopup();
+
+	virtual bool IsInThink(VPANEL panel);
+
+	virtual void RestrictPaintToSinglePanel(vgui::VPANEL panel);
+	virtual bool IsPanelUnderRestrictedPanel(VPANEL panel);
+	virtual VPANEL GetRestrictPaintSinglePanel();
+
+	virtual bool ShouldPaintChildPanel(vgui::VPANEL childPanel);
+
+	virtual void CalculateMouseVisible();
+
+	virtual bool NeedKBInput();
+
+	virtual void SetPanelForInput(VPANEL vpanel);
+
+	// Prevents vgui from changing the cursor
+	virtual bool IsCursorLocked() const;
+	virtual void SetCursor(vgui::HCursor cursor);
+
+	virtual bool IsCursorVisible();
+	virtual void SetCursorAlwaysVisible(bool visible);
+	virtual void SetCursorPos(int x, int y);
+	virtual void GetCursorPos(int& x, int& y);
+
+	// Hook needed to Get input to work
+	virtual void AttachToWindow(void* hwnd, bool bLetAppDriveInput);
+	virtual bool HandleInputEvent(const InputEvent_t& event);
+
+	virtual void UnlockCursor();
+	virtual void LockCursor();
+
+	virtual vgui::HCursor CreateCursorFromFile(char const* curOrAniFile, char const* pPathID);
+	virtual void SetSoftwareCursor(bool bUseSoftwareCursor);
+	virtual bool GetSoftwareCursor();
+	virtual int GetSoftwareCursorTextureId(float* px, float* py);
+
+	// Tells the surface to ignore windows messages
+	virtual void EnableWindowsMessages(bool bEnable);
+
 private:
 	// VGUI contexts
 	struct Context_t
@@ -585,6 +724,47 @@ private:
 
 	// timing queue, holds all the messages that have to arrive at a specified time
 	CUtlPriorityQueue<MessageItem_t> m_DelayedMessageQueue;
+
+	// List of pop-up panels based on the type enum above (draw order vs last clicked)
+	CUtlVector<vgui::HPanel>	m_PopupList;
+
+	class TitleEntry
+	{
+	public:
+		TitleEntry()
+		{
+			panel = NULL;
+			title[0] = 0;
+		}
+
+		vgui::VPANEL panel;
+		wchar_t	title[128];
+	};
+
+	CUtlVector< TitleEntry >	m_Titles;
+
+	int		GetTitleEntry(vgui::VPANEL panel);
+
+	void InternalThinkTraverse(VPANEL panel);
+	void InternalSolveTraverse(VPANEL panel);
+	void InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings);
+
+	bool m_bInThink : 1;
+	VPANEL m_CurrentThinkPanel;
+
+	vgui::VPANEL m_pRestrictedPanel;
+
+	bool m_bNeedsKeyboard : 1;
+	bool m_bNeedsMouse : 1;
+
+	bool					m_cursorAlwaysVisible;
+	vgui::HCursor			_currentCursor;
+
+	// The attached HWND
+	void* m_HWnd;
+	// Is the app gonna call HandleInputEvent?
+	bool m_bAppDrivesInput : 1;
+	int m_nLastInputPollCount;
 };
 
 CVGui g_VGui;
@@ -614,6 +794,14 @@ CVGui::CVGui() : m_DelayedMessageQueue(0, 4, PriorityQueueComp)
 	m_nReentrancyCount = 0;
 	m_hContext = DEFAULT_VGUI_CONTEXT;
 	m_DefaultContext.m_hInputContext = DEFAULT_INPUT_CONTEXT;
+	m_bInThink = false;
+	m_pRestrictedPanel = NULL;
+	m_bNeedsKeyboard = true;
+	m_bNeedsMouse = true;
+	m_cursorAlwaysVisible = false;
+	m_HWnd = NULL;
+	m_bAppDrivesInput = false;
+	m_nLastInputPollCount = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -764,7 +952,30 @@ void CVGui::RunFrame()
 	// this will generate all key and mouse events as well as make a real repaint
 	{
 		VPROF( "surface()->RunFrame()" );
-		g_pSurface->RunFrame();
+		//g_pSurface->RunFrame();
+		int nPollCount = g_pInputSystem->GetPollCount();
+		if (m_nLastInputPollCount != nPollCount) {
+
+			// If this isn't true, we've lost input!
+			if (!m_bAppDrivesInput && m_nLastInputPollCount != nPollCount - 1)
+			{
+				Assert(0);
+				Warning("Vgui is losing input messages! Call brian!\n");
+			}
+
+			m_nLastInputPollCount = nPollCount;
+
+			if (!m_bAppDrivesInput) {
+
+				// Generate all input messages
+				int nEventCount = g_pInputSystem->GetEventCount();
+				const InputEvent_t* pEvents = g_pInputSystem->GetEventData();
+				for (int i = 0; i < nEventCount; ++i)
+				{
+					HandleInputEvent(pEvents[i]);
+				}
+			}
+		}
 	}
 
 	// give the system a chance to process
@@ -846,8 +1057,8 @@ void CVGui::RunFrame()
 	{
 		VPROF( "SolveTraverse" );
 		// make sure the hierarchy is up to date
-		g_pSurface->SolveTraverse(g_pSurface->GetEmbeddedPanel());
-		g_pSurface->ApplyChanges();
+		g_pIVgui->SolveTraverse(g_pSurface->GetEmbeddedPanel());
+		g_pIVgui->ApplyChanges();
 #ifdef WIN32
 		Assert( IsX360() || ( IsPC() && _heapchk() == _HEAPOK ) );
 #endif
@@ -957,7 +1168,7 @@ void CVGui::PanelCreated(VPanel *panel)
 
 	((VPanel *)panel)->SetHPanel( h );
 
-	g_pSurface->AddPanel((VPANEL)panel);
+	g_pVGui->AddPanel((VPANEL)panel);
 }
 
 //-----------------------------------------------------------------------------
@@ -967,7 +1178,7 @@ void CVGui::PanelCreated(VPanel *panel)
 void CVGui::PanelDeleted(VPanel *focus)
 {
 	Assert( focus );
-	g_pSurface->ReleasePanel((VPANEL)focus);
+	g_pVGui->ReleasePanel((VPANEL)focus);
 	g_pInput->PanelDeleted((VPANEL)focus);
 
 	// remove from safe handle list
@@ -1496,6 +1707,14 @@ InitReturnVal_t CVGui::Init()
 	if ( nRetVal != INIT_OK )
 		return nRetVal;
 
+	g_bSpewFocus = CommandLine()->FindParm("-vguifocus") ? true : false;
+
+	// Input system
+	InitInput();
+
+	// Initialize cursors
+	InitCursors();
+
 	return INIT_OK;
 }
 
@@ -1514,6 +1733,10 @@ void CVGui::Shutdown()
 		g_pSurface->Shutdown();
 	}
 
+	m_Titles.Purge();
+
+	Cursor_ClearUserCursors();
+
 	BaseClass::Shutdown();
 }
 
@@ -1527,4 +1750,743 @@ void *CVGui::QueryInterface( const char *pInterfaceName )
 	// Access other global interfaces exposed by this system...
 	CreateInterfaceFn vguiFactory = Sys_GetFactoryThis();
 	return vguiFactory( pInterfaceName, NULL );
+}
+
+void CVGui::CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon, bool disabled, bool mouseInput, bool kbInput)
+{
+	if (!g_pVGui->GetParent(panel))
+	{
+		g_pVGui->SetParent(panel, g_pSurface->GetEmbeddedPanel());
+	}
+	((VPanel*)panel)->SetPopup(true);
+	((VPanel*)panel)->SetKeyBoardInputEnabled(kbInput);
+	((VPanel*)panel)->SetMouseInputEnabled(mouseInput);
+
+	HPanel p = g_pIVgui->PanelToHandle(panel);
+
+	if (m_PopupList.Find(p) == m_PopupList.InvalidIndex())
+	{
+		m_PopupList.AddToTail(p);
+	}
+	else
+	{
+		MovePopupToFront(panel);
+	}
+}
+
+void CVGui::MovePopupToFront(VPANEL panel)
+{
+	HPanel p = g_pIVgui->PanelToHandle(panel);
+
+	int index = m_PopupList.Find(p);
+	if (index == m_PopupList.InvalidIndex())
+		return;
+
+	m_PopupList.Remove(index);
+	m_PopupList.AddToTail(p);
+
+	if (g_bSpewFocus)
+	{
+		char const* pName = g_pIVgui->GetName(panel);
+		Msg("%s moved to front\n", pName ? pName : "(no name)");
+	}
+
+	// If the modal panel isn't a parent, restore it to the top, to prevent a hard lock
+	if (g_pInput->GetAppModalSurface())
+	{
+		if (!g_pVGui->HasParent(panel, g_pInput->GetAppModalSurface()))
+		{
+			HPanel p = g_pIVgui->PanelToHandle(g_pInput->GetAppModalSurface());
+			index = m_PopupList.Find(p);
+			if (index != m_PopupList.InvalidIndex())
+			{
+				m_PopupList.Remove(index);
+				m_PopupList.AddToTail(p);
+			}
+		}
+	}
+
+	g_pIVgui->PostMessage(panel, new KeyValues("OnMovedPopupToFront"), NULL);
+}
+
+void CVGui::MovePopupToBack(VPANEL panel)
+{
+	HPanel p = g_pVGui->PanelToHandle(panel);
+
+	int index = m_PopupList.Find(p);
+	if (index == m_PopupList.InvalidIndex())
+	{
+		return;
+	}
+
+	m_PopupList.Remove(index);
+	m_PopupList.AddToHead(p);
+}
+
+void CVGui::RemovePopup(vgui::VPANEL panel)
+{
+	// Remove from popup list if needed and remove any dead popups while we're at it
+	int c = GetPopupCount();
+
+	for (int i = c - 1; i >= 0; i--)
+	{
+		VPANEL popup = GetPopup(i);
+		if (popup && (popup != panel))
+			continue;
+
+		m_PopupList.Remove(i);
+		break;
+	}
+}
+
+int CVGui::GetPopupCount()
+{
+	return m_PopupList.Count();
+}
+
+VPANEL CVGui::GetPopup(int index)
+{
+	HPanel p = m_PopupList[index];
+	VPANEL panel = g_pVGui->HandleToPanel(p);
+	return panel;
+}
+
+void CVGui::ResetPopupList()
+{
+	m_PopupList.RemoveAll();
+}
+
+void CVGui::AddPopup(VPANEL panel)
+{
+	HPanel p = g_pVGui->PanelToHandle(panel);
+
+	if (m_PopupList.Find(p) == m_PopupList.InvalidIndex())
+	{
+		m_PopupList.AddToTail(p);
+	}
+}
+
+void CVGui::AddPopupsToList(VPANEL panel)
+{
+	if (!g_pVGui->IsVisible(panel))
+		return;
+
+	// Add to popup list as we visit popups
+	// Note:  popup list is cleared in RunFrame which occurs before this call!!!
+	if (g_pVGui->IsPopup(panel))
+	{
+		AddPopup(panel);
+	}
+
+	int count = g_pVGui->GetChildCount(panel);
+	for (int i = 0; i < count; ++i)
+	{
+		VPANEL child = g_pVGui->GetChild(panel, i);
+		AddPopupsToList(child);
+	}
+}
+
+void CVGui::ReleasePanel(VPANEL panel)
+{
+	// Remove from popup list if needed and remove any dead popups while we're at it
+	RemovePopup(panel);
+
+	int entry = GetTitleEntry(panel);
+	if (entry != -1)
+	{
+		m_Titles.Remove(entry);
+	}
+}
+
+int CVGui::GetTitleEntry(vgui::VPANEL panel)
+{
+	for (int i = 0; i < m_Titles.Count(); i++)
+	{
+		TitleEntry* entry = &m_Titles[i];
+		if (entry->panel == panel)
+			return i;
+	}
+	return -1;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CVGui::SetTitle(VPANEL panel, const wchar_t* title)
+{
+	int entry = GetTitleEntry(panel);
+	if (entry == -1)
+	{
+		entry = m_Titles.AddToTail();
+	}
+
+	TitleEntry* e = &m_Titles[entry];
+	Assert(e);
+	wcsncpy(e->title, title, sizeof(e->title) / sizeof(wchar_t));
+	e->panel = panel;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+wchar_t const* CVGui::GetTitle(VPANEL panel)
+{
+	int entry = GetTitleEntry(panel);
+	if (entry != -1)
+	{
+		TitleEntry* e = &m_Titles[entry];
+		return e->title;
+	}
+
+	return NULL;
+}
+
+void CVGui::BringToFront(VPANEL panel)
+{
+	// move panel to top of list
+	g_pVGui->MoveToFront(panel);
+
+	// move panel to top of popup list
+	if (g_pVGui->IsPopup(panel))
+	{
+		MovePopupToFront(panel);
+	}
+}
+
+void CVGui::AddPanel(VPANEL panel)
+{
+	if (g_pVGui->IsPopup(panel))
+	{
+		// turn it into a popup menu
+		CreatePopup(panel, false);
+	}
+}
+
+void CVGui::SetForegroundWindow(VPANEL panel)
+{
+	BringToFront(panel);
+}
+
+void CVGui::SetTopLevelFocus(VPANEL pSubFocus)
+{
+	// walk up the hierarchy until we find what popup panel belongs to
+	while (pSubFocus)
+	{
+		if (g_pVGui->IsPopup(pSubFocus) && g_pVGui->IsMouseInputEnabled(pSubFocus))
+		{
+			BringToFront(pSubFocus);
+			break;
+		}
+
+		pSubFocus = g_pVGui->GetParent(pSubFocus);
+	}
+}
+
+void CVGui::SetPanelVisible(VPANEL panel, bool state)
+{
+}
+
+void CVGui::SetMinimized(VPANEL panel, bool state)
+{
+	if (state)
+	{
+		g_pVGui->SetPlat(panel, VPANEL_MINIMIZED);
+		g_pVGui->SetVisible(panel, false);
+	}
+	else
+	{
+		g_pVGui->SetPlat(panel, VPANEL_NORMAL);
+	}
+}
+
+bool CVGui::IsMinimized(vgui::VPANEL panel)
+{
+	return (g_pVGui->Plat(panel) == VPANEL_MINIMIZED);
+
+}
+
+void CVGui::FlashWindow(VPANEL panel, bool state)
+{
+}
+
+void CVGui::SwapBuffers(VPANEL panel)
+{
+}
+
+void CVGui::Invalidate(VPANEL panel)
+{
+}
+
+void CVGui::ApplyChanges()
+{
+}
+
+bool CVGui::IsWithin(int x, int y)
+{
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Focus-related methods
+//-----------------------------------------------------------------------------
+bool CVGui::HasFocus()
+{
+	return true;
+}
+
+bool CVGui::RecreateContext(VPANEL panel)
+{
+	return false;
+}
+
+// notify icons?!?
+VPANEL CVGui::GetNotifyPanel()
+{
+	return NULL;
+}
+
+void CVGui::SetNotifyIcon(VPANEL context, HTexture icon, VPANEL panelToReceiveMessages, const char* text)
+{
+}
+
+//-----------------------------------------------------------------------------
+// A bunch of methods needed for the windows version only
+//-----------------------------------------------------------------------------
+void CVGui::SetAsTopMost(VPANEL panel, bool state)
+{
+}
+
+void CVGui::SetAsToolBar(VPANEL panel, bool state)		// removes the window's task bar entry (for context menu's, etc.)
+{
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Walks through the panel tree calling Solve() on them all, in order
+//-----------------------------------------------------------------------------
+void CVGui::SolveTraverse(VPANEL panel, bool forceApplySchemeSettings)
+{
+	{
+		VPROF("InternalSchemeSettingsTraverse");
+		tmZone(TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalSchemeSettingsTraverse", __FUNCTION__);
+		InternalSchemeSettingsTraverse(panel, forceApplySchemeSettings);
+	}
+
+	{
+		VPROF("InternalThinkTraverse");
+		tmZone(TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalThinkTraverse", __FUNCTION__);
+		InternalThinkTraverse(panel);
+	}
+
+	{
+		VPROF("InternalSolveTraverse");
+		tmZone(TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalSolveTraverse", __FUNCTION__);
+		InternalSolveTraverse(panel);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: recurses the panels giving them a chance to do apply settings,
+//-----------------------------------------------------------------------------
+void CVGui::InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings)
+{
+	VPanel* RESTRICT vp = (VPanel*)panel;
+
+	vp->TraverseLevel(1);
+	tmZone(TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName());
+
+	CUtlVector< VPanel* >& children = vp->GetChildren();
+
+	// apply to the children...
+	for (int i = 0; i < children.Count(); ++i)
+	{
+		VPanel* child = children[i];
+		if (forceApplySchemeSettings || child->IsVisible())
+		{
+			InternalSchemeSettingsTraverse((VPANEL)child, forceApplySchemeSettings);
+		}
+	}
+	// and then the parent
+	vp->Client()->PerformApplySchemeSettings();
+
+	vp->TraverseLevel(-1);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: recurses the panels giving them a chance to do a user-defined think,
+//			PerformLayout and ApplySchemeSettings
+//			must be done child before parent
+//-----------------------------------------------------------------------------
+void CVGui::InternalThinkTraverse(VPANEL panel)
+{
+	VPanel* RESTRICT vp = (VPanel*)panel;
+
+	vp->TraverseLevel(1);
+	tmZone(TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName());
+
+	// think the parent
+	vp->Client()->Think();
+
+	CUtlVector< VPanel* >& children = vp->GetChildren();
+
+	// WARNING: Some of the think functions add/remove children, so make sure we
+	//  explicitly check for children.Count().
+	for (int i = 0; i < children.Count(); ++i)
+	{
+		VPanel* child = children[i];
+		if (child->IsVisible())
+		{
+			InternalThinkTraverse((VPANEL)child);
+		}
+	}
+
+	vp->TraverseLevel(-1);
+}
+
+void CVGui::InternalSolveTraverse(VPANEL panel)
+{
+	VPanel * RESTRICT vp = (VPanel *)panel;
+
+	vp->TraverseLevel( 1 );
+	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
+
+	// solve the parent
+	vp->Solve();
+	
+	CUtlVector< VPanel * > &children = vp->GetChildren();
+
+	// WARNING: Some of the think functions add/remove children, so make sure we
+	//  explicitly check for children.Count().
+	for ( int i = 0; i < children.Count(); ++i )
+	{
+		VPanel *child = children[ i ];
+		if (child->IsVisible())
+		{
+			InternalSolveTraverse( (VPANEL)child );
+		}
+	}
+
+	vp->TraverseLevel( -1 );
+}
+
+IHTML* CVGui::CreateHTMLWindow(vgui::IHTMLEvents* events, VPANEL context)
+{
+	Assert(!"CMatSystemSurface::CreateHTMLWindow");
+	return NULL;
+}
+
+
+void CVGui::DeleteHTMLWindow(IHTML* htmlwin)
+{
+}
+
+
+
+void CVGui::PaintHTMLWindow(IHTML* htmlwin)
+{
+}
+
+bool CVGui::BHTMLWindowNeedsPaint(IHTML* htmlwin)
+{
+	return false;
+}
+
+void CVGui::SetModalPanel(VPANEL)
+{
+}
+
+VPANEL CVGui::GetModalPanel()
+{
+	return 0;
+}
+
+VPANEL CVGui::GetTopmostPopup()
+{
+	return 0;
+}
+
+bool CVGui::IsInThink(VPANEL panel)
+{
+	if (m_bInThink)
+	{
+		if (panel == m_CurrentThinkPanel) // HasParent() returns true if you pass yourself in
+		{
+			return false;
+		}
+
+		return g_pVGui->HasParent(panel, m_CurrentThinkPanel);
+	}
+	return false;
+}
+
+void CVGui::RestrictPaintToSinglePanel(VPANEL panel)
+{
+	if (panel && m_pRestrictedPanel && m_pRestrictedPanel == g_pInput->GetAppModalSurface())
+	{
+		return;	// don't restrict drawing to a panel other than the modal one - that's a good way to hang the game.
+	}
+
+	m_pRestrictedPanel = panel;
+
+	if (!g_pInput->GetAppModalSurface())
+	{
+		g_pInput->SetAppModalSurface(panel);	// if painting is restricted to this panel, it had better be modal, or else you can get in some bad state...
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Is a panel under the restricted panel?
+//-----------------------------------------------------------------------------
+bool CVGui::IsPanelUnderRestrictedPanel(VPANEL panel)
+{
+	if (!m_pRestrictedPanel)
+		return true;
+
+	while (panel)
+	{
+		if (panel == m_pRestrictedPanel)
+			return true;
+
+		panel = g_pVGui->GetParent(panel);
+	}
+	return false;
+}
+
+bool CVGui::ShouldPaintChildPanel(VPANEL childPanel)
+{
+	if (m_pRestrictedPanel && (m_pRestrictedPanel != childPanel) &&
+		!g_pVGui->HasParent(childPanel, m_pRestrictedPanel))
+	{
+		return false;
+	}
+
+	bool isPopup = g_pVGui->IsPopup(childPanel);
+	return !isPopup;
+}
+
+VPANEL CVGui::GetRestrictPaintSinglePanel() {
+	return m_pRestrictedPanel;
+}
+
+void CVGui::CalculateMouseVisible()
+{
+	int i;
+	m_bNeedsMouse = false;
+	m_bNeedsKeyboard = false;
+
+	if (g_pInput->GetMouseCapture() != 0)
+		return;
+
+	int c = g_pVGui->GetPopupCount();
+
+	VPANEL modalSubTree = g_pInput->GetModalSubTree();
+	if (modalSubTree)
+	{
+		for (i = 0; i < c; i++)
+		{
+			VPanel* pop = (VPanel*)g_pVGui->GetPopup(i);
+			bool isChildOfModalSubPanel = IsChildOfModalSubTree((VPANEL)pop);
+			if (!isChildOfModalSubPanel)
+				continue;
+
+			bool isVisible = pop->IsVisible();
+			VPanel* p = pop->GetParent();
+
+			while (p && isVisible)
+			{
+				if (p->IsVisible() == false)
+				{
+					isVisible = false;
+					break;
+				}
+				p = p->GetParent();
+			}
+
+			if (isVisible)
+			{
+				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
+				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
+
+				// Seen enough!!!
+				if (m_bNeedsMouse && m_bNeedsKeyboard)
+					break;
+			}
+		}
+	}
+	else
+	{
+		for (i = 0; i < c; i++)
+		{
+			VPanel* pop = (VPanel*)g_pVGui->GetPopup(i);
+
+			bool isVisible = pop->IsVisible();
+			VPanel* p = pop->GetParent();
+
+			while (p && isVisible)
+			{
+				if (p->IsVisible() == false)
+				{
+					isVisible = false;
+					break;
+				}
+				p = p->GetParent();
+			}
+
+			if (isVisible)
+			{
+				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
+				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
+
+				// Seen enough!!!
+				if (m_bNeedsMouse && m_bNeedsKeyboard)
+					break;
+			}
+		}
+	}
+
+	if (m_bNeedsMouse)
+	{
+		// NOTE: We must unlock the cursor *before* the set call here.
+		// Failing to do this causes s_bCursorVisible to not be set correctly
+		// (UnlockCursor fails to set it correctly)
+		UnlockCursor();
+		if (_currentCursor == vgui::dc_none)
+		{
+			SetCursor(vgui::dc_arrow);
+		}
+	}
+	else
+	{
+		SetCursor(vgui::dc_none);
+		LockCursor();
+	}
+}
+
+bool CVGui::NeedKBInput()
+{
+	return m_bNeedsKeyboard;
+}
+
+void CVGui::SetPanelForInput(VPANEL vpanel)
+{
+	g_pInput->AssociatePanelWithInputContext(DEFAULT_INPUT_CONTEXT, vpanel);
+	if (vpanel)
+	{
+		m_bNeedsKeyboard = true;
+	}
+	else
+	{
+		m_bNeedsKeyboard = false;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: unlocks the cursor state
+//-----------------------------------------------------------------------------
+bool CVGui::IsCursorLocked() const
+{
+	return ::IsCursorLocked();
+}
+
+void CVGui::SetCursor(HCursor hCursor)
+{
+	if (IsCursorLocked())
+		return;
+
+	if (_currentCursor != hCursor)
+	{
+		_currentCursor = hCursor;
+		CursorSelect(hCursor);
+	}
+}
+
+bool CVGui::IsCursorVisible()
+{
+	return m_cursorAlwaysVisible || (_currentCursor != dc_none);
+}
+
+void CVGui::SetCursorAlwaysVisible(bool visible)
+{
+	m_cursorAlwaysVisible = visible;
+	CursorSelect(visible ? dc_alwaysvisible_push : dc_alwaysvisible_pop);
+}
+
+void CVGui::SetCursorPos(int x, int y)
+{
+	CursorSetPos(m_HWnd, x, y);
+}
+
+void CVGui::GetCursorPos(int& x, int& y)
+{
+	CursorGetPos(m_HWnd, x, y);
+}
+
+//-----------------------------------------------------------------------------
+// Hook needed to Get input to work
+//-----------------------------------------------------------------------------
+void CVGui::AttachToWindow(void* hWnd, bool bLetAppDriveInput)
+{
+	InputDetachFromWindow(m_HWnd);
+	m_HWnd = hWnd;
+	if (hWnd)
+	{
+		InputAttachToWindow(hWnd);
+		m_bAppDrivesInput = bLetAppDriveInput;
+	}
+	else
+	{
+		// Never call RunFrame stuff
+		m_bAppDrivesInput = true;
+	}
+}
+
+void CVGui::UnlockCursor()
+{
+	::LockCursor(false);
+}
+
+void CVGui::LockCursor()
+{
+	::LockCursor(true);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *curOrAniFile - 
+// Output : vgui::HCursor
+//-----------------------------------------------------------------------------
+vgui::HCursor CVGui::CreateCursorFromFile(char const* curOrAniFile, char const* pPathID)
+{
+	return Cursor_CreateCursorFromFile(curOrAniFile, pPathID);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Handle switching in and out of "render to fullscreen" mode. We don't
+//			actually support this mode in tools.
+//-----------------------------------------------------------------------------
+void CVGui::SetSoftwareCursor(bool bUseSoftwareCursor)
+{
+	EnableSoftwareCursor(bUseSoftwareCursor);
+}
+
+bool CVGui::GetSoftwareCursor() {
+	return ShouldDrawSoftwareCursor();
+}
+
+int CVGui::GetSoftwareCursorTextureId(float* px, float* py) {
+	return GetSoftwareCursorTexture(px, py);
+}
+
+bool CVGui::HandleInputEvent(const InputEvent_t& event)
+{
+	if (!m_bAppDrivesInput)
+	{
+		g_pInput->UpdateButtonState(event);
+	}
+
+	return InputHandleInputEvent(event);
+}
+
+void CVGui::EnableWindowsMessages(bool bEnable)
+{
+	EnableInput(bEnable);
 }

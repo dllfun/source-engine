@@ -379,7 +379,7 @@ void DirectorySelectDialog::BuildDirTree()
 void DirectorySelectDialog::ExpandTreeNode(const char *path, int parentNodeIndex)
 {
 	// set the small wait cursor
-	surface()->SetCursor(dc_waitarrow);
+	ivgui()->SetCursor(dc_waitarrow);
 
 	// get all the subfolders of the current drive
 	char searchString[512];

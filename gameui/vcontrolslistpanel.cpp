@@ -138,7 +138,7 @@ void VControlsListPanel::EndCaptureMode( HCursor hCursor )
 	if (hCursor)
 	{
 		m_pInlineEditPanel->SetCursor(hCursor);
-		surface()->SetCursor(hCursor);	
+		ivgui()->SetCursor(hCursor);
 		if ( hCursor != dc_none )
 		{
 			vgui::input()->SetCursorPos ( m_iMouseX, m_iMouseY );	

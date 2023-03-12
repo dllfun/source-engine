@@ -386,13 +386,13 @@ void VPanel::SetVisible(bool state)
 		return;
 
 	// need to tell the surface (in case special window processing needs to occur)
-	g_pSurface->SetPanelVisible((VPANEL)this, state);
+	vgui::g_pIVgui->SetPanelVisible((VPANEL)this, state);
 
 	_visible = state;
 
 	if( IsPopup() )
 	{
-		vgui::g_pSurface->CalculateMouseVisible();
+		vgui::g_pIVgui->CalculateMouseVisible();
 	}
 }
 
@@ -601,7 +601,7 @@ int VPanel::GetZPos()
 //-----------------------------------------------------------------------------
 void VPanel::MoveToFront(void)
 {
-	g_pSurface->MovePopupToFront((VPANEL)this);
+	g_pIVgui->MovePopupToFront((VPANEL)this);
 
 	if (_parent)
 	{

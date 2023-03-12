@@ -28,7 +28,7 @@ CCommentaryDialog::CCommentaryDialog(vgui::Panel *parent) : BaseClass(parent, "C
 	SetSizeable( false );
 
 	input()->SetAppModalSurface(GetVPanel());
-	vgui::surface()->RestrictPaintToSinglePanel(GetVPanel());
+	vgui::ivgui()->RestrictPaintToSinglePanel(GetVPanel());
 	GameUI().PreventEngineHideGameUI();
 
 	SetTitle("#GameUI_CommentaryDialogTitle", true);
@@ -73,7 +73,7 @@ void CCommentaryDialog::OnClose( void )
 {
 	BaseClass::OnClose();
 
-	vgui::surface()->RestrictPaintToSinglePanel(NULL);
+	vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 	GameUI().AllowEngineHideGameUI();
 
 	// Bring up the post dialog
@@ -173,7 +173,7 @@ CPostCommentaryDialog::CPostCommentaryDialog(vgui::Panel *parent) : BaseClass(pa
 	SetSizeable( false );
 
 	input()->SetAppModalSurface(GetVPanel());
-	vgui::surface()->RestrictPaintToSinglePanel(GetVPanel());
+	vgui::ivgui()->RestrictPaintToSinglePanel(GetVPanel());
 	m_bResetPaintRestrict = false;
 
 	SetTitle("#GameUI_CommentaryDialogTitle", true);
@@ -217,7 +217,7 @@ void CPostCommentaryDialog::OnFinishedClose( void )
 	if ( !m_bResetPaintRestrict )
 	{
 		m_bResetPaintRestrict = true;
-		vgui::surface()->RestrictPaintToSinglePanel(NULL);
+		vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 		GameUI().HideGameUI();
 	}
 }
@@ -227,7 +227,7 @@ void CPostCommentaryDialog::OnKeyCodeTyped(KeyCode code)
 	if ( code == KEY_ESCAPE )
 	{
 		Close();
-		vgui::surface()->RestrictPaintToSinglePanel(NULL);
+		vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 		m_bResetPaintRestrict = true;
 	}
 	else
@@ -245,7 +245,7 @@ void CPostCommentaryDialog::OnKeyCodePressed(KeyCode code)
    	if ( code == KEY_XBUTTON_A || code == KEY_XBUTTON_B || code == STEAMCONTROLLER_B )
 	{
 		Close();
-		vgui::surface()->RestrictPaintToSinglePanel(NULL);
+		vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 		m_bResetPaintRestrict = true;
 	}
 	else

@@ -1223,7 +1223,7 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 	SetKeyBoardInputEnabled( true );
 	SetMouseInputEnabled( true );
 	m_pChatInput->SetVisible( true );
-	vgui::surface()->CalculateMouseVisible();
+	vgui::ivgui()->CalculateMouseVisible();
 	m_pChatInput->RequestFocus();
 	m_pChatInput->SetPaintBorderEnabled( true );
 	m_pChatInput->SetMouseInputEnabled( true );

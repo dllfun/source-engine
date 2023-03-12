@@ -53,7 +53,7 @@ public:
 	virtual void AttachToWindow( void *hwnd, bool bLetAppDriveInput=false ) = 0;
 
 	// Tells the surface to ignore windows messages
-	virtual void EnableWindowsMessages( bool bEnable ) = 0;
+	//virtual void EnableWindowsMessages( bool bEnable ) = 0;
 
 	// Starts, ends 3D painting
 	// NOTE: These methods should only be called from within the paint()
@@ -69,7 +69,7 @@ public:
 	virtual void SetClippingRect( int left, int top, int right, int bottom ) = 0;
 
 	// Prevents vgui from changing the cursor
-	virtual bool IsCursorLocked() const = 0;
+	//virtual bool IsCursorLocked() const = 0;
 
 	// Sets the mouse get + set callbacks
 	virtual void SetMouseCallbacks( GetMouseCallback_t getFunc, SetMouseCallback_t setFunc ) = 0;
@@ -98,7 +98,7 @@ public:
 	virtual void DrawSetTextureMaterial( int id, IMaterial *pMaterial ) = 0;
 
 	// Handles an input event, returns true if the event should be filtered from the rest of the game
-	virtual bool HandleInputEvent( const InputEvent_t &event ) = 0;
+	//virtual bool HandleInputEvent( const InputEvent_t &event ) = 0;
 
 	virtual void Set3DPaintTempRenderTarget( const char *pRenderTargetName ) = 0;
 	virtual void Reset3DPaintTempRenderTarget( void ) = 0;

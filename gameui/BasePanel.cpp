@@ -492,12 +492,12 @@ public:
 		if ( m_hMainMenuOverridePanel )
 		{
 			// force us to the rear when we lose focus (so it looks like the menu is always on the background)
-			surface()->MovePopupToBack( m_hMainMenuOverridePanel );
+			ivgui()->MovePopupToBack( m_hMainMenuOverridePanel );
 		}
 		else
 		{
 			// force us to the rear when we lose focus (so it looks like the menu is always on the background)
-			surface()->MovePopupToBack(GetVPanel());
+			ivgui()->MovePopupToBack(GetVPanel());
 		}
 
 		m_KeyRepeat.Reset();
@@ -2093,7 +2093,7 @@ void CBasePanel::RunMenuCommand(const char *command)
 
             // hide everything while we quit
 			SetVisible( false );
-			vgui::surface()->RestrictPaintToSinglePanel( GetVPanel() );
+			vgui::ivgui()->RestrictPaintToSinglePanel( GetVPanel() );
 			engine->ClientCmd_Unrestricted( "quit\n" );
 		}
 	}
@@ -2143,7 +2143,7 @@ void CBasePanel::RunMenuCommand(const char *command)
 	}
 	else if ( !Q_stricmp( command, "ReleaseModalWindow" ) )
 	{
-		vgui::surface()->RestrictPaintToSinglePanel(NULL);
+		vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 	}
 	else if ( Q_stristr( command, "engine " ) )
 	{
@@ -2207,7 +2207,7 @@ void CBasePanel::RunMenuCommand(const char *command)
 
 			// hide everything while we quit
 			SetVisible( false );
-			vgui::surface()->RestrictPaintToSinglePanel( GetVPanel() );
+			vgui::ivgui()->RestrictPaintToSinglePanel( GetVPanel() );
 			engine->ClientCmd_Unrestricted( "quit\n" );
 
 			// Construct Steam URL. Pattern is steam://run/<appid>/<language>. (e.g. Ep1 In French ==> steam://run/380/french)
@@ -2808,7 +2808,7 @@ public:
 		BaseClass::Activate();
 		input()->SetAppModalSurface(GetVPanel());
 		MoveToCenterOfScreen();
-		vgui::surface()->RestrictPaintToSinglePanel(GetVPanel());
+		vgui::ivgui()->RestrictPaintToSinglePanel(GetVPanel());
 
 		GameUI().PreventEngineHideGameUI();
 	}
@@ -2882,7 +2882,7 @@ public:
 	virtual void OnClose()
 	{
 		BaseClass::OnClose();
-		vgui::surface()->RestrictPaintToSinglePanel(NULL);
+		vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 		GameUI().AllowEngineHideGameUI();
 	}
 };
@@ -2901,7 +2901,7 @@ public:
 	void DoModal( Frame* pFrameOver )
 	{
 		BaseClass::DoModal( pFrameOver );
-		vgui::surface()->RestrictPaintToSinglePanel(GetVPanel());
+		vgui::ivgui()->RestrictPaintToSinglePanel(GetVPanel());
 		GameUI().PreventEngineHideGameUI();
 	}
 
@@ -2934,7 +2934,7 @@ public:
 	virtual void OnClose()
 	{
 		BaseClass::OnClose();
-		vgui::surface()->RestrictPaintToSinglePanel(NULL);
+		vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 		GameUI().AllowEngineHideGameUI();
 	}
 };
@@ -4613,7 +4613,7 @@ void CMessageDialogHandler::CloseAllMessageDialogs()
 		CMessageDialog *pDlg = m_hMessageDialogs[i];
 		if ( pDlg )
 		{
-			vgui::surface()->RestrictPaintToSinglePanel(NULL);
+			vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 			if ( vgui_message_dialog_modal.GetBool() )
 			{
 				vgui::input()->ReleaseAppModalSurface();
@@ -4640,7 +4640,7 @@ void CMessageDialogHandler::CloseMessageDialog( const uint nType )
 	CMessageDialog *pDlg = m_hMessageDialogs[nStackIdx];
 	if ( pDlg )
 	{
-		vgui::surface()->RestrictPaintToSinglePanel(NULL);
+		vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 		if ( vgui_message_dialog_modal.GetBool() )
 		{
 			vgui::input()->ReleaseAppModalSurface();
@@ -4677,7 +4677,7 @@ void CMessageDialogHandler::CreateMessageDialog( const uint nType, const char *p
 
 	if ( nType & MD_RESTRICTPAINT )
 	{
-		vgui::surface()->RestrictPaintToSinglePanel( m_hMessageDialogs[nStackIdx]->GetVPanel() );
+		vgui::ivgui()->RestrictPaintToSinglePanel( m_hMessageDialogs[nStackIdx]->GetVPanel() );
 	}
 
 	ActivateMessageDialog( nStackIdx );	

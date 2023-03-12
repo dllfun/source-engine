@@ -110,7 +110,7 @@ CLoadingDialog::~CLoadingDialog()
 {
 	if ( input()->GetAppModalSurface() == GetVPanel() )
 	{
-		vgui::surface()->RestrictPaintToSinglePanel( NULL );
+		vgui::ivgui()->RestrictPaintToSinglePanel( NULL );
 	}
 }
 
@@ -257,7 +257,7 @@ void CLoadingDialog::HideOtherDialogs( bool bHide )
 		else
 		{
 			// if there is no loading background dialog, use VGUI paint restrictions to hide other dialogs
-			vgui::surface()->RestrictPaintToSinglePanel(GetVPanel());
+			vgui::ivgui()->RestrictPaintToSinglePanel(GetVPanel());
 		}
 	}
 	else
@@ -270,7 +270,7 @@ void CLoadingDialog::HideOtherDialogs( bool bHide )
 		else
 		{
 			// remove any rendering restrictions
-			vgui::surface()->RestrictPaintToSinglePanel(NULL);
+			vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 		}
 	}
 }

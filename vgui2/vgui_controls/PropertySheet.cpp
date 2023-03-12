@@ -1651,7 +1651,7 @@ void PropertySheet::OnDroppablePanelPaint( CUtlVector< KeyValues * >& msglist, C
 	fakeTab->SetFont( m_tabFont );
 	SETUP_PANEL( fakeTab );
 	fakeTab->Repaint();
-	surface()->SolveTraverse( fakeTab->GetVPanel(), true );
+	ivgui()->SolveTraverse( fakeTab->GetVPanel(), true );
 	surface()->PaintTraverse( fakeTab->GetVPanel() );
 	delete fakeTab;
 }

@@ -71,10 +71,10 @@ public:
 	virtual void SetEmbeddedPanel(vgui::VPANEL pEmbeddedPanel);
 
 	// returns true if a panel is minimzed
-	bool IsMinimized(vgui::VPANEL panel);
+	//bool IsMinimized(vgui::VPANEL panel);
 
 	// Sets the only panel to draw.  Set to NULL to clear.
-	void RestrictPaintToSinglePanel(vgui::VPANEL panel);
+	//void RestrictPaintToSinglePanel(vgui::VPANEL panel);
 
 	// frame
 	virtual void RunFrame();
@@ -135,41 +135,41 @@ public:
 	virtual void DrawSetTextPos(int x, int y);
 	virtual void DrawGetTextPos(int& x,int& y);
 
-	virtual vgui::IHTML *CreateHTMLWindow(vgui::IHTMLEvents *events,vgui::VPANEL context);
-	virtual void PaintHTMLWindow(vgui::IHTML *htmlwin);
-	virtual void DeleteHTMLWindow(vgui::IHTML *htmlwin);
-	virtual bool BHTMLWindowNeedsPaint(IHTML *htmlwin);
+	//virtual vgui::IHTML *CreateHTMLWindow(vgui::IHTMLEvents *events,vgui::VPANEL context);
+	//virtual void PaintHTMLWindow(vgui::IHTML *htmlwin);
+	//virtual void DeleteHTMLWindow(vgui::IHTML *htmlwin);
+	//virtual bool BHTMLWindowNeedsPaint(IHTML *htmlwin);
 
 	virtual void GetScreenSize(int &wide, int &tall);
-	virtual void SetAsTopMost(vgui::VPANEL panel, bool state);
-	virtual void BringToFront(vgui::VPANEL panel);
-	virtual void SetForegroundWindow (vgui::VPANEL panel);
-	virtual void SetPanelVisible(vgui::VPANEL panel, bool state);
-	virtual void SetMinimized(vgui::VPANEL panel, bool state);
-	virtual void FlashWindow(vgui::VPANEL panel, bool state);
-	virtual void SetTitle(vgui::VPANEL panel, const wchar_t *title);
-	virtual const wchar_t *GetTitle( vgui::VPANEL panel );
+	//virtual void SetAsTopMost(vgui::VPANEL panel, bool state);
+	//virtual void BringToFront(vgui::VPANEL panel);
+	//virtual void SetForegroundWindow (vgui::VPANEL panel);
+	//virtual void SetPanelVisible(vgui::VPANEL panel, bool state);
+	//virtual void SetMinimized(vgui::VPANEL panel, bool state);
+	//virtual void FlashWindow(vgui::VPANEL panel, bool state);
+	//virtual void SetTitle(vgui::VPANEL panel, const wchar_t *title);
+	//virtual const wchar_t *GetTitle( vgui::VPANEL panel );
 
-	virtual void SetAsToolBar(vgui::VPANEL panel, bool state);		// removes the window's task bar entry (for context menu's, etc.)
+	//virtual void SetAsToolBar(vgui::VPANEL panel, bool state);		// removes the window's task bar entry (for context menu's, etc.)
 
 	// windows stuff
-	virtual void CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon = true, bool disabled = false, bool mouseInput = true , bool kbInput = true);
+	//virtual void CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon = true, bool disabled = false, bool mouseInput = true , bool kbInput = true);
 
-	virtual void SwapBuffers(vgui::VPANEL panel);
-	virtual void Invalidate(vgui::VPANEL panel);
+	//virtual void SwapBuffers(vgui::VPANEL panel);
+	//virtual void Invalidate(vgui::VPANEL panel);
 
-	virtual void SetCursor(vgui::HCursor cursor);
-	virtual bool IsCursorVisible();
-	virtual void SetCursorAlwaysVisible(bool visible);
+	//virtual void SetCursor(vgui::HCursor cursor);
+	//virtual bool IsCursorVisible();
+	//virtual void SetCursorAlwaysVisible(bool visible);
 
-	virtual void ApplyChanges();
-	virtual bool IsWithin(int x, int y);
-	virtual bool HasFocus();
+	//virtual void ApplyChanges();
+	//virtual bool IsWithin(int x, int y);
+	//virtual bool HasFocus();
 
 	virtual bool SupportsFeature(SurfaceFeature_e feature);
 
 	// engine-only focus handling (replacing WM_FOCUS windows handling)
-	virtual void SetTopLevelFocus(vgui::VPANEL panel);
+	//virtual void SetTopLevelFocus(vgui::VPANEL panel);
 
 	// fonts
 	virtual vgui::HFont CreateFont();
@@ -197,23 +197,23 @@ public:
 	void DrawUpdateRegionTextureRGBA( int nTextureID, int x, int y, const unsigned char *pchData, int wide, int tall, ImageFormat imageFormat );
 
 	// notify icons?!?
-	virtual vgui::VPANEL GetNotifyPanel();
-	virtual void SetNotifyIcon(vgui::VPANEL context, vgui::HTexture icon, vgui::VPANEL panelToReceiveMessages, const char *text);
+	//virtual vgui::VPANEL GetNotifyPanel();
+	//virtual void SetNotifyIcon(vgui::VPANEL context, vgui::HTexture icon, vgui::VPANEL panelToReceiveMessages, const char *text);
 
 	// plays a sound
 	virtual void PlaySound(const char *fileName);
 
 	//!! these functions Should not be accessed directly, but only through other vgui items
 	//!! need to move these to seperate interface
-	virtual int GetPopupCount();
-	virtual vgui::VPANEL GetPopup( int index );
-	virtual bool ShouldPaintChildPanel(vgui::VPANEL childPanel);
-	virtual bool RecreateContext(vgui::VPANEL panel);
-	virtual void AddPanel(vgui::VPANEL panel);
-	virtual void ReleasePanel(vgui::VPANEL panel);
-	virtual void MovePopupToFront(vgui::VPANEL panel);
+	//virtual int GetPopupCount();
+	//virtual vgui::VPANEL GetPopup( int index );
+	//virtual bool ShouldPaintChildPanel(vgui::VPANEL childPanel);
+	//virtual bool RecreateContext(vgui::VPANEL panel);
+	//virtual void AddPanel(vgui::VPANEL panel);
+	//virtual void ReleasePanel(vgui::VPANEL panel);
+	//virtual void MovePopupToFront(vgui::VPANEL panel);
 
-	virtual void SolveTraverse(vgui::VPANEL panel, bool forceApplySchemeSettings);
+	//virtual void SolveTraverse(vgui::VPANEL panel, bool forceApplySchemeSettings);
 	virtual void PaintTraverse(vgui::VPANEL panel);
 
 	virtual void EnableMouseCapture(vgui::VPANEL panel, bool state);
@@ -223,7 +223,7 @@ public:
 
 	// Hook needed to Get input to work
 	virtual void AttachToWindow( void *hwnd, bool bLetAppDriveInput );
-	virtual bool HandleInputEvent( const InputEvent_t &event );
+	//virtual bool HandleInputEvent( const InputEvent_t &event );
 
 	void		 InitFullScreenBuffer( const char *pszRenderTargetName );
 	virtual void Set3DPaintTempRenderTarget( const char *pRenderTargetName );
@@ -242,13 +242,13 @@ public:
 	virtual void SetClippingRect( int left, int top, int right, int bottom ) OVERRIDE;
 
 	// Prevents vgui from changing the cursor
-	virtual bool IsCursorLocked() const;
+	//virtual bool IsCursorLocked() const;
 
 	// Sets the mouse Get + Set callbacks
 	virtual void SetMouseCallbacks( GetMouseCallback_t GetFunc, SetMouseCallback_t SetFunc );
 
 	// Tells the surface to ignore windows messages
-	virtual void EnableWindowsMessages( bool bEnable );
+	//virtual void EnableWindowsMessages( bool bEnable );
 
 	// Installs a function to play sounds
 	virtual void InstallPlaySoundFunc( PlaySoundFunc_t soundFunc );
@@ -274,20 +274,20 @@ public:
 	void GetProportionalBase( int &width, int &height ) { width = BASE_WIDTH; height = BASE_HEIGHT; }
 	virtual bool HasCursorPosFunctions() { return true; }
 
-	virtual void SetModalPanel(VPANEL );
-	virtual VPANEL GetModalPanel();
-	virtual void UnlockCursor();
-	virtual void LockCursor();
+	//virtual void SetModalPanel(VPANEL );
+	//virtual VPANEL GetModalPanel();
+	//virtual void UnlockCursor();
+	//virtual void LockCursor();
 	virtual void SetTranslateExtendedKeys(bool state);
-	virtual VPANEL GetTopmostPopup();
+	//virtual VPANEL GetTopmostPopup();
 	virtual void GetAbsoluteWindowBounds(int &x, int &y, int &wide, int &tall);
-	virtual void CalculateMouseVisible();
-	virtual bool NeedKBInput();
+	//virtual void CalculateMouseVisible();
+	//virtual bool NeedKBInput();
 	virtual void SurfaceGetCursorPos(int &x, int &y);
 	virtual void SurfaceSetCursorPos(int x, int y);
-	virtual void MovePopupToBack(VPANEL panel);
+	//virtual void MovePopupToBack(VPANEL panel);
 
-	virtual bool IsInThink( VPANEL panel); 
+	//virtual bool IsInThink( VPANEL panel); 
 
 	virtual bool DrawGetUnicodeCharRenderInfo( wchar_t ch, CharRenderInfo& info );
 	virtual void DrawRenderCharFromInfo( const CharRenderInfo& info );
@@ -303,13 +303,13 @@ public:
 	// video mode changing
 	virtual void OnScreenSizeChanged( int nOldWidth, int nOldHeight );
 
-	virtual vgui::HCursor CreateCursorFromFile( char const *curOrAniFile, char const *pPathID );
+	//virtual vgui::HCursor CreateCursorFromFile( char const *curOrAniFile, char const *pPathID );
 
 	virtual void PaintTraverseEx(VPANEL panel, bool paintPopups = false );
 
 	virtual float GetZPos() const;
 
-	virtual void SetPanelForInput( VPANEL vpanel );
+	//virtual void SetPanelForInput( VPANEL vpanel );
 
 	virtual vgui::IImage *GetIconImageForFullPath( char const *pFullPath );
 
@@ -339,7 +339,7 @@ public:
 	virtual void PopFullscreenViewport() OVERRIDE;
 
 	// support for software cursors
-	virtual void SetSoftwareCursor( bool bUseSoftwareCursor ) OVERRIDE;
+	//virtual void SetSoftwareCursor( bool bUseSoftwareCursor ) OVERRIDE;
 	virtual void PaintSoftwareCursor()  OVERRIDE;
 
 	// Methods of ILocalizeTextQuery
@@ -396,22 +396,22 @@ private:
 	// Sets up a particular painting state...
 	void SetupPaintState( const PaintState_t &paintState );
 
-	void ResetPopupList();
-	void AddPopup( vgui::VPANEL panel );
-	void RemovePopup( vgui::VPANEL panel );
-	void AddPopupsToList( vgui::VPANEL panel );
+	//void ResetPopupList();
+	//void AddPopup( vgui::VPANEL panel );
+	//void RemovePopup( vgui::VPANEL panel );
+	//void AddPopupsToList( vgui::VPANEL panel );
 
 	// Helper for drawing colored text
 	int DrawColoredText( vgui::HFont font, int x, int y, int r, int g, int b, int a, const char *fmt, va_list argptr );
 	void SearchForWordBreak( vgui::HFont font, char *text, int& chars, int& pixels );
 
-	void InternalThinkTraverse(VPANEL panel);
-	void InternalSolveTraverse(VPANEL panel);
-	void InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings);
+	//void InternalThinkTraverse(VPANEL panel);
+	//void InternalSolveTraverse(VPANEL panel);
+	//void InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings);
 
 	// handles mouse movement
-	void SetCursorPos(int x, int y);
-	void GetCursorPos(int &x, int &y);
+	//void SetCursorPos(int x, int y);
+	//void GetCursorPos(int &x, int &y);
 
 	void DrawTexturedLineInternal( const Vertex_t &a, const Vertex_t &b );
 
@@ -419,7 +419,7 @@ private:
 	void GetFullScreenTexCoords( int x, int y, int w, int h, float *pMinU, float *pMinV, float *pMaxU, float *pMaxV );
 
 	// Is a panel under the restricted panel?
-	bool IsPanelUnderRestrictedPanel( VPANEL panel );
+	//bool IsPanelUnderRestrictedPanel( VPANEL panel );
 
 	// Point Translation for current panel
 	int				m_nTranslateX;
@@ -458,17 +458,17 @@ private:
 	// Root panel
 	vgui::VPANEL m_pEmbeddedPanel;
 	vgui::Panel *m_pDefaultEmbeddedPanel;
-	vgui::VPANEL m_pRestrictedPanel;
+	//vgui::VPANEL m_pRestrictedPanel;
 
 	// List of pop-up panels based on the type enum above (draw order vs last clicked)
-	CUtlVector<vgui::HPanel>	m_PopupList;
+	//CUtlVector<vgui::HPanel>	m_PopupList;
 
 	// Stack of paint state...
 	CUtlVector<	PaintState_t > m_PaintStateStack;
 
 	vgui::HFont				m_hCurrentFont;
-	vgui::HCursor			_currentCursor;
-	bool					m_cursorAlwaysVisible;
+	//vgui::HCursor			_currentCursor;
+	//bool					m_cursorAlwaysVisible;
 
 	// The currently bound texture
 	int m_iBoundTexture;
@@ -491,18 +491,18 @@ private:
 	bool m_bDrawingIn3DWorld : 1;
 
 	// Is the app gonna call HandleInputEvent?
-	bool m_bAppDrivesInput : 1;
+	//bool m_bAppDrivesInput : 1;
 
 	// Are we currently in the think() loop
-	bool m_bInThink : 1;
+	//bool m_bInThink : 1;
 
-	bool m_bNeedsKeyboard : 1;
-	bool m_bNeedsMouse : 1;
+	//bool m_bNeedsKeyboard : 1;
+	//bool m_bNeedsMouse : 1;
 	bool m_bAllowJavaScript : 1;
 
-	int m_nLastInputPollCount;
+	//int m_nLastInputPollCount;
 
-	VPANEL m_CurrentThinkPanel;
+	//VPANEL m_CurrentThinkPanel;
 
 	// The attached HWND
 	void *m_HWnd;
@@ -512,20 +512,20 @@ private:
 
 	int		m_WorkSpaceInsets[4];
 
-	class TitleEntry
-	{
-	public:
-		TitleEntry()
-		{
-			panel = NULL;
-			title[0] = 0;
-		}
+	//class TitleEntry
+	//{
+	//public:
+	//	TitleEntry()
+	//	{
+	//		panel = NULL;
+	//		title[0] = 0;
+	//	}
 
-		vgui::VPANEL panel;
-		wchar_t	title[128];
-	};
+	//	vgui::VPANEL panel;
+	//	wchar_t	title[128];
+	//};
 
-	CUtlVector< TitleEntry >	m_Titles;
+	//CUtlVector< TitleEntry >	m_Titles;
 	CUtlVector< CUtlSymbol >	m_CustomFontFileNames;
 	CUtlVector< CUtlSymbol >	m_BitmapFontFileNames;
 	CUtlDict< int, int >		m_BitmapFontFileMapping;
@@ -533,7 +533,7 @@ private:
 	float	m_flZPos;
 	CUtlDict< vgui::IImage *, unsigned short >	m_FileTypeImages;
 
-	int		GetTitleEntry( vgui::VPANEL panel );
+	//int		GetTitleEntry( vgui::VPANEL panel );
 
 	virtual void DrawSetTextureRGBAEx(int id, const unsigned char *rgba, int wide, int tall, ImageFormat format );
 

@@ -138,7 +138,7 @@ static ConVar cl_demoviewoverride( "cl_demoviewoverride", "0", 0, "Override view
 void SoftwareCursorChangedCB( IConVar *pVar, const char *pOldValue, float fOldValue )
 {
 	ConVar *pConVar = (ConVar *)pVar;
-	vgui::surface()->SetSoftwareCursor( pConVar->GetBool() || UseVR() );
+	vgui::ivgui()->SetSoftwareCursor( pConVar->GetBool() || UseVR() );
 }
 static ConVar cl_software_cursor ( "cl_software_cursor", "0", FCVAR_ARCHIVE, "Switches the game to use a larger software cursor instead of the normal OS cursor", SoftwareCursorChangedCB );
 
@@ -1280,7 +1280,7 @@ void CViewRender::Render( vrect_t *rect )
 			if( !bInFreezeCam && g_ClientVirtualReality.ShouldRenderHUDInWorld() )
 			{
 				// TODO - a bit of a shonky test - basically trying to catch the main menu, the briefing screen, the loadout screen, etc.
-				bool bTranslucent = !g_pMatSystemSurface->IsCursorVisible();
+				bool bTranslucent = !g_pVGui->IsCursorVisible();
 				g_ClientVirtualReality.OverlayHUDQuadWithUndistort( view, bDoUndistort, g_pClientMode->ShouldBlackoutAroundHUD(), bTranslucent );
 			}
 		}

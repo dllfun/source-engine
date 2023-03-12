@@ -763,7 +763,7 @@ void CInput::JoyStickMove( float frametime, CUserCmd *cmd )
 	m_flPreviousJoystickYaw		= ScaleAxisValue( gameAxes[GAME_AXIS_YAW].value, MAX_BUTTONSAMPLE * joy_yawthreshold.GetFloat()  );
 
 	// Skip out if vgui is active
-	if ( vgui::surface()->IsCursorVisible() )
+	if ( vgui::ivgui()->IsCursorVisible() )
 		return;
 
 	// If we're inverting our joystick, do so

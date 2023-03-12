@@ -953,7 +953,7 @@ void CInput::ControllerMove( float frametime, CUserCmd *cmd )
 	// NVNT if we have a haptic device..
 	if(haptics && haptics->HasDevice())
 	{
-		if(engine->IsPaused() || engine->IsLevelMainMenuBackground() || vgui::surface()->IsCursorVisible() || !engine->IsInGame())
+		if(engine->IsPaused() || engine->IsLevelMainMenuBackground() || vgui::ivgui()->IsCursorVisible() || !engine->IsInGame())
 		{
 			// NVNT send a menu process to the haptics system.
 			haptics->MenuProcess();

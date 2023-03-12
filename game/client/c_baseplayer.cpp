@@ -1099,7 +1099,7 @@ void C_BasePlayer::DetermineVguiInputMode( CUserCmd *pCmd )
 	}
 
 	// Don't interact with world screens when we're in a menu
-	if ( vgui::surface()->IsCursorVisible() )
+	if ( vgui::ivgui()->IsCursorVisible() )
 	{
 		DeactivateVguiScreen( m_pCurrentVguiScreen.Get() );
 		m_pCurrentVguiScreen.Set( NULL );

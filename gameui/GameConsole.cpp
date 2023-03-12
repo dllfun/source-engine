@@ -81,7 +81,7 @@ void CGameConsole::Activate()
 	if (!m_bInitialized)
 		return;
 
-	vgui::surface()->RestrictPaintToSinglePanel(NULL);
+	vgui::ivgui()->RestrictPaintToSinglePanel(NULL);
 	m_pConsole->Activate();
 #endif
 }

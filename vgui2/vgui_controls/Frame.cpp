@@ -942,7 +942,7 @@ void Frame::Activate()
 		m_bPreviouslyVisible = false;
 	}
 
-	surface()->SetMinimized(GetVPanel(), false);
+	ivgui()->SetMinimized(GetVPanel(), false);
 }
 
 
@@ -988,7 +988,7 @@ void Frame::ActivateMinimized()
 	else
 	{
 		ivgui()->MoveToBack(GetVPanel());
-		surface()->SetMinimized(GetVPanel(), true);
+		ivgui()->SetMinimized(GetVPanel(), true);
 		SetVisible(true);
 		SetEnabled(true);
 		if (m_bFadingOut)
@@ -1006,7 +1006,7 @@ void Frame::ActivateMinimized()
 //-----------------------------------------------------------------------------
 bool Frame::IsMinimized()
 {
-	return surface()->IsMinimized(GetVPanel());
+	return ivgui()->IsMinimized(GetVPanel());
 }
 
 //-----------------------------------------------------------------------------
@@ -1349,7 +1349,7 @@ void Frame::SetTitle(const char *title, bool surfaceTitle)
 
 	if (surfaceTitle)
 	{
-		surface()->SetTitle(GetVPanel(), unicodeText);
+		ivgui()->SetTitle(GetVPanel(), unicodeText);
 	}
 	
 	Repaint();
@@ -1367,7 +1367,7 @@ void Frame::SetTitle(const wchar_t *title, bool surfaceTitle)
 	_title->SetText(title);
 	if (surfaceTitle)
 	{
-		surface()->SetTitle(GetVPanel(), title);
+		ivgui()->SetTitle(GetVPanel(), title);
 	}
 	Repaint();
 }
@@ -1833,7 +1833,7 @@ void Frame::OnClose()
 		GetAnimationController()->RunAnimationCommand(this, "alpha", 0.0f, 0.0f, m_flTransitionEffectTime, AnimationController::INTERPOLATOR_LINEAR);
 		m_bFadingOut = true;
 		// move us to the back of the draw order (so that fading out over the top of other dialogs doesn't look wierd)
-		surface()->MovePopupToBack(GetVPanel());
+		ivgui()->MovePopupToBack(GetVPanel());
 	}
 	else
 	{
@@ -1985,7 +1985,7 @@ void Frame::OnFinishedClose()
 //-----------------------------------------------------------------------------
 void Frame::OnMinimize()
 {
-	surface()->SetMinimized(GetVPanel(), true);
+	ivgui()->SetMinimized(GetVPanel(), true);
 }
 
 //-----------------------------------------------------------------------------
@@ -2098,7 +2098,7 @@ void Frame::InternalFlashWindow()
 	{
 		// toggle icon flashing
 		_nextFlashState = true;
-		surface()->FlashWindow(GetVPanel(), _nextFlashState);
+		ivgui()->FlashWindow(GetVPanel(), _nextFlashState);
 		_nextFlashState = !_nextFlashState;
 		
 		PostMessage(this, new KeyValues("FlashWindow"), 1.8f);
@@ -2129,7 +2129,7 @@ void Frame::FlashWindow()
 //-----------------------------------------------------------------------------
 void Frame::FlashWindowStop()
 {
-	surface()->FlashWindow(GetVPanel(), false);
+	ivgui()->FlashWindow(GetVPanel(), false);
 	_flashWindow = false;
 }
 

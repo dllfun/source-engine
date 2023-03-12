@@ -2312,7 +2312,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 				SetupMain3DView( view, ClearFlags );
 
 				// TODO - a bit of a shonky test - basically trying to catch the main menu, the briefing screen, the loadout screen, etc.
-				bool bTranslucent = !g_pMatSystemSurface->IsCursorVisible();
+				bool bTranslucent = !g_pVGui->IsCursorVisible();
 				g_ClientVirtualReality.RenderHUDQuad( g_pClientMode->ShouldBlackoutAroundHUD(), bTranslucent );
 				CleanupMain3DView( view );
 			}

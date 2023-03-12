@@ -154,9 +154,9 @@ public:
 	virtual void DrawUnicodeChar(wchar_t wch, FontDrawType_t drawType = FONT_DRAW_DEFAULT ) = 0;
 
 	virtual void DrawFlushText() = 0;		// flushes any buffered text (for rendering optimizations)
-	virtual IHTML *CreateHTMLWindow(vgui::IHTMLEvents *events,VPANEL context)=0;
-	virtual void PaintHTMLWindow(vgui::IHTML *htmlwin) =0;
-	virtual void DeleteHTMLWindow(IHTML *htmlwin)=0;
+	//virtual IHTML *CreateHTMLWindow(vgui::IHTMLEvents *events,VPANEL context)=0;
+	//virtual void PaintHTMLWindow(vgui::IHTML *htmlwin) =0;
+	//virtual void DeleteHTMLWindow(IHTML *htmlwin)=0;
 
 	enum ETextureFormat
 	{
@@ -178,26 +178,26 @@ public:
 	virtual int CreateNewTextureID( bool procedural = false ) = 0;
 
 	virtual void GetScreenSize(int &wide, int &tall) = 0;
-	virtual void SetAsTopMost(VPANEL panel, bool state) = 0;
-	virtual void BringToFront(VPANEL panel) = 0;
-	virtual void SetForegroundWindow (VPANEL panel) = 0;
-	virtual void SetPanelVisible(VPANEL panel, bool state) = 0;
-	virtual void SetMinimized(VPANEL panel, bool state) = 0;
-	virtual bool IsMinimized(VPANEL panel) = 0;
-	virtual void FlashWindow(VPANEL panel, bool state) = 0;
-	virtual void SetTitle(VPANEL panel, const wchar_t *title) = 0;
-	virtual void SetAsToolBar(VPANEL panel, bool state) = 0;		// removes the window's task bar entry (for context menu's, etc.)
+	//virtual void SetAsTopMost(VPANEL panel, bool state) = 0;
+	//virtual void BringToFront(VPANEL panel) = 0;
+	//virtual void SetForegroundWindow (VPANEL panel) = 0;
+	//virtual void SetPanelVisible(VPANEL panel, bool state) = 0;
+	//virtual void SetMinimized(VPANEL panel, bool state) = 0;
+	//virtual bool IsMinimized(VPANEL panel) = 0;
+	//virtual void FlashWindow(VPANEL panel, bool state) = 0;
+	//virtual void SetTitle(VPANEL panel, const wchar_t *title) = 0;
+	//virtual void SetAsToolBar(VPANEL panel, bool state) = 0;		// removes the window's task bar entry (for context menu's, etc.)
 
 	// windows stuff
-	virtual void CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIcon = true, bool disabled = false, bool mouseInput = true , bool kbInput = true) = 0;
-	virtual void SwapBuffers(VPANEL panel) = 0;
-	virtual void Invalidate(VPANEL panel) = 0;
-	virtual void SetCursor(HCursor cursor) = 0;
-	virtual void SetCursorAlwaysVisible( bool visible ) = 0;
-	virtual bool IsCursorVisible() = 0;
-	virtual void ApplyChanges() = 0;
-	virtual bool IsWithin(int x, int y) = 0;
-	virtual bool HasFocus() = 0;
+	//virtual void CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIcon = true, bool disabled = false, bool mouseInput = true , bool kbInput = true) = 0;
+	//virtual void SwapBuffers(VPANEL panel) = 0;
+	//virtual void Invalidate(VPANEL panel) = 0;
+	//virtual void SetCursor(HCursor cursor) = 0;
+	//virtual void SetCursorAlwaysVisible( bool visible ) = 0;
+	//virtual bool IsCursorVisible() = 0;
+	//virtual void ApplyChanges() = 0;
+	//virtual bool IsWithin(int x, int y) = 0;
+	//virtual bool HasFocus() = 0;
 	
 	// returns true if the surface supports minimize & maximize capabilities
 	enum SurfaceFeature_e
@@ -214,19 +214,19 @@ public:
 
 	// restricts what gets drawn to one panel and it's children
 	// currently only works in the game
-	virtual void RestrictPaintToSinglePanel(VPANEL panel) = 0;
+	//virtual void RestrictPaintToSinglePanel(VPANEL panel) = 0;
 
 	// these two functions obselete, use IInput::SetAppModalSurface() instead
-	virtual void SetModalPanel(VPANEL ) = 0;
-	virtual VPANEL GetModalPanel() = 0;
+	//virtual void SetModalPanel(VPANEL ) = 0;
+	//virtual VPANEL GetModalPanel() = 0;
 
-	virtual void UnlockCursor() = 0;
-	virtual void LockCursor() = 0;
+	//virtual void UnlockCursor() = 0;
+	//virtual void LockCursor() = 0;
 	virtual void SetTranslateExtendedKeys(bool state) = 0;
-	virtual VPANEL GetTopmostPopup() = 0;
+	//virtual VPANEL GetTopmostPopup() = 0;
 
 	// engine-only focus handling (replacing WM_FOCUS windows handling)
-	virtual void SetTopLevelFocus(VPANEL panel) = 0;
+	//virtual void SetTopLevelFocus(VPANEL panel) = 0;
 
 	// fonts
 	// creates an empty handle to a vgui font.  windows fonts can be add to this via SetFontGlyphSet().
@@ -265,24 +265,24 @@ public:
 	virtual void GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall) = 0;
 
 	// notify icons?!?
-	virtual VPANEL GetNotifyPanel() = 0;
-	virtual void SetNotifyIcon(VPANEL context, HTexture icon, VPANEL panelToReceiveMessages, const char *text) = 0;
+	//virtual VPANEL GetNotifyPanel() = 0;
+	//virtual void SetNotifyIcon(VPANEL context, HTexture icon, VPANEL panelToReceiveMessages, const char *text) = 0;
 
 	// plays a sound
 	virtual void PlaySound(const char *fileName) = 0;
 
 	//!! these functions should not be accessed directly, but only through other vgui items
 	//!! need to move these to seperate interface
-	virtual int GetPopupCount() = 0;
-	virtual VPANEL GetPopup(int index) = 0;
-	virtual bool ShouldPaintChildPanel(VPANEL childPanel) = 0;
-	virtual bool RecreateContext(VPANEL panel) = 0;
-	virtual void AddPanel(VPANEL panel) = 0;
-	virtual void ReleasePanel(VPANEL panel) = 0;
-	virtual void MovePopupToFront(VPANEL panel) = 0;
-	virtual void MovePopupToBack(VPANEL panel) = 0;
+	//virtual int GetPopupCount() = 0;
+	//virtual VPANEL GetPopup(int index) = 0;
+	//virtual bool ShouldPaintChildPanel(VPANEL childPanel) = 0;
+	//virtual bool RecreateContext(VPANEL panel) = 0;
+	//virtual void AddPanel(VPANEL panel) = 0;
+	//virtual void ReleasePanel(VPANEL panel) = 0;
+	//virtual void MovePopupToFront(VPANEL panel) = 0;
+	//virtual void MovePopupToBack(VPANEL panel) = 0;
 
-	virtual void SolveTraverse(VPANEL panel, bool forceApplySchemeSettings = false) = 0;
+	//virtual void SolveTraverse(VPANEL panel, bool forceApplySchemeSettings = false) = 0;
 	virtual void PaintTraverse(VPANEL panel) = 0;
 
 	virtual void EnableMouseCapture(VPANEL panel, bool state) = 0;
@@ -296,8 +296,8 @@ public:
 	// gets the base resolution used in proportional mode
 	virtual void GetProportionalBase( int &width, int &height ) = 0;
 
-	virtual void CalculateMouseVisible() = 0;
-	virtual bool NeedKBInput() = 0;
+	//virtual void CalculateMouseVisible() = 0;
+	//virtual bool NeedKBInput() = 0;
 
 	virtual bool HasCursorPosFunctions() = 0;
 	virtual void SurfaceGetCursorPos(int &x, int &y) = 0;
@@ -309,8 +309,8 @@ public:
 	virtual void DrawTexturedPolyLine( const Vertex_t *p,int n ) = 0; // (Note: this connects the first and last points).
 	virtual void DrawTexturedSubRect( int x0, int y0, int x1, int y1, float texs0, float text0, float texs1, float text1 ) = 0;
 	virtual void DrawTexturedPolygon(int n, Vertex_t *pVertice, bool bClipVertices = true ) = 0;
-	virtual const wchar_t *GetTitle(VPANEL panel) = 0;
-	virtual bool IsCursorLocked( void ) const = 0;
+	//virtual const wchar_t *GetTitle(VPANEL panel) = 0;
+	//virtual bool IsCursorLocked( void ) const = 0;
 	virtual void SetWorkspaceInsets( int left, int top, int right, int bottom ) = 0;
 
 	// Lower level char drawing code, call DrawGet then pass in info to DrawRender
@@ -328,7 +328,7 @@ public:
 	// video mode changing
 	virtual void OnScreenSizeChanged( int nOldWidth, int nOldHeight ) = 0;
 
-	virtual vgui::HCursor CreateCursorFromFile( char const *curOrAniFile, char const *pPathID = 0 ) = 0;
+	//virtual vgui::HCursor CreateCursorFromFile( char const *curOrAniFile, char const *pPathID = 0 ) = 0;
 
 	// create IVguiMatInfo object ( IMaterial wrapper in VguiMatSurface, NULL in CWin32Surface )
 	virtual IVguiMatInfo *DrawGetTextureMatInfoFactory( int id ) = 0;
@@ -338,7 +338,7 @@ public:
 	virtual float GetZPos() const = 0;
 
 	// From the Xbox
-	virtual void SetPanelForInput( VPANEL vpanel ) = 0;
+	//virtual void SetPanelForInput( VPANEL vpanel ) = 0;
 	virtual void DrawFilledRectFastFade( int x0, int y0, int x1, int y1, int fadeStartPt, int fadeEndPt, unsigned int alpha0, unsigned int alpha1, bool bHorizontal ) = 0;
 	virtual void DrawFilledRectFade( int x0, int y0, int x1, int y1, unsigned int alpha0, unsigned int alpha1, bool bHorizontal ) = 0;
 	virtual void DrawSetTextureRGBAEx(int id, const unsigned char *rgba, int wide, int tall, ImageFormat imageFormat ) = 0;
@@ -379,7 +379,7 @@ public:
 	virtual void DestroyTextureID( int id ) = 0;
 
 	virtual void DrawUpdateRegionTextureRGBA( int nTextureID, int x, int y, const unsigned char *pchData, int wide, int tall, ImageFormat imageFormat ) = 0;
-	virtual bool BHTMLWindowNeedsPaint(IHTML *htmlwin) = 0 ;
+	//virtual bool BHTMLWindowNeedsPaint(IHTML *htmlwin) = 0 ;
 
 	virtual const char *GetWebkitHTMLUserAgentString() = 0;
 
@@ -392,7 +392,7 @@ public:
 	virtual void PopFullscreenViewport() = 0;
 
 	// handles support for software cursors
-	virtual void SetSoftwareCursor( bool bUseSoftwareCursor ) = 0;
+	//virtual void SetSoftwareCursor( bool bUseSoftwareCursor ) = 0;
 	virtual void PaintSoftwareCursor() = 0;
 
 

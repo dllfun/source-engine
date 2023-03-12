@@ -2013,7 +2013,7 @@ void ListPanel::Paint()
 
 				// mark the panel to draw immediately (since it will probably be recycled to draw other cells)
 				render->Repaint();
-				surface()->SolveTraverse(render->GetVPanel());
+				ivgui()->SolveTraverse(render->GetVPanel());
 				int x0, y0, x1, y1;
 				render->GetClipRect(x0, y0, x1, y1);
 				if ((y1 - y0) < (m_iRowHeight - 3))

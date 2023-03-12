@@ -1419,7 +1419,7 @@ void CClientVirtualReality::Activate()
 	sCmd.Format( "exec sourcevr_%s.cfg\n", COM_GetModDirectory() );
 	engine->ExecuteClientCmd( sCmd.Get() );
 
-    vgui::surface()->SetSoftwareCursor( true );
+    vgui::ivgui()->SetSoftwareCursor( true );
 
 #if defined(POSIX)
 	ConVarRef m_rawinput( "m_rawinput" );
@@ -1467,7 +1467,7 @@ void CClientVirtualReality::Deactivate()
 	g_pMatSystemSurface->SetFullscreenViewportAndRenderTarget( 0, 0, m_nNonVRWidth, m_nNonVRHeight, NULL );
 
     static ConVarRef cl_software_cursor( "cl_software_cursor" );
-    vgui::surface()->SetSoftwareCursor( cl_software_cursor.GetBool() );
+    vgui::ivgui()->SetSoftwareCursor( cl_software_cursor.GetBool() );
 
 #if defined( USE_SDL )
     static ConVarRef sdl_displayindex( "sdl_displayindex" );

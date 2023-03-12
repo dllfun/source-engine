@@ -143,7 +143,7 @@ void VideoPanel::Activate( void )
 	SetVisible( true );
 	SetEnabled( true );
 
-	vgui::surface()->SetMinimized( GetVPanel(), false );
+	vgui::ivgui()->SetMinimized( GetVPanel(), false );
 }
 
 //-----------------------------------------------------------------------------
@@ -155,7 +155,7 @@ void VideoPanel::DoModal( void )
 	Activate();
 
 	vgui::input()->SetAppModalSurface( GetVPanel() );
-	vgui::surface()->RestrictPaintToSinglePanel( GetVPanel() );
+	vgui::ivgui()->RestrictPaintToSinglePanel( GetVPanel() );
 }
 
 //-----------------------------------------------------------------------------
@@ -211,7 +211,7 @@ void VideoPanel::OnClose( void )
 		vgui::input()->ReleaseAppModalSurface();
 	}
 
-	vgui::surface()->RestrictPaintToSinglePanel( NULL );
+	vgui::ivgui()->RestrictPaintToSinglePanel( NULL );
 
 	// Fire an exit command if we're asked to do so
 	if ( m_szExitCommand[0] )

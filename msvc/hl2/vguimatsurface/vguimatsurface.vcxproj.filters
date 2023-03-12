@@ -29,13 +29,7 @@
     <ClCompile Include="..\..\..\vguimatsurface\Clip2D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\vguimatsurface\Cursor.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\vguimatsurface\FontTextureCache.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\vguimatsurface\Input.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\vguimatsurface\MatSystemSurface.cpp">

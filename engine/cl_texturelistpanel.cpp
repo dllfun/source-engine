@@ -77,13 +77,15 @@ CON_COMMAND( mat_get_textures, "VXConsole command" )
 
 static ConVar mat_texture_list( "mat_texture_list", "0", FCVAR_CHEAT, "For debugging, show a list of used textures per frame" );
 
-static enum TxListPanelRequest
+enum TxListPanelRequest
 {
 	TXR_NONE,
 	TXR_SHOW,
 	TXR_RUNNING,
 	TXR_HIDE
-} s_eTxListPanelRequest = TXR_NONE;
+} ;
+
+static TxListPanelRequest s_eTxListPanelRequest = TXR_NONE;
 
 IVTex* VTex_Load( CSysModule** pModule );
 void VTex_Unload( CSysModule *pModule );
@@ -3351,9 +3353,9 @@ void mat_texture_list_on_f()
 	// On Linux, the mouse gets recentered when it's hidden. So if you bring up the texture list
 	//	dialog while the game is running, we need to make sure the mouse is shown. Otherwise it's
 	//	very tough to use when your mouse keeps getting recentered.
-	if( !g_cursorset && g_pMatSystemSurface)
+	if( !g_cursorset && g_pVGui)
 	{
-		g_pMatSystemSurface->SetCursorAlwaysVisible( true );
+		g_pVGui->SetCursorAlwaysVisible( true );
 		g_cursorset = true;
 	}
 }
@@ -3362,9 +3364,9 @@ void mat_texture_list_off_f()
 	mat_texture_list.SetValue( 0 );
 	s_eTxListPanelRequest = TXR_HIDE;
 
-	if( g_cursorset && g_pMatSystemSurface)
+	if( g_cursorset && g_pVGui)
 	{
-		g_pMatSystemSurface->SetCursorAlwaysVisible( false );
+		g_pVGui->SetCursorAlwaysVisible( false );
 		g_cursorset = false;
 	}
 

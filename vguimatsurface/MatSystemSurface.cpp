@@ -32,8 +32,8 @@ ILauncherMgr *g_pLauncherMgr = NULL;
 #include <vgui/Point.h>
 #include "bitmap/imageformat.h"
 #include "TextureDictionary.h"
-#include "Cursor.h"
-#include "Input.h"
+//#include "Cursor.h"
+//#include "Input.h"
 #include <vgui/IHTML.h>
 #include <vgui/IVGui.h>
 #include "vgui_surfacelib/FontManager.h"
@@ -74,12 +74,12 @@ ILauncherMgr *g_pLauncherMgr = NULL;
 
 
 
-#define VPANEL_NORMAL	((vgui::SurfacePlat *) NULL)
-#define VPANEL_MINIMIZED ((vgui::SurfacePlat *) 0x00000001)
+//#define VPANEL_NORMAL	((vgui::SurfacePlat *) NULL)
+//#define VPANEL_MINIMIZED ((vgui::SurfacePlat *) 0x00000001)
 
 using namespace vgui;
 
-static bool g_bSpewFocus = false;
+//static bool g_bSpewFocus = false;
 
 class CVguiMatInfoVar : public IVguiMatInfoVar
 {
@@ -193,16 +193,16 @@ CMatSystemSurface::CMatSystemSurface() : m_pEmbeddedPanel(NULL), m_pWhite(NULL)
 	m_b3DPaintRenderToTexture = false;
 	m_bDrawingIn3DWorld = false;
 	m_PlaySoundFunc = NULL;
-	m_bInThink = false;
+	//m_bInThink = false;
 	m_bAllowJavaScript = false;
-	m_bAppDrivesInput = false;
-	m_nLastInputPollCount = 0;
+	//m_bAppDrivesInput = false;
+	//m_nLastInputPollCount = 0;
 
 	m_hCurrentFont = NULL;
-	m_pRestrictedPanel = NULL;
+	//m_pRestrictedPanel = NULL;
 
-	m_bNeedsKeyboard = true;
-	m_bNeedsMouse = true;
+	//m_bNeedsKeyboard = true;
+	//m_bNeedsMouse = true;
 	m_bUsingTempFullScreenBufferMaterial = false;
 	m_nFullScreenBufferMaterialId = -1;
 
@@ -213,7 +213,7 @@ CMatSystemSurface::CMatSystemSurface() : m_pEmbeddedPanel(NULL), m_pWhite(NULL)
 	m_nFullscreenViewportWidth = m_nFullscreenViewportHeight = 0;
 	m_pFullscreenRenderTarget = NULL;
 
-	m_cursorAlwaysVisible = false;
+	//m_cursorAlwaysVisible = false;
 }
 
 CMatSystemSurface::~CMatSystemSurface()
@@ -380,10 +380,10 @@ InitReturnVal_t CMatSystemSurface::Init( void )
 	m_PlaySoundFunc = NULL;
 
 	// Input system
-	InitInput();
+	//InitInput();
 
 	// Initialize cursors
-	InitCursors();
+	//InitCursors();
 
 	// fonts initialization
 	char language[64];
@@ -414,7 +414,7 @@ InitReturnVal_t CMatSystemSurface::Init( void )
 	// font manager needs the file system and material system for bitmap fonts
 	FontManager().SetInterfaces( g_pFullFileSystem, g_pMaterialSystem );
 
-	g_bSpewFocus = CommandLine()->FindParm( "-vguifocus" ) ? true : false;
+	//g_bSpewFocus = CommandLine()->FindParm( "-vguifocus" ) ? true : false;
 
 	return INIT_OK;
 }
@@ -440,7 +440,7 @@ void CMatSystemSurface::Shutdown( void )
 	m_FullScreenBufferMaterial.Shutdown();
 	m_FullScreenBuffer.Shutdown();
 
-	m_Titles.Purge();
+	//m_Titles.Purge();
 	m_PaintStateStack.Purge();
 
 #if defined( WIN32 ) && !defined( _X360 )
@@ -487,7 +487,7 @@ void CMatSystemSurface::Shutdown( void )
 	m_BitmapFontFileNames.RemoveAll();
 	m_BitmapFontFileMapping.RemoveAll();
 
-	Cursor_ClearUserCursors();
+	//Cursor_ClearUserCursors();
 
 #if defined( WIN32 ) && !defined( _X360 )
 	if ( gdiModule )
@@ -546,29 +546,29 @@ bool CMatSystemSurface::SupportsFeature(SurfaceFeature_e feature)
 //-----------------------------------------------------------------------------
 void CMatSystemSurface::AttachToWindow( void *hWnd, bool bLetAppDriveInput )
 {
-	InputDetachFromWindow( m_HWnd );
+	//InputDetachFromWindow( m_HWnd );
 	m_HWnd = hWnd;
 	if ( hWnd )
 	{
-		InputAttachToWindow( hWnd );
-		m_bAppDrivesInput = bLetAppDriveInput;
+		//InputAttachToWindow( hWnd );
+		//m_bAppDrivesInput = bLetAppDriveInput;
 	}
 	else
 	{
 		// Never call RunFrame stuff
-		m_bAppDrivesInput = true;
+		//m_bAppDrivesInput = true;
 	}
 }
 
-bool CMatSystemSurface::HandleInputEvent( const InputEvent_t &event )
-{
-	if ( !m_bAppDrivesInput )
-	{
-		g_pIInput->UpdateButtonState( event );
-	}
-
-	return InputHandleInputEvent( event );
-}
+//bool CMatSystemSurface::HandleInputEvent( const InputEvent_t &event )
+//{
+//	if ( !m_bAppDrivesInput )
+//	{
+//		g_pIInput->UpdateButtonState( event );
+//	}
+//
+//	return InputHandleInputEvent( event );
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -582,7 +582,7 @@ void CMatSystemSurface::DrawPanelIn3DSpace( vgui::VPANEL pRootPanel, const VMatr
 	Assert( pRootPanel );
 
 	// FIXME: When should such panels be solved?!?
-	SolveTraverse( pRootPanel, false );
+	g_pVGui->SolveTraverse( pRootPanel, false );
 
 	CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
 
@@ -762,29 +762,29 @@ void CMatSystemSurface::FinishDrawing( void )
 //-----------------------------------------------------------------------------
 void CMatSystemSurface::RunFrame()
 {
-	int nPollCount = g_pInputSystem->GetPollCount();
-	if ( m_nLastInputPollCount == nPollCount )
-		return;
+	//int nPollCount = g_pInputSystem->GetPollCount();
+	//if ( m_nLastInputPollCount == nPollCount )
+	//	return;
 
-	// If this isn't true, we've lost input!
-	if ( !m_bAppDrivesInput && m_nLastInputPollCount != nPollCount - 1 )
-	{
-		Assert( 0 );
-		Warning( "Vgui is losing input messages! Call brian!\n" );
-	}
+	//// If this isn't true, we've lost input!
+	//if ( !m_bAppDrivesInput && m_nLastInputPollCount != nPollCount - 1 )
+	//{
+	//	Assert( 0 );
+	//	Warning( "Vgui is losing input messages! Call brian!\n" );
+	//}
 
-	m_nLastInputPollCount = nPollCount;
+	//m_nLastInputPollCount = nPollCount;
 
-	if ( m_bAppDrivesInput )
-		return;
+	//if ( m_bAppDrivesInput )
+	//	return;
 
-	// Generate all input messages
-	int nEventCount = g_pInputSystem->GetEventCount();
-	const InputEvent_t* pEvents = g_pInputSystem->GetEventData( );
-	for ( int i = 0; i < nEventCount; ++i )
-	{
-		HandleInputEvent( pEvents[i] );
-	}
+	//// Generate all input messages
+	//int nEventCount = g_pInputSystem->GetEventCount();
+	//const InputEvent_t* pEvents = g_pInputSystem->GetEventData( );
+	//for ( int i = 0; i < nEventCount; ++i )
+	//{
+	//	HandleInputEvent( pEvents[i] );
+	//}
 }
 
 
@@ -2661,175 +2661,175 @@ void CMatSystemSurface::SetWorkspaceInsets( int left, int top, int right, int bo
 //-----------------------------------------------------------------------------
 // A bunch of methods needed for the windows version only
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::SetAsTopMost(VPANEL panel, bool state)
-{
-}
+//void CMatSystemSurface::SetAsTopMost(VPANEL panel, bool state)
+//{
+//}
 
-void CMatSystemSurface::SetAsToolBar(VPANEL panel, bool state)		// removes the window's task bar entry (for context menu's, etc.)
-{
-}
+//void CMatSystemSurface::SetAsToolBar(VPANEL panel, bool state)		// removes the window's task bar entry (for context menu's, etc.)
+//{
+//}
 
-void CMatSystemSurface::SetForegroundWindow (VPANEL panel)
-{
-	BringToFront(panel);
-}
+//void CMatSystemSurface::SetForegroundWindow (VPANEL panel)
+//{
+//	BringToFront(panel);
+//}
 
-void CMatSystemSurface::SetPanelVisible(VPANEL panel, bool state)
-{
-}
+//void CMatSystemSurface::SetPanelVisible(VPANEL panel, bool state)
+//{
+//}
+//
+//void CMatSystemSurface::SetMinimized(VPANEL panel, bool state)
+//{
+//	if (state)
+//	{
+//		g_pVGui->SetPlat(panel, VPANEL_MINIMIZED);
+//		g_pVGui->SetVisible(panel, false);
+//	}
+//	else
+//	{
+//		g_pVGui->SetPlat(panel, VPANEL_NORMAL);
+//	}
+//}
+//
+//bool CMatSystemSurface::IsMinimized(vgui::VPANEL panel)
+//{
+//	return (g_pVGui->Plat(panel) == VPANEL_MINIMIZED);
+//
+//}
 
-void CMatSystemSurface::SetMinimized(VPANEL panel, bool state)
-{
-	if (state)
-	{
-		g_pVGui->SetPlat(panel, VPANEL_MINIMIZED);
-		g_pVGui->SetVisible(panel, false);
-	}
-	else
-	{
-		g_pVGui->SetPlat(panel, VPANEL_NORMAL);
-	}
-}
+//void CMatSystemSurface::FlashWindow(VPANEL panel, bool state)
+//{
+//}
 
-bool CMatSystemSurface::IsMinimized(vgui::VPANEL panel)
-{
-	return (g_pVGui->Plat(panel) == VPANEL_MINIMIZED);
-
-}
-
-void CMatSystemSurface::FlashWindow(VPANEL panel, bool state)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CMatSystemSurface::SetTitle(VPANEL panel, const wchar_t *title)
-{
-	int entry = GetTitleEntry( panel );
-	if ( entry == -1 )
-	{
-		entry = m_Titles.AddToTail();
-	}
-
-	TitleEntry *e = &m_Titles[ entry ];
-	Assert( e );
-	wcsncpy( e->title, title, sizeof( e->title )/ sizeof( wchar_t ) );
-	e->panel = panel;
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-wchar_t const *CMatSystemSurface::GetTitle( VPANEL panel )
-{
-	int entry = GetTitleEntry( panel );
-	if ( entry != -1 )
-	{
-		TitleEntry *e = &m_Titles[ entry ];
-		return e->title;
-	}
+//void CMatSystemSurface::SetTitle(VPANEL panel, const wchar_t *title)
+//{
+//	int entry = GetTitleEntry( panel );
+//	if ( entry == -1 )
+//	{
+//		entry = m_Titles.AddToTail();
+//	}
+//
+//	TitleEntry *e = &m_Titles[ entry ];
+//	Assert( e );
+//	wcsncpy( e->title, title, sizeof( e->title )/ sizeof( wchar_t ) );
+//	e->panel = panel;
+//}
 
-	return NULL;
-}
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+//wchar_t const *CMatSystemSurface::GetTitle( VPANEL panel )
+//{
+//	int entry = GetTitleEntry( panel );
+//	if ( entry != -1 )
+//	{
+//		TitleEntry *e = &m_Titles[ entry ];
+//		return e->title;
+//	}
+//
+//	return NULL;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Private lookup method
 // Input  : *panel - 
 // Output : TitleEntry
 //-----------------------------------------------------------------------------
-int CMatSystemSurface::GetTitleEntry( vgui::VPANEL panel )
-{
-	for ( int i = 0; i < m_Titles.Count(); i++ )
-	{
-		TitleEntry* entry = &m_Titles[ i ];
-		if ( entry->panel == panel )
-			return i;
-	}
-	return -1;
-}
+//int CMatSystemSurface::GetTitleEntry( vgui::VPANEL panel )
+//{
+//	for ( int i = 0; i < m_Titles.Count(); i++ )
+//	{
+//		TitleEntry* entry = &m_Titles[ i ];
+//		if ( entry->panel == panel )
+//			return i;
+//	}
+//	return -1;
+//}
 
-void CMatSystemSurface::SwapBuffers(VPANEL panel)
-{
-}
+//void CMatSystemSurface::SwapBuffers(VPANEL panel)
+//{
+//}
 
-void CMatSystemSurface::Invalidate(VPANEL panel)
-{
-}
+//void CMatSystemSurface::Invalidate(VPANEL panel)
+//{
+//}
 
-void CMatSystemSurface::ApplyChanges()
-{
-}
+//void CMatSystemSurface::ApplyChanges()
+//{
+//}
 
 // notify icons?!?
-VPANEL CMatSystemSurface::GetNotifyPanel()
-{
-	return NULL;
-}
+//VPANEL CMatSystemSurface::GetNotifyPanel()
+//{
+//	return NULL;
+//}
+//
+//void CMatSystemSurface::SetNotifyIcon(VPANEL context, HTexture icon, VPANEL panelToReceiveMessages, const char *text)
+//{
+//}
 
-void CMatSystemSurface::SetNotifyIcon(VPANEL context, HTexture icon, VPANEL panelToReceiveMessages, const char *text)
-{
-}
+//bool CMatSystemSurface::IsWithin(int x, int y)
+//{
+//	return true;
+//}
 
-bool CMatSystemSurface::IsWithin(int x, int y)
-{
-	return true;
-}
+//bool CMatSystemSurface::ShouldPaintChildPanel(VPANEL childPanel)
+//{
+//	if ( m_pRestrictedPanel && ( m_pRestrictedPanel != childPanel ) && 
+//		 !g_pVGui->HasParent( childPanel, m_pRestrictedPanel ) )
+//	{
+//		return false;
+//	}
+//
+//	bool isPopup = ivgui()->IsPopup(childPanel);
+//	return !isPopup;
+//}
 
-bool CMatSystemSurface::ShouldPaintChildPanel(VPANEL childPanel)
-{
-	if ( m_pRestrictedPanel && ( m_pRestrictedPanel != childPanel ) && 
-		 !g_pVGui->HasParent( childPanel, m_pRestrictedPanel ) )
-	{
-		return false;
-	}
-
-	bool isPopup = ivgui()->IsPopup(childPanel);
-	return !isPopup;
-}
-
-bool CMatSystemSurface::RecreateContext(VPANEL panel)
-{
-	return false;
-}
+//bool CMatSystemSurface::RecreateContext(VPANEL panel)
+//{
+//	return false;
+//}
 
 //-----------------------------------------------------------------------------
 // Focus-related methods
 //-----------------------------------------------------------------------------
-bool CMatSystemSurface::HasFocus()
-{
-	return true;
-}
+//bool CMatSystemSurface::HasFocus()
+//{
+//	return true;
+//}
 
-void CMatSystemSurface::BringToFront(VPANEL panel)
-{
-	// move panel to top of list
-	g_pVGui->MoveToFront(panel);
-
-	// move panel to top of popup list
-	if ( g_pVGui->IsPopup( panel ) )
-	{
-		MovePopupToFront( panel );
-	}
-}
+//void CMatSystemSurface::BringToFront(VPANEL panel)
+//{
+//	// move panel to top of list
+//	g_pVGui->MoveToFront(panel);
+//
+//	// move panel to top of popup list
+//	if ( g_pVGui->IsPopup( panel ) )
+//	{
+//		MovePopupToFront( panel );
+//	}
+//}
 
 
 // engine-only focus handling (replacing WM_FOCUS windows handling)
-void CMatSystemSurface::SetTopLevelFocus(VPANEL pSubFocus)
-{
-	// walk up the hierarchy until we find what popup panel belongs to
-	while (pSubFocus)
-	{
-		if (ivgui()->IsPopup(pSubFocus) && ivgui()->IsMouseInputEnabled(pSubFocus))
-		{
-			BringToFront(pSubFocus);
-			break;
-		}
-		
-		pSubFocus = ivgui()->GetParent(pSubFocus);
-	}
-}
+//void CMatSystemSurface::SetTopLevelFocus(VPANEL pSubFocus)
+//{
+//	// walk up the hierarchy until we find what popup panel belongs to
+//	while (pSubFocus)
+//	{
+//		if (ivgui()->IsPopup(pSubFocus) && ivgui()->IsMouseInputEnabled(pSubFocus))
+//		{
+//			BringToFront(pSubFocus);
+//			break;
+//		}
+//		
+//		pSubFocus = ivgui()->GetParent(pSubFocus);
+//	}
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -2854,27 +2854,27 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //-----------------------------------------------------------------------------
 // handles mouse movement
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::SetCursorPos(int x, int y)
-{
-	CursorSetPos( m_HWnd, x, y );
-}
+//void CMatSystemSurface::SetCursorPos(int x, int y)
+//{
+//	CursorSetPos( m_HWnd, x, y );
+//}
+//
+//void CMatSystemSurface::GetCursorPos(int &x, int &y)
+//{
+//	CursorGetPos( m_HWnd, x, y );
+//}
 
-void CMatSystemSurface::GetCursorPos(int &x, int &y)
-{
-	CursorGetPos( m_HWnd, x, y );
-}
-
-void CMatSystemSurface::SetCursor(HCursor hCursor)
-{
-	if ( IsCursorLocked() )
-		return;
-
-	if ( _currentCursor != hCursor )
-	{
-		_currentCursor = hCursor;
-		CursorSelect( hCursor );
-	}
-}
+//void CMatSystemSurface::SetCursor(HCursor hCursor)
+//{
+//	if ( IsCursorLocked() )
+//		return;
+//
+//	if ( _currentCursor != hCursor )
+//	{
+//		_currentCursor = hCursor;
+//		CursorSelect( hCursor );
+//	}
+//}
 
 void CMatSystemSurface::EnableMouseCapture( VPANEL panel, bool state )
 {
@@ -2905,273 +2905,273 @@ void CMatSystemSurface::EnableMouseCapture( VPANEL panel, bool state )
 //-----------------------------------------------------------------------------
 // Purpose: Turns the panel into a standalone window
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::CreatePopup(VPANEL panel, bool minimized,  bool showTaskbarIcon, bool disabled , bool mouseInput , bool kbInput)
-{
-	if (!g_pVGui->GetParent(panel))
-	{
-		g_pVGui->SetParent(panel, GetEmbeddedPanel());
-	}
-	((VPanel *)panel)->SetPopup(true);
-	((VPanel *)panel)->SetKeyBoardInputEnabled(kbInput);
-	((VPanel *)panel)->SetMouseInputEnabled(mouseInput);
-
-	HPanel p = ivgui()->PanelToHandle( panel );
-
-	if ( m_PopupList.Find( p ) == m_PopupList.InvalidIndex() )
-	{
-		m_PopupList.AddToTail( p );
-	}
-	else
-	{
-		MovePopupToFront( panel );
-	}
-}
+//void CMatSystemSurface::CreatePopup(VPANEL panel, bool minimized,  bool showTaskbarIcon, bool disabled , bool mouseInput , bool kbInput)
+//{
+//	if (!g_pVGui->GetParent(panel))
+//	{
+//		g_pVGui->SetParent(panel, GetEmbeddedPanel());
+//	}
+//	((VPanel *)panel)->SetPopup(true);
+//	((VPanel *)panel)->SetKeyBoardInputEnabled(kbInput);
+//	((VPanel *)panel)->SetMouseInputEnabled(mouseInput);
+//
+//	HPanel p = ivgui()->PanelToHandle( panel );
+//
+//	if ( m_PopupList.Find( p ) == m_PopupList.InvalidIndex() )
+//	{
+//		m_PopupList.AddToTail( p );
+//	}
+//	else
+//	{
+//		MovePopupToFront( panel );
+//	}
+//}
 
 
 //-----------------------------------------------------------------------------
 // Create/destroy panels..
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::AddPanel(VPANEL panel)
-{
-	if (g_pVGui->IsPopup(panel))
-	{
-		// turn it into a popup menu
-		CreatePopup(panel, false);
-	}
-}
+//void CMatSystemSurface::AddPanel(VPANEL panel)
+//{
+//	if (g_pVGui->IsPopup(panel))
+//	{
+//		// turn it into a popup menu
+//		CreatePopup(panel, false);
+//	}
+//}
 
-void CMatSystemSurface::ReleasePanel(VPANEL panel)
-{
-	// Remove from popup list if needed and remove any dead popups while we're at it
-	RemovePopup( panel );
-
-	int entry = GetTitleEntry( panel );
-	if ( entry != -1 )
-	{
-		m_Titles.Remove( entry );
-	}
-}
+//void CMatSystemSurface::ReleasePanel(VPANEL panel)
+//{
+//	// Remove from popup list if needed and remove any dead popups while we're at it
+//	RemovePopup( panel );
+//
+//	int entry = GetTitleEntry( panel );
+//	if ( entry != -1 )
+//	{
+//		m_Titles.Remove( entry );
+//	}
+//}
 
 
 //-----------------------------------------------------------------------------
 // Popup accessors used by VGUI
 //-----------------------------------------------------------------------------
-int CMatSystemSurface::GetPopupCount(  )
-{
-	return m_PopupList.Count();
-}
+//int CMatSystemSurface::GetPopupCount(  )
+//{
+//	return m_PopupList.Count();
+//}
 
-VPANEL CMatSystemSurface::GetPopup(  int index )
-{
-	HPanel p = m_PopupList[ index ];
-	VPANEL panel = ivgui()->HandleToPanel( p );
-	return panel;
-}
+//VPANEL CMatSystemSurface::GetPopup(  int index )
+//{
+//	HPanel p = m_PopupList[ index ];
+//	VPANEL panel = ivgui()->HandleToPanel( p );
+//	return panel;
+//}
 
-void CMatSystemSurface::ResetPopupList(  )
-{
-	m_PopupList.RemoveAll();
-}
+//void CMatSystemSurface::ResetPopupList(  )
+//{
+//	m_PopupList.RemoveAll();
+//}
 
-void CMatSystemSurface::AddPopup( VPANEL panel )
-{
-	HPanel p = ivgui()->PanelToHandle( panel );
+//void CMatSystemSurface::AddPopup( VPANEL panel )
+//{
+//	HPanel p = ivgui()->PanelToHandle( panel );
+//
+//	if ( m_PopupList.Find( p ) == m_PopupList.InvalidIndex() )
+//	{
+//		m_PopupList.AddToTail( p );
+//	}
+//}
 
-	if ( m_PopupList.Find( p ) == m_PopupList.InvalidIndex() )
-	{
-		m_PopupList.AddToTail( p );
-	}
-}
 
-
-void CMatSystemSurface::RemovePopup( vgui::VPANEL panel )
-{
-	// Remove from popup list if needed and remove any dead popups while we're at it
-	int c = GetPopupCount();
-
-	for ( int i = c -  1; i >= 0 ; i-- )
-	{
-		VPANEL popup = GetPopup(i );
-		if ( popup && ( popup != panel ) )
-			continue;
-
-		m_PopupList.Remove( i );
-		break;
-	}
-}
+//void CMatSystemSurface::RemovePopup( vgui::VPANEL panel )
+//{
+//	// Remove from popup list if needed and remove any dead popups while we're at it
+//	int c = GetPopupCount();
+//
+//	for ( int i = c -  1; i >= 0 ; i-- )
+//	{
+//		VPANEL popup = GetPopup(i );
+//		if ( popup && ( popup != panel ) )
+//			continue;
+//
+//		m_PopupList.Remove( i );
+//		break;
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 // Methods associated with iterating + drawing the panel tree
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::AddPopupsToList( VPANEL panel )
-{
-	if (!g_pVGui->IsVisible(panel))
-		return;
-
-	// Add to popup list as we visit popups
-	// Note:  popup list is cleared in RunFrame which occurs before this call!!!
-	if ( g_pVGui->IsPopup( panel ) )
-	{
-		AddPopup( panel );
-	}
-
-	int count = g_pVGui->GetChildCount(panel);
-	for (int i = 0; i < count; ++i)
-	{
-		VPANEL child = g_pVGui->GetChild(panel, i);
-		AddPopupsToList( child );
-	}
-}
+//void CMatSystemSurface::AddPopupsToList( VPANEL panel )
+//{
+//	if (!g_pVGui->IsVisible(panel))
+//		return;
+//
+//	// Add to popup list as we visit popups
+//	// Note:  popup list is cleared in RunFrame which occurs before this call!!!
+//	if ( g_pVGui->IsPopup( panel ) )
+//	{
+//		AddPopup( panel );
+//	}
+//
+//	int count = g_pVGui->GetChildCount(panel);
+//	for (int i = 0; i < count; ++i)
+//	{
+//		VPANEL child = g_pVGui->GetChild(panel, i);
+//		AddPopupsToList( child );
+//	}
+//}
 
 
 //-----------------------------------------------------------------------------
 // Purpose: recurses the panels calculating absolute positions
 //			parents must be solved before children
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::InternalSolveTraverse(VPANEL panel)
-{
-	VPanel * RESTRICT vp = (VPanel *)panel;
-
-	vp->TraverseLevel( 1 );
-	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
-
-	// solve the parent
-	vp->Solve();
-	
-	CUtlVector< VPanel * > &children = vp->GetChildren();
-
-	// WARNING: Some of the think functions add/remove children, so make sure we
-	//  explicitly check for children.Count().
-	for ( int i = 0; i < children.Count(); ++i )
-	{
-		VPanel *child = children[ i ];
-		if (child->IsVisible())
-		{
-			InternalSolveTraverse( (VPANEL)child );
-		}
-	}
-
-	vp->TraverseLevel( -1 );
-}
+//void CMatSystemSurface::InternalSolveTraverse(VPANEL panel)
+//{
+//	VPanel * RESTRICT vp = (VPanel *)panel;
+//
+//	vp->TraverseLevel( 1 );
+//	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
+//
+//	// solve the parent
+//	vp->Solve();
+//	
+//	CUtlVector< VPanel * > &children = vp->GetChildren();
+//
+//	// WARNING: Some of the think functions add/remove children, so make sure we
+//	//  explicitly check for children.Count().
+//	for ( int i = 0; i < children.Count(); ++i )
+//	{
+//		VPanel *child = children[ i ];
+//		if (child->IsVisible())
+//		{
+//			InternalSolveTraverse( (VPANEL)child );
+//		}
+//	}
+//
+//	vp->TraverseLevel( -1 );
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: recurses the panels giving them a chance to do a user-defined think,
 //			PerformLayout and ApplySchemeSettings
 //			must be done child before parent
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::InternalThinkTraverse(VPANEL panel)
-{
-	VPanel * RESTRICT vp = (VPanel *)panel;
-
-	vp->TraverseLevel( 1 );
-	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
-
-	// think the parent
-	vp->Client()->Think();
-
-	CUtlVector< VPanel * > &children = vp->GetChildren();
-
-	// WARNING: Some of the think functions add/remove children, so make sure we
-	//  explicitly check for children.Count().
-	for ( int i = 0; i < children.Count(); ++i )
-	{
-		VPanel *child = children[ i ];
-		if ( child->IsVisible() )
-		{
-			InternalThinkTraverse( (VPANEL)child );
-		}
-	}
-	
-	vp->TraverseLevel( -1 );
-}
+//void CMatSystemSurface::InternalThinkTraverse(VPANEL panel)
+//{
+//	VPanel * RESTRICT vp = (VPanel *)panel;
+//
+//	vp->TraverseLevel( 1 );
+//	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
+//
+//	// think the parent
+//	vp->Client()->Think();
+//
+//	CUtlVector< VPanel * > &children = vp->GetChildren();
+//
+//	// WARNING: Some of the think functions add/remove children, so make sure we
+//	//  explicitly check for children.Count().
+//	for ( int i = 0; i < children.Count(); ++i )
+//	{
+//		VPanel *child = children[ i ];
+//		if ( child->IsVisible() )
+//		{
+//			InternalThinkTraverse( (VPANEL)child );
+//		}
+//	}
+//	
+//	vp->TraverseLevel( -1 );
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: recurses the panels giving them a chance to do apply settings,
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings)
-{
-	VPanel * RESTRICT vp = (VPanel *)panel;
-
-	vp->TraverseLevel( 1 );
-	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
-
-	CUtlVector< VPanel * > &children = vp->GetChildren();
-
-	// apply to the children...
-	for ( int i = 0; i < children.Count(); ++i )
-	{
-		VPanel *child = children[ i ];
-		if ( forceApplySchemeSettings || child->IsVisible() )
-		{	
-			InternalSchemeSettingsTraverse((VPANEL)child, forceApplySchemeSettings);
-		}
-	}
-	// and then the parent
-	vp->Client()->PerformApplySchemeSettings();
-
-	vp->TraverseLevel( -1 );
-}
+//void CMatSystemSurface::InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings)
+//{
+//	VPanel * RESTRICT vp = (VPanel *)panel;
+//
+//	vp->TraverseLevel( 1 );
+//	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
+//
+//	CUtlVector< VPanel * > &children = vp->GetChildren();
+//
+//	// apply to the children...
+//	for ( int i = 0; i < children.Count(); ++i )
+//	{
+//		VPanel *child = children[ i ];
+//		if ( forceApplySchemeSettings || child->IsVisible() )
+//		{	
+//			InternalSchemeSettingsTraverse((VPANEL)child, forceApplySchemeSettings);
+//		}
+//	}
+//	// and then the parent
+//	vp->Client()->PerformApplySchemeSettings();
+//
+//	vp->TraverseLevel( -1 );
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Walks through the panel tree calling Solve() on them all, in order
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::SolveTraverse(VPANEL panel, bool forceApplySchemeSettings)
-{
-	{
-		VPROF( "InternalSchemeSettingsTraverse" );
-		tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalSchemeSettingsTraverse", __FUNCTION__ );
-		InternalSchemeSettingsTraverse(panel, forceApplySchemeSettings);
-	}
-
-	{
-		VPROF( "InternalThinkTraverse" );
-		tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalThinkTraverse", __FUNCTION__ );
-		InternalThinkTraverse(panel);
-	}
-
-	{
-		VPROF( "InternalSolveTraverse" );
-		tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalSolveTraverse", __FUNCTION__ );
-		InternalSolveTraverse(panel);
-	}
-}
+//void CMatSystemSurface::SolveTraverse(VPANEL panel, bool forceApplySchemeSettings)
+//{
+//	{
+//		VPROF( "InternalSchemeSettingsTraverse" );
+//		tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalSchemeSettingsTraverse", __FUNCTION__ );
+//		InternalSchemeSettingsTraverse(panel, forceApplySchemeSettings);
+//	}
+//
+//	{
+//		VPROF( "InternalThinkTraverse" );
+//		tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalThinkTraverse", __FUNCTION__ );
+//		InternalThinkTraverse(panel);
+//	}
+//
+//	{
+//		VPROF( "InternalSolveTraverse" );
+//		tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - InternalSolveTraverse", __FUNCTION__ );
+//		InternalSolveTraverse(panel);
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Restricts rendering to a single panel
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::RestrictPaintToSinglePanel(VPANEL panel)
-{
-	if ( panel && m_pRestrictedPanel && m_pRestrictedPanel == input()->GetAppModalSurface() )
-	{
-		return;	// don't restrict drawing to a panel other than the modal one - that's a good way to hang the game.
-	}
-
-	m_pRestrictedPanel = panel;
-
-	if ( !input()->GetAppModalSurface() )
-	{
-		input()->SetAppModalSurface( panel );	// if painting is restricted to this panel, it had better be modal, or else you can get in some bad state...
-	}
-}
+//void CMatSystemSurface::RestrictPaintToSinglePanel(VPANEL panel)
+//{
+//	if ( panel && m_pRestrictedPanel && m_pRestrictedPanel == input()->GetAppModalSurface() )
+//	{
+//		return;	// don't restrict drawing to a panel other than the modal one - that's a good way to hang the game.
+//	}
+//
+//	m_pRestrictedPanel = panel;
+//
+//	if ( !input()->GetAppModalSurface() )
+//	{
+//		input()->SetAppModalSurface( panel );	// if painting is restricted to this panel, it had better be modal, or else you can get in some bad state...
+//	}
+//}
 
 
 //-----------------------------------------------------------------------------
 // Is a panel under the restricted panel?
 //-----------------------------------------------------------------------------
-bool CMatSystemSurface::IsPanelUnderRestrictedPanel( VPANEL panel )
-{
-	if ( !m_pRestrictedPanel )
-		return true;
-
-	while ( panel )
-	{
-		if ( panel == m_pRestrictedPanel )
-			return true;
-
-		panel = ivgui()->GetParent( panel );
-	}
-	return false;
-}
+//bool CMatSystemSurface::IsPanelUnderRestrictedPanel( VPANEL panel )
+//{
+//	if ( !m_pRestrictedPanel )
+//		return true;
+//
+//	while ( panel )
+//	{
+//		if ( panel == m_pRestrictedPanel )
+//			return true;
+//
+//		panel = ivgui()->GetParent( panel );
+//	}
+//	return false;
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -3215,6 +3215,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 	m_flZPos = 0.0f;								
 	if ( panel == GetEmbeddedPanel() )
 	{
+		VPANEL m_pRestrictedPanel = ivgui()->GetRestrictPaintSinglePanel();
 		if ( m_pRestrictedPanel )
 		{
 			// Paint the restricted panel, and its parent.
@@ -3246,7 +3247,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 		// since depth-test and depth-write are on, the front panels will occlude the underlying ones
 		{
 			VPROF( "CMatSystemSurface::PaintTraverse popups loop" );
-			int popups = GetPopupCount();
+			int popups = ivgui()->GetPopupCount();
 			if ( popups > 254 )
 			{
 				Warning( "Too many popups! Rendering will be bad!\n" );
@@ -3256,7 +3257,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 			int nStencilRef = 254;
 			for ( int i = popups - 1; i >= 0; --i )
 			{
-				VPANEL popupPanel = GetPopup( i );
+				VPANEL popupPanel = ivgui()->GetPopup( i );
 
 				if ( !popupPanel )
 					continue;
@@ -3264,7 +3265,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 				if ( !ivgui()->IsFullyVisible( popupPanel ) )
 					continue;
 
-				if ( !IsPanelUnderRestrictedPanel( popupPanel ) )
+				if ( !ivgui()->IsPanelUnderRestrictedPanel( popupPanel ) )
 					continue;
 
 				// This makes sure the drag/drop helper is always the first thing drawn
@@ -3842,10 +3843,10 @@ void CMatSystemSurface::SetClippingRect( int left, int top, int right, int botto
 //-----------------------------------------------------------------------------
 // Purpose: unlocks the cursor state
 //-----------------------------------------------------------------------------
-bool CMatSystemSurface::IsCursorLocked() const
-{
-	return ::IsCursorLocked();
-}
+//bool CMatSystemSurface::IsCursorLocked() const
+//{
+//	return ::IsCursorLocked();
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -3861,89 +3862,89 @@ void CMatSystemSurface::SetMouseCallbacks( GetMouseCallback_t GetFunc, SetMouseC
 //-----------------------------------------------------------------------------
 // Tells the surface to ignore windows messages
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::EnableWindowsMessages( bool bEnable )
-{
-	EnableInput( bEnable );
-}
+//void CMatSystemSurface::EnableWindowsMessages( bool bEnable )
+//{
+//	EnableInput( bEnable );
+//}
 
-void CMatSystemSurface::MovePopupToFront(VPANEL panel)
-{
-	HPanel p = ivgui()->PanelToHandle( panel );
+//void CMatSystemSurface::MovePopupToFront(VPANEL panel)
+//{
+//	HPanel p = ivgui()->PanelToHandle( panel );
+//
+//	int index = m_PopupList.Find( p );
+//	if ( index == m_PopupList.InvalidIndex() )
+//		return;
+//
+//	m_PopupList.Remove( index );
+//	m_PopupList.AddToTail( p );
+//
+//	if ( g_bSpewFocus )
+//	{
+//		char const *pName = ivgui()->GetName( panel );
+//		Msg( "%s moved to front\n", pName ? pName : "(no name)" ); 
+//	}
+//
+//	// If the modal panel isn't a parent, restore it to the top, to prevent a hard lock
+//	if ( input()->GetAppModalSurface() )
+//	{
+//		if ( !g_pVGui->HasParent(panel, input()->GetAppModalSurface()) )
+//		{
+//			HPanel p = ivgui()->PanelToHandle( input()->GetAppModalSurface() );
+//			index = m_PopupList.Find( p );
+//			if ( index != m_PopupList.InvalidIndex() )
+//			{
+//				m_PopupList.Remove( index );
+//				m_PopupList.AddToTail( p );
+//			}
+//		}
+//	}
+//
+//	ivgui()->PostMessage(panel, new KeyValues("OnMovedPopupToFront"), NULL);
+//}
 
-	int index = m_PopupList.Find( p );
-	if ( index == m_PopupList.InvalidIndex() )
-		return;
-
-	m_PopupList.Remove( index );
-	m_PopupList.AddToTail( p );
-
-	if ( g_bSpewFocus )
-	{
-		char const *pName = ivgui()->GetName( panel );
-		Msg( "%s moved to front\n", pName ? pName : "(no name)" ); 
-	}
-
-	// If the modal panel isn't a parent, restore it to the top, to prevent a hard lock
-	if ( input()->GetAppModalSurface() )
-	{
-		if ( !g_pVGui->HasParent(panel, input()->GetAppModalSurface()) )
-		{
-			HPanel p = ivgui()->PanelToHandle( input()->GetAppModalSurface() );
-			index = m_PopupList.Find( p );
-			if ( index != m_PopupList.InvalidIndex() )
-			{
-				m_PopupList.Remove( index );
-				m_PopupList.AddToTail( p );
-			}
-		}
-	}
-
-	ivgui()->PostMessage(panel, new KeyValues("OnMovedPopupToFront"), NULL);
-}
-
-void CMatSystemSurface::MovePopupToBack(VPANEL panel)
-{
-	HPanel p = ivgui()->PanelToHandle( panel );
-
-	int index = m_PopupList.Find( p );
-	if ( index == m_PopupList.InvalidIndex() )
-	{
-		return;
-	}
-
-	m_PopupList.Remove( index );
-	m_PopupList.AddToHead( p );
-}
+//void CMatSystemSurface::MovePopupToBack(VPANEL panel)
+//{
+//	HPanel p = ivgui()->PanelToHandle( panel );
+//
+//	int index = m_PopupList.Find( p );
+//	if ( index == m_PopupList.InvalidIndex() )
+//	{
+//		return;
+//	}
+//
+//	m_PopupList.Remove( index );
+//	m_PopupList.AddToHead( p );
+//}
 
 
-bool CMatSystemSurface::IsInThink( VPANEL panel)
-{
-	if ( m_bInThink )
-	{
-		if ( panel == m_CurrentThinkPanel ) // HasParent() returns true if you pass yourself in
-		{
-			return false;
-		}
-
-		return ivgui()->HasParent( panel, m_CurrentThinkPanel);
-	}
-	return false;
-}
+//bool CMatSystemSurface::IsInThink( VPANEL panel)
+//{
+//	if ( m_bInThink )
+//	{
+//		if ( panel == m_CurrentThinkPanel ) // HasParent() returns true if you pass yourself in
+//		{
+//			return false;
+//		}
+//
+//		return ivgui()->HasParent( panel, m_CurrentThinkPanel);
+//	}
+//	return false;
+//}
 
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CMatSystemSurface::IsCursorVisible()
-{
-	return m_cursorAlwaysVisible || (_currentCursor != dc_none);
-}
+//bool CMatSystemSurface::IsCursorVisible()
+//{
+//	return m_cursorAlwaysVisible || (_currentCursor != dc_none);
+//}
 
-void CMatSystemSurface::SetCursorAlwaysVisible( bool visible )
-{
-	m_cursorAlwaysVisible = visible;
-	CursorSelect( visible ? dc_alwaysvisible_push : dc_alwaysvisible_pop );
-}
+//void CMatSystemSurface::SetCursorAlwaysVisible( bool visible )
+//{
+//	m_cursorAlwaysVisible = visible;
+//	CursorSelect( visible ? dc_alwaysvisible_push : dc_alwaysvisible_pop );
+//}
 
 bool CMatSystemSurface::IsTextureIDValid(int id)
 {
@@ -3956,27 +3957,27 @@ void CMatSystemSurface::SetAllowHTMLJavaScript( bool state )
 	m_bAllowJavaScript = state; 
 }
 
-IHTML *CMatSystemSurface::CreateHTMLWindow(vgui::IHTMLEvents *events,VPANEL context)
-{
-	Assert( !"CMatSystemSurface::CreateHTMLWindow" );
-	return NULL;
-}
-
-
-void CMatSystemSurface::DeleteHTMLWindow(IHTML *htmlwin)
-{
-}
-
-
-
-void CMatSystemSurface::PaintHTMLWindow(IHTML *htmlwin)
-{
-}
-
-bool CMatSystemSurface::BHTMLWindowNeedsPaint(IHTML *htmlwin)
-{
-	return false;
-}
+//IHTML *CMatSystemSurface::CreateHTMLWindow(vgui::IHTMLEvents *events,VPANEL context)
+//{
+//	Assert( !"CMatSystemSurface::CreateHTMLWindow" );
+//	return NULL;
+//}
+//
+//
+//void CMatSystemSurface::DeleteHTMLWindow(IHTML *htmlwin)
+//{
+//}
+//
+//
+//
+//void CMatSystemSurface::PaintHTMLWindow(IHTML *htmlwin)
+//{
+//}
+//
+//bool CMatSystemSurface::BHTMLWindowNeedsPaint(IHTML *htmlwin)
+//{
+//	return false;
+//}
 
 //-----------------------------------------------------------------------------
 /*void CMatSystemSurface::DrawSetTextureRGBA( int id, const unsigned char* rgba, int wide, int tall )
@@ -4004,33 +4005,33 @@ void CMatSystemSurface::DrawUpdateRegionTextureRGBA( int nTextureID, int x, int 
 	TextureDictionary()->UpdateSubTextureRGBA( nTextureID, x, y, pchData, wide, tall, imageFormat );
 }
 
-void CMatSystemSurface::SetModalPanel(VPANEL )
-{
-}
+//void CMatSystemSurface::SetModalPanel(VPANEL )
+//{
+//}
+//
+//VPANEL CMatSystemSurface::GetModalPanel()
+//{
+//	return 0;
+//}
 
-VPANEL CMatSystemSurface::GetModalPanel()
-{
-	return 0;
-}
-
-void CMatSystemSurface::UnlockCursor()
-{
-	::LockCursor( false );
-}
-
-void CMatSystemSurface::LockCursor()
-{
-	::LockCursor( true );
-}
+//void CMatSystemSurface::UnlockCursor()
+//{
+//	::LockCursor( false );
+//}
+//
+//void CMatSystemSurface::LockCursor()
+//{
+//	::LockCursor( true );
+//}
 
 void CMatSystemSurface::SetTranslateExtendedKeys(bool state)
 {
 }
 
-VPANEL CMatSystemSurface::GetTopmostPopup()
-{
-	return 0;
-}
+//VPANEL CMatSystemSurface::GetTopmostPopup()
+//{
+//	return 0;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: gets the absolute coordinates of the screen (in screen space)
@@ -4045,139 +4046,139 @@ void CMatSystemSurface::GetAbsoluteWindowBounds(int &x, int &y, int &wide, int &
 
 // returns true if the specified panel is a child of the current modal panel
 // if no modal panel is set, then this always returns TRUE
-static bool IsChildOfModalSubTree(VPANEL panel)
-{
-	if ( !panel )
-		return true;
+//static bool IsChildOfModalSubTree(VPANEL panel)
+//{
+//	if ( !panel )
+//		return true;
+//
+//	VPANEL modalSubTree = input()->GetModalSubTree();
+//
+//	if ( modalSubTree )
+//	{
+//		bool restrictMessages = input()->ShouldModalSubTreeReceiveMessages();
+//
+//		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
+//		bool isChildOfModal = ivgui()->HasParent( panel, modalSubTree );
+//		if ( isChildOfModal )
+//		{
+//			return restrictMessages;
+//		}
+//		// If panel is not a child of modal subtree, then only allow messages if we're not restricting them to the modal subtree
+//		else
+//		{
+//			return !restrictMessages;
+//		}
+//	}
+//
+//	return true;
+//}
 
-	VPANEL modalSubTree = input()->GetModalSubTree();
+//void CMatSystemSurface::CalculateMouseVisible()
+//{
+//	int i;
+//	m_bNeedsMouse = false;
+//	m_bNeedsKeyboard = false;
+//
+//	if ( input()->GetMouseCapture() != 0 )
+//		return;
+//
+//	int c = ivgui()->GetPopupCount();
+//
+//	VPANEL modalSubTree = input()->GetModalSubTree();
+//	if ( modalSubTree )
+//	{
+//		for (i = 0 ; i < c ; i++ )
+//		{
+//			VPanel *pop = (VPanel *)ivgui()->GetPopup(i) ;
+//			bool isChildOfModalSubPanel = IsChildOfModalSubTree( (VPANEL)pop );
+//			if ( !isChildOfModalSubPanel )
+//				continue;
+//
+//			bool isVisible=pop->IsVisible();
+//			VPanel *p= pop->GetParent();
+//
+//			while (p && isVisible)
+//			{
+//				if( p->IsVisible()==false)
+//				{
+//					isVisible=false;
+//					break;
+//				}
+//				p=p->GetParent();
+//			}
+//
+//			if ( isVisible )
+//			{
+//				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
+//				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
+//
+//				// Seen enough!!!
+//				if ( m_bNeedsMouse && m_bNeedsKeyboard )
+//					break;
+//			}
+//		}
+//	}
+//	else
+//	{
+//		for (i = 0 ; i < c ; i++ )
+//		{
+//			VPanel *pop = (VPanel *)ivgui()->GetPopup(i) ;
+//			
+//			bool isVisible=pop->IsVisible();
+//			VPanel *p= pop->GetParent();
+//
+//			while (p && isVisible)
+//			{
+//				if( p->IsVisible()==false)
+//				{
+//					isVisible=false;
+//					break;
+//				}
+//				p=p->GetParent();
+//			}
+//		
+//			if ( isVisible )
+//			{
+//				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
+//				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
+//
+//				// Seen enough!!!
+//				if ( m_bNeedsMouse && m_bNeedsKeyboard )
+//					break;
+//			}
+//		}
+//	}
+//
+//	if (m_bNeedsMouse)
+//	{
+//		// NOTE: We must unlock the cursor *before* the set call here.
+//		// Failing to do this causes s_bCursorVisible to not be set correctly
+//		// (UnlockCursor fails to set it correctly)
+//		UnlockCursor();
+//		if ( _currentCursor == vgui::dc_none )
+//		{
+//			SetCursor(vgui::dc_arrow);
+//		}
+//	}
+//	else
+//	{
+//		SetCursor(vgui::dc_none);
+//		LockCursor();
+//	}
+//}
 
-	if ( modalSubTree )
-	{
-		bool restrictMessages = input()->ShouldModalSubTreeReceiveMessages();
-
-		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
-		bool isChildOfModal = ivgui()->HasParent( panel, modalSubTree );
-		if ( isChildOfModal )
-		{
-			return restrictMessages;
-		}
-		// If panel is not a child of modal subtree, then only allow messages if we're not restricting them to the modal subtree
-		else
-		{
-			return !restrictMessages;
-		}
-	}
-
-	return true;
-}
-
-void CMatSystemSurface::CalculateMouseVisible()
-{
-	int i;
-	m_bNeedsMouse = false;
-	m_bNeedsKeyboard = false;
-
-	if ( input()->GetMouseCapture() != 0 )
-		return;
-
-	int c = surface()->GetPopupCount();
-
-	VPANEL modalSubTree = input()->GetModalSubTree();
-	if ( modalSubTree )
-	{
-		for (i = 0 ; i < c ; i++ )
-		{
-			VPanel *pop = (VPanel *)surface()->GetPopup(i) ;
-			bool isChildOfModalSubPanel = IsChildOfModalSubTree( (VPANEL)pop );
-			if ( !isChildOfModalSubPanel )
-				continue;
-
-			bool isVisible=pop->IsVisible();
-			VPanel *p= pop->GetParent();
-
-			while (p && isVisible)
-			{
-				if( p->IsVisible()==false)
-				{
-					isVisible=false;
-					break;
-				}
-				p=p->GetParent();
-			}
-
-			if ( isVisible )
-			{
-				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
-				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
-
-				// Seen enough!!!
-				if ( m_bNeedsMouse && m_bNeedsKeyboard )
-					break;
-			}
-		}
-	}
-	else
-	{
-		for (i = 0 ; i < c ; i++ )
-		{
-			VPanel *pop = (VPanel *)surface()->GetPopup(i) ;
-			
-			bool isVisible=pop->IsVisible();
-			VPanel *p= pop->GetParent();
-
-			while (p && isVisible)
-			{
-				if( p->IsVisible()==false)
-				{
-					isVisible=false;
-					break;
-				}
-				p=p->GetParent();
-			}
-		
-			if ( isVisible )
-			{
-				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
-				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
-
-				// Seen enough!!!
-				if ( m_bNeedsMouse && m_bNeedsKeyboard )
-					break;
-			}
-		}
-	}
-
-	if (m_bNeedsMouse)
-	{
-		// NOTE: We must unlock the cursor *before* the set call here.
-		// Failing to do this causes s_bCursorVisible to not be set correctly
-		// (UnlockCursor fails to set it correctly)
-		UnlockCursor();
-		if ( _currentCursor == vgui::dc_none )
-		{
-			SetCursor(vgui::dc_arrow);
-		}
-	}
-	else
-	{
-		SetCursor(vgui::dc_none);
-		LockCursor();
-	}
-}
-
-bool CMatSystemSurface::NeedKBInput()
-{
-	return m_bNeedsKeyboard;
-}
+//bool CMatSystemSurface::NeedKBInput()
+//{
+//	return m_bNeedsKeyboard;
+//}
 
 void CMatSystemSurface::SurfaceGetCursorPos(int &x, int &y)
 {
-	GetCursorPos( x, y );
+	ivgui()->GetCursorPos( x, y );
 }
 void CMatSystemSurface::SurfaceSetCursorPos(int x, int y)
 {
-	SetCursorPos( x, y );
+	ivgui()->SetCursorPos( x, y );
 }
 
 //-----------------------------------------------------------------------------
@@ -4201,23 +4202,23 @@ float CMatSystemSurface::DrawGetAlphaMultiplier()
 // Input  : *curOrAniFile - 
 // Output : vgui::HCursor
 //-----------------------------------------------------------------------------
-vgui::HCursor CMatSystemSurface::CreateCursorFromFile( char const *curOrAniFile, char const *pPathID )
-{
-	return Cursor_CreateCursorFromFile( curOrAniFile, pPathID );
-}
+//vgui::HCursor CMatSystemSurface::CreateCursorFromFile( char const *curOrAniFile, char const *pPathID )
+//{
+//	return Cursor_CreateCursorFromFile( curOrAniFile, pPathID );
+//}
 
-void CMatSystemSurface::SetPanelForInput( VPANEL vpanel )
-{
-	g_pIInput->AssociatePanelWithInputContext( DEFAULT_INPUT_CONTEXT, vpanel );
-	if ( vpanel )
-	{
-		m_bNeedsKeyboard = true;
-	}
-	else
-	{
-		m_bNeedsKeyboard = false;
-	}
-}
+//void CMatSystemSurface::SetPanelForInput( VPANEL vpanel )
+//{
+//	g_pIInput->AssociatePanelWithInputContext( DEFAULT_INPUT_CONTEXT, vpanel );
+//	if ( vpanel )
+//	{
+//		m_bNeedsKeyboard = true;
+//	}
+//	else
+//	{
+//		m_bNeedsKeyboard = false;
+//	}
+//}
 
 #if defined( WIN32 ) && !defined( _X360 )
 static bool GetIconSize( ICONINFO& iconInfo, int& w, int& h )
@@ -4527,25 +4528,25 @@ void CMatSystemSurface::PopFullscreenViewport()
 // Purpose: Handle switching in and out of "render to fullscreen" mode. We don't
 //			actually support this mode in tools.
 //-----------------------------------------------------------------------------
-void CMatSystemSurface::SetSoftwareCursor( bool bUseSoftwareCursor )
-{
-	EnableSoftwareCursor( bUseSoftwareCursor );
-}
+//void CMatSystemSurface::SetSoftwareCursor( bool bUseSoftwareCursor )
+//{
+//	EnableSoftwareCursor( bUseSoftwareCursor );
+//}
 
 void CMatSystemSurface::PaintSoftwareCursor()
 {
-	if( !ShouldDrawSoftwareCursor() )
+	if( !ivgui()->GetSoftwareCursor() )
 		return;
 
 	// this asks Windows for the position RIGHT NOW, which should be the least 
 	// latent notion we have of where to draw the cursor
 	int x, y;
-	GetCursorPos( x, y );
+	ivgui()->GetCursorPos( x, y );
 
 	Color clr( 255, 255, 255, 255 );
 
 	float uOffset, vOffset;
-	int nTextureID = GetSoftwareCursorTexture( &uOffset, &vOffset );
+	int nTextureID = ivgui()->GetSoftwareCursorTextureId(&uOffset, &vOffset);
 	if( nTextureID <= 0 )
 		return;
 

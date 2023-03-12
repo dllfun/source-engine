@@ -1324,7 +1324,7 @@ void COptionsSubMultiplayer::OnFileSelected(const char *fullpath)
 {
 #ifndef _XBOX
 	// this can take a while, put up a waiting cursor
-	surface()->SetCursor(dc_hourglass);
+	ivgui()->SetCursor(dc_hourglass);
 
 	ConversionErrorType nErrorCode = ImgUtl_ConvertToVTFAndDumpVMT( fullpath, IsPosix() ? "/vgui/logos" : "\\vgui\\logos", 256, 256 );
 	if ( nErrorCode == CE_SUCCESS )
@@ -1345,7 +1345,7 @@ void COptionsSubMultiplayer::OnFileSelected(const char *fullpath)
 	}
 
 	// change the cursor back to normal
-	surface()->SetCursor(dc_user);
+	ivgui()->SetCursor(dc_user);
 #endif
 }
 

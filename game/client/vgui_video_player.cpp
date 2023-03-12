@@ -181,7 +181,7 @@ void VideoPlayerPanel::Activate( void )
 	SetVisible( true );
 	SetEnabled( true );
 
-	vgui::surface()->SetMinimized( GetVPanel(), false );
+	vgui::ivgui()->SetMinimized( GetVPanel(), false );
 }
 
 
@@ -194,7 +194,7 @@ void VideoPlayerPanel::OnClose( void )
 
 //	enginesound->NotifyEndMoviePlayback();
 
-	vgui::surface()->RestrictPaintToSinglePanel( NULL );
+	vgui::ivgui()->RestrictPaintToSinglePanel( NULL );
 
 	SetVisible( false );
 	MarkForDeletion();

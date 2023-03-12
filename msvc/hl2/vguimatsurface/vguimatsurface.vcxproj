@@ -150,9 +150,7 @@
     <ClCompile Include="..\..\..\vgui2\src\vgui_key_translation.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\asanstubs.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\Clip2D.cpp" />
-    <ClCompile Include="..\..\..\vguimatsurface\Cursor.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\FontTextureCache.cpp" />
-    <ClCompile Include="..\..\..\vguimatsurface\Input.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\MatSystemSurface.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\memorybitmap.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\TextureDictionary.cpp" />

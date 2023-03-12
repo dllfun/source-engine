@@ -1272,7 +1272,7 @@ void BuildModeDialog::EnableSaveButton()
 void BuildModeDialog::RevertToSaved()
 {
 	// hide the dialog as reloading will destroy it
-	surface()->SetPanelVisible(this->GetVPanel(), false);
+	ivgui()->SetPanelVisible(this->GetVPanel(), false);
 	m_pBuildGroup->ReloadControlSettings();
 }
 

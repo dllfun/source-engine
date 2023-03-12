@@ -1059,7 +1059,7 @@ void CEngineVGui::ActivateGameUI()
 	staticClientDLLPanel->SetVisible(false);
 	staticClientDLLPanel->SetMouseInputEnabled(false);
 
-	vgui::surface()->SetCursor( vgui::dc_arrow );
+	vgui::ivgui()->SetCursor( vgui::dc_arrow );
 
 	//staticGameDLLPanel->SetVisible( true );
 	//staticGameDLLPanel->SetMouseInputEnabled( true );
@@ -1604,7 +1604,7 @@ bool CEngineVGui::Key_Event( const InputEvent_t &event )
 		}
 	}
 
-	if ( g_pMatSystemSurface && g_pMatSystemSurface->HandleInputEvent( event ) )
+	if ( g_pVGui && g_pVGui->HandleInputEvent( event ) )
 	{
 		// always let the engine handle the console keys
 		// FIXME: Do a lookup of the key bound to toggleconsole
@@ -1664,7 +1664,7 @@ void CEngineVGui::Simulate()
 		VGui_UpdateDrawTreePanel();
 		VGui_UpdateTextureListPanel();
 
-		vgui::surface()->CalculateMouseVisible();
+		vgui::ivgui()->CalculateMouseVisible();
 		VGui_ActivateMouse();
 	}
 
@@ -1955,7 +1955,7 @@ void VGui_ActivateMouse()
 	}
 	*/
 			
-	if ( vgui::surface()->IsCursorLocked() && !g_bTextMode )
+	if ( vgui::ivgui()->IsCursorLocked() && !g_bTextMode )
 	{
 		g_ClientDLL->IN_ActivateMouse ();
 	}
@@ -2130,10 +2130,10 @@ void VGui_FindNamedPanels( CUtlVector< vgui::VPANEL >& panelList, char const *pa
 
 	// faster version of code below
 	// checks through each popup in order, top to bottom windows
-	int c = vgui::surface()->GetPopupCount();
+	int c = vgui::ivgui()->GetPopupCount();
 	for (int i = c - 1; i >= 0; i--)
 	{
-		vgui::VPANEL popup = vgui::surface()->GetPopup(i);
+		vgui::VPANEL popup = vgui::ivgui()->GetPopup(i);
 		if ( !popup )
 			continue;
 
@@ -2239,14 +2239,14 @@ void CEngineVGui::DrawMouseFocus( void )
 
 	vgui::VPANEL embedded = vgui::surface()->GetEmbeddedPanel();
 
-	if ( vgui::surface()->IsCursorVisible() && vgui::surface()->IsWithin(x, y) )
+	if ( vgui::ivgui()->IsCursorVisible() && vgui::ivgui()->IsWithin(x, y) )
 	{
 		// faster version of code below
 		// checks through each popup in order, top to bottom windows
-		int c = vgui::surface()->GetPopupCount();
+		int c = vgui::ivgui()->GetPopupCount();
 		for (int i = c - 1; i >= 0; i--)
 		{
-			vgui::VPANEL popup = vgui::surface()->GetPopup(i);
+			vgui::VPANEL popup = vgui::ivgui()->GetPopup(i);
 			if ( !popup )
 				continue;
 

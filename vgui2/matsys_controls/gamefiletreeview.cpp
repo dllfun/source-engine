@@ -246,7 +246,7 @@ void CGameFileTreeView::GenerateChildrenOfNode(int itemIndex)
 	if (!pFilePath[0])
 		return;
 
-	surface()->SetCursor(dc_waitarrow);
+	ivgui()->SetCursor(dc_waitarrow);
 
 	AddDirectoriesOfNode( itemIndex, pFilePath );
 

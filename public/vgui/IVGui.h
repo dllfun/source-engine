@@ -15,6 +15,7 @@
 #include "tier1/interface.h"
 #include "tier1/utlvector.h"
 #include <vgui/VGUI.h>
+#include <vgui/IHTML.h> // CreateHTML, PaintHTML 
 
 #include "appframework/IAppSystem.h"
 
@@ -207,6 +208,99 @@ public:
 	// sibling pins
 	virtual void SetSiblingPin(VPANEL vguiPanel, VPANEL newSibling, byte iMyCornerToPin = 0, byte iSiblingCornerToPinTo = 0) = 0;
 
+	// from surface
+	virtual void CreatePopup(VPANEL panel, bool minimised, bool showTaskbarIcon = true, bool disabled = false, bool mouseInput = true, bool kbInput = true) = 0;
+
+	virtual void MovePopupToFront(VPANEL panel) = 0;
+
+	virtual void MovePopupToBack(VPANEL panel) = 0;
+
+	virtual int GetPopupCount() = 0;
+
+	virtual VPANEL GetPopup(int index) = 0;
+
+	virtual void AddPanel(VPANEL panel) = 0;
+	virtual void ReleasePanel(VPANEL panel) = 0;
+
+	virtual void SetTitle(VPANEL panel, const wchar_t* title) = 0;
+
+	virtual const wchar_t* GetTitle(VPANEL panel) = 0;
+
+	virtual void BringToFront(VPANEL panel) = 0;
+
+	virtual void SetForegroundWindow(VPANEL panel) = 0;
+
+	virtual void SetTopLevelFocus(VPANEL panel) = 0;
+
+	virtual void SetPanelVisible(VPANEL panel, bool state) = 0;
+
+	virtual void SetMinimized(VPANEL panel, bool state) = 0;
+	virtual bool IsMinimized(VPANEL panel) = 0;
+	virtual void FlashWindow(VPANEL panel, bool state) = 0;
+
+	virtual void SwapBuffers(VPANEL panel) = 0;
+	virtual void Invalidate(VPANEL panel) = 0;
+
+	virtual void ApplyChanges() = 0;
+	virtual bool IsWithin(int x, int y) = 0;
+	virtual bool HasFocus() = 0;
+
+	virtual void SolveTraverse(VPANEL panel, bool forceApplySchemeSettings = false) = 0;
+
+	virtual void SetAsToolBar(VPANEL panel, bool state) = 0;
+
+	virtual void SetAsTopMost(VPANEL panel, bool state) = 0;
+
+	// notify icons?!?
+	virtual VPANEL GetNotifyPanel() = 0;
+	virtual void SetNotifyIcon(VPANEL context, HTexture icon, VPANEL panelToReceiveMessages, const char* text) = 0;
+
+	virtual bool RecreateContext(VPANEL panel) = 0;
+
+	virtual void RestrictPaintToSinglePanel(VPANEL panel) = 0;
+	virtual bool IsPanelUnderRestrictedPanel(VPANEL panel) = 0 ;
+	virtual VPANEL GetRestrictPaintSinglePanel() = 0 ;
+	virtual bool ShouldPaintChildPanel(VPANEL childPanel) = 0;
+
+	virtual IHTML* CreateHTMLWindow(vgui::IHTMLEvents* events, VPANEL context) = 0;
+	virtual void PaintHTMLWindow(vgui::IHTML* htmlwin) = 0;
+	virtual void DeleteHTMLWindow(IHTML* htmlwin) = 0;
+	virtual bool BHTMLWindowNeedsPaint(IHTML* htmlwin) = 0;
+
+	virtual void SetModalPanel(VPANEL) = 0;
+	virtual VPANEL GetModalPanel() = 0;
+
+	virtual VPANEL GetTopmostPopup() = 0;
+
+	virtual void CalculateMouseVisible() = 0;
+	virtual bool NeedKBInput() = 0;
+
+	virtual void SetPanelForInput(VPANEL vpanel) = 0;
+
+	virtual bool IsCursorLocked(void) const = 0;
+
+	virtual void SetCursor(HCursor cursor) = 0;
+
+	virtual bool IsCursorVisible() = 0;
+
+	virtual void SetCursorAlwaysVisible(bool visible) = 0;
+
+	virtual void UnlockCursor() = 0;
+	virtual void LockCursor() = 0;
+
+	virtual void SetCursorPos(int x, int y) = 0;
+	virtual void GetCursorPos(int& x, int& y) = 0;
+
+	virtual vgui::HCursor CreateCursorFromFile(char const* curOrAniFile, char const* pPathID = 0) = 0;
+
+	virtual void AttachToWindow(void* hwnd, bool bLetAppDriveInput) = 0;
+
+	virtual void SetSoftwareCursor(bool bUseSoftwareCursor) = 0;
+	virtual bool GetSoftwareCursor() = 0;
+	virtual int GetSoftwareCursorTextureId(float* px, float* py) = 0;
+
+	virtual void EnableWindowsMessages(bool bEnable) = 0;
+	virtual bool HandleInputEvent(const InputEvent_t& event) = 0;
 };
 
 #define VGUI_IVGUI_INTERFACE_VERSION "VGUI_ivgui008"

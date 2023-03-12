@@ -96,6 +96,6 @@ void CGameConsoleDialog::OnClosedByHittingTilde()
 	}
 	else
 	{
-		vgui::surface()->RestrictPaintToSinglePanel( LoadingDialog()->GetVPanel() );
+		vgui::ivgui()->RestrictPaintToSinglePanel( LoadingDialog()->GetVPanel() );
 	}
 }

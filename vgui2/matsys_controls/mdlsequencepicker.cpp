@@ -416,7 +416,7 @@ void CMDLSequencePicker::OnFileSelected()
 	if ( pkv->GetInt("dir") || pkv->GetInt("root") )
 		return;
 
-	surface()->SetCursor(dc_waitarrow);
+	ivgui()->SetCursor(dc_waitarrow);
 
 	const char *pFullPathName = pkv->GetString( "path" );
 

@@ -1432,7 +1432,7 @@ void CBaseAssetPicker::OnItemSelected( KeyValues *kv )
 		Q_FixSlashes( pBuf );
 		m_pFullPath->SetText( pBuf );
 
-		surface()->SetCursor( dc_waitarrow );
+		ivgui()->SetCursor( dc_waitarrow );
 		OnSelectedAssetPicked( pSelectedAsset );
 		return;
 	}

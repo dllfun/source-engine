@@ -997,10 +997,10 @@ void CBonusMapsDialog::OnFileSelected( const char *fullpath )
 		return;
 
 	// this can take a while, put up a waiting cursor
-	surface()->SetCursor(dc_hourglass);
+	ivgui()->SetCursor(dc_hourglass);
 
 	ImportZippedBonusMaps( fullpath );
 
 	// change the cursor back to normal
-	surface()->SetCursor(dc_user);
+	ivgui()->SetCursor(dc_user);
 }

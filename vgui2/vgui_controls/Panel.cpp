@@ -823,7 +823,7 @@ void Panel::MakeReadyForUse()
 {
 //	PerformApplySchemeSettings();
 	UpdateSiblingPin();
-	surface()->SolveTraverse( GetVPanel(), true );
+	ivgui()->SolveTraverse( GetVPanel(), true );
 }
 
 	
@@ -1088,7 +1088,7 @@ void Panel::Repaint()
 	_flags.SetFlag( NEEDS_REPAINT );
     if (surface())
     {
-        surface()->Invalidate(GetVPanel());
+		ivgui()->Invalidate(GetVPanel());
     }
 }
 
@@ -1131,7 +1131,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 {
 	if ( m_bWorldPositionCurrentFrame )
 	{
-		surface()->SolveTraverse( GetVPanel() );
+		ivgui()->SolveTraverse( GetVPanel() );
 	}
 
 	if ( !IsVisible() )
@@ -1219,7 +1219,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 		VPANEL child = children[ i ];
 		bool bVisible = ivgui()->IsVisible( child );
 
-		if ( surface()->ShouldPaintChildPanel( child ) )
+		if (ivgui()->ShouldPaintChildPanel( child ) )
 		{
 			if ( bVisible )
 			{
@@ -1229,7 +1229,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 		else
 		{
 			// Invalidate the child panel so that it gets redrawn
-			surface()->Invalidate( child );
+			ivgui()->Invalidate( child );
 
 			// keep traversing the tree, just don't allow anyone to paint after here
 			if ( bVisible )
@@ -1279,7 +1279,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 
 	surface()->DrawSetAlphaMultiplier( oldAlphaMultiplier );
 
-	surface()->SwapBuffers( vpanel );
+	ivgui()->SwapBuffers( vpanel );
 
 	if( bPushedViewport )
 	{
@@ -1541,7 +1541,7 @@ void Panel::MoveToFront(void)
 	// FIXME: only use ivgui() as per src branch?
 	if (IsPopup())
 	{
-		surface()->BringToFront(GetVPanel());
+		ivgui()->BringToFront(GetVPanel());
 	}
 	else
 	{
@@ -2943,7 +2943,7 @@ void Panel::InternalSetCursor()
 				cursor = input()->GetCursorOveride();
 			}
 
-			surface()->SetCursor(cursor);
+			ivgui()->SetCursor(cursor);
 		}
 	}
 }
@@ -2977,7 +2977,7 @@ void Panel::OnThink()
 			}
 
 			// allow the cursor to change based upon things like changing keystate, etc.
-			surface()->SetCursor( m_pDragDrop->m_hCurrentDrop->GetDropCursor( m_pDragDrop->m_DragData ) );
+			ivgui()->SetCursor( m_pDragDrop->m_hCurrentDrop->GetDropCursor( m_pDragDrop->m_DragData ) );
 
 			if ( !m_pDragDrop->m_bDropMenuShown )
 			{
@@ -3013,7 +3013,7 @@ void Panel::OnThink()
 							menu->SetPos( x, y );
 							menu->SetVisible( true );
 							menu->MakePopup();
-							surface()->MovePopupToFront( menu->GetVPanel() );
+							ivgui()->MovePopupToFront( menu->GetVPanel() );
 							if ( menu->GetItemCount() > 0 )
 							{
 								int id = menu->GetMenuID( 0 );
@@ -3419,7 +3419,7 @@ void Panel::ParentLocalToScreen(int &x, int &y)
 
 void Panel::MakePopup(bool showTaskbarIcon,bool disabled)
 {
-	surface()->CreatePopup(GetVPanel(), false, showTaskbarIcon,disabled);
+	ivgui()->CreatePopup(GetVPanel(), false, showTaskbarIcon,disabled);
 }
 
 void Panel::SetCursor(HCursor cursor)
@@ -3434,7 +3434,7 @@ HCursor Panel::GetCursor()
 
 void Panel::SetCursorAlwaysVisible( bool visible )
 {
-	surface()->SetCursorAlwaysVisible( visible );
+	ivgui()->SetCursorAlwaysVisible( visible );
 }
 
 void Panel::SetMinimumSize(int wide,int tall)
@@ -5708,7 +5708,7 @@ void Panel::SetMouseInputEnabled( bool state )
 	{
 	GetChild(i)->SetMouseInput(state);
 	}*/
-	vgui::surface()->CalculateMouseVisible();
+	vgui::ivgui()->CalculateMouseVisible();
 }
 
 bool Panel::IsKeyBoardInputEnabled()
@@ -7088,14 +7088,14 @@ void Panel::OnContinueDragging()
 	}
 
 	// it's not okay until we find a droppable panel
-	surface()->SetCursor( dc_no );
+	ivgui()->SetCursor( dc_no );
 
 	if ( dropTarget )
 	{
 		if ( dropTarget != this || IsSelfDroppable( m_pDragDrop->m_DragData ) )
 		{
 			m_pDragDrop->m_hCurrentDrop = dropTarget;
-			surface()->SetCursor( dropTarget->GetDropCursor( m_pDragDrop->m_DragData ) );
+			ivgui()->SetCursor( dropTarget->GetDropCursor( m_pDragDrop->m_DragData ) );
 		}
 	}
 
@@ -7332,10 +7332,10 @@ void CDragDropHelperPanel::AddPanel( Panel *current )
 
 	Menu *hover = current->GetDragDropInfo()->m_hDropContextMenu.Get();
 
-	surface()->MovePopupToFront( GetVPanel() );
+	ivgui()->MovePopupToFront( GetVPanel() );
 	if ( hover && hover->IsPopup() )
 	{
-		surface()->MovePopupToFront( hover->GetVPanel() );
+		ivgui()->MovePopupToFront( hover->GetVPanel() );
 	}
 
 	int c = m_PaintList.Count();
@@ -7414,14 +7414,14 @@ Panel *Panel::FindDropTargetPanel()
 	VPANEL embedded = surface()->GetEmbeddedPanel();
 	VPANEL helper = s_DragDropHelper.Get()->GetVPanel();
 
-	if ( surface()->IsCursorVisible() && surface()->IsWithin(x, y) )
+	if (ivgui()->IsCursorVisible() && ivgui()->IsWithin(x, y) )
 	{
 		// faster version of code below
 		// checks through each popup in order, top to bottom windows
-		int c = surface()->GetPopupCount();
+		int c = ivgui()->GetPopupCount();
 		for (int i = c - 1; i >= 0 && hits.Count() == 0; i--)
 		{
-			VPANEL popup = surface()->GetPopup(i);
+			VPANEL popup = ivgui()->GetPopup(i);
 			if ( popup == embedded )
 				continue;
 

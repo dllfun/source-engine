@@ -169,7 +169,7 @@ void CInput::DeactivateMouse (void)
 #endif
 		}
 		m_fMouseActive = false;
-		vgui::surface()->SetCursor( vgui::dc_arrow );
+		vgui::ivgui()->SetCursor( vgui::dc_arrow );
 #if !defined( PLATFORM_WINDOWS )
 		// now put the mouse back in the middle of the screen
 		ResetMouse();
@@ -584,7 +584,7 @@ void CInput::AccumulateMouse( void )
 	int y = h >> 1;	y;
 
 	//only accumulate mouse if we are not moving the camera with the mouse
-	if ( !m_fCameraInterceptingMouse && vgui::surface()->IsCursorLocked() )
+	if ( !m_fCameraInterceptingMouse && vgui::ivgui()->IsCursorLocked() )
 	{
 		//Assert( !vgui::surface()->IsCursorVisible() );
 		// By design, we follow the old mouse path even when using SDL for Windows, to retain old mouse behavior.
@@ -662,7 +662,7 @@ void CInput::MouseMove( CUserCmd *cmd )
 	//jjb - this disables normal mouse control if the user is trying to 
 	//      move the camera, or if the mouse cursor is visible 
 	if ( !m_fCameraInterceptingMouse && 
-		 !vgui::surface()->IsCursorVisible() )
+		 !vgui::ivgui()->IsCursorVisible() )
 	{
 		// Sample mouse one more time
 		AccumulateMouse();
@@ -702,7 +702,7 @@ void CInput::GetFullscreenMousePos( int *mx, int *my, int *unclampedx /*=NULL*/,
 	Assert( mx );
 	Assert( my );
 
-	if ( !vgui::surface()->IsCursorVisible() )
+	if ( !vgui::ivgui()->IsCursorVisible() )
 	{
 		return;
 	}

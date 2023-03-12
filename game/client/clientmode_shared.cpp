@@ -862,7 +862,7 @@ void ClientModeShared::Enable()
 	m_pViewport->SetProportional( true );
 
 	m_pViewport->SetCursor( m_CursorNone );
-	vgui::surface()->SetCursor( m_CursorNone );
+	vgui::ivgui()->SetCursor( m_CursorNone );
 
 	m_pViewport->SetVisible( true );
 	if ( m_pViewport->IsKeyBoardInputEnabled() )

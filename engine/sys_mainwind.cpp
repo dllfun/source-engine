@@ -372,7 +372,7 @@ void CGame::DispatchInputEvent( const InputEvent_t &event )
 			g_ClientDLL->IN_TouchEvent( event.m_nType, event.m_nData, event.m_nData2, event.m_nData3 );
 	default:
 		// Let vgui have the first whack at events
-		if ( g_pMatSystemSurface && g_pMatSystemSurface->HandleInputEvent( event ) )
+		if ( g_pVGui && g_pVGui->HandleInputEvent( event ) )
 			break;
 
 		for ( int i=0; i < ARRAYSIZE( g_GameMessageHandlers ); i++ )
@@ -1141,6 +1141,14 @@ void CGame::AttachToWindow()
 #endif
 #endif // WIN32
     
+	if (g_pVGui) {
+#if defined( WIN32 )
+		g_pVGui->AttachToWindow((void*)m_hWindow, true);
+#else
+		g_pVGui->AttachToWindow((void*)m_pSDLWindow, true);
+#endif
+		g_pVGui->EnableWindowsMessages(true);
+	}
 	if ( g_pInputSystem )
 	{
 		// Attach the input system window proc
@@ -1161,7 +1169,7 @@ void CGame::AttachToWindow()
 #else
 		g_pMatSystemSurface->AttachToWindow( (void *)m_pSDLWindow, true );
 #endif
-		g_pMatSystemSurface->EnableWindowsMessages( true );
+		//g_pMatSystemSurface->EnableWindowsMessages( true );
 	}
 }
 
@@ -1175,6 +1183,9 @@ void CGame::DetachFromWindow()
 	}
 #endif
 
+	if (g_pVGui) {
+		g_pVGui->AttachToWindow( NULL ,true);
+	}
 	if ( g_pMatSystemSurface )
 	{
 		// Detach the vgui matsurface window proc

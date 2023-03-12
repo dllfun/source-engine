@@ -585,7 +585,7 @@ void CInputSystem::RunFrame()
 	// Mouse has wandered "off" the modal panel, just force a regular arrow cursor until it wanders back within the proper bounds
 	else if ( pContext->_appModalPanel )
 	{
-		g_pSurface->SetCursor( vgui::dc_arrow );
+		g_pIVgui->SetCursor( vgui::dc_arrow );
 	}
 
 	//clear mouse and key states
@@ -706,21 +706,21 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 
 	VPanel *pRoot = (VPanel *)pContext->_rootPanel;
 	VPanel *top = pRoot;
-	if ( g_pSurface->GetPopupCount() > 0 )
+	if ( g_pIVgui->GetPopupCount() > 0 )
 	{
 		// find the highest-level window that is both visible and a popup
-		int nIndex = g_pSurface->GetPopupCount();
+		int nIndex = g_pIVgui->GetPopupCount();
 
 		while ( nIndex )
 		{			
-			top = (VPanel *)g_pSurface->GetPopup( --nIndex );
+			top = (VPanel *)g_pIVgui->GetPopup( --nIndex );
 
 			// traverse the hierarchy and check if the popup really is visible
 			if (top &&
 				// top->IsPopup() &&  // These are right out of of the popups list!!!
 				top->IsVisible() && 
 				top->IsKeyBoardInputEnabled() && 
-				!g_pSurface->IsMinimized((VPANEL)top) &&
+				!g_pIVgui->IsMinimized((VPANEL)top) &&
 				IsChildOfModalSubTree( (VPANEL)top ) &&
 				(!pRoot || top->HasParent( pRoot )) )
 			{
@@ -737,7 +737,7 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 					p=p->GetParent();
 				}
 
-				if ( bIsVisible && !g_pSurface->IsMinimized( (VPANEL)top ) )
+				if ( bIsVisible && !g_pIVgui->IsMinimized( (VPANEL)top ) )
 					break;
 			}
 
@@ -756,7 +756,7 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 	}
 
 	// check to see if any of this surfaces panels have the focus
-	if (!g_pSurface->HasFocus())
+	if (!g_pIVgui->HasFocus())
 	{
 		wantedKeyFocus=NULL;
 	}
@@ -938,16 +938,16 @@ VPanel *CInputSystem::GetMouseFocusIgnoringModalSubtree()
 
 	if (!pContext->_rootPanel)
 	{
-		if (g_pSurface->IsCursorVisible() && g_pSurface->IsWithin(x, y))
+		if (g_pIVgui->IsCursorVisible() && g_pIVgui->IsWithin(x, y))
 		{
 			// faster version of code below
 			// checks through each popup in order, top to bottom windows
-			for (int i = g_pSurface->GetPopupCount() - 1; i >= 0; i--)
+			for (int i = g_pIVgui->GetPopupCount() - 1; i >= 0; i--)
 			{
-				VPanel *popup = (VPanel *)g_pSurface->GetPopup(i);
+				VPanel *popup = (VPanel *)g_pIVgui->GetPopup(i);
 				VPanel *panel = popup;
 				bool wantsMouse = panel->IsMouseInputEnabled();
-				bool isVisible = !g_pSurface->IsMinimized((VPANEL)panel);
+				bool isVisible = !g_pIVgui->IsMinimized((VPANEL)panel);
 
 				while ( isVisible && panel && panel->GetParent() ) // only consider panels that want mouse input
 				{
@@ -999,14 +999,14 @@ void CInputSystem::UpdateMouseFocus(int x, int y)
 
 	InputContext_t *pContext = GetInputContext( m_hContext );
 
-	if (g_pSurface->IsCursorVisible() && g_pSurface->IsWithin(x, y))
+	if (g_pIVgui->IsCursorVisible() && g_pIVgui->IsWithin(x, y))
 	{
 		// faster version of code below
 		// checks through each popup in order, top to bottom windows
-		int c = g_pSurface->GetPopupCount();
+		int c = g_pIVgui->GetPopupCount();
 		for (int i = c - 1; i >= 0; i--)
 		{
-			VPanel *popup = (VPanel *)g_pSurface->GetPopup(i);
+			VPanel *popup = (VPanel *)g_pIVgui->GetPopup(i);
 			VPanel *panel = popup;
 
 			if ( pContext->_rootPanel && !popup->HasParent((VPanel*)pContext->_rootPanel) )
@@ -1022,7 +1022,7 @@ void CInputSystem::UpdateMouseFocus(int x, int y)
 			if ( !wantsMouse )
 				continue;
 
-			bool isVisible = !g_pSurface->IsMinimized((VPANEL)panel);
+			bool isVisible = !g_pIVgui->IsMinimized((VPANEL)panel);
 			if ( !isVisible )
 				continue;
 
@@ -1561,7 +1561,7 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 	// and if we are make sure this panel is a child of us.
 	if ( IsChildOfModalPanel( (VPANEL)pTargetPanel ) )
 	{	
-		g_pSurface->SetTopLevelFocus( (VPANEL)pTargetPanel );
+		g_pIVgui->SetTopLevelFocus( (VPANEL)pTargetPanel );
 	}
 
 	return bFilter;
@@ -1601,7 +1601,7 @@ bool CInputSystem::InternalMouseDoublePressed(MouseCode code)
 	// and if we are make sure this panel is a child of us.
 	if (IsChildOfModalPanel((VPANEL)pTargetPanel))
 	{	
-		g_pSurface->SetTopLevelFocus((VPANEL)pTargetPanel);
+		g_pIVgui->SetTopLevelFocus((VPANEL)pTargetPanel);
 	}
 
 	return bFilter;

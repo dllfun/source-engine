@@ -155,7 +155,7 @@ CColorXYPreview::CColorXYPreview( vgui::Panel *pParent, const char *pName ) : Ba
 	m_CurrentColor.r = m_CurrentColor.g = m_CurrentColor.b = 255;
 	SetMode( COLOR_TYPE_HSV, CHANNEL_HUE );
 	SetMouseInputEnabled( true );
-	m_hPickerCursor = surface()->CreateCursorFromFile( "resource/colorpicker.cur" );
+	m_hPickerCursor = ivgui()->CreateCursorFromFile( "resource/colorpicker.cur" );
 	SetCursor( m_hPickerCursor );
 	m_bDraggingMouse = false;
 }
