@@ -300,15 +300,15 @@ struct PanelMap_t
 
 // for use in class declarations
 // declares the static variables and functions needed for the data description iteration
-#define DECLARE_PANELMAP() \
-	static vgui::PanelMap_t m_PanelMap; \
-	static vgui::MessageMapItem_t m_MessageMap[]; \
-	virtual vgui::PanelMap_t *GetPanelMap( void );
+//#define DECLARE_PANELMAP() \
+//	static vgui::PanelMap_t m_PanelMap; \
+//	static vgui::MessageMapItem_t m_MessageMap[]; \
+//	virtual vgui::PanelMap_t *GetPanelMap( void );
 
 // could embed typeid() into here as well?
-#define IMPLEMENT_PANELMAP( derivedClass, baseClass ) \
-	vgui::PanelMap_t derivedClass::m_PanelMap = { derivedClass::m_MessageMap, ARRAYSIZE(derivedClass::m_MessageMap), #derivedClass, &baseClass::m_PanelMap }; \
-	vgui::PanelMap_t *derivedClass::GetPanelMap( void ) { return &m_PanelMap; }
+//#define IMPLEMENT_PANELMAP( derivedClass, baseClass ) \
+//	vgui::PanelMap_t derivedClass::m_PanelMap = { derivedClass::m_MessageMap, ARRAYSIZE(derivedClass::m_MessageMap), #derivedClass, &baseClass::m_PanelMap }; \
+//	vgui::PanelMap_t *derivedClass::GetPanelMap( void ) { return &m_PanelMap; }
 
 typedef vgui::Panel *( *PANELCREATEFUNC )( void );
 

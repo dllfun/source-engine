@@ -404,6 +404,6 @@ public:
 
 }
 
-#define VGUI_SURFACE_INTERFACE_VERSION "VGUI_Surface030"
+//#define VGUI_SURFACE_INTERFACE_VERSION "VGUI_Surface030"
 
 #endif // ISURFACE_H

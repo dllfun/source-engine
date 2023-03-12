@@ -39,7 +39,7 @@ bool CVguiMatSysApp::Create()
 		{ "materialsystem.dll",		MATERIAL_SYSTEM_INTERFACE_VERSION },
 
 		// NOTE: This has to occur before vgui2.dll so it replaces vgui2's surface implementation
-		{ "vguimatsurface.dll",		VGUI_SURFACE_INTERFACE_VERSION },
+		{ "vguimatsurface.dll",		MAT_SYSTEM_SURFACE_INTERFACE_VERSION },
 		{ "vgui2.dll",				VGUI_IVGUI_INTERFACE_VERSION },
 
 		// Required to terminate the list

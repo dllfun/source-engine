@@ -1765,7 +1765,7 @@ public:
 		// parent is ignored, since we want look like we're steal focus from the parent (we'll become modal below)
 		int w = 500;
 		int h = 200;
-		if (ipanel()->IsProportional(hParent))
+		if (ivgui()->IsProportional(hParent))
 		{
 			SetProportional(true);
 			w = scheme()->GetProportionalScaledValueEx(GetScheme(), w);

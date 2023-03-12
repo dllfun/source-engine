@@ -150,7 +150,7 @@ void CGameConsole::SetParent( intp parent )
 	m_pConsole->SetParent( static_cast<vgui::VPANEL>( parent ));
 
 	// apply proportionality from parent
-	if (vgui::ipanel()->IsProportional(static_cast<vgui::VPANEL>(parent)))
+	if (vgui::ivgui()->IsProportional(static_cast<vgui::VPANEL>(parent)))
 	{
 		m_pConsole->SetProportional(true);
 		m_pConsole->InvalidateLayout(true, true);

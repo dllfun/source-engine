@@ -715,7 +715,7 @@ void PropertySheet::ResetAllData()
 	// iterate all the dialogs resetting them
 	for (int i = 0; i < m_Pages.Count(); i++)
 	{
-		ipanel()->SendMessage(m_Pages[i].page->GetVPanel(), new KeyValues("ResetData"), GetVPanel());
+		ivgui()->SendMessage(m_Pages[i].page->GetVPanel(), new KeyValues("ResetData"), GetVPanel());
 	}
 }
 
@@ -727,7 +727,7 @@ void PropertySheet::ApplyChanges()
 	// iterate all the dialogs resetting them
 	for (int i = 0; i < m_Pages.Count(); i++)
 	{
-		ipanel()->SendMessage(m_Pages[i].page->GetVPanel(), new KeyValues("ApplyChanges"), GetVPanel());
+		ivgui()->SendMessage(m_Pages[i].page->GetVPanel(), new KeyValues("ApplyChanges"), GetVPanel());
 	}
 }
 

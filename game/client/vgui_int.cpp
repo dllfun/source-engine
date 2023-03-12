@@ -309,6 +309,6 @@ void GetHudSize( int& w, int &h )
 	VPANEL hudParent = enginevgui->GetPanel( PANEL_CLIENTDLL );
 	if ( hudParent )
 	{
-		vgui::ipanel()->GetSize( hudParent, w, h );
+		vgui::ivgui()->GetSize( hudParent, w, h );
 	}
 }

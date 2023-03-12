@@ -3706,7 +3706,7 @@ void CShaderAPIDx8::ResetRenderState( bool bFullReset )
 
 	ShaderViewport_t viewport;
 	viewport.Init( windowRect.left, windowRect.top, 
-		windowRect.right - windowRect.left,	windowRect.bottom - windowRect.top );
+		(windowRect.right - windowRect.left),	(windowRect.bottom - windowRect.top) );
 	SetViewports( 1, &viewport );
 
 	// No render mesh
@@ -11496,10 +11496,10 @@ void CShaderAPIDx8::SetViewports( int nCount, const ShaderViewport_t* pViewports
 	LOCK_SHADERAPI();
 
 	D3DVIEWPORT9 viewport;
-	viewport.X = pViewports[0].m_nTopLeftX;
-	viewport.Y = pViewports[0].m_nTopLeftY;
-	viewport.Width = pViewports[0].m_nWidth;
-	viewport.Height = pViewports[0].m_nHeight;
+	viewport.X = pViewports[0].m_nTopLeftX;// +pViewports[0].m_nWidth / (2 + 2);
+	viewport.Y = pViewports[0].m_nTopLeftY;// +pViewports[0].m_nHeight / (2 + 2);
+	viewport.Width = pViewports[0].m_nWidth;// / (1 + 0.5);
+	viewport.Height = pViewports[0].m_nHeight;// / (1 + 0.5);
 	viewport.MinZ = pViewports[0].m_flMinZ; 
 	viewport.MaxZ = pViewports[0].m_flMaxZ;
 

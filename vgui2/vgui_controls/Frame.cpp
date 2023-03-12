@@ -177,7 +177,7 @@ namespace
 				
 				// if a child doesn't have focus, get it for ourselves
 				VPANEL focus = input()->GetFocus();
-				if (!focus || !ipanel()->HasParent(focus, _frame->GetVPanel()))
+				if (!focus || !ivgui()->HasParent(focus, _frame->GetVPanel()))
 				{
 					_frame->RequestFocus();
 				}
@@ -286,9 +286,9 @@ namespace
 				VPANEL root = surface()->GetEmbeddedPanel();
 				// cycle through panels
 				// look for panels that are visible and are popups that we can dock to
-				for (int i = 0; i < ipanel()->GetChildCount(root); ++i)
+				for (int i = 0; i < ivgui()->GetChildCount(root); ++i)
 				{
-					VPANEL child = ipanel()->GetChild(root, i);
+					VPANEL child = ivgui()->GetChild(root, i);
 					tryToDock (child, newX, newY);
 				}
 			}
@@ -327,12 +327,12 @@ namespace
 				return;
 			
 			int cx, cy, cw, ct;
-			if ( (ipanel()->IsVisible(window)) && (ipanel()->IsPopup(window)) )
+			if ( (ivgui()->IsVisible(window)) && (ivgui()->IsPopup(window)) )
 			{
 				// position
-				ipanel()->GetAbsPos(window, cx, cy);
+				ivgui()->GetAbsPos(window, cx, cy);
 				// dimensions
-				ipanel()->GetSize(window, cw, ct);
+				ivgui()->GetSize(window, cw, ct);
 				bool snapped = getOutsideSnapPosition (cx, cy, cw, ct, newX, newY);
 				if (snapped)
 				{ 
@@ -343,9 +343,9 @@ namespace
 			}
 
 			// check all children
-			for (int i = 0; i < ipanel()->GetChildCount(window); ++i)
+			for (int i = 0; i < ivgui()->GetChildCount(window); ++i)
 			{
-				VPANEL child = ipanel()->GetChild(window, i);
+				VPANEL child = ivgui()->GetChild(window, i);
 				tryToDock(child, newX, newY);
 			}
 
@@ -987,7 +987,7 @@ void Frame::ActivateMinimized()
 	}
 	else
 	{
-		ipanel()->MoveToBack(GetVPanel());
+		ivgui()->MoveToBack(GetVPanel());
 		surface()->SetMinimized(GetVPanel(), true);
 		SetVisible(true);
 		SetEnabled(true);
@@ -1082,7 +1082,7 @@ void Frame::OnThink()
     if (input())
     {
 	    VPANEL focus = input()->GetFocus();
-	    if (focus && ipanel()->HasParent(focus, GetVPanel()))
+	    if (focus && ivgui()->HasParent(focus, GetVPanel()))
 	    {
 		    if ( input()->GetAppModalSurface() == 0 || 
 			    input()->GetAppModalSurface() == GetVPanel() )
@@ -2004,7 +2004,7 @@ void Frame::OnMousePressed(MouseCode code)
 	{
 		// if a child doesn't have focus, get it for ourselves
 		VPANEL focus = input()->GetFocus();
-		if (!focus || !ipanel()->HasParent(focus, GetVPanel()))
+		if (!focus || !ivgui()->HasParent(focus, GetVPanel()))
 		{
 			RequestFocus();
 		}
@@ -2184,7 +2184,7 @@ void Frame::OnKeyCodeTyped(KeyCode code)
 			// reload the data file
 			scheme()->ReloadSchemes();
 
-			Panel *panel = ipanel()->GetPanel(top, GetModuleName());
+			Panel *panel = ivgui()->GetPanel(top, GetModuleName());
 			if (panel)
 			{
 				// make the top-level panel reload it's scheme, it will chain down to all the child panels
@@ -2201,7 +2201,7 @@ void Frame::OnKeyCodeTyped(KeyCode code)
 	{
 		// check for a default button
 		VPANEL panel = GetFocusNavGroup().GetCurrentDefaultButton();
-		if (panel && ipanel()->IsVisible( panel ) && ipanel()->IsEnabled( panel ))
+		if (panel && ivgui()->IsVisible( panel ) && ivgui()->IsEnabled( panel ))
 		{
 			// Activate the button
 			PostMessage(panel, new KeyValues("Hotkey"));

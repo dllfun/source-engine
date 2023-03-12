@@ -55,7 +55,7 @@ bool FocusNavGroup::RequestFocusPrev(VPANEL panel)
 	int newPosition = 9999999;
 	if (panel)
 	{
-		newPosition = ipanel()->GetTabPosition(panel);
+		newPosition = ivgui()->GetTabPosition(panel);
 	}
 
 	bool bFound = false;
@@ -113,7 +113,7 @@ bool FocusNavGroup::RequestFocusPrev(VPANEL panel)
 			if (_mainPanel->GetVParent() && _mainPanel->GetVParent() != surface()->GetEmbeddedPanel())
 			{
 				// we're not a top level panel, so forward up the request instead of looping
-				if (ipanel()->RequestFocusPrev(_mainPanel->GetVParent(), _mainPanel->GetVPanel()))
+				if (ivgui()->RequestFocusPrev(_mainPanel->GetVParent(), _mainPanel->GetVPanel()))
 				{
 					bFound = true;
 					SetCurrentDefaultButton(NULL);
@@ -172,7 +172,7 @@ bool FocusNavGroup::RequestFocusNext(VPANEL panel)
 	int newPosition = 0;
 	if (panel)
 	{
-		newPosition = ipanel()->GetTabPosition(panel);
+		newPosition = ivgui()->GetTabPosition(panel);
 	}
 
 	bool bFound = false;
@@ -227,7 +227,7 @@ bool FocusNavGroup::RequestFocusNext(VPANEL panel)
 				// we're not a top level panel, so forward up the request instead of looping
 				if (stack_depth < 15)
 				{
-					if (ipanel()->RequestFocusNext(_mainPanel->GetVParent(), _mainPanel->GetVPanel()))
+					if (ivgui()->RequestFocusNext(_mainPanel->GetVParent(), _mainPanel->GetVPanel()))
 					{
 						bFound = true;
 						SetCurrentDefaultButton(NULL);
@@ -385,7 +385,7 @@ Panel *FocusNavGroup::GetDefaultPanel()
 //-----------------------------------------------------------------------------
 Panel *FocusNavGroup::GetCurrentFocus()
 {
-	return _currentFocus ? ipanel()->GetPanel(_currentFocus, vgui::GetControlsModuleName()) : NULL;
+	return _currentFocus ? ivgui()->GetPanel(_currentFocus, vgui::GetControlsModuleName()) : NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -424,7 +424,7 @@ bool FocusNavGroup::CanButtonBeDefault(VPANEL panel)
 	KeyValues *data = new KeyValues("CanBeDefaultButton");
 
 	bool bResult = false;
-	if (ipanel()->RequestInfo(panel, data))
+	if (ivgui()->RequestInfo(panel, data))
 	{
 		bResult = (data->GetInt("result") == 1);
 	}

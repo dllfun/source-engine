@@ -30,6 +30,7 @@
 #include <vgui/MouseCode.h>
 #include "vgui/Cursor.h"
 #include <vgui/keyrepeat.h>
+#include "VGuiMatSurface/IMatSystemSurface.h"
 
 #include "utllinkedlist.h"
 #include "tier0/icommandline.h"

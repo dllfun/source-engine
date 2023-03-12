@@ -667,7 +667,7 @@ void Panel::Init( int x, int y, int wide, int tall )
 
 	// get ourselves an internal panel
 	_vpanel = ivgui()->AllocPanel();
-	ipanel()->Init(_vpanel, this);
+	ivgui()->Init(_vpanel, this);
 
 	SetPos(x, y);
 	SetSize(wide, tall);
@@ -778,16 +778,16 @@ Panel::~Panel()
 	SetParent((VPANEL)NULL);
 
 	// Stop our children from pointing at us, and delete them if possible
-	while (ipanel()->GetChildCount(GetVPanel()))
+	while (ivgui()->GetChildCount(GetVPanel()))
 	{
-		VPANEL child = ipanel()->GetChild(GetVPanel(), 0);
-		if (ipanel()->IsAutoDeleteSet(child))
+		VPANEL child = ivgui()->GetChild(GetVPanel(), 0);
+		if (ivgui()->IsAutoDeleteSet(child))
 		{
-			ipanel()->DeletePanel(child);
+			ivgui()->DeletePanel(child);
 		}
 		else
 		{
-			ipanel()->SetParent(child, NULL);
+			ivgui()->SetParent(child, NULL);
 		}
 	}
 
@@ -897,7 +897,7 @@ void Panel::SetPos(int x, int y)
 	{
 		Assert( abs(x) < 32768 && abs(y) < 32768 );
 	}
-	ipanel()->SetPos(GetVPanel(), x, y);
+	ivgui()->SetPos(GetVPanel(), x, y);
 }
 
 //-----------------------------------------------------------------------------
@@ -905,7 +905,7 @@ void Panel::SetPos(int x, int y)
 //-----------------------------------------------------------------------------
 void Panel::GetPos(int &x, int &y)
 {
-	ipanel()->GetPos(GetVPanel(), x, y);
+	ivgui()->GetPos(GetVPanel(), x, y);
 }
 
 //-----------------------------------------------------------------------------
@@ -935,7 +935,7 @@ void Panel::SetSize(int wide, int tall)
 {
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s - %s", __FUNCTION__, GetName() );
 	Assert( abs(wide) < 32768 && abs(tall) < 32768 );
-	ipanel()->SetSize(GetVPanel(), wide, tall);
+	ivgui()->SetSize(GetVPanel(), wide, tall);
 }
 
 //-----------------------------------------------------------------------------
@@ -943,7 +943,7 @@ void Panel::SetSize(int wide, int tall)
 //-----------------------------------------------------------------------------
 void Panel::GetSize(int &wide, int &tall)
 {
-	ipanel()->GetSize(GetVPanel(), wide, tall);
+	ivgui()->GetSize(GetVPanel(), wide, tall);
 }
 
 //-----------------------------------------------------------------------------
@@ -969,9 +969,9 @@ void Panel::GetBounds(int &x, int &y, int &wide, int &tall)
 //-----------------------------------------------------------------------------
 VPANEL Panel::GetVParent()
 {
-    if ( ipanel() )
+    if ( ivgui() )
     {
-	    return ipanel()->GetParent(GetVPanel());
+	    return ivgui()->GetParent(GetVPanel());
     }
 
     return 0;
@@ -985,12 +985,12 @@ Panel *Panel::GetParent()
 	// get the parent and convert it to a Panel *
 	// this is OK, the hierarchy is guaranteed to be all from the same module, except for the root node
 	// the root node always returns NULL when a GetParent() is done so everything is OK
-    if ( ipanel() )
+    if ( ivgui() )
     {
-	    VPANEL parent = ipanel()->GetParent(GetVPanel());
+	    VPANEL parent = ivgui()->GetParent(GetVPanel());
 	    if (parent)
 	    {
-		    Panel *pParent = ipanel()->GetPanel(parent, GetControlsModuleName());
+		    Panel *pParent = ivgui()->GetPanel(parent, GetControlsModuleName());
 		    Assert(!pParent || !strcmp(pParent->GetModuleName(), GetControlsModuleName()));
 		    return pParent;
 	    }
@@ -1005,9 +1005,9 @@ Panel *Panel::GetParent()
 void Panel::OnScreenSizeChanged(int nOldWide, int nOldTall)
 {
 	// post to all children
-	for (int i = 0; i < ipanel()->GetChildCount(GetVPanel()); i++)
+	for (int i = 0; i < ivgui()->GetChildCount(GetVPanel()); i++)
 	{
-		VPANEL child = ipanel()->GetChild(GetVPanel(), i);
+		VPANEL child = ivgui()->GetChild(GetVPanel(), i);
 		PostMessage(child, new KeyValues("OnScreenSizeChanged", "oldwide", nOldWide, "oldtall", nOldTall), NULL);
 	}
 
@@ -1035,7 +1035,7 @@ void Panel::OnScreenSizeChanged(int nOldWide, int nOldTall)
 //-----------------------------------------------------------------------------
 void Panel::SetVisible(bool state)
 {
-	ipanel()->SetVisible(GetVPanel(), state);
+	ivgui()->SetVisible(GetVPanel(), state);
 }
 
 //-----------------------------------------------------------------------------
@@ -1043,9 +1043,9 @@ void Panel::SetVisible(bool state)
 //-----------------------------------------------------------------------------
 bool Panel::IsVisible()
 {
-    if (ipanel())
+    if (ivgui())
     {
-	    return ipanel()->IsVisible(GetVPanel());
+	    return ivgui()->IsVisible(GetVPanel());
     }
 
     return false;
@@ -1056,9 +1056,9 @@ bool Panel::IsVisible()
 //-----------------------------------------------------------------------------
 void Panel::SetEnabled(bool state)
 {
-	if (state != ipanel()->IsEnabled( GetVPanel()))
+	if (state != ivgui()->IsEnabled( GetVPanel()))
 	{
-		ipanel()->SetEnabled(GetVPanel(), state);
+		ivgui()->SetEnabled(GetVPanel(), state);
 		InvalidateLayout(false);
 		Repaint();
 	}
@@ -1069,7 +1069,7 @@ void Panel::SetEnabled(bool state)
 //-----------------------------------------------------------------------------
 bool Panel::IsEnabled()
 {
-	return ipanel()->IsEnabled(GetVPanel());
+	return ivgui()->IsEnabled(GetVPanel());
 }
 
 //-----------------------------------------------------------------------------
@@ -1077,7 +1077,7 @@ bool Panel::IsEnabled()
 //-----------------------------------------------------------------------------
 bool Panel::IsPopup()
 {
-	return ipanel()->IsPopup(GetVPanel());
+	return ivgui()->IsPopup(GetVPanel());
 }
 
 //-----------------------------------------------------------------------------
@@ -1172,7 +1172,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 	}
 
 	int clipRect[4];
-	ipanel()->GetClipRect( vpanel, clipRect[0], clipRect[1], clipRect[2], clipRect[3] );
+	ivgui()->GetClipRect( vpanel, clipRect[0], clipRect[1], clipRect[2], clipRect[3] );
 	if ( ( clipRect[2] <= clipRect[0] ) || ( clipRect[3] <= clipRect[1] ) )
 	{
 		repaint = false;
@@ -1212,18 +1212,18 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 	}
 
 	// traverse and paint all our children
-	CUtlVector< VPANEL > &children = ipanel()->GetChildren( vpanel );
+	CUtlVector< VPANEL > &children = ivgui()->GetChildren( vpanel );
 	int childCount = children.Count();
 	for (int i = 0; i < childCount; i++)
 	{
 		VPANEL child = children[ i ];
-		bool bVisible = ipanel()->IsVisible( child );
+		bool bVisible = ivgui()->IsVisible( child );
 
 		if ( surface()->ShouldPaintChildPanel( child ) )
 		{
 			if ( bVisible )
 			{
-				ipanel()->PaintTraverse( child, repaint, allowForce );
+				ivgui()->PaintTraverse( child, repaint, allowForce );
 			}
 		}
 		else
@@ -1234,7 +1234,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 			// keep traversing the tree, just don't allow anyone to paint after here
 			if ( bVisible )
 			{
-				ipanel()->PaintTraverse( child, false, false );
+				ivgui()->PaintTraverse( child, false, false );
 			}
 		}
 	}
@@ -1453,26 +1453,26 @@ void Panel::SetParent(VPANEL newParent)
 	if (newParent)
 	{
 
-		ipanel()->SetParent(GetVPanel(), newParent);
+		ivgui()->SetParent(GetVPanel(), newParent);
 	}
 	else
 	{
-		ipanel()->SetParent(GetVPanel(), NULL);
+		ivgui()->SetParent(GetVPanel(), NULL);
 	}
 
 	if (GetVParent() )
 	{
-		if( ipanel()->IsProportional(GetVParent()) )
+		if( ivgui()->IsProportional(GetVParent()) )
 			SetProportional(true);
 
 		if( IsPopup() )
 		{
 			// most of the time KBInput == parents kbinput
-			if (ipanel()->IsKeyBoardInputEnabled(GetVParent()) != IsKeyBoardInputEnabled())
-				SetKeyBoardInputEnabled(ipanel()->IsKeyBoardInputEnabled(GetVParent()));
+			if (ivgui()->IsKeyBoardInputEnabled(GetVParent()) != IsKeyBoardInputEnabled())
+				SetKeyBoardInputEnabled(ivgui()->IsKeyBoardInputEnabled(GetVParent()));
 
-			if (ipanel()->IsMouseInputEnabled(GetVParent()) != IsMouseInputEnabled())
-				SetMouseInputEnabled(ipanel()->IsMouseInputEnabled(GetVParent()));
+			if (ivgui()->IsMouseInputEnabled(GetVParent()) != IsMouseInputEnabled())
+				SetMouseInputEnabled(ivgui()->IsMouseInputEnabled(GetVParent()));
 		}
 	}
 
@@ -1485,7 +1485,7 @@ void Panel::SetParent(VPANEL newParent)
 void Panel::OnChildAdded(VPANEL child)
 {
 	Assert( !_flags.IsFlagSet( IN_PERFORM_LAYOUT ) );
-	Panel *pChild = ipanel()->GetPanel(child, GetControlsModuleName());
+	Panel *pChild = ivgui()->GetPanel(child, GetControlsModuleName());
 	if ( pChild )
 	{
 		auto idx = m_dictChidlren.Insert( pChild->GetName() );
@@ -1506,7 +1506,7 @@ void Panel::OnSizeChanged(int newWide, int newTall)
 //-----------------------------------------------------------------------------
 void Panel::SetZPos(int z)
 {
-	ipanel()->SetZPos(GetVPanel(), z);
+	ivgui()->SetZPos(GetVPanel(), z);
 }
 
 //-----------------------------------------------------------------------------
@@ -1514,7 +1514,7 @@ void Panel::SetZPos(int z)
 //-----------------------------------------------------------------------------
 int Panel::GetZPos() const
 {
-	return ( ipanel()->GetZPos( GetVPanel() ) );
+	return ( ivgui()->GetZPos( GetVPanel() ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -1538,14 +1538,14 @@ int Panel::GetAlpha()
 //-----------------------------------------------------------------------------
 void Panel::MoveToFront(void)
 {
-	// FIXME: only use ipanel() as per src branch?
+	// FIXME: only use ivgui() as per src branch?
 	if (IsPopup())
 	{
 		surface()->BringToFront(GetVPanel());
 	}
 	else
 	{
-		ipanel()->MoveToFront(GetVPanel());
+		ivgui()->MoveToFront(GetVPanel());
 	}
 }
 
@@ -1557,7 +1557,7 @@ bool Panel::HasParent(VPANEL potentialParent)
 	if (!potentialParent)
 		return false;
 
-	return ipanel()->HasParent(GetVPanel(), potentialParent);
+	return ivgui()->HasParent(GetVPanel(), potentialParent);
 }
 
 //-----------------------------------------------------------------------------
@@ -1592,7 +1592,7 @@ Panel *Panel::FindChildByName(const char *childName, bool recurseDown)
 	auto idx = m_dictChidlren.Find( childName );
 	if ( idx != m_dictChidlren.InvalidIndex() )
 	{
-		Panel *pCachedChild = ipanel()->GetPanel( m_dictChidlren[ idx ], GetControlsModuleName() );
+		Panel *pCachedChild = ivgui()->GetPanel( m_dictChidlren[ idx ], GetControlsModuleName() );
 		
 		if ( !pCachedChild )
 		{
@@ -1639,11 +1639,11 @@ Panel *Panel::FindSiblingByName(const char *siblingName)
 	if ( !GetVParent() )
 		return NULL;
 
-	int siblingCount = ipanel()->GetChildCount(GetVParent());
+	int siblingCount = ivgui()->GetChildCount(GetVParent());
 	for (int i = 0; i < siblingCount; i++)
 	{
-		VPANEL sibling = ipanel()->GetChild(GetVParent(), i);
-		Panel *panel = ipanel()->GetPanel(sibling, GetControlsModuleName());
+		VPANEL sibling = ivgui()->GetChild(GetVParent(), i);
+		Panel *panel = ivgui()->GetPanel(sibling, GetControlsModuleName());
 		if (!stricmp(panel->GetName(), siblingName))
 		{
 			return panel;
@@ -1660,7 +1660,7 @@ void Panel::CallParentFunction(KeyValues *message)
 {
 	if (GetVParent())
 	{
-		ipanel()->SendMessage(GetVParent(), message, GetVPanel());
+		ivgui()->SendMessage(GetVParent(), message, GetVPanel());
 	}
 	if (message)
 	{
@@ -1709,7 +1709,7 @@ HScheme Panel::GetScheme()
 	
 	if (GetVParent()) // recurse down the heirarchy 
 	{
-		return ipanel()->GetScheme(GetVParent());
+		return ivgui()->GetScheme(GetVParent());
 	}
 
 	return scheme()->GetDefaultScheme();
@@ -1851,7 +1851,7 @@ bool Panel::IsChildOfSurfaceModalPanel()
 	if ( !appModalPanel )
 		return true;
 
-	if ( ipanel()->HasParent( GetVPanel(), appModalPanel ) )
+	if ( ivgui()->HasParent( GetVPanel(), appModalPanel ) )
 		return true;
 
 	return false;
@@ -1893,7 +1893,7 @@ static bool ShouldHandleInputMessage( VPANEL p )
 	{
 		bChildOfModal = true;
 	}
-	else if ( ipanel()->HasParent( p, subTree ) )
+	else if ( ivgui()->HasParent( p, subTree ) )
 	{
 		bChildOfModal = true;
 	}
@@ -2924,8 +2924,8 @@ void Panel::InternalSetCursor()
 		VPANEL p = GetVParent();
 		while (p)
 		{
-			visible &= ipanel()->IsVisible(p);
-			p = ipanel()->GetParent(p);
+			visible &= ivgui()->IsVisible(p);
+			p = ivgui()->GetParent(p);
 		}
 	
 		// only change the cursor if this panel is visible, and if its part of the main VGUI tree
@@ -3043,7 +3043,7 @@ void Panel::OnCursorMoved(int x, int y)
 	{
 		// figure out x and y in parent space
 		int thisX, thisY;
-		ipanel()->GetPos( GetVPanel(), thisX, thisY );
+		ivgui()->GetPos( GetVPanel(), thisX, thisY );
 		CallParentFunction( new KeyValues( "OnCursorMoved", "x", x + thisX, "y", y + thisY ) );
 	}
 }
@@ -3280,7 +3280,7 @@ bool Panel::IsWithin(int x,int y)
 {
 	// check against our clip rect
 	int clipRect[4];
-	ipanel()->GetClipRect(GetVPanel(), clipRect[0], clipRect[1], clipRect[2], clipRect[3]);
+	ivgui()->GetClipRect(GetVPanel(), clipRect[0], clipRect[1], clipRect[2], clipRect[3]);
 
 	if (x < clipRect[0])
 	{
@@ -3319,14 +3319,14 @@ VPANEL Panel::IsWithinTraverse(int x, int y, bool traversePopups)
 	{
 		// check popups first
 		int i;
-		CUtlVector< VPANEL > &children = ipanel()->GetChildren( GetVPanel() );
+		CUtlVector< VPANEL > &children = ivgui()->GetChildren( GetVPanel() );
 		int childCount = children.Count();
 		for (i = childCount - 1; i >= 0; i--)
 		{
 			VPANEL panel = children[ i ];
-			if (ipanel()->IsPopup(panel))
+			if (ivgui()->IsPopup(panel))
 			{
-				panel = ipanel()->IsWithinTraverse(panel, x, y, true);
+				panel = ivgui()->IsWithinTraverse(panel, x, y, true);
 				if (panel != null)
 				{
 					return panel;
@@ -3341,9 +3341,9 @@ VPANEL Panel::IsWithinTraverse(int x, int y, bool traversePopups)
 		{
 			VPANEL panel = children[ i ];
 			// we've already checked popups so ignore
-			if (!ipanel()->IsPopup(panel))
+			if (!ivgui()->IsPopup(panel))
 			{
-				panel = ipanel()->IsWithinTraverse(panel, x, y, true);
+				panel = ivgui()->IsWithinTraverse(panel, x, y, true);
 				if (panel != 0)
 				{
 					return panel;
@@ -3365,15 +3365,15 @@ VPANEL Panel::IsWithinTraverse(int x, int y, bool traversePopups)
 			// check children recursive, if you find one, just return first one
 			// this checks in backwards order so the last child drawn for this panel is chosen which
 			// coincides to how it would be visibly displayed
-			CUtlVector< VPANEL > &children = ipanel()->GetChildren( GetVPanel() );
+			CUtlVector< VPANEL > &children = ivgui()->GetChildren( GetVPanel() );
 			int childCount = children.Count();
 			for (int i = childCount - 1; i >= 0; i--)
 			{
 				VPANEL panel = children[ i ];
 				// ignore popups
-				if (!ipanel()->IsPopup(panel))
+				if (!ivgui()->IsPopup(panel))
 				{
-					panel = ipanel()->IsWithinTraverse(panel, x, y, false);
+					panel = ivgui()->IsWithinTraverse(panel, x, y, false);
 					if (panel != 0)
 					{
 						return panel;
@@ -3393,7 +3393,7 @@ VPANEL Panel::IsWithinTraverse(int x, int y, bool traversePopups)
 void Panel::LocalToScreen(int& x,int& y)
 {
 	int px, py;
-	ipanel()->GetAbsPos(GetVPanel(), px, py);
+	ivgui()->GetAbsPos(GetVPanel(), px, py);
 
 	x = x + px;
 	y = y + py;
@@ -3402,7 +3402,7 @@ void Panel::LocalToScreen(int& x,int& y)
 void Panel::ScreenToLocal(int& x,int& y)
 {
 	int px, py;
-	ipanel()->GetAbsPos(GetVPanel(), px, py);
+	ivgui()->GetAbsPos(GetVPanel(), px, py);
 
 	x = x - px;
 	y = y - py;
@@ -3411,7 +3411,7 @@ void Panel::ScreenToLocal(int& x,int& y)
 void Panel::ParentLocalToScreen(int &x, int &y)
 {
 	int px, py;
-	ipanel()->GetAbsPos(GetVParent(), px, py);
+	ivgui()->GetAbsPos(GetVParent(), px, py);
 
 	x = x + px;
 	y = y + py;
@@ -3439,12 +3439,12 @@ void Panel::SetCursorAlwaysVisible( bool visible )
 
 void Panel::SetMinimumSize(int wide,int tall)
 {
-	ipanel()->SetMinimumSize(GetVPanel(), wide, tall);
+	ivgui()->SetMinimumSize(GetVPanel(), wide, tall);
 }
 
 void Panel::GetMinimumSize(int& wide,int &tall)
 {
-	ipanel()->GetMinimumSize(GetVPanel(), wide, tall);
+	ivgui()->GetMinimumSize(GetVPanel(), wide, tall);
 }
 
 bool Panel::IsBuildModeEditable()
@@ -3500,7 +3500,7 @@ bool Panel::IsBuildModeActive()
 //-----------------------------------------------------------------------------
 void Panel::GetClipRect(int& x0,int& y0,int& x1,int& y1)
 {
-	ipanel()->GetClipRect(GetVPanel(), x0, y0, x1, y1);
+	ivgui()->GetClipRect(GetVPanel(), x0, y0, x1, y1);
 }
 
 //-----------------------------------------------------------------------------
@@ -3508,9 +3508,9 @@ void Panel::GetClipRect(int& x0,int& y0,int& x1,int& y1)
 //-----------------------------------------------------------------------------
 int Panel::GetChildCount()
 {
-    if (ipanel())
+    if (ivgui())
     {
-	    return ipanel()->GetChildCount(GetVPanel());
+	    return ivgui()->GetChildCount(GetVPanel());
     }
 
     return 0;
@@ -3523,12 +3523,12 @@ Panel *Panel::GetChild(int index)
 {
 	// get the child and cast it to a panel
 	// this assumes that the child is from the same module as the this (precondition)
-	return ipanel()->GetPanel(ipanel()->GetChild(GetVPanel(), index), GetControlsModuleName());
+	return ivgui()->GetPanel(ivgui()->GetChild(GetVPanel(), index), GetControlsModuleName());
 }
 
 CUtlVector< VPANEL > &Panel::GetChildren()
 {
-	return ipanel()->GetChildren(GetVPanel());
+	return ivgui()->GetChildren(GetVPanel());
 }
 
 //-----------------------------------------------------------------------------
@@ -3539,7 +3539,7 @@ bool Panel::RequestFocusPrev(VPANEL panel)
 	// chain to parent
 	if (GetVParent())
 	{
-		return ipanel()->RequestFocusPrev(GetVParent(), GetVPanel());
+		return ivgui()->RequestFocusPrev(GetVParent(), GetVPanel());
 	}
 	return false;
 }
@@ -3552,7 +3552,7 @@ bool Panel::RequestFocusNext(VPANEL panel)
 	// chain to parent
 	if (GetVParent())
 	{
-		return ipanel()->RequestFocusNext(GetVParent(), GetVPanel());
+		return ivgui()->RequestFocusNext(GetVParent(), GetVPanel());
 	}
 	return false;
 }
@@ -3713,14 +3713,14 @@ void Panel::SetBorder(IBorder *border)
 	{
 		int x, y, x2, y2;
 		border->GetInset(x, y, x2, y2);
-		ipanel()->SetInset(GetVPanel(), x, y, x2, y2);
+		ivgui()->SetInset(GetVPanel(), x, y, x2, y2);
 
 		// update our background type based on the bord
 		SetPaintBackgroundType(border->GetBackgroundType());
 	}
 	else
 	{
-		ipanel()->SetInset(GetVPanel(), 0, 0, 0, 0);
+		ivgui()->SetInset(GetVPanel(), 0, 0, 0, 0);
 	}
 }
 
@@ -3758,7 +3758,7 @@ void Panel::SetPostChildPaintEnabled(bool state)
 
 void Panel::GetInset(int& left,int& top,int& right,int& bottom)
 {
-	ipanel()->GetInset(GetVPanel(), left, top, right, bottom);
+	ivgui()->GetInset(GetVPanel(), left, top, right, bottom);
 }
 
 void Panel::GetPaintSize(int& wide,int& tall)
@@ -3777,25 +3777,25 @@ void Panel::GetPaintSize(int& wide,int& tall)
 int Panel::GetWide()
 {
 	int wide, tall;
-	ipanel()->GetSize(GetVPanel(), wide, tall);
+	ivgui()->GetSize(GetVPanel(), wide, tall);
 	return wide;
 }
 
 void Panel::SetWide(int wide)
 {
-	ipanel()->SetSize(GetVPanel(), wide, GetTall());
+	ivgui()->SetSize(GetVPanel(), wide, GetTall());
 }
 
 int Panel::GetTall()
 {
 	int wide, tall;
-	ipanel()->GetSize(GetVPanel(), wide, tall);
+	ivgui()->GetSize(GetVPanel(), wide, tall);
 	return tall;
 }
 
 void Panel::SetTall(int tall)
 {
-	ipanel()->SetSize(GetVPanel(), GetWide(), tall);
+	ivgui()->SetSize(GetVPanel(), GetWide(), tall);
 }
 
 void Panel::SetBuildGroup(BuildGroup* buildGroup)
@@ -4083,7 +4083,7 @@ void Panel::UpdateSiblingPin( void )
 {
 	if ( !_pinToSibling )
 	{
-		ipanel()->SetSiblingPin(GetVPanel(), NULL);
+		ivgui()->SetSiblingPin(GetVPanel(), NULL);
 		return;
 	}
 
@@ -4095,11 +4095,11 @@ void Panel::UpdateSiblingPin( void )
 
 	if ( m_pinSibling.Get() )
 	{
-		ipanel()->SetSiblingPin( GetVPanel(), m_pinSibling->GetVPanel(), _pinCornerToSibling, _pinToSiblingCorner );
+		ivgui()->SetSiblingPin( GetVPanel(), m_pinSibling->GetVPanel(), _pinCornerToSibling, _pinToSiblingCorner );
 	}
 	else
 	{
-		ipanel()->SetSiblingPin(GetVPanel(), NULL);
+		ivgui()->SetSiblingPin(GetVPanel(), NULL);
 	}
 }
 
@@ -4721,7 +4721,7 @@ void Panel::GetSettings( KeyValues *outResourceData )
 		tall = scheme()->GetProportionalNormalizedValueEx( GetScheme(), tall );
 	}
 
-	int z = ipanel()->GetZPos(GetVPanel());
+	int z = ivgui()->GetZPos(GetVPanel());
 	if (z)
 	{
 		outResourceData->SetInt("zpos", z);
@@ -5281,7 +5281,7 @@ void Panel::OnOldMessage(KeyValues *params, VPANEL ifromPanel)
 						{
 							typedef void (Panel::*MessageFunc_Ptr_t)(void *);
 							VPANEL vp = ivgui()->HandleToPanel( params->GetInt( pMessageMap[i].firstParamName ) );
-							Panel *panel = ipanel()->GetPanel( vp, GetModuleName() );
+							Panel *panel = ivgui()->GetPanel( vp, GetModuleName() );
 							(this->*((MessageFunc_Ptr_t)pMessageMap[i].func))( (void *)panel );
 						}
 						break;
@@ -5367,7 +5367,7 @@ void Panel::PostMessageToAllSiblings( KeyValues *msg, float delaySeconds /*= 0.0
 	{
 		VPANEL vpanel = GetVPanel();
 
-		CUtlVector< VPANEL > &children = ipanel()->GetChildren( parent );
+		CUtlVector< VPANEL > &children = ivgui()->GetChildren( parent );
 		int nChildCount = children.Count();
 		for ( int i = 0; i < nChildCount; ++i )
 		{
@@ -5414,7 +5414,7 @@ bool Panel::RequestInfo( KeyValues *outputData )
 
 	if (GetVParent())
 	{
-		return ipanel()->RequestInfo(GetVParent(), outputData);
+		return ivgui()->RequestInfo(GetVParent(), outputData);
 	}
 
 	return false;
@@ -5527,7 +5527,7 @@ Panel *PHandle::Get() const
 		VPANEL panel = ivgui()->HandleToPanel(m_iPanelID);
 		if (panel)
 		{
-			Panel *vguiPanel = ipanel()->GetPanel(panel, GetControlsModuleName());
+			Panel *vguiPanel = ivgui()->GetPanel(panel, GetControlsModuleName());
 			return vguiPanel;
 		}
 	}
@@ -5675,7 +5675,7 @@ void Panel::SetProportional(bool state)
 
 void Panel::SetKeyBoardInputEnabled( bool state )
 {
-	ipanel()->SetKeyBoardInputEnabled( GetVPanel(), state );
+	ivgui()->SetKeyBoardInputEnabled( GetVPanel(), state );
 	for ( int i = 0; i < GetChildCount(); i++ )
 	{
 		Panel *child = GetChild( i );
@@ -5703,7 +5703,7 @@ void Panel::SetKeyBoardInputEnabled( bool state )
 
 void Panel::SetMouseInputEnabled( bool state )
 {
-	ipanel()->SetMouseInputEnabled( GetVPanel(), state );
+	ivgui()->SetMouseInputEnabled( GetVPanel(), state );
 	/*	for(int i=0;i<GetChildCount();i++)
 	{
 	GetChild(i)->SetMouseInput(state);
@@ -5713,12 +5713,12 @@ void Panel::SetMouseInputEnabled( bool state )
 
 bool Panel::IsKeyBoardInputEnabled()
 {
-	return ipanel()->IsKeyBoardInputEnabled( GetVPanel() );
+	return ivgui()->IsKeyBoardInputEnabled( GetVPanel() );
 }
 
 bool Panel::IsMouseInputEnabled()
 {
-	return ipanel()->IsMouseInputEnabled( GetVPanel() );
+	return ivgui()->IsMouseInputEnabled( GetVPanel() );
 }
 
 class CFloatProperty : public vgui::IPanelAnimationPropertyConverter
@@ -6872,7 +6872,7 @@ void Panel::OnFinishDragging( bool mousereleased, MouseCode code, bool abort /*=
 			VPANEL hover = menu->IsWithinTraverse( x, y, false );
 			if ( hover )
 			{
-				Panel *pHover = ipanel()->GetPanel( hover, GetModuleName() );
+				Panel *pHover = ivgui()->GetPanel( hover, GetModuleName() );
 				if ( pHover )
 				{
 					// Figure out if it's a menu item...
@@ -7131,7 +7131,7 @@ void Panel::OnContinueDragging()
 		VPANEL hover = menu->IsWithinTraverse( x, y, false );
 		if ( hover )
 		{
-			Panel *pHover = ipanel()->GetPanel( hover, GetModuleName() );
+			Panel *pHover = ivgui()->GetPanel( hover, GetModuleName() );
 			if ( pHover )
 			{
 				// Figure out if it's a menu item...
@@ -7262,7 +7262,7 @@ CDragDropHelperPanel::CDragDropHelperPanel() : BaseClass( NULL, "DragDropHelper"
 	SetMouseInputEnabled( false );
 	SetKeyBoardInputEnabled( false );
 	// SetCursor( dc_none );
-	ipanel()->SetTopmostPopup( GetVPanel(), true );
+	ivgui()->SetTopmostPopup( GetVPanel(), true );
 	int w, h;
 	surface()->GetScreenSize( w, h );
 	SetBounds( 0, 0, w, h );
@@ -7377,15 +7377,15 @@ void CDragDropHelperPanel::RemovePanel( Panel *search )
 void Panel::FindDropTargetPanel_R( CUtlVector< VPANEL >& panelList, int x, int y, VPANEL check )
 {
 #if defined( VGUI_USEDRAGDROP )
-	if ( !ipanel()->IsFullyVisible( check ) )
+	if ( !ivgui()->IsFullyVisible( check ) )
 		return;
 
-	if ( ::ShouldHandleInputMessage( check ) && ipanel()->IsWithinTraverse( check, x, y, false ) )
+	if ( ::ShouldHandleInputMessage( check ) && ivgui()->IsWithinTraverse( check, x, y, false ) )
 	{
 		panelList.AddToTail( check );
 	}
 
-	CUtlVector< VPANEL > &children = ipanel()->GetChildren( check );
+	CUtlVector< VPANEL > &children = ivgui()->GetChildren( check );
 	int childCount = children.Count();
 	for ( int i = 0; i < childCount; i++ )
 	{
@@ -7429,7 +7429,7 @@ Panel *Panel::FindDropTargetPanel()
 			if ( popup == helper )
 				continue;
 
-			if ( !ipanel()->IsFullyVisible( popup ) )
+			if ( !ivgui()->IsFullyVisible( popup ) )
 				continue;
 
 			FindDropTargetPanel_R( hits, x, y, popup );
@@ -7451,7 +7451,7 @@ Panel *Panel::FindDropTargetPanel()
 	int nCount = hits.Count();
 	while ( --nCount >= 0 )
 	{
-		panel = ipanel()->GetPanel( hits[ nCount ], GetModuleName() );
+		panel = ivgui()->GetPanel( hits[ nCount ], GetModuleName() );
 		if ( panel )
 			return panel;
 	}

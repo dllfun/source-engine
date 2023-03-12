@@ -272,12 +272,12 @@ public:
 		if ( m_hMainMenuOverridePanel )
 		{
 			// force to be always visible
-			ipanel()->SetVisible( m_hMainMenuOverridePanel, true );
+			ivgui()->SetVisible( m_hMainMenuOverridePanel, true );
 
 			// move us to the back instead of going invisible
 			if ( !state )
 			{
-				ipanel()->MoveToBack(m_hMainMenuOverridePanel);
+				ivgui()->MoveToBack(m_hMainMenuOverridePanel);
 			}
 		}
 
@@ -287,7 +287,7 @@ public:
 		// move us to the back instead of going invisible
 		if (!state)
 		{
-			ipanel()->MoveToBack(GetVPanel());
+			ivgui()->MoveToBack(GetVPanel());
 		}
 	}
 
@@ -343,7 +343,7 @@ public:
 	{
 		if ( m_hMainMenuOverridePanel )
 		{
-			Panel *pMainMenu = ipanel()->GetPanel( m_hMainMenuOverridePanel, "ClientDLL" );
+			Panel *pMainMenu = ivgui()->GetPanel( m_hMainMenuOverridePanel, "ClientDLL" );
 			if ( pMainMenu )
 			{
 				pMainMenu->PerformLayout();
@@ -363,8 +363,8 @@ public:
 			if ( m_hMainMenuOverridePanel )
 			{
 				// force to be always visible
-				ipanel()->MoveToFront( m_hMainMenuOverridePanel );
-				ipanel()->RequestFocus( m_hMainMenuOverridePanel );
+				ivgui()->MoveToFront( m_hMainMenuOverridePanel );
+				ivgui()->RequestFocus( m_hMainMenuOverridePanel );
 			}
 			else
 			{
@@ -646,7 +646,7 @@ private:
 //-----------------------------------------------------------------------------
 void CGameMenu::OnCursorEnteredMenuItem(VPANEL menuItem)
 {
-	MenuItem *item = static_cast<MenuItem *>(ipanel()->GetPanel(menuItem, GetModuleName()));
+	MenuItem *item = static_cast<MenuItem *>(ivgui()->GetPanel(menuItem, GetModuleName()));
 	KeyValues *pCommand = item->GetCommand();
 	if ( !pCommand->GetFirstSubKey() )
 		return;
@@ -1057,10 +1057,10 @@ void CBasePanel::UpdateBackgroundState()
 	bool bIsInLevel = GameUI().IsInLevel();
 	for ( i = 0; i < GetChildCount(); ++i )
 	{
-		VPANEL child = ipanel()->GetChild( GetVPanel(), i );
+		VPANEL child = ivgui()->GetChild( GetVPanel(), i );
 		if ( child 
-			&& ipanel()->IsVisible( child ) 
-			&& ipanel()->IsPopup( child )
+			&& ivgui()->IsVisible( child ) 
+			&& ivgui()->IsPopup( child )
 			&& child != m_pGameMenu->GetVPanel() )
 		{
 			bHaveActiveDialogs = true;
@@ -1068,12 +1068,12 @@ void CBasePanel::UpdateBackgroundState()
 	}
 	// see if the base gameui panel has dialogs hanging off it (engine stuff, console, bug reporter)
 	VPANEL parent = GetVParent();
-	for ( i = 0; i < ipanel()->GetChildCount( parent ); ++i )
+	for ( i = 0; i < ivgui()->GetChildCount( parent ); ++i )
 	{
-		VPANEL child = ipanel()->GetChild( parent, i );
+		VPANEL child = ivgui()->GetChild( parent, i );
 		if ( child 
-			&& ipanel()->IsVisible( child ) 
-			&& ipanel()->IsPopup( child )
+			&& ivgui()->IsVisible( child ) 
+			&& ivgui()->IsPopup( child )
 			&& child != GetVPanel() )
 		{
 			bHaveActiveDialogs = true;
@@ -3713,7 +3713,7 @@ void CBasePanel::SetMainMenuOverride( vgui::VPANEL panel )
 	if ( m_hMainMenuOverridePanel )
 	{
 		// Parent it to this panel
-		ipanel()->SetParent( m_hMainMenuOverridePanel, GetVPanel() );
+		ivgui()->SetParent( m_hMainMenuOverridePanel, GetVPanel() );
 	}
 }
 

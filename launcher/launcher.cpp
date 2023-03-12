@@ -33,6 +33,7 @@
 #include "appframework/AppFramework.h"
 #include <vgui/VGUI.h>
 #include <vgui/ISurface.h>
+#include "VGuiMatSurface/IMatSystemSurface.h"
 #include "tier0/platform.h"
 #include "tier0/memalloc.h"
 #include "filesystem.h"
@@ -677,7 +678,7 @@ bool CSourceAppSystemGroup::Create()
 		{ "video_services" DLL_EXT_STRING,  VIDEO_SERVICES_INTERFACE_VERSION },
   
 		// NOTE: This has to occur before vgui2.dll so it replaces vgui2's surface implementation
-		{ "vguimatsurface" DLL_EXT_STRING,	VGUI_SURFACE_INTERFACE_VERSION },
+		{ "vguimatsurface" DLL_EXT_STRING,	MAT_SYSTEM_SURFACE_INTERFACE_VERSION },
 		{ "vgui2" DLL_EXT_STRING,			VGUI_IVGUI_INTERFACE_VERSION },
 		{ "engine" DLL_EXT_STRING,			VENGINE_LAUNCHER_API_VERSION },
 

@@ -8,6 +8,7 @@
 #include "vgui_internal.h"
 
 #include <vgui/ISurface.h>
+#include "VGuiMatSurface/IMatSystemSurface.h"
 #include <vgui/ILocalize.h>
 #include <vgui/IPanel.h>
 #include "filesystem.h"
@@ -21,8 +22,8 @@
 namespace vgui
 {
 
-ISurface *g_pSurface = NULL;
-IPanel *g_pIPanel = NULL;
+IMatSystemSurface *g_pSurface = NULL;
+//IPanel *g_pIPanel = NULL;
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -55,11 +56,11 @@ static void *InitializeInterface( char const *interfaceName, CreateInterfaceFn *
 bool VGui_InternalLoadInterfaces( CreateInterfaceFn *factoryList, int numFactories )
 {
 	// loads all the interfaces
-	g_pSurface = (ISurface *)InitializeInterface(VGUI_SURFACE_INTERFACE_VERSION, factoryList, numFactories );
+	g_pSurface = (IMatSystemSurface *)InitializeInterface(MAT_SYSTEM_SURFACE_INTERFACE_VERSION, factoryList, numFactories );
 //	g_pKeyValues = (IKeyValues *)InitializeInterface(KEYVALUES_INTERFACE_VERSION, factoryList, numFactories );
-	g_pIPanel = (IPanel *)InitializeInterface(VGUI_PANEL_INTERFACE_VERSION, factoryList, numFactories );
+//	g_pIPanel = (IPanel *)InitializeInterface(VGUI_PANEL_INTERFACE_VERSION, factoryList, numFactories );
 
-	if (g_pSurface && /*g_pKeyValues &&*/ g_pIPanel)
+	if (g_pSurface)// && /*g_pKeyValues &&*/ g_pIPanel)
 		return true;
 
 	return false;

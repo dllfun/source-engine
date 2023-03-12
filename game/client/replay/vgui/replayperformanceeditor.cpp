@@ -2011,7 +2011,7 @@ void CReplayPerformanceEditorPanel::SetButtonTip( wchar_t *pTipText, Panel *pCon
 
 	// Center relative to context panel
 	int aPos[2];
-	ipanel()->GetAbsPos( pContextPanel->GetVPanel(), aPos[0], aPos[1] );
+	ivgui()->GetAbsPos( pContextPanel->GetVPanel(), aPos[0], aPos[1] );
 	const int nX = clamp(
 		aPos[0] - m_pButtonTip->GetWide() / 2,
 		0,

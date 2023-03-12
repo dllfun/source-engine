@@ -896,7 +896,7 @@ void ClientModeShared::Layout()
 	// Make the viewport fill the root panel.
 	if( pRoot != 0 )
 	{
-		vgui::ipanel()->GetSize(pRoot, wide, tall);
+		vgui::ivgui()->GetSize(pRoot, wide, tall);
 
 		bool changed = wide != m_nRootSize[ 0 ] || tall != m_nRootSize[ 1 ];
 		m_nRootSize[ 0 ] = wide;

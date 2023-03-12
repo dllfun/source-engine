@@ -3570,7 +3570,7 @@ void SixenseInput::Rumble( unsigned char playerIndex, unsigned char handIndex, u
 void SixenseInput::CreateGUI( vgui::VPANEL parent )
 {
 
-	parent = vgui::ipanel()->GetParent( parent );
+	parent = vgui::ivgui()->GetParent( parent );
 
 	m_SixenseFrame = new SixenseGUIFrame( enginevgui->GetPanel( PANEL_ROOT ), "SixenseGUIFrame" );
 	m_SixenseFrame->SetVisible( false );

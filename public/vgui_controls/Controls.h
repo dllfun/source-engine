@@ -13,9 +13,10 @@
 #endif
 
 #include <vgui/VGUI.h>
+#include <vgui/IVGui.h>
 #include <vgui/IPanel.h>
 #include <vstdlib/IKeyValuesSystem.h>
-
+#include "VGuiMatSurface/IMatSystemSurface.h"
 #include "tier1/interface.h"
 #include "vgui/MouseCode.h"
 #include "vgui/KeyCode.h"
@@ -59,9 +60,9 @@ inline vgui::ISchemeManager *scheme()
 }
 
 // #include <vgui/ISurface.h>
-inline vgui::ISurface *surface()
+inline IMatSystemSurface *surface()
 {
-	return g_pVGuiSurface;
+	return g_pMatSystemSurface;
 }
 
 // #include <vgui/ISystem.h>
@@ -77,10 +78,10 @@ inline vgui::IVGui *ivgui()
 }
 
 // #include <vgui/IPanel.h>
-inline vgui::IPanel *ipanel()
-{
-	return g_pVGuiPanel;
-}
+//inline vgui::IPanel *ipanel()
+//{
+//	return g_pVGuiPanel;
+//}
 
 // predeclare all the vgui control class names
 class AnalogBar;

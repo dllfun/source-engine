@@ -29,7 +29,7 @@ extern class IInputInternal *g_pInput;
 extern class ISchemeManager *g_pScheme;
 
 // <vgui/ISurface.h> header
-extern class ISurface *g_pSurface;
+extern class IMatSystemSurface *g_pSurface;
 
 // <vgui/ISystem.h> header
 extern class ISystem *g_pSystem;
@@ -38,7 +38,7 @@ extern class ISystem *g_pSystem;
 extern class IVGui *g_pIVgui;
 
 // <vgui/IPanel.h> header
-extern class IPanel *g_pIPanel;
+//extern class IPanel *g_pIPanel;
 
 // methods
 void vgui_strcpy(char *dst, int dstLen, const char *src);

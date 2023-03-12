@@ -1742,27 +1742,27 @@ void CEngineVGui::Paint( PaintMode_t mode )
 	
 	if ( mode & PAINT_INGAMEPANELS )
 	{
-		bool bSaveVisible = vgui::ipanel()->IsVisible( pVPanel );
-		vgui::ipanel()->SetVisible( pVPanel, false );
+		bool bSaveVisible = vgui::ivgui()->IsVisible( pVPanel );
+		vgui::ivgui()->SetVisible( pVPanel, false );
 
 		// Remove the client .dll from the main hierarchy so that popups will only paint for the client .dll here
 		// NOTE: Disconnect each surface one at a time so that we don't draw popups twice
 
 		// Paint the client .dll only
 		vgui::VPANEL ingameRoot = staticClientDLLPanel->GetVPanel();
-		vgui::VPANEL saveParent = vgui::ipanel()->GetParent( ingameRoot );
-		vgui::ipanel()->SetParent( ingameRoot, 0 );
+		vgui::VPANEL saveParent = vgui::ivgui()->GetParent( ingameRoot );
+		vgui::ivgui()->SetParent( ingameRoot, 0 );
 		vgui::surface()->PaintTraverseEx( ingameRoot, true );
-		vgui::ipanel()->SetParent( ingameRoot, saveParent );
+		vgui::ivgui()->SetParent( ingameRoot, saveParent );
 
 		// Overlay the client .dll tools next
 		vgui::VPANEL ingameToolsRoot = staticClientDLLToolsPanel->GetVPanel();
-		vgui::VPANEL saveToolParent = vgui::ipanel()->GetParent( ingameToolsRoot );
-		vgui::ipanel()->SetParent( ingameToolsRoot, 0 );
+		vgui::VPANEL saveToolParent = vgui::ivgui()->GetParent( ingameToolsRoot );
+		vgui::ivgui()->SetParent( ingameToolsRoot, 0 );
 		vgui::surface()->PaintTraverseEx( ingameToolsRoot, true );
-		vgui::ipanel()->SetParent( ingameToolsRoot, saveToolParent );
+		vgui::ivgui()->SetParent( ingameToolsRoot, saveToolParent );
 
-		vgui::ipanel()->SetVisible( pVPanel, bSaveVisible );
+		vgui::ivgui()->SetVisible( pVPanel, bSaveVisible );
 	}
 
 	if ( mode & PAINT_CURSOR )
@@ -2031,7 +2031,7 @@ void CFocusOverlayPanel::PostChildPaint( void )
 	if ( g_DrawTreeSelectedPanel )
 	{
 		int x, y, x1, y1;
-		vgui::ipanel()->GetClipRect( g_DrawTreeSelectedPanel, x, y, x1, y1 );
+		vgui::ivgui()->GetClipRect( g_DrawTreeSelectedPanel, x, y, x1, y1 );
 		vgui::surface()->DrawSetColor( Color( 255, 0, 0, 255 ) );
 		vgui::surface()->DrawOutlinedRect( x, y, x1, y1 );
 
@@ -2076,7 +2076,7 @@ bool CFocusOverlayPanel::DrawFocusPanelList( void )
 		if ( !vpanel )
 			continue;
 
-		if ( !vgui::ipanel()->IsVisible( vpanel ) )
+		if ( !vgui::ivgui()->IsVisible( vpanel ) )
 			return false;
 
 		// Convert panel bounds to screen space
@@ -2084,7 +2084,7 @@ bool CFocusOverlayPanel::DrawFocusPanelList( void )
 		GetColorForSlot( slot, r, g, b );
 
 		int x, y, x1, y1;
-		vgui::ipanel()->GetClipRect( vpanel, x, y, x1, y1 );
+		vgui::ivgui()->GetClipRect( vpanel, x, y, x1, y1 );
 
 		if ( (x1 - x) == videomode->GetModeUIWidth() && 
 			 (y1 - y) == videomode->GetModeUIHeight() )
@@ -2107,7 +2107,7 @@ bool CFocusOverlayPanel::DrawFocusPanelList( void )
 
 static void VGui_RecursiveFindPanels( CUtlVector< vgui::VPANEL  >& panelList, vgui::VPANEL check, char const *panelname )
 {
-	vgui::Panel *panel = vgui::ipanel()->GetPanel( check, "ENGINE" );
+	vgui::Panel *panel = vgui::ivgui()->GetPanel( check, "ENGINE" );
 	if ( !panel )
 		return;
 
@@ -2184,7 +2184,7 @@ CON_COMMAND( vgui_togglepanel, "show/hide vgui panel by name." )
 		if ( !p )
 			continue;
 
-		vgui::Panel *panel = vgui::ipanel()->GetPanel( p, "ENGINE");
+		vgui::Panel *panel = vgui::ivgui()->GetPanel( p, "ENGINE");
 		if ( !panel )
 			continue;
 
@@ -2203,20 +2203,20 @@ CON_COMMAND( vgui_togglepanel, "show/hide vgui panel by name." )
 
 static void VGui_RecursePanel( CUtlVector< vgui::VPANEL >& panelList, int x, int y, vgui::VPANEL check, bool include_hidden )
 {
-	if( !include_hidden && !vgui::ipanel()->IsVisible( check ) )
+	if( !include_hidden && !vgui::ivgui()->IsVisible( check ) )
 	{
 		return;
 	}
 
-	if ( vgui::ipanel()->IsWithinTraverse( check, x, y, false ) )
+	if ( vgui::ivgui()->IsWithinTraverse( check, x, y, false ) )
 	{
 		panelList.AddToTail( check );
 	}
 
-	int childcount = vgui::ipanel()->GetChildCount( check );
+	int childcount = vgui::ivgui()->GetChildCount( check );
 	for ( int i = 0; i < childcount; i++ )
 	{
-		vgui::VPANEL child = vgui::ipanel()->GetChild( check, i );
+		vgui::VPANEL child = vgui::ivgui()->GetChild( check, i );
 		VGui_RecursePanel( panelList, x, y, child, include_hidden );
 	}
 }
@@ -2252,7 +2252,7 @@ void CEngineVGui::DrawMouseFocus( void )
 
 			if ( popup == embedded )
 				continue;
-			if ( !vgui::ipanel()->IsVisible( popup ) )
+			if ( !vgui::ivgui()->IsVisible( popup ) )
 				continue;
 
 			VGui_RecursePanel( g_FocusPanelList, x, y, popup, include_hidden );
@@ -2286,7 +2286,7 @@ void CEngineVGui::DrawMouseFocus( void )
 		np.color[ 1 ] = g / 255.0f;
 		np.color[ 2 ] = b / 255.0f;
 
-		Con_NXPrintf( &np, "%3i:  %s\n", slot + 1, vgui::ipanel()->GetName(vpanel) );
+		Con_NXPrintf( &np, "%3i:  %s\n", slot + 1, vgui::ivgui()->GetName(vpanel) );
 
 		slot++;
 	}
@@ -2325,7 +2325,7 @@ void DumpPanels_r( vgui::VPANEL panel, int level )
 {
 	int i;
 
-	vgui::IPanel *ipanel = vgui::ipanel();
+	vgui::IVGui *ipanel = vgui::ivgui();
 
 	const char *pName = ipanel->GetName( panel );
 

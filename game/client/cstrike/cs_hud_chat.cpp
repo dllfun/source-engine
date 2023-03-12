@@ -344,12 +344,12 @@ void CHudChat::StartMessageMode( int iMessageModeType )
 {
 	BaseClass::StartMessageMode(iMessageModeType);
 
-	vgui::ipanel()->SetTopmostPopup(GetVPanel(), true);
+	vgui::ivgui()->SetTopmostPopup(GetVPanel(), true);
 }
 
 void CHudChat::StopMessageMode( void )
 {
-	vgui::ipanel()->SetTopmostPopup(GetVPanel(), false);
+	vgui::ivgui()->SetTopmostPopup(GetVPanel(), false);
 
 	BaseClass::StopMessageMode();
 }

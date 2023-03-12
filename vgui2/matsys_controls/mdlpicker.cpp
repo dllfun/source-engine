@@ -22,6 +22,7 @@
 #include "vgui/IVGui.h"
 #include "vgui/IInput.h"
 #include "vgui/ISurface.h"
+#include "VGuiMatSurface/IMatSystemSurface.h"
 #include "vgui/Cursor.h"
 #include "matsys_controls/assetpicker.h"
 #include "matsys_controls/colorpickerpanel.h"
@@ -532,7 +533,7 @@ const char *CMDLPicker::CaptureModel( int nModIndex, const char *AssetName, cons
 	NewPanelColor.SetColor( 0, 0, 0, 0 );
 	m_pMDLPreview->SetBackgroundColor( NewPanelColor );
 
-	g_pVGuiSurface->PaintTraverseEx( m_pMDLPreview->GetVPanel(), false );
+	g_pMatSystemSurface->PaintTraverseEx( m_pMDLPreview->GetVPanel(), false );
 
 	g_pStudioRender->EndFrame();
 	g_pMaterialSystem->EndFrame( );
@@ -554,7 +555,7 @@ const char *CMDLPicker::CaptureModel( int nModIndex, const char *AssetName, cons
 	NewPanelColor.SetColor( 255, 255, 255, 0 );
 	m_pMDLPreview->SetBackgroundColor( NewPanelColor );
 
-	g_pVGuiSurface->PaintTraverseEx( m_pMDLPreview->GetVPanel(), false );
+	g_pMatSystemSurface->PaintTraverseEx( m_pMDLPreview->GetVPanel(), false );
 
 	g_pStudioRender->EndFrame();
 	g_pMaterialSystem->EndFrame( );

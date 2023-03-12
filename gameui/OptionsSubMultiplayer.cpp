@@ -845,7 +845,7 @@ void CrosshairImagePanelAdvanced::Paint()
 	GetSize( wide, tall );
 
 	int iClipX0, iClipY0, iClipX1, iClipY1;
-	ipanel()->GetClipRect(GetVPanel(), iClipX0, iClipY0, iClipX1, iClipY1 );
+	ivgui()->GetClipRect(GetVPanel(), iClipX0, iClipY0, iClipX1, iClipY1 );
 
 	// scroll through all frames
 	if ( m_pFrameVar )

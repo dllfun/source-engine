@@ -143,8 +143,8 @@ static CFontTextureCache	g_FontTextureCache;
 // Singleton instance
 //-----------------------------------------------------------------------------
 CMatSystemSurface g_MatSystemSurface;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CMatSystemSurface, ISurface,
-	VGUI_SURFACE_INTERFACE_VERSION, g_MatSystemSurface );
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CMatSystemSurface, IMatSystemSurface,
+	MAT_SYSTEM_SURFACE_INTERFACE_VERSION, g_MatSystemSurface );
 
 #if defined(LINUX) || defined(OSX) || defined(PLATFORM_BSD)
 CUtlDict< CMatSystemSurface::font_entry, unsigned short > CMatSystemSurface::m_FontData;
@@ -246,11 +246,11 @@ bool CMatSystemSurface::Connect( CreateInterfaceFn factory )
 		return false;
 	}
 
-	if ( !g_pVGuiPanel )
-	{
-		Warning( "MatSystemSurface requires the vgui::IPanel system to run!\n" );
-		return false;
-	}
+	//if ( !g_pVGuiPanel)
+	//{
+	//	Warning( "MatSystemSurface requires the vgui::IPanel system to run!\n" );
+	//	return false;
+	//}
 
 	g_pIInput = (IInputInternal *)factory( VGUI_INPUTINTERNAL_INTERFACE_VERSION, NULL );
 	if ( !g_pIInput )
@@ -265,7 +265,7 @@ bool CMatSystemSurface::Connect( CreateInterfaceFn factory )
 		return false;
 	}
 
-	Assert( g_pVGuiSurface == this );
+	Assert(g_pMatSystemSurface == this );
 
 	// initialize vgui_control interfaces
 	if ( !vgui::VGui_InitInterfacesList( "MATSURFACE", &factory, 1 ) )
@@ -295,8 +295,8 @@ void *CMatSystemSurface::QueryInterface( const char *pInterfaceName )
 		return (IMatSystemSurface*)this;
 
 	// We also implement the IMatSystemSurface interface
-	if (!Q_strncmp(	pInterfaceName, VGUI_SURFACE_INTERFACE_VERSION, Q_strlen(VGUI_SURFACE_INTERFACE_VERSION) + 1))
-		return (vgui::ISurface*)this;
+//	if (!Q_strncmp(	pInterfaceName, VGUI_SURFACE_INTERFACE_VERSION, Q_strlen(VGUI_SURFACE_INTERFACE_VERSION) + 1))
+//		return (vgui::ISurface*)this;
 
 	return BaseClass::QueryInterface( pInterfaceName );
 }
@@ -810,16 +810,16 @@ void CMatSystemSurface::PushMakeCurrent(VPANEL pPanel, bool useInSets)
 
 	if (useInSets)
 	{
-		g_pVGuiPanel->GetInset(pPanel, inSets[0], inSets[1], inSets[2], inSets[3]);
+		g_pVGui->GetInset(pPanel, inSets[0], inSets[1], inSets[2], inSets[3]);
 	}
 
-	g_pVGuiPanel->GetAbsPos(pPanel, absExtents[0], absExtents[1]);
+	g_pVGui->GetAbsPos(pPanel, absExtents[0], absExtents[1]);
 	int wide, tall;
-	g_pVGuiPanel->GetSize(pPanel, wide, tall);
+	g_pVGui->GetSize(pPanel, wide, tall);
 	absExtents[2] = absExtents[0] + wide;
 	absExtents[3] = absExtents[1] + tall;
 
-	g_pVGuiPanel->GetClipRect(pPanel, clipRect[0], clipRect[1], clipRect[2], clipRect[3]);
+	g_pVGui->GetClipRect(pPanel, clipRect[0], clipRect[1], clipRect[2], clipRect[3]);
 
 	int i = m_PaintStateStack.AddToTail();
 	PaintState_t &paintState = m_PaintStateStack[i];
@@ -2592,7 +2592,7 @@ void CMatSystemSurface::OnScreenSizeChanged( int nOldWidth, int nOldHeight )
 	Msg( "Changing resolutions from (%d, %d) -> (%d, %d)\n", nOldWidth, nOldHeight, iNewWidth, iNewHeight );
 
 	// update the root panel size
-	ipanel()->SetSize(m_pEmbeddedPanel, iNewWidth, iNewHeight);
+	ivgui()->SetSize(m_pEmbeddedPanel, iNewWidth, iNewHeight);
 
 	// notify every panel
 	VPANEL panel = GetEmbeddedPanel();
@@ -2640,7 +2640,7 @@ void CMatSystemSurface::GetWorkspaceBounds(int &x, int &y, int &iWide, int &iTal
 	// but other embedded panels can be used
 	x = m_WorkSpaceInsets[0];
 	y = m_WorkSpaceInsets[1];
-	g_pVGuiPanel->GetSize(m_pEmbeddedPanel, iWide, iTall);
+	g_pVGui->GetSize(m_pEmbeddedPanel, iWide, iTall);
 
 	iWide -= m_WorkSpaceInsets[2];
 	iTall -= m_WorkSpaceInsets[3];
@@ -2682,18 +2682,18 @@ void CMatSystemSurface::SetMinimized(VPANEL panel, bool state)
 {
 	if (state)
 	{
-		g_pVGuiPanel->SetPlat(panel, VPANEL_MINIMIZED);
-		g_pVGuiPanel->SetVisible(panel, false);
+		g_pVGui->SetPlat(panel, VPANEL_MINIMIZED);
+		g_pVGui->SetVisible(panel, false);
 	}
 	else
 	{
-		g_pVGuiPanel->SetPlat(panel, VPANEL_NORMAL);
+		g_pVGui->SetPlat(panel, VPANEL_NORMAL);
 	}
 }
 
 bool CMatSystemSurface::IsMinimized(vgui::VPANEL panel)
 {
-	return (g_pVGuiPanel->Plat(panel) == VPANEL_MINIMIZED);
+	return (g_pVGui->Plat(panel) == VPANEL_MINIMIZED);
 
 }
 
@@ -2780,12 +2780,12 @@ bool CMatSystemSurface::IsWithin(int x, int y)
 bool CMatSystemSurface::ShouldPaintChildPanel(VPANEL childPanel)
 {
 	if ( m_pRestrictedPanel && ( m_pRestrictedPanel != childPanel ) && 
-		 !g_pVGuiPanel->HasParent( childPanel, m_pRestrictedPanel ) )
+		 !g_pVGui->HasParent( childPanel, m_pRestrictedPanel ) )
 	{
 		return false;
 	}
 
-	bool isPopup = ipanel()->IsPopup(childPanel);
+	bool isPopup = ivgui()->IsPopup(childPanel);
 	return !isPopup;
 }
 
@@ -2805,10 +2805,10 @@ bool CMatSystemSurface::HasFocus()
 void CMatSystemSurface::BringToFront(VPANEL panel)
 {
 	// move panel to top of list
-	g_pVGuiPanel->MoveToFront(panel);
+	g_pVGui->MoveToFront(panel);
 
 	// move panel to top of popup list
-	if ( g_pVGuiPanel->IsPopup( panel ) )
+	if ( g_pVGui->IsPopup( panel ) )
 	{
 		MovePopupToFront( panel );
 	}
@@ -2821,13 +2821,13 @@ void CMatSystemSurface::SetTopLevelFocus(VPANEL pSubFocus)
 	// walk up the hierarchy until we find what popup panel belongs to
 	while (pSubFocus)
 	{
-		if (ipanel()->IsPopup(pSubFocus) && ipanel()->IsMouseInputEnabled(pSubFocus))
+		if (ivgui()->IsPopup(pSubFocus) && ivgui()->IsMouseInputEnabled(pSubFocus))
 		{
 			BringToFront(pSubFocus);
 			break;
 		}
 		
-		pSubFocus = ipanel()->GetParent(pSubFocus);
+		pSubFocus = ivgui()->GetParent(pSubFocus);
 	}
 }
 
@@ -2907,9 +2907,9 @@ void CMatSystemSurface::EnableMouseCapture( VPANEL panel, bool state )
 //-----------------------------------------------------------------------------
 void CMatSystemSurface::CreatePopup(VPANEL panel, bool minimized,  bool showTaskbarIcon, bool disabled , bool mouseInput , bool kbInput)
 {
-	if (!g_pVGuiPanel->GetParent(panel))
+	if (!g_pVGui->GetParent(panel))
 	{
-		g_pVGuiPanel->SetParent(panel, GetEmbeddedPanel());
+		g_pVGui->SetParent(panel, GetEmbeddedPanel());
 	}
 	((VPanel *)panel)->SetPopup(true);
 	((VPanel *)panel)->SetKeyBoardInputEnabled(kbInput);
@@ -2933,7 +2933,7 @@ void CMatSystemSurface::CreatePopup(VPANEL panel, bool minimized,  bool showTask
 //-----------------------------------------------------------------------------
 void CMatSystemSurface::AddPanel(VPANEL panel)
 {
-	if (g_pVGuiPanel->IsPopup(panel))
+	if (g_pVGui->IsPopup(panel))
 	{
 		// turn it into a popup menu
 		CreatePopup(panel, false);
@@ -3005,20 +3005,20 @@ void CMatSystemSurface::RemovePopup( vgui::VPANEL panel )
 //-----------------------------------------------------------------------------
 void CMatSystemSurface::AddPopupsToList( VPANEL panel )
 {
-	if (!g_pVGuiPanel->IsVisible(panel))
+	if (!g_pVGui->IsVisible(panel))
 		return;
 
 	// Add to popup list as we visit popups
 	// Note:  popup list is cleared in RunFrame which occurs before this call!!!
-	if ( g_pVGuiPanel->IsPopup( panel ) )
+	if ( g_pVGui->IsPopup( panel ) )
 	{
 		AddPopup( panel );
 	}
 
-	int count = g_pVGuiPanel->GetChildCount(panel);
+	int count = g_pVGui->GetChildCount(panel);
 	for (int i = 0; i < count; ++i)
 	{
-		VPANEL child = g_pVGuiPanel->GetChild(panel, i);
+		VPANEL child = g_pVGui->GetChild(panel, i);
 		AddPopupsToList( child );
 	}
 }
@@ -3168,7 +3168,7 @@ bool CMatSystemSurface::IsPanelUnderRestrictedPanel( VPANEL panel )
 		if ( panel == m_pRestrictedPanel )
 			return true;
 
-		panel = ipanel()->GetParent( panel );
+		panel = ivgui()->GetParent( panel );
 	}
 	return false;
 }
@@ -3181,7 +3181,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 {
 	MAT_FUNC;
 
-	if ( !ipanel()->IsVisible( panel ) )
+	if ( !ivgui()->IsVisible( panel ) )
 		return;
 
 	VPROF( "CMatSystemSurface::PaintTraverse" );
@@ -3220,22 +3220,22 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 			// Paint the restricted panel, and its parent.
 			// NOTE: This call has guards to not draw popups. If the restricted panel
 			// is a popup, it won't draw here.
-			ipanel()->PaintTraverse( ipanel()->GetParent( m_pRestrictedPanel ), true );
+			ivgui()->PaintTraverse( ivgui()->GetParent( m_pRestrictedPanel ), true );
 		}
 		else
 		{
 			// paint traverse the root panel, painting all children
-			VPROF( "ipanel()->PaintTraverse" );
-			ipanel()->PaintTraverse( panel, true );
+			VPROF( "ivgui()->PaintTraverse" );
+			ivgui()->PaintTraverse( panel, true );
 		}
 	}
 	else
 	{
 		// If it's a popup, it should already have been painted above
-		VPROF( "ipanel()->PaintTraverse" );
-		if ( !paintPopups || !ipanel()->IsPopup( panel ) )
+		VPROF( "ivgui()->PaintTraverse" );
+		if ( !paintPopups || !ivgui()->IsPopup( panel ) )
 		{
-			ipanel()->PaintTraverse( panel, true );
+			ivgui()->PaintTraverse( panel, true );
 		}
 	}
 
@@ -3261,7 +3261,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 				if ( !popupPanel )
 					continue;
 
-				if ( !ipanel()->IsFullyVisible( popupPanel ) )
+				if ( !ivgui()->IsFullyVisible( popupPanel ) )
 					continue;
 
 				if ( !IsPanelUnderRestrictedPanel( popupPanel ) )
@@ -3275,7 +3275,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 				--nStencilRef;
 
 				m_flZPos = ((float)(i) / (float)popups);
-				ipanel()->PaintTraverse( popupPanel, true );
+				ivgui()->PaintTraverse( popupPanel, true );
 			}
 		}
 	}
@@ -3879,14 +3879,14 @@ void CMatSystemSurface::MovePopupToFront(VPANEL panel)
 
 	if ( g_bSpewFocus )
 	{
-		char const *pName = ipanel()->GetName( panel );
+		char const *pName = ivgui()->GetName( panel );
 		Msg( "%s moved to front\n", pName ? pName : "(no name)" ); 
 	}
 
 	// If the modal panel isn't a parent, restore it to the top, to prevent a hard lock
 	if ( input()->GetAppModalSurface() )
 	{
-		if ( !g_pVGuiPanel->HasParent(panel, input()->GetAppModalSurface()) )
+		if ( !g_pVGui->HasParent(panel, input()->GetAppModalSurface()) )
 		{
 			HPanel p = ivgui()->PanelToHandle( input()->GetAppModalSurface() );
 			index = m_PopupList.Find( p );
@@ -3925,7 +3925,7 @@ bool CMatSystemSurface::IsInThink( VPANEL panel)
 			return false;
 		}
 
-		return ipanel()->HasParent( panel, m_CurrentThinkPanel);
+		return ivgui()->HasParent( panel, m_CurrentThinkPanel);
 	}
 	return false;
 }
@@ -4057,7 +4057,7 @@ static bool IsChildOfModalSubTree(VPANEL panel)
 		bool restrictMessages = input()->ShouldModalSubTreeReceiveMessages();
 
 		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
-		bool isChildOfModal = ipanel()->HasParent( panel, modalSubTree );
+		bool isChildOfModal = ivgui()->HasParent( panel, modalSubTree );
 		if ( isChildOfModal )
 		{
 			return restrictMessages;

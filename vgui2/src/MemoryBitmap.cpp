@@ -9,6 +9,7 @@
 #if !defined(_STATIC_LINKED) || defined(_VGUI_DLL)
 
 #include <vgui/ISurface.h>
+#include "VGuiMatSurface/IMatSystemSurface.h"
 
 #include "Memorybitmap.h"
 #include "vgui_internal.h"

@@ -1002,8 +1002,8 @@ void Menu::PositionCascadingMenu()
 	Assert(GetVParent());
 	int parentX, parentY, parentWide, parentTall;
 	// move the menu to the correct place below the menuItem
-	ipanel()->GetSize(GetVParent(), parentWide, parentTall);
-	ipanel()->GetPos(GetVParent(), parentX, parentY);
+	ivgui()->GetSize(GetVParent(), parentWide, parentTall);
+	ivgui()->GetPos(GetVParent(), parentX, parentY);
 	
 	parentX += parentWide, parentY = 0;
 
@@ -1622,7 +1622,7 @@ void Menu::OnMouseWheeled(int delta)
 void Menu::OnKillFocus()
 {
 	// check to see if it's a child taking it
-	if (!input()->GetFocus() || !ipanel()->HasParent(input()->GetFocus(), GetVPanel()))
+	if (!input()->GetFocus() || !ivgui()->HasParent(input()->GetFocus(), GetVPanel()))
 	{
 		// if we don't accept keyboard input, then we have to ignore the killfocus if it's not actually being stolen
 		if (!IsKeyBoardInputEnabled() && !input()->GetFocus())
@@ -1760,7 +1760,7 @@ public:
 			}
 
 			// It's over something which is parented to the menu (i.e., a menu item)
-			if ( ipanel()->HasParent( topMost, panel->GetVPanel() ) )
+			if ( ivgui()->HasParent( topMost, panel->GetVPanel() ) )
 			{
 				return true;
 			}
@@ -1783,14 +1783,14 @@ public:
 				// NOTE:  this check used to not cast to MenuButton, but it seems wrong to me
 				//  since if the mouse is over another child of the parent panel to the menu then
 				//  the menu stays visible.  I think this is bogus.
-				Panel *pTopMost = ipanel()->GetPanel(topMost, GetControlsModuleName());
+				Panel *pTopMost = ivgui()->GetPanel(topMost, GetControlsModuleName());
 
 				if ( pTopMost &&
-					ipanel()->HasParent( topMost, parent->GetVPanel() ) &&
+					ivgui()->HasParent( topMost, parent->GetVPanel() ) &&
 					dynamic_cast< MenuButton * >( pTopMost ) )
 				{
 					Msg( "topMost %s has parent %s\n", 
-						ipanel()->GetName( topMost ),
+						ivgui()->GetName( topMost ),
 						parent->GetName() );
 
 					return true;
@@ -2370,7 +2370,7 @@ void Menu::OnCursorEnteredMenuItem(VPANEL menuItem)
 	// if we are in mouse mode
 	if (m_iInputMode == MOUSE)
 	{
-		MenuItem *item = static_cast<MenuItem *>(ipanel()->GetPanel(menuItem, GetModuleName()));
+		MenuItem *item = static_cast<MenuItem *>(ivgui()->GetPanel(menuItem, GetModuleName()));
 		// arm the menu
 		item->ArmItem();
 		SetCurrentlySelectedItem(item);
@@ -2393,7 +2393,7 @@ void Menu::OnCursorExitedMenuItem(VPANEL menuItem)
 	// only care if we are in mouse mode
 	if (m_iInputMode == MOUSE)
 	{
-		MenuItem *item = static_cast<MenuItem *>(ipanel()->GetPanel(menuItem, GetModuleName()));
+		MenuItem *item = static_cast<MenuItem *>(ivgui()->GetPanel(menuItem, GetModuleName()));
 		// unhighlight the item.
 		// note menuItems with cascading menus will stay lit.
 		item->DisarmItem();

@@ -117,7 +117,7 @@ void CFPSPanel::OnScreenSizeChanged(int iOldWide, int iOldTall)
 void CFPSPanel::ComputeSize( void )
 {
 	int wide, tall;
-	vgui::ipanel()->GetSize(GetVParent(), wide, tall );
+	vgui::ivgui()->GetSize(GetVParent(), wide, tall );
 
 	int x = wide - FPS_PANEL_WIDTH;
 	int y = 0;
@@ -448,7 +448,7 @@ CBlockingFileIOPanel::CBlockingFileIOPanel( vgui::VPANEL parent ) : BaseClass( N
 {
 	SetParent( parent );
 	int wide, tall;
-	vgui::ipanel()->GetSize( parent, wide, tall );
+	vgui::ivgui()->GetSize( parent, wide, tall );
 
 	int x = 2;
 	int y = 100;

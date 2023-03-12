@@ -614,8 +614,8 @@ void CSpectatorGUI::Update()
 		int mx, my, mwide, mtall;
 
 		VPANEL p = overview->GetVPanel();
-		vgui::ipanel()->GetPos( p, mx, my );
-		vgui::ipanel()->GetSize( p, mwide, mtall );
+		vgui::ivgui()->GetPos( p, mx, my );
+		vgui::ivgui()->GetSize( p, mwide, mtall );
 				
 		if ( my < btall )
 		{

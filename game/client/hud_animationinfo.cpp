@@ -317,7 +317,7 @@ CON_COMMAND_F_COMPLETION( cl_animationinfo, "Hud element to examine.", 0, HudEle
 	else 
 	{
 		VPANEL root = VGui_GetClientDLLRootPanel();
-		vgui::Panel *rootPanel = ipanel()->GetPanel( root, info->GetModuleName() );
+		vgui::Panel *rootPanel = ivgui()->GetPanel( root, info->GetModuleName() );
 		Panel *panel = NULL;
 		if ( rootPanel )
 		{

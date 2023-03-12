@@ -877,8 +877,8 @@ bool AnimationController::UpdateScreenSize()
 	int sx = 0, sy = 0;
 	if ( m_hSizePanel != 0 )
 	{
-		ipanel()->GetSize( m_hSizePanel, screenWide, screenTall );
-		ipanel()->GetPos( m_hSizePanel, sx, sy );
+		ivgui()->GetSize( m_hSizePanel, screenWide, screenTall );
+		ivgui()->GetPos( m_hSizePanel, sx, sy );
 	}
 	else
 	{

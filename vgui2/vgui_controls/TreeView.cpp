@@ -703,7 +703,7 @@ bool TreeNode::IsInFocus()
 {
     // check if our parent or one of it's children has focus
     VPANEL focus = input()->GetFocus();
-    return (HasFocus() || (focus && ipanel()->HasParent(focus, GetVParent())));
+    return (HasFocus() || (focus && ivgui()->HasParent(focus, GetVParent())));
 }
 */
 

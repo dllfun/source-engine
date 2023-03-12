@@ -151,8 +151,8 @@ public:
 	//-----------------------------------------------------------------------------
 	// CONSTRUCTORS
 	// these functions deal with the creation of the Panel
-	// the Panel automatically gets a handle to a vgui-internal panel, the ipanel(), upon construction
-	// vgui interfaces deal only with ipanel(), not Panel directly
+	// the Panel automatically gets a handle to a vgui-internal panel, the ivgui(), upon construction
+	// vgui interfaces deal only with ivgui(), not Panel directly
 	Panel();
 	Panel(Panel *parent);
 	Panel(Panel *parent, const char *panelName);
@@ -487,7 +487,10 @@ public:
 	virtual void PerformLayout();
 
 	// this enables message mapping for this class - requires matching IMPLEMENT_PANELDESC() in the .cpp file
-	DECLARE_PANELMAP();
+	//DECLARE_PANELMAP();
+	static vgui::PanelMap_t m_PanelMap;
+	static vgui::MessageMapItem_t m_MessageMap[];
+	virtual vgui::PanelMap_t* GetPanelMap(void);
 
 	virtual VPANEL GetCurrentKeyFocus();
 

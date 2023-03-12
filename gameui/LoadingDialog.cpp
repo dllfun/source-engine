@@ -251,7 +251,7 @@ void CLoadingDialog::HideOtherDialogs( bool bHide )
 			// if we have a loading background dialog, hide any other dialogs by moving the full-screen background dialog to the
 			// front, then moving ourselves in front of it
 			GameUI().ShowLoadingBackgroundDialog();
-			vgui::ipanel()->MoveToFront( GetVPanel() );
+			vgui::ivgui()->MoveToFront( GetVPanel() );
 			vgui::input()->SetAppModalSurface( GetVPanel() );
 		}
 		else
@@ -503,7 +503,7 @@ void CLoadingDialog::PerformLayout()
 	
 	BaseClass::PerformLayout();
 	
-	vgui::ipanel()->MoveToFront( GetVPanel() );
+	vgui::ivgui()->MoveToFront( GetVPanel() );
 }
 
 //-----------------------------------------------------------------------------

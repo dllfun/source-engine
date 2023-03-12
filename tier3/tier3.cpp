@@ -34,8 +34,8 @@ IStudioRender *g_pStudioRender = 0;
 //IStudioRender *studiorender = 0;
 IMatSystemSurface *g_pMatSystemSurface = 0;
 vgui::IInput *g_pVGuiInput = 0;
-vgui::ISurface *g_pVGuiSurface = 0;
-vgui::IPanel *g_pVGuiPanel = 0;
+//vgui::ISurface *g_pVGuiSurface = 0;
+//vgui::IPanel *g_pVGuiPanel = 0;
 vgui::IVGui	*g_pVGui = 0;
 vgui::ILocalize *g_pVGuiLocalize = 0;
 vgui::ISchemeManager *g_pVGuiSchemeManager = 0;
@@ -57,8 +57,8 @@ IVTex *g_pVTex = 0;
 void ConnectTier3Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
 {
 	// Don't connect twice..
-	Assert( !g_pStudioRender && !g_pMatSystemSurface && !g_pVGui && !g_pVGuiPanel && !g_pVGuiInput &&//&& !studiorender 
-		!g_pVGuiSurface && !g_pDataCache && !g_pMDLCache && !mdlcache && !g_pVideo &&
+	Assert( !g_pStudioRender && !g_pMatSystemSurface && !g_pVGui && /*!g_pVGuiPanel &&*/ !g_pVGuiInput &&//&& !studiorender 
+		/*!g_pVGuiSurface &&*/ !g_pDataCache && !g_pMDLCache && !mdlcache && !g_pVideo &&
 		!g_pDmeMakefileUtils && !g_pPhysicsCollision && !g_pVGuiLocalize && !g_pSoundEmitterSystem &&
 		!g_pVGuiSchemeManager && !g_pVGuiSystem );
 
@@ -76,14 +76,14 @@ void ConnectTier3Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
 		{
 			g_pVGuiInput = (vgui::IInput*)pFactoryList[i]( VGUI_INPUT_INTERFACE_VERSION, NULL );
 		}
-		if ( !g_pVGuiPanel )
-		{
-			g_pVGuiPanel = (vgui::IPanel*)pFactoryList[i]( VGUI_PANEL_INTERFACE_VERSION, NULL );
-		}
-		if ( !g_pVGuiSurface )
-		{
-			g_pVGuiSurface = (vgui::ISurface*)pFactoryList[i]( VGUI_SURFACE_INTERFACE_VERSION, NULL );
-		}
+		//if ( !g_pVGuiPanel )
+		//{
+		//	g_pVGuiPanel = (vgui::IPanel*)pFactoryList[i]( VGUI_PANEL_INTERFACE_VERSION, NULL );
+		//}
+		//if ( !g_pVGuiSurface )
+		//{
+		//	g_pVGuiSurface = (vgui::ISurface*)pFactoryList[i](MAT_SYSTEM_SURFACE_INTERFACE_VERSION, NULL );
+		//}
 		if ( !g_pVGuiSchemeManager )
 		{
 			g_pVGuiSchemeManager = (vgui::ISchemeManager*)pFactoryList[i]( VGUI_SCHEME_INTERFACE_VERSION, NULL );
@@ -137,8 +137,8 @@ void DisconnectTier3Libraries()
 	//studiorender = 0;
 	g_pVGui = 0;
 	g_pVGuiInput = 0;
-	g_pVGuiPanel = 0;
-	g_pVGuiSurface = 0;
+//	g_pVGuiPanel = 0;
+//	g_pVGuiSurface = 0;
 	g_pVGuiLocalize = 0;
 	g_pVGuiSchemeManager = 0;
 	g_pVGuiSystem = 0;

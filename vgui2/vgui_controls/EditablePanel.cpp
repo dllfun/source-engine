@@ -102,7 +102,7 @@ void EditablePanel::OnChildAdded(VPANEL child)
 	BaseClass::OnChildAdded(child);
 
 	// add only if we're in the same module
-	Panel *panel = ipanel()->GetPanel(child, GetModuleName());
+	Panel *panel = ivgui()->GetPanel(child, GetModuleName());
 	if (panel)
 	{
 		panel->SetBuildGroup(_buildGroup);
@@ -154,7 +154,7 @@ void EditablePanel::OnKeyCodePressed( KeyCode code )
 			case KEY_XBUTTON_A:
 			case STEAMCONTROLLER_A:
 			case KEY_ENTER:
-				if ( ipanel()->IsVisible( panel ) && ipanel()->IsEnabled( panel ) )
+				if ( ivgui()->IsVisible( panel ) && ivgui()->IsEnabled( panel ) )
 				{
 					// Activate the button
 					PostMessage( panel, new KeyValues( "Hotkey" ) );
@@ -275,7 +275,7 @@ void EditablePanel::OnCurrentDefaultButtonSet( VPANEL defaultButton )
 //-----------------------------------------------------------------------------
 void EditablePanel::OnDefaultButtonSet( VPANEL defaultButton )
 {
-	Panel *panel = ipanel()->GetPanel( defaultButton, GetModuleName() );
+	Panel *panel = ivgui()->GetPanel( defaultButton, GetModuleName() );
 
 	m_NavGroup.SetDefaultButton(panel);
 }
@@ -815,7 +815,7 @@ void EditablePanel::ApplySettings(KeyValues *inResourceData)
 //-----------------------------------------------------------------------------
 void EditablePanel::OnRequestFocus(VPANEL subFocus, VPANEL defaultPanel)
 {
-	if (!ipanel()->IsPopup(subFocus))
+	if (!ivgui()->IsPopup(subFocus))
     {
 		defaultPanel = m_NavGroup.SetCurrentFocus(subFocus, defaultPanel);
     }
@@ -1037,10 +1037,10 @@ void EditablePanel::ForceSubPanelsToUpdateWithNewDialogVariables()
 {
 	if (m_pDialogVariables)
 	{
-		ipanel()->SendMessage(GetVPanel(), m_pDialogVariables, GetVPanel());
-		for (int i = 0; i < ipanel()->GetChildCount(GetVPanel()); i++)
+		ivgui()->SendMessage(GetVPanel(), m_pDialogVariables, GetVPanel());
+		for (int i = 0; i < ivgui()->GetChildCount(GetVPanel()); i++)
 		{
-			ipanel()->SendMessage(ipanel()->GetChild(GetVPanel(), i), m_pDialogVariables, GetVPanel());
+			ivgui()->SendMessage(ivgui()->GetChild(GetVPanel(), i), m_pDialogVariables, GetVPanel());
 		}
 	}
 }

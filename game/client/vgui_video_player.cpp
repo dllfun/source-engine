@@ -211,7 +211,7 @@ void VideoPlayerPanel::Paint( void )
 	// Get our dimensions
 	int xpos = 0;
 	int ypos = 0;
-	vgui::ipanel()->GetAbsPos( GetVPanel(), xpos, ypos );
+	vgui::ivgui()->GetAbsPos( GetVPanel(), xpos, ypos );
 //	GetPanelPos( xpos, ypos );
 	int width = GetWide();
 	int height = GetTall();

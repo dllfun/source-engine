@@ -170,7 +170,7 @@ void ImageBorder::Paint(VPANEL panel)
 {
 	// get panel size
 	int wide, tall;
-	ipanel()->GetSize( panel, wide, tall );
+	ivgui()->GetSize( panel, wide, tall );
 	Paint(0, 0, wide, tall, -1, 0, 0);
 }
 

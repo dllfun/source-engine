@@ -115,7 +115,7 @@ void CReplayBrowserPanel::PerformLayout( void )
 	if ( GetVParent() )
 	{
 		int w,h;
-		vgui::ipanel()->GetSize( GetVParent(), w, h );
+		vgui::ivgui()->GetSize( GetVParent(), w, h );
 		SetBounds(0,0,w,h);
 	}
 

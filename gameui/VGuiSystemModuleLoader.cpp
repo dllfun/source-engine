@@ -306,7 +306,7 @@ const char *CVGuiSystemModuleLoader::GetModuleLabel(int moduleIndex)
 //-----------------------------------------------------------------------------
 bool CVGuiSystemModuleLoader::IsModuleVisible(int moduleIndex)
 {
-	return vgui::ipanel()->IsVisible( m_Modules[moduleIndex].moduleInterface->GetPanel() );
+	return vgui::ivgui()->IsVisible( m_Modules[moduleIndex].moduleInterface->GetPanel() );
 }
 
 //-----------------------------------------------------------------------------

@@ -684,7 +684,7 @@ void CRender::Push2DView( const CViewSetup &view, int nFlags, ITexture* pRenderT
 
 	CMatRenderContextPtr pRenderContext( materials );
 
-	if ( !pRenderContext )
+	if ( !pRenderTarget)//fixed by me
 	{
 		pRenderTarget = pRenderContext->GetRenderTarget();
 	}

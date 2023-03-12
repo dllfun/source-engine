@@ -89,7 +89,7 @@ IGameUIFuncs *gameuifuncs = NULL;
 IEngineVGui *enginevguifuncs = NULL;
 IMatchmaking *matchmaking = NULL;
 IXboxSystem *xboxsystem = NULL;		// 360 only
-vgui::ISurface *enginesurfacefuncs = NULL;
+IMatSystemSurface *enginesurfacefuncs = NULL;
 IVEngineClient *engine = NULL;
 IEngineSound *enginesound = NULL;
 IAchievementMgr *achievementmgr = NULL;
@@ -186,7 +186,7 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	g_pVGuiLocalize->AddFile( "Resource/valve_%language%.txt", "GAME", true );
 
 	enginevguifuncs = (IEngineVGui *)factory( VENGINE_VGUI_VERSION, NULL );
-	enginesurfacefuncs = (vgui::ISurface *)factory(VGUI_SURFACE_INTERFACE_VERSION, NULL);
+	enginesurfacefuncs = (IMatSystemSurface *)factory(MAT_SYSTEM_SURFACE_INTERFACE_VERSION, NULL);
 	gameuifuncs = (IGameUIFuncs *)factory( VENGINE_GAMEUIFUNCS_VERSION, NULL );
 	matchmaking = (IMatchmaking *)factory( VENGINE_MATCHMAKING_VERSION, NULL );
 	xboxsystem = (IXboxSystem *)factory( XBOXSYSTEM_INTERFACE_VERSION, NULL );
@@ -1180,11 +1180,11 @@ void CGameUI::ShowLoadingBackgroundDialog()
 {
 	if ( g_hLoadingBackgroundDialog )
 	{
-		vgui::ipanel()->SetParent( g_hLoadingBackgroundDialog, staticPanel->GetVPanel() );
-		vgui::ipanel()->PerformApplySchemeSettings( g_hLoadingBackgroundDialog );
-		vgui::ipanel()->SetVisible( g_hLoadingBackgroundDialog, true );		
-		vgui::ipanel()->MoveToFront( g_hLoadingBackgroundDialog );
-		vgui::ipanel()->SendMessage( g_hLoadingBackgroundDialog, new KeyValues( "activate" ), staticPanel->GetVPanel() );
+		vgui::ivgui()->SetParent( g_hLoadingBackgroundDialog, staticPanel->GetVPanel() );
+		vgui::ivgui()->PerformApplySchemeSettings( g_hLoadingBackgroundDialog );
+		vgui::ivgui()->SetVisible( g_hLoadingBackgroundDialog, true );		
+		vgui::ivgui()->MoveToFront( g_hLoadingBackgroundDialog );
+		vgui::ivgui()->SendMessage( g_hLoadingBackgroundDialog, new KeyValues( "activate" ), staticPanel->GetVPanel() );
 	}
 }
 
@@ -1195,10 +1195,10 @@ void CGameUI::HideLoadingBackgroundDialog()
 {
 	if ( g_hLoadingBackgroundDialog )
 	{
-		vgui::ipanel()->SetParent( g_hLoadingBackgroundDialog, NULL );
-		vgui::ipanel()->SetVisible( g_hLoadingBackgroundDialog, false );		
-		vgui::ipanel()->MoveToBack( g_hLoadingBackgroundDialog );
-		vgui::ipanel()->SendMessage( g_hLoadingBackgroundDialog, new KeyValues( "deactivate" ), staticPanel->GetVPanel() );
+		vgui::ivgui()->SetParent( g_hLoadingBackgroundDialog, NULL );
+		vgui::ivgui()->SetVisible( g_hLoadingBackgroundDialog, false );		
+		vgui::ivgui()->MoveToBack( g_hLoadingBackgroundDialog );
+		vgui::ivgui()->SendMessage( g_hLoadingBackgroundDialog, new KeyValues( "deactivate" ), staticPanel->GetVPanel() );
 	}
 }
 

@@ -21,6 +21,7 @@
 #include "vgui/ILocalize.h"
 #include "vgui/ISystem.h"
 #include "vgui/ISurface.h"
+#include "VGuiMatSurface/IMatSystemSurface.h"
 
 #include "tier1/utlvector.h"
 #include "tier1/utlrbtree.h"

@@ -388,7 +388,7 @@ public:
 						{
 							if (IsSelected() && !m_pListPanel->IsInEditMode())
 							{
-								if (HasFocus() || (focus && ipanel()->HasParent(focus, GetVParent())))
+								if (HasFocus() || (focus && ivgui()->HasParent(focus, GetVParent())))
 								{
 									textImage->SetColor(m_ArmedFgColor2);
 								}
@@ -409,7 +409,7 @@ public:
 						else
 						{
 							// custom colors
-							if (IsSelected() && (HasFocus() || (focus && ipanel()->HasParent(focus, GetVParent()))))
+							if (IsSelected() && (HasFocus() || (focus && ivgui()->HasParent(focus, GetVParent()))))
 							{
 								textImage->SetColor(m_ArmedFgColor2);
 							}
@@ -509,7 +509,7 @@ public:
 		{
             VPANEL focus = input()->GetFocus();
             // if one of the children of the SectionedListPanel has focus, then 'we have focus' if we're selected
-            if (HasFocus() || (focus && ipanel()->HasParent(focus, GetVParent())))
+            if (HasFocus() || (focus && ivgui()->HasParent(focus, GetVParent())))
             {
 			    surface()->DrawSetColor(m_ArmedBgColor);
             }

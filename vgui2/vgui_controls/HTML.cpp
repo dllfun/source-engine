@@ -340,7 +340,7 @@ void HTML::OnMove()
 
 	// tell cef where we are on the screen so plugins can correctly render
 	int nPanelAbsX, nPanelAbsY;
-	ipanel()->GetAbsPos( GetVPanel(), nPanelAbsX, nPanelAbsY );
+	ivgui()->GetAbsPos( GetVPanel(), nPanelAbsX, nPanelAbsY );
 }
 
 
@@ -555,7 +555,7 @@ void HTML::OnMousePressed(MouseCode code)
 	{
 		input()->GetCursorPos( m_iDragStartX, m_iDragStartY );
 		int htmlx, htmly;
-		ipanel()->GetAbsPos( GetVPanel(), htmlx, htmly );
+		ivgui()->GetAbsPos( GetVPanel(), htmlx, htmly );
 
 		GetLinkAtPosition( m_iDragStartX - htmlx, m_iDragStartY - htmly );
 
@@ -583,7 +583,7 @@ void HTML::OnMouseReleased(MouseCode code)
 		{
 			// post the text as a drag drop to the target panel
 			KeyValuesAD kv( "DragDrop" );
-			if ( ipanel()->RequestInfo( input()->GetMouseOver(), kv )
+			if ( ivgui()->RequestInfo( input()->GetMouseOver(), kv )
 				&& kv->GetPtr( "AcceptPanel" ) != NULL )
 			{
 				VPANEL vpanel = (VPANEL)kv->GetPtr( "AcceptPanel" );
@@ -1081,7 +1081,7 @@ void HTML::OnCommand( const char *pchCommand )
 		int x, y;
 		m_pContextMenu->GetPos( x, y );
 		int htmlx, htmly;
-		ipanel()->GetAbsPos( GetVPanel(), htmlx, htmly );
+		ivgui()->GetAbsPos( GetVPanel(), htmlx, htmly );
 
 		m_bRequestingCopyLink = true;
 		GetLinkAtPosition( x - htmlx, y - htmly );

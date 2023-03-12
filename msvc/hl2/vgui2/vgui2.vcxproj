@@ -159,7 +159,6 @@
     <ClCompile Include="..\..\..\vgui2\src\MessageListener.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\ScalableImageBorder.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\Scheme.cpp" />
-    <ClCompile Include="..\..\..\vgui2\src\Surface.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\System.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\vgui.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\vgui_internal.cpp" />

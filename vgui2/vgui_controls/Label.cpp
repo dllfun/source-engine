@@ -583,7 +583,7 @@ void Label::Paint()
 		{
 			if (IsEnabled())
 			{
-				if (_associate.Get() && ipanel()->HasParent(input()->GetFocus(), _associate->GetVPanel()))
+				if (_associate.Get() && ivgui()->HasParent(input()->GetFocus(), _associate->GetVPanel()))
 				{
 					_textImage->SetColor(_associateColor);
 				}

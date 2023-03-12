@@ -981,10 +981,10 @@ bool WillPanelBeVisible( vgui::VPANEL hPanel )
 {
 	while ( hPanel )
 	{
-		if ( !vgui::ipanel()->IsVisible( hPanel ) )
+		if ( !vgui::ivgui()->IsVisible( hPanel ) )
 			return false;
 
-		hPanel = vgui::ipanel()->GetParent( hPanel );
+		hPanel = vgui::ivgui()->GetParent( hPanel );
 	}
 	return true;
 }

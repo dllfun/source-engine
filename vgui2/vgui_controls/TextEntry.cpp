@@ -560,7 +560,7 @@ int TextEntry::DrawChar(wchar_t ch, HFont font, int index, int x, int y)
             VPANEL focus = input()->GetFocus();
 			Color bgColor;
 			bool hasFocus = HasFocus();
-			bool childOfFocus = focus && ipanel()->HasParent(focus, GetVPanel());
+			bool childOfFocus = focus && ivgui()->HasParent(focus, GetVPanel());
 
             // if one of the children of the SectionedListPanel has focus, then 'we have focus' if we're selected
             if ( hasFocus || childOfFocus )
@@ -3409,10 +3409,10 @@ void TextEntry::Paste()
 				wchar_t *remainingText = &buf[i];
 				system()->SetClipboardText(remainingText, len - i - 1);
 				// set the next entry to paste
-				if (GetVParent() && ipanel()->GetCurrentKeyFocus(GetVParent()) != GetVPanel())
+				if (GetVParent() && ivgui()->GetCurrentKeyFocus(GetVParent()) != GetVPanel())
 				{
 					bHaveMovedFocusAwayFromCurrentEntry = true;
-					ipanel()->SendMessage(ipanel()->GetCurrentKeyFocus(GetVParent()), new KeyValues("DoPaste"), GetVPanel());
+					ivgui()->SendMessage(ivgui()->GetCurrentKeyFocus(GetVParent()), new KeyValues("DoPaste"), GetVPanel());
 				}
 				break;
 			}

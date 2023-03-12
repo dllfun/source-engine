@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vgui/ISurface.h>
+#include "VGuiMatSurface/IMatSystemSurface.h"
 #include "bitmap.h"
 #include "vgui_internal.h"
 #include "filesystem.h"

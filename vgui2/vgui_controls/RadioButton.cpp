@@ -196,9 +196,9 @@ void RadioButton::InternalSetSelected(bool state, bool bFireEvents)
 			VPANEL radioParent = GetVParent();
 			if (radioParent)
 			{
-				for (int i = 0; i < ipanel()->GetChildCount(radioParent); i++)
+				for (int i = 0; i < ivgui()->GetChildCount(radioParent); i++)
 				{
-					VPANEL child = ipanel()->GetChild(radioParent, i);
+					VPANEL child = ivgui()->GetChild(radioParent, i);
 					if (child != GetVPanel())
 					{
 						ivgui()->PostMessage(child, msg->MakeCopy(), GetVPanel());

@@ -164,9 +164,9 @@ public:
 
 	virtual void PlaySound( const char *pSound )
 	{
-		if ( g_pVGuiSurface )
+		if (g_pMatSystemSurface)
 		{
-			g_pVGuiSurface->PlaySound( pSound );
+			g_pMatSystemSurface->PlaySound( pSound );
 		}
 	}
 

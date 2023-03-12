@@ -86,8 +86,5 @@
     <ClCompile Include="..\..\..\vgui2\src\System.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\vgui2\src\Surface.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

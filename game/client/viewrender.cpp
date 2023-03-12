@@ -2266,13 +2266,13 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		vgui::VPANEL root = enginevgui->GetPanel( PANEL_CLIENTDLL );
 		if ( root != 0 )
 		{
-			vgui::ipanel()->SetSize( root, viewWidth, viewHeight );
+			vgui::ivgui()->SetSize( root, viewWidth, viewHeight );
 		}
 		// Same for client .dll tools
 		root = enginevgui->GetPanel( PANEL_CLIENTDLL_TOOLS );
 		if ( root != 0 )
 		{
-			vgui::ipanel()->SetSize( root, viewWidth, viewHeight );
+			vgui::ivgui()->SetSize( root, viewWidth, viewHeight );
 		}
 
 		// The crosshair, etc. needs to get at the current setup stuff

@@ -1515,7 +1515,7 @@ Panel *ListPanel::GetCellRenderer(int itemID, int col)
 			selected = true;
             VPANEL focus = input()->GetFocus();
             // if one of the children of the SectionedListPanel has focus, then 'we have focus' if we're selected
-            if (HasFocus() || (focus && ipanel()->HasParent(focus, GetVParent())))
+            if (HasFocus() || (focus && ivgui()->HasParent(focus, GetVParent())))
             {
                 m_pLabel->SetBgColor(GetSchemeColor("ListPanel.SelectedBgColor", pScheme));
     			// selection
@@ -1591,7 +1591,7 @@ Panel *ListPanel::GetCellRenderer(int itemID, int col)
 		{
             VPANEL focus = input()->GetFocus();
             // if one of the children of the SectionedListPanel has focus, then 'we have focus' if we're selected
-            if (HasFocus() || (focus && ipanel()->HasParent(focus, GetVParent())))
+            if (HasFocus() || (focus && ivgui()->HasParent(focus, GetVParent())))
             {
                 m_pLabel->SetBgColor(GetSchemeColor("ListPanel.SelectedBgColor", pScheme));
     			// selection

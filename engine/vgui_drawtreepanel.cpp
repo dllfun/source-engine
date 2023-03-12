@@ -227,14 +227,14 @@ public:
 		{
 			if ( g_DrawTreeSelectedPanel )
 			{
-				vgui::ipanel()->SendMessage( g_DrawTreeSelectedPanel, new KeyValues("Command", "command", "performlayout"), GetVPanel() );
+				vgui::ivgui()->SendMessage( g_DrawTreeSelectedPanel, new KeyValues("Command", "command", "performlayout"), GetVPanel() );
 			}
 		}
 		else if ( !Q_stricmp( command, "reloadscheme" ) )
 		{
 			if ( g_DrawTreeSelectedPanel )
 			{
-				vgui::ipanel()->SendMessage( g_DrawTreeSelectedPanel, new KeyValues("Command", "command", "reloadscheme"), GetVPanel() );
+				vgui::ivgui()->SendMessage( g_DrawTreeSelectedPanel, new KeyValues("Command", "command", "reloadscheme"), GetVPanel() );
 			}
 		}
 		else
@@ -332,7 +332,7 @@ void VGui_RecursivePrintTree(
 	if ( !current )
 		return;
 
-	vgui::IPanel *ipanel = vgui::ipanel();
+	vgui::IVGui *ipanel = vgui::ivgui();
 
 	if ( !vgui_drawtree_visible.GetInt() && ipanel->IsVisible( current ) )
 		return;
@@ -365,8 +365,8 @@ void VGui_RecursivePrintTree(
 	if ( vgui_drawtree_bounds.GetBool() )
 	{
 		int x, y, w, h;
-		vgui::ipanel()->GetPos( current, x, y );
-		vgui::ipanel()->GetSize( current, w, h );
+		vgui::ivgui()->GetPos( current, x, y );
+		vgui::ivgui()->GetSize( current, w, h );
 		char b[ 128 ];
 		Q_snprintf( b, sizeof( b ), "[%-4i %-4i %-4i %-4i]", x, y, w, h );
 
@@ -380,7 +380,7 @@ void VGui_RecursivePrintTree(
 	else if (vgui_drawtree_panelalpha.GetInt() )
 	{
 		KeyValues *kv = new KeyValues("alpha");
-		vgui::ipanel()->RequestInfo(current, kv);
+		vgui::ivgui()->RequestInfo(current, kv);
 		Q_snprintf( str, sizeof( str ), "%s - [%d]", name, kv->GetInt("alpha") );
 		kv->deleteThis();
 	}
@@ -414,7 +414,7 @@ bool UpdateItemState(
 	KeyValues *pSub )
 {
 	bool bRet = false;
-	vgui::IPanel *ipanel = vgui::ipanel();
+	vgui::IVGui *ipanel = vgui::ivgui();
 
 	KeyValues *pItemData = pTree->GetItemData( iChildItemId );
 	if ( pItemData->GetInt( "PanelPtr" ) != pSub->GetInt( "PanelPtr" ) ||
@@ -474,10 +474,10 @@ bool WillPanelBeVisible( vgui::VPANEL hPanel )
 {
 	while ( hPanel )
 	{
-		if ( !vgui::ipanel()->IsVisible( hPanel ) )
+		if ( !vgui::ivgui()->IsVisible( hPanel ) )
 			return false;
 
-		hPanel = vgui::ipanel()->GetParent( hPanel );
+		hPanel = vgui::ivgui()->GetParent( hPanel );
 	}
 	return true;
 }

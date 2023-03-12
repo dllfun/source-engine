@@ -234,7 +234,7 @@ void MenuBar::OnCursorEnteredMenuButton(int VPanel)
 			// now see if menuButton is one of ours.
 			for ( int j = 0; j < m_pMenuButtons.Count(); j++)
 			{
-				MenuButton *button = static_cast<MenuButton *>(ipanel()->GetPanel(menuButton, GetModuleName()));
+				MenuButton *button = static_cast<MenuButton *>(ivgui()->GetPanel(menuButton, GetModuleName()));
 				// it is one of ours.
 				if ( button == m_pMenuButtons[j])
 				{

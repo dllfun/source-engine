@@ -12,6 +12,7 @@
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
 #include <vgui/Cursor.h>
+#include "VGuiMatSurface/IMatSystemSurface.h"
 
 #include "vgui_internal.h"
 #include "VPanel.h"

@@ -1061,7 +1061,7 @@ void CBaseAssetPicker::OnKeyCodePressed( KeyCode code )
 	if (( code == KEY_UP ) || ( code == KEY_DOWN ) || ( code == KEY_PAGEUP ) || ( code == KEY_PAGEDOWN ))
 	{
 		KeyValues *pMsg = new KeyValues("KeyCodePressed", "code", code);
-		vgui::ipanel()->SendMessage( m_pAssetBrowser->GetVPanel(), pMsg, GetVPanel());
+		vgui::ivgui()->SendMessage( m_pAssetBrowser->GetVPanel(), pMsg, GetVPanel());
 		pMsg->deleteThis();
 	}
 	else

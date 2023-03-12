@@ -196,7 +196,7 @@ void BitmapImage::DoPaint( vgui::VPANEL pPanel, float yaw, float flAlphaModulate
 	int wide, tall;
 	if ( pPanel )
 	{
-		vgui::ipanel()->GetSize(pPanel, wide, tall );
+		vgui::ivgui()->GetSize(pPanel, wide, tall );
 	}
 	else
 	{

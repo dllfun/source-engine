@@ -617,7 +617,7 @@ void CTitleEditPanel::PaintBackground()
 
 		// Calculate title entry rect (x0,y0,x1,y1) - move the absolute upper-left corner 1 pixel left & up
 		int aTitleRect[4];
-		ipanel()->GetAbsPos( m_pTitleEntry->GetVPanel(), aTitleRect[0], aTitleRect[1] );
+		ivgui()->GetAbsPos( m_pTitleEntry->GetVPanel(), aTitleRect[0], aTitleRect[1] );
 
 		--aTitleRect[0];
 		--aTitleRect[1];

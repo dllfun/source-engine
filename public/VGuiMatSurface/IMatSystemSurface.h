@@ -109,6 +109,7 @@ public:
 	virtual void GetFullscreenViewportAndRenderTarget( int & x, int & y, int & w, int & h, ITexture **ppRenderTarget ) = 0;
 	virtual void SetFullscreenViewportAndRenderTarget( int x, int y, int w, int h, ITexture *pRenderTarget ) = 0;
 
+	virtual int	 DrawGetTextureId(char const* filename) = 0;
 	// get texture id for a texture
 	virtual int  DrawGetTextureId( ITexture *pTexture ) = 0;
 

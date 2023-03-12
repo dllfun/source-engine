@@ -11,6 +11,7 @@
 #include "vgui/IPanel.h"
 #include "vgui/IScheme.h"
 #include "vgui/ISurface.h"
+#include "VGuiMatSurface/IMatSystemSurface.h"
 
 #include "VGUI_Border.h"
 #include "vgui_internal.h"

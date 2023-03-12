@@ -220,7 +220,7 @@ void CBaseViewport::OnScreenSizeChanged(int iOldWide, int iOldTall)
 #endif
 	CreateDefaultPanels();
 #ifndef _XBOX
-	vgui::ipanel()->MoveToBack( m_pBackGround->GetVPanel() ); // really send it to the back 
+	vgui::ivgui()->MoveToBack( m_pBackGround->GetVPanel() ); // really send it to the back 
 #endif
 
 	// hide all panels when reconnecting 
@@ -504,7 +504,7 @@ void CBaseViewport::RemoveAllPanels( void)
 	for ( int i=0; i < m_Panels.Count(); i++ )
 	{
 		vgui::VPANEL vPanel = m_Panels[i]->GetVPanel();
-		vgui::ipanel()->DeletePanel( vPanel );
+		vgui::ivgui()->DeletePanel( vPanel );
 	}
 #ifndef _XBOX
 	if ( m_pBackGround )
@@ -639,7 +639,7 @@ void CBaseViewport::OnThink()
 	}
 
 	int w, h;
-	vgui::ipanel()->GetSize( enginevgui->GetPanel( PANEL_CLIENTDLL ), w, h );
+	vgui::ivgui()->GetSize( enginevgui->GetPanel( PANEL_CLIENTDLL ), w, h );
 
 	if ( m_OldSize[ 0 ] != w || m_OldSize[ 1 ] != h )
 	{

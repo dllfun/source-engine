@@ -364,13 +364,13 @@ void CClientVirtualReality::DrawMainMenu()
 	vgui::VPANEL root = enginevgui->GetPanel( PANEL_CLIENTDLL );
 	if ( root != 0 )
 	{
-		vgui::ipanel()->SetSize( root, viewWidth, viewHeight );
+		vgui::ivgui()->SetSize( root, viewWidth, viewHeight );
 	}
 	// Same for client .dll tools
 	root = enginevgui->GetPanel( PANEL_CLIENTDLL_TOOLS );
 	if ( root != 0 )
 	{
-		vgui::ipanel()->SetSize( root, viewWidth, viewHeight );
+		vgui::ivgui()->SetSize( root, viewWidth, viewHeight );
 	}
 
 	// paint the main menu and cursor
@@ -1483,13 +1483,13 @@ void CClientVirtualReality::Deactivate()
 	vgui::VPANEL root = enginevgui->GetPanel( PANEL_CLIENTDLL );
 	if ( root != 0 )
 	{
-		vgui::ipanel()->SetSize( root, m_nNonVRWidth, m_nNonVRHeight );
+		vgui::ivgui()->SetSize( root, m_nNonVRWidth, m_nNonVRHeight );
 	}
 	// Same for client .dll tools
 	root = enginevgui->GetPanel( PANEL_CLIENTDLL_TOOLS );
 	if ( root != 0 )
 	{
-		vgui::ipanel()->SetSize( root, m_nNonVRWidth, m_nNonVRHeight );
+		vgui::ivgui()->SetSize( root, m_nNonVRWidth, m_nNonVRHeight );
 	}
 
 	int viewWidth, viewHeight;
