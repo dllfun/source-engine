@@ -7,7 +7,7 @@
 
 #include <assert.h>
 
-#include "VPanel.h"
+//#include "VPanel.h"
 #include "vgui_internal.h"
 
 #include <vgui/IClientPanel.h>

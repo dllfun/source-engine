@@ -86,7 +86,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;SDL2.lib;USER32.lib;IMM32.lib;GDI32.lib;SHELL32.lib;OLE32.lib;SHLWAPI.lib;vgui_surfacelib.lib;WINMM.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;SDL2.lib;USER32.lib;IMM32.lib;GDI32.lib;SHELL32.lib;OLE32.lib;SHLWAPI.lib;vgui_surfacelib.lib;WINMM.lib;vgui_controls.lib;mathlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -101,7 +101,7 @@
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;SDL2.lib;USER32.lib;IMM32.lib;GDI32.lib;SHELL32.lib;OLE32.lib;SHLWAPI.lib;vgui_surfacelib.lib;WINMM.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;SDL2.lib;USER32.lib;IMM32.lib;GDI32.lib;SHELL32.lib;OLE32.lib;SHLWAPI.lib;vgui_surfacelib.lib;WINMM.lib;vgui_controls.lib;mathlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

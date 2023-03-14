@@ -13,7 +13,7 @@
 #include <vgui_controls/CheckButton.h>
 #include <vgui_controls/Button.h>
 #include <vgui/IInput.h>
-#include "../vgui2/src/VPanel.h"
+//#include "../vgui2/src/VPanel.h"
 #include "convar.h"
 #include "tier0/vprof.h"
 #include "vgui_baseui_interface.h"
@@ -508,7 +508,7 @@ void VGui_FillKeyValues( KeyValues *pCurrentParent )
 
 	// Figure out the root panel to start at. 
 	// If they specified a name for a root panel, then use that one.
-	vgui::VPANEL hBase = vgui::surface()->GetEmbeddedPanel();
+	vgui::VPANEL hBase = vgui::ivgui()->GetEmbeddedPanel();
 
 	if ( vgui_drawtree_popupsonly.GetInt() )
 	{

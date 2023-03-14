@@ -13,7 +13,7 @@
 #include "tier2/tier2.h"
 #include "Input.h"
 #include "vguimatsurface.h"
-#include "../vgui2/src/VPanel.h"
+//#include "../vgui2/src/VPanel.h"
 #include <vgui/KeyCode.h>
 #include <vgui/MouseCode.h>
 #include <vgui/IVGui.h>

@@ -161,7 +161,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\appframework\AppSystemGroup.cpp" />
     <ClCompile Include="..\..\..\appframework\sdlmgr.cpp" />
-    <ClCompile Include="..\..\..\appframework\VguiMatSysApp.cpp" />
     <ClCompile Include="..\..\..\appframework\WinApp.cpp" />
     <ClCompile Include="..\..\..\public\filesystem_init.cpp" />
     <ClCompile Include="..\..\..\public\vgui_controls\vgui_controls.cpp" />

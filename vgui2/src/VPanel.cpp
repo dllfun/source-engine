@@ -177,7 +177,7 @@ void VPanel::Solve()
 	if (IsPopup())
 	{
 		// if we're a popup, draw at the highest level
-		parent = (VPanel *)g_pSurface->GetEmbeddedPanel();
+		parent = (VPanel *)g_pVGui->GetEmbeddedPanel();
 	}
 
 	int pabs[2];

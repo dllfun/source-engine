@@ -11,11 +11,12 @@
 #include "vgui/IPanel.h"
 #include "vgui/IScheme.h"
 #include "vgui/ISurface.h"
+#include <vgui/IVGui.h>
 #include "VGuiMatSurface/IMatSystemSurface.h"
 
 #include "VGUI_Border.h"
 #include "vgui_internal.h"
-#include "VPanel.h"
+//#include "VPanel.h"
 #include "KeyValues.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -166,7 +167,7 @@ void Border::Paint(VPANEL panel)
 {
 	// get panel size
 	int wide, tall;
-	((VPanel *)panel)->GetSize(wide, tall);
+	g_pIVgui->GetSize(panel, wide, tall);//((VPanel *)panel)
 	Paint(0, 0, wide, tall, -1, 0, 0);
 }
 

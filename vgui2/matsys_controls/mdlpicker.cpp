@@ -31,7 +31,7 @@
 #include "bitmap/tgawriter.h"
 #include "tier3/tier3.h"
 #include "istudiorender.h"
-#include "../vgui2/src/VPanel.h"
+//#include "../vgui2/src/VPanel.h"
 #include "tier2/p4helpers.h"
 #include "ivtex.h"
 #include "bitmap/tgaloader.h"
@@ -660,7 +660,7 @@ void CMDLPicker::CaptureScreenCaps( void )
 	Color NewPanelColor = m_pBackgroundColor->GetColor();
 	NewPanelColor[3] = 0;
 	m_pMDLPreview->SetBackgroundColor( NewPanelColor );
-	((VPanel *)m_pMDLPreview->GetVPanel())->Solve();
+	ivgui()->Solve(m_pMDLPreview->GetVPanel());//((VPanel *)m_pMDLPreview->GetVPanel())
 
 	bool	bSelectedOnly = false;
 	if ( input()->IsKeyDown( KEY_RCONTROL ) || input()->IsKeyDown( KEY_LCONTROL ) )
@@ -688,7 +688,7 @@ void CMDLPicker::CaptureScreenCaps( void )
 	m_pMDLPreview->SetPos( PanelX, PanelY );
 	m_pMDLPreview->SetSize( PanelWidth, PanelHeight );
 	m_pMDLPreview->SetBackgroundColor( PanelColor );
-	((VPanel *)m_pMDLPreview->GetVPanel())->Solve();
+	ivgui()->Solve(m_pMDLPreview->GetVPanel());//((VPanel *)m_pMDLPreview->GetVPanel())
 
 	Label		*m_pResults;
 
@@ -877,7 +877,7 @@ void CMDLPicker::GenerateBackpackIcons( void )
 	Color NewPanelColor = m_pBackgroundColor->GetColor();
 	NewPanelColor[3] = 0;
 	m_pMDLPreview->SetBackgroundColor( NewPanelColor );
-	((VPanel *)m_pMDLPreview->GetVPanel())->Solve();
+	ivgui()->Solve(m_pMDLPreview->GetVPanel());//((VPanel *)m_pMDLPreview->GetVPanel())
 
 	char pLargeAssetName[ MAX_PATH ];
 	V_strcpy_safe( pLargeAssetName, pSelectedAsset );
@@ -1045,7 +1045,7 @@ void CMDLPicker::GenerateBackpackIcons( void )
 	m_pMDLPreview->SetPos( PanelX, PanelY );
 	m_pMDLPreview->SetSize( PanelWidth, PanelHeight );
 	m_pMDLPreview->SetBackgroundColor( PanelColor );
-	((VPanel *)m_pMDLPreview->GetVPanel())->Solve();
+	ivgui()->Solve(m_pMDLPreview->GetVPanel());//((VPanel *)m_pMDLPreview->GetVPanel())
 }
 
 

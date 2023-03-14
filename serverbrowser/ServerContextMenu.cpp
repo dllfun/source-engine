@@ -57,7 +57,7 @@ void CServerContextMenu::ShowMenu(
 
 	int x, y, gx, gy;
 	input()->GetCursorPos(x, y);
-	ivgui()->GetPos(surface()->GetEmbeddedPanel(), gx, gy);
+	ivgui()->GetPos(ivgui()->GetEmbeddedPanel(), gx, gy);
 	SetPos(x - gx, y - gy);
 	SetVisible(true);
 }

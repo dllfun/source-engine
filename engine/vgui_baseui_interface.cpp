@@ -656,7 +656,7 @@ void CEngineVGui::Init()
 	staticPanel->SetCursor( vgui::dc_none );
 	staticPanel->SetZPos(0);
 	staticPanel->SetVisible(true);
-	staticPanel->SetParent( vgui::surface()->GetEmbeddedPanel() );
+	staticPanel->SetParent( vgui::ivgui()->GetEmbeddedPanel() );
 
 	COM_TimestampedLog( "Building Panels (staticClientDLLPanel)" );
 
@@ -1691,7 +1691,7 @@ void CEngineVGui::Paint( PaintMode_t mode )
 		return;
 
 	// setup the base panel to cover the screen
-	vgui::VPANEL pVPanel = vgui::surface()->GetEmbeddedPanel();
+	vgui::VPANEL pVPanel = vgui::ivgui()->GetEmbeddedPanel();
 	if ( !pVPanel )
 		return;
 
@@ -2126,7 +2126,7 @@ static void VGui_RecursiveFindPanels( CUtlVector< vgui::VPANEL  >& panelList, vg
 
 void VGui_FindNamedPanels( CUtlVector< vgui::VPANEL >& panelList, char const *panelname )
 {
-	vgui::VPANEL embedded = vgui::surface()->GetEmbeddedPanel();
+	vgui::VPANEL embedded = vgui::ivgui()->GetEmbeddedPanel();
 
 	// faster version of code below
 	// checks through each popup in order, top to bottom windows
@@ -2237,7 +2237,7 @@ void CEngineVGui::DrawMouseFocus( void )
 	int x, y;
 	vgui::input()->GetCursorPos( x, y );
 
-	vgui::VPANEL embedded = vgui::surface()->GetEmbeddedPanel();
+	vgui::VPANEL embedded = vgui::ivgui()->GetEmbeddedPanel();
 
 	if ( vgui::ivgui()->IsCursorVisible() && vgui::ivgui()->IsWithin(x, y) )
 	{
@@ -2348,7 +2348,7 @@ void DumpPanels_r( vgui::VPANEL panel, int level )
 
 void DumpPanels_f()
 {
-	vgui::VPANEL embedded = vgui::surface()->GetEmbeddedPanel();
+	vgui::VPANEL embedded = vgui::ivgui()->GetEmbeddedPanel();
 	DumpPanels_r( embedded, 0 );
 }
 ConCommand DumpPanels("dump_panels", DumpPanels_f, "Dump Panel Tree" );

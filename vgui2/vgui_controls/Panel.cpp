@@ -2828,7 +2828,7 @@ void Panel::InternalKeyCodeTyped( int code )
 	}
 	else
 	{
-		if ( GetVPanel() == surface()->GetEmbeddedPanel() )
+		if ( GetVPanel() == ivgui()->GetEmbeddedPanel() )
 		{
 			input()->OnKeyCodeUnhandled( code );
 		}
@@ -2929,7 +2929,7 @@ void Panel::InternalSetCursor()
 		}
 	
 		// only change the cursor if this panel is visible, and if its part of the main VGUI tree
-		if (visible && HasParent(surface()->GetEmbeddedPanel())) 
+		if (visible && HasParent(ivgui()->GetEmbeddedPanel()))
 		{	
 			HCursor cursor = GetCursor();
 			
@@ -3248,7 +3248,7 @@ void Panel::OnKeyCodeTyped(KeyCode keycode)
 	else
 	{
 		// forward up
-		if ( GetVPanel() == surface()->GetEmbeddedPanel() )
+		if ( GetVPanel() == ivgui()->GetEmbeddedPanel() )
 		{
 			input()->OnKeyCodeUnhandled( keycode );
 		}
@@ -7411,7 +7411,7 @@ Panel *Panel::FindDropTargetPanel()
 	int x, y;
 	input()->GetCursorPos( x, y );
 
-	VPANEL embedded = surface()->GetEmbeddedPanel();
+	VPANEL embedded = ivgui()->GetEmbeddedPanel();
 	VPANEL helper = s_DragDropHelper.Get()->GetVPanel();
 
 	if (ivgui()->IsCursorVisible() && ivgui()->IsWithin(x, y) )

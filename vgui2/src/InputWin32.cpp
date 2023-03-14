@@ -965,7 +965,7 @@ VPanel *CInputSystem::GetMouseFocusIgnoringModalSubtree()
 			}
 			if (!focus)
 			{
-				focus = (VPanel *)((VPanel *)g_pSurface->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
+				focus = (VPanel *)((VPanel *)g_pIVgui->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
 			}
 		}
 	}
@@ -1042,7 +1042,7 @@ void CInputSystem::UpdateMouseFocus(int x, int y)
 		}
 		if (!focus)
 		{
-			focus = (VPanel *)((VPanel *)g_pSurface->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
+			focus = (VPanel *)((VPanel *)g_pIVgui->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
 		}
 	}
 
@@ -1355,9 +1355,9 @@ void CInputSystem::GetKeyCodeText(KeyCode code, char *buf, int buflen)
 //-----------------------------------------------------------------------------
 void CInputSystem::SurfaceSetCursorPos(int x, int y)
 {
-	if ( g_pSurface->HasCursorPosFunctions() ) // does the surface export cursor functions for us to use?
+	if (g_pIVgui->HasCursorPosFunctions() ) // does the surface export cursor functions for us to use?
 	{
-		g_pSurface->SurfaceSetCursorPos(x,y);
+		g_pIVgui->SetCursorPos(x,y);
 	}
 	else
 	{
@@ -1383,9 +1383,9 @@ void CInputSystem::SurfaceSetCursorPos(int x, int y)
 void CInputSystem::SurfaceGetCursorPos( int &x, int &y )
 {
 #ifndef _X360 // X360TBD
-	if ( g_pSurface->HasCursorPosFunctions() ) // does the surface export cursor functions for us to use?
+	if (g_pIVgui->HasCursorPosFunctions() ) // does the surface export cursor functions for us to use?
 	{
-		g_pSurface->SurfaceGetCursorPos( x,y );
+		g_pIVgui->GetCursorPos( x,y );
 	}
 	else
 	{

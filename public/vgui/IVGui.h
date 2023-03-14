@@ -301,6 +301,11 @@ public:
 
 	virtual void EnableWindowsMessages(bool bEnable) = 0;
 	virtual bool HandleInputEvent(const InputEvent_t& event) = 0;
+
+	virtual void SetEmbeddedPanel(vgui::VPANEL pEmbeddedPanel) = 0;
+	virtual vgui::VPANEL GetEmbeddedPanel() = 0;
+
+	virtual bool HasCursorPosFunctions() = 0;
 };
 
 #define VGUI_IVGUI_INTERFACE_VERSION "VGUI_ivgui008"

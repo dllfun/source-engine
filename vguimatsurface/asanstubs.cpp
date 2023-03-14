@@ -7,7 +7,7 @@
 #include <vgui/Cursor.h>
 
 #include "../vgui2/src/vgui_internal.h"
-#include "../vgui2/src/VPanel.h"
+//#include "../vgui2/src/VPanel.h"
 
 #include "tier0/minidump.h"
 

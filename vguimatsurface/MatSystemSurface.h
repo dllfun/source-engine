@@ -37,15 +37,15 @@ extern class IMaterialSystem *g_pMaterialSystem;
 //-----------------------------------------------------------------------------
 // The default material system embedded panel
 //-----------------------------------------------------------------------------
-class CMatEmbeddedPanel : public vgui::Panel
-{
-	typedef vgui::Panel BaseClass;
-public:
-	CMatEmbeddedPanel();
-	virtual void OnThink();
-
-	VPANEL IsWithinTraverse(int x, int y, bool traversePopups);
-};
+//class CMatEmbeddedPanel : public vgui::Panel
+//{
+//	typedef vgui::Panel BaseClass;
+//public:
+//	CMatEmbeddedPanel();
+//	virtual void OnThink();
+//
+//	VPANEL IsWithinTraverse(int x, int y, bool traversePopups);
+//};
 
 //-----------------------------------------------------------------------------
 //
@@ -68,7 +68,7 @@ public:
 	virtual void Shutdown();
 
 	// initialization
-	virtual void SetEmbeddedPanel(vgui::VPANEL pEmbeddedPanel);
+	//virtual void SetEmbeddedPanel(vgui::VPANEL pEmbeddedPanel);
 
 	// returns true if a panel is minimzed
 	//bool IsMinimized(vgui::VPANEL panel);
@@ -80,7 +80,7 @@ public:
 	virtual void RunFrame();
 
 	// implementation of vgui::ISurface
-	virtual vgui::VPANEL GetEmbeddedPanel();
+	//virtual vgui::VPANEL GetEmbeddedPanel();
 	
 	// drawing context
 	virtual void PushMakeCurrent(vgui::VPANEL panel,bool useInSets);
@@ -272,7 +272,7 @@ public:
 	// new stuff for Alfreds VGUI2 port!!
 	virtual bool InEngine() { return true; }
 	void GetProportionalBase( int &width, int &height ) { width = BASE_WIDTH; height = BASE_HEIGHT; }
-	virtual bool HasCursorPosFunctions() { return true; }
+	//virtual bool HasCursorPosFunctions() { return true; }
 
 	//virtual void SetModalPanel(VPANEL );
 	//virtual VPANEL GetModalPanel();
@@ -283,8 +283,8 @@ public:
 	virtual void GetAbsoluteWindowBounds(int &x, int &y, int &wide, int &tall);
 	//virtual void CalculateMouseVisible();
 	//virtual bool NeedKBInput();
-	virtual void SurfaceGetCursorPos(int &x, int &y);
-	virtual void SurfaceSetCursorPos(int x, int y);
+	//virtual void SurfaceGetCursorPos(int &x, int &y);
+	//virtual void SurfaceSetCursorPos(int x, int y);
 	//virtual void MovePopupToBack(VPANEL panel);
 
 	//virtual bool IsInThink( VPANEL panel); 
@@ -456,8 +456,8 @@ private:
 	bool			m_bUsingTempFullScreenBufferMaterial;
 
 	// Root panel
-	vgui::VPANEL m_pEmbeddedPanel;
-	vgui::Panel *m_pDefaultEmbeddedPanel;
+	//vgui::VPANEL m_pEmbeddedPanel;
+	//vgui::Panel *m_pDefaultEmbeddedPanel;
 	//vgui::VPANEL m_pRestrictedPanel;
 
 	// List of pop-up panels based on the type enum above (draw order vs last clicked)

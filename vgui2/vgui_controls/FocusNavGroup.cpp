@@ -110,7 +110,7 @@ bool FocusNavGroup::RequestFocusPrev(VPANEL panel)
 		if (!_topLevelFocus)
 		{
 			// check to see if we should push the focus request up
-			if (_mainPanel->GetVParent() && _mainPanel->GetVParent() != surface()->GetEmbeddedPanel())
+			if (_mainPanel->GetVParent() && _mainPanel->GetVParent() != ivgui()->GetEmbeddedPanel())
 			{
 				// we're not a top level panel, so forward up the request instead of looping
 				if (ivgui()->RequestFocusPrev(_mainPanel->GetVParent(), _mainPanel->GetVPanel()))
@@ -222,7 +222,7 @@ bool FocusNavGroup::RequestFocusNext(VPANEL panel)
 		// check to see if we should push the focus request up
 		if (!_topLevelFocus)
 		{
-			if (_mainPanel->GetVParent() && _mainPanel->GetVParent() != surface()->GetEmbeddedPanel())
+			if (_mainPanel->GetVParent() && _mainPanel->GetVParent() != ivgui()->GetEmbeddedPanel())
 			{
 				// we're not a top level panel, so forward up the request instead of looping
 				if (stack_depth < 15)

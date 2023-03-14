@@ -53,7 +53,7 @@ ILauncherMgr *g_pLauncherMgr = NULL;
 #else
 #include <malloc.h>
 #endif
-#include "../vgui2/src/VPanel.h"
+//#include "../vgui2/src/VPanel.h"
 #include <vgui/IInputInternal.h>
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -135,7 +135,7 @@ private:
 //-----------------------------------------------------------------------------
 // Globals...
 //-----------------------------------------------------------------------------
-vgui::IInputInternal		*g_pIInput;
+//vgui::IInputInternal		*g_pIInput;
 static bool					g_bInDrawing;
 static CFontTextureCache	g_FontTextureCache;
 
@@ -153,39 +153,39 @@ CUtlDict< CMatSystemSurface::font_entry, unsigned short > CMatSystemSurface::m_F
 //-----------------------------------------------------------------------------
 // Make sure the panel is the same size as the viewport
 //-----------------------------------------------------------------------------
-CMatEmbeddedPanel::CMatEmbeddedPanel() : BaseClass( NULL, "MatSystemTopPanel" )
-{
-	SetPaintBackgroundEnabled( false );
+//CMatEmbeddedPanel::CMatEmbeddedPanel() : BaseClass( NULL, "MatSystemTopPanel" )
+//{
+//	SetPaintBackgroundEnabled( false );
+//
+//#if defined( _X360 )
+//	SetPos( 0, 0 );
+//	SetSize( GetSystemMetrics( SM_CXSCREEN ), GetSystemMetrics( SM_CYSCREEN ) );
+//#endif
+//}
 
-#if defined( _X360 )
-	SetPos( 0, 0 );
-	SetSize( GetSystemMetrics( SM_CXSCREEN ), GetSystemMetrics( SM_CYSCREEN ) );
-#endif
-}
+//void CMatEmbeddedPanel::OnThink()
+//{
+//	int x, y, width, height;
+//	CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
+//	pRenderContext->GetViewport( x, y, width, height );
+//	SetSize( width, height );
+//	SetPos( x, y );
+//	Repaint();
+//}
 
-void CMatEmbeddedPanel::OnThink()
-{
-	int x, y, width, height;
-	CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
-	pRenderContext->GetViewport( x, y, width, height );
-	SetSize( width, height );
-	SetPos( x, y );
-	Repaint();
-}
-
-VPANEL CMatEmbeddedPanel::IsWithinTraverse(int x, int y, bool traversePopups)
-{
-	VPANEL retval = BaseClass::IsWithinTraverse( x, y, traversePopups );
-	if ( retval == GetVPanel() )
-		return 0;
-	return retval;
-}
+//VPANEL CMatEmbeddedPanel::IsWithinTraverse(int x, int y, bool traversePopups)
+//{
+//	VPANEL retval = BaseClass::IsWithinTraverse( x, y, traversePopups );
+//	if ( retval == GetVPanel() )
+//		return 0;
+//	return retval;
+//}
 
 
 //-----------------------------------------------------------------------------
 // Constructor, destructor
 //-----------------------------------------------------------------------------
-CMatSystemSurface::CMatSystemSurface() : m_pEmbeddedPanel(NULL), m_pWhite(NULL)
+CMatSystemSurface::CMatSystemSurface() : /*m_pEmbeddedPanel(NULL),*/ m_pWhite(NULL)
 {
 	m_iBoundTexture = -1; 
 	m_HWnd = NULL; 
@@ -252,12 +252,12 @@ bool CMatSystemSurface::Connect( CreateInterfaceFn factory )
 	//	return false;
 	//}
 
-	g_pIInput = (IInputInternal *)factory( VGUI_INPUTINTERNAL_INTERFACE_VERSION, NULL );
-	if ( !g_pIInput )
-	{
-		Warning( "MatSystemSurface requires the vgui::IInput system to run!\n" );
-		return false;
-	}
+	//g_pIInput = (IInputInternal *)factory( VGUI_INPUTINTERNAL_INTERFACE_VERSION, NULL );
+	//if ( !g_pIInput )
+	//{
+	//	Warning( "MatSystemSurface requires the vgui::IInput system to run!\n" );
+	//	return false;
+	//}
 
 	if ( !g_pVGui )
 	{
@@ -280,7 +280,7 @@ bool CMatSystemSurface::Connect( CreateInterfaceFn factory )
 
 void CMatSystemSurface::Disconnect()
 {
-	g_pIInput = NULL;
+	//g_pIInput = NULL;
 	BaseClass::Disconnect();
 }
 
@@ -365,8 +365,8 @@ InitReturnVal_t CMatSystemSurface::Init( void )
 	m_flAlphaMultiplier = 1.0f;
 
 	// By default, use the default embedded panel
-	m_pDefaultEmbeddedPanel = new CMatEmbeddedPanel;
-	SetEmbeddedPanel( m_pDefaultEmbeddedPanel->GetVPanel() );
+	//m_pDefaultEmbeddedPanel = new CMatEmbeddedPanel;
+	//SetEmbeddedPanel( m_pDefaultEmbeddedPanel->GetVPanel() );
 
 	m_iBoundTexture = -1;
 
@@ -499,19 +499,19 @@ void CMatSystemSurface::Shutdown( void )
 	BaseClass::Shutdown();
 }
 
-void CMatSystemSurface::SetEmbeddedPanel(VPANEL pEmbeddedPanel)
-{
-	m_pEmbeddedPanel = pEmbeddedPanel;
-	((VPanel *)pEmbeddedPanel)->Client()->RequestFocus(0);
-}
+//void CMatSystemSurface::SetEmbeddedPanel(VPANEL pEmbeddedPanel)
+//{
+//	m_pEmbeddedPanel = pEmbeddedPanel;
+//	((VPanel *)pEmbeddedPanel)->Client()->RequestFocus(0);
+//}
 
 //-----------------------------------------------------------------------------
 // hierarchy root
 //-----------------------------------------------------------------------------
-VPANEL CMatSystemSurface::GetEmbeddedPanel()
-{
-	return m_pEmbeddedPanel;
-}
+//VPANEL CMatSystemSurface::GetEmbeddedPanel()
+//{
+//	return m_pEmbeddedPanel;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: cap bits
@@ -594,8 +594,8 @@ void CMatSystemSurface::DrawPanelIn3DSpace( vgui::VPANEL pRootPanel, const VMatr
 
 	StartDrawingIn3DSpace( panelCenterToWorld, pw, ph, sw, sh );
 
-	((VPanel *)pRootPanel)->Client()->Repaint();
-	((VPanel *)pRootPanel)->Client()->PaintTraverse(true, false);
+	g_pVGui->Repaint(pRootPanel);//((VPanel *)pRootPanel)->Client()
+	g_pVGui->PaintTraverse(pRootPanel,true, false);//((VPanel *)pRootPanel)->Client()
 
 	FinishDrawing();
 
@@ -2591,11 +2591,11 @@ void CMatSystemSurface::OnScreenSizeChanged( int nOldWidth, int nOldHeight )
 
 	Msg( "Changing resolutions from (%d, %d) -> (%d, %d)\n", nOldWidth, nOldHeight, iNewWidth, iNewHeight );
 
+	
+	VPANEL panel = ivgui()->GetEmbeddedPanel();
 	// update the root panel size
-	ivgui()->SetSize(m_pEmbeddedPanel, iNewWidth, iNewHeight);
-
+	ivgui()->SetSize(panel, iNewWidth, iNewHeight);
 	// notify every panel
-	VPANEL panel = GetEmbeddedPanel();
 	ivgui()->PostMessage(panel, new KeyValues("OnScreenSizeChanged", "oldwide", nOldWidth, "oldtall", nOldHeight), NULL);
 
 	// Run a frame of the GUI to notify all subwindows of the message size change
@@ -2640,7 +2640,8 @@ void CMatSystemSurface::GetWorkspaceBounds(int &x, int &y, int &iWide, int &iTal
 	// but other embedded panels can be used
 	x = m_WorkSpaceInsets[0];
 	y = m_WorkSpaceInsets[1];
-	g_pVGui->GetSize(m_pEmbeddedPanel, iWide, iTall);
+	VPANEL panel = ivgui()->GetEmbeddedPanel();
+	g_pVGui->GetSize(panel, iWide, iTall);
 
 	iWide -= m_WorkSpaceInsets[2];
 	iTall -= m_WorkSpaceInsets[3];
@@ -3213,7 +3214,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 	// them, but there are a few things we do have to draw on top of, esp. the black
 	// panel that draws over the top of the engine to darken everything.
 	m_flZPos = 0.0f;								
-	if ( panel == GetEmbeddedPanel() )
+	if ( panel == ivgui()->GetEmbeddedPanel() )
 	{
 		VPANEL m_pRestrictedPanel = ivgui()->GetRestrictPaintSinglePanel();
 		if ( m_pRestrictedPanel )
@@ -3269,7 +3270,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 					continue;
 
 				// This makes sure the drag/drop helper is always the first thing drawn
-				bool bIsTopmostPopup = ( (VPanel *)popupPanel )->IsTopmostPopup();
+				bool bIsTopmostPopup = ivgui()->IsTopmostPopup( popupPanel );//( (VPanel *)popupPanel )
 
 				// set our z position
 				pRenderContext->SetStencilReferenceValue( bIsTopmostPopup ? 255 : nStencilRef );
@@ -4172,14 +4173,14 @@ void CMatSystemSurface::GetAbsoluteWindowBounds(int &x, int &y, int &wide, int &
 //	return m_bNeedsKeyboard;
 //}
 
-void CMatSystemSurface::SurfaceGetCursorPos(int &x, int &y)
-{
-	ivgui()->GetCursorPos( x, y );
-}
-void CMatSystemSurface::SurfaceSetCursorPos(int x, int y)
-{
-	ivgui()->SetCursorPos( x, y );
-}
+//void CMatSystemSurface::SurfaceGetCursorPos(int &x, int &y)
+//{
+//	ivgui()->GetCursorPos( x, y );
+//}
+//void CMatSystemSurface::SurfaceSetCursorPos(int x, int y)
+//{
+//	ivgui()->SetCursorPos( x, y );
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: global alpha setting functions

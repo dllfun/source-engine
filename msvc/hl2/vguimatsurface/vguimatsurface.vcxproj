@@ -148,7 +148,6 @@
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
     <ClCompile Include="..\..\..\public\vgui_controls\vgui_controls.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\vgui_key_translation.cpp" />
-    <ClCompile Include="..\..\..\vguimatsurface\asanstubs.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\Clip2D.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\FontTextureCache.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\MatSystemSurface.cpp" />

@@ -283,7 +283,7 @@ namespace
 
 				// now lets check all windows and see if we snap to those
 				// root panel
-				VPANEL root = surface()->GetEmbeddedPanel();
+				VPANEL root = ivgui()->GetEmbeddedPanel();
 				// cycle through panels
 				// look for panels that are visible and are popups that we can dock to
 				for (int i = 0; i < ivgui()->GetChildCount(root); ++i)
@@ -2178,7 +2178,7 @@ void Frame::OnKeyCodeTyped(KeyCode code)
 	else if (ctrl && shift && alt && code == KEY_R)
 	{
 		// reload the scheme
-		VPANEL top = surface()->GetEmbeddedPanel();
+		VPANEL top = ivgui()->GetEmbeddedPanel();
 		if (top)
 		{
 			// reload the data file

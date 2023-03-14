@@ -47,6 +47,8 @@
 #include "tier0/vprof.h"
 #include "tier0/icommandline.h"
 #include "inputsystem/iinputsystem.h"
+#include <vgui_controls/Panel.h>
+#include "materialsystem/imaterialsystem.h"
 
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -128,6 +130,48 @@ static bool IsChildOfModalSubTree(VPANEL panel)
 
 	return true;
 }
+
+class CMatEmbeddedPanel : public vgui::Panel
+{
+	typedef vgui::Panel BaseClass;
+public:
+	CMatEmbeddedPanel();
+	virtual void OnThink();
+
+	VPANEL IsWithinTraverse(int x, int y, bool traversePopups);
+};
+
+//-----------------------------------------------------------------------------
+// Make sure the panel is the same size as the viewport
+//-----------------------------------------------------------------------------
+CMatEmbeddedPanel::CMatEmbeddedPanel() : BaseClass(NULL, "MatSystemTopPanel")
+{
+	SetPaintBackgroundEnabled(false);
+
+#if defined( _X360 )
+	SetPos(0, 0);
+	SetSize(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN));
+#endif
+}
+
+void CMatEmbeddedPanel::OnThink()
+{
+	int x, y, width, height;
+	CMatRenderContextPtr pRenderContext(g_pMaterialSystem);
+	pRenderContext->GetViewport(x, y, width, height);
+	SetSize(width, height);
+	SetPos(x, y);
+	Repaint();
+}
+
+VPANEL CMatEmbeddedPanel::IsWithinTraverse(int x, int y, bool traversePopups)
+{
+	VPANEL retval = BaseClass::IsWithinTraverse(x, y, traversePopups);
+	if (retval == GetVPanel())
+		return 0;
+	return retval;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Implementation of core vgui functionality
 //-----------------------------------------------------------------------------
@@ -515,7 +559,7 @@ public:
 		if (!vguiPanel)
 			return NULL;
 
-		if (vguiPanel == g_pSurface->GetEmbeddedPanel())
+		if (vguiPanel == g_pVGui->GetEmbeddedPanel())
 			return NULL;
 
 		// assert that the specified vpanel is from the same module as requesting the cast
@@ -662,6 +706,10 @@ public:
 	// Tells the surface to ignore windows messages
 	virtual void EnableWindowsMessages(bool bEnable);
 
+	virtual void SetEmbeddedPanel(vgui::VPANEL pEmbeddedPanel);
+	virtual vgui::VPANEL GetEmbeddedPanel();
+
+	virtual bool HasCursorPosFunctions() { return true; }
 private:
 	// VGUI contexts
 	struct Context_t
@@ -752,6 +800,9 @@ private:
 	bool m_bInThink : 1;
 	VPANEL m_CurrentThinkPanel;
 
+	// Root panel
+	vgui::VPANEL m_pEmbeddedPanel;
+	vgui::Panel* m_pDefaultEmbeddedPanel;
 	vgui::VPANEL m_pRestrictedPanel;
 
 	bool m_bNeedsKeyboard : 1;
@@ -783,7 +834,7 @@ IVGui *g_pIVgui = &g_VGui;
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CVGui::CVGui() : m_DelayedMessageQueue(0, 4, PriorityQueueComp)
+CVGui::CVGui() : m_pEmbeddedPanel(NULL), m_DelayedMessageQueue(0, 4, PriorityQueueComp)
 {
 	m_bRunning = false;
 	m_InDispatcher = false;
@@ -1057,7 +1108,7 @@ void CVGui::RunFrame()
 	{
 		VPROF( "SolveTraverse" );
 		// make sure the hierarchy is up to date
-		g_pIVgui->SolveTraverse(g_pSurface->GetEmbeddedPanel());
+		g_pIVgui->SolveTraverse(g_pVGui->GetEmbeddedPanel());
 		g_pIVgui->ApplyChanges();
 #ifdef WIN32
 		Assert( IsX360() || ( IsPC() && _heapchk() == _HEAPOK ) );
@@ -1533,7 +1584,7 @@ void CVGui::PostMessage(VPANEL target, KeyValues *params, VPANEL from, float del
 void CVGui::ShutdownMessage(unsigned int shutdownID)
 {
 	// broadcast Shutdown to all the top level windows, and see if any take notice
-	VPANEL panel = g_pSurface->GetEmbeddedPanel();
+	VPANEL panel = g_pVGui->GetEmbeddedPanel();
 	for (int i = 0; i < ((VPanel *)panel)->GetChildCount(); i++)
 	{
 		g_pIVgui->PostMessage((VPANEL)((VPanel *)panel)->GetChild(i), new KeyValues("ShutdownRequest", "id", shutdownID), NULL);
@@ -1709,6 +1760,9 @@ InitReturnVal_t CVGui::Init()
 
 	g_bSpewFocus = CommandLine()->FindParm("-vguifocus") ? true : false;
 
+	m_pDefaultEmbeddedPanel = new CMatEmbeddedPanel;
+	SetEmbeddedPanel(m_pDefaultEmbeddedPanel->GetVPanel());
+
 	// Input system
 	InitInput();
 
@@ -1756,7 +1810,7 @@ void CVGui::CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon, bool
 {
 	if (!g_pVGui->GetParent(panel))
 	{
-		g_pVGui->SetParent(panel, g_pSurface->GetEmbeddedPanel());
+		g_pVGui->SetParent(panel, g_pVGui->GetEmbeddedPanel());
 	}
 	((VPanel*)panel)->SetPopup(true);
 	((VPanel*)panel)->SetKeyBoardInputEnabled(kbInput);
@@ -2489,4 +2543,18 @@ bool CVGui::HandleInputEvent(const InputEvent_t& event)
 void CVGui::EnableWindowsMessages(bool bEnable)
 {
 	EnableInput(bEnable);
+}
+
+void CVGui::SetEmbeddedPanel(VPANEL pEmbeddedPanel)
+{
+	m_pEmbeddedPanel = pEmbeddedPanel;
+	((VPanel*)pEmbeddedPanel)->Client()->RequestFocus(0);
+}
+
+//-----------------------------------------------------------------------------
+// hierarchy root
+//-----------------------------------------------------------------------------
+VPANEL CVGui::GetEmbeddedPanel()
+{
+	return m_pEmbeddedPanel;
 }

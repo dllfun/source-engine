@@ -127,8 +127,8 @@ public:
 	virtual void RunFrame() = 0;
 
 	// hierarchy root
-	virtual VPANEL GetEmbeddedPanel() = 0;
-	virtual void SetEmbeddedPanel( VPANEL pPanel ) = 0;
+	//virtual VPANEL GetEmbeddedPanel() = 0;
+	//virtual void SetEmbeddedPanel( VPANEL pPanel ) = 0;
 
 	// drawing context
 	virtual void PushMakeCurrent(VPANEL panel, bool useInsets) = 0;
@@ -299,9 +299,9 @@ public:
 	//virtual void CalculateMouseVisible() = 0;
 	//virtual bool NeedKBInput() = 0;
 
-	virtual bool HasCursorPosFunctions() = 0;
-	virtual void SurfaceGetCursorPos(int &x, int &y) = 0;
-	virtual void SurfaceSetCursorPos(int x, int y) = 0;
+	//virtual bool HasCursorPosFunctions() = 0;
+	//virtual void SurfaceGetCursorPos(int &x, int &y) = 0;
+	//virtual void SurfaceSetCursorPos(int x, int y) = 0;
 
 	// SRC only functions!!!
 	virtual void DrawTexturedLine( const Vertex_t &a, const Vertex_t &b ) = 0;
