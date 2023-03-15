@@ -173,14 +173,14 @@ public:
 	//  if restrictMessagesToSubTree is false, then mouse and kb messages are routed as normal except that they are not routed down into the subtree
 	//   however, if a mouse click occurs outside of the subtree, and "UnhandleMouseClick" message is sent to unhandledMouseClickListener panel
 	//   if it's set
-	virtual void	SetModalSubTree( VPANEL subTree, VPANEL unhandledMouseClickListener, bool restrictMessagesToSubTree = true ) = 0;
-	virtual void	ReleaseModalSubTree() = 0;
-	virtual VPANEL	GetModalSubTree() = 0;
+	//virtual void	SetModalSubTree( VPANEL subTree, VPANEL unhandledMouseClickListener, bool restrictMessagesToSubTree = true ) = 0;
+	//virtual void	ReleaseModalSubTree() = 0;
+	//virtual VPANEL	GetModalSubTree() = 0;
 
 	// These toggle whether the modal subtree is exclusively receiving messages or conversely whether it's being excluded from receiving messages
 	// Sends a "ModalSubTree", state message
-	virtual void	SetModalSubTreeReceiveMessages( bool state ) = 0;
-	virtual bool	ShouldModalSubTreeReceiveMessages() const = 0;
+	//virtual void	SetModalSubTreeReceiveMessages( bool state ) = 0;
+	//virtual bool	ShouldModalSubTreeReceiveMessages() const = 0;
 
 	virtual VPANEL 	GetMouseCapture() = 0;
 };

@@ -215,20 +215,20 @@ public:
 	//  if restrictMessagesToSubTree is false, then mouse and kb messages are routed as normal except that they are not routed down into the subtree
 	//   however, if a mouse click occurs outside of the subtree, and "UnhandleMouseClick" message is sent to unhandledMouseClickListener panel
 	//   if it's set
-	virtual void	SetModalSubTree( VPANEL subTree, VPANEL unhandledMouseClickListener, bool restrictMessagesToSubTree = true );
-	virtual void	ReleaseModalSubTree();
-	virtual VPANEL	GetModalSubTree();
+	//virtual void	SetModalSubTree( VPANEL subTree, VPANEL unhandledMouseClickListener, bool restrictMessagesToSubTree = true );
+	//virtual void	ReleaseModalSubTree();
+	//virtual VPANEL	GetModalSubTree();
 
 	// These toggle whether the modal subtree is exclusively receiving messages or conversely whether it's being excluded from receiving messages
-	virtual void	SetModalSubTreeReceiveMessages( bool state );
-	virtual bool	ShouldModalSubTreeReceiveMessages() const;
+	//virtual void	SetModalSubTreeReceiveMessages( bool state );
+	//virtual bool	ShouldModalSubTreeReceiveMessages() const;
 
 	virtual VPANEL 	GetMouseCapture();
 
 	virtual VPANEL	GetMouseFocus();
 private:
 
-	VPanel			*GetMouseFocusIgnoringModalSubtree();
+	//VPanel			*GetMouseFocusIgnoringModalSubtree();
 
 	void InternalSetCompositionString( const wchar_t *compstr );
 	void InternalShowCandidateWindow();
@@ -242,10 +242,10 @@ private:
 
 	VPanel *CalculateNewKeyFocus();
 
-	void PostModalSubTreeMessage( VPanel *subTree, bool state );
+	//void PostModalSubTreeMessage( VPanel *subTree, bool state );
 	// returns true if the specified panel is a child of the current modal panel
 	// if no modal panel is set, then this always returns TRUE
-	bool IsChildOfModalSubTree(VPANEL panel);
+	//bool IsChildOfModalSubTree(VPANEL panel);
 
 	void SurfaceSetCursorPos( int x, int y );
 	void SurfaceGetCursorPos( int &x, int &y );
@@ -284,9 +284,9 @@ private:
 
 		CUtlVector< VPanel * >	m_KeyCodeUnhandledListeners;
 
-		VPanel	*m_pModalSubTree;
-		VPanel	*m_pUnhandledMouseClickListener;
-		bool	m_bRestrictMessagesToModalSubTree;
+		//VPanel	*m_pModalSubTree;
+		//VPanel	*m_pUnhandledMouseClickListener;
+		//bool	m_bRestrictMessagesToModalSubTree;
 
 		CKeyRepeatHandler m_keyRepeater;
 	};
@@ -478,9 +478,9 @@ void CInputSystem::InitInputContext( InputContext_t *pContext )
 
 	pContext->m_KeyCodeUnhandledListeners.RemoveAll();
 
-	pContext->m_pModalSubTree = NULL;
-	pContext->m_pUnhandledMouseClickListener = NULL;
-	pContext->m_bRestrictMessagesToModalSubTree = false;
+	//pContext->m_pModalSubTree = NULL;
+	//pContext->m_pUnhandledMouseClickListener = NULL;
+	//pContext->m_bRestrictMessagesToModalSubTree = false;
 }
 
 void CInputSystem::ResetInputContext( HInputContext context )
@@ -721,7 +721,7 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 				top->IsVisible() && 
 				top->IsKeyBoardInputEnabled() && 
 				!g_pIVgui->IsMinimized((VPANEL)top) &&
-				IsChildOfModalSubTree( (VPANEL)top ) &&
+				//IsChildOfModalSubTree((VPANEL)top) &&
 				(!pRoot || top->HasParent( pRoot )) )
 			{
 				bool bIsVisible = top->IsVisible();
@@ -817,15 +817,15 @@ void CInputSystem::PanelDeleted(VPANEL vfocus, InputContext_t &context)
 	{
 		ReleaseAppModalSurface();
 	}
-	if ( context.m_pUnhandledMouseClickListener == focus )
-	{
-		context.m_pUnhandledMouseClickListener = NULL;
-	}
-	if ( context.m_pModalSubTree == focus )
-	{
-		context.m_pModalSubTree = NULL;
-		context.m_bRestrictMessagesToModalSubTree = false;
-	}
+	//if ( context.m_pUnhandledMouseClickListener == focus )
+	//{
+	//	context.m_pUnhandledMouseClickListener = NULL;
+	//}
+	//if ( context.m_pModalSubTree == focus )
+	//{
+	//	context.m_pModalSubTree = NULL;
+	//	context.m_bRestrictMessagesToModalSubTree = false;
+	//}
 
 	context.m_KeyCodeUnhandledListeners.FindAndRemove( focus );
 }
@@ -925,66 +925,66 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 	}
 }
 
-VPanel *CInputSystem::GetMouseFocusIgnoringModalSubtree()
-{
-	// find the panel that has the focus
-	VPanel *focus = NULL; 
-
-	InputContext_t *pContext = GetInputContext( m_hContext );
-
-	int x, y;
-	x = pContext->m_nCursorX;
-	y = pContext->m_nCursorY;
-
-	if (!pContext->_rootPanel)
-	{
-		if (g_pIVgui->IsCursorVisible() && g_pIVgui->IsWithin(x, y))
-		{
-			// faster version of code below
-			// checks through each popup in order, top to bottom windows
-			for (int i = g_pIVgui->GetPopupCount() - 1; i >= 0; i--)
-			{
-				VPanel *popup = (VPanel *)g_pIVgui->GetPopup(i);
-				VPanel *panel = popup;
-				bool wantsMouse = panel->IsMouseInputEnabled();
-				bool isVisible = !g_pIVgui->IsMinimized((VPANEL)panel);
-
-				while ( isVisible && panel && panel->GetParent() ) // only consider panels that want mouse input
-				{
-					isVisible = panel->IsVisible();
-					panel = panel->GetParent();
-				}
-				
-
-				if ( wantsMouse && isVisible ) 
-				{
-					focus = (VPanel *)popup->Client()->IsWithinTraverse(x, y, false);
-					if (focus)
-						break;
-				}
-			}
-			if (!focus)
-			{
-				focus = (VPanel *)((VPanel *)g_pIVgui->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
-			}
-		}
-	}
-	else
-	{
-		focus = (VPanel *)((VPanel *)(pContext->_rootPanel))->Client()->IsWithinTraverse(x, y, false);
-	}
-
-
-	// check if we are in modal state, 
-	// and if we are make sure this panel is a child of us.
-	if ( !IsChildOfModalPanel((VPANEL)focus, false ))
-	{	
-		// should this be _appModalPanel?
-		focus = NULL;
-	}
-
-	return focus;
-}
+//VPanel *CInputSystem::GetMouseFocusIgnoringModalSubtree()
+//{
+//	// find the panel that has the focus
+//	VPanel *focus = NULL; 
+//
+//	InputContext_t *pContext = GetInputContext( m_hContext );
+//
+//	int x, y;
+//	x = pContext->m_nCursorX;
+//	y = pContext->m_nCursorY;
+//
+//	if (!pContext->_rootPanel)
+//	{
+//		if (g_pIVgui->IsCursorVisible() && g_pIVgui->IsWithin(x, y))
+//		{
+//			// faster version of code below
+//			// checks through each popup in order, top to bottom windows
+//			for (int i = g_pIVgui->GetPopupCount() - 1; i >= 0; i--)
+//			{
+//				VPanel *popup = (VPanel *)g_pIVgui->GetPopup(i);
+//				VPanel *panel = popup;
+//				bool wantsMouse = panel->IsMouseInputEnabled();
+//				bool isVisible = !g_pIVgui->IsMinimized((VPANEL)panel);
+//
+//				while ( isVisible && panel && panel->GetParent() ) // only consider panels that want mouse input
+//				{
+//					isVisible = panel->IsVisible();
+//					panel = panel->GetParent();
+//				}
+//				
+//
+//				if ( wantsMouse && isVisible ) 
+//				{
+//					focus = (VPanel *)popup->Client()->IsWithinTraverse(x, y, false);
+//					if (focus)
+//						break;
+//				}
+//			}
+//			if (!focus)
+//			{
+//				focus = (VPanel *)((VPanel *)g_pIVgui->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		focus = (VPanel *)((VPanel *)(pContext->_rootPanel))->Client()->IsWithinTraverse(x, y, false);
+//	}
+//
+//
+//	// check if we are in modal state, 
+//	// and if we are make sure this panel is a child of us.
+//	if ( !IsChildOfModalPanel((VPANEL)focus, false ))
+//	{	
+//		// should this be _appModalPanel?
+//		focus = NULL;
+//	}
+//
+//	return focus;
+//}
 
 
 
@@ -1018,7 +1018,7 @@ void CInputSystem::UpdateMouseFocus(int x, int y)
 			char const *pchName = popup->GetName();
 			NOTE_UNUSED( pchName );
 #endif
-			bool wantsMouse = panel->IsMouseInputEnabled() && IsChildOfModalSubTree( (VPANEL)panel );
+			bool wantsMouse = panel->IsMouseInputEnabled();//&& IsChildOfModalSubTree((VPANEL)panel);
 			if ( !wantsMouse )
 				continue;
 
@@ -1141,29 +1141,29 @@ void CInputSystem::SetMouseCapture(VPANEL panel)
 
 // returns true if the specified panel is a child of the current modal panel
 // if no modal panel is set, then this always returns TRUE
-bool CInputSystem::IsChildOfModalSubTree(VPANEL panel)
-{
-	if ( !panel )
-		return true;
-
-	InputContext_t *pContext = GetInputContext( m_hContext );
-	if ( pContext->m_pModalSubTree )
-	{
-		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
-		bool isChildOfModal = ((VPanel *)panel)->HasParent(pContext->m_pModalSubTree );
-		if ( isChildOfModal )
-		{
-			return pContext->m_bRestrictMessagesToModalSubTree;
-		}
-		// If panel is not a child of modal subtree, then only allow messages if we're not restricting them to the modal subtree
-		else
-		{
-			return !pContext->m_bRestrictMessagesToModalSubTree;
-		}
-	}
-
-	return true;
-}
+//bool CInputSystem::IsChildOfModalSubTree(VPANEL panel)
+//{
+//	if ( !panel )
+//		return true;
+//
+//	InputContext_t *pContext = GetInputContext( m_hContext );
+//	if ( pContext->m_pModalSubTree )
+//	{
+//		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
+//		bool isChildOfModal = ((VPanel *)panel)->HasParent(pContext->m_pModalSubTree );
+//		if ( isChildOfModal )
+//		{
+//			return pContext->m_bRestrictMessagesToModalSubTree;
+//		}
+//		// If panel is not a child of modal subtree, then only allow messages if we're not restricting them to the modal subtree
+//		else
+//		{
+//			return !pContext->m_bRestrictMessagesToModalSubTree;
+//		}
+//	}
+//
+//	return true;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: check if we are in modal state, 
@@ -1190,7 +1190,7 @@ bool CInputSystem::IsChildOfModalPanel(VPANEL panel, bool checkModalSubTree /*= 
 		return true;
 
 	// Defer to modal subtree logic instead...
-	return IsChildOfModalSubTree( panel );
+	return true;// IsChildOfModalSubTree(panel);
 }
 
 
@@ -1535,26 +1535,26 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 //		g_pIVgui->DPrintf2("MousePressed: (%s, %s)\n", _mouseFocus->GetName(), _mouseFocus->GetClassName());
 		pTargetPanel = pContext->_mouseFocus;
 	}
-	else if ( pContext->m_pModalSubTree && pContext->m_pUnhandledMouseClickListener )
-	{
-		VPanel *p = GetMouseFocusIgnoringModalSubtree();
-		if ( p )
-		{
-			bool isChildOfModal = IsChildOfModalSubTree( (VPANEL)p );
-			bool isUnRestricted = !pContext->m_bRestrictMessagesToModalSubTree;
+	//else if ( pContext->m_pModalSubTree && pContext->m_pUnhandledMouseClickListener )
+	//{
+	//	VPanel *p = GetMouseFocusIgnoringModalSubtree();
+	//	if ( p )
+	//	{
+	//		bool isChildOfModal = IsChildOfModalSubTree( (VPANEL)p );
+	//		bool isUnRestricted = !pContext->m_bRestrictMessagesToModalSubTree;
 
-			if ( isUnRestricted != isChildOfModal )
-			{
-				// The faked mouse wheel button messages are specifically ignored by vgui
-				if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
-					return true;
+	//		if ( isUnRestricted != isChildOfModal )
+	//		{
+	//			// The faked mouse wheel button messages are specifically ignored by vgui
+	//			if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
+	//				return true;
 
-				g_pIVgui->PostMessage( ( VPANEL )pContext->m_pUnhandledMouseClickListener, new KeyValues( "UnhandledMouseClick", "code", code ), NULL );
-				pTargetPanel = pContext->m_pUnhandledMouseClickListener;
-				bFilter = true;
-			}
-		}
-	}
+	//			g_pIVgui->PostMessage( ( VPANEL )pContext->m_pUnhandledMouseClickListener, new KeyValues( "UnhandledMouseClick", "code", code ), NULL );
+	//			pTargetPanel = pContext->m_pUnhandledMouseClickListener;
+	//			bFilter = true;
+	//		}
+	//	}
+	//}
 
 
 	// check if we are in modal state, 
@@ -3108,16 +3108,16 @@ void CInputSystem::OnKeyCodeUnhandled( int keyCode )
 	}
 }
 
-void CInputSystem::PostModalSubTreeMessage( VPanel *subTree, bool state )
-{
-	InputContext_t *pContext = GetInputContext( m_hContext );
-	if( pContext->m_pModalSubTree == NULL )
-		return;
-
-	//tell the current focused panel that a key was released
-	KeyValues *kv = new KeyValues( "ModalSubTree", "state", state ? 1 : 0 );
-	g_pIVgui->PostMessage( (VPANEL)pContext->m_pModalSubTree, kv, NULL );
-}
+//void CInputSystem::PostModalSubTreeMessage( VPanel *subTree, bool state )
+//{
+//	InputContext_t *pContext = GetInputContext( m_hContext );
+//	if( pContext->m_pModalSubTree == NULL )
+//		return;
+//
+//	//tell the current focused panel that a key was released
+//	KeyValues *kv = new KeyValues( "ModalSubTree", "state", state ? 1 : 0 );
+//	g_pIVgui->PostMessage( (VPANEL)pContext->m_pModalSubTree, kv, NULL );
+//}
 
 // Assumes subTree is a child panel of the root panel for the vgui contect
 //  if restrictMessagesToSubTree is true, then mouse and kb messages are only routed to the subTree and it's children and mouse/kb focus
@@ -3126,74 +3126,74 @@ void CInputSystem::PostModalSubTreeMessage( VPanel *subTree, bool state )
 //  if restrictMessagesToSubTree is false, then mouse and kb messages are routed as normal except that they are not routed down into the subtree
 //   however, if a mouse click occurs outside of the subtree, and "UnhandleMouseClick" message is sent to unhandledMouseClickListener panel
 //   if it's set
-void CInputSystem::SetModalSubTree( VPANEL subTree, VPANEL unhandledMouseClickListener, bool restrictMessagesToSubTree /*= true*/ )
-{
-	InputContext_t *pContext = GetInputContext(m_hContext);
-	if ( !pContext )
-		return;
+//void CInputSystem::SetModalSubTree( VPANEL subTree, VPANEL unhandledMouseClickListener, bool restrictMessagesToSubTree /*= true*/ )
+//{
+//	InputContext_t *pContext = GetInputContext(m_hContext);
+//	if ( !pContext )
+//		return;
+//
+//	if ( pContext->m_pModalSubTree && 
+//		pContext->m_pModalSubTree != (VPanel *)subTree )
+//	{
+//		ReleaseModalSubTree();
+//	}
+//
+//	if ( !subTree )
+//		return;
+//
+//	pContext->m_pModalSubTree = (VPanel *)subTree;
+//	pContext->m_pUnhandledMouseClickListener = (VPanel *)unhandledMouseClickListener;
+//	pContext->m_bRestrictMessagesToModalSubTree = restrictMessagesToSubTree;
+//
+//	PostModalSubTreeMessage( pContext->m_pModalSubTree, true );
+//}
 
-	if ( pContext->m_pModalSubTree && 
-		pContext->m_pModalSubTree != (VPanel *)subTree )
-	{
-		ReleaseModalSubTree();
-	}
+//void CInputSystem::ReleaseModalSubTree()
+//{
+//	InputContext_t *pContext = GetInputContext(m_hContext);
+//	if ( !pContext )
+//		return;
+//
+//	if ( pContext->m_pModalSubTree )
+//	{
+//		PostModalSubTreeMessage( pContext->m_pModalSubTree, false );
+//	}
+//
+//	pContext->m_pModalSubTree = NULL;
+//	pContext->m_pUnhandledMouseClickListener = NULL;
+//	pContext->m_bRestrictMessagesToModalSubTree = false;
+//
+//}
 
-	if ( !subTree )
-		return;
-
-	pContext->m_pModalSubTree = (VPanel *)subTree;
-	pContext->m_pUnhandledMouseClickListener = (VPanel *)unhandledMouseClickListener;
-	pContext->m_bRestrictMessagesToModalSubTree = restrictMessagesToSubTree;
-
-	PostModalSubTreeMessage( pContext->m_pModalSubTree, true );
-}
-
-void CInputSystem::ReleaseModalSubTree()
-{
-	InputContext_t *pContext = GetInputContext(m_hContext);
-	if ( !pContext )
-		return;
-
-	if ( pContext->m_pModalSubTree )
-	{
-		PostModalSubTreeMessage( pContext->m_pModalSubTree, false );
-	}
-
-	pContext->m_pModalSubTree = NULL;
-	pContext->m_pUnhandledMouseClickListener = NULL;
-	pContext->m_bRestrictMessagesToModalSubTree = false;
-
-}
-
-VPANEL CInputSystem::GetModalSubTree()
-{
-	InputContext_t *pContext = GetInputContext(m_hContext);
-	if ( !pContext )
-		return 0;
-
-	return (VPANEL)pContext->m_pModalSubTree;
-}
+//VPANEL CInputSystem::GetModalSubTree()
+//{
+//	InputContext_t *pContext = GetInputContext(m_hContext);
+//	if ( !pContext )
+//		return 0;
+//
+//	return (VPANEL)pContext->m_pModalSubTree;
+//}
 
 // These toggle whether the modal subtree is exclusively receiving messages or conversely whether it's being excluded from receiving messages
-void CInputSystem::SetModalSubTreeReceiveMessages( bool state )
-{
-	InputContext_t *pContext = GetInputContext(m_hContext);
-	if ( !pContext )
-		return;
+//void CInputSystem::SetModalSubTreeReceiveMessages( bool state )
+//{
+//	InputContext_t *pContext = GetInputContext(m_hContext);
+//	if ( !pContext )
+//		return;
+//
+//	Assert( pContext->m_pModalSubTree );
+//	if ( !pContext->m_pModalSubTree )
+//		return;
+//
+//	pContext->m_bRestrictMessagesToModalSubTree = state;
+//	
+//}
 
-	Assert( pContext->m_pModalSubTree );
-	if ( !pContext->m_pModalSubTree )
-		return;
-
-	pContext->m_bRestrictMessagesToModalSubTree = state;
-	
-}
-
-bool CInputSystem::ShouldModalSubTreeReceiveMessages() const
-{
-	InputContext_t *pContext = const_cast< CInputSystem * >( this )->GetInputContext(m_hContext);
-	if ( !pContext )
-		return true;
-
-	return pContext->m_bRestrictMessagesToModalSubTree;
-}
+//bool CInputSystem::ShouldModalSubTreeReceiveMessages() const
+//{
+//	InputContext_t *pContext = const_cast< CInputSystem * >( this )->GetInputContext(m_hContext);
+//	if ( !pContext )
+//		return true;
+//
+//	return pContext->m_bRestrictMessagesToModalSubTree;
+//}

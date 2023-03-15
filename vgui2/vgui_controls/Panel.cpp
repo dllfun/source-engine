@@ -1863,17 +1863,17 @@ bool Panel::IsChildOfSurfaceModalPanel()
 // Input  :  - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool Panel::IsChildOfModalSubTree()
-{
-	VPANEL subTree = input()->GetModalSubTree();
-	if ( !subTree )
-		return true;
-
-	if ( HasParent( subTree ) )
-		return true;
-
-	return false;
-}
+//bool Panel::IsChildOfModalSubTree()
+//{
+//	VPANEL subTree = input()->GetModalSubTree();
+//	if ( !subTree )
+//		return true;
+//
+//	if ( HasParent( subTree ) )
+//		return true;
+//
+//	return false;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Checks to see if message is being subverted due to modal subtree logic
@@ -1883,25 +1883,26 @@ bool Panel::IsChildOfModalSubTree()
 static bool ShouldHandleInputMessage( VPANEL p )
 {
 	// If there is not modal subtree, then always handle the msg
-	if ( !input()->GetModalSubTree() )
-		return true;
+	return true;
+	//if ( !input()->GetModalSubTree() )
+	//	return true;
 
-	// What state are we in?
-	bool bChildOfModal = false;
-	VPANEL subTree = input()->GetModalSubTree();
-	if ( !subTree )
-	{
-		bChildOfModal = true;
-	}
-	else if ( ivgui()->HasParent( p, subTree ) )
-	{
-		bChildOfModal = true;
-	}
+	//// What state are we in?
+	//bool bChildOfModal = false;
+	//VPANEL subTree = input()->GetModalSubTree();
+	//if ( !subTree )
+	//{
+	//	bChildOfModal = true;
+	//}
+	//else if ( ivgui()->HasParent( p, subTree ) )
+	//{
+	//	bChildOfModal = true;
+	//}
 
-	if ( input()->ShouldModalSubTreeReceiveMessages() )
-		return bChildOfModal;
+	//if ( input()->ShouldModalSubTreeReceiveMessages() )
+	//	return bChildOfModal;
 
-	return !bChildOfModal;
+	//return !bChildOfModal;
 }
 
 bool Panel::ShouldHandleInputMessage()

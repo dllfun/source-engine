@@ -104,32 +104,32 @@ bool PriorityQueueComp(const MessageItem_t& x, const MessageItem_t& y)
 
 // returns true if the specified panel is a child of the current modal panel
 // if no modal panel is set, then this always returns TRUE
-static bool IsChildOfModalSubTree(VPANEL panel)
-{
-	if (!panel)
-		return true;
-
-	VPANEL modalSubTree = g_pInput->GetModalSubTree();
-
-	if (modalSubTree)
-	{
-		bool restrictMessages = g_pInput->ShouldModalSubTreeReceiveMessages();
-
-		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
-		bool isChildOfModal = g_pVGui->HasParent(panel, modalSubTree);
-		if (isChildOfModal)
-		{
-			return restrictMessages;
-		}
-		// If panel is not a child of modal subtree, then only allow messages if we're not restricting them to the modal subtree
-		else
-		{
-			return !restrictMessages;
-		}
-	}
-
-	return true;
-}
+//static bool IsChildOfModalSubTree(VPANEL panel)
+//{
+//	if (!panel)
+//		return true;
+//
+//	VPANEL modalSubTree = g_pInput->GetModalSubTree();
+//
+//	if (modalSubTree)
+//	{
+//		bool restrictMessages = g_pInput->ShouldModalSubTreeReceiveMessages();
+//
+//		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
+//		bool isChildOfModal = g_pVGui->HasParent(panel, modalSubTree);
+//		if (isChildOfModal)
+//		{
+//			return restrictMessages;
+//		}
+//		// If panel is not a child of modal subtree, then only allow messages if we're not restricting them to the modal subtree
+//		else
+//		{
+//			return !restrictMessages;
+//		}
+//	}
+//
+//	return true;
+//}
 
 class CMatEmbeddedPanel : public vgui::Panel
 {
@@ -2332,15 +2332,45 @@ void CVGui::CalculateMouseVisible()
 
 	int c = g_pVGui->GetPopupCount();
 
-	VPANEL modalSubTree = g_pInput->GetModalSubTree();
-	if (modalSubTree)
-	{
+	//VPANEL modalSubTree = g_pInput->GetModalSubTree();
+	//if (modalSubTree)
+	//{
+	//	for (i = 0; i < c; i++)
+	//	{
+	//		VPanel* pop = (VPanel*)g_pVGui->GetPopup(i);
+	//		bool isChildOfModalSubPanel = IsChildOfModalSubTree((VPANEL)pop);
+	//		if (!isChildOfModalSubPanel)
+	//			continue;
+
+	//		bool isVisible = pop->IsVisible();
+	//		VPanel* p = pop->GetParent();
+
+	//		while (p && isVisible)
+	//		{
+	//			if (p->IsVisible() == false)
+	//			{
+	//				isVisible = false;
+	//				break;
+	//			}
+	//			p = p->GetParent();
+	//		}
+
+	//		if (isVisible)
+	//		{
+	//			m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
+	//			m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
+
+	//			// Seen enough!!!
+	//			if (m_bNeedsMouse && m_bNeedsKeyboard)
+	//				break;
+	//		}
+	//	}
+	//}
+	//else
+	//{
 		for (i = 0; i < c; i++)
 		{
 			VPanel* pop = (VPanel*)g_pVGui->GetPopup(i);
-			bool isChildOfModalSubPanel = IsChildOfModalSubTree((VPANEL)pop);
-			if (!isChildOfModalSubPanel)
-				continue;
 
 			bool isVisible = pop->IsVisible();
 			VPanel* p = pop->GetParent();
@@ -2365,37 +2395,7 @@ void CVGui::CalculateMouseVisible()
 					break;
 			}
 		}
-	}
-	else
-	{
-		for (i = 0; i < c; i++)
-		{
-			VPanel* pop = (VPanel*)g_pVGui->GetPopup(i);
-
-			bool isVisible = pop->IsVisible();
-			VPanel* p = pop->GetParent();
-
-			while (p && isVisible)
-			{
-				if (p->IsVisible() == false)
-				{
-					isVisible = false;
-					break;
-				}
-				p = p->GetParent();
-			}
-
-			if (isVisible)
-			{
-				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
-				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
-
-				// Seen enough!!!
-				if (m_bNeedsMouse && m_bNeedsKeyboard)
-					break;
-			}
-		}
-	}
+	//}
 
 	if (m_bNeedsMouse)
 	{

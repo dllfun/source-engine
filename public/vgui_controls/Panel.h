@@ -606,7 +606,7 @@ public:
 	virtual int	GetPaintBackgroundType();
 	virtual void GetCornerTextureSize( int& w, int& h );
 
-	bool		IsChildOfModalSubTree();
+	//bool		IsChildOfModalSubTree();
 	bool		IsChildOfSurfaceModalPanel();
 
 	bool		ShouldHandleInputMessage();
