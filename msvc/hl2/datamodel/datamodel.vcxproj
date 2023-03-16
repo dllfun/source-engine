@@ -140,10 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\datamodel\clipboardmanager.cpp" />
     <ClCompile Include="..\..\..\datamodel\datamodel.cpp" />
     <ClCompile Include="..\..\..\datamodel\dependencygraph.cpp" />

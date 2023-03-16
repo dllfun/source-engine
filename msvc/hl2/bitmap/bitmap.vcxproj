@@ -154,10 +154,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\bitmap\bitmap.cpp" />
     <ClCompile Include="..\..\..\bitmap\colorconversion.cpp" />
     <ClCompile Include="..\..\..\bitmap\float_bm.cpp" />

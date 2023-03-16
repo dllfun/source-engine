@@ -15,7 +15,7 @@
 #include "vgui_controls/Panel.h"
 #include "datacache/imdlcache.h"
 #include "materialsystem/MaterialSystemUtil.h"
-#include "matsys_controls/potterywheelpanel.h"
+#include "potterywheelpanel.h"
 #include "tier3/mdlutils.h"
 
 

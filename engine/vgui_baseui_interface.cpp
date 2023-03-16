@@ -16,7 +16,7 @@
 #include "appframework/ilaunchermgr.h"
 #include <vgui_controls/Panel.h>
 #include <vgui_controls/EditablePanel.h>
-#include <matsys_controls/matsyscontrols.h>
+#include <matsyscontrols.h>
 #include <vgui/Cursor.h>
 #include <vgui_controls/PHandle.h>
 #include "keys.h"

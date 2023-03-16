@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\public\map_utils.cpp" />
     <ClCompile Include="..\..\..\public\materialsystem\MaterialSystemUtil.cpp" />
     <ClCompile Include="..\..\..\tier2\beamsegdraw.cpp" />

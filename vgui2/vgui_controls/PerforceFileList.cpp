@@ -268,7 +268,7 @@ int PerforceFileList::AddFileToFileList( const char *pFullPath, bool bExistsOnDi
 	kv->SetString( "fullpath", pFullPath );
 	kv->SetInt( "image", 1 );
 
-	IImage *pImage = surface()->GetIconImageForFullPath( pFullPath );
+	IImage *pImage = ivgui()->GetIconImageForFullPath( pFullPath );
 	if ( pImage )
 	{
 		kv->SetPtr( "iconImage", (void *)pImage );

@@ -9,7 +9,7 @@
 #include "activitylist.h"
 #include "animation.h"
 #include "vgui/IInput.h"
-#include "matsys_controls/manipulator.h"
+#include "manipulator.h"
 #include "bone_setup.h"
 
 using namespace vgui;

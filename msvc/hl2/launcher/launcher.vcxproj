@@ -142,10 +142,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\launcher\launcher.cpp" />
     <ClCompile Include="..\..\..\launcher\reslistgenerator.cpp" />
     <ClCompile Include="..\..\..\public\filesystem_init.cpp" />

@@ -84,7 +84,7 @@
       <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;CLIENT_DLL;DISABLE_STEAM;NO_STEAM;GAMECLIENTHL2_EXPORTS;CSTRIKE_DLL;VERSION_SAFE_STEAM_API_INTERFACES;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\game\client;..\..\..\game\client\game_controls;..\..\..\common;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\vgui2;..\..\..\game\shared;..\..\..\thirdparty\SDL;..\..\..\game\client\cstrike;..\..\..\game\client\cstrike\VGUI;..\..\..\game\shared\cstrike</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\game\client;..\..\..\game\client\game_controls;..\..\..\common;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\vgui2;..\..\..\game\shared;..\..\..\thirdparty\SDL;..\..\..\game\client\cstrike;..\..\..\game\client\cstrike\VGUI;..\..\..\game\shared\cstrike;..\..\..\public\matsys_controls</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
     </ClCompile>
@@ -93,7 +93,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>tier0.lib;particles.lib;dmxloader.lib;tier1.lib;tier2.lib;tier3.lib;mathlib.lib;vstdlib.lib;choreoobjects.lib;steam_api.lib;bitmap.lib;matsys_controls.lib;vgui_controls.lib;vtf.lib;Rpcrt4.lib;SHELL32.lib;USER32.lib</AdditionalDependencies>
+      <AdditionalDependencies>tier0.lib;particles.lib;dmxloader.lib;tier1.lib;tier2.lib;tier3.lib;mathlib.lib;vstdlib.lib;choreoobjects.lib;steam_api.lib;bitmap.lib;vgui_controls.lib;matsys_controls.lib;vtf.lib;Rpcrt4.lib;SHELL32.lib;USER32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -105,7 +105,7 @@
       <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;CLIENT_DLL;DISABLE_STEAM;NO_STEAM;GAMECLIENTHL2_EXPORTS;CSTRIKE_DLL;VERSION_SAFE_STEAM_API_INTERFACES;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\game\client;..\..\..\game\client\game_controls;..\..\..\common;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\vgui2;..\..\..\game\shared;..\..\..\thirdparty\SDL;..\..\..\game\client\cstrike;..\..\..\game\client\cstrike\VGUI;..\..\..\game\shared\cstrike</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\game\client;..\..\..\game\client\game_controls;..\..\..\common;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\vgui2;..\..\..\game\shared;..\..\..\thirdparty\SDL;..\..\..\game\client\cstrike;..\..\..\game\client\cstrike\VGUI;..\..\..\game\shared\cstrike;..\..\..\public\matsys_controls</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
     </ClCompile>
@@ -116,7 +116,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>tier0.lib;particles.lib;dmxloader.lib;tier1.lib;tier2.lib;tier3.lib;mathlib.lib;vstdlib.lib;choreoobjects.lib;steam_api.lib;bitmap.lib;matsys_controls.lib;vgui_controls.lib;vtf.lib;Rpcrt4.lib;SHELL32.lib;USER32.lib</AdditionalDependencies>
+      <AdditionalDependencies>tier0.lib;particles.lib;dmxloader.lib;tier1.lib;tier2.lib;tier3.lib;mathlib.lib;vstdlib.lib;choreoobjects.lib;steam_api.lib;bitmap.lib;vgui_controls.lib;matsys_controls.lib;vtf.lib;Rpcrt4.lib;SHELL32.lib;USER32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -153,10 +153,6 @@
       <EnableUAC>false</EnableUAC>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\common\compiledcaptionswap.cpp" />
     <ClCompile Include="..\..\..\common\language.cpp" />

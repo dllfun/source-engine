@@ -109,7 +109,7 @@
 #include "ipresence.h"
 #include "engine/imatchmaking.h"
 #include "cdll_bounded_cvars.h"
-#include "matsys_controls/matsyscontrols.h"
+#include "matsyscontrols.h"
 #include "gamestats.h"
 #include "particle_parse.h"
 #if defined( TF_CLIENT_DLL )

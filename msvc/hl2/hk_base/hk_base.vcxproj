@@ -150,10 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_base\array\array.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_base\base_types.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_base\console.cpp" />

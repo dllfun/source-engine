@@ -142,10 +142,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\filesystem\basefilesystem.cpp" />
     <ClCompile Include="..\..\..\filesystem\filesystem_async.cpp" />
     <ClCompile Include="..\..\..\filesystem\filesystem_stdio.cpp" />

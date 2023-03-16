@@ -150,10 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\particles\addbuiltin_ops.cpp" />
     <ClCompile Include="..\..\..\particles\builtin_constraints.cpp" />
     <ClCompile Include="..\..\..\particles\builtin_initializers.cpp" />

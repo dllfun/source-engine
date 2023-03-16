@@ -150,10 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\utils\bzip2\blocksort.c" />
     <ClCompile Include="..\..\..\utils\bzip2\bzip2.c" />
     <ClCompile Include="..\..\..\utils\bzip2\bzlib.c" />

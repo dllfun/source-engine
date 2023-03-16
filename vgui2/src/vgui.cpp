@@ -7,7 +7,7 @@
 
 
 #if defined( WIN32 ) && !defined( _X360 )
-#define WIN32_LEAN_AND_MEAN
+//#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
@@ -49,6 +49,9 @@
 #include "inputsystem/iinputsystem.h"
 #include <vgui_controls/Panel.h>
 #include "materialsystem/imaterialsystem.h"
+#include "bitmap/imageformat.h"
+#include "Memorybitmap.h"
+
 
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -710,6 +713,11 @@ public:
 	virtual vgui::VPANEL GetEmbeddedPanel();
 
 	virtual bool HasCursorPosFunctions() { return true; }
+
+	virtual vgui::IImage* GetIconImageForFullPath(char const* pFullPath);
+
+	virtual void EnableMouseCapture(vgui::VPANEL panel, bool state);
+
 private:
 	// VGUI contexts
 	struct Context_t
@@ -816,6 +824,8 @@ private:
 	// Is the app gonna call HandleInputEvent?
 	bool m_bAppDrivesInput : 1;
 	int m_nLastInputPollCount;
+
+	CUtlDict< vgui::IImage*, unsigned short >	m_FileTypeImages;
 };
 
 CVGui g_VGui;
@@ -1774,6 +1784,12 @@ InitReturnVal_t CVGui::Init()
 
 void CVGui::Shutdown()
 {
+	for (int i = m_FileTypeImages.First(); i != m_FileTypeImages.InvalidIndex(); i = m_FileTypeImages.Next(i))
+	{
+		delete m_FileTypeImages[i];
+	}
+	m_FileTypeImages.RemoveAll();
+
 	g_pSystem->SaveUserConfigFile();
 
 	DestroyAllContexts();
@@ -2557,4 +2573,192 @@ void CVGui::SetEmbeddedPanel(VPANEL pEmbeddedPanel)
 VPANEL CVGui::GetEmbeddedPanel()
 {
 	return m_pEmbeddedPanel;
+}
+
+#if defined( WIN32 ) && !defined( _X360 )
+static bool GetIconSize(ICONINFO& iconInfo, int& w, int& h)
+{
+	w = h = 0;
+
+	HBITMAP bitmap = iconInfo.hbmColor;
+	BITMAP bm;
+	if (0 == GetObject((HGDIOBJ)bitmap, sizeof(BITMAP), (LPVOID)&bm))
+	{
+		return false;
+	}
+
+	w = bm.bmWidth;
+	h = bm.bmHeight;
+
+	return true;
+}
+
+// If rgba is NULL, bufsize gets filled in w/ # of bytes required
+static bool GetIconBits(HDC hdc, ICONINFO& iconInfo, int& w, int& h, unsigned char* rgba, size_t& bufsize)
+{
+	if (!iconInfo.hbmColor || !iconInfo.hbmMask)
+		return false;
+
+	if (!rgba)
+	{
+		if (!GetIconSize(iconInfo, w, h))
+			return false;
+
+		bufsize = (size_t)((w * h) << 2);
+		return true;
+	}
+
+	bool bret = false;
+
+	Assert(w > 0);
+	Assert(h > 0);
+	Assert(bufsize == (size_t)((w * h) << 2));
+
+	DWORD* maskData = new DWORD[w * h];
+	DWORD* colorData = new DWORD[w * h];
+	DWORD* output = (DWORD*)rgba;
+
+	BITMAPINFO bmInfo;
+
+	memset(&bmInfo, 0, sizeof(bmInfo));
+	bmInfo.bmiHeader.biSize = sizeof(bmInfo.bmiHeader);
+	bmInfo.bmiHeader.biWidth = w;
+	bmInfo.bmiHeader.biHeight = h;
+	bmInfo.bmiHeader.biPlanes = 1;
+	bmInfo.bmiHeader.biBitCount = 32;
+	bmInfo.bmiHeader.biCompression = BI_RGB;
+
+	// Get the info about the bits
+	if (GetDIBits(hdc, iconInfo.hbmMask, 0, h, maskData, &bmInfo, DIB_RGB_COLORS) == h &&
+		GetDIBits(hdc, iconInfo.hbmColor, 0, h, colorData, &bmInfo, DIB_RGB_COLORS) == h)
+	{
+		bret = true;
+
+		for (int row = 0; row < h; ++row)
+		{
+			// Invert
+			int r = (h - row - 1);
+			int rowstart = r * w;
+
+			DWORD* color = &colorData[rowstart];
+			DWORD* mask = &maskData[rowstart];
+			DWORD* outdata = &output[row * w];
+
+			for (int col = 0; col < w; ++col)
+			{
+				unsigned char* cr = (unsigned char*)&color[col];
+
+				// Set alpha
+				cr[3] = mask[col] == 0 ? 0xff : 0x00;
+
+				// Swap blue and red
+				unsigned char t = cr[2];
+				cr[2] = cr[0];
+				cr[0] = t;
+
+				*(unsigned int*)&outdata[col] = *(unsigned int*)cr;
+			}
+		}
+	}
+
+	delete[] colorData;
+	delete[] maskData;
+
+	return bret;
+}
+
+static bool ShouldMakeUnique(char const* extension)
+{
+	if (!Q_stricmp(extension, "cur"))
+		return true;
+	if (!Q_stricmp(extension, "ani"))
+		return true;
+	return false;
+}
+#endif // !_X360
+
+vgui::IImage* CVGui::GetIconImageForFullPath(char const* pFullPath)
+{
+	vgui::IImage* newIcon = NULL;
+
+#if defined( WIN32 ) && !defined( _X360 )
+	SHFILEINFO info = { 0 };
+	DWORD_PTR dwResult = SHGetFileInfo(
+		pFullPath,
+		0,
+		&info,
+		sizeof(info),
+		SHGFI_TYPENAME | SHGFI_ICON | SHGFI_SMALLICON | SHGFI_SHELLICONSIZE
+	);
+	if (dwResult)
+	{
+		if (info.szTypeName[0] != 0)
+		{
+			char ext[32];
+			Q_ExtractFileExtension(pFullPath, ext, sizeof(ext));
+
+			char lookup[512];
+			Q_snprintf(lookup, sizeof(lookup), "%s", ShouldMakeUnique(ext) ? pFullPath : info.szTypeName);
+
+			// Now check the dictionary
+			unsigned short idx = m_FileTypeImages.Find(lookup);
+			if (idx == m_FileTypeImages.InvalidIndex())
+			{
+				ICONINFO iconInfo;
+				if (0 != GetIconInfo(info.hIcon, &iconInfo))
+				{
+					int w, h;
+					size_t bufsize = 0;
+
+					HDC hdc = ::GetDC(reinterpret_cast<HWND>(m_HWnd));
+
+					if (GetIconBits(hdc, iconInfo, w, h, NULL, bufsize))
+					{
+						byte* bits = new byte[bufsize];
+						if (bits && GetIconBits(hdc, iconInfo, w, h, bits, bufsize))
+						{
+							newIcon = new MemoryBitmap(bits, w, h);
+						}
+						delete[] bits;
+					}
+
+					::ReleaseDC(reinterpret_cast<HWND>(m_HWnd), hdc);
+				}
+
+				idx = m_FileTypeImages.Insert(lookup, newIcon);
+			}
+
+			newIcon = m_FileTypeImages[idx];
+		}
+
+		DestroyIcon(info.hIcon);
+	}
+#endif
+	return newIcon;
+}
+
+void CVGui::EnableMouseCapture(VPANEL panel, bool state)
+{
+#ifdef WIN32
+	if (state)
+	{
+		::SetCapture(reinterpret_cast<HWND>(m_HWnd));
+	}
+	else
+	{
+		::ReleaseCapture();
+	}
+#elif defined( POSIX )
+	// SetCapture on Win32 makes all the mouse messages (move and button up/down) head to
+	//	the captured window. From what I can tell, this routine is called for modal dialogs
+	//	when you click down on a button. However the current behavior is to highlight the
+	//	buttons when you're over them, and trigger when you mouse up over the top - so I
+	//	don't believe that SetCapture is needed on Windows, and Linux is behaving exactly
+	//	the same as Win32 in all the tests I've run so far. (I've clicked on a lot of dialogs).
+	// I talked with Alfred about this and we haven't done any SetCapture stuff on OSX ever
+	//  and he says nobody has ever reported any regressions.
+	// So I've removed the Assert. 8/32/2012 - mikesart.
+#else
+#error
+#endif
 }

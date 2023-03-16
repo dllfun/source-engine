@@ -140,10 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\inputsystem\inputsystem.cpp" />
     <ClCompile Include="..\..\..\inputsystem\joystick_sdl.cpp" />
     <ClCompile Include="..\..\..\inputsystem\key_translation.cpp" />

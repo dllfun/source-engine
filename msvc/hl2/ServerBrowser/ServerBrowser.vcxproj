@@ -141,10 +141,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\common\ServerBrowser\blacklisted_server_manager.cpp" />
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
     <ClCompile Include="..\..\..\public\vgui_controls\vgui_controls.cpp" />

@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_math\densematrix.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_math\densematrix_util.cpp" />
     <ClCompile Include="..\..\..\ivp\havana\havok\hk_math\eulerangles.cpp" />

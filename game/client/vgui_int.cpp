@@ -23,7 +23,7 @@
 #include <KeyValues.h>
 #include "filesystem.h"
 #include "touch.h"
-#include "matsys_controls/matsyscontrols.h"
+#include "matsyscontrols.h"
 
 #ifdef SIXENSE
 #include "sixense/in_sixense.h"

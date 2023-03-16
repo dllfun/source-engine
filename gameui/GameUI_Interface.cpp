@@ -72,7 +72,7 @@
 #include <vgui_controls/PHandle.h>
 #include "tier3/tier3.h"
 #include "tier0/vcrmode.h"
-#include "matsys_controls/matsyscontrols.h"
+#include "matsyscontrols.h"
 #include "steam/steam_api.h"
 
 #if defined( _X360 )
@@ -89,7 +89,7 @@ IGameUIFuncs *gameuifuncs = NULL;
 IEngineVGui *enginevguifuncs = NULL;
 IMatchmaking *matchmaking = NULL;
 IXboxSystem *xboxsystem = NULL;		// 360 only
-IMatSystemSurface *enginesurfacefuncs = NULL;
+//IMatSystemSurface *enginesurfacefuncs = NULL;
 IVEngineClient *engine = NULL;
 IEngineSound *enginesound = NULL;
 IAchievementMgr *achievementmgr = NULL;
@@ -186,7 +186,7 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	g_pVGuiLocalize->AddFile( "Resource/valve_%language%.txt", "GAME", true );
 
 	enginevguifuncs = (IEngineVGui *)factory( VENGINE_VGUI_VERSION, NULL );
-	enginesurfacefuncs = (IMatSystemSurface *)factory(MAT_SYSTEM_SURFACE_INTERFACE_VERSION, NULL);
+	//enginesurfacefuncs = (IMatSystemSurface *)factory(MAT_SYSTEM_SURFACE_INTERFACE_VERSION, NULL);
 	gameuifuncs = (IGameUIFuncs *)factory( VENGINE_GAMEUIFUNCS_VERSION, NULL );
 	matchmaking = (IMatchmaking *)factory( VENGINE_MATCHMAKING_VERSION, NULL );
 	xboxsystem = (IXboxSystem *)factory( XBOXSYSTEM_INTERFACE_VERSION, NULL );
@@ -198,7 +198,7 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	}
 
 	// NOTE: g_pEngineReplay intentionally not checked here
-	if ( !enginesurfacefuncs || !gameuifuncs || !enginevguifuncs || !xboxsystem || (IsX360() && !matchmaking) )
+	if ( /*!enginesurfacefuncs ||*/ !gameuifuncs || !enginevguifuncs || !xboxsystem || (IsX360() && !matchmaking))
 	{
 		Error( "CGameUI::Initialize() failed to get necessary interfaces\n" );
 	}

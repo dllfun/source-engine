@@ -155,8 +155,6 @@
     <ClInclude Include="..\..\..\public\appframework\tier2app.h" />
     <ClInclude Include="..\..\..\public\appframework\tier3app.h" />
     <ClInclude Include="..\..\..\public\appframework\VguiMatSysApp.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\appframework\AppSystemGroup.cpp" />

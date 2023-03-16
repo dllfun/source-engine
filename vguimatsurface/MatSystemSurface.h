@@ -77,7 +77,7 @@ public:
 	//void RestrictPaintToSinglePanel(vgui::VPANEL panel);
 
 	// frame
-	virtual void RunFrame();
+	//virtual void RunFrame();
 
 	// implementation of vgui::ISurface
 	//virtual vgui::VPANEL GetEmbeddedPanel();
@@ -216,13 +216,13 @@ public:
 	//virtual void SolveTraverse(vgui::VPANEL panel, bool forceApplySchemeSettings);
 	virtual void PaintTraverse(vgui::VPANEL panel);
 
-	virtual void EnableMouseCapture(vgui::VPANEL panel, bool state);
+	//virtual void EnableMouseCapture(vgui::VPANEL panel, bool state);
 
 	virtual void SetWorkspaceInsets( int left, int top, int right, int bottom );
 	virtual void GetWorkspaceBounds(int &x, int &y, int &wide, int &tall);
 
 	// Hook needed to Get input to work
-	virtual void AttachToWindow( void *hwnd, bool bLetAppDriveInput );
+	//virtual void AttachToWindow( void *hwnd, bool bLetAppDriveInput );
 	//virtual bool HandleInputEvent( const InputEvent_t &event );
 
 	void		 InitFullScreenBuffer( const char *pszRenderTargetName );
@@ -245,7 +245,7 @@ public:
 	//virtual bool IsCursorLocked() const;
 
 	// Sets the mouse Get + Set callbacks
-	virtual void SetMouseCallbacks( GetMouseCallback_t GetFunc, SetMouseCallback_t SetFunc );
+	//virtual void SetMouseCallbacks( GetMouseCallback_t GetFunc, SetMouseCallback_t SetFunc );
 
 	// Tells the surface to ignore windows messages
 	//virtual void EnableWindowsMessages( bool bEnable );
@@ -278,7 +278,7 @@ public:
 	//virtual VPANEL GetModalPanel();
 	//virtual void UnlockCursor();
 	//virtual void LockCursor();
-	virtual void SetTranslateExtendedKeys(bool state);
+	//virtual void SetTranslateExtendedKeys(bool state);
 	//virtual VPANEL GetTopmostPopup();
 	virtual void GetAbsoluteWindowBounds(int &x, int &y, int &wide, int &tall);
 	//virtual void CalculateMouseVisible();
@@ -311,7 +311,7 @@ public:
 
 	//virtual void SetPanelForInput( VPANEL vpanel );
 
-	virtual vgui::IImage *GetIconImageForFullPath( char const *pFullPath );
+	//virtual vgui::IImage *GetIconImageForFullPath( char const *pFullPath );
 
 	virtual void DestroyTextureID( int id );
 
@@ -505,7 +505,7 @@ private:
 	//VPANEL m_CurrentThinkPanel;
 
 	// The attached HWND
-	void *m_HWnd;
+	//void *m_HWnd;
 
 	// Installed function to play sounds
 	PlaySoundFunc_t m_PlaySoundFunc;
@@ -531,7 +531,7 @@ private:
 	CUtlDict< int, int >		m_BitmapFontFileMapping;
 
 	float	m_flZPos;
-	CUtlDict< vgui::IImage *, unsigned short >	m_FileTypeImages;
+	//CUtlDict< vgui::IImage *, unsigned short >	m_FileTypeImages;
 
 	//int		GetTitleEntry( vgui::VPANEL panel );
 

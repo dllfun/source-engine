@@ -9,7 +9,7 @@
 #pragma once
 #endif
 
-#include "matsys_controls/mdlpanel.h"
+#include "mdlpanel.h"
 
 //-----------------------------------------------------------------------------
 // Resource file data used in posing the model inside of the model panel.

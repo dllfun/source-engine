@@ -151,10 +151,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\tier1\bitbuf.cpp" />
     <ClCompile Include="..\..\..\tier1\byteswap.cpp" />
     <ClCompile Include="..\..\..\tier1\characterset.cpp" />

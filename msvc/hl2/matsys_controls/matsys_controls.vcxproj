@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\vgui2\matsys_controls\assetpicker.cpp" />
     <ClCompile Include="..\..\..\vgui2\matsys_controls\baseassetpicker.cpp" />
     <ClCompile Include="..\..\..\vgui2\matsys_controls\colorpickerpanel.cpp" />

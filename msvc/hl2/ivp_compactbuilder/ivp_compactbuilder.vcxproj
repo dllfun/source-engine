@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\ivp\ivp_compact_builder\3dsimport_co.cxx" />
     <ClCompile Include="..\..\..\ivp\ivp_compact_builder\geompack_cutfac.cxx" />
     <ClCompile Include="..\..\..\ivp\ivp_compact_builder\geompack_cvdec3.cxx" />

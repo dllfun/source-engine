@@ -124,7 +124,7 @@ public:
 	virtual void Shutdown() = 0;
 
 	// frame
-	virtual void RunFrame() = 0;
+	//virtual void RunFrame() = 0;
 
 	// hierarchy root
 	//virtual VPANEL GetEmbeddedPanel() = 0;
@@ -222,7 +222,7 @@ public:
 
 	//virtual void UnlockCursor() = 0;
 	//virtual void LockCursor() = 0;
-	virtual void SetTranslateExtendedKeys(bool state) = 0;
+	//virtual void SetTranslateExtendedKeys(bool state) = 0;
 	//virtual VPANEL GetTopmostPopup() = 0;
 
 	// engine-only focus handling (replacing WM_FOCUS windows handling)
@@ -285,7 +285,7 @@ public:
 	//virtual void SolveTraverse(VPANEL panel, bool forceApplySchemeSettings = false) = 0;
 	virtual void PaintTraverse(VPANEL panel) = 0;
 
-	virtual void EnableMouseCapture(VPANEL panel, bool state) = 0;
+	//virtual void EnableMouseCapture(VPANEL panel, bool state) = 0;
 
 	// returns the size of the workspace
 	virtual void GetWorkspaceBounds(int &x, int &y, int &wide, int &tall) = 0;
@@ -352,7 +352,7 @@ public:
 	virtual const char *GetBitmapFontName( const char *pName ) = 0;
 	virtual void ClearTemporaryFontCache( void ) = 0;
 
-	virtual IImage *GetIconImageForFullPath( char const *pFullPath ) = 0;
+	//virtual IImage *GetIconImageForFullPath( char const *pFullPath ) = 0;
 	virtual void DrawUnicodeString( const wchar_t *pwString, FontDrawType_t drawType = FONT_DRAW_DEFAULT ) = 0;
 	virtual void PrecacheFontCharacters(HFont font, const wchar_t *pCharacters) = 0;
 	// Console-only.  Get the string to use for the current video mode for layout files.

@@ -153,10 +153,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\vgui2\vgui_surfacelib\BitmapFont.cpp" />
     <ClCompile Include="..\..\..\vgui2\vgui_surfacelib\FontAmalgam.cpp" />
     <ClCompile Include="..\..\..\vgui2\vgui_surfacelib\FontEffects.cpp" />

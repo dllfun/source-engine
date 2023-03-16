@@ -80,13 +80,13 @@
       <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;__USEA3D;_ADD_EAX_;ENGINE_DLL;VERSION_SAFE_STEAM_API_INTERFACES;USE_BREAKPAD_HANDLER;USE_CONVARS;VOICE_OVER_IP;MEM_OVERRIDE_ON;HAVE_JPEG;ENGINE_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;..\..\..\thirdparty\SDL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;..\..\..\thirdparty\SDL;..\..\..\public\matsys_controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\;..\..\..\utils\vmpi_private\mysql\lib\opt;..\..\..\dx9sdk\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vgui_controls.lib;dmxloader.lib;bitmap.lib;vstdlib.lib;appframework.lib;vtf.lib;mathlib.lib;steam_api.lib;matsys_controls.lib;SDL2.lib;libjpeg.lib;libpng.lib;libz.lib;nvtc.lib;zlib.lib;amstrmid.lib;d3d8.lib;d3d9.lib;d3dx.lib;d3dx8.lib;d3dx8d.lib;d3dx8dt.lib;d3dx9.lib;d3dx9d.lib;d3dx9dt.lib;d3dxd.lib;d3dxof.lib;ddraw.lib;dinput.lib;dinput8.lib;dmoguids.lib;dplayx.lib;dsetup.lib;dsound.lib;DxErr8.lib;DxErr9.lib;dxguid.lib;dxtrans.lib;encapi.lib;ksproxy.lib;ksuser.lib;msdmo.lib;quartz.lib;strmiids.lib;XInput.lib;Winmm.lib;Ws2_32.lib;Wininet.lib;Rpcrt4.lib;bzip2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vgui_controls.lib;matsys_controls.lib;dmxloader.lib;bitmap.lib;vstdlib.lib;appframework.lib;vtf.lib;mathlib.lib;steam_api.lib;SDL2.lib;libjpeg.lib;libpng.lib;libz.lib;nvtc.lib;zlib.lib;amstrmid.lib;d3d8.lib;d3d9.lib;d3dx.lib;d3dx8.lib;d3dx8d.lib;d3dx8dt.lib;d3dx9.lib;d3dx9d.lib;d3dx9dt.lib;d3dxd.lib;d3dxof.lib;ddraw.lib;dinput.lib;dinput8.lib;dmoguids.lib;dplayx.lib;dsetup.lib;dsound.lib;DxErr8.lib;DxErr9.lib;dxguid.lib;dxtrans.lib;encapi.lib;ksproxy.lib;ksuser.lib;msdmo.lib;quartz.lib;strmiids.lib;XInput.lib;Winmm.lib;Ws2_32.lib;Wininet.lib;Rpcrt4.lib;bzip2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -96,13 +96,13 @@
       <PreprocessorDefinitions>WIN32;_WIN32;_WINDOWS;_DLL_EXT=.dll;COMPILER_MSVC;COMPILER_MSVC32;MSVC;_ALLOW_RUNTIME_LIBRARY_MISMATCH;_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH;__USEA3D;_ADD_EAX_;ENGINE_DLL;VERSION_SAFE_STEAM_API_INTERFACES;USE_BREAKPAD_HANDLER;USE_CONVARS;VOICE_OVER_IP;MEM_OVERRIDE_ON;HAVE_JPEG;ENGINE_EXPORTS;_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;..\..\..\thirdparty\SDL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;..\..\..\thirdparty\SDL;..\..\..\public\matsys_controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\;..\..\..\utils\vmpi_private\mysql\lib\opt;..\..\..\dx9sdk\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vgui_controls.lib;dmxloader.lib;bitmap.lib;vstdlib.lib;appframework.lib;vtf.lib;mathlib.lib;steam_api.lib;matsys_controls.lib;SDL2.lib;libjpeg.lib;libpng.lib;libz.lib;nvtc.lib;zlib.lib;amstrmid.lib;d3d8.lib;d3d9.lib;d3dx.lib;d3dx8.lib;d3dx8d.lib;d3dx8dt.lib;d3dx9.lib;d3dx9d.lib;d3dx9dt.lib;d3dxd.lib;d3dxof.lib;ddraw.lib;dinput.lib;dinput8.lib;dmoguids.lib;dplayx.lib;dsetup.lib;dsound.lib;DxErr8.lib;DxErr9.lib;dxguid.lib;dxtrans.lib;encapi.lib;ksproxy.lib;ksuser.lib;msdmo.lib;quartz.lib;strmiids.lib;XInput.lib;Winmm.lib;Ws2_32.lib;Wininet.lib;Rpcrt4.lib;bzip2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vgui_controls.lib;matsys_controls.lib;dmxloader.lib;bitmap.lib;vstdlib.lib;appframework.lib;vtf.lib;mathlib.lib;steam_api.lib;SDL2.lib;libjpeg.lib;libpng.lib;libz.lib;nvtc.lib;zlib.lib;amstrmid.lib;d3d8.lib;d3d9.lib;d3dx.lib;d3dx8.lib;d3dx8d.lib;d3dx8dt.lib;d3dx9.lib;d3dx9d.lib;d3dx9dt.lib;d3dxd.lib;d3dxof.lib;ddraw.lib;dinput.lib;dinput8.lib;dmoguids.lib;dplayx.lib;dsetup.lib;dsound.lib;DxErr8.lib;DxErr9.lib;dxguid.lib;dxtrans.lib;encapi.lib;ksproxy.lib;ksuser.lib;msdmo.lib;quartz.lib;strmiids.lib;XInput.lib;Winmm.lib;Ws2_32.lib;Wininet.lib;Rpcrt4.lib;bzip2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -142,8 +142,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\public\tier1\utlmemory.h" />
     <ClInclude Include="..\..\..\public\tier1\utlvector.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\common\language.cpp" />

@@ -1128,12 +1128,12 @@ void CInputSystem::SetMouseCapture(VPANEL panel)
 	{
 		if (pContext->_mouseCapture != NULL)
 		{
-			g_pSurface->EnableMouseCapture((VPANEL)pContext->_mouseCapture, false);
+			g_pIVgui->EnableMouseCapture((VPANEL)pContext->_mouseCapture, false);
 		}
 	}
 	else
 	{
-		g_pSurface->EnableMouseCapture(panel, true);
+		g_pIVgui->EnableMouseCapture(panel, true);
 	}
 
 	pContext->_mouseCapture = (VPanel *)panel;

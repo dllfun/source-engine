@@ -150,10 +150,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\ivp\ivp_collision\ivp_3d_solver.cxx" />
     <ClCompile Include="..\..\..\ivp\ivp_collision\ivp_clustering_longrange.cxx" />
     <ClCompile Include="..\..\..\ivp\ivp_collision\ivp_clustering_lrange_hash.cxx" />

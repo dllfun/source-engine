@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\dmxloader\dmxattribute.cpp" />
     <ClCompile Include="..\..\..\dmxloader\dmxelement.cpp" />
     <ClCompile Include="..\..\..\dmxloader\dmxloader.cpp" />

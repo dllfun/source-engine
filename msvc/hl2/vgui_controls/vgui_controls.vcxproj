@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\public\filesystem_helpers.cpp" />
     <ClCompile Include="..\..\..\public\vgui_controls\vgui_controls.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\vgui_key_translation.cpp" />

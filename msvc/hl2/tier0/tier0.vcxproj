@@ -199,8 +199,6 @@
     <ClInclude Include="..\..\..\tier0\pch_tier0.h" />
     <ClInclude Include="..\..\..\tier0\resource.h" />
     <ClInclude Include="..\..\..\tier0\tier0_strtools.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\tier0\assert_dialog.cpp" />

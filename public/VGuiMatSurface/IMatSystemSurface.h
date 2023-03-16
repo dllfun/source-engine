@@ -50,7 +50,7 @@ public:
 	// Hook needed to get input to work.
 	// If the app drives the input (like the engine needs to do for VCR mode), 
 	// it can set bLetAppDriveInput to true and call HandleInputEvent for the input events.
-	virtual void AttachToWindow( void *hwnd, bool bLetAppDriveInput=false ) = 0;
+	//virtual void AttachToWindow( void *hwnd, bool bLetAppDriveInput=false ) = 0;
 
 	// Tells the surface to ignore windows messages
 	//virtual void EnableWindowsMessages( bool bEnable ) = 0;
@@ -72,7 +72,7 @@ public:
 	//virtual bool IsCursorLocked() const = 0;
 
 	// Sets the mouse get + set callbacks
-	virtual void SetMouseCallbacks( GetMouseCallback_t getFunc, SetMouseCallback_t setFunc ) = 0;
+	//virtual void SetMouseCallbacks( GetMouseCallback_t getFunc, SetMouseCallback_t setFunc ) = 0;
 
 	// Installs a function to play sounds
 	virtual void InstallPlaySoundFunc( PlaySoundFunc_t soundFunc ) = 0;

@@ -152,10 +152,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\mathlib\3dnow.cpp" />
     <ClCompile Include="..\..\..\mathlib\almostequal.cpp" />
     <ClCompile Include="..\..\..\mathlib\anorms.cpp" />

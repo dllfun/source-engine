@@ -293,7 +293,7 @@ public:
 
 	virtual vgui::HCursor CreateCursorFromFile(char const* curOrAniFile, char const* pPathID = 0) = 0;
 
-	virtual void AttachToWindow(void* hwnd, bool bLetAppDriveInput) = 0;
+	virtual void AttachToWindow(void* hwnd, bool bLetAppDriveInput = false) = 0;
 
 	virtual void SetSoftwareCursor(bool bUseSoftwareCursor) = 0;
 	virtual bool GetSoftwareCursor() = 0;
@@ -306,6 +306,10 @@ public:
 	virtual vgui::VPANEL GetEmbeddedPanel() = 0;
 
 	virtual bool HasCursorPosFunctions() = 0;
+
+	virtual vgui::IImage* GetIconImageForFullPath(char const* pFullPath) = 0;
+
+	virtual void EnableMouseCapture(VPANEL panel, bool state) = 0;
 };
 
 #define VGUI_IVGUI_INTERFACE_VERSION "VGUI_ivgui008"

@@ -1161,16 +1161,16 @@ void CGame::AttachToWindow()
 		g_pInputSystem->EnableMessagePump( false );
 	}
 
-	if ( g_pMatSystemSurface )
-	{
+//	if ( g_pMatSystemSurface )
+//	{
 		// Attach the vgui matsurface window proc
-#if defined( WIN32 )
-		g_pMatSystemSurface->AttachToWindow( (void *)m_hWindow, true );
-#else
-		g_pMatSystemSurface->AttachToWindow( (void *)m_pSDLWindow, true );
-#endif
+//#if defined( WIN32 )
+//		g_pMatSystemSurface->AttachToWindow( (void *)m_hWindow, true );
+//#else
+//		g_pMatSystemSurface->AttachToWindow( (void *)m_pSDLWindow, true );
+//#endif
 		//g_pMatSystemSurface->EnableWindowsMessages( true );
-	}
+//	}
 }
 
 void CGame::DetachFromWindow()
@@ -1184,13 +1184,13 @@ void CGame::DetachFromWindow()
 #endif
 
 	if (g_pVGui) {
-		g_pVGui->AttachToWindow( NULL ,true);
+		g_pVGui->AttachToWindow( NULL );
 	}
-	if ( g_pMatSystemSurface )
-	{
+//	if ( g_pMatSystemSurface )
+//	{
 		// Detach the vgui matsurface window proc
-		g_pMatSystemSurface->AttachToWindow( NULL );
-	}
+//		g_pMatSystemSurface->AttachToWindow( NULL );
+//	}
 
 	if ( g_pInputSystem )
 	{

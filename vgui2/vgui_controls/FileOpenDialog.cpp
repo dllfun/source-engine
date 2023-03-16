@@ -1222,7 +1222,7 @@ void FileOpenDialog::PopulateFileList()
 
 					kv->SetInt( "image", 1 );
 
-					IImage *image = surface()->GetIconImageForFullPath( pFullPath );
+					IImage *image = ivgui()->GetIconImageForFullPath( pFullPath );
 					
 					if ( image )
 					{

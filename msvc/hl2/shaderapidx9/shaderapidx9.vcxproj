@@ -140,10 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\materialsystem\shaderapidx9\colorformatdx8.cpp" />
     <ClCompile Include="..\..\..\materialsystem\shaderapidx9\cvballoctracker.cpp" />
     <ClCompile Include="..\..\..\materialsystem\shaderapidx9\hardwareconfig.cpp" />

@@ -140,10 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="pch.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\..\engine\voice_codecs\minimp3\mp3codecs.cpp" />
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
   </ItemGroup>
