@@ -502,7 +502,7 @@ void CMatSystemSurface::Shutdown( void )
 //void CMatSystemSurface::SetEmbeddedPanel(VPANEL pEmbeddedPanel)
 //{
 //	m_pEmbeddedPanel = pEmbeddedPanel;
-//	((VPanel *)pEmbeddedPanel)->Client()->RequestFocus(0);
+//	(pEmbeddedPanel)->Client()->RequestFocus(0);
 //}
 
 //-----------------------------------------------------------------------------
@@ -594,8 +594,8 @@ void CMatSystemSurface::DrawPanelIn3DSpace( vgui::VPANEL pRootPanel, const VMatr
 
 	StartDrawingIn3DSpace( panelCenterToWorld, pw, ph, sw, sh );
 
-	g_pVGui->Repaint(pRootPanel);//((VPanel *)pRootPanel)->Client()
-	g_pVGui->PaintTraverse(pRootPanel,true, false);//((VPanel *)pRootPanel)->Client()
+	g_pVGui->Repaint(pRootPanel);//(pRootPanel)->Client()
+	g_pVGui->PaintTraverse(pRootPanel,true, false);//(pRootPanel)->Client()
 
 	FinishDrawing();
 
@@ -2912,9 +2912,9 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //	{
 //		g_pVGui->SetParent(panel, GetEmbeddedPanel());
 //	}
-//	((VPanel *)panel)->SetPopup(true);
-//	((VPanel *)panel)->SetKeyBoardInputEnabled(kbInput);
-//	((VPanel *)panel)->SetMouseInputEnabled(mouseInput);
+//	(panel)->SetPopup(true);
+//	(panel)->SetKeyBoardInputEnabled(kbInput);
+//	(panel)->SetMouseInputEnabled(mouseInput);
 //
 //	HPanel p = ivgui()->PanelToHandle( panel );
 //
@@ -3031,7 +3031,7 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //-----------------------------------------------------------------------------
 //void CMatSystemSurface::InternalSolveTraverse(VPANEL panel)
 //{
-//	VPanel * RESTRICT vp = (VPanel *)panel;
+//	VPanel * RESTRICT vp = panel;
 //
 //	vp->TraverseLevel( 1 );
 //	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
@@ -3048,7 +3048,7 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //		VPanel *child = children[ i ];
 //		if (child->IsVisible())
 //		{
-//			InternalSolveTraverse( (VPANEL)child );
+//			InternalSolveTraverse( child );
 //		}
 //	}
 //
@@ -3062,7 +3062,7 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //-----------------------------------------------------------------------------
 //void CMatSystemSurface::InternalThinkTraverse(VPANEL panel)
 //{
-//	VPanel * RESTRICT vp = (VPanel *)panel;
+//	VPanel * RESTRICT vp = panel;
 //
 //	vp->TraverseLevel( 1 );
 //	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
@@ -3079,7 +3079,7 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //		VPanel *child = children[ i ];
 //		if ( child->IsVisible() )
 //		{
-//			InternalThinkTraverse( (VPANEL)child );
+//			InternalThinkTraverse( child );
 //		}
 //	}
 //	
@@ -3091,7 +3091,7 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //-----------------------------------------------------------------------------
 //void CMatSystemSurface::InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings)
 //{
-//	VPanel * RESTRICT vp = (VPanel *)panel;
+//	VPanel * RESTRICT vp = panel;
 //
 //	vp->TraverseLevel( 1 );
 //	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
@@ -3104,7 +3104,7 @@ void CMatSystemSurface::PlaySound(const char *pFileName)
 //		VPanel *child = children[ i ];
 //		if ( forceApplySchemeSettings || child->IsVisible() )
 //		{	
-//			InternalSchemeSettingsTraverse((VPANEL)child, forceApplySchemeSettings);
+//			InternalSchemeSettingsTraverse(child, forceApplySchemeSettings);
 //		}
 //	}
 //	// and then the parent
@@ -3270,7 +3270,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 					continue;
 
 				// This makes sure the drag/drop helper is always the first thing drawn
-				bool bIsTopmostPopup = ivgui()->IsTopmostPopup( popupPanel );//( (VPanel *)popupPanel )
+				bool bIsTopmostPopup = ivgui()->IsTopmostPopup( popupPanel );//( popupPanel )
 
 				// set our z position
 				pRenderContext->SetStencilReferenceValue( bIsTopmostPopup ? 255 : nStencilRef );
@@ -4090,8 +4090,8 @@ void CMatSystemSurface::GetAbsoluteWindowBounds(int &x, int &y, int &wide, int &
 //	{
 //		for (i = 0 ; i < c ; i++ )
 //		{
-//			VPanel *pop = (VPanel *)ivgui()->GetPopup(i) ;
-//			bool isChildOfModalSubPanel = IsChildOfModalSubTree( (VPANEL)pop );
+//			VPanel *pop = ivgui()->GetPopup(i) ;
+//			bool isChildOfModalSubPanel = IsChildOfModalSubTree( pop );
 //			if ( !isChildOfModalSubPanel )
 //				continue;
 //
@@ -4123,7 +4123,7 @@ void CMatSystemSurface::GetAbsoluteWindowBounds(int &x, int &y, int &wide, int &
 //	{
 //		for (i = 0 ; i < c ; i++ )
 //		{
-//			VPanel *pop = (VPanel *)ivgui()->GetPopup(i) ;
+//			VPanel *pop = ivgui()->GetPopup(i) ;
 //			
 //			bool isVisible=pop->IsVisible();
 //			VPanel *p= pop->GetParent();

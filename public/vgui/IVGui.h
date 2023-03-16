@@ -310,6 +310,8 @@ public:
 	virtual vgui::IImage* GetIconImageForFullPath(char const* pFullPath) = 0;
 
 	virtual void EnableMouseCapture(VPANEL panel, bool state) = 0;
+
+	virtual IClientPanel* Client(VPANEL vguiPanel) = 0;
 };
 
 #define VGUI_IVGUI_INTERFACE_VERSION "VGUI_ivgui008"

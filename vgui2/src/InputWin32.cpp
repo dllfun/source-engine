@@ -240,7 +240,7 @@ private:
 	void DestroyCandidateList();
 	void CreateNewCandidateList();
 
-	VPanel *CalculateNewKeyFocus();
+	VPANEL CalculateNewKeyFocus();
 
 	//void PostModalSubTreeMessage( VPanel *subTree, bool state );
 	// returns true if the specified panel is a child of the current modal panel
@@ -263,14 +263,14 @@ private:
 		bool _keyDown[BUTTON_CODE_COUNT];
 		bool _keyReleased[BUTTON_CODE_COUNT];
 
-		VPanel *_keyFocus;
-		VPanel *_oldMouseFocus;
-		VPanel *_mouseFocus;   // the panel that has the current mouse focus - same as _mouseOver unless _mouseCapture is set
-		VPanel *_mouseOver;	 // the panel that the mouse is currently over, NULL if not over any vgui item
+		VPANEL _keyFocus;
+		VPANEL _oldMouseFocus;
+		VPANEL _mouseFocus;   // the panel that has the current mouse focus - same as _mouseOver unless _mouseCapture is set
+		VPANEL _mouseOver;	 // the panel that the mouse is currently over, NULL if not over any vgui item
 
-		VPanel *_mouseCapture; // the panel that has currently captured mouse focus
+		VPANEL _mouseCapture; // the panel that has currently captured mouse focus
 		MouseCode m_MouseCaptureStartCode; // The Mouse button which was pressed to initiate mouse capture
-		VPanel *_appModalPanel; // the modal dialog panel.
+		VPANEL _appModalPanel; // the modal dialog panel.
 
 		int m_nCursorX;
 		int m_nCursorY;
@@ -282,7 +282,7 @@ private:
 		int m_nExternallySetCursorY;
 		bool m_bSetCursorExplicitly;
 
-		CUtlVector< VPanel * >	m_KeyCodeUnhandledListeners;
+		CUtlVector< VPANEL >	m_KeyCodeUnhandledListeners;
 
 		//VPanel	*m_pModalSubTree;
 		//VPanel	*m_pUnhandledMouseClickListener;
@@ -567,9 +567,9 @@ void CInputSystem::RunFrame()
 	if (pContext->_keyFocus)
 	{
 		// when modal dialogs are up messages only get sent to the dialogs children.
-		if (IsChildOfModalPanel((VPANEL)pContext->_keyFocus))
+		if (IsChildOfModalPanel(pContext->_keyFocus))
 		{	
-			g_pIVgui->PostMessage((VPANEL)pContext->_keyFocus, new KeyValues("KeyFocusTicked"), NULL);
+			g_pIVgui->PostMessage(pContext->_keyFocus, new KeyValues("KeyFocusTicked"), NULL);
 		}
 	}
 
@@ -577,9 +577,9 @@ void CInputSystem::RunFrame()
 	if (pContext->_mouseFocus)
 	{
 		// when modal dialogs are up messages only get sent to the dialogs children.
-		if (IsChildOfModalPanel((VPANEL)pContext->_mouseFocus))
+		if (IsChildOfModalPanel(pContext->_mouseFocus))
 		{	
-			g_pIVgui->PostMessage((VPANEL)pContext->_mouseFocus, new KeyValues("MouseFocusTicked"), NULL);
+			g_pIVgui->PostMessage(pContext->_mouseFocus, new KeyValues("MouseFocusTicked"), NULL);
 		}
 	}
 	// Mouse has wandered "off" the modal panel, just force a regular arrow cursor until it wanders back within the proper bounds
@@ -603,14 +603,14 @@ void CInputSystem::RunFrame()
 		pContext->_keyReleased[i] = 0;
 	}
 
-	VPanel *wantedKeyFocus = CalculateNewKeyFocus();
+	VPANEL wantedKeyFocus = CalculateNewKeyFocus();
 
 	// make sure old and new focus get painted
 	if (pContext->_keyFocus != wantedKeyFocus)
 	{
 		if (pContext->_keyFocus != NULL)
 		{
-			pContext->_keyFocus->Client()->InternalFocusChanged(true);
+			g_pIVgui->Client(pContext->_keyFocus)->InternalFocusChanged(true);
 
 			// there may be out of order operations here, since we're directly calling SendMessage,
 			// but we need to have focus messages happen immediately, since otherwise mouse events
@@ -621,29 +621,29 @@ void CInputSystem::RunFrame()
 				MEM_ALLOC_CREDIT();
 				KeyValues *pMessage = new KeyValues( "KillFocus" );
 				KeyValues::AutoDelete autodelete_pMessage( pMessage );
-				pMessage->SetPtr( "newPanel", wantedKeyFocus );
-				pContext->_keyFocus->SendMessage( pMessage, 0 );
+				pMessage->SetPtr( "newPanel", (VPanel*)wantedKeyFocus );
+				g_pIVgui->SendMessage(pContext->_keyFocus, pMessage, 0 );
 			}
 
 			if ( pContext->_keyFocus )
 			{
-				pContext->_keyFocus->Client()->Repaint();
+				g_pIVgui->Client(pContext->_keyFocus)->Repaint();
 			}
 
 			// repaint the nearest popup as well, since it will need to redraw after losing focus
-			VPanel *dlg = pContext->_keyFocus;
-			while (dlg && !dlg->IsPopup())
+			VPANEL dlg = pContext->_keyFocus;
+			while (dlg && !g_pIVgui->IsPopup(dlg))
 			{
-				dlg = dlg->GetParent();
+				dlg = g_pIVgui->GetParent(dlg);
 			}
 			if (dlg)
 			{
-				dlg->Client()->Repaint();
+				g_pIVgui->Client(dlg)->Repaint();
 			}
 		}
 		if (wantedKeyFocus != NULL)
 		{
-			wantedKeyFocus->Client()->InternalFocusChanged(false);
+			g_pIVgui->Client(wantedKeyFocus)->InternalFocusChanged(false);
 
 			// there may be out of order operations here, since we're directly calling SendMessage,
 			// but we need to have focus messages happen immediately, since otherwise mouse events
@@ -654,34 +654,34 @@ void CInputSystem::RunFrame()
 				MEM_ALLOC_CREDIT();
 				KeyValues *pMsg = new KeyValues("SetFocus");
 				KeyValues::AutoDelete autodelete_pMsg( pMsg );
-				wantedKeyFocus->SendMessage( pMsg, 0 );
+				g_pIVgui->SendMessage(wantedKeyFocus, pMsg, 0 );
 			}
-			wantedKeyFocus->Client()->Repaint();
+			g_pIVgui->Client(wantedKeyFocus)->Repaint();
 
 			// repaint the nearest popup as well, since it will need to redraw after gaining focus
-			VPanel *dlg = wantedKeyFocus;
-			while (dlg && !dlg->IsPopup())
+			VPANEL dlg = wantedKeyFocus;
+			while (dlg && !g_pIVgui->IsPopup(dlg))
 			{
-				dlg = dlg->GetParent();
+				dlg = g_pIVgui->GetParent(dlg);
 			}
 			if (dlg)
 			{
-				dlg->Client()->Repaint();
+				g_pIVgui->Client(dlg)->Repaint();
 			}
 		}
 
 		if ( m_nDebugMessages > 0 )
 		{
 			g_pIVgui->DPrintf2( "changing kb focus from %s to %s\n", 
-				pContext->_keyFocus ? pContext->_keyFocus->GetName() : "(no name)",
-				wantedKeyFocus ? wantedKeyFocus->GetName() : "(no name)" );
+				pContext->_keyFocus ? g_pIVgui->GetName(pContext->_keyFocus) : "(no name)",
+				wantedKeyFocus ? g_pIVgui->GetName(wantedKeyFocus) : "(no name)" );
 		}
 
 		// accept the focus request
 		pContext->_keyFocus = wantedKeyFocus;
 		if (pContext->_keyFocus)
 		{
-			pContext->_keyFocus->MoveToFront();
+			g_pIVgui->MoveToFront(pContext->_keyFocus);
 		}
 	}
 
@@ -697,15 +697,15 @@ void CInputSystem::RunFrame()
 //-----------------------------------------------------------------------------
 // Purpose: Calculate the new key focus
 //-----------------------------------------------------------------------------
-VPanel *CInputSystem::CalculateNewKeyFocus()
+VPANEL CInputSystem::CalculateNewKeyFocus()
 {
 	InputContext_t *pContext = GetInputContext(m_hContext);
 
 	// get the top-order panel
-	VPanel *wantedKeyFocus = NULL;
+	VPANEL wantedKeyFocus = NULL;
 
-	VPanel *pRoot = (VPanel *)pContext->_rootPanel;
-	VPanel *top = pRoot;
+	VPANEL pRoot = pContext->_rootPanel;
+	VPANEL top = pRoot;
 	if ( g_pIVgui->GetPopupCount() > 0 )
 	{
 		// find the highest-level window that is both visible and a popup
@@ -713,31 +713,31 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 
 		while ( nIndex )
 		{			
-			top = (VPanel *)g_pIVgui->GetPopup( --nIndex );
+			top = g_pIVgui->GetPopup( --nIndex );
 
 			// traverse the hierarchy and check if the popup really is visible
 			if (top &&
 				// top->IsPopup() &&  // These are right out of of the popups list!!!
-				top->IsVisible() && 
-				top->IsKeyBoardInputEnabled() && 
-				!g_pIVgui->IsMinimized((VPANEL)top) &&
-				//IsChildOfModalSubTree((VPANEL)top) &&
-				(!pRoot || top->HasParent( pRoot )) )
+				g_pIVgui->IsVisible(top) &&
+				g_pIVgui->IsKeyBoardInputEnabled(top) &&
+				!g_pIVgui->IsMinimized(top) &&
+				//IsChildOfModalSubTree(top) &&
+				(!pRoot || g_pIVgui->HasParent(top, pRoot )) )
 			{
-				bool bIsVisible = top->IsVisible();
-				VPanel *p = top->GetParent();
+				bool bIsVisible = g_pIVgui->IsVisible(top);
+				VPANEL p = g_pIVgui->GetParent(top);
 				// drill down the hierarchy checking that everything is visible
 				while(p && bIsVisible)
 				{
-					if( p->IsVisible()==false)
+					if(g_pIVgui->IsVisible(p)==false)
 					{
 						bIsVisible = false;
 						break;
 					}
-					p=p->GetParent();
+					p= g_pIVgui->GetParent(p);
 				}
 
-				if ( bIsVisible && !g_pIVgui->IsMinimized( (VPANEL)top ) )
+				if ( bIsVisible && !g_pIVgui->IsMinimized( top ) )
 					break;
 			}
 
@@ -748,7 +748,7 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 	if (top)
 	{
 		// ask the top-level panel for what it considers to be the current focus
-		wantedKeyFocus = (VPanel *)top->Client()->GetCurrentKeyFocus();
+		wantedKeyFocus = g_pIVgui->Client(top)->GetCurrentKeyFocus();
 		if (!wantedKeyFocus)
 		{
 			wantedKeyFocus = top;
@@ -763,7 +763,7 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 
 	// check if we are in modal state, 
 	// and if we are make sure this panel is a child of us.
-	if (!IsChildOfModalPanel((VPANEL)wantedKeyFocus))
+	if (!IsChildOfModalPanel(wantedKeyFocus))
 	{	
 		wantedKeyFocus=NULL;
 	}
@@ -777,13 +777,13 @@ VPanel *CInputSystem::CalculateNewKeyFocus()
 //-----------------------------------------------------------------------------
 void CInputSystem::PanelDeleted(VPANEL vfocus, InputContext_t &context)
 {
-	VPanel *focus = (VPanel *)vfocus;
+	VPANEL focus = vfocus;
 	if (context._keyFocus == focus)
 	{
 		if ( m_nDebugMessages > 0 )
 		{
 			g_pIVgui->DPrintf2( "removing kb focus %s\n", 
-				context._keyFocus ? context._keyFocus->GetName() : "(no name)" );
+				context._keyFocus ? g_pIVgui->GetName(context._keyFocus) : "(no name)" );
 		}
 		context._keyFocus = NULL;
 	}
@@ -862,7 +862,7 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 	}
 
 	bool wantsMouse, isPopup; // =  popup->GetMouseInput();
-	VPanel *panel = (VPanel *)newMouseFocus;
+	VPANEL panel = newMouseFocus;
 
 	InputContext_t *pContext = GetInputContext( m_hContext );
 
@@ -871,11 +871,11 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 	{
 		do 
 		{
-			wantsMouse = panel->IsMouseInputEnabled();
-			isPopup = panel->IsPopup();
-			panel = panel->GetParent();
+			wantsMouse = g_pIVgui->IsMouseInputEnabled(panel);
+			isPopup = g_pIVgui->IsPopup(panel);
+			panel = g_pIVgui->GetParent(panel);
 		}
-		while ( wantsMouse && !isPopup && panel && panel->GetParent() ); // only consider panels that want mouse input
+		while ( wantsMouse && !isPopup && panel && g_pIVgui->GetParent(panel) ); // only consider panels that want mouse input
 	}
 
 	// if this panel doesn't want mouse input don't let it get focus
@@ -884,10 +884,10 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 		return;
 	}
 
-	if ((VPANEL)pContext->_mouseOver != newMouseFocus || (!pContext->_mouseCapture && (VPANEL)pContext->_mouseFocus != newMouseFocus) )
+	if (pContext->_mouseOver != newMouseFocus || (!pContext->_mouseCapture && pContext->_mouseFocus != newMouseFocus) )
 	{
 		pContext->_oldMouseFocus = pContext->_mouseOver;
-		pContext->_mouseOver = (VPanel *)newMouseFocus;
+		pContext->_mouseOver = newMouseFocus;
 
 		//tell the old panel with the mouseFocus that the cursor exited
 		if ( pContext->_oldMouseFocus != NULL )
@@ -895,7 +895,7 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 			// only notify of entry if the mouse is not captured or we're the captured panel
 			if ( !pContext->_mouseCapture || pContext->_oldMouseFocus == pContext->_mouseCapture )
 			{
-				g_pIVgui->PostMessage( (VPANEL)pContext->_oldMouseFocus, new KeyValues( "CursorExited" ), NULL );
+				g_pIVgui->PostMessage( pContext->_oldMouseFocus, new KeyValues( "CursorExited" ), NULL );
 			}
 		}
 
@@ -905,19 +905,19 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 			// only notify of entry if the mouse is not captured or we're the captured panel
 			if ( !pContext->_mouseCapture || pContext->_mouseOver == pContext->_mouseCapture )
 			{
-				g_pIVgui->PostMessage( (VPANEL)pContext->_mouseOver, new KeyValues( "CursorEntered" ), NULL );
+				g_pIVgui->PostMessage( pContext->_mouseOver, new KeyValues( "CursorEntered" ), NULL );
 			}
 		}
 
 		// set where the mouse is currently over
 		// mouse capture overrides destination
-		VPanel *newFocus = pContext->_mouseCapture ? pContext->_mouseCapture : pContext->_mouseOver;
+		VPANEL newFocus = pContext->_mouseCapture ? pContext->_mouseCapture : pContext->_mouseOver;
 
 		if ( m_nDebugMessages > 0 )
 		{
 			g_pIVgui->DPrintf2( "changing mouse focus from %s to %s\n", 
-				pContext->_mouseFocus ? pContext->_mouseFocus->GetName() : "(no name)",
-				newFocus ? newFocus->GetName() : "(no name)" );
+				pContext->_mouseFocus ? g_pIVgui->GetName(pContext->_mouseFocus) : "(no name)",
+				newFocus ? g_pIVgui->GetName(newFocus) : "(no name)" );
 		}
 
 
@@ -944,10 +944,10 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 //			// checks through each popup in order, top to bottom windows
 //			for (int i = g_pIVgui->GetPopupCount() - 1; i >= 0; i--)
 //			{
-//				VPanel *popup = (VPanel *)g_pIVgui->GetPopup(i);
+//				VPanel *popup = g_pIVgui->GetPopup(i);
 //				VPanel *panel = popup;
 //				bool wantsMouse = panel->IsMouseInputEnabled();
-//				bool isVisible = !g_pIVgui->IsMinimized((VPANEL)panel);
+//				bool isVisible = !g_pIVgui->IsMinimized(panel);
 //
 //				while ( isVisible && panel && panel->GetParent() ) // only consider panels that want mouse input
 //				{
@@ -958,26 +958,26 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 //
 //				if ( wantsMouse && isVisible ) 
 //				{
-//					focus = (VPanel *)popup->Client()->IsWithinTraverse(x, y, false);
+//					focus = popup->Client()->IsWithinTraverse(x, y, false);
 //					if (focus)
 //						break;
 //				}
 //			}
 //			if (!focus)
 //			{
-//				focus = (VPanel *)((VPanel *)g_pIVgui->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
+//				focus = (g_pIVgui->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
 //			}
 //		}
 //	}
 //	else
 //	{
-//		focus = (VPanel *)((VPanel *)(pContext->_rootPanel))->Client()->IsWithinTraverse(x, y, false);
+//		focus = ((pContext->_rootPanel))->Client()->IsWithinTraverse(x, y, false);
 //	}
 //
 //
 //	// check if we are in modal state, 
 //	// and if we are make sure this panel is a child of us.
-//	if ( !IsChildOfModalPanel((VPANEL)focus, false ))
+//	if ( !IsChildOfModalPanel(focus, false ))
 //	{	
 //		// should this be _appModalPanel?
 //		focus = NULL;
@@ -995,7 +995,7 @@ void CInputSystem::SetMouseFocus(VPANEL newMouseFocus)
 void CInputSystem::UpdateMouseFocus(int x, int y)
 {
 	// find the panel that has the focus
-	VPanel *focus = NULL; 
+	VPANEL focus = 0; 
 
 	InputContext_t *pContext = GetInputContext( m_hContext );
 
@@ -1006,10 +1006,10 @@ void CInputSystem::UpdateMouseFocus(int x, int y)
 		int c = g_pIVgui->GetPopupCount();
 		for (int i = c - 1; i >= 0; i--)
 		{
-			VPanel *popup = (VPanel *)g_pIVgui->GetPopup(i);
-			VPanel *panel = popup;
+			VPANEL popup = g_pIVgui->GetPopup(i);
+			VPANEL panel = popup;
 
-			if ( pContext->_rootPanel && !popup->HasParent((VPanel*)pContext->_rootPanel) )
+			if ( pContext->_rootPanel && !g_pIVgui->HasParent(popup, pContext->_rootPanel) )
 			{
 				// if we have a root panel, only consider popups that belong to it
 				continue;
@@ -1018,37 +1018,37 @@ void CInputSystem::UpdateMouseFocus(int x, int y)
 			char const *pchName = popup->GetName();
 			NOTE_UNUSED( pchName );
 #endif
-			bool wantsMouse = panel->IsMouseInputEnabled();//&& IsChildOfModalSubTree((VPANEL)panel);
+			bool wantsMouse = g_pIVgui->IsMouseInputEnabled(panel);//&& IsChildOfModalSubTree(panel);
 			if ( !wantsMouse )
 				continue;
 
-			bool isVisible = !g_pIVgui->IsMinimized((VPANEL)panel);
+			bool isVisible = !g_pIVgui->IsMinimized(panel);
 			if ( !isVisible )
 				continue;
 
-			while ( isVisible && panel && panel->GetParent() ) // only consider panels that want mouse input
+			while ( isVisible && panel && g_pIVgui->GetParent(panel) ) // only consider panels that want mouse input
 			{
-				isVisible = panel->IsVisible();
-				panel = panel->GetParent();
+				isVisible = g_pIVgui->IsVisible(panel);
+				panel = g_pIVgui->GetParent(panel);
 			}
 			
 
 			if ( !wantsMouse || !isVisible ) 
 				continue;
 
-			focus = (VPanel *)popup->Client()->IsWithinTraverse(x, y, false);
+			focus = g_pIVgui->Client(popup)->IsWithinTraverse(x, y, false);
 			if (focus)
 				break;
 		}
 		if (!focus)
 		{
-			focus = (VPanel *)((VPanel *)g_pIVgui->GetEmbeddedPanel())->Client()->IsWithinTraverse(x, y, false);
+			focus = g_pIVgui->Client(g_pIVgui->GetEmbeddedPanel())->IsWithinTraverse(x, y, false);
 		}
 	}
 
 	// mouse focus debugging code
 	/*
-	static VPanel *oldFocus = (VPanel *)0x0001;
+	static VPanel *oldFocus = 0x0001;
 	if (oldFocus != focus)
 	{
 		oldFocus = focus;
@@ -1065,13 +1065,13 @@ void CInputSystem::UpdateMouseFocus(int x, int y)
 
 	// check if we are in modal state, 
 	// and if we are make sure this panel is a child of us.
-	if (!IsChildOfModalPanel((VPANEL)focus))
+	if (!IsChildOfModalPanel(focus))
 	{	
 		// should this be _appModalPanel?
 		focus = NULL;
 	}
 
-	SetMouseFocus((VPANEL)focus);
+	SetMouseFocus(focus);
 }
 
 // Passes in a keycode which allows hitting other mouse buttons w/o cancelling capture mode
@@ -1095,7 +1095,7 @@ void CInputSystem::SetMouseCaptureEx(VPANEL panel, MouseCode captureStartMouseCo
 VPANEL CInputSystem::GetMouseCapture() 
 {
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	return (VPANEL)pContext->_mouseCapture;
+	return pContext->_mouseCapture;
 }
 
 //-----------------------------------------------------------------------------
@@ -1119,16 +1119,16 @@ void CInputSystem::SetMouseCapture(VPANEL panel)
 	pContext->m_MouseCaptureStartCode = (MouseCode)-1;
 
 	// send a message if the panel is losing mouse capture
-	if (pContext->_mouseCapture && panel != (VPANEL)pContext->_mouseCapture)
+	if (pContext->_mouseCapture && panel != pContext->_mouseCapture)
 	{
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseCapture, new KeyValues("MouseCaptureLost"), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseCapture, new KeyValues("MouseCaptureLost"), NULL);
 	}
 
 	if (panel == NULL)
 	{
 		if (pContext->_mouseCapture != NULL)
 		{
-			g_pIVgui->EnableMouseCapture((VPANEL)pContext->_mouseCapture, false);
+			g_pIVgui->EnableMouseCapture(pContext->_mouseCapture, false);
 		}
 	}
 	else
@@ -1136,7 +1136,7 @@ void CInputSystem::SetMouseCapture(VPANEL panel)
 		g_pIVgui->EnableMouseCapture(panel, true);
 	}
 
-	pContext->_mouseCapture = (VPanel *)panel;
+	pContext->_mouseCapture = panel;
 }
 
 // returns true if the specified panel is a child of the current modal panel
@@ -1150,7 +1150,7 @@ void CInputSystem::SetMouseCapture(VPANEL panel)
 //	if ( pContext->m_pModalSubTree )
 //	{
 //		// If panel is child of modal subtree, the allow messages to route to it if restrict messages is set
-//		bool isChildOfModal = ((VPanel *)panel)->HasParent(pContext->m_pModalSubTree );
+//		bool isChildOfModal = panel)->HasParent(pContext->m_pModalSubTree );
 //		if ( isChildOfModal )
 //		{
 //			return pContext->m_bRestrictMessagesToModalSubTree;
@@ -1180,7 +1180,7 @@ bool CInputSystem::IsChildOfModalPanel(VPANEL panel, bool checkModalSubTree /*= 
 	// if we are in modal state, make sure this panel is a child of us.
 	if (pContext->_appModalPanel)
 	{	
-		if (!((VPanel *)panel)->HasParent(pContext->_appModalPanel))
+		if (!g_pIVgui->HasParent(panel, pContext->_appModalPanel))
 		{
 			return false;
 		}
@@ -1199,7 +1199,7 @@ bool CInputSystem::IsChildOfModalPanel(VPANEL panel, bool checkModalSubTree /*= 
 //-----------------------------------------------------------------------------
 VPANEL CInputSystem::GetFocus()
 {
-	return (VPANEL)( GetInputContext( m_hContext )->_keyFocus );
+	return ( GetInputContext( m_hContext )->_keyFocus );
 }
 
 //-----------------------------------------------------------------------------
@@ -1207,7 +1207,7 @@ VPANEL CInputSystem::GetFocus()
 //-----------------------------------------------------------------------------
 VPANEL CInputSystem::GetCalculatedFocus()
 {
-	return (VPANEL) CalculateNewKeyFocus();
+	return CalculateNewKeyFocus();
 }
 
 //-----------------------------------------------------------------------------
@@ -1215,12 +1215,12 @@ VPANEL CInputSystem::GetCalculatedFocus()
 //-----------------------------------------------------------------------------
 VPANEL CInputSystem::GetMouseOver()
 {
-	return (VPANEL)( GetInputContext( m_hContext )->_mouseOver );
+	return ( GetInputContext( m_hContext )->_mouseOver );
 }
 
 VPANEL CInputSystem::GetMouseFocus()
 {
-	return (VPANEL)( GetInputContext( m_hContext )->_mouseFocus );
+	return ( GetInputContext( m_hContext )->_mouseFocus );
 }
 
 bool CInputSystem::WasMousePressed( MouseCode code )
@@ -1481,17 +1481,17 @@ void CInputSystem::PostCursorMessage( )
 
 	if ( pContext->_mouseCapture )
 	{
-		if (!IsChildOfModalPanel((VPANEL)pContext->_mouseCapture))
+		if (!IsChildOfModalPanel(pContext->_mouseCapture))
 			return;	
 
 		// the panel with mouse capture gets all messages
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseCapture, new KeyValues("CursorMoved", "xpos", pContext->m_nCursorX, "ypos", pContext->m_nCursorY), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseCapture, new KeyValues("CursorMoved", "xpos", pContext->m_nCursorX, "ypos", pContext->m_nCursorY), NULL);
 	}
 	else if (pContext->_mouseFocus != NULL)
 	{
 		// mouse focus is current from UpdateMouse focus
 		// so the appmodal check has already been made.
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseFocus, new KeyValues("CursorMoved", "xpos", pContext->m_nCursorX, "ypos", pContext->m_nCursorY), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseFocus, new KeyValues("CursorMoved", "xpos", pContext->m_nCursorX, "ypos", pContext->m_nCursorY), NULL);
 	}
 }
 
@@ -1501,8 +1501,8 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 	bool bFilter = false;
 
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	VPanel *pTargetPanel = pContext->_mouseOver;
-	if ( pContext->_mouseCapture && IsChildOfModalPanel((VPANEL)pContext->_mouseCapture))
+	VPANEL pTargetPanel = pContext->_mouseOver;
+	if ( pContext->_mouseCapture && IsChildOfModalPanel(pContext->_mouseCapture))
 	{
 		// The faked mouse wheel button messages are specifically ignored by vgui
 		if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
@@ -1513,7 +1513,7 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 		bool captureLost = code == pContext->m_MouseCaptureStartCode || pContext->m_MouseCaptureStartCode == (MouseCode)-1;
 
 		// the panel with mouse capture gets all messages
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseCapture, new KeyValues("MousePressed", "code", code), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseCapture, new KeyValues("MousePressed", "code", code), NULL);
 		pTargetPanel = pContext->_mouseCapture;
 
 		if ( captureLost )
@@ -1522,7 +1522,7 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 			SetMouseCapture(NULL);
 		}
 	}
-	else if ( (pContext->_mouseFocus != NULL) && IsChildOfModalPanel((VPANEL)pContext->_mouseFocus) )
+	else if ( (pContext->_mouseFocus != NULL) && IsChildOfModalPanel(pContext->_mouseFocus) )
 	{
 		// The faked mouse wheel button messages are specifically ignored by vgui
 		if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
@@ -1531,7 +1531,7 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 		bFilter = true;
 
 		// tell the panel with the mouseFocus that the mouse was presssed
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseFocus, new KeyValues("MousePressed", "code", code), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseFocus, new KeyValues("MousePressed", "code", code), NULL);
 //		g_pIVgui->DPrintf2("MousePressed: (%s, %s)\n", _mouseFocus->GetName(), _mouseFocus->GetClassName());
 		pTargetPanel = pContext->_mouseFocus;
 	}
@@ -1540,7 +1540,7 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 	//	VPanel *p = GetMouseFocusIgnoringModalSubtree();
 	//	if ( p )
 	//	{
-	//		bool isChildOfModal = IsChildOfModalSubTree( (VPANEL)p );
+	//		bool isChildOfModal = IsChildOfModalSubTree( p );
 	//		bool isUnRestricted = !pContext->m_bRestrictMessagesToModalSubTree;
 
 	//		if ( isUnRestricted != isChildOfModal )
@@ -1559,9 +1559,9 @@ bool CInputSystem::InternalMousePressed(MouseCode code)
 
 	// check if we are in modal state, 
 	// and if we are make sure this panel is a child of us.
-	if ( IsChildOfModalPanel( (VPANEL)pTargetPanel ) )
+	if ( IsChildOfModalPanel( pTargetPanel ) )
 	{	
-		g_pIVgui->SetTopLevelFocus( (VPANEL)pTargetPanel );
+		g_pIVgui->SetTopLevelFocus( pTargetPanel );
 	}
 
 	return bFilter;
@@ -1573,35 +1573,35 @@ bool CInputSystem::InternalMouseDoublePressed(MouseCode code)
 	bool bFilter = false;
 
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	VPanel *pTargetPanel = pContext->_mouseOver;
-	if ( pContext->_mouseCapture && IsChildOfModalPanel((VPANEL)pContext->_mouseCapture))
+	VPANEL pTargetPanel = pContext->_mouseOver;
+	if ( pContext->_mouseCapture && IsChildOfModalPanel(pContext->_mouseCapture))
 	{
 		// The faked mouse wheel button messages are specifically ignored by vgui
 		if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
 			return true;
 
 		// the panel with mouse capture gets all messages
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseCapture, new KeyValues("MouseDoublePressed", "code", code), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseCapture, new KeyValues("MouseDoublePressed", "code", code), NULL);
 		pTargetPanel = pContext->_mouseCapture;
 		bFilter = true;
 	}
-	else if ( (pContext->_mouseFocus != NULL) && IsChildOfModalPanel((VPANEL)pContext->_mouseFocus))
+	else if ( (pContext->_mouseFocus != NULL) && IsChildOfModalPanel(pContext->_mouseFocus))
 	{			
 		// The faked mouse wheel button messages are specifically ignored by vgui
 		if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
 			return true;
 
 		// tell the panel with the mouseFocus that the mouse was double presssed
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseFocus, new KeyValues("MouseDoublePressed", "code", code), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseFocus, new KeyValues("MouseDoublePressed", "code", code), NULL);
 		pTargetPanel = pContext->_mouseFocus;
 		bFilter = true;
 	}
 
 	// check if we are in modal state, 
 	// and if we are make sure this panel is a child of us.
-	if (IsChildOfModalPanel((VPANEL)pTargetPanel))
+	if (IsChildOfModalPanel(pTargetPanel))
 	{	
-		g_pIVgui->SetTopLevelFocus((VPANEL)pTargetPanel);
+		g_pIVgui->SetTopLevelFocus(pTargetPanel);
 	}
 
 	return bFilter;
@@ -1613,24 +1613,24 @@ bool CInputSystem::InternalMouseReleased( MouseCode code )
 	bool bFilter = false;
 
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	if (pContext->_mouseCapture && IsChildOfModalPanel((VPANEL)pContext->_mouseCapture))
+	if (pContext->_mouseCapture && IsChildOfModalPanel(pContext->_mouseCapture))
 	{
 		// The faked mouse wheel button messages are specifically ignored by vgui
 		if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
 			return true;
 
 		// the panel with mouse capture gets all messages
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseCapture, new KeyValues("MouseReleased", "code", code), NULL );
+		g_pIVgui->PostMessage(pContext->_mouseCapture, new KeyValues("MouseReleased", "code", code), NULL );
 		bFilter = true;
 	}
-	else if ((pContext->_mouseFocus != NULL) && IsChildOfModalPanel((VPANEL)pContext->_mouseFocus))
+	else if ((pContext->_mouseFocus != NULL) && IsChildOfModalPanel(pContext->_mouseFocus))
 	{
 		// The faked mouse wheel button messages are specifically ignored by vgui
 		if ( code == MOUSE_WHEEL_DOWN || code == MOUSE_WHEEL_UP )
 			return true;
 
 		//tell the panel with the mouseFocus that the mouse was release
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseFocus, new KeyValues("MouseReleased", "code", code), NULL );
+		g_pIVgui->PostMessage(pContext->_mouseFocus, new KeyValues("MouseReleased", "code", code), NULL );
 		bFilter = true;
 	}
 
@@ -1643,10 +1643,10 @@ bool CInputSystem::InternalMouseWheeled(int delta)
 	bool bFilter = false;
 
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	if ((pContext->_mouseFocus != NULL) && IsChildOfModalPanel((VPANEL)pContext->_mouseFocus))
+	if ((pContext->_mouseFocus != NULL) && IsChildOfModalPanel(pContext->_mouseFocus))
 	{
 		// the mouseWheel works with the mouseFocus, not the keyFocus
-		g_pIVgui->PostMessage((VPANEL)pContext->_mouseFocus, new KeyValues("MouseWheeled", "delta", delta), NULL);
+		g_pIVgui->PostMessage(pContext->_mouseFocus, new KeyValues("MouseWheeled", "delta", delta), NULL);
 		bFilter = true;
 	}
 	return bFilter;
@@ -1796,13 +1796,13 @@ bool CInputSystem::InternalKeyCodeReleased( KeyCode code )
 bool CInputSystem::PostKeyMessage(KeyValues *message)
 {
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	if( (pContext->_keyFocus!= NULL) && IsChildOfModalPanel((VPANEL)pContext->_keyFocus))
+	if( (pContext->_keyFocus!= NULL) && IsChildOfModalPanel(pContext->_keyFocus))
 	{
 #ifdef _X360
-		g_pIVgui->PostMessage((VPANEL) MESSAGE_CURRENT_KEYFOCUS, message, NULL );
+		g_pIVgui->PostMessage( MESSAGE_CURRENT_KEYFOCUS, message, NULL );
 #else
 		//tell the current focused panel that a key was released
-		g_pIVgui->PostMessage((VPANEL)pContext->_keyFocus, message, NULL );
+		g_pIVgui->PostMessage(pContext->_keyFocus, message, NULL );
 #endif
 		return true;
 	}
@@ -1814,13 +1814,13 @@ bool CInputSystem::PostKeyMessage(KeyValues *message)
 VPANEL CInputSystem::GetAppModalSurface()
 {
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	return (VPANEL)pContext->_appModalPanel;
+	return pContext->_appModalPanel;
 }
 
 void CInputSystem::SetAppModalSurface(VPANEL panel)
 {
 	InputContext_t *pContext = GetInputContext( m_hContext );
-	pContext->_appModalPanel = (VPanel *)panel;
+	pContext->_appModalPanel = panel;
 }
 
 
@@ -3070,7 +3070,7 @@ void CInputSystem::RegisterKeyCodeUnhandledListener( VPANEL panel )
 	if ( !pContext )
 		return;
 
-	VPanel *listener = (VPanel *)panel;
+	VPANEL listener = panel;
 
 	if ( pContext->m_KeyCodeUnhandledListeners.Find( listener ) == pContext->m_KeyCodeUnhandledListeners.InvalidIndex() )
 	{
@@ -3087,7 +3087,7 @@ void CInputSystem::UnregisterKeyCodeUnhandledListener( VPANEL panel )
 	if ( !pContext )
 		return;
 
-	VPanel *listener = (VPanel *)panel;
+	VPANEL listener = panel;
 
 	pContext->m_KeyCodeUnhandledListeners.FindAndRemove( listener );
 }
@@ -3103,8 +3103,8 @@ void CInputSystem::OnKeyCodeUnhandled( int keyCode )
 	int c = pContext->m_KeyCodeUnhandledListeners.Count();
 	for ( int i = 0; i < c; ++i )
 	{
-		VPanel *listener = pContext->m_KeyCodeUnhandledListeners[ i ];
-		g_pIVgui->PostMessage((VPANEL)listener, new KeyValues( "KeyCodeUnhandled", "code", keyCode ), NULL );
+		VPANEL listener = pContext->m_KeyCodeUnhandledListeners[ i ];
+		g_pIVgui->PostMessage(listener, new KeyValues( "KeyCodeUnhandled", "code", keyCode ), NULL );
 	}
 }
 
@@ -3116,7 +3116,7 @@ void CInputSystem::OnKeyCodeUnhandled( int keyCode )
 //
 //	//tell the current focused panel that a key was released
 //	KeyValues *kv = new KeyValues( "ModalSubTree", "state", state ? 1 : 0 );
-//	g_pIVgui->PostMessage( (VPANEL)pContext->m_pModalSubTree, kv, NULL );
+//	g_pIVgui->PostMessage( pContext->m_pModalSubTree, kv, NULL );
 //}
 
 // Assumes subTree is a child panel of the root panel for the vgui contect
@@ -3133,7 +3133,7 @@ void CInputSystem::OnKeyCodeUnhandled( int keyCode )
 //		return;
 //
 //	if ( pContext->m_pModalSubTree && 
-//		pContext->m_pModalSubTree != (VPanel *)subTree )
+//		pContext->m_pModalSubTree != subTree )
 //	{
 //		ReleaseModalSubTree();
 //	}
@@ -3141,8 +3141,8 @@ void CInputSystem::OnKeyCodeUnhandled( int keyCode )
 //	if ( !subTree )
 //		return;
 //
-//	pContext->m_pModalSubTree = (VPanel *)subTree;
-//	pContext->m_pUnhandledMouseClickListener = (VPanel *)unhandledMouseClickListener;
+//	pContext->m_pModalSubTree = subTree;
+//	pContext->m_pUnhandledMouseClickListener = )unhandledMouseClickListener;
 //	pContext->m_bRestrictMessagesToModalSubTree = restrictMessagesToSubTree;
 //
 //	PostModalSubTreeMessage( pContext->m_pModalSubTree, true );
@@ -3171,7 +3171,7 @@ void CInputSystem::OnKeyCodeUnhandled( int keyCode )
 //	if ( !pContext )
 //		return 0;
 //
-//	return (VPANEL)pContext->m_pModalSubTree;
+//	return pContext->m_pModalSubTree;
 //}
 
 // These toggle whether the modal subtree is exclusively receiving messages or conversely whether it's being excluded from receiving messages

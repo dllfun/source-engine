@@ -727,7 +727,7 @@ private:
 
 	struct Tick_t
 	{
-		VPanel	*panel;
+		VPANEL	panel;
 		int		interval;
 		int		nexttick;
 		bool	bMarkDeleted;
@@ -1094,7 +1094,7 @@ void CVGui::RunFrame()
 				t->nexttick = time + t->interval;
 			}
 			
-			t->panel->Client()->OnTick();
+			g_pIVgui->Client(t->panel)->OnTick();
 			tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s - Ticks: %s", __FUNCTION__, t->panel->Client()->GetName() );
 		}
 
@@ -1227,7 +1227,7 @@ void CVGui::PanelCreated(VPanel *panel)
 	Assert( nActualCount < WARN_PANEL_NUMBER );
 #endif // DUMP_PANEL_LIST
 
-	((VPanel *)panel)->SetHPanel( h );
+	panel->SetHPanel( h );
 
 	g_pVGui->AddPanel((VPANEL)panel);
 }
@@ -1251,7 +1251,7 @@ void CVGui::PanelDeleted(VPanel *focus)
 		m_HandleTable.RemoveHandle( h );
 	}
 
-	((VPanel *)focus)->SetHPanel( INVALID_PANEL );
+	focus->SetHPanel( INVALID_PANEL );
 
 	// remove from tick signal dar
 	RemoveTickSignal( (VPANEL)focus );
@@ -1268,7 +1268,7 @@ CVGui::Tick_t* CVGui::CreateNewTick( VPANEL panel, int intervalMilliseconds )
 	for (int i = 0; i < count; i++ )
 	{
 		Tick_t *t = m_TickSignalVec[i];
-		if ( t->panel == (VPanel *)panel )
+		if ( t->panel == panel )
 		{
 			// Go ahead and update intervals
 			t->interval = intervalMilliseconds;
@@ -1283,18 +1283,18 @@ CVGui::Tick_t* CVGui::CreateNewTick( VPANEL panel, int intervalMilliseconds )
 	// Add to list
 	t = new Tick_t;
 
-	t->panel = (VPanel *)panel;
+	t->panel = panel;
 	t->interval = intervalMilliseconds;
 	t->nexttick = g_pSystem->GetTimeMillis() + t->interval;
 	t->bMarkDeleted = false;
 
-	if ( strlen( ((VPanel *)panel)->Client()->GetName() ) > 0 )
+	if ( strlen( g_pIVgui->Client(panel)->GetName() ) > 0 )
 	{
-		strncpy( t->panelname, ((VPanel *)panel)->Client()->GetName(), sizeof( t->panelname ) );
+		strncpy( t->panelname, g_pIVgui->Client(panel)->GetName(), sizeof( t->panelname ) );
 	}
 	else
 	{
-		strncpy( t->panelname, ((VPanel *)panel)->Client()->GetClassName(), sizeof( t->panelname ) );
+		strncpy( t->panelname, g_pIVgui->Client(panel)->GetClassName(), sizeof( t->panelname ) );
 	}
 
 	return t;
@@ -1336,7 +1336,7 @@ void CVGui::AddTickSignalToHead(VPANEL panel, int intervalMilliseconds /*=0*/ )
 //-----------------------------------------------------------------------------
 void CVGui::RemoveTickSignal( VPANEL panel )
 {
-	VPanel *search = (VPanel *)panel;
+	VPANEL search = panel;
 
 	// remove from tick signal dar
 	int count = m_TickSignalVec.Count();
@@ -1595,9 +1595,9 @@ void CVGui::ShutdownMessage(unsigned int shutdownID)
 {
 	// broadcast Shutdown to all the top level windows, and see if any take notice
 	VPANEL panel = g_pVGui->GetEmbeddedPanel();
-	for (int i = 0; i < ((VPanel *)panel)->GetChildCount(); i++)
+	for (int i = 0; i < g_pVGui->GetChildCount(panel); i++)
 	{
-		g_pIVgui->PostMessage((VPANEL)((VPanel *)panel)->GetChild(i), new KeyValues("ShutdownRequest", "id", shutdownID), NULL);
+		g_pIVgui->PostMessage(g_pVGui->GetChild(panel, i), new KeyValues("ShutdownRequest", "id", shutdownID), NULL);
 	}
 
 	// post to the top level window as well
@@ -1828,9 +1828,9 @@ void CVGui::CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon, bool
 	{
 		g_pVGui->SetParent(panel, g_pVGui->GetEmbeddedPanel());
 	}
-	((VPanel*)panel)->SetPopup(true);
-	((VPanel*)panel)->SetKeyBoardInputEnabled(kbInput);
-	((VPanel*)panel)->SetMouseInputEnabled(mouseInput);
+	g_pVGui->SetPopup(panel, true);
+	g_pVGui->SetKeyBoardInputEnabled(panel, kbInput);
+	g_pVGui->SetMouseInputEnabled(panel, mouseInput);
 
 	HPanel p = g_pIVgui->PanelToHandle(panel);
 
@@ -2386,25 +2386,25 @@ void CVGui::CalculateMouseVisible()
 	//{
 		for (i = 0; i < c; i++)
 		{
-			VPanel* pop = (VPanel*)g_pVGui->GetPopup(i);
+			VPANEL pop = g_pVGui->GetPopup(i);
 
-			bool isVisible = pop->IsVisible();
-			VPanel* p = pop->GetParent();
+			bool isVisible = g_pVGui->IsVisible(pop);
+			VPANEL p = g_pVGui->GetParent(pop);
 
 			while (p && isVisible)
 			{
-				if (p->IsVisible() == false)
+				if (g_pVGui->IsVisible(p) == false)
 				{
 					isVisible = false;
 					break;
 				}
-				p = p->GetParent();
+				p = g_pVGui->GetParent(p);
 			}
 
 			if (isVisible)
 			{
-				m_bNeedsMouse = m_bNeedsMouse || pop->IsMouseInputEnabled();
-				m_bNeedsKeyboard = m_bNeedsKeyboard || pop->IsKeyBoardInputEnabled();
+				m_bNeedsMouse = m_bNeedsMouse || g_pVGui->IsMouseInputEnabled(pop);
+				m_bNeedsKeyboard = m_bNeedsKeyboard || g_pVGui->IsKeyBoardInputEnabled(pop);
 
 				// Seen enough!!!
 				if (m_bNeedsMouse && m_bNeedsKeyboard)
@@ -2564,7 +2564,7 @@ void CVGui::EnableWindowsMessages(bool bEnable)
 void CVGui::SetEmbeddedPanel(VPANEL pEmbeddedPanel)
 {
 	m_pEmbeddedPanel = pEmbeddedPanel;
-	((VPanel*)pEmbeddedPanel)->Client()->RequestFocus(0);
+	g_pVGui->Client(pEmbeddedPanel)->RequestFocus(0);
 }
 
 //-----------------------------------------------------------------------------
