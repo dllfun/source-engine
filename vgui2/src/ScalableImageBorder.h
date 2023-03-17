@@ -57,7 +57,7 @@ private:
 
 	backgroundtype_e m_eBackgroundType;
 
-	friend class VPanel;
+	//friend class VPanel;
 
 	int m_iSrcCornerHeight;	// in pixels, how tall is the corner inside the image
 	int m_iSrcCornerWidth; // same for width

@@ -493,7 +493,7 @@ bool InputHandleInputEvent( const InputEvent_t &event )
 		return true;
 
 	case IE_Quit:
-		g_pVGui->Stop();
+		g_VGui.Stop();
 #if defined( USE_SDL )
 		return false; // also let higher layers consume it
 #else
@@ -502,7 +502,7 @@ bool InputHandleInputEvent( const InputEvent_t &event )
 
 	case IE_Close:
 		// FIXME: Change this so we don't stop until 'save' occurs, etc.
-		g_pVGui->Stop();
+		g_VGui.Stop();
 		return true;
 
 	case IE_SetCursor:

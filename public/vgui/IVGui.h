@@ -80,7 +80,7 @@ public:
 	// safe-pointer handle methods
 	//virtual HPanel PanelToHandle(VPANEL panel) = 0;
 	//virtual VPANEL HandleToPanel(HPanel index) = 0;
-	virtual void* HandleToVPanel(VPANEL index) = 0;
+	//virtual void* HandleToVPanel(VPANEL index) = 0;
 	virtual void MarkPanelForDeletion(VPANEL panel) = 0;
 
 	// makes panel receive a 'Tick' message every frame (~50ms, depending on sleep times/framerate)

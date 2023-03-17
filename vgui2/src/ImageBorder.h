@@ -57,7 +57,7 @@ private:
 
 	backgroundtype_e m_eBackgroundType;
 
-	friend class VPanel;
+	//friend class VPanel;
 
 	int m_iTextureID;
 	bool m_bTiled;

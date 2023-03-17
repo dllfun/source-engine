@@ -16,10 +16,6 @@
 #include "tier1/interface.h"
 #include "tier1/utlvector.h"
 
-#ifdef SendMessage
-#undef SendMessage
-#endif
-
 class KeyValues;
 
 namespace vgui

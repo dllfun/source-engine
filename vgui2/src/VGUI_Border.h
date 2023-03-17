@@ -74,7 +74,7 @@ private:
 	side_t _sides[4];	// left, top, right, bottom
 	backgroundtype_e m_eBackgroundType;
 
-	friend class VPanel;
+	//friend class VPanel;
 };
 
 } // namespace vgui

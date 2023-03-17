@@ -30,9 +30,7 @@
 #include "vgui_controls/BuildGroup.h"
 
 // undefine windows function macros that overlap 
-#ifdef PostMessage
-#undef PostMessage
-#endif
+
 
 #ifdef SetCursor
 #undef SetCursor

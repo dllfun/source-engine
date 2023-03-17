@@ -234,7 +234,7 @@ bool CLocalizedStringTable::AddFile( const char *szFileName, const char *pPathID
 		strncpy(fileName, szFileName, offs);
 		fileName[offs] = 0;
 
-		if ( vgui::g_pSystem->CommandLineParamExists("-all_languages") )
+		if ( g_pSystem->CommandLineParamExists("-all_languages") )
 		{
 			m_bUseOnlyLongestLanguageString = true;
 			return AddAllLanguageFiles( fileName );
@@ -252,7 +252,7 @@ bool CLocalizedStringTable::AddFile( const char *szFileName, const char *pPathID
 		bool bValid;
 		if ( IsPC() )
 		{
-			bValid = vgui::g_pSystem->GetRegistryString( "HKEY_CURRENT_USER\\Software\\Valve\\Source\\Language", language, sizeof(language)-1 );
+			bValid = g_pSystem->GetRegistryString( "HKEY_CURRENT_USER\\Software\\Valve\\Source\\Language", language, sizeof(language)-1 );
 		}
 		else
 		{
@@ -834,8 +834,8 @@ void CLocalizedStringTable::AddString(const char *pString, wchar_t *pValue, cons
 
 			// get the width of the string, using just the first font
 			int newWide, oldWide, tall;
-			vgui::g_pSurface->GetTextSize( 1, newValue, newWide, tall );
-			vgui::g_pSurface->GetTextSize( 1, oldValue, oldWide, tall );
+			g_pSurface->GetTextSize( 1, newValue, newWide, tall );
+			g_pSurface->GetTextSize( 1, oldValue, oldWide, tall );
 			
 			// if the new one is shorter, don't let it be added
 			if (newWide < oldWide)

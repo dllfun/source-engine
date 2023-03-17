@@ -406,7 +406,7 @@ HScheme  CSchemeManager::LoadSchemeFromFileEx( VPANEL sizingPanel, const char *f
 			data->ProcessResolutionKeys( "_minmode" );
 		}
 	}
-	if( g_pVGui->GetVRMode() )
+	if( g_VGui.GetVRMode() )
 	{
 		data->ProcessResolutionKeys( "_vrmode" );
 	}
@@ -682,7 +682,7 @@ void CScheme::LoadFonts()
 	// get our language
 	if ( IsPC() )
 	{
-		bValid = vgui::g_pSystem->GetRegistryString( "HKEY_CURRENT_USER\\Software\\Valve\\Source\\Language", language, sizeof( language ) - 1 );
+		bValid = g_pSystem->GetRegistryString( "HKEY_CURRENT_USER\\Software\\Valve\\Source\\Language", language, sizeof( language ) - 1 );
 	}
 	else
 	{
@@ -802,7 +802,7 @@ void CScheme::ReloadFontGlyphs()
 	// get our current resolution
 	if ( m_SizingPanel != 0 )
 	{
-		g_pVGui->GetSize( m_SizingPanel, m_nScreenWide, m_nScreenTall );
+		g_VGui.GetSize( m_SizingPanel, m_nScreenWide, m_nScreenTall );
 	}
 	else
 	{
@@ -1168,7 +1168,7 @@ int CSchemeManager::GetProportionalScaledValueEx( CScheme *pScheme, int normaliz
 	}
 
 	int w, h;
-	g_pVGui->GetSize( sizing, w, h );
+	g_VGui.GetSize( sizing, w, h );
 	return GetProportionalScaledValue_( w, h, normalizedValue );
 }
 
@@ -1181,7 +1181,7 @@ int CSchemeManager::GetProportionalNormalizedValueEx( CScheme *pScheme, int scal
 	}
 
 	int w, h;
-	g_pVGui->GetSize( sizing, w, h );
+	g_VGui.GetSize( sizing, w, h );
 	return GetProportionalNormalizedValue_( w, h, scaledValue );
 }
 
@@ -1502,7 +1502,7 @@ int CScheme::GetMinimumFontHeightForCurrentLanguage()
 	bool bValid;
 	if ( IsPC() )
 	{
-		bValid = vgui::g_pSystem->GetRegistryString( "HKEY_CURRENT_USER\\Software\\Valve\\Source\\Language", language, sizeof(language)-1 );
+		bValid = g_pSystem->GetRegistryString( "HKEY_CURRENT_USER\\Software\\Valve\\Source\\Language", language, sizeof(language)-1 );
 	}
 	else
 	{
