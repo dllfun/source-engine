@@ -40,8 +40,8 @@ namespace vgui
 		virtual SurfacePlat *Plat();
 		virtual void SetPlat(SurfacePlat *pl);
 
-		virtual HPanel GetHPanel() { return _hPanel; } // safe pointer handling
-		virtual void SetHPanel(HPanel hPanel) { _hPanel = hPanel; }
+		virtual VPANEL GetVPANEL() { return _vPanel; } // safe pointer handling
+		virtual void SetVPANEL(VPANEL vPanel) { _vPanel = vPanel; }
 
 		virtual bool IsPopup();
 		virtual void SetPopup(bool state);
@@ -67,15 +67,15 @@ namespace vgui
 		virtual void SetEnabled(bool state);
 		virtual bool IsVisible();
 		virtual bool IsEnabled();
-		virtual void SetParent(VPanel *newParent);
+		virtual void SetParent(VPANEL newParent);
 		virtual int GetChildCount();
-		virtual VPanel *GetChild(int index);
-		virtual VPanel *GetParent();
+		virtual VPANEL GetChild(int index);
+		virtual VPANEL GetParent();
 		virtual void MoveToFront();
 		virtual void MoveToBack();
-		virtual bool HasParent(VPanel *potentialParent);
+		virtual bool HasParent(VPANEL potentialParent);
 
-		virtual CUtlVector< VPanel * > &GetChildren();
+		virtual CUtlVector< VPANEL > &GetChildren();
 
 		// gets names of the object (for debugging purposes)
 		virtual const char *GetName();
@@ -99,20 +99,21 @@ namespace vgui
 		virtual void SetTopmostPopup( bool bEnable );
 
 		// sibling pins
-		virtual void SetSiblingPin(VPanel *newSibling, byte iMyCornerToPin = 0, byte iSiblingCornerToPinTo = 0 );
+		virtual void SetSiblingPin(VPANEL newSibling, byte iMyCornerToPin = 0, byte iSiblingCornerToPinTo = 0 );
 
 	public:
 		virtual void GetInternalAbsPos(int &x, int &y);
 		virtual void TraverseLevel( int val );
 
 	private:
-		Dar<VPanel*> _childDar;
-		VPanel *_parent;
+		VPANEL _vPanel;
+		Dar<VPANEL> _childDar;
+		VPANEL _parent;
 		SurfacePlat	*_plat;	// platform-specific data
-		HPanel _hPanel;
 
 		// our companion Client panel
 		IClientPanel *_clientPanel;
+		//VPANEL _clientPanelVPANEL; // Temp to check if _clientPanel is valid.
 
 		short _pos[2];
 		short _size[2];
@@ -131,13 +132,12 @@ namespace vgui
 		bool _kbInput : 1;
 		bool _isTopmostPopup : 1;
 
-		VPanel  *_pinsibling;
+		VPANEL  _pinsibling;
 		byte	_pinsibling_my_corner;
 		byte	_pinsibling_their_corner;
 
 		int	 m_nMessageContextId;
 		int m_nThinkTraverseLevel;
-		HPanel _clientPanelHandle; // Temp to check if _clientPanel is valid.
 	};
 
 }

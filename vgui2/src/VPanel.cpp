@@ -75,11 +75,12 @@ VPanel::VPanel()
 	_visible = true;
 	_enabled = true;
 	_clientPanel = NULL;
+	//_clientPanelVPANEL = vgui::INVALID_PANEL;
 	_parent = NULL;
 	_plat = NULL;
 	_popup = false;
 	_isTopmostPopup = false;
-	_hPanel = INVALID_PANEL;
+	_vPanel = INVALID_PANEL;
 
 	_mouseInput = true; // by default you want mouse and kb input to this panel
 	_kbInput = true;
@@ -89,7 +90,6 @@ VPanel::VPanel()
 	_pinsibling_their_corner = PIN_TOPLEFT;
 
 	m_nThinkTraverseLevel = 0;
-	_clientPanelHandle = vgui::INVALID_PANEL;
 }
 
 //-----------------------------------------------------------------------------
@@ -120,7 +120,7 @@ void VPanel::TraverseLevel( int val )
 	// Bump up our client panel traverse level.
 	if ( Client() )
 	{
-		VPANEL vp = g_pVGui->HandleToPanel( _clientPanelHandle );
+		VPANEL vp = Client()->GetVPanel();
 		if ( vp == vgui::INVALID_PANEL )
 		{
 			// This is really bad - we have a Client() pointer that is invalid.
@@ -132,7 +132,7 @@ void VPanel::TraverseLevel( int val )
 
 		if ( Client()->GetVPanel() )
 		{
-			VPanel *vpanel = (VPanel *)Client()->GetVPanel();
+			VPanel *vpanel = (VPanel*)g_pVGui->HandleToVPanel(Client()->GetVPanel());
 			vpanel->m_nThinkTraverseLevel += vpanel->m_nThinkTraverseLevel;
 		}
 	}
@@ -142,10 +142,10 @@ void VPanel::TraverseLevel( int val )
 	//  then drops to -1 when we decrement the traverse level.
 #if 0
 	// Bump up our children traverse levels.
-	CUtlVector< VPanel * > &children = GetChildren();
+	CUtlVector< VPANEL > &children = GetChildren();
 	for ( int i = 0; i < children.Count(); ++i )
 	{
-		VPanel *child = children[ i ];
+		VPANEL child = children[ i ];
 		if ( child )
 			child->m_nThinkTraverseLevel = Max( child->m_nThinkTraverseLevel + val, 0 );
 	}
@@ -157,8 +157,11 @@ void VPanel::TraverseLevel( int val )
 //-----------------------------------------------------------------------------
 void VPanel::Init(IClientPanel *attachedClientPanel)
 {
+	if (_vPanel != attachedClientPanel->GetVPanel()) {
+		Error("_vPanel != attachedClientPanel->GetVPanel()");
+	}
 	_clientPanel = attachedClientPanel;
-	_clientPanelHandle = g_pVGui->PanelToHandle( attachedClientPanel ? attachedClientPanel->GetVPanel() : 0 );
+	//_clientPanelVPANEL = g_pVGui->PanelToHandle( attachedClientPanel ? attachedClientPanel->GetVPanel() : 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -173,27 +176,27 @@ void VPanel::Solve()
 	int baseSize[2];
 	GetSize( baseSize[0], baseSize[1] );
 
-	VPanel *parent = GetParent();
+	VPANEL parent = GetParent();
 	if (IsPopup())
 	{
 		// if we're a popup, draw at the highest level
-		parent = (VPanel *)g_pVGui->GetEmbeddedPanel();
+		parent = g_pVGui->GetEmbeddedPanel();
 	}
 
 	int pabs[2];
 	if ( parent )
 	{
-		parent->GetAbsPos(pabs[0], pabs[1]);
+		g_pVGui->GetAbsPos(parent, pabs[0], pabs[1]);
 	}
 
 	if ( _pinsibling )
 	{
-		_pinsibling->Solve();
+		((VPanel*)g_pVGui->HandleToVPanel(_pinsibling))->Solve();
 
 		int sibPos[2];
 		int sibSize[2];
-		_pinsibling->GetInternalAbsPos( sibPos[0], sibPos[1] );
-		_pinsibling->GetSize( sibSize[0], sibSize[1] );
+		((VPanel*)g_pVGui->HandleToVPanel(_pinsibling))->GetInternalAbsPos( sibPos[0], sibPos[1] );
+		((VPanel*)g_pVGui->HandleToVPanel(_pinsibling))->GetSize( sibSize[0], sibSize[1] );
 
 		for ( int i = 0; i < 2; i++ )
 		{
@@ -230,7 +233,7 @@ void VPanel::Solve()
 	int pinset[4] = {0, 0, 0, 0}; 
 	if ( parent )
 	{
-		parent->GetInset( pinset[0], pinset[1], pinset[2], pinset[3] );
+		g_pVGui->GetInset(parent, pinset[0], pinset[1], pinset[2], pinset[3] );
 
 		absX += pabs[0] + pinset[0];
 		absY += pabs[1] + pinset[1];
@@ -252,7 +255,7 @@ void VPanel::Solve()
 	if ( parent && !IsPopup() )
 	{ 
 		int pclip[4];
-		parent->GetClipRect(pclip[0], pclip[1], pclip[2], pclip[3]);
+		g_pVGui->GetClipRect(parent, pclip[0], pclip[1], pclip[2], pclip[3]);
 
 		if (_clipRect[0] < pclip[0])
 		{
@@ -386,13 +389,13 @@ void VPanel::SetVisible(bool state)
 		return;
 
 	// need to tell the surface (in case special window processing needs to occur)
-	vgui::g_pIVgui->SetPanelVisible((VPANEL)this, state);
+	g_pVGui->SetPanelVisible(this->GetVPANEL(), state);
 
 	_visible = state;
 
 	if( IsPopup() )
 	{
-		vgui::g_pIVgui->CalculateMouseVisible();
+		g_pVGui->CalculateMouseVisible();
 	}
 }
 
@@ -476,9 +479,9 @@ void VPanel::GetInset(int &left, int &top, int &right, int &bottom)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void VPanel::SetParent(VPanel *newParent)
+void VPanel::SetParent(VPANEL newParent)
 {
-	if (this == newParent)
+	if (this->GetVPANEL() == newParent)
 		return;
 
 	if (_parent == newParent)
@@ -486,18 +489,18 @@ void VPanel::SetParent(VPanel *newParent)
 
 	if (_parent != NULL)
 	{
-		_parent->_childDar.RemoveElement(this);
+		((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.RemoveElement(this->GetVPANEL());
 		_parent = null;
 	}
 
 	if (newParent != NULL)
 	{
 		_parent = newParent;
-		_parent->_childDar.PutElement(this);
+		((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.PutElement(this->GetVPANEL());
 		SetZPos(_zpos);						// re-sort parent's panel order if necessary
-		if (_parent->Client())
+		if (g_pVGui->Client(_parent))
 		{
-			_parent->Client()->OnChildAdded((VPANEL)this);
+			g_pVGui->Client(_parent)->OnChildAdded(this->GetVPANEL());
 		}
 	}
 }
@@ -513,12 +516,12 @@ int VPanel::GetChildCount()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-VPanel *VPanel::GetChild(int index)
+VPANEL VPanel::GetChild(int index)
 {
 	return _childDar[index];
 }
 
-CUtlVector< VPanel *> &VPanel::GetChildren()
+CUtlVector< VPANEL > &VPanel::GetChildren()
 {
 	return _childDar;
 }
@@ -526,7 +529,7 @@ CUtlVector< VPanel *> &VPanel::GetChildren()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-VPanel *VPanel::GetParent()
+VPANEL VPanel::GetParent()
 {
 	return _parent;
 }
@@ -541,11 +544,11 @@ void VPanel::SetZPos(int z)
 	if (_parent)
 	{
 		// find the child in the list
-		int childCount = _parent->GetChildCount();
+		int childCount = ((VPanel*)g_pVGui->HandleToVPanel(_parent))->GetChildCount();
 		int i;
 		for (i = 0; i < childCount; i++)
 		{
-			if (_parent->GetChild(i) == this)
+			if (((VPanel*)g_pVGui->HandleToVPanel(_parent))->GetChild(i) == this->GetVPANEL())
 				break;
 		}
 
@@ -554,30 +557,30 @@ void VPanel::SetZPos(int z)
 
 		while (1)
 		{
-			VPanel *prevChild = NULL, *nextChild = NULL;
+			VPANEL prevChild = NULL, nextChild = NULL;
 
 			if ( i > 0 )
 			{
-				prevChild = _parent->GetChild( i - 1 );
+				prevChild = ((VPanel*)g_pVGui->HandleToVPanel(_parent))->GetChild( i - 1 );
 			}
 			if ( i <(childCount - 1) )
 			{
-				nextChild = _parent->GetChild( i + 1 );
+				nextChild = ((VPanel*)g_pVGui->HandleToVPanel(_parent))->GetChild( i + 1 );
 			}
 
 			// check either side of the child to see if it should move
-			if ( i > 0 && prevChild && ( prevChild->_zpos > _zpos ) )
+			if ( i > 0 && prevChild && (((VPanel*)g_pVGui->HandleToVPanel(prevChild))->_zpos > _zpos ) )
 			{
 				// swap with the lower
-				_parent->_childDar.SetElementAt(prevChild, i);
-				_parent->_childDar.SetElementAt(this, i - 1);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(prevChild, i);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(this->GetVPANEL(), i - 1);
 				i--;
 			}
-			else if (i < (childCount - 1) && nextChild && ( nextChild->_zpos < _zpos ) )
+			else if (i < (childCount - 1) && nextChild && (((VPanel*)g_pVGui->HandleToVPanel(nextChild))->_zpos < _zpos ) )
 			{
 				// swap with the higher
-				_parent->_childDar.SetElementAt(nextChild, i);
-				_parent->_childDar.SetElementAt(this, i + 1);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(nextChild, i);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(this->GetVPANEL(), i + 1);
 				i++;
 			}
 			else
@@ -601,22 +604,22 @@ int VPanel::GetZPos()
 //-----------------------------------------------------------------------------
 void VPanel::MoveToFront(void)
 {
-	g_pIVgui->MovePopupToFront((VPANEL)this);
+	g_pVGui->MovePopupToFront(this->GetVPANEL());
 
 	if (_parent)
 	{
 		// move this panel to the end of it's parents list
-		_parent->_childDar.MoveElementToEnd(this);
+		((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.MoveElementToEnd(this->GetVPANEL());
 
 		// Validate the Z order
-		int i = _parent->_childDar.GetCount() - 2;
+		int i = ((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.GetCount() - 2;
 		while (i >= 0)
 		{
-			if (_parent->_childDar[i]->_zpos > _zpos)
+			if (((VPanel*)g_pVGui->HandleToVPanel(((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar[i]))->_zpos > _zpos)
 			{
 				// we can't be in front of this; swap positions
-				_parent->_childDar.SetElementAt(_parent->_childDar[i], i + 1);
-				_parent->_childDar.SetElementAt(this, i);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar[i], i + 1);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(this->GetVPANEL(), i);
 
 				// check the next value
 				i--;
@@ -638,18 +641,18 @@ void VPanel::MoveToBack()
 	if (_parent)
 	{
 		// move this panel to the end of it's parents list
-		_parent->_childDar.RemoveElement(this);
-		_parent->_childDar.InsertElementAt(this, 0);
+		((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.RemoveElement(this->GetVPANEL());
+		((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.InsertElementAt(this->GetVPANEL(), 0);
 
 		// Validate the Z order
 		int i = 1;
-		while (i < _parent->_childDar.GetCount())
+		while (i < ((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.GetCount())
 		{
-			if (_parent->_childDar[i]->_zpos < _zpos)
+			if (((VPanel*)g_pVGui->HandleToVPanel(((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar[i]))->_zpos < _zpos)
 			{
 				// we can't be behind this; swap positions
-				_parent->_childDar.SetElementAt(_parent->_childDar[i], i - 1);
-				_parent->_childDar.SetElementAt(this, i);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar[i], i - 1);
+				((VPanel*)g_pVGui->HandleToVPanel(_parent))->_childDar.SetElementAt(this->GetVPANEL(), i);
 
 				// check the next value
 				i++;
@@ -666,14 +669,14 @@ void VPanel::MoveToBack()
 //-----------------------------------------------------------------------------
 // Purpose: Iterates up the hierarchy looking to see if a panel has the specified ancestor
 //-----------------------------------------------------------------------------
-bool VPanel::HasParent(VPanel *potentialParent)
+bool VPanel::HasParent(VPANEL potentialParent)
 {
-	if (this == potentialParent)
+	if (this->GetVPANEL() == potentialParent)
 		return true;
 
 	if (_parent)
 	{
-		return _parent->HasParent(potentialParent);
+		return ((VPanel*)g_pVGui->HandleToVPanel(_parent))->HasParent(potentialParent);
 	}
 
 	return false;
@@ -720,7 +723,7 @@ bool VPanel::IsFullyVisible()
 			return false;
 		}
 
-		panel = panel->_parent;
+		panel = (VPanel*)g_pVGui->HandleToVPanel(panel->_parent);
 	}
 
 	// we're visible all the way up the hierarchy
@@ -775,7 +778,7 @@ bool VPanel::IsMouseInputEnabled()
 //-----------------------------------------------------------------------------
 // Purpose: sibling pins
 //-----------------------------------------------------------------------------
-void VPanel::SetSiblingPin(VPanel *newSibling, byte iMyCornerToPin, byte iSiblingCornerToPinTo )
+void VPanel::SetSiblingPin(VPANEL newSibling, byte iMyCornerToPin, byte iSiblingCornerToPinTo )
 {
 	_pinsibling = newSibling;
 	_pinsibling_my_corner = iMyCornerToPin;

@@ -1482,7 +1482,7 @@ void PropertySheet::OnCurrentDefaultButtonSet( vgui::VPANEL defaultButton )
 	if (GetVParent())
 	{
 		KeyValues *msg = new KeyValues("CurrentDefaultButtonSet");
-		msg->SetInt("button", ivgui()->PanelToHandle( defaultButton ) );
+		msg->SetInt("button", defaultButton );
 		PostMessage(GetVParent(), msg);
 	}
 }
@@ -1496,7 +1496,7 @@ void PropertySheet::OnDefaultButtonSet( VPANEL defaultButton )
 	if (GetVParent())
 	{
 		KeyValues *msg = new KeyValues("DefaultButtonSet");
-		msg->SetInt("button", ivgui()->PanelToHandle( defaultButton ) );
+		msg->SetInt("button", defaultButton );
 		PostMessage(GetVParent(), msg);
 	}
 }

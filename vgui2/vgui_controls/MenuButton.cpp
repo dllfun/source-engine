@@ -105,7 +105,7 @@ void MenuButton::HideMenu(void)
 //-----------------------------------------------------------------------------
 void MenuButton::OnKillFocus( KeyValues *pParams )
 {
-	VPANEL hPanel = (VPANEL)pParams->GetPtr( "newPanel" );
+	VPANEL hPanel = (VPANEL)pParams->GetInt( "newPanel" );
 	if ( m_pMenu && !m_pMenu->HasFocus() && hPanel != m_pMenu->GetVPanel() )
 	{
 		HideMenu();

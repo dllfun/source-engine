@@ -265,7 +265,7 @@ void EditablePanel::OnCurrentDefaultButtonSet( VPANEL defaultButton )
 	if (GetVParent())
 	{
 		KeyValues *msg = new KeyValues("CurrentDefaultButtonSet");
-		msg->SetInt("button", ivgui()->PanelToHandle( defaultButton ) );
+		msg->SetInt("button", defaultButton );
 		PostMessage(GetVParent(), msg);
 	}
 }

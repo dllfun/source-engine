@@ -406,7 +406,7 @@ HScheme  CSchemeManager::LoadSchemeFromFileEx( VPANEL sizingPanel, const char *f
 			data->ProcessResolutionKeys( "_minmode" );
 		}
 	}
-	if( g_pIVgui->GetVRMode() )
+	if( g_pVGui->GetVRMode() )
 	{
 		data->ProcessResolutionKeys( "_vrmode" );
 	}
@@ -802,7 +802,7 @@ void CScheme::ReloadFontGlyphs()
 	// get our current resolution
 	if ( m_SizingPanel != 0 )
 	{
-		g_pIVgui->GetSize( m_SizingPanel, m_nScreenWide, m_nScreenTall );
+		g_pVGui->GetSize( m_SizingPanel, m_nScreenWide, m_nScreenTall );
 	}
 	else
 	{
@@ -1168,7 +1168,7 @@ int CSchemeManager::GetProportionalScaledValueEx( CScheme *pScheme, int normaliz
 	}
 
 	int w, h;
-	g_pIVgui->GetSize( sizing, w, h );
+	g_pVGui->GetSize( sizing, w, h );
 	return GetProportionalScaledValue_( w, h, normalizedValue );
 }
 
@@ -1181,7 +1181,7 @@ int CSchemeManager::GetProportionalNormalizedValueEx( CScheme *pScheme, int scal
 	}
 
 	int w, h;
-	g_pIVgui->GetSize( sizing, w, h );
+	g_pVGui->GetSize( sizing, w, h );
 	return GetProportionalNormalizedValue_( w, h, scaledValue );
 }
 

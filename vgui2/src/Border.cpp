@@ -167,7 +167,7 @@ void Border::Paint(VPANEL panel)
 {
 	// get panel size
 	int wide, tall;
-	g_pIVgui->GetSize(panel, wide, tall);//(panel)
+	g_pVGui->GetSize(panel, wide, tall);//(panel)
 	Paint(0, 0, wide, tall, -1, 0, 0);
 }
 

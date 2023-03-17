@@ -70,8 +70,8 @@ typedef unsigned long HScheme;
 // Both -1 and 0 are used for invalid textures. Be careful.
 typedef unsigned long HTexture;
 typedef unsigned long HCursor;
-typedef unsigned long HPanel;
-const HPanel INVALID_PANEL = (HPanel)-1;
+//typedef unsigned long HPanel;
+const unsigned long INVALID_PANEL = 0;
 typedef unsigned long HFont;
 const HFont INVALID_FONT = 0; // the value of an invalid font handle
 }

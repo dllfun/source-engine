@@ -78,8 +78,8 @@ struct MessageItem_t
 	KeyValues *_params; // message data
 						// _params->GetName() is the message name
 
-	HPanel _messageTo;	// the panel this message is to be sent to
-	HPanel _from;		// the panel this message is from (if any)
+	VPANEL _messageTo;	// the panel this message is to be sent to
+	VPANEL _from;		// the panel this message is from (if any)
 	float _arrivalTime;	// time at which the message should be passed on to the recipient
 
 	int _messageID;		// incrementing message index
@@ -227,8 +227,8 @@ public:
 	// safe-pointer handle methods
 	virtual VPANEL AllocPanel();
 	virtual void FreePanel(VPANEL ipanel);
-	virtual HPanel PanelToHandle(VPANEL panel);
-	virtual VPANEL HandleToPanel(HPanel index);
+	//virtual HPanel PanelToHandle(VPANEL panel);
+	//virtual VPANEL HandleToPanel(HPanel index);
 	virtual void MarkPanelForDeletion(VPANEL panel);
 
 	virtual void AddTickSignal(VPANEL panel, int intervalMilliseconds = 0);
@@ -274,142 +274,160 @@ public:
 		return m_InDispatcher;
 	}
 
+	void* HandleToVPanel(VPANEL index)
+	{
+		if (!index || !m_HandleTable.IsHandleValid(index))
+		{
+			return NULL;
+		}
+		return m_HandleTable.GetHandle((UtlHandle_t)index);
+	}
+
+	VPanel* InternalHandleToVPanel(VPANEL index)
+	{
+		if (!index || !m_HandleTable.IsHandleValid(index))
+		{
+			return NULL;
+		}
+		return m_HandleTable.GetHandle((UtlHandle_t)index);
+	}
+
 	virtual void Init(VPANEL vguiPanel, IClientPanel* panel)
 	{
-		((VPanel*)vguiPanel)->Init(panel);
+		InternalHandleToVPanel(vguiPanel)->Init(panel);
 	}
 
 	// returns a pointer to the Client panel
 	virtual IClientPanel* Client(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->Client();
+		return InternalHandleToVPanel(vguiPanel)->Client();
 	}
 
 	// methods
 	virtual void SetPos(VPANEL vguiPanel, int x, int y)
 	{
-		((VPanel*)vguiPanel)->SetPos(x, y);
+		InternalHandleToVPanel(vguiPanel)->SetPos(x, y);
 	}
 
 	virtual void GetPos(VPANEL vguiPanel, int& x, int& y)
 	{
-		((VPanel*)vguiPanel)->GetPos(x, y);
+		InternalHandleToVPanel(vguiPanel)->GetPos(x, y);
 	}
 
 	virtual void SetSize(VPANEL vguiPanel, int wide, int tall)
 	{
-		((VPanel*)vguiPanel)->SetSize(wide, tall);
+		InternalHandleToVPanel(vguiPanel)->SetSize(wide, tall);
 	}
 
 	virtual void GetSize(VPANEL vguiPanel, int& wide, int& tall)
 	{
-		((VPanel*)vguiPanel)->GetSize(wide, tall);
+		InternalHandleToVPanel(vguiPanel)->GetSize(wide, tall);
 	}
 
 	virtual void SetMinimumSize(VPANEL vguiPanel, int wide, int tall)
 	{
-		((VPanel*)vguiPanel)->SetMinimumSize(wide, tall);
+		InternalHandleToVPanel(vguiPanel)->SetMinimumSize(wide, tall);
 	}
 
 	virtual void GetMinimumSize(VPANEL vguiPanel, int& wide, int& tall)
 	{
-		((VPanel*)vguiPanel)->GetMinimumSize(wide, tall);
+		InternalHandleToVPanel(vguiPanel)->GetMinimumSize(wide, tall);
 	}
 
 	virtual void SetZPos(VPANEL vguiPanel, int z)
 	{
-		((VPanel*)vguiPanel)->SetZPos(z);
+		InternalHandleToVPanel(vguiPanel)->SetZPos(z);
 	}
 
 	virtual int GetZPos(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->GetZPos();
+		return InternalHandleToVPanel(vguiPanel)->GetZPos();
 	}
 
 	virtual void GetAbsPos(VPANEL vguiPanel, int& x, int& y)
 	{
-		((VPanel*)vguiPanel)->GetAbsPos(x, y);
+		InternalHandleToVPanel(vguiPanel)->GetAbsPos(x, y);
 	}
 
 	virtual void GetClipRect(VPANEL vguiPanel, int& x0, int& y0, int& x1, int& y1)
 	{
-		((VPanel*)vguiPanel)->GetClipRect(x0, y0, x1, y1);
+		InternalHandleToVPanel(vguiPanel)->GetClipRect(x0, y0, x1, y1);
 	}
 
 	virtual void SetInset(VPANEL vguiPanel, int left, int top, int right, int bottom)
 	{
-		((VPanel*)vguiPanel)->SetInset(left, top, right, bottom);
+		InternalHandleToVPanel(vguiPanel)->SetInset(left, top, right, bottom);
 	}
 
 	virtual void GetInset(VPANEL vguiPanel, int& left, int& top, int& right, int& bottom)
 	{
-		((VPanel*)vguiPanel)->GetInset(left, top, right, bottom);
+		InternalHandleToVPanel(vguiPanel)->GetInset(left, top, right, bottom);
 	}
 
 	virtual void SetVisible(VPANEL vguiPanel, bool state)
 	{
-		((VPanel*)vguiPanel)->SetVisible(state);
+		InternalHandleToVPanel(vguiPanel)->SetVisible(state);
 	}
 
 	virtual void SetEnabled(VPANEL vguiPanel, bool state)
 	{
-		((VPanel*)vguiPanel)->SetEnabled(state);
+		InternalHandleToVPanel(vguiPanel)->SetEnabled(state);
 	}
 
 	virtual bool IsVisible(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->IsVisible();
+		return InternalHandleToVPanel(vguiPanel)->IsVisible();
 	}
 
 	virtual bool IsEnabled(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->IsEnabled();
+		return InternalHandleToVPanel(vguiPanel)->IsEnabled();
 	}
 
 	// Used by the drag/drop manager to always draw on top
 	virtual bool IsTopmostPopup(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->IsTopmostPopup();
+		return InternalHandleToVPanel(vguiPanel)->IsTopmostPopup();
 	}
 
 	virtual void SetTopmostPopup(VPANEL vguiPanel, bool state)
 	{
-		return ((VPanel*)vguiPanel)->SetTopmostPopup(state);
+		return InternalHandleToVPanel(vguiPanel)->SetTopmostPopup(state);
 	}
 
 	virtual void SetParent(VPANEL vguiPanel, VPANEL newParent)
 	{
-		((VPanel*)vguiPanel)->SetParent((VPanel*)newParent);
+		InternalHandleToVPanel(vguiPanel)->SetParent(newParent);
 	}
 
 	virtual int GetChildCount(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->GetChildCount();
+		return InternalHandleToVPanel(vguiPanel)->GetChildCount();
 	}
 
 	virtual VPANEL GetChild(VPANEL vguiPanel, int index)
 	{
-		return (VPANEL)((VPanel*)vguiPanel)->GetChild(index);
+		return InternalHandleToVPanel(vguiPanel)->GetChild(index);
 	}
 
 	virtual CUtlVector< VPANEL >& GetChildren(VPANEL vguiPanel)
 	{
-		return (CUtlVector< VPANEL > &)((VPanel*)vguiPanel)->GetChildren();
+		return InternalHandleToVPanel(vguiPanel)->GetChildren();
 	}
 
 	virtual VPANEL GetParent(VPANEL vguiPanel)
 	{
-		return (VPANEL)((VPanel*)vguiPanel)->GetParent();
+		return InternalHandleToVPanel(vguiPanel)->GetParent();
 	}
 
 	virtual void MoveToFront(VPANEL vguiPanel)
 	{
-		((VPanel*)vguiPanel)->MoveToFront();
+		InternalHandleToVPanel(vguiPanel)->MoveToFront();
 	}
 
 	virtual void MoveToBack(VPANEL vguiPanel)
 	{
-		((VPanel*)vguiPanel)->MoveToBack();
+		InternalHandleToVPanel(vguiPanel)->MoveToBack();
 	}
 
 	virtual bool HasParent(VPANEL vguiPanel, VPANEL potentialParent)
@@ -417,54 +435,54 @@ public:
 		if (!vguiPanel)
 			return false;
 
-		return ((VPanel*)vguiPanel)->HasParent((VPanel*)potentialParent);
+		return InternalHandleToVPanel(vguiPanel)->HasParent(potentialParent);
 	}
 
 	virtual bool IsPopup(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->IsPopup();
+		return InternalHandleToVPanel(vguiPanel)->IsPopup();
 	}
 
 	virtual void SetPopup(VPANEL vguiPanel, bool state)
 	{
-		((VPanel*)vguiPanel)->SetPopup(state);
+		InternalHandleToVPanel(vguiPanel)->SetPopup(state);
 	}
 
 	virtual bool IsFullyVisible(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->IsFullyVisible();
+		return InternalHandleToVPanel(vguiPanel)->IsFullyVisible();
 	}
 
 	// calculates the panels current position within the hierarchy
 	virtual void Solve(VPANEL vguiPanel)
 	{
-		((VPanel*)vguiPanel)->Solve();
+		InternalHandleToVPanel(vguiPanel)->Solve();
 	}
 
 	// used by ISurface to store platform-specific data
 	virtual SurfacePlat* Plat(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->Plat();
+		return InternalHandleToVPanel(vguiPanel)->Plat();
 	}
 
 	virtual void SetPlat(VPANEL vguiPanel, SurfacePlat* Plat)
 	{
-		((VPanel*)vguiPanel)->SetPlat(Plat);
+		InternalHandleToVPanel(vguiPanel)->SetPlat(Plat);
 	}
 
 	virtual const char* GetName(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->GetName();
+		return InternalHandleToVPanel(vguiPanel)->GetName();
 	}
 
 	virtual const char* GetClassName(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->GetClassName();
+		return InternalHandleToVPanel(vguiPanel)->GetClassName();
 	}
 
 	virtual HScheme GetScheme(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->GetScheme();
+		return InternalHandleToVPanel(vguiPanel)->GetScheme();
 	}
 
 	virtual bool IsProportional(VPANEL vguiPanel)
@@ -484,7 +502,7 @@ public:
 
 	virtual void SendMessage(VPANEL vguiPanel, KeyValues* params, VPANEL ifrompanel)
 	{
-		((VPanel*)vguiPanel)->SendMessage(params, ifrompanel);
+		InternalHandleToVPanel(vguiPanel)->SendMessage(params, ifrompanel);
 	}
 
 	virtual void Think(VPANEL vguiPanel)
@@ -565,6 +583,11 @@ public:
 		if (vguiPanel == g_pVGui->GetEmbeddedPanel())
 			return NULL;
 
+		VPanel* panel = (VPanel*)g_pVGui->HandleToVPanel(vguiPanel);
+		if (!panel) {
+			return NULL;
+		}
+
 		// assert that the specified vpanel is from the same module as requesting the cast
 		if (!vguiPanel || V_stricmp(GetModuleName(vguiPanel), moduleName))
 		{
@@ -582,27 +605,27 @@ public:
 
 	virtual void SetKeyBoardInputEnabled(VPANEL vguiPanel, bool state)
 	{
-		((VPanel*)vguiPanel)->SetKeyBoardInputEnabled(state);
+		InternalHandleToVPanel(vguiPanel)->SetKeyBoardInputEnabled(state);
 	}
 
 	virtual void SetMouseInputEnabled(VPANEL vguiPanel, bool state)
 	{
-		((VPanel*)vguiPanel)->SetMouseInputEnabled(state);
+		InternalHandleToVPanel(vguiPanel)->SetMouseInputEnabled(state);
 	}
 
 	virtual bool IsMouseInputEnabled(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->IsMouseInputEnabled();
+		return InternalHandleToVPanel(vguiPanel)->IsMouseInputEnabled();
 	}
 
 	virtual bool IsKeyBoardInputEnabled(VPANEL vguiPanel)
 	{
-		return ((VPanel*)vguiPanel)->IsKeyBoardInputEnabled();
+		return InternalHandleToVPanel(vguiPanel)->IsKeyBoardInputEnabled();
 	}
 
 	virtual void SetSiblingPin(VPANEL vguiPanel, VPANEL newSibling, byte iMyCornerToPin = 0, byte iSiblingCornerToPinTo = 0)
 	{
-		return ((VPanel*)vguiPanel)->SetSiblingPin((VPanel*)newSibling, iMyCornerToPin, iSiblingCornerToPinTo);
+		return InternalHandleToVPanel(vguiPanel)->SetSiblingPin(newSibling, iMyCornerToPin, iSiblingCornerToPinTo);
 	}
 
 	// windows stuff
@@ -740,8 +763,8 @@ private:
 	// Returns the current context
 	Context_t *GetContext( HContext context );
 
-	void PanelCreated(VPanel *panel);
-	void PanelDeleted(VPanel *panel);
+	VPANEL PanelCreated(VPanel *panel);
+	VPanel* PanelDeleted(VPANEL panel);
 	bool DispatchMessages();
 	void DestroyAllContexts( );
 	void ClearMessageQueues();
@@ -782,7 +805,7 @@ private:
 	CUtlPriorityQueue<MessageItem_t> m_DelayedMessageQueue;
 
 	// List of pop-up panels based on the type enum above (draw order vs last clicked)
-	CUtlVector<vgui::HPanel>	m_PopupList;
+	CUtlVector<VPANEL>	m_PopupList;
 
 	class TitleEntry
 	{
@@ -836,10 +859,10 @@ bool IsDispatchingMessageQueue( void )
 	return g_VGui.IsDispatchingMessages();
 }
 
-namespace vgui
-{
-IVGui *g_pIVgui = &g_VGui;
-}
+//namespace vgui
+//{
+//IVGui *g_pVGui = &g_VGui;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -863,6 +886,8 @@ CVGui::CVGui() : m_pEmbeddedPanel(NULL), m_DelayedMessageQueue(0, 4, PriorityQue
 	m_HWnd = NULL;
 	m_bAppDrivesInput = false;
 	m_nLastInputPollCount = 0;
+	UtlHandle_t h = m_HandleTable.AddHandle();
+	m_HandleTable.SetHandle(h, NULL);//0 for INVALID_PANEL
 }
 
 //-----------------------------------------------------------------------------
@@ -873,7 +898,7 @@ CVGui::~CVGui()
 #ifdef _DEBUG
 	int nCount = m_HandleTable.GetHandleCount();
 	int nActualCount = 0;
-	for ( int i = 0; i < nCount; ++i )
+	for ( int i = 1; i < nCount; ++i )
 	{
 		UtlHandle_t h = m_HandleTable.GetHandleFromIndex( i );
 		if ( m_HandleTable.IsHandleValid( h ) )
@@ -895,13 +920,13 @@ CVGui::~CVGui()
 void CVGui::SpewAllActivePanelNames()
 {
 	int nCount = m_HandleTable.GetHandleCount();
-	for ( int i = 0; i < nCount; ++i )
+	for ( int i = 1; i < nCount; ++i )
 	{
 		UtlHandle_t h = m_HandleTable.GetHandleFromIndex( i );
 		if ( m_HandleTable.IsHandleValid( h ) )
 		{
 			VPanel *pPanel = m_HandleTable.GetHandle( h );
-			Msg("\tpanel '%s' of type '%s' leaked\n", ((VPanel*)pPanel)->GetName(), ((VPanel *)pPanel)->GetClassName());
+			Msg("\tpanel '%s' of type '%s' leaked\n", (pPanel)->GetName(), (pPanel)->GetClassName());
 		}
 	}
 }
@@ -1094,7 +1119,7 @@ void CVGui::RunFrame()
 				t->nexttick = time + t->interval;
 			}
 			
-			g_pIVgui->Client(t->panel)->OnTick();
+			g_pVGui->Client(t->panel)->OnTick();
 			tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s - Ticks: %s", __FUNCTION__, t->panel->Client()->GetName() );
 		}
 
@@ -1118,8 +1143,8 @@ void CVGui::RunFrame()
 	{
 		VPROF( "SolveTraverse" );
 		// make sure the hierarchy is up to date
-		g_pIVgui->SolveTraverse(g_pVGui->GetEmbeddedPanel());
-		g_pIVgui->ApplyChanges();
+		g_pVGui->SolveTraverse(g_pVGui->GetEmbeddedPanel());
+		g_pVGui->ApplyChanges();
 #ifdef WIN32
 		Assert( IsX360() || ( IsPC() && _heapchk() == _HEAPOK ) );
 #endif
@@ -1142,8 +1167,8 @@ VPANEL CVGui::AllocPanel()
 #endif
 
 	VPanel *panel = new VPanel;
-	PanelCreated(panel);
-	return (VPANEL)panel;
+	VPANEL h = PanelCreated(panel);
+	return h;
 }
 
 //-----------------------------------------------------------------------------
@@ -1151,8 +1176,10 @@ VPANEL CVGui::AllocPanel()
 //-----------------------------------------------------------------------------
 void CVGui::FreePanel(VPANEL ipanel)
 {
-	PanelDeleted((VPanel *)ipanel);
-	delete (VPanel *)ipanel;
+	VPanel* panel = PanelDeleted(ipanel);
+	if (panel) {
+		delete panel;
+	}
 #ifdef DEBUG
 	m_iDeleteCount--;
 #endif
@@ -1161,39 +1188,43 @@ void CVGui::FreePanel(VPANEL ipanel)
 //-----------------------------------------------------------------------------
 // Purpose: Returns the safe index of the panel
 //-----------------------------------------------------------------------------
-HPanel CVGui::PanelToHandle(VPANEL panel)
-{
-	if (panel)
-		return ((VPanel*)panel)->GetHPanel();
-	return INVALID_PANEL;
-}
+//HPanel CVGui::PanelToHandle(VPANEL panel)
+//{
+//	if (panel)
+//		return panel;// ((VPanel*)panel)->GetVPANEL();
+//	return INVALID_PANEL;
+//}
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns the panel at the specified index
 //-----------------------------------------------------------------------------
-VPANEL CVGui::HandleToPanel(HPanel index)
-{
-	if ( !m_HandleTable.IsHandleValid( index ) )
-	{
-		return NULL;
-	}
-	return (VPANEL)m_HandleTable.GetHandle( (UtlHandle_t)index );
-}
+//VPANEL CVGui::HandleToPanel(HPanel index)
+//{
+//	if (!index || !m_HandleTable.IsHandleValid( index ) )
+//	{
+//		return index;
+//	}
+//	return m_HandleTable.GetHandle( (UtlHandle_t)index )->GetVPANEL();
+//}
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Called whenever a panel is constructed
 //-----------------------------------------------------------------------------
-void CVGui::PanelCreated(VPanel *panel)
+VPANEL CVGui::PanelCreated(VPanel *panel)
 {
 	UtlHandle_t h = m_HandleTable.AddHandle();
 	m_HandleTable.SetHandle( h, panel );
 
+	if (h == 2108) {
+		int aaa = 0;
+	}
+
 #if DUMP_PANEL_LIST
 	int nCount = m_HandleTable.GetHandleCount();
 	int nActualCount = 0;
-	for ( int i = 0; i < nCount; ++i )
+	for ( int i = 1; i < nCount; ++i )
 	{
 		UtlHandle_t h = m_HandleTable.GetHandleFromIndex( i );
 		if ( m_HandleTable.IsHandleValid( h ) )
@@ -1227,34 +1258,40 @@ void CVGui::PanelCreated(VPanel *panel)
 	Assert( nActualCount < WARN_PANEL_NUMBER );
 #endif // DUMP_PANEL_LIST
 
-	panel->SetHPanel( h );
+	panel->SetVPANEL( h );
 
-	g_pVGui->AddPanel((VPANEL)panel);
+	g_pVGui->AddPanel( h );
+	return h;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: instantly stops the app from pointing to the focus'd object
 //			used when an object is being deleted
 //-----------------------------------------------------------------------------
-void CVGui::PanelDeleted(VPanel *focus)
+VPanel* CVGui::PanelDeleted(VPANEL focus)
 {
+	VPanel* panel = NULL;
 	Assert( focus );
-	g_pVGui->ReleasePanel((VPANEL)focus);
-	g_pInput->PanelDeleted((VPANEL)focus);
+	g_pVGui->ReleasePanel(focus);
+	g_pInput->PanelDeleted(focus);
 
 	// remove from safe handle list
-	UtlHandle_t h = ((VPanel *)focus)->GetHPanel();
-
+	UtlHandle_t h = focus;// (focus)->GetVPANEL();
+	if (h == 2108) {
+		int aaa = 0;
+	}
+	Assert(h);
 	Assert( m_HandleTable.IsHandleValid(h) );
 	if ( m_HandleTable.IsHandleValid(h) )
 	{
+		panel = m_HandleTable.GetHandle(h);
+		panel->SetVPANEL(INVALID_PANEL);
 		m_HandleTable.RemoveHandle( h );
 	}
 
-	focus->SetHPanel( INVALID_PANEL );
-
 	// remove from tick signal dar
-	RemoveTickSignal( (VPANEL)focus );
+	RemoveTickSignal( focus );
+	return panel;
 }
 
 //-----------------------------------------------------------------------------
@@ -1288,13 +1325,13 @@ CVGui::Tick_t* CVGui::CreateNewTick( VPANEL panel, int intervalMilliseconds )
 	t->nexttick = g_pSystem->GetTimeMillis() + t->interval;
 	t->bMarkDeleted = false;
 
-	if ( strlen( g_pIVgui->Client(panel)->GetName() ) > 0 )
+	if ( strlen( g_pVGui->Client(panel)->GetName() ) > 0 )
 	{
-		strncpy( t->panelname, g_pIVgui->Client(panel)->GetName(), sizeof( t->panelname ) );
+		strncpy( t->panelname, g_pVGui->Client(panel)->GetName(), sizeof( t->panelname ) );
 	}
 	else
 	{
-		strncpy( t->panelname, g_pIVgui->Client(panel)->GetClassName(), sizeof( t->panelname ) );
+		strncpy( t->panelname, g_pVGui->Client(panel)->GetClassName(), sizeof( t->panelname ) );
 	}
 
 	return t;
@@ -1430,11 +1467,11 @@ bool CVGui::DispatchMessages()
 				{
 					if (!stricmp(messageItem->_params->GetName(), "command"))
 					{
-						g_pIVgui->DPrintf2( "%s Queue dispatching command( %s, %s -- %i )\n", qname, messageItem->_params->GetName(), messageItem->_params->GetString("command"), messageItem->_messageID );
+						g_pVGui->DPrintf2( "%s Queue dispatching command( %s, %s -- %i )\n", qname, messageItem->_params->GetName(), messageItem->_params->GetString("command"), messageItem->_messageID );
 					}
 					else
 					{
-						g_pIVgui->DPrintf2( "%s Queue dispatching( %s -- %i )\n", qname ,messageItem->_params->GetName(), messageItem->_messageID );
+						g_pVGui->DPrintf2( "%s Queue dispatching( %s -- %i )\n", qname ,messageItem->_params->GetName(), messageItem->_messageID );
 					}
 				}
 			}
@@ -1458,17 +1495,17 @@ bool CVGui::DispatchMessages()
 				VPanel *vto = (VPanel *) g_pInput->GetCalculatedFocus();
 				if (vto)
 				{
-					vto->SendMessage(params, g_pIVgui->HandleToPanel(messageItem->_from));
+					vto->SendMessage(params, g_pVGui->HandleToPanel(messageItem->_from));
 				}
 			}
 #endif
 			else
 			{
-				VPanel *vto = (VPanel *)g_pIVgui->HandleToPanel(messageItem->_messageTo);
+				VPanel *vto = (VPanel*)g_pVGui->HandleToVPanel(messageItem->_messageTo);
 				if (vto)
 				{
 					//			Msg("Sending message: %s to %s\n", params ? params->GetName() : "\"\"", vto->GetName() ? vto->GetName() : "\"\"");
-					vto->SendMessage(params, g_pIVgui->HandleToPanel(messageItem->_from));
+					vto->SendMessage(params, messageItem->_from);
 				}
 			}
 
@@ -1557,18 +1594,18 @@ void CVGui::PostMessage(VPANEL target, KeyValues *params, VPANEL from, float del
 	else
 #endif	
 	{
-		messageItem._messageTo = (target != (VPANEL) MESSAGE_CURSOR_POS ) ? g_pIVgui->PanelToHandle(target) : 0xFFFFFFFF;
+		messageItem._messageTo = (target != (VPANEL) MESSAGE_CURSOR_POS ) ? target : 0xFFFFFFFF;
 	}
 	messageItem._params = params;
 	Assert(params->GetName());
-	messageItem._from = g_pIVgui->PanelToHandle(from);
+	messageItem._from = from;
 	messageItem._arrivalTime = 0;
 	messageItem._messageID = m_iCurrentMessageID++;
 
 	/* message debug code
 	//if ( stricmp(messageItem._params->GetName(),"CursorMoved") && stricmp(messageItem._params->GetName(),"KeyFocusTicked"))
 	{
-		g_pIVgui->DPrintf2( "posting( %s -- %i )\n", messageItem._params->GetName(), messageItem._messageID );
+		g_pVGui->DPrintf2( "posting( %s -- %i )\n", messageItem._params->GetName(), messageItem._messageID );
 	}
 	*/
 				
@@ -1597,11 +1634,11 @@ void CVGui::ShutdownMessage(unsigned int shutdownID)
 	VPANEL panel = g_pVGui->GetEmbeddedPanel();
 	for (int i = 0; i < g_pVGui->GetChildCount(panel); i++)
 	{
-		g_pIVgui->PostMessage(g_pVGui->GetChild(panel, i), new KeyValues("ShutdownRequest", "id", shutdownID), NULL);
+		g_pVGui->PostMessage(g_pVGui->GetChild(panel, i), new KeyValues("ShutdownRequest", "id", shutdownID), NULL);
 	}
 
 	// post to the top level window as well
-	g_pIVgui->PostMessage(panel, new KeyValues("ShutdownRequest", "id", shutdownID), NULL);
+	g_pVGui->PostMessage(panel, new KeyValues("ShutdownRequest", "id", shutdownID), NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -1832,7 +1869,7 @@ void CVGui::CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon, bool
 	g_pVGui->SetKeyBoardInputEnabled(panel, kbInput);
 	g_pVGui->SetMouseInputEnabled(panel, mouseInput);
 
-	HPanel p = g_pIVgui->PanelToHandle(panel);
+	VPANEL p = panel;
 
 	if (m_PopupList.Find(p) == m_PopupList.InvalidIndex())
 	{
@@ -1846,7 +1883,7 @@ void CVGui::CreatePopup(VPANEL panel, bool minimized, bool showTaskbarIcon, bool
 
 void CVGui::MovePopupToFront(VPANEL panel)
 {
-	HPanel p = g_pIVgui->PanelToHandle(panel);
+	VPANEL p = panel;
 
 	int index = m_PopupList.Find(p);
 	if (index == m_PopupList.InvalidIndex())
@@ -1857,7 +1894,7 @@ void CVGui::MovePopupToFront(VPANEL panel)
 
 	if (g_bSpewFocus)
 	{
-		char const* pName = g_pIVgui->GetName(panel);
+		char const* pName = g_pVGui->GetName(panel);
 		Msg("%s moved to front\n", pName ? pName : "(no name)");
 	}
 
@@ -1866,7 +1903,7 @@ void CVGui::MovePopupToFront(VPANEL panel)
 	{
 		if (!g_pVGui->HasParent(panel, g_pInput->GetAppModalSurface()))
 		{
-			HPanel p = g_pIVgui->PanelToHandle(g_pInput->GetAppModalSurface());
+			VPANEL p = g_pInput->GetAppModalSurface();
 			index = m_PopupList.Find(p);
 			if (index != m_PopupList.InvalidIndex())
 			{
@@ -1876,12 +1913,12 @@ void CVGui::MovePopupToFront(VPANEL panel)
 		}
 	}
 
-	g_pIVgui->PostMessage(panel, new KeyValues("OnMovedPopupToFront"), NULL);
+	g_pVGui->PostMessage(panel, new KeyValues("OnMovedPopupToFront"), NULL);
 }
 
 void CVGui::MovePopupToBack(VPANEL panel)
 {
-	HPanel p = g_pVGui->PanelToHandle(panel);
+	VPANEL p = panel;
 
 	int index = m_PopupList.Find(p);
 	if (index == m_PopupList.InvalidIndex())
@@ -1916,9 +1953,9 @@ int CVGui::GetPopupCount()
 
 VPANEL CVGui::GetPopup(int index)
 {
-	HPanel p = m_PopupList[index];
-	VPANEL panel = g_pVGui->HandleToPanel(p);
-	return panel;
+	VPANEL p = m_PopupList[index];
+	//VPANEL panel = g_pVGui->HandleToPanel(p);
+	return p;
 }
 
 void CVGui::ResetPopupList()
@@ -1928,7 +1965,7 @@ void CVGui::ResetPopupList()
 
 void CVGui::AddPopup(VPANEL panel)
 {
-	HPanel p = g_pVGui->PanelToHandle(panel);
+	VPANEL p = panel;
 
 	if (m_PopupList.Find(p) == m_PopupList.InvalidIndex())
 	{
@@ -2159,20 +2196,20 @@ void CVGui::SolveTraverse(VPANEL panel, bool forceApplySchemeSettings)
 //-----------------------------------------------------------------------------
 void CVGui::InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSettings)
 {
-	VPanel* RESTRICT vp = (VPanel*)panel;
+	VPanel* RESTRICT vp = InternalHandleToVPanel(panel);
 
 	vp->TraverseLevel(1);
 	tmZone(TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName());
 
-	CUtlVector< VPanel* >& children = vp->GetChildren();
+	CUtlVector< VPANEL >& children = vp->GetChildren();
 
 	// apply to the children...
 	for (int i = 0; i < children.Count(); ++i)
 	{
-		VPanel* child = children[i];
-		if (forceApplySchemeSettings || child->IsVisible())
+		VPANEL child = children[i];
+		if (forceApplySchemeSettings || g_pVGui->IsVisible(child))
 		{
-			InternalSchemeSettingsTraverse((VPANEL)child, forceApplySchemeSettings);
+			InternalSchemeSettingsTraverse(child, forceApplySchemeSettings);
 		}
 	}
 	// and then the parent
@@ -2188,7 +2225,7 @@ void CVGui::InternalSchemeSettingsTraverse(VPANEL panel, bool forceApplySchemeSe
 //-----------------------------------------------------------------------------
 void CVGui::InternalThinkTraverse(VPANEL panel)
 {
-	VPanel* RESTRICT vp = (VPanel*)panel;
+	VPanel* RESTRICT vp = InternalHandleToVPanel(panel);
 
 	vp->TraverseLevel(1);
 	tmZone(TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName());
@@ -2196,16 +2233,16 @@ void CVGui::InternalThinkTraverse(VPANEL panel)
 	// think the parent
 	vp->Client()->Think();
 
-	CUtlVector< VPanel* >& children = vp->GetChildren();
+	CUtlVector< VPANEL >& children = vp->GetChildren();
 
 	// WARNING: Some of the think functions add/remove children, so make sure we
 	//  explicitly check for children.Count().
 	for (int i = 0; i < children.Count(); ++i)
 	{
-		VPanel* child = children[i];
-		if (child->IsVisible())
+		VPANEL child = children[i];
+		if (g_pVGui->IsVisible(child))
 		{
-			InternalThinkTraverse((VPANEL)child);
+			InternalThinkTraverse(child);
 		}
 	}
 
@@ -2214,7 +2251,7 @@ void CVGui::InternalThinkTraverse(VPANEL panel)
 
 void CVGui::InternalSolveTraverse(VPANEL panel)
 {
-	VPanel * RESTRICT vp = (VPanel *)panel;
+	VPanel * RESTRICT vp = InternalHandleToVPanel(panel);
 
 	vp->TraverseLevel( 1 );
 	tmZone( TELEMETRY_LEVEL1, TMZF_NONE, "%s - %s", __FUNCTION__, vp->GetName() );
@@ -2222,16 +2259,16 @@ void CVGui::InternalSolveTraverse(VPANEL panel)
 	// solve the parent
 	vp->Solve();
 	
-	CUtlVector< VPanel * > &children = vp->GetChildren();
+	CUtlVector< VPANEL > &children = vp->GetChildren();
 
 	// WARNING: Some of the think functions add/remove children, so make sure we
 	//  explicitly check for children.Count().
 	for ( int i = 0; i < children.Count(); ++i )
 	{
-		VPanel *child = children[ i ];
-		if (child->IsVisible())
+		VPANEL child = children[ i ];
+		if (g_pVGui->IsVisible(child))
 		{
-			InternalSolveTraverse( (VPANEL)child );
+			InternalSolveTraverse( child );
 		}
 	}
 

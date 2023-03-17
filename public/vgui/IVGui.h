@@ -36,7 +36,7 @@ class IClientPanel;
 //!! must be removed
 class Panel;
 // safe handle to a panel - can be converted to and from a VPANEL
-typedef unsigned long HPanel;
+//typedef unsigned long HPanel;
 typedef int HContext;
 
 enum
@@ -45,7 +45,7 @@ enum
 };
 
 // safe handle to a panel - can be converted to and from a VPANEL
-typedef unsigned long HPanel;
+//typedef unsigned long HPanel;
 
 //-----------------------------------------------------------------------------
 // Purpose: Interface to core vgui components
@@ -78,8 +78,9 @@ public:
 	virtual void SpewAllActivePanelNames() = 0;
 	
 	// safe-pointer handle methods
-	virtual HPanel PanelToHandle(VPANEL panel) = 0;
-	virtual VPANEL HandleToPanel(HPanel index) = 0;
+	//virtual HPanel PanelToHandle(VPANEL panel) = 0;
+	//virtual VPANEL HandleToPanel(HPanel index) = 0;
+	virtual void* HandleToVPanel(VPANEL index) = 0;
 	virtual void MarkPanelForDeletion(VPANEL panel) = 0;
 
 	// makes panel receive a 'Tick' message every frame (~50ms, depending on sleep times/framerate)

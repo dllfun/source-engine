@@ -31,7 +31,7 @@
 #include <vgui_controls/PHandle.h>
 #include <vgui_controls/Controls.h>
 #include "vgui_controls/Menu.h"
-#include "vgui_controls/MenuItem.h"
+#include "vgui_controls/MenuItem.h" 
 
 #include "UtlSortVector.h"
 
@@ -41,6 +41,7 @@
 #include "filesystem.h"
 #include "tier0/icommandline.h"
 #include "tier0/minidump.h"
+
 
 #include "tier0/vprof.h"
 
@@ -3576,7 +3577,7 @@ void Panel::RequestFocus(int direction)
 //-----------------------------------------------------------------------------
 void Panel::OnRequestFocus(VPANEL subFocus, VPANEL defaultPanel)
 {
-	CallParentFunction(new KeyValues("OnRequestFocus", "subFocus", ivgui()->PanelToHandle( subFocus ), "defaultPanel", ivgui()->PanelToHandle( defaultPanel )));
+	CallParentFunction(new KeyValues("OnRequestFocus", "subFocus",  subFocus , "defaultPanel",  defaultPanel ));
 }
 
 //-----------------------------------------------------------------------------
@@ -3645,7 +3646,7 @@ void Panel::OnMouseCaptureLost()
 //-----------------------------------------------------------------------------
 void Panel::AddActionSignalTarget(Panel *messageTarget)
 {
-	HPanel target = ivgui()->PanelToHandle(messageTarget->GetVPanel());
+	VPANEL target = messageTarget->GetVPanel();
 	if (!_actionSignalTargetDar.HasElement(target))
 	{
 		_actionSignalTargetDar.AddElement(target);
@@ -3657,7 +3658,7 @@ void Panel::AddActionSignalTarget(Panel *messageTarget)
 //-----------------------------------------------------------------------------
 void Panel::AddActionSignalTarget(VPANEL messageTarget)
 {
-	HPanel target = ivgui()->PanelToHandle(messageTarget);
+	VPANEL target = messageTarget;
 	if (!_actionSignalTargetDar.HasElement(target))
 	{
 		_actionSignalTargetDar.AddElement(target);
@@ -3669,7 +3670,7 @@ void Panel::AddActionSignalTarget(VPANEL messageTarget)
 //-----------------------------------------------------------------------------
 void Panel::RemoveActionSignalTarget(Panel *oldTarget)
 {
-	_actionSignalTargetDar.RemoveElement(ivgui()->PanelToHandle(oldTarget->GetVPanel()));
+	_actionSignalTargetDar.RemoveElement(oldTarget->GetVPanel());
 }
 
 //-----------------------------------------------------------------------------
@@ -3684,7 +3685,7 @@ void Panel::PostActionSignal( KeyValues *message )
 		int i;
 		for (i = _actionSignalTargetDar.GetCount() - 1; i > 0; i--)
 		{
-			VPANEL panel = ivgui()->HandleToPanel(_actionSignalTargetDar[i]);
+			VPANEL panel = _actionSignalTargetDar[i];
 			if (panel)
 			{
 				ivgui()->PostMessage(panel, message->MakeCopy(), GetVPanel());
@@ -3694,7 +3695,7 @@ void Panel::PostActionSignal( KeyValues *message )
 		// do this so we can save on one MakeCopy() call
 		if (i == 0)
 		{
-			VPANEL panel = ivgui()->HandleToPanel(_actionSignalTargetDar[i]);
+			VPANEL panel = _actionSignalTargetDar[i];
 			if (panel)
 			{
 				ivgui()->PostMessage(panel, message, GetVPanel());
@@ -5033,7 +5034,7 @@ void Panel::OnMessage(const KeyValues *params, VPANEL ifromPanel)
 						case DATATYPE_HANDLE:
 							{
 								typedef void (Panel::*MessageFunc_VPANEL_t)( VPANEL );
-								VPANEL vpanel = ivgui()->HandleToPanel( param1->GetInt() );
+								VPANEL vpanel = param1->GetInt();
 								(this->*((MessageFunc_VPANEL_t)pMap->func))( vpanel );
 							}
 							break;
@@ -5124,20 +5125,20 @@ void Panel::OnMessage(const KeyValues *params, VPANEL ifromPanel)
 					else if ( (DATATYPE_HANDLE == pMap->firstParamType) && (DATATYPE_CONSTCHARPTR == pMap->secondParamType) )
 					{
 						typedef void (Panel::*MessageFunc_HandleConstCharPtr_t)(VPANEL, const char *);
-						VPANEL vp = ivgui()->HandleToPanel( param1->GetInt() );
+						VPANEL vp = param1->GetInt();
 						(this->*((MessageFunc_HandleConstCharPtr_t)pMap->func))( vp, param2->GetString() );
 					}
 					else if ( (DATATYPE_HANDLE == pMap->firstParamType) && (DATATYPE_CONSTWCHARPTR == pMap->secondParamType) )
 					{
 						typedef void (Panel::*MessageFunc_HandleConstCharPtr_t)(VPANEL, const wchar_t *);
-						VPANEL vp = ivgui()->HandleToPanel( param1->GetInt() );
+						VPANEL vp = param1->GetInt();
 						(this->*((MessageFunc_HandleConstCharPtr_t)pMap->func))( vp, param2->GetWString() );
 					}
 					else if ( (DATATYPE_HANDLE == pMap->firstParamType) && (DATATYPE_HANDLE == pMap->secondParamType) )
 					{
 						typedef void (Panel::*MessageFunc_HandleConstCharPtr_t)(VPANEL, VPANEL);
-						VPANEL vp1 = ivgui()->HandleToPanel( param1->GetInt() );
-						VPANEL vp2 = ivgui()->HandleToPanel( param2->GetInt() );
+						VPANEL vp1 = param1->GetInt();
+						VPANEL vp2 = param2->GetInt();
 						(this->*((MessageFunc_HandleConstCharPtr_t)pMap->func))( vp1, vp2 );
 					}
 					else
@@ -5229,13 +5230,13 @@ void Panel::OnOldMessage(KeyValues *params, VPANEL ifromPanel)
 					else if ( (DATATYPE_HANDLE == pMessageMap[i].firstParamType) && (DATATYPE_CONSTCHARPTR ==pMessageMap[i].secondParamType) )
 					{
 						typedef void (Panel::*MessageFunc_HandleConstCharPtr_t)(VPANEL, const char *);
-						VPANEL vp = ivgui()->HandleToPanel( params->GetInt( pMessageMap[i].firstParamName ) );
+						VPANEL vp = params->GetInt( pMessageMap[i].firstParamName );
 						(this->*((MessageFunc_HandleConstCharPtr_t)pMessageMap[i].func))( vp, params->GetString(pMessageMap[i].secondParamName) );
 					}
 					else if ( (DATATYPE_HANDLE == pMessageMap[i].firstParamType) && (DATATYPE_CONSTWCHARPTR == pMessageMap[i].secondParamType) )
 					{
 						typedef void (Panel::*MessageFunc_HandleConstCharPtr_t)(VPANEL, const wchar_t *);
-						VPANEL vp = ivgui()->HandleToPanel( params->GetInt( pMessageMap[i].firstParamName ) );
+						VPANEL vp = params->GetInt( pMessageMap[i].firstParamName );
 						(this->*((MessageFunc_HandleConstCharPtr_t)pMessageMap[i].func))( vp, params->GetWString(pMessageMap[i].secondParamName) );
 					}
 					else
@@ -5281,7 +5282,7 @@ void Panel::OnOldMessage(KeyValues *params, VPANEL ifromPanel)
 					case DATATYPE_HANDLE:
 						{
 							typedef void (Panel::*MessageFunc_Ptr_t)(void *);
-							VPANEL vp = ivgui()->HandleToPanel( params->GetInt( pMessageMap[i].firstParamName ) );
+							VPANEL vp = params->GetInt( pMessageMap[i].firstParamName );
 							Panel *panel = ivgui()->GetPanel( vp, GetModuleName() );
 							(this->*((MessageFunc_Ptr_t)pMessageMap[i].func))( (void *)panel );
 						}
@@ -5525,7 +5526,7 @@ Panel *PHandle::Get() const
 {
 	if (m_iPanelID != INVALID_PANEL)
 	{
-		VPANEL panel = ivgui()->HandleToPanel(m_iPanelID);
+		VPANEL panel = m_iPanelID;
 		if (panel)
 		{
 			Panel *vguiPanel = ivgui()->GetPanel(panel, GetControlsModuleName());
@@ -5542,7 +5543,7 @@ Panel *PHandle::Set(Panel *pent)
 {
 	if (pent)
 	{
-		m_iPanelID = ivgui()->PanelToHandle(pent->GetVPanel());
+		m_iPanelID = pent->GetVPanel();
 	}
 	else
 	{
@@ -5551,7 +5552,7 @@ Panel *PHandle::Set(Panel *pent)
 	return pent; 
 }
 
-Panel *PHandle::Set( HPanel hPanel )
+Panel *PHandle::Set( VPANEL hPanel )
 {
 	m_iPanelID = hPanel;
 	return Get();
@@ -5567,7 +5568,7 @@ VPANEL VPanelHandle::Get()
 	{
         if (ivgui())
         {
-		    return ivgui()->HandleToPanel(m_iPanelID);
+		    return m_iPanelID;
         }
 	}
 	return NULL;
@@ -5580,7 +5581,7 @@ VPANEL VPanelHandle::Set(VPANEL pent)
 {
 	if (pent)
 	{
-		m_iPanelID = ivgui()->PanelToHandle(pent);
+		m_iPanelID = pent;
 	}
 	else
 	{
@@ -7729,10 +7730,10 @@ void Panel::SetSkipChildDuringPainting( Panel *child )
 	m_SkipChild = child;
 }
 
-HPanel Panel::ToHandle() const
-{
-	return ivgui()->PanelToHandle( _vpanel );
-}
+//HPanel Panel::ToHandle() const
+//{
+//	return ivgui()->PanelToHandle( _vpanel );
+//}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

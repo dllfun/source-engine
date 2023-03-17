@@ -35,7 +35,7 @@ extern class IMatSystemSurface *g_pSurface;
 extern class ISystem *g_pSystem;
 
 // <vgui/IVGui.h> header
-extern class IVGui *g_pIVgui;
+//extern class IVGui *g_pVGui;
 
 // <vgui/IPanel.h> header
 //extern class IPanel *g_pIPanel;

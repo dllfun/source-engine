@@ -613,7 +613,7 @@ void Button::SetAsCurrentDefaultButton(int state)
 		{
 			// post a message up notifying our nav group that we're now the default button
 			KeyValues *msg = new KeyValues( "CurrentDefaultButtonSet" );
-			msg->SetInt( "button", ToHandle() );
+			msg->SetInt( "button", GetVPanel() );
 			CallParentFunction( msg );
 		}
 
@@ -635,7 +635,7 @@ void Button::SetAsDefaultButton(int state)
 		{
 			// post a message up notifying our nav group that we're now the default button
 			KeyValues *msg = new KeyValues( "DefaultButtonSet" );
-			msg->SetInt( "button", ToHandle() );
+			msg->SetInt( "button", GetVPanel() );
 			CallParentFunction( msg );
 		}
 

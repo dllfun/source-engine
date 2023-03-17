@@ -29,7 +29,7 @@ public:
 
 	Panel *Get() const;
 	Panel *Set( Panel *pPanel );
-	Panel *Set( HPanel hPanel );
+	Panel *Set( VPANEL hPanel );
 
 	operator Panel *() const				{ return Get(); }
 	Panel * operator ->()					{ return Get(); }
@@ -44,7 +44,7 @@ public:
     }
 
 private:
-	HPanel m_iPanelID;
+	VPANEL m_iPanelID;
 };
 
 //-----------------------------------------------------------------------------
@@ -65,7 +65,7 @@ public:
 	operator bool ()						{ return Get() != 0; }
 
 private:
-	HPanel m_iPanelID;
+	VPANEL m_iPanelID;
 };
 
 //-----------------------------------------------------------------------------
@@ -77,7 +77,7 @@ class DHANDLE : public PHandle
 public:
 	PanelType *Get()					{ return (PanelType *)PHandle::Get(); }
 	PanelType *Set( PanelType *pPanel )	{ return (PanelType *)PHandle::Set(pPanel); }
-	PanelType *Set( HPanel hPanel )		{ return (PanelType *)PHandle::Set(hPanel); }
+	PanelType *Set( VPANEL hPanel )		{ return (PanelType *)PHandle::Set(hPanel); }
 
 	operator PanelType *()						{ return (PanelType *)PHandle::Get(); }
 	PanelType * operator ->()					{ return (PanelType *)PHandle::Get(); }

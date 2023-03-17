@@ -584,9 +584,9 @@ void HTML::OnMouseReleased(MouseCode code)
 			// post the text as a drag drop to the target panel
 			KeyValuesAD kv( "DragDrop" );
 			if ( ivgui()->RequestInfo( input()->GetMouseOver(), kv )
-				&& kv->GetPtr( "AcceptPanel" ) != NULL )
+				&& kv->GetInt( "AcceptPanel" ) != 0 )
 			{
-				VPANEL vpanel = (VPANEL)kv->GetPtr( "AcceptPanel" );
+				VPANEL vpanel = kv->GetInt( "AcceptPanel" );
 				ivgui()->PostMessage( vpanel, new KeyValues( "DragDrop", "text", m_sDragURL.Get() ), GetVPanel() );
 			}
 		}

@@ -163,7 +163,7 @@ public:
 	// returns pointer to Panel's vgui VPanel interface handle
 	virtual VPANEL GetVPanel()  { return _vpanel; }
 	VPANEL GetVPanel() const { return _vpanel; }
-	HPanel ToHandle() const;
+	//HPanel ToHandle() const;
 
 	virtual void Init( int x, int y, int wide, int tall );
 
@@ -856,7 +856,7 @@ private:
 	IBorder			*_border;
 
 	CUtlFlags< unsigned short > _flags;	// see PanelFlags_t
-	Dar<HPanel>		_actionSignalTargetDar;	// the panel to direct notify messages to ("Command", "TextChanged", etc.)
+	Dar<VPANEL>		_actionSignalTargetDar;	// the panel to direct notify messages to ("Command", "TextChanged", etc.)
 
 	CUtlVector<OverridableColorEntry>	m_OverridableColorEntries;
 
