@@ -151,11 +151,11 @@ public:
 	// gets the scheme this panel uses
 	virtual HScheme GetScheme(VPANEL vguiPanel) = 0;
 	// gets whether or not this panel should scale with screen resolution
-	virtual bool IsProportional(VPANEL vguiPanel) = 0;
+	//virtual bool IsProportional(VPANEL vguiPanel) = 0;
 	// returns true if auto-deletion flag is set
-	virtual bool IsAutoDeleteSet(VPANEL vguiPanel) = 0;
+	//virtual bool IsAutoDeleteSet(VPANEL vguiPanel) = 0;
 	// deletes the Panel * associated with the vpanel
-	virtual void DeletePanel(VPANEL vguiPanel) = 0;
+	//virtual void DeletePanel(VPANEL vguiPanel) = 0;
 
 	// input interest
 	virtual void SetKeyBoardInputEnabled(VPANEL vguiPanel, bool state) = 0;

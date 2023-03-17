@@ -32,7 +32,7 @@
 //-----------------------------------------------------------------------------
 IStudioRender *g_pStudioRender = 0;
 //IStudioRender *studiorender = 0;
-IMatSystemSurface *g_pMatSystemSurface = 0;
+vgui::ISurface *g_pMatSystemSurface = 0;
 vgui::IInput *g_pVGuiInput = 0;
 //vgui::ISurface *g_pVGuiSurface = 0;
 //vgui::IPanel *g_pVGuiPanel = 0;
@@ -98,7 +98,7 @@ void ConnectTier3Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
 		}
 		if ( !g_pMatSystemSurface )
 		{
-			g_pMatSystemSurface = ( IMatSystemSurface * )pFactoryList[i]( MAT_SYSTEM_SURFACE_INTERFACE_VERSION, NULL );
+			g_pMatSystemSurface = (vgui::ISurface* )pFactoryList[i]( MAT_SYSTEM_SURFACE_INTERFACE_VERSION, NULL );
 		}
 		if ( !g_pDataCache )
 		{

@@ -782,9 +782,9 @@ Panel::~Panel()
 	while (ivgui()->GetChildCount(GetVPanel()))
 	{
 		VPANEL child = ivgui()->GetChild(GetVPanel(), 0);
-		if (ivgui()->IsAutoDeleteSet(child))
+		if (ivgui()->Client(child)->IsAutoDeleteSet())
 		{
-			ivgui()->DeletePanel(child);
+			ivgui()->Client(child)->DeletePanel();
 		}
 		else
 		{
@@ -1463,7 +1463,7 @@ void Panel::SetParent(VPANEL newParent)
 
 	if (GetVParent() )
 	{
-		if( ivgui()->IsProportional(GetVParent()) )
+		if( ivgui()->Client(GetVParent())->IsProportional() )
 			SetProportional(true);
 
 		if( IsPopup() )

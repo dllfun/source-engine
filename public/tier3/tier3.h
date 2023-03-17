@@ -48,7 +48,7 @@ namespace vgui
 //-----------------------------------------------------------------------------
 extern IStudioRender *g_pStudioRender;
 //extern IStudioRender *studiorender;
-extern IMatSystemSurface *g_pMatSystemSurface;
+extern vgui::ISurface *g_pMatSystemSurface;
 //extern vgui::ISurface *g_pVGuiSurface;
 extern vgui::IInput *g_pVGuiInput;
 extern vgui::IVGui *g_pVGui;

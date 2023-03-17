@@ -60,7 +60,7 @@ inline vgui::ISchemeManager *scheme()
 }
 
 // #include <vgui/ISurface.h>
-inline IMatSystemSurface *surface()
+inline vgui::ISurface *surface()
 {
 	return g_pMatSystemSurface;
 }

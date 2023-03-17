@@ -399,20 +399,20 @@ public:
 		return InternalHandleToVPanel(vguiPanel)->GetScheme();
 	}
 
-	virtual bool IsProportional(VPANEL vguiPanel)
-	{
-		return Client(vguiPanel)->IsProportional();
-	}
+	//virtual bool IsProportional(VPANEL vguiPanel)
+	//{
+	//	return Client(vguiPanel)->IsProportional();
+	//}
 
-	virtual bool IsAutoDeleteSet(VPANEL vguiPanel)
-	{
-		return Client(vguiPanel)->IsAutoDeleteSet();
-	}
+	//virtual bool IsAutoDeleteSet(VPANEL vguiPanel)
+	//{
+	//	return Client(vguiPanel)->IsAutoDeleteSet();
+	//}
 
-	virtual void DeletePanel(VPANEL vguiPanel)
-	{
-		Client(vguiPanel)->DeletePanel();
-	}
+	//virtual void DeletePanel(VPANEL vguiPanel)
+	//{
+	//	Client(vguiPanel)->DeletePanel();
+	//}
 
 	virtual void SendMessage(VPANEL vguiPanel, KeyValues* params, VPANEL ifrompanel)
 	{

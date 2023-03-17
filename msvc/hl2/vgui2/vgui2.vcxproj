@@ -164,6 +164,9 @@
     <ClCompile Include="..\..\..\vguimatsurface\Cursor.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\Input.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\vgui2\src\vgui_internal.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -14,6 +14,7 @@
 
 #include "ienginevgui.h"
 #include "inputsystem/ButtonCode.h"
+#include <vgui/ISurface.h>
 
 #if !defined( _X360 )
 #include "xbox/xboxstubs.h"
@@ -30,7 +31,7 @@ struct InputEvent_t;
 //-----------------------------------------------------------------------------
 // Global singleton interfaces related to VGUI 
 //-----------------------------------------------------------------------------
-extern IMatSystemSurface *g_pMatSystemSurface;
+extern vgui::ISurface *g_pMatSystemSurface;
 
 // enumeration of level loading progress bar spots
 enum LevelLoadingProgress_e

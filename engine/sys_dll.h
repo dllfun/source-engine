@@ -13,6 +13,7 @@
 #endif
 
 #include "interface.h"
+#include <vgui/ISurface.h>
 
 //-----------------------------------------------------------------------------
 // Forward declarations
@@ -49,7 +50,7 @@ extern IHammer *g_pHammer;
 extern IDataCache *g_pDataCache;
 extern IPhysics *g_pPhysics;
 extern IMDLCache *g_pMDLCache;
-extern IMatSystemSurface *g_pMatSystemSurface;
+extern vgui::ISurface *g_pMatSystemSurface;
 extern IInputSystem *g_pInputSystem;
 extern IVideoServices *g_pVideo;
 extern IDedicatedExports *dedicated;

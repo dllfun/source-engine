@@ -21,7 +21,7 @@ extern ConVar cl_forwardspeed;
 extern ConVar cl_upspeed;
 extern ConVar default_fov;
 
-extern IMatSystemSurface *g_pMatSystemSurface;
+extern vgui::ISurface *g_pMatSystemSurface;
 
 #ifdef ANDROID
 #define TOUCH_DEFAULT "1"

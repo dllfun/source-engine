@@ -504,7 +504,7 @@ void CBaseViewport::RemoveAllPanels( void)
 	for ( int i=0; i < m_Panels.Count(); i++ )
 	{
 		vgui::VPANEL vPanel = m_Panels[i]->GetVPanel();
-		vgui::ivgui()->DeletePanel( vPanel );
+		vgui::ivgui()->Client(vPanel)->DeletePanel();
 	}
 #ifndef _XBOX
 	if ( m_pBackGround )

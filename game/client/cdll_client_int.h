@@ -15,6 +15,7 @@
 #include "utllinkedlist.h"
 #include "cdll_int.h"
 #include "eiface.h"
+#include <vgui/ISurface.h>
 
 
 class IVModelRender;
@@ -90,7 +91,7 @@ extern IFileSystem *filesystem;
 extern IStaticPropMgrClient *staticpropmgr;
 extern IShadowMgr *shadowmgr;
 extern IEngineSound *enginesound;
-extern IMatSystemSurface *g_pMatSystemSurface;
+extern vgui::ISurface *g_pMatSystemSurface;
 extern IEngineTrace *enginetrace;
 extern IGameUIFuncs *gameuifuncs;
 extern IGameEventManager2 *gameeventmanager;

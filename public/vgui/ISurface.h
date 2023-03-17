@@ -32,6 +32,10 @@
 
 class Color;
 class ITexture;
+class VMatrix;
+class IMaterial;
+struct InputEvent_t;
+typedef void (*PlaySoundFunc_t)(const char* pFileName);
 
 namespace vgui
 {
@@ -395,7 +399,28 @@ public:
 	//virtual void SetSoftwareCursor( bool bUseSoftwareCursor ) = 0;
 	virtual void PaintSoftwareCursor() = 0;
 
+	// Draws text with current font at position and wordwrapped to the rect using color values specified
+	virtual void DrawColoredTextRect(vgui::HFont font, int x, int y, int w, int h, int r, int g, int b, int a, PRINTF_FORMAT_STRING const char* fmt, ...) = 0;
+	virtual void DrawTextHeight(vgui::HFont font, int w, int& h, PRINTF_FORMAT_STRING const char* fmt, ...) = 0;
 
+	// Returns the length of the text string in pixels
+	virtual int	DrawTextLen(vgui::HFont font, PRINTF_FORMAT_STRING const char* fmt, ...) = 0;
+
+	// Installs a function to play sounds
+	virtual void InstallPlaySoundFunc(PlaySoundFunc_t soundFunc) = 0;
+	virtual int DrawColoredText(vgui::HFont font, int x, int y, int r, int g, int b, int a, PRINTF_FORMAT_STRING const char* fmt, ...) = 0;
+	virtual void GetFullscreenViewportAndRenderTarget(int& x, int& y, int& w, int& h, ITexture** ppRenderTarget) = 0;
+	virtual void SetFullscreenViewportAndRenderTarget(int x, int y, int w, int h, ITexture* pRenderTarget) = 0;
+
+	// Draws a panel in 3D space. Assumes view + projection are already set up
+	// Also assumes the (x,y) coordinates of the panels are defined in 640xN coords
+	// (N isn't necessary 480 because the panel may not be 4x3)
+	// The width + height specified are the size of the panel in world coordinates
+	virtual void DrawPanelIn3DSpace(vgui::VPANEL pRootPanel, const VMatrix& panelCenterToWorld, int nPixelWidth, int nPixelHeight, float flWorldWidth, float flWorldHeight) = 0;
+
+	virtual void DisableClipping(bool bDisable) = 0;
+	// Gets a material bound to a surface texture ID
+	virtual IMaterial* DrawGetTextureMaterial(int id) = 0;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !! WARNING! YOU MUST NOT ADD YOUR NEW METHOD HERE OR YOU WILL BREAK MODS !!
 	// !! Add your new stuff to the bottom of IMatSystemSurface instead.        !!
