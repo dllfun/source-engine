@@ -89,7 +89,7 @@ void CReplayConfirmQuitDialog::OnCommand( const char *pCommand )
 	else if ( FStrEq( pCommand, "quit" ) )
 	{
 		MarkForDeletion();
-		engine->ClientCmd_Unrestricted( "quit\n" );
+		engineClient->ClientCmd_Unrestricted( "quit\n" );
 	}
 	else if ( FStrEq( pCommand, "cancel" ) )
 	{
@@ -99,7 +99,7 @@ void CReplayConfirmQuitDialog::OnCommand( const char *pCommand )
 	{
 		// "Go to replays"
 		MarkForDeletion();
-		engine->ClientCmd( "replay_reloadbrowser" );
+		engineClient->ClientCmd( "replay_reloadbrowser" );
 	}
 }
 

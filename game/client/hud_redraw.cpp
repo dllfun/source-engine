@@ -34,9 +34,9 @@ const int CHud::HUDPB_HORIZONTAL_INV = 2;
 static void FovChanged_Callback( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
 	ConVarRef var( pConVar );
-	if ( engine->IsInGame() )
+	if (engineClient->IsInGame() )
 	{
-		engine->ServerCmd( VarArgs( "fov %f\n", var.GetFloat() ) );
+		engineClient->ServerCmd( VarArgs( "fov %f\n", var.GetFloat() ) );
 	}
 }
 
@@ -94,7 +94,7 @@ void CHud::Think(void)
 	{
 		if ( !IsX360() )
 		{
-			engine->ClientCmd( "screenshot" );
+			engineClient->ClientCmd( "screenshot" );
 		}
 
 		m_flScreenShotTime = -1;

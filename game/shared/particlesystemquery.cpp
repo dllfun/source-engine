@@ -101,11 +101,11 @@ void CParticleSystemQuery::GetLightingAtPoint( const Vector& vecOrigin, Color &c
 
 #else
 
-	if ( engine->IsInGame() )
+	if (engineClient->IsInGame() )
 	{
 		s_LightMutex.Lock();
 		// Compute our lighting at our position
-		Vector totalColor = engine->GetLightForPoint( vecOrigin, true );
+		Vector totalColor = engineClient->GetLightForPoint( vecOrigin, true );
 		s_LightMutex.Unlock();
 
 		// Get our lighting information
@@ -123,7 +123,7 @@ void CParticleSystemQuery::GetLightingAtPoint( const Vector& vecOrigin, Color &c
 void CParticleSystemQuery::SetUpLightingEnvironment( const Vector& pos )
 {
 #ifndef GAME_DLL
-	if ( !engine->IsInGame() )
+	if ( !engineClient->IsInGame() )
 		return;
 
 	s_LightMutex.Lock();
@@ -139,7 +139,7 @@ void CParticleSystemQuery::TraceLine( const Vector& vecAbsStart,
 {
 	bool bDoTrace = false;
 #ifndef GAME_DLL
-	bDoTrace = engine->IsInGame();
+	bDoTrace = engineClient->IsInGame();
 #endif
 	if ( bDoTrace )
 	{

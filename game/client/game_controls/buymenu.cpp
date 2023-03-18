@@ -69,11 +69,11 @@ void CBuyMenu::ShowPanel(bool bShow)
 
 		SetMouseInputEnabled( true );
 
-		engine->ClientCmd_Unrestricted( "gameui_preventescapetoshow\n" );
+		engineClient->ClientCmd_Unrestricted( "gameui_preventescapetoshow\n" );
 	}
 	else
 	{
-		engine->ClientCmd_Unrestricted( "gameui_allowescapetoshow\n" );
+		engineClient->ClientCmd_Unrestricted( "gameui_allowescapetoshow\n" );
 
 		SetVisible( false );
 		SetMouseInputEnabled( false );
@@ -89,7 +89,7 @@ void CBuyMenu::Update()
 }
 void CBuyMenu::OnClose()
 {
-	engine->ClientCmd_Unrestricted( "gameui_allowescapetoshow\n" );
+	engineClient->ClientCmd_Unrestricted( "gameui_allowescapetoshow\n" );
 
 	BaseClass::OnClose();
 	ResetHistory();

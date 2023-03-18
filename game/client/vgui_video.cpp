@@ -216,7 +216,7 @@ void VideoPanel::OnClose( void )
 	// Fire an exit command if we're asked to do so
 	if ( m_szExitCommand[0] )
 	{
-		engine->ClientCmd( m_szExitCommand );
+		engineClient->ClientCmd( m_szExitCommand );
 	}
 
 	SetVisible( false );
@@ -418,6 +418,6 @@ CON_COMMAND( playvideo_exitcommand, "Plays a video and fires and exit command wh
 	if ( VideoPanel_Create( 0, 0, nScreenWidth, nScreenHeight, strFullpath, pExitCommand ) == false )
 	{
 		Warning( "Unable to play video: %s\n", strFullpath );
-		engine->ClientCmd( pExitCommand );
+		engineClient->ClientCmd( pExitCommand );
 	}
 }

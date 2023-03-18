@@ -190,8 +190,8 @@ void CCSFreezePanel::FireGameEvent( IGameEvent * event )
 	if ( Q_strcmp( "player_death", pEventName ) == 0 )
 	{
 		// see if the local player died
-		int iPlayerIndexVictim = engine->GetPlayerForUserID( event->GetInt( "userid" ) );
-		int iPlayerIndexKiller = engine->GetPlayerForUserID( event->GetInt( "attacker" ) );
+		int iPlayerIndexVictim = engineClient->GetPlayerForUserID( event->GetInt( "userid" ) );
+		int iPlayerIndexKiller = engineClient->GetPlayerForUserID( event->GetInt( "attacker" ) );
 		C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
 		CCSPlayer* pKiller =  ToCSPlayer(ClientEntityList().GetBaseEntity(iPlayerIndexKiller));
 
@@ -273,7 +273,7 @@ void CCSFreezePanel::FireGameEvent( IGameEvent * event )
 
 			m_pAvatar->SetDefaultAvatar( GetDefaultAvatarImage( pKiller ) );
 
-			if ( engine->GetPlayerInfo(iKillerIndex, &pi) )
+			if (engineClient->GetPlayerInfo(iKillerIndex, &pi) )
 			{
 				m_pAvatar->SetPlayer( (C_BasePlayer*)pKiller, k_EAvatarSize64x64);
 				m_pAvatar->SetVisible(true);
@@ -312,7 +312,7 @@ void CCSFreezePanel::SetActive( bool bActive )
 	if ( bActive )
 	{
 		// Setup replay key binding in UI
-		const char *pKey = engine->Key_LookupBinding( "save_replay" );
+		const char *pKey = engineClient->Key_LookupBinding( "save_replay" );
 		if ( pKey == NULL || FStrEq( pKey, "(null)" ) )
 		{
 			pKey = "<NOT BOUND>";

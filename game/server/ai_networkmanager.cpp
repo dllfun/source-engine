@@ -478,7 +478,7 @@ void CAI_NetworkManager::LoadNetworkGraph( void )
 	// If I'm in edit mode don't load, always recalculate
 	// ---------------------------------------------------
 	DevMsg( "Loading AI graph\n" );
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		DevMsg( "Not loading AI due to edit mode\n" );
 		return;
@@ -608,7 +608,7 @@ void CAI_NetworkManager::LoadNetworkGraph( void )
 	// ------------------------------------------------------------------------
 	// If in wc_edit mode allocate extra space for nodes that might be created
 	// ------------------------------------------------------------------------
-	if ( engine->IsInEditMode() )
+	if (engineServer->IsInEditMode() )
 	{
 		numNodes = MAX( numNodes, 1024 );
 	}
@@ -932,7 +932,7 @@ void CAI_NetworkManager::InitializeAINetworks()
 	g_pBigAINet = pNetwork->GetNetwork();
 	pNetwork->SetName( AllocPooledString("BigNet") );
 	pNetwork->Spawn();
-	if ( engine->IsInEditMode() )
+	if (engineServer->IsInEditMode() )
 	{
 		g_ai_norebuildgraph.SetValue( 0 );
 	}
@@ -994,7 +994,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 	Q_snprintf( szGraphFilename, sizeof( szGraphFilename ), "maps/graphs/%s%s.ain", szMapName, GetPlatformExt() );
 	
 	int iCompare;
-	if ( engine->CompareFileTime( szBspFilename, szGraphFilename, &iCompare ) )
+	if (engineServer->CompareFileTime( szBspFilename, szGraphFilename, &iCompare ) )
 	{
 		if ( iCompare > 0 )
 		{
@@ -1058,9 +1058,9 @@ void CAI_NetworkManager::DelayedInit( void )
 
 			BuildNetworkGraph();	// For now only one AI Network
 
-			if (engine->IsInEditMode())
+			if (engineServer->IsInEditMode())
 			{
-				engine->ServerCommand("exec map_edit.cfg\n");
+				engineServer->ServerCommand("exec map_edit.cfg\n");
 			}
 
 			SetThink ( NULL );
@@ -1075,21 +1075,21 @@ void CAI_NetworkManager::DelayedInit( void )
 		// If I haven't loaded a network, or I'm in 
 		// WorldCraft edit mode rebuild the network
 		// --------------------------------------------
-		else if ( !m_bDontSaveGraph && ( !CAI_NetworkManager::NetworksLoaded() || engine->IsInEditMode() ) )
+		else if ( !m_bDontSaveGraph && ( !CAI_NetworkManager::NetworksLoaded() || engineServer->IsInEditMode() ) )
 		{
 #ifdef _WIN32
 			// --------------------------------------------------------
 			// If in edit mode start WC session and make sure we are
 			// running the same map in WC and the engine
 			// --------------------------------------------------------
-			if (engine->IsInEditMode())
+			if (engineServer->IsInEditMode())
 			{
 				int status = Editor_BeginSession(STRING(gpGlobals->mapname), gpGlobals->mapversion, false);
 				if (status == Editor_NotRunning)
 				{
 					DevMsg("\nAborting map_edit\nWorldcraft not running...\n\n");
 					UTIL_CenterPrintAll( "Worldcraft not running...\n" );
-					engine->ServerCommand("disconnect\n");
+					engineServer->ServerCommand("disconnect\n");
 					SetThink(NULL);
 					return;
 				}
@@ -1097,7 +1097,7 @@ void CAI_NetworkManager::DelayedInit( void )
 				{
 					DevMsg("\nAborting map_edit\nWC/Engine map versions different...\n\n");
 					UTIL_CenterPrintAll( "WC/Engine map versions different...\n" );
-					engine->ServerCommand("disconnect\n");
+					engineServer->ServerCommand("disconnect\n");
 					SetThink(NULL);
 					return;
 				}
@@ -1109,7 +1109,7 @@ void CAI_NetworkManager::DelayedInit( void )
 			}
 #endif
 
-			DevMsg( "Node Graph out of Date. Rebuilding... (%d, %d, %d)\n", (int)m_bDontSaveGraph, (int)!CAI_NetworkManager::NetworksLoaded(), (int) engine->IsInEditMode() );
+			DevMsg( "Node Graph out of Date. Rebuilding... (%d, %d, %d)\n", (int)m_bDontSaveGraph, (int)!CAI_NetworkManager::NetworksLoaded(), (int)engineServer->IsInEditMode() );
 			UTIL_CenterPrintAll( "Node Graph out of Date. Rebuilding...\n" );
 			m_bNeedGraphRebuild = true;
 			g_pAINetworkManager->SetNextThink( gpGlobals->curtime + 1 );
@@ -1171,7 +1171,7 @@ void CAI_NetworkEditTools::OnInit()
 	// --------------------------------------------
 	// If I'm not in edit mode delete WC ID table
 	// --------------------------------------------
-	if ( !engine->IsInEditMode() )
+	if ( !engineServer->IsInEditMode() )
 	{
 //		delete[] m_pNodeIndexTable;	// For now only one AI Network called "BigNet"
 //		m_pNodeIndexTable = NULL;
@@ -1531,7 +1531,7 @@ void CAI_NetworkEditTools::DrawEditInfoOverlay(void)
 	Q_snprintf(hullTypeTxt,sizeof(hullTypeTxt),"  %s",NAI_Hull::Name(m_iHullDrawNum));
 	Q_snprintf(outTxt,sizeof(outTxt),"Displaying:\n%s\n\n", hullTypeTxt);
 
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		char outTxt2[255];
 		Q_snprintf(nodeTypeTxt,sizeof(nodeTypeTxt),"  %s (l)", m_bLinkEditMode ? "Links":"Nodes");
@@ -1982,7 +1982,7 @@ CAI_NetworkEditTools::CAI_NetworkEditTools(CAI_NetworkManager *pNetworkManager)
 	// ----------------------------------------------------------------------------
 	// If in wc_edit mode 
 	// ----------------------------------------------------------------------------
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		// ----------------------------------------------------------------------------
 		// Allocate extra space for storing undropped node positions

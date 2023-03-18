@@ -2327,7 +2327,7 @@ void CTempEnts::Update(void)
 	float		frametime;
 
 	// Don't simulate while loading
-	if ( ( m_TempEnts.Count() == 0 ) || !engine->IsInGame() )		
+	if ( ( m_TempEnts.Count() == 0 ) || !engineClient->IsInGame() )
 	{
 		return;
 	}
@@ -2390,35 +2390,35 @@ void CTempEnts::Update(void)
 void CTempEnts::LevelInit()
 {
 #ifndef TF_CLIENT_DLL
-	m_pSpriteMuzzleFlash[0] = (model_t *)engine->LoadModel( "sprites/ar2_muzzle1.vmt" );
-	m_pSpriteMuzzleFlash[1] = (model_t *)engine->LoadModel( "sprites/muzzleflash4.vmt" );
-	m_pSpriteMuzzleFlash[2] = (model_t *)engine->LoadModel( "sprites/muzzleflash4.vmt" );
+	m_pSpriteMuzzleFlash[0] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle1.vmt" );
+	m_pSpriteMuzzleFlash[1] = (model_t *)engineClient->LoadModel( "sprites/muzzleflash4.vmt" );
+	m_pSpriteMuzzleFlash[2] = (model_t *)engineClient->LoadModel( "sprites/muzzleflash4.vmt" );
 
-	m_pSpriteAR2Flash[0] = (model_t *)engine->LoadModel( "sprites/ar2_muzzle1b.vmt" );
-	m_pSpriteAR2Flash[1] = (model_t *)engine->LoadModel( "sprites/ar2_muzzle2b.vmt" );
-	m_pSpriteAR2Flash[2] = (model_t *)engine->LoadModel( "sprites/ar2_muzzle3b.vmt" );
-	m_pSpriteAR2Flash[3] = (model_t *)engine->LoadModel( "sprites/ar2_muzzle4b.vmt" );
+	m_pSpriteAR2Flash[0] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle1b.vmt" );
+	m_pSpriteAR2Flash[1] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle2b.vmt" );
+	m_pSpriteAR2Flash[2] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle3b.vmt" );
+	m_pSpriteAR2Flash[3] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle4b.vmt" );
 
-	m_pSpriteCombineFlash[0] = (model_t *)engine->LoadModel( "effects/combinemuzzle1.vmt" );
-	m_pSpriteCombineFlash[1] = (model_t *)engine->LoadModel( "effects/combinemuzzle2.vmt" );
+	m_pSpriteCombineFlash[0] = (model_t *)engineClient->LoadModel( "effects/combinemuzzle1.vmt" );
+	m_pSpriteCombineFlash[1] = (model_t *)engineClient->LoadModel( "effects/combinemuzzle2.vmt" );
 
-	m_pShells[0] = (model_t *) engine->LoadModel( "models/weapons/shell.mdl" );
-	m_pShells[1] = (model_t *) engine->LoadModel( "models/weapons/rifleshell.mdl" );
-	m_pShells[2] = (model_t *) engine->LoadModel( "models/weapons/shotgun_shell.mdl" );
+	m_pShells[0] = (model_t *)engineClient->LoadModel( "models/weapons/shell.mdl" );
+	m_pShells[1] = (model_t *)engineClient->LoadModel( "models/weapons/rifleshell.mdl" );
+	m_pShells[2] = (model_t *)engineClient->LoadModel( "models/weapons/shotgun_shell.mdl" );
 #endif
 
 #if defined( HL1_CLIENT_DLL )
-	m_pHL1Shell			= (model_t *)engine->LoadModel( "models/shell.mdl" );
-	m_pHL1ShotgunShell	= (model_t *)engine->LoadModel( "models/shotgunshell.mdl" );
+	m_pHL1Shell			= (model_t *)engineClient->LoadModel( "models/shell.mdl" );
+	m_pHL1ShotgunShell	= (model_t *)engineClient->LoadModel( "models/shotgunshell.mdl" );
 #endif
 
 #if defined( CSTRIKE_DLL ) || defined ( SDK_DLL )
-	m_pCS_9MMShell		= (model_t *)engine->LoadModel( "models/Shells/shell_9mm.mdl" );
-	m_pCS_57Shell		= (model_t *)engine->LoadModel( "models/Shells/shell_57.mdl" );
-	m_pCS_12GaugeShell	= (model_t *)engine->LoadModel( "models/Shells/shell_12gauge.mdl" );
-	m_pCS_556Shell		= (model_t *)engine->LoadModel( "models/Shells/shell_556.mdl" );
-	m_pCS_762NATOShell	= (model_t *)engine->LoadModel( "models/Shells/shell_762nato.mdl" );
-	m_pCS_338MAGShell	= (model_t *)engine->LoadModel( "models/Shells/shell_338mag.mdl" );
+	m_pCS_9MMShell		= (model_t *)engineClient->LoadModel( "models/Shells/shell_9mm.mdl" );
+	m_pCS_57Shell		= (model_t *)engineClient->LoadModel( "models/Shells/shell_57.mdl" );
+	m_pCS_12GaugeShell	= (model_t *)engineClient->LoadModel( "models/Shells/shell_12gauge.mdl" );
+	m_pCS_556Shell		= (model_t *)engineClient->LoadModel( "models/Shells/shell_556.mdl" );
+	m_pCS_762NATOShell	= (model_t *)engineClient->LoadModel( "models/Shells/shell_762nato.mdl" );
+	m_pCS_338MAGShell	= (model_t *)engineClient->LoadModel( "models/Shells/shell_338mag.mdl" );
 #endif
 }
 
@@ -3245,7 +3245,7 @@ void CTempEnts::RocketFlare( const Vector& pos )
 	const model_t		*model;
 	int					nframeCount;
 
-	model = (model_t *)engine->LoadModel( "sprites/animglow01.vmt" );
+	model = (model_t *)engineClient->LoadModel( "sprites/animglow01.vmt" );
 	if ( !model )
 	{
 		return;

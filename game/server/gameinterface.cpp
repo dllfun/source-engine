@@ -159,7 +159,7 @@ ISaveRestoreBlockHandler *GetCommentarySaveRestoreBlockHandler();
 CUtlLinkedList<CMapEntityRef, unsigned short> g_MapEntityRefs;
 
 // Engine interfaces.
-IVEngineServer	*engine = NULL;
+IVEngineServer	*engineServer = NULL;
 IVoiceServer	*g_pVoiceServer = NULL;
 #if !defined(_STATIC_LINKED)
 IFileSystem		*filesystem = NULL;
@@ -254,12 +254,12 @@ CSharedEdictChangeInfo *g_pSharedChangeInfo = NULL;
 
 IChangeInfoAccessor *CBaseEdict::GetChangeAccessor()
 {
-	return engine->GetChangeAccessor( (const edict_t *)this );
+	return engineServer->GetChangeAccessor( (const edict_t *)this );
 }
 
 const IChangeInfoAccessor *CBaseEdict::GetChangeAccessor() const
 {
-	return engine->GetChangeAccessor( (const edict_t *)this );
+	return engineServer->GetChangeAccessor( (const edict_t *)this );
 }
 
 const char *GetHintTypeDescription( CAI_Hint *pHint );
@@ -378,12 +378,12 @@ void DrawMeasuredSections(void)
 
 	// Time to redo sort?
 	if ( measure_resort.GetFloat() > 0.0 &&
-		engine->Time() >= CMeasureSection::m_dNextResort )
+		engineServer->Time() >= CMeasureSection::m_dNextResort )
 	{
 		// Redo it
 		CMeasureSection::SortSections();
 		// Set next time
-		CMeasureSection::m_dNextResort = engine->Time() + measure_resort.GetFloat();
+		CMeasureSection::m_dNextResort = engineServer->Time() + measure_resort.GetFloat();
 		// Flag to reset sort accumulator, too
 		sort_reset = true;
 	}
@@ -440,7 +440,7 @@ void DrawAllDebugOverlays( void )
 	// ------------------------------------------------------------------------
 	// If in wc_edit mode draw a box to highlight which node I'm looking at
 	// ------------------------------------------------------------------------
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		CBasePlayer* pPlayer = UTIL_PlayerByIndex( CBaseEntity::m_nDebugPlayer );
 		if (pPlayer) 
@@ -516,7 +516,7 @@ void DrawAllDebugOverlays( void )
 	}
 
 	// PERFORMANCE: only do this in developer mode
-	if ( g_pDeveloper->GetInt() && !engine->IsDedicatedServer() )
+	if ( g_pDeveloper->GetInt() && !engineServer->IsDedicatedServer() )
 	{
 		// iterate through all objects for debug overlays
 		const CEntInfo *pInfo = gEntList.FirstEntInfo();
@@ -583,7 +583,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 #endif
 
 	// init each (seperated for ease of debugging)
-	if ( (engine = (IVEngineServer*)appSystemFactory(INTERFACEVERSION_VENGINESERVER, NULL)) == NULL )
+	if ( (engineServer = (IVEngineServer*)appSystemFactory(INTERFACEVERSION_VENGINESERVER, NULL)) == NULL )
 		return false;
 	if ( (g_pVoiceServer = (IVoiceServer*)appSystemFactory(INTERFACEVERSION_VOICESERVER, NULL)) == NULL )
 		return false;
@@ -625,7 +625,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 
 	// If not running dedicated, grab the engine vgui interface
-	if ( !engine->IsDedicatedServer() )
+	if ( !engineServer->IsDedicatedServer() )
 	{
 #ifdef _WIN32
 		// This interface is optional, and is only valid when running with -tools
@@ -640,7 +640,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	// cache the globals
 	gpGlobals = pGlobals;
 
-	g_pSharedChangeInfo = engine->GetSharedEdictChangeInfo();
+	g_pSharedChangeInfo = engineServer->GetSharedEdictChangeInfo();
 	
 	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f );
 
@@ -852,8 +852,8 @@ float CServerGameDLL::GetTickInterval( void ) const
 bool CServerGameDLL::GameInit( void )
 {
 	ResetGlobalState();
-	engine->ServerCommand( "exec game.cfg\n" );
-	engine->ServerExecute( );
+	engineServer->ServerCommand( "exec game.cfg\n" );
+	engineServer->ServerExecute( );
 	CBaseEntity::sm_bAccurateTriggerBboxChecks = true;
 
 	IGameEvent *event = gameeventmanager->CreateEvent( "game_init" );
@@ -987,7 +987,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 		}
 
 		BeginRestoreEntities();
-		if ( !engine->LoadGameState( pMapName, 1 ) )
+		if ( !engineServer->LoadGameState( pMapName, 1 ) )
 		{
 			if ( pOldLevel )
 			{
@@ -1002,12 +1002,12 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 
 		if ( pOldLevel )
 		{
-			engine->LoadAdjacentEnts( pOldLevel, pLandmarkName );
+			engineServer->LoadAdjacentEnts( pOldLevel, pLandmarkName );
 		}
 
 		if ( g_OneWayTransition )
 		{
-			engine->ClearSaveDirAfterClientLoad();
+			engineServer->ClearSaveDirAfterClientLoad();
 		}
 
 		if ( pOldLevel && sv_autosave.GetBool() == true )
@@ -1150,7 +1150,7 @@ void CServerGameDLL::GameServerSteamAPIActivated( void )
 #ifndef NO_STEAM
 	steamgameserverapicontext->Clear();
 	steamgameserverapicontext->Init();
-	if ( steamgameserverapicontext->SteamGameServer() && engine->IsDedicatedServer() )
+	if ( steamgameserverapicontext->SteamGameServer() && engineServer->IsDedicatedServer() )
 	{
 		steamgameserverapicontext->SteamGameServer()->GetGameplayStats();
 	}
@@ -1327,7 +1327,7 @@ void CServerGameDLL::PreClientUpdate( bool simulating )
 		return;
 	}
 
-	CBaseAnimating *anim = dynamic_cast< CBaseAnimating * >( CBaseEntity::Instance( engine->PEntityOfEntIndex( sv_showhitboxes.GetInt() ) ) );
+	CBaseAnimating *anim = dynamic_cast< CBaseAnimating * >( CBaseEntity::Instance(engineServer->PEntityOfEntIndex( sv_showhitboxes.GetInt() ) ) );
 	if ( !anim )
 		return;
 
@@ -1349,7 +1349,7 @@ void CServerGameDLL::Think( bool finalTick )
 			if( pPlayer->GetHealth() >= m_fAutoSaveDangerousMinHealthToCommit )
 			{
 				// The player isn't dead, so make the dangerous auto save safe
-				engine->ServerCommand( "autosavedangerousissafe\n" );
+				engineServer->ServerCommand( "autosavedangerousissafe\n" );
 			}
 		}
 
@@ -1874,7 +1874,7 @@ void CServerGameDLL::SetServerHibernation( bool bHibernating )
 	m_bIsHibernating = bHibernating;
 
 #ifdef INFESTED_DLL
-	if ( engine && engine->IsDedicatedServer() && m_bIsHibernating && ASWGameRules() )
+	if (engineServer && engineServer->IsDedicatedServer() && m_bIsHibernating && ASWGameRules() )
 	{
 		ASWGameRules()->OnServerHibernating();
 	}
@@ -2179,7 +2179,7 @@ void UpdateChapterRestrictions( const char *mapname )
 			// HACK: Call up through a better function than this? 7/23/07 - jdw
 			if ( IsX360() )
 			{
-				engine->ServerCommand( "host_writeconfig\n" );
+				engineServer->ServerCommand( "host_writeconfig\n" );
 			}
 		}
 
@@ -2455,7 +2455,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 	// is consecutive in memory. If either of these things change, then this routine needs to change, but
 	// ideally we won't be calling any virtual from this routine. This speedy routine was added as an
 	// optimization which would be nice to keep.
-	edict_t *pBaseEdict = engine->PEntityOfEntIndex( 0 );
+	edict_t *pBaseEdict = engineServer->PEntityOfEntIndex( 0 );
 
 	// get recipient player's skybox:
 	CBaseEntity *pRecipientEntity = CBaseEntity::Instance( pInfo->m_pClientEnt );
@@ -2482,7 +2482,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 		int iEdict = pEdictIndices[i];
 
 		edict_t *pEdict = &pBaseEdict[iEdict];
-		Assert( pEdict == engine->PEntityOfEntIndex( iEdict ) );
+		Assert( pEdict == engineServer->PEntityOfEntIndex( iEdict ) );
 		int nFlags = pEdict->m_fStateFlags & (FL_EDICT_DONTSEND|FL_EDICT_ALWAYS|FL_EDICT_PVSCHECK|FL_EDICT_FULLCHECK);
 
 		// entity needs no transmit
@@ -2827,7 +2827,7 @@ void CServerGameClients::ClientSettingsChanged( edict_t *pEdict )
 	if ( bAllowNetworkingClientSettingsChange )
 	{
 
-#define QUICKGETCVARVALUE(v) (engine->GetClientConVarValue( player->entindex(), v ))
+#define QUICKGETCVARVALUE(v) (engineServer->GetClientConVarValue( player->entindex(), v ))
 
 	// get network setting for prediction & lag compensation
 	
@@ -2952,7 +2952,7 @@ void CServerGameClients::ClientSetupVisibility( edict_t *pViewEntity, edict_t *p
 	Vector org;
 
 	// Reset the PVS!!!
-	engine->ResetPVS( pvs, pvssize );
+	engineServer->ResetPVS( pvs, pvssize );
 
 	g_pToolFrameworkServer->PreSetupVisibility();
 
@@ -2965,7 +2965,7 @@ void CServerGameClients::ClientSetupVisibility( edict_t *pViewEntity, edict_t *p
 		if ( pVE )
 		{
 			org = pVE->EyePosition();
-			engine->AddOriginToPVS( org );
+			engineServer->AddOriginToPVS( org );
 		}
 	}
 
@@ -3008,7 +3008,7 @@ void CServerGameClients::ClientSetupVisibility( edict_t *pViewEntity, edict_t *p
 		++iOutPortal;
 		if ( iOutPortal >= ARRAYSIZE( portalNums ) )
 		{
-			engine->SetAreaPortalStates( portalNums, isOpen, iOutPortal );
+			engineServer->SetAreaPortalStates( portalNums, isOpen, iOutPortal );
 			iOutPortal = 0;
 		}
 
@@ -3029,7 +3029,7 @@ void CServerGameClients::ClientSetupVisibility( edict_t *pViewEntity, edict_t *p
 	}
 
 	// Flush the remaining areaportal states.
-	engine->SetAreaPortalStates( portalNums, isOpen, iOutPortal );
+	engineServer->SetAreaPortalStates( portalNums, isOpen, iOutPortal );
 
 	if ( pPlayer )
 	{
@@ -3252,7 +3252,7 @@ void EntityMessageBegin( CBaseEntity * entity, bool reliable /*= false*/ )
 
 	Assert ( entity );
 
-	g_pMsgBuffer = engine->EntityMessageBegin( entity->entindex(), entity->GetServerClass(), reliable );
+	g_pMsgBuffer = engineServer->EntityMessageBegin( entity->entindex(), entity->GetServerClass(), reliable );
 }
 
 void UserMessageBegin( IRecipientFilter& filter, const char *messagename )
@@ -3268,14 +3268,14 @@ void UserMessageBegin( IRecipientFilter& filter, const char *messagename )
 		Error( "UserMessageBegin:  Unregistered message '%s'\n", messagename );
 	}
 
-	g_pMsgBuffer = engine->UserMessageBegin( &filter, msg_type );
+	g_pMsgBuffer = engineServer->UserMessageBegin( &filter, msg_type );
 }
 
 void MessageEnd( void )
 {
 	Assert( g_pMsgBuffer );
 
-	engine->MessageEnd();
+	engineServer->MessageEnd();
 
 	g_pMsgBuffer = NULL;
 }
@@ -3492,7 +3492,7 @@ void CServerGameTags::GetTaggedConVarList( KeyValues *pCvarTagList )
 
 CSteamID GetSteamIDForPlayerIndex( int iPlayerIndex )
 {
-	const CSteamID *pResult = engine->GetClientSteamIDByPlayerIndex( iPlayerIndex );
+	const CSteamID *pResult = engineServer->GetClientSteamIDByPlayerIndex( iPlayerIndex );
 	if ( pResult )
 		return *pResult;
 

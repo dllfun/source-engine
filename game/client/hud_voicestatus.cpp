@@ -246,7 +246,7 @@ void CHudVoiceStatus::OnThink( void )
 #endif
 				activeSpeaker.pAvatar->SetDrawFriend(show_friend);
 				player_info_t pi;
-				if ( engine->GetPlayerInfo( iPlayerIndex, &pi ) )
+				if (engineClient->GetPlayerInfo( iPlayerIndex, &pi ) )
 				{
 					if ( steamapicontext != NULL && steamapicontext->SteamUtils() != NULL )
 					{

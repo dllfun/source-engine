@@ -1093,7 +1093,7 @@ void CVisibleShadowList::EnumShadow( unsigned short clientShadowHandle )
 	// FIXME: Add distance check here?
 
 	// Make sure it's in the frustum. If it isn't it's not interesting
-	if (engine->CullBox( vecAbsMins, vecAbsMaxs ))
+	if (engineClient->CullBox( vecAbsMins, vecAbsMaxs ))
 		return;
 
 	int i = m_ShadowsInView.AddToTail( );
@@ -1515,7 +1515,7 @@ void CClientShadowMgr::LevelInitPreEntity()
 	m_bUpdatingDirtyShadows = false;
 
 	Vector ambientColor;
-	engine->GetAmbientLightColor( ambientColor );
+	engineClient->GetAmbientLightColor( ambientColor );
 	ambientColor *= 3;
 	ambientColor += Vector( 0.3f, 0.3f, 0.3f );
 
@@ -2270,7 +2270,7 @@ static void BuildShadowLeafList( CShadowLeafEnum *pEnum, const Vector& origin,
 	ray.m_IsRay = false;
 	ray.m_IsSwept = true;
 
-	ISpatialQuery* pQuery = engine->GetBSPTreeQuery();
+	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
 	pQuery->EnumerateLeavesAlongRay( ray, pEnum, 0 );
 }
 
@@ -2604,7 +2604,7 @@ static void BuildFlashlightLeafList( CShadowLeafEnum *pEnum, const VMatrix &worl
 	// Use an AABB around the frustum to enumerate leaves.
 	Vector mins, maxs;
 	CalculateAABBFromProjectionMatrix( worldToShadow, &mins, &maxs );
-	ISpatialQuery* pQuery = engine->GetBSPTreeQuery();
+	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
 	pQuery->EnumerateLeavesInBox( mins, maxs, pEnum, 0 );
 }
 

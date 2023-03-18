@@ -1397,7 +1397,7 @@ void CNewGameDialog::StartGame( void )
 				// sv_cheats on the client (via the code above) and then hit <esc> to get out of the explanation dialog.
 				if ( GameUI().IsInMultiplayer() )
 				{
-					engine->ExecuteClientCmd( "disconnect" );
+					engineClient->ExecuteClientCmd( "disconnect" );
 				}
 
 				DHANDLE<CCommentaryExplanationDialog> hCommentaryExplanationDialog;
@@ -1434,7 +1434,7 @@ void CNewGameDialog::StartGame( void )
 
 					// Set up the challenge mode
 					Q_snprintf( sz, sizeof( sz ), "sv_bonus_challenge %i\n", iChallenge );
-					engine->ClientCmd_Unrestricted( sz );
+					engineClient->ClientCmd_Unrestricted( sz );
 
 					ChallengeDescription_t *pChallengeDescription = &((*m_pBonusMapDescription->m_pChallenges)[ iChallenge - 1 ]);
 
@@ -1480,7 +1480,7 @@ void CNewGameDialog::OnCommand( const char *command )
 		{
 			if ( m_ChapterPanels[m_iSelectedChapter]->IsEnabled() )
 			{
-				if ( !GameUI().HasSavedThisMenuSession() && GameUI().IsInLevel() && engine->GetMaxClients() == 1 )
+				if ( !GameUI().HasSavedThisMenuSession() && GameUI().IsInLevel() && engineClient->GetMaxClients() == 1 )
 				{
 					vgui::surface()->PlaySound( "UI/buttonclickrelease.wav" );
 					BasePanel()->ShowMessageDialog( MD_SAVE_BEFORE_NEW_GAME, this );

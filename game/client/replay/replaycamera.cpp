@@ -218,7 +218,7 @@ void C_ReplayCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, flo
 	if ( bManual )
 	{
 		// let spectator choose the view angles
- 		engine->GetViewAngles( cameraAngles );
+ 		engineClient->GetViewAngles( cameraAngles );
 	}
 	else if ( target2 )
 	{
@@ -363,7 +363,7 @@ void C_ReplayCamera::CalcInEyeCamView( Vector& eyeOrigin, QAngle& eyeAngles, flo
 
 	// This fixes the bug where going from third or first person to free cam defaults to some arbitrary angle,
 	// because free cam uses engine->GetViewAngles().
-	engine->SetViewAngles( m_aCamAngle );
+	engineClient->SetViewAngles( m_aCamAngle );
 }
 
 void C_ReplayCamera::Accelerate( Vector& wishdir, float wishspeed, float accel, float flDelta )
@@ -527,7 +527,7 @@ void C_ReplayCamera::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float
 		VectorMA( m_vCamOrigin, flDelta, m_vecVelocity, m_vCamOrigin );
 		
 		// get camera angle directly from engine
-		engine->GetViewAngles( m_aCamAngle );
+		engineClient->GetViewAngles( m_aCamAngle );
 
 		// Zero out velocity if in noaccel mode
 		if ( sv_specaccelerate.GetFloat() < 0.0f )
@@ -677,7 +677,7 @@ void C_ReplayCamera::ClearOverrideView()
 	m_bOverrideView = false;
 
 	// Set view angles in engine so that CalcRoamingView() won't pop to some stupid angle
-	engine->SetViewAngles( m_aCamAngle );
+	engineClient->SetViewAngles( m_aCamAngle );
 }
 
 void C_ReplayCamera::OverrideView( const Vector *pOrigin, const QAngle *pAngles, float flFov )

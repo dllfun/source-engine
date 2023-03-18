@@ -55,7 +55,7 @@ static void PrintBuyPresetUsage( void )
  */
 CON_COMMAND_F( cl_buy_favorite, "Purchase a favorite weapon/equipment loadout", FCVAR_CLIENTCMD_CAN_EXECUTE )
 {
-	if ( !engine->IsConnected() )
+	if ( !engineClient->IsConnected() )
 		return;
 
 	if ( !TheBuyPresets )
@@ -86,7 +86,7 @@ CON_COMMAND_F( cl_buy_favorite, "Purchase a favorite weapon/equipment loadout", 
  */
 CON_COMMAND_F( cl_buy_favorite_set, "Saves the current loadout as a favorite", FCVAR_CLIENTCMD_CAN_EXECUTE )
 {
-	if ( !engine->IsConnected() )
+	if ( !engineClient->IsConnected() )
 		return;
 
 	if ( !TheBuyPresets )
@@ -135,7 +135,7 @@ CON_COMMAND_F( cl_buy_favorite_set, "Saves the current loadout as a favorite", F
  */
 void __CmdFunc_BuyPresetsReset(void)
 {
-	if ( !engine->IsConnected() )
+	if ( !engineClient->IsConnected() )
 		return;
 
 	if ( !TheBuyPresets )
@@ -405,7 +405,7 @@ void BuyPresetManager::PurchasePreset( int presetIndex )
 
 					// Send completed string
 					PRESET_DEBUG( "%s\n", buf );
-					engine->ClientCmd( buf );
+					engineClient->ClientCmd( buf );
 					return;
 				}
 				else if ( currentCost == 0 )

@@ -90,7 +90,7 @@ IEngineVGui *enginevguifuncs = NULL;
 IMatchmaking *matchmaking = NULL;
 IXboxSystem *xboxsystem = NULL;		// 360 only
 //IMatSystemSurface *enginesurfacefuncs = NULL;
-IVEngineClient *engine = NULL;
+IVEngineClient *engineClient = NULL;
 IEngineSound *enginesound = NULL;
 IAchievementMgr *achievementmgr = NULL;
 IEngineClientReplay *g_pEngineClientReplay = NULL;
@@ -166,7 +166,7 @@ void CGameUI::Initialize( CreateInterfaceFn factory )
 	ConnectTier3Libraries( &factory, 1 );
 
 	enginesound = (IEngineSound *)factory(IENGINESOUND_CLIENT_INTERFACE_VERSION, NULL);
-	engine = (IVEngineClient *)factory( VENGINE_CLIENT_INTERFACE_VERSION, NULL );
+	engineClient = (IVEngineClient *)factory( VENGINE_CLIENT_INTERFACE_VERSION, NULL );
 
 	steamapicontext->Init();
 
@@ -362,7 +362,7 @@ void CGameUI::Connect( CreateInterfaceFn gameFactory )
 {
 	g_pGameClientExports = (IGameClientExports *)gameFactory(GAMECLIENTEXPORTS_INTERFACE_VERSION, NULL);
 
-	achievementmgr = engine->GetAchievementMgr();
+	achievementmgr = engineClient->GetAchievementMgr();
 
 	if (!g_pGameClientExports)
 	{
@@ -484,7 +484,7 @@ void CGameUI::PlayGameStartupSound()
 			// Play the Saxxy music if we're in saxxy mode.
 #if defined( SAXXYMAINMENU_ENABLED )
 			bool bIsTF = false;
-			const char *pGameDir = engine->GetGameDirectory();
+			const char *pGameDir = engineClient->GetGameDirectory();
 			if ( pGameDir )
 			{
 				// Is the game TF?
@@ -504,7 +504,7 @@ void CGameUI::PlayGameStartupSound()
 			char found[ 512 ];
 			Q_snprintf( found, sizeof( found ), "play *#%s", pSoundFile );
 
-			engine->ClientCmd_Unrestricted( found );
+			engineClient->ClientCmd_Unrestricted( found );
 		}
 
 		fileNames.PurgeAndDeleteElements();
@@ -708,7 +708,7 @@ void CGameUI::Shutdown()
 //-----------------------------------------------------------------------------
 void CGameUI::ActivateGameUI()
 {
-	engine->ExecuteClientCmd("gameui_activate");
+	engineClient->ExecuteClientCmd("gameui_activate");
 }
 
 //-----------------------------------------------------------------------------
@@ -716,7 +716,7 @@ void CGameUI::ActivateGameUI()
 //-----------------------------------------------------------------------------
 void CGameUI::HideGameUI()
 {
-	engine->ExecuteClientCmd("gameui_hide");
+	engineClient->ExecuteClientCmd("gameui_hide");
 }
 
 //-----------------------------------------------------------------------------
@@ -724,7 +724,7 @@ void CGameUI::HideGameUI()
 //-----------------------------------------------------------------------------
 void CGameUI::PreventEngineHideGameUI()
 {
-	engine->ExecuteClientCmd("gameui_preventescape");
+	engineClient->ExecuteClientCmd("gameui_preventescape");
 }
 
 //-----------------------------------------------------------------------------
@@ -732,7 +732,7 @@ void CGameUI::PreventEngineHideGameUI()
 //-----------------------------------------------------------------------------
 void CGameUI::AllowEngineHideGameUI()
 {
-	engine->ExecuteClientCmd("gameui_allowescape");
+	engineClient->ExecuteClientCmd("gameui_allowescape");
 }
 
 //-----------------------------------------------------------------------------
@@ -746,9 +746,9 @@ void CGameUI::OnGameUIActivated()
 	staticPanel->SetVisible( true );
 
 	// pause the server in single player
-	if ( engine->GetMaxClients() <= 1 )
+	if (engineClient->GetMaxClients() <= 1 )
 	{
-		engine->ClientCmd_Unrestricted( "setpause" );
+		engineClient->ClientCmd_Unrestricted( "setpause" );
 	}
 
 	SetSavedThisMenuSession( false );
@@ -783,9 +783,9 @@ void CGameUI::OnGameUIHidden()
 	}
 
 	// unpause the game when leaving the UI
-	if ( engine->GetMaxClients() <= 1 )
+	if (engineClient->GetMaxClients() <= 1 )
 	{
-		engine->ClientCmd_Unrestricted("unpause");
+		engineClient->ClientCmd_Unrestricted("unpause");
 	}
 
 	BasePanel()->OnGameUIHidden();
@@ -835,7 +835,7 @@ void CGameUI::RunFrame()
 				Sys_ReleaseMutex(g_hWaitMutex);
 
 			// notify the game of our game name
-			const char *fullGamePath = engine->GetGameDirectory();
+			const char *fullGamePath = engineClient->GetGameDirectory();
 			const char *pathSep = strrchr( fullGamePath, '/' );
 			if ( !pathSep )
 			{
@@ -845,7 +845,7 @@ void CGameUI::RunFrame()
 			{
 				KeyValues *pKV = new KeyValues("ActiveGameName" );
 				pKV->SetString( "name", pathSep + 1 );
-				pKV->SetInt( "appid", engine->GetAppID() );
+				pKV->SetInt( "appid", engineClient->GetAppID() );
 				KeyValues *modinfo = new KeyValues("ModInfo");
 				if ( modinfo->LoadFromFile( g_pFullFileSystem, "gameinfo.txt" ) )
 				{
@@ -1105,8 +1105,8 @@ bool CGameUI::SetShowProgressText( bool show )
 //-----------------------------------------------------------------------------
 bool CGameUI::IsInLevel()
 {
-	const char *levelName = engine->GetLevelName();
-	if (levelName && levelName[0] && !engine->IsLevelMainMenuBackground())
+	const char *levelName = engineClient->GetLevelName();
+	if (levelName && levelName[0] && !engineClient->IsLevelMainMenuBackground())
 	{
 		return true;
 	}
@@ -1118,8 +1118,8 @@ bool CGameUI::IsInLevel()
 //-----------------------------------------------------------------------------
 bool CGameUI::IsInBackgroundLevel()
 {
-	const char *levelName = engine->GetLevelName();
-	if (levelName && levelName[0] && engine->IsLevelMainMenuBackground())
+	const char *levelName = engineClient->GetLevelName();
+	if (levelName && levelName[0] && engineClient->IsLevelMainMenuBackground())
 	{
 		return true;
 	}
@@ -1131,7 +1131,7 @@ bool CGameUI::IsInBackgroundLevel()
 //-----------------------------------------------------------------------------
 bool CGameUI::IsInMultiplayer()
 {
-	return (IsInLevel() && engine->GetMaxClients() > 1);
+	return (IsInLevel() && engineClient->GetMaxClients() > 1);
 }
 
 //-----------------------------------------------------------------------------

@@ -131,7 +131,7 @@ CAI_Network::~CAI_Network()
 #ifdef AI_NODE_TREE
 	if ( m_pNodeTree )
 	{
-		engine->DestroySpatialPartition( m_pNodeTree );
+		engineServer->DestroySpatialPartition( m_pNodeTree );
 		m_pNodeTree = NULL;
 	}
 #endif
@@ -544,7 +544,7 @@ CAI_Node *CAI_Network::AddNode( const Vector &origin, float yaw )
 	{
 		Vector worldMins, worldMaxs;
 		GetWorldEntity()->GetWorldBounds( worldMins, worldMaxs );
-		m_pNodeTree = engine->CreateSpatialPartition( worldMins, worldMaxs );
+		m_pNodeTree = engineServer->CreateSpatialPartition( worldMins, worldMaxs );
 	}
 
 	m_pNodeTree->CreateHandle( (IHandleEntity *)m_iNumNodes, PARTITION_NODE, origin, origin ); // ignore result for now as we'll never move or remove

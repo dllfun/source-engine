@@ -106,7 +106,7 @@ void CKeyToggleCheckButton::ApplyChanges()
 	Q_snprintf( szCommand, sizeof( szCommand ), "%c%s\n", IsSelected() ? '+' : '-',
 		m_pszCmdName );
 
-	engine->ClientCmd_Unrestricted( szCommand );
+	engineClient->ClientCmd_Unrestricted( szCommand );
 }
 
 //-----------------------------------------------------------------------------

@@ -240,7 +240,7 @@ void CRecipientFilter::AddRecipientsByPVS( const Vector& origin )
 	else
 	{
 		CBitVec< ABSOLUTE_PLAYER_LIMIT > playerbits;
-		engine->Message_DetermineMulticastRecipients( false, origin, playerbits );
+		engineServer->Message_DetermineMulticastRecipients( false, origin, playerbits );
 		AddPlayersFromBitMask( playerbits );
 	}
 }
@@ -254,7 +254,7 @@ void CRecipientFilter::RemoveRecipientsByPVS( const Vector& origin )
 	else
 	{
 		CBitVec< ABSOLUTE_PLAYER_LIMIT > playerbits;
-		engine->Message_DetermineMulticastRecipients( false, origin, playerbits );
+		engineServer->Message_DetermineMulticastRecipients( false, origin, playerbits );
 		RemovePlayersFromBitMask( playerbits );
 	}
 }
@@ -270,7 +270,7 @@ void CRecipientFilter::AddRecipientsByPAS( const Vector& origin )
 	else
 	{
 		CBitVec< ABSOLUTE_PLAYER_LIMIT > playerbits;
-		engine->Message_DetermineMulticastRecipients( true, origin, playerbits );
+		engineServer->Message_DetermineMulticastRecipients( true, origin, playerbits );
 		AddPlayersFromBitMask( playerbits );
 	}
 }

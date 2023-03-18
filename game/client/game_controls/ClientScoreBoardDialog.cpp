@@ -494,7 +494,7 @@ void CClientScoreBoardDialog::UpdatePlayerAvatar( int playerIndex, KeyValues *kv
 	if ( kv && ShowAvatars() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils() )
 	{
 		player_info_t pi;
-		if ( engine->GetPlayerInfo( playerIndex, &pi ) )
+		if (engineClient->GetPlayerInfo( playerIndex, &pi ) )
 		{
 			if ( pi.friendsID )
 			{

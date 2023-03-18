@@ -45,7 +45,7 @@ CReplayReminderPanel::CReplayReminderPanel( const char *pElementName )
 void CReplayReminderPanel::SetupText()
 {
 	// Get current key binding, if any.
-	const char *pBoundKey = engine->Key_LookupBinding( "save_replay" );
+	const char *pBoundKey = engineClient->Key_LookupBinding( "save_replay" );
 	if ( !pBoundKey || FStrEq( pBoundKey, "(null)" ) )
 	{
 		pBoundKey = " ";

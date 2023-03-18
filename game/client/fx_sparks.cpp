@@ -1062,7 +1062,7 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 	// Get color data from our hit point
 	IMaterial	*pTraceMaterial;
 	Vector		diffuseColor, baseColor;
-	pTraceMaterial = engine->TraceLineMaterialAndLighting( origin, normal * -16.0f, diffuseColor, baseColor );
+	pTraceMaterial = engineClient->TraceLineMaterialAndLighting( origin, normal * -16.0f, diffuseColor, baseColor );
 	// Get final light value
 	float r = pow( diffuseColor[0], 1.0f/2.2f ) * baseColor[0];
 	float g = pow( diffuseColor[1], 1.0f/2.2f ) * baseColor[1];

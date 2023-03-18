@@ -1605,9 +1605,9 @@ CON_COMMAND( physics_budget, "Times the cost of each active object" )
 		CUtlVector<float> times;
 		float totalTime = 0.f;
 		g_Collisions.BufferTouchEvents( true );
-		float full = engine->Time();
+		float full = engineServer->Time();
 		physenv->Simulate( gpGlobals->interval_per_tick );
-		full = engine->Time() - full;
+		full = engineServer->Time() - full;
 		float lastTime = full;
 
 		times.SetSize( ents.Count() );
@@ -1622,9 +1622,9 @@ CON_COMMAND( physics_budget, "Times the cost of each active object" )
 			{
 				PhysForceEntityToSleep( ents[j], ents[j]->VPhysicsGetObject() );
 			}
-			float start = engine->Time();
+			float start = engineServer->Time();
 			physenv->Simulate( gpGlobals->interval_per_tick );
-			float end = engine->Time();
+			float end = engineServer->Time();
 
 			float elapsed = end - start;
 			float avgTime = lastTime - elapsed;
@@ -1698,7 +1698,7 @@ void PhysFrame( float deltaTime )
 
 	if ( bProfile )
 	{
-		simRealTime = engine->Time();
+		simRealTime = engineServer->Time();
 	}
 
 #ifdef _DEBUG
@@ -1752,7 +1752,7 @@ void PhysFrame( float deltaTime )
 
 	if ( bProfile )
 	{
-		simRealTime = engine->Time() - simRealTime;
+		simRealTime = engineServer->Time() - simRealTime;
 
 		if ( simRealTime < 0 )
 			simRealTime = 0;

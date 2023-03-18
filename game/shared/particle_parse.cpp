@@ -142,7 +142,7 @@ void ReloadParticleEffectsInList( IFileList *pFilesToReload )
 	// Then check to see if we need to reload the map's particles
 	const char *pszMapName = NULL;
 #ifdef CLIENT_DLL
-	pszMapName = engine->GetLevelName();	
+	pszMapName = engineClient->GetLevelName();
 #else
 	pszMapName = STRING( gpGlobals->mapname );
 #endif

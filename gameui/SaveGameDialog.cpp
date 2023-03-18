@@ -98,7 +98,7 @@ void CSaveGameDialog::OnCommand( const char *command )
 				char sz[ 256 ];
 				Q_snprintf(sz, sizeof( sz ), "save %s\n", saveName );
 
-				engine->ClientCmd_Unrestricted( sz );
+				engineClient->ClientCmd_Unrestricted( sz );
 
 				// Close this dialog
 				Close();

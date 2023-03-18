@@ -428,7 +428,7 @@ void CPlayerLogoProxy::OnLogoBindInternal( int playerindex )
 {
 	// Find player
 	player_info_t info;
-	engine->GetPlayerInfo( playerindex, &info );
+	engineClient->GetPlayerInfo( playerindex, &info );
 
 	if ( !info.customFiles[0] ) 
 		return;

@@ -109,8 +109,8 @@ bool CHudCrosshair::ShouldDraw( void )
 	if ( IsX360() )
 	{
 		bNeedsDraw = m_pCrosshair && 
-			!engine->IsDrawingLoadingImage() &&
-			!engine->IsPaused() && 
+			!engineClient->IsDrawingLoadingImage() &&
+			!engineClient->IsPaused() &&
 			( !pPlayer->IsSuitEquipped() || g_pGameRules->IsMultiplayer() ) &&
 			g_pClientMode->ShouldDrawCrosshair() &&
 			!( pPlayer->GetFlags() & FL_FROZEN ) &&
@@ -121,8 +121,8 @@ bool CHudCrosshair::ShouldDraw( void )
 	{
 		bNeedsDraw = m_pCrosshair && 
 			crosshair.GetInt() &&
-			!engine->IsDrawingLoadingImage() &&
-			!engine->IsPaused() && 
+			!engineClient->IsDrawingLoadingImage() &&
+			!engineClient->IsPaused() &&
 			g_pClientMode->ShouldDrawCrosshair() &&
 			!( pPlayer->GetFlags() & FL_FROZEN ) &&
 			( pPlayer->entindex() == render->GetViewEntity() ) &&

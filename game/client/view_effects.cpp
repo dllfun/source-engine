@@ -260,7 +260,7 @@ void CViewEffects::CalcShake( void )
 			np.color[2] = 0.1;
 			np.index = nShake + 2;
 
-			engine->Con_NXPrintf( &np, "%02d: dur(%8.2f) amp(%8.2f) freq(%8.2f)", nShake + 1, (double)pShake->duration, (double)pShake->amplitude, (double)pShake->frequency );
+			engineClient->Con_NXPrintf( &np, "%02d: dur(%8.2f) amp(%8.2f) freq(%8.2f)", nShake + 1, (double)pShake->duration, (double)pShake->amplitude, (double)pShake->frequency );
 		}
 
 		if ( gpGlobals->curtime > pShake->nextShake )

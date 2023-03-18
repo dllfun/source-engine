@@ -44,7 +44,7 @@ IToolFrameworkServer *g_pToolFrameworkServer = &g_ToolFrameworkServer;
 
 bool ToolsEnabled()
 {
-	return g_ToolFrameworkServer.m_pTools && g_ToolFrameworkServer.m_pTools->InToolMode() && !engine->IsDedicatedServer();
+	return g_ToolFrameworkServer.m_pTools && g_ToolFrameworkServer.m_pTools->InToolMode() && !engineServer->IsDedicatedServer();
 }
 
 #endif
@@ -57,7 +57,7 @@ bool CToolFrameworkServer::Init()
 	// Latch onto internal interface
 	m_pTools = ( IServerEngineTools * )list.engineFactory( VSERVERENGINETOOLS_INTERFACE_VERSION, NULL );
 
-	if ( !m_pTools && !engine->IsDedicatedServer() )
+	if ( !m_pTools && !engineServer->IsDedicatedServer() )
 	{
 		return false;
 	}

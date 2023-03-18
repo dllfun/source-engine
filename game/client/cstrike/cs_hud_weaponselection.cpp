@@ -712,7 +712,7 @@ void CHudWeaponSelection::SelectWeapon( void )
 {
 	if ( !GetSelectedWeapon() )
 	{
-		engine->ClientCmd( "cancelselect\n" );
+		engineClient->ClientCmd( "cancelselect\n" );
 		return;
 	}
 
@@ -741,7 +741,7 @@ void CHudWeaponSelection::SelectWeapon( void )
 	
 		m_hSelectedWeapon = NULL;
 	
-		engine->ClientCmd( "cancelselect\n" );
+		engineClient->ClientCmd( "cancelselect\n" );
 
 	}
 }
@@ -766,7 +766,7 @@ void CHudWeaponSelection::CancelWeaponSelection()
 	}
 	else
 	{
-		engine->ClientCmd("escape");
+		engineClient->ClientCmd("escape");
 	}
 }
 

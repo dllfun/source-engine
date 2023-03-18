@@ -2629,7 +2629,7 @@ void CFlexCycler::Think( void )
 			m_istalking = 1;
 			char pszSentence[256];
 			Q_snprintf( pszSentence,sizeof(pszSentence), "%s%d", STRING(m_iszSentence), m_sentence++ );
-			int sentenceIndex = engine->SentenceIndexFromName( pszSentence );
+			int sentenceIndex = engineServer->SentenceIndexFromName( pszSentence );
 			if (sentenceIndex >= 0)
 			{
 				Msg( "%d : %s\n", sentenceIndex, pszSentence );
@@ -2645,7 +2645,7 @@ void CFlexCycler::Think( void )
 		} 
 		else if (!FStrEq( flex_talk.GetString(), "0") )
 		{
-			int sentenceIndex = engine->SentenceIndexFromName( flex_talk.GetString() );
+			int sentenceIndex = engineServer->SentenceIndexFromName( flex_talk.GetString() );
 			if (sentenceIndex >= 0)
 			{
 				CPASAttenuationFilter filter( this );

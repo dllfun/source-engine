@@ -282,7 +282,7 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 						sizeof(szBuffer),
 						"(%0.2f) output: (%s,%s) -> (%s,%s,%.1f)(%s)\n",
 #ifdef TF_DLL
-						engine->GetServerTime(),
+						engineServer->GetServerTime(),
 #else
 						gpGlobals->curtime,
 #endif
@@ -303,7 +303,7 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 						sizeof(szBuffer),
 						"(%0.2f) output: (%s,%s) -> (%s,%s)(%s)\n",
 #ifdef TF_DLL
-						engine->GetServerTime(),
+						engineServer->GetServerTime(),
 #else
 						gpGlobals->curtime,
 #endif
@@ -777,7 +777,7 @@ void CEventQueue::Dump( void )
 
 	Msg("Dumping event queue. Current time is: %.2f\n",
 #ifdef TF_DLL
-		engine->GetServerTime()
+		engineServer->GetServerTime()
 #else
 		gpGlobals->curtime
 #endif
@@ -810,7 +810,7 @@ void CEventQueue::AddEvent( const char *target, const char *targetInput, variant
 	// build the new event
 	EventQueuePrioritizedEvent_t *newEvent = new EventQueuePrioritizedEvent_t;
 #ifdef TF_DLL
-	newEvent->m_flFireTime = engine->GetServerTime() + fireDelay;	// priority key in the priority queue
+	newEvent->m_flFireTime = engineServer->GetServerTime() + fireDelay;	// priority key in the priority queue
 #else
 	newEvent->m_flFireTime = gpGlobals->curtime + fireDelay;	// priority key in the priority queue
 #endif
@@ -833,7 +833,7 @@ void CEventQueue::AddEvent( CBaseEntity *target, const char *targetInput, varian
 	// build the new event
 	EventQueuePrioritizedEvent_t *newEvent = new EventQueuePrioritizedEvent_t;
 #ifdef TF_DLL
-	newEvent->m_flFireTime = engine->GetServerTime() + fireDelay;	// primary priority key in the priority queue
+	newEvent->m_flFireTime = engineServer->GetServerTime() + fireDelay;	// primary priority key in the priority queue
 #else
 	newEvent->m_flFireTime = gpGlobals->curtime + fireDelay;	// primary priority key in the priority queue
 #endif
@@ -908,7 +908,7 @@ void CEventQueue::ServiceEvents( void )
 	EventQueuePrioritizedEvent_t *pe = m_Events.m_pNext;
 
 #ifdef TF_DLL
-	while ( pe != NULL && pe->m_flFireTime <= engine->GetServerTime() )
+	while ( pe != NULL && pe->m_flFireTime <= engineServer->GetServerTime() )
 #else
 	while ( pe != NULL && pe->m_flFireTime <= gpGlobals->curtime )
 #endif
@@ -1198,7 +1198,7 @@ int CEventQueue::Restore( IRestore &restore )
 					  STRING(tmpEvent.m_iTargetInput),
 					  tmpEvent.m_VariantValue,
 #ifdef TF_DLL
-					  tmpEvent.m_flFireTime - engine->GetServerTime(),
+					  tmpEvent.m_flFireTime - engineServer->GetServerTime(),
 #else
 					  tmpEvent.m_flFireTime - gpGlobals->curtime,
 #endif
@@ -1212,7 +1212,7 @@ int CEventQueue::Restore( IRestore &restore )
 					  STRING(tmpEvent.m_iTargetInput),
 					  tmpEvent.m_VariantValue,
 #ifdef TF_DLL
-					  tmpEvent.m_flFireTime - engine->GetServerTime(),
+					  tmpEvent.m_flFireTime - engineServer->GetServerTime(),
 #else
 					  tmpEvent.m_flFireTime - gpGlobals->curtime,
 #endif

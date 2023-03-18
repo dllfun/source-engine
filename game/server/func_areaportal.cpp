@@ -177,7 +177,7 @@ bool CAreaPortal::KeyValue( const char *szKeyName, const char *szValue )
 
 bool CAreaPortal::UpdateState()
 {
-	engine->SetAreaPortalState( m_portalNumber, m_state );
+	engineServer->SetAreaPortalState( m_portalNumber, m_state );
 	return !!m_state;
 }
 

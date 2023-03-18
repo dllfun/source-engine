@@ -48,7 +48,7 @@ T * NextBotCreatePlayerBot( const char *name, bool bReportFakeClient = true )
 	ClientPutInServerOverride( T::AllocatePlayerEntity );
 
 	// create the bot and spawn it into the environment
-	edict_t *botEdict = engine->CreateFakeClientEx( name, bReportFakeClient );
+	edict_t *botEdict = engineServer->CreateFakeClientEx( name, bReportFakeClient );
 
 	// close the "back door"
 	ClientPutInServerOverride( NULL );
@@ -527,7 +527,7 @@ inline NextBotPlayer< PlayerType >::~NextBotPlayer()
 template < typename PlayerType >
 inline void NextBotPlayer< PlayerType >::Spawn( void )
 {
-	engine->SetFakeClientConVarValue( this->edict(), "cl_autohelp", "0" );
+	engineServer->SetFakeClientConVarValue( this->edict(), "cl_autohelp", "0" );
 
 	m_prevInputButtons = m_inputButtons = 0;
 	m_fireButtonTimer.Invalidate();
@@ -584,7 +584,7 @@ inline void NextBotPlayer< PlayerType >::PhysicsSimulate( void )
 		return;
 	}
 
-	if ( engine->IsPaused() )
+	if (engineServer->IsPaused() )
 	{
 		// We're paused - don't add new commands
 		PlayerType::PhysicsSimulate();

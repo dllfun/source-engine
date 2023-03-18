@@ -212,7 +212,7 @@ void CCenterStringLabel::OnTick( void )
 //-----------------------------------------------------------------------------
 bool CCenterStringLabel::ShouldDraw( void )
 {
-	if ( engine->IsDrawingLoadingImage() )
+	if (engineClient->IsDrawingLoadingImage() )
 	{
 		return false;
 	}

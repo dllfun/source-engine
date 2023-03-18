@@ -984,7 +984,7 @@ const char *CNavMesh::GetFilename( void ) const
 {
 	// filename is local to game dir for Steam, so we need to prepend game dir for regular file save
 	char gamePath[256];
-	engine->GetGameDir( gamePath, 256 );
+	engineServer->GetGameDir( gamePath, 256 );
 
 	// persistant return value
 	static char filename[256];
@@ -1464,7 +1464,7 @@ NavErrorType CNavMesh::Load( void )
 
 		if ( bspSize != saveBspSize && !navIsInBsp )
 		{
-			if ( engine->IsDedicatedServer() )
+			if (engineServer->IsDedicatedServer() )
 			{
 				// Warning doesn't print to the dedicated server console, so we'll use Msg instead
 				DevMsg( "The Navigation Mesh was built using a different version of this map.\n" );

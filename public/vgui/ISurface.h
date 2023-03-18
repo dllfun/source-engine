@@ -419,8 +419,13 @@ public:
 	virtual void DrawPanelIn3DSpace(vgui::VPANEL pRootPanel, const VMatrix& panelCenterToWorld, int nPixelWidth, int nPixelHeight, float flWorldWidth, float flWorldHeight) = 0;
 
 	virtual void DisableClipping(bool bDisable) = 0;
+	// Binds a material to a surface texture ID
+	virtual void DrawSetTextureMaterial(int id, IMaterial* pMaterial) = 0;
 	// Gets a material bound to a surface texture ID
 	virtual IMaterial* DrawGetTextureMaterial(int id) = 0;
+
+	virtual void Begin3DPaint(int iLeft, int iTop, int iRight, int iBottom, bool bRenderToTexture = true) = 0;
+	virtual void End3DPaint() = 0;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// !! WARNING! YOU MUST NOT ADD YOUR NEW METHOD HERE OR YOU WILL BREAK MODS !!
 	// !! Add your new stuff to the bottom of IMatSystemSurface instead.        !!

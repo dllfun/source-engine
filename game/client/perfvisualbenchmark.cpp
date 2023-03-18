@@ -219,10 +219,10 @@ void CPerfVisualBenchmark::Start()
 	m_flTimer = gpGlobals->realtime + FPS_STABILIZE_TIME;
 	m_bWaiting = true;
 	m_bIsOn = true;									// showtime!
-	engine->ClientCmd_Unrestricted("cancelselect");				// exit menu and console
-//	engine->ClientCmd_Unrestricted("wait");				
-//	engine->ClientCmd_Unrestricted("setpause");					// pause the mofo
-	engine->ClientCmd_Unrestricted("host_timescale 0.0001");					// pause the mofo
+	engineClient->ClientCmd_Unrestricted("cancelselect");				// exit menu and console
+//	engineClient->ClientCmd_Unrestricted("wait");				
+//	engineClient->ClientCmd_Unrestricted("setpause");					// pause the mofo
+	engineClient->ClientCmd_Unrestricted("host_timescale 0.0001");					// pause the mofo
 	
 }
 
@@ -233,10 +233,10 @@ void CPerfVisualBenchmark::Stop()
 #endif
 	m_bIsOn = false;
 	Print();
-	engine->ClientCmd_Unrestricted("host_timescale 0");					// pause the mofo
-//	engine->ClientCmd_Unrestricted("unpause");				// unpause the mofo
-//	engine->ClientCmd_Unrestricted("wait");				
-	engine->ClientCmd_Unrestricted("toggleconsole");
+	engineClient->ClientCmd_Unrestricted("host_timescale 0");					// pause the mofo
+//	engineClient->ClientCmd_Unrestricted("unpause");				// unpause the mofo
+//	engineClient->ClientCmd_Unrestricted("wait");				
+	engineClient->ClientCmd_Unrestricted("toggleconsole");
 }
 
 void CPerfVisualBenchmark::PreRender( )
@@ -277,7 +277,7 @@ void CPerfVisualBenchmark::PreRender( )
 	if ( m_RunInfo[m_iCurVar].m_pVarName )
 	{
 		Q_snprintf(combuffer, sizeof(combuffer), "%s %s\n", m_RunInfo[m_iCurVar].m_pVarName, m_RunInfo[m_iCurVar].m_pOffVal );	//turn off current var
-		engine->ClientCmd_Unrestricted(combuffer);
+		engineClient->ClientCmd_Unrestricted(combuffer);
 	}
 
 	// next var
@@ -289,7 +289,7 @@ void CPerfVisualBenchmark::PreRender( )
 	}
 
 	Q_snprintf(combuffer, sizeof(combuffer), "%s %s\n",m_RunInfo[m_iCurVar].m_pVarName, m_RunInfo[m_iCurVar].m_pOnVal);  //turn on next var
-	engine->ClientCmd_Unrestricted(combuffer);
+	engineClient->ClientCmd_Unrestricted(combuffer);
 }
 
 

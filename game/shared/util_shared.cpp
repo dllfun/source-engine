@@ -831,8 +831,11 @@ bool UTIL_IsLowViolence( void )
 		return true;
 	}
 #endif
-
-	return engine->IsLowViolence();
+#ifdef GAME_DLL
+	return engineServer->IsLowViolence();
+#else
+	return engineClient->IsLowViolence();
+#endif
 }
 
 bool UTIL_ShouldShowBlood( int color )

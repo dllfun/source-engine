@@ -196,8 +196,8 @@ void CPlayerLocalData::UpdateAreaBits( CBasePlayer *pl, unsigned char chAreaPort
 	COMPILE_TIME_ASSERT( sizeof( tempBits ) >= sizeof( ((CPlayerLocalData*)0)->m_chAreaBits ) );
 
 	int i;
-	int area = engine->GetArea( origin );
-	engine->GetAreaBits( area, tempBits, sizeof( tempBits ) );
+	int area = engineServer->GetArea( origin );
+	engineServer->GetAreaBits( area, tempBits, sizeof( tempBits ) );
 	for ( i=0; i < m_chAreaBits.Count(); i++ )
 	{
 		if ( tempBits[i] != m_chAreaBits[ i ] )

@@ -726,7 +726,7 @@ float CLuminanceHistogramSystem::GetTargetTonemapScalar( bool bGetIdealTargetFor
 
 			if ( mat_debug_autoexposure.GetInt() )
 			{
-				engine->Con_NPrintf( 20, "Scale value = %f", scale_value );
+				engineClient->Con_NPrintf( 20, "Scale value = %f", scale_value );
 				//Warning( "scale value=%f\n", scale_value );
 			}
 		}
@@ -824,7 +824,7 @@ void CLuminanceHistogramSystem::UpdateLuminanceRanges( void )
 	// Force fallback to original tone mapping algorithm for these mods //
 	//==================================================================//
 	static bool s_bFirstTime = true;
-	if ( engine == NULL )
+	if (engineClient == NULL )
 	{
 		// Force this code to get hit again so we can change algorithm based on the client
 		s_nCurrentBucketAlgorithm = -1;
@@ -837,9 +837,9 @@ void CLuminanceHistogramSystem::UpdateLuminanceRanges( void )
 		const char *sModsForOriginalAlgorithm[] = { "dod", "cstrike", "lostcoast", "hl1" };
 		for ( int i=0; i<3; i++ )
 		{
-			if ( strlen( engine->GetGameDirectory() ) >= strlen( sModsForOriginalAlgorithm[i] ) )
+			if ( strlen(engineClient->GetGameDirectory() ) >= strlen( sModsForOriginalAlgorithm[i] ) )
 			{
-				if ( stricmp( &( engine->GetGameDirectory()[strlen( engine->GetGameDirectory() ) - strlen( sModsForOriginalAlgorithm[i] )] ), sModsForOriginalAlgorithm[i] ) == 0 )
+				if ( stricmp( &(engineClient->GetGameDirectory()[strlen(engineClient->GetGameDirectory() ) - strlen( sModsForOriginalAlgorithm[i] )] ), sModsForOriginalAlgorithm[i] ) == 0 )
 				{
 					mat_tonemap_algorithm.SetValue( 0 ); // Original algorithm
 					s_nCurrentBucketAlgorithm = mat_tonemap_algorithm.GetInt();
@@ -945,12 +945,12 @@ void CLuminanceHistogramSystem::DisplayHistogram( void )
 
 	if ( bDrawTextThisFrame == true )
 	{
-		engine->Con_NPrintf( 17, "(All values in linear space)" );
+		engineClient->Con_NPrintf( 17, "(All values in linear space)" );
 
-		engine->Con_NPrintf( 21, "AvgLum @ %4.2f%%  mat_tonemap_min_avglum = %4.2f%%  Using %d pixels of %d pixels on screen (%3d%%)", 
+		engineClient->Con_NPrintf( 21, "AvgLum @ %4.2f%%  mat_tonemap_min_avglum = %4.2f%%  Using %d pixels of %d pixels on screen (%3d%%)",
 			MAX( 0.0f, FindLocationOfPercentBrightPixels( 50.0f ) ) * 100.0f, mat_tonemap_min_avglum.GetFloat(),
 			nTotalValidPixels, ( dest_width * dest_height ), int( float( nTotalValidPixels ) * 100.0f / float( dest_width * dest_height ) ) );
-		engine->Con_NPrintf( 23, "BloomScale = %4.2f  mat_hdr_manual_tonemap_rate = %4.2f  mat_accelerate_adjust_exposure_down = %4.2f", 
+		engineClient->Con_NPrintf( 23, "BloomScale = %4.2f  mat_hdr_manual_tonemap_rate = %4.2f  mat_accelerate_adjust_exposure_down = %4.2f",
 			GetCurrentBloomScale(), mat_hdr_manual_tonemap_rate.GetFloat(), mat_accelerate_adjust_exposure_down.GetFloat() );
 	}
 
@@ -999,8 +999,8 @@ void CLuminanceHistogramSystem::DisplayHistogram( void )
 	{
 		if ( bDrawTextThisFrame == true )
 		{
-			engine->Con_NPrintf( 17, "" );
-			engine->Con_NPrintf( 15, "" );
+			engineClient->Con_NPrintf( 17, "" );
+			engineClient->Con_NPrintf( 15, "" );
 		}
 	}
 
@@ -1099,9 +1099,9 @@ void CLuminanceHistogramSystem::DisplayHistogram( void )
 		if ( bDrawTextThisFrame == true )
 		{
 			if ( IsX360() )
-				engine->Con_NPrintf( 26, "Min: %.2f  Max: %.2f", flAutoExposureMin, flAutoExposureMax );
+				engineClient->Con_NPrintf( 26, "Min: %.2f  Max: %.2f", flAutoExposureMin, flAutoExposureMax );
 			else
-				engine->Con_NPrintf( 26, "%.2f                                                                                       %.2f                                                                                           %.2f", flAutoExposureMin, ( flAutoExposureMax + flAutoExposureMin ) / 2.0f, flAutoExposureMax );
+				engineClient->Con_NPrintf( 26, "%.2f                                                                                       %.2f                                                                                           %.2f", flAutoExposureMin, ( flAutoExposureMax + flAutoExposureMin ) / 2.0f, flAutoExposureMax );
 		}
 	}
 
@@ -1422,14 +1422,14 @@ static void DrawBloomDebugBoxes( IMatRenderContext *pRenderContext )
 static float GetBloomAmount( void )
 {
 	// return bloom amount ( 0.0 if disabled or otherwise turned off )
-	if ( engine->GetDXSupportLevel() < 80 )
+	if (engineClient->GetDXSupportLevel() < 80 )
 		return 0.0;
 
 	HDRType_t hdrType = g_pMaterialSystemHardwareConfig->GetHDRType();
 
 	bool bBloomEnabled = (mat_hdr_level.GetInt() >= 1);
 	
-	if ( !engine->MapHasHDRLighting() )
+	if ( !engineClient->MapHasHDRLighting() )
 		bBloomEnabled = false;
 	if ( mat_force_bloom.GetInt() )
 		bBloomEnabled = true;
@@ -1645,12 +1645,12 @@ static void DoPreBloomTonemapping( IMatRenderContext *pRenderContext, int nX, in
 				{
 					if ( mat_tonemap_algorithm.GetInt() == 0 )
 					{
-						engine->Con_NPrintf( 19, "(Original algorithm) Target Scalar = %4.2f  Min/Max( %4.2f, %4.2f )  Final Scalar: %4.2f  Actual: %4.2f",
+						engineClient->Con_NPrintf( 19, "(Original algorithm) Target Scalar = %4.2f  Min/Max( %4.2f, %4.2f )  Final Scalar: %4.2f  Actual: %4.2f",
 											 flTargetScalar, flAutoExposureMin, flAutoExposureMax, mat_hdr_tonemapscale.GetFloat(), pRenderContext->GetToneMappingScaleLinear().x );
 					}
 					else
 					{
-						engine->Con_NPrintf( 19, "%.2f%% of pixels above %d%% target @ %4.2f%%  Target Scalar = %4.2f  Min/Max( %4.2f, %4.2f )  Final Scalar: %4.2f  Actual: %4.2f",
+						engineClient->Con_NPrintf( 19, "%.2f%% of pixels above %d%% target @ %4.2f%%  Target Scalar = %4.2f  Min/Max( %4.2f, %4.2f )  Final Scalar: %4.2f  Actual: %4.2f",
 											 mat_tonemap_percent_bright_pixels.GetFloat(), mat_tonemap_percent_target.GetInt(),
 											 ( g_HDR_HistogramSystem.FindLocationOfPercentBrightPixels( mat_tonemap_percent_bright_pixels.GetFloat(), mat_tonemap_percent_target.GetFloat() ) * 100.0f ),
 											 g_HDR_HistogramSystem.GetTargetTonemapScalar( true ), flAutoExposureMin, flAutoExposureMax, mat_hdr_tonemapscale.GetFloat(), pRenderContext->GetToneMappingScaleLinear().x );
@@ -1663,7 +1663,7 @@ static void DoPreBloomTonemapping( IMatRenderContext *pRenderContext, int nX, in
 
 static void DoPostBloomTonemapping( IMatRenderContext *pRenderContext, int nX, int nY, int nWidth, int nHeight, float flAutoExposureMin, float flAutoExposureMax )
 {
-	if ( mat_show_histogram.GetInt() && ( engine->GetDXSupportLevel() >= 90 ) )
+	if ( mat_show_histogram.GetInt() && (engineClient->GetDXSupportLevel() >= 90 ) )
 	{
 		g_HDR_HistogramSystem.DisplayHistogram();
 	}
@@ -2324,8 +2324,8 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 			}
 
 			// bloom, software-AA and colour-correction (applied in 1 pass, after generation of the bloom texture)
-			bool  bPerformSoftwareAA	= IsX360() && ( engine->GetDXSupportLevel() >= 90 ) && ( flAAStrength != 0.0f );
-			bool  bPerformBloom			= !bPostVGui && ( flBloomScale > 0.0f ) && ( engine->GetDXSupportLevel() >= 90 );
+			bool  bPerformSoftwareAA	= IsX360() && (engineClient->GetDXSupportLevel() >= 90 ) && ( flAAStrength != 0.0f );
+			bool  bPerformBloom			= !bPostVGui && ( flBloomScale > 0.0f ) && (engineClient->GetDXSupportLevel() >= 90 );
 			bool  bPerformColCorrect	= !bPostVGui && 
 										  ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90) &&
 										  ( g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_FLOAT ) &&
@@ -2614,7 +2614,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 			}
 
 			pRenderContext->SetRenderTarget(NULL);
-			if ( mat_show_histogram.GetInt() && (engine->GetDXSupportLevel()>=90))
+			if ( mat_show_histogram.GetInt() && (engineClient->GetDXSupportLevel()>=90))
 				g_HDR_HistogramSystem.DisplayHistogram();
 			if ( mat_dynamic_tonemapping.GetInt() )
 			{

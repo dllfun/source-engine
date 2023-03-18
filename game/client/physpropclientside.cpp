@@ -180,7 +180,7 @@ void C_PhysPropClientside::RecreateAll()
 	DestroyAll();
 	if ( cl_phys_props_enable.GetInt() )
 	{
-		ParseAllEntities( engine->GetMapEntitiesString() );
+		ParseAllEntities(engineClient->GetMapEntitiesString() );
 		InitializePropRespawnZones();
 	}
 }
@@ -298,7 +298,7 @@ bool C_PhysPropClientside::Initialize()
 	}
 	else 
 	{
-		if ( engine->IsInEditMode() )
+		if (engineClient->IsInEditMode() )
 		{
 			// don't spawn in map edit mode
 			return false;
@@ -944,10 +944,10 @@ bool C_FuncPhysicsRespawnZone::CanMovePropAt( Vector vecOrigin, const Vector &ve
 		return false;
 
 	// Now make sure it's not in view
-	if( engine->IsBoxInViewCluster( vecMins + vecOrigin, vecMaxs + vecOrigin) )
+	if(engineClient->IsBoxInViewCluster( vecMins + vecOrigin, vecMaxs + vecOrigin) )
 		return false;
 
-	if( !engine->CullBox( vecMins + vecOrigin, vecMaxs + vecOrigin ) )
+	if( !engineClient->CullBox( vecMins + vecOrigin, vecMaxs + vecOrigin ) )
 		return false;
 
 	return true;

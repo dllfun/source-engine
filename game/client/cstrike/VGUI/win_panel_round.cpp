@@ -358,7 +358,7 @@ void WinPanel_Round::SetMVP( C_CSPlayer* pPlayer, CSMvpReason_t reason )
 		SetDialogVariable( "MVP_TEXT", wszBuf );
 
 		player_info_t pi;
-		if ( engine->GetPlayerInfo(pPlayer->entindex(), &pi) )
+		if (engineClient->GetPlayerInfo(pPlayer->entindex(), &pi) )
 		{
 			if ( pMVP_Avatar )
 			{

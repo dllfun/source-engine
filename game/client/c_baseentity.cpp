@@ -1349,15 +1349,15 @@ void C_BaseEntity::UpdateVisibility()
 #ifdef TF_CLIENT_DLL
 	// TF prevents drawing of any entity attached to players that aren't items in the inventory of the player.
 	// This is to prevent servers creating fake cosmetic items and attaching them to players.
-	if ( !engine->IsPlayingDemo() )
+	if ( !engineClient->IsPlayingDemo() )
 	{
-		static bool bIsStaging = ( engine->GetAppID() == 810 );
+		static bool bIsStaging = ( engineClient->GetAppID() == 810 );
 		if ( !m_bValidatedOwner )
 		{
 			bool bRetry = false;
 
 			// Check it the first time we call update visibility (Source TV doesn't bother doing validation)
-			m_bDeemedInvalid = engine->IsHLTV() ? false : !ValidateEntityAttachedToPlayer( bRetry );
+			m_bDeemedInvalid = engineClient->IsHLTV() ? false : !ValidateEntityAttachedToPlayer( bRetry );
 			m_bValidatedOwner = !bRetry;
 		}
 
@@ -2115,7 +2115,7 @@ void C_BaseEntity::NotifyShouldTransmit( ShouldTransmitState_t state )
 //-----------------------------------------------------------------------------
 void C_BaseEntity::MarkMessageReceived()
 {
-	m_flLastMessageTime = engine->GetLastTimeStamp();
+	m_flLastMessageTime = engineClient->GetLastTimeStamp();
 }
 
 
@@ -2145,7 +2145,7 @@ void C_BaseEntity::PreDataUpdate( DataUpdateType_t updateType )
 
 	if ( bnewentity && !IsClientCreated() )
 	{
-		m_flSpawnTime = engine->GetLastTimeStamp();
+		m_flSpawnTime = engineClient->GetLastTimeStamp();
 		MDLCACHE_CRITICAL_SECTION();
 		Spawn();
 	}
@@ -2155,7 +2155,7 @@ void C_BaseEntity::PreDataUpdate( DataUpdateType_t updateType )
 	// then use the current server time as the time for interpolation.
 	if ( IsSelfAnimating() )
 	{
-		m_flAnimTime = engine->GetLastTimeStamp();
+		m_flAnimTime = engineClient->GetLastTimeStamp();
 	}
 #endif
 
@@ -3056,7 +3056,7 @@ void C_BaseEntity::CheckInterpolatedVarParanoidMeasurement()
 			continue;
 		
 		// Player angles always generates this error when the console is up.
-		if ( pEnt->entindex() == 1 && engine->Con_IsVisible() )
+		if ( pEnt->entindex() == 1 && engineClient->Con_IsVisible() )
 			continue;
 			
 		// View models tend to screw up this test unnecesarily because they modify origin,
@@ -3183,15 +3183,15 @@ void C_BaseEntity::InterpolateServerEntities()
 	s_bInterpolate = cl_interpolate.GetBool();
 
 	// Don't interpolate during timedemo playback
-	if ( engine->IsPlayingTimeDemo() || engine->IsPaused() )
+	if (engineClient->IsPlayingTimeDemo() || engineClient->IsPaused() )
 	{										 
 		s_bInterpolate = false;
 	}
 
-	if ( !engine->IsPlayingDemo() )
+	if ( !engineClient->IsPlayingDemo() )
 	{
 		// Don't interpolate, either, if we are timing out
-		INetChannelInfo *nci = engine->GetNetChannelInfo();
+		INetChannelInfo *nci = engineClient->GetNetChannelInfo();
 		if ( nci && nci->GetTimeSinceLastReceived() > 0.5f )
 		{
 			s_bInterpolate = false;
@@ -3213,8 +3213,8 @@ void C_BaseEntity::InterpolateServerEntities()
 
 	// Enable extrapolation?
 	CInterpolationContext context;
-	context.SetLastTimeStamp( engine->GetLastTimeStamp() );
-	if ( cl_extrapolate.GetBool() && !engine->IsPaused() )
+	context.SetLastTimeStamp(engineClient->GetLastTimeStamp() );
+	if ( cl_extrapolate.GetBool() && !engineClient->IsPaused() )
 	{
 		context.EnableExtrapolation( true );
 	}
@@ -5893,9 +5893,9 @@ float C_BaseEntity::GetInterpolationAmount( int flags )
 
 	// Always fully interpolate during multi-player or during demo playback, if the recorded
 	// demo was recorded locally.
-	const bool bPlayingDemo = engine->IsPlayingDemo();
+	const bool bPlayingDemo = engineClient->IsPlayingDemo();
 	const bool bPlayingMultiplayer = !bPlayingDemo && ( gpGlobals->maxClients > 1 );
-	const bool bPlayingNonLocallyRecordedDemo = bPlayingDemo && !engine->IsPlayingDemoALocallyRecordedDemo();
+	const bool bPlayingNonLocallyRecordedDemo = bPlayingDemo && !engineClient->IsPlayingDemoALocallyRecordedDemo();
 	if ( bPlayingMultiplayer || bPlayingNonLocallyRecordedDemo )
 	{
 		return AdjustInterpolationAmount( this, TICKS_TO_TIME( TIME_TO_TICKS( GetClientInterpAmount() ) + serverTickMultiple ) );

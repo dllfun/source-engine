@@ -62,13 +62,13 @@ void CPlayerListDialog::Activate()
 
 	// refresh player list
 	m_pPlayerList->DeleteAllItems();
-	int maxClients = engine->GetMaxClients();
+	int maxClients = engineClient->GetMaxClients();
 	for (int i = 1; i <= maxClients; i++)
 	{
 		// get the player info from the engine	
 		player_info_t pi;
 
-		if ( !engine->GetPlayerInfo(i, &pi) )
+		if ( !engineClient->GetPlayerInfo(i, &pi) )
 			continue;
 
 		char szPlayerIndex[32];
@@ -109,7 +109,7 @@ void CPlayerListDialog::RefreshPlayerProperties()
 		int playerIndex = data->GetInt("index");
 		player_info_t pi;
 
-		if ( !engine->GetPlayerInfo( playerIndex, &pi) )
+		if ( !engineClient->GetPlayerInfo( playerIndex, &pi) )
 		{
 			// disconnected
 			data->SetString("properties", "Disconnected");
@@ -214,10 +214,10 @@ void CPlayerListDialog::OnItemSelected()
 
 		player_info_t pi;
 
-		int iLocalPlayer = engine->GetLocalPlayer();
+		int iLocalPlayer = engineClient->GetLocalPlayer();
 
 		int iPlayerIndex = data->GetInt("index");		
-		bool isValidPlayer = engine->GetPlayerInfo( iPlayerIndex, &pi );
+		bool isValidPlayer = engineClient->GetPlayerInfo( iPlayerIndex, &pi );
 
 		// make sure the player is not a bot, or the user 
 		// Matt - changed this check to see if player indeces match, instead of using friends ID

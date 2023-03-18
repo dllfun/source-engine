@@ -678,7 +678,7 @@ class CAchievementCS_AvengeFriend : public CCSBaseAchievement
 
             if (pLocalPlayer && pLocalPlayer->GetUserID() == event->GetInt( "avenger_id" ))
             {
-                int avengedPlayerIndex = engine->GetPlayerForUserID( event->GetInt( "avenged_player_id" ) );
+                int avengedPlayerIndex = engineClient->GetPlayerForUserID( event->GetInt( "avenged_player_id" ) );
 
                 if ( avengedPlayerIndex > 0 )
                 {
@@ -717,7 +717,7 @@ class CAchievementCS_CollectHolidayGifts : public CCSBaseAchievement
 
 		if ( Q_strcmp( event->GetName(), "christmas_gift_grab" ) == 0 )
 		{
-			int iPlayer = engine->GetPlayerForUserID( event->GetInt( "userid" ) );
+			int iPlayer = engineClient->GetPlayerForUserID( event->GetInt( "userid" ) );
 			CBaseEntity *pPlayer = UTIL_PlayerByIndex( iPlayer );
 
 			if ( pPlayer && pPlayer == C_CSPlayer::GetLocalCSPlayer() )

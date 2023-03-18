@@ -41,7 +41,7 @@ void CGameConsoleDialog::OnCommand(const char *command)
 		{
 			// Tell the engine we've hid the console, so that it unpauses the game
 			// even though we're still sitting at the menu.
-			engine->ClientCmd_Unrestricted( "unpause" );
+			engineClient->ClientCmd_Unrestricted( "unpause" );
 		}
 	}
 
@@ -69,7 +69,7 @@ void CGameConsoleDialog::OnKeyCodeTyped(KeyCode code)
 				// submit the entry as a console commmand
 				char szCommand[256];
 				Q_strncpy( szCommand, binding, sizeof( szCommand ) );
-				engine->ClientCmd_Unrestricted( szCommand );
+				engineClient->ClientCmd_Unrestricted( szCommand );
 			}
 		}
 	}
@@ -81,7 +81,7 @@ void CGameConsoleDialog::OnKeyCodeTyped(KeyCode code)
 //-----------------------------------------------------------------------------
 void CGameConsoleDialog::OnCommandSubmitted( const char *pCommand )
 {
-	engine->ClientCmd_Unrestricted( pCommand );
+	engineClient->ClientCmd_Unrestricted( pCommand );
 }
 
 

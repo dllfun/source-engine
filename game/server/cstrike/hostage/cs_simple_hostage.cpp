@@ -329,7 +329,7 @@ void CHostage::CheckForHostageAbuse( CCSPlayer *player )
 		else if ( player->m_iHostagesKilled >= hostageKillLimit )
 		{
 			Msg( "Kicking client \"%s\" for killing too many hostages\n", player->GetPlayerName() );
-			engine->ServerCommand( UTIL_VarArgs( "kickid %d \"For killing too many hostages\"\n", player->GetUserID() ) );
+			engineServer->ServerCommand( UTIL_VarArgs( "kickid %d \"For killing too many hostages\"\n", player->GetUserID() ) );
 		}
 	}
 }

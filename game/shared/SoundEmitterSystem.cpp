@@ -264,7 +264,7 @@ public:
 		StartLog();
 		Q_snprintf( mapname, sizeof( mapname ), "maps/%s", STRING( gpGlobals->mapname ) );
 #else
-		Q_strncpy( mapname, engine->GetLevelName(), sizeof( mapname ) );
+		Q_strncpy( mapname, engineClient->GetLevelName(), sizeof( mapname ) );
 #endif
 
 		Q_FixSlashes( mapname );
@@ -829,7 +829,7 @@ public:
 #if defined( CLIENT_DLL )
 		enginesound->EmitAmbientSound( params.soundname, params.volume, params.pitch, iFlags, soundtime );
 #else
-		engine->EmitAmbientSound(entindex, origin, params.soundname, params.volume, params.soundlevel, iFlags, params.pitch, soundtime );
+		engineServer->EmitAmbientSound(entindex, origin, params.soundname, params.volume, params.soundlevel, iFlags, params.pitch, soundtime );
 #endif
 
 		bool needsCC = !( iFlags & ( SND_STOP | SND_CHANGE_VOL | SND_CHANGE_PITCH ) );
@@ -957,7 +957,7 @@ public:
 #if defined( CLIENT_DLL )
 			enginesound->EmitAmbientSound( pSample, volume, pitch, flags, soundtime );
 #else
-			engine->EmitAmbientSound( entindex, origin, pSample, volume, soundlevel, flags, pitch, soundtime );
+			engineServer->EmitAmbientSound( entindex, origin, pSample, volume, soundlevel, flags, pitch, soundtime );
 #endif
 
 			if ( duration )
@@ -1362,7 +1362,7 @@ void CBaseEntity::EmitAmbientSound( int entindex, const Vector& origin, const ch
 #if defined( CLIENT_DLL )
 int SENTENCEG_Lookup(const char *sample)
 {
-	return engine->SentenceIndexFromName( sample + 1 );
+	return engineClient->SentenceIndexFromName( sample + 1 );
 }
 #endif
 
@@ -1383,7 +1383,7 @@ void UTIL_EmitAmbientSound( int entindex, const Vector &vecOrigin, const char *s
 			char name[32];
 			Q_snprintf( name, sizeof(name), "!%d", sentenceIndex );
 #if !defined( CLIENT_DLL )
-			engine->EmitAmbientSound( entindex, vecOrigin, name, vol, soundlevel, fFlags, pitch, soundtime );
+			engineServer->EmitAmbientSound( entindex, vecOrigin, name, vol, soundlevel, fFlags, pitch, soundtime );
 #else
 			enginesound->EmitAmbientSound( name, vol, pitch, fFlags, soundtime );
 #endif

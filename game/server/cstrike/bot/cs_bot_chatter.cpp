@@ -764,7 +764,7 @@ bool BotPhraseManager::Initialize( const char *filename, int bankIndex )
 
 				if (speak->m_duration <= 0.0f)
 				{
-					if ( !engine->IsDedicatedServer() )
+					if ( !engineServer->IsDedicatedServer() )
 					{
 						DevMsg( "Warning: Couldn't get duration of phrase '%s'\n", speak->m_phrase );
 					}

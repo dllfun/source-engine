@@ -947,7 +947,7 @@ float CHud::GetFOVSensitivityAdjust()
 bool CHud::IsHidden( int iHudFlags )
 {
 	// Not in game?
-	if ( !engine->IsInGame() )
+	if ( !engineClient->IsInGame() )
 		return true;
 
 	// No local player yet?

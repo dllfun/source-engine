@@ -3405,8 +3405,8 @@ void CNavMesh::BeginGeneration( bool incremental )
 	}
 
 #ifdef TERROR
-	engine->ServerCommand( "director_stop\nnb_delete_all\n" );
-	if ( !incremental && !engine->IsDedicatedServer() )
+	engineServer->ServerCommand( "director_stop\nnb_delete_all\n" );
+	if ( !incremental && !engineServer->IsDedicatedServer() )
 	{
 		CBasePlayer *host = UTIL_GetListenServerHost();
 		if ( host )
@@ -3415,7 +3415,7 @@ void CNavMesh::BeginGeneration( bool incremental )
 		}
 	}
 #else
-	engine->ServerCommand( "bot_kick\n" );
+	engineServer->ServerCommand( "bot_kick\n" );
 #endif
 
 	// Right now, incrementally-generated areas won't connect to existing areas automatically.
@@ -3473,13 +3473,13 @@ void CNavMesh::BeginGeneration( bool incremental )
 void CNavMesh::BeginAnalysis( bool quitWhenFinished )
 {
 #ifdef TERROR
-	if ( !engine->IsDedicatedServer() )
+	if ( !engineServer->IsDedicatedServer() )
 	{
 		CBasePlayer *host = UTIL_GetListenServerHost();
 		if ( host )
 		{
 			host->ChangeTeam( TEAM_SPECTATOR );
-			engine->ServerCommand( "director_no_death_check 1\ndirector_stop\nnb_delete_all\n" );
+			engineServer->ServerCommand( "director_no_death_check 1\ndirector_stop\nnb_delete_all\n" );
 
 			ConVarRef mat_fullbright( "mat_fullbright" );
 			ConVarRef mat_hdr_level( "mat_hdr_level" );
@@ -3494,7 +3494,7 @@ void CNavMesh::BeginAnalysis( bool quitWhenFinished )
 			{
 				Warning( "Enabling HDR and reloading materials\n" );
 				mat_hdr_level.SetValue( 2 );
-				engine->ClientCommand( host->edict(), "mat_reloadallmaterials\n" );
+				engineServer->ClientCommand( host->edict(), "mat_reloadallmaterials\n" );
 			}
 
 			// Running a threaded server breaks our lighting calculations
@@ -3821,7 +3821,7 @@ bool CNavMesh::UpdateGeneration( float maxTime )
 			Msg( "Finding earliest occupy times...DONE\n" );
 
 #ifdef NAV_ANALYZE_LIGHT_INTENSITY
-			bool shouldSkipLightComputation = ( m_generationMode == GENERATE_INCREMENTAL || engine->IsDedicatedServer() );
+			bool shouldSkipLightComputation = ( m_generationMode == GENERATE_INCREMENTAL || engineServer->IsDedicatedServer() );
 #else
 			bool shouldSkipLightComputation = true;
 #endif
@@ -4002,11 +4002,11 @@ bool CNavMesh::UpdateGeneration( float maxTime )
 
 			if ( m_bQuitWhenFinished )
 			{
-				engine->ServerCommand( "quit\n" );
+				engineServer->ServerCommand( "quit\n" );
 			}
 			else if ( restart )
 			{
-				engine->ChangeLevel( STRING( gpGlobals->mapname ), NULL );
+				engineServer->ChangeLevel( STRING( gpGlobals->mapname ), NULL );
 			}
 			else
 			{

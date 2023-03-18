@@ -89,7 +89,7 @@ void TracerCallback( const CEffectData &data )
 		QAngle	vangles;
 		Vector	vforward, vright, vup;
 
-		engine->GetViewAngles( vangles );
+		engineClient->GetViewAngles( vangles );
 		AngleVectors( vangles, &vforward, &vright, &vup );
 
 		VectorMA( data.m_vStart, 4, vright, foo );
@@ -131,7 +131,7 @@ void ParticleTracerCallback( const CEffectData &data )
 		QAngle	vangles;
 		Vector	vforward, vright, vup;
 
-		engine->GetViewAngles( vangles );
+		engineClient->GetViewAngles( vangles );
 		AngleVectors( vangles, &vforward, &vright, &vup );
 
 		VectorMA( data.m_vStart, 4, vright, vecStart );

@@ -38,7 +38,7 @@ CON_COMMAND( testreplaymessagedlg, "" )
 	pPanel->SetKeyBoardInputEnabled( true );
 	pPanel->SetMouseInputEnabled( true );
 	pPanel->RequestFocus();
-	engine->ClientCmd_Unrestricted( "gameui_hide" );
+	engineClient->ClientCmd_Unrestricted( "gameui_hide" );
 }
 #endif
 
@@ -118,7 +118,7 @@ void CReplayMessageDlg::Close()
 	// Hide / delete / hide game UI
 	SetVisible( false );
 	MarkForDeletion();
-	engine->ClientCmd_Unrestricted( "gameui_hide" );
+	engineClient->ClientCmd_Unrestricted( "gameui_hide" );
 }
 
 void CReplayMessageDlg::OnCommand( const char *pCommand )

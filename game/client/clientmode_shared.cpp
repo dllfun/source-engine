@@ -90,16 +90,16 @@ extern bool IsInCommentaryMode( void );
 #ifdef VOICE_VOX_ENABLE
 void VoxCallback( IConVar *var, const char *oldString, float oldFloat )
 {
-	if ( engine && engine->IsConnected() )
+	if ( engineClient && engineClient->IsConnected() )
 	{
 		ConVarRef voice_vox( var->GetName() );
 		if ( voice_vox.GetBool() && voice_modenable.GetBool() )
 		{
-			engine->ClientCmd_Unrestricted( "voicerecord_toggle on\n" );
+			engineClient->ClientCmd_Unrestricted( "voicerecord_toggle on\n" );
 		}
 		else
 		{
-			engine->ClientCmd_Unrestricted( "voicerecord_toggle off\n" );
+			engineClient->ClientCmd_Unrestricted( "voicerecord_toggle off\n" );
 		}
 	}
 }
@@ -119,7 +119,7 @@ public:
 	{
 		if ( voice_vox.GetBool() && voice_modenable.GetBool() )
 		{
-			engine->ClientCmd_Unrestricted( "voicerecord_toggle on\n" );
+			engineClient->ClientCmd_Unrestricted( "voicerecord_toggle on\n" );
 		}
 	}
 
@@ -127,7 +127,7 @@ public:
 	{
 		if ( voice_vox.GetBool() )
 		{
-			engine->ClientCmd_Unrestricted( "voicerecord_toggle off\n" );
+			engineClient->ClientCmd_Unrestricted( "voicerecord_toggle off\n" );
 		}
 	}
 };
@@ -448,7 +448,7 @@ void ClientModeShared::OverrideView( CViewSetup *pSetup )
 
 		if ( g_ThirdPersonManager.IsOverridingThirdPerson() == false )
 		{
-			engine->GetViewAngles( camAngles );
+			engineClient->GetViewAngles( camAngles );
 		}
 			
 		// get the forward vector
@@ -624,7 +624,7 @@ void ClientModeShared::Update()
 			}
 		}
 
-		engine->Con_NPrintf( 0, "# Active particle systems: %i", nCount );
+		engineClient->Con_NPrintf( 0, "# Active particle systems: %i", nCount );
 	}
 }
 
@@ -642,7 +642,7 @@ void ClientModeShared::ProcessInput(bool bActive)
 //-----------------------------------------------------------------------------
 int	ClientModeShared::KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding )
 {
-	if ( engine->Con_IsVisible() )
+	if (engineClient->Con_IsVisible() )
 		return 1;
 	
 	// If we're voting...
@@ -695,17 +695,17 @@ int ClientModeShared::HandleSpectatorKeyInput( int down, ButtonCode_t keynum, co
 	}
 	else if ( down && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+attack" ) == 0 )
 	{
-		engine->ClientCmd( "spec_next" );
+		engineClient->ClientCmd( "spec_next" );
 		return 0;
 	}
 	else if ( down && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+attack2" ) == 0 )
 	{
-		engine->ClientCmd( "spec_prev" );
+		engineClient->ClientCmd( "spec_prev" );
 		return 0;
 	}
 	else if ( down && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+jump" ) == 0 )
 	{
-		engine->ClientCmd( "spec_mode" );
+		engineClient->ClientCmd( "spec_mode" );
 		return 0;
 	}
 	else if ( down && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+strafe" ) == 0 )
@@ -753,7 +753,7 @@ int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const c
 bool ClientModeShared::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
 {
 #if defined( REPLAY_ENABLED )
-	if ( engine->IsPlayingDemo() )
+	if ( engineClient->IsPlayingDemo() )
 	{
 		if ( !replay_rendersetting_renderglow.GetBool() )
 			return false;
@@ -1152,7 +1152,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 
 		if ( !IsInCommentaryMode() )
 		{
-			CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>( engine->GetAchievementMgr() );
+			CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 			if ( !pAchievementMgr )
 				return;
 
@@ -1302,7 +1302,7 @@ void ClientModeShared::UpdateReplayMessages()
 		m_flReplayStopRecordTime = 0.0f;
 	}
 
-	if ( !engine->IsConnected() )
+	if ( !engineClient->IsConnected() )
 	{
 		ClearReplayMessageList();
 	}
@@ -1334,7 +1334,7 @@ void ClientModeShared::DisplayReplayMessage( const char *pLocalizeName, float fl
 	// Display a replay message
 	if ( bDlg )
 	{
-		if ( engine->IsInGame() )
+		if ( engineClient->IsInGame() )
 		{
 			Panel *pPanel = new CReplayMessageDlg( pLocalizeName );
 			pPanel->SetVisible( true );

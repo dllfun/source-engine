@@ -458,7 +458,7 @@ void CClient_Precipitation::Simulate( float dt )
 	if ( r_RainProfile.GetInt() )
 	{
 		timer.End();
-		engine->Con_NPrintf( 15, "Rain simulation: %du (%d tracers)", timer.GetDuration().GetMicroseconds(), m_Particles.Count() );
+		engineClient->Con_NPrintf( 15, "Rain simulation: %du (%d tracers)", timer.GetDuration().GetMicroseconds(), m_Particles.Count() );
 	}
 }
 
@@ -618,7 +618,7 @@ void CClient_Precipitation::Render()
 	if ( r_RainProfile.GetInt() )
 	{
 		timer.End();
-		engine->Con_NPrintf( 16, "Rain render    : %du", timer.GetDuration().GetMicroseconds() );
+		engineClient->Con_NPrintf( 16, "Rain render    : %du", timer.GetDuration().GetMicroseconds() );
 	}
 }
 

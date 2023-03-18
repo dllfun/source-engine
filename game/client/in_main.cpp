@@ -159,9 +159,9 @@ void IN_CenterView_f (void)
 	{
 		if ( !::input->CAM_InterceptingMouse() )
 		{
-			engine->GetViewAngles( viewangles );
+			engineClient->GetViewAngles( viewangles );
 			viewangles[PITCH] = 0;
-			engine->SetViewAngles( viewangles );
+			engineClient->SetViewAngles( viewangles );
 		}
 	}
 }
@@ -216,7 +216,7 @@ int KB_ConvertString( char *in, char **ppout )
 			if ( strlen( binding + 1 ) > 0 )
 			{
 				// See if there is a binding for binding?
-				pBinding = engine->Key_LookupBinding( binding + 1 );
+				pBinding = engineClient->Key_LookupBinding( binding + 1 );
 			}
 
 			if ( pBinding )
@@ -777,7 +777,7 @@ void CInput::AdjustAngles ( float frametime )
 	}
 
 	// Retrieve latest view direction from engine
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 
 	// Adjust YAW
 	AdjustYaw( speed, viewangles );
@@ -789,7 +789,7 @@ void CInput::AdjustAngles ( float frametime )
 	ClampAngles( viewangles );
 
 	// Store new view angles into engine view direction
-	engine->SetViewAngles( viewangles );
+	engineClient->SetViewAngles( viewangles );
 }
 
 /*
@@ -953,7 +953,7 @@ void CInput::ControllerMove( float frametime, CUserCmd *cmd )
 	// NVNT if we have a haptic device..
 	if(haptics && haptics->HasDevice())
 	{
-		if(engine->IsPaused() || engine->IsLevelMainMenuBackground() || vgui::ivgui()->IsCursorVisible() || !engine->IsInGame())
+		if(engineClient->IsPaused() || engineClient->IsLevelMainMenuBackground() || vgui::ivgui()->IsCursorVisible() || !engineClient->IsInGame())
 		{
 			// NVNT send a menu process to the haptics system.
 			haptics->MenuProcess();
@@ -1007,7 +1007,7 @@ void CInput::ExtraMouseSample( float frametime, bool active )
 
 
 	QAngle viewangles;
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 	QAngle originalViewangles = viewangles;
 
 	if ( active )
@@ -1041,7 +1041,7 @@ void CInput::ExtraMouseSample( float frametime, bool active )
 	}
 
 	// Retreive view angles from engine ( could have been set in IN_AdjustAngles above )
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 
 	// Set button and flag bits, don't blow away state
 #ifdef SIXENSE
@@ -1073,7 +1073,7 @@ void CInput::ExtraMouseSample( float frametime, bool active )
 	if ( g_pClientMode->CreateMove( frametime, cmd ) )
 	{
 		// Get current view angles after the client mode tweaks with it
-		engine->SetViewAngles( cmd->viewangles );
+		engineClient->SetViewAngles( cmd->viewangles );
 		prediction->SetLocalViewAngles( cmd->viewangles );
 	}
 
@@ -1087,13 +1087,13 @@ void CInput::ExtraMouseSample( float frametime, bool active )
 		{
 			QAngle curViewangles, newViewangles;
 			Vector curMotion, newMotion;
-			engine->GetViewAngles( curViewangles );
+			engineClient->GetViewAngles( curViewangles );
 			curMotion.Init ( 
 				cmd->forwardmove,
 				cmd->sidemove,
 				cmd->upmove );
 			g_ClientVirtualReality.OverridePlayerMotion ( frametime, originalViewangles, curViewangles, curMotion, &newViewangles, &newMotion );
-			engine->SetViewAngles( newViewangles );
+			engineClient->SetViewAngles( newViewangles );
 			cmd->forwardmove = newMotion[0];
 			cmd->sidemove = newMotion[1];
 			cmd->upmove = newMotion[2];
@@ -1116,7 +1116,7 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 	cmd->tick_count = gpGlobals->tickcount;
 
 	QAngle viewangles;
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 	QAngle originalViewangles = viewangles;
 
 	if ( active || sv_noclipduringpause.GetInt() )
@@ -1159,7 +1159,7 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 		}
 	}
 	// Retreive view angles from engine ( could have been set in IN_AdjustAngles above )
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 
 	// Latch and clear impulse
 	cmd->impulse = in_impulse;
@@ -1229,10 +1229,10 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 		// Only set the engine angles if sixense is not enabled. It is done in SixenseInput::SetView otherwise.
 		if( !g_pSixenseInput->IsEnabled() )
 		{
-			engine->SetViewAngles( cmd->viewangles );
+			engineClient->SetViewAngles( cmd->viewangles );
 		}
 #else
-		engine->SetViewAngles( cmd->viewangles );
+		engineClient->SetViewAngles( cmd->viewangles );
 
 #endif
 
@@ -1243,13 +1243,13 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 			{
 				QAngle curViewangles, newViewangles;
 				Vector curMotion, newMotion;
-				engine->GetViewAngles( curViewangles );
+				engineClient->GetViewAngles( curViewangles );
 				curMotion.Init ( 
 					cmd->forwardmove,
 					cmd->sidemove,
 					cmd->upmove );
 				g_ClientVirtualReality.OverridePlayerMotion ( input_sample_frametime, originalViewangles, curViewangles, curMotion, &newViewangles, &newMotion );
-				engine->SetViewAngles( newViewangles );
+				engineClient->SetViewAngles( newViewangles );
 				cmd->forwardmove = newMotion[0];
 				cmd->sidemove = newMotion[1];
 				cmd->upmove = newMotion[2];
@@ -1259,7 +1259,7 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 			{
 				Vector vPos;
 				g_ClientVirtualReality.GetTorsoRelativeAim( &vPos, &cmd->viewangles );
-				engine->SetViewAngles( cmd->viewangles );
+				engineClient->SetViewAngles( cmd->viewangles );
 			}
 		}
 	}

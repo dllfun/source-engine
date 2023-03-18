@@ -462,7 +462,7 @@ public:
 				// submit the entry as a console commmand
 				char szCommand[256];
 				Q_strncpy( szCommand, binding, sizeof( szCommand ) );
-				engine->ClientCmd_Unrestricted( szCommand );
+				engineClient->ClientCmd_Unrestricted( szCommand );
 			}
 		}
 	}
@@ -1151,7 +1151,7 @@ void CBasePanel::SetBackgroundRenderState(EBackgroundState state)
 	}
 
 	// apply state change transition
-	float frametime = engine->Time();
+	float frametime = engineClient->Time();
 
 	if ( m_eBackgroundState == BACKGROUND_INITIAL && ( state == BACKGROUND_DISCONNECTED || state == BACKGROUND_MAINMENU ) )
 	{
@@ -1223,7 +1223,7 @@ void CBasePanel::StartExitingProcess()
 {
 	// must let a non trivial number of screen swaps occur to stabilize image
 	// ui runs in a constrained state, while shutdown is occurring
-	m_flTransitionStartTime = engine->Time();
+	m_flTransitionStartTime = engineClient->Time();
 	m_flTransitionEndTime = m_flTransitionStartTime + 0.5f;
 	m_ExitingFrameCount = 30;
 	g_pInputSystem->DetachFromWindow();
@@ -1234,7 +1234,7 @@ void CBasePanel::StartExitingProcess()
 		pPanel->CloseAllDialogs( false );
 	}
 
-	engine->StartXboxExitingProcess();
+	engineClient->StartXboxExitingProcess();
 }
 
 //-----------------------------------------------------------------------------
@@ -1296,7 +1296,7 @@ void CBasePanel::DrawBackgroundImage()
 		// force the engine to do an image capture ONCE into this image's render target
 		char filename[MAX_PATH];
 		surface()->DrawGetTextureFile( m_iRenderTargetImageID, filename, sizeof( filename ) );
-		engine->CopyFrameBufferToMaterial( filename );
+		engineClient->CopyFrameBufferToMaterial( filename );
 		m_bCopyFrameBuffer = false;
 		m_bUseRenderTargetImage = true;
 	}
@@ -1304,7 +1304,7 @@ void CBasePanel::DrawBackgroundImage()
 	int wide, tall;
 	GetSize( wide, tall );
 
-	float frametime = engine->Time();
+	float frametime = engineClient->Time();
 
 	// a background transition has a running map underneath it, so fade image out
 	// otherwise, there is no map and the background image stays opaque
@@ -1470,7 +1470,7 @@ void CBasePanel::UpdateGameMenus()
 {
 	// check our current state
 	bool isInGame = GameUI().IsInLevel();
-	bool isMulti = isInGame && (engine->GetMaxClients() > 1);
+	bool isMulti = isInGame && (engineClient->GetMaxClients() > 1);
 	bool isInReplay = GameUI().IsInReplay();
 	bool isVREnabled = materials->GetCurrentConfigForVideoCard().m_nVRModeAdapter == materials->GetCurrentAdapter();
 	bool isVRActive = UseVR();
@@ -1525,14 +1525,14 @@ CGameMenu *CBasePanel::RecursiveLoadGameMenu(KeyValues *datafile)
 void CBasePanel::RunFrame()
 {
 	InvalidateLayout();
-	vgui::GetAnimationController()->UpdateAnimations( engine->Time() );
+	vgui::GetAnimationController()->UpdateAnimations(engineClient->Time() );
 
 	if ( GameUI().IsConsoleUI() )
 	{
 		// run the console ui animations
-		m_pConsoleAnimationController->UpdateAnimations( engine->Time() );
+		m_pConsoleAnimationController->UpdateAnimations(engineClient->Time() );
 
-		if ( IsX360() && m_ExitingFrameCount && engine->Time() >= m_flTransitionEndTime )
+		if ( IsX360() && m_ExitingFrameCount && engineClient->Time() >= m_flTransitionEndTime )
 		{
 			if ( m_ExitingFrameCount > 1 )
 			{
@@ -1543,16 +1543,16 @@ void CBasePanel::RunFrame()
 					// If we kicked off this event from an invite, we need to properly setup the restart to account for that
 					if ( m_bRestartFromInvite )
 					{
-						engine->ClientCmd_Unrestricted( "quit_x360 invite" );
+						engineClient->ClientCmd_Unrestricted( "quit_x360 invite" );
 					}
 					else if ( m_bRestartSameGame )
 					{
-						engine->ClientCmd_Unrestricted( "quit_x360 restart" );
+						engineClient->ClientCmd_Unrestricted( "quit_x360 restart" );
 					}
 					else
 					{
 						// quits to appchooser
-						engine->ClientCmd_Unrestricted( "quit_x360\n" );
+						engineClient->ClientCmd_Unrestricted( "quit_x360\n" );
 					}
 				}
 			}
@@ -1766,14 +1766,14 @@ void CBasePanel::ApplySchemeSettings(IScheme *pScheme)
 	{
 		// pc uses blurry backgrounds based on the background level
 		char background[MAX_PATH];
-		engine->GetMainMenuBackgroundName( background, sizeof(background) );
+		engineClient->GetMainMenuBackgroundName( background, sizeof(background) );
 		Q_snprintf( filename, sizeof( filename ), "console/%s%s", background, ( bIsWidescreen ? "_widescreen" : "" ) );
 	}
 	else
 	{
 		// 360 uses hi-res game specific backgrounds
 		char gameName[MAX_PATH];
-		const char *pGameDir = engine->GetGameDirectory();
+		const char *pGameDir = engineClient->GetGameDirectory();
 		V_FileBase( pGameDir, gameName, sizeof( gameName ) );
 		V_snprintf( filename, sizeof( filename ), "vgui/appchooser/background_%s%s", gameName, ( bIsWidescreen ? "_widescreen" : "" ) );
 	}
@@ -1824,10 +1824,10 @@ void CBasePanel::OnActivateModule(int moduleIndex)
 void CBasePanel::OnGameUIActivated()
 {
 	// If the load failed, we're going to bail out here
-	if ( engine->MapLoadFailed() )
+	if (engineClient->MapLoadFailed() )
 	{
 		// Don't display this again until it happens again
-		engine->SetMapLoadFailed( false );
+		engineClient->SetMapLoadFailed( false );
 		ShowMessageDialog( MD_LOAD_FAILED_WARNING );
 	}
 
@@ -1844,7 +1844,7 @@ void CBasePanel::OnGameUIActivated()
 		if ( XBX_GetPrimaryUserId() != XBX_INVALID_USER_ID && XBX_GetStorageDeviceId() != XBX_INVALID_STORAGE_ID && XBX_GetStorageDeviceId() != XBX_STORAGE_DECLINED )
 		{
 			// Open user settings and save game container here
-			uint nRet = engine->OnStorageDeviceAttached();
+			uint nRet = engineClient->OnStorageDeviceAttached();
 			if ( nRet != ERROR_SUCCESS )
 			{
 				// Invalidate the device
@@ -1869,7 +1869,7 @@ void CBasePanel::OnGameUIActivated()
 		// Brute force check to open tf matchmaking ui.
 		if ( GameUI().IsConsoleUI() )
 		{
-			const char *pGame = engine->GetGameDirectory();
+			const char *pGame = engineClient->GetGameDirectory();
 			if ( !Q_stricmp( Q_UnqualifiedFileName( pGame ), "tf" ) )
 			{
 				m_bUseMatchmaking = true;
@@ -2094,7 +2094,7 @@ void CBasePanel::RunMenuCommand(const char *command)
             // hide everything while we quit
 			SetVisible( false );
 			vgui::ivgui()->RestrictPaintToSinglePanel( GetVPanel() );
-			engine->ClientCmd_Unrestricted( "quit\n" );
+			engineClient->ClientCmd_Unrestricted( "quit\n" );
 		}
 	}
 	else if ( !Q_stricmp( command, "QuitRestartNoConfirm" ) )
@@ -2118,7 +2118,7 @@ void CBasePanel::RunMenuCommand(const char *command)
 		}
 		else
 		{
-			engine->ClientCmd_Unrestricted( "disconnect" );
+			engineClient->ClientCmd_Unrestricted( "disconnect" );
 		}
 	}
 	else if ( !Q_stricmp( command, "DisconnectNoConfirm" ) )
@@ -2126,7 +2126,7 @@ void CBasePanel::RunMenuCommand(const char *command)
 		ConVarRef commentary( "commentary" );
 		if ( commentary.IsValid() && commentary.GetBool() )
 		{
-			engine->ClientCmd_Unrestricted( "disconnect" );
+			engineClient->ClientCmd_Unrestricted( "disconnect" );
 
 			CMatchmakingBasePanel *pBase = GetMatchmakingBasePanel();
 			if ( pBase )
@@ -2150,7 +2150,7 @@ void CBasePanel::RunMenuCommand(const char *command)
 		const char *engineCMD = strstr( command, "engine " ) + strlen( "engine " );
 		if ( strlen( engineCMD ) > 0 )
 		{
-			engine->ClientCmd_Unrestricted( const_cast<char *>( engineCMD ) );
+			engineClient->ClientCmd_Unrestricted( const_cast<char *>( engineCMD ) );
 		}
 	}
 	else if ( !Q_stricmp( command, "ShowSigninUI" ) )
@@ -2208,10 +2208,10 @@ void CBasePanel::RunMenuCommand(const char *command)
 			// hide everything while we quit
 			SetVisible( false );
 			vgui::ivgui()->RestrictPaintToSinglePanel( GetVPanel() );
-			engine->ClientCmd_Unrestricted( "quit\n" );
+			engineClient->ClientCmd_Unrestricted( "quit\n" );
 
 			// Construct Steam URL. Pattern is steam://run/<appid>/<language>. (e.g. Ep1 In French ==> steam://run/380/french)
-			V_snprintf( szSteamURL, sizeof(szSteamURL), "steam://run/%d/%s", engine->GetAppID(), COptionsSubAudio::GetUpdatedAudioLanguage() );
+			V_snprintf( szSteamURL, sizeof(szSteamURL), "steam://run/%d/%s", engineClient->GetAppID(), COptionsSubAudio::GetUpdatedAudioLanguage() );
 
 			// Set Steam URL for re-launch in registry. Launcher will check this registry key and exec it in order to re-load the game in the proper language
 #if defined( WIN32 ) && !defined( _X360 )
@@ -2448,7 +2448,7 @@ void CAsyncCtxOnDeviceAttached::ExecuteAsync()
 	// Asynchronously do the tasks that don't interact with the command buffer
 
 	// Open user settings and save game container here
-	m_ContainerOpenResult = engine->OnStorageDeviceAttached();
+	m_ContainerOpenResult = engineClient->OnStorageDeviceAttached();
 	if ( m_ContainerOpenResult != ERROR_SUCCESS )
 		return;
 
@@ -2487,8 +2487,8 @@ void CBasePanel::OnCompletedAsyncDeviceAttached( CAsyncCtxOnDeviceAttached *job 
 
 	// First part of the device checking completed asynchronously,
 	// perform the rest of duties that require to run on main thread.
-	engine->ReadConfiguration();
-	engine->ExecuteClientCmd( "refreshplayerstats" );
+	engineClient->ReadConfiguration();
+	engineClient->ExecuteClientCmd( "refreshplayerstats" );
 
 	BonusMapsDatabase()->ReadBonusMapSaveData();
 
@@ -2863,7 +2863,7 @@ public:
 				// save the game
 				char sz[ 256 ];
 				Q_snprintf(sz, sizeof( sz ), "save %s\n", saveName );
-				engine->ClientCmd_Unrestricted( sz );
+				engineClient->ClientCmd_Unrestricted( sz );
 			}
 
 			// quit
@@ -2946,7 +2946,7 @@ void CBasePanel::OnOpenQuitConfirmationDialog()
 {
 	if ( GameUI().IsConsoleUI() )
 	{
-		if ( !GameUI().HasSavedThisMenuSession() && GameUI().IsInLevel() && engine->GetMaxClients() == 1 )
+		if ( !GameUI().HasSavedThisMenuSession() && GameUI().IsInLevel() && engineClient->GetMaxClients() == 1 )
 		{
 			// single player, progress will be lost...
 			ShowMessageDialog( MD_SAVE_BEFORE_QUIT ); 
@@ -2966,7 +2966,7 @@ void CBasePanel::OnOpenQuitConfirmationDialog()
 	}
 
 
-	if ( GameUI().IsInLevel() && engine->GetMaxClients() == 1 )
+	if ( GameUI().IsInLevel() && engineClient->GetMaxClients() == 1 )
 	{
 		// prompt for saving current game before quiting
 		CSaveBeforeQuitQueryDialog *box = new CSaveBeforeQuitQueryDialog(this, "SaveBeforeQuitQueryDialog");
@@ -2995,7 +2995,7 @@ void CBasePanel::OnOpenDisconnectConfirmationDialog()
 
 	if ( GameUI().IsConsoleUI() && GameUI().IsInLevel() )
 	{
-		if ( engine->GetLocalPlayer() == 1 )
+		if (engineClient->GetLocalPlayer() == 1 )
 		{
 			ShowMessageDialog( MD_DISCONNECT_CONFIRMATION_HOST );
 		}
@@ -3284,7 +3284,7 @@ void CBasePanel::OnOpenCSAchievementsDialog()
     {
 		int screenWide = 0;
 		int screenHeight = 0;
-		engine->GetScreenSize( screenWide, screenHeight );
+		engineClient->GetScreenSize( screenWide, screenHeight );
 
 		// [smessick] For lower resolutions, open the Steam achievements instead of the CSS achievements screen.
 		if ( screenWide < GameClientExports()->GetAchievementsPanelMinWidth() )
@@ -3437,8 +3437,8 @@ void CBasePanel::SystemNotification( const int notification )
 			m_bStorageBladeShown = false;
 		}	
 		UpdateRichPresenceInfo();
-		engine->GetAchievementMgr()->DownloadUserData();
-		engine->GetAchievementMgr()->EnsureGlobalStateLoaded();
+		engineClient->GetAchievementMgr()->DownloadUserData();
+		engineClient->GetAchievementMgr()->EnsureGlobalStateLoaded();
 #endif
 	}
 	else if ( notification == SYSTEMNOTIFY_USER_SIGNEDOUT  )
@@ -3452,11 +3452,11 @@ void CBasePanel::SystemNotification( const int notification )
 		}
 
 		// Invalidate their storage ID
-		engine->OnStorageDeviceDetached();
+		engineClient->OnStorageDeviceDetached();
 		m_bUserRefusedStorageDevice = false;
 		m_bUserRefusedSignIn = false;
 		m_iStorageID = XBX_INVALID_STORAGE_ID;
-		engine->GetAchievementMgr()->InitializeAchievements();
+		engineClient->GetAchievementMgr()->InitializeAchievements();
 		m_MessageDialogHandler.CloseAllMessageDialogs();
 
 #endif
@@ -3747,7 +3747,7 @@ void CBasePanel::SetMenuItemBlinkingState( const char *itemName, bool state )
 //-----------------------------------------------------------------------------
 void CBasePanel::RunEngineCommand(const char *command)
 {
-	engine->ClientCmd_Unrestricted(command);
+	engineClient->ClientCmd_Unrestricted(command);
 }
 
 //-----------------------------------------------------------------------------
@@ -4769,7 +4769,7 @@ void CMainMenuGameLogo::ApplySchemeSettings( vgui::IScheme *pScheme )
 	if ( pConditions )
 	{
 		char background[MAX_PATH];
-		engine->GetMainMenuBackgroundName( background, sizeof(background) );
+		engineClient->GetMainMenuBackgroundName( background, sizeof(background) );
 
 		KeyValues *pSubKey = new KeyValues( background );
 		if ( pSubKey )

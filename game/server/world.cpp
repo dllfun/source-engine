@@ -210,7 +210,7 @@ void CDecal::StaticDecal( void )
 
 	if ( canDraw )
 	{
-		engine->StaticDecal( position, m_nTexture, entityIndex, modelIndex, m_bLowPriority );
+		engineServer->StaticDecal( position, m_nTexture, entityIndex, modelIndex, m_bLowPriority );
 	}
 
 	SUB_Remove();
@@ -653,13 +653,13 @@ void CWorld::Precache( void )
 //
 	for ( int i = 0; i < ARRAYSIZE(g_DefaultLightstyles); i++ )
 	{
-		engine->LightStyle( i, GetDefaultLightstyleString(i) );
+		engineServer->LightStyle( i, GetDefaultLightstyleString(i) );
 	}
 
 	// styles 32-62 are assigned by the light program for switchable lights
 
 	// 63 testing
-	engine->LightStyle(63, "a");
+	engineServer->LightStyle(63, "a");
 
 	// =================================================
 	//	Load and Init AI Networks
@@ -703,7 +703,7 @@ void CWorld::Precache( void )
 //-----------------------------------------------------------------------------
 float GetRealTime()
 {
-	return engine->Time();
+	return engineServer->Time();
 }
 
 

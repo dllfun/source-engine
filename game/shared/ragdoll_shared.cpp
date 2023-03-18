@@ -747,7 +747,7 @@ bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 	Vector origin = pRagdoll->m_pRagdoll->GetRagdollOrigin();
 	pRagdoll->m_pRagdoll->GetRagdollBounds( vMins, vMaxs );
 
-	if( engine->IsBoxInViewCluster( vMins + origin, vMaxs + origin) == false )
+	if(engineClient->IsBoxInViewCluster( vMins + origin, vMaxs + origin) == false )
 	{
 		if ( g_debug_ragdoll_removal.GetBool() )
 		{
@@ -757,7 +757,7 @@ bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 
 		return true;
 	}
-	else if( engine->CullBox( vMins + origin, vMaxs + origin ) == true )
+	else if(engineClient->CullBox( vMins + origin, vMaxs + origin ) == true )
 	{
 		if ( g_debug_ragdoll_removal.GetBool() )
 		{

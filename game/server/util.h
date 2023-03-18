@@ -156,7 +156,7 @@ public:
 inline int	  ENTINDEX( edict_t *pEdict)			
 { 
 	int nResult = pEdict ? pEdict->m_EdictIndex : 0;
-	Assert( nResult == engine->IndexOfEdict(pEdict) );
+	Assert( nResult == engineServer->IndexOfEdict(pEdict) );
 	return nResult;
 }
 
@@ -164,7 +164,7 @@ int	  ENTINDEX( CBaseEntity *pEnt );
 
 inline edict_t* INDEXENT( int iEdictNum )		
 { 
-	return engine->PEntityOfEntIndex(iEdictNum); 
+	return engineServer->PEntityOfEntIndex(iEdictNum);
 }
 
 // Testing the three types of "entity" for nullity

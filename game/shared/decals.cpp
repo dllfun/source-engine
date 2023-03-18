@@ -180,7 +180,7 @@ void CDecalEmitterSystem::LevelInitPreEntity()
 #if defined( CLIENT_DLL )
 		e.precache_index = effects->Draw_DecalIndexFromName( (char *)m_DecalFileNames.String( e.name ) );
 #else
-		e.precache_index = engine->PrecacheDecal( m_DecalFileNames.String( e.name ) );
+		e.precache_index = engineServer->PrecacheDecal( m_DecalFileNames.String( e.name ) );
 #endif
 	}
 }

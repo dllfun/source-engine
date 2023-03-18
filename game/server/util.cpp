@@ -253,7 +253,7 @@ int UTIL_PrecacheDecal( const char *name, bool preload )
 	// If this is out of order, make sure to warn.
 	if ( !CBaseEntity::IsPrecacheAllowed() )
 	{
-		if ( !engine->IsDecalPrecached( name ) )
+		if ( !engineServer->IsDecalPrecached( name ) )
 		{
 			Assert( !"UTIL_PrecacheDecal:  too late" );
 
@@ -261,7 +261,7 @@ int UTIL_PrecacheDecal( const char *name, bool preload )
 		}
 	}
 
-	return engine->PrecacheDecal( name, preload );
+	return engineServer->PrecacheDecal( name, preload );
 }
 
 //-----------------------------------------------------------------------------
@@ -609,7 +609,7 @@ CBasePlayer* UTIL_PlayerByUserId( int userID )
 		if ( !pPlayer->IsConnected() )
 			continue;
 
-		if ( engine->GetPlayerUserId(pPlayer->edict()) == userID )
+		if (engineServer->GetPlayerUserId(pPlayer->edict()) == userID )
 		{
 			return pPlayer;
 		}
@@ -647,7 +647,7 @@ CBasePlayer *UTIL_GetLocalPlayer( void )
 CBasePlayer *UTIL_GetListenServerHost( void )
 {
 	// no "local player" if this is a dedicated server or a single player game
-	if (engine->IsDedicatedServer())
+	if (engineServer->IsDedicatedServer())
 	{
 		Assert( !"UTIL_GetListenServerHost" );
 		Warning( "UTIL_GetListenServerHost() called from a dedicated server or single-player game.\n" );
@@ -667,13 +667,13 @@ bool UTIL_IsCommandIssuedByServerAdmin( void )
 {
 	int issuingPlayerIndex = UTIL_GetCommandClientIndex();
 
-	if ( engine->IsDedicatedServer() && issuingPlayerIndex > 0 )
+	if (engineServer->IsDedicatedServer() && issuingPlayerIndex > 0 )
 		return false;
 
 #if defined( REPLAY_ENABLED )
 	// entity 1 is replay?
 	player_info_t pi;
-	bool bPlayerIsReplay = engine->GetPlayerInfo( 1, &pi ) && pi.isreplay;
+	bool bPlayerIsReplay = engineServer->GetPlayerInfo( 1, &pi ) && pi.isreplay;
 #else
 	bool bPlayerIsReplay = false;
 #endif
@@ -732,7 +732,7 @@ void UTIL_GetPlayerConnectionInfo( int playerIndex, int& ping, int &packetloss )
 {
 	CBasePlayer *player =  UTIL_PlayerByIndex( playerIndex );
 
-	INetChannelInfo *nci = engine->GetPlayerNetInfo(playerIndex);
+	INetChannelInfo *nci = engineServer->GetPlayerNetInfo(playerIndex);
 
 	if ( nci && player && !player->IsBot() )
 	{
@@ -740,7 +740,7 @@ void UTIL_GetPlayerConnectionInfo( int playerIndex, int& ping, int &packetloss )
 		
 		// that should be the correct latency, we assume that cmdrate is higher 
 		// then updaterate, what is the case for default settings
-		const char * szCmdRate = engine->GetClientConVarValue( playerIndex, "cl_cmdrate" );
+		const char * szCmdRate = engineServer->GetClientConVarValue( playerIndex, "cl_cmdrate" );
 		
 		int nCmdRate = MAX( 1, Q_atoi( szCmdRate ) );
 		latency -= (0.5f/nCmdRate) + TICKS_TO_TIME( 1.0f ); // correct latency
@@ -1803,7 +1803,7 @@ void UTIL_LogPrintf( const char *fmt, ... )
 	va_end   ( argptr );
 
 	// Print to server console
-	engine->LogPrint( tempString );
+	engineServer->LogPrint( tempString );
 }
 
 //=========================================================
@@ -2134,7 +2134,7 @@ static int UTIL_GetNewCheckClient( int check )
 			i = 1;
 		}
 
-		ent = engine->PEntityOfEntIndex( i );
+		ent = engineServer->PEntityOfEntIndex( i );
 		if ( !ent )
 			continue;
 
@@ -2171,11 +2171,11 @@ static int UTIL_GetNewCheckClient( int check )
 
 		org = pce->EyePosition();
 
-		int clusterIndex = engine->GetClusterForOrigin( org );
+		int clusterIndex = engineServer->GetClusterForOrigin( org );
 		if ( clusterIndex != g_CheckClient.m_checkCluster )
 		{
 			g_CheckClient.m_checkCluster = clusterIndex;
-			engine->GetPVSForCluster( clusterIndex, sizeof(g_CheckClient.m_checkPVS), g_CheckClient.m_checkPVS );
+			engineServer->GetPVSForCluster( clusterIndex, sizeof(g_CheckClient.m_checkPVS), g_CheckClient.m_checkPVS );
 		}
 	}
 	
@@ -2199,7 +2199,7 @@ static edict_t *UTIL_GetCurrentCheckClient()
 	}
 
 	// return check if it might be visible	
-	ent = engine->PEntityOfEntIndex( g_CheckClient.m_lastcheck );
+	ent = engineServer->PEntityOfEntIndex( g_CheckClient.m_lastcheck );
 
 	// Allow dead clients -- JAY
 	// Our monsters know the difference, and this function gates alot of behavior
@@ -2272,7 +2272,7 @@ CBaseEntity *UTIL_FindClientInPVS( const Vector &vecBoxMins, const Vector &vecBo
 		return NULL;
 	}
 
-	if ( !engine->CheckBoxInPVS( vecBoxMins, vecBoxMaxs, g_CheckClient.m_checkPVS, sizeof( g_CheckClient.m_checkPVS ) ) )
+	if ( !engineServer->CheckBoxInPVS( vecBoxMins, vecBoxMaxs, g_CheckClient.m_checkPVS, sizeof( g_CheckClient.m_checkPVS ) ) )
 	{
 		return NULL;
 	}
@@ -2313,7 +2313,7 @@ static edict_t *UTIL_FindClientInPVSGuts(edict_t *pEdict, unsigned char *pvs, un
 	{
 		view = pe->EyePosition();
 		
-		if ( !engine->CheckOriginInPVS( view, pvs, pvssize ) )
+		if ( !engineServer->CheckOriginInPVS( view, pvs, pvssize ) )
 		{
 			return NULL;
 		}
@@ -2369,9 +2369,9 @@ CBaseEntity *UTIL_EntitiesInPVS( CBaseEntity *pPVSEntity, CBaseEntity *pStarting
 	if ( !pStartingEntity )
 	{
 		org = pPVSEntity->EyePosition();
-		int clusterIndex = engine->GetClusterForOrigin( org );
+		int clusterIndex = engineServer->GetClusterForOrigin( org );
 		Assert( clusterIndex >= 0 );
-		engine->GetPVSForCluster( clusterIndex, sizeof(pvs), pvs );
+		engineServer->GetPVSForCluster( clusterIndex, sizeof(pvs), pvs );
 	}
 
 	for ( CBaseEntity *pEntity = gEntList.NextEnt(pStartingEntity); pEntity; pEntity = gEntList.NextEnt(pEntity) )
@@ -2384,7 +2384,7 @@ CBaseEntity *UTIL_EntitiesInPVS( CBaseEntity *pPVSEntity, CBaseEntity *pStarting
 
 		Vector vecSurroundMins, vecSurroundMaxs;
 		pParent->CollisionProp()->WorldSpaceSurroundingBounds( &vecSurroundMins, &vecSurroundMaxs );
-		if ( !engine->CheckBoxInPVS( vecSurroundMins, vecSurroundMaxs, pvs, sizeof( pvs ) ) )
+		if ( !engineServer->CheckBoxInPVS( vecSurroundMins, vecSurroundMaxs, pvs, sizeof( pvs ) ) )
 			continue;
 
 		return pEntity;
@@ -3254,7 +3254,7 @@ void CC_CollisionTest( const CCommand &args )
 	int nMask = MASK_ALL & ~(CONTENTS_MONSTER | CONTENTS_HITBOX );
 	for ( int j = 0; j < 2; j++ )
 	{
-		float startTime = engine->Time();
+		float startTime = engineServer->Time();
 		if ( testType == 1 )
 		{
 			trace_t tr;
@@ -3284,7 +3284,7 @@ void CC_CollisionTest( const CCommand &args )
 			}
 		}
 
-		duration += engine->Time() - startTime;
+		duration += engineServer->Time() - startTime;
 	}
 	test[testType] = duration;
 	Msg("%d collisions in %.2f ms (%u dots)\n", NUM_COLLISION_TESTS, duration*1000, dots );

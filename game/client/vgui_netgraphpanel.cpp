@@ -727,7 +727,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 	if ( m_Framerate <= 0.0f )
 		m_Framerate = 1.0f;
 
-	if ( engine->IsPlayingDemo() )
+	if (engineClient->IsPlayingDemo() )
 		m_AvgLatency = 0.0f;
 
 	int textTall = surface()->GetFontTall( font );
@@ -1140,7 +1140,7 @@ static bool IsTakingAFreezecamScreenshot()
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	bool bInFreezeCam = ( pPlayer && pPlayer->GetObserverMode() == OBS_MODE_FREEZECAM );
 
-	return ( bInFreezeCam && engine->IsTakingScreenshot() );
+	return ( bInFreezeCam && engineClient->IsTakingScreenshot() );
 }
 
 //-----------------------------------------------------------------------------
@@ -1192,7 +1192,7 @@ void CNetGraphPanel::Paint()
 	}
 
 	// get current client netchannel INetChannelInfo interface
-	INetChannelInfo *nci = engine->GetNetChannelInfo();
+	INetChannelInfo *nci = engineClient->GetNetChannelInfo();
 
 	if ( nci )
 	{

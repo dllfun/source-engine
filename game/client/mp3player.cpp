@@ -1362,7 +1362,7 @@ void CMP3Player::GetLocalCopyOfSong( const MP3File_t &mp3, char *outsong, size_t
 		g_pFullFileSystem->CreateDirHierarchy( mp3_temp_path, "MOD" );
 
 		char destpath[ 512 ];
-		Q_snprintf( destpath, sizeof( destpath ), "%s/%s", engine->GetGameDirectory(), hexfilename );
+		Q_snprintf( destpath, sizeof( destpath ), "%s/%s", engineClient->GetGameDirectory(), hexfilename );
 		Q_FixSlashes( destpath );
 
 		char sourcepath[ 512 ];
@@ -1588,7 +1588,7 @@ void CMP3Player::OnTick()
 	if ( !m_bEnableAutoAdvance )
 	{
 		// If we got disconnected completely, reset the flag
-		if ( !engine->IsConnected() )
+		if ( !engineClient->IsConnected() )
 		{
 			m_bEnableAutoAdvance = true;
 		}
@@ -2453,7 +2453,7 @@ public:
 	virtual void LevelShutdownPostEntity()
 	{
 		// If we are still connected, disable auto advance until we get into the next level
-		if ( engine->IsConnected() )
+		if ( engineClient->IsConnected() )
 		{
 			g_pPlayer->EnableAutoAdvance( false );
 		}

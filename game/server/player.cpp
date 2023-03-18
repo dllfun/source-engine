@@ -675,7 +675,7 @@ void CBasePlayer::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 	Vector org;
 	org = EyePosition();
 
-	engine->AddOriginToPVS( org );
+	engineServer->AddOriginToPVS( org );
 }
 
 int	CBasePlayer::UpdateTransmitState()
@@ -4214,7 +4214,7 @@ void CBasePlayer::CheckSuitUpdate()
 				// play sentence number
 
 				char sentence[512];
-				Q_snprintf( sentence, sizeof( sentence ), "!%s", engine->SentenceNameFromIndex( isentence ) );
+				Q_snprintf( sentence, sizeof( sentence ), "!%s", engineServer->SentenceNameFromIndex( isentence ) );
 				UTIL_EmitSoundSuit( edict(), sentence );
 			}
 			else
@@ -6219,7 +6219,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		{
 			trace_t tr;
 
-			edict_t		*pWorld = engine->PEntityOfEntIndex( 0 );
+			edict_t		*pWorld = engineServer->PEntityOfEntIndex( 0 );
 
 			Vector start = EyePosition();
 			Vector forward;
@@ -6429,13 +6429,13 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			if ( !SetObserverMode( mode ) )
 				ClientPrint( this, HUD_PRINTCONSOLE, "#Spectator_Mode_Unkown");
 			else
-				engine->ClientCommand( edict(), "cl_spec_mode %d", mode );
+				engineServer->ClientCommand( edict(), "cl_spec_mode %d", mode );
 		}
 		else
 		{
 			// remember spectator mode for later use
 			m_iObserverLastMode = mode;
-			engine->ClientCommand( edict(), "cl_spec_mode %d", mode );
+			engineServer->ClientCommand( edict(), "cl_spec_mode %d", mode );
 		}
 
 		return true;
@@ -7242,7 +7242,7 @@ void CBasePlayer::ResetAutoaim( void )
 	if (m_vecAutoAim.x != 0 || m_vecAutoAim.y != 0)
 	{
 		m_vecAutoAim = QAngle( 0, 0, 0 );
-		engine->CrosshairAngle( edict(), 0, 0 );
+		engineServer->CrosshairAngle( edict(), 0, 0 );
 	}
 	m_fOnTarget = false;
 }
@@ -7752,7 +7752,7 @@ void CRevertSaved::LoadThink( void )
 {
 	if ( !gpGlobals->deathmatch )
 	{
-		engine->ServerCommand("reload\n");
+		engineServer->ServerCommand("reload\n");
 	}
 }
 
@@ -8709,11 +8709,11 @@ void CBasePlayer::SetViewEntity( CBaseEntity *pEntity )
 
 	if ( m_hViewEntity )
 	{
-		engine->SetView( edict(), m_hViewEntity->edict() );
+		engineServer->SetView( edict(), m_hViewEntity->edict() );
 	}
 	else
 	{
-		engine->SetView( edict(), edict() );
+		engineServer->SetView( edict(), edict() );
 	}
 }
 
@@ -8836,7 +8836,7 @@ bool CBasePlayer::HandleVoteCommands( const CCommand &args )
 //-----------------------------------------------------------------------------
 const char *CBasePlayer::GetNetworkIDString()
 {
-	const char *pStr = engine->GetPlayerNetworkIDString( edict() );
+	const char *pStr = engineServer->GetPlayerNetworkIDString( edict() );
 	Q_strncpy( m_szNetworkIDString, pStr ? pStr : "", sizeof(m_szNetworkIDString) );
 	return m_szNetworkIDString; 
 }
@@ -8959,7 +8959,7 @@ const char *CPlayerInfo::GetName()
 int	CPlayerInfo::GetUserID() 
 { 
 	Assert( m_pParent );
-	return engine->GetPlayerUserId( m_pParent->edict() ); 
+	return engineServer->GetPlayerUserId( m_pParent->edict() );
 }
 
 const char *CPlayerInfo::GetNetworkIDString() 
@@ -9341,7 +9341,7 @@ void CBasePlayer::AdjustDrownDmg( int nAmount )
 //-----------------------------------------------------------------------------
 bool CBasePlayer::GetSteamID( CSteamID *pID )
 {
-	const CSteamID *pClientID = engine->GetClientSteamID( edict() );
+	const CSteamID *pClientID = engineServer->GetClientSteamID( edict() );
 	if ( pClientID )
 	{
 		*pID = *pClientID;

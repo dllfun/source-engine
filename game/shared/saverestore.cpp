@@ -2547,7 +2547,13 @@ void CEntitySaveRestoreBlockHandler::ReadRestoreHeaders( IRestore *pRestore )
 	int nEntities;
 	pRestore->ReadInt( &nEntities );
 
-	entitytable_t *pEntityTable = ( entitytable_t *)engine->SaveAllocMemory( (sizeof(entitytable_t) * nEntities), sizeof(char) );
+	entitytable_t* pEntityTable = NULL;
+#ifdef GAME_DLL
+	pEntityTable = (entitytable_t*)engineServer->SaveAllocMemory((sizeof(entitytable_t) * nEntities), sizeof(char));
+#else
+	pEntityTable = (entitytable_t*)engineClient->SaveAllocMemory((sizeof(entitytable_t) * nEntities), sizeof(char));
+#endif
+
 	if ( !pEntityTable )
 	{
 		return;
@@ -2790,7 +2796,13 @@ bool CEntitySaveRestoreBlockHandler::SaveInitEntities( CSaveRestoreData *pSaveDa
 #else
 	number_of_entities = ClientEntityList().NumberOfEntities( true );
 #endif
-	entitytable_t *pEntityTable = ( entitytable_t *)engine->SaveAllocMemory( (sizeof(entitytable_t) * number_of_entities), sizeof(char) );
+	entitytable_t* pEntityTable = NULL;
+#ifdef GAME_DLL
+	pEntityTable = (entitytable_t*)engineServer->SaveAllocMemory((sizeof(entitytable_t) * number_of_entities), sizeof(char));
+#else
+	pEntityTable = (entitytable_t*)engineClient->SaveAllocMemory((sizeof(entitytable_t) * number_of_entities), sizeof(char));
+#endif
+	
 	if ( !pEntityTable )
 		return false;
 
@@ -3038,8 +3050,11 @@ CSaveRestoreData *SaveInit( int size )
 #else
 	numentities = ClientEntityList().NumberOfEntities();
 #endif
-
-	void *pSaveMemory = engine->SaveAllocMemory( sizeof(CSaveRestoreData) + (sizeof(entitytable_t) * numentities) + size, sizeof(char) );
+#ifdef GAME_DLL
+	void* pSaveMemory = engineServer->SaveAllocMemory(sizeof(CSaveRestoreData) + (sizeof(entitytable_t) * numentities) + size, sizeof(char));
+#else
+	void* pSaveMemory = engineClient->SaveAllocMemory(sizeof(CSaveRestoreData) + (sizeof(entitytable_t) * numentities) + size, sizeof(char));
+#endif
 	if ( !pSaveMemory )
 	{
 		return NULL;
@@ -3049,10 +3064,18 @@ CSaveRestoreData *SaveInit( int size )
 	pSaveData->Init( (char *)(pSaveData + 1), size );	// skip the save structure
 	
 	const int nTokens = 0xfff; // Assume a maximum of 4K-1 symbol table entries(each of some length)
-	pSaveMemory = engine->SaveAllocMemory( nTokens, sizeof( char * ) );
+#ifdef GAME_DLL
+	pSaveMemory = engineServer->SaveAllocMemory(nTokens, sizeof(char*));
+#else
+	pSaveMemory = engineClient->SaveAllocMemory(nTokens, sizeof(char*));
+#endif
 	if ( !pSaveMemory )
 	{
-		engine->SaveFreeMemory( pSaveMemory );
+#ifdef GAME_DLL
+		engineServer->SaveFreeMemory(pSaveMemory);
+#else
+		engineClient->SaveFreeMemory(pSaveMemory);
+#endif
 		return NULL;
 	}
 

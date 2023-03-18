@@ -89,7 +89,7 @@ void CInput::TouchMove( CUserCmd *cmd )
 	QAngle viewangles;
 	float dx,dy,side,forward,pitch,yaw;
 
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 
 	view->StopPitchDrift();
 
@@ -109,5 +109,5 @@ void CInput::TouchMove( CUserCmd *cmd )
 	ApplyTouch( viewangles, cmd, dx, dy );
 
 	// Store out the new viewangles.
-	engine->SetViewAngles( viewangles );
+	engineClient->SetViewAngles( viewangles );
 }

@@ -35,7 +35,7 @@ public:
 
 	void Save( ISave *pSave )
 	{
-		CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>( engine->GetAchievementMgr() );
+		CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
 		if ( !pAchievementMgr )
 			return;
 
@@ -101,7 +101,7 @@ public:
 
 	void Restore( IRestore *pRestore, bool createPlayers )
 	{
-		CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>( engine->GetAchievementMgr() );
+		CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
 		if ( !pAchievementMgr )
 			return;
 

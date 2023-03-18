@@ -137,10 +137,10 @@ void CChangeGameDialog::OnCommand(const char *command)
 				// change the game dir and restart the engine
 				char szCmd[256];
 				Q_snprintf(szCmd, sizeof( szCmd ), "_setgamedir %s\n", kv->GetString("ModDir"));
-				engine->ClientCmd_Unrestricted(szCmd);
+				engineClient->ClientCmd_Unrestricted(szCmd);
 
 				// Force restart of entire engine
-				engine->ClientCmd_Unrestricted("_restart\n");
+				engineClient->ClientCmd_Unrestricted("_restart\n");
 			}
 		}
 	}

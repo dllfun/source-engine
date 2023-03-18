@@ -249,7 +249,7 @@ CON_COMMAND( showschemevisualizer, "Show borders, fonts and colors for a particu
 	g_pSchemeVisualizer = vgui::SETUP_PANEL( new CSchemeVisualizer( NULL, pScheme, pSchemeName ) );
 	g_pSchemeVisualizer->InvalidateLayout( false, true );
 
-	engine->ClientCmd_Unrestricted( "gameui_activate" );
+	engineClient->ClientCmd_Unrestricted( "gameui_activate" );
 
 	const int nWidth = XRES( 300 );
 	const int nHeight = YRES( 300 );

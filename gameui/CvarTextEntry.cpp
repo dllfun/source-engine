@@ -71,7 +71,7 @@ void CCvarTextEntry::ApplyChanges( bool immediate )
 	{
 		char szCommand[ 256 ];
 		sprintf( szCommand, "%s \"%s\"\n", m_pszCvarName, szText );
-		engine->ClientCmd_Unrestricted( szCommand );
+		engineClient->ClientCmd_Unrestricted( szCommand );
 	}
 
 	Q_strncpy( m_pszStartValue, szText, sizeof( m_pszStartValue ) );

@@ -35,7 +35,7 @@ void CCSTeamMenu::ShowPanel(bool bShow)
 {
 	if ( bShow )
 	{
-		engine->CheckPoint( "TeamMenu" );
+		engineClient->CheckPoint( "TeamMenu" );
 	}
 
 	BaseClass::ShowPanel( bShow );
@@ -78,7 +78,7 @@ void CCSTeamMenu::Update( void )
 
 	char mapName[MAX_MAP_NAME];
 
-	Q_FileBase( engine->GetLevelName(), mapName, sizeof(mapName) );
+	Q_FileBase(engineClient->GetLevelName(), mapName, sizeof(mapName) );
 
 	if ( !Q_strncmp( mapName, "maps/as_", 8 ) )
 	{
@@ -131,7 +131,7 @@ void CCSTeamMenu::OnCommand( const char *command )
 {
 	if ( Q_stricmp( command, "vguicancel" ) )
 	{
-		engine->ClientCmd( command );
+		engineClient->ClientCmd( command );
 	}
 	
 	

@@ -252,7 +252,7 @@ void CHudMenu::SelectMenuItem( int menu_item )
 	{
 		char szbuf[32];
 		Q_snprintf( szbuf, sizeof( szbuf ), "menuselect %d\n", menu_item );
-		engine->ClientCmd( szbuf );
+		engineClient->ClientCmd( szbuf );
 
 		m_nSelectedItem = menu_item;
 		// Pulse the selection

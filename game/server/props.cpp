@@ -3493,7 +3493,7 @@ bool PropBreakableCapEdictsOnCreateAll(int modelindex, IPhysicsObject *pPhysics,
 		}
 	}
 
-	return ( !numToCreate || ( engine->GetEntityCount() + numToCreate + BREATHING_ROOM < MAX_EDICTS ) );
+	return ( !numToCreate || (engineServer->GetEntityCount() + numToCreate + BREATHING_ROOM < MAX_EDICTS ) );
 }
 
 
@@ -5596,7 +5596,7 @@ class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
 
 		if ( m_iPhysicsMode == PHYSICS_MULTIPLAYER_CLIENTSIDE )
 		{
-			if ( engine->IsInEditMode() )
+			if (engineServer->IsInEditMode() )
 			{
 				// in map edit mode always spawn as server phys prop
 				SetPhysicsMode( PHYSICS_MULTIPLAYER_NON_SOLID );

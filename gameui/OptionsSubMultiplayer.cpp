@@ -396,7 +396,7 @@ void CrosshairImagePanelSimple::ApplyChanges()
 	{
 		int val = m_pCrosshairColorCombo->GetActiveItem();
 		Q_snprintf( cmd, sizeof(cmd), "cl_crosshaircolor %d\n", val );
-		engine->ClientCmd_Unrestricted( cmd );
+		engineClient->ClientCmd_Unrestricted( cmd );
 	}
 }
 
@@ -704,7 +704,7 @@ void CrosshairImagePanelCS::ApplyChanges()
 	{
 		int val = m_pColorComboBox->GetActiveItem();
 		Q_snprintf( cmd, sizeof(cmd), "cl_crosshaircolor %d\n", val );
-		engine->ClientCmd_Unrestricted( cmd );
+		engineClient->ClientCmd_Unrestricted( cmd );
 	}
 }
 
@@ -1035,12 +1035,12 @@ void CrosshairImagePanelAdvanced::ApplyChanges()
 
 	if ( ModInfo().AdvCrosshairLevel() == 1 && m_pAdvCrosshairStyle->GetActiveItem() == 0 ) // this is the "none" selection
 	{
-		engine->ClientCmd_Unrestricted("cl_crosshair_file \"\"");
+		engineClient->ClientCmd_Unrestricted("cl_crosshair_file \"\"");
 	}
 	else
 	{
 		Q_snprintf(cmd, sizeof(cmd), "cl_crosshair_file %s\n", crosshair);
-		engine->ClientCmd_Unrestricted(cmd);
+		engineClient->ClientCmd_Unrestricted(cmd);
 	}
 }
 
@@ -1258,7 +1258,7 @@ void COptionsSubMultiplayer::OnCommand( const char *command )
 
 	else if ( !stricmp( command, "ResetStats_NoConfirm" ) )
 	{
-		engine->ClientCmd_Unrestricted("stats_reset");
+		engineClient->ClientCmd_Unrestricted("stats_reset");
 	}
 
 	BaseClass::OnCommand( command );
@@ -1831,7 +1831,7 @@ void COptionsSubMultiplayer::OnApplyChanges()
 	{
 		Q_strncpy( cmd, "cl_logofile \"\"\n", sizeof( cmd ) );
 	}
-	engine->ClientCmd_Unrestricted(cmd);
+	engineClient->ClientCmd_Unrestricted(cmd);
 
 	if ( m_pModelList && m_pModelList->IsVisible() && m_pModelList->GetActiveItemCommand() )
 	{
@@ -1840,7 +1840,7 @@ void COptionsSubMultiplayer::OnApplyChanges()
 		
 		// save the player model name
 		Q_snprintf(cmd, sizeof(cmd), "cl_playermodel models/%s.mdl\n", m_ModelName );
-		engine->ClientCmd_Unrestricted(cmd);
+		engineClient->ClientCmd_Unrestricted(cmd);
 	}
 	else
 	{

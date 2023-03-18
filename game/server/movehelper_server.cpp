@@ -349,7 +349,7 @@ void CMoveHelperServer::Con_NPrintf( int idx, char const* pFormat, ...)
 	Q_vsnprintf(msg, sizeof( msg ), pFormat, marker);
 	va_end(marker);
 	
-	engine->Con_NPrintf( idx, msg );
+	engineServer->Con_NPrintf( idx, msg );
 }
 
 //-----------------------------------------------------------------------------

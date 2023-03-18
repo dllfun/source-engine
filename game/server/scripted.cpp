@@ -2076,7 +2076,7 @@ void CAI_ScriptedSentence::FindThink( void )
 	if ( pNPC )
 	{
 		int index = StartSentence( pNPC );
-		float length = engine->SentenceLength(index);
+		float length = engineServer->SentenceLength(index);
 		
 		m_OnEndSentence.FireOutput(NULL, this, length + m_flRepeat);
 

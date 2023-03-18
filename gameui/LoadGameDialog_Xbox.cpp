@@ -54,7 +54,7 @@ void CLoadGameDialogXbox::PerformSelectedAction( void )
 	SetControlDisabled( true );
 
 	// Warn the player if they're already in a map
-	if ( !GameUI().HasSavedThisMenuSession() && GameUI().IsInLevel() && engine->GetMaxClients() == 1 )
+	if ( !GameUI().HasSavedThisMenuSession() && GameUI().IsInLevel() && engineClient->GetMaxClients() == 1 )
 	{
 		BasePanel()->ShowMessageDialog( MD_SAVE_BEFORE_LOAD, this );
 	}
@@ -134,7 +134,7 @@ void CLoadGameDialogXbox::OnCommand( const char *command )
 		// Load the saved game
 		char szCmd[ 256 ];
 		Q_snprintf( szCmd, sizeof( szCmd ), "xload %s", pSave->szShortName );
-		engine->ClientCmd_Unrestricted( szCmd );
+		engineClient->ClientCmd_Unrestricted( szCmd );
 
 		// Ignore all other input while we're open
 		OnClose();	
@@ -188,7 +188,7 @@ void CLoadGameDialogXbox::DeleteSaveGame( const SaveGameDescription_t *pSaveDesc
 	}
 
 	// If we're deleting our more recent save game, we need to make sure we setup the engine to properly load the last most recent
-	if ( Q_stristr( engine->GetMostRecentSaveGame(), pSaveDesc->szShortName ) )
+	if ( Q_stristr(engineClient->GetMostRecentSaveGame(), pSaveDesc->szShortName ) )
 	{
 		// We must have at least two active save games that we know about
 		if ( GetNumPanels() > 1 )
@@ -204,7 +204,7 @@ void CLoadGameDialogXbox::DeleteSaveGame( const SaveGameDescription_t *pSaveDesc
 			// Remember this filename for the next time we need to reload
 			if ( pDesc )
 			{
-				engine->SetMostRecentSaveGame( pDesc->szShortName );
+				engineClient->SetMostRecentSaveGame( pDesc->szShortName );
 			}
 		}
 	}

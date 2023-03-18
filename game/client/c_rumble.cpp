@@ -765,7 +765,7 @@ void CRumbleEffects::UpdateEffects( float curtime )
 	fLeftMotor *= cl_rumblescale.GetFloat();
 	fRightMotor *= cl_rumblescale.GetFloat();
 
-	if( engine->IsPaused() )
+	if(engineClient->IsPaused() )
 	{
 		// Send nothing when paused.
 		fLeftMotor = 0.0f;

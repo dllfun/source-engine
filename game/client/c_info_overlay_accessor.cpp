@@ -52,6 +52,6 @@ void C_InfoOverlayAccessor::OnDataChanged( DataUpdateType_t updateType )
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
 		// Update overlay's bind proxy
-		engine->SetOverlayBindProxy( m_iOverlayID, GetClientRenderable() );
+		engineClient->SetOverlayBindProxy( m_iOverlayID, GetClientRenderable() );
 	}
 }

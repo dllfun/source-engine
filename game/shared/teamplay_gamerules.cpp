@@ -128,7 +128,7 @@ const char *CTeamplayRules::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 {
 	// copy out the team name from the model
 	int clientIndex = pPlayer->entindex();
-	const char *team = (!pPlayer->IsNetClient())?"default":engine->GetClientConVarValue( clientIndex, "cl_team" );
+	const char *team = (!pPlayer->IsNetClient())?"default": engineServer->GetClientConVarValue( clientIndex, "cl_team" );
 
 	/* TODO
 
@@ -269,7 +269,7 @@ void CTeamplayRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	// recound stuff
 	RecountTeams(); */
 
-	const char *pszName = engine->GetClientConVarValue( pPlayer->entindex(), "name" );
+	const char *pszName = engineServer->GetClientConVarValue( pPlayer->entindex(), "name" );
 
 	const char *pszOldName = pPlayer->GetPlayerName();
 
@@ -290,7 +290,7 @@ void CTeamplayRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	}
 
 	// NVNT see if this user is still or has began using a haptic device
-	const char *pszHH = engine->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
 	if(pszHH)
 	{
 		int iHH = atoi(pszHH);

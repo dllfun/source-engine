@@ -207,7 +207,7 @@ void CSpectatorMenu::OnTextChanged(KeyValues *data)
 			{
 				char command[128];
 				Q_snprintf( command, sizeof(command), "spec_player \"%s\"", player );
-				engine->ClientCmd( command );
+				engineClient->ClientCmd( command );
 			}
 		}
 	}
@@ -217,11 +217,11 @@ void CSpectatorMenu::OnCommand( const char *command )
 {
 	if (!stricmp(command, "specnext") )
 	{
-		engine->ClientCmd("spec_next");
+		engineClient->ClientCmd("spec_next");
 	}
 	else if (!stricmp(command, "specprev") )
 	{
-		engine->ClientCmd("spec_prev");
+		engineClient->ClientCmd("spec_prev");
 	}
 }
 
@@ -294,7 +294,7 @@ void CSpectatorMenu::ShowPanel(bool bShow)
 
 	bool bIsEnabled = true;
 	
-	 if ( engine->IsHLTV() && HLTVCamera()->IsPVSLocked() )
+	 if (engineClient->IsHLTV() && HLTVCamera()->IsPVSLocked() )
 	{
 		 // when watching HLTV or Replay with a locked PVS, some elements are disabled
 		 bIsEnabled = false;
@@ -675,7 +675,7 @@ void CSpectatorGUI::Update()
 	wchar_t szTitleLabel[1024];
 	char tempstr[128];
 
-	if ( engine->IsHLTV() )
+	if (engineClient->IsHLTV() )
 	{
 		// set spectator number and HLTV title
 		Q_snprintf(tempstr,sizeof(tempstr),"Spectators : %d", HLTVCamera()->GetNumSpectators() );
@@ -687,7 +687,7 @@ void CSpectatorGUI::Update()
 	else
 	{
 		// otherwise show map name
-		Q_FileBase( engine->GetLevelName(), tempstr, sizeof(tempstr) );
+		Q_FileBase(engineClient->GetLevelName(), tempstr, sizeof(tempstr) );
 
 		wchar_t wMapName[64];
 		g_pVGuiLocalize->ConvertANSIToUnicode(tempstr,wMapName,sizeof(wMapName));
@@ -716,20 +716,20 @@ void CSpectatorGUI::UpdateTimer()
 
 static void ForwardSpecCmdToServer( const CCommand &args )
 {
-	if ( engine->IsPlayingDemo() )
+	if (engineClient->IsPlayingDemo() )
 		return;
 
 	if ( args.ArgC() == 1 )
 	{
 		// just forward the command without parameters
-		engine->ServerCmd( args[ 0 ] );
+		engineClient->ServerCmd( args[ 0 ] );
 	}
 	else if ( args.ArgC() == 2 )
 	{
 		// forward the command with parameter
 		char command[128];
 		Q_snprintf( command, sizeof(command), "%s \"%s\"", args[ 0 ], args[ 1 ] );
-		engine->ServerCmd( command );
+		engineClient->ServerCmd( command );
 	}
 }
 
@@ -740,7 +740,7 @@ CON_COMMAND_F( spec_next, "Spectate next player", FCVAR_CLIENTCMD_CAN_EXECUTE )
 	if ( !pPlayer || !pPlayer->IsObserver() )
 		return;
 
-	if ( engine->IsHLTV() )
+	if (engineClient->IsHLTV() )
 	{
 		// handle the command clientside
 		if ( !HLTVCamera()->IsPVSLocked() )
@@ -761,7 +761,7 @@ CON_COMMAND_F( spec_prev, "Spectate previous player", FCVAR_CLIENTCMD_CAN_EXECUT
 	if ( !pPlayer || !pPlayer->IsObserver() )
 		return;
 
-	if ( engine->IsHLTV() )
+	if (engineClient->IsHLTV() )
 	{
 		// handle the command clientside
 		if ( !HLTVCamera()->IsPVSLocked() )
@@ -782,7 +782,7 @@ CON_COMMAND_F( spec_mode, "Set spectator mode", FCVAR_CLIENTCMD_CAN_EXECUTE )
 	if ( !pPlayer || !pPlayer->IsObserver() )
 		return;
 
-	if ( engine->IsHLTV() )
+	if (engineClient->IsHLTV() )
 	{
 		if ( HLTVCamera()->IsPVSLocked() )
 		{
@@ -832,7 +832,7 @@ CON_COMMAND_F( spec_player, "Spectate player by name", FCVAR_CLIENTCMD_CAN_EXECU
 	if ( args.ArgC() != 2 )
 		return;
 
-	if ( engine->IsHLTV() )
+	if (engineClient->IsHLTV() )
 	{
 		// we can only switch primary spectator targets is PVS isnt locked by auto-director
 		if ( !HLTVCamera()->IsPVSLocked() )

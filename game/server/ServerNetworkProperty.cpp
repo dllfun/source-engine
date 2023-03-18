@@ -47,7 +47,7 @@ CServerNetworkProperty::~CServerNetworkProperty()
 		m_pTransmitProxy->Release();
 	}*/
 
-	engine->CleanUpEntityClusterList( &m_PVSInfo );
+	engineServer->CleanUpEntityClusterList( &m_PVSInfo );
 
 	// remove the attached edict if it exists
 	DetachEdict();
@@ -79,7 +79,7 @@ void CServerNetworkProperty::AttachEdict( edict_t *pRequiredEdict )
 	// see if there is an edict allocated for it, otherwise get one from the engine
 	if ( !pRequiredEdict )
 	{
-		pRequiredEdict = engine->CreateEdict();
+		pRequiredEdict = engineServer->CreateEdict();
 	}
 
 	m_pPev = pRequiredEdict;
@@ -91,7 +91,7 @@ void CServerNetworkProperty::DetachEdict()
 	if ( m_pPev )
 	{
 		m_pPev->SetEdict( NULL, false );
-		engine->RemoveEdict( m_pPev );
+		engineServer->RemoveEdict( m_pPev );
 		m_pPev = NULL;
 	}
 }
@@ -143,7 +143,7 @@ void CServerNetworkProperty::RecomputePVSInformation()
 	if ( m_pPev && ( ( m_pPev->m_fStateFlags & FL_EDICT_DIRTY_PVS_INFORMATION ) != 0 ) )
 	{
 		m_pPev->m_fStateFlags &= ~FL_EDICT_DIRTY_PVS_INFORMATION;
-		engine->BuildEntityClusterList( edict(), &m_PVSInfo );
+		engineServer->BuildEntityClusterList( edict(), &m_PVSInfo );
 	}
 }
 
@@ -199,7 +199,7 @@ bool CServerNetworkProperty::IsInPVS( const edict_t *pRecipient, const void *pvs
 	
 	if ( m_PVSInfo.m_nClusterCount < 0 )   // too many clusters, use headnode
 	{
-		return ( engine->CheckHeadnodeVisible( m_PVSInfo.m_nHeadNode, pPVS, pvssize ) != 0);
+		return (engineServer->CheckHeadnodeVisible( m_PVSInfo.m_nHeadNode, pPVS, pvssize ) != 0);
 	}
 	
 	for ( int i = m_PVSInfo.m_nClusterCount; --i >= 0; )
@@ -228,7 +228,7 @@ bool CServerNetworkProperty::IsInPVS( const CCheckTransmitInfo *pInfo )
 		for ( i=0; i< pInfo->m_AreasNetworked; i++ )
 		{
 			int clientArea = pInfo->m_Areas[i];
-			if ( clientArea == m_PVSInfo.m_nAreaNum || engine->CheckAreasConnected( clientArea, m_PVSInfo.m_nAreaNum ) )
+			if ( clientArea == m_PVSInfo.m_nAreaNum || engineServer->CheckAreasConnected( clientArea, m_PVSInfo.m_nAreaNum ) )
 				break;
 		}
 	}
@@ -242,10 +242,10 @@ bool CServerNetworkProperty::IsInPVS( const CCheckTransmitInfo *pInfo )
 			if ( clientArea == m_PVSInfo.m_nAreaNum || clientArea == m_PVSInfo.m_nAreaNum2 )
 				break;
 
-			if ( engine->CheckAreasConnected( clientArea, m_PVSInfo.m_nAreaNum ) )
+			if (engineServer->CheckAreasConnected( clientArea, m_PVSInfo.m_nAreaNum ) )
 				break;
 
-			if ( engine->CheckAreasConnected( clientArea, m_PVSInfo.m_nAreaNum2 ) )
+			if (engineServer->CheckAreasConnected( clientArea, m_PVSInfo.m_nAreaNum2 ) )
 				break;
 		}
 	}
@@ -266,7 +266,7 @@ bool CServerNetworkProperty::IsInPVS( const CCheckTransmitInfo *pInfo )
 	
 	if ( m_PVSInfo.m_nClusterCount < 0 )   // too many clusters, use headnode
 	{
-		return (engine->CheckHeadnodeVisible( m_PVSInfo.m_nHeadNode, pPVS, pInfo->m_nPVSSize ) != 0);
+		return (engineServer->CheckHeadnodeVisible( m_PVSInfo.m_nHeadNode, pPVS, pInfo->m_nPVSSize ) != 0);
 	}
 	
 	for ( i = m_PVSInfo.m_nClusterCount; --i >= 0; )

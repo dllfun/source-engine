@@ -683,8 +683,8 @@ ConVar cl_autohelp(
 		{
 			// Execute a map specific cfg file - as in Day of Defeat
 			// Map names cannot contain quotes or control characters so this is safe but silly that we have to do it.
-			engine->ServerCommand( UTIL_VarArgs( "exec \"%s.cfg\" */maps\n", STRING(gpGlobals->mapname) ) );
-			engine->ServerExecute();
+			engineServer->ServerCommand( UTIL_VarArgs( "exec \"%s.cfg\" */maps\n", STRING(gpGlobals->mapname) ) );
+			engineServer->ServerExecute();
 		}
 
 #ifndef CLIENT_DLL
@@ -1436,12 +1436,12 @@ ConVar cl_autohelp(
 				if ( pCSScorer->m_iTeamKills >= 3 )
 				{
 					ClientPrint( pCSScorer, HUD_PRINTCONSOLE, "#Banned_For_Killing_Teammates" );
-					engine->ServerCommand( UTIL_VarArgs( "kickid %d\n", pCSScorer->GetUserID() ) );
+					engineServer->ServerCommand( UTIL_VarArgs( "kickid %d\n", pCSScorer->GetUserID() ) );
 				}
 				else if ( mp_spawnprotectiontime.GetInt() > 0 && GetRoundElapsedTime() < mp_spawnprotectiontime.GetInt() )
 				{
 					ClientPrint( pCSScorer, HUD_PRINTCONSOLE, "#Banned_For_Killing_Teammates" );
-					engine->ServerCommand( UTIL_VarArgs( "kickid %d\n", pCSScorer->GetUserID() ) );
+					engineServer->ServerCommand( UTIL_VarArgs( "kickid %d\n", pCSScorer->GetUserID() ) );
 				}
 			}
 
@@ -1531,7 +1531,7 @@ ConVar cl_autohelp(
 		if ( pPlayer->GetActiveWeapon() && pPlayer->IsNetClient() && !bIsBeingGivenItem )
 		{
 			// Player has an active item, so let's check cl_autowepswitch.
-			const char *cl_autowepswitch = engine->GetClientConVarValue( engine->IndexOfEdict( pPlayer->edict() ), "cl_autowepswitch" );
+			const char *cl_autowepswitch = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( pPlayer->edict() ), "cl_autowepswitch" );
 			if ( cl_autowepswitch && atoi( cl_autowepswitch ) <= 0 )
 			{
 				return false;
@@ -3842,10 +3842,10 @@ ConVar cl_autohelp(
 				if ( pPlayer &&
 					 ( m_pVIP != pPlayer ) && 
 					 ( pPlayer->GetTeamNumber() == iTeamToSwap ) && 
-					 ( engine->GetPlayerUserId( pPlayer->edict() ) > iHighestUserID ) &&
+					 (engineServer->GetPlayerUserId( pPlayer->edict() ) > iHighestUserID ) &&
 					 ( pPlayer->State_Get() != STATE_PICKINGCLASS ) )
 					{
-						iHighestUserID = engine->GetPlayerUserId( pPlayer->edict() );
+						iHighestUserID = engineServer->GetPlayerUserId( pPlayer->edict() );
 						pPlayerToSwap = pPlayer;
 					}
 			}
@@ -4287,7 +4287,7 @@ ConVar cl_autohelp(
 			if ( !pPlayer )
 				return false;
 
-			const char *pClanID = engine->GetClientConVarValue( pPlayer->entindex(), "cl_clanid" );
+			const char *pClanID = engineServer->GetClientConVarValue( pPlayer->entindex(), "cl_clanid" );
 			uint32 iPlayerClan = atoi( pClanID );
 			if ( iPlayer == 0 )
 			{
@@ -4636,7 +4636,7 @@ ConVar cl_autohelp(
 					CMapEntityRef &ref = g_MapEntityRefs[m_iIterator];
 					m_iIterator = g_MapEntityRefs.Next( m_iIterator );	// Seek to the next entity.
 
-					if ( ref.m_iEdict == -1 || engine->PEntityOfEntIndex( ref.m_iEdict ) )
+					if ( ref.m_iEdict == -1 || engineServer->PEntityOfEntIndex( ref.m_iEdict ) )
 					{
 						// Doh! The entity was delete and its slot was reused.
 						// Just use any old edict slot. This case sucks because we lose the baseline.
@@ -4659,7 +4659,7 @@ ConVar cl_autohelp(
 
 		// DO NOT CALL SPAWN ON info_node ENTITIES!
 
-		MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &filter, true );
+		MapEntity_ParseAllEntities(engineServer->GetMapEntitiesString(), &filter, true );
 	}
 
 
@@ -5270,7 +5270,7 @@ const char *CCSGameRules::GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer )
 
 void CCSGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 {
-	const char *pszNewName = engine->GetClientConVarValue( pPlayer->entindex(), "name" );
+	const char *pszNewName = engineServer->GetClientConVarValue( pPlayer->entindex(), "name" );
 	const char *pszOldName = pPlayer->GetPlayerName();
 	CCSPlayer *pCSPlayer = (CCSPlayer*)pPlayer;		
 	if ( pszOldName[0] != 0 && Q_strncmp( pszOldName, pszNewName, MAX_PLAYER_NAME_LENGTH-1 ) )		
@@ -5281,7 +5281,7 @@ void CCSGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	pCSPlayer->m_bShowHints = true;
 	if ( pCSPlayer->IsNetClient() )
 	{
-		const char *pShowHints = engine->GetClientConVarValue( engine->IndexOfEdict( pCSPlayer->edict() ), "cl_autohelp" );
+		const char *pShowHints = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( pCSPlayer->edict() ), "cl_autohelp" );
 		if ( pShowHints && atoi( pShowHints ) <= 0 )
 		{
 			pCSPlayer->m_bShowHints = false;

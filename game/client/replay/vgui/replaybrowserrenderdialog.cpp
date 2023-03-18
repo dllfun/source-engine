@@ -402,7 +402,7 @@ void CReplayRenderDialog::OnCommand( const char *pCommand )
 	}
 	else
 	{
-		engine->ClientCmd( const_cast<char *>( pCommand ) );
+		engineClient->ClientCmd( const_cast<char *>( pCommand ) );
 	}
 
 	BaseClass::OnCommand( pCommand );
@@ -501,7 +501,7 @@ void CReplayRenderDialog::Render()
 	ReplayUI_CloseReplayBrowser();
 
 	// Hide the console
-	engine->ExecuteClientCmd( "hideconsole" );
+	engineClient->ExecuteClientCmd( "hideconsole" );
 
 	// Stats tracking.
 	GetReplayGameStatsHelper().SW_ReplayStats_WriteRenderDataStart( params, this );

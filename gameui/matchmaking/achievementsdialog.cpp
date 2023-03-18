@@ -137,7 +137,7 @@ void UpdateProgressBar( vgui::EditablePanel* pPanel, IAchievement *pAchievement,
 // TODO: revisit this once other games are rebuilt using the updated IAchievement interface
 bool GameSupportsAchievementTracker()
 {
-	const char *pGame = Q_UnqualifiedFileName( engine->GetGameDirectory() );
+	const char *pGame = Q_UnqualifiedFileName(engineClient->GetGameDirectory() );
 	if ( ( Q_stricmp( pGame, "tf" ) == 0 ) || ( Q_stricmp( pGame, "tf_beta" ) == 0 ) )
 		return true;
 

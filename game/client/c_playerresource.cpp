@@ -102,7 +102,7 @@ void C_PlayerResource::UpdatePlayerName( int slot )
 		m_szUnconnectedName = AllocPooledString( PLAYER_UNCONNECTED_NAME );
 	
 	player_info_t sPlayerInfo;
-	if ( IsConnected( slot ) && engine->GetPlayerInfo( slot, &sPlayerInfo ) )
+	if ( IsConnected( slot ) && engineClient->GetPlayerInfo( slot, &sPlayerInfo ) )
 	{
 		m_szName[slot] = AllocPooledString( sPlayerInfo.name );
 	}
@@ -210,7 +210,7 @@ bool C_PlayerResource::IsHLTV(int index)
 
 	player_info_t sPlayerInfo;
 	
-	if ( engine->GetPlayerInfo( index, &sPlayerInfo ) )
+	if (engineClient->GetPlayerInfo( index, &sPlayerInfo ) )
 	{
 		return sPlayerInfo.ishltv;
 	}
@@ -226,7 +226,7 @@ bool C_PlayerResource::IsReplay(int index)
 
 	player_info_t sPlayerInfo;
 
-	if ( engine->GetPlayerInfo( index, &sPlayerInfo ) )
+	if ( engineClient->GetPlayerInfo( index, &sPlayerInfo ) )
 	{
 		return sPlayerInfo.isreplay;
 	}
@@ -245,7 +245,7 @@ bool C_PlayerResource::IsFakePlayer( int iIndex )
 
 	// Yuck, make sure it's up to date
 	player_info_t sPlayerInfo;
-	if ( engine->GetPlayerInfo( iIndex, &sPlayerInfo ) )
+	if (engineClient->GetPlayerInfo( iIndex, &sPlayerInfo ) )
 	{
 		return sPlayerInfo.fakeplayer;
 	}

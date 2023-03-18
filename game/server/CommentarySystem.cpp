@@ -264,7 +264,7 @@ public:
 		m_iClearPressedButtons = 0;
 
 		// If the map started via the map_commentary cmd, start in commentary
-		g_bInCommentaryMode = (engine->IsInCommentaryMode() != 0);
+		g_bInCommentaryMode = (engineServer->IsInCommentaryMode() != 0);
 
 		CalculateCommentaryState();
 	}
@@ -594,7 +594,7 @@ public:
 		CBaseEntity *pSemaphore = CreateEntityByName( "info_target" );
 		pSemaphore->SetName( MAKE_STRING(COMMENTARY_SPAWNED_SEMAPHORE) );
 
-		bool oldLock = engine->LockNetworkStringTables( false );
+		bool oldLock = engineServer->LockNetworkStringTables( false );
 
 		// Find the commentary file
 		char szFullName[512];
@@ -663,7 +663,7 @@ public:
 			Msg( "Commentary: Could not find commentary data file '%s'. \n", szFullName );
 		}
 
-		engine->LockNetworkStringTables( oldLock );
+		engineServer->LockNetworkStringTables( oldLock );
 	}
 
 	void ShutDownCommentary( void )
@@ -1122,8 +1122,8 @@ void CPointCommentaryNode::StartCommentary( void )
 	if ( m_iszPreCommands != NULL_STRING )
 	{
 		g_CommentarySystem.SetCommentaryConvarsChanging( true );
-		engine->ClientCommand( pPlayer->edict(), STRING(m_iszPreCommands) );
-		engine->ClientCommand( pPlayer->edict(), "commentary_cvarsnotchanging\n" );
+		engineServer->ClientCommand( pPlayer->edict(), STRING(m_iszPreCommands) );
+		engineServer->ClientCommand( pPlayer->edict(), "commentary_cvarsnotchanging\n" );
 	}
 
 	// Start the commentary
@@ -1321,8 +1321,8 @@ void CPointCommentaryNode::FinishCommentary( bool bBlendOut )
 	if ( m_iszPostCommands != NULL_STRING )
 	{
 		g_CommentarySystem.SetCommentaryConvarsChanging( true );
-		engine->ClientCommand( pPlayer->edict(), STRING(m_iszPostCommands) );
-		engine->ClientCommand( pPlayer->edict(), "commentary_cvarsnotchanging\n" );
+		engineServer->ClientCommand( pPlayer->edict(), STRING(m_iszPostCommands) );
+		engineServer->ClientCommand( pPlayer->edict(), "commentary_cvarsnotchanging\n" );
 	}
 
 	// Stop the commentary

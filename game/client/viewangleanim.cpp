@@ -47,7 +47,7 @@ void TestViewAnim( void )
 	if ( g_pTestAnimation )
 	{
 		QAngle angles;
-		engine->GetViewAngles( angles );
+		engineClient->GetViewAngles( angles );
 
 		g_pTestAnimation->RunAnimation( angles );
 	}
@@ -61,7 +61,7 @@ void ResetViewAngles( void )
 {
 	// create a blank anim
 	QAngle angles = vec3_angle;
-	engine->SetViewAngles( angles );
+	engineClient->SetViewAngles( angles );
 }
 ConCommand viewanim_reset( "viewanim_reset", ResetViewAngles, "reset view angles!", FCVAR_CHEAT );
 
@@ -71,7 +71,7 @@ CON_COMMAND_F( viewanim_addkeyframe, "", FCVAR_CHEAT )
 	if ( g_pTestAnimation )
 	{
 		QAngle vecTarget;
-		engine->GetViewAngles( vecTarget );
+		engineClient->GetViewAngles( vecTarget );
 
 		float flDelay = 0.2;
 		if (args.ArgC() > 1)
@@ -137,7 +137,7 @@ void CViewAngleAnimation::Spawn( void )
 {
 	m_iFlags = 0;
 	QAngle angles;
-	engine->GetViewAngles( angles );	
+	engineClient->GetViewAngles( angles );
 
 	/*
 	if ( m_iFlags & VIEWANIM_RELATIVE )
@@ -319,7 +319,7 @@ void CViewAngleAnimation::ClientThink()
 		if ( ( m_KeyFrames[i]->m_iFlags & VIEWANIM_RELATIVE ) && !( m_iFlags & VIEWANIM_RELATIVE ) )
 		{
             // new relative position is current angles
-			engine->GetViewAngles( m_vecBaseAngles );
+			engineClient->GetViewAngles( m_vecBaseAngles );
 		}
 
 		// copy the rest over
@@ -367,7 +367,7 @@ void CViewAngleAnimation::SetAngles( QAngle vecCalculatedAngles )
 		vecCalculatedAngles += m_vecBaseAngles;
 
 	QAngle vecViewAngle;
-	engine->GetViewAngles( vecViewAngle );
+	engineClient->GetViewAngles( vecViewAngle );
 
 	if ( !(FBitSet( m_iFlags, VIEWANIM_IGNORE_X ) ) )
 		vecViewAngle[PITCH] = vecCalculatedAngles[PITCH];
@@ -381,6 +381,6 @@ void CViewAngleAnimation::SetAngles( QAngle vecCalculatedAngles )
 	// clamp pitch
 	vecViewAngle[PITCH] = clamp( vecViewAngle[PITCH], -cl_pitchup.GetFloat(), cl_pitchdown.GetFloat() );
 
-	engine->SetViewAngles( vecViewAngle );
+	engineClient->SetViewAngles( vecViewAngle );
 }
 

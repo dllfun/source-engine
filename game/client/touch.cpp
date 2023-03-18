@@ -53,7 +53,7 @@ ConVar touch_button_info( "touch_button_info", "0", FCVAR_ARCHIVE );
 #define bound( low, num, high ) ( boundmin( boundmax(num, high), low ))
 #define S
 
-extern IVEngineClient *engine;
+extern IVEngineClient *engineClient;
 
 CTouchControls gTouch;
 static VTouchPanel g_TouchPanel;
@@ -64,7 +64,7 @@ CTouchPanel::CTouchPanel( vgui::VPANEL parent ) : BaseClass( NULL, "TouchPanel" 
 	SetParent( parent );
 
 	int w, h;
-	engine->GetScreenSize(w, h);
+	engineClient->GetScreenSize(w, h);
 	SetBounds( 0, 0, w, h );
 
 	SetFgColor( Color( 0, 0, 0, 255 ) );
@@ -343,7 +343,7 @@ void CTouchControls::ResetToDefaults()
 	else
 	{
 		Q_snprintf(buf, sizeof buf, "exec %s", TOUCH_DEFAULT_CFG);
-		engine->ExecuteClientCmd(buf);
+		engineClient->ExecuteClientCmd(buf);
 	}
 
 	WriteConfig();
@@ -352,7 +352,7 @@ void CTouchControls::ResetToDefaults()
 void CTouchControls::Init()
 {
 	int w,h;
-	engine->GetScreenSize( w, h );
+	engineClient->GetScreenSize( w, h );
 	screen_w = w; screen_h = h;
 
 	touchTextureID = 0;
@@ -406,7 +406,7 @@ void CTouchControls::Init()
 	if( filesystem->FileExists(buf, "MOD") )
 	{
 		Q_snprintf(buf, sizeof buf, "exec %s\n", touch_config_file.GetString());
-		engine->ExecuteClientCmd(buf);
+		engineClient->ExecuteClientCmd(buf);
 	}
 	else
 		ResetToDefaults();
@@ -952,7 +952,7 @@ void CTouchControls::EditEvent(touch_event_t *ev)
 				
 				if( btn->flags & TOUCH_FL_NOEDIT )
 				{
-					engine->ClientCmd_Unrestricted( btn->command );
+					engineClient->ClientCmd_Unrestricted( btn->command );
 					continue;
 				}
 
@@ -1067,7 +1067,7 @@ void CTouchControls::FingerPress(touch_event_t *ev)
 						btn->finger = look_finger;
 				}
 				else
-					engine->ClientCmd_Unrestricted( btn->command );
+					engineClient->ClientCmd_Unrestricted( btn->command );
 			}
 		}
 	}
@@ -1097,7 +1097,7 @@ void CTouchControls::FingerPress(touch_event_t *ev)
 
 					snprintf( cmd, sizeof cmd, "%s", btn->command );
 					cmd[0] = '-';
-					engine->ClientCmd_Unrestricted( cmd );
+					engineClient->ClientCmd_Unrestricted( cmd );
 				}
 			}
 		}

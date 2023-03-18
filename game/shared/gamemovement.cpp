@@ -3398,9 +3398,15 @@ int CGameMovement::CheckStuck( void )
 	if ( developer.GetBool() )
 	{
 		bool isServer = player->IsServer();
-		engine->Con_NPrintf( isServer, "%s stuck on object %i/%s", 
+#ifdef GAME_DLL
+		engineServer->Con_NPrintf(isServer, "%s stuck on object %i/%s",
 			isServer ? "server" : "client",
 			hitent.GetEntryIndex(), MoveHelper()->GetName(hitent) );
+#else
+		engineClient->Con_NPrintf( isServer, "%s stuck on object %i/%s",
+			isServer ? "server" : "client",
+			hitent.GetEntryIndex(), MoveHelper()->GetName(hitent) );
+#endif
 	}
 #endif
 
@@ -3435,7 +3441,11 @@ int CGameMovement::CheckStuck( void )
 	// Only an issue on the client.
 	idx = player->IsServer() ? 0 : 1;
 
-	fTime = engine->Time();
+#ifdef GAME_DLL
+	fTime = engineServer->Time();
+#else
+	fTime = engineClient->Time();
+#endif
 	// Too soon?
 	if ( m_flStuckCheckTime[ player->entindex() ][ idx ] >=  fTime - CHECKSTUCK_MINTIME )
 	{

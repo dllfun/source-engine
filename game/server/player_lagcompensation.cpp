@@ -355,7 +355,7 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	// correct is the amout of time we have to correct game time
 	float correct = 0.0f;
 
-	INetChannelInfo *nci = engine->GetPlayerNetInfo( player->entindex() ); 
+	INetChannelInfo *nci = engineServer->GetPlayerNetInfo( player->entindex() );
 
 	if ( nci )
 	{
@@ -386,7 +386,7 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	}
 	
 	// Iterate all active players
-	const CBitVec<MAX_EDICTS> *pEntityTransmitBits = engine->GetEntityTransmitBitsForClient( player->entindex() - 1 );
+	const CBitVec<MAX_EDICTS> *pEntityTransmitBits = engineServer->GetEntityTransmitBitsForClient( player->entindex() - 1 );
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );

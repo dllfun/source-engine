@@ -789,9 +789,9 @@ int CViewRenderBeams::CullBeam( const Vector &start, const Vector &end, int pvsO
 	}
 
 	// Check bbox
-	if ( engine->IsBoxVisible( mins, maxs ) )
+	if (engineClient->IsBoxVisible( mins, maxs ) )
 	{
-		if ( pvsOnly || !engine->CullBox( mins, maxs ) )
+		if ( pvsOnly || !engineClient->CullBox( mins, maxs ) )
 		{
 			// Beam is visible
 			return 1;	

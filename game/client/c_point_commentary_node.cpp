@@ -241,7 +241,7 @@ void C_PointCommentaryNode::OnDataChanged( DataUpdateType_t updateType )
 		}
 		if ( !pszCommentaryFile || !pszCommentaryFile[0] )
 		{
-			engine->ServerCmd( "commentary_finishnode\n" );
+			engineClient->ServerCmd( "commentary_finishnode\n" );
 			return;
 		}
 
@@ -416,7 +416,7 @@ void CHudCommentary::Paint()
 			m_hActiveNode = NULL;
 			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "HideCommentary" );
 
-			engine->ServerCmd( "commentary_finishnode\n" );
+			engineClient->ServerCmd( "commentary_finishnode\n" );
 		}
 	}
 

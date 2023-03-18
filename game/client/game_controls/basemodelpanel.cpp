@@ -353,7 +353,7 @@ const char *CModelPanel::GetModelName( void )
 		if ( m_pModelInfo->m_pszModelName_HWM && ( Q_strlen( m_pModelInfo->m_pszModelName_HWM  ) > 0 ) )
 		{
 			// does the file exist
-			model_t *pModel = (model_t *)engine->LoadModel( m_pModelInfo->m_pszModelName_HWM );
+			model_t *pModel = (model_t *)engineClient->LoadModel( m_pModelInfo->m_pszModelName_HWM );
 			if ( pModel )
 			{
 				return m_pModelInfo->m_pszModelName_HWM;

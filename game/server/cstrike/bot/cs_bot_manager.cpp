@@ -724,7 +724,7 @@ CON_COMMAND_F( bot_kick, "bot_kick <all> <t|ct> <type> <difficulty> <name> - Kic
 	for ( int i=0; i<collector.m_bots.Count(); ++i )
 	{
 		CCSBot *bot = collector.m_bots[i];
-		engine->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", bot->GetPlayerName() ) );
+		engineServer->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", bot->GetPlayerName() ) );
 		if ( !all )
 		{
 			// adjust bot quota so kicked bot is not immediately added back in
@@ -1092,7 +1092,7 @@ bool UTIL_CSSKickBotFromTeam( int kickTeam )
 		if (!player->IsAlive() && player->GetTeamNumber() == kickTeam)
 		{
 			// its a bot on the right team - kick it
-			engine->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
+			engineServer->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
 
 			return true;
 		}
@@ -1109,7 +1109,7 @@ bool UTIL_CSSKickBotFromTeam( int kickTeam )
 		if (player->GetTeamNumber() == kickTeam)
 		{
 			// its a bot on the right team - kick it
-			engine->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
+			engineServer->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
 
 			return true;
 		}
@@ -1135,7 +1135,7 @@ void CCSBotManager::MaintainBotQuota( void )
 	int humanPlayersInGame = UTIL_HumansInGame( IGNORE_SPECTATORS );
 
 	// don't add bots until local player has been registered, to make sure he's player ID #1
-	if (!engine->IsDedicatedServer() && totalHumansInGame == 0)
+	if (!engineServer->IsDedicatedServer() && totalHumansInGame == 0)
 		return;
 
 	// new players can't spawn immediately after the round has been going for some time
@@ -1345,7 +1345,7 @@ void CCSBotManager::ExtractScenarioData( void )
 	int i;
 	for( i=1; i<gpGlobals->maxEntities; ++i )
 	{
-		entity = CBaseEntity::Instance( engine->PEntityOfEntIndex( i ) );
+		entity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex( i ) );
 
 		if (entity == NULL)
 			continue;
@@ -1614,7 +1614,7 @@ CNavArea *CCSBotManager::GetRandomAreaInZone( const Zone *zone ) const
 //--------------------------------------------------------------------------------------------------------------
 void CCSBotManager::OnServerShutdown( IGameEvent *event )
 {
-	if ( !engine->IsDedicatedServer() )
+	if ( !engineServer->IsDedicatedServer() )
 	{
 		// Since we're a listenserver, save some config info for the next time we start up
 		static const char *botVars[] =
@@ -2373,13 +2373,13 @@ CON_COMMAND_F( nav_check_connectivity, "Checks to be sure every (or just the mar
 	else
 	{
 		// Otherwise, loop through every area, and make sure they can all get to the goal.
-		float start = engine->Time();
+		float start = engineServer->Time();
 		FOR_EACH_VEC( TheNavAreas, nit )
 		{
 			CheckAreaAgainstAllZoneAreas(TheNavAreas[ nit ]);
 		}
 
-		float end = engine->Time();
+		float end = engineServer->Time();
 		float time = (end - start) * 1000.0f;
 		Msg( "nav_check_connectivity took %2.2f ms\n", time );
 	}

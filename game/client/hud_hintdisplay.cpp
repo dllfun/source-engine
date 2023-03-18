@@ -598,7 +598,7 @@ bool CHudHintKeyDisplay::SetHintText( const char *text )
 			}
 			else
 			{
-				const char *key = engine->Key_LookupBinding( *binding == '+' ? binding + 1 : binding );
+				const char *key = engineClient->Key_LookupBinding( *binding == '+' ? binding + 1 : binding );
 				if ( !key )
 				{
 					key = "< not bound >";

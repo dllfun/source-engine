@@ -422,7 +422,7 @@ void CFlextalkActor::ProcessSceneEvents( void )
 
 			char pszSentence[256];
 			Q_snprintf( pszSentence,sizeof(pszSentence), "%s%d", STRING(m_iszSentence), m_sentence++ );
-			int sentenceIndex = engine->SentenceIndexFromName( pszSentence );
+			int sentenceIndex = engineServer->SentenceIndexFromName( pszSentence );
 			if (sentenceIndex >= 0)
 			{
 				Msg( "%d : %s\n", sentenceIndex, pszSentence );

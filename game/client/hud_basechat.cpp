@@ -343,7 +343,7 @@ int CBaseHudChatLine::GetCount( void )
 bool CBaseHudChatLine::IsReadyToExpire( void )
 {
 	// Engine disconnected, expire right away
-	if ( !engine->IsInGame() && !engine->IsConnected() )
+	if ( !engineClient->IsInGame() && !engineClient->IsConnected() )
 		return true;
 
 	if ( gpGlobals->curtime >= m_flExpireTime )
@@ -1237,7 +1237,7 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 
 	m_pFilterPanel->SetVisible( false );
 
-	engine->ClientCmd_Unrestricted( "gameui_preventescapetoshow\n" );
+	engineClient->ClientCmd_Unrestricted( "gameui_preventescapetoshow\n" );
 		
 #endif
 }
@@ -1249,7 +1249,7 @@ void CBaseHudChat::StopMessageMode( void )
 {
 #ifndef _XBOX
 
-	engine->ClientCmd_Unrestricted( "gameui_allowescapetoshow\n" );
+	engineClient->ClientCmd_Unrestricted( "gameui_allowescapetoshow\n" );
 
 	SetKeyBoardInputEnabled( false );
 	SetMouseInputEnabled( false );
@@ -1646,7 +1646,7 @@ This is a very long string that I am going to attempt to paste into the cs hud c
 		char szbuf[144];	// more than 128
 		Q_snprintf( szbuf, sizeof(szbuf), "%s \"%s\"", m_nMessageMode == MM_SAY ? "say" : "say_team", ansi );
 
-		engine->ClientCmd_Unrestricted(szbuf);
+		engineClient->ClientCmd_Unrestricted(szbuf);
 	}
 	
 	m_pChatInput->ClearEntry();
@@ -1801,7 +1801,7 @@ void CBaseHudChat::ChatPrintf( int iPlayerIndex, int iFilter, const char *fmt, .
 	}
 	else
 	{
-		engine->GetPlayerInfo( iPlayerIndex, &sPlayerInfo );
+		engineClient->GetPlayerInfo( iPlayerIndex, &sPlayerInfo );
 	}	
 
 	int bufSize = (strlen( pmsg ) + 1 ) * sizeof(wchar_t);

@@ -295,7 +295,7 @@ void CVoteSetupDialog::ApplySettings(KeyValues *inResourceData)
 //-----------------------------------------------------------------------------
 void CVoteSetupDialog::UpdateCurrentMap( void )
 {
-	Q_FileBase( engine->GetLevelName(), m_szCurrentMap, sizeof(m_szCurrentMap) );
+	Q_FileBase(engineClient->GetLevelName(), m_szCurrentMap, sizeof(m_szCurrentMap) );
 	Q_strlower( m_szCurrentMap );
 }
 
@@ -455,7 +455,7 @@ void CVoteSetupDialog::OnCommand(const char *command)
 							// Which Map?
 							const char *szMapName = pParameterKeyValues->GetString( "Name" );
 							Q_snprintf( szVoteCommand, sizeof( szVoteCommand ), "callvote %s %s\n;", szIssue, szMapName );
-							engine->ClientCmd( szVoteCommand );
+							engineClient->ClientCmd( szVoteCommand );
 						}
 					}
 				}
@@ -473,11 +473,11 @@ void CVoteSetupDialog::OnCommand(const char *command)
 						int playerIndex = pKeyValues->GetInt( "index" );
 						const char *pReasonString = m_pComboBox->GetActiveItemUserData() ? m_pComboBox->GetActiveItemUserData()->GetName() : "other";
 						player_info_t playerInfo;
-						if ( engine->GetPlayerInfo( playerIndex, &playerInfo ) )
+						if (engineClient->GetPlayerInfo( playerIndex, &playerInfo ) )
 						{
 							CBasePlayer *pPlayer = UTIL_PlayerByIndex( playerIndex );
 							Q_snprintf( szVoteCommand, sizeof( szVoteCommand ), "callvote %s \"%d %s\"\n;", szIssue, pPlayer->GetUserID(), pReasonString );
-							engine->ClientCmd( szVoteCommand );
+							engineClient->ClientCmd( szVoteCommand );
 #ifdef TF_CLIENT_DLL
 							CSteamID steamID;
 							CTFPlayer* pSubject = ToTFPlayer( pPlayer );
@@ -510,7 +510,7 @@ void CVoteSetupDialog::OnCommand(const char *command)
 							// Which Pop File?
 							const char *szPopFile = pParameterKeyValues->GetString( "Name" );
 							Q_snprintf( szVoteCommand, sizeof( szVoteCommand ), "callvote %s %s\n;", szIssue, szPopFile );
-							engine->ClientCmd( szVoteCommand );
+							engineClient->ClientCmd( szVoteCommand );
 						}
 					}
 				}
@@ -520,7 +520,7 @@ void CVoteSetupDialog::OnCommand(const char *command)
 			{
 				// Non-parameter vote.  i.e.  callvote scrambleteams
 				Q_snprintf( szVoteCommand, sizeof(szVoteCommand), "callvote %s\n;", szIssue );
-				engine->ClientCmd( szVoteCommand );
+				engineClient->ClientCmd( szVoteCommand );
 			}
 
 			Close();
@@ -601,7 +601,7 @@ void CVoteSetupDialog::OnItemSelected( vgui::Panel *panel )
 			else if ( V_stricmp( "kick", szName ) == 0 )
 			{
 				// Feed the player list to the parameters list
-				int nMaxClients = engine->GetMaxClients();
+				int nMaxClients = engineClient->GetMaxClients();
 				for ( int playerIndex = 1; playerIndex <= nMaxClients; playerIndex++ )
 				{
 					C_BasePlayer *pPlayer = UTIL_PlayerByIndex( playerIndex );
@@ -667,7 +667,7 @@ void CVoteSetupDialog::OnItemSelected( vgui::Panel *panel )
 					{
 						// Use the map name
 						char szShortMapName[ MAX_MAP_NAME ];
-						V_strncpy( szShortMapName, engine->GetLevelName(), sizeof( szShortMapName ) );
+						V_strncpy( szShortMapName, engineClient->GetLevelName(), sizeof( szShortMapName ) );
 						V_StripExtension( szShortMapName, szShortMapName, sizeof( szShortMapName ) );					
 
 						if ( V_strncmp( m_VoteIssuesPopFiles[index], V_GetFileName( szShortMapName ), ( V_strlen( m_VoteIssuesPopFiles[index] ) - 1 ) ) == 0 )
@@ -756,7 +756,7 @@ void CVoteSetupDialog::RefreshIssueParameters()
 					int playerIndex = pKeyValues->GetInt( "index" );
 					player_info_t playerInfo;
 
-					if ( !engine->GetPlayerInfo( playerIndex, &playerInfo ) )
+					if ( !engineClient->GetPlayerInfo( playerIndex, &playerInfo ) )
 					{
 						pKeyValues->SetString( "Properties", "Offline" );
 						continue;
@@ -947,7 +947,7 @@ int	CHudVote::KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBin
 	char szOptionName[13] = "vote option";
 	Q_strncat( szOptionName, szNumber, sizeof( szOptionName ), COPY_ALL_CHARACTERS );
 
-	engine->ClientCmd( szOptionName );
+	engineClient->ClientCmd( szOptionName );
 
 	return 0;
 }
@@ -1697,7 +1697,7 @@ bool CHudVote::ShouldDraw( void )
 //-----------------------------------------------------------------------------
 bool CHudVote::IsPlayingDemo() const
 {
-	return engine->IsPlayingDemo();
+	return engineClient->IsPlayingDemo();
 }
 
 //-----------------------------------------------------------------------------

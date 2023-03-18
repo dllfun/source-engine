@@ -33,7 +33,7 @@ void COptionsSubHaptics::OnCommand(const char *command)
 {
 	if ( !stricmp( command, "DoDefaults" ) )
 	{
-		engine->ClientCmd_Unrestricted("exec haptics_default.cfg");
+		engineClient->ClientCmd_Unrestricted("exec haptics_default.cfg");
 		OnResetData();
 	}
 
@@ -151,8 +151,8 @@ void COptionsSubHaptics::OnApplyChanges()
 
 
 	//Write out our config file
-	engine->ClientCmd_Unrestricted("writehapticconfig");
-	engine->ClientCmd_Unrestricted("reloadhaptics"); 
+	engineClient->ClientCmd_Unrestricted("writehapticconfig");
+	engineClient->ClientCmd_Unrestricted("reloadhaptics");
 }
 
 //-----------------------------------------------------------------------------

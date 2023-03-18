@@ -36,7 +36,7 @@ CMatStubHandler::CMatStubHandler()
 		GetStubMaterialSystem()->SetRealMaterialSystem( materials );
 		materials->SetInStubMode( true );
 		materials = GetStubMaterialSystem();
-		engine->Mat_Stub( materials );
+		engineClient->Mat_Stub( materials );
 	}
 	else
 	{
@@ -58,7 +58,7 @@ void CMatStubHandler::End()
 	{
 		materials = m_pOldMaterialSystem;
 		materials->SetInStubMode( false );
-		engine->Mat_Stub( materials );
+		engineClient->Mat_Stub( materials );
 		m_pOldMaterialSystem = 0;
 //		if( gl_clear.GetBool() )
 		{

@@ -340,7 +340,7 @@ void CAvatarImagePanel::SetPlayer( int entindex, EAvatarSize avatarSize )
 	m_pImage->ClearAvatarSteamID();
 
 	player_info_t pi;
-	if ( engine->GetPlayerInfo(entindex, &pi) )
+	if (engineClient->GetPlayerInfo(entindex, &pi) )
 	{
 		if ( pi.friendsID != 0 	&& steamapicontext->SteamUtils() )
 		{		

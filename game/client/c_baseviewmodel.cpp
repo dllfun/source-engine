@@ -162,7 +162,7 @@ bool C_BaseViewModel::Interpolate( float currentTime )
 		float curtime = pPlayer ? pPlayer->GetFinalPredictedTime() : gpGlobals->curtime;
 		elapsed_time = curtime - m_flAnimTime;
 		// Adjust for interpolated partial frame
-		if ( !engine->IsPaused() )
+		if ( !engineClient->IsPaused() )
 		{
 			elapsed_time += ( gpGlobals->interpolation_amount * TICK_INTERVAL );
 		}
@@ -256,7 +256,7 @@ void C_BaseViewModel::ApplyBoneMatrixTransform( matrix3x4_t& transform )
 //-----------------------------------------------------------------------------
 bool C_BaseViewModel::ShouldDraw()
 {
-	if ( engine->IsHLTV() )
+	if (engineClient->IsHLTV() )
 	{
 		return ( HLTVCamera()->GetMode() == OBS_MODE_IN_EYE &&
 				 HLTVCamera()->GetPrimaryTarget() == GetOwner()	);

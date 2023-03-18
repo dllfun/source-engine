@@ -54,7 +54,7 @@ static ConVar mat_depthbias_shadowmap(	"mat_depthbias_shadowmap", "0.0005", FCVA
 
 void r_newflashlightCallback_f( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
-	if( engine->GetDXSupportLevel() < 70 )
+	if(engineClient->GetDXSupportLevel() < 70 )
 	{
 		r_newflashlight.SetValue( 0 );
 	}	
@@ -73,7 +73,7 @@ CFlashlightEffect::CFlashlightEffect(int nEntIndex)
 
 	m_bIsOn = false;
 	m_pPointLight = NULL;
-	if( engine->GetDXSupportLevel() < 70 )
+	if(engineClient->GetDXSupportLevel() < 70 )
 	{
 		r_newflashlight.SetValue( 0 );
 	}	

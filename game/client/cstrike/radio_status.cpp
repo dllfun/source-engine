@@ -116,7 +116,7 @@ CON_COMMAND_F( menuselect, "menuselect", FCVAR_CLIENTCMD_CAN_EXECUTE )
 	{
 		// if we didn't have a menu open, maybe a plugin did.  send it on to the server.
 		const char *cmd = VarArgs( "menuselect %s", args[1] );
-		engine->ServerCmd( cmd );
+		engineClient->ServerCmd( cmd );
 		return;
 	}
 
@@ -129,22 +129,22 @@ CON_COMMAND_F( menuselect, "menuselect", FCVAR_CLIENTCMD_CAN_EXECUTE )
 			switch( whichEntry )
 			{
 			case 1: // coverme
-				engine->ClientCmd( "coverme" );
+				engineClient->ClientCmd( "coverme" );
 				break;
 			case 2: // takepoint
-				engine->ClientCmd( "takepoint" );
+				engineClient->ClientCmd( "takepoint" );
 				break;
 			case 3: // holdpos
-				engine->ClientCmd( "holdpos" );
+				engineClient->ClientCmd( "holdpos" );
 				break;
 			case 4: // regroup
-				engine->ClientCmd( "regroup" );
+				engineClient->ClientCmd( "regroup" );
 				break;
 			case 5: // followme
-				engine->ClientCmd( "followme" );
+				engineClient->ClientCmd( "followme" );
 				break;
 			case 6: // takingfire
-				engine->ClientCmd( "takingfire" );
+				engineClient->ClientCmd( "takingfire" );
 				break;
 			}
 		}
@@ -155,22 +155,22 @@ CON_COMMAND_F( menuselect, "menuselect", FCVAR_CLIENTCMD_CAN_EXECUTE )
 			switch( whichEntry )
 			{
 			case 1: // go
-				engine->ClientCmd( "go" );
+				engineClient->ClientCmd( "go" );
 				break;
 			case 2: // fallback
-				engine->ClientCmd( "fallback" );
+				engineClient->ClientCmd( "fallback" );
 				break;
 			case 3: // sticktog
-				engine->ClientCmd( "sticktog" );
+				engineClient->ClientCmd( "sticktog" );
 				break;
 			case 4: // getinpos
-				engine->ClientCmd( "getinpos" );
+				engineClient->ClientCmd( "getinpos" );
 				break;
 			case 5: // stormfront
-				engine->ClientCmd( "stormfront" );
+				engineClient->ClientCmd( "stormfront" );
 				break;
 			case 6: // report
-				engine->ClientCmd( "report" );
+				engineClient->ClientCmd( "report" );
 				break;
 			}
 		}
@@ -181,31 +181,31 @@ CON_COMMAND_F( menuselect, "menuselect", FCVAR_CLIENTCMD_CAN_EXECUTE )
 			switch( whichEntry )
 			{
 			case 1: // roger
-				engine->ClientCmd( "roger" );
+				engineClient->ClientCmd( "roger" );
 				break;
 			case 2: // enemyspot
-				engine->ClientCmd( "enemyspot" );
+				engineClient->ClientCmd( "enemyspot" );
 				break;
 			case 3: // needbackup
-				engine->ClientCmd( "needbackup" );
+				engineClient->ClientCmd( "needbackup" );
 				break;
 			case 4: // sectorclear
-				engine->ClientCmd( "sectorclear" );
+				engineClient->ClientCmd( "sectorclear" );
 				break;
 			case 5: // inposition
-				engine->ClientCmd( "inposition" );
+				engineClient->ClientCmd( "inposition" );
 				break;
 			case 6: // reportingin
-				engine->ClientCmd( "reportingin" );
+				engineClient->ClientCmd( "reportingin" );
 				break;
 			case 7: // getout
-				engine->ClientCmd( "getout" );
+				engineClient->ClientCmd( "getout" );
 				break;
 			case 8: // negative
-				engine->ClientCmd( "negative" );
+				engineClient->ClientCmd( "negative" );
 				break;
 			case 9: // enemydown
-				engine->ClientCmd( "enemydown" );
+				engineClient->ClientCmd( "enemydown" );
 				break;
 			}
 		}
@@ -214,7 +214,7 @@ CON_COMMAND_F( menuselect, "menuselect", FCVAR_CLIENTCMD_CAN_EXECUTE )
 		default:
 			// if we didn't have a menu open, maybe a plugin did.  send it on to the server.
 			const char *cmd = VarArgs( "menuselect %d", whichEntry );
-			engine->ServerCmd( cmd );
+			engineClient->ServerCmd( cmd );
 			break;
 	}
 

@@ -109,7 +109,7 @@ IBotController *CPluginBotManager::GetBotController( edict_t *pEdict )
 
 edict_t *CPluginBotManager::CreateBot( const char *botname )
 {	
-	edict_t *pEdict = engine->CreateFakeClient( botname );
+	edict_t *pEdict = engineServer->CreateFakeClient( botname );
 	if (!pEdict)
 	{
 		Msg( "Failed to create Bot.\n");

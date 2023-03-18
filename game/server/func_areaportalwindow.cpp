@@ -61,7 +61,7 @@ void CFuncAreaPortalWindow::Spawn()
 {
 	Precache();
 
-	engine->SetAreaPortalState( m_portalNumber, 1 );
+	engineServer->SetAreaPortalState( m_portalNumber, 1 );
 }
 
 

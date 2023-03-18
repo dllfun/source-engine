@@ -1697,7 +1697,7 @@ void CReplayDetailsPanel::OnFileSelected( const char *fullpath )
 	{
 		IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
 		CFmtStr srcMovieFullFilename( "%s%s", g_pReplayMovieManager->GetRenderDir(), pMovie->GetMovieFilename() );
-		if ( !engine->CopyLocalFile( srcMovieFullFilename.Access(), fullpath ) )
+		if ( !engineClient->CopyLocalFile( srcMovieFullFilename.Access(), fullpath ) )
 		{
 			ShowMessageBox( "#Replay_ExportMovieError_Title", "#Replay_ExportMovieError_Text", "#GameUI_OK" );
 		}
@@ -1730,7 +1730,7 @@ void CReplayDetailsPanel::OnCommand( const char *pCommand )
 
 	else if ( FStrEq( pCommand, "play" ) )
 	{
-		if ( engine->IsInGame() )
+		if (engineClient->IsInGame() )
 		{
 			ShowPlayConfirmationDialog();
 		}

@@ -1438,9 +1438,9 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 		
 #if defined( REPLAY_ENABLED )
 		// If we're playing back a demo, override the ragdoll bones with cached version if available - otherwise, simulate.
-		if ( ( !engine->IsPlayingDemo() && !engine->IsPlayingTimeDemo() ) ||
+		if ( ( !engineClient->IsPlayingDemo() && !engineClient->IsPlayingTimeDemo() ) ||
 			 !CReplayRagdollCache::Instance().IsInitialized() ||
-			 !CReplayRagdollCache::Instance().GetFrame( this, engine->GetDemoPlaybackTick(), boneSimulated, &m_BoneAccessor ) )
+			 !CReplayRagdollCache::Instance().GetFrame( this, engineClient->GetDemoPlaybackTick(), boneSimulated, &m_BoneAccessor ) )
 #endif
 		{
 			m_pRagdoll->RagdollBone( this, pbones, hdr->numbones(), boneSimulated, m_BoneAccessor );
@@ -3205,13 +3205,13 @@ void C_BaseAnimating::DoInternalDrawModel( ClientModelRenderInfo_t *pInfo, DrawM
 				static color32 debugColor = {0,255,255,0};
 				matrix3x4_t matrix;
 				AngleMatrix( GetAbsAngles(), GetAbsOrigin(), matrix );
-				engine->DebugDrawPhysCollide( pCollide->solids[0], NULL, matrix, debugColor );
+				engineClient->DebugDrawPhysCollide( pCollide->solids[0], NULL, matrix, debugColor );
 				if ( VPhysicsGetObject() )
 				{
 					static color32 debugColorPhys = {255,0,0,0};
 					matrix3x4_t matrix;
 					VPhysicsGetObject()->GetPositionMatrix( &matrix );
-					engine->DebugDrawPhysCollide( pCollide->solids[0], NULL, matrix, debugColorPhys );
+					engineClient->DebugDrawPhysCollide( pCollide->solids[0], NULL, matrix, debugColorPhys );
 				}
 			}
 		}
@@ -4685,10 +4685,10 @@ bool C_BaseAnimating::InitAsClientRagdoll( const matrix3x4_t *pDeltaBones0, cons
 #if defined( REPLAY_ENABLED )
 	// If Replay is enabled on server, add an entry to the ragdoll recorder for this entity
 	ConVar* pReplayEnable = (ConVar*)g_pCVar->FindVar( "replay_enable" );
-	if ( m_pRagdoll && pReplayEnable && pReplayEnable->GetInt() && !engine->IsPlayingDemo() && !engine->IsPlayingTimeDemo() )
+	if ( m_pRagdoll && pReplayEnable && pReplayEnable->GetInt() && !engineClient->IsPlayingDemo() && !engineClient->IsPlayingTimeDemo() )
 	{
 		CReplayRagdollRecorder& RagdollRecorder = CReplayRagdollRecorder::Instance();
-		int nStartTick = TIME_TO_TICKS( engine->GetLastTimeStamp() );
+		int nStartTick = TIME_TO_TICKS( engineClient->GetLastTimeStamp() );
 		RagdollRecorder.AddEntry( this, nStartTick, m_pRagdoll->RagdollBoneCount() );
 	}
 #endif
@@ -5640,7 +5640,7 @@ void C_BaseAnimating::ClearRagdoll()
 #if defined( REPLAY_ENABLED )
 		// Delete entry from ragdoll recorder if Replay is enabled on server
 		ConVar* pReplayEnable = (ConVar*)g_pCVar->FindVar( "replay_enable" );
-		if ( pReplayEnable && pReplayEnable->GetInt() && !engine->IsPlayingDemo() && !engine->IsPlayingTimeDemo() )
+		if ( pReplayEnable && pReplayEnable->GetInt() && !engineClient->IsPlayingDemo() && !engineClient->IsPlayingTimeDemo() )
 		{
 			CReplayRagdollRecorder& RagdollRecorder = CReplayRagdollRecorder::Instance();
 			RagdollRecorder.StopRecordingRagdoll( this );
@@ -5965,7 +5965,7 @@ int C_BoneFollower::DrawModel( int flags )
 		static color32 debugColor = {0,255,255,0};
 		matrix3x4_t matrix;
 		AngleMatrix( GetAbsAngles(), GetAbsOrigin(), matrix );
-		engine->DebugDrawPhysCollide( pCollide->solids[m_solidIndex], NULL, matrix, debugColor );
+		engineClient->DebugDrawPhysCollide( pCollide->solids[m_solidIndex], NULL, matrix, debugColor );
 	}
 	return 1;
 }

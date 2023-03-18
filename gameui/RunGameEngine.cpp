@@ -32,7 +32,7 @@ public:
 	// returns true on success, false on failure
 	virtual bool AddTextCommand(const char *text)
 	{
-		engine->ClientCmd_Unrestricted((char *)text);
+		engineClient->ClientCmd_Unrestricted((char *)text);
 		return true;
 	}
 
@@ -56,7 +56,7 @@ public:
 	// returns true if the player is currently connected to a game server
 	virtual bool IsInGame()
 	{
-		return engine->GetLevelName() && strlen(engine->GetLevelName()) > 0;
+		return engineClient->GetLevelName() && strlen(engineClient->GetLevelName()) > 0;
 	}
 
 	// gets information about the server the engine is currently connected to
@@ -83,7 +83,7 @@ public:
 	// returns the number of user
 	virtual int GetPlayerCount()
 	{
-		return engine->GetMaxClients();
+		return engineClient->GetMaxClients();
 	}
 
 	// returns a playerID for a player
@@ -92,7 +92,7 @@ public:
 	{
 		player_info_t pi;
 
-		if  ( engine->GetPlayerInfo(playerIndex, &pi ) )
+		if  (engineClient->GetPlayerInfo(playerIndex, &pi ) )
 			return pi.friendsID;
 
 		return 0;
@@ -103,9 +103,9 @@ public:
 	{
 		// find the player by their friendsID
 		player_info_t pi;
-		for (int i = 0; i < engine->GetMaxClients(); i++)
+		for (int i = 0; i < engineClient->GetMaxClients(); i++)
 		{
-			if  (engine->GetPlayerInfo(i, &pi ))
+			if  (engineClient->GetPlayerInfo(i, &pi ))
 			{
 				if (pi.friendsID == (uint)trackerID)
 				{
@@ -122,9 +122,9 @@ public:
 	{
 		// find the player by their friendsID
 		player_info_t pi;
-		for (int i = 0; i < engine->GetMaxClients(); i++)
+		for (int i = 0; i < engineClient->GetMaxClients(); i++)
 		{
-			if  (engine->GetPlayerInfo(i, &pi ))
+			if  (engineClient->GetPlayerInfo(i, &pi ))
 			{
 				if (pi.friendsID == (uint)trackerID)
 				{
@@ -140,13 +140,13 @@ public:
 	// return the build number of the engine
 	virtual unsigned int GetEngineBuildNumber()
 	{
-		return engine->GetEngineBuildNumber();
+		return engineClient->GetEngineBuildNumber();
 	}
 
 	// return the product version of the mod being played (comes from steam.inf)
 	virtual const char *GetProductVersionString()
 	{
-		return engine->GetProductVersionString();
+		return engineClient->GetProductVersionString();
 	}
 };
 

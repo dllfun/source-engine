@@ -64,7 +64,11 @@ const char *CSceneTokenProcessor::CurrentToken( void )
 bool CSceneTokenProcessor::GetToken( bool crossline )
 {
 	// NOTE: crossline is ignored here, may need to implement if needed
-	m_pBuffer = engine->ParseFile( m_pBuffer, m_szToken, sizeof( m_szToken ) );
+#ifdef GAME_DLL
+	m_pBuffer = engineServer->ParseFile(m_pBuffer, m_szToken, sizeof(m_szToken));
+#else
+	m_pBuffer = engineClient->ParseFile(m_pBuffer, m_szToken, sizeof(m_szToken));
+#endif
 	if ( m_szToken[0] )
 		return true;
 	return false;

@@ -43,7 +43,7 @@ static CAllowMultipleRefractsLogic s_AllowMultipleRefractsLogic;
 
 void ViewTransform( const Vector &worldSpace, Vector &viewSpace )
 {
-	const VMatrix &viewMatrix = engine->WorldToViewMatrix();
+	const VMatrix &viewMatrix = engineClient->WorldToViewMatrix();
 	Vector3DMultiplyPosition( viewMatrix, worldSpace, viewSpace );
 }
 
@@ -93,7 +93,7 @@ int FrustumTransform( const VMatrix &worldToSurface, const Vector& point, Vector
 int ScreenTransform( const Vector& point, Vector& screen )
 {
 	// UNDONE: Clean this up some, handle off-screen vertices
-	return FrustumTransform ( engine->WorldToScreenMatrix(), point, screen );
+	return FrustumTransform (engineClient->WorldToScreenMatrix(), point, screen );
 }
 
 //-----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ int HudTransform( const Vector& point, Vector& screen )
 	}
 	else
 	{
-		return FrustumTransform ( engine->WorldToScreenMatrix(), point, screen );
+		return FrustumTransform (engineClient->WorldToScreenMatrix(), point, screen );
 	}
 }
 

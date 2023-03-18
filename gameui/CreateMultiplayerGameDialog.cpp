@@ -148,7 +148,7 @@ bool CCreateMultiplayerGameDialog::OnOK(bool applyOnly)
 	);
 
 	// exec
-	engine->ClientCmd_Unrestricted(szMapCommand);
+	engineClient->ClientCmd_Unrestricted(szMapCommand);
 
 	return true;
 }

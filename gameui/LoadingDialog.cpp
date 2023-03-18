@@ -609,7 +609,7 @@ void CLoadingDialog::OnCommand(const char *command)
 	if ( !stricmp(command, "Cancel") )
 	{
 		// disconnect from the server
-		engine->ClientCmd_Unrestricted("disconnect\n");
+		engineClient->ClientCmd_Unrestricted("disconnect\n");
 
 		// close
 		Close();

@@ -45,7 +45,7 @@ RecvProp RecvPropIntWithMinusOneFlag( const char *pVarName, int offset, int size
 void RecvProxy_IntToModelIndex16_BackCompatible( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	int modelIndex = pData->m_Value.m_Int;
-	if ( modelIndex < -1 && engine->GetProtocolVersion() <= PROTOCOL_VERSION_20 )
+	if ( modelIndex < -1 && engineClient->GetProtocolVersion() <= PROTOCOL_VERSION_20 )
 	{
 		Assert( modelIndex > -20000 );
 		modelIndex = -2 - ( ( -2 - modelIndex ) << 1 );
@@ -56,7 +56,7 @@ void RecvProxy_IntToModelIndex16_BackCompatible( const CRecvProxyData *pData, vo
 void RecvProxy_IntToModelIndex32_BackCompatible( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	int modelIndex = pData->m_Value.m_Int;
-	if ( modelIndex < -1 && engine->GetProtocolVersion() <= PROTOCOL_VERSION_20 )
+	if ( modelIndex < -1 && engineClient->GetProtocolVersion() <= PROTOCOL_VERSION_20 )
 	{
 		Assert( modelIndex > -20000 );
 		modelIndex = -2 - ( ( -2 - modelIndex ) << 1 );
@@ -155,7 +155,7 @@ static void RecvProxy_Time( const CRecvProxyData *pData, void *pStruct, void *pO
 	offset	= ( float )pData->m_Value.m_Int / 1000.0f;
 
 	// Get base
-	clock_base = floor( engine->GetLastTimeStamp() );
+	clock_base = floor(engineClient->GetLastTimeStamp() );
 
 	// Add together and clamp to msec precision
 	t = ClampToMsec( clock_base + offset );

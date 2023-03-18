@@ -314,7 +314,7 @@ void CRagdoll::DrawWireframe()
 		// draw the actual physics positions, not the cleaned up animation position
 		m_ragdoll.list[i].pObject->GetPositionMatrix( &matrix );
 		const CPhysCollide *pCollide = m_ragdoll.list[i].pObject->GetCollide();
-		engine->DebugDrawPhysCollide( pCollide, pWireframe, matrix, debugColor );
+		engineClient->DebugDrawPhysCollide( pCollide, pWireframe, matrix, debugColor );
 	}
 
 #if RAGDOLL_VISUALIZE
@@ -323,14 +323,14 @@ void CRagdoll::DrawWireframe()
 		static color32 debugColor = {255,0,0,0};
 
 		const CPhysCollide *pCollide = m_ragdoll.list[i].pObject->GetCollide();
-		engine->DebugDrawPhysCollide( pCollide, pWireframe, m_savedBone1[m_ragdoll.boneIndex[i]], debugColor );
+		engineClient->DebugDrawPhysCollide( pCollide, pWireframe, m_savedBone1[m_ragdoll.boneIndex[i]], debugColor );
 	}
 	for ( i = 0; i < m_ragdoll.listCount; i++ )
 	{
 		static color32 debugColor = {0,255,0,0};
 
 		const CPhysCollide *pCollide = m_ragdoll.list[i].pObject->GetCollide();
-		engine->DebugDrawPhysCollide( pCollide, pWireframe, m_savedBone2[m_ragdoll.boneIndex[i]], debugColor );
+		engineClient->DebugDrawPhysCollide( pCollide, pWireframe, m_savedBone2[m_ragdoll.boneIndex[i]], debugColor );
 	}
 
 	for ( i = 0; i < m_ragdoll.listCount; i++ )
@@ -338,7 +338,7 @@ void CRagdoll::DrawWireframe()
 		static color32 debugColor = {0,0,255,0};
 
 		const CPhysCollide *pCollide = m_ragdoll.list[i].pObject->GetCollide();
-		engine->DebugDrawPhysCollide( pCollide, pWireframe, m_savedBone3[m_ragdoll.boneIndex[i]], debugColor );
+		engineClient->DebugDrawPhysCollide( pCollide, pWireframe, m_savedBone3[m_ragdoll.boneIndex[i]], debugColor );
 	}
 #endif
 }
@@ -471,7 +471,7 @@ int C_ServerRagdoll::InternalDrawModel( int flags )
 			static color32 debugColor = {0,255,255,0};
 
 			AngleMatrix( m_ragAngles[i], m_ragPos[i], matrix );
-			engine->DebugDrawPhysCollide( pCollide->solids[i], pWireframe, matrix, debugColor );
+			engineClient->DebugDrawPhysCollide( pCollide->solids[i], pWireframe, matrix, debugColor );
 		}
 	}
 	return ret;

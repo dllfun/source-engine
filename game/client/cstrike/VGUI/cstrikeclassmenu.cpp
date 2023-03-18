@@ -77,7 +77,7 @@ void CClassMenu_TER::ShowPanel(bool bShow)
 {
 	if ( bShow)
 	{
-		engine->CheckPoint( "ClassMenu" );
+		engineClient->CheckPoint( "ClassMenu" );
 	}
 
 	BaseClass::ShowPanel( bShow );
@@ -172,7 +172,7 @@ void CClassMenu_CT::ShowPanel(bool bShow)
 {
 	if ( bShow)
 	{
-		engine->CheckPoint( "ClassMenu" );
+		engineClient->CheckPoint( "ClassMenu" );
 	}
 
 	BaseClass::ShowPanel( bShow );

@@ -475,7 +475,7 @@ void CClientLeafSystem::LevelInitPreEntity()
 	m_DirtyRenderables.EnsureCapacity( 256 );
 
 	// Add all the leaves we'll need
-	int leafCount = engine->LevelLeafCount();
+	int leafCount = engineClient->LevelLeafCount();
 	m_Leaf.EnsureCapacity( leafCount );
 
 	ClientLeaf_t newLeaf;
@@ -859,7 +859,7 @@ short CClientLeafSystem::GetRenderableArea( ClientRenderHandle_t handle )
 		return 0;
 
 	// Now ask the 
-	return engine->GetLeavesArea( leaves, nLeaves );
+	return engineClient->GetLeavesArea( leaves, nLeaves );
 }
 
 
@@ -1167,7 +1167,7 @@ void CClientLeafSystem::InsertIntoTree( ClientRenderHandle_t &handle )
 	CalcRenderableWorldSpaceAABB_Fast( pRenderable, absMins, absMaxs );
 	Assert( absMins.IsValid() && absMaxs.IsValid() );
 
-	ISpatialQuery* pQuery = engine->GetBSPTreeQuery();
+	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
 	pQuery->EnumerateLeavesInBox( absMins, absMaxs, this, (intp)&list );
 
 	if ( list.pHead )
@@ -1435,7 +1435,7 @@ inline void AddRenderableToRenderList( CClientRenderablesList &renderList, IClie
 	}
 	else
 	{
-		engine->Con_NPrintf( 10, "Warning: overflowed CClientRenderablesList group %d", group );
+		engineClient->Con_NPrintf( 10, "Warning: overflowed CClientRenderablesList group %d", group );
 	}
 }
 
@@ -1570,13 +1570,13 @@ void CClientLeafSystem::CollateRenderablesInLeaf( int leaf, int worldListLeafInd
 		if ( portalTestEnts && renderable.m_Area != -1 )
 		{
 			VPROF( "r_PortalTestEnts" );
-			if ( !engine->DoesBoxTouchAreaFrustum( absMins, absMaxs, renderable.m_Area ) )
+			if ( !engineClient->DoesBoxTouchAreaFrustum( absMins, absMaxs, renderable.m_Area ) )
 				continue;
 		}
 		else
 		{
 			// cull with main frustum
-			if ( engine->CullBox( absMins, absMaxs ) )
+			if (engineClient->CullBox( absMins, absMaxs ) )
 				continue;
 		}
 
@@ -1584,7 +1584,7 @@ void CClientLeafSystem::CollateRenderablesInLeaf( int leaf, int worldListLeafInd
 		if ( renderable.m_Flags & RENDER_FLAGS_STUDIO_MODEL )
 		{
 			// test to see if this renderable is occluded by the engine's occlusion system
-			if ( engine->IsOccluded( absMins, absMaxs ) )
+			if (engineClient->IsOccluded( absMins, absMaxs ) )
 				continue;
 		}
 

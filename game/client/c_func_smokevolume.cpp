@@ -210,7 +210,7 @@ static inline Vector EngineGetLightForPoint(const Vector &vPos)
 #if defined(PARTICLEPROTOTYPE_APP)
 	return Vector(1,1,1);
 #else
-	return engine->GetLightForPoint(vPos, true);
+	return engineClient->GetLightForPoint(vPos, true);
 #endif
 }
 

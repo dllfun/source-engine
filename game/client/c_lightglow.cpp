@@ -202,7 +202,7 @@ void C_LightGlow::OnDataChanged( DataUpdateType_t updateType )
 void C_LightGlow::ClientThink( void )
 {
 	Vector mins = GetAbsOrigin();
-	if ( engine->IsBoxVisible( mins, mins ) )
+	if (engineClient->IsBoxVisible( mins, mins ) )
 	{
 		m_Glow.Activate();
 	}

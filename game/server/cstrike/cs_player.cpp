@@ -574,28 +574,28 @@ void CCSPlayer::Precache()
 	for ( i=0; i<CTPlayerModels.Count(); ++i )
 	{
 		PrecacheModel( CTPlayerModels[i] );
-		engine->ForceModelBounds( CTPlayerModels[i], mins, maxs );
+		engineServer->ForceModelBounds( CTPlayerModels[i], mins, maxs );
 	}
 	for ( i=0; i<TerroristPlayerModels.Count(); ++i )
 	{
 		PrecacheModel( TerroristPlayerModels[i] );
-		engine->ForceModelBounds( TerroristPlayerModels[i], mins, maxs );
+		engineServer->ForceModelBounds( TerroristPlayerModels[i], mins, maxs );
 	}
 
 	// Sigh - have to force identical VMTs for the player models.  I'm just going to hard-code these
 	// strings here, rather than have char***'s or the CUtlVector<CUtlVector<>> equivalent.
-	engine->ForceSimpleMaterial( "materials/models/player/ct_urban/ct_urban.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/ct_urban/ct_urban_glass.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/ct_sas/ct_sas.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/ct_sas/ct_sas_glass.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/ct_gsg9/ct_gsg9.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/ct_gign/ct_gign.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/ct_gign/ct_gign_glass.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/t_phoenix/t_phoenix.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/t_guerilla/t_guerilla.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/t_leet/t_leet.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/t_leet/t_leet_glass.vmt" );
-	engine->ForceSimpleMaterial( "materials/models/player/t_arctic/t_arctic.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/ct_urban/ct_urban.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/ct_urban/ct_urban_glass.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/ct_sas/ct_sas.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/ct_sas/ct_sas_glass.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/ct_gsg9/ct_gsg9.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/ct_gign/ct_gign.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/ct_gign/ct_gign_glass.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/t_phoenix/t_phoenix.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/t_guerilla/t_guerilla.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/t_leet/t_leet.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/t_leet/t_leet_glass.vmt" );
+	engineServer->ForceSimpleMaterial( "materials/models/player/t_arctic/t_arctic.vmt" );
 
 #ifdef CS_SHIELD_ENABLED
 	PrecacheModel( SHIELD_VIEW_MODEL );
@@ -760,7 +760,7 @@ void CCSPlayer::InitialSpawn( void )
 		m_iAccount = CSGameRules()->GetStartMoney();
 	}
 
-	if ( !engine->IsDedicatedServer() && TheNavMesh->IsOutOfDate() && this == UTIL_GetListenServerHost() )
+	if ( !engineServer->IsDedicatedServer() && TheNavMesh->IsOutOfDate() && this == UTIL_GetListenServerHost() )
 	{
 		ClientPrint( this, HUD_PRINTCENTER, "The Navigation Mesh was built using a different version of this map." );
 	}
@@ -892,7 +892,7 @@ void CCSPlayer::Spawn()
 
 	m_iNumSpawns++;
 
-	if ( !engine->IsDedicatedServer() && CSGameRules()->m_iTotalRoundsPlayed < 2 && TheNavMesh->IsOutOfDate() && this == UTIL_GetListenServerHost() )
+	if ( !engineServer->IsDedicatedServer() && CSGameRules()->m_iTotalRoundsPlayed < 2 && TheNavMesh->IsOutOfDate() && this == UTIL_GetListenServerHost() )
 	{
 		ClientPrint( this, HUD_PRINTCENTER, "The Navigation Mesh was built using a different version of this map." );
 	}
@@ -1507,7 +1507,7 @@ void CCSPlayer::UpdateRadar()
 
 	// update positions of all players outside of my PVS
 	CBitVec< ABSOLUTE_PLAYER_LIMIT > playerbits;
-	engine->Message_DetermineMulticastRecipients( false, EyePosition(), playerbits );
+	engineServer->Message_DetermineMulticastRecipients( false, EyePosition(), playerbits );
 
 	CSingleUserRecipientFilter user( this );
 	UserMessageBegin( user, "UpdateRadar" );
@@ -2733,7 +2733,7 @@ void CCSPlayer::PreThink()
 		if ( m_flLastMovement + CSGameRules()->GetRoundLength()*2 < gpGlobals->curtime )
 		{
 			UTIL_ClientPrintAll( HUD_PRINTCONSOLE, "#Game_idle_kick", GetPlayerName() );
-			engine->ServerCommand( UTIL_VarArgs( "kickid %d\n", GetUserID() ) );
+			engineServer->ServerCommand( UTIL_VarArgs( "kickid %d\n", GetUserID() ) );
 			m_flLastMovement = gpGlobals->curtime;
 		}
 	}
@@ -5289,7 +5289,7 @@ void CCSPlayer::State_Enter_WELCOME()
 	{
 		if ( CommandLine()->FindParm( "-makereslists" ) ) // don't show the MOTD when making reslists
 		{
-			engine->ClientCommand( edict(), "jointeam 3\n" );
+			engineServer->ClientCommand( edict(), "jointeam 3\n" );
 		}
 		else
 		{
@@ -5475,7 +5475,7 @@ void CCSPlayer::State_Enter_OBSERVER_MODE()
 	int observerMode = m_iObserverLastMode;
 	if ( IsNetClient() )
 	{
-		const char *pIdealMode = engine->GetClientConVarValue( engine->IndexOfEdict( edict() ), "cl_spec_mode" );
+		const char *pIdealMode = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( edict() ), "cl_spec_mode" );
 		if ( pIdealMode )
 		{
 			int nIdealMode = atoi( pIdealMode );
@@ -5516,7 +5516,7 @@ void CCSPlayer::State_Enter_PICKINGCLASS()
 {
 	if ( CommandLine()->FindParm( "-makereslists" ) ) // don't show the menu when making reslists
 	{
-		engine->ClientCommand( edict(), "joinclass 0\n" );
+		engineServer->ClientCommand( edict(), "joinclass 0\n" );
 		return;
 	}
 
@@ -5867,7 +5867,7 @@ void CCSPlayer::AutoBuy()
 		return;
 	}
 
-	const char *autobuyString = engine->GetClientConVarValue( engine->IndexOfEdict( edict() ), "cl_autobuy" );
+	const char *autobuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( edict() ), "cl_autobuy" );
 	if ( !autobuyString || !*autobuyString )
 	{
 		EmitPrivateSound( "BuyPreset.AlreadyBought" );
@@ -6267,7 +6267,7 @@ void CCSPlayer::Rebuy( void )
 		return;
 	}
 
-	const char *rebuyString = engine->GetClientConVarValue( engine->IndexOfEdict( edict() ), "cl_rebuy" );
+	const char *rebuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( edict() ), "cl_rebuy" );
 	if ( !rebuyString || !*rebuyString )
 	{
 		EmitPrivateSound( "BuyPreset.AlreadyBought" );
@@ -6278,7 +6278,7 @@ void CCSPlayer::Rebuy( void )
 	BuyResult_e overallResult = BUY_ALREADY_HAVE;
 
 	char token[256];
-	rebuyString = engine->ParseFile( rebuyString, token, sizeof( token ) );
+	rebuyString = engineServer->ParseFile( rebuyString, token, sizeof( token ) );
 
 	while (rebuyString != NULL)
 	{
@@ -6327,7 +6327,7 @@ void CCSPlayer::Rebuy( void )
 
 		overallResult = CombineBuyResults( overallResult, result );
 
-		rebuyString = engine->ParseFile( rebuyString, token, sizeof( token ) );
+		rebuyString = engineServer->ParseFile( rebuyString, token, sizeof( token ) );
 	}
 
 	m_bIsInRebuy = false;
@@ -7377,7 +7377,7 @@ void CCSPlayer::ChangeName( const char *pszNewName )
 	SetPlayerName( trimmedName );
 
 	// tell engine to use new name
-	engine->ClientCommand( edict(), "name \"%s\"", trimmedName );
+	engineServer->ClientCommand( edict(), "name \"%s\"", trimmedName );
 
 	// remember time of name change
 	for ( int i=NAME_CHANGE_HISTORY_SIZE-1; i>0; i-- )

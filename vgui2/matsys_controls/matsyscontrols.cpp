@@ -12,6 +12,7 @@
 #include <VGuiMatSurface/IMatSystemSurface.h>
 #include <istudiorender.h>
 #include "vgui_controls/Controls.h"
+#include <vgui/ISurface.h>
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -37,8 +38,8 @@ IMDLCache *MDLCache()
 	return g_pMDLCache;
 }
 
-IMatSystemSurface *g_pMatSystemSurface = NULL;
-IMatSystemSurface *MatSystemSurface()
+vgui::ISurface *g_pMatSystemSurface = NULL;
+vgui::ISurface *MatSystemSurface()
 {
 	return g_pMatSystemSurface;
 }

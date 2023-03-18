@@ -89,7 +89,7 @@ bool NextBotDestroyer::operator() ( INextBot *bot  )
 		if ( bot->GetEntity()->IsPlayer() )
 		{
 			CBasePlayer *player = dynamic_cast< CBasePlayer * >( bot->GetEntity() );
-			engine->ServerCommand( UTIL_VarArgs( "kickid %d\n", player->GetUserID() ) );
+			engineServer->ServerCommand( UTIL_VarArgs( "kickid %d\n", player->GetUserID() ) );
 		}
 		else
 		{

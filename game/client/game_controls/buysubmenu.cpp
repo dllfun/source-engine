@@ -138,7 +138,7 @@ void CBuySubMenu::OnCommand( const char *command)
 		gViewPortInterface->ShowBackGround( false );
 	
 		if ( Q_stricmp( command, "vguicancel" ) != 0 )
-			engine->ClientCmd( command );
+			engineClient->ClientCmd( command );
 
 		BaseClass::OnCommand(command);
 	}

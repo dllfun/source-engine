@@ -226,7 +226,7 @@ void CCSAchievementAnnouncePanel::OnThink( void )
             //=============================================================================
 
             //Here we get the achievement to be displayed and set that in the popup windows
-            CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>( engine->GetAchievementMgr() );
+            CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
             if ( !pAchievementMgr )
                 return;
             

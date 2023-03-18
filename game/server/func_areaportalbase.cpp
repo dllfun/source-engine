@@ -56,7 +56,7 @@ bool CFuncAreaPortalBase::UpdateVisibility( const Vector &vOrigin, float fovDist
 
 	// See if the viewer is on the backside.
 	VPlane plane;
-	if( !engine->GetAreaPortalPlane( vOrigin, m_portalNumber, &plane ) )
+	if( !engineServer->GetAreaPortalPlane( vOrigin, m_portalNumber, &plane ) )
 		return true; // leave it open if there's an error here for some reason
 
 	bool bOpen = false;

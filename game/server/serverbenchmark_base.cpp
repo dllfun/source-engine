@@ -89,7 +89,7 @@ public:
 		m_nStartWaitCounter = -1;
 
 		// Setup the benchmark environment.
-		engine->SetDedicatedServerBenchmarkMode( true );	// Run 1 tick per frame and ignore all timing stuff.
+		engineServer->SetDedicatedServerBenchmarkMode( true );	// Run 1 tick per frame and ignore all timing stuff.
 
 		// Tell the game-specific hook that we're starting.
 		CServerBenchmarkHook::s_pBenchmarkHook->StartBenchmark();
@@ -151,8 +151,8 @@ public:
 	{
 		if ( sv_benchmark_autovprofrecord.GetInt() )
 		{
-			engine->ServerCommand( "vprof_record_start benchmark\n" );
-			engine->ServerExecute();
+			engineServer->ServerCommand( "vprof_record_start benchmark\n" );
+			engineServer->ServerExecute();
 		}
 	}
 
@@ -160,8 +160,8 @@ public:
 	{
 		if ( sv_benchmark_autovprofrecord.GetInt() )
 		{
-			engine->ServerCommand( "vprof_record_stop\n" );
-			engine->ServerExecute();
+			engineServer->ServerCommand( "vprof_record_stop\n" );
+			engineServer->ServerExecute();
 		}
 	}
 
@@ -181,18 +181,18 @@ public:
 			filesystem->Close( fh );
 
 			// Quit out.
-			engine->ServerCommand( "quit\n" );
+			engineServer->ServerCommand( "quit\n" );
 		}
 		
 		m_BenchmarkState = BENCHMARKSTATE_NOT_RUNNING;
-		engine->SetDedicatedServerBenchmarkMode( false );
+		engineServer->SetDedicatedServerBenchmarkMode( false );
 	}
 
 	virtual bool IsLocalBenchmarkPlayer( CBasePlayer *pPlayer )
 	{
 		if ( m_BenchmarkState != BENCHMARKSTATE_NOT_RUNNING )
 		{
-			if( !engine->IsDedicatedServer() && pPlayer->entindex() == 1 )
+			if( !engineServer->IsDedicatedServer() && pPlayer->entindex() == 1 )
 				return true;
 		}
 		

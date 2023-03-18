@@ -148,7 +148,7 @@ void COptionsSubMouse::OnApplyChanges()
 	m_pJoyYawSensitivitySlider->ApplyChanges();
 	m_pJoyPitchSensitivitySlider->ApplyChanges();
 
-	engine->ClientCmd_Unrestricted( "joyadvancedupdate" );
+	engineClient->ClientCmd_Unrestricted( "joyadvancedupdate" );
 
 	ConVarRef m_customacel("m_customaccel");
 	if ( m_customacel.IsValid() )

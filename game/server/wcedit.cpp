@@ -56,13 +56,13 @@ bool NWCEdit::IsWCVersionValid(void)
 	{
 		Msg("\nAborting map_edit\nWorldcraft not running...\n\n");
 		UTIL_CenterPrintAll( "Worldcraft not running..." );
-		engine->ServerCommand("disconnect\n");
+		engineServer->ServerCommand("disconnect\n");
 	}
 	else
 	{
 		Msg("\nAborting map_edit\nWC/Engine map versions different...\n\n");
 		UTIL_CenterPrintAll( "WC/Engine map versions different..." );
-		engine->ServerCommand("disconnect\n");
+		engineServer->ServerCommand("disconnect\n");
 	}
 	return false;
 }
@@ -491,7 +491,7 @@ void NWCEdit::UpdateEntityPosition( CBaseEntity *pEntity )
 		return;
 	
 	// can't do this unless in edit mode
-	if ( !engine->IsInEditMode() )
+	if ( !engineServer->IsInEditMode() )
 		return;
 
 	int entIndex = pEntity->entindex();
@@ -549,7 +549,7 @@ error:
 void CC_WC_Create( void )
 {
 	// Only allowed in wc_edit_mode
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		CBaseEntity::m_nDebugPlayer = UTIL_GetCommandClientIndex();
 
@@ -573,7 +573,7 @@ static ConCommand wc_create("wc_create", CC_WC_Create, "When in WC edit mode, cr
 void CC_WC_Destroy( void )
 {
 	// Only allowed in wc_edit_mode
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		CBaseEntity::m_nDebugPlayer = UTIL_GetCommandClientIndex();
 
@@ -601,7 +601,7 @@ static ConCommand wc_destroy("wc_destroy", CC_WC_Destroy, "When in WC edit mode,
 void CC_WC_DestroyUndo( void )
 {
 	// Only allowed in wc_edit_mode
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		CBaseEntity::m_nDebugPlayer = UTIL_GetCommandClientIndex();
 
@@ -618,7 +618,7 @@ static ConCommand wc_destroy_undo("wc_destroy_undo", CC_WC_DestroyUndo, "When in
 void CC_WC_AirNodeEdit( void )
 {
 	// Only allowed in wc_edit_mode
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		// Toggle air edit mode state
 		if (g_pAINetworkManager->GetEditOps()->m_bAirEditMode)
@@ -641,7 +641,7 @@ static ConCommand wc_air_node_edit("wc_air_node_edit", CC_WC_AirNodeEdit, "When 
 void CC_WC_AirNodeEditFurther( void )
 {
 	// Only allowed in wc_edit_mode
-	if (engine->IsInEditMode() && g_pAINetworkManager->GetEditOps()->m_bAirEditMode)
+	if (engineServer->IsInEditMode() && g_pAINetworkManager->GetEditOps()->m_bAirEditMode)
 	{
 		g_pAINetworkManager->GetEditOps()->m_flAirEditDistance += 10.0;
 	}
@@ -656,7 +656,7 @@ static ConCommand wc_air_edit_further("wc_air_edit_further", CC_WC_AirNodeEditFu
 void CC_WC_AirNodeEditNearer( void )
 {
 	// Only allowed in wc_edit_mode
-	if (engine->IsInEditMode() && g_pAINetworkManager->GetEditOps()->m_bAirEditMode)
+	if (engineServer->IsInEditMode() && g_pAINetworkManager->GetEditOps()->m_bAirEditMode)
 	{
 		g_pAINetworkManager->GetEditOps()->m_flAirEditDistance -= 10.0;
 	}
@@ -671,7 +671,7 @@ static ConCommand wc_air_edit_nearer("wc_air_edit_nearer", CC_WC_AirNodeEditNear
 void CC_WC_LinkEdit( void )
 {
 	// Only allowed in wc_edit_mode 
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		// Toggle air edit mode state
 		if (g_pAINetworkManager->GetEditOps()->m_bLinkEditMode)

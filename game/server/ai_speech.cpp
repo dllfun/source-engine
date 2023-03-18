@@ -477,7 +477,7 @@ bool CAI_Expresser::SpeakDispatchResponse( AIConcept_t concept, AI_Response *res
 
 		if ( result->IsApplyContextToWorld() )
 		{
-			CBaseEntity *pEntity = CBaseEntity::Instance( engine->PEntityOfEntIndex( 0 ) );
+			CBaseEntity *pEntity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex( 0 ) );
 			if ( pEntity )
 			{
 				pEntity->AddContext( result->GetContext() );
@@ -636,8 +636,8 @@ int CAI_Expresser::SpeakRawSentence( const char *pszSentence, float delay, float
 		sentenceIndex = SENTENCEG_PlayRndSz( GetOuter()->NetworkProp()->edict(), pszSentence, volume, soundlevel, 0, GetVoicePitch() );
 	}
 
-	SpeechMsg( GetOuter(), "SpeakRawSentence( %s, %f) %f\n", pszSentence, delay, engine->SentenceLength( sentenceIndex ) );
-	NoteSpeaking( engine->SentenceLength( sentenceIndex ), delay );
+	SpeechMsg( GetOuter(), "SpeakRawSentence( %s, %f) %f\n", pszSentence, delay, engineServer->SentenceLength( sentenceIndex ) );
+	NoteSpeaking(engineServer->SentenceLength( sentenceIndex ), delay );
 
 	return sentenceIndex;
 }
@@ -1004,9 +1004,9 @@ CON_COMMAND( npc_speakall, "Force the npc to try and speak all their responses" 
 		{
 			if ( pNPC->GetExpresser() )
 			{
-				bool save = engine->LockNetworkStringTables( false );
+				bool save = engineServer->LockNetworkStringTables( false );
 				pNPC->GetExpresser()->TestAllResponses();
-				engine->LockNetworkStringTables( save );
+				engineServer->LockNetworkStringTables( save );
 			}
 		}
 	}

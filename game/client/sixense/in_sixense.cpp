@@ -521,7 +521,7 @@ static void update_controller_manager_visibility( sixenseAllControllerData *acd 
 			SixenseInput::m_SixenseFrame->MoveToFront();
 
 			// Pause the engine if we can...
-			engine->ClientCmd_Unrestricted( "setpause nomsg" );
+			engineClient->ClientCmd_Unrestricted( "setpause nomsg" );
 		}
 	}
 	else 
@@ -530,7 +530,7 @@ static void update_controller_manager_visibility( sixenseAllControllerData *acd 
 
 		{
 			SixenseInput::m_SixenseFrame->SetVisible( false );
-			engine->ClientCmd_Unrestricted( "unpause nomsg" );
+			engineClient->ClientCmd_Unrestricted( "unpause nomsg" );
 
 		}
 	}
@@ -609,7 +609,7 @@ static void SixenseAutosave( const CCommand &args )
 		char szFullSaveFileName[32];
 		char szComment[32];
 
-		engine->SaveGame( 
+		engineClient->SaveGame(
 			szSaveName, 
 			IsX360(), 
 			szFullSaveFileName, 
@@ -872,7 +872,7 @@ SixenseInput::~SixenseInput()
 bool SixenseInput::IsSixenseMap()
 {
 #ifdef PORTAL2
-	if ( Q_strncmp( engine->GetLevelName(), "maps/sixense_", 13 ) == 0 )
+	if ( Q_strncmp(engineClient->GetLevelName(), "maps/sixense_", 13 ) == 0 )
 	{
 		return true;
 	}
@@ -1278,7 +1278,7 @@ void SixenseInput::PostInit()
 		LoadDefaultSettings( 2 );
 	}
 
-	engine->ExecuteClientCmd( "exec sixense_bindings.cfg" );
+	engineClient->ExecuteClientCmd( "exec sixense_bindings.cfg" );
 
 	if( m_pGestureBindings->GetNumBindings() == 0 )
 	{
@@ -1356,17 +1356,17 @@ void SixenseInput::GetFOV( float *hfov, float *vfov )
 {
 
 #if ( defined( HL2_CLIENT_DLL ) || defined( TF_CLIENT_DLL ) || defined( CSTRIKE_DLL ) ) && !defined( CSTRIKE15 ) && !defined( TERROR )
-	float engineAspectRatio = engine->GetScreenAspectRatio();
+	float engineAspectRatio = engineClient->GetScreenAspectRatio();
 #else
 	// avoid GetLocalPlayer() assert...
-	if( !engine->IsLocalPlayerResolvable() ) {
+	if( !engineClient->IsLocalPlayerResolvable() ) {
 		// defaults?
 		*hfov = 90.0f;
 		*vfov = 50.0f;
 		return;
 	}
 
-	float engineAspectRatio = engine->GetScreenAspectRatio( ScreenWidth(), ScreenHeight() );
+	float engineAspectRatio = engineClient->GetScreenAspectRatio( ScreenWidth(), ScreenHeight() );
 #endif
 
 	C_BasePlayer * pPlayer = C_BasePlayer::GetLocalPlayer();
@@ -1507,7 +1507,7 @@ bool SixenseInput::InMenuMode()
 		cstrike_panel_visible ||
 #endif
 		(SixenseInput::m_SixenseFrame && SixenseInput::m_SixenseFrame->IsVisible() ) || 
-		engine->IsPaused() || 
+		engineClient->IsPaused() ||
 		( enginevgui && enginevgui->IsGameUIVisible() ) || 
 		vgui::surface()->IsCursorVisible() ||
 		( m_pControllerManager && m_pControllerManager->isMenuVisible() ) )
@@ -1579,11 +1579,11 @@ bool SixenseInput::SixenseFrame( float flFrametime, CUserCmd *pCmd )
 			m_bIsActive = false;
 
 			QAngle engine_angles;
-			engine->GetViewAngles( engine_angles );
+			engineClient->GetViewAngles( engine_angles );
 
 			QAngle new_engine_angles = engine_angles + GetViewAngleOffset();
 
-			engine->SetViewAngles( new_engine_angles );
+			engineClient->SetViewAngles( new_engine_angles );
 
 		} else if( !controllers_docked && !m_bIsActive ) {
 			m_bIsActive = true;
@@ -1625,7 +1625,7 @@ bool SixenseInput::SixenseFrame( float flFrametime, CUserCmd *pCmd )
 	SixenseUpdateMouseCursor();
 
 #ifdef SIXENSE_PLAYER_DATA
-	if ( !engine->IsPaused() && !( enginevgui && enginevgui->IsGameUIVisible() ) && sixense_features_enabled.GetInt() )
+	if ( !engineClient->IsPaused() && !( enginevgui && enginevgui->IsGameUIVisible() ) && sixense_features_enabled.GetInt() )
 		SetPlayerHandPositions( pCmd, flFrametime );
 #endif
 
@@ -2490,7 +2490,7 @@ void SixenseInput::SetView( float flInputSampleFrametime, CUserCmd *pCmd )
 		m_bJustSpawned = false;
 
 		QAngle engine_angles;
-		engine->GetViewAngles( engine_angles );
+		engineClient->GetViewAngles( engine_angles );
 
 		ResetView( engine_angles );
 
@@ -2504,21 +2504,21 @@ void SixenseInput::SetView( float flInputSampleFrametime, CUserCmd *pCmd )
 	// Dont turn when charging
 	if( !charging )
 	{
-		engine->SetViewAngles( new_viewangles );
+		engineClient->SetViewAngles( new_viewangles );
 	}
 
 	if( charge_stopped )
 	{
 
 		QAngle engine_angles;
-		engine->GetViewAngles( engine_angles );
+		engineClient->GetViewAngles( engine_angles );
 
 		ForceViewAngles( engine_angles );
 		Msg("charge stopped\n");
 	}
 #else
 	// Set the engine's aim direction
-	engine->SetViewAngles( new_viewangles );
+	engineClient->SetViewAngles( new_viewangles );
 #endif
 
 	if ( pCmd )
@@ -2602,36 +2602,36 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 		{
 			if( m_pLeftButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_RIGHT ) )
 			{
-				engine->ExecuteClientCmd( "spec_next" );
+				engineClient->ExecuteClientCmd( "spec_next" );
 			}
 			if( m_pLeftButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_LEFT ) )
 			{
-				engine->ExecuteClientCmd( "spec_prev" );
+				engineClient->ExecuteClientCmd( "spec_prev" );
 			}
 			if( m_pLeftButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_UP ) )
 			{
-				engine->ExecuteClientCmd( "spec_mode" );
+				engineClient->ExecuteClientCmd( "spec_mode" );
 			}
 			if( m_pLeftButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_DOWN ) )
 			{
-				engine->ExecuteClientCmd( "spec_mode" );
+				engineClient->ExecuteClientCmd( "spec_mode" );
 			}
 
 			if( m_pRightButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_RIGHT ) )
 			{
-				engine->ExecuteClientCmd( "spec_next" );
+				engineClient->ExecuteClientCmd( "spec_next" );
 			}
 			if( m_pRightButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_LEFT ) )
 			{
-				engine->ExecuteClientCmd( "spec_prev" );
+				engineClient->ExecuteClientCmd( "spec_prev" );
 			}
 			if( m_pRightButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_UP ) )
 			{
-				engine->ExecuteClientCmd( "spec_mode" );
+				engineClient->ExecuteClientCmd( "spec_mode" );
 			}
 			if( m_pRightButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_DOWN ) )
 			{
-				engine->ExecuteClientCmd( "spec_mode" );
+				engineClient->ExecuteClientCmd( "spec_mode" );
 			}
 
 		}
@@ -2692,16 +2692,16 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 	}
 
 	// If the radial menu is open, all we care about is the release of the radial menu buttons.
-	if ( engine->IsLocalPlayerResolvable() && IsRadialMenuOpen() )
+	if (engineClient->IsLocalPlayerResolvable() && IsRadialMenuOpen() )
 	{
 		if ( m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_2 ) || m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_4 ) )
 		{
-			engine->ClientCmd_Unrestricted( "-mouse_menu" );
+			engineClient->ClientCmd_Unrestricted( "-mouse_menu" );
 		}
 
 		if ( m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_1 ) || m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_3 ) )
 		{
-			engine->ClientCmd_Unrestricted( "-mouse_menu_taunt" );
+			engineClient->ClientCmd_Unrestricted( "-mouse_menu_taunt" );
 		}
 
 		pCmd->buttons = last_buttons;
@@ -2757,7 +2757,7 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 		}
 		if( m_pRightButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_DOWN ) )
 		{
-			engine->ExecuteClientCmd( "lastinv" );
+			engineClient->ExecuteClientCmd( "lastinv" );
 		}
 		if( m_pRightButtonStates->buttonJustPressed( SIXENSE_BUTTON_JOYSTICK ) )
 		{
@@ -2786,7 +2786,7 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 		}
 		if( m_pRightButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_DOWN ) )
 		{
-			engine->ExecuteClientCmd( "lastinv" );
+			engineClient->ExecuteClientCmd( "lastinv" );
 		}
 	}
 
@@ -2811,7 +2811,7 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 		}
 		if( m_pRightButtonStates->stickJustPressed( sixenseUtils::IButtonStates::DIR_DOWN ) )
 		{
-			engine->ExecuteClientCmd( "lastinv" );
+			engineClient->ExecuteClientCmd( "lastinv" );
 		}
 	}
 
@@ -2819,7 +2819,7 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 	{
 		if( m_pLeftButtonStates->absoluteTiltJustStarted( sixenseUtils::IButtonStates::DIR_UP ) )
 		{
-			engine->ClientCmd_Unrestricted( "training_continue" );
+			engineClient->ClientCmd_Unrestricted( "training_continue" );
 		}
 	}
 
@@ -2829,24 +2829,24 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 	// coop ping
 	if ( m_pLeftButtonStates->justPressed( SIXENSE_BUTTON_1 ) || m_pLeftButtonStates->justPressed( SIXENSE_BUTTON_2 ) )
 	{
-		engine->ClientCmd_Unrestricted( "+mouse_menu" );
+		engineClient->ClientCmd_Unrestricted( "+mouse_menu" );
 	}
 
 	if ( m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_1 ) || m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_2 ) )
 	{
-		engine->ClientCmd_Unrestricted( "-mouse_menu" );
+		engineClient->ClientCmd_Unrestricted( "-mouse_menu" );
 	}
 
 	// coop remote view "tab"
 	if ( m_pRightButtonStates->justPressed( SIXENSE_BUTTON_START ) )
 	{
-		engine->ClientCmd_Unrestricted( "+remote_view" );
+		engineClient->ClientCmd_Unrestricted( "+remote_view" );
 		new_buttons |= IN_REMOTE_VIEW;
 	}
 
 	if ( m_pRightButtonStates->justReleased( SIXENSE_BUTTON_START ) )
 	{
-		engine->ClientCmd_Unrestricted( "-remote_view" );
+		engineClient->ClientCmd_Unrestricted( "-remote_view" );
 		new_buttons &= ~IN_REMOTE_VIEW;
 	}
 
@@ -2864,12 +2864,12 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 	// coop gesture
 	if ( m_pLeftButtonStates->justPressed( SIXENSE_BUTTON_3 ) || m_pLeftButtonStates->justPressed( SIXENSE_BUTTON_4 ) )
 	{
-		engine->ClientCmd_Unrestricted( "+mouse_menu_taunt" );
+		engineClient->ClientCmd_Unrestricted( "+mouse_menu_taunt" );
 	}
 
 	if ( m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_3 ) || m_pLeftButtonStates->justReleased( SIXENSE_BUTTON_4 ) )
 	{
-		engine->ClientCmd_Unrestricted( "-mouse_menu_taunt" );
+		engineClient->ClientCmd_Unrestricted( "-mouse_menu_taunt" );
 	}
 
 	// zooom
@@ -3304,7 +3304,7 @@ void SixenseInput::SixenseUpdateMouseCursor()
 
 #ifdef PORTAL2
 			float pixel_scale = 0.6f;
-			if ( engine->IsLocalPlayerResolvable() && IsRadialMenuOpen() )
+			if (engineClient->IsLocalPlayerResolvable() && IsRadialMenuOpen() )
 			{
 				hand_index = m_nLeftIndex;
 				pixel_scale = 0.5f;
@@ -3322,13 +3322,13 @@ void SixenseInput::SixenseUpdateMouseCursor()
 			static bool radial_menu_up_last_frame = false;
 
 #ifdef PORTAL2
-			if ( engine->IsLocalPlayerResolvable() && ( IsRadialMenuOpen() != radial_menu_up_last_frame ) )
+			if (engineClient->IsLocalPlayerResolvable() && ( IsRadialMenuOpen() != radial_menu_up_last_frame ) )
 			{
 				// Switched modes, reset the filters...
 				filtered_pixel_pos = Vector2( -999, -999 ); // reset the filter
 			}
 
-			if ( engine->IsLocalPlayerResolvable() ) radial_menu_up_last_frame = IsRadialMenuOpen();
+			if (engineClient->IsLocalPlayerResolvable() ) radial_menu_up_last_frame = IsRadialMenuOpen();
 #endif
 
 			Vector3 view_angles;

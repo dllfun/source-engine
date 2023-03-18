@@ -4,7 +4,7 @@
 // Desc: 		Manages client side stat storage, accumulation, and access
 // Author: 		Peter Freese <peter@hiddenpath.com>
 // Date: 		2009/09/11
-// Copyright:	© 2009 Hidden Path Entertainment
+// Copyright:	?2009 Hidden Path Entertainment
 //
 // Keywords: 	
 //-------------------------------------------------------------
@@ -189,7 +189,7 @@ void CCSClientGameStats::UpdateSteamStats()
 	if ( !steamapicontext->SteamUserStats() )
 		return; 
 
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>( engine->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	Assert(pAchievementMgr != NULL);
 	if (!pAchievementMgr)
 		return;

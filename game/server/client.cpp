@@ -262,7 +262,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 
 	// echo to server console
 	// Adrian: Only do this if we're running a dedicated server since we already print to console on the client.
-	if ( engine->IsDedicatedServer() )
+	if (engineServer->IsDedicatedServer() )
 		 Msg( "%s", text );
 
 	Assert( p );
@@ -519,7 +519,7 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 	edict_t *pClient = NULL;
 	if ( gpGlobals->maxClients == 1 )
 	{
-		pClient = engine->PEntityOfEntIndex( 1 );
+		pClient = engineServer->PEntityOfEntIndex( 1 );
 	}
 	else
 	{
@@ -533,14 +533,14 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 		if ( IsInCommentaryMode() && !pClient )
 		{
 			// Commentary is stuffing a command in. We'll pretend it came from the first player.
-			pClient = engine->PEntityOfEntIndex( 1 );
+			pClient = engineServer->PEntityOfEntIndex( 1 );
 		}
 	}
 
 	if ( !pClient || !pClient->GetUnknown() )
 		return;
 
-	engine->ClientCommand( pClient, "%s\n", inputdata.value.String() );
+	engineServer->ClientCommand( pClient, "%s\n", inputdata.value.String() );
 }
 
 BEGIN_DATADESC( CPointClientCommand )
@@ -569,7 +569,7 @@ void CPointServerCommand::InputCommand( inputdata_t& inputdata )
 	if ( !inputdata.value.String()[0] )
 		return;
 
-	engine->ServerCommand( UTIL_VarArgs( "%s\n", inputdata.value.String() ) );
+	engineServer->ServerCommand( UTIL_VarArgs( "%s\n", inputdata.value.String() ) );
 }
 
 BEGIN_DATADESC( CPointServerCommand )
@@ -801,7 +801,7 @@ CON_COMMAND( give, "Give item to player.\n\tArguments: <item_name>" )
 		// Don't allow regular users to create point_servercommand entities for the same reason as blocking ent_fire
 		if ( !Q_stricmp( item_to_give, "point_servercommand" ) )
 		{
-			if ( engine->IsDedicatedServer() )
+			if (engineServer->IsDedicatedServer() )
 			{
 				// We allow people with disabled autokick to do it, because they already have rcon.
 				if ( pPlayer->IsAutoKickDisabled() == false )
@@ -960,7 +960,7 @@ void CC_Player_PhysSwap( void )
 		if ( pWeapon )
 		{
 			// Tell the client to stop selecting weapons
-			engine->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
+			engineServer->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
 
 			const char *strWeaponName = pWeapon->GetName();
 
@@ -993,7 +993,7 @@ void CC_Player_BugBaitSwap( void )
 		if ( pWeapon )
 		{
 			// Tell the client to stop selecting weapons
-			engine->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
+			engineServer->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
 
 			const char *strWeaponName = pWeapon->GetName();
 

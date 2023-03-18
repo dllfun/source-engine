@@ -130,7 +130,7 @@ void CAsyncCtxSaveGame::ExecuteAsync()
 	// Sit and wait for the async save to finish
 	for ( ; ; )
 	{
-		if ( !engine->IsSaveInProgress() )
+		if ( !engineClient->IsSaveInProgress() )
 			// Save operation is no longer in progress
 			break;
 		else
@@ -178,7 +178,7 @@ void CSaveGameDialogXbox::InitiateSaving()
 		Q_snprintf( szFilename, maxFilenameLen, "%s_%u", COM_GetModDirectory(), (unsigned)currentTime );
 #endif
 		Q_snprintf( szCmd, sizeof( szCmd ), "xsave %s", szFilename );
-		engine->ExecuteClientCmd( szCmd );
+		engineClient->ExecuteClientCmd( szCmd );
 		Q_strncat( szFilename, ".360.sav", maxFilenameLen );
 	}
 	else
@@ -186,7 +186,7 @@ void CSaveGameDialogXbox::InitiateSaving()
 		const SaveGameDescription_t *pDesc = GetActivePanelSaveDescription();
 		Q_strncpy( szFilename, pDesc->szShortName, maxFilenameLen );
 		Q_snprintf( szCmd, sizeof( szCmd ), "xsave %s", szFilename );
-		engine->ExecuteClientCmd( szCmd );
+		engineClient->ExecuteClientCmd( szCmd );
 	}
 
 	// Enqueue waiting

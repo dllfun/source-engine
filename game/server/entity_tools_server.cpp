@@ -268,7 +268,7 @@ void CServerTools::ReloadParticleDefintions( const char *pFileName, const void *
 
 void CServerTools::AddOriginToPVS( const Vector &org )
 {
-	engine->AddOriginToPVS( org );
+	engineServer->AddOriginToPVS( org );
 }
 
 void CServerTools::MoveEngineViewTo( const Vector &vPos, const QAngle &vAngles )

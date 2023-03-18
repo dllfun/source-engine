@@ -20,7 +20,7 @@
 CON_COMMAND(soundscape_flush, "Flushes the server & client side soundscapes")
 {
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() );
-	if ( engine->IsDedicatedServer() )
+	if (engineServer->IsDedicatedServer() )
 	{
 		// If it's a dedicated server, only the server console can run this.
 		if ( pPlayer )
@@ -37,19 +37,19 @@ CON_COMMAND(soundscape_flush, "Flushes the server & client side soundscapes")
 	g_SoundscapeSystem.Init();
 
 	
-	if ( engine->IsDedicatedServer() )
+	if (engineServer->IsDedicatedServer() )
 	{
 		// If the ds console typed it, send it to everyone.
 		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
 			CBasePlayer	*pSendToPlayer = UTIL_PlayerByIndex( i );
 			if ( pSendToPlayer )
-				engine->ClientCommand( pSendToPlayer->edict(), "cl_soundscape_flush\n" );
+				engineServer->ClientCommand( pSendToPlayer->edict(), "cl_soundscape_flush\n" );
 		}
 	}
 	else
 	{
-		engine->ClientCommand( pPlayer->edict(), "cl_soundscape_flush\n" );
+		engineServer->ClientCommand( pPlayer->edict(), "cl_soundscape_flush\n" );
 	}
 }
 
@@ -202,9 +202,9 @@ void CSoundscapeSystem::LevelInitPostEntity()
 		m_soundscapeSounds.Purge();
 	}
 	CUtlVector<bbox_t> clusterbounds;
-	int clusterCount = engine->GetClusterCount();
+	int clusterCount = engineServer->GetClusterCount();
 	clusterbounds.SetCount( clusterCount );
-	engine->GetAllClusterBounds( clusterbounds.Base(), clusterCount );
+	engineServer->GetAllClusterBounds( clusterbounds.Base(), clusterCount );
 	m_soundscapesInCluster.SetCount(clusterCount);
 	for ( int i = 0; i < clusterCount; i++ )
 	{
@@ -222,7 +222,7 @@ void CSoundscapeSystem::LevelInitPostEntity()
 		Vector position = m_soundscapeEntities[i]->GetAbsOrigin();
 		float radius = m_soundscapeEntities[i]->m_flRadius;
 		float radiusSq = radius * radius;
-		engine->GetPVSForCluster( engine->GetClusterForOrigin( position ), sizeof( myPVS ), myPVS );
+		engineServer->GetPVSForCluster(engineServer->GetClusterForOrigin( position ), sizeof( myPVS ), myPVS );
 		for ( int j = 0; j < clusterCount; j++ )
 		{
 			if ( myPVS[ j >> 3 ] & (1<<(j&7)) )
@@ -345,7 +345,7 @@ void CSoundscapeSystem::FrameUpdatePostEntityThink()
 					pCurrent->UpdateForPlayer(update);
 				}
 
-				int clusterIndex = engine->GetClusterForOrigin( update.playerPosition );
+				int clusterIndex = engineServer->GetClusterForOrigin( update.playerPosition );
 			
 				if ( clusterIndex >= 0 && clusterIndex < m_soundscapesInCluster.Count() )
 				{

@@ -452,9 +452,9 @@ void CBaseViewport::ShowPanel( IViewPortPanel* pPanel, bool state )
 		{
 			// don't show input panels during normal demo playback
 #if defined( REPLAY_ENABLED )
-			if ( engine->IsPlayingDemo() && !engine->IsHLTV() && !g_pEngineClientReplay->IsPlayingReplayDemo() )
+			if ( engineClient->IsPlayingDemo() && !engineClient->IsHLTV() && !g_pEngineClientReplay->IsPlayingReplayDemo() )
 #else
-			if ( engine->IsPlayingDemo() && !engine->IsHLTV() )
+			if (engineClient->IsPlayingDemo() && !engineClient->IsHLTV() )
 #endif
 				return;
 			if ( (m_pActivePanel != NULL) && (m_pActivePanel != pPanel) && (m_pActivePanel->IsVisible()) )
@@ -698,7 +698,7 @@ void CBaseViewport::FireGameEvent( IGameEvent * event)
 		// hide all panels when reconnecting 
 		ShowPanel( PANEL_ALL, false );
 
-		if ( engine->IsHLTV() )
+		if (engineClient->IsHLTV() )
 		{
 			ShowPanel( PANEL_SPECGUI, true );
 		}

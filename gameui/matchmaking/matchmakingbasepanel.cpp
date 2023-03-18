@@ -195,17 +195,17 @@ void CMatchmakingBasePanel::OnCommand( const char *pCommand )
 	}
 	else if ( !Q_stricmp( "ChangeClass", pCommand ) )
 	{
-		engine->ClientCmd_Unrestricted( "changeclass" );
+		engineClient->ClientCmd_Unrestricted( "changeclass" );
 		OnCommand( "ResumeGame" );
 	}
 	else if ( !Q_stricmp( "ChangeTeam", pCommand ) )
 	{
-		engine->ClientCmd_Unrestricted( "changeteam" );
+		engineClient->ClientCmd_Unrestricted( "changeteam" );
 		OnCommand( "ResumeGame" );
 	}
 	else if ( !Q_stricmp( "ShowMapInfo", pCommand ) )
 	{
-		engine->ClientCmd_Unrestricted( "showmapinfo" );
+		engineClient->ClientCmd_Unrestricted( "showmapinfo" );
 		OnCommand( "ResumeGame" );
 	}
 	else if ( !Q_stricmp( "StartHost", pCommand ) )

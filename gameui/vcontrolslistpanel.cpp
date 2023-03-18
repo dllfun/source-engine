@@ -111,7 +111,7 @@ void VControlsListPanel::StartCaptureMode( HCursor hCursor )
 	// should be set unable to do menu mouse emulation.
 	g_pInputSystem->SetNovintPure(true);
 
-	engine->StartKeyTrapMode();
+	engineClient->StartKeyTrapMode();
 
 	if (hCursor)
 	{

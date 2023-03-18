@@ -370,8 +370,8 @@ void CHudDeathNotice::FireGameEvent( IGameEvent *event )
 
 	// the event should be "player_death"
 	
-	int iKiller = engine->GetPlayerForUserID( event->GetInt("attacker") );
-	int iVictim = engine->GetPlayerForUserID( event->GetInt("userid") );
+	int iKiller = engineClient->GetPlayerForUserID( event->GetInt("attacker") );
+	int iVictim = engineClient->GetPlayerForUserID( event->GetInt("userid") );
 	const char *killedwith = event->GetString( "weapon" );
 	bool headshot = event->GetInt( "headshot" ) > 0;
 

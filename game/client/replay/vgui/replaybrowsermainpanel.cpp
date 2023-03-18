@@ -185,9 +185,9 @@ void CReplayBrowserPanel::OnCommand( const char *command )
 			MarkForDeletion();
 
 			// If we're connected to a game server, we also close the game UI.
-			if ( engine->IsInGame() )
+			if (engineClient->IsInGame() )
 			{
-				engine->ClientCmd_Unrestricted( "gameui_hide" );
+				engineClient->ClientCmd_Unrestricted( "gameui_hide" );
 			}
 		}
 	}
@@ -373,7 +373,7 @@ CReplayBrowserPanel *ReplayUI_OpenReplayBrowserPanel( ReplayHandle_t hReplayDeta
 		g_ReplayBrowserPanel->InvalidateLayout( false, true );
 	}
 
-	engine->ClientCmd_Unrestricted( "gameui_activate" );
+	engineClient->ClientCmd_Unrestricted( "gameui_activate" );
 	g_ReplayBrowserPanel->ShowPanel( true, hReplayDetails, iPerformance );
 
 	extern IReplayMovieManager *g_pReplayMovieManager;

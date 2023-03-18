@@ -167,7 +167,7 @@ void CBaseHudWeaponSelection::ProcessInput()
 				input->ClearInputButton( IN_ATTACK );
 			}
 
-			engine->ClientCmd( "cancelselect\n" );
+			engineClient->ClientCmd( "cancelselect\n" );
 		}
 		return;
 	}
@@ -305,7 +305,7 @@ void CBaseHudWeaponSelection::UserCmd_Slot3(void)
 {
 	if( HUDTYPE_CAROUSEL == hud_fastswitch.GetInt() )
 	{
-		engine->ClientCmd( "phys_swap" );
+		engineClient->ClientCmd( "phys_swap" );
 	}
 	else
 	{
@@ -512,7 +512,7 @@ void CBaseHudWeaponSelection::SelectWeapon( void )
 {
 	if ( !GetSelectedWeapon() )
 	{
-		engine->ClientCmd( "cancelselect\n" );
+		engineClient->ClientCmd( "cancelselect\n" );
 		return;
 	}
 
@@ -531,7 +531,7 @@ void CBaseHudWeaponSelection::SelectWeapon( void )
 	
 		m_hSelectedWeapon = NULL;
 	
-		engine->ClientCmd( "cancelselect\n" );
+		engineClient->ClientCmd( "cancelselect\n" );
 
 		// Play the "weapon selected" sound
 		player->EmitSound( "Player.WeaponSelected" );
@@ -561,7 +561,7 @@ void CBaseHudWeaponSelection::CancelWeaponSelection( void )
 	}
 	else
 	{
-		engine->ClientCmd("escape");
+		engineClient->ClientCmd("escape");
 	}
 }
 

@@ -67,7 +67,7 @@ void CLoadGameDialog::OnCommand( const char *command )
 				char sz[ 256 ];
 				Q_snprintf(sz, sizeof( sz ), "progress_enable\nload %s\n", shortName );
 				
-				engine->ClientCmd_Unrestricted( sz );
+				engineClient->ClientCmd_Unrestricted( sz );
 				
 				// Close this dialog
 				OnClose();

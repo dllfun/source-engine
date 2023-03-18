@@ -2294,10 +2294,10 @@ void CLogicAutosave::InputSave( inputdata_t &inputdata )
 {
 	if ( m_bForceNewLevelUnit )
 	{
-		engine->ClearSaveDir();
+		engineServer->ClearSaveDir();
 	}
 
-	engine->ServerCommand( "autosave\n" );
+	engineServer->ServerCommand( "autosave\n" );
 }
 
 //-----------------------------------------------------------------------------
@@ -2314,18 +2314,18 @@ void CLogicAutosave::InputSaveDangerous( inputdata_t &inputdata )
 		if ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime )
 		{
 			// The player isn't dead, so make the dangerous auto save safe
-			engine->ServerCommand( "autosavedangerousissafe\n" );
+			engineServer->ServerCommand( "autosavedangerousissafe\n" );
 		}
 	}
 
 	if ( m_bForceNewLevelUnit )
 	{
-		engine->ClearSaveDir();
+		engineServer->ClearSaveDir();
 	}
 
 	if ( pPlayer->GetHealth() >= m_minHitPoints )
 	{
-		engine->ServerCommand( "autosavedangerous\n" );
+		engineServer->ServerCommand( "autosavedangerous\n" );
 		g_ServerGameDLL.m_fAutoSaveDangerousTime = gpGlobals->curtime + inputdata.value.Float();
 
 		// Player must have this much health when we go to commit, or we don't commit.

@@ -101,7 +101,7 @@ static ConVar sv_stickysprint_default( "sv_stickysprint_default", "0", FCVAR_NON
 
 void joy_movement_stick_Callback( IConVar *var, const char *pOldString, float flOldValue )
 {
-	engine->ClientCmd( "joyadvancedupdate" );
+	engineClient->ClientCmd( "joyadvancedupdate" );
 }
 static ConVar joy_movement_stick("joy_movement_stick", "0", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX, "Which stick controls movement (0 is left stick)", joy_movement_stick_Callback );
 
@@ -534,17 +534,17 @@ void CInput::Joystick_Advanced(void)
 	{
 		if ( joy_xcontroller_cfg_loaded.GetInt() < 2 )
 		{
-			engine->ClientCmd_Unrestricted( "exec 360controller.cfg" );
+			engineClient->ClientCmd_Unrestricted( "exec 360controller.cfg" );
 			if ( IsLinux () )
 			{
-				engine->ClientCmd_Unrestricted( "exec 360controller-linux.cfg" );
+				engineClient->ClientCmd_Unrestricted( "exec 360controller-linux.cfg" );
 			}
 			joy_xcontroller_cfg_loaded.SetValue( 2 );
 		}
 	}
 	else if ( joy_xcontroller_cfg_loaded.GetInt() > 0 )
 	{
-		engine->ClientCmd_Unrestricted( "exec undo360controller.cfg" );
+		engineClient->ClientCmd_Unrestricted( "exec undo360controller.cfg" );
 		joy_xcontroller_cfg_loaded.SetValue( 0 );
 	}
 }
@@ -699,7 +699,7 @@ void CInput::JoyStickMove( float frametime, CUserCmd *cmd )
 	QAngle viewangles;
 
 	// Get starting angles
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 
 	struct axis_t
 	{
@@ -780,7 +780,7 @@ void CInput::JoyStickMove( float frametime, CUserCmd *cmd )
 			// apply turn control [ YAW ]
 			// factor in the camera offset, so that the move direction is relative to the thirdperson camera
 			viewangles[ YAW ] = RAD2DEG(atan2(-m_flPreviousJoystickSide, -m_flPreviousJoystickForward)) + g_ThirdPersonManager.GetCameraOffsetAngles()[ YAW ];
-			engine->SetViewAngles( viewangles );
+			engineClient->SetViewAngles( viewangles );
 
 			// apply movement
 			Vector2D moveDir( m_flPreviousJoystickForward, m_flPreviousJoystickSide );
@@ -910,5 +910,5 @@ void CInput::JoyStickMove( float frametime, CUserCmd *cmd )
 	// Bound pitch
 	viewangles[PITCH] = clamp( viewangles[ PITCH ], -cl_pitchup.GetFloat(), cl_pitchdown.GetFloat() );
 
-	engine->SetViewAngles( viewangles );
+	engineClient->SetViewAngles( viewangles );
 }

@@ -225,11 +225,11 @@ void SixenseGestureBindings::WriteBindings( CUtlString filename_str )
 	// If no filename was provided, use "cfg/sixense_bindings.cfg"
 	if( !filename_str.IsEmpty() )
 	{
-		Q_snprintf( filename, filenamelen, "%s\\cfg\\%s", engine->GetGameDirectory(), filename_str.String() );
+		Q_snprintf( filename, filenamelen, "%s\\cfg\\%s", engineClient->GetGameDirectory(), filename_str.String() );
 	}
 	else
 	{
-		Q_snprintf( filename, filenamelen, "%s\\cfg\\sixense_bindings.cfg", engine->GetGameDirectory() );
+		Q_snprintf( filename, filenamelen, "%s\\cfg\\sixense_bindings.cfg", engineClient->GetGameDirectory() );
 	}
 
 	Msg("writing bindings to %s\n", filename );
@@ -516,7 +516,7 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 						continue;
 					}
 
-					engine->ClientCmd_Unrestricted( binding.m_pActivateCommand );
+					engineClient->ClientCmd_Unrestricted( binding.m_pActivateCommand );
 					//Msg("activate: %s\n", binding.m_pActivateCommand );
 				}
 			}
@@ -526,7 +526,7 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 			{
 				if( binding.m_pDeactivateCommand )
 				{
-					engine->ClientCmd_Unrestricted( binding.m_pDeactivateCommand );
+					engineClient->ClientCmd_Unrestricted( binding.m_pDeactivateCommand );
 					//Msg("deactivate: %s\n", binding.m_pDeactivateCommand );
 				}
 			}
@@ -553,7 +553,7 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 						continue;
 					}
 
-					engine->ClientCmd_Unrestricted( binding.m_pActivateCommand );
+					engineClient->ClientCmd_Unrestricted( binding.m_pActivateCommand );
 					//Msg("activate: %s\n", binding.m_pActivateCommand );
 				}
 			}
@@ -563,7 +563,7 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 			{
 				if( binding.m_pDeactivateCommand )
 				{
-					engine->ClientCmd_Unrestricted( binding.m_pDeactivateCommand );
+					engineClient->ClientCmd_Unrestricted( binding.m_pDeactivateCommand );
 					//Msg("deactivate: %s\n", binding.m_pDeactivateCommand );
 				}
 			}

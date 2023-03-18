@@ -42,7 +42,7 @@ extern void longjmp( jmp_buf, int ) __attribute__((noreturn));
 	// @note Tom Bui: instead of forcing the project to include EngineInterface.h...
 	#include "cdll_int.h"
 	// engine interface singleton accessors
-	extern IVEngineClient *engine;
+	extern IVEngineClient *engineClient;
 	extern class IGameUIFuncs *gameuifuncs;
 	extern class IEngineSound *enginesound;
 	extern class IMatchmaking *matchmaking;
@@ -58,7 +58,7 @@ extern void longjmp( jmp_buf, int ) __attribute__((noreturn));
 	// OwO
 #else
 	#include "cdll_int.h"
-	extern IVEngineClient *engine;
+	extern IVEngineClient *engineClient;
 #endif
 
 // use the JPEGLIB_USE_STDIO define so that we can read in jpeg's from outside the game directory tree.
@@ -1757,7 +1757,7 @@ ConversionErrorType	ImgUtl_ConvertToVTFAndDumpVMT( const char *pInPath, const ch
 #elif REPLAY_DLL
 		Q_strncpy(finalPath, g_pEngine->GetGameDir(), sizeof(finalPath));
 #elif !UTILS
-		Q_strncpy(finalPath, engine->GetGameDirectory(), sizeof(finalPath));
+		Q_strncpy(finalPath, engineClient->GetGameDirectory(), sizeof(finalPath));
 #endif
 		Q_strncat(finalPath, szOutDir, sizeof(finalPath), COPY_ALL_CHARACTERS);
 		Q_strncat(finalPath, vtfFilename, sizeof(finalPath), COPY_ALL_CHARACTERS);

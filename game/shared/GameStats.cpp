@@ -308,7 +308,7 @@ void CBaseGameStats::Event_SaveGame( void )
 void CBaseGameStats::Event_LoadGame( void )
 {
 #ifdef GAME_DLL
-	char const *pchSaveFile = engine->GetMostRecentlyLoadedFileName();
+	char const *pchSaveFile = engineServer->GetMostRecentlyLoadedFileName();
 	StatsLog( "CBaseGameStats::Event_LoadGame [%s] from %s\n", CBGSDriver.m_PrevMapName.String(), pchSaveFile );
 #endif
 }
@@ -429,7 +429,7 @@ bool CBaseGameStats::SaveToFileNOW( bool bForceSyncWrite /* = false */ )
 	{
 		// filename is local to game dir for Steam, so we need to prepend game dir for regular file save
 		char gamePath[256];
-		engine->GetGameDir( gamePath, 256 );
+		engineServer->GetGameDir( gamePath, 256 );
 		Q_StripTrailingSlash( gamePath );
 		Q_snprintf( fullpath, sizeof( fullpath ), "%s/%s", gamePath, GetStatSaveFileName() );
 		Q_strlower( fullpath );
@@ -771,7 +771,7 @@ void CBaseGameStats_Driver::Shutdown()
 	if ( m_pGamestatsData != NULL )
 	{
 #ifdef CLIENT_DLL 
-		engine->SetGamestatsData( NULL );
+		engineClient->SetGamestatsData( NULL );
 #endif
 		delete m_pGamestatsData;
 		m_pGamestatsData = NULL;
@@ -963,7 +963,7 @@ void CBaseGameStats_Driver::CollectData( StatSendType_t sendType )
 #ifdef GAME_DLL
 	// for server, check with the engine to see if there already a gamestats data container registered.  (There will be if there is a client
 	// running in the same process.)
-	pGamestatsData = engine->GetGamestatsData();
+	pGamestatsData = engineServer->GetGamestatsData();
 	if ( pGamestatsData )
 	{
 		// use the registered gamestats container, so free the one we allocated
@@ -983,9 +983,13 @@ void CBaseGameStats_Driver::CollectData( StatSendType_t sendType )
 	Assert( pGamestatsData );
 	KeyValues *pKV = pGamestatsData->m_pKVData;
 
-	int iAppID = engine->GetAppID();
+#ifdef GAME_DLL
+	int iAppID = engineServer->GetAppID();
+	pKV->SetInt("appid", iAppID);
+#else
+	int iAppID = engineClient->GetAppID();
 	pKV->SetInt( "appid", iAppID );
-
+#endif
 	switch ( sendType )
 	{
 	case STATSEND_LEVELSHUTDOWN:
@@ -1155,7 +1159,7 @@ void CBaseGameStats_Driver::ResetData()
 {
 #ifdef GAME_DLL
 	// on the server, if there is a gamestats data container registered (by a client in the same process), they're in charge of resetting it, nothing for us to do
-	if ( engine->GetGamestatsData() != NULL )
+	if (engineServer->GetGamestatsData() != NULL )
 		return;
 #endif
 
@@ -1200,7 +1204,7 @@ void CBaseGameStats_Driver::ResetData()
 	const MaterialSystem_Config_t &config = materials->GetCurrentConfigForVideoCard();
 	pKV->SetInt( "Windowed", config.Windowed() == true );
 
-	engine->SetGamestatsData( m_pGamestatsData );
+	engineClient->SetGamestatsData( m_pGamestatsData );
 #endif
 
 #if defined(CSTRIKE_DLL) && defined(CLIENT_DLL)
@@ -1387,7 +1391,7 @@ void CBaseGameStats::SetHL2UnlockedChapterStatistic( void )
 	char const *relative = "cfg/config.cfg";
 	char fullpath[ 512 ];
 	char gamedir[256];
-	engine->GetGameDir( gamedir, 256 );
+	engineServer->GetGameDir( gamedir, 256 );
 	Q_snprintf( fullpath, sizeof( fullpath ), "%s/../hl2/%s", gamedir, relative );
 
 	if ( filesystem->FileExists( fullpath ) )

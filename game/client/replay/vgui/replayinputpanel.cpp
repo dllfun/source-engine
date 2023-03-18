@@ -195,7 +195,7 @@ void CReplayInputPanel::OnCommand( const char *command )
 		if ( TFInventoryManager()->GetNumItemPickedUpItems() == 0 )
 		{
 			TFInventoryManager()->CheckForRoomAndForceDiscard();
-			engine->ClientCmd_Unrestricted( "gameui_hide" );
+			engineClient->ClientCmd_Unrestricted( "gameui_hide" );
 		}
 		else if ( bLocalPlayerDead )
 		{
@@ -230,7 +230,7 @@ void ShowReplayInputPanel( ReplayHandle_t hReplay )
 	hReplayInputPanel->SetKeyBoardInputEnabled(true);
 	hReplayInputPanel->SetMouseInputEnabled(true);
 	TFModalStack()->PushModal( hReplayInputPanel );
-	engine->ClientCmd_Unrestricted( "gameui_hide" );
+	engineClient->ClientCmd_Unrestricted( "gameui_hide" );
 	s_bPanelVisible = true;
 }
 

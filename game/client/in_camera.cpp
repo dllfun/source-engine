@@ -477,7 +477,7 @@ void CInput::CAM_Think( void )
 
 	// Obtain engine view angles and if they popped while the camera was static,
 	// fix the camera angles as well
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 	static QAngle s_oldAngles = viewangles;
 	if ( Is_CAM_ThirdPerson_MayaMode() && ( s_oldAngles != viewangles ) )
 	{
@@ -556,9 +556,9 @@ void CInput::CAM_Think( void )
 
 	if ( cam_showangles.GetInt() )
 	{
-		engine->Con_NPrintf( 4, "Pitch: %6.1f   Yaw: %6.1f %38s", viewangles[ PITCH ], viewangles[ YAW ], "view angles" );
-		engine->Con_NPrintf( 6, "Pitch: %6.1f   Yaw: %6.1f   Dist: %6.1f %19s", cam_idealpitch.GetFloat(), cam_idealyaw.GetFloat(), cam_idealdist.GetFloat(), "ideal angles" );
-		engine->Con_NPrintf( 8, "Pitch: %6.1f   Yaw: %6.1f   Dist: %6.1f %16s", g_ThirdPersonManager.GetCameraOffsetAngles()[ PITCH ], g_ThirdPersonManager.GetCameraOffsetAngles()[ YAW ], g_ThirdPersonManager.GetCameraOffsetAngles()[ DIST ], "camera offset" );
+		engineClient->Con_NPrintf( 4, "Pitch: %6.1f   Yaw: %6.1f %38s", viewangles[ PITCH ], viewangles[ YAW ], "view angles" );
+		engineClient->Con_NPrintf( 6, "Pitch: %6.1f   Yaw: %6.1f   Dist: %6.1f %19s", cam_idealpitch.GetFloat(), cam_idealyaw.GetFloat(), cam_idealdist.GetFloat(), "ideal angles" );
+		engineClient->Con_NPrintf( 8, "Pitch: %6.1f   Yaw: %6.1f   Dist: %6.1f %16s", g_ThirdPersonManager.GetCameraOffsetAngles()[ PITCH ], g_ThirdPersonManager.GetCameraOffsetAngles()[ YAW ], g_ThirdPersonManager.GetCameraOffsetAngles()[ DIST ], "camera offset" );
 	}
 
 	g_ThirdPersonManager.SetCameraOffsetAngles( camOffset );
@@ -611,7 +611,7 @@ void CInput::CAM_CameraThirdThink( void )
 
 	// Obtain engine view angles and if they popped while the camera was static, fix the camera angles as well.
 	QAngle angView;
-	engine->GetViewAngles( angView );
+	engineClient->GetViewAngles( angView );
 
 	// Move the CameraOffset "towards" the idealAngles, Note: CameraOffset = viewangle + idealAngle
 	Vector vecCamOffset;
@@ -676,7 +676,7 @@ void CInput::CAM_ToThirdPerson(void)
 { 
 	QAngle viewangles;
 
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 
 	if( !m_fCameraInThirdPerson )
 	{

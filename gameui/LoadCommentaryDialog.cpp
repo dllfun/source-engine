@@ -210,7 +210,7 @@ void CLoadCommentaryDialog::OnCommand( const char *command )
 				// Close this dialog
 				OnClose();
 
-				engine->ClientCmd_Unrestricted( sz );
+				engineClient->ClientCmd_Unrestricted( sz );
 			}
 		}
 	}

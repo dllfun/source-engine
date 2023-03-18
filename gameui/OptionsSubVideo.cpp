@@ -671,7 +671,7 @@ public:
 		Assert(g_pCVar->FindVar( pConVarName ) );
 		char szCmd[256];
 		Q_snprintf( szCmd, sizeof(szCmd), "%s %d\n", pConVarName, value );
-		engine->ClientCmd_Unrestricted( szCmd );
+		engineClient->ClientCmd_Unrestricted( szCmd );
 	}
 
 	virtual void ApplyChanges()
@@ -1322,7 +1322,7 @@ COptionsSubVideo::~COptionsSubVideo()
 
 FILE *FOpenGameHDFile( const char *pchMode )
 {
-	const char *pGameDir = engine->GetGameDirectory();
+	const char *pGameDir = engineClient->GetGameDirectory();
 	char szModSteamInfPath[ 1024 ];
 	V_ComposeFileName( pGameDir, "game_hd.txt", szModSteamInfPath, sizeof( szModSteamInfPath ) );
 
@@ -1363,7 +1363,7 @@ void COptionsSubVideo::SetUseHDContent( bool bUse )
 	}
 	else
 	{
-		const char *pGameDir = engine->GetGameDirectory();
+		const char *pGameDir = engineClient->GetGameDirectory();
 		char szModSteamInfPath[ 1024 ];
 		V_ComposeFileName( pGameDir, "game_hd.txt", szModSteamInfPath, sizeof( szModSteamInfPath ) );
 		_unlink( szModSteamInfPath );
@@ -1479,7 +1479,7 @@ void COptionsSubVideo::OnApplyChanges()
 {
 	if ( RequiresRestart() )
 	{
-		INetChannelInfo *nci = engine->GetNetChannelInfo();
+		INetChannelInfo *nci = engineClient->GetNetChannelInfo();
 		if ( nci )
 		{
 			// Only retry if we're not running the server
@@ -1488,11 +1488,11 @@ void COptionsSubVideo::OnApplyChanges()
 			{
 				if ( Q_strncmp(pAddr,"127.0.0.1",9) && Q_strncmp(pAddr,"localhost",9) )
 				{
-					engine->ClientCmd_Unrestricted( "retry\n" );
+					engineClient->ClientCmd_Unrestricted( "retry\n" );
 				}
 				else
 				{
-					engine->ClientCmd_Unrestricted( "disconnect\n" );
+					engineClient->ClientCmd_Unrestricted( "disconnect\n" );
 				}
 			}
 		}
@@ -1529,7 +1529,7 @@ void COptionsSubVideo::OnApplyChanges()
 		// let engine fill in mat_vrmode_adapter 
 		char szCmd[256];
 		Q_snprintf( szCmd, sizeof(szCmd), "mat_enable_vrmode %d\n", bVRMode ? 1 : 0 );
-		engine->ClientCmd_Unrestricted( szCmd );
+		engineClient->ClientCmd_Unrestricted( szCmd );
 
 		// force windowed. VR mode ignores this flag and desktop mode needs to be in a window always
 		windowed = bVRMode;
@@ -1582,7 +1582,7 @@ void COptionsSubVideo::OnApplyChanges()
 		// set mode
 		char szCmd[ 256 ];
 		Q_snprintf( szCmd, sizeof( szCmd ), "mat_setvideomode %i %i %i\n", width, height, windowed ? 1 : 0 );
-		engine->ClientCmd_Unrestricted( szCmd );
+		engineClient->ClientCmd_Unrestricted( szCmd );
 	}
 
 	if ( ModInfo().HasHDContent() )
@@ -1598,7 +1598,7 @@ void COptionsSubVideo::OnApplyChanges()
 	}
 
 	// apply changes
-	engine->ClientCmd_Unrestricted( "mat_savechanges\n" );
+	engineClient->ClientCmd_Unrestricted( "mat_savechanges\n" );
 
 }
 

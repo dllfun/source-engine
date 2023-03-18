@@ -131,7 +131,7 @@ END_PREDICTION_DATA()
 		PrecacheModel( PLANTED_C4_MODEL );
 		PrecacheVGuiScreen( "c4_panel" );
 
-		engine->ForceModelBounds( PLANTED_C4_MODEL, Vector( -7, -13, -3 ), Vector( 9, 12, 11 ) );
+		engineServer->ForceModelBounds( PLANTED_C4_MODEL, Vector( -7, -13, -3 ), Vector( 9, 12, 11 ) );
 
 		PrecacheParticleSystem( "bomb_explosion_huge" );
 	}
@@ -893,7 +893,7 @@ void CC4::ItemPostFrame()
 		// The gamerules will give another C4 to some lucky player.
 		CCSPlayer *pPlayer = GetPlayerOwner();
 		if ( pPlayer && pPlayer->GetActiveWeapon() == this )
-			engine->ClientCommand( pPlayer->edict(), "lastinv reset\n" );
+			engineServer->ClientCommand( pPlayer->edict(), "lastinv reset\n" );
 		return true;
 	}
 

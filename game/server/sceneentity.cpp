@@ -1276,10 +1276,10 @@ void CSceneEntity::DispatchPauseScene( CChoreoScene *scene, const char *paramete
 
 	// Check for auto resume/cancel
 	const char *buffer = parameters;
-	buffer = engine->ParseFile( buffer, token, sizeof( token ) );
+	buffer = engineServer->ParseFile( buffer, token, sizeof( token ) );
 	if ( !stricmp( token, "automate" ) )
 	{
-		buffer = engine->ParseFile( buffer, token, sizeof( token ) );
+		buffer = engineServer->ParseFile( buffer, token, sizeof( token ) );
 		if ( !stricmp( token, "Cancel" ) )
 		{
 			m_nAutomatedAction = SCENE_ACTION_CANCEL;
@@ -1291,7 +1291,7 @@ void CSceneEntity::DispatchPauseScene( CChoreoScene *scene, const char *paramete
 
 		if ( m_nAutomatedAction != SCENE_ACTION_UNKNOWN )
 		{
-			buffer = engine->ParseFile( buffer, token, sizeof( token ) );
+			buffer = engineServer->ParseFile( buffer, token, sizeof( token ) );
 			m_flAutomationDelay = (float)atof( token );
 
 			if ( m_flAutomationDelay > 0.0f )
@@ -1620,7 +1620,7 @@ bool CSceneEntity::GetSoundNameForPlayer( CChoreoEvent *event, CBasePlayer *play
 	bool usingEnglish = true;
 	if ( !IsXbox() )
 	{
-		char const *cvarvalue = engine->GetClientConVarValue( player->entindex(), "english" );
+		char const *cvarvalue = engineServer->GetClientConVarValue( player->entindex(), "english" );
 		if ( cvarvalue && *cvarvalue && Q_atoi( cvarvalue ) != 1 )
 		{
 			usingEnglish = false;

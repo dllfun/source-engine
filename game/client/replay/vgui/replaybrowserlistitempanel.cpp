@@ -892,7 +892,7 @@ void CReplayThumbnailCollection::ApplySchemeSettings( IScheme *pScheme )
 #endif
 
 	// Get current key binding for "save_replay", if any.
-	const char *pBoundKey = engine->Key_LookupBinding( "save_replay" );
+	const char *pBoundKey = engineClient->Key_LookupBinding( "save_replay" );
 	if ( !pBoundKey || FStrEq( pBoundKey, "(null)" ) )
 	{
 		m_pNoReplayItemsLabel->SetText( "#Replay_NoKeyBoundNoReplays" );

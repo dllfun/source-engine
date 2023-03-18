@@ -108,12 +108,12 @@ static const char *gs_pBaseComponentNames[ NCAMS ] =
 
 void PlayDemo()
 {
-	engine->ClientCmd_Unrestricted( "demo_resume" );
+	engineClient->ClientCmd_Unrestricted( "demo_resume" );
 }
 
 void PauseDemo()
 {
-	engine->ClientCmd_Unrestricted( "demo_pause" );
+	engineClient->ClientCmd_Unrestricted( "demo_pause" );
 }
 
 //-----------------------------------------------------------------------------
@@ -1391,7 +1391,7 @@ static void Replay_GotoTick( bool bConfirmed, void *pContext )
 	{
 		int nGotoTick = (int)pContext;
 		CFmtStr fmtCmd( "demo_gototick %i\ndemo_pause\n", nGotoTick );
-		engine->ClientCmd_Unrestricted( fmtCmd.Access() );
+		engineClient->ClientCmd_Unrestricted( fmtCmd.Access() );
 	}
 }
 
@@ -2278,7 +2278,7 @@ void CReplayPerformanceEditorPanel::HandleUiToggle()
 
 void CReplayPerformanceEditorPanel::Exit()
 {
-	engine->ClientCmd_Unrestricted( "disconnect" );
+	engineClient->ClientCmd_Unrestricted( "disconnect" );
 }
 
 void CReplayPerformanceEditorPanel::Exit_ShowDialogs()
@@ -2357,7 +2357,7 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 	else if ( !V_strnicmp( command, "settick_", 8 ) )
 	{
 		const char *pSetType = command + 8;
-		const int nCurTick = engine->GetDemoPlaybackTick();
+		const int nCurTick = engineClient->GetDemoPlaybackTick();
 
 		if ( !V_stricmp( pSetType, "in" ) )
 		{
@@ -2387,7 +2387,7 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 			const CReplayPerformance *pSavedPerformance = g_pReplayPerformanceController->GetSavedPerformance();
 			const CReplayPerformance *pPerformance = pScratchPerformance ? pScratchPerformance : pSavedPerformance;
 
-			const int nCurTick = engine->GetDemoPlaybackTick();
+			const int nCurTick = engineClient->GetDemoPlaybackTick();
 
 			// If in or out ticks are set in the performance, use those for the 'full' rewind/fast-forward
 			const int nStartTick = MAX( 0, ( pPerformance && pPerformance->HasInTick() ) ? pPerformance->m_nTickIn : pReplay->m_nSpawnTick );
@@ -2438,7 +2438,7 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 
 			// Go to the given tick and pause
 			CFmtStr fmtCmd( "demo_gototick %i\ndemo_pause\n", nGotoTick );
-			engine->ClientCmd_Unrestricted( fmtCmd.Access() );
+			engineClient->ClientCmd_Unrestricted( fmtCmd.Access() );
 		}
 		return;
 	}
@@ -2483,7 +2483,7 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 	}
 	else
 	{
-		engine->ClientCmd( const_cast<char *>( command ) );
+	engineClient->ClientCmd( const_cast<char *>( command ) );
 		return;
 	}
 

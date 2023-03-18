@@ -1217,6 +1217,9 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 	int childCount = children.Count();
 	for (int i = 0; i < childCount; i++)
 	{
+		if (i % 2 == 1) {
+			//continue;
+		}
 		VPANEL child = children[ i ];
 		bool bVisible = ivgui()->IsVisible( child );
 

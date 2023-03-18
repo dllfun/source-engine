@@ -51,7 +51,7 @@ void CTargetCDAudioRep::InputChangeCDTrack( inputdata_t &inputdata )
 	edict_t *pClient = NULL;
 	if ( gpGlobals->maxClients == 1 )
 	{
-		pClient = engine->PEntityOfEntIndex( 1 );
+		pClient = engineServer->PEntityOfEntIndex( 1 );
 	}
 	else
 	{
@@ -75,11 +75,11 @@ void CTargetCDAudioRep::InputChangeCDTrack( inputdata_t &inputdata )
 
 	if ( iTrack == -1 )
 	{
-		engine->ClientCommand( pClient, "cd pause\n" );
+		engineServer->ClientCommand( pClient, "cd pause\n" );
 	}
 	else
 	{
-		engine->ClientCommand ( pClient, "cd play %3d\n", iTrack );
+		engineServer->ClientCommand ( pClient, "cd play %3d\n", iTrack );
 	}
 }
 

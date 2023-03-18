@@ -1417,7 +1417,7 @@ void CChangeLevel::Activate( void )
 	CBaseEntity *pLandmark = FindLandmark( m_szLandmarkName );
 	if ( pLandmark )
 	{
-		int clusterIndex = engine->GetClusterForOrigin( pLandmark->GetAbsOrigin() );
+		int clusterIndex = engineServer->GetClusterForOrigin( pLandmark->GetAbsOrigin() );
 		if ( clusterIndex < 0 )
 		{
 			Warning( "trigger_changelevel to map %s has a landmark embedded in solid!\n"
@@ -1498,12 +1498,12 @@ bool CChangeLevel::IsEntityInTransition( CBaseEntity *pEntity )
 
 	// Check to make sure it's also in the PVS of landmark
 	byte pvs[MAX_MAP_CLUSTERS/8];
-	int clusterIndex = engine->GetClusterForOrigin( pLandmark->GetAbsOrigin() );
-	engine->GetPVSForCluster( clusterIndex, sizeof(pvs), pvs );
+	int clusterIndex = engineServer->GetClusterForOrigin( pLandmark->GetAbsOrigin() );
+	engineServer->GetPVSForCluster( clusterIndex, sizeof(pvs), pvs );
 	Vector vecSurroundMins, vecSurroundMaxs;
 	pEntity->CollisionProp()->WorldSpaceSurroundingBounds( &vecSurroundMins, &vecSurroundMaxs );
 
-	return engine->CheckBoxInPVS( vecSurroundMins, vecSurroundMaxs, pvs, sizeof( pvs ) );
+	return engineServer->CheckBoxInPVS( vecSurroundMins, vecSurroundMaxs, pvs, sizeof( pvs ) );
 }
 
 void CChangeLevel::NotifyEntitiesOutOfTransition()
@@ -1589,13 +1589,13 @@ void CChangeLevel::ChangeLevelNow( CBaseEntity *pActivator )
 	if ( transitionState == TRANSITION_VOLUME_NOT_FOUND )
 	{
 		byte pvs[MAX_MAP_CLUSTERS/8];
-		int clusterIndex = engine->GetClusterForOrigin( pLandmark->GetAbsOrigin() );
-		engine->GetPVSForCluster( clusterIndex, sizeof(pvs), pvs );
+		int clusterIndex = engineServer->GetClusterForOrigin( pLandmark->GetAbsOrigin() );
+		engineServer->GetPVSForCluster( clusterIndex, sizeof(pvs), pvs );
 		if ( pPlayer )
 		{
 			Vector vecSurroundMins, vecSurroundMaxs;
 			pPlayer->CollisionProp()->WorldSpaceSurroundingBounds( &vecSurroundMins, &vecSurroundMaxs );
-			bool playerInPVS = engine->CheckBoxInPVS( vecSurroundMins, vecSurroundMaxs, pvs, sizeof( pvs ) );
+			bool playerInPVS = engineServer->CheckBoxInPVS( vecSurroundMins, vecSurroundMaxs, pvs, sizeof( pvs ) );
 
 			//Assert( playerInPVS );
 			if ( !playerInPVS )
@@ -1633,7 +1633,7 @@ void CChangeLevel::ChangeLevelNow( CBaseEntity *pActivator )
 	// If we're debugging, don't actually change level
 	if ( g_debug_transitions.GetInt() == 0 )
 	{
-		engine->ChangeLevel( st_szNextMap, st_szNextSpot );
+		engineServer->ChangeLevel( st_szNextMap, st_szNextSpot );
 	}
 	else
 	{
@@ -2481,7 +2481,7 @@ void CTriggerToggleSave::Touch( CBaseEntity *pOther )
 	// Can be re-enabled
 	m_bDisabled = true;
 
-	engine->ServerCommand( "autosave\n" );
+	engineServer->ServerCommand( "autosave\n" );
 }
 
 //-----------------------------------------------------------------------------
@@ -2549,7 +2549,7 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
 			if ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime )
 			{
 				// The player isn't dead, so make the dangerous auto save safe
-				engine->ServerCommand( "autosavedangerousissafe\n" );
+				engineServer->ServerCommand( "autosavedangerousissafe\n" );
 			}
 		}
 	}
@@ -2557,7 +2557,7 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
     // this is a one-way transition - there is no way to return to the previous map.
 	if ( m_bForceNewLevelUnit )
 	{
-		engine->ClearSaveDir();
+		engineServer->ClearSaveDir();
 	}
 	UTIL_Remove( this );
 
@@ -2568,13 +2568,13 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
 
 		if (pPlayer && pPlayer->GetHealth() >= m_minHitPoints)
 		{
-			engine->ServerCommand( "autosavedangerous\n" );
+			engineServer->ServerCommand( "autosavedangerous\n" );
 			g_ServerGameDLL.m_fAutoSaveDangerousTime = gpGlobals->curtime + m_fDangerousTimer;
 		}
 	}
 	else
 	{
-		engine->ServerCommand( "autosave\n" );
+		engineServer->ServerCommand( "autosave\n" );
 	}
 }
 
@@ -3439,7 +3439,7 @@ static void PlayCDTrack( int iTrack )
 	edict_t *pClient;
 	
 	// manually find the single player. 
-	pClient = engine->PEntityOfEntIndex( 1 );
+	pClient = engineServer->PEntityOfEntIndex( 1 );
 
 	Assert(gpGlobals->maxClients == 1);
 	
@@ -3456,11 +3456,11 @@ static void PlayCDTrack( int iTrack )
 
 	if ( iTrack == -1 )
 	{
-		engine->ClientCommand ( pClient, "cd pause\n");
+		engineServer->ClientCommand ( pClient, "cd pause\n");
 	}
 	else
 	{
-		engine->ClientCommand ( pClient, "cd play %3d\n", iTrack);
+		engineServer->ClientCommand ( pClient, "cd play %3d\n", iTrack);
 	}
 }
 

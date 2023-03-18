@@ -1256,7 +1256,7 @@ void DrawRing( int noise_divisions, float *prgNoise, void (*pfnNoise)( float *no
 	VectorSubtract( center, last1, screen ); // mins
 
 	// Is that box in PVS && frustum?
-	if ( !engine->IsBoxVisible( screen, tmp ) || engine->CullBox( screen, tmp ) )	
+	if ( !engineClient->IsBoxVisible( screen, tmp ) || engineClient->CullBox( screen, tmp ) )
 	{
 		return;
 	}

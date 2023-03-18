@@ -228,7 +228,7 @@ void InterpolateVector( float frac, const Vector& src, const Vector& dest, Vecto
 
 client_textmessage_t *TextMessageGet( const char *pName )
 { 
-	return engine->TextMessageGet( pName );
+	return engineClient->TextMessageGet( pName );
 }
 
 //-----------------------------------------------------------------------------
@@ -928,7 +928,7 @@ void UTIL_ReplaceKeyBindings( const wchar_t *inbuf, int inbufsizebytes, OUT_Z_BY
 				char binding[64];
 				g_pVGuiLocalize->ConvertUnicodeToANSI( token, binding, sizeof(binding) );
 
-				const char *key = engine->Key_LookupBinding( *binding == '+' ? binding + 1 : binding );
+				const char *key = engineClient->Key_LookupBinding( *binding == '+' ? binding + 1 : binding );
 				if ( !key )
 				{
 					key = IsX360() ? "" : "< not bound >";
@@ -1138,7 +1138,7 @@ unsigned char UTIL_ComputeEntityFade( C_BaseEntity *pEntity, float flMinDist, fl
 		unsigned char nGlobalAlpha = IsXbox() ? 255 : modelinfo->ComputeLevelScreenFade( vecAbsCenter, flRadius, flFadeScale );
 		unsigned char nDistAlpha;
 
-		if ( !engine->IsLevelMainMenuBackground() )
+		if ( !engineClient->IsLevelMainMenuBackground() )
 		{
 			nDistAlpha = modelinfo->ComputeViewScreenFade( vecAbsCenter, flRadius, flFadeScale );
 		}
@@ -1229,7 +1229,7 @@ void UTIL_IncrementMapKey( const char *pszCustomKey )
 		kvMapLoadFile->LoadFromFile( g_pFullFileSystem, szFilename, "MOD" );
 
 		char mapname[MAX_MAP_NAME];
-		Q_FileBase( engine->GetLevelName(), mapname, sizeof( mapname) );
+		Q_FileBase(engineClient->GetLevelName(), mapname, sizeof( mapname) );
 		Q_strlower( mapname );
 
 		// Increment existing, or add a new one
@@ -1296,7 +1296,7 @@ int UTIL_GetMapKeyCount( const char *pszCustomKey )
 		kvMapLoadFile->LoadFromFile( g_pFullFileSystem, szFilename, "MOD" );
 
 		char mapname[MAX_MAP_NAME];
-		Q_FileBase( engine->GetLevelName(), mapname, sizeof( mapname) );
+		Q_FileBase(engineClient->GetLevelName(), mapname, sizeof( mapname) );
 		Q_strlower( mapname );
 
 		KeyValues *pMapKey = kvMapLoadFile->FindKey( mapname );

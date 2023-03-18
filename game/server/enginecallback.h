@@ -29,7 +29,7 @@ class IXboxSystem;
 class CSteamAPIContext;
 class CSteamGameServerAPIContext;
 
-extern IVEngineServer			*engine;
+extern IVEngineServer			*engineServer;
 extern IVoiceServer				*g_pVoiceServer;
 extern IFileSystem				*filesystem;
 extern IStaticPropMgrServer		*staticpropmgr;

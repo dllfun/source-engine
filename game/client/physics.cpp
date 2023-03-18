@@ -36,7 +36,7 @@ void PrecachePhysicsSounds( void );
 //FIXME: Replicated from server end, consolidate?
 
 
-extern IVEngineClient *engine;
+extern IVEngineClient *engineClient;
 
 class CCollisionEvent : public IPhysicsCollisionEvent, public IPhysicsCollisionSolver, public IPhysicsObjectEvent
 {

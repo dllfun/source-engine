@@ -103,7 +103,7 @@ void GetColorForSurface( trace_t *trace, Vector *color )
 		if ( trace->hitbox == 0 )
 		{
 			// If we hit the world, then ask the world for the fleck color
-			engine->TraceLineMaterialAndLighting( trace->startpos, end, diffuseColor, baseColor );
+			engineClient->TraceLineMaterialAndLighting( trace->startpos, end, diffuseColor, baseColor );
 		}
 		else
 		{
@@ -483,7 +483,7 @@ void FX_GlassImpact( const Vector &pos, const Vector &normal )
 	pGlassEmitter->SetSortOrigin( pos );
 
 	Vector vecColor;
-	engine->ComputeLighting( pos, NULL, true, vecColor );
+	engineClient->ComputeLighting( pos, NULL, true, vecColor );
 
 	// HACK: Blend a little toward white to match the materials...
 	VectorLerp( vecColor, Vector( 1, 1, 1 ), 0.3, vecColor );

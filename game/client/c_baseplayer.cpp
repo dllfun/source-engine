@@ -499,7 +499,7 @@ bool C_BasePlayer::AudioStateIsUnderwater( Vector vecMainViewOrigin )
 
 bool C_BasePlayer::IsHLTV() const
 {
-	return ( IsLocalPlayer() && engine->IsHLTV() );	
+	return ( IsLocalPlayer() && engineClient->IsHLTV() );
 }
 
 bool C_BasePlayer::IsReplay() const
@@ -752,7 +752,7 @@ void C_BasePlayer::SetVehicleRole( int nRole )
 
 	char szCmd[64];
 	Q_snprintf( szCmd, sizeof( szCmd ), "vehicleRole %i\n", nRole );
-	engine->ServerCmd( szCmd );
+	engineClient->ServerCmd( szCmd );
 }
 
 //-----------------------------------------------------------------------------
@@ -791,7 +791,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 	{
 		// Make sure s_pLocalPlayer is correct
 
-		int iLocalPlayerIndex = engine->GetLocalPlayer();
+		int iLocalPlayerIndex = engineClient->GetLocalPlayer();
 
 		if ( g_nKillCamMode )
 			iLocalPlayerIndex = g_nKillCamTarget1;
@@ -833,7 +833,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 	if ( IsLocalPlayer() )
 	{
 		QAngle angles;
-		engine->GetViewAngles( angles );
+		engineClient->GetViewAngles( angles );
 		if ( updateType == DATA_UPDATE_CREATED )
 		{
 			SetLocalViewAngles( angles );
@@ -901,7 +901,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 
 	// If we are updated while paused, allow the player origin to be snapped by the
 	//  server if we receive a packet from the server
-	if ( engine->IsPaused() || bForceEFNoInterp )
+	if (engineClient->IsPaused() || bForceEFNoInterp )
 	{
 		ResetLatched();
 	}
@@ -1138,7 +1138,7 @@ bool C_BasePlayer::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 		if ( pVehicle )
 		{
 			pVehicle->UpdateViewAngles( this, pCmd );
-			engine->SetViewAngles( pCmd->viewangles );
+			engineClient->SetViewAngles( pCmd->viewangles );
 		}
 	}
 	else 
@@ -1168,7 +1168,7 @@ bool C_BasePlayer::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 		{
 			// Stomp the new viewangles with old ones
 			pCmd->viewangles = m_vecOldViewAngles;
-			engine->SetViewAngles( pCmd->viewangles );
+			engineClient->SetViewAngles( pCmd->viewangles );
 		}
 		else
 		{
@@ -1468,7 +1468,7 @@ void C_BasePlayer::CalcChaseCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 	}
 	else if ( IsLocalPlayer() )
 	{
-		engine->GetViewAngles( viewangles );
+		engineClient->GetViewAngles( viewangles );
 		if ( UseVR() )
 		{
 			// Don't let people play with the pitch - they drive it into the ground or into the air and 
@@ -1580,7 +1580,7 @@ void C_BasePlayer::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& 
 
 			NormalizeAngles( a );
 			eyeAngles = a;
-			engine->SetViewAngles( a );
+			engineClient->SetViewAngles( a );
 		}
 	}
 
@@ -1705,9 +1705,9 @@ void C_BasePlayer::CalcInEyeCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 	VectorAdd( eyeAngles, GetPunchAngle(), eyeAngles );
 
 #if defined( REPLAY_ENABLED )
-	if( engine->IsHLTV() || g_pEngineClientReplay->IsPlayingReplayDemo() )
+	if( engineClient->IsHLTV() || g_pEngineClientReplay->IsPlayingReplayDemo() )
 #else
-	if( engine->IsHLTV() )
+	if(engineClient->IsHLTV() )
 #endif
 	{
 		C_BaseAnimating *pTargetAnimating = target->GetBaseAnimating();
@@ -1729,7 +1729,7 @@ void C_BasePlayer::CalcInEyeCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 		eyeOrigin += offset; // hack hack
 	}
 
-	engine->SetViewAngles( eyeAngles );
+	engineClient->SetViewAngles( eyeAngles );
 }
 
 float C_BasePlayer::GetDeathCamInterpolationTime()
@@ -1958,7 +1958,7 @@ int	C_BasePlayer::GetUserID( void )
 {
 	player_info_t pi;
 
-	if ( !engine->GetPlayerInfo( entindex(), &pi ) )
+	if ( !engineClient->GetPlayerInfo( entindex(), &pi ) )
 		return -1;
 
 	return pi.userID;
@@ -2071,7 +2071,7 @@ void C_BasePlayer::GetToolRecordingState( KeyValues *msg )
 	float flZNear = view->GetZNear();
 	float flZFar = view->GetZFar();
 	CalcView( state.m_vecEyePosition, state.m_vecEyeAngles, flZNear, flZFar, state.m_flFOV );
-	state.m_bThirdPerson = !engine->IsPaused() && ::input->CAM_IsThirdPerson();
+	state.m_bThirdPerson = !engineClient->IsPaused() && ::input->CAM_IsThirdPerson();
 
 	// this is a straight copy from ClientModeShared::OverrideView,
 	// When that method is removed in favor of rolling it into CalcView,
@@ -2188,7 +2188,7 @@ void C_BasePlayer::PlayPlayerJingle()
 #ifndef _XBOX
 	// Find player sound for shooter
 	player_info_t info;
-	engine->GetPlayerInfo( entindex(), &info );
+	engineClient->GetPlayerInfo( entindex(), &info );
 
 	if ( !cl_customsounds.GetBool() )
 		return;
@@ -2215,7 +2215,7 @@ void C_BasePlayer::PlayPlayerJingle()
 		// copy from download folder to materials/temp folder
 		// this is done since material system can access only materials/*.vtf files
 
-		if ( !engine->CopyLocalFile( custname, fullsoundname) )
+		if ( !engineClient->CopyLocalFile( custname, fullsoundname) )
 			return;
 	}
 
@@ -2248,7 +2248,7 @@ void C_BasePlayer::ResetAutoaim( void )
 	if (m_vecAutoAim.x != 0 || m_vecAutoAim.y != 0)
 	{
 		m_vecAutoAim = QAngle( 0, 0, 0 );
-		engine->CrosshairAngle( edict(), 0, 0 );
+		engineClient->CrosshairAngle( edict(), 0, 0 );
 	}
 #endif
 	m_fOnTarget = false;
@@ -2366,7 +2366,7 @@ bool C_BasePlayer::IsUseableEntity( CBaseEntity *pEntity, unsigned int requiredC
 float C_BasePlayer::GetFOV( void )
 {
 	// Allow users to override the FOV during demo playback
-	bool bUseDemoOverrideFov = engine->IsPlayingDemo() && demo_fov_override.GetFloat() > 0.0f;
+	bool bUseDemoOverrideFov = engineClient->IsPlayingDemo() && demo_fov_override.GetFloat() > 0.0f;
 #if defined( REPLAY_ENABLED )
 	bUseDemoOverrideFov = bUseDemoOverrideFov && !g_pEngineClientReplay->IsPlayingReplayDemo();
 #endif
@@ -2639,7 +2639,7 @@ void C_BasePlayer::GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x
 void C_BasePlayer::GetPredictionErrorSmoothingVector( Vector &vOffset )
 {
 #if !defined( NO_ENTITY_PREDICTION )
-	if ( engine->IsPlayingDemo() || !cl_smooth.GetInt() || !cl_predict->GetInt() || engine->IsPaused() )
+	if (engineClient->IsPlayingDemo() || !cl_smooth.GetInt() || !cl_predict->GetInt() || engineClient->IsPaused() )
 	{
 		vOffset.Init();
 		return;
@@ -2804,7 +2804,7 @@ bool C_BasePlayer::GetSteamID( CSteamID *pID )
 	// try to make this a little more efficient
 
 	player_info_t pi;
-	if ( engine->GetPlayerInfo( entindex(), &pi ) )
+	if (engineClient->GetPlayerInfo( entindex(), &pi ) )
 	{
 		if ( pi.friendsID && steamapicontext && steamapicontext->SteamUtils() )
 		{

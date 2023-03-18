@@ -248,9 +248,9 @@ void CMoveHelperClient::Con_NPrintf( int idx, char const* pFormat, ...)
 	va_end(marker);
 	
 #if defined( CSTRIKE_DLL ) || defined( DOD_DLL ) // reltodo
-	engine->Con_NPrintf( idx, "%s", msg );
+	engineClient->Con_NPrintf( idx, "%s", msg );
 #else
-	engine->Con_NPrintf( idx, msg );
+	engineClient->Con_NPrintf( idx, msg );
 #endif
 }
 

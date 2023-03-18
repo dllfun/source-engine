@@ -23,7 +23,7 @@
 #include "icvar.h"
 
 // engine interface singleton accessors
-extern IVEngineClient *engine;
+extern IVEngineClient * engineClient;
 extern class IGameUIFuncs *gameuifuncs;
 extern class IEngineSound *enginesound;
 extern class IMatchmaking *matchmaking;

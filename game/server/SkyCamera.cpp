@@ -103,7 +103,7 @@ CSkyCamera::~CSkyCamera()
 void CSkyCamera::Spawn( void ) 
 { 
 	m_skyboxData.origin = GetLocalOrigin();
-	m_skyboxData.area = engine->GetArea( m_skyboxData.origin );
+	m_skyboxData.area = engineServer->GetArea( m_skyboxData.origin );
 	
 	Precache();
 }

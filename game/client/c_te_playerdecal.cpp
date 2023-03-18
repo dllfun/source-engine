@@ -183,7 +183,7 @@ IMaterial *CreateTempMaterialForPlayerLogo( int iPlayerIndex, player_info_t *inf
 		// copy from download folder to materials/temp folder
 		// this is done since material system can access only materials/*.vtf files
 
-		if ( !engine->CopyLocalFile( custname, fulltexname) )
+		if ( !engineClient->CopyLocalFile( custname, fulltexname) )
 			return NULL;
 	}
 
@@ -211,7 +211,7 @@ void TE_PlayerDecal( IRecipientFilter& filter, float delay,
 
 	// Find player logo for shooter
 	player_info_t info;
-	engine->GetPlayerInfo( player, &info );
+	engineClient->GetPlayerInfo( player, &info );
 
 	// Make sure we've got the material for this player's logo
 	char texname[ 512 ];

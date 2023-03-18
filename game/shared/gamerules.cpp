@@ -275,15 +275,15 @@ void CGameRules::RefreshSkillData ( bool forceUpdate )
 	// synthesizes EASY and HARD. (sjb)
 	Q_snprintf( szExec,sizeof(szExec), "exec skill_manifest.cfg\n" );
 
-	engine->ServerCommand( szExec );
-	engine->ServerExecute();
+	engineServer->ServerCommand( szExec );
+	engineServer->ServerExecute();
 #else
 
 #if !defined( TF_DLL ) && !defined( DOD_DLL )
 	Q_snprintf( szExec,sizeof(szExec), "exec skill%d.cfg\n", GetSkillLevel() );
 
-	engine->ServerCommand( szExec );
-	engine->ServerExecute();
+	engineServer->ServerCommand( szExec );
+	engineServer->ServerExecute();
 #endif // TF_DLL && DOD_DLL
 
 #endif // HL2_DLL
@@ -633,7 +633,7 @@ void CGameRules::MarkAchievement( IRecipientFilter& filter, char const *pchAchie
 {
 	gamestats->Event_IncrementCountedStatistic( vec3_origin, pchAchievementName, 1.0f );
 
-	IAchievementMgr *pAchievementMgr = engine->GetAchievementMgr();
+	IAchievementMgr *pAchievementMgr = engineServer->GetAchievementMgr();
 	if ( !pAchievementMgr )
 		return;
 	pAchievementMgr->OnMapEvent( pchAchievementName );
@@ -820,7 +820,7 @@ const char *CGameRules::GetChatPrefix( bool bTeamOnly, CBasePlayer *pPlayer )
 void CGameRules::CheckHaptics(CBasePlayer* pPlayer)
 {
 	// NVNT see if the client of pPlayer is using a haptic device.
-	const char *pszHH = engine->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
 	if( pszHH )
 	{
 		int iHH = atoi( pszHH );
@@ -830,7 +830,7 @@ void CGameRules::CheckHaptics(CBasePlayer* pPlayer)
 
 void CGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 {
-	const char *pszName = engine->GetClientConVarValue( pPlayer->entindex(), "name" );
+	const char *pszName = engineServer->GetClientConVarValue( pPlayer->entindex(), "name" );
 
 	const char *pszOldName = pPlayer->GetPlayerName();
 
@@ -855,7 +855,7 @@ void CGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 		pPlayer->SetPlayerName( pszName );
 	}
 
-	const char *pszFov = engine->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
+	const char *pszFov = engineServer->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
 	if ( pszFov )
 	{
 		int iFov = atoi(pszFov);
@@ -864,7 +864,7 @@ void CGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	}
 
 	// NVNT see if this user is still or has began using a haptic device
-	const char *pszHH = engine->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
 	if( pszHH )
 	{
 		int iHH = atoi( pszHH );

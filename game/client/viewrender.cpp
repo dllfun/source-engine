@@ -802,7 +802,7 @@ CLIENTEFFECT_REGISTER_BEGIN( PrecachePostProcessingEffects )
 	CLIENTEFFECT_MATERIAL( "dev/pyro_post" )
 #endif
 
-CLIENTEFFECT_REGISTER_END_CONDITIONAL( engine->GetDXSupportLevel() >= 90 )
+CLIENTEFFECT_REGISTER_END_CONDITIONAL(engineClient->GetDXSupportLevel() >= 90 )
 
 //-----------------------------------------------------------------------------
 // Accessors to return the current view being rendered
@@ -1051,7 +1051,7 @@ void CViewRender::DrawViewModels( const CViewSetup &view, bool drawViewmodel )
 	viewModelSetup.zNear = view.zNearViewmodel;
 	viewModelSetup.zFar = view.zFarViewmodel;
 	viewModelSetup.fov = view.fovViewmodel;
-	viewModelSetup.m_flAspectRatio = engine->GetScreenAspectRatio();
+	viewModelSetup.m_flAspectRatio = engineClient->GetScreenAspectRatio();
 
 	ITexture *pRTColor = NULL;
 	ITexture *pRTDepth = NULL;
@@ -1158,7 +1158,7 @@ void CViewRender::PerformScreenSpaceEffects( int x, int y, int w, int h )
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
 	// FIXME: Screen-space effects are busted in the editor
-	if ( engine->IsHammerRunning() )
+	if (engineClient->IsHammerRunning() )
 		return;
 
 	g_pScreenSpaceEffects->RenderEffects( x, y, w, h );
@@ -1377,7 +1377,7 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 	DrawPrecipitation();
 
 	// Make sure sound doesn't stutter
-	engine->Sound_ExtraUpdate();
+	engineClient->Sound_ExtraUpdate();
 
 	// Debugging info goes over the top
 	CDebugViewRender::Draw3DDebuggingInfo( view );
@@ -2009,7 +2009,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		s_bCanAccessCurrentView = true;
 
 
-		engine->DrawPortals();
+		engineClient->DrawPortals();
 
 		DisableFog();
 
@@ -2058,7 +2058,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		PerformScreenOverlay( view.x, view.y, view.width, view.height );
 
 		// Prevent sound stutter if going slow
-		engine->Sound_ExtraUpdate();	
+		engineClient->Sound_ExtraUpdate();
 	
 		if ( !building_cubemaps.GetBool() && view.m_bDoBloomAndToneMapping )
 		{
@@ -2084,7 +2084,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 			tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "GrabPreColorCorrectedFrame" );
 
 			// Grab the pre-color corrected frame for editing purposes
-			engine->GrabPreColorCorrectedFrame( view.x, view.y, view.width, view.height );
+			engineClient->GrabPreColorCorrectedFrame( view.x, view.y, view.width, view.height );
 		}
 
 		PerformScreenSpaceEffects( 0, 0, view.width, view.height );
@@ -2422,7 +2422,7 @@ void CViewRender::DetermineWaterRenderInfo( const VisibleFogVolumeInfo_t &fogVol
 	info.m_bOpaqueWater = !pWaterMaterial->IsTranslucent();
 
 	// DX level 70 can't handle anything but cheap water
-	if (engine->GetDXSupportLevel() < 80)
+	if (engineClient->GetDXSupportLevel() < 80)
 		return;
 
 	bool bForceCheap = false;
@@ -2782,7 +2782,7 @@ void CViewRender::ViewDrawScene_PortalStencil( const CViewSetup &viewIn, ViewCus
 	PixelVisibility_EndCurrentView();
 
 	// Make sure sound doesn't stutter
-	engine->Sound_ExtraUpdate();
+	engineClient->Sound_ExtraUpdate();
 
 	// Debugging info goes over the top
 	CDebugViewRender::Draw3DDebuggingInfo( view );
@@ -2859,7 +2859,7 @@ void CViewRender::ViewDrawScene_Intro( const CViewSetup &view, int nClearFlags, 
 		playerView.angles = introData.m_vecCameraViewAngles;
 		if ( introData.m_playerViewFOV )
 		{
-			playerView.fov = ScaleFOVByWidthRatio( introData.m_playerViewFOV, engine->GetScreenAspectRatio() / ( 4.0f / 3.0f ) );
+			playerView.fov = ScaleFOVByWidthRatio( introData.m_playerViewFOV, engineClient->GetScreenAspectRatio() / ( 4.0f / 3.0f ) );
 		}
 
 		g_pClientShadowMgr->PreRender();
@@ -2988,7 +2988,7 @@ void CViewRender::ViewDrawScene_Intro( const CViewSetup &view, int nClearFlags, 
 	PerformScreenSpaceEffects( 0, 0, view.width, view.height );
 
 	// Make sure sound doesn't stutter
-	engine->Sound_ExtraUpdate();
+	engineClient->Sound_ExtraUpdate();
 
 	// Debugging info goes over the top
 	CDebugViewRender::Draw3DDebuggingInfo( view );
@@ -3927,11 +3927,11 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 		nxPrn.color[0] = 0.9f, nxPrn.color[1] = 1.0f, nxPrn.color[2] = 0.9f;
 		nxPrn.fixed_width_font = true;
 
-		engine->Con_NXPrintf( &nxPrn, "Draw Opaque Technique : NEW" );
+		engineClient->Con_NXPrintf( &nxPrn, "Draw Opaque Technique : NEW" );
 		if ( r_drawopaque_old.GetBool() )
 		{
 
-			engine->Con_NXPrintf( &nxPrn, "Draw Opaque Technique : OLD" );
+			engineClient->Con_NXPrintf( &nxPrn, "Draw Opaque Technique : OLD" );
 
 			// now the static props
 			{
@@ -4041,13 +4041,13 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 				nxPrn.fixed_width_font = true;
 				
 				if ( bDrawopaquestaticpropslast )
-					engine->Con_NXPrintf( &nxPrn, "[ %2d  ]  Ents : %3d", bucket + 1, pEnts[bucket][1] - pEnts[bucket][0] ),
+					engineClient->Con_NXPrintf( &nxPrn, "[ %2d  ]  Ents : %3d", bucket + 1, pEnts[bucket][1] - pEnts[bucket][0] ),
 					++ nxPrn.index,
-					engine->Con_NXPrintf( &nxPrn, "[ %2d  ]  Props: %3d", bucket + 1, pProps[bucket][1] - pProps[bucket][0] );
+					engineClient->Con_NXPrintf( &nxPrn, "[ %2d  ]  Props: %3d", bucket + 1, pProps[bucket][1] - pProps[bucket][0] );
 				else
-					engine->Con_NXPrintf( &nxPrn, "[ %2d  ]  Props: %3d", bucket + 1, pProps[bucket][1] - pProps[bucket][0] ),
+					engineClient->Con_NXPrintf( &nxPrn, "[ %2d  ]  Props: %3d", bucket + 1, pProps[bucket][1] - pProps[bucket][0] ),
 					++ nxPrn.index,
-					engine->Con_NXPrintf( &nxPrn, "[ %2d  ]  Ents : %3d", bucket + 1, pEnts[bucket][1] - pEnts[bucket][0] );
+					engineClient->Con_NXPrintf( &nxPrn, "[ %2d  ]  Ents : %3d", bucket + 1, pEnts[bucket][1] - pEnts[bucket][0] );
 			}
 			#endif
 		}
@@ -4601,7 +4601,7 @@ void CRendering3dView::SetFogVolumeState( const VisibleFogVolumeInfo_t &fogInfo,
 //-----------------------------------------------------------------------------
 SkyboxVisibility_t CSkyboxView::ComputeSkyboxVisibility()
 {
-	return engine->IsSkyboxVisibleFromPoint( origin );
+	return engineClient->IsSkyboxVisibleFromPoint( origin );
 }
 
 
@@ -4966,7 +4966,7 @@ void CShadowDepthView::Draw()
 		BuildRenderableRenderLists( CurrentViewID() );
 	}
 
-	engine->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
+	engineClient->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
 
 	m_DrawFlags = m_pMainView->GetBaseDrawFlags() | DF_RENDER_UNDERWATER | DF_RENDER_ABOVEWATER | DF_SHADOW_DEPTH_MAP;	// Don't draw water surface...
 
@@ -5057,7 +5057,7 @@ void CFreezeFrameView::Draw( void )
 		nTexX0, nTexY0, nTexX1-1, nTexY1-1, nTexWidth, nTexHeight );
 
 	//Fake a fade during freezeframe view.
-	if ( g_flFreezeFlash >= gpGlobals->curtime && engine->IsTakingScreenshot() == false )
+	if ( g_flFreezeFlash >= gpGlobals->curtime && engineClient->IsTakingScreenshot() == false )
 	{
 		// Overlay screen fade on entire screen
 		IMaterial* pMaterial = m_TranslucentSingleColor;
@@ -5329,7 +5329,7 @@ void CBaseWorldView::DrawExecute( float waterHeight, view_id_t viewID, float wat
 	MaybeInvalidateLocalPlayerAnimation();
 
 	// Make sure sound doesn't stutter
-	engine->Sound_ExtraUpdate();
+	engineClient->Sound_ExtraUpdate();
 
 	g_CurrentViewID = viewID;
 
@@ -5346,7 +5346,7 @@ void CBaseWorldView::DrawExecute( float waterHeight, view_id_t viewID, float wat
 #endif
 
 	ITexture *pSaveFrameBufferCopyTexture = pRenderContext->GetFrameBufferCopyTexture( 0 );
-	if ( engine->GetDXSupportLevel() >= 80 )
+	if (engineClient->GetDXSupportLevel() >= 80 )
 	{
 		pRenderContext->SetFrameBufferCopyTexture( GetPowerOfTwoFrameBufferTexture() );
 	}
@@ -5444,7 +5444,7 @@ void CBaseWorldView::SSAO_DepthPass()
 
 	MDLCACHE_CRITICAL_SECTION();
 
-	engine->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
+	engineClient->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
 
 	m_DrawFlags |= DF_SSAO_DEPTH_PASS;
 
@@ -5947,7 +5947,7 @@ void CUnderWaterView::Setup( const CViewSetup &view, bool bDrawSkybox, const Vis
 	CalcWaterEyeAdjustments( fogInfo, m_waterHeight, m_waterZAdjust, m_bSoftwareUserClipPlane );
 
 	IMaterial *pWaterMaterial = fogInfo.m_pFogVolumeMaterial;
-	if (engine->GetDXSupportLevel() >= 90 )					// screen voerlays underwater are a dx9 feature
+	if (engineClient->GetDXSupportLevel() >= 90 )					// screen voerlays underwater are a dx9 feature
 	{
 		IMaterialVar *pScreenOverlayVar = pWaterMaterial->FindVar( "$underwateroverlay", NULL, false );
 		if ( pScreenOverlayVar && ( pScreenOverlayVar->IsDefined() ) )

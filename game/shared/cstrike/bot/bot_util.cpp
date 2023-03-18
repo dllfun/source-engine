@@ -154,7 +154,7 @@ bool UTIL_KickBotFromTeam( int kickTeam )
 		if (!player->IsAlive() && player->GetTeamNumber() == kickTeam)
 		{
 			// its a bot on the right team - kick it
-			engine->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
+			engineServer->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
 
 			return true;
 		}
@@ -174,7 +174,7 @@ bool UTIL_KickBotFromTeam( int kickTeam )
 		if (player->GetTeamNumber() == kickTeam)
 		{
 			// its a bot on the right team - kick it
-			engine->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
+			engineServer->ServerCommand( UTIL_VarArgs( "kick \"%s\"\n", player->GetPlayerName() ) );
 
 			return true;
 		}

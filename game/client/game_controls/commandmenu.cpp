@@ -89,7 +89,7 @@ void CommandMenu::OnMessage(const KeyValues *params, VPANEL fromPanel)
 	Q_strncpy( text, param1->GetString("command"), sizeof( text ) );
 	if ( text[0] )
 	{
-		engine->ClientCmd( text );
+		engineClient->ClientCmd( text );
 		bHandled = true;
 	}
 
@@ -266,7 +266,7 @@ bool CommandMenu::LoadFromKeyValues( KeyValues * params )
 
 	Q_snprintf( m_CurrentTeam, 4, "%i", GetLocalPlayerTeam() );
 
-	Q_FileBase( engine->GetLevelName(), m_CurrentMap, sizeof(m_CurrentMap) );
+	Q_FileBase(engineClient->GetLevelName(), m_CurrentMap, sizeof(m_CurrentMap) );
 	
 	if ( params != m_MenuKeys )
 	{

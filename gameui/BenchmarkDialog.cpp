@@ -37,12 +37,12 @@ void CBenchmarkDialog::RunBenchmark()
 	BasePanel()->ApplyOptionsDialogSettings();
 
 	// launch the map
-	engine->ClientCmd_Unrestricted("disconnect\n");
-	engine->ClientCmd_Unrestricted("wait\n");
-	engine->ClientCmd_Unrestricted("wait\n");
-	engine->ClientCmd_Unrestricted("maxplayers 1\n");
-	engine->ClientCmd_Unrestricted("progress_enable\n");
-	engine->ClientCmd_Unrestricted("map test_hardware\n");
+	engineClient->ClientCmd_Unrestricted("disconnect\n");
+	engineClient->ClientCmd_Unrestricted("wait\n");
+	engineClient->ClientCmd_Unrestricted("wait\n");
+	engineClient->ClientCmd_Unrestricted("maxplayers 1\n");
+	engineClient->ClientCmd_Unrestricted("progress_enable\n");
+	engineClient->ClientCmd_Unrestricted("map test_hardware\n");
 
 	// close this dialog
 	Close();
@@ -106,7 +106,7 @@ private:
 	{
 		if ( m_pUploadCheck->IsSelected() )
 		{
-			engine->ClientCmd_Unrestricted( "bench_upload\n" );
+			engineClient->ClientCmd_Unrestricted( "bench_upload\n" );
 		}
 		BaseClass::OnClose();
 	}

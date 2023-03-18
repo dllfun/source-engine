@@ -49,7 +49,7 @@ void TrackerDescriptionChanged( IConVar *var, const char *pOldString, float flOl
 	static int s_iTimesChanged = 0;
 	if ( s_iTimesChanged > 0 )
 	{
-		engine->ClientCmd_Unrestricted( "hud_reloadscheme" );
+		engineClient->ClientCmd_Unrestricted( "hud_reloadscheme" );
 	}
 	s_iTimesChanged++;
 }
@@ -125,7 +125,7 @@ void CHudBaseAchievementTracker::ApplySchemeSettings( IScheme *pScheme )
 //-----------------------------------------------------------------------------
 bool CHudBaseAchievementTracker::ShouldDraw()
 {
-	if ( engine->IsPlayingDemo() )
+	if (engineClient->IsPlayingDemo() )
 		return false;
 
 	return CHudElement::ShouldDraw();
@@ -166,7 +166,7 @@ CAchievementTrackerItem* CHudBaseAchievementTracker::CreateAchievementPanel()
 //-----------------------------------------------------------------------------
 void CHudBaseAchievementTracker::UpdateAchievementItems()
 {
-	IAchievementMgr *pAchievementMgr = engine->GetAchievementMgr();
+	IAchievementMgr *pAchievementMgr = engineClient->GetAchievementMgr();
 	if ( !pAchievementMgr )
 		return;
 
@@ -387,7 +387,7 @@ void CAchievementTrackerItem::OnThink()
 //-----------------------------------------------------------------------------
 void CAchievementTrackerItem::UpdateAchievementDisplay()
 {
-	IAchievementMgr *pAchievementMgr = engine->GetAchievementMgr();
+	IAchievementMgr *pAchievementMgr = engineClient->GetAchievementMgr();
 	if ( !pAchievementMgr )
 		return;
 

@@ -137,7 +137,7 @@ void CInput::ActivateMouse (void)
 		ResetMouse();
 #if !defined( PLATFORM_WINDOWS )
 		int dx, dy;
-		engine->GetMouseDelta( dx, dy, true );
+		engineClient->GetMouseDelta( dx, dy, true );
 #endif
 
 		// Clear accumulated error, too
@@ -311,7 +311,7 @@ void CInput::Init_Mouse (void)
 void CInput::GetWindowCenter( int&x, int& y )
 {
 	int w, h;
-	engine->GetScreenSize( w, h );
+	engineClient->GetScreenSize( w, h );
 
 	x = w >> 1;
 	y = h >> 1;
@@ -577,7 +577,7 @@ void CInput::AccumulateMouse( void )
 	}
 
 	int w, h;
-	engine->GetScreenSize( w, h );
+	engineClient->GetScreenSize( w, h );
 
 	// x,y = screen center
 	int x = w >> 1;	x;
@@ -598,7 +598,7 @@ void CInput::AccumulateMouse( void )
 		
 #elif defined( USE_SDL )
 		int dx, dy;
-		engine->GetMouseDelta( dx, dy );
+		engineClient->GetMouseDelta( dx, dy );
 		m_flAccumulatedMouseXMovement += dx;
 		m_flAccumulatedMouseYMovement += dy;
 #else
@@ -651,7 +651,7 @@ void CInput::MouseMove( CUserCmd *cmd )
 	QAngle	viewangles;
 
 	// Get view angles from engine
-	engine->GetViewAngles( viewangles );
+	engineClient->GetViewAngles( viewangles );
 
 	// Validate mouse speed/acceleration settings
 	CheckMouseAcclerationVars();
@@ -687,7 +687,7 @@ void CInput::MouseMove( CUserCmd *cmd )
 	}
 
 	// Store out the new viewangles.
-	engine->SetViewAngles( viewangles );
+	engineClient->SetViewAngles( viewangles );
 }
 
 //-----------------------------------------------------------------------------

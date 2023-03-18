@@ -2619,11 +2619,11 @@ void CBaseEntity::PhysicsTouchTriggers( const Vector *pPrevAbsOrigin )
 		SetCheckUntouch( true );
 		if ( isSolidCheckTriggers )
 		{
-			engine->SolidMoved( pEdict, CollisionProp(), pPrevAbsOrigin, sm_bAccurateTriggerBboxChecks );
+			engineServer->SolidMoved( pEdict, CollisionProp(), pPrevAbsOrigin, sm_bAccurateTriggerBboxChecks );
 		}
 		if ( isTriggerCheckSolids )
 		{
-			engine->TriggerMoved( pEdict, sm_bAccurateTriggerBboxChecks );
+			engineServer->TriggerMoved( pEdict, sm_bAccurateTriggerBboxChecks );
 		}
 	}
 }
@@ -3253,7 +3253,7 @@ void CBaseEntity::OnRestore()
 		V_snprintf( szMsg, sizeof(szMsg), "\nInvalid save, unable to load. Please run \"map %s\" to restart this level manually\n\n",STRING( gpGlobals->mapname ) );
 		Msg( "%s", szMsg );
 		
-		engine->ServerCommand("wait;wait;disconnect;showconsole\n");
+		engineServer->ServerCommand("wait;wait;disconnect;showconsole\n");
 	}
 #endif
 
@@ -3339,20 +3339,20 @@ void *CBaseEntity::operator new( size_t stAllocateBlock )
 {
 	// call into engine to get memory
 	Assert( stAllocateBlock != 0 );
-	return engine->PvAllocEntPrivateData(stAllocateBlock);
+	return engineServer->PvAllocEntPrivateData(stAllocateBlock);
 };
 
 void *CBaseEntity::operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine )
 {
 	// call into engine to get memory
 	Assert( stAllocateBlock != 0 );
-	return engine->PvAllocEntPrivateData(stAllocateBlock);
+	return engineServer->PvAllocEntPrivateData(stAllocateBlock);
 }
 
 void CBaseEntity::operator delete( void *pMem )
 {
 	// get the engine to free the memory
-	engine->FreeEntPrivateData( pMem );
+	engineServer->FreeEntPrivateData( pMem );
 }
 
 #include "tier0/memdbgon.h"
@@ -3505,7 +3505,7 @@ int	CBaseEntity::SetTransmitState( int nFlag)
 	
 	// Tell the engine (used for a network backdoor optimization).
 	if ( (oldFlags & FL_EDICT_DONTSEND) != (ed->m_fStateFlags & FL_EDICT_DONTSEND) )
-		engine->NotifyEdictFlagsChange( entindex() );
+		engineServer->NotifyEdictFlagsChange( entindex() );
 
 	return ed->m_fStateFlags;
 }
@@ -3666,12 +3666,12 @@ void CBaseEntity::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 //-----------------------------------------------------------------------------
 CSkyCamera *CBaseEntity::GetEntitySkybox()
 {
-	int area = engine->GetArea( WorldSpaceCenter() );
+	int area = engineServer->GetArea( WorldSpaceCenter() );
 
 	CSkyCamera *pCur = GetSkyCameraList();
 	while ( pCur )
 	{
-		if ( engine->CheckAreasConnected( area, pCur->m_skyboxData.area ) )
+		if (engineServer->CheckAreasConnected( area, pCur->m_skyboxData.area ) )
 			return pCur;
 
 		pCur = pCur->m_pNext;
@@ -4555,7 +4555,7 @@ void CBaseEntity::SetSize( const Vector &vecMin, const Vector &vecMax )
 CStudioHdr *ModelSoundsCache_LoadModel( const char *filename )
 {
 	// Load the file
-	int idx = engine->PrecacheModel( filename, true );
+	int idx = engineServer->PrecacheModel( filename, true );
 	if ( idx != -1 )
 	{
 		model_t *mdl = (model_t *)modelinfo->GetModel( idx );
@@ -4915,7 +4915,7 @@ int CBaseEntity::PrecacheModel( const char *name, bool bPreload )
 	// Warn on out of order precache
 	if ( !CBaseEntity::IsPrecacheAllowed() )
 	{
-		if ( !engine->IsModelPrecached( name ) )
+		if ( !engineServer->IsModelPrecached( name ) )
 		{
 			Assert( !"CBaseEntity::PrecacheModel:  too late" );
 			Warning( "Late precache of %s\n", name );
@@ -4928,7 +4928,7 @@ int CBaseEntity::PrecacheModel( const char *name, bool bPreload )
 	}
 #endif
 
-	int idx = engine->PrecacheModel( name, bPreload );
+	int idx = engineServer->PrecacheModel( name, bPreload );
 	if ( idx != -1 )
 	{
 		PrecacheModelComponents( idx );
@@ -5350,7 +5350,7 @@ public:
 			//	  ent_create point_servercommand; ent_setname mine; ent_fire mine command "rcon_password mynewpassword"
 			// So, I'm removing the ability for anyone to execute ent_fires on dedicated servers (we can't check to see if
 			// this command is going to connect with a point_servercommand entity here, because they could delay the event and create it later).
-			if ( engine->IsDedicatedServer() )
+			if (engineServer->IsDedicatedServer() )
 			{
 				// We allow people with disabled autokick to do it, because they already have rcon.
 				if ( pPlayer->IsAutoKickDisabled() == false )
@@ -6328,7 +6328,7 @@ void CBaseEntity::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	}
 
 	// Append anything from world I/O/keyvalues with "world" as prefix
-	CWorld *world = dynamic_cast< CWorld * >( CBaseEntity::Instance( engine->PEntityOfEntIndex( 0 ) ) );
+	CWorld *world = dynamic_cast< CWorld * >( CBaseEntity::Instance(engineServer->PEntityOfEntIndex( 0 ) ) );
 	if ( world )
 	{
 		world->AppendContextToCriteria( set, "world" );
@@ -6989,7 +6989,7 @@ void CBaseEntity::RemoveRecipientsIfNotCloseCaptioning( CRecipientFilter& filter
 		if ( !player )
 			continue;
 #if !defined( _XBOX )
-		const char *cvarvalue = engine->GetClientConVarValue( playerIndex, "closecaption" );
+		const char *cvarvalue = engineServer->GetClientConVarValue( playerIndex, "closecaption" );
 		Assert( cvarvalue );
 		if ( !cvarvalue[ 0 ] )
 			continue;
@@ -7317,7 +7317,7 @@ void CC_Ent_Create( const CCommand& args )
 	// Don't allow regular users to create point_servercommand entities for the same reason as blocking ent_fire
 	if ( !Q_stricmp( args[1], "point_servercommand" ) )
 	{
-		if ( engine->IsDedicatedServer() )
+		if (engineServer->IsDedicatedServer() )
 		{
 			// We allow people with disabled autokick to do it, because they already have rcon.
 			if ( pPlayer->IsAutoKickDisabled() == false )

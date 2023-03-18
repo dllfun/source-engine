@@ -40,7 +40,7 @@ class Panel;
 
 class CReplayReminderPanel;
 
-#define USERID2PLAYER(i) ToBasePlayer( ClientEntityList().GetEnt( engine->GetPlayerForUserID( i ) ) )	
+#define USERID2PLAYER(i) ToBasePlayer( ClientEntityList().GetEnt( engineClient->GetPlayerForUserID( i ) ) )	
 
 extern IClientMode *GetClientModeNormal(); // must be implemented
 

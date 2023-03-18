@@ -52,7 +52,7 @@ static CBasePlayer* FindPlayerByName(const char *pTestName)
 {
 	for(int i=1; i <= gpGlobals->maxClients; i++)
 	{
-		edict_t *pEdict = engine->PEntityOfEntIndex(i);
+		edict_t *pEdict = engineServer->PEntityOfEntIndex(i);
 		if(pEdict)
 		{
 			CBaseEntity *pEnt = CBaseEntity::Instance(pEdict);

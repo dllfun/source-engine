@@ -187,9 +187,9 @@ COptionsDialogXbox::COptionsDialogXbox( vgui::Panel *parent, bool bControllerOpt
 #endif
 
 	//Figure out which way duck is bound, and set the option_duck_method convar the correct way.
-	const char *pDuckKey = engine->Key_LookupBinding( "+duck" );
+	const char *pDuckKey = engineClient->Key_LookupBinding( "+duck" );
 	ButtonCode_t code = g_pInputSystem->StringToButtonCode( pDuckKey );
-	const char *pDuckMode = engine->Key_BindingForKey( code );
+	const char *pDuckMode = engineClient->Key_BindingForKey( code );
 
 	// NOW. If duck key is bound to +DUCK, set the convar to 0. Else, set it to 1.
 	ConVarRef varOption( "option_duck_method" );
@@ -470,20 +470,20 @@ void COptionsDialogXbox::OnClose( void )
 			{
 				// Bind DUCK key to toggle_duck
 				Q_snprintf( szCommand, sizeof( szCommand ), "bind \"%s\" \"%s\"", g_pInputSystem->ButtonCodeToString( code ), "toggle_duck" );
-				engine->ClientCmd_Unrestricted( szCommand );
+				engineClient->ClientCmd_Unrestricted( szCommand );
 			}
 			else
 			{
 				// Bind DUCK key to +DUCK
 				Q_snprintf( szCommand, sizeof( szCommand ), "bind \"%s\" \"%s\"", g_pInputSystem->ButtonCodeToString( code ), "+DUCK" );
-				engine->ClientCmd_Unrestricted( szCommand );
+				engineClient->ClientCmd_Unrestricted( szCommand );
 			}	
 		}
 	}
 
 	// Save these settings!
 	if ( m_bOptionsChanged )
-		engine->ClientCmd_Unrestricted( "host_writeconfig" );
+		engineClient->ClientCmd_Unrestricted( "host_writeconfig" );
 
 	BasePanel()->RunCloseAnimation( "CloseOptionsDialog_OpenMainMenu" );
 	if ( !m_bControllerOptions )
@@ -1118,7 +1118,7 @@ void COptionsDialogXbox::ChangeValue( float fChange )
 
 			char szCommand[ 256 ];
 			Q_snprintf( szCommand, sizeof( szCommand ), "bind \"%s\" \"%s\"", g_pInputSystem->ButtonCodeToString( code ), m_pSelectedOption->szCommand );
-			engine->ClientCmd_Unrestricted( szCommand );
+			engineClient->ClientCmd_Unrestricted( szCommand );
 
 			// After binding we need to update all bindings so they display the correct keys
 			UpdateAllBinds( code );
@@ -1151,7 +1151,7 @@ void COptionsDialogXbox::UnbindOption( OptionData_t *pOption, int iLabel )
 		{
 			char szCommand[ 256 ];
 			Q_snprintf( szCommand, sizeof( szCommand ), "unbind %s", g_pInputSystem->ButtonCodeToString( code ) );
-			engine->ClientCmd_Unrestricted( szCommand );
+			engineClient->ClientCmd_Unrestricted( szCommand );
 		}
 	}
 
@@ -1406,7 +1406,7 @@ void COptionsDialogXbox::FillInDefaultBindings( void )
 			// Bind it
 			char szCommand[ 256 ];
 			Q_snprintf( szCommand, sizeof( szCommand ), "bind \"%s\" \"%s\"", szKeyName, szBinding );
-			engine->ClientCmd_Unrestricted( szCommand );
+			engineClient->ClientCmd_Unrestricted( szCommand );
 
 			// Loop through all the items
 			for ( int iLabel = 0; iLabel < m_iNumItems; ++iLabel )

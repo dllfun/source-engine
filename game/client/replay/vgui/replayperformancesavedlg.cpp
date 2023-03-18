@@ -103,7 +103,7 @@ CReplayPerformanceSaveDlg::~CReplayPerformanceSaveDlg()
 	ms_hDlg->SetKeyBoardInputEnabled(true);
 	ms_hDlg->SetMouseInputEnabled(true);
 	TFModalStack()->PushModal( ms_hDlg );
-	engine->ClientCmd_Unrestricted( "gameui_hide" );
+	engineClient->ClientCmd_Unrestricted( "gameui_hide" );
 
 	ReplayCamera()->EnableInput( false );
 }

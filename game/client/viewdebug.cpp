@@ -535,7 +535,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 		return;
 
 	// HDRFIXME: Assert NULL rendertarget
-	if ( mat_yuv.GetInt() && (engine->GetDXSupportLevel() >= 80) )
+	if ( mat_yuv.GetInt() && (engineClient->GetDXSupportLevel() >= 80) )
 	{
 		IMaterial *pMaterial;
 		pMaterial = materials->FindMaterial( "debug/yuv", TEXTURE_GROUP_OTHER, true );
@@ -547,7 +547,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 		}
 	}
 
-	if ( mat_hsv.GetInt() && (engine->GetDXSupportLevel() >= 90) )
+	if ( mat_hsv.GetInt() && (engineClient->GetDXSupportLevel() >= 90) )
 	{
 		IMaterial *pMaterial;
 		pMaterial = materials->FindMaterial( "debug/hsv", TEXTURE_GROUP_OTHER, true );

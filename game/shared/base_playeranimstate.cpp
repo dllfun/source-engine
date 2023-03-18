@@ -973,8 +973,12 @@ void CBasePlayerAnimState::AnimStatePrintf( int iLine, const char *pMsg, ... )
 	Q_vsnprintf( str, sizeof( str ), pMsg, marker );
 	va_end( marker );
 
+#ifdef GAME_DLL
+	engineServer->Con_NPrintf(iLine, "%s", str);
+#else
 	// Show it with Con_NPrintf.
-	engine->Con_NPrintf( iLine, "%s", str );
+	engineClient->Con_NPrintf( iLine, "%s", str );
+#endif
 
 	// Log it.
 	AnimStateLog( "%s\n", str );

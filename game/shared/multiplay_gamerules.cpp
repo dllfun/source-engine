@@ -271,7 +271,7 @@ CMultiplayRules::CMultiplayRules()
 	// 3/31/99
 	// Added lservercfg file cvar, since listen and dedicated servers should not
 	// share a single config file. (sjb)
-	if ( engine->IsDedicatedServer() )
+	if (engineServer->IsDedicatedServer() )
 	{
 		// dedicated server
 		const char *cfgfile = servercfgfile.GetString();
@@ -282,7 +282,7 @@ CMultiplayRules::CMultiplayRules()
 
 			Log( "Executing dedicated server config file %s\n", cfgfile );
 			Q_snprintf( szCommand,sizeof(szCommand), "exec %s\n", cfgfile );
-			engine->ServerCommand( szCommand );
+			engineServer->ServerCommand( szCommand );
 		}
 	}
 	else
@@ -296,7 +296,7 @@ CMultiplayRules::CMultiplayRules()
 
 			Log( "Executing listen server config file %s\n", cfgfile );
 			Q_snprintf( szCommand,sizeof(szCommand), "exec %s\n", cfgfile );
-			engine->ServerCommand( szCommand );
+			engineServer->ServerCommand( szCommand );
 		}
 	}
 
@@ -415,7 +415,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 			for( int iPlayerIndex = 1 ; iPlayerIndex <= MAX_PLAYERS; iPlayerIndex++ )
 			{
 				player_info_t pi;
-				if ( !engine->GetPlayerInfo( iPlayerIndex, &pi ) )
+				if ( !engineServer->GetPlayerInfo( iPlayerIndex, &pi ) )
 					continue;
 #if defined( REPLAY_ENABLED )
 				if ( pi.ishltv || pi.isreplay || pi.fakeplayer )
@@ -1291,7 +1291,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 			{
 				bIgnore = true;
 			}
-			else if ( !engine->IsMapValid( mapList[i] ) )
+			else if ( !engineServer->IsMapValid( mapList[i] ) )
 			{
 				bIgnore = true;
 
@@ -1336,7 +1336,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	{
 		char szNextMap[MAX_MAP_NAME];
 
-		if ( nextlevel.GetString() && *nextlevel.GetString() && engine->IsMapValid( nextlevel.GetString() ) )
+		if ( nextlevel.GetString() && *nextlevel.GetString() && engineServer->IsMapValid( nextlevel.GetString() ) )
 		{
 			Q_strncpy( szNextMap, nextlevel.GetString(), sizeof( szNextMap ) );
 		}
@@ -1481,7 +1481,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		g_fGameOver = true;
 		m_flTimeLastMapChangeOrPlayerWasConnected = 0.0f;
 		Msg( "CHANGE LEVEL: %s\n", pszMap );
-		engine->ChangeLevel( pszMap, NULL );
+		engineServer->ChangeLevel( pszMap, NULL );
 	}
 
 
@@ -1554,7 +1554,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 
 		Msg( "Skipping: %s\tNext map: %s\n", szSkippedMap, szNextMap );
 
-		if ( nextlevel.GetString() && *nextlevel.GetString() && engine->IsMapValid( nextlevel.GetString() ) )
+		if ( nextlevel.GetString() && *nextlevel.GetString() && engineServer->IsMapValid( nextlevel.GetString() ) )
 		{
 			Msg( "Warning! \"nextlevel\" is set to \"%s\" and will override the next map to be played.\n", nextlevel.GetString() );
 		}
@@ -1731,7 +1731,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 
 	bool CMultiplayRules::IsLoadingBugBaitReport()
 	{
-		return ( !engine->IsDedicatedServer()&& CommandLine()->CheckParm( "-bugbait" ) && sv_cheats->GetBool() );
+		return ( !engineServer->IsDedicatedServer()&& CommandLine()->CheckParm( "-bugbait" ) && sv_cheats->GetBool() );
 	}
 
 	void CMultiplayRules::HaveAllPlayersSpeakConceptIfAllowed( int iConcept, int iTeam /* = TEAM_UNASSIGNED */, const char *modifiers /* = NULL */ )
@@ -1788,7 +1788,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	void CMultiplayRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	{
 		// NVNT see if this user is still or has began using a haptic device
-		const char *pszHH = engine->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+		const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
 		if( pszHH )
 		{
 			int iHH = atoi( pszHH );

@@ -36,12 +36,12 @@ void CCommandCheckButton::SetSelected( bool state )
 
 	if ( IsSelected() && m_pszDown )
 	{
-		engine->ClientCmd_Unrestricted( m_pszDown );
-		engine->ClientCmd_Unrestricted( "\n" );
+		engineClient->ClientCmd_Unrestricted( m_pszDown );
+		engineClient->ClientCmd_Unrestricted( "\n" );
 	}
 	else if ( !IsSelected() && m_pszUp )
 	{
-		engine->ClientCmd_Unrestricted( m_pszUp );
-		engine->ClientCmd_Unrestricted( "\n" );
+		engineClient->ClientCmd_Unrestricted( m_pszUp );
+		engineClient->ClientCmd_Unrestricted( "\n" );
 	}
 }

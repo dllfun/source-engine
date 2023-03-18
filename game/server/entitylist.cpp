@@ -1458,18 +1458,18 @@ public:
 			GlobalEntity_EnableStateUpdates( true );
 
 			// Allows us to immediately re-use the edict indices we just freed to avoid edict overflow
-			engine->AllowImmediateEdictReuse();
+			engineServer->AllowImmediateEdictReuse();
 
 			// Reset node counter used during load
 			CNodeEnt::m_nNodeCount = 0;
 
 			CRespawnEntitiesFilter filter;
-			MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &filter, true );
+			MapEntity_ParseAllEntities(engineServer->GetMapEntitiesString(), &filter, true );
 
 			// Allocate a CBasePlayer for pev, and call spawn
 			if ( nPlayerIndex >= 0 )
 			{
-				edict_t *pEdict = engine->PEntityOfEntIndex( nPlayerIndex );
+				edict_t *pEdict = engineServer->PEntityOfEntIndex( nPlayerIndex );
 				ClientPutInServer( pEdict, "unnamed" );
 				ClientActive( pEdict, false );
 

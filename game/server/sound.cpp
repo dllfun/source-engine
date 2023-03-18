@@ -1186,7 +1186,7 @@ int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg,
 
 	name[0] = 0;
 
-	ipick = engine->SentenceGroupPick( isentenceg, name, sizeof( name ) );
+	ipick = engineServer->SentenceGroupPick( isentenceg, name, sizeof( name ) );
 	if (ipick > 0 && name)
 	{
 		int sentenceIndex = SENTENCEG_Lookup( name );
@@ -1213,14 +1213,14 @@ int SENTENCEG_PickRndSz(const char *szgroupname)
 
 	name[0] = 0;
 
-	isentenceg = engine->SentenceGroupIndexFromName(szgroupname);
+	isentenceg = engineServer->SentenceGroupIndexFromName(szgroupname);
 	if (isentenceg < 0)
 	{
 		Warning( "No such sentence group %s\n", szgroupname );
 		return -1;
 	}
 
-	ipick = engine->SentenceGroupPick(isentenceg, name, sizeof( name ));
+	ipick = engineServer->SentenceGroupPick(isentenceg, name, sizeof( name ));
 	if (ipick >= 0 && name[0])
 	{
 		return SENTENCEG_Lookup( name );
@@ -1253,14 +1253,14 @@ int SENTENCEG_PlayRndSz(edict_t *entity, const char *szgroupname,
 
 	name[0] = 0;
 
-	isentenceg = engine->SentenceGroupIndexFromName(szgroupname);
+	isentenceg = engineServer->SentenceGroupIndexFromName(szgroupname);
 	if (isentenceg < 0)
 	{
 		Warning( "No such sentence group %s\n", szgroupname );
 		return -1;
 	}
 
-	ipick = engine->SentenceGroupPick(isentenceg, name, sizeof( name ));
+	ipick = engineServer->SentenceGroupPick(isentenceg, name, sizeof( name ));
 	if (ipick >= 0 && name[0])
 	{
 		int sentenceIndex = SENTENCEG_Lookup( name );
@@ -1286,11 +1286,11 @@ int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname,
 
 	name[0] = 0;
 
-	isentenceg = engine->SentenceGroupIndexFromName(szgroupname);
+	isentenceg = engineServer->SentenceGroupIndexFromName(szgroupname);
 	if (isentenceg < 0)
 		return -1;
 
-	ipicknext = engine->SentenceGroupPickSequential(isentenceg, name, sizeof( name ), ipick, freset);
+	ipicknext = engineServer->SentenceGroupPickSequential(isentenceg, name, sizeof( name ), ipick, freset);
 	if (ipicknext >= 0 && name[0])
 	{
 		int sentenceIndex = SENTENCEG_Lookup( name );
@@ -1318,7 +1318,7 @@ void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 	if (isentenceg < 0 || ipick < 0)
 		return;
 
-	Q_snprintf(buffer,sizeof(buffer),"!%s%d", engine->SentenceGroupNameFromIndex( isentenceg ), ipick );
+	Q_snprintf(buffer,sizeof(buffer),"!%s%d", engineServer->SentenceGroupNameFromIndex( isentenceg ), ipick );
 
 	UTIL_StopSound(entity, CHAN_VOICE, buffer);
 }
@@ -1332,7 +1332,7 @@ void SENTENCEG_Init()
 	if (fSentencesInit)
 		return;
 
-	engine->PrecacheSentenceFile( "scripts/sentences.txt" );
+	engineServer->PrecacheSentenceFile( "scripts/sentences.txt" );
 	fSentencesInit = true;
 }
 
@@ -1340,13 +1340,13 @@ void SENTENCEG_Init()
 
 int SENTENCEG_Lookup(const char *sample)
 {
-	return engine->SentenceIndexFromName( sample + 1 );
+	return engineServer->SentenceIndexFromName( sample + 1 );
 }
 
 
 int SENTENCEG_GetIndex(const char *szrootname)
 {
-	return engine->SentenceGroupIndexFromName( szrootname );
+	return engineServer->SentenceGroupIndexFromName( szrootname );
 }
 
 void UTIL_RestartAmbientSounds( void )

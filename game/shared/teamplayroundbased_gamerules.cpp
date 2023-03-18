@@ -596,7 +596,7 @@ void CTeamplayRoundBasedRules::Think( void )
 					event->SetBool( "forceupload", true );
 					gameeventmanager->FireEvent( event );
 				}
-				engine->MultiplayerEndGame();
+				engineServer->MultiplayerEndGame();
 			}
 
 			// Don't run this code again
@@ -1124,7 +1124,7 @@ bool CTeamplayRoundBasedRules::CheckNextLevelCvar( void )
 {
 	if ( m_bForceMapReset )
 	{
-		if ( nextlevel.GetString() && *nextlevel.GetString() && engine->IsMapValid( nextlevel.GetString() ) )
+		if ( nextlevel.GetString() && *nextlevel.GetString() && engineServer->IsMapValid( nextlevel.GetString() ) )
 		{
 			IGameEvent *event = gameeventmanager->CreateEvent( "teamplay_game_over" );
 			if ( event )
@@ -2199,7 +2199,7 @@ void CTeamplayRoundBasedRules::SetWinningTeam( int team, int iWinReason, bool bF
 
 #ifndef DEBUG
 		// Don't bother on a listen server - usually not desirable
-		if ( !engine->IsDedicatedServer() )
+		if ( !engineServer->IsDedicatedServer() )
 			return;
 #endif // DEBUG
 
@@ -2680,7 +2680,7 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 	// Really remove the entities so we can have access to their slots below.
 	gEntList.CleanupDeleteList();
 
-	engine->AllowImmediateEdictReuse();
+	engineServer->AllowImmediateEdictReuse();
 
 	if ( mp_showcleanedupents.GetInt() & 2 )
 	{
@@ -2733,7 +2733,7 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 				CMapEntityRef &ref = g_MapEntityRefs[m_iIterator];
 				m_iIterator = g_MapEntityRefs.Next( m_iIterator );	// Seek to the next entity.
 
-				if ( ref.m_iEdict == -1 || engine->PEntityOfEntIndex( ref.m_iEdict ) )
+				if ( ref.m_iEdict == -1 || engineServer->PEntityOfEntIndex( ref.m_iEdict ) )
 				{
 					// Doh! The entity was delete and its slot was reused.
 					// Just use any old edict slot. This case sucks because we lose the baseline.
@@ -2757,7 +2757,7 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 
 	// DO NOT CALL SPAWN ON info_node ENTITIES!
 
-	MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &filter, true );
+	MapEntity_ParseAllEntities(engineServer->GetMapEntitiesString(), &filter, true );
 }
 
 //-----------------------------------------------------------------------------
@@ -3507,7 +3507,7 @@ void CTeamplayRoundBasedRules::GetAllPlayersLobbyInfo( CUtlVector<LobbyPlayerInf
 		// we're on the server or client
 		#ifdef CLIENT_DLL
 			player_info_t pi;
-			if ( !engine->GetPlayerInfo( i, &pi ) )
+			if ( !engineServer->GetPlayerInfo( i, &pi ) )
 				continue;
 			if ( pi.ishltv || pi.isreplay )
 				continue;

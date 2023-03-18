@@ -491,7 +491,7 @@ EResult	CSteamWorksGameStatsUploader::RequestSessionID()
 	{
 		int accountType = k_EGameStatsAccountType_Steam;
 #ifdef GAME_DLL
-		if ( engine->IsDedicatedServer() )
+		if (engineServer->IsDedicatedServer() )
 		{
 			accountType = k_EGameStatsAccountType_SteamGameServer;
 		}
@@ -856,7 +856,7 @@ ISteamGameStats* CSteamWorksGameStatsUploader::GetInterface( void )
 	}
 
 	// Now let's get the interface for dedicated servers
-	if ( g_pSteamClientGameServer && engine && (/*engine->IsDedicatedServerForXbox() ||*/ engine->IsDedicatedServer()) )
+	if ( g_pSteamClientGameServer && engineServer && (/*engine->IsDedicatedServerForXbox() ||*/ engineServer->IsDedicatedServer()) )
 	{
 		return (ISteamGameStats*)g_pSteamClientGameServer->GetISteamGenericInterface( hSteamUser, hSteamPipe, STEAMGAMESTATS_INTERFACE_VERSION );
 	}

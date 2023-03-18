@@ -40,7 +40,7 @@ void PreferredOverviewModeChanged( IConVar *pConVar, const char *oldString, floa
 	ConVarRef var( pConVar );
 	char cmd[32];
 	V_snprintf( cmd, sizeof( cmd ), "overview_mode %d\n", var.GetInt() );
-	engine->ClientCmd( cmd );
+	engineClient->ClientCmd( cmd );
 }
 ConVar overview_preferred_mode( "overview_preferred_mode", "1", FCVAR_ARCHIVE, "Preferred overview mode", PreferredOverviewModeChanged );
 
@@ -157,7 +157,7 @@ void CCSSpectatorGUI::ShowPanel( bool bShow )
 		// Resend the overview command.
 		char cmd[32];
 		V_snprintf( cmd, sizeof( cmd ), "overview_mode %d\n", overview_preferred_mode.GetInt() );
-		engine->ClientCmd( cmd );
+		engineClient->ClientCmd( cmd );
 	}
 }
 //=============================================================================

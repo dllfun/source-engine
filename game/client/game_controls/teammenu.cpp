@@ -124,7 +124,7 @@ void CTeamMenu::ApplySchemeSettings(IScheme *pScheme)
 //-----------------------------------------------------------------------------
 void CTeamMenu::AutoAssign()
 {
-	engine->ClientCmd("jointeam 0");
+	engineClient->ClientCmd("jointeam 0");
 	OnClose();
 }
 
@@ -172,7 +172,7 @@ void CTeamMenu::Update()
 {
 	char mapname[MAX_MAP_NAME];
 
-	Q_FileBase( engine->GetLevelName(), mapname, sizeof(mapname) );
+	Q_FileBase(engineClient->GetLevelName(), mapname, sizeof(mapname) );
 
 	SetLabelText( "mapname", mapname );
 
@@ -191,7 +191,7 @@ void CTeamMenu::LoadMapPage( const char *mapName )
 
 	char uilanguage[ 64 ];
 	uilanguage[0] = 0;
-	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
+	engineClient->GetUILanguage( uilanguage, sizeof( uilanguage ) );
 
 	Q_snprintf( mapRES, sizeof( mapRES ), "resource/maphtml/%s_%s.html", mapName, uilanguage );
 

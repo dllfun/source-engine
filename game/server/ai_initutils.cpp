@@ -242,7 +242,7 @@ int CNodeEnt::Spawn( const char *pMapData )
 	//  If we loaded from disk, we can discard all these node ents as soon as they spawn
 	//  unless we are in WC edited mode
 	// ---------------------------------------------------------------------------------
-	if ( g_pAINetworkManager->NetworksLoaded() && !engine->IsInEditMode())
+	if ( g_pAINetworkManager->NetworksLoaded() && !engineServer->IsInEditMode())
 	{
 		// If hint exists for this node, set it
 		if (pHint)
@@ -289,7 +289,7 @@ int CNodeEnt::Spawn( const char *pMapData )
 	// 	Remember the original positions of the nodes before
 	//	they drop so we can send the undropped positions to wc.
 	// -------------------------------------------------------------------------
-	if (engine->IsInEditMode())
+	if (engineServer->IsInEditMode())
 	{
 		if (g_pAINetworkManager->GetEditOps()->m_pWCPosition)
 		{

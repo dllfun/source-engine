@@ -37,7 +37,7 @@ CBaseEntity *CreateEntityByName( const char *className, int iForceEdictIndex )
 {
 	if ( iForceEdictIndex != -1 )
 	{
-		g_pForceAttachEdict = engine->CreateEdict( iForceEdictIndex );
+		g_pForceAttachEdict = engineServer->CreateEdict( iForceEdictIndex );
 		if ( !g_pForceAttachEdict )
 			Error( "CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex );
 	}
@@ -498,7 +498,7 @@ void SpawnHierarchicalList( int nEntities, HierarchicalSpawn_t *pSpawnList, bool
 	SortSpawnListByHierarchy( nEntities, pSpawnList );
 
 	// save off entity positions if in edit mode
-	if ( engine->IsInEditMode() )
+	if (engineServer->IsInEditMode() )
 	{
 		RememberInitialEntityPositions( nEntities, pSpawnList );
 	}

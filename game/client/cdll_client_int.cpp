@@ -177,7 +177,7 @@ extern vgui::IInputInternal *g_InputInternal;
 extern IClientMode *GetClientModeNormal();
 
 // IF YOU ADD AN INTERFACE, EXTERN IT IN THE HEADER FILE.
-IVEngineClient	*engine = NULL;
+IVEngineClient	*engineClient = NULL;
 IVModelRender *modelrender = NULL;
 IVEfx *effects = NULL;
 IVRenderView *render = NULL;
@@ -555,7 +555,7 @@ void DisplayBoneSetupEnts()
 	for ( i=g_BoneSetupEnts.FirstInorder(); i != g_BoneSetupEnts.LastInorder(); i=g_BoneSetupEnts.NextInorder( i ) )
 		++nElements;
 		
-	engine->Con_NPrintf( 0, "%d bone setup ents (name/count/entindex) ------------", nElements );
+	engineClient->Con_NPrintf( 0, "%d bone setup ents (name/count/entindex) ------------", nElements );
 
 	con_nprint_s printInfo;
 	printInfo.time_to_live = -1;
@@ -582,7 +582,7 @@ void DisplayBoneSetupEnts()
 		{
 			printInfo.color[0] = printInfo.color[0] = printInfo.color[0] = 1;
 		}
-		engine->Con_NXPrintf( &printInfo, "%25s / %3d / %3d", pEnt->m_ModelName, pEnt->m_Count, pEnt->m_Index );
+		engineClient->Con_NXPrintf( &printInfo, "%25s / %3d / %3d", pEnt->m_ModelName, pEnt->m_Count, pEnt->m_Index );
 		printInfo.index++;
 	}
 
@@ -879,7 +879,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 
 	// We aren't happy unless we get all of our interfaces.
 	// please don't collapse this into one monolithic boolean expression (impossible to debug)
-	if ( (engine = (IVEngineClient *)appSystemFactory( VENGINE_CLIENT_INTERFACE_VERSION, NULL )) == NULL )
+	if ( (engineClient = (IVEngineClient *)appSystemFactory( VENGINE_CLIENT_INTERFACE_VERSION, NULL )) == NULL )
 		return false;
 	if ( (modelrender = (IVModelRender *)appSystemFactory( VENGINE_HUDMODEL_INTERFACE_VERSION, NULL )) == NULL )
 		return false;
@@ -1277,7 +1277,7 @@ void CHLClient::HudUpdate( bool bActive )
 	}
 
 	// run vgui animations
-	vgui::GetAnimationController()->UpdateAnimations( engine->Time() );
+	vgui::GetAnimationController()->UpdateAnimations(engineClient->Time() );
 
 	hudlcd->SetGlobalStat( "(time_int)", VarArgs( "%d", (int)gpGlobals->curtime ) );
 	hudlcd->SetGlobalStat( "(time_float)", VarArgs( "%.2f", gpGlobals->curtime ) );
@@ -1288,7 +1288,7 @@ void CHLClient::HudUpdate( bool bActive )
 
 #ifdef SIXENSE
 	// If we're not connected, update sixense so we can move the mouse cursor when in the menus
-	if( !engine->IsConnected() || engine->IsPaused() )
+	if( !engineClient->IsConnected() || engineClient->IsPaused() )
 	{
 		g_pSixenseInput->SixenseFrame( 0, NULL ); 
 	}
@@ -1615,14 +1615,14 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 	{
 		if ( !cl_predict->GetInt() )
 		{
-			engine->ClientCmd( "cl_predict 1" );
+			engineClient->ClientCmd( "cl_predict 1" );
 		}
 	}
 	else
 	{
 		if ( cl_predict->GetInt() )
 		{
-			engine->ClientCmd( "cl_predict 0" );
+			engineClient->ClientCmd( "cl_predict 0" );
 		}
 	}
 #endif
@@ -1634,7 +1634,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 #if defined( REPLAY_ENABLED )
 	// Initialize replay ragdoll recorder
-	if ( !engine->IsPlayingDemo() )
+	if ( !engineClient->IsPlayingDemo() )
 	{
 		CReplayRagdollRecorder::Instance().Init();
 	}
@@ -2177,7 +2177,7 @@ void OnRenderStart()
 	{
 		VPROF_("Client TempEnts", 0, VPROF_BUDGETGROUP_CLIENT_SIM, false, BUDGETFLAG_CLIENT);
 		// This creates things like temp entities.
-		engine->FireEvents();
+		engineClient->FireEvents();
 
 		// Update temp entities
 		tempents->Update();
@@ -2265,7 +2265,7 @@ void CHLClient::FrameStageNotify( ClientFrameStage_t curStage )
 			// disabled all recomputations while we update entities
 			C_BaseEntity::EnableAbsRecomputations( false );
 			C_BaseEntity::SetAbsQueriesValid( false );
-			Interpolation_SetLastPacketTimeStamp( engine->GetLastTimeStamp() );
+			Interpolation_SetLastPacketTimeStamp(engineClient->GetLastTimeStamp() );
 			partition->SuppressLists( PARTITION_ALL_CLIENT_EDICTS, true );
 
 			PREDICTION_STARTTRACKVALUE( "netupdate" );
@@ -2623,7 +2623,7 @@ CSteamID GetSteamIDForPlayerIndex( int iPlayerIndex )
 	player_info_t pi;
 	if ( steamapicontext && steamapicontext->SteamUtils() )
 	{
-		if ( engine->GetPlayerInfo( iPlayerIndex, &pi ) )
+		if ( engineClient->GetPlayerInfo( iPlayerIndex, &pi ) )
 		{
 			if ( pi.friendsID )
 			{

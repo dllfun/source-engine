@@ -126,7 +126,7 @@ CVoiceStatus::~CVoiceStatus()
 
 	g_pInternalVoiceStatus = NULL;			
 
-	const char *pGameDir = engine->GetGameDirectory();
+	const char *pGameDir = engineClient->GetGameDirectory();
 	if( pGameDir )
 	{
 		if(m_bBanMgrInitialized)
@@ -140,7 +140,7 @@ int CVoiceStatus::Init(
 	IVoiceStatusHelper *pHelper,
 	VPANEL pParentPanel)
 {
-	const char *pGameDir = engine->GetGameDirectory();
+	const char *pGameDir = engineClient->GetGameDirectory();
 	if( pGameDir )
 	{
 		m_BanMgr.Init( pGameDir );
@@ -298,7 +298,7 @@ void CVoiceStatus::UpdateSpeakerStatus(int entindex, bool bTalking)
 		if( bTalking )
 		{
 			// Enable voice for them automatically if they try to talk.
-			engine->ClientCmd( "voice_modenable 1" );
+			engineClient->ClientCmd( "voice_modenable 1" );
 		}
 	}
 	else if( entindex == -2 )
@@ -354,7 +354,7 @@ void CVoiceStatus::UpdateServerState(bool bForce)
 
 		char str[256];
 		Q_snprintf(str, sizeof(str), "VModEnable %d", m_bServerModEnable);
-		engine->ServerCmd(str);
+		engineClient->ServerCmd(str);
 
 		if( voice_clientdebug.GetInt() )
 		{
@@ -378,7 +378,7 @@ void CVoiceStatus::UpdateServerState(bool bForce)
 
 			player_info_t pi;
 
-			if ( !engine->GetPlayerInfo( i+1, &pi ) )
+			if ( !engineClient->GetPlayerInfo( i+1, &pi ) )
 				continue;
 
 			if ( m_BanMgr.GetPlayerBan( pi.guid ) )
@@ -410,7 +410,7 @@ void CVoiceStatus::UpdateServerState(bool bForce)
 			Msg( "CVoiceStatus::UpdateServerState: Sending '%s'\n", str );
 		}
 
-		engine->ServerCmd( str, false );	// Tell the server..
+		engineClient->ServerCmd( str, false );	// Tell the server..
 	}
 	else
 	{
@@ -500,7 +500,7 @@ bool CVoiceStatus::IsPlayerBlocked(int iPlayer)
 {
 	player_info_t pi;
 
-	if ( !engine->GetPlayerInfo( iPlayer, &pi ) )
+	if ( !engineClient->GetPlayerInfo( iPlayer, &pi ) )
 		return false;
 
 	return m_BanMgr.GetPlayerBan( pi.guid );
@@ -557,7 +557,7 @@ void CVoiceStatus::SetPlayerBlockedState(int iPlayer, bool blocked)
 	}
 
 	player_info_t pi;
-	if ( !engine->GetPlayerInfo( iPlayer, &pi ) )
+	if ( !engineClient->GetPlayerInfo( iPlayer, &pi ) )
 		return;
 
 	if (voice_clientdebug.GetInt())

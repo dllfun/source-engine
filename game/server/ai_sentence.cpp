@@ -85,7 +85,7 @@ void CAI_SentenceBase::UpdateSentenceQueue()
 	{
 		SENTENCEG_PlaySentenceIndex( GetOuter()->edict(), m_nQueuedSentenceIndex, GetVolume(), GetSoundLevel(), 0, GetVoicePitch() );
 
-		const char *pSentenceName = engine->SentenceNameFromIndex( m_nQueuedSentenceIndex ); 
+		const char *pSentenceName = engineServer->SentenceNameFromIndex( m_nQueuedSentenceIndex );
 		SentenceMsg( "Speaking [from QUEUE]", pSentenceName );
 
 		GetOuter()->JustMadeSound( m_nQueueSoundPriority );
@@ -138,7 +138,7 @@ int CAI_SentenceBase::PlaySentence( const char *pSentence )
 		return -1;
 	}
 
-	const char *pSentenceName = engine->SentenceNameFromIndex( nSentenceIndex ); 
+	const char *pSentenceName = engineServer->SentenceNameFromIndex( nSentenceIndex );
 	SentenceMsg( "Speaking", pSentenceName );
 	return nSentenceIndex;
 }

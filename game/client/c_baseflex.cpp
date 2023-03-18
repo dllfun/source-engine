@@ -933,11 +933,11 @@ void C_BaseFlex::ProcessVisemes( Emphasized_Phoneme *classes )
 		if ( !vd || vd->ShouldIgnorePhonemes() )
 			continue;
 
-		CSentence *sentence = engine->GetSentence( vd->GetSource() );
+		CSentence *sentence = engineClient->GetSentence( vd->GetSource() );
 		if ( !sentence )
 			continue;
 
-		float	sentence_length = engine->GetSentenceLength( vd->GetSource() );
+		float	sentence_length = engineClient->GetSentenceLength( vd->GetSource() );
 		float	timesincestart = vd->GetElapsedTime();
 
 		// This sound should be done...why hasn't it been removed yet???

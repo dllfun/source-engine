@@ -36,7 +36,7 @@ END_RECV_TABLE()
 void C_FuncOccluder::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
-	engine->ActivateOccluder( m_nOccluderIndex, m_bActive );
+	engineClient->ActivateOccluder( m_nOccluderIndex, m_bActive );
 }
 
 bool C_FuncOccluder::ShouldDraw()

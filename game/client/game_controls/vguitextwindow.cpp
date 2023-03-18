@@ -361,7 +361,7 @@ void CTextWindow::OnCommand( const char *command )
 
 		if ( pszCommand != NULL )
 		{
-			engine->ClientCmd_Unrestricted( pszCommand );
+			engineClient->ClientCmd_Unrestricted( pszCommand );
 		}
 		//=============================================================================
 		// HPE_END

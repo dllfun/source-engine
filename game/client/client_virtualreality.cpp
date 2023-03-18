@@ -1387,7 +1387,7 @@ void CClientVirtualReality::Activate()
 		{
 			Warning( "VR Mode expects adapter %d which is different from %d which we are currently using. Try restarting and enabling VR mode again.\n",
 				nVRModeAdapter, materials->GetCurrentConfigForVideoCard().m_nVRModeAdapter );
-			engine->ExecuteClientCmd( "mat_enable_vrmode 0\n" );
+			engineClient->ExecuteClientCmd( "mat_enable_vrmode 0\n" );
 			return;
 		}
 	}
@@ -1412,12 +1412,12 @@ void CClientVirtualReality::Activate()
 	}
 
 	// general all-game stuff
-	engine->ExecuteClientCmd( "mat_reset_rendertargets\n" );
+	engineClient->ExecuteClientCmd( "mat_reset_rendertargets\n" );
 
 	// game specific VR config
 	CUtlString sCmd;
 	sCmd.Format( "exec sourcevr_%s.cfg\n", COM_GetModDirectory() );
-	engine->ExecuteClientCmd( sCmd.Get() );
+	engineClient->ExecuteClientCmd( sCmd.Get() );
 
     vgui::ivgui()->SetSoftwareCursor( true );
 
@@ -1448,7 +1448,7 @@ void CClientVirtualReality::Activate()
 			// set mode
 			char szCmd[256];
 			Q_snprintf( szCmd, sizeof(szCmd), "mat_setvideomode %i %i %i\n", rect.nWidth, rect.nHeight, vr_force_windowed.GetBool() ? 1 : 0 );
-			engine->ClientCmd_Unrestricted( szCmd );
+			engineClient->ClientCmd_Unrestricted( szCmd );
 		}
 	}
 }
@@ -1495,12 +1495,12 @@ void CClientVirtualReality::Deactivate()
 	int viewWidth, viewHeight;
 	vgui::surface()->GetScreenSize( viewWidth, viewHeight );
 
-	engine->ExecuteClientCmd( "mat_reset_rendertargets\n" );
+	engineClient->ExecuteClientCmd( "mat_reset_rendertargets\n" );
 
 	// set mode
 	char szCmd[ 256 ];
 	Q_snprintf( szCmd, sizeof( szCmd ), "mat_setvideomode %i %i %i\n", m_nNonVRWidth, m_nNonVRHeight, m_bNonVRWindowed ? 1 : 0 );
-	engine->ClientCmd_Unrestricted( szCmd );
+	engineClient->ClientCmd_Unrestricted( szCmd );
 
 }
 

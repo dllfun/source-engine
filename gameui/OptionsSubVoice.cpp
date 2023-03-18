@@ -30,7 +30,7 @@ using namespace vgui;
 COptionsSubVoice::COptionsSubVoice(vgui::Panel *parent) : PropertyPage(parent, NULL)
 {
 #if !defined( NO_VOICE ) //#ifndef _XBOX
-	m_pVoiceTweak = engine->GetVoiceTweakAPI();
+	m_pVoiceTweak = engineClient->GetVoiceTweakAPI();
 #endif
     m_pMicMeter = new ImagePanel(this, "MicMeter");
     m_pMicMeter2 = new ImagePanel(this, "MicMeter2");

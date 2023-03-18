@@ -100,7 +100,7 @@ void CReplayRenderOverlay::Show()
 	TFModalStack()->PushModal( this );
 
 	// Make sure game UI is hidden
-	engine->ClientCmd_Unrestricted( "gameui_hide" );
+	engineClient->ClientCmd_Unrestricted( "gameui_hide" );
 
 	InvalidateLayout( false, true );
 }

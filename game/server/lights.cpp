@@ -74,11 +74,11 @@ void CLight::Spawn( void )
 		}
 
 		if (FBitSet(m_spawnflags, SF_LIGHT_START_OFF))
-			engine->LightStyle(m_iStyle, "a");
+			engineServer->LightStyle(m_iStyle, "a");
 		else if (m_iszPattern != NULL_STRING)
-			engine->LightStyle(m_iStyle, (char *)STRING( m_iszPattern ));
+			engineServer->LightStyle(m_iStyle, (char *)STRING( m_iszPattern ));
 		else
-			engine->LightStyle(m_iStyle, "m");
+			engineServer->LightStyle(m_iStyle, "m");
 	}
 }
 
@@ -101,11 +101,11 @@ void CLight::TurnOn( void )
 {
 	if ( m_iszPattern != NULL_STRING )
 	{
-		engine->LightStyle( m_iStyle, (char *) STRING( m_iszPattern ) );
+		engineServer->LightStyle( m_iStyle, (char *) STRING( m_iszPattern ) );
 	}
 	else
 	{
-		engine->LightStyle( m_iStyle, "m" );
+		engineServer->LightStyle( m_iStyle, "m" );
 	}
 
 	CLEARBITS( m_spawnflags, SF_LIGHT_START_OFF );
@@ -116,7 +116,7 @@ void CLight::TurnOn( void )
 //-----------------------------------------------------------------------------
 void CLight::TurnOff( void )
 {
-	engine->LightStyle( m_iStyle, "a" );
+	engineServer->LightStyle( m_iStyle, "a" );
 	SETBITS( m_spawnflags, SF_LIGHT_START_OFF );
 }
 
@@ -169,7 +169,7 @@ void CLight::InputToggle( inputdata_t &inputdata )
 void CLight::InputSetPattern( inputdata_t &inputdata )
 {
 	m_iszPattern = inputdata.value.StringID();
-	engine->LightStyle(m_iStyle, (char *)STRING( m_iszPattern ));
+	engineServer->LightStyle(m_iStyle, (char *)STRING( m_iszPattern ));
 
 	// Light is on if pattern is set
 	CLEARBITS(m_spawnflags, SF_LIGHT_START_OFF);
@@ -210,7 +210,7 @@ void CLight::FadeThink(void)
 	// If we're done fading instantiate our light pattern and stop thinking
 	if (m_iCurrentFade == m_iTargetFade)
 	{
-		engine->LightStyle(m_iStyle, (char *)STRING( m_iszPattern ));
+		engineServer->LightStyle(m_iStyle, (char *)STRING( m_iszPattern ));
 		SetNextThink( TICK_NEVER_THINK );
 	}
 	// Otherwise instantiate our current fade value and keep thinking
@@ -219,7 +219,7 @@ void CLight::FadeThink(void)
 		char sCurString[2];
 		sCurString[0] = m_iCurrentFade;
 		sCurString[1] = 0;
-		engine->LightStyle(m_iStyle, sCurString);
+		engineServer->LightStyle(m_iStyle, sCurString);
 
 		// UNDONE: Consider making this settable war to control fade speed
 		SetNextThink( gpGlobals->curtime + 0.1f );

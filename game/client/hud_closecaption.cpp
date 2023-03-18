@@ -846,7 +846,7 @@ CHudCloseCaption::CHudCloseCaption( const char *pElementName )
 	HOOK_HUD_MESSAGE( CHudCloseCaption, CloseCaption );
 
 	char uilanguage[ 64 ];
-	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
+	engineClient->GetUILanguage( uilanguage, sizeof( uilanguage ) );
 
 	if ( !Q_stricmp( uilanguage, "english" ) )
 	{
@@ -2755,7 +2755,7 @@ void OnCaptionLanguageChanged( IConVar *pConVar, const char *pOldString, float f
 	}
 
 	char uilanguage[ 64 ];
-	engine->GetUILanguage( uilanguage, sizeof( uilanguage ) );
+	engineClient->GetUILanguage( uilanguage, sizeof( uilanguage ) );
 
 	CHudCloseCaption *hudCloseCaption = GET_HUDELEMENT( CHudCloseCaption );
 

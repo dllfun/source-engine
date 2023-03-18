@@ -714,7 +714,7 @@ void CBonusMapsDialog::OnCommand( const char *command )
 					if ( iChallenge > 0 )
 					{
 						Q_snprintf( sz, sizeof( sz ), "sv_bonus_challenge %i\n", iChallenge );
-						engine->ClientCmd_Unrestricted( sz );
+						engineClient->ClientCmd_Unrestricted( sz );
 
 						ChallengeDescription_t *pChallengeDescription = &((*pBonusMap->m_pChallenges)[ iChallenge - 1 ]);
 
@@ -744,7 +744,7 @@ void CBonusMapsDialog::OnCommand( const char *command )
 						}
 					}
 
-					engine->ClientCmd_Unrestricted( sz );
+					engineClient->ClientCmd_Unrestricted( sz );
 
 					// Close this dialog
 					//OnClose();

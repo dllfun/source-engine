@@ -1008,8 +1008,13 @@ Activity CCSPlayerAnimState::CalcMainActivity()
 
 void CCSPlayerAnimState::DebugShowAnimState( int iStartLine )
 {
-	engine->Con_NPrintf( iStartLine++, "fire  : %s, cycle: %.2f\n", m_bFiring ? GetSequenceName( m_pOuter->GetModelPtr(), m_iFireSequence ) : "[not firing]", m_flFireCycle );
-	engine->Con_NPrintf( iStartLine++, "reload: %s, cycle: %.2f\n", m_bReloading ? GetSequenceName( m_pOuter->GetModelPtr(), m_iReloadSequence ) : "[not reloading]", m_flReloadCycle );
+#ifdef GAME_DLL
+	engineServer->Con_NPrintf(iStartLine++, "fire  : %s, cycle: %.2f\n", m_bFiring ? GetSequenceName(m_pOuter->GetModelPtr(), m_iFireSequence) : "[not firing]", m_flFireCycle);
+	engineServer->Con_NPrintf(iStartLine++, "reload: %s, cycle: %.2f\n", m_bReloading ? GetSequenceName(m_pOuter->GetModelPtr(), m_iReloadSequence) : "[not reloading]", m_flReloadCycle);
+#else
+	engineClient->Con_NPrintf( iStartLine++, "fire  : %s, cycle: %.2f\n", m_bFiring ? GetSequenceName( m_pOuter->GetModelPtr(), m_iFireSequence ) : "[not firing]", m_flFireCycle );
+	engineClient->Con_NPrintf( iStartLine++, "reload: %s, cycle: %.2f\n", m_bReloading ? GetSequenceName( m_pOuter->GetModelPtr(), m_iReloadSequence ) : "[not reloading]", m_flReloadCycle );
+#endif
 	BaseClass::DebugShowAnimState( iStartLine );
 }
 

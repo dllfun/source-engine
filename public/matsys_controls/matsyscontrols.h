@@ -13,7 +13,7 @@
 #endif
 
 #include "tier1/interface.h"
-
+#include <vgui/ISurface.h>
 
 //-----------------------------------------------------------------------------
 // Forward declarations
@@ -48,7 +48,7 @@ IMaterialSystem *MaterialSystem();
 IMDLCache *MDLCache();
 
 // #include <VGuiMatSurface/IMatSystemSurface.h>
-IMatSystemSurface *MatSystemSurface();
+vgui::ISurface *MatSystemSurface();
 
 // #include <istudiorender.h"
 IStudioRender *StudioRender();

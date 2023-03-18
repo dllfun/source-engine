@@ -108,7 +108,7 @@ void ConnectHaptics(CreateInterfaceFn appFactory)
 		{
 			haptics = reinterpret_cast< IHaptics* >( factory( HAPTICS_INTERFACE_VERSION, NULL ) );
 			if(haptics && 
-				haptics->Initialize(engine,
+				haptics->Initialize(engineClient,
 					view,
 					g_InputInternal,
 					gpGlobals,

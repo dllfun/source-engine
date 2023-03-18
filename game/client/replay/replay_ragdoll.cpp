@@ -64,7 +64,7 @@ void DrawBones( matrix3x4_t const* pBones, int nNumBones, ragdoll_t const* pRagd
 
 inline int GetServerTickCount()
 {
-	int nTick = TIME_TO_TICKS( engine->GetLastTimeStamp() );
+	int nTick = TIME_TO_TICKS(engineClient->GetLastTimeStamp() );
 	return nTick;
 }
 
@@ -360,17 +360,17 @@ void CReplayRagdollRecorder::PrintDebug()
 	int nLine = 0;
 
 	// Print memory usage
-	engine->Con_NPrintf( nLine++, "ragdolls: %.2f MB", gs_nBytesAllocated / 1048576.0f );
+	engineClient->Con_NPrintf( nLine++, "ragdolls: %.2f MB", gs_nBytesAllocated / 1048576.0f );
 
 	// Print server time
-	engine->Con_NPrintf( nLine++, "server time: %d", GetServerTickCount() );
+	engineClient->Con_NPrintf( nLine++, "server time: %d", GetServerTickCount() );
 
 	++nLine;  // Blank line
 
 	// Print info about each ragdoll
 	FOR_EACH_LL( m_lstRagdolls, i )
 	{
-		engine->Con_NPrintf( nLine++, "entity %d: start time=%d  duration=%d  num bones=%d", m_lstRagdolls[i]->m_nEntityIndex, m_lstRagdolls[i]->m_nStartTick, m_lstRagdolls[i]->m_nDuration, m_lstRagdolls[i]->m_nNumBones );
+		engineClient->Con_NPrintf( nLine++, "entity %d: start time=%d  duration=%d  num bones=%d", m_lstRagdolls[i]->m_nEntityIndex, m_lstRagdolls[i]->m_nStartTick, m_lstRagdolls[i]->m_nDuration, m_lstRagdolls[i]->m_nNumBones );
 	}
 }
 

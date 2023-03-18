@@ -162,7 +162,7 @@ void COptionsSubAudio::OnResetData()
    szAvailableLanguages[0] = 0;
 
    // Fallback to current engine language
-   engine->GetUILanguage( szCurrentLanguage, sizeof( szCurrentLanguage ));
+   engineClient->GetUILanguage( szCurrentLanguage, sizeof( szCurrentLanguage ));
 
    // In a Steam environment we get the current language 
 #if !defined( NO_STEAM )
@@ -250,7 +250,7 @@ void COptionsSubAudio::OnApplyChanges()
 	//  the level for the change to take effect.
 	char cmd[ 64 ];
 	Q_snprintf( cmd, sizeof( cmd ), "closecaption %i\n", closecaption_value );
-	engine->ClientCmd_Unrestricted( cmd );
+	engineClient->ClientCmd_Unrestricted( cmd );
 
 	ConVarRef snd_surround_speakers( "Snd_Surround_Speakers" );
 	int speakers = m_pSpeakerSetupCombo->GetActiveItemUserData()->GetInt( "speakers" );
@@ -338,7 +338,7 @@ void COptionsSubAudio::OnCommand( const char *command )
 	if ( !stricmp( command, "TestSpeakers" ) )
 	{
 		// ask them if they REALLY want to test the speakers if they're in a game already.
-		if (engine->IsConnected())
+		if (engineClient->IsConnected())
 		{
 			QueryBox *qb = new QueryBox("#GameUI_TestSpeakersWarning_Title", "#GameUI_TestSpeakersWarning_Info" );
 			if (qb != NULL)
@@ -371,7 +371,7 @@ void COptionsSubAudio::OnCommand( const char *command )
 //-----------------------------------------------------------------------------
 void COptionsSubAudio::RunTestSpeakers()
 {
-	engine->ClientCmd_Unrestricted( "disconnect\nwait\nwait\nsv_lan 1\nsetmaster enable\nmaxplayers 1\n\nhostname \"Speaker Test\"\nprogress_enable\nmap test_speakers\n" );
+	engineClient->ClientCmd_Unrestricted( "disconnect\nwait\nwait\nsv_lan 1\nsetmaster enable\nmaxplayers 1\n\nhostname \"Speaker Test\"\nprogress_enable\nmap test_speakers\n" );
 }
 
 //-----------------------------------------------------------------------------

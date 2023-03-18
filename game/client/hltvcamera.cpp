@@ -174,7 +174,7 @@ void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float
 	if ( bManual )
 	{
 		// let spectator choose the view angles
- 		engine->GetViewAngles( cameraAngles );
+		engineClient->GetViewAngles( cameraAngles );
 	}
 	else if ( target2 )
 	{
@@ -452,7 +452,7 @@ void C_HLTVCamera::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& 
 		VectorMA( m_vCamOrigin, gpGlobals->frametime, m_vecVelocity, m_vCamOrigin );
 		
 		// get camera angle directly from engine
-		 engine->GetViewAngles( m_aCamAngle );
+		engineClient->GetViewAngles( m_aCamAngle );
 
 		// Zero out velocity if in noaccel mode
 		if ( sv_specaccelerate.GetFloat() < 0.0f )
@@ -670,7 +670,7 @@ void C_HLTVCamera::SpecNamedPlayer( const char *szPlayerName )
 
 void C_HLTVCamera::FireGameEvent( IGameEvent * event)
 {
-	if ( !engine->IsHLTV() )
+	if ( !engineClient->IsHLTV() )
 		return;	// not in HLTV mode
 
 	const char *type = event->GetName();
@@ -683,7 +683,7 @@ void C_HLTVCamera::FireGameEvent( IGameEvent * event)
 		if ( !gViewPortInterface )
 			return;
 
-		if ( engine->IsPlayingDemo() )
+		if (engineClient->IsPlayingDemo() )
         {
 			// for demo playback show full menu
 			gViewPortInterface->ShowPanel( PANEL_SPECMENU, true );
@@ -868,7 +868,7 @@ bool C_HLTVCamera::IsPVSLocked()
 	else
 	{
 		//old style, assume locked unless we playback a demo
-		return !engine->IsPlayingDemo();
+		return !engineClient->IsPlayingDemo();
 	}
 }
 

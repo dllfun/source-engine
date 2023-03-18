@@ -257,7 +257,7 @@ C_CSRagdoll::C_CSRagdoll()
 {
 	m_flRagdollSinkStart = -1;
 	m_bInitialized = false;
-	m_bCreatedWhilePlaybackSkipping = engine->IsSkippingPlayback();
+	m_bCreatedWhilePlaybackSkipping = engineClient->IsSkippingPlayback();
 }
 
 C_CSRagdoll::~C_CSRagdoll()
@@ -563,7 +563,7 @@ void C_CSRagdoll::OnDataChanged( DataUpdateType_t type )
 		// If a player died (leaving a ragdoll) previous to the first frame of replay playback,
 		// their ragdoll wasn't yet initialized because OnDataChanged events are queued but not processed
 		// until the first render. 
-		if ( engine->IsPlayingDemo() && m_bCreatedWhilePlaybackSkipping )
+		if (engineClient->IsPlayingDemo() && m_bCreatedWhilePlaybackSkipping )
 		{
 			Release();
 			return;
@@ -2394,7 +2394,7 @@ bool C_CSPlayer::HasPlayerAsFriend(C_CSPlayer* player)
     }
 
     player_info_t pi;
-    if ( !engine->GetPlayerInfo( player->entindex(), &pi ) )
+    if ( !engineClient->GetPlayerInfo( player->entindex(), &pi ) )
     {
         return false;
     }

@@ -92,7 +92,7 @@ template < class T > T * CreateBot( const BotProfile *profile, int team )
 	// NOTE: This will ultimately invoke CBot::Spawn(), so set the profile now
 	g_botInitProfile = profile;
 	g_botInitTeam = team;
-	edict_t *botEdict = engine->CreateFakeClient( botName );
+	edict_t *botEdict = engineServer->CreateFakeClient( botName );
 
 	ClientPutInServerOverride( NULL );
 	Assert( g_nClientPutInServerOverrides == 1 );
@@ -974,7 +974,7 @@ inline int CBot< PlayerType >::GetFriendsRemaining( void ) const
 template < class PlayerType >
 inline bool CBot< PlayerType >::IsLocalPlayerWatchingMe( void ) const
 {
-	if ( engine->IsDedicatedServer() )
+	if (engineServer->IsDedicatedServer() )
 		return false;
 
 	CBasePlayer *player = UTIL_GetListenServerHost();

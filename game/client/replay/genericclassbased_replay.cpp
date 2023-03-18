@@ -86,7 +86,7 @@ void CGenericClassBasedReplay::Update()
 	RecordUpdatedStats();
 
 	// Setup next update
-	m_flNextUpdateTime = engine->Time() + .1f;
+	m_flNextUpdateTime = engineClient->Time() + .1f;
 }
 
 float CGenericClassBasedReplay::GetKillScreenshotDelay()
@@ -323,11 +323,11 @@ void CGenericClassBasedReplay::AddAssisterRevenge( int nVictimID, int nAssiterID
 void CGenericClassBasedReplay::AddKillStatFromUserIds( CUtlVector< GenericStatInfo_t * > &vec, int nVictimId, int nAssisterId/*=0*/ )
 {
 	uint32 nVictimFriendId;
-	if ( !GetFriendIdFromUserId( engine->GetPlayerForUserID( nVictimId ), nVictimFriendId ) )
+	if ( !GetFriendIdFromUserId( engineClient->GetPlayerForUserID( nVictimId ), nVictimFriendId ) )
 		return;
 
 	uint32 nAssisterFriendId = 0;
-	if ( nAssisterId && !GetFriendIdFromUserId( engine->GetPlayerForUserID( nAssisterId ), nAssisterFriendId ) )
+	if ( nAssisterId && !GetFriendIdFromUserId( engineClient->GetPlayerForUserID( nAssisterId ), nAssisterFriendId ) )
 		return;
 
 	AddKillStatFromFriendIds( vec, nVictimFriendId, nAssisterFriendId );
@@ -346,7 +346,7 @@ bool CGenericClassBasedReplay::GetFriendIdFromUserId( int nPlayerIndex, uint32 &
 	player_info_t pi;
 	if ( !steamapicontext->SteamFriends() ||
 		 !steamapicontext->SteamUtils() ||
-		 !engine->GetPlayerInfo( nPlayerIndex, &pi ) )
+		 !engineClient->GetPlayerInfo( nPlayerIndex, &pi ) )
 	{
 		AssertMsg( 0, "REPLAY: Failed to add domination" );
 		nFriendIdOut = 0;

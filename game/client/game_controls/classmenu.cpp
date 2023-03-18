@@ -167,14 +167,14 @@ void CClassMenu::OnCommand( const char *command )
 {
 	if ( Q_stricmp( command, "vguicancel" ) )
 	{
-		engine->ClientCmd( const_cast<char *>( command ) );
+		engineClient->ClientCmd( const_cast<char *>( command ) );
 
 #if !defined( CSTRIKE_DLL ) && !defined( TF_CLIENT_DLL )
 		// They entered a command to change their class, kill them so they spawn with 
 		// the new class right away
 		if ( hud_classautokill.GetBool() )
 		{
-            engine->ClientCmd( "kill" );
+            engineClient->ClientCmd( "kill" );
 		}
 #endif // !CSTRIKE_DLL && !TF_CLIENT_DLL
 	}

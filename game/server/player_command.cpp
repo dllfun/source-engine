@@ -56,7 +56,7 @@ void CPlayerMove::StartCommand( CBasePlayer *player, CUserCmd *cmd )
 	for (i = 0; i < cmd->entitygroundcontact.Count(); i++)
 	{
 		int entindex =  cmd->entitygroundcontact[i].entindex;
-		CBaseEntity *pEntity = CBaseEntity::Instance( engine->PEntityOfEntIndex( entindex) );
+		CBaseEntity *pEntity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex( entindex) );
 		if (pEntity)
 		{
 			CBaseAnimating *pAnimating = pEntity->GetBaseAnimating();

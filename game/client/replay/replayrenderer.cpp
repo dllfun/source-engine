@@ -356,7 +356,7 @@ void CReplayRenderer::InitBuffers( const RenderMovieParams_t &params )
 	m_pLayoffBuf = new BGRA8888_t[ Settings.m_nWidth * Settings.m_nHeight ];
 
 	CFmtStr fmtHostFramerateCmd( "host_framerate %f\n", params.m_flEngineFps );
-	engine->ClientCmd_Unrestricted( fmtHostFramerateCmd.Access() );
+	engineClient->ClientCmd_Unrestricted( fmtHostFramerateCmd.Access() );
 
     g_pMaterialSystem->BeginRenderTargetAllocation();								// Begin allocating RTs which IFM can scribble into
 
@@ -442,13 +442,13 @@ void CReplayRenderer::ShutdownRenderer()
 		g_pEngineClientReplay->Wave_FixupTmpFile( TMP_WAVE_FILENAME );
 
 		// Move the temp wave file to the destination dir
-		CFmtStr fmtTmpFilename( "%s%c%s.wav", engine->GetGameDirectory(), CORRECT_PATH_SEPARATOR, TMP_WAVE_FILENAME );
+		CFmtStr fmtTmpFilename( "%s%c%s.wav", engineClient->GetGameDirectory(), CORRECT_PATH_SEPARATOR, TMP_WAVE_FILENAME );
 		CFmtStr fmtDstFilename( "%s%s", m_fmtTgaRenderDirName.Access(), "audio.wav" );
 		g_pFullFileSystem->RenameFile( fmtTmpFilename.Access(), fmtDstFilename.Access() );
 	}
 
 	// Reset framerate
-	engine->ClientCmd_Unrestricted( "host_framerate 0" );
+	engineClient->ClientCmd_Unrestricted( "host_framerate 0" );
 
 	// Notify of performance end
 	g_pReplayPerformanceController->Stop();
@@ -986,7 +986,7 @@ void CReplayRenderer::RenderVideo()
 		return;
 #endif
 
-	if ( !engine->IsInGame() )
+	if ( !engineClient->IsInGame() )
 		return;
 
 	if ( !m_LayoffResult.IsValid() )

@@ -148,11 +148,11 @@ static QAngle s_DemoAngle;
 
 static void CalcDemoViewOverride( Vector &origin, QAngle &angles )
 {
-	engine->SetViewAngles( s_DemoAngle );
+	engineClient->SetViewAngles( s_DemoAngle );
 
 	input->ExtraMouseSample( gpGlobals->absoluteframetime, true );
 
-	engine->GetViewAngles( s_DemoAngle );
+	engineClient->GetViewAngles( s_DemoAngle );
 
 	Vector forward, right, up;
 
@@ -315,7 +315,7 @@ void CViewRender::Init( void )
 
 	// FIXME:  
 	QAngle angles;
-	engine->GetViewAngles( angles );
+	engineClient->GetViewAngles( angles );
 	AngleVectors( angles, &m_vecLastFacing );
 
 #if defined( REPLAY_ENABLED )
@@ -426,9 +426,9 @@ void CViewRender::DriftPitch (void)
 		return;
 
 #if defined( REPLAY_ENABLED )
-	if ( engine->IsHLTV() || g_pEngineClientReplay->IsPlayingReplayDemo() || ( player->GetGroundEntity() == NULL ) || engine->IsPlayingDemo() )
+	if (engineClient->IsHLTV() || g_pEngineClientReplay->IsPlayingReplayDemo() || ( player->GetGroundEntity() == NULL ) || engineClient->IsPlayingDemo() )
 #else
-	if ( engine->IsHLTV() || ( player->GetGroundEntity() == NULL ) || engine->IsPlayingDemo() )
+	if (engineClient->IsHLTV() || ( player->GetGroundEntity() == NULL ) || engineClient->IsPlayingDemo() )
 #endif
 	{
 		m_PitchDrift.driftmove = 0;
@@ -674,7 +674,7 @@ void CViewRender::SetUpViews()
 	Vector ViewModelOrigin;
 	QAngle ViewModelAngles;
 
-	if ( engine->IsHLTV() )
+	if (engineClient->IsHLTV() )
 	{
 		HLTVCamera()->CalcView( view.origin, view.angles, view.fov );
 	}
@@ -724,7 +724,7 @@ void CViewRender::SetUpViews()
 	// give the toolsystem a chance to override the view
 	ToolFramework_SetupEngineView( view.origin, view.angles, view.fov );
 
-	if ( engine->IsPlayingDemo() )
+	if (engineClient->IsPlayingDemo() )
 	{
 		if ( cl_demoviewoverride.GetFloat() > 0.0f )
 		{
@@ -810,7 +810,7 @@ void CViewRender::SetUpViews()
 	view.origin = audioState.m_Origin;
 	view.angles = audioState.m_Angles;
 
-	engine->SetAudioState( audioState );
+	engineClient->SetAudioState( audioState );
 
 	g_vecPrevRenderOrigin = g_vecRenderOrigin;
 	g_vecPrevRenderAngles = g_vecRenderAngles;
@@ -1072,7 +1072,7 @@ void CViewRender::Render( vrect_t *rect )
 	// Stub out the material system if necessary.
 	CMatStubHandler matStub;
 
-	engine->EngineStats_BeginFrame();
+	engineClient->EngineStats_BeginFrame();
 	
 	// Assume normal vis
 	m_bForceNoVis			= false;
@@ -1131,9 +1131,9 @@ void CViewRender::Render( vrect_t *rect )
 		#endif
 
 	    static ConVarRef sv_restrict_aspect_ratio_fov( "sv_restrict_aspect_ratio_fov" );
-	    float aspectRatio = engine->GetScreenAspectRatio() * 0.75f;	 // / (4/3)
+	    float aspectRatio = engineClient->GetScreenAspectRatio() * 0.75f;	 // / (4/3)
 	    float limitedAspectRatio = aspectRatio;
-	    if ( ( sv_restrict_aspect_ratio_fov.GetInt() > 0 && engine->IsWindowedMode() && gpGlobals->maxClients > 1 ) ||
+	    if ( ( sv_restrict_aspect_ratio_fov.GetInt() > 0 && engineClient->IsWindowedMode() && gpGlobals->maxClients > 1 ) ||
 		    sv_restrict_aspect_ratio_fov.GetInt() == 2 )
 	    {
 		    limitedAspectRatio = MIN( aspectRatio, 1.85f * 0.75f ); // cap out the FOV advantage at a 1.85:1 ratio (about the widest any legit user should be)
@@ -1172,7 +1172,7 @@ void CViewRender::Render( vrect_t *rect )
 				view.width			= vr.width * flViewportScale;
 				view.height			= vr.height * flViewportScale;
 #endif
-			    float engineAspectRatio = engine->GetScreenAspectRatio();
+			    float engineAspectRatio = engineClient->GetScreenAspectRatio();
 			    view.m_flAspectRatio	= ( engineAspectRatio > 0.0f ) ? engineAspectRatio : ( (float)view.width / (float)view.height );
 			}
 			break;
@@ -1264,7 +1264,7 @@ void CViewRender::Render( vrect_t *rect )
 
 		if ( UseVR() )
 		{
-			bool bDoUndistort = ! engine->IsTakingScreenshot();
+			bool bDoUndistort = !engineClient->IsTakingScreenshot();
 
 			if ( bDoUndistort )
 			{
@@ -1289,7 +1289,7 @@ void CViewRender::Render( vrect_t *rect )
 
 	// TODO: should these be inside or outside the stereo eye stuff?
 	g_pClientMode->PostRender();
-	engine->EngineStats_EndFrame();
+	engineClient->EngineStats_EndFrame();
 
 #if !defined( _X360 )
 	// Stop stubbing the material system so we can see the budget panel

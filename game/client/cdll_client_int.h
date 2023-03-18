@@ -73,7 +73,7 @@ class AchievementsAndStatsInterface;
 //=============================================================================
 
 extern IVModelRender *modelrender;
-extern IVEngineClient	*engine;
+extern IVEngineClient	*engineClient;
 extern IVModelRender *modelrender;
 extern IVEfx *effects;
 extern IVRenderView *render;

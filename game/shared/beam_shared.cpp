@@ -476,7 +476,7 @@ const Vector &CBeam::GetAbsStartPos( void ) const
 {
 	if ( GetType() == BEAM_ENTS && GetStartEntity() )
 	{
-		edict_t *pent =  engine->PEntityOfEntIndex( GetStartEntity() );
+		edict_t *pent = engineServer->PEntityOfEntIndex( GetStartEntity() );
 		CBaseEntity *ent = CBaseEntity::Instance( pent );
 		if ( !ent )
 		{
@@ -492,7 +492,7 @@ const Vector &CBeam::GetAbsEndPos( void ) const
 {
 	if ( GetType() != BEAM_POINTS && GetType() != BEAM_HOSE && GetEndEntity() ) 
 	{
-		edict_t *pent =  engine->PEntityOfEntIndex( GetEndEntity() );
+		edict_t *pent = engineServer->PEntityOfEntIndex( GetEndEntity() );
 		CBaseEntity *ent = CBaseEntity::Instance( pent );
 		if ( ent )
 			return ent->GetAbsOrigin();

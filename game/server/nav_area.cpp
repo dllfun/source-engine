@@ -4232,7 +4232,7 @@ float CNavArea::GetLightIntensity( void ) const
  */
 bool CNavArea::ComputeLighting( void )
 {
-	if ( engine->IsDedicatedServer() )
+	if (engineServer->IsDedicatedServer() )
 	{
 		for ( int i=0; i<NUM_CORNERS; ++i )
 		{
@@ -5252,7 +5252,7 @@ CUtlHash< NavVisPair_t, CVisPairHashFuncs, CVisPairHashFuncs > *g_pNavVisPairHas
 void CNavArea::SetupPVS( void ) const
 {
 	m_nPVSSize = sizeof( m_PVS );
-	engine->ResetPVS( m_PVS, m_nPVSSize );
+	engineServer->ResetPVS( m_PVS, m_nPVSSize );
 
 	const float margin = GenerationStepSize/2.0f;
 	Vector eye( 0, 0, 0.75f * HumanHeight );
@@ -5269,7 +5269,7 @@ void CNavArea::SetupPVS( void ) const
 			Vector testPos( GetCorner( NORTH_WEST ) + shift );
 			testPos.z = GetZ( testPos ) + eye.z;
 
-			engine->AddOriginToPVS( testPos );
+			engineServer->AddOriginToPVS( testPos );
 		}
 	}
 }
@@ -5293,7 +5293,7 @@ bool CNavArea::IsInPVS( void ) const
 	areaExtent.Encompass( GetCorner( SOUTH_WEST ) + eye );
 	areaExtent.Encompass( GetCorner( SOUTH_EAST ) + eye );
 
-	return engine->CheckBoxInPVS( areaExtent.lo, areaExtent.hi, m_PVS, m_nPVSSize );
+	return engineServer->CheckBoxInPVS( areaExtent.lo, areaExtent.hi, m_PVS, m_nPVSSize );
 }
 
 
@@ -5330,7 +5330,7 @@ CNavArea::VisibilityType CNavArea::ComputeVisibility( const CNavArea *area, bool
 		areaExtent.Encompass( area->GetCorner( NORTH_EAST ) + eye );
 		areaExtent.Encompass( area->GetCorner( SOUTH_WEST ) + eye );
 		areaExtent.Encompass( area->GetCorner( SOUTH_EAST ) + eye );
-		if ( !engine->CheckBoxInPVS( areaExtent.lo, areaExtent.hi, m_PVS, m_nPVSSize ) )
+		if ( !engineServer->CheckBoxInPVS( areaExtent.lo, areaExtent.hi, m_PVS, m_nPVSSize ) )
 		{
 			if ( pOutsidePVS )
 				*pOutsidePVS = true;

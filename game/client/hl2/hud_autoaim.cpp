@@ -157,7 +157,7 @@ bool CHUDAutoAim::ShouldDraw( void )
 	}
 #endif
 
-	return ( (hud_draw_fixed_reticle.GetBool() || hud_draw_active_reticle.GetBool()) && CHudElement::ShouldDraw() && !engine->IsDrawingLoadingImage() );
+	return ( (hud_draw_fixed_reticle.GetBool() || hud_draw_active_reticle.GetBool()) && CHudElement::ShouldDraw() && !engineClient->IsDrawingLoadingImage() );
 }
 
 #define AUTOAIM_ALPHA_UP_SPEED		1000
@@ -233,7 +233,7 @@ void CHUDAutoAim::OnThink()
 						QAngle targetangles;
 						QAngle delta;
 
-						engine->GetViewAngles( viewangles );
+						engineClient->GetViewAngles( viewangles );
 
 						Vector vecDir = pLocalPlayer->m_HL2Local.m_vecAutoAimPoint - pLocalPlayer->EyePosition();
 						VectorNormalize(vecDir);
@@ -246,7 +246,7 @@ void CHUDAutoAim::OnThink()
 						delta[2] = targetangles[2];
 
 						//viewangles[PITCH] = clamp( viewangles[ PITCH ], -cl_pitchup.GetFloat(), cl_pitchdown.GetFloat() );
-						engine->SetViewAngles( delta );
+						engineClient->SetViewAngles( delta );
 					}
 				}
 			}
@@ -368,7 +368,7 @@ void CHUDAutoAim::OnThink()
 			{
 				QAngle viewangles;
 
-				engine->GetViewAngles( viewangles );
+				engineClient->GetViewAngles( viewangles );
 				
 				Vector vecDir = pLocalPlayer->m_HL2Local.m_vecAutoAimPoint - pLocalPlayer->EyePosition();
 				VectorNormalize(vecDir);
@@ -376,7 +376,7 @@ void CHUDAutoAim::OnThink()
 				VectorAngles( vecDir, viewangles );
 
 				//viewangles[PITCH] = clamp( viewangles[ PITCH ], -cl_pitchup.GetFloat(), cl_pitchdown.GetFloat() );
-				engine->SetViewAngles( viewangles );
+				engineClient->SetViewAngles( viewangles );
 			}
 		}
 		break;

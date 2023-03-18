@@ -305,7 +305,7 @@ bool CEnvMicrophone::CanHearSound( int entindex, soundlevel_t soundlevel, float 
 	CBaseEntity *pEntity = NULL;
 	if ( entindex )
 	{
-		pEntity = CBaseEntity::Instance( engine->PEntityOfEntIndex(entindex) );
+		pEntity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex(entindex) );
 	}
 			    
 	// Cull out sounds except from specific entities

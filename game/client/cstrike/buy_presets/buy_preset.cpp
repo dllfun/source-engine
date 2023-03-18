@@ -146,7 +146,7 @@ void WeaponSet::GetCurrent( int& cost, WeaponSet& ws ) const
 	cost = -1;
 	ws.Reset();
 
-	if ( !engine->IsConnected() )
+	if ( !engineClient->IsConnected() )
 		return;
 
 	C_CSPlayer *player = CCSPlayer::GetLocalCSPlayer();

@@ -157,7 +157,7 @@ void SetBuyData( const ConVar &buyVar, const char *filename )
 	char buystring[256];
 	V_sprintf_safe( buystring, "setinfo %s \"", buyVar.GetName() );
 
-	const char *pfile = engine->ParseFile( (const char *)buf.Base(), token, sizeof(token) );
+	const char *pfile = engineClient->ParseFile( (const char *)buf.Base(), token, sizeof(token) );
 
 	bool first = true;
 
@@ -174,12 +174,12 @@ void SetBuyData( const ConVar &buyVar, const char *filename )
 
 		Q_strncat(buystring, token, sizeof(buystring), COPY_ALL_CHARACTERS);
 
-		pfile = engine->ParseFile( pfile, token, sizeof(token) );
+		pfile = engineClient->ParseFile( pfile, token, sizeof(token) );
 	}
 
 	Q_strncat(buystring, "\"", sizeof(buystring), COPY_ALL_CHARACTERS);
 
-	engine->ClientCmd(buystring);
+	engineClient->ClientCmd(buystring);
 }
 
 void MsgFunc_KillCam(bf_read &msg) 
@@ -478,7 +478,7 @@ void ClientModeCSNormal::FireGameEvent( IGameEvent *event )
 		g_HostageRagdolls.RemoveAll();
 
 		// Just tell engine to clear decals
-		engine->ClientCmd( "r_cleardecals\n" );
+		engineClient->ClientCmd( "r_cleardecals\n" );
 
 		//stop any looping sounds
 		enginesound->StopAllSounds( true );
@@ -667,7 +667,7 @@ void ClientModeCSNormal::FireGameEvent( IGameEvent *event )
             return;
 
 
-        CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>( engine->GetAchievementMgr() );
+        CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
         if ( !pAchievementMgr )
             return;
 
