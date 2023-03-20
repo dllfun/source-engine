@@ -16,7 +16,7 @@
 
 #include <vgui/IBorder.h>
 #include <vgui/IInput.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>
 #include <vgui/ISystem.h>
@@ -1227,7 +1227,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 		{
 			if ( bVisible )
 			{
-				ivgui()->PaintTraverse( child, repaint, allowForce );
+				ivgui()->Client(child)->PaintTraverse( repaint, allowForce );
 			}
 		}
 		else
@@ -1238,7 +1238,7 @@ void Panel::PaintTraverse( bool repaint, bool allowForce )
 			// keep traversing the tree, just don't allow anyone to paint after here
 			if ( bVisible )
 			{
-				ivgui()->PaintTraverse( child, false, false );
+				ivgui()->Client(child)->PaintTraverse( false, false );
 			}
 		}
 	}
@@ -3331,7 +3331,7 @@ VPANEL Panel::IsWithinTraverse(int x, int y, bool traversePopups)
 			VPANEL panel = children[ i ];
 			if (ivgui()->IsPopup(panel))
 			{
-				panel = ivgui()->IsWithinTraverse(panel, x, y, true);
+				panel = ivgui()->Client(panel)->IsWithinTraverse(x, y, true);
 				if (panel != null)
 				{
 					return panel;
@@ -3348,7 +3348,7 @@ VPANEL Panel::IsWithinTraverse(int x, int y, bool traversePopups)
 			// we've already checked popups so ignore
 			if (!ivgui()->IsPopup(panel))
 			{
-				panel = ivgui()->IsWithinTraverse(panel, x, y, true);
+				panel = ivgui()->Client(panel)->IsWithinTraverse(x, y, true);
 				if (panel != 0)
 				{
 					return panel;
@@ -3378,7 +3378,7 @@ VPANEL Panel::IsWithinTraverse(int x, int y, bool traversePopups)
 				// ignore popups
 				if (!ivgui()->IsPopup(panel))
 				{
-					panel = ivgui()->IsWithinTraverse(panel, x, y, false);
+					panel = ivgui()->Client(panel)->IsWithinTraverse(x, y, false);
 					if (panel != 0)
 					{
 						return panel;
@@ -3544,7 +3544,7 @@ bool Panel::RequestFocusPrev(VPANEL panel)
 	// chain to parent
 	if (GetVParent())
 	{
-		return ivgui()->RequestFocusPrev(GetVParent(), GetVPanel());
+		return ivgui()->Client(GetVParent())->RequestFocusPrev(GetVPanel());
 	}
 	return false;
 }
@@ -3557,7 +3557,7 @@ bool Panel::RequestFocusNext(VPANEL panel)
 	// chain to parent
 	if (GetVParent())
 	{
-		return ivgui()->RequestFocusNext(GetVParent(), GetVPanel());
+		return ivgui()->Client(GetVParent())->RequestFocusNext(GetVPanel());
 	}
 	return false;
 }
@@ -5419,7 +5419,7 @@ bool Panel::RequestInfo( KeyValues *outputData )
 
 	if (GetVParent())
 	{
-		return ivgui()->RequestInfo(GetVParent(), outputData);
+		return ivgui()->Client(GetVParent())->RequestInfo(outputData);
 	}
 
 	return false;
@@ -7385,7 +7385,7 @@ void Panel::FindDropTargetPanel_R( CUtlVector< VPANEL >& panelList, int x, int y
 	if ( !ivgui()->IsFullyVisible( check ) )
 		return;
 
-	if ( ::ShouldHandleInputMessage( check ) && ivgui()->IsWithinTraverse( check, x, y, false ) )
+	if ( ::ShouldHandleInputMessage( check ) && ivgui()->Client(check)->IsWithinTraverse( x, y, false ) )
 	{
 		panelList.AddToTail( check );
 	}

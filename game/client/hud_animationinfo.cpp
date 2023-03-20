@@ -15,7 +15,7 @@
 #include <vgui/ILocalize.h>
 #include <vgui_controls/AnimationController.h>
 #include <vgui_controls/Panel.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include "vgui_int.h"
 
 // memdbgon must be the last include file in a .cpp file!!!

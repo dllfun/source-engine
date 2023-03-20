@@ -14,7 +14,7 @@
 #include <vgui/ISurface.h>
 #include <vgui/IScheme.h>
 #include <vgui/IVGui.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 
 #include <vgui_controls/Tooltip.h>
 #include <vgui_controls/TextEntry.h>

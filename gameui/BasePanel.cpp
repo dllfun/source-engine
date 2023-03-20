@@ -15,7 +15,7 @@
 
 #include "vgui/IInput.h"
 #include "vgui/ILocalize.h"
-#include "vgui/IPanel.h"
+//#include "vgui/IPanel.h"
 #include "vgui/ISurface.h"
 #include "vgui/ISystem.h"
 #include "vgui/IVGui.h"
@@ -364,7 +364,7 @@ public:
 			{
 				// force to be always visible
 				ivgui()->MoveToFront( m_hMainMenuOverridePanel );
-				ivgui()->RequestFocus( m_hMainMenuOverridePanel );
+				ivgui()->Client(m_hMainMenuOverridePanel)->RequestFocus( 0 );
 			}
 			else
 			{

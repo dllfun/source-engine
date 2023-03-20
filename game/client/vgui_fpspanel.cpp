@@ -13,7 +13,7 @@
 #include <vgui_controls/Controls.h>
 #include <vgui/ISurface.h>
 #include <vgui/IScheme.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "filesystem.h"
 #include "../common/xbox/xboxstubs.h"

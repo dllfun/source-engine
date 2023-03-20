@@ -25,7 +25,7 @@ const int DT_RIGHT = 3;
 #include "vgui/IScheme.h"
 #include "vgui/IVGui.h"
 #include "vgui/ILocalize.h"
-#include "vgui/IPanel.h"
+//#include "vgui/IPanel.h"
 
 #include "c_team.h"
 #include "c_playerresource.h"

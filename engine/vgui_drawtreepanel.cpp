@@ -380,7 +380,7 @@ void VGui_RecursivePrintTree(
 	else if (vgui_drawtree_panelalpha.GetInt() )
 	{
 		KeyValues *kv = new KeyValues("alpha");
-		vgui::ivgui()->RequestInfo(current, kv);
+		vgui::ivgui()->Client(current)->RequestInfo(kv);
 		Q_snprintf( str, sizeof( str ), "%s - [%d]", name, kv->GetInt("alpha") );
 		kv->deleteThis();
 	}

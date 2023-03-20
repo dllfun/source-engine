@@ -18,7 +18,7 @@ inline bool IsSteamInOfflineMode()
 	vgui::system()->GetRegistryInteger( STEAM_OFFLINE_MODE, offline );
 	return ( offline == 1 );
 #else
-	return true;
+	return false;
 #endif
 }inline bool IsSteamInAuthenticationFailSafeMode()
 {
@@ -33,6 +33,9 @@ inline bool IsSteamInOfflineMode()
 
 inline bool IsSteamGameServerBrowsingEnabled()
 {
-
+#ifndef NO_STEAM
 	return (IsSteamInAuthenticationFailSafeMode() || !IsSteamInOfflineMode());
+#else
+	return true;
+#endif // !NO_STEAM
 }

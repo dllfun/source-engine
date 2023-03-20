@@ -23,7 +23,7 @@
 #include "../client/cstrike/VGUI/achievement_stats_summary.h"
 #include "vgui/IInput.h"
 #include "vgui/ILocalize.h"
-#include "vgui/IPanel.h"
+//#include "vgui/IPanel.h"
 #include "vgui/ISurface.h"
 #include "vgui/ISystem.h"
 #include "vgui/IVGui.h"

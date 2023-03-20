@@ -594,8 +594,8 @@ void CMatSystemSurface::DrawPanelIn3DSpace( vgui::VPANEL pRootPanel, const VMatr
 
 	StartDrawingIn3DSpace( panelCenterToWorld, pw, ph, sw, sh );
 
-	g_pVGui->Repaint(pRootPanel);//(pRootPanel)->Client()
-	g_pVGui->PaintTraverse(pRootPanel,true, false);//(pRootPanel)->Client()
+	g_pVGui->Client(pRootPanel)->Repaint();//(pRootPanel)->Client()
+	g_pVGui->Client(pRootPanel)->PaintTraverse(true, false);//(pRootPanel)->Client()
 
 	FinishDrawing();
 
@@ -3222,13 +3222,13 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 			// Paint the restricted panel, and its parent.
 			// NOTE: This call has guards to not draw popups. If the restricted panel
 			// is a popup, it won't draw here.
-			ivgui()->PaintTraverse( ivgui()->GetParent( m_pRestrictedPanel ), true );
+			ivgui()->Client(ivgui()->GetParent(m_pRestrictedPanel))->PaintTraverse(  true ,true);
 		}
 		else
 		{
 			// paint traverse the root panel, painting all children
 			VPROF( "ivgui()->PaintTraverse" );
-			ivgui()->PaintTraverse( panel, true );
+			ivgui()->Client(panel)->PaintTraverse( true , true );
 		}
 	}
 	else
@@ -3237,7 +3237,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 		VPROF( "ivgui()->PaintTraverse" );
 		if ( !paintPopups || !ivgui()->IsPopup( panel ) )
 		{
-			ivgui()->PaintTraverse( panel, true );
+			ivgui()->Client(panel)->PaintTraverse( true , true );
 		}
 	}
 
@@ -3277,7 +3277,7 @@ void CMatSystemSurface::PaintTraverseEx(VPANEL panel, bool paintPopups /*= false
 				--nStencilRef;
 
 				m_flZPos = ((float)(i) / (float)popups);
-				ivgui()->PaintTraverse( popupPanel, true );
+				ivgui()->Client(popupPanel)->PaintTraverse( true , true );
 			}
 		}
 	}

@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #include <vgui/IInput.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/ILocalize.h>
 #include <vgui/IScheme.h>
 #include <vgui/ISurface.h>

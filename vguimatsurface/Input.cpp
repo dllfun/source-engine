@@ -17,7 +17,7 @@
 #include <vgui/KeyCode.h>
 #include <vgui/MouseCode.h>
 #include <vgui/IVGui.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/ISurface.h>
 #include <vgui/IClientPanel.h>
 #include "inputsystem/ButtonCode.h"

@@ -9,7 +9,7 @@
 
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/VGUI.h>
 #include <KeyValues.h>
 #include <tier0/dbg.h>
@@ -55,7 +55,7 @@ bool FocusNavGroup::RequestFocusPrev(VPANEL panel)
 	int newPosition = 9999999;
 	if (panel)
 	{
-		newPosition = ivgui()->GetTabPosition(panel);
+		newPosition = ivgui()->Client(panel)->GetTabPosition();
 	}
 
 	bool bFound = false;
@@ -113,7 +113,7 @@ bool FocusNavGroup::RequestFocusPrev(VPANEL panel)
 			if (_mainPanel->GetVParent() && _mainPanel->GetVParent() != ivgui()->GetEmbeddedPanel())
 			{
 				// we're not a top level panel, so forward up the request instead of looping
-				if (ivgui()->RequestFocusPrev(_mainPanel->GetVParent(), _mainPanel->GetVPanel()))
+				if (ivgui()->Client(_mainPanel->GetVParent())->RequestFocusPrev(_mainPanel->GetVPanel()))
 				{
 					bFound = true;
 					SetCurrentDefaultButton(NULL);
@@ -172,7 +172,7 @@ bool FocusNavGroup::RequestFocusNext(VPANEL panel)
 	int newPosition = 0;
 	if (panel)
 	{
-		newPosition = ivgui()->GetTabPosition(panel);
+		newPosition = ivgui()->Client(panel)->GetTabPosition();
 	}
 
 	bool bFound = false;
@@ -227,7 +227,7 @@ bool FocusNavGroup::RequestFocusNext(VPANEL panel)
 				// we're not a top level panel, so forward up the request instead of looping
 				if (stack_depth < 15)
 				{
-					if (ivgui()->RequestFocusNext(_mainPanel->GetVParent(), _mainPanel->GetVPanel()))
+					if (ivgui()->Client(_mainPanel->GetVParent())->RequestFocusNext(_mainPanel->GetVPanel()))
 					{
 						bFound = true;
 						SetCurrentDefaultButton(NULL);
@@ -424,7 +424,7 @@ bool FocusNavGroup::CanButtonBeDefault(VPANEL panel)
 	KeyValues *data = new KeyValues("CanBeDefaultButton");
 
 	bool bResult = false;
-	if (ivgui()->RequestInfo(panel, data))
+	if (ivgui()->Client(panel)->RequestInfo(data))
 	{
 		bResult = (data->GetInt("result") == 1);
 	}

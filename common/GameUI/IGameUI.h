@@ -12,7 +12,8 @@
 #endif
 
 #include "interface.h"
-#include "vgui/IPanel.h"
+//#include "vgui/IPanel.h"
+#include <vgui_controls/Panel.h>
 
 #if !defined( _X360 )
 #include "xbox/xboxstubs.h"

@@ -11,7 +11,7 @@
 #include "IVguiModule.h"
 #include "ServerBrowser/IServerBrowser.h"
 
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/ISystem.h>
 #include <vgui/IVGui.h>
 #include <vgui/ILocalize.h>

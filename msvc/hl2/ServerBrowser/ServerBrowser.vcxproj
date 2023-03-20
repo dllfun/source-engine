@@ -164,6 +164,9 @@
     <ClCompile Include="..\..\..\serverbrowser\SpectateGames.cpp" />
     <ClCompile Include="..\..\..\serverbrowser\VACBannedConnRefusedDialog.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\serverbrowser\ServerBrowser.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

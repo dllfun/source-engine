@@ -63,7 +63,7 @@
 #include <vgui/Cursor.h>
 #include <KeyValues.h>
 #include <vgui/ILocalize.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IScheme.h>
 #include <vgui/IVGui.h>
 #include <vgui/ISystem.h>
@@ -1181,7 +1181,7 @@ void CGameUI::ShowLoadingBackgroundDialog()
 	if ( g_hLoadingBackgroundDialog )
 	{
 		vgui::ivgui()->SetParent( g_hLoadingBackgroundDialog, staticPanel->GetVPanel() );
-		vgui::ivgui()->PerformApplySchemeSettings( g_hLoadingBackgroundDialog );
+		vgui::ivgui()->Client(g_hLoadingBackgroundDialog)->PerformApplySchemeSettings( );
 		vgui::ivgui()->SetVisible( g_hLoadingBackgroundDialog, true );		
 		vgui::ivgui()->MoveToFront( g_hLoadingBackgroundDialog );
 		vgui::ivgui()->SendMessage( g_hLoadingBackgroundDialog, new KeyValues( "activate" ), staticPanel->GetVPanel() );

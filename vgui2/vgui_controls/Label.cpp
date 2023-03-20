@@ -12,7 +12,7 @@
 
 #include <vgui/IInput.h>
 #include <vgui/ILocalize.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/ISurface.h>
 #include <vgui/IScheme.h>
 #include <KeyValues.h>

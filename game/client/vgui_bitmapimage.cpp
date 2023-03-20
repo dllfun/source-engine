@@ -11,7 +11,7 @@
 #include <vgui_controls/Panel.h>
 #include "panelmetaclassmgr.h"
 #include <KeyValues.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <bitmap/bitmap.h>
 
 // memdbgon must be the last include file in a .cpp file!!!

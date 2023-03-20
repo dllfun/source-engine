@@ -60,9 +60,6 @@
     <ClCompile Include="..\..\..\vgui2\src\VPanel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\vgui2\src\VPanelWrapper.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\public\filesystem_helpers.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

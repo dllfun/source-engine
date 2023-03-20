@@ -17,7 +17,7 @@
 #include <vgui/VGUI.h>
 #include <vgui/Dar.h>
 #include <vgui/IInputInternal.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/ISystem.h>
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
@@ -630,7 +630,7 @@ Panel* CVGui::GetPanel(VPANEL vguiPanel, const char* moduleName)
 	}
 
 	// assert that the specified vpanel is from the same module as requesting the cast
-	if (!vguiPanel || V_stricmp(GetModuleName(vguiPanel), moduleName))
+	if (!vguiPanel || V_stricmp(g_VGui.Client(vguiPanel)->GetModuleName(), moduleName))
 	{
 		// assert(!("GetPanel() used to retrieve a Panel * from a different dll than which which it was created. This is bad, you can't pass Panel * across dll boundaries else you'll break the versioning.  Please only use a VPANEL."));
 		// this is valid for now

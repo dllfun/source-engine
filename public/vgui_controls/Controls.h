@@ -14,7 +14,7 @@
 
 #include <vgui/VGUI.h>
 #include <vgui/IVGui.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vstdlib/IKeyValuesSystem.h>
 #include "VGuiMatSurface/IMatSystemSurface.h"
 #include "tier1/interface.h"

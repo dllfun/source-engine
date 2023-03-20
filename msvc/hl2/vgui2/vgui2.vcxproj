@@ -160,7 +160,6 @@
     <ClCompile Include="..\..\..\vgui2\src\vgui_internal.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\vgui_key_translation.cpp" />
     <ClCompile Include="..\..\..\vgui2\src\VPanel.cpp" />
-    <ClCompile Include="..\..\..\vgui2\src\VPanelWrapper.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\Cursor.cpp" />
     <ClCompile Include="..\..\..\vguimatsurface\Input.cpp" />
   </ItemGroup>

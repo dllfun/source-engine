@@ -174,21 +174,21 @@ public:
 	virtual void SendMessage(VPANEL vguiPanel, KeyValues* params, VPANEL ifromPanel) = 0;
 
 	// these pass through to the IClientPanel
-	virtual void Think(VPANEL vguiPanel) = 0;
-	virtual void PerformApplySchemeSettings(VPANEL vguiPanel) = 0;
-	virtual void PaintTraverse(VPANEL vguiPanel, bool forceRepaint, bool allowForce = true) = 0;
-	virtual void Repaint(VPANEL vguiPanel) = 0;
-	virtual VPANEL IsWithinTraverse(VPANEL vguiPanel, int x, int y, bool traversePopups) = 0;
-	virtual void OnChildAdded(VPANEL vguiPanel, VPANEL child) = 0;
-	virtual void OnSizeChanged(VPANEL vguiPanel, int newWide, int newTall) = 0;
+	//virtual void Think(VPANEL vguiPanel) = 0;
+	//virtual void PerformApplySchemeSettings(VPANEL vguiPanel) = 0;
+	//virtual void PaintTraverse(VPANEL vguiPanel, bool forceRepaint, bool allowForce = true) = 0;
+	//virtual void Repaint(VPANEL vguiPanel) = 0;
+	//virtual VPANEL IsWithinTraverse(VPANEL vguiPanel, int x, int y, bool traversePopups) = 0;
+	//virtual void OnChildAdded(VPANEL vguiPanel, VPANEL child) = 0;
+	//virtual void OnSizeChanged(VPANEL vguiPanel, int newWide, int newTall) = 0;
 
-	virtual void InternalFocusChanged(VPANEL vguiPanel, bool lost) = 0;
-	virtual bool RequestInfo(VPANEL vguiPanel, KeyValues* outputData) = 0;
-	virtual void RequestFocus(VPANEL vguiPanel, int direction = 0) = 0;
-	virtual bool RequestFocusPrev(VPANEL vguiPanel, VPANEL existingPanel) = 0;
-	virtual bool RequestFocusNext(VPANEL vguiPanel, VPANEL existingPanel) = 0;
-	virtual VPANEL GetCurrentKeyFocus(VPANEL vguiPanel) = 0;
-	virtual int GetTabPosition(VPANEL vguiPanel) = 0;
+	//virtual void InternalFocusChanged(VPANEL vguiPanel, bool lost) = 0;
+	//virtual bool RequestInfo(VPANEL vguiPanel, KeyValues* outputData) = 0;
+	//virtual void RequestFocus(VPANEL vguiPanel, int direction = 0) = 0;
+	//virtual bool RequestFocusPrev(VPANEL vguiPanel, VPANEL existingPanel) = 0;
+	//virtual bool RequestFocusNext(VPANEL vguiPanel, VPANEL existingPanel) = 0;
+	//virtual VPANEL GetCurrentKeyFocus(VPANEL vguiPanel) = 0;
+	//virtual int GetTabPosition(VPANEL vguiPanel) = 0;
 
 	// used by ISurface to store platform-specific data
 	virtual SurfacePlat* Plat(VPANEL vguiPanel) = 0;

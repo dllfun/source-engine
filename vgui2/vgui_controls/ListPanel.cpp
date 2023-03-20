@@ -12,7 +12,7 @@
 #include <vgui/Cursor.h>
 #include <vgui/IInput.h>
 #include <vgui/ILocalize.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IScheme.h>
 #include <vgui/ISystem.h>
 #include <vgui/ISurface.h>

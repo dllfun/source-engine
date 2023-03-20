@@ -10,7 +10,7 @@
 #include <vgui/ISurface.h>
 #include "VGuiMatSurface/IMatSystemSurface.h"
 #include <vgui/ILocalize.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include "filesystem.h"
 #include <vstdlib/IKeyValuesSystem.h>
 

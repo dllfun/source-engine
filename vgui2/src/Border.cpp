@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "vgui/IPanel.h"
+//#include "vgui/IPanel.h"
 #include "vgui/IScheme.h"
 #include "vgui/ISurface.h"
 #include <vgui/IVGui.h>

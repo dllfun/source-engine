@@ -74,7 +74,7 @@
 #include <vgui/Cursor.h>
 #include <KeyValues.h>
 #include <vgui/ILocalize.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IScheme.h>
 #include <vgui/IVGui.h>
 #include <vgui/ISystem.h>
@@ -2208,7 +2208,7 @@ static void VGui_RecursePanel( CUtlVector< vgui::VPANEL >& panelList, int x, int
 		return;
 	}
 
-	if ( vgui::ivgui()->IsWithinTraverse( check, x, y, false ) )
+	if ( vgui::ivgui()->Client(check)->IsWithinTraverse( x, y, false ) )
 	{
 		panelList.AddToTail( check );
 	}

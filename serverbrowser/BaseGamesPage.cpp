@@ -322,6 +322,7 @@ void CBaseGamesPage::PerformLayout()
 		m_pRefreshQuick->SetEnabled(false);
 	}
 
+#ifndef NO_STEAM
 	if ( !steamapicontext->SteamMatchmakingServers() || !steamapicontext->SteamMatchmaking() )
 	{
 		m_pAddCurrentServer->SetVisible( false );
@@ -332,6 +333,7 @@ void CBaseGamesPage::PerformLayout()
 		m_pAddToFavoritesButton->SetEnabled( false );
 		m_pGameList->SetEmptyListText( "#ServerBrowser_SteamRunning" );
 	}
+#endif // !NO_STEAM
 
 	Repaint();
 }

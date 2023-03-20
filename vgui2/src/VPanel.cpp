@@ -10,7 +10,7 @@
 //#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IClientPanel.h>
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>

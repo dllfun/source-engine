@@ -13,7 +13,7 @@
 #endif
 
 #include <vgui/Dar.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 
 #ifdef GetClassName
 #undef GetClassName
@@ -25,6 +25,7 @@ namespace vgui
 	class SurfaceBase;
 	class IClientPanel;
 	struct SerialPanel_t;
+	class SurfacePlat;
 
 	//-----------------------------------------------------------------------------
 	// Purpose: VGUI private implementation of panel

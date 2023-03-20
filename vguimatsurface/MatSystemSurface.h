@@ -13,7 +13,7 @@
 
 #include <vgui/VGUI.h>
 #include <vgui/ISurface.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IClientPanel.h>
 #include <vgui_controls/Panel.h>
 #include <vgui/IInput.h>

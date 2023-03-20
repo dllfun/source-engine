@@ -14,7 +14,7 @@
 #include <vgui/IScheme.h>
 #include <vgui/ILocalize.h>
 #include <vgui/IVGui.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui_controls/Controls.h>
 #include <vgui_controls/Frame.h>
 #include <vgui_controls/EditablePanel.h>

@@ -17,7 +17,7 @@
 #include <vgui/ISystem.h>
 #include <vgui/ISurface.h>
 #include <vgui/ILocalize.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <KeyValues.h>
 #include <vgui/MouseCode.h>
 
@@ -3409,10 +3409,10 @@ void TextEntry::Paste()
 				wchar_t *remainingText = &buf[i];
 				system()->SetClipboardText(remainingText, len - i - 1);
 				// set the next entry to paste
-				if (GetVParent() && ivgui()->GetCurrentKeyFocus(GetVParent()) != GetVPanel())
+				if (GetVParent() && ivgui()->Client(GetVParent())->GetCurrentKeyFocus() != GetVPanel())
 				{
 					bHaveMovedFocusAwayFromCurrentEntry = true;
-					ivgui()->SendMessage(ivgui()->GetCurrentKeyFocus(GetVParent()), new KeyValues("DoPaste"), GetVPanel());
+					ivgui()->SendMessage(ivgui()->Client(GetVParent())->GetCurrentKeyFocus(), new KeyValues("DoPaste"), GetVPanel());
 				}
 				break;
 			}

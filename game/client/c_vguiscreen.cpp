@@ -15,7 +15,7 @@
 #include "view.h"
 #include "collisionutils.h"
 #include <vgui/IInput.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IVGui.h>
 #include "ienginevgui.h"
 #include "in_buttons.h"

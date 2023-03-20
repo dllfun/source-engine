@@ -23,7 +23,7 @@
 #include <vgui/VGUI.h>
 #include <vgui/Dar.h>
 #include <vgui/IInputInternal.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/ISystem.h>
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
@@ -419,81 +419,81 @@ public:
 		InternalHandleToVPanel(vguiPanel)->SendMessage(params, ifrompanel);
 	}
 
-	virtual void Think(VPANEL vguiPanel)
-	{
-		Client(vguiPanel)->Think();
-	}
+	//virtual void Think(VPANEL vguiPanel)
+	//{
+	//	Client(vguiPanel)->Think();
+	//}
 
-	virtual void PerformApplySchemeSettings(VPANEL vguiPanel)
-	{
-		Client(vguiPanel)->PerformApplySchemeSettings();
-	}
+	//virtual void PerformApplySchemeSettings(VPANEL vguiPanel)
+	//{
+	//	Client(vguiPanel)->PerformApplySchemeSettings();
+	//}
 
-	virtual void PaintTraverse(VPANEL vguiPanel, bool forceRepaint, bool allowForce)
-	{
-		Client(vguiPanel)->PaintTraverse(forceRepaint, allowForce);
-	}
+	//virtual void PaintTraverse(VPANEL vguiPanel, bool forceRepaint, bool allowForce)
+	//{
+	//	Client(vguiPanel)->PaintTraverse(forceRepaint, allowForce);
+	//}
 
-	virtual void Repaint(VPANEL vguiPanel)
-	{
-		Client(vguiPanel)->Repaint();
-	}
+	//virtual void Repaint(VPANEL vguiPanel)
+	//{
+	//	Client(vguiPanel)->Repaint();
+	//}
 
-	virtual VPANEL IsWithinTraverse(VPANEL vguiPanel, int x, int y, bool traversePopups)
-	{
-		return Client(vguiPanel)->IsWithinTraverse(x, y, traversePopups);
-	}
+	//virtual VPANEL IsWithinTraverse(VPANEL vguiPanel, int x, int y, bool traversePopups)
+	//{
+	//	return Client(vguiPanel)->IsWithinTraverse(x, y, traversePopups);
+	//}
 
-	virtual void OnChildAdded(VPANEL vguiPanel, VPANEL child)
-	{
-		Client(vguiPanel)->OnChildAdded(child);
-	}
+	//virtual void OnChildAdded(VPANEL vguiPanel, VPANEL child)
+	//{
+	//	Client(vguiPanel)->OnChildAdded(child);
+	//}
 
-	virtual void OnSizeChanged(VPANEL vguiPanel, int newWide, int newTall)
-	{
-		Client(vguiPanel)->OnSizeChanged(newWide, newTall);
-	}
+	//virtual void OnSizeChanged(VPANEL vguiPanel, int newWide, int newTall)
+	//{
+	//	Client(vguiPanel)->OnSizeChanged(newWide, newTall);
+	//}
 
-	virtual void InternalFocusChanged(VPANEL vguiPanel, bool lost)
-	{
-		Client(vguiPanel)->InternalFocusChanged(lost);
-	}
+	//virtual void InternalFocusChanged(VPANEL vguiPanel, bool lost)
+	//{
+	//	Client(vguiPanel)->InternalFocusChanged(lost);
+	//}
 
-	virtual bool RequestInfo(VPANEL vguiPanel, KeyValues* outputData)
-	{
-		return Client(vguiPanel)->RequestInfo(outputData);
-	}
+	//virtual bool RequestInfo(VPANEL vguiPanel, KeyValues* outputData)
+	//{
+	//	return Client(vguiPanel)->RequestInfo(outputData);
+	//}
 
-	virtual void RequestFocus(VPANEL vguiPanel, int direction = 0)
-	{
-		Client(vguiPanel)->RequestFocus(direction);
-	}
+	//virtual void RequestFocus(VPANEL vguiPanel, int direction = 0)
+	//{
+	//	Client(vguiPanel)->RequestFocus(direction);
+	//}
 
-	virtual bool RequestFocusPrev(VPANEL vguiPanel, VPANEL existingPanel)
-	{
-		return Client(vguiPanel)->RequestFocusPrev(existingPanel);
-	}
+	//virtual bool RequestFocusPrev(VPANEL vguiPanel, VPANEL existingPanel)
+	//{
+	//	return Client(vguiPanel)->RequestFocusPrev(existingPanel);
+	//}
 
-	virtual bool RequestFocusNext(VPANEL vguiPanel, VPANEL existingPanel)
-	{
-		return Client(vguiPanel)->RequestFocusNext(existingPanel);
-	}
+	//virtual bool RequestFocusNext(VPANEL vguiPanel, VPANEL existingPanel)
+	//{
+	//	return Client(vguiPanel)->RequestFocusNext(existingPanel);
+	//}
 
-	virtual VPANEL GetCurrentKeyFocus(VPANEL vguiPanel)
-	{
-		return Client(vguiPanel)->GetCurrentKeyFocus();
-	}
+	//virtual VPANEL GetCurrentKeyFocus(VPANEL vguiPanel)
+	//{
+	//	return Client(vguiPanel)->GetCurrentKeyFocus();
+	//}
 
-	virtual int GetTabPosition(VPANEL vguiPanel)
-	{
-		return Client(vguiPanel)->GetTabPosition();
-	}
+	//virtual int GetTabPosition(VPANEL vguiPanel)
+	//{
+	//	return Client(vguiPanel)->GetTabPosition();
+	//}
 
 
-	virtual const char* GetModuleName(VPANEL vguiPanel)
-	{
-		return Client(vguiPanel)->GetModuleName();
-	}
+	//virtual const char* GetModuleName(VPANEL vguiPanel)
+	//{
+	//	return Client(vguiPanel)->GetModuleName();
+	//}
 
 	virtual void SetKeyBoardInputEnabled(VPANEL vguiPanel, bool state)
 	{

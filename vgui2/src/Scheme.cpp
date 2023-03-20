@@ -13,7 +13,7 @@
 #include <vgui/IScheme.h>
 #include <KeyValues.h>
 #include <vgui/ISurface.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/ISystem.h>
 #include <vstdlib/IKeyValuesSystem.h>
 #include <vgui/IVGui.h>

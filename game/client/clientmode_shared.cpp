@@ -17,7 +17,7 @@
 #include "weapon_selection.h"
 #include <vgui/IVGui.h>
 #include <vgui/Cursor.h>
-#include <vgui/IPanel.h>
+//#include <vgui/IPanel.h>
 #include <vgui/IInput.h>
 #include "engine/IEngineSound.h"
 #include <KeyValues.h>
