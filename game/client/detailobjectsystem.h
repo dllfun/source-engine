@@ -16,7 +16,7 @@
 #include "icliententityinternal.h"
 #include "engine/ivmodelrender.h"
 #include "mathlib/vector.h"
-#include "ivrenderview.h"
+//#include "ivrenderview.h"
 
 struct model_t;
 

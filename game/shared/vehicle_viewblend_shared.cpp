@@ -12,6 +12,7 @@
 // Client includes
 #include "c_prop_vehicle.h"
 #include "view.h"
+#include "iviewrender.h"
 
 #else
 // Server include

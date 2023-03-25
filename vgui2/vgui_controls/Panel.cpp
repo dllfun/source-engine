@@ -1332,6 +1332,7 @@ void Panel::PaintBackground()
 	{
 		Color col = GetBgColor();
 
+		//m_nPaintBackgroundType = 0;
 		switch ( m_nPaintBackgroundType )
 		{
 		default:
@@ -3829,6 +3830,9 @@ bool Panel::IsBuildGroupEnabled()
 
 void Panel::SetBgColor(Color color)
 {
+	if (color.r() != 0 || color.g() != 0 || color.b() != 0 || color.a() != 0) {
+		int aaa = 0;
+	}
 	_bgColor = color;
 }
 
@@ -3839,6 +3843,7 @@ void Panel::SetFgColor(Color color)
 
 Color Panel::GetBgColor()
 {
+	//return Color(0, 0, 0, 0);
 	return _bgColor;
 }
 

@@ -13,6 +13,7 @@
 #include "mathlib/vmatrix.h"
 #include "VGuiMatSurface/IMatSystemSurface.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "collisionutils.h"
 #include <vgui/IInput.h>
 //#include <vgui/IPanel.h>

@@ -19,6 +19,7 @@
 #include "spectatorgui.h"
 #include "c_playerresource.h"
 #include "view.h"
+#include "iviewrender.h"
 
 #include "clientmode.h"
 #include <vgui_controls/AnimationController.h>

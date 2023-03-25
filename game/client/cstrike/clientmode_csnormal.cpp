@@ -20,6 +20,7 @@
 #include "hud_basechat.h"
 #include "view_shared.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "ivrenderview.h"
 #include "cstrikeclassmenu.h"
 #include "model_types.h"

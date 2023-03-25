@@ -162,6 +162,9 @@ public:
 		StopRefresh();
 	}
 
+	virtual void SetBgColor(Color color);
+	virtual Color GetBgColor();
+
 protected:
 	virtual void OnCommand(const char *command);
 	virtual void OnKeyCodePressed(vgui::KeyCode code);
@@ -320,6 +323,7 @@ private:
 	bool m_bFilterReplayServers;
 
 	CGameID m_iLimitToAppID;
+	Color			_bgColor;		// background color
 };
 
 #endif // BASEGAMESPAGE_H

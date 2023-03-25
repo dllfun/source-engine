@@ -10,6 +10,7 @@
 #include "smoke_fog_overlay.h"
 #include "engine/IEngineTrace.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "dlight.h"
 #include "iefx.h"
 #include "tier1/KeyValues.h"

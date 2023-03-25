@@ -13,8 +13,40 @@
 #endif
 
 
-#include "ivrenderview.h"
+//#include "ivrenderview.h"
 
+// near and far Z it uses to render the world.
+#define VIEW_NEARZ	3
+//#define VIEW_FARZ	28400
+
+class VMatrix;
+class Vector;
+class QAngle;
+class VPlane;
+//-----------------------------------------------------------------------------
+// There's a difference between the 'current view' and the 'main view'
+// The 'main view' is where the player is sitting. Current view is just
+// what's currently being rendered, which, owing to monitors or water,
+// could be just about anywhere.
+//-----------------------------------------------------------------------------
+const Vector& MainViewOrigin();
+const QAngle& MainViewAngles();
+const Vector& PrevMainViewOrigin();
+const QAngle& PrevMainViewAngles();
+const VMatrix& MainWorldToViewMatrix();
+const Vector& MainViewForward();
+const Vector& MainViewRight();
+const Vector& MainViewUp();
+
+const Vector& CurrentViewOrigin();
+const QAngle& CurrentViewAngles();
+const VMatrix& CurrentWorldToViewMatrix();
+const Vector& CurrentViewForward();
+const Vector& CurrentViewRight();
+const Vector& CurrentViewUp();
+
+void AllowCurrentViewAccess(bool allow);
+bool IsCurrentViewAccessAllowed();
 
 // These are set as it draws reflections, refractions, etc, so certain effects can avoid 
 // drawing themselves in reflections.

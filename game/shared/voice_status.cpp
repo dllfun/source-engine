@@ -20,6 +20,7 @@
 #include "c_baseplayer.h"
 #include "materialsystem/imesh.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "convar.h"
 #include <vgui_controls/Controls.h>
 #include <vgui/IScheme.h>

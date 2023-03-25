@@ -12,6 +12,7 @@
 #include "tempent.h"
 #include "glow_overlay.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "particle_litsmokeemitter.h"
 
 class CFireOverlay;

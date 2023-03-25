@@ -21,6 +21,7 @@
 #include "effect_color_tables.h"
 #include "iviewrender_beams.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "IEffects.h"
 #include "fx.h"
 #include "c_te_legacytempents.h"

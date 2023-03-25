@@ -75,7 +75,7 @@ class CHudWeaponSelection;
 class CHudChat;
 class CHudVote;
 
-static vgui::HContext s_hVGuiContext = DEFAULT_VGUI_CONTEXT;
+static vgui::HContext s_hVGuiContext = vgui::DEFAULT_VGUI_CONTEXT;
 
 ConVar cl_drawhud( "cl_drawhud", "1", FCVAR_CHEAT, "Enable the rendering of the hud" );
 ConVar hud_takesshots( "hud_takesshots", "0", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Auto-save a scoreboard screenshot at the end of a map." );
@@ -813,7 +813,7 @@ void ClientModeShared::LevelInit( const char *newmap )
 	}
 
 	// Create a vgui context for all of the in-game vgui panels...
-	if ( s_hVGuiContext == DEFAULT_VGUI_CONTEXT )
+	if ( s_hVGuiContext == vgui::DEFAULT_VGUI_CONTEXT )
 	{
 		s_hVGuiContext = vgui::ivgui()->CreateContext();
 	}
@@ -835,10 +835,10 @@ void ClientModeShared::LevelShutdown( void )
 	{
 		m_pChatElement->LevelShutdown();
 	}
-	if ( s_hVGuiContext != DEFAULT_VGUI_CONTEXT )
+	if ( s_hVGuiContext != vgui::DEFAULT_VGUI_CONTEXT )
 	{
 		vgui::ivgui()->DestroyContext( s_hVGuiContext );
- 		s_hVGuiContext = DEFAULT_VGUI_CONTEXT;
+ 		s_hVGuiContext = vgui::DEFAULT_VGUI_CONTEXT;
 	}
 
 	// Reset any player explosion/shock effects
@@ -1392,6 +1392,6 @@ void ClientModeShared::ActivateInGameVGuiContext( vgui::Panel *pPanel )
 
 void ClientModeShared::DeactivateInGameVGuiContext()
 {
-	vgui::ivgui()->ActivateContext( DEFAULT_VGUI_CONTEXT );
+	vgui::ivgui()->ActivateContext( vgui::DEFAULT_VGUI_CONTEXT );
 }
 

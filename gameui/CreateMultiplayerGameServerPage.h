@@ -39,6 +39,9 @@ public:
 	int GetBotQuota( void );
 	bool GetBotsEnabled( void );
 
+	virtual void SetBgColor(Color color);
+	virtual Color GetBgColor();
+
 protected:
 	virtual void OnApplyChanges();
 	MESSAGE_FUNC( OnCheckButtonChecked, "CheckButtonChecked" );
@@ -54,6 +57,7 @@ private:
 
 	enum { DATA_STR_LENGTH = 64 };
 	char m_szMapName[DATA_STR_LENGTH];
+	Color			_bgColor;		// background color
 };
 
 

@@ -1188,7 +1188,7 @@ void R_DrawLightmaps( IWorldRenderList *pList, int pageId )
 	if ( pageId != -1 )
 	{
 		DrawLightmapPage( pageId );
-		Shader_DrawLightmapPageChains( pList, pageId );
+		pList->Shader_DrawLightmapPageChains( pageId );
 	}
 #endif
 }
@@ -1237,7 +1237,7 @@ void CRender::BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, 
 		BeginUpdateLightmaps();
 	}
 
-	R_BuildWorldLists( pList, pInfo, iForceViewLeaf, pVisData, bShadowDepth, pWaterReflectionHeight );
+	pList->R_BuildWorldLists( pInfo, iForceViewLeaf, pVisData, bShadowDepth, pWaterReflectionHeight );
 
 	if ( !bShadowDepth )
 	{
@@ -1250,5 +1250,5 @@ void CRender::BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, 
 void CRender::DrawWorldLists( IWorldRenderList *pList, unsigned long flags, float flWaterZAdjust )
 {
 	Assert( pList );
-	R_DrawWorldLists( pList, flags, flWaterZAdjust );
+	pList->R_DrawWorldLists( flags, flWaterZAdjust );
 }

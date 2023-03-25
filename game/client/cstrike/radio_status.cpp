@@ -14,6 +14,7 @@
 #include "c_baseplayer.h"
 #include "materialsystem/imesh.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "materialsystem/imaterial.h"
 #include "tier0/dbg.h"
 #include "cdll_int.h"

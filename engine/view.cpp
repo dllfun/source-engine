@@ -410,12 +410,12 @@ public:
 
 	void DrawTranslucentSurfaces( IWorldRenderList *pList, int sortIndex, unsigned long flags, bool bShadowDepth )
 	{
-		Shader_DrawTranslucentSurfaces( pList, sortIndex, flags, bShadowDepth );
+		pList->Shader_DrawTranslucentSurfaces( sortIndex, flags, bShadowDepth );
 	}
 
 	bool LeafContainsTranslucentSurfaces( IWorldRenderList *pList, int sortIndex, unsigned long flags )
 	{
-		return Shader_LeafContainsTranslucentSurfaces( pList, sortIndex, flags );
+		return pList->Shader_LeafContainsTranslucentSurfaces( sortIndex, flags );
 	}
 
 	void DrawLineFile( void )

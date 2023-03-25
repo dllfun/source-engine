@@ -10,6 +10,7 @@
 #include <vgui_controls/EditablePanel.h>
 #include <mathlib/mathlib.h>
 #include "view.h"
+#include "iviewrender.h"
 #include "studio_stats.h"
 #include "coordsize.h"
 #include "collisionutils.h"

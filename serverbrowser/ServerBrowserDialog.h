@@ -94,6 +94,9 @@ public:
 	void		BlacklistsChanged();
 	CBlacklistedServers *GetBlacklistPage( void ) { return m_pBlacklist; }
 
+	virtual void SetBgColor(Color color);
+	virtual Color GetBgColor();
+
 private:
 
 	// current game list change
@@ -147,6 +150,8 @@ private:
 	// currently connected game
 	bool m_bCurrentlyConnected;
 	gameserveritem_t m_CurrentConnection;
+
+	Color			_bgColor;		// background color
 };
 
 // singleton accessor

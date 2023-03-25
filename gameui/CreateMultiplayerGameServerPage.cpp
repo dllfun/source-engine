@@ -311,3 +311,14 @@ void CCreateMultiplayerGameServerPage::OnCheckButtonChecked()
 	SetControlEnabled("BotQuotaLabel", m_pEnableBotsCheck->IsSelected());
 	SetControlEnabled("BotDifficultyLabel", m_pEnableBotsCheck->IsSelected());
 }
+
+void CCreateMultiplayerGameServerPage::SetBgColor(Color color)
+{
+	//BaseClass::SetBgColor(color);
+	_bgColor = color;
+}
+Color CCreateMultiplayerGameServerPage::GetBgColor()
+{
+	//return Color(160, 160, 160, 32);
+	return _bgColor;
+}

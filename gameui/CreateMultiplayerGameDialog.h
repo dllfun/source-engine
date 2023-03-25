@@ -28,6 +28,8 @@ public:
 	CCreateMultiplayerGameDialog(vgui::Panel *parent);
 	~CCreateMultiplayerGameDialog();
 
+	virtual void SetBgColor(Color color);
+	virtual Color GetBgColor();
 protected:
 	virtual bool OnOK(bool applyOnly);
 	virtual void OnKeyCodePressed( vgui::KeyCode code );
@@ -41,6 +43,7 @@ private:
 
 	// for loading/saving game config
 	KeyValues *m_pSavedData;
+	Color			_bgColor;		// background color
 };
 
 

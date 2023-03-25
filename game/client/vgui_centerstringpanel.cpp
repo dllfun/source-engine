@@ -9,7 +9,7 @@
 #include "cbase.h"
 #include <stdarg.h>
 #include "vguicenterprint.h"
-#include "ivrenderview.h"
+//#include "ivrenderview.h"
 #include <vgui/IVGui.h>
 #include "VGuiMatSurface/IMatSystemSurface.h"
 #include <vgui_controls/Label.h>

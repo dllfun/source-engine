@@ -59,23 +59,19 @@ void R_Surface_LevelInit();
 void R_Surface_LevelShutdown();
 void R_SceneBegin( void );
 void R_SceneEnd( void );
-void R_BuildWorldLists( IWorldRenderList *pRenderList, WorldListInfo_t* pInfo, int iForceViewLeaf, const struct VisOverrideData_t* pVisData, bool bShadowDepth = false, float *pWaterReflectionHeight = NULL );
-void R_DrawWorldLists( IWorldRenderList *pRenderList, unsigned long flags, float waterZAdjust );
+
+
 
 void R_GetVisibleFogVolume( const Vector& vEyePoint, VisibleFogVolumeInfo_t *pInfo );
 void R_SetFogVolumeState( int fogVolume, bool useHeightFog );
 IMaterial *R_GetFogVolumeMaterial( int fogVolume, bool bEyeInFogVolume );
 void R_SetupSkyTexture( model_t *pWorld );
 
-void Shader_DrawLightmapPageChains( IWorldRenderList *pRenderList, int pageId );
 void Shader_DrawLightmapPageSurface( SurfaceHandle_t surfID, float red, float green, float blue );
-void Shader_DrawTranslucentSurfaces( IWorldRenderList *pRenderList, int sortIndex, unsigned long flags, bool bShadowDepth );
-bool Shader_LeafContainsTranslucentSurfaces( IWorldRenderList *pRenderList, int sortIndex, unsigned long flags );
 void R_DrawTopView( bool enable );
 void R_TopViewBounds( const Vector2D & mins, const Vector2D & maxs );
 
-// Resets a world render list
-void ResetWorldRenderList( IWorldRenderList *pRenderList );
+
 
 // Computes the centroid of a surface
 void Surf_ComputeCentroid( SurfaceHandle_t surfID, Vector *pVecCentroid );

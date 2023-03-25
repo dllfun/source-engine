@@ -94,6 +94,15 @@ struct WorldListInfo_t
 
 class IWorldRenderList : public IRefCounted
 {
+public:
+	virtual void R_BuildWorldLists(WorldListInfo_t* pInfo, int iForceViewLeaf, const struct VisOverrideData_t* pVisData, bool bShadowDepth = false, float* pWaterReflectionHeight = NULL) = 0;
+	virtual void R_DrawWorldLists(unsigned long flags, float waterZAdjust) = 0;
+	virtual void Shader_DrawLightmapPageChains(int pageId) = 0;
+	virtual void Shader_DrawTranslucentSurfaces(int sortIndex, unsigned long flags, bool bShadowDepth) = 0;
+	virtual bool Shader_LeafContainsTranslucentSurfaces(int sortIndex, unsigned long flags) = 0;
+	// Resets a world render list
+	virtual void ResetWorldRenderList() = 0;
+
 };
 
 //-----------------------------------------------------------------------------

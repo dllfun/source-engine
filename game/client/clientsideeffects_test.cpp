@@ -8,6 +8,7 @@
 #include "cbase.h"
 #include "engine/IEngineSound.h"
 #include "view.h"
+#include "iviewrender.h"
 
 #include "fx_line.h"
 #include "fx_discreetline.h"

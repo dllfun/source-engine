@@ -2314,6 +2314,17 @@ void CBaseGamesPage::OnFavoritesMsg( FavoritesListChanged_t *pFavListChanged )
 	};
 }
 
+void CBaseGamesPage::SetBgColor(Color color)
+{
+	//BaseClass::SetBgColor(color);
+	_bgColor = color;
+}
+Color CBaseGamesPage::GetBgColor()
+{
+	//return Color(160, 160, 160, 32);
+	return _bgColor;
+}
+
 void CCheckBoxWithStatus::OnCursorEntered()
 {
 	ServerBrowserDialog().UpdateStatusText("#ServerBrowser_QuickListExplanation");

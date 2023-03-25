@@ -8,6 +8,7 @@
 #include "ifpspanel.h"
 #include <vgui_controls/Panel.h>
 #include "view.h"
+#include "iviewrender.h"
 #include <vgui/IVGui.h>
 #include "VGuiMatSurface/IMatSystemSurface.h"
 #include <vgui_controls/Controls.h>

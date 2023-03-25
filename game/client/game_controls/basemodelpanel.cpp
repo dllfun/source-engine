@@ -25,6 +25,7 @@
 #include "model_types.h"
 #include "view_shared.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "ivrenderview.h"
 #include "iefx.h"
 #include "dlight.h"

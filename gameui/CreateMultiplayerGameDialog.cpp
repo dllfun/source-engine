@@ -197,3 +197,14 @@ void CCreateMultiplayerGameDialog::OnKeyCodePressed( vgui::KeyCode code )
 		BaseClass::OnKeyCodePressed( code );
 	}
 }
+
+void CCreateMultiplayerGameDialog::SetBgColor(Color color)
+{
+	//BaseClass::SetBgColor(color);
+	_bgColor = color;
+}
+Color CCreateMultiplayerGameDialog::GetBgColor()
+{
+	//return Color(160, 160, 160, 32);
+	return _bgColor;
+}

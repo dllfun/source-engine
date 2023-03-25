@@ -16,7 +16,7 @@
 #include "igamesystem.h"
 #include "icliententityinternal.h"
 #include "engine/ishadowmgr.h"
-#include "ivrenderview.h"
+//#include "ivrenderview.h"
 #include "toolframework/itoolentity.h"
 
 //-----------------------------------------------------------------------------

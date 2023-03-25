@@ -44,6 +44,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+//using namespace vgui;
+
 ConVar cl_vote_ui_active_after_voting( "cl_vote_ui_active_after_voting", "0" );
 ConVar cl_vote_ui_show_notification( "cl_vote_ui_show_notification", "0" );
 
@@ -190,10 +192,10 @@ CVoteSetupDialog::CVoteSetupDialog( vgui::Panel *parent ) : BaseClass( parent, "
 	SetMoveable( false );
 	SetSizeable( false );
 
-	m_pVoteSetupList = new SectionedListPanel( this, "VoteSetupList" );
-	m_pVoteParameterList = new SectionedListPanel( this, "VoteParameterList" );
-	m_pCallVoteButton = new Button( this, "CallVoteButton", "CallVote", this, "CallVote" );
-	m_pComboBox = new ComboBox( this, "ComboBox", 5, false );
+	m_pVoteSetupList = new vgui::SectionedListPanel( this, "VoteSetupList" );
+	m_pVoteParameterList = new vgui::SectionedListPanel( this, "VoteParameterList" );
+	m_pCallVoteButton = new vgui::Button( this, "CallVoteButton", "CallVote", this, "CallVote" );
+	m_pComboBox = new vgui::ComboBox( this, "ComboBox", 5, false );
 	m_pImageList = NULL;
 
 #ifdef TF_CLIENT_DLL
@@ -237,7 +239,7 @@ void CVoteSetupDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 		delete m_pImageList;
 	}
 
-	m_pImageList = new ImageList( false );
+	m_pImageList = new vgui::ImageList( false );
 }
 
 //-----------------------------------------------------------------------------
@@ -250,7 +252,7 @@ void CVoteSetupDialog::PostApplySchemeSettings( vgui::IScheme *pScheme )
 	{
 		int wide, tall;
 		m_pImageList->GetImage( i )->GetSize( wide, tall );
-		m_pImageList->GetImage( i )->SetSize(scheme()->GetProportionalScaledValueEx( GetScheme(), wide ), scheme()->GetProportionalScaledValueEx( GetScheme(), tall ) );
+		m_pImageList->GetImage( i )->SetSize(vgui::scheme()->GetProportionalScaledValueEx( GetScheme(), wide ), vgui::scheme()->GetProportionalScaledValueEx( GetScheme(), tall ) );
 	}
 
 	m_pVoteParameterList->SetImageList( m_pImageList, false );
@@ -264,16 +266,16 @@ void CVoteSetupDialog::ApplySettings(KeyValues *inResourceData)
 {
 	BaseClass::ApplySettings( inResourceData );
 
-	IScheme *pScheme = scheme()->GetIScheme( GetScheme() );
+	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
 
-	m_hIssueFont = INVALID_FONT;
+	m_hIssueFont = vgui::INVALID_FONT;
 	const char *pszFont = inResourceData->GetString( "issue_font", NULL );
 	if ( pszFont && pszFont[0] )
 	{
 		m_hIssueFont = pScheme->GetFont( pszFont, true );
 	}
 
-	m_hHeaderFont = INVALID_FONT;
+	m_hHeaderFont = vgui::INVALID_FONT;
 	pszFont = inResourceData->GetString( "header_font", NULL );
 	if ( pszFont && pszFont[0] )
 	{
@@ -356,9 +358,9 @@ void CVoteSetupDialog::Activate()
 	m_pVoteSetupList->SetSectionFgColor( 0, Color( 255, 255, 255, 255 ) );
 	m_pVoteSetupList->SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pVoteSetupList->SetBorder( NULL );
-	m_pVoteSetupList->AddColumnToSection( 0, "Issue", "#TF_Vote_Column_Issue", SectionedListPanel::COLUMN_CENTER, m_iIssueWidth );
+	m_pVoteSetupList->AddColumnToSection( 0, "Issue", "#TF_Vote_Column_Issue", vgui::SectionedListPanel::COLUMN_CENTER, m_iIssueWidth );
 
-	if ( m_hHeaderFont != INVALID_FONT )
+	if ( m_hHeaderFont != vgui::INVALID_FONT )
 	{
 		m_pVoteSetupList->SetFontSection( 0, m_hHeaderFont );
 		m_pVoteSetupList->SetSectionFgColor( 0, m_HeaderFGColor );
@@ -372,12 +374,12 @@ void CVoteSetupDialog::Activate()
 	m_pVoteParameterList->SetSectionFgColor( 0, Color( 255, 255, 255, 255 ) );
 	m_pVoteParameterList->SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pVoteParameterList->SetBorder( NULL );
-	m_pVoteParameterList->AddColumnToSection( 0, "Avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_RIGHT, 55 );
+	m_pVoteParameterList->AddColumnToSection( 0, "Avatar", "", vgui::SectionedListPanel::COLUMN_IMAGE | vgui::SectionedListPanel::COLUMN_RIGHT, 55 );
 	m_pVoteParameterList->AddColumnToSection( 0, "", "", 0, 10 );	// Spacer
 	m_pVoteParameterList->AddColumnToSection( 0, "Name", "#TF_Vote_Column_Name", 0, m_iParameterWidth * 0.6 );
-	m_pVoteParameterList->AddColumnToSection( 0, "Properties", "#TF_Vote_Column_Properties", SectionedListPanel::COLUMN_CENTER, m_iParameterWidth * 0.3 );
+	m_pVoteParameterList->AddColumnToSection( 0, "Properties", "#TF_Vote_Column_Properties", vgui::SectionedListPanel::COLUMN_CENTER, m_iParameterWidth * 0.3 );
 
-	if ( m_hHeaderFont != INVALID_FONT )
+	if ( m_hHeaderFont != vgui::INVALID_FONT )
 	{
 		m_pVoteParameterList->SetFontSection( 0, m_hHeaderFont );
 		m_pVoteParameterList->SetSectionFgColor( 0, m_HeaderFGColor );
@@ -398,7 +400,7 @@ void CVoteSetupDialog::Activate()
 		pKeyValues->deleteThis();
 
 		// Setup the list entry style
-		if ( m_hIssueFont != INVALID_FONT )
+		if ( m_hIssueFont != vgui::INVALID_FONT )
 		{
 			m_pVoteSetupList->SetItemFont( iId, m_hIssueFont );
 
@@ -581,7 +583,7 @@ void CVoteSetupDialog::OnItemSelected( vgui::Panel *panel )
 					int iId = m_pVoteParameterList->AddItem( 0, pKeyValues );
 					pKeyValues->deleteThis();
 
-					if ( m_hIssueFont != INVALID_FONT )
+					if ( m_hIssueFont != vgui::INVALID_FONT )
 					{
 						m_pVoteParameterList->SetItemFont( iId, m_hIssueFont );
 						m_pVoteParameterList->SetItemFgColor( iId, m_IssueFGColor );
@@ -637,7 +639,7 @@ void CVoteSetupDialog::OnItemSelected( vgui::Panel *panel )
 					int iId = m_pVoteParameterList->AddItem( 0, pKeyValues );
 					pKeyValues->deleteThis();
 
-					if ( m_hIssueFont != INVALID_FONT )
+					if ( m_hIssueFont != vgui::INVALID_FONT )
 					{
 						m_pVoteParameterList->SetItemFont( iId, m_hIssueFont );
 						m_pVoteParameterList->SetItemFgColor( iId, m_IssueFGColor );

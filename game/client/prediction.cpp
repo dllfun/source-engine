@@ -8,7 +8,7 @@
 #include "prediction.h"
 #include "igamemovement.h"
 #include "prediction_private.h"
-#include "ivrenderview.h"
+//#include "ivrenderview.h"
 #include "iinput.h"
 #include "usercmd.h"
 #include <vgui_controls/Controls.h>

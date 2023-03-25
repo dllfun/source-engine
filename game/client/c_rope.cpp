@@ -8,6 +8,7 @@
 #include "c_rope.h"
 #include "beamdraw.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "env_wind_shared.h"
 #include "input.h"
 #ifdef TF_CLIENT_DLL
