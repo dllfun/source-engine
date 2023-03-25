@@ -222,23 +222,8 @@ ConVar	gl_clear_randomcolor("gl_clear_randomcolor", "0", FCVAR_CHEAT, "Clear the
 // Globals
 //-----------------------------------------------------------------------------
 
-// These are the vectors for the "main" view - the one the player is looking down.
-// For stereo views, they are the vectors for the middle eye.
-static Vector g_vecRenderOrigin(0, 0, 0);
-static QAngle g_vecRenderAngles(0, 0, 0);
-static Vector g_vecPrevRenderOrigin(0, 0, 0);	// Last frame's render origin
-static QAngle g_vecPrevRenderAngles(0, 0, 0); // Last frame's render angles
-static Vector g_vecVForward(0, 0, 0), g_vecVRight(0, 0, 0), g_vecVUp(0, 0, 0);
-static VMatrix g_matCamInverse;
-static Vector g_vecCurrentRenderOrigin(0, 0, 0);
-static QAngle g_vecCurrentRenderAngles(0, 0, 0);
-static Vector g_vecCurrentVForward(0, 0, 0), g_vecCurrentVRight(0, 0, 0), g_vecCurrentVUp(0, 0, 0);
-static VMatrix g_matCurrentCamInverse;
-bool s_bCanAccessCurrentView = false;
-IntroData_t *g_pIntroData = NULL;
-static bool	g_bRenderingView = false;			// For debugging...
-static int g_CurrentViewID = VIEW_NONE;
-bool g_bRenderingScreenshot = false;
+
+
 
 
 #define FREEZECAM_SNAPSHOT_FADE_SPEED 340
@@ -247,103 +232,6 @@ float g_flFreezeFlash = 0.0f;
 CViewRender g_DefaultViewRender;
 IViewRender *view = NULL;	// set in cldll_client_init.cpp if no mod creates their owns
 
-
-
-
-//-----------------------------------------------------------------------------
-// Accessors to return the main view (where the player's looking)
-//-----------------------------------------------------------------------------
-const Vector& MainViewOrigin()
-{
-	return g_vecRenderOrigin;
-}
-
-const QAngle& MainViewAngles()
-{
-	return g_vecRenderAngles;
-}
-
-const Vector& MainViewForward()
-{
-	return g_vecVForward;
-}
-
-const Vector& MainViewRight()
-{
-	return g_vecVRight;
-}
-
-const Vector& MainViewUp()
-{
-	return g_vecVUp;
-}
-
-const VMatrix& MainWorldToViewMatrix()
-{
-	return g_matCamInverse;
-}
-
-const Vector& PrevMainViewOrigin()
-{
-	return g_vecPrevRenderOrigin;
-}
-
-const QAngle& PrevMainViewAngles()
-{
-	return g_vecPrevRenderAngles;
-}
-
-//-----------------------------------------------------------------------------
-// Accessors to return the current view being rendered
-//-----------------------------------------------------------------------------
-const Vector& CurrentViewOrigin()
-{
-	Assert(s_bCanAccessCurrentView);
-	return g_vecCurrentRenderOrigin;
-}
-
-const QAngle& CurrentViewAngles()
-{
-	Assert(s_bCanAccessCurrentView);
-	return g_vecCurrentRenderAngles;
-}
-
-const Vector& CurrentViewForward()
-{
-	Assert(s_bCanAccessCurrentView);
-	return g_vecCurrentVForward;
-}
-
-const Vector& CurrentViewRight()
-{
-	Assert(s_bCanAccessCurrentView);
-	return g_vecCurrentVRight;
-}
-
-const Vector& CurrentViewUp()
-{
-	Assert(s_bCanAccessCurrentView);
-	return g_vecCurrentVUp;
-}
-
-const VMatrix& CurrentWorldToViewMatrix()
-{
-	Assert(s_bCanAccessCurrentView);
-	return g_matCurrentCamInverse;
-}
-
-//-----------------------------------------------------------------------------
-// Methods to set the current view/guard access to view parameters
-//-----------------------------------------------------------------------------
-void AllowCurrentViewAccess(bool allow)
-{
-	s_bCanAccessCurrentView = allow;
-}
-
-bool IsCurrentViewAccessAllowed()
-{
-	return s_bCanAccessCurrentView;
-}
 //-----------------------------------------------------------------------------
 
 CON_COMMAND( r_cheapwaterstart,  "" )
@@ -960,44 +848,6 @@ CLIENTEFFECT_REGISTER_BEGIN( PrecachePostProcessingEffects )
 CLIENTEFFECT_REGISTER_END_CONDITIONAL(engineClient->GetDXSupportLevel() >= 90 )
 
 
-
-void SetupCurrentView( const Vector &vecOrigin, const QAngle &angles, view_id_t viewID )
-{
-	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
-
-	// Store off view origin and angles
-	g_vecCurrentRenderOrigin = vecOrigin;
-	g_vecCurrentRenderAngles = angles;
-
-	// Compute the world->main camera transform
-	ComputeCameraVariables( vecOrigin, angles, 
-		&g_vecCurrentVForward, &g_vecCurrentVRight, &g_vecCurrentVUp, &g_matCurrentCamInverse );
-
-	g_CurrentViewID = viewID;
-	s_bCanAccessCurrentView = true;
-
-	// Cache off fade distances
-	float flScreenFadeMinSize, flScreenFadeMaxSize;
-	view->GetScreenFadeDistances( &flScreenFadeMinSize, &flScreenFadeMaxSize );
-	modelinfo->SetViewScreenFadeRange( flScreenFadeMinSize, flScreenFadeMaxSize );
-
-	CMatRenderContextPtr pRenderContext( materials );
-#ifdef PORTAL
-	if ( g_pPortalRender->GetViewRecursionLevel() == 0 )
-	{
-		pRenderContext->SetIntRenderingParameter( INT_RENDERPARM_WRITE_DEPTH_TO_DESTALPHA, ((viewID == VIEW_MAIN) || (viewID == VIEW_3DSKY)) ? 1 : 0 );
-	}
-#else
-	pRenderContext->SetIntRenderingParameter( INT_RENDERPARM_WRITE_DEPTH_TO_DESTALPHA, ((viewID == VIEW_MAIN) || (viewID == VIEW_3DSKY)) ? 1 : 0 );
-#endif
-}
-
-view_id_t CurrentViewID()
-{
-	Assert( g_CurrentViewID != VIEW_ILLEGAL );
-	return ( view_id_t )g_CurrentViewID;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Portal views are considered 'Main' views. This function tests a view id 
 //			against all view ids used by portal renderables, as well as the main view.
@@ -1011,10 +861,7 @@ bool IsMainView ( view_id_t id )
 #endif
 }
 
-void FinishCurrentView()
-{
-	s_bCanAccessCurrentView = false;
-}
+
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -4459,7 +4306,7 @@ void CRendering3dView::SetupRenderablesList( int viewID )
 		setupInfo.m_bDrawTranslucentObjects = (viewID != VIEW_SHADOW_DEPTH_TEXTURE);
 
 		setupInfo.m_vecRenderOrigin = origin;
-		setupInfo.m_vecRenderForward = CurrentViewForward();
+		setupInfo.m_vecRenderForward = view->CurrentViewForward();
 
 		float fMaxDist = cl_maxrenderable_dist.GetFloat();
 
@@ -5035,7 +4882,7 @@ static void DrawOpaqueRenderables_DrawStaticProps( CClientRenderablesList::CEntr
 		else
 			continue;
 
-		if ( g_pStudioStatsEntity != NULL && g_CurrentViewID == VIEW_MAIN && itEntity->m_pRenderable == g_pStudioStatsEntity )
+		if ( g_pStudioStatsEntity != NULL && view->CurrentViewID() == VIEW_MAIN && itEntity->m_pRenderable == g_pStudioStatsEntity )
 		{
 			DrawOpaqueRenderable( itEntity->m_pRenderable, false, DepthMode, STUDIO_GENERATE_STATS );
 			continue;
@@ -5313,7 +5160,7 @@ void CRendering3dView::DrawTranslucentWorldAndDetailPropsInLeaves( int iCurLeafI
 		if ( render->LeafContainsTranslucentSurfaces( m_pWorldRenderList, nActualLeafIndex, nEngineDrawFlags ) )
 		{
 			// First draw any queued-up detail props from previously visited leaves
-			DetailObjectSystem()->RenderTranslucentDetailObjects( CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
+			DetailObjectSystem()->RenderTranslucentDetailObjects(view->CurrentViewOrigin(), view->CurrentViewForward(), view->CurrentViewRight(), view->CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
 			nDetailLeafCount = 0;
 
 			// Now draw the surfaces in this leaf
@@ -5534,7 +5381,7 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 	{
 		//opaques generally write depth, and translucents generally don't.
 		//So immediately after opaques are done is the best time to snap off the depth buffer to a texture.
-		switch ( g_CurrentViewID )
+		switch ( view->CurrentViewID())
 		{				 
 		case VIEW_MAIN:
 #ifdef _X360
@@ -5602,7 +5449,7 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 				Assert( nDetailLeafCount > 0 ); 
 				--nDetailLeafCount;
 				Assert( pDetailLeafList[nDetailLeafCount] == nLeaf );
-				DetailObjectSystem()->RenderTranslucentDetailObjects( CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
+				DetailObjectSystem()->RenderTranslucentDetailObjects(view->CurrentViewOrigin(), view->CurrentViewForward(), view->CurrentViewRight(), view->CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
 
 				// Draw translucent renderables in the leaf interspersed with detail props
 				for( ;pEntities[iCurTranslucentEntity].m_iWorldListInfoLeaf == iThisLeaf && iCurTranslucentEntity >= 0; --iCurTranslucentEntity )
@@ -5611,7 +5458,7 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 
 					// Draw any detail props in this leaf that's farther than the entity
 					const Vector &vecRenderOrigin = pRenderable->GetRenderOrigin();
-					DetailObjectSystem()->RenderTranslucentDetailObjectsInLeaf( CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nLeaf, &vecRenderOrigin );
+					DetailObjectSystem()->RenderTranslucentDetailObjectsInLeaf(view->CurrentViewOrigin(), view->CurrentViewForward(), view->CurrentViewRight(), view->CurrentViewUp(), nLeaf, &vecRenderOrigin );
 
 					bool bUsesPowerOfTwoFB = pRenderable->UsesPowerOfTwoFrameBufferTexture();
 					bool bUsesFullFB       = pRenderable->UsesFullFrameBufferTexture();
@@ -5643,13 +5490,13 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 				}
 
 				// Draw all remaining props in this leaf
-				DetailObjectSystem()->RenderTranslucentDetailObjectsInLeaf( CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nLeaf, NULL );
+				DetailObjectSystem()->RenderTranslucentDetailObjectsInLeaf(view->CurrentViewOrigin(), view->CurrentViewForward(), view->CurrentViewRight(), view->CurrentViewUp(), nLeaf, NULL );
 			}
 			else
 			{
 				// Draw queued up detail props (we know that the list of detail leaves won't include this leaf, since ShouldDrawDetailObjectsInLeaf is false)
 				// Therefore no fixup on nDetailLeafCount is required as in the above section
-				DetailObjectSystem()->RenderTranslucentDetailObjects( CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
+				DetailObjectSystem()->RenderTranslucentDetailObjects(view->CurrentViewOrigin(), view->CurrentViewForward(), view->CurrentViewRight(), view->CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
 
 				for( ;pEntities[iCurTranslucentEntity].m_iWorldListInfoLeaf == iThisLeaf && iCurTranslucentEntity >= 0; --iCurTranslucentEntity )
 				{
@@ -5702,7 +5549,7 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 	DrawTranslucentWorldAndDetailPropsInLeaves( iPrevLeaf, 0, nEngineDrawFlags, nDetailLeafCount, pDetailLeafList, bShadowDepth );
 
 	// Draw any queued-up detail props from previously visited leaves
-	DetailObjectSystem()->RenderTranslucentDetailObjects( CurrentViewOrigin(), CurrentViewForward(), CurrentViewRight(), CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
+	DetailObjectSystem()->RenderTranslucentDetailObjects(view->CurrentViewOrigin(), view->CurrentViewForward(), view->CurrentViewRight(), view->CurrentViewUp(), nDetailLeafCount, pDetailLeafList );
 
 	// Reset the blend state.
 	render->SetBlend( 1 );
@@ -5913,7 +5760,7 @@ void CSkyboxView::DrawInternal( view_id_t iSkyBoxViewID, bool bInvokePreAndPostR
 	render->Push3DView( (*this), m_ClearFlags, pRenderTarget, GetFrustum(), pDepthTarget );
 
 	// Store off view origin and angles
-	SetupCurrentView( origin, angles, iSkyBoxViewID );
+	view->SetupCurrentView( origin, angles, iSkyBoxViewID );
 
 #if defined( _X360 )
 	CMatRenderContextPtr pRenderContext( materials );
@@ -5956,7 +5803,7 @@ void CSkyboxView::DrawInternal( view_id_t iSkyBoxViewID, bool bInvokePreAndPostR
 	if( bInvokePreAndPostRender )
 	{
 		IGameSystem::PostRenderAllSystems();
-		FinishCurrentView();
+		view->FinishCurrentView();
 	}
 
 	render->PopView( GetFrustum() );
@@ -6089,12 +5936,12 @@ void CShadowDepthView::Setup( const CViewSetup &shadowViewIn, ITexture *pRenderT
 
 bool DrawingShadowDepthView( void ) //for easy externing
 {
-	return (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE);
+	return (view->CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE);
 }
 
 bool DrawingMainView() //for easy externing
 {
-	return (CurrentViewID() == VIEW_MAIN);
+	return (view->CurrentViewID() == VIEW_MAIN);
 }
 
 
@@ -6129,7 +5976,7 @@ void CShadowDepthView::Draw()
 		render->Push3DView( (*this), VIEW_CLEAR_DEPTH, m_pRenderTarget, GetFrustum() );
 	}
 
-	SetupCurrentView( origin, angles, VIEW_SHADOW_DEPTH_TEXTURE );
+	view->SetupCurrentView( origin, angles, VIEW_SHADOW_DEPTH_TEXTURE );
 
 	MDLCACHE_CRITICAL_SECTION();
 
@@ -6140,7 +5987,7 @@ void CShadowDepthView::Draw()
 
 	{
 		VPROF_BUDGET( "BuildRenderableRenderLists", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
-		BuildRenderableRenderLists( CurrentViewID() );
+		BuildRenderableRenderLists(view->CurrentViewID() );
 	}
 
 	engineClient->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
@@ -6421,8 +6268,8 @@ void CBaseWorldView::PopView()
 //-----------------------------------------------------------------------------
 void CBaseWorldView::DrawSetup( float waterHeight, int nSetupFlags, float waterZAdjust, int iForceViewLeaf )
 {
-	int savedViewID = g_CurrentViewID;
-	g_CurrentViewID = VIEW_ILLEGAL;
+	view_id_t savedViewID = view->CurrentViewID();
+	view->SetupCurrentView(VIEW_ILLEGAL);
 
 	bool bViewChanged = AdjustView( waterHeight );
 
@@ -6460,7 +6307,7 @@ void CBaseWorldView::DrawSetup( float waterHeight, int nSetupFlags, float waterZ
 	}
 #endif
 
-	g_CurrentViewID = savedViewID;
+	view->SetupCurrentView(savedViewID);
 }
 
 
@@ -6497,10 +6344,10 @@ void MaybeInvalidateLocalPlayerAnimation()
 
 void CBaseWorldView::DrawExecute( float waterHeight, view_id_t viewID, float waterZAdjust )
 {
-	int savedViewID = g_CurrentViewID;
+	view_id_t savedViewID = view->CurrentViewID();
 
 	// @MULTICORE (toml 8/16/2006): rethink how, where, and when this is done...
-	g_CurrentViewID = VIEW_SHADOW_DEPTH_TEXTURE;
+	view->SetupCurrentView(VIEW_SHADOW_DEPTH_TEXTURE);
 	MaybeInvalidateLocalPlayerAnimation();
 	g_pClientShadowMgr->ComputeShadowTextures( *this, m_pWorldListInfo->m_LeafCount, m_pWorldListInfo->m_pLeafList );
 	MaybeInvalidateLocalPlayerAnimation();
@@ -6508,7 +6355,7 @@ void CBaseWorldView::DrawExecute( float waterHeight, view_id_t viewID, float wat
 	// Make sure sound doesn't stutter
 	engineClient->Sound_ExtraUpdate();
 
-	g_CurrentViewID = viewID;
+	view->SetupCurrentView(viewID);
 
 	// Update our render view flags.
 	int iDrawFlagsBackup = m_DrawFlags;
@@ -6565,7 +6412,7 @@ void CBaseWorldView::DrawExecute( float waterHeight, view_id_t viewID, float wat
 	}
 
 	// issue the pixel visibility tests for sub-views
-	if ( !IsMainView( CurrentViewID() ) && CurrentViewID() != VIEW_INTRO_CAMERA )
+	if ( !IsMainView( view->CurrentViewID() ) && view->CurrentViewID() != VIEW_INTRO_CAMERA )
 	{
 		PixelVisibility_EndCurrentView();
 	}
@@ -6576,7 +6423,7 @@ void CBaseWorldView::DrawExecute( float waterHeight, view_id_t viewID, float wat
 
 	m_DrawFlags = iDrawFlagsBackup;
 
-	g_CurrentViewID = savedViewID;
+	view->SetupCurrentView(savedViewID);
 
 #if defined( _X360 )
 	pRenderContext->PopVertexShaderGPRAllocation();
@@ -6594,8 +6441,8 @@ void CBaseWorldView::SSAO_DepthPass()
 #if 1
 	VPROF_BUDGET( "CSimpleWorldView::SSAO_DepthPass", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
-	int savedViewID = g_CurrentViewID;
-	g_CurrentViewID = VIEW_SSAO;
+	view_id_t savedViewID = view->CurrentViewID();
+	view->SetupCurrentView(VIEW_SSAO);
 
 	ITexture *pSSAO = materials->FindTexture( "_rt_ResolvedFullFrameDepth", TEXTURE_GROUP_RENDER_TARGET );
 
@@ -6667,7 +6514,7 @@ void CBaseWorldView::SSAO_DepthPass()
 
 	pRenderContext.SafeRelease();
 
-	g_CurrentViewID = savedViewID;
+	view->SetupCurrentView(savedViewID);
 #endif
 }
 
@@ -6793,7 +6640,7 @@ void CSimpleWorldView::Draw()
 
 	pRenderContext.SafeRelease();
 
-	DrawExecute( 0, CurrentViewID(), 0 );
+	DrawExecute( 0, view->CurrentViewID(), 0 );
 
 	pRenderContext.GetFrom( materials );
 	pRenderContext->ClearColor4ub( 0, 0, 0, 255 );
@@ -6857,7 +6704,7 @@ void CBaseWaterView::CSoftwareIntersectionView::Setup( bool bAboveWater )
 void CBaseWaterView::CSoftwareIntersectionView::Draw()
 {
 	DrawSetup( GetOuter()->m_waterHeight, m_DrawFlags, GetOuter()->m_waterZAdjust );
-	DrawExecute( GetOuter()->m_waterHeight, CurrentViewID(), GetOuter()->m_waterZAdjust );
+	DrawExecute( GetOuter()->m_waterHeight, view->CurrentViewID(), GetOuter()->m_waterZAdjust );
 }
 
 //-----------------------------------------------------------------------------
@@ -6957,7 +6804,7 @@ void CAboveWaterView::Draw()
 	// render the world
 	DrawSetup( m_waterHeight, m_DrawFlags, m_waterZAdjust );
 	EnableWorldFog();
-	DrawExecute( m_waterHeight, CurrentViewID(), m_waterZAdjust );
+	DrawExecute( m_waterHeight, view->CurrentViewID(), m_waterZAdjust );
 
 	if ( m_waterInfo.m_bRefract )
 	{
@@ -7010,8 +6857,8 @@ void CAboveWaterView::CReflectionView::Draw()
 #endif
 
 	// Store off view origin and angles and set the new view
-	int nSaveViewID = CurrentViewID();
-	SetupCurrentView( origin, angles, VIEW_REFLECTION );
+	view_id_t nSaveViewID = view->CurrentViewID();
+	view->SetupCurrentView( origin, angles, VIEW_REFLECTION );
 
 	// Disable occlusion visualization in reflection
 	bool bVisOcclusion = r_visocclusion.GetInt();
@@ -7030,7 +6877,7 @@ void CAboveWaterView::CReflectionView::Draw()
 #endif
 
 	// finish off the view and restore the previous view.
-	SetupCurrentView( origin, angles, ( view_id_t )nSaveViewID );
+	view->SetupCurrentView( origin, angles, ( view_id_t )nSaveViewID );
 
 	// This is here for multithreading
 	CMatRenderContextPtr pRenderContext( materials );
@@ -7063,8 +6910,8 @@ void CAboveWaterView::CRefractionView::Draw()
 #endif
 
 	// Store off view origin and angles and set the new view
-	int nSaveViewID = CurrentViewID();
-	SetupCurrentView( origin, angles, VIEW_REFRACTION );
+	view_id_t nSaveViewID = view->CurrentViewID();
+	view->SetupCurrentView( origin, angles, VIEW_REFRACTION );
 
 	DrawSetup( GetOuter()->m_waterHeight, m_DrawFlags, GetOuter()->m_waterZAdjust );
 
@@ -7078,7 +6925,7 @@ void CAboveWaterView::CRefractionView::Draw()
 #endif
 
 	// finish off the view.  restore the previous view.
-	SetupCurrentView( origin, angles, ( view_id_t )nSaveViewID );
+	view->SetupCurrentView( origin, angles, ( view_id_t )nSaveViewID );
 
 	// This is here for multithreading
 	CMatRenderContextPtr pRenderContext( materials );
@@ -7191,7 +7038,7 @@ void CUnderWaterView::Draw()
 
 	DrawSetup( m_waterHeight, m_DrawFlags, m_waterZAdjust );
 	SetFogVolumeState( m_fogInfo, false );
-	DrawExecute( m_waterHeight, CurrentViewID(), m_waterZAdjust );
+	DrawExecute( m_waterHeight, view->CurrentViewID(), m_waterZAdjust );
 	m_ClearFlags = 0;
 
 	if( m_waterZAdjust != 0.0f && m_bSoftwareUserClipPlane && m_waterInfo.m_bRefract )

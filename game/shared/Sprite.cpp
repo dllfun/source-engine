@@ -12,6 +12,7 @@
 #include "engine/ivdebugoverlay.h"
 
 #if defined( CLIENT_DLL )
+	#include "iviewrender.h"
 	#include "enginesprite.h"
 	#include "iclientmode.h"
 	#include "c_baseviewmodel.h"
@@ -739,7 +740,7 @@ void CSprite::ClientThink( void )
 	}
 }
 
-extern bool g_bRenderingScreenshot;
+//extern bool g_bRenderingScreenshot;
 extern ConVar r_drawviewmodel;
 
 //-----------------------------------------------------------------------------
@@ -764,7 +765,7 @@ int CSprite::DrawModel( int flags )
 
 	// Tracker 16432:  If rendering a savegame screenshot then don't draw sprites 
 	//   who have viewmodels as their moveparent
-	if ( g_bRenderingScreenshot || !r_drawviewmodel.GetBool() )
+	if ( view->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
 	{
 		C_BaseViewModel *vm = dynamic_cast< C_BaseViewModel * >( GetMoveParent() );
 		if ( vm )

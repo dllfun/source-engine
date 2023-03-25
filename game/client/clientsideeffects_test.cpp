@@ -215,7 +215,7 @@ void FX_TracerSound( const Vector &start, const Vector &end, int iTracerType )
 	float flWhizDist = TRACER_MAX_HEAR_DIST;
 	float flMinWhizTime = TRACER_SOUND_TIME_MIN;
 	float flMaxWhizTime = TRACER_SOUND_TIME_MAX;
-	Vector vecListenOrigin = MainViewOrigin();
+	Vector vecListenOrigin = view->MainViewOrigin();
 	switch( iTracerType )
 	{
 	case TRACER_TYPE_DEFAULT:

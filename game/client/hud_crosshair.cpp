@@ -144,8 +144,8 @@ extern ConVar cl_crosshair_scale;
 
 void CHudCrosshair::GetDrawPosition ( float *pX, float *pY, bool *pbBehindCamera, QAngle angleCrosshairOffset )
 {
-	QAngle curViewAngles = CurrentViewAngles();
-	Vector curViewOrigin = CurrentViewOrigin();
+	QAngle curViewAngles = view->CurrentViewAngles();
+	Vector curViewOrigin = view->CurrentViewOrigin();
 
 	int vx, vy, vw, vh;
 	vgui::surface()->GetFullscreenViewport( vx, vy, vw, vh );
@@ -236,7 +236,7 @@ void CHudCrosshair::Paint( void )
 	if ( !m_pCrosshair )
 		return;
 
-	if ( !IsCurrentViewAccessAllowed() )
+	if ( !view->IsCurrentViewAccessAllowed() )
 		return;
 
 	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();

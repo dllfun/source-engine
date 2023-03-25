@@ -67,7 +67,7 @@ void ToolFramework_AdjustEngineViewport( int& x, int& y, int& width, int& height
 bool ToolFramework_SetupEngineView( Vector &origin, QAngle &angles, float &fov );
 bool ToolFramework_SetupEngineMicrophone( Vector &origin, QAngle &angles );
 
-extern bool g_bRenderingScreenshot;
+//extern bool g_bRenderingScreenshot;
 
 #if _DEBUG
 bool g_bRenderingCameraView = false;
@@ -142,8 +142,8 @@ float ScaleFOVByWidthRatio(float fovDegrees, float ratio)
 
 static void GetPos( const CCommand &args, Vector &vecOrigin, QAngle &angles )
 {
-	vecOrigin = MainViewOrigin();
-	angles = MainViewAngles();
+	vecOrigin = view->MainViewOrigin();
+	angles = view->MainViewAngles();
 	if ( args.ArgC() == 2 && atoi( args[1] ) == 2 )
 	{
 		C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();

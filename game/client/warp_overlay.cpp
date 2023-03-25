@@ -29,11 +29,11 @@ void CWarpOverlay::Draw( bool bCacheFullSceneState )
 	if( m_bDirectional )
 		vToGlow = m_vDirection;
 	else
-		vToGlow = m_vPos - CurrentViewOrigin();
+		vToGlow = m_vPos - view->CurrentViewOrigin();
 
 	VectorNormalize( vToGlow );
 
-	float flDot = vToGlow.Dot( CurrentViewForward() );
+	float flDot = vToGlow.Dot(view->CurrentViewForward() );
 
 	if( flDot <= g_flOverlayRange )
 		return;

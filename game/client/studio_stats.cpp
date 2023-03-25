@@ -104,8 +104,8 @@ void StudioStats_FindClosestEntity( CClientRenderablesList *pClientRenderablesLi
 
 	trace_t tr;
 	Vector vecStart, vecEnd;
-	VectorMA( MainViewOrigin(), MAX_TRACE_LENGTH, MainViewForward(), vecEnd );
-	VectorMA( MainViewOrigin(), 10,   MainViewForward(), vecStart );
+	VectorMA(view->MainViewOrigin(), MAX_TRACE_LENGTH, view->MainViewForward(), vecEnd );
+	VectorMA(view->MainViewOrigin(), 10, view->MainViewForward(), vecStart );
 
 	Ray_t shotRay;
 	shotRay.Init( vecStart, vecEnd );

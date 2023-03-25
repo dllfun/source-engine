@@ -159,7 +159,7 @@ void CGlowOverlay::UpdateSkyGlowObstruction( float zFar, bool bCacheFullSceneSta
 	if ( PixelVisibility_IsAvailable() )
 	{
 		// Trace a ray at the object. 
-		Vector pos = CurrentViewOrigin() + m_vDirection * zFar * 0.99f; //9f;
+		Vector pos = view->CurrentViewOrigin() + m_vDirection * zFar * 0.99f; //9f;
 
 		// UNDONE: Can probably do only the pixelvis query in this case if you can figure out where
 		// to put it - or save the position of this trace
@@ -171,7 +171,7 @@ void CGlowOverlay::UpdateSkyGlowObstruction( float zFar, bool bCacheFullSceneSta
 	}
 	// Trace a ray at the object.
 	trace_t trace;
-	UTIL_TraceLine( CurrentViewOrigin(), CurrentViewOrigin() + (m_vDirection*MAX_TRACE_LENGTH), 
+	UTIL_TraceLine(view->CurrentViewOrigin(), view->CurrentViewOrigin() + (m_vDirection*MAX_TRACE_LENGTH),
 		CONTENTS_SOLID, NULL, COLLISION_GROUP_NONE, &trace );
 	
 	// back the trace with a pixel query to occlude with models
@@ -207,7 +207,7 @@ void CGlowOverlay::UpdateGlowObstruction( const Vector &vToGlow, bool bCacheFull
 		if ( m_bInSky )
 		{
 			const CViewSetup *pViewSetup = view->GetViewSetup();
-			Vector pos = CurrentViewOrigin() + m_vDirection * (pViewSetup->zFar * 0.999f);
+			Vector pos = view->CurrentViewOrigin() + m_vDirection * (pViewSetup->zFar * 0.999f);
 			pixelvis_queryparams_t params;
 			params.Init( pos, m_flProxyRadius, CalcGlowAspect() );
 			params.bSizeInScreenspace = true;
@@ -233,7 +233,7 @@ void CGlowOverlay::UpdateGlowObstruction( const Vector &vToGlow, bool bCacheFull
 	{
 		// Trace a ray at the object.
 		trace_t trace;
-		UTIL_TraceLine( CurrentViewOrigin(), CurrentViewOrigin() + (vToGlow*MAX_TRACE_LENGTH), 
+		UTIL_TraceLine(view->CurrentViewOrigin(), view->CurrentViewOrigin() + (vToGlow*MAX_TRACE_LENGTH),
 			CONTENTS_SOLID, NULL, COLLISION_GROUP_NONE, &trace );
 		
 		bFade = (trace.fraction < 1 && !(trace.surface.flags & SURF_SKY));
@@ -328,7 +328,7 @@ void CGlowOverlay::CalcBasis(
 	Vector &vRight )
 {
 	const float flOverlayDist = 100;	
-	vBasePt = CurrentViewOrigin() + vToGlow * flOverlayDist;
+	vBasePt = view->CurrentViewOrigin() + vToGlow * flOverlayDist;
 	
 	vUp.Init( 0, 0, 1 );
 	
@@ -355,11 +355,11 @@ void CGlowOverlay::Draw( bool bCacheFullSceneState )
 	if( m_bDirectional )
 		vToGlow = m_vDirection;
 	else
-		vToGlow = m_vPos - CurrentViewOrigin();
+		vToGlow = m_vPos - view->CurrentViewOrigin();
 
 	VectorNormalize( vToGlow );
 
-	float flDot = vToGlow.Dot( CurrentViewForward() );
+	float flDot = vToGlow.Dot(view->CurrentViewForward() );
 
 	UpdateGlowObstruction( vToGlow, bCacheFullSceneState );
 	if( m_flGlowObstructionScale == 0 )

@@ -23,30 +23,7 @@ class VMatrix;
 class Vector;
 class QAngle;
 class VPlane;
-//-----------------------------------------------------------------------------
-// There's a difference between the 'current view' and the 'main view'
-// The 'main view' is where the player is sitting. Current view is just
-// what's currently being rendered, which, owing to monitors or water,
-// could be just about anywhere.
-//-----------------------------------------------------------------------------
-const Vector& MainViewOrigin();
-const QAngle& MainViewAngles();
-const Vector& PrevMainViewOrigin();
-const QAngle& PrevMainViewAngles();
-const VMatrix& MainWorldToViewMatrix();
-const Vector& MainViewForward();
-const Vector& MainViewRight();
-const Vector& MainViewUp();
 
-const Vector& CurrentViewOrigin();
-const QAngle& CurrentViewAngles();
-const VMatrix& CurrentWorldToViewMatrix();
-const Vector& CurrentViewForward();
-const Vector& CurrentViewRight();
-const Vector& CurrentViewUp();
-
-void AllowCurrentViewAccess(bool allow);
-bool IsCurrentViewAccessAllowed();
 
 // These are set as it draws reflections, refractions, etc, so certain effects can avoid 
 // drawing themselves in reflections.
@@ -81,6 +58,25 @@ enum DrawFlags_t
 	DF_SHADOW_DEPTH_MAP		= 0x100000	// Currently rendering a shadow depth map
 };
 
+// This identifies the view for certain systems that are unique per view (e.g. pixel visibility)
+// NOTE: This is identifying which logical part of the scene an entity is being redered in
+// This is not identifying a particular render target necessarily.  This is mostly needed for entities that
+// can be rendered more than once per frame (pixel vis queries need to be identified per-render call)
+enum view_id_t
+{
+	VIEW_ILLEGAL = -2,
+	VIEW_NONE = -1,
+	VIEW_MAIN = 0,
+	VIEW_3DSKY = 1,
+	VIEW_MONITOR = 2,
+	VIEW_REFLECTION = 3,
+	VIEW_REFRACTION = 4,
+	VIEW_INTRO_PLAYER = 5,
+	VIEW_INTRO_CAMERA = 6,
+	VIEW_SHADOW_DEPTH_TEXTURE = 7,
+	VIEW_SSAO = 8,
+	VIEW_ID_COUNT
+};
 
 //-----------------------------------------------------------------------------
 // Purpose: View setup and rendering
@@ -91,6 +87,27 @@ struct vrect_t;
 class C_BaseViewModel;
 struct WriteReplayScreenshotParams_t;
 class IReplayScreenshotSystem;
+
+//-----------------------------------------------------------------------------
+// Data specific to intro mode to control rendering.
+//-----------------------------------------------------------------------------
+struct IntroDataBlendPass_t
+{
+	int m_BlendMode;
+	float m_Alpha; // in [0.0f,1.0f]  This needs to add up to 1.0 for all passes, unless you are fading out.
+};
+
+struct IntroData_t
+{
+	bool	m_bDrawPrimary;
+	Vector	m_vecCameraView;
+	QAngle	m_vecCameraViewAngles;
+	float	m_playerViewFOV;
+	CUtlVector<IntroDataBlendPass_t> m_Passes;
+
+	// Fade overriding for the intro
+	float	m_flCurrentFadeColor[4];
+};
 
 abstract_class IViewRender
 {
@@ -170,6 +187,37 @@ public:
 	virtual void		FreezeFrame( float flFreezeTime ) = 0;
 
 	virtual IReplayScreenshotSystem *GetReplayScreenshotSystem() = 0;
+
+	//-----------------------------------------------------------------------------
+// There's a difference between the 'current view' and the 'main view'
+// The 'main view' is where the player is sitting. Current view is just
+// what's currently being rendered, which, owing to monitors or water,
+// could be just about anywhere.
+//-----------------------------------------------------------------------------
+	virtual const Vector& MainViewOrigin() = 0;
+	virtual const QAngle& MainViewAngles() = 0;
+	virtual const Vector& PrevMainViewOrigin() = 0;
+	virtual const QAngle& PrevMainViewAngles() = 0;
+	virtual const VMatrix& MainWorldToViewMatrix() = 0;
+	virtual const Vector& MainViewForward() = 0;
+	virtual const Vector& MainViewRight() = 0;
+	virtual const Vector& MainViewUp() = 0;
+
+	virtual const Vector& CurrentViewOrigin() = 0;
+	virtual const QAngle& CurrentViewAngles() = 0;
+	virtual const VMatrix& CurrentWorldToViewMatrix() = 0;
+	virtual const Vector& CurrentViewForward() = 0;
+	virtual const Vector& CurrentViewRight() = 0;
+	virtual const Vector& CurrentViewUp() = 0;
+
+	virtual void AllowCurrentViewAccess(bool allow) = 0;
+	virtual bool IsCurrentViewAccessAllowed() = 0;
+	virtual void SetupCurrentView(const Vector& vecOrigin, const QAngle& angles, view_id_t viewID) = 0;
+	virtual void SetupCurrentView(view_id_t viewID) = 0;
+	virtual void FinishCurrentView() = 0;
+	virtual view_id_t CurrentViewID() = 0;
+	virtual bool IsRenderingScreenshot() = 0;
+	virtual IntroData_t* GetIntroData() = 0;
 };
 
 extern IViewRender *view;

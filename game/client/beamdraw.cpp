@@ -89,29 +89,29 @@ void DrawHalo(IMaterial* pMaterial, const Vector& source, float scale, float con
 
 	meshBuilder.Color3fv (color);
 	meshBuilder.TexCoord2f (0, 0, 1);
-	VectorMA (source, -scale, CurrentViewUp(), point);
-	VectorMA (point, -scale, CurrentViewRight(), point);
+	VectorMA (source, -scale, view->CurrentViewUp(), point);
+	VectorMA (point, -scale, view->CurrentViewRight(), point);
 	meshBuilder.Position3fv (point.Base());
 	meshBuilder.AdvanceVertex();
 
 	meshBuilder.Color3fv (color);
 	meshBuilder.TexCoord2f (0, 0, 0);
-	VectorMA (source, scale, CurrentViewUp(), point);
-	VectorMA (point, -scale, CurrentViewRight(), point);
+	VectorMA (source, scale, view->CurrentViewUp(), point);
+	VectorMA (point, -scale, view->CurrentViewRight(), point);
 	meshBuilder.Position3fv (point.Base());
 	meshBuilder.AdvanceVertex();
 
 	meshBuilder.Color3fv (color);
 	meshBuilder.TexCoord2f (0, 1, 0);
-	VectorMA (source, scale, CurrentViewUp(), point);
-	VectorMA (point, scale, CurrentViewRight(), point);
+	VectorMA (source, scale, view->CurrentViewUp(), point);
+	VectorMA (point, scale, view->CurrentViewRight(), point);
 	meshBuilder.Position3fv (point.Base());
 	meshBuilder.AdvanceVertex();
 
 	meshBuilder.Color3fv (color);
 	meshBuilder.TexCoord2f (0, 1, 1);
-	VectorMA (source, -scale, CurrentViewUp(), point);
-	VectorMA (point, scale, CurrentViewRight(), point);
+	VectorMA (source, -scale, view->CurrentViewUp(), point);
+	VectorMA (point, scale, view->CurrentViewRight(), point);
 	meshBuilder.Position3fv (point.Base());
 	meshBuilder.AdvanceVertex();
 	
@@ -132,11 +132,11 @@ void DrawSprite( const Vector &vecOrigin, float flWidth, float flHeight, color32
 
 	// Compute direction vectors for the sprite
 	Vector fwd, right( 1, 0, 0 ), up( 0, 1, 0 );
-	VectorSubtract( CurrentViewOrigin(), vecOrigin, fwd );
+	VectorSubtract(view->CurrentViewOrigin(), vecOrigin, fwd );
 	float flDist = VectorNormalize( fwd );
 	if (flDist >= 1e-3)
 	{
-		CrossProduct( CurrentViewUp(), fwd, right );
+		CrossProduct(view->CurrentViewUp(), fwd, right );
 		flDist = VectorNormalize( right );
 		if (flDist >= 1e-3)
 		{
@@ -146,7 +146,7 @@ void DrawSprite( const Vector &vecOrigin, float flWidth, float flHeight, color32
 		{
 			// In this case, fwd == g_vecVUp, it's right above or 
 			// below us in screen space
-			CrossProduct( fwd, CurrentViewRight(), up );
+			CrossProduct( fwd, view->CurrentViewRight(), up );
 			VectorNormalize( up );
 			CrossProduct( up, fwd, right );
 		}
@@ -201,7 +201,7 @@ static void ComputeBeamPerpendicular( const Vector &vecBeamDelta, Vector *pPerp 
 	Vector vecBeamCenter = vecBeamDelta;
 	VectorNormalize( vecBeamCenter );
 
-	CrossProduct( CurrentViewForward(), vecBeamCenter, *pPerp );
+	CrossProduct(view->CurrentViewForward(), vecBeamCenter, *pPerp );
 	VectorNormalize( *pPerp );
 }
 
@@ -384,9 +384,9 @@ void DrawSegs( int noise_divisions, float *prgNoise, const model_t* spritemodel,
 			{
 				float	s, c;
 				SinCos( fraction*M_PI*length + freq, &s, &c );
-				VectorMA( curSeg.m_vPos, factor * s, CurrentViewUp(), curSeg.m_vPos );
+				VectorMA( curSeg.m_vPos, factor * s, view->CurrentViewUp(), curSeg.m_vPos );
 				// Rotate the noise along the perpendicluar axis a bit to keep the bolt from looking diagonal
-				VectorMA( curSeg.m_vPos, factor * c, CurrentViewRight(), curSeg.m_vPos );
+				VectorMA( curSeg.m_vPos, factor * c, view->CurrentViewRight(), curSeg.m_vPos );
 			}
 			else
 			{
@@ -450,9 +450,9 @@ void CalcSegOrigin( Vector *vecOut, int iPoint, int noise_divisions, float *prgN
 		{
 			float	s, c;
 			SinCos( fraction*M_PI*length + freq, &s, &c );
-			VectorMA( *vecOut, factor * s, MainViewUp(), *vecOut );
+			VectorMA( *vecOut, factor * s, view->MainViewUp(), *vecOut );
 			// Rotate the noise along the perpendicular axis a bit to keep the bolt from looking diagonal
-			VectorMA( *vecOut, factor * c, MainViewRight(), *vecOut );
+			VectorMA( *vecOut, factor * c, view->MainViewRight(), *vecOut );
 		}
 		else
 		{
@@ -614,7 +614,7 @@ void DrawTeslaSegs( int noise_divisions, float *prgNoise, const model_t* spritem
 
 				// Get an endpoint for the new branch
 				vecStart = curSeg.m_vPos;
-				vecEnd = source + delta + (MainViewUp() * 32) + (MainViewRight() * 32);
+				vecEnd = source + delta + (view->MainViewUp() * 32) + (view->MainViewRight() * 32);
 				vecEnd -= vecStart;
 
 				// Reduce the end width by the current number of branches we've had
@@ -860,7 +860,7 @@ void DrawSplineSegs( int noise_divisions, float *prgNoise,
 				VectorNormalize(vBeamDir1);
 
 				Vector vLookDir;
-				VectorSubtract(CurrentViewOrigin(),seg.m_vPos,vLookDir);
+				VectorSubtract(view->CurrentViewOrigin(),seg.m_vPos,vLookDir);
 				VectorNormalize(vLookDir);
 
 				float	dotpr		= fabs(DotProduct(vBeamDir1,vLookDir));
@@ -884,16 +884,16 @@ void DrawSplineSegs( int noise_divisions, float *prgNoise,
 				{
 					float	s, c;
 					SinCos( fraction*M_PI*length + freq, &s, &c );
-					VectorMA( seg.m_vPos, factor * s, CurrentViewUp(), seg.m_vPos );
+					VectorMA( seg.m_vPos, factor * s, view->CurrentViewUp(), seg.m_vPos );
 					// Rotate the noise along the perpendicluar axis a bit to keep the bolt from looking diagonal
-					VectorMA( seg.m_vPos, factor * c, CurrentViewRight(), seg.m_vPos );
+					VectorMA( seg.m_vPos, factor * c, view->CurrentViewRight(), seg.m_vPos );
 				}
 				else
 				{
-					VectorMA( seg.m_vPos, factor, CurrentViewUp(), seg.m_vPos );
+					VectorMA( seg.m_vPos, factor, view->CurrentViewUp(), seg.m_vPos );
 					// Rotate the noise along the perpendicluar axis a bit to keep the bolt from looking diagonal
 					factor = prgNoise[noiseIndex>>16] * scale * cos(fraction*M_PI*3+freq);
-					VectorMA( seg.m_vPos, factor, CurrentViewRight(), seg.m_vPos );
+					VectorMA( seg.m_vPos, factor, view->CurrentViewRight(), seg.m_vPos );
 				}
 			}
 
@@ -929,7 +929,7 @@ void DrawSplineSegs( int noise_divisions, float *prgNoise,
 				VectorNormalize(vBeamDir1);
 
 				Vector vLookDir;
-				VectorSubtract(CurrentViewOrigin(),pStart,vLookDir);
+				VectorSubtract(view->CurrentViewOrigin(),pStart,vLookDir);
 				VectorNormalize(vLookDir);
 
 				bestDot		= fabs(DotProduct(vBeamDir1,vLookDir));
@@ -1286,11 +1286,11 @@ void DrawRing( int noise_divisions, float *prgNoise, void (*pfnNoise)( float *no
 		if ( scale != 0.0f )
 		{
 			factor = prgNoise[(noiseIndex>>16) & 0x7F] * scale;
-			VectorMA( point, factor, CurrentViewUp(), point );
+			VectorMA( point, factor, view->CurrentViewUp(), point );
 
 			// Rotate the noise along the perpendicluar axis a bit to keep the bolt from looking diagonal
 			factor = prgNoise[(noiseIndex>>16) & 0x7F] * scale * cos(fraction*M_PI*3*8+freq);
-			VectorMA( point, factor, CurrentViewRight(), point );
+			VectorMA( point, factor, view->CurrentViewRight(), point );
 		}
 		
 		// Transform point into screen space
@@ -1303,8 +1303,8 @@ void DrawRing( int noise_divisions, float *prgNoise, void (*pfnNoise)( float *no
 			// We don't need Z, we're in screen space
 			tmp[2] = 0;
 			VectorNormalize( tmp );
-			VectorScale( CurrentViewUp(), tmp[0], normal );	// Build point along noraml line (normal is -y, x)
-			VectorMA( normal, -tmp[1], CurrentViewRight(), normal );
+			VectorScale(view->CurrentViewUp(), tmp[0], normal );	// Build point along noraml line (normal is -y, x)
+			VectorMA( normal, -tmp[1], view->CurrentViewRight(), normal );
 			
 			// Make a wide line
 			VectorMA( point, width, normal, last1 );
@@ -1386,8 +1386,8 @@ void DrawBeamFollow( const model_t* spritemodel, BeamTrail_t* pHead, int frame, 
 	// We don't need Z, we're in screen space
 	tmp[2] = 0;
 	VectorNormalize( tmp );
-	VectorScale( CurrentViewUp(), tmp[0], normal );	// Build point along noraml line (normal is -y, x)
-	VectorMA( normal, -tmp[1], CurrentViewRight(), normal );
+	VectorScale(view->CurrentViewUp(), tmp[0], normal );	// Build point along noraml line (normal is -y, x)
+	VectorMA( normal, -tmp[1], view->CurrentViewRight(), normal );
 	
 	// Make a wide line
 	VectorMA( delta, width, normal, last1 );
@@ -1437,8 +1437,8 @@ void DrawBeamFollow( const model_t* spritemodel, BeamTrail_t* pHead, int frame, 
 		// We don't need Z, we're in screen space
 		tmp[2] = 0;
 		VectorNormalize( tmp );
-		VectorScale( CurrentViewUp(), tmp[0], normal );	// Build point along noraml line (normal is -y, x)
-		VectorMA( normal, -tmp[1], CurrentViewRight(), normal );
+		VectorScale(view->CurrentViewUp(), tmp[0], normal );	// Build point along noraml line (normal is -y, x)
+		VectorMA( normal, -tmp[1], view->CurrentViewRight(), normal );
 		
 		// Make a wide line
 		VectorMA( pHead->org, width, normal, last1 );

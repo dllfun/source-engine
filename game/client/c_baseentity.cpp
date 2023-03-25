@@ -3450,8 +3450,8 @@ void C_BaseEntity::ComputeFxBlend( void )
 			float	dist;
 			
 			VectorCopy( GetAbsOrigin(), tmp );
-			VectorSubtract( tmp, CurrentViewOrigin(), tmp );
-			dist = DotProduct( tmp, CurrentViewForward() );
+			VectorSubtract( tmp, view->CurrentViewOrigin(), tmp );
+			dist = DotProduct( tmp, view->CurrentViewForward() );
 			
 			// Turn off distance fade
 			if ( m_nRenderFX == kRenderFxDistort )

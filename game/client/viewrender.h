@@ -12,10 +12,13 @@
 
 #include "shareddefs.h"
 #include "tier1/utlstack.h"
+#include "view.h"
 #include "iviewrender.h"
 #include "view_shared.h"
 #include "replay/ireplayscreenshotsystem.h"
-
+#include "mathlib/vector.h"
+#include "tier0/vprof.h"
+#include "renderparm.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations
@@ -32,55 +35,21 @@ struct ClientWorldListInfo_t;
 class C_BaseEntity;
 struct WriteReplayScreenshotParams_t;
 class CReplayScreenshotTaker;
+class VMatrix;
+class Vector;
+class QAngle;
+class VPlane;
 
 #ifdef HL2_EPISODIC
 	class CStunEffect;
 #endif // HL2_EPISODIC
 
-//-----------------------------------------------------------------------------
-// Data specific to intro mode to control rendering.
-//-----------------------------------------------------------------------------
-struct IntroDataBlendPass_t
-{
-	int m_BlendMode;
-	float m_Alpha; // in [0.0f,1.0f]  This needs to add up to 1.0 for all passes, unless you are fading out.
-};
 
-struct IntroData_t
-{
-	bool	m_bDrawPrimary;
-	Vector	m_vecCameraView;
-	QAngle	m_vecCameraViewAngles;
-	float	m_playerViewFOV;
-	CUtlVector<IntroDataBlendPass_t> m_Passes;
-
-	// Fade overriding for the intro
-	float	m_flCurrentFadeColor[4];
-};
 
 // Robin, make this point at something to get intro mode.
-extern IntroData_t *g_pIntroData;
+//extern IntroData_t *g_pIntroData;
 
-// This identifies the view for certain systems that are unique per view (e.g. pixel visibility)
-// NOTE: This is identifying which logical part of the scene an entity is being redered in
-// This is not identifying a particular render target necessarily.  This is mostly needed for entities that
-// can be rendered more than once per frame (pixel vis queries need to be identified per-render call)
-enum view_id_t
-{
-	VIEW_ILLEGAL = -2,
-	VIEW_NONE = -1,
-	VIEW_MAIN = 0,
-	VIEW_3DSKY = 1,
-	VIEW_MONITOR = 2,
-	VIEW_REFLECTION = 3,
-	VIEW_REFRACTION = 4,
-	VIEW_INTRO_PLAYER = 5,
-	VIEW_INTRO_CAMERA = 6,
-	VIEW_SHADOW_DEPTH_TEXTURE = 7,
-	VIEW_SSAO = 8,
-	VIEW_ID_COUNT
-};
-view_id_t CurrentViewID();
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Stored pitch drifting variables
@@ -401,8 +370,8 @@ public:
 
 	virtual bool		UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CViewSetup &shadowView );
 
-	int GetBaseDrawFlags() { return m_BaseDrawFlags; }
-	virtual bool ShouldForceNoVis()  { return m_bForceNoVis; }
+	int				GetBaseDrawFlags() { return m_BaseDrawFlags; }
+	virtual bool	ShouldForceNoVis()  { return m_bForceNoVis; }
 	int				BuildRenderablesListsNumber() const { return m_BuildRenderableListsNumber; }
 	int				IncRenderablesListsNumber()  { return ++m_BuildRenderableListsNumber; }
 
@@ -423,7 +392,165 @@ public:
 	{
 		m_UnderWaterOverlayMaterial.Init( pMaterial );
 	}
+
+	//-----------------------------------------------------------------------------
+// Accessors to return the main view (where the player's looking)
+//-----------------------------------------------------------------------------
+	virtual const Vector& MainViewOrigin()
+	{
+		return g_vecRenderOrigin;
+	}
+
+	virtual const QAngle& MainViewAngles()
+	{
+		return g_vecRenderAngles;
+	}
+
+	virtual const Vector& MainViewForward()
+	{
+		return g_vecVForward;
+	}
+
+	virtual const Vector& MainViewRight()
+	{
+		return g_vecVRight;
+	}
+
+	virtual const Vector& MainViewUp()
+	{
+		return g_vecVUp;
+	}
+
+	virtual const VMatrix& MainWorldToViewMatrix()
+	{
+		return g_matCamInverse;
+	}
+
+	virtual const Vector& PrevMainViewOrigin()
+	{
+		return g_vecPrevRenderOrigin;
+	}
+
+	virtual const QAngle& PrevMainViewAngles()
+	{
+		return g_vecPrevRenderAngles;
+	}
+
+	//-----------------------------------------------------------------------------
+	// Accessors to return the current view being rendered
+	//-----------------------------------------------------------------------------
+	virtual const Vector& CurrentViewOrigin()
+	{
+		Assert(s_bCanAccessCurrentView);
+		return g_vecCurrentRenderOrigin;
+	}
+
+	virtual const QAngle& CurrentViewAngles()
+	{
+		Assert(s_bCanAccessCurrentView);
+		return g_vecCurrentRenderAngles;
+	}
+
+	virtual const Vector& CurrentViewForward()
+	{
+		Assert(s_bCanAccessCurrentView);
+		return g_vecCurrentVForward;
+	}
+
+	virtual const Vector& CurrentViewRight()
+	{
+		Assert(s_bCanAccessCurrentView);
+		return g_vecCurrentVRight;
+	}
+
+	virtual const Vector& CurrentViewUp()
+	{
+		Assert(s_bCanAccessCurrentView);
+		return g_vecCurrentVUp;
+	}
+
+	virtual const VMatrix& CurrentWorldToViewMatrix()
+	{
+		Assert(s_bCanAccessCurrentView);
+		return g_matCurrentCamInverse;
+	}
+
+	//-----------------------------------------------------------------------------
+	// Methods to set the current view/guard access to view parameters
+	//-----------------------------------------------------------------------------
+	virtual void AllowCurrentViewAccess(bool allow)
+	{
+		s_bCanAccessCurrentView = allow;
+	}
+
+	virtual bool IsCurrentViewAccessAllowed()
+	{
+		return s_bCanAccessCurrentView;
+	}
+
+	virtual void SetupCurrentView(view_id_t viewID)
+	{
+		tmZone(TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__);
+
+		g_CurrentViewID = viewID;
+	}
+
+	virtual void SetupCurrentView(const Vector& vecOrigin, const QAngle& angles, view_id_t viewID)
+	{
+		tmZone(TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__);
+
+		// Store off view origin and angles
+		g_vecCurrentRenderOrigin = vecOrigin;
+		g_vecCurrentRenderAngles = angles;
+
+		// Compute the world->main camera transform
+		ComputeCameraVariables(vecOrigin, angles,
+			&g_vecCurrentVForward, &g_vecCurrentVRight, &g_vecCurrentVUp, &g_matCurrentCamInverse);
+
+		g_CurrentViewID = viewID;
+		s_bCanAccessCurrentView = true;
+
+		// Cache off fade distances
+		float flScreenFadeMinSize, flScreenFadeMaxSize;
+		view->GetScreenFadeDistances(&flScreenFadeMinSize, &flScreenFadeMaxSize);
+		modelinfo->SetViewScreenFadeRange(flScreenFadeMinSize, flScreenFadeMaxSize);
+
+		CMatRenderContextPtr pRenderContext(materials);
+#ifdef PORTAL
+		if (g_pPortalRender->GetViewRecursionLevel() == 0)
+		{
+			pRenderContext->SetIntRenderingParameter(INT_RENDERPARM_WRITE_DEPTH_TO_DESTALPHA, ((viewID == VIEW_MAIN) || (viewID == VIEW_3DSKY)) ? 1 : 0);
+		}
+#else
+		pRenderContext->SetIntRenderingParameter(INT_RENDERPARM_WRITE_DEPTH_TO_DESTALPHA, ((viewID == VIEW_MAIN) || (viewID == VIEW_3DSKY)) ? 1 : 0);
+#endif
+	}
+
+	virtual void FinishCurrentView()
+	{
+		s_bCanAccessCurrentView = false;
+	}
+
+	virtual view_id_t CurrentViewID()
+	{
+		Assert(g_CurrentViewID != VIEW_ILLEGAL);
+		return (view_id_t)g_CurrentViewID;
+	}
+
+	virtual bool IsRenderingScreenshot()
+	{
+		return g_bRenderingScreenshot;
+	}
+
+	virtual IntroData_t* GetIntroData()
+	{
+		return g_pIntroData;
+	}
+
 private:
+
+	
+
 	int				m_BuildWorldListsNumber;
 
 
@@ -523,6 +650,25 @@ private:
 #if defined( REPLAY_ENABLED )
 	CReplayScreenshotTaker	*m_pReplayScreenshotTaker;
 #endif
+
+	// These are the vectors for the "main" view - the one the player is looking down.
+// For stereo views, they are the vectors for the middle eye.
+	Vector g_vecRenderOrigin = Vector(0, 0, 0);
+	QAngle g_vecRenderAngles = QAngle(0, 0, 0);
+	Vector g_vecPrevRenderOrigin = Vector(0, 0, 0);	// Last frame's render origin
+	QAngle g_vecPrevRenderAngles = QAngle(0, 0, 0); // Last frame's render angles
+	Vector g_vecVForward = Vector(0, 0, 0), g_vecVRight = Vector(0, 0, 0), g_vecVUp = Vector(0, 0, 0);
+	VMatrix g_matCamInverse;
+	Vector g_vecCurrentRenderOrigin = Vector(0, 0, 0);
+	QAngle g_vecCurrentRenderAngles = QAngle(0, 0, 0);
+	Vector g_vecCurrentVForward = Vector(0, 0, 0), g_vecCurrentVRight = Vector(0, 0, 0), g_vecCurrentVUp = Vector(0, 0, 0);
+	VMatrix g_matCurrentCamInverse;
+	bool s_bCanAccessCurrentView = false;
+
+	IntroData_t* g_pIntroData = NULL;
+	bool	g_bRenderingView = false;			// For debugging...
+	int g_CurrentViewID = VIEW_NONE;
+	bool g_bRenderingScreenshot = false;
 };
 
 #endif // VIEWRENDER_H

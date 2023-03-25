@@ -62,13 +62,15 @@ public:
 
 	void Draw()
 	{
-		extern bool s_bCanAccessCurrentView;
-		s_bCanAccessCurrentView = true;
+		//extern bool s_bCanAccessCurrentView;
+		//s_bCanAccessCurrentView = true;
+		view->AllowCurrentViewAccess(true);
 		Frustum frustum;
 		render->Push3DView( *this, 0, NULL, frustum );
 		BuildWorldRenderLists( this, true, true );
 		render->PopView( frustum );
-		s_bCanAccessCurrentView = false;
+		//s_bCanAccessCurrentView = false;
+		view->AllowCurrentViewAccess(false);
 
 		render->DrawLightmaps( m_pWorldRenderList, mat_showlightmappage.GetInt() );
 	}

@@ -54,7 +54,7 @@ void CFXLine::Draw( double frametime )
 	
 	//Get the proper orientation for the line
 	VectorSubtract( m_FXData.m_vecStart, m_FXData.m_vecEnd, lineDir );
-	VectorSubtract( m_FXData.m_vecEnd, CurrentViewOrigin(), viewDir );
+	VectorSubtract( m_FXData.m_vecEnd, view->CurrentViewOrigin(), viewDir );
 	
 	Vector cross = lineDir.Cross( viewDir );
 
@@ -154,7 +154,7 @@ void FX_DrawLine( const Vector &start, const Vector &end, float scale, IMaterial
 	Vector			lineDir, viewDir;
 	//Get the proper orientation for the line
 	VectorSubtract( end, start, lineDir );
-	VectorSubtract( end, CurrentViewOrigin(), viewDir );
+	VectorSubtract( end, view->CurrentViewOrigin(), viewDir );
 	
 	Vector cross = lineDir.Cross( viewDir );
 
@@ -207,7 +207,7 @@ void FX_DrawLineFade( const Vector &start, const Vector &end, float scale, IMate
 	Vector			lineDir, viewDir;
 	//Get the proper orientation for the line
 	VectorSubtract( end, start, lineDir );
-	VectorSubtract( end, CurrentViewOrigin(), viewDir );
+	VectorSubtract( end, view->CurrentViewOrigin(), viewDir );
 	
 	float lineLength = lineDir.Length();
 	float t0 = 0.25f;

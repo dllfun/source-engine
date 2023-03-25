@@ -1089,7 +1089,7 @@ void FX_Tesla( const CTeslaInfo &teslaInfo )
 				// Move it towards the camera
 				Vector vecFlash = tr.endpos;
 				Vector vecForward;
-				AngleVectors( MainViewAngles(), &vecForward );
+				AngleVectors(view->MainViewAngles(), &vecForward );
 				vecFlash -= (vecForward * 8);
 
 				g_pEffects->EnergySplash( vecFlash, -vecForward, false );

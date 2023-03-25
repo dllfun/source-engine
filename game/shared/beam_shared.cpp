@@ -960,7 +960,7 @@ bool CBeam::OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity *predicte
 	return true;
 }
 
-extern bool g_bRenderingScreenshot;
+//extern bool g_bRenderingScreenshot;
 extern ConVar r_drawviewmodel;
 
 int CBeam::DrawModel( int flags )
@@ -971,7 +971,7 @@ int CBeam::DrawModel( int flags )
 	if ( IsMarkedForDeletion() )
 		return 0;
 
-	if ( CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE )
+	if (view->CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE )
 		return 0;
 
 #ifdef PORTAL
@@ -984,7 +984,7 @@ int CBeam::DrawModel( int flags )
 
 	// Tracker 16432:  If rendering a savegame screenshot don't draw beams 
 	//   who have viewmodels as their attached entity
-	if ( g_bRenderingScreenshot || !r_drawviewmodel.GetBool() )
+	if ( view->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
 	{
 		// If the beam is attached
 		for (int i=0;i<MAX_BEAM_ENTS;i++)

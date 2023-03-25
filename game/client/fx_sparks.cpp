@@ -52,7 +52,7 @@ bool EffectOccluded( const Vector &pos, pixelvis_handle_t *queryHandle )
 		// NOTE: This is called by networking code before the current view is set up.
 		// so use the main view instead
 		trace_t	tr;
-		UTIL_TraceLine( pos, MainViewOrigin(), MASK_OPAQUE, NULL, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( pos, view->MainViewOrigin(), MASK_OPAQUE, NULL, COLLISION_GROUP_NONE, &tr );
 		
 		return ( tr.fraction < 1.0f ) ? true : false;
 	}
@@ -124,7 +124,7 @@ void CSimpleGlowEmitter::SetVisibleInView( unsigned char viewMask, bool bVisible
 
 unsigned char CSimpleGlowEmitter::CurrentViewMask() const
 {
-	int viewId = (int)CurrentViewID();
+	int viewId = (int)view->CurrentViewID();
 	viewId = clamp(viewId, 0, 7);
 	return 1<<viewId;
 }

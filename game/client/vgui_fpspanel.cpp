@@ -280,8 +280,8 @@ void CFPSPanel::Paint()
 	int nShowPosMode = cl_showpos.GetInt();
 	if ( nShowPosMode > 0 )
 	{
-		Vector vecOrigin = MainViewOrigin();
-		QAngle angles = MainViewAngles();
+		Vector vecOrigin = view->MainViewOrigin();
+		QAngle angles = view->MainViewAngles();
 		if ( nShowPosMode == 2 )
 		{
 			C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();

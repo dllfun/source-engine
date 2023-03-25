@@ -74,7 +74,7 @@ void CLampHaloProxy::OnBind( C_BaseEntity *pEnt )
 	if ( !m_pFadeValue )
 		return;
 	
-	Vector vecLocal = pEnt->GetAbsOrigin() - CurrentViewOrigin();
+	Vector vecLocal = pEnt->GetAbsOrigin() - view->CurrentViewOrigin();
 	VectorNormalize( vecLocal );
 
 	float fade = fabs( vecLocal.z );
