@@ -17,6 +17,8 @@
 #include <vgui/ISurface.h>
 #include "cs_gamerules.h"
 
+using namespace vgui;
+
 DECLARE_BUILD_FACTORY( CCSHudPlayerHealth );
 
 //-----------------------------------------------------------------------------

@@ -16,7 +16,7 @@
 #include "hud.h"
 #include "hudelement.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 //-----------------------------------------------------------------------------
 // Purpose: Replay reminder panel

@@ -25,7 +25,7 @@
 
 #include "cs_shareddefs.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 class IAchievement;
 
@@ -48,10 +48,10 @@ private:
 
 
 
-class CCSAchievementAnnouncePanel: public EditablePanel, public CHudElement
+class CCSAchievementAnnouncePanel: public vgui::EditablePanel, public CHudElement
 {
 private:
-	DECLARE_CLASS_SIMPLE( CCSAchievementAnnouncePanel, EditablePanel );
+	DECLARE_CLASS_SIMPLE( CCSAchievementAnnouncePanel, vgui::EditablePanel );
 
 public:
 	CCSAchievementAnnouncePanel( const char *pElementName );

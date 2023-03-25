@@ -22,7 +22,7 @@
 #include <vgui/ILocalize.h>
 #include <vgui_controls/ImagePanel.h>
 
-using namespace vgui;
+//using namespace vgui;
 
 //-----------------------------------------------------------------------------
 // Purpose: Triggers a new panel when the mouse goes over the button
@@ -258,11 +258,11 @@ public:
 				pLabel->SetVisible( true );
 			}
 
-			ImagePanel *pImage = dynamic_cast< ImagePanel * >(m_pBlackMarketPrice->FindChildByName( "classimage" ) );	
+			vgui::ImagePanel *pImage = dynamic_cast< vgui::ImagePanel * >(m_pBlackMarketPrice->FindChildByName( "classimage" ) );	
 
 			if ( pImage )
 			{
-				ImagePanel *pClassImage = dynamic_cast< ImagePanel * >(GetClassPanel()->FindChildByName( "classimage" ) );	
+				vgui::ImagePanel *pClassImage = dynamic_cast< vgui::ImagePanel * >(GetClassPanel()->FindChildByName( "classimage" ) );	
 
 				if ( pClassImage )
 				{

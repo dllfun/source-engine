@@ -56,7 +56,7 @@ private:
 	int m_lastMoney;
 
 	vgui::EditablePanel *m_pBlackMarket;
-	HFont m_hUnderlineFont;
+	vgui::HFont m_hUnderlineFont;
 
 	// Background panel -------------------------------------------------------
 

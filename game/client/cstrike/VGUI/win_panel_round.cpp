@@ -20,6 +20,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+using namespace vgui;
+
 ConVar cl_round_win_fade_time( "cl_round_win_fade_time", "1.5", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 
 DECLARE_HUDELEMENT_DEPTH( WinPanel_Round, 1 );	// 1 is foreground

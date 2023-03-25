@@ -11,7 +11,7 @@
 #include "replaybrowserbasepanel.h"
 #include "video/ivideoservices.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 //-----------------------------------------------------------------------------
 // Purpose: A panel that plays AVI's

@@ -20,7 +20,7 @@
 #include "vgui_controls/ImagePanel.h"
 #include "backgroundpanel.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 
 //-----------------------------------------------------------------------------

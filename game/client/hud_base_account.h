@@ -14,7 +14,7 @@
 #include "hudelement.h"
 #include "hud_numericdisplay.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 class CHudBaseAccount : public CHudElement, public CHudNumericDisplay
 {
@@ -30,7 +30,7 @@ public:
 
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 
-	int GetNumberWidth(HFont font, int number);
+	int GetNumberWidth(vgui::HFont font, int number);
 
 	// How much money does the player have
 	virtual int	GetPlayerAccount( void ) { return 0; }

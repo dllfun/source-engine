@@ -19,7 +19,7 @@
 #include "replaybrowseritemmanager.h"
 #include "replay/genericclassbased_replay.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 //-----------------------------------------------------------------------------
 // Forward declarations

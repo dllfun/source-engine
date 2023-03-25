@@ -18,6 +18,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+using namespace vgui;
 
 CommandMenu::CommandMenu( Panel *parent, const char *panelName, IViewPort * viewport) : Menu( parent, panelName )
 { 

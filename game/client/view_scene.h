@@ -35,12 +35,12 @@ int HudTransform( const Vector& point, Vector& screen );
 extern ConVar r_updaterefracttexture;
 extern int g_viewscene_refractUpdateFrame;
 extern bool g_bAllowMultipleRefractUpdatesPerScenePerFrame;
-bool DrawingShadowDepthView( void );
-bool DrawingMainView();
+//bool DrawingShadowDepthView( void );
+//bool DrawingMainView();
 
 inline void UpdateRefractTexture( int x, int y, int w, int h, bool bForceUpdate = false )
 {
-	Assert( !DrawingShadowDepthView() );
+	Assert( !view->DrawingShadowDepthView() );
 
 	if ( !IsRetail() && !r_updaterefracttexture.GetBool() )
 		return;
@@ -64,7 +64,7 @@ inline void UpdateRefractTexture( int x, int y, int w, int h, bool bForceUpdate 
 
 inline void UpdateRefractTexture( bool bForceUpdate = false )
 {
-	Assert( !DrawingShadowDepthView() );
+	Assert( !view->DrawingShadowDepthView() );
 
 	CMatRenderContextPtr pRenderContext( materials );
 
@@ -137,7 +137,7 @@ inline void DrawScreenEffectMaterial( IMaterial *pMaterial, int x, int y, int w,
 //intended for use by dynamic meshes to naively update front buffer textures needed by a material
 inline void UpdateFrontBufferTexturesForMaterial( IMaterial *pMaterial, bool bForce = false )
 {
-	Assert( !DrawingShadowDepthView() );
+	Assert( !view->DrawingShadowDepthView() );
 
 	if( pMaterial->NeedsPowerOfTwoFrameBufferTexture() )
 	{
@@ -152,7 +152,7 @@ inline void UpdateFrontBufferTexturesForMaterial( IMaterial *pMaterial, bool bFo
 
 inline void UpdateScreenEffectTexture( void )
 {
-	Assert( !DrawingShadowDepthView() );
+	Assert( !view->DrawingShadowDepthView() );
 
 	const CViewSetup *pViewSetup = view->GetViewSetup();
 	UpdateScreenEffectTexture( 0, pViewSetup->x, pViewSetup->y, pViewSetup->width, pViewSetup->height);

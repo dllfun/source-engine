@@ -12,8 +12,7 @@
 #pragma once
 #endif
 
-
-//#include "ivrenderview.h"
+#include "ivrenderview.h"
 
 // near and far Z it uses to render the world.
 #define VIEW_NEARZ	3
@@ -57,6 +56,64 @@ enum DrawFlags_t
 
 	DF_SHADOW_DEPTH_MAP		= 0x100000	// Currently rendering a shadow depth map
 };
+
+//-----------------------------------------------------------------------------
+// Computes draw flags for the engine to build its world surface lists
+//-----------------------------------------------------------------------------
+static inline unsigned long BuildEngineDrawWorldListFlags(unsigned nDrawFlags)
+{
+	unsigned long nEngineFlags = 0;
+
+	if (nDrawFlags & DF_DRAWSKYBOX)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_SKYBOX;
+	}
+
+	if (nDrawFlags & DF_RENDER_ABOVEWATER)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_STRICTLYABOVEWATER;
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_INTERSECTSWATER;
+	}
+
+	if (nDrawFlags & DF_RENDER_UNDERWATER)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_STRICTLYUNDERWATER;
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_INTERSECTSWATER;
+	}
+
+	if (nDrawFlags & DF_RENDER_WATER)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_WATERSURFACE;
+	}
+
+	if (nDrawFlags & DF_CLIP_SKYBOX)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_CLIPSKYBOX;
+	}
+
+	if (nDrawFlags & DF_SHADOW_DEPTH_MAP)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_SHADOWDEPTH;
+	}
+
+	if (nDrawFlags & DF_RENDER_REFRACTION)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_REFRACTION;
+	}
+
+	if (nDrawFlags & DF_RENDER_REFLECTION)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_REFLECTION;
+	}
+
+	if (nDrawFlags & DF_SSAO_DEPTH_PASS)
+	{
+		nEngineFlags |= DRAWWORLDLISTS_DRAW_SSAO | DRAWWORLDLISTS_DRAW_STRICTLYUNDERWATER | DRAWWORLDLISTS_DRAW_INTERSECTSWATER | DRAWWORLDLISTS_DRAW_STRICTLYABOVEWATER;
+		nEngineFlags &= ~(DRAWWORLDLISTS_DRAW_WATERSURFACE | DRAWWORLDLISTS_DRAW_REFRACTION | DRAWWORLDLISTS_DRAW_REFLECTION);
+	}
+
+	return nEngineFlags;
+}
 
 // This identifies the view for certain systems that are unique per view (e.g. pixel visibility)
 // NOTE: This is identifying which logical part of the scene an entity is being redered in
@@ -164,6 +221,14 @@ public:
 	virtual void		SetScreenOverlayMaterial( IMaterial *pMaterial ) = 0;
 	virtual IMaterial	*GetScreenOverlayMaterial( ) = 0;
 
+#if !defined( _X360 )
+#define SAVEGAME_SCREENSHOT_WIDTH	180
+#define SAVEGAME_SCREENSHOT_HEIGHT	100
+#else
+#define SAVEGAME_SCREENSHOT_WIDTH	128
+#define SAVEGAME_SCREENSHOT_HEIGHT	128
+#endif
+
 	virtual void		WriteSaveGameScreenshot( const char *pFilename ) = 0;
 	virtual void		WriteSaveGameScreenshotOfSize( const char *pFilename, int width, int height, bool bCreatePowerOf2Padded = false, bool bWriteVTF = false ) = 0;
 
@@ -216,8 +281,18 @@ public:
 	virtual void SetupCurrentView(view_id_t viewID) = 0;
 	virtual void FinishCurrentView() = 0;
 	virtual view_id_t CurrentViewID() = 0;
+	virtual bool IsMainView(view_id_t id) = 0;
+	virtual bool DrawingShadowDepthView(void) = 0;
+	virtual bool DrawingMainView() = 0;
 	virtual bool IsRenderingScreenshot() = 0;
 	virtual IntroData_t* GetIntroData() = 0;
+	virtual void DrawClippedDepthBox(IClientRenderable* pEnt, float* pClipPlane) = 0;
+	virtual inline void DrawOpaqueRenderable(IClientRenderable* pEnt, bool bTwoPass, ERenderDepthMode DepthMode, int nDefaultFlags = 0) = 0;
+	virtual inline void DrawTranslucentRenderable(IClientRenderable* pEnt, bool twoPass, bool bShadowDepth, bool bIgnoreDepth) = 0;
+	virtual void DrawOpaqueRenderables_Range(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
+	virtual void DrawOpaqueRenderables_DrawStaticProps(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
+	virtual void DrawOpaqueRenderables_DrawBrushModels(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
+	virtual void SetClearColorToFogColor() = 0;
 };
 
 extern IViewRender *view;

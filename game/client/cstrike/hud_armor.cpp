@@ -5,7 +5,7 @@
 // $NoKeywords: $
 //
 //=============================================================================//
- //====== Copyright © 1996-2003, Valve Corporation, All rights reserved. =======
+ //====== Copyright 1996-2003, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -19,6 +19,7 @@
 #include "cs_gamerules.h"
 #include "hud_numericdisplay.h"
 
+using namespace vgui;
 
 class CHudArmor : public CHudElement, public CHudNumericDisplay
 {

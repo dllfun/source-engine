@@ -17,12 +17,12 @@
 #include "cs_shareddefs.h"
 #include <vgui_controls/EditablePanel.h>
 
-using namespace vgui;
+//using namespace vgui;
 
-class StatCard : public EditablePanel
+class StatCard : public vgui::EditablePanel
 {
 private:
-	DECLARE_CLASS_SIMPLE( StatCard, EditablePanel );
+	DECLARE_CLASS_SIMPLE( StatCard, vgui::EditablePanel );
 
 public:
 	StatCard(vgui::Panel *parent, const char *name);
@@ -34,13 +34,13 @@ public:
 protected:
 	
 
-	ImagePanel*			m_pAvatarDefault;
+	vgui::ImagePanel*			m_pAvatarDefault;
 	//ImagePanel*			m_pBackgroundArt;
 	CAvatarImagePanel*	m_pAvatar;
 
-	Label* m_pName;
-	Label* m_pKillToDeathRatio;
-	Label* m_pStars;
+	vgui::Label* m_pName;
+	vgui::Label* m_pKillToDeathRatio;
+	vgui::Label* m_pStars;
 	
 
 private:

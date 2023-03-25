@@ -11,6 +11,7 @@
 #include <vgui/IVGui.h>
 #include "clientmode_csnormal.h"
 
+using namespace vgui;
 
 //-----------------------------------------------------------------------------
 // Purpose: 

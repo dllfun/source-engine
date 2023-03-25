@@ -16,21 +16,21 @@
 #include "utlvector.h"
 #include <KeyValues.h>
 
-using namespace vgui;
+//using namespace vgui;
 
-class CommandMenu : public Menu
+class CommandMenu : public vgui::Menu
 {
 private:
-	DECLARE_CLASS_SIMPLE( CommandMenu, Menu );
+	DECLARE_CLASS_SIMPLE( CommandMenu, vgui::Menu );
 	
 		typedef struct
 		{
-			Menu *	menu;
+			vgui::Menu *	menu;
 			int		itemnr;
 		} CommandMenuItem;
 
 	public:
-		CommandMenu( Panel *parent, const char *panelName, IViewPort * viewport );
+		CommandMenu(vgui::Panel *parent, const char *panelName, IViewPort * viewport );
 		~CommandMenu();
 
 		bool		LoadFromFile(const char * fileName);	// load menu from file (via KeyValues)
@@ -41,8 +41,8 @@ private:
 	public:
 		// overwrite these in your derived class
 		// virtual CommandMenu * CommandMenu::Factory(Panel *parent, const char *panelName, IViewPort * viewport = NULL, IFileSystem * pFileSytem = NULL); // overwrite
-		virtual int  AddCustomItem(KeyValues * params, Menu * menu) {return 0;} // return MenuItem nr
-		virtual void UpdateCustomItem(KeyValues * params, MenuItem * item ) {}; // maybe change your item
+		virtual int  AddCustomItem(KeyValues * params, vgui::Menu * menu) {return 0;} // return MenuItem nr
+		virtual void UpdateCustomItem(KeyValues * params, vgui::MenuItem * item ) {}; // maybe change your item
 		virtual void OnCustomItem(KeyValues * params) {}; // a custom item was pressed
 		virtual bool CheckRules(const char *rule, const char *ruledata); // check a menu item rule
 		virtual void SetVisible(bool state);
@@ -51,7 +51,7 @@ private:
 
 	protected:
 				
-		void	OnMessage(const KeyValues *params, VPANEL fromPanel);
+		void	OnMessage(const KeyValues *params, vgui::VPANEL fromPanel);
 		void	StartNewSubMenu(KeyValues * params);
 		void	FinishSubMenu();
 		void	AddMenuCommandItem(KeyValues * params);

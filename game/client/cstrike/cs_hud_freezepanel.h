@@ -24,7 +24,7 @@
 
 #include "cs_shareddefs.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 class HorizontalGauge;
 class BorderedPanel;
@@ -32,10 +32,10 @@ class BorderedPanel;
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class CCSFreezePanel : public EditablePanel, public CHudElement
+class CCSFreezePanel : public vgui::EditablePanel, public CHudElement
 {
 private:
-	DECLARE_CLASS_SIMPLE( CCSFreezePanel, EditablePanel );
+	DECLARE_CLASS_SIMPLE( CCSFreezePanel, vgui::EditablePanel );
 
 public:
 	CCSFreezePanel( const char *pElementName );
@@ -62,7 +62,7 @@ private:
 	BorderedPanel*			m_pBackgroundPanel;
 	HorizontalGauge*		m_pKillerHealth;
 	CAvatarImagePanel*		m_pAvatar;
-	ImagePanel*				m_pDominationIcon;
+	vgui::ImagePanel*				m_pDominationIcon;
 
 	bool					m_bShouldBeVisible;
 };

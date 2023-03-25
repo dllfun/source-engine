@@ -13,7 +13,7 @@
 #include "replay/genericclassbased_replay.h"
 #include "game_controls/slideshowpanel.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 //-----------------------------------------------------------------------------
 // Purpose: Slideshow panel that adds all screenshots associated 

@@ -21,7 +21,7 @@
 
 #include "cs_shareddefs.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 class WinPanel_Round : public BorderedPanel, public CHudElement
 {

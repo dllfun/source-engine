@@ -18,7 +18,7 @@
 #include "vgui_controls/Slider.h"
 #include "replay/replayhandle.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 class CExLabel;
 class CExButton;

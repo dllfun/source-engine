@@ -2866,7 +2866,7 @@ void C_BasePlayer::BuildFirstPersonMeathookTransformations( CStudioHdr *hdr, Vec
 		return;
 	}
 
-	if ( !DrawingMainView() )
+	if ( !view->DrawingMainView() )
 	{
 		return;
 	}

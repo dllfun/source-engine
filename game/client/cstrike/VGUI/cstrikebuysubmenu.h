@@ -14,7 +14,7 @@
 #include <buysubmenu.h>
 #include <buymouseoverpanelbutton.h>
 
-using namespace vgui;
+//using namespace vgui;
 
 class CCSBuySubMenu : public CBuySubMenu
 {

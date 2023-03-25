@@ -10,7 +10,7 @@
 
 #include "vgui_controls/EditablePanel.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 //----------------------------------------------------------------------------------------
 // Purpose:

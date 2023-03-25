@@ -16,6 +16,8 @@
 
 #include <vgui_controls/AnimationController.h>
 
+using namespace vgui;
+
 class CHudRoundTimer : public CHudElement, public vgui::Panel
 {
 public:

@@ -20,7 +20,7 @@
 #include "replay/gamedefs.h"
 #include "econ/econ_controls.h"
 
-using namespace vgui;
+//using namespace vgui;
 
 //-----------------------------------------------------------------------------
 

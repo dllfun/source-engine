@@ -29,6 +29,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+using namespace vgui;
+
 DECLARE_HUDELEMENT_DEPTH( CCSFreezePanel, 1 );
 // DECLARE_HUD_MESSAGE( CCSFreezePanel, Damage );
 // DECLARE_HUD_MESSAGE( CCSFreezePanel, DroppedEquipment );
