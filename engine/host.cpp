@@ -689,11 +689,11 @@ void CCommonHostState::SetWorldModel( model_t *pModel )
 	worldmodel = pModel;
 	if ( pModel )
 	{
-		worldbrush = pModel->brush.pShared;
+		//worldbrush = pModel->brush.pShared;
 	}
 	else
 	{
-		worldbrush = NULL;
+		//worldbrush = NULL;
 	}
 }
 

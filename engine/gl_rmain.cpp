@@ -192,7 +192,7 @@ void R_DrawPortals()
 	CMatRenderContextPtr pRenderContext( materials );
 	IMesh *pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
 
-	worldbrushdata_t *pBrushData = host_state.worldbrush;
+	worldbrushdata_t *pBrushData = host_state.worldmodel->brush.pShared;
 	for( int i=0; i < pBrushData->m_nAreaPortals; i++ )
 	{
 		dareaportal_t *pAreaPortal = &pBrushData->m_pAreaPortals[i];

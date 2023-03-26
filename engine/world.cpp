@@ -58,7 +58,7 @@ void SV_ClearWorld (void)
 	// Load all static props into the spatial partition
 	StaticPropMgr()->LevelInit();
 #if !defined( SWDS )
-	g_pShadowMgr->LevelInit( host_state.worldbrush->numsurfaces );
+	g_pShadowMgr->LevelInit( host_state.worldmodel->brush.pShared->numsurfaces );
 #endif
 }
 

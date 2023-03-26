@@ -658,7 +658,7 @@ public:
 	virtual void			DecodeUserCmdFromBuffer( bf_read& buf, int slot ) = 0;
 
 	// Set up and render one or more views (e.g., rear view window, etc.).  This called into RenderView below
-	virtual void			View_Render( vrect_t *rect ) = 0;
+	virtual void			RenderRect( vrect_t *rect ) = 0;
 
 	// Allow engine to expressly render a view (e.g., during timerefresh)
 	// See IVRenderView.h, PushViewFlags_t for nFlags values

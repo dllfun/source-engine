@@ -248,7 +248,7 @@ void V_RenderView( void )
 		// We can get into situations where some other material system app
 		// is trying to start up; in those cases, we shouldn't render...
 		vrect_t scr_vrect = videomode->GetClientViewRect();
-		g_ClientDLL->View_Render( &scr_vrect );
+		g_ClientDLL->RenderRect( &scr_vrect );
 	}
 
 	FullViewColorAdjustment();
@@ -440,7 +440,7 @@ public:
 
 	bool AreAnyLeavesVisible( int *leafList, int nLeaves )
 	{
-		return Map_AreAnyLeavesVisible( *host_state.worldbrush, leafList, nLeaves );
+		return Map_AreAnyLeavesVisible( *host_state.worldmodel->brush.pShared, leafList, nLeaves );
 	}
 
 	// For backward compatibility only!!!

@@ -9,13 +9,13 @@
 #include "iviewrender.h"
 #include "iviewrender_beams.h"
 #include "ivrenderview.h"
+#include "viewrender.h"
 #include "view_shared.h"
 #include "ivieweffects.h"
 #include "iinput.h"
 #include "model_types.h"
 #include "clientsideeffects.h"
 #include "particlemgr.h"
-#include "viewrender.h"
 #include "c_te_legacytempents.h"
 #include "iclientmode.h"
 #include "prediction.h"
@@ -1286,7 +1286,7 @@ void CViewRender::SetUpOverView()
 // Purpose: Render current view into specified rectangle
 // Input  : *rect - is computed by CVideoMode_Common::GetClientViewRect()
 //-----------------------------------------------------------------------------
-void CViewRender::Render(vrect_t* rect)
+void CViewRender::RenderRect(vrect_t* rect)
 {
 	Assert(s_DbgSetupOrigin == m_View.origin);
 	Assert(s_DbgSetupAngles == m_View.angles);

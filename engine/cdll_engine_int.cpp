@@ -119,7 +119,7 @@ bool g_bClientGameDLLGreaterThanV13;
 
 void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct *pStruct )
 {
-	SurfaceHandle_t *pHandle = &host_state.worldbrush->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int iSurf=0; iSurf < pLeaf->nummarksurfaces; iSurf++ )
 	{
 		SurfaceHandle_t surfID = pHandle[iSurf];
@@ -1000,7 +1000,7 @@ bool CEngineClient::LoadGameLump( int lumpId, void* pBuffer, int size )
 // Returns the number of leaves in the level
 int	CEngineClient::LevelLeafCount() const
 {
-	return host_state.worldbrush->numleafs;
+	return host_state.worldmodel->brush.pShared->numleafs;
 }
 
 ISpatialQuery* CEngineClient::GetBSPTreeQuery()
@@ -1185,10 +1185,10 @@ int CEngineClient::GetLeavesArea( int *pLeaves, int nLeaves )
 	if ( nLeaves == 0 )
 		return -1;
 
-	int iArea = host_state.worldbrush->leafs[pLeaves[0]].area;
+	int iArea = host_state.worldmodel->brush.pShared->leafs[pLeaves[0]].area;
 	for ( int i=1; i < nLeaves; i++ )
 	{
-		int iTestArea = host_state.worldbrush->leafs[pLeaves[i]].area;
+		int iTestArea = host_state.worldmodel->brush.pShared->leafs[pLeaves[i]].area;
 		if ( iTestArea != iArea )
 			return -1;
 	}

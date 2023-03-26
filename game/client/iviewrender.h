@@ -186,7 +186,7 @@ public:
 	virtual void		OnRenderStart() = 0;
 
 	// Called to render the entire scene
-	virtual	void		Render( vrect_t *rect ) = 0;
+	virtual	void		RenderRect( vrect_t *rect ) = 0;
 
 	// Called to render just a particular setup ( for timerefresh and envmap creation )
 	virtual void		RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw ) = 0;

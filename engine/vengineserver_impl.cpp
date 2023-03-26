@@ -1678,7 +1678,7 @@ public:
 	virtual int GetAllClusterBounds( bbox_t *pBBoxList, int maxBBox )
 	{
 		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->map_vis && host_state.worldbrush )
+		if ( pBSPData && pBSPData->map_vis && host_state.worldmodel->brush.pShared)
 		{
 			// clamp to max clusters in the map
 			if ( maxBBox > pBSPData->map_vis->numclusters )
@@ -1691,9 +1691,9 @@ public:
 				ClearBounds( pBBoxList[i].mins, pBBoxList[i].maxs );
 			}
 			// add each leaf's bounds to the bounds for that cluster
-			for ( int i = 0; i < host_state.worldbrush->numleafs; i++ )
+			for ( int i = 0; i < host_state.worldmodel->brush.pShared->numleafs; i++ )
 			{
-				mleaf_t *pLeaf = &host_state.worldbrush->leafs[i];
+				mleaf_t *pLeaf = &host_state.worldmodel->brush.pShared->leafs[i];
 				// skip solid leaves and leaves with cluster < 0
 				if ( !(pLeaf->contents & CONTENTS_SOLID) && pLeaf->cluster >= 0 && pLeaf->cluster < maxBBox )
 				{

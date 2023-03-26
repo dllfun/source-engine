@@ -2470,12 +2470,12 @@ void COcclusionSystem::RecomputeOccluderEdgeList()
 	m_WingedEdgeList.Clear();
 	m_ClippedVerts.RemoveAll();
 
-	mvertex_t *pVertices = host_state.worldbrush->vertexes;
-	int *pIndices = host_state.worldbrush->occludervertindices;
-	doccluderdata_t *pOccluders = host_state.worldbrush->occluders;
+	mvertex_t *pVertices = host_state.worldmodel->brush.pShared->vertexes;
+	int *pIndices = host_state.worldmodel->brush.pShared->occludervertindices;
+	doccluderdata_t *pOccluders = host_state.worldmodel->brush.pShared->occluders;
 
 	int i, j, k;
-	for ( i = host_state.worldbrush->numoccluders ; --i >= 0; )
+	for ( i = host_state.worldmodel->brush.pShared->numoccluders ; --i >= 0; )
 	{
 		if ( pOccluders[i].flags & OCCLUDER_FLAGS_INACTIVE )
 			continue;
@@ -2489,13 +2489,13 @@ void COcclusionSystem::RecomputeOccluderEdgeList()
 		int nSurfCount = pOccluders[i].polycount;
 		for ( j = 0; j < nSurfCount; ++j, ++nSurfID )
 		{
-			doccluderpolydata_t *pSurf = &host_state.worldbrush->occluderpolys[nSurfID];
+			doccluderpolydata_t *pSurf = &host_state.worldmodel->brush.pShared->occluderpolys[nSurfID];
 
 			int nFirstVertexIndex = pSurf->firstvertexindex;
 			int nVertexCount = pSurf->vertexcount;
 
 			// If the surface is backfacing, blow it off...
-			const cplane_t &surfPlane = host_state.worldbrush->planes[ pSurf->planenum ];
+			const cplane_t &surfPlane = host_state.worldmodel->brush.pShared->planes[ pSurf->planenum ];
 			if ( DotProduct( surfPlane.normal, m_vecCameraPosition ) <= surfPlane.dist )
 				continue;
 
@@ -2540,16 +2540,16 @@ void COcclusionSystem::RecomputeOccluderEdgeList()
 //-----------------------------------------------------------------------------
 void COcclusionSystem::ActivateOccluder( int nOccluderIndex, bool bActive )
 {
-	if ( ( nOccluderIndex >= host_state.worldbrush->numoccluders ) || ( nOccluderIndex < 0 ) )
+	if ( ( nOccluderIndex >= host_state.worldmodel->brush.pShared->numoccluders ) || ( nOccluderIndex < 0 ) )
 		return;
 
 	if ( bActive )
 	{
-		host_state.worldbrush->occluders[nOccluderIndex].flags &= ~OCCLUDER_FLAGS_INACTIVE;
+		host_state.worldmodel->brush.pShared->occluders[nOccluderIndex].flags &= ~OCCLUDER_FLAGS_INACTIVE;
 	}
 	else
 	{
-		host_state.worldbrush->occluders[nOccluderIndex].flags |= OCCLUDER_FLAGS_INACTIVE;
+		host_state.worldmodel->brush.pShared->occluders[nOccluderIndex].flags |= OCCLUDER_FLAGS_INACTIVE;
 	}
 
 	m_bEdgeListDirty = true;

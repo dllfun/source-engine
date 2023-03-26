@@ -19,7 +19,7 @@
 #include "convar.h"
 #include "surfacehandle.h"
 #include "utlvector.h"
-
+#include "gl_model_private.h"
 
 //-----------------------------------------------------------------------------
 // Forward declarations
@@ -56,7 +56,7 @@ void MaterialSystem_RegisterLightmapSurfaces( void );
 
 IMaterial *GetMaterialAtCrossHair( void );
 
-bool SurfHasBumpedLightmaps( SurfaceHandle_t surfID );
+bool SurfHasBumpedLightmaps( SurfaceHandle_t surfID ,worldbrushdata_t* pBrushData);
 bool SurfNeedsBumpedLightmaps( SurfaceHandle_t surfID );
 bool SurfHasLightmap( SurfaceHandle_t surfID );
 bool SurfNeedsLightmap( SurfaceHandle_t surfID );

@@ -444,7 +444,7 @@ static ConVar r_drawclipbrushes( "r_drawclipbrushes", "0", FCVAR_CHEAT, "Draw cl
 
 static Vector LeafAmbientSamplePos( int leafIndex, const mleafambientlighting_t &sample )
 {
-	mleaf_t *pLeaf = &host_state.worldbrush->leafs[leafIndex];
+	mleaf_t *pLeaf = &host_state.worldmodel->brush.pShared->leafs[leafIndex];
 	Vector out = pLeaf->m_vecCenter - pLeaf->m_vecHalfDiagonal;
 	out.x += float(sample.x) * pLeaf->m_vecHalfDiagonal.x * (2.0f / 255.0f);
 	out.y += float(sample.y) * pLeaf->m_vecHalfDiagonal.y * (2.0f / 255.0f);
@@ -529,19 +529,19 @@ void LeafVisDraw( void )
 		pRenderContext->Bind( g_pMaterialDebugFlat );
 		float cubesize = 12.0f;
 		int leafIndex = g_LeafVis->leafIndex;
-		mleafambientindex_t *pAmbient = &host_state.worldbrush->m_pLeafAmbient[leafIndex];
+		mleafambientindex_t *pAmbient = &host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
 		if ( !pAmbient->ambientSampleCount && pAmbient->firstAmbientSample )
 		{
 			// this leaf references another leaf, move there (this leaf is a solid leaf so it borrows samples from a neighbor)
 			leafIndex = pAmbient->firstAmbientSample;
-			pAmbient = &host_state.worldbrush->m_pLeafAmbient[leafIndex];
+			pAmbient = &host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
 		}
 		for ( int i = 0; i < pAmbient->ambientSampleCount; i++ )
 		{
 			IMesh *pMesh = pRenderContext->GetDynamicMesh( );
 			CMeshBuilder meshBuilder;
 			meshBuilder.Begin( pMesh, MATERIAL_QUADS, 6 );
-			const mleafambientlighting_t &sample = host_state.worldbrush->m_pAmbientSamples[pAmbient->firstAmbientSample+i];
+			const mleafambientlighting_t &sample = host_state.worldmodel->brush.pShared->m_pAmbientSamples[pAmbient->firstAmbientSample+i];
 			Vector pos = LeafAmbientSamplePos( leafIndex, sample );
 			// x axis
 			color32 color;

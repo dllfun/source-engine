@@ -81,7 +81,7 @@ static VMatrix g_ScreenFromWorldProjection;
 // ------------------------------------------------------------------------------------ //
 void R_Areaportal_LevelInit()
 {
-	g_AreaCullInfo.SetCount( host_state.worldbrush->m_nAreas );
+	g_AreaCullInfo.SetCount( host_state.worldmodel->brush.pShared->m_nAreas );
 }
 
 void R_Areaportal_LevelShutdown()
@@ -125,7 +125,7 @@ static inline bool GetPortalScreenExtents( dareaportal_t *pPortal,
 	portalRect.left = portalRect.bottom = 1e24;
 	portalRect.right = portalRect.top   = -1e24;
 	bool bValidExtents = false;
-	worldbrushdata_t *pBrushData = host_state.worldbrush;
+	worldbrushdata_t *pBrushData = host_state.worldmodel->brush.pShared;
 	
 	int nStartVerts = min( (int)pPortal->m_nClipPortalVerts, MAX_PORTAL_VERTS );
 
@@ -275,10 +275,10 @@ static void R_FlowThroughArea( int area, const Vector &vecVisOrigin, const CPort
 	// Set that we're in this area on the stack.
 	R_SetBit( g_AreaStack, area );
 
-	worldbrushdata_t *pBrushData = host_state.worldbrush;
+	worldbrushdata_t *pBrushData = host_state.worldmodel->brush.pShared;
 
 	Assert( area < host_state.worldbrush->m_nAreas );
-	darea_t *pArea = &host_state.worldbrush->m_pAreas[area];
+	darea_t *pArea = &host_state.worldmodel->brush.pShared->m_pAreas[area];
 	// temp buffer for clipping
 	portalclip_t clipTmp;
 
@@ -644,7 +644,7 @@ void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pV
 		{
 			// Clear the visible area bits.
 			memset( g_RenderAreaBits, 0, sizeof( g_RenderAreaBits ) );
-			int area = host_state.worldbrush->leafs[leaf].area;
+			int area = host_state.worldmodel->brush.pShared->leafs[leaf].area;
 			R_SetBit( g_RenderAreaBits, area );
 			
 			g_VisibleAreas[0] = area;
@@ -667,7 +667,7 @@ void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pV
 	if ( host_state.worldbrush->leafs[leaf].contents & CONTENTS_SOLID ||
 		 cl.ishltv || cl.isreplay || !cl.m_bAreaBitsValid || r_portalsopenall.GetBool()  )
 #else
-	if ( host_state.worldbrush->leafs[leaf].contents & CONTENTS_SOLID ||
+	if ( host_state.worldmodel->brush.pShared->leafs[leaf].contents & CONTENTS_SOLID ||
 		 cl.ishltv || !cl.m_bAreaBitsValid || r_portalsopenall.GetBool()  )
 #endif
 	{
@@ -679,7 +679,7 @@ void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pV
 	}
 	else
 	{
-		int area = host_state.worldbrush->leafs[leaf].area;
+		int area = host_state.worldmodel->brush.pShared->leafs[leaf].area;
 		
 		if ( r_ShowViewerArea.GetInt() )
 			Con_NPrintf( 3, "Viewer area: %d", area );

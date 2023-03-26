@@ -921,8 +921,8 @@ void CShadowMgr::ComputeSurfaceBounds( SurfaceBounds_t* pBounds, SurfaceHandle_t
 	int nCount = MSurf_VertCount( nSurfID );
 	for ( int i = 0; i < nCount; ++i )
 	{
-		int nVertIndex = host_state.worldbrush->vertindices[ MSurf_FirstVertIndex( nSurfID ) + i ];
-		const Vector &position = host_state.worldbrush->vertexes[ nVertIndex ].position;
+		int nVertIndex = host_state.worldmodel->brush.pShared->vertindices[ MSurf_FirstVertIndex( nSurfID ) + i ];
+		const Vector &position = host_state.worldmodel->brush.pShared->vertexes[ nVertIndex ].position;
 		pBounds->m_vecCenter += position;
 
 		fltx4 pos4 = LoadUnaligned3SIMD( position.Base() );
@@ -938,8 +938,8 @@ void CShadowMgr::ComputeSurfaceBounds( SurfaceBounds_t* pBounds, SurfaceHandle_t
 	pBounds->m_flRadius = 0.0f;
 	for ( int i = 0; i < nCount; ++i )
 	{
-		int nVertIndex = host_state.worldbrush->vertindices[ MSurf_FirstVertIndex( nSurfID ) + i ];
-		const Vector &position = host_state.worldbrush->vertexes[ nVertIndex ].position;
+		int nVertIndex = host_state.worldmodel->brush.pShared->vertindices[ MSurf_FirstVertIndex( nSurfID ) + i ];
+		const Vector &position = host_state.worldmodel->brush.pShared->vertexes[ nVertIndex ].position;
 		float flDistSq = position.DistToSqr( pBounds->m_vecCenter );
 		if ( flDistSq > pBounds->m_flRadius )
 		{
@@ -1522,7 +1522,7 @@ void CShadowMgr::ProjectShadow( ShadowHandle_t handle, const Vector &origin,
 	++r_surfacevisframe;
 
 	// Clear out the displacement tags also
-	DispInfo_ClearAllTags( host_state.worldbrush->hDispInfos );
+	DispInfo_ClearAllTags( host_state.worldmodel->brush.pShared->hDispInfos );
 
 	ShadowBuildInfo_t build;
 	build.m_Shadow = handle;
@@ -1630,7 +1630,7 @@ void CShadowMgr::ProjectFlashlight( ShadowHandle_t handle, const VMatrix& worldT
 	++r_surfacevisframe;
 
 	// Clear out the displacement tags also
-	DispInfo_ClearAllTags( host_state.worldbrush->hDispInfos );
+	DispInfo_ClearAllTags( host_state.worldmodel->brush.pShared->hDispInfos );
 
 	ShadowBuildInfo_t build;
 	build.m_Shadow = handle;
@@ -1678,7 +1678,7 @@ void CShadowMgr::ApplyFlashlightToLeaf( const Shadow_t &shadow, mleaf_t* pLeaf, 
 
 	bool bCullDepth = r_flashlightculldepth.GetBool();
 
-	SurfaceHandle_t *pHandle = &host_state.worldbrush->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
 		SurfaceHandle_t surfID = pHandle[i];
@@ -1693,8 +1693,8 @@ void CShadowMgr::ApplyFlashlightToLeaf( const Shadow_t &shadow, mleaf_t* pLeaf, 
 		// perspective projection
 
 		// world-space vertex
-		int vertIndex = host_state.worldbrush->vertindices[MSurf_FirstVertIndex( surfID )];
-		Vector& worldPos = host_state.worldbrush->vertexes[vertIndex].position;
+		int vertIndex = host_state.worldmodel->brush.pShared->vertindices[MSurf_FirstVertIndex( surfID )];
+		Vector& worldPos = host_state.worldmodel->brush.pShared->vertexes[vertIndex].position;
 
 		// Get the lookdir
 		Vector lookdir;
@@ -1745,7 +1745,7 @@ void CShadowMgr::ApplyShadowToLeaf( const Shadow_t &shadow, mleaf_t* RESTRICT pL
 	// sit on the surface; when we render, we'll actually do the clipping
 	// computation and at that point we'll remove surfaces that don't
 	// actually hit the surface
-	SurfaceHandle_t *pHandle = &host_state.worldbrush->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
 		SurfaceHandleRestrict_t surfID = pHandle[i];
@@ -1824,7 +1824,7 @@ bool CShadowMgr::EnumerateLeaf( int leaf, intp context )
 
 	const Shadow_t &shadow = m_Shadows[pBuild->m_Shadow];
 	
-	mleaf_t* pLeaf = &host_state.worldbrush->leafs[leaf];
+	mleaf_t* pLeaf = &host_state.worldmodel->brush.pShared->leafs[leaf];
 
 	bool bIsFlashlight;
 	if( shadow.m_Flags & SHADOW_FLASHLIGHT )
@@ -2317,8 +2317,8 @@ bool CShadowMgr::ComputeShadowVertices( ShadowDecal_t& decal,
 	Vector **ppVec = (Vector**)stackalloc( MSurf_VertCount( decal.m_SurfID ) * sizeof(Vector*) );
 	for (int i = 0; i < MSurf_VertCount( decal.m_SurfID ); ++i )
 	{
-		int vertIndex = host_state.worldbrush->vertindices[MSurf_FirstVertIndex( decal.m_SurfID )+i];
-		ppVec[i] = &host_state.worldbrush->vertexes[vertIndex].position;
+		int vertIndex = host_state.worldmodel->brush.pShared->vertindices[MSurf_FirstVertIndex( decal.m_SurfID )+i];
+		ppVec[i] = &host_state.worldmodel->brush.pShared->vertexes[vertIndex].position;
 	}
 
 	// Compute the modelToShadow transform.
@@ -3479,9 +3479,9 @@ void CShadowMgr::RenderFlashlights( bool bDoMasking, const VMatrix* pModelToWorl
 					if( !SurfaceHasDispInfo( surfID ) )
 					{
 #if NEWMESH
-						BuildIndicesForWorldSurface( indexBufferBuilder, surfID, host_state.worldbrush );
+						BuildIndicesForWorldSurface( indexBufferBuilder, surfID, host_state.worldmodel->brush.pShared);
 #else
-						BuildIndicesForWorldSurface( meshBuilder, surfID, host_state.worldbrush );
+						BuildIndicesForWorldSurface( meshBuilder, surfID, host_state.worldmodel->brush.pShared);
 #endif				
 					}
 				}

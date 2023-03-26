@@ -488,7 +488,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 	// XXX(johns): There are security issues with this system currently. sv_pure doesn't handle unexpected/mismatched
 	//             lumps, so players can create lumps for maps not using them to wallhack/etc.. Currently unused,
 	//             disabling until we have time to make a proper security pass.
-	if ( IsPC() )
+	if ( IsPC() && 0)
 	{
 		// Now find and open our lump files, and create the master list of them.
 		for ( int iIndex = 0; iIndex < MAX_LUMPFILES; iIndex++ )
@@ -1543,7 +1543,7 @@ static void LinearToGamma( unsigned char *pDstRGB, const float *pSrcRGB )
 static void CheckSurfaceLighting( SurfaceHandle_t surfID, worldbrushdata_t *pBrushData )
 {
 #if !defined( SWDS )
-	host_state.worldbrush = pBrushData;
+	//host_state.worldmodel->brush.pShared = pBrushData;
 	msurfacelighting_t *pLighting = SurfaceLighting( surfID, pBrushData );
 
 	if( !pLighting->m_pSamples )
@@ -1552,7 +1552,7 @@ static void CheckSurfaceLighting( SurfaceHandle_t surfID, worldbrushdata_t *pBru
 	int smax = ( pLighting->m_LightmapExtents[0] ) + 1;
 	int tmax = ( pLighting->m_LightmapExtents[1] ) + 1;
 	int offset = smax * tmax;
-	if ( SurfHasBumpedLightmaps( surfID ) )
+	if ( SurfHasBumpedLightmaps( surfID , pBrushData) )
 	{
 		offset *= ( NUM_BUMP_VECTS + 1 );
 	}
@@ -4249,7 +4249,7 @@ static void MarkWaterSurfaces_ProcessLeafNode( mleaf_t *pLeaf )
 
 	int flags = ( pLeaf->leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
 
-	SurfaceHandle_t *pHandle = &host_state.worldbrush->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 
 	for( i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
@@ -6072,19 +6072,19 @@ void Mod_LeafAmbientColorAtPos( Vector *pOut, const Vector &pos, int leafIndex )
 	{
 		pOut[i].Init();
 	}
-	mleafambientindex_t *pAmbient = &host_state.worldbrush->m_pLeafAmbient[leafIndex];
+	mleafambientindex_t *pAmbient = &host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
 	if ( !pAmbient->ambientSampleCount && pAmbient->firstAmbientSample )
 	{
 		// this leaf references another leaf, move there (this leaf is a solid leaf so it borrows samples from a neighbor)
 		leafIndex = pAmbient->firstAmbientSample;
-		pAmbient = &host_state.worldbrush->m_pLeafAmbient[leafIndex];
+		pAmbient = &host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
 	}
 	int count = pAmbient->ambientSampleCount;
 	if ( count > 0 )
 	{
-		int start = host_state.worldbrush->m_pLeafAmbient[leafIndex].firstAmbientSample;
-		mleafambientlighting_t *pSamples = host_state.worldbrush->m_pAmbientSamples + start;
-		mleaf_t *pLeaf = &host_state.worldbrush->leafs[leafIndex];
+		int start = host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex].firstAmbientSample;
+		mleafambientlighting_t *pSamples = host_state.worldmodel->brush.pShared->m_pAmbientSamples + start;
+		mleaf_t *pLeaf = &host_state.worldmodel->brush.pShared->leafs[leafIndex];
 		float totalFactor = 0;
 		for ( int i = 0; i < count; i++ )
 		{

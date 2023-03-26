@@ -46,7 +46,7 @@ class QAngle;
 class VPlane;
 
 #ifdef HL2_EPISODIC
-	class CStunEffect;
+class CStunEffect;
 #endif // HL2_EPISODIC
 
 extern ConVar cl_demoviewoverride;
@@ -66,8 +66,6 @@ extern ConVar r_entityclips;
 // Robin, make this point at something to get intro mode.
 //extern IntroData_t *g_pIntroData;
 
-
-
 //-----------------------------------------------------------------------------
 // Purpose: Stored pitch drifting variables
 //-----------------------------------------------------------------------------
@@ -79,8 +77,6 @@ public:
 	float		driftmove;
 	double		laststop;
 };
-
-
 
 //-----------------------------------------------------------------------------
 // 
@@ -1140,7 +1136,7 @@ public:
 
 
 	// Render functions
-	virtual	void	Render( vrect_t *rect );
+	virtual	void	RenderRect( vrect_t *rect );
 	virtual void	RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw );
 	virtual void	RenderPlayerSprites();
 	virtual void	Render2DEffectsPreHUD( const CViewSetup &view );

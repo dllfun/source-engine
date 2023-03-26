@@ -245,7 +245,7 @@ void R_LevelInit( void )
 		StaticPropMgr()->LevelShutdown();
 		SpatialPartition()->Init( host_state.worldmodel->mins, host_state.worldmodel->maxs );
 		StaticPropMgr()->LevelInit();
-		g_pShadowMgr->LevelInit( host_state.worldbrush->numsurfaces );
+		g_pShadowMgr->LevelInit( host_state.worldmodel->brush.pShared->numsurfaces );
 	}
 
 	// We've fully loaded the new level, unload any models that we don't care about any more

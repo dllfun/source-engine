@@ -376,9 +376,9 @@ void R_StudioCalculateVirtualLightAndLightCube( Vector& mid, Vector& virtualLigh
 	pvis = CM_Vis( pvs, sizeof(pvs), CM_LeafCluster( CM_PointLeafnum( mid ), DVIS_PVS );
 
 	float sumBumpBlendParam = 0;
-	for (i = 0; i < host_state.worldbrush->numworldlights; i++)
+	for (i = 0; i < host_state.worldmodel->brush.pShared->numworldlights; i++)
 	{
-		dworldlight_t *wl = &host_state.worldbrush->worldlights[i];
+		dworldlight_t *wl = &host_state.worldmodel->brush.pShared->worldlights[i];
 
 		if (wl->cluster < 0)
 			continue;

@@ -636,7 +636,7 @@ public:
 	virtual void					DecodeUserCmdFromBuffer( bf_read& buf, int slot );
 
 
-	virtual void					View_Render( vrect_t *rect );
+	virtual void					RenderRect( vrect_t *rect );
 	virtual void					RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw );
 	virtual void					View_Fade( ScreenFade_t *pSF );
 	
@@ -1491,15 +1491,15 @@ void CHLClient::DecodeUserCmdFromBuffer( bf_read& buf, int slot )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHLClient::View_Render( vrect_t *rect )
+void CHLClient::RenderRect( vrect_t *rect )
 {
-	VPROF( "View_Render" );
+	VPROF( "RenderRect" );
 
 	// UNDONE: This gets hit at startup sometimes, investigate - will cause NaNs in calcs inside Render()
 	if ( rect->width == 0 || rect->height == 0 )
 		return;
 
-	view->Render( rect );
+	view->RenderRect( rect );
 	UpdatePerfStats();
 }
 

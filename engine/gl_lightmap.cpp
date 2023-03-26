@@ -1174,7 +1174,7 @@ void R_BuildLightMapGuts( dlight_t *pLights, SurfaceHandle_t surfID, const matri
 	int bumpID;
 
 	// Lightmap data can be dumped to save memory - this precludes any dynamic lighting on the world
-	Assert( !host_state.worldbrush->unloadedlightmaps );
+	Assert( !host_state.worldmodel->brush.pShared->unloadedlightmaps );
 
 	// Mark the surface with the particular cached light values...
 	msurfacelighting_t *pLighting = SurfaceLighting( surfID );
@@ -1183,7 +1183,7 @@ void R_BuildLightMapGuts( dlight_t *pLights, SurfaceHandle_t surfID, const matri
 	if (size == 0)
 		return;
 
-	bool hasBumpmap = SurfHasBumpedLightmaps( surfID );
+	bool hasBumpmap = SurfHasBumpedLightmaps( surfID , host_state.worldmodel->brush.pShared);
 	bool hasLightmap = SurfHasLightmap( surfID );
 
 	// clear to no light
@@ -1299,7 +1299,7 @@ void CacheAndUnloadLightmapData()
 		return;
 	}
 
-	worldbrushdata_t *pBrushData = host_state.worldbrush;
+	worldbrushdata_t *pBrushData = host_state.worldmodel->brush.pShared;
 	msurfacelighting_t *pLighting = pBrushData->surfacelighting;
 	int numSurfaces = pBrushData->numsurfaces;
 
@@ -1328,9 +1328,9 @@ void CacheAndUnloadLightmapData()
 	}
 
 	// Update the lightdata pointer
-	free( host_state.worldbrush->lightdata );
-	host_state.worldbrush->lightdata = (ColorRGBExp32*)pDestBase;
-	host_state.worldbrush->unloadedlightmaps = true;
+	free( host_state.worldmodel->brush.pShared->lightdata );
+	host_state.worldmodel->brush.pShared->lightdata = (ColorRGBExp32*)pDestBase;
+	host_state.worldmodel->brush.pShared->unloadedlightmaps = true;
 }
 
 //sorts the surfaces in place
@@ -1396,9 +1396,9 @@ void R_RedownloadAllLightmaps()
 	// Can't build lightmaps if the source data has been dumped
 	CMatRenderContextPtr pRenderContext( materials );
 	ICallQueue *pCallQueue = pRenderContext->GetCallQueue();
-	if ( !host_state.worldbrush->unloadedlightmaps )
+	if ( !host_state.worldmodel->brush.pShared->unloadedlightmaps )
 	{		
-		int iSurfaceCount = host_state.worldbrush->numsurfaces;
+		int iSurfaceCount = host_state.worldmodel->brush.pShared->numsurfaces;
 		
 		SurfaceHandle_t *pSortedSurfaces = (SurfaceHandle_t *)stackalloc( sizeof( SurfaceHandle_t ) * iSurfaceCount );
 		for( int surfaceIndex = 0; surfaceIndex < iSurfaceCount; surfaceIndex++ )

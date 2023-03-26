@@ -196,7 +196,7 @@ int R_MarkLightsLeaf( dlight_t *light, int bit, mleaf_t *pLeaf )
 		}
 	}
 
-	SurfaceHandle_t *pHandle = &host_state.worldbrush->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
 		SurfaceHandle_t surfID = pHandle[i];
@@ -293,7 +293,7 @@ R_PushDlights
 */
 void R_PushDlights (void)
 {
-	R_MarkDLightsOnSurface( host_state.worldbrush->nodes );
+	R_MarkDLightsOnSurface( host_state.worldmodel->brush.pShared->nodes );
 	MarkDLightsOnStaticProps();
 }
 
@@ -342,7 +342,7 @@ static void ComputeLightmapCoordsAtIntersection( msurfacelighting_t *pLighting, 
 //-----------------------------------------------------------------------------
 // Computes the lightmap color at a particular point
 //-----------------------------------------------------------------------------
-static void ComputeLightmapColor( SurfaceHandle_t surfID, int ds, int dt, bool bUseLightStyles, Vector& c )
+static void ComputeLightmapColor( SurfaceHandle_t surfID, worldbrushdata_t* pBrushData, int ds, int dt, bool bUseLightStyles, Vector& c )
 {
 	msurfacelighting_t *pLighting = SurfaceLighting( surfID );
 
@@ -361,7 +361,7 @@ static void ComputeLightmapColor( SurfaceHandle_t surfID, int ds, int dt, bool b
 	int smax = ( pLighting->m_LightmapExtents[0] ) + 1;
 	int tmax = ( pLighting->m_LightmapExtents[1] ) + 1;
 	int offset = smax * tmax;
-	if ( SurfHasBumpedLightmaps( surfID ) )
+	if ( SurfHasBumpedLightmaps( surfID ,pBrushData) )
 	{
 		offset *= ( NUM_BUMP_VECTS + 1 );
 	}
@@ -429,14 +429,14 @@ static bool FASTCALL FindIntersectionAtSurface( SurfaceHandle_t surfID, float f,
 	if( s < pLighting->m_LightmapMins[0] || 
 		t < pLighting->m_LightmapMins[1] )
 		return false;	
-	
+
+	worldbrushdata_t* pBrushData = host_state.worldmodel->brush.pShared;
 	// assuming a square lightmap (FIXME: which ain't always the case),
 	// lets see if it lies in that rectangle. If not, punt...
 	float ds = s - pLighting->m_LightmapMins[0];
 	float dt = t - pLighting->m_LightmapMins[1];
 	if ( !pLighting->m_LightmapExtents[0] && !pLighting->m_LightmapExtents[1] )
 	{
-		worldbrushdata_t *pBrushData = host_state.worldbrush;
 
 		// 
 		float	lightMaxs[2];
@@ -497,7 +497,7 @@ static bool FASTCALL FindIntersectionAtSurface( SurfaceHandle_t surfID, float f,
 		ComputeLightmapCoordsAtIntersection( pLighting, ds, dt, state.m_pLightmapS, state.m_pLightmapT );
 		
 		// Check out the value of the lightmap at the intersection point
-		ComputeLightmapColor( surfID, (int)ds, (int)dt, state.m_bUseLightStyles, c );
+		ComputeLightmapColor( surfID, pBrushData, (int)ds, (int)dt, state.m_bUseLightStyles, c );
 	}
 
 	return true;
@@ -547,6 +547,8 @@ static SurfaceHandle_t R_LightVecDisplacementChain( LightVecState_t& state, bool
 	// test the ray against displacements
 	SurfaceHandle_t surfID = SURFACE_HANDLE_INVALID;
 
+	worldbrushdata_t* pBrushData = host_state.worldmodel->brush.pShared;
+
 	for ( int i = 0; i < state.m_LightTestDisps.Count(); i++ )
 	{
 	
@@ -559,7 +561,7 @@ static SurfaceHandle_t R_LightVecDisplacementChain( LightVecState_t& state, bool
 			// nearest intersection point
 			state.m_HitFrac = dist;
 			surfID = pDispInfo->GetParent();
-			ComputeLightmapColor( surfID, (int)luv.x, (int)luv.y, bUseLightStyles, c );
+			ComputeLightmapColor( surfID, pBrushData, (int)luv.x, (int)luv.y, bUseLightStyles, c );
 
 			if (state.m_pLightmapS && state.m_pLightmapT)
 			{
@@ -619,7 +621,7 @@ static SurfaceHandle_t FASTCALL FindIntersectionSurfaceAtLeaf( mleaf_t *pLeaf,
 
 	// Add non-displacement surfaces
 	// Since there's no BSP tree here, we gotta test *all* surfaces! (blech)
-	SurfaceHandle_t *pHandle = &host_state.worldbrush->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	// NOTE: Skip all marknodesurfaces, only check detail/leaf faces
 	for ( int i = pLeaf->nummarknodesurfaces; i < pLeaf->nummarksurfaces; i++ )
 	{
