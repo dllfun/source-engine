@@ -42,9 +42,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\game\client\replay\replaycamera.cpp">
       <Filter>源文件\Replay</Filter>
     </ClCompile>
