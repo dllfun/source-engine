@@ -1,9 +1,0 @@
-[submodule "ivp"]
-	path = ivp
-	url = https://github.com/dllfun/source-physics
-[submodule "lib"]
-	path = lib
-	url = https://github.com/dllfun/source-engine-libs.git
-[submodule "thirdparty"]
-	path = thirdparty
-	url = https://github.com/dllfun/source-thirdparty.git
