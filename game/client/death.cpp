@@ -205,8 +205,8 @@ void CHudDeathNotice::FireGameEvent( KeyValues * event)
 	if ( !g_PR )
 		return;
 
-	int killer = engine->GetPlayerForUserID( event->GetInt("killer") ); 
-	int victim = engine->GetPlayerForUserID( event->GetInt("victim") );
+	int killer = engineClient->GetPlayerForUserID( event->GetInt("killer") ); 
+	int victim = engineClient->GetPlayerForUserID( event->GetInt("victim") );
 
 	char killedwith[32];
 	Q_snprintf( killedwith, sizeof( killedwith ), "d_%s", event->GetString("weapon") );

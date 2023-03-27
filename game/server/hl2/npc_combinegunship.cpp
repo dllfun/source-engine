@@ -2582,7 +2582,7 @@ void CNPC_CombineGunship::InputDisableGroundAttack( inputdata_t &inputdata )
 void CNPC_CombineGunship::InputDoGroundAttack( inputdata_t &inputdata )
 {
 	// Was a target node specified?
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, inputdata.value.StringID(), NULL, inputdata.pActivator, inputdata.pCaller );
+	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, STRING( inputdata.value.StringID() ), NULL, inputdata.pActivator, inputdata.pCaller );
 	if ( pEntity )
 	{
 		// Mapmaker wants us to ground attack a specific target

@@ -3895,7 +3895,7 @@ CBaseEntity *CNPC_AntlionGuard::GetNextShoveTarget( CBaseEntity *pLastEntity, AI
 	// Try to find scripted items first
 	if ( m_strShoveTargets != NULL_STRING )
 	{
-		CBaseEntity *pFound = gEntList.FindEntityByName( pLastEntity, m_strShoveTargets );
+		CBaseEntity *pFound = gEntList.FindEntityByName( pLastEntity, STRING( m_strShoveTargets ) );
 		if ( pFound )
 			return pFound;
 	}

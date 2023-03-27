@@ -1046,7 +1046,7 @@ void CNPC_Blob::FormShapeFromPath( string_t iszPathName )
 			break;
 		}
 
-		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, iszPathName );
+		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, STRING( iszPathName ) );
 
 		if( pEntity != NULL )
 		{
@@ -1146,7 +1146,7 @@ void CNPC_Blob::InputSetRadius( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CNPC_Blob::InputChaseEntity( inputdata_t &inputdata )
 {
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, inputdata.value.StringID(), NULL, inputdata.pActivator, inputdata.pCaller );
+	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, STRING( inputdata.value.StringID() ), NULL, inputdata.pActivator, inputdata.pCaller );
 	
 	if ( pEntity )
 	{

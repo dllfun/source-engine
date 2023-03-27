@@ -174,7 +174,7 @@ bool CBaseNPCMaker::CanMakeNPC( bool bIgnoreSolidEntities )
 
 	if ( m_iszIngoreEnt != NULL_STRING )
 	{
-		m_hIgnoreEntity = gEntList.FindEntityByName( NULL, m_iszIngoreEnt );
+		m_hIgnoreEntity = gEntList.FindEntityByName( NULL, STRING( m_iszIngoreEnt ) );
 	}
 
 	Vector mins = GetAbsOrigin() - Vector( 34, 34, 0 );
@@ -646,7 +646,7 @@ CNPCSpawnDestination *CTemplateNPCMaker::FindSpawnDestination()
 	}
 
 	// Collect all the qualifiying destination ents
-	pEnt = gEntList.FindEntityByName( NULL, m_iszDestinationGroup );
+	pEnt = gEntList.FindEntityByName( NULL, STRING( m_iszDestinationGroup ) );
 
 	if( !pEnt )
 	{
@@ -697,7 +697,7 @@ CNPCSpawnDestination *CTemplateNPCMaker::FindSpawnDestination()
 			}
 		}
 
-		pEnt = gEntList.FindEntityByName( pEnt, m_iszDestinationGroup );
+		pEnt = gEntList.FindEntityByName( pEnt, STRING( m_iszDestinationGroup ) );
 	}
 
 	if( count < 1 )

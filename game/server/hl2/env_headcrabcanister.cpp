@@ -378,7 +378,7 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 	if ( m_iszLaunchPositionName != NULL_STRING )
 	{
 		// Get the launch position entity
-		CBaseEntity *pLaunchPos = gEntList.FindEntityByName( NULL, m_iszLaunchPositionName );
+		CBaseEntity *pLaunchPos = gEntList.FindEntityByName( NULL, STRING( m_iszLaunchPositionName ) );
 		if ( !pLaunchPos )
 		{
 			Warning("%s (%s) could not find an entity matching LaunchPositionName of '%s'\n", GetEntityName().ToCStr(), GetDebugName(), STRING(m_iszLaunchPositionName) );

@@ -88,7 +88,7 @@ void C_BaseHLPlayer::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void C_BaseHLPlayer::Weapon_DropPrimary( void )
 {
-	engine->ServerCmd( "DropPrimary" );
+	engineClient->ServerCmd( "DropPrimary" );
 }
 
 float C_BaseHLPlayer::GetFOV()

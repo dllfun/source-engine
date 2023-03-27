@@ -640,7 +640,7 @@ void DynamicResupply_InitFromAlternateMaster( CBaseEntity *pTargetEnt, string_t 
 	}
 
 	CItem_DynamicResupply *pTargetResupply = assert_cast<CItem_DynamicResupply *>( pTargetEnt );
-	CBaseEntity *pMasterEnt = gEntList.FindEntityByName( NULL, iszMaster );
+	CBaseEntity *pMasterEnt = gEntList.FindEntityByName( NULL, STRING( iszMaster ) );
 
 	if ( !pMasterEnt || !pMasterEnt->ClassMatches( pTargetResupply->GetClassname() ) )
 	{

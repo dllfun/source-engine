@@ -470,7 +470,7 @@ void CAntlionTemplateMaker::SetFightTarget( string_t strTarget, CBaseEntity *pAc
 		CBaseEntity *pSearch = m_hFightTarget;
 
 		for ( int i = random->RandomInt(1,5); i > 0; i-- )
-			pSearch = gEntList.FindEntityByName( pSearch, strTarget, this, pActivator, pCaller );
+			pSearch = gEntList.FindEntityByName( pSearch, STRING( strTarget ), this, pActivator, pCaller );
 
 		if ( pSearch != NULL )
 		{
@@ -478,12 +478,12 @@ void CAntlionTemplateMaker::SetFightTarget( string_t strTarget, CBaseEntity *pAc
 		}
 		else
 		{
-			SetFightTarget( gEntList.FindEntityByName( NULL, strTarget, this, pActivator, pCaller ) );
+			SetFightTarget( gEntList.FindEntityByName( NULL, STRING( strTarget ), this, pActivator, pCaller ) );
 		}
 	}
 	else 
 	{
-		SetFightTarget( gEntList.FindEntityByName( NULL, strTarget, this, pActivator, pCaller ) );
+		SetFightTarget( gEntList.FindEntityByName( NULL, STRING( strTarget ), this, pActivator, pCaller ) );
 	}
 }
 
@@ -523,7 +523,7 @@ void CAntlionTemplateMaker::SetFollowTarget( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 void CAntlionTemplateMaker::SetFollowTarget( string_t strTarget, CBaseEntity *pActivator, CBaseEntity *pCaller )
 {
-	CBaseEntity *pSearch = gEntList.FindEntityByName( NULL, strTarget, NULL, pActivator, pCaller );
+	CBaseEntity *pSearch = gEntList.FindEntityByName( NULL, STRING( strTarget ), NULL, pActivator, pCaller );
 
 	if ( pSearch != NULL )
 	{
@@ -664,7 +664,7 @@ void CAntlionTemplateMaker::MakeNPC( void )
 	QAngle	targetAngles = GetAbsAngles();
 
 	// Look for our target entity
-	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_strSpawnTarget, this );
+	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, STRING( m_strSpawnTarget ), this );
 
 	// Take its position if it exists
 	if ( pTarget != NULL )
@@ -1107,7 +1107,7 @@ CBaseEntity *CAntlionTemplateMaker::AllHintsFromClusterBlocked( CAI_Hint *pNode,
 
 			if ( pTestHint )
 			{
-				if ( pTestHint->NameMatches( pNode->GetEntityName() ) )
+				if ( pTestHint->NameMatches( STRING( pNode->GetEntityName() ) ) )
 				{
 					bool bBlocked;
 
@@ -1207,7 +1207,7 @@ void CAntlionTemplateMaker::FindNodesCloseToPlayer( void )
 			//Have one of the nodes from this cluster been checked for blockage? If so then there's no need to do block checks again for this cluster.
 			for ( int iStringCount = 0; iStringCount < m_BlockedNames.Count(); iStringCount++ )
 			{
-				if ( pNode->NameMatches( m_BlockedNames[iStringCount] ) )
+				if ( pNode->NameMatches( STRING( m_BlockedNames[iStringCount] ) ) )
 				{
 					bClusterAlreadyBlocked = true;
 					break;
@@ -1721,7 +1721,7 @@ void CAntlionTemplateMaker::DrawDebugGeometryOverlays( void )
 		if ( m_strSpawnTarget != NULL_STRING )
 		{
 			// Find all the possible targets
-			CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_strSpawnTarget );
+			CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, STRING( m_strSpawnTarget ) );
 			if ( pTarget != NULL )
 			{
 				NDebugOverlay::VertArrow( GetAbsOrigin(), pTarget->WorldSpaceCenter(), 4.0f, 255, 255, 255, 0, true, 0.05f );
@@ -1732,7 +1732,7 @@ void CAntlionTemplateMaker::DrawDebugGeometryOverlays( void )
 		if ( m_strFollowTarget != NULL_STRING )
 		{
 			// Find all the possible targets
-			CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_strFollowTarget );
+			CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, STRING( m_strFollowTarget ) );
 			if ( pTarget != NULL )
 			{
 				NDebugOverlay::VertArrow( GetAbsOrigin(), pTarget->WorldSpaceCenter(), 4.0f, 255, 255, 0, 0, true, 0.05f );
@@ -1743,7 +1743,7 @@ void CAntlionTemplateMaker::DrawDebugGeometryOverlays( void )
 		if ( m_strFightTarget != NULL_STRING )
 		{
 			// Find all the possible targets
-			CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_strFightTarget );
+			CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, STRING( m_strFightTarget ) );
 			if ( pTarget != NULL )
 			{
 				NDebugOverlay::VertArrow( GetAbsOrigin(), pTarget->WorldSpaceCenter(), 4.0f, 255, 0, 0, 0, true, 0.05f );

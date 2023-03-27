@@ -340,11 +340,11 @@ void DrawSpriteTangentSpace( const Vector &vecOrigin, float flWidth, float flHei
 
 	// Compute direction vectors for the sprite
 	Vector fwd, right( 1, 0, 0 ), up( 0, 1, 0 );
-	VectorSubtract( CurrentViewOrigin(), vecOrigin, fwd );
+	VectorSubtract(view->CurrentViewOrigin(), vecOrigin, fwd );
 	float flDist = VectorNormalize( fwd );
 	if (flDist >= 1e-3)
 	{
-		CrossProduct( CurrentViewUp(), fwd, right );
+		CrossProduct(view->CurrentViewUp(), fwd, right );
 		flDist = VectorNormalize( right );
 		if (flDist >= 1e-3)
 		{
@@ -354,7 +354,7 @@ void DrawSpriteTangentSpace( const Vector &vecOrigin, float flWidth, float flHei
 		{
 			// In this case, fwd == g_vecVUp, it's right above or 
 			// below us in screen space
-			CrossProduct( fwd, CurrentViewRight(), up );
+			CrossProduct( fwd, view->CurrentViewRight(), up );
 			VectorNormalize( up );
 			CrossProduct( up, fwd, right );
 		}

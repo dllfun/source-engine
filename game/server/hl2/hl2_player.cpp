@@ -1774,7 +1774,7 @@ void CHL2_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs,
 			{
 				pPointCamera->SetActive( true );
 			}
-			engine->AddOriginToPVS( vecOrigin );
+			engineServer->AddOriginToPVS( vecOrigin );
 		}
 	}
 }
@@ -3911,7 +3911,7 @@ void CLogicPlayerProxy::InputSetLocatorTargetEntity( inputdata_t &inputdata )
 
 	if( iszTarget != NULL_STRING )
 	{
-		pTarget = gEntList.FindEntityByName( NULL, iszTarget );
+		pTarget = gEntList.FindEntityByName( NULL, STRING( iszTarget ) );
 	}
 
 	CHL2_Player *pPlayer = dynamic_cast<CHL2_Player*>(m_hPlayer.Get());

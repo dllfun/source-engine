@@ -10,6 +10,7 @@
 #include "hud_macros.h"
 #include "iclientmode.h"
 #include "view.h"
+#include "iviewrender.h"
 #include <KeyValues.h>
 #include <vgui_controls/AnimationController.h>
 #include <vgui/ISurface.h>
@@ -354,7 +355,7 @@ void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
 	if ( vecFrom == vec3_origin && !(bitsDamage & DMG_DROWN))
 		return;
 
-	Vector vecDelta = (vecFrom - MainViewOrigin());
+	Vector vecDelta = (vecFrom - view->MainViewOrigin());
 	VectorNormalize( vecDelta );
 
 	int highDamage = DAMAGE_LOW;
@@ -410,8 +411,8 @@ void CHudDamageIndicator::GetDamagePosition( const Vector &vecDelta, float *flRo
 	float flRadius = 360.0f;
 
 	// Player Data
-	Vector playerPosition = MainViewOrigin();
-	QAngle playerAngles = MainViewAngles();
+	Vector playerPosition = view->MainViewOrigin();
+	QAngle playerAngles = view->MainViewAngles();
 
 	Vector forward, right, up(0,0,1);
 	AngleVectors (playerAngles, &forward, NULL, NULL );

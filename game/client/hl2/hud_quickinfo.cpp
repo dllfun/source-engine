@@ -184,7 +184,7 @@ bool CHUDQuickInfo::ShouldDraw( void )
 	if ( !crosshair.GetBool() && !IsX360() )
 		return false;
 
-	return ( CHudElement::ShouldDraw() && !engine->IsDrawingLoadingImage() );
+	return ( CHudElement::ShouldDraw() && !engineClient->IsDrawingLoadingImage() );
 }
 
 //-----------------------------------------------------------------------------

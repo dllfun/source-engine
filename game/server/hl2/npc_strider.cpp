@@ -3691,7 +3691,7 @@ bool CNPC_Strider::HasPendingTargetPath()
 void CNPC_Strider::SetTargetPath()
 {
 	SetGoalEnt( NULL );
-	CBaseEntity *pGoalEnt = gEntList.FindEntityByName( NULL, m_strTrackName );
+	CBaseEntity *pGoalEnt = gEntList.FindEntityByName( NULL, STRING( m_strTrackName ) );
 	if ( pGoalEnt == NULL )
 	{
 		DevWarning( "%s: Could not find target path '%s'!\n", GetClassname(), STRING( m_strTrackName ) );

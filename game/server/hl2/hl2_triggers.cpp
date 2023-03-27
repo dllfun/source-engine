@@ -108,7 +108,7 @@ void CTriggerWeaponDissolve::Activate( void )
 
 	CBaseEntity *pEntity = NULL;
 
-	while ( ( pEntity = gEntList.FindEntityByName( pEntity, m_strEmitterName ) ) != NULL )
+	while ( ( pEntity = gEntList.FindEntityByName( pEntity, STRING( m_strEmitterName ) ) ) != NULL )
 	{
 		m_pConduitPoints.AddToTail( pEntity );
 	}

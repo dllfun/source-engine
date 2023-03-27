@@ -759,7 +759,7 @@ int CNPCSimpleTalker::PlayScriptedSentence( const char *pszSentence, float delay
 		ShutUpFriends();
 
 	int sentenceIndex = BaseClass::PlayScriptedSentence( pszSentence, delay, volume, soundlevel, bConcurrent, pListener );
-	delay += engine->SentenceLength( sentenceIndex );
+	delay += engineServer->SentenceLength( sentenceIndex );
 	if ( delay < 0 )
 		delay = 0;
 	m_useTime = gpGlobals->curtime + delay;

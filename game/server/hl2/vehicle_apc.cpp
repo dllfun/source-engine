@@ -527,7 +527,7 @@ void CPropAPC::InputDestroy( inputdata_t &inputdata )
 void CPropAPC::InputFireMissileAt( inputdata_t &inputdata )
 {
 	string_t strMissileTarget = MAKE_STRING( inputdata.value.String() );
-	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, strMissileTarget, NULL, inputdata.pActivator, inputdata.pCaller );
+	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, STRING( strMissileTarget ), NULL, inputdata.pActivator, inputdata.pCaller );
 	if ( pTarget == NULL )
 	{
 		DevWarning( "%s: Could not find target '%s'!\n", GetClassname(), STRING( strMissileTarget ) );

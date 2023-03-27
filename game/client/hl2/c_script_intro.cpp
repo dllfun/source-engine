@@ -14,7 +14,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern IntroData_t *g_pIntroData;
+//extern IntroData_t *g_pIntroData;
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -109,7 +109,7 @@ C_ScriptIntro::C_ScriptIntro( void )
 	m_iPrevFOV = 0;
 	m_iStartFOV = 0;
 
-	g_pIntroData = NULL;
+	view->SetIntroData( NULL );
 
 	// Setup fade colors
 	m_IntroData.m_flCurrentFadeColor[0] = m_flFadeColor[0];
@@ -123,7 +123,7 @@ C_ScriptIntro::C_ScriptIntro( void )
 //-----------------------------------------------------------------------------
 C_ScriptIntro::~C_ScriptIntro( void )
 {
-	g_pIntroData = NULL;
+	view->SetIntroData( NULL );
 }
 
 //-----------------------------------------------------------------------------
@@ -196,11 +196,11 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 	// Set the introdata our data chunk
 	if ( m_bActive )
 	{
-		g_pIntroData = &m_IntroData;
+		view->SetIntroData(&m_IntroData);
 	}
-	else if ( g_pIntroData == &m_IntroData )
+	else if ( view->GetIntroData() == &m_IntroData )
 	{
-		g_pIntroData = NULL;
+		view->SetIntroData( NULL );
 	}
 
 	// Update the fade color

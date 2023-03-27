@@ -353,7 +353,7 @@ void CFuncTank::InputFindNPCToManTank( inputdata_t &inputdata )
 		return;
 
 	// NPC assigned to man the func_tank?
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, inputdata.value.StringID() );
+	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, STRING( inputdata.value.StringID() ) );
 	if ( pEntity )
 	{
 		CAI_BaseNPC *pNPC = pEntity->MyNPCPointer();
@@ -985,7 +985,7 @@ bool CFuncTank::OnControls( CBaseEntity *pTest )
 		// Find our control volume
 		if ( m_iszControlVolume != NULL_STRING )
 		{
-			m_hControlVolume = dynamic_cast<CBaseTrigger*>( gEntList.FindEntityByName( NULL, m_iszControlVolume ) );
+			m_hControlVolume = dynamic_cast<CBaseTrigger*>( gEntList.FindEntityByName( NULL, STRING( m_iszControlVolume ) ) );
 		}
 
 		if (( !m_hControlVolume ) && IsControllable() )
@@ -1224,7 +1224,7 @@ bool CFuncTank::NPC_FindManPoint( Vector &vecPos )
 {
 	if ( m_iszNPCManPoint != NULL_STRING )
 	{	
-		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, m_iszNPCManPoint );
+		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, STRING( m_iszNPCManPoint ) );
 		if ( pEntity )
 		{
 			vecPos = pEntity->GetAbsOrigin();
@@ -1462,7 +1462,7 @@ void CFuncTank::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 			// Find our control volume
 			if ( m_iszControlVolume != NULL_STRING )
 			{
-				m_hControlVolume = dynamic_cast<CBaseTrigger*>( gEntList.FindEntityByName( NULL, m_iszControlVolume ) );
+				m_hControlVolume = dynamic_cast<CBaseTrigger*>( gEntList.FindEntityByName( NULL, STRING( m_iszControlVolume ) ) );
 			}
 
 			if (( !m_hControlVolume ) && IsControllable() )
@@ -2645,7 +2645,7 @@ CEnvLaser *CFuncTankLaser::GetLaser( void )
 	if ( m_pLaser )
 		return m_pLaser;
 
-	CBaseEntity *pLaser = gEntList.FindEntityByName( NULL, m_iszLaserName );
+	CBaseEntity *pLaser = gEntList.FindEntityByName( NULL, STRING( m_iszLaserName ) );
 	while ( pLaser )
 	{
 		// Found the landmark
@@ -2656,7 +2656,7 @@ CEnvLaser *CFuncTankLaser::GetLaser( void )
 		}
 		else
 		{
-			pLaser = gEntList.FindEntityByName( pLaser, m_iszLaserName );
+			pLaser = gEntList.FindEntityByName( pLaser, STRING( m_iszLaserName ) );
 		}
 	}
 
@@ -2832,7 +2832,7 @@ void CFuncTankAirboatGun::Activate()
 
 	if ( m_iszAirboatGunModel != NULL_STRING )
 	{
-		m_hAirboatGunModel = dynamic_cast<CBaseAnimating*>( gEntList.FindEntityByName( NULL, m_iszAirboatGunModel ) );
+		m_hAirboatGunModel = dynamic_cast<CBaseAnimating*>( gEntList.FindEntityByName( NULL, STRING( m_iszAirboatGunModel ) ) );
 		if ( m_hAirboatGunModel )
 		{
 			m_nGunBarrelAttachment = m_hAirboatGunModel->LookupAttachment( "muzzle" );
@@ -4001,7 +4001,7 @@ void CFuncTankPhysCannister::Fire( int bulletCount, const Vector &barrelEnd, con
 	{
 		if ( m_iszBarrelVolume != NULL_STRING )
 		{
-			m_hBarrelVolume = dynamic_cast<CBaseTrigger*>( gEntList.FindEntityByName( NULL, m_iszBarrelVolume ) );
+			m_hBarrelVolume = dynamic_cast<CBaseTrigger*>( gEntList.FindEntityByName( NULL, STRING( m_iszBarrelVolume ) ) );
 		}
 
 		if ( !m_hBarrelVolume )

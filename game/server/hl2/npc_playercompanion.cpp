@@ -315,8 +315,8 @@ Disposition_t CNPC_PlayerCompanion::IRelationType( CBaseEntity *pTarget )
 		else if ( baseRelationship == D_HT && 
 				  pTarget->IsNPC() && 
 				  ((CAI_BaseNPC *)pTarget)->GetActiveWeapon() && 
-				  ((CAI_BaseNPC *)pTarget)->GetActiveWeapon()->ClassMatches( gm_iszShotgunClassname ) &&
-				  ( !GetActiveWeapon() || !GetActiveWeapon()->ClassMatches( gm_iszShotgunClassname ) ) )
+				  ((CAI_BaseNPC *)pTarget)->GetActiveWeapon()->ClassMatches( STRING( gm_iszShotgunClassname ) ) &&
+				  ( !GetActiveWeapon() || !GetActiveWeapon()->ClassMatches( STRING( gm_iszShotgunClassname ) ) ) )
 		{
 			if ( (pTarget->GetAbsOrigin() - GetAbsOrigin()).LengthSqr() < Square( 25 * 12 ) )
 			{
@@ -2346,7 +2346,7 @@ bool CNPC_PlayerCompanion::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 		// If this weapon is a shotgun, take measures to control how many
 		// are being used in this squad. Don't allow a companion to pick up
 		// a shotgun if a squadmate already has one.
-		if( pWeapon->ClassMatches( gm_iszShotgunClassname ) )
+		if( pWeapon->ClassMatches( STRING( gm_iszShotgunClassname) ) )
 		{
 			return (NumWeaponsInSquad("weapon_shotgun") < 1 );
 		}

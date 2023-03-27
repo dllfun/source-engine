@@ -139,7 +139,7 @@ void respawn( CBaseEntity *pEdict, bool fCopyCorpse )
 	}
 	else
 	{       // restart the entire server
-		engine->ServerCommand("reload\n");
+		engineServer->ServerCommand("reload\n");
 	}
 }
 

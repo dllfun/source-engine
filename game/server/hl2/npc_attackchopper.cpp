@@ -992,7 +992,7 @@ int CNPC_AttackHelicopter::ObjectCaps()
 
 void CNPC_AttackHelicopter::InputOutsideTransition( inputdata_t &inputdata )
 {
-	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, m_iszTransitionTarget );
+	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, STRING( m_iszTransitionTarget ) );
 
 	if ( pEnt )
 	{
@@ -2908,7 +2908,7 @@ void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdat
 
 	// Find our specified target
 	string_t strBombTarget = MAKE_STRING( inputdata.value.String() );
-	CBaseEntity *pBombEnt = gEntList.FindEntityByName( NULL, strBombTarget );
+	CBaseEntity *pBombEnt = gEntList.FindEntityByName( NULL, STRING( strBombTarget ) );
 	if ( pBombEnt == NULL )
 	{
 		Warning( "%s: Could not find bomb drop target '%s'!\n", GetClassname(), STRING( strBombTarget ) );

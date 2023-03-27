@@ -2196,7 +2196,7 @@ void CProtoSniper::RunTask( const Task_t *pTask )
 		{
 			// Time up! Paint the next target in the chain, or stop.
 			CBaseEntity *pNext;
-			pNext = gEntList.FindEntityByName( NULL, m_hSweepTarget->m_target );
+			pNext = gEntList.FindEntityByName( NULL, STRING( m_hSweepTarget->m_target ) );
 
 			if ( m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_SHOOTME ) )
 			{

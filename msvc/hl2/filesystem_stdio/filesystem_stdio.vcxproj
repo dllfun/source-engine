@@ -101,8 +101,8 @@
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <Optimization>Disabled</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;vpklib.lib;vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>

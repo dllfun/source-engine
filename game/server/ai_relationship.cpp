@@ -253,10 +253,10 @@ void CAI_Relationship::OnRestore()
 //---------------------------------------------------------
 bool CAI_Relationship::IsASubject( CBaseEntity *pEntity )
 {
-	if( pEntity->NameMatches( m_iszSubject ) )
+	if( pEntity->NameMatches( STRING( m_iszSubject ) ) )
 		return true;
 
-	if( pEntity->ClassMatches( m_iszSubject ) )
+	if( pEntity->ClassMatches( STRING( m_iszSubject ) ) )
 		return true;
 
 	return false;
@@ -266,10 +266,10 @@ bool CAI_Relationship::IsASubject( CBaseEntity *pEntity )
 //---------------------------------------------------------
 bool CAI_Relationship::IsATarget( CBaseEntity *pEntity )
 {
-	if( pEntity->NameMatches( m_target ) )
+	if( pEntity->NameMatches( STRING( m_target ) ) )
 		return true;
 
-	if( pEntity->ClassMatches( m_target ) )
+	if( pEntity->ClassMatches( STRING( m_target ) ) )
 		return true;
 
 	return false;

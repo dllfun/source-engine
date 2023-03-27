@@ -920,7 +920,7 @@ void CNPC_CombineDropship::Spawn( void )
 	case CRATE_APC:
 		{
 			m_soldiersToDrop = 0;
-			m_hContainer = (CBaseAnimating*)gEntList.FindEntityByName( NULL, m_iszAPCVehicleName );
+			m_hContainer = (CBaseAnimating*)gEntList.FindEntityByName( NULL, STRING( m_iszAPCVehicleName ) );
 			if ( !m_hContainer )
 			{
 				Warning("Unable to find APC %s\n", STRING( m_iszAPCVehicleName ) ); 		
@@ -1670,7 +1670,7 @@ void CNPC_CombineDropship::LandCommon( bool bHover )
 	// Do we have a land target?
 	if ( m_iszLandTarget != NULL_STRING )
 	{
-		CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_iszLandTarget );
+		CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, STRING( m_iszLandTarget ) );
 		if ( !pTarget )
 		{
 			Warning("npc_combinedropship %s couldn't find land target named %s\n", STRING(GetEntityName()), STRING(m_iszLandTarget) );
@@ -1844,7 +1844,7 @@ void CNPC_CombineDropship::InputPickup( inputdata_t &inputdata )
 		Warning("npc_combinedropship %s tried to pickup with no specified pickup target.\n", STRING(GetEntityName()) );
 		return;
 	}
-	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, iszTargetName );
+	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, STRING( iszTargetName ) );
 	if ( !pTarget )
 	{
 		Warning("npc_combinedropship %s couldn't find pickup target named %s\n", STRING(GetEntityName()), STRING(iszTargetName) );
@@ -2521,7 +2521,7 @@ Vector CNPC_CombineDropship::GetDropoffFinishPosition( Vector vecOrigin, CAI_Bas
 //-----------------------------------------------------------------------------
 void CNPC_CombineDropship::InputNPCFinishDustoff( inputdata_t &inputdata )
 {
-	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, inputdata.value.StringID(), NULL, inputdata.pActivator, inputdata.pCaller );
+	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, STRING( inputdata.value.StringID() ), NULL, inputdata.pActivator, inputdata.pCaller );
 	if ( !pEnt )
 		return;
 
@@ -2535,7 +2535,7 @@ void CNPC_CombineDropship::InputNPCFinishDustoff( inputdata_t &inputdata )
 	CBaseEntity *pDustoff = NULL;
 	if ( m_sDustoffPoints[m_iCurrentTroopExiting-1] != NULL_STRING )
 	{
-		pDustoff = gEntList.FindEntityByName( NULL, m_sDustoffPoints[m_iCurrentTroopExiting-1] );
+		pDustoff = gEntList.FindEntityByName( NULL, STRING( m_sDustoffPoints[m_iCurrentTroopExiting-1] ) );
 		if ( !pDustoff )
 		{
 			Warning("npc_combinedropship %s couldn't find dustoff target named %s\n", STRING(GetEntityName()), STRING(m_sDustoffPoints[m_iCurrentTroopExiting-1]) );

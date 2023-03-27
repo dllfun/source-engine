@@ -10,6 +10,7 @@
 #include "c_tracer.h"
 #include "particle_collision.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "clienteffectprecachesystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -144,7 +145,7 @@ void CPlasmaSpray::RenderParticles( CParticleRenderIterator *pIterator )
 		TransformParticle(ParticleMgr()->GetModelView(), pParticle->m_Pos, start);
 		float sortKey = start.z;
 
-		Vector3DMultiply( CurrentWorldToViewMatrix(), pParticle->m_vecVelocity, delta );
+		Vector3DMultiply(view->CurrentWorldToViewMatrix(), pParticle->m_vecVelocity, delta );
 
 		delta[0] *= scale;
 		delta[1] *= scale;

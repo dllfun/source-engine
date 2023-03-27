@@ -3049,11 +3049,11 @@ void CWeaponPhysCannon::WaitForUpgradeThink()
 
 	if ( !GlobalEntity_IsInTable( "super_phys_gun" ) )
 	{
-		GlobalEntity_Add( MAKE_STRING("super_phys_gun"), gpGlobals->mapname, GLOBAL_ON );
+		GlobalEntity_Add( "super_phys_gun", STRING( gpGlobals->mapname ), GLOBAL_ON );
 	}
 	else
 	{
-		GlobalEntity_SetState( MAKE_STRING("super_phys_gun"), GLOBAL_ON );
+		GlobalEntity_SetState( "super_phys_gun", GLOBAL_ON );
 	}
 	m_bIsCurrentlyUpgrading = false;
 
@@ -3190,7 +3190,7 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 	if ( IsMegaPhysCannon() )
 	{
 		// Randomly arc between the elements and core
-		if ( random->RandomInt( 0, 100 ) == 0 && !engine->IsPaused() )
+		if ( random->RandomInt( 0, 100 ) == 0 && !engineServer->IsPaused() )
 		{
 			CBeam *pBeam = CBeam::BeamCreate( MEGACANNON_BEAM_SPRITE, 1 );
 

@@ -108,8 +108,8 @@
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <Optimization>Disabled</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies>RPCRT4.lib;WS2_32.lib;tier0.lib;%(AdditionalDependencies)</AdditionalDependencies>

@@ -323,7 +323,7 @@ void CHudCredits::DrawOutroCreditsName( void )
 						if ( m_Alpha <= 0 )
 						{
 							pCredit->bActive = false;
-							engine->ClientCmd( "creditsdone" );
+							engineClient->ClientCmd( "creditsdone" );
 						}
 					}
 				}

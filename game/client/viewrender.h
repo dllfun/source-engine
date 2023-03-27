@@ -1378,6 +1378,10 @@ public:
 		return g_pIntroData;
 	}
 
+	virtual void SetIntroData(IntroData_t* introData) {
+		g_pIntroData = introData;
+	}
+
 	//-----------------------------------------------------------------------------
 // Fakes per-entity clip planes on cards that don't support user clip planes.
 //  Achieves the effect by drawing an invisible box that writes to the depth buffer

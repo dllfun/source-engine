@@ -550,7 +550,7 @@ void CNPC_EnemyFinderCombineCannon::Spawn()
 
 	if( m_iszSnapToEnt != NULL_STRING )
 	{
-		CBaseEntity *pSnapToEnt = gEntList.FindEntityByName( NULL, m_iszSnapToEnt );
+		CBaseEntity *pSnapToEnt = gEntList.FindEntityByName( NULL, STRING( m_iszSnapToEnt ) );
 
 		if( pSnapToEnt != NULL )
 		{

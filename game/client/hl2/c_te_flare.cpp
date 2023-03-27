@@ -10,6 +10,7 @@
 #include "iefx.h"
 #include "dlight.h"
 #include "view.h"
+#include "iviewrender.h"
 #include "fx.h"
 #include "clientsideeffects.h"
 #include "c_pixel_visibility.h"
@@ -308,7 +309,7 @@ void C_Flare::Update( float timeDelta )
 		{
 			Vector	smokeOrg = GetAbsOrigin();
 
-			Vector	flareScreenDir = ( smokeOrg - MainViewOrigin() );
+			Vector	flareScreenDir = ( smokeOrg - view->MainViewOrigin() );
 			VectorNormalize( flareScreenDir );
 
 			smokeOrg = smokeOrg + ( flareScreenDir * 2.0f );

@@ -101,8 +101,8 @@
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <Optimization>Disabled</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies>tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;steam_api.lib;SDL2.lib;WS2_32.lib;appframework.lib;%(AdditionalDependencies)</AdditionalDependencies>

@@ -286,6 +286,7 @@ public:
 	virtual bool DrawingMainView() = 0;
 	virtual bool IsRenderingScreenshot() = 0;
 	virtual IntroData_t* GetIntroData() = 0;
+	virtual void SetIntroData(IntroData_t* introData) = 0;
 	virtual void DrawClippedDepthBox(IClientRenderable* pEnt, float* pClipPlane) = 0;
 	virtual inline void DrawOpaqueRenderable(IClientRenderable* pEnt, bool bTwoPass, ERenderDepthMode DepthMode, int nDefaultFlags = 0) = 0;
 	virtual inline void DrawTranslucentRenderable(IClientRenderable* pEnt, bool twoPass, bool bShadowDepth, bool bIgnoreDepth) = 0;

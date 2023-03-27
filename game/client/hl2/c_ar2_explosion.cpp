@@ -225,7 +225,7 @@ void C_AR2Explosion::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArg
 			C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
 			if ( ent )
 			{
-				nSurfInfos = engine->GetIntersectingSurfaces(
+				nSurfInfos = engineClient->GetIntersectingSurfaces(
 					ent->GetModel(),
 					vCenter,
 					AR2_DUST_RADIUS,
