@@ -83,6 +83,8 @@
       <AdditionalIncludeDirectories>..\..\..\engine;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\common;..\..\..\engine\audio;..\..\..\public\engine\audio;..\..\..\thirdparty\SDL;..\..\..\public\matsys_controls;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\;..\..\..\utils\vmpi_private\mysql\lib\opt;..\..\..\dx9sdk\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -101,6 +103,8 @@
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <DebugInformationFormat>None</DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\lib\win32\x86;$(SolutionDir)$(Configuration)\;..\..\..\utils\vmpi_private\mysql\lib\opt;..\..\..\dx9sdk\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
