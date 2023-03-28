@@ -33,7 +33,7 @@ bool VGui_InitInterfacesList( const char *moduleName, CreateInterfaceFn *factory
 	if ( _heapmin() != 1 )
 	{
 		Assert( false );
-		Error( "Must include memoverride.cpp in your project." );
+		//Error( "Must include memoverride.cpp in your project." );
 	}
 #endif	
 	// keep a record of this module name

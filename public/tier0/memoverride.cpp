@@ -5,7 +5,7 @@
 //
 // $NoKeywords: $
 //=============================================================================//
-
+#ifdef AAA
 
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
 
@@ -149,7 +149,7 @@ inline void *ReallocUnattributed( void *pMem, size_t nSize )
 #ifndef _CRT_NOEXCEPT
 #define _CRT_NOEXCEPT
 #endif
-#if defined(USE_MEM_DEBUG)
+
 extern "C"
 {
 	
@@ -176,7 +176,7 @@ ALLOC_CALL void *calloc( size_t nCount, size_t nElementSize )
 }
 
 } // end extern "C"
-#endif
+
 //-----------------------------------------------------------------------------
 // Non-standard MSVC functions that we're going to override to call our allocator
 //-----------------------------------------------------------------------------
@@ -260,16 +260,16 @@ ALLOC_CALL void * __cdecl _recalloc ( void * memblock, size_t count, size_t size
 	return pMem;
 }
 
-size_t source_msize_base( void *pMem ) _CRT_NOEXCEPT
+size_t _msize_base( void *pMem ) _CRT_NOEXCEPT
 {
 	return g_pMemAlloc->GetSize(pMem);
 }
-#if defined(USE_MEM_DEBUG)
-size_t source_msize( void *pMem )
+
+size_t _msize( void *pMem )
 {
-	return source_msize_base(pMem);
+	return _msize_base(pMem);
 }
-#endif
+
 size_t msize( void *pMem )
 {
 	return g_pMemAlloc->GetSize(pMem);
@@ -307,12 +307,12 @@ int __cdecl _set_sbh_threshold( size_t )
 {
 	return 0;
 }
-#if defined(USE_MEM_DEBUG)
+
 int _heapchk()
 {
 	return g_pMemAlloc->heapchk();
 }
-#endif
+
 int _heapmin()
 {
 	return 1;
@@ -619,12 +619,11 @@ FREE_CALL void __cdecl _aligned_free_base( void *ptr )
 }
 
 // aligned
-#if defined(USE_MEM_DEBUG)
 ALLOC_CALL void * __cdecl _aligned_malloc( size_t size, size_t align )
 {
 	return _aligned_malloc_base(size, align);
 }
-#endif
+
 ALLOC_CALL void *__cdecl _aligned_realloc(void *memblock, size_t size, size_t align)
 {
     return _aligned_realloc_base(memblock, size, align);
@@ -634,12 +633,12 @@ ALLOC_CALL void * __cdecl _aligned_recalloc( void * memblock, size_t count, size
 {
     return _aligned_recalloc_base(memblock, count * size, align);
 }
-#if defined(USE_MEM_DEBUG)
+
 FREE_CALL void __cdecl _aligned_free( void *memblock )
 {
     _aligned_free_base(memblock);
 }
-#endif
+
 // aligned offset base
 ALLOC_CALL void * __cdecl _aligned_offset_malloc_base( size_t size, size_t align, size_t offset )
 {
@@ -815,7 +814,7 @@ _CRT_REPORT_HOOK __cdecl _CrtSetReportHook( _CRT_REPORT_HOOK pfnNewHook )
 }
 
 int __cdecl _CrtDbgReport( int nRptType, const char * szFile,
-	int nLine, const char * szModule, const char * szFormat, ... )
+        int nLine, const char * szModule, const char * szFormat, ... )
 {
 	static char output[1024];
 	va_list args;
@@ -1465,3 +1464,4 @@ namespace _NATIVE_STARTUP_NAMESPACE
 #endif // !STEAM && !NO_MALLOC_OVERRIDE
 
 #endif // _WIN32
+#endif

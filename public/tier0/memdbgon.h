@@ -11,6 +11,8 @@
 // to include this potentially multiple times (since we can deactivate debugging
 // by including memdbgoff.h)
 
+#ifdef AAA
+
 #if !defined(STEAM) && !defined(NO_MALLOC_OVERRIDE)
 
 // SPECIAL NOTE #2: This must be the final include in a .cpp or .h file!!!
@@ -322,3 +324,4 @@ inline void *valve_aligned_malloc_check_oom( size_t size, size_t alignment )
 #undef _aligned_malloc
 
 #endif // NO_MALLOC_OVERRIDE
+#endif

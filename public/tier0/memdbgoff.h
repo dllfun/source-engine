@@ -6,7 +6,7 @@
 //
 // $NoKeywords: $
 //=============================================================================//
-
+#ifdef AAA
 #ifdef MEM_OVERRIDE_ON
 
 #undef malloc
@@ -22,4 +22,5 @@
 
 #undef MEM_OVERRIDE_ON
 
+#endif
 #endif
