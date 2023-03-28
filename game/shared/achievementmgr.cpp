@@ -304,8 +304,13 @@ bool CAchievementMgr::Init()
 	// to go get the pointer to us
 
 #ifdef _DEBUG
+	IAchievementMgr* pAchievementMgr = NULL;
 	// There can be only one achievement manager instance; no one else should be registered
-	IAchievementMgr *pAchievementMgr = engineServer->GetAchievementMgr();
+#ifdef GAME_DLL
+	pAchievementMgr = engineServer->GetAchievementMgr();
+#else
+	pAchievementMgr = engineClient->GetAchievementMgr();
+#endif // CLIENT_DLL
 	Assert( NULL == pAchievementMgr );
 #endif // _DEBUG
 #ifdef GAME_DLL
@@ -1756,7 +1761,7 @@ void CAchievementMgr::Steam_OnUserStatsStored( UserStatsStored_t *pUserStatsStor
 
 						KeyValues *kv = new KeyValues( "AchievementEarned" );
 						kv->SetInt( "achievementID", nAchievementID );
-						engineServer->ServerCmdKeyValues( kv );
+						engineClient->ServerCmdKeyValues( kv );
 					}
 				}
 			}
@@ -1920,7 +1925,7 @@ void MsgFunc_AchievementEvent( bf_read &msg )
 #if defined(_DEBUG) || defined(STAGING_ONLY) || DEBUG_ACHIEVEMENTS_IN_RELEASE
 CON_COMMAND_F( achievement_reset_all, "Clears all achievements", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 	pAchievementMgr->ResetAchievements();
@@ -1928,7 +1933,7 @@ CON_COMMAND_F( achievement_reset_all, "Clears all achievements", FCVAR_CHEAT )
 
 CON_COMMAND_F( achievement_reset, "<internal name> Clears specified achievement", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 
@@ -1949,7 +1954,7 @@ CON_COMMAND_F( achievement_reset, "<internal name> Clears specified achievement"
 
 CON_COMMAND_F( achievement_status, "Shows status of all achievement", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 	pAchievementMgr->PrintAchievementStatus();
@@ -1957,7 +1962,7 @@ CON_COMMAND_F( achievement_status, "Shows status of all achievement", FCVAR_CHEA
 
 CON_COMMAND_F( achievement_unlock, "<internal name> Unlocks achievement", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 
@@ -1977,7 +1982,7 @@ CON_COMMAND_F( achievement_unlock, "<internal name> Unlocks achievement", FCVAR_
 
 CON_COMMAND_F( achievement_unlock_all, "Unlocks all achievements", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 
@@ -1994,7 +1999,7 @@ CON_COMMAND_F( achievement_unlock_all, "Unlocks all achievements", FCVAR_CHEAT )
 
 CON_COMMAND_F( achievement_evaluate, "<internal name> Causes failable achievement to be evaluated", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 
@@ -2022,7 +2027,7 @@ CON_COMMAND_F( achievement_evaluate, "<internal name> Causes failable achievemen
 
 CON_COMMAND_F( achievement_test_friend_count, "Counts the # of teammates on local player's friends list", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 	if ( 2 != args.ArgC() )
@@ -2037,7 +2042,7 @@ CON_COMMAND_F( achievement_test_friend_count, "Counts the # of teammates on loca
 
 CON_COMMAND_F( achievement_test_clan_count, "Determines if specified # of teammates belong to same clan w/local player", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 
@@ -2053,7 +2058,7 @@ CON_COMMAND_F( achievement_test_clan_count, "Determines if specified # of teamma
 
 CON_COMMAND_F( achievement_mark_dirty, "Mark achievement data as dirty", FCVAR_CHEAT )
 {
-	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineServer->GetAchievementMgr() );
+	CAchievementMgr *pAchievementMgr = dynamic_cast<CAchievementMgr *>(engineClient->GetAchievementMgr() );
 	if ( !pAchievementMgr )
 		return;
 	pAchievementMgr->SetDirty( true );

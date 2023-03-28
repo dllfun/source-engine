@@ -15,7 +15,7 @@
 #define __cdecl 
 #endif
 
-void __cdecl srand(unsigned int)
+void __cdecl source_srand(unsigned int)
 {
 }
 

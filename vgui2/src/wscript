@@ -35,12 +35,14 @@ def build(bld):
 		'VPanel.cpp',
 		'VPanelWrapper.cpp',
 		'keyrepeat.cpp',
-		'../../public/tier0/memoverride.cpp'
+		'../../public/tier0/memoverride.cpp',
+        '../../vguimatsurface/Cursor.cpp',
+        '../../vguimatsurface/Input.cpp',
 	]
 
 	if bld.env.DEST_OS == 'win32':
 		source += [
-			'Surface.cpp',
+			#'Surface.cpp',
 			'System.cpp'
 		]
 	else:
@@ -53,12 +55,13 @@ def build(bld):
 		'../../public',
 		'../../public/tier0',
 		'../../public/tier1',
-		'../../common'
+		'../../common',
+        '../../vguimatsurface'
 	] + bld.env.INCLUDES_SDL2
 
 	defines = []
 
-	libs = ['tier0','tier1','tier2','tier3','vstdlib','SDL2']
+	libs = ['tier0','tier1','tier2','tier3','vstdlib','SDL2','vgui_controls','mathlib']
 
 	if bld.env.DEST_OS == 'win32':
 		libs += ['USER32', 'IMM32', 'GDI32', 'SHELL32', 'OLE32', 'SHLWAPI', 'vgui_surfacelib', 'WINMM']

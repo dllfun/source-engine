@@ -110,7 +110,8 @@ def build(bld):
 		'../public/tier1',
 		'../common',
 		'../common/GameUI',
-		'../thirdparty'
+		'../thirdparty',
+        '../public/matsys_controls',
 	]
 
 	defines = []

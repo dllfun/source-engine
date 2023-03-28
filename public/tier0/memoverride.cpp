@@ -260,14 +260,14 @@ ALLOC_CALL void * __cdecl _recalloc ( void * memblock, size_t count, size_t size
 	return pMem;
 }
 
-size_t _msize_base( void *pMem ) _CRT_NOEXCEPT
+size_t source_msize_base( void *pMem ) _CRT_NOEXCEPT
 {
 	return g_pMemAlloc->GetSize(pMem);
 }
 #if defined(USE_MEM_DEBUG)
-size_t _msize( void *pMem )
+size_t source_msize( void *pMem )
 {
-	return _msize_base(pMem);
+	return source_msize_base(pMem);
 }
 #endif
 size_t msize( void *pMem )

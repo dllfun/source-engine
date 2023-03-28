@@ -353,6 +353,7 @@ def build(bld):
 		'audio',
 		'../public/engine/audio/',
 		'audio/',
+        '../public/matsys_controls',
 	]
 
 	defines = []

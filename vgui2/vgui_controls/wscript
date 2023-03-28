@@ -92,6 +92,7 @@ def build(bld):
 		'URLLabel.cpp',
 		'WizardPanel.cpp',
 		'WizardSubPanel.cpp',
+        '../../public/vgui_controls/vgui_controls.cpp',
 		'../src/vgui_key_translation.cpp'
 	]
 

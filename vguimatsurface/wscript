@@ -21,12 +21,12 @@ def configure(conf):
 def build(bld):
 	source = [
 		'Clip2D.cpp',
-		'Cursor.cpp',
+		#'Cursor.cpp',
 		'../public/filesystem_helpers.cpp',
 		'FontTextureCache.cpp',
-		'Input.cpp',
+		#'Input.cpp',
 		'MatSystemSurface.cpp',
-		'asanstubs.cpp',
+		#'asanstubs.cpp',
 		'TextureDictionary.cpp',
 		'../vgui2/src/vgui_key_translation.cpp',
 		'../public/vgui_controls/vgui_controls.cpp',
