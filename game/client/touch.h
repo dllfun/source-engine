@@ -216,7 +216,7 @@ private:
 	float m_flPreviousYaw, m_flPreviousPitch;
 
 	int touchTextureID;
-	IMesh* m_pMesh;
+	//IMesh* m_pMesh;
 	CMeshBuilder meshBuilder;
 
 	// editing

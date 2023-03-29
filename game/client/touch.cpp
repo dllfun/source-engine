@@ -698,9 +698,9 @@ void CTouchControls::Paint()
 
 			if( t->textureID )
 			{
-				m_pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, g_pMatSystemSurface->DrawGetTextureMaterial(t->textureID) );
+				static IMesh* pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, g_pMatSystemSurface->DrawGetTextureMaterial(t->textureID) );
 
-				meshBuilder.Begin( m_pMesh, MATERIAL_QUADS, 1 );
+				meshBuilder.Begin(pMesh, MATERIAL_QUADS, 1 );
 
 				int alpha = (btn->color.a > MIN_ALPHA_IN_CUTSCENE) ? max(MIN_ALPHA_IN_CUTSCENE, btn->color.a-m_AlphaDiff) : btn->color.a;
 				rgba_t color(btn->color.r, btn->color.g, btn->color.b, alpha);
@@ -727,7 +727,7 @@ void CTouchControls::Paint()
 
 				meshBuilder.End();
 
-				m_pMesh->Draw();
+				pMesh->Draw();
 			}
 			else if( !btn->texture->isInAtlas )
 				CreateAtlasTexture();
@@ -737,8 +737,8 @@ void CTouchControls::Paint()
 		}
 	}
 
-	m_pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, g_pMatSystemSurface->DrawGetTextureMaterial(touchTextureID) );
-	meshBuilder.Begin( m_pMesh, MATERIAL_QUADS, meshCount );
+	static IMesh* pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, g_pMatSystemSurface->DrawGetTextureMaterial(touchTextureID) );
+	meshBuilder.Begin(pMesh, MATERIAL_QUADS, meshCount );
 
 	for( it = btns.begin(); it != btns.end(); it++ )
 	{
@@ -774,7 +774,7 @@ void CTouchControls::Paint()
 	}
 
 	meshBuilder.End();
-	m_pMesh->Draw();
+	pMesh->Draw();
 
 
 	if( m_flHideTouch < gpGlobals->curtime )

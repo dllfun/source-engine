@@ -1396,9 +1396,9 @@ void CNetGraphPanel::DrawLineSegments()
 		return;
 
 	CMatRenderContextPtr pRenderContext( materials );
-	IMesh* m_pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, m_WhiteMaterial );
+	IMesh* pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, m_WhiteMaterial );
 	CMeshBuilder		meshBuilder;
-	meshBuilder.Begin( m_pMesh, MATERIAL_LINES, c );
+	meshBuilder.Begin(pMesh, MATERIAL_LINES, c );
 
 	int i;
 	for ( i = 0 ; i < c; i++ )
@@ -1418,7 +1418,7 @@ void CNetGraphPanel::DrawLineSegments()
 
 	meshBuilder.End();
 
-	m_pMesh->Draw();
+	pMesh->Draw();
 }
 
 //-----------------------------------------------------------------------------

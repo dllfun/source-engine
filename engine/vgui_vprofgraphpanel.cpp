@@ -310,9 +310,9 @@ void CVProfGraphPanel::PaintLineArt( int x, int y, int w )
 
 	CMatRenderContextPtr pRenderContext( materials );
 
-	IMesh* m_pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, m_WhiteMaterial );
+	IMesh* pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, m_WhiteMaterial );
 	CMeshBuilder meshBuilder;
-	meshBuilder.Begin( m_pMesh, MATERIAL_LINES, 3 * w + 4 );
+	meshBuilder.Begin(pMesh, MATERIAL_LINES, 3 * w + 4 );
 
 	// Draw lines at 20, 30, 60 hz, and baseline
 	int i;
@@ -397,7 +397,7 @@ void CVProfGraphPanel::PaintLineArt( int x, int y, int w )
 	}
 
 	meshBuilder.End();
-	m_pMesh->Draw();
+	pMesh->Draw();
 }
 
 
