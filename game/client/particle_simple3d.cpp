@@ -95,14 +95,14 @@ void CSimple3DEmitter::RenderParticles( CParticleRenderIterator *pIterator )
 	const Particle3D *pParticle = (const Particle3D *)pIterator->GetFirst();
 	while ( pParticle )
 	{
-		float sortKey = view->CurrentViewForward().Dot(view->CurrentViewOrigin() - pParticle->m_Pos );
+		float sortKey = g_pView->CurrentViewForward().Dot(g_pView->CurrentViewOrigin() - pParticle->m_Pos );
 
 		// -------------------------------------------------------
 		//  Set color based on direction towards camera
 		// -------------------------------------------------------
 		Vector	color;
 		Vector vFaceNorm;
-		Vector vCameraToFace = (pParticle->m_Pos - view->CurrentViewOrigin());
+		Vector vCameraToFace = (pParticle->m_Pos - g_pView->CurrentViewOrigin());
 		AngleVectors(pParticle->m_vAngles,&vFaceNorm);
 		float flFacing = DotProduct(vCameraToFace,vFaceNorm);
 

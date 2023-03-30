@@ -80,7 +80,7 @@ struct materiallist_t
 {
 	short			nextBlock;
 	short			count;
-	msurface2_t		*pSurfaces[15];
+	SurfaceHandle_t	pSurfaces[15];
 };
 
 struct surfacesortgroup_t
@@ -102,9 +102,9 @@ public:
 	void Init( int maxSortIDs, int minMaterialLists );
 	void Shutdown();
 	void Reset();
-	void AddSurfaceToTail( msurface2_t *pSurface, int nSortGroup, int sortID );
-	msurface2_t *GetSurfaceAtHead( const surfacesortgroup_t &group ) const;
-	void GetSurfaceListForGroup( CUtlVector<msurface2_t *> &list, const surfacesortgroup_t &group ) const;
+	void AddSurfaceToTail(SurfaceHandle_t pSurface, int nSortGroup, int sortID );
+	SurfaceHandle_t GetSurfaceAtHead( const surfacesortgroup_t &group ) const;
+	void GetSurfaceListForGroup( CUtlVector<SurfaceHandle_t> &list, const surfacesortgroup_t &group ) const;
 	inline int GetIndexForSortID( int nSortGroup, int sortID ) const
 	{
 		Assert(sortID<m_maxSortIDs);

@@ -269,7 +269,7 @@ static inline const Vector& EngineGetVecRenderOrigin()
 		static Vector dummy(0,0,0);
 		return dummy;
 	#else
-		return view->CurrentViewOrigin();
+		return g_pView->CurrentViewOrigin();
 	#endif
 }
 
@@ -398,7 +398,7 @@ void C_ParticleSmokeGrenade::ClientThink()
 	{
 		// Add our influence to the global smoke fog alpha.
 		
-		float testDist = (view->MainViewOrigin() - m_SmokeBasePos ).Length();
+		float testDist = (g_pView->MainViewOrigin() - m_SmokeBasePos ).Length();
 
 		float fadeEnd = m_ExpandRadius;
 

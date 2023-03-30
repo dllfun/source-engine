@@ -153,7 +153,7 @@ void ComputeRenderInfo( mstudiobbox_t *pHitBox, const matrix3x4_t &hitboxToWorld
 //	vec[1] *= -1.0f;
 
 	Vector vecViewDir;
-	VectorSubtract(view->CurrentViewOrigin(), *pVecAbsOrigin, vecViewDir );
+	VectorSubtract(g_pView->CurrentViewOrigin(), *pVecAbsOrigin, vecViewDir );
 	VectorNormalize( vecViewDir );
 
 	// Project the shadow casting direction into the space of the hitbox
@@ -257,7 +257,7 @@ int C_WeaponPhysCannon::DrawModel( int flags )
 			Vector	vecSkew = vec3_origin;
 
 			// Skew the particles in front or in back of their targets
-			vecSkew = view->CurrentViewForward() * 4.0f;
+			vecSkew = g_pView->CurrentViewForward() * 4.0f;
 
 			float spriteScale = 1.0f;
 			spriteScale = clamp( spriteScale, 0.75f, 1.0f );

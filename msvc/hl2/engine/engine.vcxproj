@@ -394,7 +394,6 @@
     <ClCompile Include="..\..\..\engine\xboxsystem.cpp" />
     <ClCompile Include="..\..\..\engine\zone.cpp" />
     <ClCompile Include="..\..\..\public\blockingudpsocket.cpp" />
-    <ClCompile Include="..\..\..\public\bsptreedata.cpp" />
     <ClCompile Include="..\..\..\public\builddisp.cpp" />
     <ClCompile Include="..\..\..\public\collisionutils.cpp" />
     <ClCompile Include="..\..\..\public\crtmemdebug.cpp" />

@@ -130,7 +130,7 @@ int C_FuncAreaPortalWindow::DrawModel( int flags )
 float C_FuncAreaPortalWindow::GetDistanceBlend()
 {
 	// Get the viewer's distance to us.
-	float flDist = CollisionProp()->CalcDistanceFromPoint(view->CurrentViewOrigin() );
+	float flDist = CollisionProp()->CalcDistanceFromPoint(g_pView->CurrentViewOrigin() );
 	C_BasePlayer *local = C_BasePlayer::GetLocalPlayer();
 	if ( local )
 	{

@@ -1802,5 +1802,8 @@
     <ClInclude Include="..\..\..\game\client\viewrender.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\game\client\iviewrender.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

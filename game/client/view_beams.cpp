@@ -243,7 +243,7 @@ bool ComputeBeamEntPosition( C_BaseEntity *pEnt, int nAttachment, bool bInterpre
 					if ( pAnimating->HitboxToWorldTransforms( hitboxbones ) )
 					{
 						mstudiobbox_t *pHitbox = set->pHitbox( nAttachment - 1 );
-						Vector vecViewPt = view->MainViewOrigin();
+						Vector vecViewPt = g_pView->MainViewOrigin();
 						Vector vecLocalViewPt;
 						VectorITransform( vecViewPt, *hitboxbones[ pHitbox->bone ], vecLocalViewPt );
 
@@ -450,7 +450,7 @@ int Beam_t::DrawModel( int flags )
 
 	// Tracker 16432:  If rendering a savegame screenshot don't draw beams 
 	//   who have viewmodels as their attached entity
-	if ( view->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
+	if (g_pView->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
 	{
 		// If the beam is attached
 		for (int i=0;i<MAX_BEAM_ENTS;i++)
@@ -1780,7 +1780,7 @@ void CViewRenderBeams::DrawBeamWithHalo(	Beam_t*			pbeam,
 	Vector beamDir = pbeam->attachment[1] - pbeam->attachment[0];
 	VectorNormalize( beamDir );
 	
-	Vector localDir = view->CurrentViewOrigin() - pbeam->attachment[0];
+	Vector localDir = g_pView->CurrentViewOrigin() - pbeam->attachment[0];
 	VectorNormalize( localDir );
 	
 	float dotpr = DotProduct( beamDir, localDir );
@@ -1799,9 +1799,9 @@ void CViewRenderBeams::DrawBeamWithHalo(	Beam_t*			pbeam,
 	Vector	out;
 
 	// Find out how close we are to the "line" of the spotlight
-	CalcClosestPointOnLine(view->CurrentViewOrigin(), pbeam->attachment[0], pbeam->attachment[0] + ( beamDir * 2 ), out, &distToLine );
+	CalcClosestPointOnLine(g_pView->CurrentViewOrigin(), pbeam->attachment[0], pbeam->attachment[0] + ( beamDir * 2 ), out, &distToLine );
 
-	distToLine = (view->CurrentViewOrigin() - out ).Length();
+	distToLine = (g_pView->CurrentViewOrigin() - out ).Length();
 
 	float scaleColor[4];
 	float dotScale = 1.0f;
@@ -1871,7 +1871,7 @@ void CViewRenderBeams::DrawLaser( Beam_t *pbeam, int frame, int rendermode, floa
 	Vector vecForward;
 	Vector	beamDir	= pbeam->attachment[1] - pbeam->attachment[0];
 	VectorNormalize( beamDir );
-	AngleVectors(view->CurrentViewAngles(), &vecForward );
+	AngleVectors(g_pView->CurrentViewAngles(), &vecForward );
 	float flDot = DotProduct(beamDir, vecForward);
 
 	// abort if the player's looking along it away from the source
@@ -1885,7 +1885,7 @@ void CViewRenderBeams::DrawLaser( Beam_t *pbeam, int frame, int rendermode, floa
 		float flFade = pow( flDot, 10 );
 
 		// Fade the beam based on the player's proximity to the beam
-		Vector localDir = view->CurrentViewOrigin() - pbeam->attachment[0];
+		Vector localDir = g_pView->CurrentViewOrigin() - pbeam->attachment[0];
 		flDot = DotProduct( beamDir, localDir );
 		Vector vecProjection = flDot * beamDir;
 		float flDistance = ( localDir - vecProjection ).Length();
@@ -2338,7 +2338,7 @@ void CViewRenderBeams::DrawBeam( C_Beam* pbeam, ITraceFilter *pEntityBeamTraceFi
 	if ( beam.entity[0] )
 	{
 		// don't draw viewmodel effects in reflections
-		if (view->CurrentViewID() == VIEW_REFLECTION )
+		if (g_pView->CurrentViewID() == VIEW_REFLECTION )
 		{
 			int group = beam.entity[0]->GetRenderGroup();
 			if (group == RENDER_GROUP_VIEW_MODEL_TRANSLUCENT || group == RENDER_GROUP_VIEW_MODEL_OPAQUE)

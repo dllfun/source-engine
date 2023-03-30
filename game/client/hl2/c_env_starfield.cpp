@@ -66,7 +66,7 @@ void C_EnvStarfield::OnDataChanged( DataUpdateType_t updateType )
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
 		m_pEmitter = CTrailParticles::Create( "EnvStarfield" );
-		Vector vecCenter = view->MainViewOrigin() + (view->MainViewForward() * cl_starfield_distance.GetFloat() );
+		Vector vecCenter = g_pView->MainViewOrigin() + (g_pView->MainViewForward() * cl_starfield_distance.GetFloat() );
 		m_pEmitter->Setup( (Vector &) vecCenter, 
 			NULL, 
 			0.0, 
@@ -95,7 +95,7 @@ void C_EnvStarfield::ClientThink( void )
 
 	// Find a start & end point for the particle
 	// Start particles straight ahead of the client
-	Vector vecViewOrigin = view->MainViewOrigin();
+	Vector vecViewOrigin = g_pView->MainViewOrigin();
 
 	// Determine the number of particles
 	m_flNumParticles += 1.0 * (m_flDensity);
@@ -107,8 +107,8 @@ void C_EnvStarfield::ClientThink( void )
 	{
 		float flDiameter = cl_starfield_diameter.GetFloat();
 
-		Vector vecStart = vecViewOrigin + (view->MainViewForward() * cl_starfield_distance.GetFloat() );
-		Vector vecEnd = vecViewOrigin + (view->MainViewRight() * RandomFloat(-flDiameter,flDiameter)) + (view->MainViewUp() * RandomFloat(-flDiameter,flDiameter));
+		Vector vecStart = vecViewOrigin + (g_pView->MainViewForward() * cl_starfield_distance.GetFloat() );
+		Vector vecEnd = vecViewOrigin + (g_pView->MainViewRight() * RandomFloat(-flDiameter,flDiameter)) + (g_pView->MainViewUp() * RandomFloat(-flDiameter,flDiameter));
 		Vector vecDir = (vecEnd - vecStart);
 		float flDistance = VectorNormalize( vecDir );
 		float flTravelTime = 2.0;

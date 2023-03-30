@@ -956,7 +956,7 @@ void CDetailModel::ComputeAngles( void )
 	case 1:
 		{
 			Vector vecDir;
-			VectorSubtract(view->CurrentViewOrigin(), m_Origin, vecDir );
+			VectorSubtract(g_pView->CurrentViewOrigin(), m_Origin, vecDir );
 			VectorAngles( vecDir, m_Angles );
 		}
 		break;
@@ -964,7 +964,7 @@ void CDetailModel::ComputeAngles( void )
 	case 2:
 		{
 			Vector vecDir;
-			VectorSubtract(view->CurrentViewOrigin(), m_Origin, vecDir );
+			VectorSubtract(g_pView->CurrentViewOrigin(), m_Origin, vecDir );
 			vecDir.z = 0.0f;
 			VectorAngles( vecDir, m_Angles );
 		}
@@ -1171,7 +1171,7 @@ void CDetailModel::DrawTypeShapeCross( CMeshBuilder &meshBuilder )
 	*/ 
 	// eg if they are in quadrant 0, set iBranch to 0, and the draw order will be
 	// 0, 1, 2, 3, or South, west, north, east
-	Vector viewOffset = view->CurrentViewOrigin() - m_Origin;
+	Vector viewOffset = g_pView->CurrentViewOrigin() - m_Origin;
 	bool bForward = ( DotProduct( forward, viewOffset ) > 0 );
 	bool bRight = ( DotProduct( right, viewOffset ) > 0 );	
 	int iBranch = bForward ? ( bRight ? 0 : 3 ) : ( bRight ? 1 : 2 );
@@ -1242,7 +1242,7 @@ void CDetailModel::DrawTypeShapeTri( CMeshBuilder &meshBuilder )
 	Vector2DMultiply( dict.m_LR, flScale, lr );
 
 	// sort the sides relative to the view origin
-	Vector viewOffset = view->CurrentViewOrigin() - m_Origin;
+	Vector viewOffset = g_pView->CurrentViewOrigin() - m_Origin;
 
 	// three sides, A, B, C, counter-clockwise from A is the unrotated side
 	bool bOutsideA = DotProduct( m_pAdvInfo->m_vecAnglesForward[0], viewOffset ) > 0;
@@ -2788,7 +2788,7 @@ void CDetailObjectSystem::BuildDetailObjectRenderLists( const Vector &vViewOrigi
 
 	EnumContext_t ctx;
 	ctx.m_vViewOrigin = vViewOrigin;
- 	ctx.m_BuildWorldListNumber = view->BuildWorldListsNumber();
+ 	ctx.m_BuildWorldListNumber = g_pView->BuildWorldListsNumber();
 
 	// We need to recompute translucency information for all detail props
 	for (int i = m_DetailObjectDict.Size(); --i >= 0; )
@@ -2826,7 +2826,7 @@ void CDetailObjectSystem::BuildDetailObjectRenderLists( const Vector &vViewOrigi
 
 
 	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
-	pQuery->EnumerateLeavesInSphere(view->CurrentViewOrigin(),
+	pQuery->EnumerateLeavesInSphere(g_pView->CurrentViewOrigin(),
 									 cl_detaildist.GetFloat(), this, (intp)&ctx );
 }
 

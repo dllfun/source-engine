@@ -765,7 +765,7 @@ int CSprite::DrawModel( int flags )
 
 	// Tracker 16432:  If rendering a savegame screenshot then don't draw sprites 
 	//   who have viewmodels as their moveparent
-	if ( view->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
+	if (g_pView->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
 	{
 		C_BaseViewModel *vm = dynamic_cast< C_BaseViewModel * >( GetMoveParent() );
 		if ( vm )

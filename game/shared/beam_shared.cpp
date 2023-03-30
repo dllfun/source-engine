@@ -971,7 +971,7 @@ int CBeam::DrawModel( int flags )
 	if ( IsMarkedForDeletion() )
 		return 0;
 
-	if (view->CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE )
+	if (g_pView->CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE )
 		return 0;
 
 #ifdef PORTAL
@@ -984,7 +984,7 @@ int CBeam::DrawModel( int flags )
 
 	// Tracker 16432:  If rendering a savegame screenshot don't draw beams 
 	//   who have viewmodels as their attached entity
-	if ( view->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
+	if (g_pView->IsRenderingScreenshot() || !r_drawviewmodel.GetBool() )
 	{
 		// If the beam is attached
 		for (int i=0;i<MAX_BEAM_ENTS;i++)

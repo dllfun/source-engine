@@ -91,7 +91,7 @@ void CInput::TouchMove( CUserCmd *cmd )
 
 	engineClient->GetViewAngles( viewangles );
 
-	view->StopPitchDrift();
+	g_pView->StopPitchDrift();
 
 	gTouch.GetTouchAccumulators( &side, &forward, &yaw, &pitch );
 

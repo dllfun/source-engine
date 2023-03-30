@@ -48,7 +48,7 @@ static CCSViewRender g_ViewRender;
 
 CCSViewRender::CCSViewRender()
 {
-	view = ( IViewRender * )&g_ViewRender;
+	g_pView = ( IViewRender * )&g_ViewRender;
 	m_pFlashTexture = NULL;
 }
 

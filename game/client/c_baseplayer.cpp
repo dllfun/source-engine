@@ -852,7 +852,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 
 		if ( !m_bWasFreezeFraming && GetObserverMode() == OBS_MODE_FREEZECAM )
 		{
-			m_vecFreezeFrameStart = view->MainViewOrigin();
+			m_vecFreezeFrameStart = g_pView->MainViewOrigin();
 			m_flFreezeFrameStartTime = gpGlobals->curtime;
 			m_flFreezeFrameDistance = RandomFloat( spec_freeze_distance_min.GetFloat(), spec_freeze_distance_max.GetFloat() );
 			m_flFreezeZOffset = RandomFloat( -30, 20 );
@@ -889,7 +889,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 				gameeventmanager->FireEventClientSide( pEvent );
 			}
 
-			view->FreezeFrame(0);
+			g_pView->FreezeFrame(0);
 
 			ConVar *pVar = (ConVar *)g_pCVar->FindVar( "snd_soundmixer" );
 			pVar->Revert();
@@ -1671,7 +1671,7 @@ void C_BasePlayer::CalcFreezeCamView( Vector& eyeOrigin, QAngle& eyeAngles, floa
 		}
 
 		m_bSentFreezeFrame = true;
-		view->FreezeFrame( spec_freeze_time.GetFloat() );
+		g_pView->FreezeFrame( spec_freeze_time.GetFloat() );
 	}
 }
 
@@ -2068,8 +2068,8 @@ void C_BasePlayer::GetToolRecordingState( KeyValues *msg )
 	static CameraRecordingState_t state;
 	state.m_flFOV = GetFOV();
 
-	float flZNear = view->GetZNear();
-	float flZFar = view->GetZFar();
+	float flZNear = g_pView->GetZNear();
+	float flZFar = g_pView->GetZFar();
 	CalcView( state.m_vecEyePosition, state.m_vecEyeAngles, flZNear, flZFar, state.m_flFOV );
 	state.m_bThirdPerson = !engineClient->IsPaused() && ::input->CAM_IsThirdPerson();
 
@@ -2866,7 +2866,7 @@ void C_BasePlayer::BuildFirstPersonMeathookTransformations( CStudioHdr *hdr, Vec
 		return;
 	}
 
-	if ( !view->DrawingMainView() )
+	if ( !g_pView->DrawingMainView() )
 	{
 		return;
 	}
@@ -2915,9 +2915,9 @@ void C_BasePlayer::BuildFirstPersonMeathookTransformations( CStudioHdr *hdr, Vec
 	{
 		// figure out where to put the body from the aim angles
 		Vector vForward, vRight, vUp;
-		AngleVectors(view->MainViewAngles(), &vForward, &vRight, &vUp );
+		AngleVectors(g_pView->MainViewAngles(), &vForward, &vRight, &vUp );
 		
-		vRealPivotPoint = view->MainViewOrigin() - ( vUp * cl_meathook_neck_pivot_ingame_up.GetFloat() ) - ( vForward * cl_meathook_neck_pivot_ingame_fwd.GetFloat() );
+		vRealPivotPoint = g_pView->MainViewOrigin() - ( vUp * cl_meathook_neck_pivot_ingame_up.GetFloat() ) - ( vForward * cl_meathook_neck_pivot_ingame_fwd.GetFloat() );
 	}
 
 	Vector vDeltaToAdd = vRealPivotPoint - vHeadTransformTranslation;

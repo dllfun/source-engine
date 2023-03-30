@@ -530,8 +530,8 @@ void CRopeManager::DrawRenderCache( bool bShadowDepth )
 	if( iRenderCacheCount == 0 )
 		return;
 
-	Vector vForward = view->CurrentViewForward();
-	Vector vOrigin = view->CurrentViewOrigin();
+	Vector vForward = g_pView->CurrentViewForward();
+	Vector vOrigin = g_pView->CurrentViewOrigin();
 
 	ICallQueue *pCallQueue;
 	if( r_queued_ropes.GetBool() && (pCallQueue = materials->GetRenderContext()->GetCallQueue()) != NULL )
@@ -1615,7 +1615,7 @@ bool C_RopeKeyframe::DetectRestingState( bool &bApplyWind )
 	if ( !( m_RopeFlags & ROPE_NO_WIND ) )
 	{
 		// Don't apply wind if more than half of the nodes are touching something.
-		float flDist1 = CalcDistanceToLineSegment(view->MainViewOrigin(), vEnd1, vEnd2 );
+		float flDist1 = CalcDistanceToLineSegment(g_pView->MainViewOrigin(), vEnd1, vEnd2 );
 		if( m_nLinksTouchingSomething < (m_RopePhysics.NumNodes() >> 1) )
 			bApplyWind = flDist1 < rope_wind_dist.GetFloat();
 	}

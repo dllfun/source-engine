@@ -347,7 +347,7 @@ Vector CBasePlayer::EyePosition( )
 			{
 				if ( IsLocalPlayer() )
 				{
-					return view->MainViewOrigin();
+					return g_pView->MainViewOrigin();
 				}
 			}
 		}
@@ -1587,7 +1587,7 @@ void CBasePlayer::CalcPlayerView( Vector& eyeOrigin, QAngle& eyeAngles, float& f
 	if ( !prediction->InPrediction() )
 	{
 		// FIXME: Move into prediction
-		view->DriftPitch();
+		g_pView->DriftPitch();
 	}
 #endif
 

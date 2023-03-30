@@ -101,7 +101,7 @@ void CFXDiscreetLine::Draw( double frametime )
 
 	//Setup our info for drawing the line
 	VectorSubtract( vecEnd, vecStart, lineDir );
-	VectorSubtract( vecEnd, view->CurrentViewOrigin(), viewDir );
+	VectorSubtract( vecEnd, g_pView->CurrentViewOrigin(), viewDir );
 	
 	cross = lineDir.Cross( viewDir );
 	VectorNormalize( cross );
@@ -117,7 +117,7 @@ void CFXDiscreetLine::Draw( double frametime )
 		float flScreenWidth = ScreenWidth();
 		float flHalfScreenWidth = flScreenWidth * 0.5f;
 		
-		float zCoord = view->CurrentViewForward().Dot( vecStart - view->CurrentViewOrigin() );
+		float zCoord = g_pView->CurrentViewForward().Dot( vecStart - g_pView->CurrentViewOrigin() );
 		float flScreenSpaceWidth = m_fScale * flHalfScreenWidth / zCoord;
 
 		float flAlpha;

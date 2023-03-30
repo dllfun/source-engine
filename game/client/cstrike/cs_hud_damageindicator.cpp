@@ -310,7 +310,7 @@ void CHudDamageIndicator::CalcDamageDirection( const Vector &vecFrom )
 	Vector forward;
 	Vector right;
 	Vector up;
-	AngleVectors(view->MainViewAngles(), &forward, &right, &up );
+	AngleVectors(g_pView->MainViewAngles(), &forward, &right, &up );
 
 
 	float flFront	= DotProduct( vecDelta, forward );

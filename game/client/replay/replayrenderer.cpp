@@ -920,7 +920,7 @@ void CReplayRenderer::GetViewSetup( CViewSetup &viewsetup )
 {
 	extern ConVar v_viewmodel_fov;
 
-	viewsetup = *view->GetPlayerViewSetup();
+	viewsetup = *g_pView->GetPlayerViewSetup();
 
 	// HACK: Override the view - this will keep the view from popping if the user toggles the render preview checkbox.
 	ReplayCamera()->CalcView( viewsetup.origin, viewsetup.angles, viewsetup.fov );
@@ -946,7 +946,7 @@ void CReplayRenderer::RenderLayoffFrame( DmeTime_t time, int nCurSample, int nNu
 	const int flags = RENDERVIEW_DRAWVIEWMODEL;
 
 	// Tell the engine to tell the client to render the view (sans viewmodel)
-	view->RenderView( viewSetup, VIEW_CLEAR_COLOR | VIEW_CLEAR_DEPTH, flags );
+	g_pView->RenderView( viewSetup, VIEW_CLEAR_COLOR | VIEW_CLEAR_DEPTH, flags );
 
 	// Resolve the accumulation buffer samples for display this frame
 	float fBloomScale = 0.28f;

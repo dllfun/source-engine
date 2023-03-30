@@ -206,7 +206,7 @@ int	C_LocalTempEntity::DrawModel( int flags )
 	if ( this->flags & FTENT_BEOCCLUDED )
 	{
 		// Check normal
-		Vector vecDelta = (GetAbsOrigin() - view->MainViewOrigin());
+		Vector vecDelta = (GetAbsOrigin() - g_pView->MainViewOrigin());
 		VectorNormalize( vecDelta );
 		float flDot = DotProduct( m_vecNormal, vecDelta );
 		if ( flDot > 0 )

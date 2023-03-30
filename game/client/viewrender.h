@@ -161,7 +161,7 @@ public:
 protected:
 	// @MULTICORE (toml 8/11/2006): need to have per-view frustum. Change when move view stack to client
 	VPlane			*m_Frustum;
-	CViewRender *m_pMainView;
+	CViewRender *m_pView;
 };
 
 //-----------------------------------------------------------------------------
@@ -1049,8 +1049,8 @@ public:
 	virtual void Execute() = 0;
 
 protected:
-	CRenderExecutor( CViewRender *pMainView ) : m_pMainView( pMainView ) {}
-	CViewRender *m_pMainView;
+	CRenderExecutor( CViewRender *pMainView ) : m_pView( pMainView ) {}
+	CViewRender *m_pView;
 };
 
 //-----------------------------------------------------------------------------
@@ -1320,7 +1320,7 @@ public:
 
 		// Cache off fade distances
 		float flScreenFadeMinSize, flScreenFadeMaxSize;
-		view->GetScreenFadeDistances(&flScreenFadeMinSize, &flScreenFadeMaxSize);
+		this->GetScreenFadeDistances(&flScreenFadeMinSize, &flScreenFadeMaxSize);
 		modelinfo->SetViewScreenFadeRange(flScreenFadeMinSize, flScreenFadeMaxSize);
 
 		CMatRenderContextPtr pRenderContext(materials);
@@ -1360,12 +1360,12 @@ public:
 
 	virtual bool DrawingShadowDepthView(void) //for easy externing
 	{
-		return (view->CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE);
+		return (this->CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE);
 	}
 
 	virtual bool DrawingMainView() //for easy externing
 	{
-		return (view->CurrentViewID() == VIEW_MAIN);
+		return (this->CurrentViewID() == VIEW_MAIN);
 	}
 
 	virtual bool IsRenderingScreenshot()
@@ -1667,18 +1667,18 @@ public:
 			else
 				DrawClippedDepthBox(pEnt, pRenderClipPlane);
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
-			view->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
+			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
 			pEnt->DrawModel(flags);
-			view->SetCurrentlyDrawingEntity(NULL);
+			this->SetCurrentlyDrawingEntity(NULL);
 			if (pRenderClipPlane && !materials->UsingFastClipping())
 				pRenderContext->PopCustomClipPlane();
 		}
 		else
 		{
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
-			view->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
+			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
 			pEnt->DrawModel(flags);
-			view->SetCurrentlyDrawingEntity(NULL);
+			this->SetCurrentlyDrawingEntity(NULL);
 		}
 	}
 	//-----------------------------------------------------------------------------
@@ -1722,9 +1722,9 @@ public:
 			else
 				DrawClippedDepthBox(pEnt, pRenderClipPlane);
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
-			view->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
+			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
 			pEnt->DrawModel(flags);
-			view->SetCurrentlyDrawingEntity(NULL);
+			this->SetCurrentlyDrawingEntity(NULL);
 
 			if (pRenderClipPlane && !materials->UsingFastClipping())
 				pRenderContext->PopCustomClipPlane();
@@ -1732,9 +1732,9 @@ public:
 		else
 		{
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
-			view->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
+			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
 			pEnt->DrawModel(flags);
-			view->SetCurrentlyDrawingEntity(NULL);
+			this->SetCurrentlyDrawingEntity(NULL);
 		}
 	}
 
@@ -1768,7 +1768,7 @@ public:
 			else
 				continue;
 
-			if (g_pStudioStatsEntity != NULL && view->CurrentViewID() == VIEW_MAIN && itEntity->m_pRenderable == g_pStudioStatsEntity)
+			if (g_pStudioStatsEntity != NULL && this->CurrentViewID() == VIEW_MAIN && itEntity->m_pRenderable == g_pStudioStatsEntity)
 			{
 				DrawOpaqueRenderable(itEntity->m_pRenderable, false, DepthMode, STUDIO_GENERATE_STATS);
 				continue;

@@ -45,7 +45,7 @@ void PostToolMessage( HTOOLHANDLE hEntity, KeyValues *msg );
 void FormatViewModelAttachment( Vector &vOrigin, bool bInverse )
 {
 	// Presumably, SetUpView has been called so we know our FOV and render origin.
-	const CViewSetup *pViewSetup = view->GetPlayerViewSetup();
+	const CViewSetup *pViewSetup = g_pView->GetPlayerViewSetup();
 	
 	float worldx = tan( pViewSetup->fov * M_PI/360.0 );
 	float viewx = tan( pViewSetup->fovViewmodel * M_PI/360.0 );
@@ -59,7 +59,7 @@ void FormatViewModelAttachment( Vector &vOrigin, bool bInverse )
 	
 	// Get the coordinates in the viewer's space.
 	Vector tmp = vOrigin - pViewSetup->origin;
-	Vector vTransformed(view->MainViewRight().Dot( tmp ), view->MainViewUp().Dot( tmp ), view->MainViewForward().Dot( tmp ) );
+	Vector vTransformed(g_pView->MainViewRight().Dot( tmp ), g_pView->MainViewUp().Dot( tmp ), g_pView->MainViewForward().Dot( tmp ) );
 
 	// Now squash X and Y.
 	if ( bInverse )
@@ -84,7 +84,7 @@ void FormatViewModelAttachment( Vector &vOrigin, bool bInverse )
 
 
 	// Transform back to world space.
-	Vector vOut = (view->MainViewRight() * vTransformed.x) + (view->MainViewUp() * vTransformed.y) + (view->MainViewForward() * vTransformed.z);
+	Vector vOut = (g_pView->MainViewRight() * vTransformed.x) + (g_pView->MainViewUp() * vTransformed.y) + (g_pView->MainViewForward() * vTransformed.z);
 	vOrigin = pViewSetup->origin + vOut;
 }
 
@@ -224,7 +224,7 @@ void C_BaseViewModel::ApplyBoneMatrixTransform( matrix3x4_t& transform )
 
 		// We could get MATERIAL_VIEW here, but this is called sometimes before the renderer
 		// has set that matrix. Luckily, this is called AFTER the CViewSetup has been initialized.
-		const CViewSetup *pSetup = view->GetPlayerViewSetup();
+		const CViewSetup *pSetup = g_pView->GetPlayerViewSetup();
 		AngleMatrix( pSetup->angles, pSetup->origin, viewMatrixInverse );
 		MatrixInvert( viewMatrixInverse, viewMatrix );
 

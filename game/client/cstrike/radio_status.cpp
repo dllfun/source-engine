@@ -323,7 +323,7 @@ void CRadioStatus::DrawHeadLabels()
 		
 		// Align it so it never points up or down.
 		Vector vUp( 0, 0, 1 );
-		Vector vRight = view->CurrentViewRight();
+		Vector vRight = g_pView->CurrentViewRight();
 		if ( fabs( vRight.z ) > 0.95 )	// don't draw it edge-on
 			continue;
 

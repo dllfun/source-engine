@@ -742,6 +742,7 @@
     <ClCompile Include="..\..\..\public\vgui_controls\vgui_controls.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\game\client\iviewrender.h" />
     <ClInclude Include="..\..\..\game\client\view.h" />
     <ClInclude Include="..\..\..\game\client\viewrender.h" />
   </ItemGroup>

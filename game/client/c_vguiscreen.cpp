@@ -580,7 +580,7 @@ int	C_VGuiScreen::DrawModel( int flags )
 	}
 	
 	// Backface cull the entire panel here...
-	if (IsBackfacing(view->CurrentViewOrigin()))
+	if (IsBackfacing(g_pView->CurrentViewOrigin()))
 		return 0;
 
 	// Recompute the panel-to-world center

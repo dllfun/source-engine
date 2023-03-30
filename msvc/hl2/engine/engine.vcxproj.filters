@@ -164,9 +164,6 @@
     <ClCompile Include="..\..\..\public\blockingudpsocket.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\public\bsptreedata.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\public\builddisp.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

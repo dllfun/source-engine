@@ -245,7 +245,7 @@ public:
 	virtual void		GetScreenFadeDistances( float *min, float *max ) = 0;
 
 	virtual C_BaseEntity *GetCurrentlyDrawingEntity() = 0;
-	virtual void		SetCurrentlyDrawingEntity( C_BaseEntity *pEnt ) = 0;
+	//virtual void		SetCurrentlyDrawingEntity( C_BaseEntity *pEnt ) = 0;
 
 	virtual bool		UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CViewSetup &shadowView ) = 0;
 
@@ -277,25 +277,25 @@ public:
 
 	virtual void AllowCurrentViewAccess(bool allow) = 0;
 	virtual bool IsCurrentViewAccessAllowed() = 0;
-	virtual void SetupCurrentView(const Vector& vecOrigin, const QAngle& angles, view_id_t viewID) = 0;
-	virtual void SetupCurrentView(view_id_t viewID) = 0;
-	virtual void FinishCurrentView() = 0;
 	virtual view_id_t CurrentViewID() = 0;
-	virtual bool IsMainView(view_id_t id) = 0;
-	virtual bool DrawingShadowDepthView(void) = 0;
 	virtual bool DrawingMainView() = 0;
+	virtual bool DrawingShadowDepthView(void) = 0;
 	virtual bool IsRenderingScreenshot() = 0;
 	virtual IntroData_t* GetIntroData() = 0;
 	virtual void SetIntroData(IntroData_t* introData) = 0;
-	virtual void DrawClippedDepthBox(IClientRenderable* pEnt, float* pClipPlane) = 0;
-	virtual inline void DrawOpaqueRenderable(IClientRenderable* pEnt, bool bTwoPass, ERenderDepthMode DepthMode, int nDefaultFlags = 0) = 0;
-	virtual inline void DrawTranslucentRenderable(IClientRenderable* pEnt, bool twoPass, bool bShadowDepth, bool bIgnoreDepth) = 0;
-	virtual void DrawOpaqueRenderables_Range(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
-	virtual void DrawOpaqueRenderables_DrawStaticProps(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
-	virtual void DrawOpaqueRenderables_DrawBrushModels(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
-	virtual void SetClearColorToFogColor() = 0;
+	//virtual void SetupCurrentView(const Vector& vecOrigin, const QAngle& angles, view_id_t viewID) = 0;
+	//virtual void SetupCurrentView(view_id_t viewID) = 0;
+	//virtual void FinishCurrentView() = 0;
+	//virtual bool IsMainView(view_id_t id) = 0;
+	//virtual void DrawClippedDepthBox(IClientRenderable* pEnt, float* pClipPlane) = 0;
+	//virtual inline void DrawOpaqueRenderable(IClientRenderable* pEnt, bool bTwoPass, ERenderDepthMode DepthMode, int nDefaultFlags = 0) = 0;
+	//virtual inline void DrawTranslucentRenderable(IClientRenderable* pEnt, bool twoPass, bool bShadowDepth, bool bIgnoreDepth) = 0;
+	//virtual void DrawOpaqueRenderables_Range(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
+	//virtual void DrawOpaqueRenderables_DrawStaticProps(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
+	//virtual void DrawOpaqueRenderables_DrawBrushModels(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode) = 0;
+	//virtual void SetClearColorToFogColor() = 0;
 };
 
-extern IViewRender *view;
+extern IViewRender *g_pView;
 
 #endif // IVIEWRENDER_H

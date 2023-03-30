@@ -54,7 +54,7 @@ public:
 	virtual IReplayScreenshotSystem *GetReplayScreenshotSystem()
 	{
 		if ( g_pEngineReplay->IsSupportedModAndPlatform() )
-			return view->GetReplayScreenshotSystem();
+			return g_pView->GetReplayScreenshotSystem();
 		return NULL;
 	}
 

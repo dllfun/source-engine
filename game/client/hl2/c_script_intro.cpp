@@ -109,7 +109,7 @@ C_ScriptIntro::C_ScriptIntro( void )
 	m_iPrevFOV = 0;
 	m_iStartFOV = 0;
 
-	view->SetIntroData( NULL );
+	g_pView->SetIntroData( NULL );
 
 	// Setup fade colors
 	m_IntroData.m_flCurrentFadeColor[0] = m_flFadeColor[0];
@@ -123,7 +123,7 @@ C_ScriptIntro::C_ScriptIntro( void )
 //-----------------------------------------------------------------------------
 C_ScriptIntro::~C_ScriptIntro( void )
 {
-	view->SetIntroData( NULL );
+	g_pView->SetIntroData( NULL );
 }
 
 //-----------------------------------------------------------------------------
@@ -196,11 +196,11 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 	// Set the introdata our data chunk
 	if ( m_bActive )
 	{
-		view->SetIntroData(&m_IntroData);
+		g_pView->SetIntroData(&m_IntroData);
 	}
-	else if ( view->GetIntroData() == &m_IntroData )
+	else if (g_pView->GetIntroData() == &m_IntroData )
 	{
-		view->SetIntroData( NULL );
+		g_pView->SetIntroData( NULL );
 	}
 
 	// Update the fade color

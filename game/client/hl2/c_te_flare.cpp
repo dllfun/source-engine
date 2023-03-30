@@ -309,7 +309,7 @@ void C_Flare::Update( float timeDelta )
 		{
 			Vector	smokeOrg = GetAbsOrigin();
 
-			Vector	flareScreenDir = ( smokeOrg - view->MainViewOrigin() );
+			Vector	flareScreenDir = ( smokeOrg - g_pView->MainViewOrigin() );
 			VectorNormalize( flareScreenDir );
 
 			smokeOrg = smokeOrg + ( flareScreenDir * 2.0f );

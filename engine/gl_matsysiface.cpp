@@ -843,7 +843,7 @@ void CMSurfaceSortList::EnsureMaxSortIDs( int newMaxSortIDs )
 }
 
 
-void CMSurfaceSortList::AddSurfaceToTail( msurface2_t *pSurface, int sortGroup, int sortID )
+void CMSurfaceSortList::AddSurfaceToTail(SurfaceHandle_t pSurface, int sortGroup, int sortID )
 {
 	Assert(sortGroup<MAX_MAT_SORT_GROUPS);
 	int index = groupOffset[sortGroup] + sortID;
@@ -907,7 +907,7 @@ void CMSurfaceSortList::AddSurfaceToTail( msurface2_t *pSurface, int sortGroup, 
 	}
 }
 
-msurface2_t *CMSurfaceSortList::GetSurfaceAtHead( const surfacesortgroup_t &group ) const
+SurfaceHandle_t CMSurfaceSortList::GetSurfaceAtHead( const surfacesortgroup_t &group ) const
 {
 	if ( group.listHead == m_list.InvalidIndex() )
 		return NULL;
@@ -915,7 +915,7 @@ msurface2_t *CMSurfaceSortList::GetSurfaceAtHead( const surfacesortgroup_t &grou
 	return m_list[group.listHead].pSurfaces[0];
 }
 
-void CMSurfaceSortList::GetSurfaceListForGroup( CUtlVector<msurface2_t *> &list, const surfacesortgroup_t &group ) const
+void CMSurfaceSortList::GetSurfaceListForGroup( CUtlVector<SurfaceHandle_t> &list, const surfacesortgroup_t &group ) const
 {
 	MSL_FOREACH_SURFACE_IN_GROUP_BEGIN( *this, group, surfID )
 	{

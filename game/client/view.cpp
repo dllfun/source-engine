@@ -142,8 +142,8 @@ float ScaleFOVByWidthRatio(float fovDegrees, float ratio)
 
 static void GetPos( const CCommand &args, Vector &vecOrigin, QAngle &angles )
 {
-	vecOrigin = view->MainViewOrigin();
-	angles = view->MainViewAngles();
+	vecOrigin = g_pView->MainViewOrigin();
+	angles = g_pView->MainViewAngles();
 	if ( args.ArgC() == 2 && atoi( args[1] ) == 2 )
 	{
 		C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();

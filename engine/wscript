@@ -78,7 +78,7 @@ def build(bld):
 		'baseserver.cpp',
 		'bitbuf_errorhandler.cpp',
 		'../public/blockingudpsocket.cpp',
-		'../public/bsptreedata.cpp',
+		#'../public/bsptreedata.cpp',
 		'../public/builddisp.cpp',
 		'changeframelist.cpp',
 		'checksum_engine.cpp',

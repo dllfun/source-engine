@@ -616,12 +616,12 @@ void CViewEffects::ClearAllFades( void )
 void CViewEffects::GetFadeParams( byte *r, byte *g, byte *b, byte *a, bool *blend )
 {
 	// If the intro is overriding our fade, use that instead
-	if ( view->GetIntroData() && view->GetIntroData()->m_flCurrentFadeColor[3] )
+	if (g_pView->GetIntroData() && g_pView->GetIntroData()->m_flCurrentFadeColor[3] )
 	{
-		*r = view->GetIntroData()->m_flCurrentFadeColor[0];
-		*g = view->GetIntroData()->m_flCurrentFadeColor[1];
-		*b = view->GetIntroData()->m_flCurrentFadeColor[2];
-		*a = view->GetIntroData()->m_flCurrentFadeColor[3];
+		*r = g_pView->GetIntroData()->m_flCurrentFadeColor[0];
+		*g = g_pView->GetIntroData()->m_flCurrentFadeColor[1];
+		*b = g_pView->GetIntroData()->m_flCurrentFadeColor[2];
+		*a = g_pView->GetIntroData()->m_flCurrentFadeColor[3];
 		*blend = false;
 		return;
 	}

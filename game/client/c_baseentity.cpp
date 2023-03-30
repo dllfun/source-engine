@@ -1936,7 +1936,7 @@ float *C_BaseEntity::GetRenderClipPlane( void )
 int C_BaseEntity::DrawBrushModel( bool bDrawingTranslucency, int nFlags, bool bTwoPass )
 {
 	VPROF_BUDGET( "C_BaseEntity::DrawBrushModel", VPROF_BUDGETGROUP_BRUSHMODEL_RENDERING );
-	// Identity brushes are drawn in view->DrawWorld as an optimization
+	// Identity brushes are drawn in g_pView->DrawWorld as an optimization
 	Assert ( modelinfo->GetModelType( model ) == mod_brush );
 
 	ERenderDepthMode DepthMode = DEPTH_MODE_NORMAL;
@@ -3450,8 +3450,8 @@ void C_BaseEntity::ComputeFxBlend( void )
 			float	dist;
 			
 			VectorCopy( GetAbsOrigin(), tmp );
-			VectorSubtract( tmp, view->CurrentViewOrigin(), tmp );
-			dist = DotProduct( tmp, view->CurrentViewForward() );
+			VectorSubtract( tmp, g_pView->CurrentViewOrigin(), tmp );
+			dist = DotProduct( tmp, g_pView->CurrentViewForward() );
 			
 			// Turn off distance fade
 			if ( m_nRenderFX == kRenderFxDistort )

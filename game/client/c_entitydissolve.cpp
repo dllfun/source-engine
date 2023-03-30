@@ -229,7 +229,7 @@ void C_EntityDissolve::BuildTeslaEffect( mstudiobbox_t *pHitBox, const matrix3x4
 			// Move it towards the camera
 			Vector vecFlash = tr.endpos;
 			Vector vecForward;
-			AngleVectors(view->MainViewAngles(), &vecForward );
+			AngleVectors(g_pView->MainViewAngles(), &vecForward );
 			vecFlash -= (vecForward * 8);
 
 			g_pEffects->EnergySplash( vecFlash, -vecForward, false );
@@ -317,7 +317,7 @@ void C_EntityDissolve::ComputeRenderInfo( mstudiobbox_t *pHitBox, const matrix3x
 //	vec[1] *= -1.0f;
 
 	Vector vecViewDir;
-	VectorSubtract(view->CurrentViewOrigin(), *pVecAbsOrigin, vecViewDir );
+	VectorSubtract(g_pView->CurrentViewOrigin(), *pVecAbsOrigin, vecViewDir );
 	VectorNormalize( vecViewDir );
 
 	// Project the shadow casting direction into the space of the hitbox
@@ -627,7 +627,7 @@ int C_EntityDissolve::DrawModel( int flags )
 	}
 
 	// Skew the particles in front or in back of their targets
-	vecSkew = view->CurrentViewForward() * ( 8.0f - ( ( 1.0f - fadePerc ) * 32.0f ) );
+	vecSkew = g_pView->CurrentViewForward() * ( 8.0f - ( ( 1.0f - fadePerc ) * 32.0f ) );
 
 	float spriteScale = ( ( gpGlobals->curtime - m_flStartTime ) / m_flFadeOutLength );
 	spriteScale = clamp( spriteScale, 0.75f, 1.0f );

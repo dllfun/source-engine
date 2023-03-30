@@ -240,7 +240,7 @@ void DrawSurfaceID(SurfaceHandle_t surfID, const Vector& vecCentroid)
 
 void DrawSurfaceIDAsInt(SurfaceHandle_t surfID, const Vector& vecCentroid)
 {
-	int nInt = (msurface2_t*)surfID - host_state.worldmodel->brush.pShared->surfaces2;
+	int nInt = (SurfaceHandle_t)surfID - host_state.worldmodel->brush.pShared->surfaces2;
 	char buf[32];
 	Q_snprintf(buf, sizeof(buf), "%d", nInt);
 	CDebugOverlay::AddTextOverlay(vecCentroid, 0, buf);
@@ -265,7 +265,7 @@ void DrawSurfaceMaterial(SurfaceHandle_t surfID, const Vector& vecCentroid)
 //-----------------------------------------------------------------------------
 // Displays the surface id # in the center of the surface.
 //-----------------------------------------------------------------------------
-void Shader_DrawSurfaceDebuggingInfo(const CUtlVector<msurface2_t*>& surfaceList, SurfaceDebugFunc_t func)
+void Shader_DrawSurfaceDebuggingInfo(const CUtlVector<SurfaceHandle_t>& surfaceList, SurfaceDebugFunc_t func)
 {
 	for (int i = 0; i < surfaceList.Count(); i++)
 	{
@@ -288,7 +288,7 @@ void Shader_DrawSurfaceDebuggingInfo(const CUtlVector<msurface2_t*>& surfaceList
 //-----------------------------------------------------------------------------
 // Doesn't draw internal triangles
 //-----------------------------------------------------------------------------
-void Shader_DrawWireframePolygons(const CUtlVector<msurface2_t*>& surfaceList)
+void Shader_DrawWireframePolygons(const CUtlVector<SurfaceHandle_t>& surfaceList)
 {
 	int nLineCount = 0;
 	for (int i = 0; i < surfaceList.Count(); i++)
@@ -347,7 +347,7 @@ void Shader_DrawWireframePolygons(const CUtlVector<msurface2_t*>& surfaceList)
 //-----------------------------------------------------------------------------
 // Debugging mode, renders the wireframe.
 //-----------------------------------------------------------------------------
-void Shader_DrawChainsWireframe(const CUtlVector<msurface2_t*>& surfaceList)
+void Shader_DrawChainsWireframe(const CUtlVector<SurfaceHandle_t>& surfaceList)
 {
 	int nWireFrameMode = WireFrameMode();
 
@@ -383,7 +383,7 @@ void Shader_DrawChainsWireframe(const CUtlVector<msurface2_t*>& surfaceList)
 //-----------------------------------------------------------------------------
 // Debugging mode, renders the normals
 //-----------------------------------------------------------------------------
-void Shader_DrawChainNormals(const CUtlVector<msurface2_t*>& surfaceList)
+void Shader_DrawChainNormals(const CUtlVector<SurfaceHandle_t>& surfaceList)
 {
 	Vector p, tVect, tangentS, tangentT;
 
@@ -443,7 +443,7 @@ void Shader_DrawChainNormals(const CUtlVector<msurface2_t*>& surfaceList)
 	}
 }
 
-void Shader_DrawChainBumpBasis(const CUtlVector<msurface2_t*>& surfaceList)
+void Shader_DrawChainBumpBasis(const CUtlVector<SurfaceHandle_t>& surfaceList)
 {
 	Vector p, tVect, tangentS, tangentT;
 
@@ -525,7 +525,7 @@ void Shader_DrawChainBumpBasis(const CUtlVector<msurface2_t*>& surfaceList)
 //-----------------------------------------------------------------------------
 // Debugging mode, renders the luxel grid.
 //-----------------------------------------------------------------------------
-void Shader_DrawLuxels(const CUtlVector<msurface2_t*>& surfaceList)
+void Shader_DrawLuxels(const CUtlVector<SurfaceHandle_t>& surfaceList)
 {
 	CMatRenderContextPtr pRenderContext(materials);
 
@@ -561,7 +561,7 @@ static struct CShaderDebug
 //-----------------------------------------------------------------------------
 // Draw debugging information
 //-----------------------------------------------------------------------------
-void DrawDebugInformation(const CUtlVector<msurface2_t*>& surfaceList)
+void DrawDebugInformation(const CUtlVector<SurfaceHandle_t>& surfaceList)
 {
 	// Overlay with wireframe if we're in that mode
 	if (g_ShaderDebug.wireframe)
@@ -2592,7 +2592,7 @@ public:
 			}
 			if ( g_ShaderDebug.anydebug )
 			{
-				CUtlVector<msurface2_t *> brushList;
+				CUtlVector<SurfaceHandle_t> brushList;
 				for ( j = 0; j < node.batchCount; j++ )
 				{
 					const transbatch_t &batch = renderT.batches[node.firstBatch+j];
@@ -2984,7 +2984,7 @@ void CBrushBatchRender::DrawOpaqueBrushModel( IClientEntity *baseentity, model_t
 		for ( i = 0; i < pRender->meshCount; i++ )
 		{
 			brushrendermesh_t &mesh = pRender->pMeshes[i];
-			CUtlVector<msurface2_t *> brushList;
+			CUtlVector<SurfaceHandle_t> brushList;
 			for ( int j = 0; j < mesh.batchCount; j++ )
 			{
 				brushrenderbatch_t &batch = pRender->pBatches[mesh.firstBatch + j];
@@ -3103,7 +3103,7 @@ static void R_DrawBrushModel_Override( IClientEntity *baseentity, model_t *model
 	// now draw debug for each drawn surface
 	if ( g_ShaderDebug.anydebug )
 	{
-		CUtlVector<msurface2_t *> surfaceList;
+		CUtlVector<SurfaceHandle_t> surfaceList;
 		surfID = SurfaceHandleFromIndex( model->brush.firstmodelsurface, model->brush.pShared );
 		for (int i=0 ; i<model->brush.nummodelsurfaces ; i++, surfID++)
 		{
@@ -4049,7 +4049,7 @@ void CWorldRenderList::Shader_DrawTranslucentSurfaces(int sortIndex, unsigned lo
 	// means it's closer. We want to render closer things first to get
 	// fast z-reject.
 	int i;
-	CUtlVector<msurface2_t*> surfaceList;
+	CUtlVector<SurfaceHandle_t> surfaceList;
 	for (i = 0; i < MAX_MAT_SORT_GROUPS; ++i)
 	{
 		if (!(flags & (1 << i)))
@@ -5362,7 +5362,7 @@ void CWorldRenderList::Shader_DrawDispChain(int nSortGroup, unsigned long flags,
 
 	const CMSurfaceSortList& list = this->m_DispSortList;
 	int count = 0;
-	msurface2_t** pList;
+	SurfaceHandle_t* pList;
 	MSL_FOREACH_GROUP_BEGIN(list, nSortGroup, group)
 	{
 		count += group.surfaceCount;
@@ -5371,7 +5371,7 @@ void CWorldRenderList::Shader_DrawDispChain(int nSortGroup, unsigned long flags,
 
 		if (count)
 		{
-			pList = (msurface2_t**)stackalloc(count * sizeof(msurface2_t*));
+			pList = (SurfaceHandle_t*)stackalloc(count * sizeof(SurfaceHandle_t));
 			int i = 0;
 			MSL_FOREACH_GROUP_BEGIN(list, nSortGroup, group)
 			{
@@ -5444,7 +5444,7 @@ void CWorldRenderList::Shader_DrawChains(int nSortGroup, bool bShadowDepth)
 		// Debugging information
 		MSL_FOREACH_GROUP_BEGIN(sortList, nSortGroup, group)
 		{
-			CUtlVector<msurface2_t*> surfList;
+			CUtlVector<SurfaceHandle_t> surfList;
 			sortList.GetSurfaceListForGroup(surfList, group);
 			DrawDebugInformation(surfList);
 		}

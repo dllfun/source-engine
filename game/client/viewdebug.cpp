@@ -64,13 +64,13 @@ public:
 	{
 		//extern bool s_bCanAccessCurrentView;
 		//s_bCanAccessCurrentView = true;
-		view->AllowCurrentViewAccess(true);
+		g_pView->AllowCurrentViewAccess(true);
 		Frustum frustum;
 		render->Push3DView( *this, 0, NULL, frustum );
 		BuildWorldRenderLists( this, true, true );
 		render->PopView( frustum );
 		//s_bCanAccessCurrentView = false;
-		view->AllowCurrentViewAccess(false);
+		g_pView->AllowCurrentViewAccess(false);
 
 		render->DrawLightmaps( m_pWorldRenderList, mat_showlightmappage.GetInt() );
 	}
@@ -564,7 +564,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 	// Draw debugging lightmaps
 	if ( mat_showlightmappage.GetInt() != -1 )
 	{
-		CLightmapDebugView clientView( assert_cast<CViewRender *>( ::view ) );
+		CLightmapDebugView clientView( assert_cast<CViewRender *>( ::g_pView) );
 		clientView.Setup( view );
 		clientView.Draw();
 	}
@@ -635,24 +635,24 @@ CON_COMMAND_F( r_screenoverlay, "Draw specified material as an overlay", FCVAR_C
 	{
 		if ( !Q_stricmp( "off", args[1] ) )
 		{
-			view->SetScreenOverlayMaterial( NULL );
+			g_pView->SetScreenOverlayMaterial( NULL );
 		}
 		else
 		{
 			IMaterial *pMaterial = materials->FindMaterial( args[1], TEXTURE_GROUP_OTHER, false );
 			if ( !IsErrorMaterial( pMaterial ) )
 			{
-				view->SetScreenOverlayMaterial( pMaterial );
+				g_pView->SetScreenOverlayMaterial( pMaterial );
 			}
 			else
 			{
-				view->SetScreenOverlayMaterial( NULL );
+				g_pView->SetScreenOverlayMaterial( NULL );
 			}
 		}
 	}
 	else
 	{
-		IMaterial *pMaterial = view->GetScreenOverlayMaterial();
+		IMaterial *pMaterial = g_pView->GetScreenOverlayMaterial();
 		Warning( "r_screenoverlay: %s\n", pMaterial ? pMaterial->GetName() : "off" );
 	}
 }
