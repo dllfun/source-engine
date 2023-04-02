@@ -2768,7 +2768,7 @@ void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CViewSetup &view
 	MDLCACHE_CRITICAL_SECTION();
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
-	VisibleFogVolumeInfo_t fogVolumeInfo;
+	VisibleFogVolumeInfo_t fogInfo;
 #ifdef PORTAL //in portal, we can't use the fog volume for the camera since it's almost never in the same fog volume as what's in front of the portal
 	if( g_pPortalRender->GetViewRecursionLevel() == 0 )
 	{
@@ -2779,11 +2779,11 @@ void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CViewSetup &view
 		render->GetVisibleFogVolume( g_pPortalRender->GetExitPortalFogOrigin(), &fogVolumeInfo );
 	}
 #else
-	render->GetVisibleFogVolume( viewIn.origin, &fogVolumeInfo );
+	render->GetVisibleFogVolume( viewIn.origin, &fogInfo);
 #endif
 
 	WaterRenderInfo_t info;
-	DetermineWaterRenderInfo( fogVolumeInfo, info );
+	DetermineWaterRenderInfo(fogInfo, info );
 
 	if ( info.m_bCheapWater )
 	{		     
@@ -2792,16 +2792,16 @@ void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CViewSetup &view
 		if ( IsReflectiveGlassInView( viewIn, glassReflectionPlane ) )
 		{								    
 			CRefPtr<CReflectiveGlassView> pGlassReflectionView = new CReflectiveGlassView( this );
-			pGlassReflectionView->Setup( viewIn, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, bDrawSkybox, fogVolumeInfo, info, glassReflectionPlane );
+			pGlassReflectionView->Setup( viewIn, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, bDrawSkybox, fogInfo, info, glassReflectionPlane );
 			AddViewToScene( pGlassReflectionView );
 
 			CRefPtr<CRefractiveGlassView> pGlassRefractionView = new CRefractiveGlassView( this );
-			pGlassRefractionView->Setup( viewIn, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, bDrawSkybox, fogVolumeInfo, info, glassReflectionPlane );
+			pGlassRefractionView->Setup( viewIn, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, bDrawSkybox, fogInfo, info, glassReflectionPlane );
 			AddViewToScene( pGlassRefractionView );
 		}
 
 		CRefPtr<CSimpleWorldView> pNoWaterView = new CSimpleWorldView( this );
-		pNoWaterView->Setup( viewIn, nClearFlags, bDrawSkybox, fogVolumeInfo, info, pCustomVisibility );
+		pNoWaterView->Setup( viewIn, nClearFlags, bDrawSkybox, fogInfo, info, pCustomVisibility );
 		AddViewToScene( pNoWaterView );
 		return;
 	}
@@ -2811,22 +2811,22 @@ void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CViewSetup &view
 	// Blat out the visible fog leaf if we're not going to use it
 	if ( !r_ForceWaterLeaf.GetBool() )
 	{
-		fogVolumeInfo.m_nVisibleFogVolumeLeaf = -1;
+		fogInfo.m_nVisibleFogVolumeLeaf = -1;
 	}
 
 	// We can see water of some sort
-	if ( !fogVolumeInfo.m_bEyeInFogVolume )
+	if ( !fogInfo.m_bEyeInFogVolume )
 	{
 		tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "CAboveWaterView" );
 		CRefPtr<CAboveWaterView> pAboveWaterView = new CAboveWaterView( this );
-		pAboveWaterView->Setup( viewIn, bDrawSkybox, fogVolumeInfo, info );
+		pAboveWaterView->Setup( viewIn, bDrawSkybox, fogInfo, info );
 		AddViewToScene( pAboveWaterView );
 	}
 	else
 	{
 		tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "CUnderWaterView" );
 		CRefPtr<CUnderWaterView> pUnderWaterView = new CUnderWaterView( this );
-		pUnderWaterView->Setup( viewIn, bDrawSkybox, fogVolumeInfo, info );
+		pUnderWaterView->Setup( viewIn, bDrawSkybox, fogInfo, info );
 		AddViewToScene( pUnderWaterView );
 	}
 }

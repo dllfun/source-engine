@@ -89,7 +89,7 @@
       <AdditionalIncludeDirectories>..\..\..\game\server;..\..\..\game\shared;..\..\..\utils\common;..\..\..\game\shared\econ;..\..\..\game\server\NextBot;..\..\..\common;..\..\..\public;..\..\..\public\tier0;..\..\..\public\tier1;..\..\..\game\server\hl2;..\..\..\game\shared\hl2;..\..\..\game\server\hl2mp;..\..\..\game\shared\hl2mp;..\..\..\game\server\cstrike;..\..\..\game\shared\cstrike;..\..\..\game\server\cstrike\bot;..\..\..\game\server\cstrike\bot\states;..\..\..\game\server\cstrike\hostage;..\..\..\game\server\NextBot\Behavior;..\..\..\game\server\NextBot\NavMeshEntities;..\..\..\game\server\NextBot\Path;..\..\..\game\server\NextBot\Player;..\..\..\game\shared\cstrike\bot;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <Optimization>Disabled</Optimization>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -113,7 +113,7 @@
       <DisableSpecificWarnings>4819</DisableSpecificWarnings>
       <DebugInformationFormat>None</DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions512</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
