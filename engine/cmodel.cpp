@@ -70,7 +70,7 @@ TraceInfo_t *BeginTrace()
 		for ( int i = 0; i < MAX_CHECK_COUNT_DEPTH; i++ )
 		{
 			pTraceInfo->m_BrushCounters[i].SetCount( GetCollisionBSPData()->GetBrushesCount() + 1);
-			pTraceInfo->m_DispCounters[i].SetCount( g_DispCollTreeCount );
+			pTraceInfo->m_DispCounters[i].SetCount(GetCollisionBSPData()->GetDispCollTreesCount() );
 
 			memset( pTraceInfo->m_BrushCounters[i].Base(), 0, pTraceInfo->m_BrushCounters[i].Count() * sizeof(TraceCounter_t) );
 			memset( pTraceInfo->m_DispCounters[i].Base(), 0, pTraceInfo->m_DispCounters[i].Count() * sizeof(TraceCounter_t) );
@@ -335,7 +335,7 @@ cmodel_t *CM_LoadMap( const char *name, bool allowReusePrevious, unsigned *check
 	CMapLoadHelper::Shutdown( );
 
     // Push the displacement bounding boxes down the tree and set leaf data.
-    CM_DispTreeLeafnum( pBSPData );
+    //CM_DispTreeLeafnum( pBSPData );
 
 	CM_InitPortalOpenState( pBSPData );
 	FloodAreaConnections(pBSPData);
@@ -1573,7 +1573,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 			for( int i = 0; i < pLeaf->dispCount; i++ )
 			{
 				int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
-				alignedbbox_t * RESTRICT pDispBounds = &g_pDispBounds[dispIndex];
+				alignedbbox_t * RESTRICT pDispBounds = pTraceInfo->m_pBSPData->GetDispBounds(dispIndex);
 
 				// only collide with objects you are interested in
 				if( !( pDispBounds->GetContents() & pTraceInfo->m_contents ) )
@@ -1601,7 +1601,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 						continue;
 				}
 
-				CDispCollTree * RESTRICT pDispTree = &g_pDispCollTrees[dispIndex];
+				CDispCollTree * RESTRICT pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
 				CM_TraceToDispTree<IS_POINT>( pTraceInfo, pDispTree, startFrac, endFrac );
 				if( !pTraceInfo->m_trace.fraction )
 					break;
@@ -1613,7 +1613,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 			for( int i = 0; i < pLeaf->dispCount; i++ )
 			{
 				int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
-				alignedbbox_t * RESTRICT pDispBounds = &g_pDispBounds[dispIndex];
+				alignedbbox_t * RESTRICT pDispBounds = pTraceInfo->m_pBSPData->GetDispBounds(dispIndex);
 
 				// only collide with objects you are interested in
 				if( !( pDispBounds->GetContents() & pTraceInfo->m_contents ) )
@@ -1637,7 +1637,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 					continue;
 				}
 				
-				CDispCollTree * RESTRICT pDispTree = &g_pDispCollTrees[dispIndex];
+				CDispCollTree * RESTRICT pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
 				CM_TraceToDispTree<IS_POINT>( pTraceInfo, pDispTree, startFrac, endFrac );
 				if( !pTraceInfo->m_trace.fraction )
 					break;

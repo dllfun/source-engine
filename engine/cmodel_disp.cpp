@@ -20,9 +20,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-int g_DispCollTreeCount = 0;
-CDispCollTree *g_pDispCollTrees = NULL;
-alignedbbox_t *g_pDispBounds = NULL;
+
 class CVirtualTerrain;
 
 //csurface_t dispSurf = { "terrain", 0, 0 };
@@ -48,175 +46,6 @@ static void SetDispTraceSurfaceProps( trace_t *pTrace, CDispCollTree *pDisp )
 	}
 }
 
-class CDispLeafBuilder
-{
-public:
-	CDispLeafBuilder( CCollisionBSPData *pBSPData )
-	{
-		m_pBSPData = pBSPData;
-		// don't want this to resize much, so make the backing buffer large
-		m_dispList.EnsureCapacity( MAX_MAP_DISPINFO * 2 );
-
-		// size both of these to the size of the array since there is exactly one per element
-		m_leafCount.SetCount( g_DispCollTreeCount );
-		m_firstIndex.SetCount( g_DispCollTreeCount );
-		for ( int i = 0; i < g_DispCollTreeCount; i++ )
-		{
-			m_leafCount[i] = 0;
-			m_firstIndex[i] = -1;
-		}
-	}
-
-	void BuildLeafListForDisplacement( int index )
-	{
-		// get tree and see if it is real (power != 0)
-		CDispCollTree *pDispTree = &g_pDispCollTrees[index];
-		if( !pDispTree || ( pDispTree->GetPower() == 0 ) )
-			return;
-		m_firstIndex[index] = m_dispList.Count();
-		m_leafCount[index] = 0;
-		const int MAX_NODES = 1024;
-		int nodeList[MAX_NODES];
-		int listRead = 0;
-		int listWrite = 1;
-		nodeList[0] = m_pBSPData->GetCModels(0)->headnode;
-		Vector mins, maxs;
-		pDispTree->GetBounds( mins, maxs );
-
-		// UNDONE: The rendering code did this, do we need it?
-//		mins -= Vector( 0.5, 0.5, 0.5 );
-//		maxs += Vector( 0.5, 0.5, 0.5 );
-
-		while( listRead != listWrite )
-		{
-			int nodeIndex = nodeList[listRead];
-			listRead = (listRead+1)%MAX_NODES;
-
-			// if this is a leaf, add it to the array
-			if( nodeIndex < 0 )
-			{
-				int leafIndex = -1 - nodeIndex;
-				m_dispList.AddToTail(leafIndex);
-				m_leafCount[index]++;
-			}
-			else
-			{
-				//
-				// choose side(s) to traverse
-				//
-				cnode_t *pNode = m_pBSPData->GetNodes(nodeIndex);
-				cplane_t *pPlane = pNode->plane;
-
-				int sideResult = BOX_ON_PLANE_SIDE( mins, maxs, pPlane );
-
-				// front side
-				if( sideResult & 1 )
-				{
-					nodeList[listWrite] = pNode->children[0];
-					listWrite = (listWrite+1)%MAX_NODES;
-					Assert(listWrite != listRead);
-				}
-				// back side
-				if( sideResult & 2 )
-				{
-					nodeList[listWrite] = pNode->children[1];
-					listWrite = (listWrite+1)%MAX_NODES;
-					Assert(listWrite != listRead);
-				}
-			}
-		}
-	}
-	int GetDispListCount() { return m_dispList.Count(); }
-	void WriteLeafList( unsigned short *pLeafList )
-	{
-		// clear current count if any
-		for ( int i = 0; i < m_pBSPData->GetLeafsCount(); i++ )
-		{
-			cleaf_t *pLeaf = m_pBSPData->GetLeafs(i);
-			pLeaf->dispCount = 0;
-		}
-		// compute new count per leaf
-		for ( int i = 0; i < m_dispList.Count(); i++ )
-		{
-			int leafIndex = m_dispList[i];
-			cleaf_t *pLeaf = m_pBSPData->GetLeafs(leafIndex);
-			pLeaf->dispCount++;
-		}
-		// point each leaf at the start of it's output range in the output array
-		unsigned short firstDispIndex = 0;
-		for ( int i = 0; i < m_pBSPData->GetLeafsCount(); i++ )
-		{
-			cleaf_t *pLeaf = m_pBSPData->GetLeafs(i);
-			pLeaf->dispListStart = firstDispIndex;
-			firstDispIndex += pLeaf->dispCount;
-			pLeaf->dispCount = 0;
-		}
-		// now iterate the references in disp order adding to each leaf's (now compact) list
-		// for each displacement with leaves
-		for ( int i = 0; i < m_leafCount.Count(); i++ )
-		{
-			// for each leaf in this disp's list
-			int count = m_leafCount[i];
-			for ( int j = 0; j < count; j++ )
-			{
-				int listIndex = m_firstIndex[i] + j;					// index to per-disp list
-				int leafIndex = m_dispList[listIndex];					// this reference is for one leaf
-				cleaf_t *pLeaf = m_pBSPData->GetLeafs(leafIndex);
-				int outListIndex = pLeaf->dispListStart + pLeaf->dispCount;	// output position for this leaf
-				pLeafList[outListIndex] = i;							// write the reference there
-				Assert(outListIndex < GetDispListCount());
-				pLeaf->dispCount++;										// move this leaf's output pointer
-			}
-		}
-	}
-
-private:
-	CCollisionBSPData *m_pBSPData;
-	// this is a list of all of the leaf indices for each displacement
-	CUtlVector<unsigned short> m_dispList;
-	// this is the first entry into dispList for each displacement
-	CUtlVector<int> m_firstIndex;
-	// this is the # of leaf entries for each displacement
-	CUtlVector<unsigned short> m_leafCount;
-};
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CM_DispTreeLeafnum( CCollisionBSPData *pBSPData )
-{
-	// check to see if there are any displacement trees to push down the bsp tree??
-	if( g_DispCollTreeCount == 0 )
-		return;
-
-	for ( int i = 0; i < pBSPData->GetLeafsCount(); i++ )
-	{
-		pBSPData->GetLeafs(i)->dispCount = 0;
-	}
-	//
-	// get the number of displacements per leaf
-	//
-	CDispLeafBuilder leafBuilder( pBSPData );
-
-	for ( int i = 0; i < g_DispCollTreeCount; i++ )
-	{
-		leafBuilder.BuildLeafListForDisplacement( i );
-	}
-	int count = leafBuilder.GetDispListCount();
-	pBSPData->GetDispList()->Attach(count, (unsigned short*)Hunk_Alloc(sizeof(unsigned short) * count, false));
-	leafBuilder.WriteLeafList( pBSPData->GetDispList()->Base());
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void DispCollTrees_FreeLeafList( CCollisionBSPData *pBSPData )
-{
-	if ( pBSPData->GetDispList()->Base())
-	{
-		pBSPData->GetDispList()->Detach();
-		pBSPData->SetDispListCount(0);
-	}
-}
-
 // Virtual collision models for terrain
 class CVirtualTerrain : public IVirtualMeshEvent
 {
@@ -230,7 +59,7 @@ public:
 	{
 		intp index = (intp)userData;
 		Assert(index >= 0 && index < g_DispCollTreeCount );
-		g_pDispCollTrees[index].GetVirtualMeshList( pList );
+		GetCollisionBSPData()->GetDispCollTrees(index)->GetVirtualMeshList( pList );
 		pList->pHull = NULL;
 		if ( m_pDispHullData )
 		{
@@ -244,14 +73,14 @@ public:
 	virtual void GetWorldspaceBounds( void *userData, Vector *pMins, Vector *pMaxs )
 	{
 		intp index = (intp)userData;
-		*pMins = g_pDispBounds[index].mins;
-		*pMaxs = g_pDispBounds[index].maxs;
+		*pMins = GetCollisionBSPData()->GetDispBounds(index)->mins;
+		*pMaxs = GetCollisionBSPData()->GetDispBounds(index)->maxs;
 	}
 	// Query against the AABB tree to find the list of triangles for this patch in a sphere
 	virtual void GetTrianglesInSphere( void *userData, const Vector &center, float radius, virtualmeshtrianglelist_t *pList )
 	{
 		intp index = (intp)userData;
-		pList->triangleCount = g_pDispCollTrees[index].AABBTree_GetTrisInSphere( center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices) );
+		pList->triangleCount = GetCollisionBSPData()->GetDispCollTrees(index)->AABBTree_GetTrisInSphere( center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices) );
 	}
 	void LevelInit( dphysdisp_t *pLump, int lumpSize )
 	{
@@ -261,7 +90,7 @@ public:
 			return;
 		}
 		int totalHullData = 0;
-		m_dispHullOffset.SetCount(g_DispCollTreeCount);
+		m_dispHullOffset.SetCount(GetCollisionBSPData()->GetDispCollTreesCount());
 		Assert(pLump->numDisplacements==g_DispCollTreeCount);
 		// count the size of the lump
 		unsigned short *pDataSize = (unsigned short *)(pLump+1);
@@ -303,7 +132,7 @@ static CUtlVector<CPhysCollide *> g_TerrainList;
 // Find or create virtual terrain collision model.  Note that these will be shared by client & server
 CPhysCollide *CM_PhysCollideForDisp( int index )
 {
-	if ( index < 0 || index >= g_DispCollTreeCount )
+	if ( index < 0 || index >= GetCollisionBSPData()->GetDispCollTreesCount())
 		return NULL;
 
 	return g_TerrainList[index];
@@ -311,17 +140,17 @@ CPhysCollide *CM_PhysCollideForDisp( int index )
 
 int CM_SurfacepropsForDisp( int index )
 {
-	return g_pDispCollTrees[index].GetSurfaceProps(0);
+	return GetCollisionBSPData()->GetDispCollTrees(index)->GetSurfaceProps(0);
 }
 
 void CM_CreateDispPhysCollide( dphysdisp_t *pDispLump, int dispLumpSize )
 {
 	g_VirtualTerrain.LevelInit(pDispLump, dispLumpSize);
-	g_TerrainList.SetCount( g_DispCollTreeCount );
-	for ( intp i = 0; i < g_DispCollTreeCount; i++ )
+	g_TerrainList.SetCount(GetCollisionBSPData()->GetDispCollTreesCount());
+	for ( intp i = 0; i < GetCollisionBSPData()->GetDispCollTreesCount(); i++ )
 	{
 		// Don't create a physics collision model for displacements that have been tagged as such.
-		CDispCollTree *pDispTree = &g_pDispCollTrees[i];
+		CDispCollTree *pDispTree = GetCollisionBSPData()->GetDispCollTrees(i);
 		if ( pDispTree && pDispTree->CheckFlags( CCoreDispInfo::SURF_NOPHYSICS_COLL ) )
 		{
 			g_TerrainList[i] = NULL;
@@ -369,7 +198,7 @@ void CM_TestInDispTree( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, const Vector &t
 		for( int i = 0; i < pLeaf->dispCount; i++ )
 		{
 			int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
-			alignedbbox_t * RESTRICT pDispBounds = &g_pDispBounds[dispIndex];
+			alignedbbox_t * RESTRICT pDispBounds = pTraceInfo->m_pBSPData->GetDispBounds(dispIndex);
 
 			// Respect trace contents
 			if( !(pDispBounds->GetContents() & collisionMask) )
@@ -380,7 +209,7 @@ void CM_TestInDispTree( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, const Vector &t
 
 			if ( IsBoxIntersectingBox( absMins, absMaxs, pDispBounds->mins, pDispBounds->maxs ) )
 			{
-				CDispCollTree *pDispTree = &g_pDispCollTrees[dispIndex];
+				CDispCollTree *pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
 				if( pDispTree->AABBTree_IntersectAABB( absMins, absMaxs ) )
 				{
 					pTrace->startsolid = true;
@@ -416,7 +245,7 @@ void CM_PreStab( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, Vector &vStabDir, int 
 	// if the point wasn't in the bounded area of any of the displacements -- stab in any
 	// direction and set contents to "solid"
 	int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart);
-	CDispCollTree *pDispTree = &g_pDispCollTrees[dispIndex];
+	CDispCollTree *pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
 	pDispTree->GetStabDirection( vStabDir );
 	contents = CONTENTS_SOLID;
 
@@ -427,7 +256,7 @@ void CM_PreStab( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, Vector &vStabDir, int 
 	for( int i = 0; i < pLeaf->dispCount; i++ )
 	{
 		dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
-		pDispTree = &g_pDispCollTrees[dispIndex];
+		pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
 
 		// Respect trace contents
 		if( !(pDispTree->GetContents() & collisionMask) )

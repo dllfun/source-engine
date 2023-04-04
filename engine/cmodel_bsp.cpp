@@ -253,6 +253,16 @@ void CCollisionBSPData::Destory() {
 	numportalopen = 0;
 	map_name[0] = 0;
 	map_rootnode = NULL;
+
+	g_pDispCollTrees = NULL;
+	g_pDispBounds = NULL;
+	g_DispCollTreeCount = 0;
+
+	if (GetDispList()->Base())
+	{
+		GetDispList()->Detach();
+		SetDispListCount(0);
+	}
 }
 bool CCollisionBSPData::Load(const char* pName) {
 	// This is a table that maps texinfo references to csurface_t
@@ -310,6 +320,7 @@ bool CCollisionBSPData::Load(const char* pName) {
 	COM_TimestampedLog("  CollisionBSPData_LoadDispInfo");
 	CollisionBSPData_LoadDispInfo();
 
+	CM_DispTreeLeafnum();
 	return true;
 }
 CRangeValidatedArray<unsigned short>* CCollisionBSPData::GetDispList() {
@@ -327,22 +338,21 @@ int CCollisionBSPData::GetEntityCharsCount() {
 int CCollisionBSPData::GetTexturesCount() {
 	return numtextures;
 }
-csurface_t* CCollisionBSPData::GetSurface() {
-	return map_surfaces.Base();
-}
-cleaf_t* CCollisionBSPData::GetLeafs() {
-	return map_leafs.Base();
-}
 unsigned short* CCollisionBSPData::GetDispListBase() {
 	return map_dispList.Base();
 }
 int CCollisionBSPData::GetDispListCount() {
 	return numdisplist;
 }
-cplane_t* CCollisionBSPData::GetPlanes() {
-	return map_planes.Base();
+int CCollisionBSPData::GetDispCollTreesCount() {
+	return g_DispCollTreeCount;
 }
-
+CDispCollTree* CCollisionBSPData::GetDispCollTrees(int index) {
+	return &g_pDispCollTrees[index];
+}
+alignedbbox_t* CCollisionBSPData::GetDispBounds(int index) {
+	return &g_pDispBounds[index];
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1337,6 +1347,31 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 }
 
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CCollisionBSPData::CM_DispTreeLeafnum()
+{
+	// check to see if there are any displacement trees to push down the bsp tree??
+	if (GetCollisionBSPData()->GetDispCollTreesCount() == 0)
+		return;
+
+	for (int i = 0; i < GetLeafsCount(); i++)
+	{
+		GetLeafs(i)->dispCount = 0;
+	}
+	//
+	// get the number of displacements per leaf
+	//
+	CDispLeafBuilder leafBuilder(this);
+
+	for (int i = 0; i < GetCollisionBSPData()->GetDispCollTreesCount(); i++)
+	{
+		leafBuilder.BuildLeafListForDisplacement(i);
+	}
+	int count = leafBuilder.GetDispListCount();
+	GetDispList()->Attach(count, (unsigned short*)Hunk_Alloc(sizeof(unsigned short) * count, false));
+	leafBuilder.WriteLeafList(GetDispList()->Base());
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1347,6 +1382,12 @@ bool CollisionBSPData_Init( CCollisionBSPData *pBSPData )
 	return true;
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//void DispCollTrees_FreeLeafList(CCollisionBSPData* pBSPData)
+//{
+	
+//}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1358,12 +1399,10 @@ void CollisionBSPData_Destroy( CCollisionBSPData *pBSPData )
 	}
 
 	// free displacement data
-	DispCollTrees_FreeLeafList( pBSPData );
+	//DispCollTrees_FreeLeafList( pBSPData );
 	CM_DestroyDispPhysCollide();
-	DispCollTrees_Free( g_pDispCollTrees );
-	g_pDispCollTrees = NULL;
-	g_pDispBounds = NULL;
-	g_DispCollTreeCount = 0;
+	DispCollTrees_Free(GetCollisionBSPData()->GetDispCollTrees(0));
+	
 
 	pBSPData->Destory();
 }
@@ -1374,10 +1413,10 @@ void CollisionBSPData_Destroy( CCollisionBSPData *pBSPData )
 
 CDispCollTree* CollisionBSPData_GetCollisionTree( int i )
 {
-	if ((i < 0) || (i >= g_DispCollTreeCount))
+	if ((i < 0) || (i >= GetCollisionBSPData()->GetDispCollTreesCount()))
 		return 0;
 
-	return &g_pDispCollTrees[i];
+	return GetCollisionBSPData()->GetDispCollTrees(i);
 }
 
 //-----------------------------------------------------------------------------

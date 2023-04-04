@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\engine\cmodel_private.h" />
     <ClInclude Include="..\..\..\public\tier1\utlmemory.h" />
     <ClInclude Include="..\..\..\public\tier1\utlvector.h" />
   </ItemGroup>

@@ -1462,7 +1462,7 @@ void Mod_LoadTexdata( void )
 	// Don't bother loading these again; they're already stored in the collision model
 	// which is guaranteed to be loaded at this point
 	s_pMap->numtexdata = GetCollisionBSPData()->GetTexturesCount();
-	s_pMap->texdata = GetCollisionBSPData()->GetSurface();
+	s_pMap->texdata = GetCollisionBSPData()->GetSurfaceAtIndex(0);
 }
 
 
@@ -2361,7 +2361,7 @@ void Mod_LoadLeafs( void )
 	}
 
 	worldbrushdata_t *pMap = lh.GetMap();
-	cleaf_t *pCLeaf = GetCollisionBSPData()->GetLeafs();
+	cleaf_t *pCLeaf = GetCollisionBSPData()->GetLeafs(0);
 	for ( int i = 0; i < pMap->numleafs; i++ )
 	{
 		pMap->leafs[i].dispCount = pCLeaf[i].dispCount;
@@ -2683,7 +2683,7 @@ void Mod_LoadSurfedges( medge_t *pedges )
 void Mod_LoadPlanes( void )
 {
 	// Don't bother loading them, they're already stored
-	s_pMap->planes = GetCollisionBSPData()->GetPlanes();
+	s_pMap->planes = GetCollisionBSPData()->GetPlane(0);
 	s_pMap->numplanes = GetCollisionBSPData()->GetPlanesCount();
 }
 

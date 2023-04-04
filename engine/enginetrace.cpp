@@ -633,7 +633,7 @@ CPhysCollide* CEngineTrace::GetCollidableFromDisplacementsInAABB( const Vector& 
 		for( int k = 0; k < curLeaf->dispCount; k++ )
 		{
 			int dispIndex = pBSPData->GetDispList(curLeaf->dispListStart + k);
-			CDispCollTree *pDispTree = &g_pDispCollTrees[dispIndex];
+			CDispCollTree *pDispTree = pBSPData->GetDispCollTrees(dispIndex);
 		
 			// make sure we only check this brush once per trace/stab
 			if ( !pTraceInfo->Visit( pDispTree->m_iCounter, count, pCounters ) )

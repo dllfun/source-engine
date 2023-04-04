@@ -21,6 +21,9 @@
     <ClInclude Include="..\..\..\public\tier1\utlvector.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\engine\cmodel_private.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\engine\socketcreator.cpp">

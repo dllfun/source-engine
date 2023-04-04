@@ -299,54 +299,91 @@ const int SURFACE_INDEX_INVALID = 0xFFFF;
 
 //=============================================================================
 //
+// Displacement Collision Functions and Data
+//
+// UNDONE: Find a way to overlap the counter/contents bits with mins.w/maxs.w without hosing performance
+struct alignedbbox_t
+{
+	VectorAligned	mins;
+	VectorAligned	maxs;
+	int				dispCounter;
+	int				dispContents;
+	int				pad[2];
+	void SetCounter(int counter)
+	{
+		dispCounter = counter;
+	}
+	int GetCounter()
+	{
+		return dispCounter;
+	}
+	void SetContents(int contents)
+	{
+		dispContents = contents;
+	}
+	int GetContents()
+	{
+		return dispContents;
+	}
+	void Init(const Vector& minsIn, const Vector& maxsIn, int counterIn, int contentsIn)
+	{
+		mins = minsIn;
+		SetCounter(counterIn);
+		maxs = maxsIn;
+		SetContents(contentsIn);
+	}
+};
+
+//=============================================================================
+//
 // Collision BSP Data Class
 //
 class CCollisionBSPData
 {
 public:
-	int GetBrushesCount();
-	int GetCModelsCount();
-	cmodel_t* GetCModels(int index);
-	cleaf_t* GetLeafs(int index);
-	unsigned short GetLeafBrushes(int index);
-	cbrush_t* GetBrushes(int index);
-	cnode_t* GetNodes(int index);
-	int GetClustersCount();
-	char* GetEntityString();
-	void DiscardEntityString();
-	void InitPortalOpenState();
-	char* GetMapName();
-	int GetPlanesCount();
-	cboxbrush_t* GetBoxBrushes(int index);
-	cbrushside_t* GetBrushesSide(int index);
-	int GetNodesCount();
-	csurface_t GetNullSurface();
-	csurface_t* GetSurfaceAtIndex(unsigned short surfaceIndex);
-	int GetVisibilityCount();
-	dvis_t* GetVis();
-	int GetFloodvalid();
-	dareaportal_t* GetAreaPortals(int index);
-	bool GetPortalOpenState(int index);
-	void SetPortalOpenState(int index, bool state);
-	carea_t* GetArea(int index);
-	void IncFloodvalid();
-	int GetAreaCount();
-	int GetAreaPortalsCount();
-	int GetLeafsCount();
-	cplane_t* GetPlane(int index);
 	void Init();
 	void Destory();
 	bool Load(const char* pName);
-	CRangeValidatedArray<unsigned short>* GetDispList();
+	char* GetMapName();
+	int GetNodesCount();
+	cnode_t* GetNodes(int index);
+	int GetLeafsCount();
+	cleaf_t* GetLeafs(int index);
+	int GetPlanesCount();
+	cplane_t* GetPlane(int index);
+	int GetBrushesCount();
+	cbrush_t* GetBrushes(int index);
+	int GetCModelsCount();
+	cmodel_t* GetCModels(int index);
+	unsigned short GetLeafBrushes(int index);
+	cboxbrush_t* GetBoxBrushes(int index);
+	cbrushside_t* GetBrushesSide(int index);
+	int GetClustersCount();
+	int GetVisibilityCount();
+	dvis_t* GetVis();
+	int GetAreaCount();
+	carea_t* GetArea(int index);
+	int GetAreaPortalsCount();
+	dareaportal_t* GetAreaPortals(int index);
+	int GetFloodvalid();
+	void IncFloodvalid();
+	void InitPortalOpenState();
+	bool GetPortalOpenState(int index);
+	void SetPortalOpenState(int index, bool state);
 	void SetDispListCount(int count);
-	unsigned short GetDispList(int index);
-	int GetEntityCharsCount();
-	int GetTexturesCount();
-	csurface_t* GetSurface();
-	cleaf_t* GetLeafs();
-	unsigned short* GetDispListBase();
 	int GetDispListCount();
-	cplane_t* GetPlanes();
+	CRangeValidatedArray<unsigned short>* GetDispList();
+	unsigned short GetDispList(int index);
+	unsigned short* GetDispListBase();
+	csurface_t GetNullSurface();
+	csurface_t* GetSurfaceAtIndex(unsigned short surfaceIndex);
+	int GetTexturesCount();
+	int GetEntityCharsCount();
+	char* GetEntityString();
+	void DiscardEntityString();
+	int GetDispCollTreesCount();
+	CDispCollTree* GetDispCollTrees(int index);
+	alignedbbox_t* GetDispBounds(int index);
 private:
 	// This is sort of a hack, but it was a little too painful to do this any other way
 	// The goal of this dude is to allow us to override the tree with some
@@ -449,6 +486,144 @@ private:
 	//-----------------------------------------------------------------------------
 	//-----------------------------------------------------------------------------
 	void CollisionBSPData_LoadDispInfo();
+
+	int g_DispCollTreeCount = 0;
+	CDispCollTree* g_pDispCollTrees = NULL;
+	alignedbbox_t* g_pDispBounds = NULL;
+
+	class CDispLeafBuilder
+	{
+	public:
+		CDispLeafBuilder(CCollisionBSPData* pBSPData)
+		{
+			m_pBSPData = pBSPData;
+			// don't want this to resize much, so make the backing buffer large
+			m_dispList.EnsureCapacity(MAX_MAP_DISPINFO * 2);
+
+			// size both of these to the size of the array since there is exactly one per element
+			m_leafCount.SetCount(m_pBSPData->GetDispCollTreesCount());
+			m_firstIndex.SetCount(m_pBSPData->GetDispCollTreesCount());
+			for (int i = 0; i < m_pBSPData->GetDispCollTreesCount(); i++)
+			{
+				m_leafCount[i] = 0;
+				m_firstIndex[i] = -1;
+			}
+		}
+
+		void BuildLeafListForDisplacement(int index)
+		{
+			// get tree and see if it is real (power != 0)
+			CDispCollTree* pDispTree = m_pBSPData->GetDispCollTrees(index);
+			if (!pDispTree || (pDispTree->GetPower() == 0))
+				return;
+			m_firstIndex[index] = m_dispList.Count();
+			m_leafCount[index] = 0;
+			const int MAX_NODES = 1024;
+			int nodeList[MAX_NODES];
+			int listRead = 0;
+			int listWrite = 1;
+			nodeList[0] = m_pBSPData->GetCModels(0)->headnode;
+			Vector mins, maxs;
+			pDispTree->GetBounds(mins, maxs);
+
+			// UNDONE: The rendering code did this, do we need it?
+	//		mins -= Vector( 0.5, 0.5, 0.5 );
+	//		maxs += Vector( 0.5, 0.5, 0.5 );
+
+			while (listRead != listWrite)
+			{
+				int nodeIndex = nodeList[listRead];
+				listRead = (listRead + 1) % MAX_NODES;
+
+				// if this is a leaf, add it to the array
+				if (nodeIndex < 0)
+				{
+					int leafIndex = -1 - nodeIndex;
+					m_dispList.AddToTail(leafIndex);
+					m_leafCount[index]++;
+				}
+				else
+				{
+					//
+					// choose side(s) to traverse
+					//
+					cnode_t* pNode = m_pBSPData->GetNodes(nodeIndex);
+					cplane_t* pPlane = pNode->plane;
+
+					int sideResult = BOX_ON_PLANE_SIDE(mins, maxs, pPlane);
+
+					// front side
+					if (sideResult & 1)
+					{
+						nodeList[listWrite] = pNode->children[0];
+						listWrite = (listWrite + 1) % MAX_NODES;
+						Assert(listWrite != listRead);
+					}
+					// back side
+					if (sideResult & 2)
+					{
+						nodeList[listWrite] = pNode->children[1];
+						listWrite = (listWrite + 1) % MAX_NODES;
+						Assert(listWrite != listRead);
+					}
+				}
+			}
+		}
+		int GetDispListCount() { return m_dispList.Count(); }
+		void WriteLeafList(unsigned short* pLeafList)
+		{
+			// clear current count if any
+			for (int i = 0; i < m_pBSPData->GetLeafsCount(); i++)
+			{
+				cleaf_t* pLeaf = m_pBSPData->GetLeafs(i);
+				pLeaf->dispCount = 0;
+			}
+			// compute new count per leaf
+			for (int i = 0; i < m_dispList.Count(); i++)
+			{
+				int leafIndex = m_dispList[i];
+				cleaf_t* pLeaf = m_pBSPData->GetLeafs(leafIndex);
+				pLeaf->dispCount++;
+			}
+			// point each leaf at the start of it's output range in the output array
+			unsigned short firstDispIndex = 0;
+			for (int i = 0; i < m_pBSPData->GetLeafsCount(); i++)
+			{
+				cleaf_t* pLeaf = m_pBSPData->GetLeafs(i);
+				pLeaf->dispListStart = firstDispIndex;
+				firstDispIndex += pLeaf->dispCount;
+				pLeaf->dispCount = 0;
+			}
+			// now iterate the references in disp order adding to each leaf's (now compact) list
+			// for each displacement with leaves
+			for (int i = 0; i < m_leafCount.Count(); i++)
+			{
+				// for each leaf in this disp's list
+				int count = m_leafCount[i];
+				for (int j = 0; j < count; j++)
+				{
+					int listIndex = m_firstIndex[i] + j;					// index to per-disp list
+					int leafIndex = m_dispList[listIndex];					// this reference is for one leaf
+					cleaf_t* pLeaf = m_pBSPData->GetLeafs(leafIndex);
+					int outListIndex = pLeaf->dispListStart + pLeaf->dispCount;	// output position for this leaf
+					pLeafList[outListIndex] = i;							// write the reference there
+					Assert(outListIndex < GetDispListCount());
+					pLeaf->dispCount++;										// move this leaf's output pointer
+				}
+			}
+		}
+
+	private:
+		CCollisionBSPData* m_pBSPData;
+		// this is a list of all of the leaf indices for each displacement
+		CUtlVector<unsigned short> m_dispList;
+		// this is the first entry into dispList for each displacement
+		CUtlVector<int> m_firstIndex;
+		// this is the # of leaf entries for each displacement
+		CUtlVector<unsigned short> m_leafCount;
+	};
+	// setup
+	void CM_DispTreeLeafnum();
 };
 
 //=============================================================================
@@ -466,9 +641,9 @@ extern IPhysicsCollision* physcollision;
 // This might eventually become a class/interface when we want multiple instances
 // etc.......for now....
 //
-extern csurface_t nullsurface;
+//extern csurface_t nullsurface;
 
-extern bool bStartSolidDisp;
+//extern bool bStartSolidDisp;
 
 bool CollisionBSPData_Init( CCollisionBSPData *pBSPData );
 void CollisionBSPData_Destroy( CCollisionBSPData *pBSPData );
@@ -519,52 +694,16 @@ extern CCollisionCounts g_CollisionCounts;
 // a shared file should contain all the CDispCollTree stuff
 //
 
-//=============================================================================
-//
-// Displacement Collision Functions and Data
-//
-// UNDONE: Find a way to overlap the counter/contents bits with mins.w/maxs.w without hosing performance
-struct alignedbbox_t
-{
-	VectorAligned	mins;
-	VectorAligned	maxs;
-	int				dispCounter;
-	int				dispContents;
-	int				pad[2];
-	void SetCounter(int counter)
-	{
-		dispCounter = counter;
-	}
-	int GetCounter()
-	{
-		return dispCounter;
-	}
-	void SetContents(int contents)
-	{
-		dispContents = contents;
-	}
-	int GetContents()
-	{
-		return dispContents;
-	}
-	void Init( const Vector &minsIn, const Vector &maxsIn, int counterIn, int contentsIn )
-	{
-		mins = minsIn;
-		SetCounter(counterIn);
-		maxs = maxsIn;
-		SetContents(contentsIn);
-	}
-};
-extern int g_DispCollTreeCount;
-extern CDispCollTree *g_pDispCollTrees;
-extern alignedbbox_t *g_pDispBounds;
-extern csurface_t dispSurf;
+
+//extern int g_DispCollTreeCount;
+//extern CDispCollTree *g_pDispCollTrees;
+//extern alignedbbox_t *g_pDispBounds;
+//extern csurface_t dispSurf;
 
 // memory allocation/de-allocation
-void DispCollTrees_FreeLeafList( CCollisionBSPData *pBSPData );
+//void DispCollTrees_FreeLeafList( CCollisionBSPData *pBSPData );
 
-// setup
-void CM_DispTreeLeafnum( CCollisionBSPData *pBSPData );
+
 
 // collision
 void CM_TestInDispTree( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, Vector const &traceStart, 
