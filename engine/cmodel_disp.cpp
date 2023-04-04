@@ -79,7 +79,7 @@ public:
 		int nodeList[MAX_NODES];
 		int listRead = 0;
 		int listWrite = 1;
-		nodeList[0] = m_pBSPData->map_cmodels[0].headnode;
+		nodeList[0] = m_pBSPData->GetCModels(0)->headnode;
 		Vector mins, maxs;
 		pDispTree->GetBounds( mins, maxs );
 
@@ -104,7 +104,7 @@ public:
 				//
 				// choose side(s) to traverse
 				//
-				cnode_t *pNode = &m_pBSPData->map_rootnode[nodeIndex];
+				cnode_t *pNode = m_pBSPData->GetNodes(nodeIndex);
 				cplane_t *pPlane = pNode->plane;
 
 				int sideResult = BOX_ON_PLANE_SIDE( mins, maxs, pPlane );
@@ -130,23 +130,23 @@ public:
 	void WriteLeafList( unsigned short *pLeafList )
 	{
 		// clear current count if any
-		for ( int i = 0; i < m_pBSPData->numleafs; i++ )
+		for ( int i = 0; i < m_pBSPData->GetLeafsCount(); i++ )
 		{
-			cleaf_t *pLeaf = &m_pBSPData->map_leafs[i];
+			cleaf_t *pLeaf = m_pBSPData->GetLeafs(i);
 			pLeaf->dispCount = 0;
 		}
 		// compute new count per leaf
 		for ( int i = 0; i < m_dispList.Count(); i++ )
 		{
 			int leafIndex = m_dispList[i];
-			cleaf_t *pLeaf = &m_pBSPData->map_leafs[leafIndex];
+			cleaf_t *pLeaf = m_pBSPData->GetLeafs(leafIndex);
 			pLeaf->dispCount++;
 		}
 		// point each leaf at the start of it's output range in the output array
 		unsigned short firstDispIndex = 0;
-		for ( int i = 0; i < m_pBSPData->numleafs; i++ )
+		for ( int i = 0; i < m_pBSPData->GetLeafsCount(); i++ )
 		{
-			cleaf_t *pLeaf = &m_pBSPData->map_leafs[i];
+			cleaf_t *pLeaf = m_pBSPData->GetLeafs(i);
 			pLeaf->dispListStart = firstDispIndex;
 			firstDispIndex += pLeaf->dispCount;
 			pLeaf->dispCount = 0;
@@ -161,7 +161,7 @@ public:
 			{
 				int listIndex = m_firstIndex[i] + j;					// index to per-disp list
 				int leafIndex = m_dispList[listIndex];					// this reference is for one leaf
-				cleaf_t *pLeaf = &m_pBSPData->map_leafs[leafIndex];
+				cleaf_t *pLeaf = m_pBSPData->GetLeafs(leafIndex);
 				int outListIndex = pLeaf->dispListStart + pLeaf->dispCount;	// output position for this leaf
 				pLeafList[outListIndex] = i;							// write the reference there
 				Assert(outListIndex < GetDispListCount());
@@ -188,9 +188,9 @@ void CM_DispTreeLeafnum( CCollisionBSPData *pBSPData )
 	if( g_DispCollTreeCount == 0 )
 		return;
 
-	for ( int i = 0; i < pBSPData->numleafs; i++ )
+	for ( int i = 0; i < pBSPData->GetLeafsCount(); i++ )
 	{
-		pBSPData->map_leafs[i].dispCount = 0;
+		pBSPData->GetLeafs(i)->dispCount = 0;
 	}
 	//
 	// get the number of displacements per leaf
@@ -202,18 +202,18 @@ void CM_DispTreeLeafnum( CCollisionBSPData *pBSPData )
 		leafBuilder.BuildLeafListForDisplacement( i );
 	}
 	int count = leafBuilder.GetDispListCount();
-	pBSPData->map_dispList.Attach( count, (unsigned short*)Hunk_Alloc( sizeof(unsigned short) * count, false ) );
-	leafBuilder.WriteLeafList( pBSPData->map_dispList.Base() );
+	pBSPData->GetDispList()->Attach(count, (unsigned short*)Hunk_Alloc(sizeof(unsigned short) * count, false));
+	leafBuilder.WriteLeafList( pBSPData->GetDispList()->Base());
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void DispCollTrees_FreeLeafList( CCollisionBSPData *pBSPData )
 {
-	if ( pBSPData->map_dispList.Base() )
+	if ( pBSPData->GetDispList()->Base())
 	{
-		pBSPData->map_dispList.Detach();
-		pBSPData->numdisplist = 0;
+		pBSPData->GetDispList()->Detach();
+		pBSPData->SetDispListCount(0);
 	}
 }
 
@@ -368,7 +368,7 @@ void CM_TestInDispTree( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, const Vector &t
 		int count = pTraceInfo->GetCount();
 		for( int i = 0; i < pLeaf->dispCount; i++ )
 		{
-			int dispIndex = pTraceInfo->m_pBSPData->map_dispList[pLeaf->dispListStart + i];
+			int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
 			alignedbbox_t * RESTRICT pDispBounds = &g_pDispBounds[dispIndex];
 
 			// Respect trace contents
@@ -415,7 +415,7 @@ void CM_PreStab( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, Vector &vStabDir, int 
 
 	// if the point wasn't in the bounded area of any of the displacements -- stab in any
 	// direction and set contents to "solid"
-	int dispIndex = pTraceInfo->m_pBSPData->map_dispList[pLeaf->dispListStart];
+	int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart);
 	CDispCollTree *pDispTree = &g_pDispCollTrees[dispIndex];
 	pDispTree->GetStabDirection( vStabDir );
 	contents = CONTENTS_SOLID;
@@ -426,7 +426,7 @@ void CM_PreStab( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, Vector &vStabDir, int 
 	//
 	for( int i = 0; i < pLeaf->dispCount; i++ )
 	{
-		dispIndex = pTraceInfo->m_pBSPData->map_dispList[pLeaf->dispListStart + i];
+		dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
 		pDispTree = &g_pDispCollTrees[dispIndex];
 
 		// Respect trace contents
@@ -469,7 +469,7 @@ void CM_Stab( TraceInfo_t *pTraceInfo, const Vector &start, const Vector &vStabD
 	//
 	pTraceInfo->m_trace.fraction = 1.0f;
 	pTraceInfo->m_trace.fractionleftsolid = 0.0f;
-	pTraceInfo->m_trace.surface = pTraceInfo->m_pBSPData->nullsurface;
+	pTraceInfo->m_trace.surface = pTraceInfo->m_pBSPData->GetNullSurface();
 
 	pTraceInfo->m_trace.startsolid = false;
 	pTraceInfo->m_trace.allsolid = false;

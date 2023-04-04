@@ -32,23 +32,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CCollisionBSPData g_BSPData;								// the global collision bsp
-#define g_BSPData dont_use_g_BSPData_directly
 
 #ifdef COUNT_COLLISIONS
 CCollisionCounts  g_CollisionCounts;						// collision test counters
 #endif
 
-csurface_t CCollisionBSPData::nullsurface = { "**empty**", 0, 0 };				// generic null collision model surface
 
-csurface_t *CCollisionBSPData::GetSurfaceAtIndex( unsigned short surfaceIndex )
-{
-	if ( surfaceIndex == SURFACE_INDEX_INVALID )
-	{
-		return &nullsurface;
-	}
-	return &map_surfaces[surfaceIndex];
-}
 
 #if TEST_TRACE_POOL
 CTSPool<TraceInfo_t> g_TraceInfoPool;
@@ -73,14 +62,14 @@ TraceInfo_t *BeginTrace()
 		pTraceInfo = new TraceInfo_t;
 	}
 #endif
-	if ( pTraceInfo->m_BrushCounters[0].Count() != GetCollisionBSPData()->numbrushes + 1 )
+	if ( pTraceInfo->m_BrushCounters[0].Count() != GetCollisionBSPData()->GetBrushesCount() + 1)
 	{
 		memset( pTraceInfo->m_Count, 0, sizeof( pTraceInfo->m_Count ) );
 		pTraceInfo->m_nCheckDepth = -1;
 
 		for ( int i = 0; i < MAX_CHECK_COUNT_DEPTH; i++ )
 		{
-			pTraceInfo->m_BrushCounters[i].SetCount( GetCollisionBSPData()->numbrushes + 1 );
+			pTraceInfo->m_BrushCounters[i].SetCount( GetCollisionBSPData()->GetBrushesCount() + 1);
 			pTraceInfo->m_DispCounters[i].SetCount( g_DispCollTreeCount );
 
 			memset( pTraceInfo->m_BrushCounters[i].Base(), 0, pTraceInfo->m_BrushCounters[i].Count() * sizeof(TraceCounter_t) );
@@ -161,7 +150,7 @@ cmodel_t *CM_InlineModel( const char *name )
 
 	// check for valid model
 	int ndxModel = atoi( name + 1 );
-	if( ( ndxModel < 1 ) || ( ndxModel >= GetCollisionBSPData()->numcmodels ) )
+	if( ( ndxModel < 1 ) || ( ndxModel >= GetCollisionBSPData()->GetCModelsCount() ) )
 		Sys_Error( "CM_InlineModel: bad model number!" );
 
 	return CM_InlineModelNumber( ndxModel );
@@ -174,10 +163,10 @@ cmodel_t *CM_InlineModelNumber( int index )
 {
 	CCollisionBSPData *pBSPDataData = GetCollisionBSPData();
 
-	if( ( index < 0 ) || ( index > pBSPDataData->numcmodels ) )
+	if( ( index < 0 ) || ( index > pBSPDataData->GetCModelsCount() ) )
 		return NULL;
 
-	return ( &pBSPDataData->map_cmodels[ index ] );
+	return pBSPDataData->GetCModels( index );
 }
 
 
@@ -190,20 +179,20 @@ int CM_BrushContents_r( CCollisionBSPData *pBSPData, int nodenum )
 		if (nodenum < 0)
 		{
 			int leafIndex = -1 - nodenum;
-			cleaf_t &leaf = pBSPData->map_leafs[leafIndex];
+			cleaf_t* leaf = pBSPData->GetLeafs(leafIndex);
 			
-			for ( int i = 0; i < leaf.numleafbrushes; i++ )
+			for ( int i = 0; i < leaf->numleafbrushes; i++ )
 			{
-				unsigned short brushIndex = pBSPData->map_leafbrushes[ leaf.firstleafbrush + i ];
-				contents |= pBSPData->map_brushes[brushIndex].contents;
+				unsigned short brushIndex = pBSPData->GetLeafBrushes( leaf->firstleafbrush + i );
+				contents |= pBSPData->GetBrushes(brushIndex)->contents;
 			}
 
 			return contents;
 		}
 
-		cnode_t &node = pBSPData->map_rootnode[nodenum];
-		contents |= CM_BrushContents_r( pBSPData, node.children[0] );
-		nodenum = node.children[1];
+		cnode_t* node = pBSPData->GetNodes(nodenum);
+		contents |= CM_BrushContents_r( pBSPData, node->children[0] );
+		nodenum = node->children[1];
 	}
 
 	return contents;
@@ -224,7 +213,7 @@ int CM_InlineModelContents( int index )
 //-----------------------------------------------------------------------------
 int	CM_NumClusters( void )
 {
-	return GetCollisionBSPData()->numclusters;
+	return GetCollisionBSPData()->GetClustersCount();
 }
 
 
@@ -232,24 +221,24 @@ int	CM_NumClusters( void )
 //-----------------------------------------------------------------------------
 char *CM_EntityString( void )
 {
-	return GetCollisionBSPData()->map_entitystring.Get();
+	return GetCollisionBSPData()->GetEntityString();
 }
 
 void CM_DiscardEntityString( void )
 {
-	GetCollisionBSPData()->map_entitystring.Discard();
+	GetCollisionBSPData()->DiscardEntityString();
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int	CM_LeafContents( int leafnum )
 {
-	const CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->map_leafs[leafnum].contents;
+	return pBSPData->GetLeafs(leafnum)->contents;
 }
 
 
@@ -257,23 +246,23 @@ int	CM_LeafContents( int leafnum )
 //-----------------------------------------------------------------------------
 int	CM_LeafCluster( int leafnum )
 {
-	const CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->map_leafs[leafnum].cluster;
+	return pBSPData->GetLeafs(leafnum)->cluster;
 }
 
 
 int	CM_LeafFlags( int leafnum )
 {
-	const CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->map_leafs[leafnum].flags;
+	return pBSPData->GetLeafs(leafnum)->flags;
 }
 
 
@@ -281,12 +270,12 @@ int	CM_LeafFlags( int leafnum )
 //-----------------------------------------------------------------------------
 int	CM_LeafArea( int leafnum )
 {
-	const CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->map_leafs[leafnum].area;
+	return pBSPData->GetLeafs(leafnum)->area;
 }
 
 
@@ -305,10 +294,7 @@ void CM_FreeMap(void)
 // This turns on all the area portals that are "always on" in the map.
 void CM_InitPortalOpenState( CCollisionBSPData *pBSPData )
 {
-	for ( int i=0; i < pBSPData->numportalopen; i++ )
-	{
-		pBSPData->portalopen[i] = false;
-	}
+	pBSPData->InitPortalOpenState();
 }
 
 
@@ -328,10 +314,10 @@ cmodel_t *CM_LoadMap( const char *name, bool allowReusePrevious, unsigned *check
 
 	Assert( physcollision );
 
-	if( !strcmp( pBSPData->map_name, name ) && allowReusePrevious )
+	if( !strcmp( pBSPData->GetMapName(), name) && allowReusePrevious)
 	{
 		*checksum = last_checksum;
-		return &pBSPData->map_cmodels[0];		// still have the right version
+		return pBSPData->GetCModels(0);		// still have the right version
 	}
 
 	// only pre-load if the map doesn't already exist
@@ -340,7 +326,7 @@ cmodel_t *CM_LoadMap( const char *name, bool allowReusePrevious, unsigned *check
 	if ( !name || !name[0] )
 	{
 		*checksum = 0;
-		return &pBSPData->map_cmodels[0];			// cinematic servers won't have anything at all
+		return pBSPData->GetCModels(0);			// cinematic servers won't have anything at all
 	}
 
 	// read in the collision model data
@@ -359,7 +345,7 @@ cmodel_t *CM_LoadMap( const char *name, bool allowReusePrevious, unsigned *check
 	CollisionCounts_Init( &g_CollisionCounts );
 #endif
 
-	return &pBSPData->map_cmodels[0];
+	return pBSPData->GetCModels(0);
 }
 
 
@@ -409,7 +395,7 @@ int CM_PointLeafnumMinDistSqr_r( CCollisionBSPData *pBSPData, const Vector& p, i
 
 	while (num >= 0)
 	{
-		node = pBSPData->map_rootnode + num;
+		node = pBSPData->GetNodes(num);
 		plane = node->plane;
 		
 		if (plane->type < 3)
@@ -439,7 +425,7 @@ int CM_PointLeafnum_r( CCollisionBSPData *pBSPData, const Vector& p, int num)
 
 	while (num >= 0)
 	{
-		node = pBSPData->map_rootnode + num;
+		node = pBSPData->GetNodes(num);
 		plane = node->plane;
 		
 		if (plane->type < 3)
@@ -464,7 +450,7 @@ int CM_PointLeafnum (const Vector& p)
 	// get the current collision bsp -- there is only one!
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if (!pBSPData->numplanes)
+	if (!pBSPData->GetPlanesCount())
 		return 0;		// sound may call this without map loaded
 	return CM_PointLeafnum_r (pBSPData, p, 0);
 }
@@ -477,7 +463,7 @@ void CM_SnapPointToReferenceLeaf_r( CCollisionBSPData *pBSPData, const Vector& p
 
 	while (num >= 0)
 	{
-		node = pBSPData->map_rootnode + num;
+		node = pBSPData->GetNodes(num);
 		plane = node->plane;
 		
 		if (plane->type < 3)
@@ -515,7 +501,7 @@ void CM_SnapPointToReferenceLeaf(const Vector &referenceLeafPoint, float toleran
 	// get the current collision bsp -- there is only one!
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if (pBSPData->numplanes)
+	if (pBSPData->GetPlanesCount())
 	{
 		CM_SnapPointToReferenceLeaf_r(pBSPData, referenceLeafPoint, 0, tolerance, pSnapPoint);
 	}
@@ -570,7 +556,7 @@ int CM_BoxLeafnums( leafnums_t &context, const Vector &center, const Vector &ext
                 }
                 else
                 {
-                        node = &context.pBSPData->map_rootnode[nodenum];
+                        node = context.pBSPData->GetNodes(nodenum);
                         plane = node->plane;
                         //              s = BoxOnPlaneSide (leaf_mins, leaf_maxs, plane);
                         //              s = BOX_ON_PLANE_SIDE(*leaf_mins, *leaf_maxs, plane);
@@ -605,7 +591,7 @@ int	CM_BoxLeafnums ( const Vector& mins, const Vector& maxs, int *list, int list
 	context.pBSPData = GetCollisionBSPData();
 	Vector center = (mins+maxs)*0.5f;
 	Vector extents = maxs - center;
-	int leafCount = CM_BoxLeafnums(context, center, extents, context.pBSPData->map_cmodels[0].headnode );
+	int leafCount = CM_BoxLeafnums(context, center, extents, context.pBSPData->GetCModels(0)->headnode );
 
 	if (topnode)
 		*topnode = context.leafTopNode;
@@ -698,7 +684,7 @@ static int FASTCALL CM_BrushBoxContents( CCollisionBSPData *pBSPData, const Vect
 {
 	if ( pBrush->IsBox())
 	{
-		cboxbrush_t *pBox = &pBSPData->map_boxbrushes[pBrush->GetBox()];
+		cboxbrush_t *pBox = pBSPData->GetBoxBrushes(pBrush->GetBox());
 		if ( !IsBoxIntersectingBox( vMins, vMaxs, pBox->mins, pBox->maxs ) )
 			return 0;
 	}
@@ -718,7 +704,7 @@ static int FASTCALL CM_BrushBoxContents( CCollisionBSPData *pBSPData, const Vect
 
 		for (i=0 ; i<pBrush->numsides ; i++)
 		{
-			side = &pBSPData->map_brushsides[pBrush->firstbrushside+i];
+			side = pBSPData->GetBrushesSide(pBrush->firstbrushside+i);
 			plane = side->plane;
 
 			// FIXME: special case for axial
@@ -755,7 +741,7 @@ static int FASTCALL CM_BrushPointContents( CCollisionBSPData *pBSPData, const Ve
 {
 	if ( pBrush->IsBox())
 	{
-		cboxbrush_t *pBox = &pBSPData->map_boxbrushes[pBrush->GetBox()];
+		cboxbrush_t *pBox = pBSPData->GetBoxBrushes(pBrush->GetBox());
 		if ( !IsPointInBox( vPos, pBox->mins, pBox->maxs ) )
 			return 0;
 	}
@@ -769,7 +755,7 @@ static int FASTCALL CM_BrushPointContents( CCollisionBSPData *pBSPData, const Ve
 
 		for ( int i = 0 ; i < pBrush->numsides; i++ )
 		{
-			side = &pBSPData->map_brushsides[pBrush->firstbrushside+i];
+			side = pBSPData->GetBrushesSide(pBrush->firstbrushside+i);
 			plane = side->plane;
 
 			float flDist = DotProduct (vPos, plane->normal) - plane->dist;
@@ -797,17 +783,17 @@ int CM_PointContents ( const Vector &p, int headnode)
 	// get the current collision bsp -- there is only one!
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if (!pBSPData->numnodes)	// map not loaded
+	if (!pBSPData->GetNodesCount())	// map not loaded
 		return 0;
 
 	l = CM_PointLeafnum_r (pBSPData, p, headnode);
 
-	cleaf_t *pLeaf = &pBSPData->map_leafs[l];
+	cleaf_t *pLeaf = pBSPData->GetLeafs(l);
 	int nContents = pLeaf->contents;
 	for ( int i = 0; i < pLeaf->numleafbrushes; i++ )
 	{
-		int nBrush = pBSPData->map_leafbrushes[pLeaf->firstleafbrush + i];
-		cbrush_t * RESTRICT pBrush = &pBSPData->map_brushes[nBrush];
+		int nBrush = pBSPData->GetLeafBrushes(pLeaf->firstleafbrush + i);
+		cbrush_t * RESTRICT pBrush = pBSPData->GetBrushes(nBrush);
 		nContents |= CM_BrushPointContents( pBSPData, p, pBrush );
 	}
 	
@@ -849,7 +835,7 @@ int	CM_TransformedPointContents ( const Vector& p, int headnode, const Vector& o
 
 	l = CM_PointLeafnum_r (pBSPData, p_l, headnode);
 
-	return pBSPData->map_leafs[l].contents;
+	return pBSPData->GetLeafs(l)->contents;
 }
 
 /*
@@ -991,7 +977,7 @@ bool IntersectRayWithBoxBrush( TraceInfo_t *pTraceInfo, const cbrush_t *pBrush, 
 					if (pTrace->fraction <= t2)
 					{
 						pTrace->fraction = 1.0f;
-						pTrace->surface = pTraceInfo->m_pBSPData->nullsurface;
+						pTrace->surface = pTraceInfo->m_pBSPData->GetNullSurface();
 					}
 				}
 			}
@@ -1209,7 +1195,7 @@ void FASTCALL CM_ClipBoxToBrush( TraceInfo_t * RESTRICT pTraceInfo, const cbrush
 {
 	if ( brush->IsBox() )
 	{
-		cboxbrush_t *pBox = &pTraceInfo->m_pBSPData->map_boxbrushes[brush->GetBox()];
+		cboxbrush_t *pBox = pTraceInfo->m_pBSPData->GetBoxBrushes(brush->GetBox());
 		IntersectRayWithBoxBrush( pTraceInfo, brush, pBox );
 		return;
 	}
@@ -1234,7 +1220,7 @@ void FASTCALL CM_ClipBoxToBrush( TraceInfo_t * RESTRICT pTraceInfo, const cbrush
 
 	float dist;
 
-	cbrushside_t *  RESTRICT side = &pTraceInfo->m_pBSPData->map_brushsides[brush->firstbrushside];
+	cbrushside_t *  RESTRICT side = pTraceInfo->m_pBSPData->GetBrushesSide(brush->firstbrushside);
 	for ( const cbrushside_t * const sidelimit = side + brush->numsides; side < sidelimit; side++ )
 	{
 		cplane_t *plane = side->plane;
@@ -1346,7 +1332,7 @@ void FASTCALL CM_ClipBoxToBrush( TraceInfo_t * RESTRICT pTraceInfo, const cbrush
 				if (trace->fraction <= leavefrac)
 				{
 					trace->fraction = 1.0f;
-					trace->surface = pTraceInfo->m_pBSPData->nullsurface;
+					trace->surface = pTraceInfo->m_pBSPData->GetNullSurface();
 				}
 			}
 		}
@@ -1395,7 +1381,7 @@ static void FASTCALL CM_TestBoxInBrush( TraceInfo_t *pTraceInfo, const cbrush_t 
 {
 	if ( brush->IsBox())
 	{
-		cboxbrush_t *pBox = &pTraceInfo->m_pBSPData->map_boxbrushes[brush->GetBox()];
+		cboxbrush_t *pBox = pTraceInfo->m_pBSPData->GetBoxBrushes(brush->GetBox());
 		if ( !IsTraceBoxIntersectingBoxBrush( pTraceInfo, pBox ) )
 			return;
 	}
@@ -1416,7 +1402,7 @@ static void FASTCALL CM_TestBoxInBrush( TraceInfo_t *pTraceInfo, const cbrush_t 
 
 		for (i=0 ; i<brush->numsides ; i++)
 		{
-			side = &pTraceInfo->m_pBSPData->map_brushsides[brush->firstbrushside+i];
+			side = pTraceInfo->m_pBSPData->GetBrushesSide(brush->firstbrushside+i);
 			plane = side->plane;
 
 			// FIXME: special case for axial
@@ -1469,23 +1455,23 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 {
 	VPROF("CM_TraceToLeaf");
 	// get the leaf
-	cleaf_t * RESTRICT pLeaf = &pTraceInfo->m_pBSPData->map_leafs[ndxLeaf];
+	cleaf_t * RESTRICT pLeaf = pTraceInfo->m_pBSPData->GetLeafs(ndxLeaf);
 
 	//
 	// trace ray/box sweep against all brushes in this leaf
 	//
 	const int numleafbrushes = pLeaf->numleafbrushes;
 	const int lastleafbrush = pLeaf->firstleafbrush + numleafbrushes;
-	const CRangeValidatedArray<unsigned short> &map_leafbrushes = pTraceInfo->m_pBSPData->map_leafbrushes;
-	CRangeValidatedArray<cbrush_t> & 			map_brushes = pTraceInfo->m_pBSPData->map_brushes;
+	//const CRangeValidatedArray<unsigned short> &map_leafbrushes = pTraceInfo->m_pBSPData->map_leafbrushes;
+	//CRangeValidatedArray<cbrush_t> & 			map_brushes = pTraceInfo->m_pBSPData->map_brushes;
 	TraceCounter_t * RESTRICT pCounters = pTraceInfo->GetBrushCounters();
 	TraceCounter_t count = pTraceInfo->GetCount();
 	for( int ndxLeafBrush = pLeaf->firstleafbrush; ndxLeafBrush < lastleafbrush; ndxLeafBrush++ )
 	{
 		// get the current brush
-		int ndxBrush = map_leafbrushes[ndxLeafBrush];
+		int ndxBrush = pTraceInfo->m_pBSPData->GetLeafBrushes(ndxLeafBrush);
 
-		cbrush_t * RESTRICT pBrush = &map_brushes[ndxBrush];
+		cbrush_t * RESTRICT pBrush = pTraceInfo->m_pBSPData->GetBrushes(ndxBrush);
 
 		// make sure we only check this brush once per trace/stab
 		if ( !pTraceInfo->Visit( pBrush, ndxBrush, count, pCounters ) )
@@ -1514,7 +1500,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 
 			if ( pBrush->IsBox())
 			{
-				cboxbrush_t *pBox = &pTraceInfo->m_pBSPData->map_boxbrushes[pBrush->GetBox()];
+				cboxbrush_t *pBox = pTraceInfo->m_pBSPData->GetBoxBrushes(pBrush->GetBox());
 				for (int i=0 ; i<6 && !isNoDraw ;i++)
 				{
 					csurface_t *surface = pTraceInfo->m_pBSPData->GetSurfaceAtIndex( pBox->surfaceIndex[i] );
@@ -1527,7 +1513,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 			}
 			else
 			{
-				cbrushside_t *side = &pTraceInfo->m_pBSPData->map_brushsides[pBrush->firstbrushside];
+				cbrushside_t *side = pTraceInfo->m_pBSPData->GetBrushesSide(pBrush->firstbrushside);
 				for (int i=0 ; i<pBrush->numsides && !isNoDraw ;i++, side++)
 				{
 					csurface_t *surface = pTraceInfo->m_pBSPData->GetSurfaceAtIndex( side->surfaceIndex );
@@ -1586,7 +1572,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 			// against four boxes simultaneously.
 			for( int i = 0; i < pLeaf->dispCount; i++ )
 			{
-				int dispIndex = pTraceInfo->m_pBSPData->map_dispList[pLeaf->dispListStart + i];
+				int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
 				alignedbbox_t * RESTRICT pDispBounds = &g_pDispBounds[dispIndex];
 
 				// only collide with objects you are interested in
@@ -1626,7 +1612,7 @@ void FASTCALL CM_TraceToLeaf( TraceInfo_t * RESTRICT pTraceInfo, int ndxLeaf, fl
 			// utterly nonoptimal FPU pathway
 			for( int i = 0; i < pLeaf->dispCount; i++ )
 			{
-				int dispIndex = pTraceInfo->m_pBSPData->map_dispList[pLeaf->dispListStart + i];
+				int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
 				alignedbbox_t * RESTRICT pDispBounds = &g_pDispBounds[dispIndex];
 
 				// only collide with objects you are interested in
@@ -1671,7 +1657,7 @@ CM_TestInLeaf
 static void FASTCALL CM_TestInLeaf( TraceInfo_t *pTraceInfo, int ndxLeaf )
 {
 	// get the leaf
-	cleaf_t *pLeaf = &pTraceInfo->m_pBSPData->map_leafs[ndxLeaf];
+	cleaf_t *pLeaf = pTraceInfo->m_pBSPData->GetLeafs(ndxLeaf);
 
 	//
 	// trace ray/box sweep against all brushes in this leaf
@@ -1681,9 +1667,9 @@ static void FASTCALL CM_TestInLeaf( TraceInfo_t *pTraceInfo, int ndxLeaf )
 	for( int ndxLeafBrush = 0; ndxLeafBrush < pLeaf->numleafbrushes; ndxLeafBrush++ )
 	{
 		// get the current brush
-		int ndxBrush = pTraceInfo->m_pBSPData->map_leafbrushes[pLeaf->firstleafbrush+ndxLeafBrush];
+		int ndxBrush = pTraceInfo->m_pBSPData->GetLeafBrushes(pLeaf->firstleafbrush+ndxLeafBrush);
 
-		cbrush_t *pBrush = &pTraceInfo->m_pBSPData->map_brushes[ndxBrush];
+		cbrush_t *pBrush = pTraceInfo->m_pBSPData->GetBrushes(ndxBrush);
 
 		// make sure we only check this brush once per trace/stab
 		if ( !pTraceInfo->Visit( pBrush, ndxBrush, count, pCounters ) )
@@ -1772,7 +1758,7 @@ void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode,
 	{
 		while( iNode >= 0 )
 		{
-			pNode = pBSPData->map_rootnode + iNode;
+			pNode = pBSPData->GetNodes(iNode);
 			pPlane = pNode->plane;
 
 			if ( pPlane->type < 3 )
@@ -1808,7 +1794,7 @@ void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode,
 	{
 		while( iNode >= 0 )
 		{
-			pNode = pBSPData->map_rootnode + iNode;
+			pNode = pBSPData->GetNodes(iNode);
 			pPlane = pNode->plane;
 
 			if ( pPlane->type < 3 )
@@ -1900,7 +1886,7 @@ void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode,
 void CM_RayLeafnums( const Ray_t &ray, int *pLeafList, int nMaxLeafCount, int &nLeafCount  )
 {
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
-	if ( !pBSPData->numnodes )
+	if ( !pBSPData->GetNodesCount() )
 		return;
 
 	Vector vecEnd;
@@ -1938,7 +1924,7 @@ static void FASTCALL CM_RecursiveHullCheckImpl( TraceInfo_t *pTraceInfo, int num
 
 	while( num >= 0 )
 	{
-		node = pTraceInfo->m_pBSPData->map_rootnode + num;
+		node = pTraceInfo->m_pBSPData->GetNodes(num);
 		plane = node->plane;
 		byte type = plane->type;
 		float dist = plane->dist;
@@ -2044,7 +2030,7 @@ void CM_ClearTrace( trace_t *trace )
 	memset( trace, 0, sizeof(*trace));
 	trace->fraction = 1.f;
 	trace->fractionleftsolid = 0;
-	trace->surface = CCollisionBSPData::nullsurface;
+	trace->surface = GetCollisionBSPData()->GetNullSurface();
 }
 
 
@@ -2074,7 +2060,7 @@ static inline void CM_UnsweptBoxTrace( TraceInfo_t *pTraceInfo, const Ray_t& ray
 	numleafs = CM_BoxLeafnums ( context, ray.m_Start, ray.m_Extents+Vector(1,1,1), headnode);
 	for (i=0 ; i<numleafs ; i++)
 	{
-		if ((pTraceInfo->m_pBSPData->map_leafs[leafs[i]].contents & CONTENTS_SOLID) == 0)
+		if ((pTraceInfo->m_pBSPData->GetLeafs(leafs[i])->contents & CONTENTS_SOLID) == 0)
 		{
 			bFoundNonSolidLeaf = true;
 		}
@@ -2108,7 +2094,7 @@ void CM_BoxTraceAgainstLeafList( const Ray_t &ray, int *pLeafList, int nLeafCoun
 	pTraceInfo->m_pBSPData = GetCollisionBSPData();
 
 	// Check if the map is loaded.
-	if ( !pTraceInfo->m_pBSPData->numnodes )	
+	if ( !pTraceInfo->m_pBSPData->GetNodesCount() )	
 	{
 		trace = pTraceInfo->m_trace;
 		EndTrace( pTraceInfo );
@@ -2137,7 +2123,7 @@ void CM_BoxTraceAgainstLeafList( const Ray_t &ray, int *pLeafList, int nLeafCoun
 		bool bFoundNonSolidLeaf = false;
 		for ( int iLeaf = 0; iLeaf < nLeafCount; ++iLeaf )
 		{
-			if ( ( pTraceInfo->m_pBSPData->map_leafs[pLeafList[iLeaf]].contents & CONTENTS_SOLID ) == 0 )
+			if ( ( pTraceInfo->m_pBSPData->GetLeafs(pLeafList[iLeaf])->contents & CONTENTS_SOLID ) == 0 )
 			{
 				bFoundNonSolidLeaf = true;
 			}
@@ -2196,7 +2182,7 @@ void CM_BoxTrace( const Ray_t& ray, int headnode, int brushmask, bool computeEnd
 	pTraceInfo->m_pBSPData = GetCollisionBSPData();
 
 	// check if the map is not loaded
-	if (!pTraceInfo->m_pBSPData->numnodes)	
+	if (!pTraceInfo->m_pBSPData->GetNodesCount())	
 	{
 		tr = pTraceInfo->m_trace;
 		EndTrace( pTraceInfo );
@@ -2306,7 +2292,7 @@ PVS / PAS
 //-----------------------------------------------------------------------------
 void CM_NullVis( CCollisionBSPData *pBSPData, byte *out )
 {
-	int numClusterBytes = (pBSPData->numclusters+7)>>3;	
+	int numClusterBytes = (pBSPData->GetClustersCount() + 7) >> 3;
 	byte *out_p = out;
 
 	while (numClusterBytes)
@@ -2332,7 +2318,7 @@ void CM_DecompressVis( CCollisionBSPData *pBSPData, int cluster, int visType, by
 		Assert( false ); // Shouldn't ever happen.
 	}
 
-	if ( cluster > pBSPData->numclusters || cluster < 0 )
+	if ( cluster > pBSPData->GetClustersCount() || cluster < 0)
 	{
 		// This can happen if this is called while the level is loading. See Map_VisCurrentCluster.
 		CM_NullVis( pBSPData, out );
@@ -2340,14 +2326,14 @@ void CM_DecompressVis( CCollisionBSPData *pBSPData, int cluster, int visType, by
 	}
 
 	// no vis info, so make all visible
-	if ( !pBSPData->numvisibility || !pBSPData->map_vis )
+	if ( !pBSPData->GetVisibilityCount() || !pBSPData->GetVis())
 	{	
 		CM_NullVis( pBSPData, out );
 		return;		
 	}
 
-	byte *in = ((byte *)pBSPData->map_vis) + pBSPData->map_vis->bitofs[cluster][visType];
-	numClusterBytes = (pBSPData->numclusters+7)>>3;	
+	byte *in = ((byte *)pBSPData->GetVis()) + pBSPData->GetVis()->bitofs[cluster][visType];
+	numClusterBytes = (pBSPData->GetClustersCount() + 7) >> 3;
 	out_p = out;
 
 	// no vis info, so make all visible
@@ -2400,13 +2386,13 @@ const byte *CM_Vis( byte *dest, int destlen, int cluster, int visType )
 
 	if ( cluster == -1 )
 	{
-		int len = (pBSPData->numclusters+7)>>3;
+		int len = (pBSPData->GetClustersCount() + 7) >> 3;
 		if ( len > destlen )
 		{
 			Sys_Error( "CM_Vis:  buffer not big enough (%i but need %i)\n",
 				destlen, len );
 		}
-		memset( dest, 0, (pBSPData->numclusters+7)>>3 );
+		memset( dest, 0, (pBSPData->GetClustersCount() + 7) >> 3);
 	}
 	else
 	{
@@ -2441,7 +2427,7 @@ void FloodArea_r (CCollisionBSPData *pBSPData, carea_t *area, int floodnum)
 	int		i;
 	dareaportal_t	*p;
 
-	if (area->floodvalid == pBSPData->floodvalid)
+	if (area->floodvalid == pBSPData->GetFloodvalid())
 	{
 		if (area->floodnum == floodnum)
 			return;
@@ -2449,13 +2435,13 @@ void FloodArea_r (CCollisionBSPData *pBSPData, carea_t *area, int floodnum)
 	}
 
 	area->floodnum = floodnum;
-	area->floodvalid = pBSPData->floodvalid;
-	p = &pBSPData->map_areaportals[area->firstareaportal];
+	area->floodvalid = pBSPData->GetFloodvalid();
+	p = pBSPData->GetAreaPortals(area->firstareaportal);
 	for (i=0 ; i<area->numareaportals ; i++, p++)
 	{
-		if (pBSPData->portalopen[p->m_PortalKey])
+		if (pBSPData->GetPortalOpenState(p->m_PortalKey))
 		{
-			FloodArea_r (pBSPData, &pBSPData->map_areas[p->otherarea], floodnum);
+			FloodArea_r (pBSPData, pBSPData->GetArea(p->otherarea), floodnum);
 		}
 	}
 }
@@ -2474,14 +2460,14 @@ void	FloodAreaConnections ( CCollisionBSPData *pBSPData )
 	int		floodnum;
 
 	// all current floods are now invalid
-	pBSPData->floodvalid++;
+	pBSPData->IncFloodvalid();
 	floodnum = 0;
 
 	// area 0 is not used
-	for (i=1 ; i<pBSPData->numareas ; i++)
+	for (i=1 ; i<pBSPData->GetAreaCount() ; i++)
 	{
-		area = &pBSPData->map_areas[i];
-		if (area->floodvalid == pBSPData->floodvalid)
+		area = pBSPData->GetArea(i);
+		if (area->floodvalid == pBSPData->GetFloodvalid())
 			continue;		// already flooded into
 		floodnum++;
 		FloodArea_r (pBSPData, area, floodnum);
@@ -2495,12 +2481,12 @@ void CM_SetAreaPortalState( int portalnum, int isOpen )
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	// Portalnums in the BSP file are 1-based instead of 0-based
-	if (portalnum > pBSPData->numareaportals)
+	if (portalnum > pBSPData->GetAreaPortalsCount())
 	{
 		Sys_Error( "portalnum > numareaportals");
 	}
 
-	pBSPData->portalopen[portalnum] = (isOpen != 0);
+	pBSPData->SetPortalOpenState(portalnum, (isOpen != 0));
 	FloodAreaConnections (pBSPData);
 }
 
@@ -2515,10 +2501,10 @@ void CM_SetAreaPortalStates( const int *portalnums, const int *isOpen, int nPort
 	for ( int i=0; i < nPortals; i++ )
 	{
 		// Portalnums in the BSP file are 1-based instead of 0-based
-		if (portalnums[i] > pBSPData->numareaportals)
+		if (portalnums[i] > pBSPData->GetAreaPortalsCount())
 			Sys_Error( "portalnum > numareaportals");
 
-		pBSPData->portalopen[portalnums[i]] = (isOpen[i] != 0);
+		pBSPData->SetPortalOpenState(portalnums[i], (isOpen[i] != 0));
 	}
 
 	FloodAreaConnections( pBSPData );
@@ -2532,12 +2518,12 @@ bool	CM_AreasConnected (int area1, int area2)
 	if (map_noareas.GetInt())
 		return true;
 
-	if (area1 >= pBSPData->numareas || area2 >= pBSPData->numareas)
+	if (area1 >= pBSPData->GetAreaCount() || area2 >= pBSPData->GetAreaCount())
 	{
-		Sys_Error( "area(1==%i, 2==%i) >= numareas (%i):  Check if engine->ResetPVS() was called from ClientSetupVisibility", area1, area2,  pBSPData->numareas );
+		Sys_Error( "area(1==%i, 2==%i) >= numareas (%i):  Check if engine->ResetPVS() was called from ClientSetupVisibility", area1, area2,  pBSPData->GetAreaCount() );
 	}
 
-	return (pBSPData->map_areas[area1].floodnum == pBSPData->map_areas[area2].floodnum);
+	return (pBSPData->GetArea(area1)->floodnum == pBSPData->GetArea(area2)->floodnum);
 }
 
 
@@ -2560,7 +2546,7 @@ int CM_WriteAreaBits ( byte *buffer, int buflen, int area )
 	// get the current collision bsp -- there is only one!
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	bytes = (pBSPData->numareas+7)>>3;
+	bytes = (pBSPData->GetAreaCount() + 7) >> 3;
 
 	if ( map_noareas.GetInt() )
 	{	
@@ -2576,10 +2562,10 @@ int CM_WriteAreaBits ( byte *buffer, int buflen, int area )
 
 		Q_memset( buffer, 0, 32 );
 
-		floodnum = pBSPData->map_areas[area].floodnum;
-		for (i=0 ; i<pBSPData->numareas ; i++)
+		floodnum = pBSPData->GetArea(area)->floodnum;
+		for (i=0 ; i<pBSPData->GetAreaCount() ; i++)
 		{
-			if (pBSPData->map_areas[i].floodnum == floodnum || !area)
+			if (pBSPData->GetArea(i)->floodnum == floodnum || !area)
 				buffer[i>>3] |= 1<<(i&7);
 		}
 	}
@@ -2594,21 +2580,21 @@ bool CM_GetAreaPortalPlane( const Vector &vViewOrigin, int portalKey, VPlane *pP
 
 	// First, find the leaf and area the viewer is in.
 	int iLeaf = CM_PointLeafnum( vViewOrigin );
-	if( iLeaf < 0 || iLeaf >= pBSPData->numleafs )
+	if( iLeaf < 0 || iLeaf >= pBSPData->GetLeafsCount() )
 		return false;
 
-	int iArea = pBSPData->map_leafs[iLeaf].area;
-	if( iArea < 0 || iArea >= pBSPData->numareas )
+	int iArea = pBSPData->GetLeafs(iLeaf)->area;
+	if( iArea < 0 || iArea >= pBSPData->GetAreaCount() )
 		return false;
 
-	carea_t *pArea = &pBSPData->map_areas[iArea];
+	carea_t *pArea = pBSPData->GetArea(iArea);
 	for( int i=0; i < pArea->numareaportals; i++ )
 	{
-		dareaportal_t *pPortal = &pBSPData->map_areaportals[pArea->firstareaportal + i];
+		dareaportal_t *pPortal = pBSPData->GetAreaPortals(pArea->firstareaportal + i);
 
 		if( pPortal->m_PortalKey == portalKey )
 		{
-			cplane_t *pMapPlane = &pBSPData->map_planes[pPortal->planenum];
+			cplane_t *pMapPlane = pBSPData->GetPlane(pPortal->planenum);
 			pPlane->m_Normal = pMapPlane->normal;
 			pPlane->m_Dist = pMapPlane->dist;
 			return true;
@@ -2639,7 +2625,7 @@ bool CM_HeadnodeVisible (int nodenum, const byte *visbits, int vissize )
 	if (nodenum < 0)
 	{
 		leafnum = -1-nodenum;
-		cluster = pBSPData->map_leafs[leafnum].cluster;
+		cluster = pBSPData->GetLeafs(leafnum)->cluster;
 		if (cluster == -1)
 			return false;
 		if (visbits[cluster>>3] & (1<<(cluster&7)))
@@ -2647,7 +2633,7 @@ bool CM_HeadnodeVisible (int nodenum, const byte *visbits, int vissize )
 		return false;
 	}
 
-	node = &pBSPData->map_rootnode[nodenum];
+	node = pBSPData->GetNodes(nodenum);
 	if (CM_HeadnodeVisible(node->children[0], visbits, vissize ))
 		return true;
 	return CM_HeadnodeVisible(node->children[1], visbits, vissize );
@@ -2751,14 +2737,14 @@ void CM_SetupAreaFloodNums( byte areaFloodNums[MAX_MAP_AREAS], int *pNumAreas )
 {
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	*pNumAreas = pBSPData->numareas;
-	if ( pBSPData->numareas > MAX_MAP_AREAS )
+	*pNumAreas = pBSPData->GetAreaCount();
+	if ( pBSPData->GetAreaCount() > MAX_MAP_AREAS)
 		Error( "pBSPData->numareas > MAX_MAP_AREAS" );
 
-	for ( int i=0; i < pBSPData->numareas; i++ )
+	for ( int i=0; i < pBSPData->GetAreaCount(); i++ )
 	{
 		Assert( pBSPData->map_areas[i].floodnum < MAX_MAP_AREAS );
-		areaFloodNums[i] = (byte)pBSPData->map_areas[i].floodnum;
+		areaFloodNums[i] = (byte)pBSPData->GetArea(i)->floodnum;
 	}
 }
 

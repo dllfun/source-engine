@@ -1461,8 +1461,8 @@ void Mod_LoadTexdata( void )
 {
 	// Don't bother loading these again; they're already stored in the collision model
 	// which is guaranteed to be loaded at this point
-	s_pMap->numtexdata = GetCollisionBSPData()->numtextures;
-	s_pMap->texdata = GetCollisionBSPData()->map_surfaces.Base();
+	s_pMap->numtexdata = GetCollisionBSPData()->GetTexturesCount();
+	s_pMap->texdata = GetCollisionBSPData()->GetSurface();
 }
 
 
@@ -2361,15 +2361,15 @@ void Mod_LoadLeafs( void )
 	}
 
 	worldbrushdata_t *pMap = lh.GetMap();
-	cleaf_t *pCLeaf = GetCollisionBSPData()->map_leafs.Base();
+	cleaf_t *pCLeaf = GetCollisionBSPData()->GetLeafs();
 	for ( int i = 0; i < pMap->numleafs; i++ )
 	{
 		pMap->leafs[i].dispCount = pCLeaf[i].dispCount;
 		pMap->leafs[i].dispListStart = pCLeaf[i].dispListStart;
 	}
 	// HACKHACK: Copy over the shared global list here.  Hunk_Alloc a copy?
-	pMap->m_pDispInfoReferences = GetCollisionBSPData()->map_dispList.Base();
-	pMap->m_nDispInfoReferences = GetCollisionBSPData()->numdisplist;
+	pMap->m_pDispInfoReferences = GetCollisionBSPData()->GetDispListBase();
+	pMap->m_nDispInfoReferences = GetCollisionBSPData()->GetDispListCount();
 }
 
 //-----------------------------------------------------------------------------
@@ -2683,8 +2683,8 @@ void Mod_LoadSurfedges( medge_t *pedges )
 void Mod_LoadPlanes( void )
 {
 	// Don't bother loading them, they're already stored
-	s_pMap->planes = GetCollisionBSPData()->map_planes.Base();
-	s_pMap->numplanes = GetCollisionBSPData()->numplanes;
+	s_pMap->planes = GetCollisionBSPData()->GetPlanes();
+	s_pMap->numplanes = GetCollisionBSPData()->GetPlanesCount();
 }
 
 

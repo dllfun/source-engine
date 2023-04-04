@@ -1375,7 +1375,7 @@ SkyboxVisibility_t CEngineClient::IsSkyboxVisibleFromPoint( const Vector &vecPoi
 		return SKYBOX_3DSKYBOX_VISIBLE;
 
 	int nLeaf = CM_PointLeafnum( vecPoint );
-	int nFlags = GetCollisionBSPData()->map_leafs[nLeaf].flags;
+	int nFlags = GetCollisionBSPData()->GetLeafs(nLeaf)->flags;
 	if ( nFlags & LEAF_FLAGS_SKY )
 		return SKYBOX_3DSKYBOX_VISIBLE;
 	return ( nFlags & LEAF_FLAGS_SKY2D ) ? SKYBOX_2DSKYBOX_VISIBLE : SKYBOX_NOT_VISIBLE;

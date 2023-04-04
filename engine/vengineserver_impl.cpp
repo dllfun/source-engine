@@ -1670,20 +1670,20 @@ public:
 	virtual int GetClusterCount()
 	{
 		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->map_vis )
-			return pBSPData->map_vis->numclusters;
+		if ( pBSPData && pBSPData->GetVis() )
+			return pBSPData->GetVis()->numclusters;
 		return 0;
 	}
 
 	virtual int GetAllClusterBounds( bbox_t *pBBoxList, int maxBBox )
 	{
 		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->map_vis && host_state.worldmodel->brush.pShared)
+		if ( pBSPData && pBSPData->GetVis() && host_state.worldmodel->brush.pShared)
 		{
 			// clamp to max clusters in the map
-			if ( maxBBox > pBSPData->map_vis->numclusters )
+			if ( maxBBox > pBSPData->GetVis()->numclusters)
 			{
-				maxBBox = pBSPData->map_vis->numclusters;
+				maxBBox = pBSPData->GetVis()->numclusters;
 			}
 			// reset all of the bboxes
 			for ( int i =  0; i < maxBBox; i++ )
@@ -1705,7 +1705,7 @@ public:
 				}
 			}
 
-			return pBSPData->map_vis->numclusters;
+			return pBSPData->GetVis()->numclusters;
 		}
 		return 0;
 	}

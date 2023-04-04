@@ -535,8 +535,8 @@ static void FASTCALL GetBrushesInAABB_ParseLeaf( const Vector *pExtents, CCollis
 {
 	for( unsigned int i = 0; i != pLeaf->numleafbrushes; ++i )
 	{
-		int iBrushNumber = pBSPData->map_leafbrushes[pLeaf->firstleafbrush + i];
-		cbrush_t *pBrush = &pBSPData->map_brushes[iBrushNumber];
+		int iBrushNumber = pBSPData->GetLeafBrushes(pLeaf->firstleafbrush + i);
+		cbrush_t *pBrush = pBSPData->GetBrushes(iBrushNumber);
 
 		if( pCounters[iBrushNumber] ) 
 			continue;
@@ -548,7 +548,7 @@ static void FASTCALL GetBrushesInAABB_ParseLeaf( const Vector *pExtents, CCollis
 
 		if ( pBrush->IsBox() )
 		{
-			cboxbrush_t *pBox = &pBSPData->map_boxbrushes[pBrush->GetBox()];
+			cboxbrush_t *pBox = pBSPData->GetBoxBrushes(pBrush->GetBox());
 			if ( IsBoxIntersectingBox(pBox->mins, pBox->maxs, pExtents[0], pExtents[7]) )
 			{
 				pOutput->AddToTail(iBrushNumber);
@@ -559,7 +559,7 @@ static void FASTCALL GetBrushesInAABB_ParseLeaf( const Vector *pExtents, CCollis
 			unsigned int j;
 			for( j = 0; j != pBrush->numsides; ++j )
 			{
-				cplane_t *pPlane = pBSPData->map_brushsides[pBrush->firstbrushside + j].plane;
+				cplane_t *pPlane = pBSPData->GetBrushesSide(pBrush->firstbrushside + j)->plane;
 
 				if( (pExtents[pPlane->signbits].Dot( pPlane->normal ) - pPlane->dist) > 0.0f )
 					break; //the bounding box extent that was most likely to be encapsulated by the plane is outside the halfspace, brush not in bbox
@@ -586,14 +586,14 @@ void CEngineTrace::GetBrushesInAABB( const Vector &vMins, const Vector &vMaxs, C
 		ptBBoxExtents[i].z = (i & (1<<2)) ? (vMaxs.z) : (vMins.z);
 	}	
 
-	int *pLeafList = (int *)stackalloc( pBSPData->numleafs * 2 * sizeof( int ) ); // *2 just in case
-	int iNumLeafs = CM_BoxLeafnums( vMins, vMaxs, pLeafList, pBSPData->numleafs * 2, NULL );
+	int *pLeafList = (int *)stackalloc( pBSPData->GetLeafsCount() * 2 * sizeof( int ) ); // *2 just in case
+	int iNumLeafs = CM_BoxLeafnums( vMins, vMaxs, pLeafList, pBSPData->GetLeafsCount() * 2, NULL );
 
 	CUtlVector<int> counters;
-	counters.SetSize( pBSPData->numbrushes );
-	memset( counters.Base(), 0, pBSPData->numbrushes * sizeof(int) );
+	counters.SetSize( pBSPData->GetBrushesCount() );
+	memset( counters.Base(), 0, pBSPData->GetBrushesCount() * sizeof(int) );
 	for( int i = 0; i != iNumLeafs; ++i )
-		GetBrushesInAABB_ParseLeaf( ptBBoxExtents, pBSPData, &pBSPData->map_leafs[pLeafList[i]], pOutput, iContentsMask, counters.Base() );
+		GetBrushesInAABB_ParseLeaf( ptBBoxExtents, pBSPData, pBSPData->GetLeafs(pLeafList[i]), pOutput, iContentsMask, counters.Base() );
 }
 
 
@@ -609,8 +609,8 @@ CPhysCollide* CEngineTrace::GetCollidableFromDisplacementsInAABB( const Vector& 
 {
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	int *pLeafList = (int *)stackalloc( pBSPData->numleafs * sizeof( int ) ); 
-	int iLeafCount = CM_BoxLeafnums( vMins, vMaxs, pLeafList, pBSPData->numleafs, NULL );
+	int *pLeafList = (int *)stackalloc( pBSPData->GetLeafsCount() * sizeof( int ) ); 
+	int iLeafCount = CM_BoxLeafnums( vMins, vMaxs, pLeafList, pBSPData->GetLeafsCount(), NULL);
 
 	// Get all the triangles for displacement surfaces in this box, add them to a polysoup
 	CPhysPolysoup *pDispCollideSoup = physcollision->PolysoupCreate();
@@ -627,12 +627,12 @@ CPhysCollide* CEngineTrace::GetCollidableFromDisplacementsInAABB( const Vector& 
 	for ( int i = 0; i < iLeafCount; ++i )
 	{
 		// Current leaf
-		cleaf_t curLeaf = pBSPData->map_leafs[ pLeafList[i] ];
+		cleaf_t* curLeaf = pBSPData->GetLeafs( pLeafList[i] );
 
 		// Test box against all displacements in the leaf.
-		for( int k = 0; k < curLeaf.dispCount; k++ )
+		for( int k = 0; k < curLeaf->dispCount; k++ )
 		{
-			int dispIndex = pBSPData->map_dispList[curLeaf.dispListStart + k];
+			int dispIndex = pBSPData->GetDispList(curLeaf->dispListStart + k);
 			CDispCollTree *pDispTree = &g_pDispCollTrees[dispIndex];
 		
 			// make sure we only check this brush once per trace/stab
@@ -721,10 +721,10 @@ bool CEngineTrace::GetBrushInfo( int iBrush, CUtlVector<Vector4D> *pPlanesOut, i
 {
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if( iBrush < 0 || iBrush >= pBSPData->numbrushes )
+	if( iBrush < 0 || iBrush >= pBSPData->GetBrushesCount() )
 		return false;
 
-	cbrush_t *pBrush = &pBSPData->map_brushes[iBrush];
+	cbrush_t *pBrush = pBSPData->GetBrushes(iBrush);
 
 	if( pPlanesOut )
 	{
@@ -732,7 +732,7 @@ bool CEngineTrace::GetBrushInfo( int iBrush, CUtlVector<Vector4D> *pPlanesOut, i
 		Vector4D p;
 		if ( pBrush->IsBox() )
 		{
-			cboxbrush_t *pBox = &pBSPData->map_boxbrushes[pBrush->GetBox()];
+			cboxbrush_t *pBox = pBSPData->GetBoxBrushes(pBrush->GetBox());
 
 			for ( int i = 0; i < 6; i++ )
 			{
@@ -752,10 +752,10 @@ bool CEngineTrace::GetBrushInfo( int iBrush, CUtlVector<Vector4D> *pPlanesOut, i
 		}
 		else
 		{
-			cbrushside_t *stopside = &pBSPData->map_brushsides[pBrush->firstbrushside];
+			cbrushside_t *stopside = pBSPData->GetBrushesSide(pBrush->firstbrushside);
 			// Note:  Don't do this in the [] since the final one on the last brushside will be past the end of the array end by one index
 			stopside += pBrush->numsides;
-			for( cbrushside_t *side = &pBSPData->map_brushsides[pBrush->firstbrushside]; side != stopside; ++side )
+			for( cbrushside_t *side = pBSPData->GetBrushesSide(pBrush->firstbrushside); side != stopside; ++side )
 			{
 				Vector4D pVec( side->plane->normal.x, side->plane->normal.y, side->plane->normal.z, side->plane->dist );
 				pPlanesOut->AddToTail( pVec );
@@ -777,7 +777,7 @@ bool CEngineTrace::PointOutsideWorld( const Vector &ptTest )
 
 	CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if( pBSPData->map_leafs[iLeaf].cluster == -1 )
+	if( pBSPData->GetLeafs(iLeaf)->cluster == -1 )
 		return true;
 
 	return false;
@@ -807,7 +807,7 @@ public:
 	}
 	virtual unsigned int GetContents( int convexGameData )
 	{
-		return m_pBSPData->map_brushes[convexGameData].contents;
+		return m_pBSPData->GetBrushes(convexGameData)->contents;
 	}
 
 private:

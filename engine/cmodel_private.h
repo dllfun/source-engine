@@ -13,6 +13,7 @@
 #include "bitvec.h"
 #include "bspfile.h"
 #include "utlbuffer.h"
+#include "modelloader.h"
 
 #include "filesystem.h"
 #include "filesystem_engine.h"
@@ -303,6 +304,50 @@ const int SURFACE_INDEX_INVALID = 0xFFFF;
 class CCollisionBSPData
 {
 public:
+	int GetBrushesCount();
+	int GetCModelsCount();
+	cmodel_t* GetCModels(int index);
+	cleaf_t* GetLeafs(int index);
+	unsigned short GetLeafBrushes(int index);
+	cbrush_t* GetBrushes(int index);
+	cnode_t* GetNodes(int index);
+	int GetClustersCount();
+	char* GetEntityString();
+	void DiscardEntityString();
+	void InitPortalOpenState();
+	char* GetMapName();
+	int GetPlanesCount();
+	cboxbrush_t* GetBoxBrushes(int index);
+	cbrushside_t* GetBrushesSide(int index);
+	int GetNodesCount();
+	csurface_t GetNullSurface();
+	csurface_t* GetSurfaceAtIndex(unsigned short surfaceIndex);
+	int GetVisibilityCount();
+	dvis_t* GetVis();
+	int GetFloodvalid();
+	dareaportal_t* GetAreaPortals(int index);
+	bool GetPortalOpenState(int index);
+	void SetPortalOpenState(int index, bool state);
+	carea_t* GetArea(int index);
+	void IncFloodvalid();
+	int GetAreaCount();
+	int GetAreaPortalsCount();
+	int GetLeafsCount();
+	cplane_t* GetPlane(int index);
+	void Init();
+	void Destory();
+	bool Load(const char* pName);
+	CRangeValidatedArray<unsigned short>* GetDispList();
+	void SetDispListCount(int count);
+	unsigned short GetDispList(int index);
+	int GetEntityCharsCount();
+	int GetTexturesCount();
+	csurface_t* GetSurface();
+	cleaf_t* GetLeafs();
+	unsigned short* GetDispListBase();
+	int GetDispListCount();
+	cplane_t* GetPlanes();
+private:
 	// This is sort of a hack, but it was a little too painful to do this any other way
 	// The goal of this dude is to allow us to override the tree with some
 	// other tree (or a subtree)
@@ -352,7 +397,58 @@ public:
 	int									numportalopen;
 	CRangeValidatedArray<bool>			portalopen;
 
-	csurface_t							*GetSurfaceAtIndex( unsigned short surfaceIndex );
+	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadTextures();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadTexinfo(
+		CUtlVector<unsigned short>& map_texinfo);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadLeafs_Version_0(CMapLoadHelper& lh);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadLeafs_Version_1(CMapLoadHelper& lh);
+	void CollisionBSPData_LoadLeafs();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadLeafBrushes();
+	//----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadPlanes();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadBrushes();
+	inline bool IsBoxBrush(const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes);
+	inline void ExtractBoxBrush(cboxbrush_t* pBox, const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes, CUtlVector<unsigned short>& map_texinfo);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadBrushSides(CUtlVector<unsigned short>& map_texinfo);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadSubmodels();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadNodes();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadAreas();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadAreaPortals();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadVisibility();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadEntityString();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadPhysics();
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadDispInfo();
 };
 
 //=============================================================================
@@ -362,8 +458,8 @@ public:
 class IPhysicsSurfaceProps;
 class IPhysicsCollision;
 
-extern IPhysicsSurfaceProps	*physprop;
-extern IPhysicsCollision	*physcollision;
+extern IPhysicsSurfaceProps* physprop;
+extern IPhysicsCollision* physcollision;
 
 //=============================================================================
 //

@@ -19,15 +19,15 @@ struct leafvis_t
 		CCollisionBSPData *pBSP = GetCollisionBSPData();
 		if ( pBSP )
 		{
-			numbrushes = pBSP->numbrushes;
-			numentitychars = pBSP->numentitychars;
+			numbrushes = pBSP->GetBrushesCount();
+			numentitychars = pBSP->GetEntityCharsCount();
 		}
 	}
 
 	bool IsValid()
 	{
 		CCollisionBSPData *pBSP = GetCollisionBSPData();
-		if ( !pBSP || numbrushes != pBSP->numbrushes || numentitychars != pBSP->numentitychars )
+		if ( !pBSP || numbrushes != pBSP->GetBrushesCount() || numentitychars != pBSP->GetEntityCharsCount())
 			return false;
 
 		return true;
@@ -361,8 +361,8 @@ int FindMinBrush( CCollisionBSPData *pBSPData, int nodenum, int brushIndex )
 		if (nodenum < 0)
 		{
 			int leafIndex = -1 - nodenum;
-			cleaf_t &leaf = pBSPData->map_leafs[leafIndex];
-			int firstbrush = pBSPData->map_leafbrushes[ leaf.firstleafbrush ];
+			cleaf_t* leaf = pBSPData->GetLeafs(leafIndex);
+			int firstbrush = pBSPData->GetLeafBrushes( leaf->firstleafbrush );
 			if ( firstbrush < brushIndex )
 			{
 				brushIndex = firstbrush;
@@ -370,9 +370,9 @@ int FindMinBrush( CCollisionBSPData *pBSPData, int nodenum, int brushIndex )
 			return brushIndex;
 		}
 
-		cnode_t &node = pBSPData->map_rootnode[nodenum];
-		brushIndex = FindMinBrush( pBSPData, node.children[0], brushIndex );
-		nodenum = node.children[1];
+		cnode_t* node = pBSPData->GetNodes(nodenum);
+		brushIndex = FindMinBrush( pBSPData, node->children[0], brushIndex );
+		nodenum = node->children[1];
 	}
 
 	return brushIndex;
@@ -395,20 +395,20 @@ void RecomputeClipbrushes( bool bEnabled )
 		g_ClipVis[v] = new leafvis_t;
 		g_ClipVis[v]->color.Init( v != 1 ? 1.0f : 0.5, 0.0f, v != 0 ? 1.0f : 0.0f );
 		CCollisionBSPData *pBSP = GetCollisionBSPData();
-		int lastBrush = pBSP->numbrushes; 
-		if ( pBSP->numcmodels > 1 )
+		int lastBrush = pBSP->GetBrushesCount(); 
+		if ( pBSP->GetCModelsCount() > 1)
 		{
-			lastBrush = FindMinBrush( pBSP, pBSP->map_cmodels[1].headnode, lastBrush );
+			lastBrush = FindMinBrush( pBSP, pBSP->GetCModels(1)->headnode, lastBrush );
 		}
 		for ( int i = 0; i < lastBrush; i++ )
 		{
-			cbrush_t *pBrush = &pBSP->map_brushes[i];
+			cbrush_t *pBrush = pBSP->GetBrushes(i);
 			if ( (pBrush->contents & (CONTENTS_PLAYERCLIP|CONTENTS_MONSTERCLIP)) == contents[v] )
 			{
 				CUtlVector<cplane_t> planeList;
 				if ( pBrush->IsBox() )
 				{
-					cboxbrush_t *pBox = &pBSP->map_boxbrushes[pBrush->GetBox()];
+					cboxbrush_t *pBox = pBSP->GetBoxBrushes(pBrush->GetBox());
 					for ( int idxSide = 0; idxSide < 3; idxSide++ )
 					{
 						Vector normal = vec3_origin;
@@ -421,7 +421,7 @@ void RecomputeClipbrushes( bool bEnabled )
 				{
 					for ( int j = 0; j < pBrush->numsides; j++ )
 					{
-						cbrushside_t *pSide = &pBSP->map_brushsides[pBrush->firstbrushside + j];
+						cbrushside_t *pSide = pBSP->GetBrushesSide(pBrush->firstbrushside + j);
 						if ( pSide->bBevel )
 							continue;
 						AddPlaneToList( planeList, pSide->plane->normal, pSide->plane->dist, true );
