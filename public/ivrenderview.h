@@ -26,7 +26,7 @@ class CViewSetup;
 class CEngineSprite;
 class IClientEntity;
 class IMaterial;
-struct model_t;
+class model_t;
 class IClientRenderable;
 
 

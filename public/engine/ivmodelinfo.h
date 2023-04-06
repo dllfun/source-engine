@@ -21,7 +21,7 @@
 class IMaterial;
 class KeyValues;
 struct vcollide_t;
-struct model_t;
+class model_t;
 class Vector;
 class QAngle;
 class CGameTrace;

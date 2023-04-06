@@ -10,7 +10,7 @@
 #pragma once
 #endif
 
-struct model_t;
+class model_t;
 class IMaterial;
 class IFileList;
 class IModelLoadCallback;

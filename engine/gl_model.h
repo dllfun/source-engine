@@ -18,7 +18,7 @@ struct mnode_t;
 struct mleaf_t;
 struct mtexinfo_t;
 typedef struct mtexdata_s mtexdata_t;
-struct model_t;
+class model_t;
 
 struct dvis_t;
 struct dworldlight_t;

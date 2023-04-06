@@ -24,7 +24,7 @@ class IMaterial;
 class IClientRenderable;
 class IBrushRenderer;
 class IClientEntity;
-struct model_t;
+class model_t;
 struct cplane_t;
 struct VisibleFogVolumeInfo_t;
 

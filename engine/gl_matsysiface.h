@@ -31,7 +31,7 @@ class IDebugTextureInfo;
 class Vector;
 struct mprimitive_t;
 class CMeshBuilder;
-struct model_t;
+class model_t;
 
 
 //-----------------------------------------------------------------------------

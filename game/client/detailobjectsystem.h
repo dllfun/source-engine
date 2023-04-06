@@ -18,7 +18,7 @@
 #include "mathlib/vector.h"
 //#include "ivrenderview.h"
 
-struct model_t;
+class model_t;
 
 
 //-----------------------------------------------------------------------------

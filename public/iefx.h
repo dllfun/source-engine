@@ -15,7 +15,7 @@
 #include "interface.h"
 #include "mathlib/vector.h"
 
-struct model_t;
+class model_t;
 struct dlight_t;
 class IMaterial;
 

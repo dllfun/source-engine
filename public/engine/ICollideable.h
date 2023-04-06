@@ -15,7 +15,7 @@
 enum SolidType_t;
 class IHandleEntity;
 struct Ray_t;
-struct model_t;
+class model_t;
 class Vector;
 class QAngle;
 class CGameTrace;

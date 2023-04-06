@@ -11,7 +11,7 @@
 #pragma once
 #endif
 
-struct model_t;
+class model_t;
 class Vector;
 class SurfInfo;
 

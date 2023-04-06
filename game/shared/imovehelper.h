@@ -20,7 +20,7 @@
 enum PLAYER_ANIM;
 class IPhysicsSurfaceProps;
 class Vector;
-struct model_t;
+class model_t;
 struct cmodel_t;
 struct vcollide_t;
 class CGameTrace;

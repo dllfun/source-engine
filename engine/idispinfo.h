@@ -28,7 +28,7 @@
 #include "surfacehandle.h"
 #include "ivrenderview.h"
 
-struct model_t;
+class model_t;
 struct Ray_t;
 struct RayDispOutput_t;
 struct decal_t;

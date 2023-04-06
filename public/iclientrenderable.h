@@ -17,7 +17,7 @@
 #include "client_render_handle.h"
 #include "engine/ivmodelrender.h"
 
-struct model_t;
+class model_t;
 struct matrix3x4_t;
 
 extern void DefaultRenderBoundsWorldspace( IClientRenderable *pRenderable, Vector &absMins, Vector &absMaxs );

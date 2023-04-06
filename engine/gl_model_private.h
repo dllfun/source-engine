@@ -356,8 +356,9 @@ struct spritedata_t
 	CEngineSprite	*sprite;
 };
 
-struct model_t
+class model_t
 {
+public:
 	FileNameHandle_t	fnHandle;
 	CUtlString			strName;
 

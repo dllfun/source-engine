@@ -29,7 +29,7 @@ struct CPrecacheUserData
 
 
 class CSfxTable;
-struct model_t;
+class model_t;
 
 //#define DEBUG_PRECACHE 1
 

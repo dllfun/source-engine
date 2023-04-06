@@ -28,7 +28,7 @@
 // forward declarations
 //-----------------------------------------------------------------------------
 class ClientClass;
-struct model_t;
+class model_t;
 class CSentence;
 struct vrect_t;
 struct cmodel_t;

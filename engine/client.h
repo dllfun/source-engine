@@ -33,7 +33,7 @@
 
 
 
-struct model_t;
+class model_t;
 struct SoundInfo_t;
 
 class ClientClass;

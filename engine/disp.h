@@ -29,7 +29,7 @@
 #include "utllinkedlist.h"
 #include "zone.h"
 
-struct model_t;
+class model_t;
 class IMesh;
 class CMeshBuilder;
 struct ShadowInfo_t;

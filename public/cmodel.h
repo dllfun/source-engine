@@ -18,7 +18,7 @@
 #include "basehandle.h"
 
 struct edict_t;
-struct model_t;
+class model_t;
 
 /*
 ==============================================================

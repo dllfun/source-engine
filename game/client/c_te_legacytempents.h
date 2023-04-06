@@ -14,7 +14,7 @@
 
 class C_BaseEntity;
 class C_LocalTempEntity;
-struct model_t;
+class model_t;
 
 #include "mempool.h"
 #include "utllinkedlist.h"
@@ -144,23 +144,23 @@ private:
 	CUtlLinkedList< C_LocalTempEntity *, unsigned short >	m_TempEnts;
 
 	// Muzzle flash sprites
-	struct model_t			*m_pSpriteMuzzleFlash[10];
-	struct model_t			*m_pSpriteAR2Flash[4];
-	struct model_t			*m_pShells[3];
-	struct model_t			*m_pSpriteCombineFlash[2];
+	class model_t			*m_pSpriteMuzzleFlash[10];
+	class model_t			*m_pSpriteAR2Flash[4];
+	class model_t			*m_pShells[3];
+	class model_t			*m_pSpriteCombineFlash[2];
 
 #if defined( HL1_CLIENT_DLL )
-	struct model_t			*m_pHL1Shell;
-	struct model_t			*m_pHL1ShotgunShell;
+	class model_t			*m_pHL1Shell;
+	class model_t			*m_pHL1ShotgunShell;
 #endif
 
 #if defined( CSTRIKE_DLL ) || defined ( SDK_DLL )
-	struct model_t			*m_pCS_9MMShell;
-	struct model_t			*m_pCS_57Shell;
-	struct model_t			*m_pCS_12GaugeShell;
-	struct model_t			*m_pCS_556Shell;
-	struct model_t			*m_pCS_762NATOShell;
-	struct model_t			*m_pCS_338MAGShell;
+	class model_t			*m_pCS_9MMShell;
+	class model_t			*m_pCS_57Shell;
+	class model_t			*m_pCS_12GaugeShell;
+	class model_t			*m_pCS_556Shell;
+	class model_t			*m_pCS_762NATOShell;
+	class model_t			*m_pCS_338MAGShell;
 #endif
 
 // Internal methods also available to children

@@ -17,7 +17,7 @@
 
 #define SCRIPT_DIR			"scripts/"
 
-struct model_t;
+class model_t;
 struct AudioState_t;
 
 
