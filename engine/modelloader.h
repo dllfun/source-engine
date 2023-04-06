@@ -176,7 +176,7 @@ public:
 	int					LumpVersion() const;
 	const char			*GetMapName( void );
 	char				*GetLoadName( void );
-	struct worldbrushdata_t	*GetMap( void );
+	//struct worldbrushdata_t	*GetMap( void );
 
 	// Global setup/shutdown
 	static void			Init( model_t *pMapModel, const char *pLoadname );

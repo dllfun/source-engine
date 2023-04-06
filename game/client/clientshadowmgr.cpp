@@ -2244,7 +2244,7 @@ inline ShadowType_t CClientShadowMgr::GetActualShadowCastType( IClientRenderable
 class CShadowLeafEnum : public ISpatialLeafEnumerator
 {
 public:
-	bool EnumerateLeaf( int leaf, intp context )
+	bool EnumerateLeaf(model_t* world, int leaf, intp context )
 	{
 		m_LeafList.AddToTail( leaf );
 		return true;
@@ -2271,7 +2271,7 @@ static void BuildShadowLeafList( CShadowLeafEnum *pEnum, const Vector& origin,
 	ray.m_IsSwept = true;
 
 	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
-	pQuery->EnumerateLeavesAlongRay( ray, pEnum, 0 );
+	pQuery->EnumerateLeavesAlongRay(NULL, ray, pEnum, 0 );
 }
 
 
@@ -2605,7 +2605,7 @@ static void BuildFlashlightLeafList( CShadowLeafEnum *pEnum, const VMatrix &worl
 	Vector mins, maxs;
 	CalculateAABBFromProjectionMatrix( worldToShadow, &mins, &maxs );
 	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
-	pQuery->EnumerateLeavesInBox( mins, maxs, pEnum, 0 );
+	pQuery->EnumerateLeavesInBox(NULL, mins, maxs, pEnum, 0 );
 }
 
 

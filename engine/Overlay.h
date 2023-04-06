@@ -11,12 +11,13 @@
 #ifdef _WIN32
 #pragma once
 #endif
-
+#include "gl_model_private.h"
 
 // This is a workaround for the fact that we get massive decal flicker
 // when looking at a decal at a glancing angle while standing right next to it.
 #define OVERLAY_AVOID_FLICKER_NORMAL_OFFSET	0.1f
 
+struct worldbrushdata_t;
 
 //-----------------------------------------------------------------------------
 // Overlay fragments
@@ -37,7 +38,7 @@ class IOverlayMgr
 {
 public:
 	// Memory allocation/de-allocation.
-	virtual bool	LoadOverlays( ) = 0;
+	virtual bool	LoadOverlays(worldbrushdata_t* pBrushData) = 0;
 	virtual void	UnloadOverlays( ) = 0;
 
 	virtual void	CreateFragments( void ) = 0;

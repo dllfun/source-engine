@@ -302,7 +302,7 @@ private:
 
 	// World loading helper
 	void		SetWorldModel( model_t *mod );
-	void		ClearWorldModel( void );
+	void		ClearWorldModel(model_t* mod);
 	bool		IsWorldModelSet( void );
 	int			GetNumWorldSubmodels( void );
 
@@ -346,9 +346,9 @@ private:
 	CUtlVector<model_t>	m_InlineModels;
 
 	model_t				*m_pWorldModel;
+	worldbrushdata_t	m_worldBrushData;
 
 public: // HACKHACK
-	worldbrushdata_t	m_worldBrushData;
 
 private:
 	// local name of current loading model
@@ -391,7 +391,7 @@ static dheader_t		s_MapHeader;
 static FileHandle_t		s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
 static char				s_szLoadName[128];
 static char				s_szMapName[128];
-static worldbrushdata_t	*s_pMap = NULL;
+//static worldbrushdata_t	*s_pMap = NULL;
 static int				s_nMapLoadRecursion = 0;
 static CUtlBuffer		s_MapBuffer;
 
@@ -428,7 +428,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 		return;
 	}
 
-	s_pMap = NULL;
+	//s_pMap = NULL;
 	s_szLoadName[ 0 ] = 0;
 	s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
 	V_memset( &s_MapHeader, 0, sizeof( s_MapHeader ) );
@@ -481,7 +481,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 	InitDLightGlobals( s_MapHeader.version );
 #endif
 
-	s_pMap = &g_ModelLoader.m_worldBrushData;
+	//s_pMap = &g_ModelLoader.m_worldBrushData;
 
 	// nillerusr: Fuck you johns
 
@@ -547,7 +547,7 @@ void CMapLoadHelper::InitFromMemory( model_t *pMapModel, const void *pData, int 
 		return;
 	}
 
-	s_pMap = NULL;
+	//s_pMap = NULL;
 	s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
 	V_memset( &s_MapHeader, 0, sizeof( s_MapHeader ) );
 	V_memset( &s_MapLumpFiles, 0, sizeof( s_MapLumpFiles ) );
@@ -578,7 +578,7 @@ void CMapLoadHelper::InitFromMemory( model_t *pMapModel, const void *pData, int 
 	InitDLightGlobals( s_MapHeader.version );
 #endif
 
-	s_pMap = &g_ModelLoader.m_worldBrushData;
+	//s_pMap = &g_ModelLoader.m_worldBrushData;
 }
 
 //-----------------------------------------------------------------------------
@@ -612,7 +612,7 @@ void CMapLoadHelper::Shutdown( void )
 
 	s_szLoadName[ 0 ] = 0;
 	V_memset( &s_MapHeader, 0, sizeof( s_MapHeader ) );
-	s_pMap = NULL;
+	//s_pMap = NULL;
 
 	// discard from memory
 	if ( s_MapBuffer.Base() )
@@ -868,11 +868,11 @@ CMapLoadHelper::~CMapLoadHelper( void )
 // Purpose: 
 // Output : model_t
 //-----------------------------------------------------------------------------
-worldbrushdata_t *CMapLoadHelper::GetMap( void )
-{
-	Assert( s_pMap );
-	return s_pMap;
-}
+//worldbrushdata_t *CMapLoadHelper::GetMap( void )
+//{
+//	Assert( s_pMap );
+//	return s_pMap;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1110,19 +1110,19 @@ static int ComputeLightmapSize( dface_t *pFace, mtexinfo_t *pTexInfo )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadLighting( CMapLoadHelper &lh )
+void Mod_LoadLighting(worldbrushdata_t* pBrushData, CMapLoadHelper &lh )
 {
 	if ( !lh.LumpSize() )
 	{
-		lh.GetMap()->lightdata = NULL;
+		pBrushData->lightdata = NULL;
 		return;
 	}
 
 	Assert( lh.LumpSize() % sizeof( ColorRGBExp32 ) == 0 );
 	Assert ( lh.LumpVersion() != 0 );
 
-	AllocateLightingData( lh.GetMap(), lh.LumpSize() );
-	memcpy( lh.GetMap()->lightdata, lh.LumpBase(), lh.LumpSize());
+	AllocateLightingData(pBrushData, lh.LumpSize() );//&g_ModelLoader.m_worldBrushData
+	memcpy( pBrushData->lightdata, lh.LumpBase(), lh.LumpSize());
 
 	if ( IsX360() )
 	{
@@ -1134,13 +1134,13 @@ void Mod_LoadLighting( CMapLoadHelper &lh )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadWorldlights( CMapLoadHelper &lh, bool bIsHDR )
+void Mod_LoadWorldlights(worldbrushdata_t* pBrushData, CMapLoadHelper &lh, bool bIsHDR )
 {
-	lh.GetMap()->shadowzbuffers = NULL;
+	pBrushData->shadowzbuffers = NULL;
 	if (!lh.LumpSize())
 	{
-		lh.GetMap()->numworldlights = 0;
-		lh.GetMap()->worldlights = NULL;
+		pBrushData->numworldlights = 0;
+		pBrushData->worldlights = NULL;
 		return;
 	}
 
@@ -1148,19 +1148,19 @@ void Mod_LoadWorldlights( CMapLoadHelper &lh, bool bIsHDR )
 	{
 		case LUMP_WORLDLIGHTS_VERSION:
 		{
-			lh.GetMap()->numworldlights = lh.LumpSize() / sizeof( dworldlight_t );
-			lh.GetMap()->worldlights = (dworldlight_t *)Hunk_AllocName( lh.LumpSize(), va( "%s [%s]", lh.GetLoadName(), "worldlights" ) );
-			memcpy( lh.GetMap()->worldlights, lh.LumpBase(), lh.LumpSize() );
+			pBrushData->numworldlights = lh.LumpSize() / sizeof( dworldlight_t );
+			pBrushData->worldlights = (dworldlight_t *)Hunk_AllocName( lh.LumpSize(), va( "%s [%s]", lh.GetLoadName(), "worldlights" ) );
+			memcpy( pBrushData->worldlights, lh.LumpBase(), lh.LumpSize() );
 			break;
 		}
 
 		case 0:
 		{
 			int nNumWorldLights = lh.LumpSize() / sizeof( dworldlight_version0_t );
-			lh.GetMap()->numworldlights = nNumWorldLights;
-			lh.GetMap()->worldlights = (dworldlight_t *)Hunk_AllocName( nNumWorldLights * sizeof( dworldlight_t ), va( "%s [%s]", lh.GetLoadName(), "worldlights" ) );
+			pBrushData->numworldlights = nNumWorldLights;
+			pBrushData->worldlights = (dworldlight_t *)Hunk_AllocName( nNumWorldLights * sizeof( dworldlight_t ), va( "%s [%s]", lh.GetLoadName(), "worldlights" ) );
 			dworldlight_version0_t* RESTRICT pOldWorldLight = reinterpret_cast<dworldlight_version0_t*>( lh.LumpBase() );
-			dworldlight_t* RESTRICT pNewWorldLight = lh.GetMap()->worldlights;
+			dworldlight_t* RESTRICT pNewWorldLight = pBrushData->worldlights;
 
 			for ( int i = 0; i < nNumWorldLights; i++ )
 			{
@@ -1195,35 +1195,35 @@ void Mod_LoadWorldlights( CMapLoadHelper &lh, bool bIsHDR )
 #if !defined( SWDS )
 	if ( r_lightcache_zbuffercache.GetInt() )
 	{
-		size_t zbufSize = lh.GetMap()->numworldlights * sizeof( lightzbuffer_t );
-		lh.GetMap()->shadowzbuffers = ( lightzbuffer_t *) Hunk_AllocName( zbufSize, va( "%s [%s]", lh.GetLoadName(), "shadowzbuffers" ) );
-		memset( lh.GetMap()->shadowzbuffers, 0, zbufSize );		// mark empty
+		size_t zbufSize = pBrushData->numworldlights * sizeof( lightzbuffer_t );
+		pBrushData->shadowzbuffers = ( lightzbuffer_t *) Hunk_AllocName( zbufSize, va( "%s [%s]", lh.GetLoadName(), "shadowzbuffers" ) );
+		memset( pBrushData->shadowzbuffers, 0, zbufSize );		// mark empty
 	}
 #endif
 
 	// Fixup for backward compatability
-	for ( int i = 0; i < lh.GetMap()->numworldlights; i++ )
+	for ( int i = 0; i < pBrushData->numworldlights; i++ )
 	{
-		if( lh.GetMap()->worldlights[i].type == emit_spotlight)
+		if( pBrushData->worldlights[i].type == emit_spotlight)
 		{
-			if ((lh.GetMap()->worldlights[i].constant_attn == 0.0) && 
-				(lh.GetMap()->worldlights[i].linear_attn == 0.0) && 
-				(lh.GetMap()->worldlights[i].quadratic_attn == 0.0))
+			if ((pBrushData->worldlights[i].constant_attn == 0.0) && 
+				(pBrushData->worldlights[i].linear_attn == 0.0) && 
+				(pBrushData->worldlights[i].quadratic_attn == 0.0))
 			{
-				lh.GetMap()->worldlights[i].quadratic_attn = 1.0;
+				pBrushData->worldlights[i].quadratic_attn = 1.0;
 			}
 
-			if (lh.GetMap()->worldlights[i].exponent == 0.0)
-				lh.GetMap()->worldlights[i].exponent = 1.0;
+			if (pBrushData->worldlights[i].exponent == 0.0)
+				pBrushData->worldlights[i].exponent = 1.0;
 		}
-		else if( lh.GetMap()->worldlights[i].type == emit_point)
+		else if( pBrushData->worldlights[i].type == emit_point)
 		{
 			// To match earlier lighting, use quadratic...
-			if ((lh.GetMap()->worldlights[i].constant_attn == 0.0) && 
-				(lh.GetMap()->worldlights[i].linear_attn == 0.0) && 
-				(lh.GetMap()->worldlights[i].quadratic_attn == 0.0))
+			if ((pBrushData->worldlights[i].constant_attn == 0.0) && 
+				(pBrushData->worldlights[i].linear_attn == 0.0) && 
+				(pBrushData->worldlights[i].quadratic_attn == 0.0))
 			{
-				lh.GetMap()->worldlights[i].quadratic_attn = 1.0;
+				pBrushData->worldlights[i].quadratic_attn = 1.0;
 			}
 		}
 
@@ -1231,9 +1231,9 @@ void Mod_LoadWorldlights( CMapLoadHelper &lh, bool bIsHDR )
 		// with a max light radius. Radius of less than 1 will never happen,
 		// so I can get away with this. When I set radius to 0, it'll 
 		// run the old code which computed a radius
-		if (lh.GetMap()->worldlights[i].radius < 1)
+		if (pBrushData->worldlights[i].radius < 1)
 		{
-			lh.GetMap()->worldlights[i].radius = ComputeLightRadius( &lh.GetMap()->worldlights[i], bIsHDR );
+			pBrushData->worldlights[i].radius = ComputeLightRadius( &pBrushData->worldlights[i], bIsHDR );
 		}
 	}
 }
@@ -1241,7 +1241,7 @@ void Mod_LoadWorldlights( CMapLoadHelper &lh, bool bIsHDR )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadVertices( void )
+void Mod_LoadVertices(worldbrushdata_t* pBrushData)
 {
 	dvertex_t	*in;
 	mvertex_t	*out;
@@ -1257,8 +1257,8 @@ void Mod_LoadVertices( void )
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mvertex_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "vertexes" ) );
 
-	lh.GetMap()->vertexes = out;
-	lh.GetMap()->numvertexes = count;
+	pBrushData->vertexes = out;
+	pBrushData->numvertexes = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -1290,7 +1290,7 @@ static float RadiusFromBounds (Vector& mins, Vector& maxs)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadSubmodels( CUtlVector<mmodel_t> &submodelList )
+void Mod_LoadSubmodels(worldbrushdata_t* pBrushData, CUtlVector<mmodel_t> &submodelList )
 {
 	dmodel_t	*in;
 	int			i, j, count;
@@ -1303,7 +1303,7 @@ void Mod_LoadSubmodels( CUtlVector<mmodel_t> &submodelList )
 	count = lh.LumpSize() / sizeof(*in);
 
 	submodelList.SetCount( count );
-	lh.GetMap()->numsubmodels = count;
+	pBrushData->numsubmodels = count;
 
 	for ( i=0 ; i<count ; i++, in++)
 	{
@@ -1325,7 +1325,7 @@ void Mod_LoadSubmodels( CUtlVector<mmodel_t> &submodelList )
 // Purpose: 
 // Output : medge_t *Mod_LoadEdges
 //-----------------------------------------------------------------------------
-medge_t *Mod_LoadEdges ( void )
+medge_t *Mod_LoadEdges (worldbrushdata_t* pBrushData)
 {
 	dedge_t *in;
 	medge_t *out;
@@ -1355,17 +1355,17 @@ medge_t *Mod_LoadEdges ( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadOcclusion( void )
+void Mod_LoadOcclusion(worldbrushdata_t* pBrushData)
 {
 	CMapLoadHelper lh( LUMP_OCCLUSION );
 
-	worldbrushdata_t *b = lh.GetMap();
-	b->numoccluders = 0;
-	b->occluders = NULL;
-	b->numoccluderpolys = 0;
-	b->occluderpolys = NULL;
-	b->numoccludervertindices = 0;
-	b->occludervertindices = NULL;
+	//worldbrushdata_t *b = &g_ModelLoader.m_worldBrushData;
+	pBrushData->numoccluders = 0;
+	pBrushData->occluders = NULL;
+	pBrushData->numoccluderpolys = 0;
+	pBrushData->occluderpolys = NULL;
+	pBrushData->numoccludervertindices = 0;
+	pBrushData->occludervertindices = NULL;
 
 	if ( !lh.LumpSize() )
 	{
@@ -1378,63 +1378,63 @@ void Mod_LoadOcclusion( void )
 	{
 	case LUMP_OCCLUSION_VERSION:
 		{
-			b->numoccluders = buf.GetInt();
-			if (b->numoccluders)
+			pBrushData->numoccluders = buf.GetInt();
+			if (pBrushData->numoccluders)
 			{
-				int nSize = b->numoccluders * sizeof(doccluderdata_t);
-				b->occluders = (doccluderdata_t*)Hunk_AllocName( nSize, "occluder data" );
-				buf.Get( b->occluders, nSize );
+				int nSize = pBrushData->numoccluders * sizeof(doccluderdata_t);
+				pBrushData->occluders = (doccluderdata_t*)Hunk_AllocName( nSize, "occluder data" );
+				buf.Get(pBrushData->occluders, nSize );
 			}
 
-			b->numoccluderpolys = buf.GetInt();
-			if (b->numoccluderpolys)
+			pBrushData->numoccluderpolys = buf.GetInt();
+			if (pBrushData->numoccluderpolys)
 			{
-				int nSize = b->numoccluderpolys * sizeof(doccluderpolydata_t);
-				b->occluderpolys = (doccluderpolydata_t*)Hunk_AllocName( nSize, "occluder poly data" );
-				buf.Get( b->occluderpolys, nSize );
+				int nSize = pBrushData->numoccluderpolys * sizeof(doccluderpolydata_t);
+				pBrushData->occluderpolys = (doccluderpolydata_t*)Hunk_AllocName( nSize, "occluder poly data" );
+				buf.Get(pBrushData->occluderpolys, nSize );
 			}
 
-			b->numoccludervertindices = buf.GetInt();
-			if (b->numoccludervertindices)
+			pBrushData->numoccludervertindices = buf.GetInt();
+			if (pBrushData->numoccludervertindices)
 			{
-				int nSize = b->numoccludervertindices * sizeof(int);
-				b->occludervertindices = (int*)Hunk_AllocName( nSize, "occluder vertices" );
-				buf.Get( b->occludervertindices, nSize );
+				int nSize = pBrushData->numoccludervertindices * sizeof(int);
+				pBrushData->occludervertindices = (int*)Hunk_AllocName( nSize, "occluder vertices" );
+				buf.Get(pBrushData->occludervertindices, nSize );
 			}
 		}
 		break;
 
 	case 1:
 		{
-			b->numoccluders = buf.GetInt();
-			if (b->numoccluders)
+			pBrushData->numoccluders = buf.GetInt();
+			if (pBrushData->numoccluders)
 			{
-				int nSize = b->numoccluders * sizeof(doccluderdata_t);
-				b->occluders = (doccluderdata_t*)Hunk_AllocName( nSize, "occluder data" );
+				int nSize = pBrushData->numoccluders * sizeof(doccluderdata_t);
+				pBrushData->occluders = (doccluderdata_t*)Hunk_AllocName( nSize, "occluder data" );
 
 				doccluderdataV1_t temp;
-				for ( int i = 0; i < b->numoccluders; ++i )
+				for ( int i = 0; i < pBrushData->numoccluders; ++i )
 				{
 					buf.Get( &temp, sizeof(doccluderdataV1_t) );
-					memcpy( &b->occluders[i], &temp, sizeof(doccluderdataV1_t) );
-					b->occluders[i].area = 1;
+					memcpy( &pBrushData->occluders[i], &temp, sizeof(doccluderdataV1_t) );
+					pBrushData->occluders[i].area = 1;
 				}
 			}
 
-			b->numoccluderpolys = buf.GetInt();
-			if (b->numoccluderpolys)
+			pBrushData->numoccluderpolys = buf.GetInt();
+			if (pBrushData->numoccluderpolys)
 			{
-				int nSize = b->numoccluderpolys * sizeof(doccluderpolydata_t);
-				b->occluderpolys = (doccluderpolydata_t*)Hunk_AllocName( nSize, "occluder poly data" );
-				buf.Get( b->occluderpolys, nSize );
+				int nSize = pBrushData->numoccluderpolys * sizeof(doccluderpolydata_t);
+				pBrushData->occluderpolys = (doccluderpolydata_t*)Hunk_AllocName( nSize, "occluder poly data" );
+				buf.Get(pBrushData->occluderpolys, nSize );
 			}
 
-			b->numoccludervertindices = buf.GetInt();
-			if (b->numoccludervertindices)
+			pBrushData->numoccludervertindices = buf.GetInt();
+			if (pBrushData->numoccludervertindices)
 			{
-				int nSize = b->numoccludervertindices * sizeof(int);
-				b->occludervertindices = (int*)Hunk_AllocName( nSize, "occluder vertices" );
-				buf.Get( b->occludervertindices, nSize );
+				int nSize = pBrushData->numoccludervertindices * sizeof(int);
+				pBrushData->occludervertindices = (int*)Hunk_AllocName( nSize, "occluder vertices" );
+				buf.Get(pBrushData->occludervertindices, nSize );
 			}
 		}
 		break;
@@ -1457,19 +1457,19 @@ void Mod_LoadOcclusion( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadTexdata( void )
+void Mod_LoadTexdata(worldbrushdata_t* pBrushData)
 {
 	// Don't bother loading these again; they're already stored in the collision model
 	// which is guaranteed to be loaded at this point
-	s_pMap->numtexdata = GetCollisionBSPData()->GetTexturesCount();
-	s_pMap->texdata = GetCollisionBSPData()->GetSurfaceAtIndex(0);
+	pBrushData->numtexdata = GetCollisionBSPData()->GetTexturesCount();
+	pBrushData->texdata = GetCollisionBSPData()->GetSurfaceAtIndex(0);
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadTexinfo( void )
+void Mod_LoadTexinfo(worldbrushdata_t* pBrushData)
 {
 	texinfo_t *in;
 	mtexinfo_t *out;
@@ -1484,8 +1484,8 @@ void Mod_LoadTexinfo( void )
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mtexinfo_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "texinfo" ) );
 
-	s_pMap->texinfo = out;
-	s_pMap->numtexinfo = count;
+	pBrushData->texinfo = out;
+	pBrushData->numtexinfo = count;
 
 	bool loadtextures = mat_loadtextures.GetBool();
 
@@ -1511,7 +1511,7 @@ void Mod_LoadTexinfo( void )
 		{
 			if ( in->texdata >= 0 )
 			{
-				out->material = GL_LoadMaterial( lh.GetMap()->texdata[ in->texdata ].name, TEXTURE_GROUP_WORLD );
+				out->material = GL_LoadMaterial( pBrushData->texdata[ in->texdata ].name, TEXTURE_GROUP_WORLD );
 			}
 			else
 			{
@@ -1616,7 +1616,7 @@ static void CheckSurfaceLighting( SurfaceHandle_t surfID, worldbrushdata_t *pBru
 //			*s - 
 // Output : void CalcSurfaceExtents
 //-----------------------------------------------------------------------------
-static void CalcSurfaceExtents ( CMapLoadHelper& lh, SurfaceHandle_t surfID )
+static void CalcSurfaceExtents (worldbrushdata_t* pBrushData, SurfaceHandle_t surfID )
 {
 	float	textureMins[2], textureMaxs[2], val;
 	int		i,j, e;
@@ -1627,7 +1627,7 @@ static void CalcSurfaceExtents ( CMapLoadHelper& lh, SurfaceHandle_t surfID )
 	textureMins[0] = textureMins[1] = 999999;
 	textureMaxs[0] = textureMaxs[1] = -99999;
 
-	worldbrushdata_t *pBrushData = lh.GetMap();
+	//worldbrushdata_t *pBrushData = &g_ModelLoader.m_worldBrushData;
 	tex = MSurf_TexInfo( surfID, pBrushData );
 	
 	for (i=0 ; i<MSurf_VertCount( surfID ); i++)
@@ -1673,7 +1673,7 @@ static void CalcSurfaceExtents ( CMapLoadHelper& lh, SurfaceHandle_t surfID )
 //			*pLump - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadVertNormals( void )
+void Mod_LoadVertNormals(worldbrushdata_t* pBrushData)
 {
 	CMapLoadHelper lh( LUMP_VERTNORMALS );
 
@@ -1690,15 +1690,15 @@ void Mod_LoadVertNormals( void )
 	Vector *out = (Vector *)Hunk_AllocName( lh.LumpSize(), va( "%s [%s]", lh.GetLoadName(), "vertnormals" ) );
 	memcpy( out, pVertNormals, lh.LumpSize() );
 	
-	lh.GetMap()->vertnormals = out;
-	lh.GetMap()->numvertnormals = count;
+	pBrushData->vertnormals = out;
+	pBrushData->numvertnormals = count;
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadVertNormalIndices( void )
+void Mod_LoadVertNormalIndices(worldbrushdata_t* pBrushData)
 {
 	CMapLoadHelper lh( LUMP_VERTNORMALINDICES );
 
@@ -1709,15 +1709,15 @@ void Mod_LoadVertNormalIndices( void )
 	unsigned short *out = (unsigned short *)Hunk_AllocName( lh.LumpSize(), va( "%s [%s]", lh.GetLoadName(), "vertnormalindices" ) );
 	memcpy( out, pIndices, lh.LumpSize() );
 	
-	lh.GetMap()->vertnormalindices = out;
-	lh.GetMap()->numvertnormalindices = count;
+	pBrushData->vertnormalindices = out;
+	pBrushData->numvertnormalindices = count;
 
 	// OPTIMIZE: Water surfaces don't need vertex normals?
 	int normalIndex = 0;
-	for( int i = 0; i < lh.GetMap()->numsurfaces; i++ )
+	for( int i = 0; i < pBrushData->numsurfaces; i++ )
 	{
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex( i, lh.GetMap() );
-		MSurf_FirstVertNormal( surfID, lh.GetMap() ) = normalIndex;
+		SurfaceHandle_t surfID = SurfaceHandleFromIndex( i, pBrushData);//&g_ModelLoader.m_worldBrushData
+		MSurf_FirstVertNormal( surfID, pBrushData) = normalIndex;//&g_ModelLoader.m_worldBrushData
 		normalIndex += MSurf_VertCount( surfID );
 	}
 }
@@ -1728,7 +1728,7 @@ void Mod_LoadVertNormalIndices( void )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadPrimitives( void )
+void Mod_LoadPrimitives(worldbrushdata_t* pBrushData)
 {
 	dprimitive_t	*in;
 	mprimitive_t	*out;
@@ -1743,8 +1743,8 @@ void Mod_LoadPrimitives( void )
 	out = (mprimitive_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "primitives" ) );
 	memset( out, 0, count * sizeof( mprimitive_t ) );
 
-	lh.GetMap()->primitives = out;
-	lh.GetMap()->numprimitives = count;
+	pBrushData->primitives = out;
+	pBrushData->numprimitives = count;
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
 		out->firstIndex		= in->firstIndex;
@@ -1761,7 +1761,7 @@ void Mod_LoadPrimitives( void )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadPrimVerts( void )
+void Mod_LoadPrimVerts(worldbrushdata_t* pBrushData)
 {
 	dprimvert_t		*in;
 	mprimvert_t		*out;
@@ -1776,8 +1776,8 @@ void Mod_LoadPrimVerts( void )
 	out = (mprimvert_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "primverts" ) );
 	memset( out, 0, count * sizeof( mprimvert_t ) );
 
-	lh.GetMap()->primverts = out;
-	lh.GetMap()->numprimverts = count;
+	pBrushData->primverts = out;
+	pBrushData->numprimverts = count;
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
 		out->pos = in->pos;
@@ -1790,7 +1790,7 @@ void Mod_LoadPrimVerts( void )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadPrimIndices( void )
+void Mod_LoadPrimIndices(worldbrushdata_t* pBrushData)
 {
 	unsigned short	*in;
 	unsigned short	*out;
@@ -1805,8 +1805,8 @@ void Mod_LoadPrimIndices( void )
 	out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va("%s [%s]", lh.GetLoadName(), "primindices" ) );
 	memset( out, 0, count * sizeof( unsigned short ) );
 
-	lh.GetMap()->primindices = out;
-	lh.GetMap()->numprimindices = count;
+	pBrushData->primindices = out;
+	pBrushData->numprimindices = count;
 
 	memcpy( out, in, count * sizeof( unsigned short ) );
 }
@@ -1894,7 +1894,7 @@ T *Hunk_AllocNameAlignedClear( int count, int alignment, const char *pHunkName )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadFaces( void )
+void Mod_LoadFaces(worldbrushdata_t* pBrushData)
 {
 	dface_t		*in;
 	int			count, surfnum;
@@ -1931,13 +1931,13 @@ void Mod_LoadFaces( void )
 	msurfacelighting_t *pLighting = Hunk_AllocNameAlignedClear< msurfacelighting_t >( count, 32, va( "%s [%s]", lh.GetLoadName(), "surfacelighting" ) );
 #endif
 
-	lh.GetMap()->surfaces1 = out1;
-	lh.GetMap()->surfaces2 = out2;
-	lh.GetMap()->surfacelighting = pLighting;
-	lh.GetMap()->surfacenormals = Hunk_AllocNameAlignedClear< msurfacenormal_t >( count, 2, va( "%s [%s]", lh.GetLoadName(), "surfacenormal" ) );
-	lh.GetMap()->numsurfaces = count;
+	pBrushData->surfaces1 = out1;
+	pBrushData->surfaces2 = out2;
+	pBrushData->surfacelighting = pLighting;
+	pBrushData->surfacenormals = Hunk_AllocNameAlignedClear< msurfacenormal_t >( count, 2, va( "%s [%s]", lh.GetLoadName(), "surfacenormal" ) );
+	pBrushData->numsurfaces = count;
 
-	worldbrushdata_t *pBrushData = lh.GetMap();
+	//worldbrushdata_t *pBrushData = &g_ModelLoader.m_worldBrushData;
 
 	for ( surfnum=0 ; surfnum<count ; ++surfnum, ++in, ++out1, ++out2, ++pLighting )
 	{
@@ -1960,16 +1960,16 @@ void Mod_LoadFaces( void )
 			MSurf_Flags( surfID ) |= SURFDRAW_PLANEBACK;
 		}
 
-		out2->plane = lh.GetMap()->planes + planenum;
+		out2->plane = pBrushData->planes + planenum;
 
 		ti = in->texinfo;
-		if (ti < 0 || ti >= lh.GetMap()->numtexinfo)
+		if (ti < 0 || ti >= pBrushData->numtexinfo)
 		{
 			Host_Error( "Mod_LoadFaces: bad texinfo number" );
 		}
 		surfID->texinfo = ti;
 		surfID->m_bDynamicShadowsEnabled = in->AreDynamicShadowsEnabled();
-		mtexinfo_t *pTex = lh.GetMap()->texinfo + ti;
+		mtexinfo_t *pTex = pBrushData->texinfo + ti;
 
 		// big hack!
 		if ( !pTex->material )
@@ -1979,7 +1979,7 @@ void Mod_LoadFaces( void )
 		}
 
 		// lighting info
-		if ( Mod_LoadSurfaceLightingV1( pLighting, in, lh.GetMap()->lightdata ) )
+		if ( Mod_LoadSurfaceLightingV1( pLighting, in, pBrushData->lightdata ) )
 		{
 			MSurf_Flags( surfID ) |= SURFDRAW_HASLIGHTSYTLES;
 		}
@@ -2037,7 +2037,7 @@ void Mod_LoadFaces( void )
 		// No overlays on the surface to start with
 		out2->m_nFirstOverlayFragment = OVERLAY_FRAGMENT_INVALID;
 
-		CalcSurfaceExtents( lh, surfID );
+		CalcSurfaceExtents(pBrushData, surfID );
 	}
 }
 
@@ -2092,7 +2092,7 @@ static void CheckSmallVolumeDifferences( mnode_t *pNode, const Vector &parentSiz
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadNodes( void )
+void Mod_LoadNodes(worldbrushdata_t* pBrushData)
 {
 	Vector mins( 0, 0, 0 ), maxs( 0, 0, 0 );
 	int			i, j, count, p;
@@ -2107,8 +2107,8 @@ void Mod_LoadNodes( void )
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mnode_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "nodes" ) );
 
-	lh.GetMap()->nodes = out;
-	lh.GetMap()->numnodes = count;
+	pBrushData->nodes = out;
+	pBrushData->numnodes = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -2123,7 +2123,7 @@ void Mod_LoadNodes( void )
 		VectorSubtract( maxs, out->m_vecCenter, out->m_vecHalfDiagonal );
 
 		p = in->planenum;
-		out->plane = lh.GetMap()->planes + p;
+		out->plane = pBrushData->planes + p;
 
 		out->firstsurface = in->firstface;
 		out->numsurfaces = in->numfaces;
@@ -2134,16 +2134,16 @@ void Mod_LoadNodes( void )
 		{
 			p = in->children[j];
 			if (p >= 0)
-				out->children[j] = lh.GetMap()->nodes + p;
+				out->children[j] = pBrushData->nodes + p;
 			else
-				out->children[j] = (mnode_t *)(lh.GetMap()->leafs + (-1 - p));
+				out->children[j] = (mnode_t *)(pBrushData->leafs + (-1 - p));
 		}
 	}
 	
-	Mod_SetParent (lh.GetMap()->nodes, NULL);	// sets nodes and leafs
+	Mod_SetParent (pBrushData->nodes, NULL);	// sets nodes and leafs
 
 	// Check for small-area parents... no culling below them...
-	mnode_t *pNode = lh.GetMap()->nodes;
+	mnode_t *pNode = pBrushData->nodes;
 	for ( i=0 ; i<count ; ++i, ++pNode)
 	{
 		if (pNode->contents == -1)
@@ -2170,7 +2170,7 @@ void Mod_LoadNodes( void )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadLeafs_Version_0( CMapLoadHelper &lh )
+void Mod_LoadLeafs_Version_0(worldbrushdata_t* pBrushData, CMapLoadHelper &lh )
 {
 	Vector mins( 0, 0, 0 ), maxs( 0, 0, 0 );
 	dleaf_version_0_t 	*in;
@@ -2183,14 +2183,14 @@ void Mod_LoadLeafs_Version_0( CMapLoadHelper &lh )
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleaf_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafs" ) );
 
-	lh.GetMap()->leafs = out;
-	lh.GetMap()->numleafs = count;
+	pBrushData->leafs = out;
+	pBrushData->numleafs = count;
 
 	// one sample per leaf
-	lh.GetMap()->m_pLeafAmbient = (mleafambientindex_t *)Hunk_AllocName( count * sizeof(*lh.GetMap()->m_pLeafAmbient), "LeafAmbient" );
-	lh.GetMap()->m_pAmbientSamples = (mleafambientlighting_t *)Hunk_AllocName( count * sizeof(*lh.GetMap()->m_pAmbientSamples), "LeafAmbientSamples" );
-	mleafambientindex_t *pTable = lh.GetMap()->m_pLeafAmbient;
-	mleafambientlighting_t *pSamples = lh.GetMap()->m_pAmbientSamples;
+	pBrushData->m_pLeafAmbient = (mleafambientindex_t *)Hunk_AllocName( count * sizeof(*pBrushData->m_pLeafAmbient), "LeafAmbient" );
+	pBrushData->m_pAmbientSamples = (mleafambientlighting_t *)Hunk_AllocName( count * sizeof(*pBrushData->m_pAmbientSamples), "LeafAmbientSamples" );
+	mleafambientindex_t *pTable = pBrushData->m_pLeafAmbient;
+	mleafambientlighting_t *pSamples = pBrushData->m_pAmbientSamples;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -2218,7 +2218,7 @@ void Mod_LoadLeafs_Version_0( CMapLoadHelper &lh )
 		out->area = in->area;
 		out->flags = in->flags;
 /*
-		out->firstmarksurface = lh.GetMap()->marksurfaces + in->firstleafface;
+		out->firstmarksurface = pBrushData->marksurfaces + in->firstleafface;
 */
 		out->firstmarksurface = in->firstleafface;
 		out->nummarksurfaces = in->numleaffaces;
@@ -2236,7 +2236,7 @@ void Mod_LoadLeafs_Version_0( CMapLoadHelper &lh )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadLeafs_Version_1( CMapLoadHelper &lh, CMapLoadHelper &ambientLightingLump, CMapLoadHelper &ambientLightingTable )
+void Mod_LoadLeafs_Version_1(worldbrushdata_t* pBrushData, CMapLoadHelper &lh, CMapLoadHelper &ambientLightingLump, CMapLoadHelper &ambientLightingTable )
 {
 	Vector mins( 0, 0, 0 ), maxs( 0, 0, 0 );
 	dleaf_t 	*in;
@@ -2249,8 +2249,8 @@ void Mod_LoadLeafs_Version_1( CMapLoadHelper &lh, CMapLoadHelper &ambientLightin
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleaf_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafs" ) );
 
-	lh.GetMap()->leafs = out;
-	lh.GetMap()->numleafs = count;
+	pBrushData->leafs = out;
+	pBrushData->numleafs = count;
 
 	if ( ambientLightingLump.LumpVersion() != LUMP_LEAF_AMBIENT_LIGHTING_VERSION || ambientLightingTable.LumpSize() == 0 )
 	{
@@ -2262,10 +2262,10 @@ void Mod_LoadLeafs_Version_1( CMapLoadHelper &lh, CMapLoadHelper &ambientLightin
 			Assert( ambientLightingLump.LumpSize() % sizeof( CompressedLightCube ) == 0 );
 			Assert( ambientLightingLump.LumpSize() / sizeof( CompressedLightCube ) == lh.LumpSize() / sizeof( dleaf_t ) );
 		}
-		lh.GetMap()->m_pLeafAmbient = (mleafambientindex_t *)Hunk_AllocName( count * sizeof(*lh.GetMap()->m_pLeafAmbient), "LeafAmbient" );
-		lh.GetMap()->m_pAmbientSamples = (mleafambientlighting_t *)Hunk_AllocName( count * sizeof(*lh.GetMap()->m_pAmbientSamples), "LeafAmbientSamples" );
-		mleafambientindex_t *pTable = lh.GetMap()->m_pLeafAmbient;
-		mleafambientlighting_t *pSamples = lh.GetMap()->m_pAmbientSamples;
+		pBrushData->m_pLeafAmbient = (mleafambientindex_t *)Hunk_AllocName( count * sizeof(*pBrushData->m_pLeafAmbient), "LeafAmbient" );
+		pBrushData->m_pAmbientSamples = (mleafambientlighting_t *)Hunk_AllocName( count * sizeof(*pBrushData->m_pAmbientSamples), "LeafAmbientSamples" );
+		mleafambientindex_t *pTable = pBrushData->m_pLeafAmbient;
+		mleafambientlighting_t *pSamples = pBrushData->m_pAmbientSamples;
 		Vector gray(0.5, 0.5, 0.5);
 		ColorRGBExp32 grayColor;
 		VectorToColorRGBExp32( gray, grayColor );
@@ -2293,10 +2293,10 @@ void Mod_LoadLeafs_Version_1( CMapLoadHelper &lh, CMapLoadHelper &ambientLightin
 		Assert( ambientLightingLump.LumpSize() % sizeof( dleafambientlighting_t ) == 0 );
 		Assert( ambientLightingTable.LumpSize() % sizeof( dleafambientindex_t ) == 0 );
 		Assert((ambientLightingTable.LumpSize() / sizeof(dleafambientindex_t)) == (unsigned)count);	// should have one of these per leaf
-		lh.GetMap()->m_pLeafAmbient = (mleafambientindex_t *)Hunk_AllocName( ambientLightingTable.LumpSize(), "LeafAmbient" );
-		lh.GetMap()->m_pAmbientSamples = (mleafambientlighting_t *)Hunk_AllocName( ambientLightingLump.LumpSize(), "LeafAmbientSamples" );
-		Q_memcpy( lh.GetMap()->m_pLeafAmbient, ambientLightingTable.LumpBase(), ambientLightingTable.LumpSize() );
-		Q_memcpy( lh.GetMap()->m_pAmbientSamples, ambientLightingLump.LumpBase(), ambientLightingLump.LumpSize() );
+		pBrushData->m_pLeafAmbient = (mleafambientindex_t *)Hunk_AllocName( ambientLightingTable.LumpSize(), "LeafAmbient" );
+		pBrushData->m_pAmbientSamples = (mleafambientlighting_t *)Hunk_AllocName( ambientLightingLump.LumpSize(), "LeafAmbientSamples" );
+		Q_memcpy( pBrushData->m_pLeafAmbient, ambientLightingTable.LumpBase(), ambientLightingTable.LumpSize() );
+		Q_memcpy( pBrushData->m_pAmbientSamples, ambientLightingLump.LumpBase(), ambientLightingLump.LumpSize() );
 	}
 
 
@@ -2319,7 +2319,7 @@ void Mod_LoadLeafs_Version_1( CMapLoadHelper &lh, CMapLoadHelper &ambientLightin
 		out->area = in->area;
 		out->flags = in->flags;
 /*
-		out->firstmarksurface = lh.GetMap()->marksurfaces + in->firstleafface;
+		out->firstmarksurface = pBrushData->marksurfaces + in->firstleafface;
 */
 		out->firstmarksurface = in->firstleafface;
 		out->nummarksurfaces = in->numleaffaces;
@@ -2331,27 +2331,27 @@ void Mod_LoadLeafs_Version_1( CMapLoadHelper &lh, CMapLoadHelper &ambientLightin
 	}	
 }
 
-void Mod_LoadLeafs( void )
+void Mod_LoadLeafs(worldbrushdata_t* pBrushData)
 {
 	CMapLoadHelper lh( LUMP_LEAFS );
 
 	switch( lh.LumpVersion() )
 	{
 	case 0:
-		Mod_LoadLeafs_Version_0( lh );
+		Mod_LoadLeafs_Version_0(pBrushData, lh );
 		break;
 	case 1:
 		if( g_pMaterialSystemHardwareConfig->GetHDREnabled() && CMapLoadHelper::LumpSize( LUMP_LEAF_AMBIENT_LIGHTING_HDR ) > 0 )
 		{
 			CMapLoadHelper mlh( LUMP_LEAF_AMBIENT_LIGHTING_HDR );
 			CMapLoadHelper mlhTable( LUMP_LEAF_AMBIENT_INDEX_HDR );
-			Mod_LoadLeafs_Version_1( lh, mlh, mlhTable );
+			Mod_LoadLeafs_Version_1(pBrushData, lh, mlh, mlhTable );
 		}
 		else
 		{
 			CMapLoadHelper mlh( LUMP_LEAF_AMBIENT_LIGHTING );
 			CMapLoadHelper mlhTable( LUMP_LEAF_AMBIENT_INDEX );
-			Mod_LoadLeafs_Version_1( lh, mlh, mlhTable ); 
+			Mod_LoadLeafs_Version_1(pBrushData, lh, mlh, mlhTable );
 		}
 		break;
 	default:
@@ -2360,22 +2360,22 @@ void Mod_LoadLeafs( void )
 		break;
 	}
 
-	worldbrushdata_t *pMap = lh.GetMap();
+	//worldbrushdata_t *pMap = &g_ModelLoader.m_worldBrushData;
 	cleaf_t *pCLeaf = GetCollisionBSPData()->GetLeafs(0);
-	for ( int i = 0; i < pMap->numleafs; i++ )
+	for ( int i = 0; i < pBrushData->numleafs; i++ )
 	{
-		pMap->leafs[i].dispCount = pCLeaf[i].dispCount;
-		pMap->leafs[i].dispListStart = pCLeaf[i].dispListStart;
+		pBrushData->leafs[i].dispCount = pCLeaf[i].dispCount;
+		pBrushData->leafs[i].dispListStart = pCLeaf[i].dispListStart;
 	}
 	// HACKHACK: Copy over the shared global list here.  Hunk_Alloc a copy?
-	pMap->m_pDispInfoReferences = GetCollisionBSPData()->GetDispListBase();
-	pMap->m_nDispInfoReferences = GetCollisionBSPData()->GetDispListCount();
+	pBrushData->m_pDispInfoReferences = GetCollisionBSPData()->GetDispListBase();
+	pBrushData->m_nDispInfoReferences = GetCollisionBSPData()->GetDispListCount();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadLeafWaterData( void )
+void Mod_LoadLeafWaterData(worldbrushdata_t* pBrushData)
 {
 	dleafwaterdata_t *in;
 	mleafwaterdata_t *out;
@@ -2389,8 +2389,8 @@ void Mod_LoadLeafWaterData( void )
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleafwaterdata_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafwaterdata" ) );
 
-	lh.GetMap()->leafwaterdata = out;
-	lh.GetMap()->numleafwaterdata = count;
+	pBrushData->leafwaterdata = out;
+	pBrushData->numleafwaterdata = count;
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
 		out->minZ = in->minZ;
@@ -2400,12 +2400,12 @@ void Mod_LoadLeafWaterData( void )
 	}
 	if ( count == 1 )
 	{
-		worldbrushdata_t *brush = lh.GetMap();
-		for ( i = 0; i < brush->numleafs; i++ )
+		//worldbrushdata_t *brush = &g_ModelLoader.m_worldBrushData;
+		for ( i = 0; i < pBrushData->numleafs; i++ )
 		{
-			if ( brush->leafs[i].leafWaterDataID >= 0 )
+			if (pBrushData->leafs[i].leafWaterDataID >= 0 )
 			{
-				brush->leafwaterdata[0].firstLeafIndex = i;
+				pBrushData->leafwaterdata[0].firstLeafIndex = i;
 				break;
 			}
 		}
@@ -2415,7 +2415,7 @@ void Mod_LoadLeafWaterData( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadCubemapSamples( void )
+void Mod_LoadCubemapSamples(worldbrushdata_t* pBrushData)
 {
 	char textureName[512];
 	char loadName[ MAX_PATH ];
@@ -2433,8 +2433,8 @@ void Mod_LoadCubemapSamples( void )
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mcubemapsample_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "cubemapsample" ) );
 
-	lh.GetMap()->m_pCubemapSamples = out;
-	lh.GetMap()->m_nCubemapSamples = count;
+	pBrushData->m_pCubemapSamples = out;
+	pBrushData->m_nCubemapSamples = count;
 
 	bool bHDR =  g_pMaterialSystemHardwareConfig->GetHDREnabled(); //g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE;
 	int nCreateFlags = bHDR ? 0 : TEXTUREFLAGS_SRGB;
@@ -2483,7 +2483,7 @@ void Mod_LoadCubemapSamples( void )
 
 	if ( count )
 	{
-		pRenderContext->BindLocalCubemap( lh.GetMap()->m_pCubemapSamples[0].pTexture );
+		pRenderContext->BindLocalCubemap( pBrushData->m_pCubemapSamples[0].pTexture );
 	}
 	else
 	{
@@ -2507,7 +2507,7 @@ void Mod_LoadCubemapSamples( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadLeafMinDistToWater( void )
+void Mod_LoadLeafMinDistToWater(worldbrushdata_t* pBrushData)
 {
 	CMapLoadHelper lh( LUMP_LEAFMINDISTTOWATER );
 
@@ -2530,7 +2530,7 @@ void Mod_LoadLeafMinDistToWater( void )
 		// 1) there is no water in the map
 		// 2) we don't have this lump in the bsp file (old bsp file)
 		// 3) we aren't going to use it because we are on old hardware.
-		lh.GetMap()->m_LeafMinDistToWater = NULL;
+		pBrushData->m_LeafMinDistToWater = NULL;
 	}
 	else
 	{
@@ -2545,14 +2545,14 @@ void Mod_LoadLeafMinDistToWater( void )
 		out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafmindisttowater" ) );
 
 		memcpy( out, in, sizeof( out[0] ) * count );
-		lh.GetMap()->m_LeafMinDistToWater = out;
+		pBrushData->m_LeafMinDistToWater = out;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Mod_LoadMarksurfaces( void )
+void Mod_LoadMarksurfaces(worldbrushdata_t* pBrushData)
 {	
 	int		i, j, count;
 	unsigned short	*in;
@@ -2565,7 +2565,7 @@ void Mod_LoadMarksurfaces( void )
 	count = lh.LumpSize() / sizeof(*in);
 	SurfaceHandle_t	*tempDiskData = new SurfaceHandle_t[count];
 
-	worldbrushdata_t *pBrushData = lh.GetMap();
+	//worldbrushdata_t *pBrushData = &g_ModelLoader.m_worldBrushData;
 	pBrushData->marksurfaces = tempDiskData;
 	pBrushData->nummarksurfaces = count;
 
@@ -2574,7 +2574,7 @@ void Mod_LoadMarksurfaces( void )
 	for ( i=0 ; i<count ; i++)
 	{
 		j = in[i];
-		if (j >= lh.GetMap()->numsurfaces)
+		if (j >= pBrushData->numsurfaces)
 			Host_Error ("Mod_LoadMarksurfaces: bad surface number");
 		SurfaceHandle_t surfID = SurfaceHandleFromIndex( j, pBrushData );
 		tempDiskData[i] = surfID;
@@ -2639,7 +2639,7 @@ void Mod_LoadMarksurfaces( void )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadSurfedges( medge_t *pedges )
+void Mod_LoadSurfedges(worldbrushdata_t* pBrushData, medge_t *pedges )
 {	
 	int		i, count;
 	int		*in;
@@ -2656,8 +2656,8 @@ void Mod_LoadSurfedges( medge_t *pedges )
 		lh.GetMapName(), count);
 	out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "surfedges" ) );
 
-	lh.GetMap()->vertindices = out;
-	lh.GetMap()->numvertindices = count;
+	pBrushData->vertindices = out;
+	pBrushData->numvertindices = count;
 
 	for ( i=0 ; i<count ; i++)
 	{
@@ -2680,11 +2680,11 @@ void Mod_LoadSurfedges( medge_t *pedges )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void Mod_LoadPlanes( void )
+void Mod_LoadPlanes(worldbrushdata_t* pBrushData)
 {
 	// Don't bother loading them, they're already stored
-	s_pMap->planes = GetCollisionBSPData()->GetPlane(0);
-	s_pMap->numplanes = GetCollisionBSPData()->GetPlanesCount();
+	pBrushData->planes = GetCollisionBSPData()->GetPlane(0);
+	pBrushData->numplanes = GetCollisionBSPData()->GetPlanesCount();
 }
 
 
@@ -4243,13 +4243,13 @@ void Mod_SetMaterialVarFlag( model_t *pModel, unsigned int uiFlag, bool on )
 // Used to compute which surfaces are in water or not
 //-----------------------------------------------------------------------------
 
-static void MarkWaterSurfaces_ProcessLeafNode( mleaf_t *pLeaf )
+static void MarkWaterSurfaces_ProcessLeafNode(model_t* world, mleaf_t *pLeaf )
 {
 	int i;
 
 	int flags = ( pLeaf->leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
 
-	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &world->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 
 	for( i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
@@ -4271,7 +4271,7 @@ static void MarkWaterSurfaces_ProcessLeafNode( mleaf_t *pLeaf )
 	// I'm going to mark it as being in water, and vice versa.
 	for ( i = 0; i < pLeaf->dispCount; i++ )
 	{
-		IDispInfo *pDispInfo = MLeaf_Disaplcement( pLeaf, i );
+		IDispInfo *pDispInfo = MLeaf_Disaplcement( pLeaf, i, world->brush.pShared);
 
 		if ( pDispInfo )
 		{
@@ -4282,7 +4282,7 @@ static void MarkWaterSurfaces_ProcessLeafNode( mleaf_t *pLeaf )
 }
 
 
-void MarkWaterSurfaces_r( mnode_t *node )
+void MarkWaterSurfaces_r(model_t* world, mnode_t *node )
 {
 	// no polygons in solid nodes
 	if (node->contents == CONTENTS_SOLID)
@@ -4291,12 +4291,12 @@ void MarkWaterSurfaces_r( mnode_t *node )
 	// if a leaf node, . .mark all the polys as to whether or not they are in water.
 	if (node->contents >= 0)
 	{
-		MarkWaterSurfaces_ProcessLeafNode( (mleaf_t *)node );
+		MarkWaterSurfaces_ProcessLeafNode(world, (mleaf_t *)node );
 		return;
 	}
 
-	MarkWaterSurfaces_r( node->children[0] );
-	MarkWaterSurfaces_r( node->children[1] );
+	MarkWaterSurfaces_r(world, node->children[0] );
+	MarkWaterSurfaces_r(world, node->children[1] );
 }
 
 
@@ -4346,8 +4346,8 @@ bool Mod_MarkWaterSurfaces( model_t *pModel )
 
 	// garymcthack!!!!!!!!
 	// host_state.worldmodel isn't set at this point, so. . . . 
-	host_state.SetWorldModel( pModel );
-	MarkWaterSurfaces_r( pModel->brush.pShared->nodes );
+	//host_state.SetWorldModel( pModel );
+	MarkWaterSurfaces_r( pModel, pModel->brush.pShared->nodes );
 	for ( int i = 0; i < pModel->brush.pShared->numsurfaces; i++ )
 	{
 		SurfaceHandle_t surfID = SurfaceHandleFromIndex( i, pModel->brush.pShared );
@@ -4359,7 +4359,7 @@ bool Mod_MarkWaterSurfaces( model_t *pModel )
 		}
 		MSurf_SetSortGroup( surfID, sortGroup );
 	}
-	host_state.SetWorldModel( pSaveModel );
+	//host_state.SetWorldModel( pSaveModel );
 
 	return bHasWaterSurfaces;
 }
@@ -4371,45 +4371,45 @@ bool Mod_MarkWaterSurfaces( model_t *pModel )
 class CBrushBSPIterator : public ISpatialLeafEnumerator
 {
 public:
-	CBrushBSPIterator( model_t *pWorld, model_t *pBrush )
+	CBrushBSPIterator(void)//model_t *pWorld, model_t *pBrush
 	{
-		m_pWorld = pWorld;
-		m_pBrush = pBrush;
-		m_pShared = pBrush->brush.pShared;
+		//m_pWorld = pWorld;
+		//m_pBrush = pBrush;
+		//m_pShared = pBrush->brush.pShared;
 		m_count = 0;
 	}
-	bool EnumerateLeaf( int leaf, intp )
+	bool EnumerateLeaf(model_t* world, int leaf, intp )
 	{
 		// garymcthack - need to test identity brush models
-		int flags = ( m_pShared->leafs[leaf].leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
-		MarkModelSurfaces( flags );
+		int flags = (world->brush.pShared->leafs[leaf].leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
+		MarkModelSurfaces(world, flags );
 		m_count++;
 		return true;
 	}
 
-	void MarkModelSurfaces( int flags )
+	void MarkModelSurfaces(model_t* world, int flags )
 	{
 		// Iterate over all this models surfaces
-		int surfaceCount = m_pBrush->brush.nummodelsurfaces;
+		int surfaceCount = world->brush.nummodelsurfaces;
 		for (int i = 0; i < surfaceCount; ++i)
 		{
-			SurfaceHandle_t surfID = SurfaceHandleFromIndex( m_pBrush->brush.firstmodelsurface + i, m_pShared ); 
+			SurfaceHandle_t surfID = SurfaceHandleFromIndex(world->brush.firstmodelsurface + i, world->brush.pShared); // m_pShared
 			MSurf_Flags( surfID ) &= ~(SURFDRAW_ABOVEWATER | SURFDRAW_UNDERWATER);
 			MSurf_Flags( surfID ) |= flags;
 		}
 	}
 
-	void CheckSurfaces()
+	void CheckSurfaces(model_t* world)
 	{
 		if ( !m_count )
 		{
-			MarkModelSurfaces( SURFDRAW_ABOVEWATER );
+			MarkModelSurfaces(world, SURFDRAW_ABOVEWATER );
 		}
 	}
 
-	model_t* m_pWorld;
-	model_t* m_pBrush;
-	worldbrushdata_t *m_pShared;
+	//model_t* m_pWorld;
+	//model_t* m_pBrush;
+	//worldbrushdata_t *m_pShared;
 	int m_count;
 };
 
@@ -4422,12 +4422,12 @@ static void MarkBrushModelWaterSurfaces( model_t* world,
 	// set up at that time however, so I have to fly through these crazy hoops.
 	// Massive suckage.
 
-	model_t* pTemp = host_state.worldmodel;
-	CBrushBSPIterator brushIterator( world, brush );
-	host_state.SetWorldModel( world );
-	g_pToolBSPTree->EnumerateLeavesInBox( mins, maxs, &brushIterator, (intp)brush );
-	brushIterator.CheckSurfaces();
-	host_state.SetWorldModel( pTemp );
+	//model_t* pTemp = host_state.worldmodel;
+	CBrushBSPIterator brushIterator;
+	//host_state.SetWorldModel( world );
+	g_pToolBSPTree->EnumerateLeavesInBox(world, mins, maxs, &brushIterator, (intp)brush );
+	brushIterator.CheckSurfaces(world);
+	//host_state.SetWorldModel( pTemp );
 }
 
 int g_nMapLoadCount = 0;
@@ -4455,8 +4455,8 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 	SetWorldModel( mod );
 
 	// point at the shared world/brush data
-	mod->brush.pShared = &m_worldBrushData;
-	mod->brush.renderHandle = 0;
+	//mod->brush.pShared = &m_worldBrushData;
+	//mod->brush.renderHandle = 0;
 
 	// HDR and features must be established first
 	COM_TimestampedLog( "  Map_CheckForHDR" );
@@ -4477,26 +4477,26 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 	CMapLoadHelper::Init( mod, m_szLoadName );
 
 	COM_TimestampedLog( "  Mod_LoadVertices" );
-	Mod_LoadVertices();
+	Mod_LoadVertices(mod->brush.pShared);
 	
 	COM_TimestampedLog( "  Mod_LoadEdges" );
-	medge_t *pedges = Mod_LoadEdges();
+	medge_t *pedges = Mod_LoadEdges(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadSurfedges" );
-	Mod_LoadSurfedges( pedges );
+	Mod_LoadSurfedges(mod->brush.pShared, pedges );
 
 	COM_TimestampedLog( "  Mod_LoadPlanes" );
-	Mod_LoadPlanes();
+	Mod_LoadPlanes(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadOcclusion" );
-	Mod_LoadOcclusion();
+	Mod_LoadOcclusion(mod->brush.pShared);
 
 	// texdata needs to load before texinfo
 	COM_TimestampedLog( "  Mod_LoadTexdata" );
-	Mod_LoadTexdata();
+	Mod_LoadTexdata(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadTexinfo" );
-	Mod_LoadTexinfo();
+	Mod_LoadTexinfo(mod->brush.pShared);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4507,22 +4507,22 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && CMapLoadHelper::LumpSize( LUMP_LIGHTING_HDR ) > 0 )
 	{
 		CMapLoadHelper mlh( LUMP_LIGHTING_HDR );
-		Mod_LoadLighting( mlh );
+		Mod_LoadLighting(mod->brush.pShared, mlh );
 	}
 	else
 	{
 		CMapLoadHelper mlh( LUMP_LIGHTING );
-		Mod_LoadLighting( mlh );
+		Mod_LoadLighting(mod->brush.pShared, mlh );
 	}
 
 	COM_TimestampedLog( "  Mod_LoadPrimitives" );
-	Mod_LoadPrimitives();
+	Mod_LoadPrimitives(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadPrimVerts" );
-	Mod_LoadPrimVerts();
+	Mod_LoadPrimVerts(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadPrimIndices" );
-	Mod_LoadPrimIndices();
+	Mod_LoadPrimIndices(mod->brush.pShared);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4530,13 +4530,13 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	// faces need to be loaded before vertnormals
 	COM_TimestampedLog( "  Mod_LoadFaces" );
-	Mod_LoadFaces();
+	Mod_LoadFaces(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadVertNormals" );
-	Mod_LoadVertNormals();
+	Mod_LoadVertNormals(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadVertNormalIndices" );
-	Mod_LoadVertNormalIndices();
+	Mod_LoadVertNormalIndices(mod->brush.pShared);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4544,28 +4544,28 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	// note leafs must load befor marksurfaces
 	COM_TimestampedLog( "  Mod_LoadLeafs" );
-	Mod_LoadLeafs();
+	Mod_LoadLeafs(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadMarksurfaces" );
-    Mod_LoadMarksurfaces();
+    Mod_LoadMarksurfaces(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadNodes" );
-	Mod_LoadNodes();
+	Mod_LoadNodes(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadLeafWaterData" );
-	Mod_LoadLeafWaterData();
+	Mod_LoadLeafWaterData(mod->brush.pShared);
 
 	COM_TimestampedLog( "  Mod_LoadCubemapSamples" );
-	Mod_LoadCubemapSamples();
+	Mod_LoadCubemapSamples(mod->brush.pShared);
 
 #ifndef SWDS
 	// UNDONE: Does the cmodel need worldlights?
 	COM_TimestampedLog( "  OverlayMgr()->LoadOverlays" );
-	OverlayMgr()->LoadOverlays();	
+	OverlayMgr()->LoadOverlays(mod->brush.pShared);//&g_ModelLoader.m_worldBrushData
 #endif
 
 	COM_TimestampedLog( "  Mod_LoadLeafMinDistToWater" );
-	Mod_LoadLeafMinDistToWater();
+	Mod_LoadLeafMinDistToWater(mod->brush.pShared);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4575,36 +4575,36 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 	Mod_LoadLump( mod, 
 		LUMP_CLIPPORTALVERTS, 
 		va( "%s [%s]", m_szLoadName, "clipportalverts" ),
-		sizeof(m_worldBrushData.m_pClipPortalVerts[0]), 
-		(void**)&m_worldBrushData.m_pClipPortalVerts,
-		&m_worldBrushData.m_nClipPortalVerts );
+		sizeof(mod->brush.pShared->m_pClipPortalVerts[0]),
+		(void**)&mod->brush.pShared->m_pClipPortalVerts,
+		&mod->brush.pShared->m_nClipPortalVerts );
 
 	COM_TimestampedLog( "  LUMP_AREAPORTALS" );
 	Mod_LoadLump( mod, 
 		LUMP_AREAPORTALS, 
 		va( "%s [%s]", m_szLoadName, "areaportals" ),
-		sizeof(m_worldBrushData.m_pAreaPortals[0]), 
-		(void**)&m_worldBrushData.m_pAreaPortals,
-		&m_worldBrushData.m_nAreaPortals );
+		sizeof(mod->brush.pShared->m_pAreaPortals[0]),
+		(void**)&mod->brush.pShared->m_pAreaPortals,
+		&mod->brush.pShared->m_nAreaPortals );
 	
 	COM_TimestampedLog( "  LUMP_AREAS" );
 	Mod_LoadLump( mod, 
 		LUMP_AREAS, 
 		va( "%s [%s]", m_szLoadName, "areas" ),
-		sizeof(m_worldBrushData.m_pAreas[0]), 
-		(void**)&m_worldBrushData.m_pAreas,
-		&m_worldBrushData.m_nAreas );
+		sizeof(mod->brush.pShared->m_pAreas[0]),
+		(void**)&mod->brush.pShared->m_pAreas,
+		&mod->brush.pShared->m_nAreas );
 
 	COM_TimestampedLog( "  Mod_LoadWorldlights" );
 	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && CMapLoadHelper::LumpSize( LUMP_WORLDLIGHTS_HDR ) > 0 )
 	{
 		CMapLoadHelper mlh( LUMP_WORLDLIGHTS_HDR );
-		Mod_LoadWorldlights( mlh, true );
+		Mod_LoadWorldlights(mod->brush.pShared, mlh, true );
 	}
 	else
 	{
 		CMapLoadHelper mlh( LUMP_WORLDLIGHTS );
-		Mod_LoadWorldlights( mlh, false );
+		Mod_LoadWorldlights(mod->brush.pShared, mlh, false );
 	}
 
 	COM_TimestampedLog( "  Mod_LoadGameLumpDict" );
@@ -4625,7 +4625,7 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	COM_TimestampedLog( "  Mod_LoadSubmodels" );
 	CUtlVector<mmodel_t> submodelList;
-	Mod_LoadSubmodels( submodelList );
+	Mod_LoadSubmodels(mod->brush.pShared, submodelList );
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4694,9 +4694,9 @@ void CModelLoader::SetupSubModels( model_t *mod, CUtlVector<mmodel_t> &list )
 {
 	int	i;
 
-	m_InlineModels.SetCount( m_worldBrushData.numsubmodels );
+	m_InlineModels.SetCount(mod->brush.pShared->numsubmodels );
 
-	for (i=0 ; i<m_worldBrushData.numsubmodels ; i++)
+	for (i=0 ; i< mod->brush.pShared->numsubmodels ; i++)
 	{
 		model_t		*starmod;
 		mmodel_t	*bm;
@@ -4709,7 +4709,7 @@ void CModelLoader::SetupSubModels( model_t *mod, CUtlVector<mmodel_t> &list )
 		starmod->brush.firstmodelsurface = bm->firstface;
 		starmod->brush.nummodelsurfaces = bm->numfaces;
 		starmod->brush.firstnode = bm->headnode;
-		if ( starmod->brush.firstnode >= m_worldBrushData.numnodes )
+		if ( starmod->brush.firstnode >= mod->brush.pShared->numnodes )
 		{
 			Sys_Error( "Inline model %i has bad firstnode", i );
 		}
@@ -4743,7 +4743,7 @@ void CModelLoader::Map_UnloadModel( model_t *mod )
 	OverlayMgr()->UnloadOverlays();
 #endif
 
-	DeallocateLightingData( &m_worldBrushData );
+	DeallocateLightingData(mod->brush.pShared);
 
 #ifndef SWDS
 	DispInfo_ReleaseMaterialSystemObjects( mod );
@@ -4753,19 +4753,19 @@ void CModelLoader::Map_UnloadModel( model_t *mod )
 	
 #ifndef SWDS
 	// Free decals in displacements.
-	R_DecalTerm( &m_worldBrushData, true );
+	R_DecalTerm(mod->brush.pShared, true );
 #endif
 
-	if ( m_worldBrushData.hDispInfos )
+	if (mod->brush.pShared->hDispInfos )
 	{
-		DispInfo_DeleteArray( m_worldBrushData.hDispInfos );
-		m_worldBrushData.hDispInfos = NULL;
+		DispInfo_DeleteArray(mod->brush.pShared->hDispInfos );
+		mod->brush.pShared->hDispInfos = NULL;
 	}
 
 	// Model loader loads world model materials, unload them here
-	for( int texinfoID = 0; texinfoID < m_worldBrushData.numtexinfo; texinfoID++ )
+	for( int texinfoID = 0; texinfoID < mod->brush.pShared->numtexinfo; texinfoID++ )
 	{
-		mtexinfo_t *pTexinfo = &m_worldBrushData.texinfo[texinfoID];
+		mtexinfo_t *pTexinfo = &mod->brush.pShared->texinfo[texinfoID];
 		if ( pTexinfo )
 		{
 			GL_UnloadMaterial( pTexinfo->material );
@@ -4775,7 +4775,7 @@ void CModelLoader::Map_UnloadModel( model_t *mod )
 	MaterialSystem_DestroySortinfo();
 
 	// Don't store any reference to it here
-	ClearWorldModel();
+	ClearWorldModel(mod);
 	Map_SetRenderInfoAllocated( false );
 }
 
@@ -5192,16 +5192,20 @@ void CModelLoader::SetWorldModel( model_t *mod )
 {
 	Assert( mod );
 	m_pWorldModel = mod;
+	// point at the shared world/brush data
+	mod->brush.pShared = &m_worldBrushData;
+	mod->brush.renderHandle = 0;
 //	host_state.SetWorldModel( mod ); // garymcthack
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CModelLoader::ClearWorldModel( void )
+void CModelLoader::ClearWorldModel(model_t* mod)
 {
+	Assert(m_pWorldModel==mod);
 	m_pWorldModel = NULL;
-	memset( &m_worldBrushData, 0, sizeof(m_worldBrushData) );
+	memset( &mod->brush.pShared, 0, sizeof(mod->brush.pShared) );
 	m_InlineModels.Purge();
 }
 
@@ -5218,12 +5222,12 @@ bool CModelLoader::IsWorldModelSet( void )
 // Purpose: 
 // Output : int
 //-----------------------------------------------------------------------------
-int CModelLoader::GetNumWorldSubmodels( void )
+int CModelLoader::GetNumWorldSubmodels()
 {
 	if ( !IsWorldModelSet() )
 		return 0;
 
-	return m_worldBrushData.numsubmodels;
+	return m_pWorldModel->brush.pShared->numsubmodels;
 }
 
 //-----------------------------------------------------------------------------

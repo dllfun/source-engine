@@ -10,6 +10,7 @@
 //=============================================================================//
 
 #include "tier0/platform.h"
+#include "../engine/gl_model_private.h"
 
 #if !defined( BSPTREEDATA )
 #define BSPTREEDATA
@@ -58,20 +59,20 @@ public:
 	// that passes the test; return true to continue enumerating,
 	// false to stop
 
-	virtual bool EnumerateLeaf( int leaf, intp context ) = 0;
+	virtual bool EnumerateLeaf(model_t* world, int leaf, intp context ) = 0;
 };
 
 abstract_class ISpatialQuery
 {
 public:
 	// Returns the number of leaves
-	virtual int LeafCount() const = 0;
+	virtual int LeafCount(model_t* world) const = 0;
 
 	// Enumerates the leaves along a ray, box, etc.
-	virtual bool EnumerateLeavesAtPoint( Vector const& pt, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
-	virtual bool EnumerateLeavesInBox( Vector const& mins, Vector const& maxs, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
-	virtual bool EnumerateLeavesInSphere( Vector const& center, float radius, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
-	virtual bool EnumerateLeavesAlongRay( Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesAtPoint(model_t* world, Vector const& pt, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesInBox(model_t* world, Vector const& mins, Vector const& maxs, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesInSphere(model_t* world, Vector const& center, float radius, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesAlongRay(model_t* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
 };
 
 

@@ -1618,7 +1618,7 @@ static ConVar r_flashlightrendermodels(  "r_flashlightrendermodels", "1" );
 
 
 
-int LeafToIndex( mleaf_t* pLeaf );
+int LeafToIndex(model_t* world, mleaf_t* pLeaf );
 
 
 
@@ -3342,9 +3342,9 @@ void R_DrawIdentityBrushModel( IWorldRenderList *pRenderListIn, model_t *model )
 //-----------------------------------------------------------------------------
 // Converts leaf pointer to index
 //-----------------------------------------------------------------------------
-inline int LeafToIndex( mleaf_t* pLeaf )
+inline int LeafToIndex(model_t* world, mleaf_t* pLeaf )
 {
-	return pLeaf - host_state.worldmodel->brush.pShared->leafs;
+	return pLeaf - world->brush.pShared->leafs;
 }
 
 
@@ -3383,7 +3383,7 @@ struct EnumLeafSphereInfo_t
 //-----------------------------------------------------------------------------
 // Finds all leaves of the BSP tree within a particular volume
 //-----------------------------------------------------------------------------
-static bool EnumerateLeafInBox_R(mnode_t *node, EnumLeafBoxInfo_t& info )
+static bool EnumerateLeafInBox_R(model_t* world, mnode_t *node, EnumLeafBoxInfo_t& info )
 {
 	// no polygons in solid nodes (don't report these leaves either)
 	if (node->contents == CONTENTS_SOLID)
@@ -3399,7 +3399,7 @@ static bool EnumerateLeafInBox_R(mnode_t *node, EnumLeafBoxInfo_t& info )
 	if (node->contents >= 0)
 	{
 		// if a leaf node, report it to the iterator...
-		return info.m_pIterator->EnumerateLeaf( LeafToIndex( (mleaf_t *)node ), info.m_nContext ); 
+		return info.m_pIterator->EnumerateLeaf(world, LeafToIndex(world, (mleaf_t *)node ), info.m_nContext ); 
 	}
 
 	// Does the node plane split the box?
@@ -3409,20 +3409,20 @@ static bool EnumerateLeafInBox_R(mnode_t *node, EnumLeafBoxInfo_t& info )
 	{
 		if (info.m_vecBoxMax[plane->type] <= plane->dist)
 		{
-			return EnumerateLeafInBox_R( node->children[1], info );
+			return EnumerateLeafInBox_R(world, node->children[1], info );
 		}
 		else if (info.m_vecBoxMin[plane->type] >= plane->dist)
 		{
-			return EnumerateLeafInBox_R( node->children[0], info );
+			return EnumerateLeafInBox_R(world, node->children[0], info );
 		}
 		else
 		{
 			// Here the box is split by the node
-			bool ret = EnumerateLeafInBox_R( node->children[0], info );
+			bool ret = EnumerateLeafInBox_R(world, node->children[0], info );
 			if (!ret)
 				return false;
 
-			return EnumerateLeafInBox_R( node->children[1], info );
+			return EnumerateLeafInBox_R(world, node->children[1], info );
 		}
 	}
 
@@ -3444,20 +3444,20 @@ static bool EnumerateLeafInBox_R(mnode_t *node, EnumLeafBoxInfo_t& info )
 
 	if (DotProduct( plane->normal, cornermax ) <= plane->dist)
 	{
-		return EnumerateLeafInBox_R( node->children[1], info );
+		return EnumerateLeafInBox_R(world, node->children[1], info );
 	}
 	else if (DotProduct( plane->normal, cornermin ) >= plane->dist)
 	{
-		return EnumerateLeafInBox_R( node->children[0], info );
+		return EnumerateLeafInBox_R(world, node->children[0], info );
 	}
 	else
 	{
 		// Here the box is split by the node
-		bool ret = EnumerateLeafInBox_R( node->children[0], info );
+		bool ret = EnumerateLeafInBox_R(world, node->children[0], info );
 		if (!ret)
 			return false;
 
-		return EnumerateLeafInBox_R( node->children[1], info );
+		return EnumerateLeafInBox_R(world, node->children[1], info );
 	}
 }
 
@@ -3605,7 +3605,7 @@ static bool EnumerateLeafInBox_R(mnode_t * RESTRICT node, const EnumLeafBoxInfo_
 //-----------------------------------------------------------------------------
 // Returns all leaves that lie within a spherical volume
 //-----------------------------------------------------------------------------
-bool EnumerateLeafInSphere_R( mnode_t *node, EnumLeafSphereInfo_t& info, int nTestFlags )
+bool EnumerateLeafInSphere_R(model_t* world, mnode_t *node, EnumLeafSphereInfo_t& info, int nTestFlags )
 {
 	while (true)
 	{
@@ -3626,7 +3626,7 @@ bool EnumerateLeafInSphere_R( mnode_t *node, EnumLeafSphereInfo_t& info, int nTe
 			}
 
 			// if a leaf node, report it to the iterator...
-			return info.m_pIterator->EnumerateLeaf( LeafToIndex( (mleaf_t *)node ), info.m_nContext ); 
+			return info.m_pIterator->EnumerateLeaf(world, LeafToIndex(world, (mleaf_t *)node ), info.m_nContext );
 		}
 		else if (nTestFlags)
 		{
@@ -3700,7 +3700,7 @@ bool EnumerateLeafInSphere_R( mnode_t *node, EnumLeafSphereInfo_t& info, int nTe
 		else
 		{
 			// Here the box is split by the node
-			if (!EnumerateLeafInSphere_R( node->children[0], info, nTestFlags ))
+			if (!EnumerateLeafInSphere_R(world, node->children[0], info, nTestFlags ))
 				return false;
 
 			node = node->children[1];
@@ -3713,7 +3713,7 @@ bool EnumerateLeafInSphere_R( mnode_t *node, EnumLeafSphereInfo_t& info, int nTe
 // Enumerate leaves along a non-extruded ray
 //-----------------------------------------------------------------------------
 
-static bool EnumerateLeavesAlongRay_R( mnode_t *node, Ray_t const& ray, 
+static bool EnumerateLeavesAlongRay_R(model_t* world, mnode_t *node, Ray_t const& ray,
 	float start, float end, ISpatialLeafEnumerator* pEnum, intp context )
 {
 	// no polygons in solid nodes (don't report these leaves either)
@@ -3724,7 +3724,7 @@ static bool EnumerateLeavesAlongRay_R( mnode_t *node, Ray_t const& ray,
 	if (node->contents >= 0)
 	{
 		// if a leaf node, report it to the iterator...
-		return pEnum->EnumerateLeaf( LeafToIndex( (mleaf_t *)node ), context ); 
+		return pEnum->EnumerateLeaf(world, LeafToIndex(world, (mleaf_t *)node ), context );
 	}
 	
 	// Determine which side of the node plane our points are on
@@ -3751,7 +3751,7 @@ static bool EnumerateLeavesAlongRay_R( mnode_t *node, Ray_t const& ray,
 	// just check the appropriate child
 	if ( (back < 0) == side )
 	{
-		return EnumerateLeavesAlongRay_R (node->children[side], ray, start, end, pEnum, context );
+		return EnumerateLeavesAlongRay_R (world, node->children[side], ray, start, end, pEnum, context );
 	}
 	
 	// calculate mid point
@@ -3759,12 +3759,12 @@ static bool EnumerateLeavesAlongRay_R( mnode_t *node, Ray_t const& ray,
 	float mid = start * (1.0f - frac) + end * frac;
 	
 	// go down front side	
-	bool ok = EnumerateLeavesAlongRay_R (node->children[side], ray, start, mid, pEnum, context );
+	bool ok = EnumerateLeavesAlongRay_R (world, node->children[side], ray, start, mid, pEnum, context );
 	if (!ok)
 		return ok;
 
 	// go down back side
-	return EnumerateLeavesAlongRay_R (node->children[!side], ray, mid, end, pEnum, context );
+	return EnumerateLeavesAlongRay_R (world, node->children[!side], ray, mid, end, pEnum, context );
 }
 
 
@@ -3772,7 +3772,7 @@ static bool EnumerateLeavesAlongRay_R( mnode_t *node, Ray_t const& ray,
 // Enumerate leaves along a non-extruded ray
 //-----------------------------------------------------------------------------
 
-static bool EnumerateLeavesAlongExtrudedRay_R( mnode_t *node, Ray_t const& ray, 
+static bool EnumerateLeavesAlongExtrudedRay_R(model_t* world, mnode_t *node, Ray_t const& ray,
 	float start, float end, ISpatialLeafEnumerator* pEnum, intp context )
 {
 	// no polygons in solid nodes (don't report these leaves either)
@@ -3783,7 +3783,7 @@ static bool EnumerateLeavesAlongExtrudedRay_R( mnode_t *node, Ray_t const& ray,
 	if (node->contents >= 0)
 	{
 		// if a leaf node, report it to the iterator...
-		return pEnum->EnumerateLeaf( LeafToIndex( (mleaf_t *)node ), context ); 
+		return pEnum->EnumerateLeaf(world, LeafToIndex(world, (mleaf_t *)node ), context );
 	}
 	
 	// Determine which side of the node plane our points are on
@@ -3814,12 +3814,12 @@ static bool EnumerateLeavesAlongExtrudedRay_R( mnode_t *node, Ray_t const& ray,
     if (t1 > offset && t2 > offset )
 //	if (t1 >= offset && t2 >= offset)
 	{
-		return EnumerateLeavesAlongExtrudedRay_R( node->children[0], ray,
+		return EnumerateLeavesAlongExtrudedRay_R(world, node->children[0], ray,
 			start, end, pEnum, context );
 	}
 	if (t1 < -offset && t2 < -offset)
 	{
-		return EnumerateLeavesAlongExtrudedRay_R( node->children[1], ray,
+		return EnumerateLeavesAlongExtrudedRay_R(world, node->children[1], ray,
 			start, end, pEnum, context );
 	}
 
@@ -3835,11 +3835,11 @@ static bool EnumerateLeavesAlongExtrudedRay_R( mnode_t *node, Ray_t const& ray,
 	if (fabs(t1-t2) < DIST_EPSILON)
 	{
 		// Parallel case, send entire ray to both children...
-		bool ret = EnumerateLeavesAlongExtrudedRay_R( node->children[0], 
+		bool ret = EnumerateLeavesAlongExtrudedRay_R(world, node->children[0],
 			ray, start, end, pEnum, context );
 		if (!ret)
 			return false;
-		return EnumerateLeavesAlongExtrudedRay_R( node->children[1],
+		return EnumerateLeavesAlongExtrudedRay_R(world, node->children[1],
 			ray, start, end, pEnum, context );
 	}
 	
@@ -3872,14 +3872,14 @@ static bool EnumerateLeavesAlongExtrudedRay_R( mnode_t *node, Ray_t const& ray,
 	// move up to the node
 	frac = clamp( frac, 0.f, 1.f );
 	float midf = start + (end - start)*frac;
-	bool ret = EnumerateLeavesAlongExtrudedRay_R( node->children[side], ray, start, midf, pEnum, context );
+	bool ret = EnumerateLeavesAlongExtrudedRay_R(world, node->children[side], ray, start, midf, pEnum, context );
 	if (!ret)
 		return ret;
 
 	// go past the node
 	frac2 = clamp( frac2, 0.f, 1.f );
 	midf = start + (end - start)*frac2;
-	return EnumerateLeavesAlongExtrudedRay_R( node->children[!side], ray, midf, end, pEnum, context );
+	return EnumerateLeavesAlongExtrudedRay_R(world, node->children[!side], ray, midf, end, pEnum, context );
 }
 
 
@@ -3893,13 +3893,13 @@ class CEngineBSPTree : public IEngineSpatialQuery
 {
 public:
 	// Returns the number of leaves
-	int LeafCount() const;
+	int LeafCount(model_t* world) const;
 
 	// Enumerates the leaves along a ray, box, etc.
-	bool EnumerateLeavesAtPoint( const Vector& pt, ISpatialLeafEnumerator* pEnum, intp context );
-	bool EnumerateLeavesInBox( const Vector& mins, const Vector& maxs, ISpatialLeafEnumerator* pEnum, intp context );
-	bool EnumerateLeavesInSphere( const Vector& center, float radius, ISpatialLeafEnumerator* pEnum, intp context );
-	bool EnumerateLeavesAlongRay( Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesAtPoint(model_t* world, const Vector& pt, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesInBox(model_t* world, const Vector& mins, const Vector& maxs, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesInSphere(model_t* world, const Vector& center, float radius, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesAlongRay(model_t* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context );
 };
 
 //-----------------------------------------------------------------------------
@@ -3914,31 +3914,38 @@ IEngineSpatialQuery* g_pToolBSPTree = &s_ToolBSPTree;
 // Returns the number of leaves
 //-----------------------------------------------------------------------------
 
-int CEngineBSPTree::LeafCount() const
+int CEngineBSPTree::LeafCount(model_t* world) const
 {
-	return host_state.worldmodel->brush.pShared->numleafs;
+	return world->brush.pShared->numleafs;
 }
 
 //-----------------------------------------------------------------------------
 // Enumerates the leaves at a point
 //-----------------------------------------------------------------------------
 
-bool CEngineBSPTree::EnumerateLeavesAtPoint( const Vector& pt, 
+bool CEngineBSPTree::EnumerateLeavesAtPoint(model_t* world, const Vector& pt,
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
+	if (!world)
+		world = host_state.worldmodel;
+	if (!world)
+		return false;
 	int leaf = CM_PointLeafnum( pt );
-	return pEnum->EnumerateLeaf( leaf, context );
+	return pEnum->EnumerateLeaf(world, leaf, context );
 }
 
 
 static ConVar opt_EnumerateLeavesFastAlgorithm( "opt_EnumerateLeavesFastAlgorithm", "1", FCVAR_NONE, "Use the new SIMD version of CEngineBSPTree::EnumerateLeavesInBox." ); 
 
 
-bool CEngineBSPTree::EnumerateLeavesInBox( const Vector& mins, const Vector& maxs, 
+bool CEngineBSPTree::EnumerateLeavesInBox(model_t* world, const Vector& mins, const Vector& maxs,
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
-	if ( !host_state.worldmodel )
+	if ( !world )
+		world = host_state.worldmodel;
+	if ( !world )
 		return false;
+
 
 	EnumLeafBoxInfo_t info;
 	VectorAdd( mins, maxs, info.m_vecBoxCenter );
@@ -3954,14 +3961,19 @@ bool CEngineBSPTree::EnumerateLeavesInBox( const Vector& mins, const Vector& max
 	else
 		return EnumerateLeafInBox_R( host_state.worldbrush->nodes, info );
 #else
-	return EnumerateLeafInBox_R( host_state.worldmodel->brush.pShared->nodes, info );
+	return EnumerateLeafInBox_R(world, world->brush.pShared->nodes, info );
 #endif
 }
 
 
-bool CEngineBSPTree::EnumerateLeavesInSphere( const Vector& center, float radius, 
+bool CEngineBSPTree::EnumerateLeavesInSphere(model_t* world, const Vector& center, float radius,
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
+	if (!world)
+		world = host_state.worldmodel;
+	if (!world)
+		return false;
+
 	EnumLeafSphereInfo_t info;
 	info.m_vecCenter = center;
 	info.m_flRadius = radius;
@@ -3970,19 +3982,24 @@ bool CEngineBSPTree::EnumerateLeavesInSphere( const Vector& center, float radius
 	info.m_vecBoxCenter = center;
 	info.m_vecBoxHalfDiagonal.Init( radius, radius, radius );
 
-	return EnumerateLeafInSphere_R( host_state.worldmodel->brush.pShared->nodes, info, ENUM_SPHERE_TEST_ALL );
+	return EnumerateLeafInSphere_R(world, world->brush.pShared->nodes, info, ENUM_SPHERE_TEST_ALL );
 }
 
 
-bool CEngineBSPTree::EnumerateLeavesAlongRay( Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context )
+bool CEngineBSPTree::EnumerateLeavesAlongRay(model_t* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context )
 {
+	if (!world)
+		world = host_state.worldmodel;
+	if (!world)
+		return false;
+
 	if (!ray.m_IsSwept)
 	{
 		Vector mins, maxs;
 		VectorAdd( ray.m_Start, ray.m_Extents, maxs );
 		VectorSubtract( ray.m_Start, ray.m_Extents, mins );
 
-		return EnumerateLeavesInBox( mins, maxs, pEnum, context );
+		return EnumerateLeavesInBox(world, mins, maxs, pEnum, context );
 	}
 
 	Vector end;
@@ -3990,11 +4007,11 @@ bool CEngineBSPTree::EnumerateLeavesAlongRay( Ray_t const& ray, ISpatialLeafEnum
 
 	if ( ray.m_IsRay )
 	{
-		return EnumerateLeavesAlongRay_R( host_state.worldmodel->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
+		return EnumerateLeavesAlongRay_R(world, world->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
 	}
 	else
 	{
-		return EnumerateLeavesAlongExtrudedRay_R( host_state.worldmodel->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
+		return EnumerateLeavesAlongExtrudedRay_R(world, world->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
 	}
 }
 
@@ -4361,7 +4378,7 @@ void FASTCALL CWorldRenderList::R_DrawLeaf(mleaf_t* pleaf)
 
 	// Debugging to only draw at a particular leaf
 #ifdef USE_CONVARS
-	if ((s_ShaderConvars.m_nDrawLeaf >= 0) && (s_ShaderConvars.m_nDrawLeaf != LeafToIndex(pleaf)))
+	if ((s_ShaderConvars.m_nDrawLeaf >= 0) && (s_ShaderConvars.m_nDrawLeaf != LeafToIndex(host_state.worldmodel, pleaf)))
 		return;
 #endif
 
@@ -4862,7 +4879,7 @@ inline void CWorldRenderList::UpdateVisibleLeafLists(mleaf_t* pLeaf)
 	MEM_ALLOC_CREDIT();
 
 	// Add this leaf to the list of visible leafs
-	int nLeafIndex = LeafToIndex(pLeaf);
+	int nLeafIndex = LeafToIndex(host_state.worldmodel, pLeaf);
 	this->m_VisibleLeaves.AddToTail(nLeafIndex);
 	int leafCount = this->m_VisibleLeaves.Count();
 	this->m_VisibleLeafFogVolumes.AddToTail(pLeaf->leafWaterDataID);

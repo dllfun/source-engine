@@ -130,7 +130,7 @@ public:
 	~COverlayMgr();
 
 	// Implementation of IOverlayMgr interface
-	virtual bool	LoadOverlays( );
+	virtual bool	LoadOverlays(worldbrushdata_t* pBrushData);
 	virtual void	UnloadOverlays( );
 
 	virtual void	CreateFragments( void );
@@ -1113,7 +1113,7 @@ void COverlayMgr::ReSortMaterials( void )
 //-----------------------------------------------------------------------------
 // Loads overlays from the lump
 //-----------------------------------------------------------------------------
-bool COverlayMgr::LoadOverlays( )
+bool COverlayMgr::LoadOverlays(worldbrushdata_t* pBrushData)
 {
 	CMapLoadHelper lh( LUMP_OVERLAYS );
 	CMapLoadHelper lh2( LUMP_WATEROVERLAYS );
@@ -1200,7 +1200,7 @@ bool COverlayMgr::LoadOverlays( )
 		pOverlayOut->m_aFaces.SetSize( pOverlayIn->GetFaceCount() );
 		for( int iFace = 0; iFace < pOverlayIn->GetFaceCount(); ++iFace )
 		{
-			pOverlayOut->m_aFaces[iFace] = SurfaceHandleFromIndex( pOverlayIn->aFaces[iFace], lh.GetMap() );
+			pOverlayOut->m_aFaces[iFace] = SurfaceHandleFromIndex( pOverlayIn->aFaces[iFace], pBrushData);
 		}
 
 		pOverlayOut->m_hFirstFragment = OVERLAY_FRAGMENT_LIST_INVALID;
@@ -1251,7 +1251,7 @@ bool COverlayMgr::LoadOverlays( )
 		pOverlayOut->m_aFaces.SetSize( pWaterOverlayIn->GetFaceCount() );
 		for( int iFace = 0; iFace < pWaterOverlayIn->GetFaceCount(); ++iFace )
 		{
-			pOverlayOut->m_aFaces[iFace] = SurfaceHandleFromIndex( pWaterOverlayIn->aFaces[iFace], lh2.GetMap() );
+			pOverlayOut->m_aFaces[iFace] = SurfaceHandleFromIndex( pWaterOverlayIn->aFaces[iFace], pBrushData);
 		}
 
 		pOverlayOut->m_hFirstFragment = OVERLAY_FRAGMENT_LIST_INVALID;
