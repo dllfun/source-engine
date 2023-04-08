@@ -118,7 +118,7 @@ void C_World::OnDataChanged( DataUpdateType_t updateType )
 		params.m_flMinOccluderArea = m_flMinOccluderArea;
 		engineClient->SetOcclusionParameters( params );
 
-		modelinfo->SetLevelScreenFadeRange( m_flMinPropScreenSpaceWidth, m_flMaxPropScreenSpaceWidth );
+		render->SetLevelScreenFadeRange( m_flMinPropScreenSpaceWidth, m_flMaxPropScreenSpaceWidth );
 	}
 }
 

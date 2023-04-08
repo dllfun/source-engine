@@ -154,17 +154,7 @@ public:
 
 	byte *LoadAnimBlock( model_t *model, const studiohdr_t *pStudioHdr, int iBlock, cache_user_t *cache ) const;
 
-	// NOTE: These aren't in the server version, but putting them here makes this code easier to write
-	// Sets/gets a map-specified fade range
-	virtual void					SetLevelScreenFadeRange( float flMinSize, float flMaxSize ) {}
-	virtual void					GetLevelScreenFadeRange( float *pMinArea, float *pMaxArea ) const { *pMinArea = 0; *pMaxArea = 0; }
-
-	// Sets/gets a map-specified per-view fade range
-	virtual void					SetViewScreenFadeRange( float flMinSize, float flMaxSize ) {}
-
-	// Computes fade alpha based on distance fade + screen fade
-	virtual unsigned char			ComputeLevelScreenFade( const Vector &vecAbsOrigin, float flRadius, float flFadeScale ) const { return 0; }
-	virtual unsigned char			ComputeViewScreenFade( const Vector &vecAbsOrigin, float flRadius, float flFadeScale ) const { return 0; }
+	
 
 	int GetAutoplayList( const studiohdr_t *pStudioHdr, unsigned short **pAutoplayList ) const;
 	CPhysCollide *GetCollideForVirtualTerrain( int index );
@@ -1005,38 +995,14 @@ public:
 	virtual const model_t *FindOrLoadModel( const char *name );
 	virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData );
 
-	// Sets/gets a map-specified fade range
-	virtual void	SetLevelScreenFadeRange( float flMinSize, float flMaxSize );
-	virtual void	GetLevelScreenFadeRange( float *pMinArea, float *pMaxArea ) const;
-
-	// Sets/gets a map-specified per-view fade range
-	virtual void	SetViewScreenFadeRange( float flMinSize, float flMaxSize );
-
-	// Computes fade alpha based on distance fade + screen fade
-	virtual unsigned char ComputeLevelScreenFade( const Vector &vecAbsOrigin, float flRadius, float flFadeScale ) const;
-	virtual unsigned char ComputeViewScreenFade( const Vector &vecAbsOrigin, float flRadius, float flFadeScale ) const;
-
-	virtual void GetModelMaterialColorAndLighting( const model_t *model, const Vector& origin,
-		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor );
+	virtual void GetModelMaterialColorAndLighting(const model_t* model, const Vector& origin,
+		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor);
 
 protected:
-	virtual INetworkStringTable *GetDynamicModelStringTable() const;
-	virtual int LookupPrecachedModelIndex( const char *name ) const;
+	virtual INetworkStringTable* GetDynamicModelStringTable() const;
+	virtual int LookupPrecachedModelIndex(const char* name) const;
 
-private:
-	struct ScreenFadeInfo_t
-	{
-		float	m_flMinScreenWidth;	
-		float	m_flMaxScreenWidth;	
-		float	m_flFalloffFactor;
-	};
 
-	// Sets/gets a map-specified fade range
-	void SetScreenFadeRange( float flMinSize, float flMaxSize, ScreenFadeInfo_t *pFade );
-	unsigned char ComputeScreenFade( const Vector &vecAbsOrigin, float flRadius, float flFadeScale, const ScreenFadeInfo_t &fade ) const;
-
-	ScreenFadeInfo_t m_LevelFade;
-	ScreenFadeInfo_t m_ViewFade;
 };
 
 INetworkStringTable *CModelInfoClient::GetDynamicModelStringTable() const
@@ -1107,95 +1073,7 @@ const model_t *CModelInfoClient::FindOrLoadModel( const char *name )
 }
 
 
-//-----------------------------------------------------------------------------
-// Sets/gets a map-specified fade range
-//-----------------------------------------------------------------------------
-void CModelInfoClient::SetScreenFadeRange( float flMinSize, float flMaxSize, ScreenFadeInfo_t *pFade )
-{
-	pFade->m_flMinScreenWidth = flMinSize;
-	pFade->m_flMaxScreenWidth = flMaxSize;
-	if ( pFade->m_flMaxScreenWidth <= pFade->m_flMinScreenWidth )
-	{
-		pFade->m_flMaxScreenWidth = pFade->m_flMinScreenWidth;
-	}
 
-	if (pFade->m_flMaxScreenWidth != pFade->m_flMinScreenWidth)
-	{
-		pFade->m_flFalloffFactor = 255.0f / (pFade->m_flMaxScreenWidth - pFade->m_flMinScreenWidth);
-	}
-	else
-	{
-		pFade->m_flFalloffFactor = 255.0f;
-	}
-}
-
-void CModelInfoClient::SetLevelScreenFadeRange( float flMinSize, float flMaxSize )
-{
-	SetScreenFadeRange( flMinSize, flMaxSize, &m_LevelFade );
-}
-
-void CModelInfoClient::GetLevelScreenFadeRange( float *pMinArea, float *pMaxArea ) const
-{
-	*pMinArea = m_LevelFade.m_flMinScreenWidth;
-	*pMaxArea = m_LevelFade.m_flMaxScreenWidth;
-}
-
-
-//-----------------------------------------------------------------------------
-// Sets/gets a map-specified per-view fade range
-//-----------------------------------------------------------------------------
-void CModelInfoClient::SetViewScreenFadeRange( float flMinSize, float flMaxSize )
-{
-	SetScreenFadeRange( flMinSize, flMaxSize, &m_ViewFade );
-}
-
-
-//-----------------------------------------------------------------------------
-// Computes fade alpha based on distance fade + screen fade
-//-----------------------------------------------------------------------------
-inline unsigned char CModelInfoClient::ComputeScreenFade( const Vector &vecAbsOrigin,
-	float flRadius, float flFadeScale, const ScreenFadeInfo_t &fade ) const
-{
-	if ( ( fade.m_flMinScreenWidth <= 0 ) || (flFadeScale <= 0.0f) )
-		return 255;
-
-	CMatRenderContextPtr pRenderContext( materials );
-
-	float flPixelWidth = pRenderContext->ComputePixelWidthOfSphere( vecAbsOrigin, flRadius ) / flFadeScale;
-
-	unsigned char alpha = 0;
-	if ( flPixelWidth > fade.m_flMinScreenWidth )
-	{
-		if ( (fade.m_flMaxScreenWidth >= 0) && (flPixelWidth < fade.m_flMaxScreenWidth) )
-		{
-			int nAlpha = fade.m_flFalloffFactor * (flPixelWidth - fade.m_flMinScreenWidth);
-			alpha = clamp( nAlpha, 0, 255 );
-		}
-		else
-		{
-			alpha = 255;
-		}
-	}
-
-	return alpha;
-}
-
-unsigned char CModelInfoClient::ComputeLevelScreenFade( const Vector &vecAbsOrigin, float flRadius, float flFadeScale ) const
-{
-	if ( IsXbox() )
-	{
-		return 255;
-	}
-	else
-	{
-		return ComputeScreenFade( vecAbsOrigin, flRadius, flFadeScale, m_LevelFade );
-	}
-}
-
-unsigned char CModelInfoClient::ComputeViewScreenFade( const Vector &vecAbsOrigin, float flRadius, float flFadeScale ) const
-{
-	return ComputeScreenFade( vecAbsOrigin, flRadius, flFadeScale, m_ViewFade );
-}
 
 
 //-----------------------------------------------------------------------------

@@ -165,6 +165,17 @@ public:
 	virtual void BeginUpdateLightmaps( void ) = 0;
 	virtual void EndUpdateLightmaps( void ) = 0;
 	virtual bool InLightmapUpdate( void ) const = 0;
+
+	// Sets/gets a map-specified fade range (client only)
+	virtual void					SetLevelScreenFadeRange(float flMinSize, float flMaxSize) = 0;
+	virtual void					GetLevelScreenFadeRange(float* pMinArea, float* pMaxArea) = 0;
+
+	// Sets/gets a map-specified per-view fade range (client only)
+	virtual void					SetViewScreenFadeRange(float flMinSize, float flMaxSize) = 0;
+
+	// Computes fade alpha based on distance fade + screen fade (client only)
+	virtual unsigned char			ComputeLevelScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale) = 0;
+	virtual unsigned char			ComputeViewScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale) = 0;
 };
 
 void R_PushDlights (void);

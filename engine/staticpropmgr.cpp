@@ -2208,8 +2208,8 @@ void CStaticPropMgr::ComputePropOpacity( CStaticProp &prop )
 	{
 		// Fade all props, if we have a default level setting
 		// But only change the fade if it's more translucent than any other fades we might have
-		unsigned char alpha = modelinfoclient->ComputeLevelScreenFade( prop.GetRenderOrigin(), prop.Radius(), prop.ForcedFadeScale() ); 
-		unsigned char nViewAlpha = modelinfoclient->ComputeViewScreenFade( prop.GetRenderOrigin(), prop.Radius(), prop.ForcedFadeScale() );
+		unsigned char alpha = g_EngineRenderer->ComputeLevelScreenFade( prop.GetRenderOrigin(), prop.Radius(), prop.ForcedFadeScale() );
+		unsigned char nViewAlpha = g_EngineRenderer->ComputeViewScreenFade( prop.GetRenderOrigin(), prop.Radius(), prop.ForcedFadeScale() );
 		if ( nViewAlpha < alpha )
 		{
 			alpha = nViewAlpha;

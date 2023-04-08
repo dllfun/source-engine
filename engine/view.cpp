@@ -606,7 +606,32 @@ public:
 		ComputeViewMatrices( pWorldToView, pViewToProjection, pWorldToProjection, view );
 		ComputeWorldToScreenMatrix( pWorldToPixels, *pWorldToProjection, view );
 	}
+
+	// Sets/gets a map-specified fade range
+	void	SetLevelScreenFadeRange(float flMinSize, float flMaxSize) {
+		g_EngineRenderer->SetLevelScreenFadeRange(flMinSize, flMaxSize);
+	}
+	void	GetLevelScreenFadeRange(float* pMinArea, float* pMaxArea) {
+		g_EngineRenderer->GetLevelScreenFadeRange(pMinArea, pMaxArea);
+	}
+
+	// Sets/gets a map-specified per-view fade range
+	void	SetViewScreenFadeRange(float flMinSize, float flMaxSize) {
+		g_EngineRenderer->SetViewScreenFadeRange(flMinSize, flMaxSize);
+	}
+
+	// Computes fade alpha based on distance fade + screen fade
+	unsigned char ComputeLevelScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale) {
+		return g_EngineRenderer->ComputeLevelScreenFade(vecAbsOrigin, flRadius, flFadeScale);
+	}
+	unsigned char ComputeViewScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale) {
+		return g_EngineRenderer->ComputeViewScreenFade(vecAbsOrigin, flRadius, flFadeScale);
+	}
+
+
 };
+
+
 
 static CVRenderView s_RenderView;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CVRenderView, IVRenderView, VENGINE_RENDERVIEW_INTERFACE_VERSION, s_RenderView );

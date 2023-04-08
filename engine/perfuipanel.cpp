@@ -179,7 +179,7 @@ void CPropFadeUIPanel::OnTextChanged( KeyValues *data )
 
 		if ( nReadMin && nReadMax )
 		{
-			modelinfoclient->SetLevelScreenFadeRange( flMinArea, flMaxArea );
+			g_EngineRenderer->SetLevelScreenFadeRange( flMinArea, flMaxArea );
 		}
 	}
 }
@@ -214,7 +214,7 @@ void CPropFadeUIPanel::OnVisualizationSelected()
 void CPropFadeUIPanel::Activate()
 {
 	float flMinArea, flMaxArea;
-	modelinfoclient->GetLevelScreenFadeRange( &flMinArea, &flMaxArea );
+	g_EngineRenderer->GetLevelScreenFadeRange( &flMinArea, &flMaxArea );
 
 	char buf[256];
 	Q_snprintf( buf, 256, "%.2f", flMinArea );

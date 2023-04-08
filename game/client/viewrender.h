@@ -1321,7 +1321,7 @@ public:
 		// Cache off fade distances
 		float flScreenFadeMinSize, flScreenFadeMaxSize;
 		this->GetScreenFadeDistances(&flScreenFadeMinSize, &flScreenFadeMaxSize);
-		modelinfo->SetViewScreenFadeRange(flScreenFadeMinSize, flScreenFadeMaxSize);
+		render->SetViewScreenFadeRange(flScreenFadeMinSize, flScreenFadeMaxSize);
 
 		CMatRenderContextPtr pRenderContext(materials);
 #ifdef PORTAL

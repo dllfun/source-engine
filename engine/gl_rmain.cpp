@@ -339,6 +339,33 @@ private:
 
 	CUtlStack< ViewStack_t > m_ViewStack;
 	int m_iLightmapUpdateDepth;
+
+public:
+		// Sets/gets a map-specified fade range
+		virtual void	SetLevelScreenFadeRange(float flMinSize, float flMaxSize);
+		virtual void	GetLevelScreenFadeRange(float* pMinArea, float* pMaxArea);
+
+		// Sets/gets a map-specified per-view fade range
+		virtual void	SetViewScreenFadeRange(float flMinSize, float flMaxSize);
+
+		// Computes fade alpha based on distance fade + screen fade
+		virtual unsigned char ComputeLevelScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale);
+		virtual unsigned char ComputeViewScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale);
+
+private:
+	struct ScreenFadeInfo_t
+	{
+		float	m_flMinScreenWidth;
+		float	m_flMaxScreenWidth;
+		float	m_flFalloffFactor;
+	};
+
+	// Sets/gets a map-specified fade range
+	void SetScreenFadeRange(float flMinSize, float flMaxSize, ScreenFadeInfo_t* pFade);
+	unsigned char ComputeScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale, const ScreenFadeInfo_t& fade) const;
+
+	ScreenFadeInfo_t m_LevelFade;
+	ScreenFadeInfo_t m_ViewFade;
 };
 
 
@@ -1251,4 +1278,94 @@ void CRender::DrawWorldLists( IWorldRenderList *pList, unsigned long flags, floa
 {
 	Assert( pList );
 	pList->R_DrawWorldLists( flags, flWaterZAdjust );
+}
+
+//-----------------------------------------------------------------------------
+// Sets/gets a map-specified fade range
+//-----------------------------------------------------------------------------
+void CRender::SetScreenFadeRange(float flMinSize, float flMaxSize, ScreenFadeInfo_t* pFade)
+{
+	pFade->m_flMinScreenWidth = flMinSize;
+	pFade->m_flMaxScreenWidth = flMaxSize;
+	if (pFade->m_flMaxScreenWidth <= pFade->m_flMinScreenWidth)
+	{
+		pFade->m_flMaxScreenWidth = pFade->m_flMinScreenWidth;
+	}
+
+	if (pFade->m_flMaxScreenWidth != pFade->m_flMinScreenWidth)
+	{
+		pFade->m_flFalloffFactor = 255.0f / (pFade->m_flMaxScreenWidth - pFade->m_flMinScreenWidth);
+	}
+	else
+	{
+		pFade->m_flFalloffFactor = 255.0f;
+	}
+}
+
+void CRender::SetLevelScreenFadeRange(float flMinSize, float flMaxSize)
+{
+	SetScreenFadeRange(flMinSize, flMaxSize, &m_LevelFade);
+}
+
+void CRender::GetLevelScreenFadeRange(float* pMinArea, float* pMaxArea)
+{
+	*pMinArea = m_LevelFade.m_flMinScreenWidth;
+	*pMaxArea = m_LevelFade.m_flMaxScreenWidth;
+}
+
+
+//-----------------------------------------------------------------------------
+// Sets/gets a map-specified per-view fade range
+//-----------------------------------------------------------------------------
+void CRender::SetViewScreenFadeRange(float flMinSize, float flMaxSize)
+{
+	SetScreenFadeRange(flMinSize, flMaxSize, &m_ViewFade);
+}
+
+
+//-----------------------------------------------------------------------------
+// Computes fade alpha based on distance fade + screen fade
+//-----------------------------------------------------------------------------
+inline unsigned char CRender::ComputeScreenFade(const Vector& vecAbsOrigin,
+	float flRadius, float flFadeScale, const ScreenFadeInfo_t& fade) const
+{
+	if ((fade.m_flMinScreenWidth <= 0) || (flFadeScale <= 0.0f))
+		return 255;
+
+	CMatRenderContextPtr pRenderContext(materials);
+
+	float flPixelWidth = pRenderContext->ComputePixelWidthOfSphere(vecAbsOrigin, flRadius) / flFadeScale;
+
+	unsigned char alpha = 0;
+	if (flPixelWidth > fade.m_flMinScreenWidth)
+	{
+		if ((fade.m_flMaxScreenWidth >= 0) && (flPixelWidth < fade.m_flMaxScreenWidth))
+		{
+			int nAlpha = fade.m_flFalloffFactor * (flPixelWidth - fade.m_flMinScreenWidth);
+			alpha = clamp(nAlpha, 0, 255);
+		}
+		else
+		{
+			alpha = 255;
+		}
+	}
+
+	return alpha;
+}
+
+unsigned char CRender::ComputeLevelScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale)
+{
+	if (IsXbox())
+	{
+		return 255;
+	}
+	else
+	{
+		return ComputeScreenFade(vecAbsOrigin, flRadius, flFadeScale, m_LevelFade);
+	}
+}
+
+unsigned char CRender::ComputeViewScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale)
+{
+	return ComputeScreenFade(vecAbsOrigin, flRadius, flFadeScale, m_ViewFade);
 }

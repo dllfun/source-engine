@@ -322,6 +322,17 @@ public:
 	virtual void			Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture ) = 0;
 	virtual void			GetMatricesForView( const CViewSetup &view, VMatrix *pWorldToView, VMatrix *pViewToProjection, VMatrix *pWorldToProjection, VMatrix *pWorldToPixels ) = 0;
 	virtual void			DrawBrushModelEx( IClientEntity *baseentity, model_t *model, const Vector& origin, const QAngle& angles, DrawBrushModelMode_t mode ) = 0;
+
+	// Sets/gets a map-specified fade range (client only)
+	virtual void					SetLevelScreenFadeRange(float flMinSize, float flMaxSize) = 0;
+	virtual void					GetLevelScreenFadeRange(float* pMinArea, float* pMaxArea) = 0;
+
+	// Sets/gets a map-specified per-view fade range (client only)
+	virtual void					SetViewScreenFadeRange(float flMinSize, float flMaxSize) = 0;
+
+	// Computes fade alpha based on distance fade + screen fade (client only)
+	virtual unsigned char			ComputeLevelScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale) = 0;
+	virtual unsigned char			ComputeViewScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale) = 0;
 };
 
 // change this when the new version is incompatable with the old
