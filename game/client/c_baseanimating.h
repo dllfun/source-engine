@@ -617,13 +617,13 @@ private:
 	bool							m_bInitModelEffects;
 
 	// Dynamic models
-	bool							m_bDynamicModelAllowed;
-	bool							m_bDynamicModelPending;
-	bool							m_bResetSequenceInfoOnLoad;
-	CRefCountedModelIndex			m_AutoRefModelIndex;
+	//bool							m_bDynamicModelAllowed;
+	//bool							m_bDynamicModelPending;
+	//bool							m_bResetSequenceInfoOnLoad;
+	//CRefCountedModelIndex			m_AutoRefModelIndex;
 public:
-	void							EnableDynamicModels() { m_bDynamicModelAllowed = true; }
-	bool							IsDynamicModelLoading() const { return m_bDynamicModelPending; }
+	//void							EnableDynamicModels() { m_bDynamicModelAllowed = true; }
+	//bool							IsDynamicModelLoading() const { return m_bDynamicModelPending; }
 private:
 	virtual void					OnModelLoadComplete( const model_t* pModel );
 
@@ -739,8 +739,8 @@ inline float C_BaseAnimating::GetCycle() const
 
 inline CStudioHdr *C_BaseAnimating::GetModelPtr() const
 { 
-	if ( IsDynamicModelLoading() )
-		return NULL;
+	//if ( IsDynamicModelLoading() )
+	//	return NULL;
 
 #ifdef _DEBUG
 	// GetModelPtr() is often called before OnNewModel() so go ahead and set it up first chance.

@@ -731,9 +731,9 @@ C_BaseAnimating::C_BaseAnimating() :
 
 	m_pAttachedTo = NULL;
 
-	m_bDynamicModelAllowed = false;
-	m_bDynamicModelPending = false;
-	m_bResetSequenceInfoOnLoad = false;
+	//m_bDynamicModelAllowed = false;
+	//m_bDynamicModelPending = false;
+	//m_bResetSequenceInfoOnLoad = false;
 
 	Q_memset(&m_mouth, 0, sizeof(m_mouth));
 	m_flCycle = 0;
@@ -972,13 +972,13 @@ void C_BaseAnimating::UnlockStudioHdr()
 
 void C_BaseAnimating::OnModelLoadComplete( const model_t* pModel )
 {
-	Assert( m_bDynamicModelPending && pModel == GetModel() );
-	if ( m_bDynamicModelPending && pModel == GetModel() )
-	{
-		m_bDynamicModelPending = false;
-		OnNewModel();
-		UpdateVisibility();
-	}
+//	Assert( m_bDynamicModelPending && pModel == GetModel() );
+//	if ( m_bDynamicModelPending && pModel == GetModel() )
+//	{
+//		m_bDynamicModelPending = false;
+//		OnNewModel();
+//		UpdateVisibility();
+//	}
 }
 
 void C_BaseAnimating::ValidateModelIndex()
@@ -1000,13 +1000,13 @@ CStudioHdr *C_BaseAnimating::OnNewModel()
 		m_pJiggleBones = NULL;
 	}
 
-	if ( m_bDynamicModelPending )
-	{
-		modelinfo->UnregisterModelLoadCallback( -1, this );
-		m_bDynamicModelPending = false;
-	}
+	//if ( m_bDynamicModelPending )
+	//{
+	//	modelinfo->UnregisterModelLoadCallback( -1, this );
+	//	m_bDynamicModelPending = false;
+	//}
 
-	m_AutoRefModelIndex.Clear();
+	//m_AutoRefModelIndex.Clear();
 
 	if ( !GetModel() || modelinfo->GetModelType( GetModel() ) != mod_studio )
 		return NULL;
@@ -1022,19 +1022,19 @@ CStudioHdr *C_BaseAnimating::OnNewModel()
 			nNewIndex = m_nModelIndex;
 	}
 
-	m_AutoRefModelIndex = nNewIndex;
-	if ( IsDynamicModelIndex( nNewIndex ) && modelinfo->IsDynamicModelLoading( nNewIndex ) )
-	{
-		m_bDynamicModelPending = true;
-		modelinfo->RegisterModelLoadCallback( nNewIndex, this );
-	}
+	//m_AutoRefModelIndex = nNewIndex;
+	//if ( IsDynamicModelIndex( nNewIndex ) && modelinfo->IsDynamicModelLoading( nNewIndex ) )
+	//{
+	//	m_bDynamicModelPending = true;
+	//	modelinfo->RegisterModelLoadCallback( nNewIndex, this );
+	//}
 
-	if ( IsDynamicModelLoading() )
-	{
-		// Called while dynamic model still loading -> new model, clear deferred state
-		m_bResetSequenceInfoOnLoad = false;
-		return NULL;
-	}
+	//if ( IsDynamicModelLoading() )
+	//{
+	//	// Called while dynamic model still loading -> new model, clear deferred state
+	//	m_bResetSequenceInfoOnLoad = false;
+	//	return NULL;
+	//}
 
 	CStudioHdr *hdr = GetModelPtr();
 	if (hdr == NULL)
@@ -1146,11 +1146,11 @@ CStudioHdr *C_BaseAnimating::OnNewModel()
 	m_nSequence = -1;
 	SetSequence( forceSequence );
 
-	if ( m_bResetSequenceInfoOnLoad )
-	{
-		m_bResetSequenceInfoOnLoad = false;
-		ResetSequenceInfo();
-	}
+	//if ( m_bResetSequenceInfoOnLoad )
+	//{
+	//	m_bResetSequenceInfoOnLoad = false;
+	//	ResetSequenceInfo();
+	//}
 
 	UpdateRelevantInterpolatedVars();
 		
@@ -2182,7 +2182,7 @@ bool C_BaseAnimating::GetAttachmentLocal( int iAttachment, Vector &origin )
 //-----------------------------------------------------------------------------
 bool C_BaseAnimating::GetRootBone( matrix3x4_t &rootBone )
 {
-	Assert( !IsDynamicModelLoading() );
+	//Assert( !IsDynamicModelLoading() );
 
 	if ( IsEffectActive( EF_BONEMERGE ) && GetMoveParent() && m_pBoneMergeCache )
 		return m_pBoneMergeCache->GetRootBone( rootBone );
@@ -3048,7 +3048,7 @@ void C_BaseAnimating::InvalidateBoneCaches()
 
 bool C_BaseAnimating::ShouldDraw()
 {
-	return !IsDynamicModelLoading() && BaseClass::ShouldDraw();
+	return  BaseClass::ShouldDraw();//!IsDynamicModelLoading() &&
 }
 
 ConVar r_drawothermodels( "r_drawothermodels", "1", FCVAR_CHEAT, "0=Off, 1=Normal, 2=Wireframe" );
@@ -5290,11 +5290,11 @@ void C_BaseAnimating::ResetSequenceInfo( void )
 		SetSequence( 0 );
 	}
 
-	if ( IsDynamicModelLoading() )
-	{
-		m_bResetSequenceInfoOnLoad = true;
-		return;
-	}
+	//if ( IsDynamicModelLoading() )
+	//{
+	//	m_bResetSequenceInfoOnLoad = true;
+	//	return;
+	//}
 
 	CStudioHdr *pStudioHdr = GetModelPtr();
 	m_flGroundSpeed = GetSequenceGroundSpeed( pStudioHdr, GetSequence() ) * GetModelScale();
@@ -5368,32 +5368,32 @@ void C_BaseAnimating::SetBodygroup( int iGroup, int iValue )
 
 int C_BaseAnimating::GetBodygroup( int iGroup )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? 0 : ::GetBodygroup( GetModelPtr( ), m_nBody, iGroup );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetBodygroup( GetModelPtr( ), m_nBody, iGroup );//IsDynamicModelLoading() ? 0 : 
 }
 
 const char *C_BaseAnimating::GetBodygroupName( int iGroup )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? "" : ::GetBodygroupName( GetModelPtr( ), iGroup );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetBodygroupName( GetModelPtr( ), iGroup );//IsDynamicModelLoading() ? "" : 
 }
 
 int C_BaseAnimating::FindBodygroupByName( const char *name )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? -1 : ::FindBodygroupByName( GetModelPtr( ), name );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::FindBodygroupByName( GetModelPtr( ), name );//IsDynamicModelLoading() ? -1 : 
 }
 
 int C_BaseAnimating::GetBodygroupCount( int iGroup )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? 0 : ::GetBodygroupCount( GetModelPtr( ), iGroup );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetBodygroupCount( GetModelPtr( ), iGroup );//IsDynamicModelLoading() ? 0 : 
 }
 
 int C_BaseAnimating::GetNumBodyGroups( void )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? 0 : ::GetNumBodyGroups( GetModelPtr( ) );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetNumBodyGroups( GetModelPtr( ) );//IsDynamicModelLoading() ? 0 : 
 }
 
 //-----------------------------------------------------------------------------
@@ -5402,8 +5402,8 @@ int C_BaseAnimating::GetNumBodyGroups( void )
 //-----------------------------------------------------------------------------
 void C_BaseAnimating::SetHitboxSet( int setnum )
 {
-	if ( IsDynamicModelLoading() )
-		return;
+	//if ( IsDynamicModelLoading() )
+	//	return;
 
 #ifdef _DEBUG
 	CStudioHdr *pStudioHdr = GetModelPtr();
@@ -5432,8 +5432,8 @@ void C_BaseAnimating::SetHitboxSet( int setnum )
 //-----------------------------------------------------------------------------
 void C_BaseAnimating::SetHitboxSetByName( const char *setname )
 {
-	if ( IsDynamicModelLoading() )
-		return;
+	//if ( IsDynamicModelLoading() )
+	//	return;
 
 	m_nHitboxSet = FindHitboxSetByName( GetModelPtr(), setname );
 }
@@ -5453,8 +5453,8 @@ int C_BaseAnimating::GetHitboxSet( void )
 //-----------------------------------------------------------------------------
 const char *C_BaseAnimating::GetHitboxSetName( void )
 {
-	if ( IsDynamicModelLoading() )
-		return "";
+	//if ( IsDynamicModelLoading() )
+	//	return "";
 
 	return ::GetHitboxSetName( GetModelPtr(), m_nHitboxSet );
 }
@@ -5465,8 +5465,8 @@ const char *C_BaseAnimating::GetHitboxSetName( void )
 //-----------------------------------------------------------------------------
 int C_BaseAnimating::GetHitboxSetCount( void )
 {
-	if ( IsDynamicModelLoading() )
-		return 0;
+	//if ( IsDynamicModelLoading() )
+	//	return 0;
 
 	return ::GetHitboxSetCount( GetModelPtr() );
 }
@@ -5602,9 +5602,9 @@ void C_BaseAnimating::Clear( void )
 	Q_memset(&m_mouth, 0, sizeof(m_mouth));
 	m_flCycle = 0;
 	m_flOldCycle = 0;
-	m_bResetSequenceInfoOnLoad = false;
-	m_bDynamicModelPending = false;
-	m_AutoRefModelIndex.Clear();
+	//m_bResetSequenceInfoOnLoad = false;
+	//m_bDynamicModelPending = false;
+	//m_AutoRefModelIndex.Clear();
 	BaseClass::Clear();	
 }
 

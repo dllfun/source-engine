@@ -558,7 +558,7 @@ bool CStaticProp::Init( int index, StaticPropLump_t &lump, model_t *pModel )
 	}
 	else
 	{
-		modelinfo->GetIlluminationPoint( m_pModel, this, m_Origin, m_Angles, &m_LightingOrigin );
+		modelinfoclient->GetIlluminationPoint( m_pModel, this, m_Origin, m_Angles, &m_LightingOrigin );
 	}
 	g_MakingDevShots = CommandLine()->FindParm( "-makedevshots" ) ? true : false;
 

@@ -1747,17 +1747,17 @@ private:
 
 private:
 	// dynamic model state tracking
-	bool m_bDynamicModelAllowed;
-	bool m_bDynamicModelPending;
-	bool m_bDynamicModelSetBounds;
+	//bool m_bDynamicModelAllowed;
+	//bool m_bDynamicModelPending;
+	//bool m_bDynamicModelSetBounds;
 	void OnModelLoadComplete( const model_t* model );
-	friend class CBaseEntityModelLoadProxy;
+	//friend class CBaseEntityModelLoadProxy;
 
 protected:
-	void EnableDynamicModels() { m_bDynamicModelAllowed = true; }
+	//void EnableDynamicModels() { m_bDynamicModelAllowed = true; }
 
 public:
-	bool IsDynamicModelLoading() const { return m_bDynamicModelPending; } 
+	//bool IsDynamicModelLoading() const { return m_bDynamicModelPending; } 
 	void SetCollisionBoundsFromModel();
 
 #if !defined( NO_ENTITY_PREDICTION )

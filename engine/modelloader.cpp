@@ -5712,7 +5712,7 @@ void CModelLoader::FinishDynamicModelLoadIfReady( CDynamicModelInfo *pDyn, model
 		if ( !( dyn.m_nLoadFlags & CDynamicModelInfo::SERVERLOADING ) )
 		{
 			// There ought to be a better way to plumb this through, but this should be ok...
-			if ( sv.GetDynamicModelsTable() )
+			/*if ( sv.GetDynamicModelsTable() )
 			{
 				int netidx = sv.GetDynamicModelsTable()->FindStringIndex( pModel->strName );
 				if ( netidx != INVALID_STRING_INDEX )
@@ -5720,7 +5720,7 @@ void CModelLoader::FinishDynamicModelLoadIfReady( CDynamicModelInfo *pDyn, model
 					char nIsLoaded = 1;
 					sv.GetDynamicModelsTable()->SetStringUserData( netidx, 1, &nIsLoaded );
 				}
-			}
+			}*/
 
 			DynamicModelDebugMsg( "model %p [%s] loaded\n", pModel, pModel->strName.String() );
 
@@ -5982,7 +5982,7 @@ void CModelLoader::InternalUpdateDynamicModels( bool bIgnoreTime )
 			}
 
 			// There ought to be a better way to plumb this through, but this should be ok...
-			if ( sv.GetDynamicModelsTable() )
+			/*if ( sv.GetDynamicModelsTable() )
 			{
 				int netidx = sv.GetDynamicModelsTable()->FindStringIndex( pModel->strName );
 				if ( netidx != INVALID_STRING_INDEX )
@@ -5990,7 +5990,7 @@ void CModelLoader::InternalUpdateDynamicModels( bool bIgnoreTime )
 					char nIsLoaded = 0;
 					sv.GetDynamicModelsTable()->SetStringUserData( netidx, 1, &nIsLoaded );
 				}
-			}
+			}*/
 
 			if ( pModel->nLoadFlags & FMODELLOADER_DYNAMIC )
 			{
@@ -6240,7 +6240,7 @@ CON_COMMAND_F( mod_dynamicmodeldebug, "debug spew for dynamic model loading", FC
 void CModelLoader::DebugPrintDynamicModels()
 {
 	Msg( "network table (server):\n" );
-	if ( sv.GetDynamicModelsTable() )
+	/*if ( sv.GetDynamicModelsTable() )
 	{
 		for ( int i = 0; i < sv.GetDynamicModelsTable()->GetNumStrings(); ++i )
 		{
@@ -6249,20 +6249,20 @@ void CModelLoader::DebugPrintDynamicModels()
 			bool bLoadedOnServer = !(data && dummy && data[0] == 0);
 			Msg( "%3i: %c %s\n", i, bLoadedOnServer ? '*' : ' ', sv.GetDynamicModelsTable()->GetString(i) );
 		}
-	}
+	}*/
 
 #ifndef SWDS
 	Msg( "\nnetwork table (client):\n" );
-	if ( cl.m_pDynamicModelsTable )
-	{
-		for ( int i = 0; i < cl.m_pDynamicModelsTable->GetNumStrings(); ++i )
-		{
-			int dummy = 0;
-			char* data = (char*) cl.m_pDynamicModelsTable->GetStringUserData( i, &dummy );
-			bool bLoadedOnServer = !(data && dummy && data[0] == 0);
-			Msg( "%3i: %c %s\n", i, bLoadedOnServer ? '*' : ' ', cl.m_pDynamicModelsTable->GetString(i) );
-		}
-	}
+	//if ( cl.m_pDynamicModelsTable )
+	//{
+	//	for ( int i = 0; i < cl.m_pDynamicModelsTable->GetNumStrings(); ++i )
+	//	{
+	//		int dummy = 0;
+	//		char* data = (char*) cl.m_pDynamicModelsTable->GetStringUserData( i, &dummy );
+	//		bool bLoadedOnServer = !(data && dummy && data[0] == 0);
+	//		Msg( "%3i: %c %s\n", i, bLoadedOnServer ? '*' : ' ', cl.m_pDynamicModelsTable->GetString(i) );
+	//	}
+	//}
 #endif
 
 	extern IVModelInfo *modelinfo;

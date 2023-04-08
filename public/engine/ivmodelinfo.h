@@ -95,8 +95,8 @@ public:
 // - if the dynamic index is EVEN, then the model is NETWORKED
 //   and has a dynamic model string table index of (dynamic index)>>1
 
-inline bool IsDynamicModelIndex( int modelindex ) { return modelindex < -1; }
-inline bool IsClientOnlyModelIndex( int modelindex ) { return modelindex < -1 && (modelindex & 1); }
+//inline bool IsDynamicModelIndex( int modelindex ) { return modelindex < -1; }
+//inline bool IsClientOnlyModelIndex( int modelindex ) { return modelindex < -1 && (modelindex & 1); }
 
 abstract_class IVModelInfo
 {
@@ -119,7 +119,6 @@ public:
 	virtual int						GetModelFrameCount( const model_t *model ) const = 0;
 	virtual int						GetModelType( const model_t *model ) const = 0;
 	virtual void					*GetModelExtraData( const model_t *model ) = 0;
-	virtual bool					ModelHasMaterialProxy( const model_t *model ) const = 0;
 	virtual bool					IsTranslucent( model_t const* model ) const = 0;
 	virtual bool					IsTranslucentTwoPass( const model_t *model ) const = 0;
 	virtual void					RecomputeTranslucency( const model_t *model, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate=1.0f) = 0;
@@ -136,11 +135,11 @@ public:
 	virtual byte					*GetAnimBlock( const studiohdr_t *pStudioHdr, int iBlock ) const = 0;
 
 	// Available on client only!!!
-	virtual void					GetModelMaterialColorAndLighting( const model_t *model, Vector const& origin,
-										QAngle const& angles, trace_t* pTrace, 
-										Vector& lighting, Vector& matColor ) = 0;
-	virtual void					GetIlluminationPoint( const model_t *model, IClientRenderable *pRenderable, Vector const& origin, 
-										QAngle const& angles, Vector* pLightingCenter ) = 0;
+	//virtual void					GetModelMaterialColorAndLighting( const model_t *model, Vector const& origin,
+	//									QAngle const& angles, trace_t* pTrace, 
+	//									Vector& lighting, Vector& matColor ) = 0;
+	//virtual void					GetIlluminationPoint( const model_t *model, IClientRenderable *pRenderable, Vector const& origin, 
+	//									QAngle const& angles, Vector* pLightingCenter ) = 0;
 
 	virtual int						GetModelContents( int modelIndex ) = 0;
 	virtual studiohdr_t				*GetStudiomodel( const model_t *mod ) = 0;
@@ -156,53 +155,60 @@ public:
 	// NOTE: This may return NULL if the terrain model cannot be virtualized
 	virtual CPhysCollide			*GetCollideForVirtualTerrain( int index ) = 0;
 
-	virtual bool					IsUsingFBTexture( const model_t *model, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable ) const = 0;
 
 	// Obsolete methods. These are left in to maintain binary compatibility with clients using the IVModelInfo old version.
-	virtual const model_t			*FindOrLoadModel( const char *name ) { Warning( "IVModelInfo::FindOrLoadModel is now obsolte.\n" ); return NULL; }
-	virtual void					InitDynamicModels( ) { Warning( "IVModelInfo::InitDynamicModels is now obsolte.\n" ); }
-	virtual void					ShutdownDynamicModels( ) { Warning( "IVModelInfo::ShutdownDynamicModels is now obsolte.\n" ); }
-	virtual void					AddDynamicModel( const char *name, int nModelIndex = -1 ) { Warning( "IVModelInfo::AddDynamicModel is now obsolte.\n" ); }
-	virtual void					ReferenceModel( int modelindex ) { Warning( "IVModelInfo::ReferenceModel is now obsolte.\n" ); }
-	virtual void					UnreferenceModel( int modelindex ) { Warning( "IVModelInfo::UnreferenceModel is now obsolte.\n" ); }
-	virtual void					CleanupDynamicModels( bool bForce = false ) { Warning( "IVModelInfo::CleanupDynamicModels is now obsolte.\n" ); }
+	//virtual const model_t			*FindOrLoadModel( const char *name ) { Warning( "IVModelInfo::FindOrLoadModel is now obsolte.\n" ); return NULL; }
+	//virtual void					InitDynamicModels( ) { Warning( "IVModelInfo::InitDynamicModels is now obsolte.\n" ); }
+	//virtual void					ShutdownDynamicModels( ) { Warning( "IVModelInfo::ShutdownDynamicModels is now obsolte.\n" ); }
+	//virtual void					AddDynamicModel( const char *name, int nModelIndex = -1 ) { Warning( "IVModelInfo::AddDynamicModel is now obsolte.\n" ); }
+	//virtual void					ReferenceModel( int modelindex ) { Warning( "IVModelInfo::ReferenceModel is now obsolte.\n" ); }
+	//virtual void					UnreferenceModel( int modelindex ) { Warning( "IVModelInfo::UnreferenceModel is now obsolte.\n" ); }
+	//virtual void					CleanupDynamicModels( bool bForce = false ) { Warning( "IVModelInfo::CleanupDynamicModels is now obsolte.\n" ); }
 
 	virtual MDLHandle_t				GetCacheHandle( const model_t *model ) const = 0;
 
 	// Returns planes of non-nodraw brush model surfaces
 	virtual int						GetBrushModelPlaneCount( const model_t *model ) const = 0;
 	virtual void					GetBrushModelPlane( const model_t *model, int nIndex, cplane_t &plane, Vector *pOrigin ) const = 0;
-	virtual int						GetSurfacepropsForVirtualTerrain( int index ) = 0;
+	//virtual int						GetSurfacepropsForVirtualTerrain( int index ) = 0;
 
 	// Poked by engine host system
 	virtual void					OnLevelChange() = 0;
 
-	virtual int						GetModelClientSideIndex( const char *name ) const = 0;
+	//virtual int						GetModelClientSideIndex( const char *name ) const = 0;
 
 	// Returns index of model by name, dynamically registered if not already known.
-	virtual int						RegisterDynamicModel( const char *name, bool bClientSide ) = 0;
+	//virtual int						RegisterDynamicModel( const char *name, bool bClientSide ) = 0;
 
-	virtual bool					IsDynamicModelLoading( int modelIndex ) = 0;
+	//virtual bool					IsDynamicModelLoading( int modelIndex ) = 0;
 
-	virtual void					AddRefDynamicModel( int modelIndex ) = 0;
-	virtual void					ReleaseDynamicModel( int modelIndex ) = 0;
+	//virtual void					AddRefDynamicModel( int modelIndex ) = 0;
+	//virtual void					ReleaseDynamicModel( int modelIndex ) = 0;
 
 	// Registers callback for when dynamic model has finished loading.
 	// Automatically adds reference, pair with ReleaseDynamicModel.
-	virtual bool					RegisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback, bool bCallImmediatelyIfLoaded = true ) = 0;
-	virtual void					UnregisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback ) = 0;
+	//virtual bool					RegisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback, bool bCallImmediatelyIfLoaded = true ) = 0;
+	//virtual void					UnregisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback ) = 0;
 };
 
 typedef IVModelInfo IVModelInfo003;
 
 
-abstract_class IVModelInfoClient : public IVModelInfo
+abstract_class IVModelInfoClient : virtual public IVModelInfo
 {
 public:
 	virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData ) = 0;
 
 	// For tools only!
-	virtual const model_t *FindOrLoadModel( const char *name ) = 0;
+	//virtual const model_t *FindOrLoadModel( const char *name ) = 0;
+
+	virtual void GetModelMaterialColorAndLighting(const model_t* model, const Vector& origin,
+		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) = 0;
+	virtual void GetIlluminationPoint(const model_t* model, IClientRenderable* pRenderable, Vector const& origin,
+		QAngle const& angles, Vector* pLightingCenter) = 0;
+	virtual bool IsUsingFBTexture(const model_t* model, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const = 0;
+	virtual bool					ModelHasMaterialProxy(const model_t* model) const = 0;
+
 };
 
 
@@ -225,7 +231,7 @@ inline IModelLoadCallback::~IModelLoadCallback()
 #endif
 	if ( modelinfo )
 	{
-		modelinfo->UnregisterModelLoadCallback( -1, this );
+		//modelinfo->UnregisterModelLoadCallback( -1, this );
 	}
 }
 
@@ -243,8 +249,8 @@ inline void CRefCountedModelIndex::Set( int i )
 #endif
 	if ( i == m_nIndex )
 		return;
-	modelinfo->AddRefDynamicModel( i );
-	modelinfo->ReleaseDynamicModel( m_nIndex );
+	//modelinfo->AddRefDynamicModel( i );
+	//modelinfo->ReleaseDynamicModel( m_nIndex );
 	m_nIndex = i;
 }
 

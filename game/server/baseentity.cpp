@@ -310,36 +310,36 @@ END_SEND_TABLE()
 
 
 // dynamic models
-class CBaseEntityModelLoadProxy
-{
-protected:
-	class Handler : public IModelLoadCallback
-	{
-	public:
-		explicit Handler( CBaseEntity *pEntity ) : m_pEntity(pEntity) { }
-		virtual void OnModelLoadComplete( const model_t *pModel );
-		CBaseEntity* m_pEntity;
-	};
-	Handler* m_pHandler;
+//class CBaseEntityModelLoadProxy
+//{
+//protected:
+//	class Handler : public IModelLoadCallback
+//	{
+//	public:
+//		explicit Handler( CBaseEntity *pEntity ) : m_pEntity(pEntity) { }
+//		virtual void OnModelLoadComplete( const model_t *pModel );
+//		CBaseEntity* m_pEntity;
+//	};
+//	Handler* m_pHandler;
+//
+//public:
+//	explicit CBaseEntityModelLoadProxy( CBaseEntity *pEntity ) : m_pHandler( new Handler( pEntity ) ) { }
+//	~CBaseEntityModelLoadProxy() { delete m_pHandler; }
+//	void Register( int nModelIndex ) const { modelinfo->RegisterModelLoadCallback( nModelIndex, m_pHandler ); }
+//	operator CBaseEntity * () const { return m_pHandler->m_pEntity; }
+//
+//private:
+//	CBaseEntityModelLoadProxy( const CBaseEntityModelLoadProxy& );
+//	CBaseEntityModelLoadProxy& operator=( const CBaseEntityModelLoadProxy& );
+//};
 
-public:
-	explicit CBaseEntityModelLoadProxy( CBaseEntity *pEntity ) : m_pHandler( new Handler( pEntity ) ) { }
-	~CBaseEntityModelLoadProxy() { delete m_pHandler; }
-	void Register( int nModelIndex ) const { modelinfo->RegisterModelLoadCallback( nModelIndex, m_pHandler ); }
-	operator CBaseEntity * () const { return m_pHandler->m_pEntity; }
+//static CUtlHashtable< CBaseEntityModelLoadProxy, empty_t, PointerHashFunctor, PointerEqualFunctor, CBaseEntity * > sg_DynamicLoadHandlers;
 
-private:
-	CBaseEntityModelLoadProxy( const CBaseEntityModelLoadProxy& );
-	CBaseEntityModelLoadProxy& operator=( const CBaseEntityModelLoadProxy& );
-};
-
-static CUtlHashtable< CBaseEntityModelLoadProxy, empty_t, PointerHashFunctor, PointerEqualFunctor, CBaseEntity * > sg_DynamicLoadHandlers;
-
-void CBaseEntityModelLoadProxy::Handler::OnModelLoadComplete( const model_t *pModel )
-{
-	m_pEntity->OnModelLoadComplete( pModel );
-	sg_DynamicLoadHandlers.Remove( m_pEntity ); // NOTE: destroys *this!
-}
+//void CBaseEntityModelLoadProxy::Handler::OnModelLoadComplete( const model_t *pModel )
+//{
+//	m_pEntity->OnModelLoadComplete( pModel );
+//	//sg_DynamicLoadHandlers.Remove( m_pEntity ); // NOTE: destroys *this!
+//}
 
 
 CBaseEntity::CBaseEntity( bool bServerOnly )
@@ -387,9 +387,9 @@ CBaseEntity::CBaseEntity( bool bServerOnly )
 	ClearSolidFlags();
 
 	m_nModelIndex = 0;
-	m_bDynamicModelAllowed = false;
-	m_bDynamicModelPending = false;
-	m_bDynamicModelSetBounds = false;
+	//m_bDynamicModelAllowed = false;
+	//m_bDynamicModelPending = false;
+	//m_bDynamicModelSetBounds = false;
 
 	SetMoveType( MOVETYPE_NONE );
 	SetOwnerEntity( NULL );
@@ -441,8 +441,8 @@ CBaseEntity::~CBaseEntity( )
 	// case where friction sounds are added between the call to UpdateOnRemove + ~CBaseEntity
 	PhysCleanupFrictionSounds( this );
 
-	Assert( !IsDynamicModelIndex( m_nModelIndex ) );
-	Verify( !sg_DynamicLoadHandlers.Remove( this ) );
+	//Assert( !IsDynamicModelIndex( m_nModelIndex ) );
+	//Verify( !sg_DynamicLoadHandlers.Remove( this ) );
 
 	// In debug make sure that we don't call delete on an entity without setting
 	//  the disable flag first!
@@ -617,35 +617,35 @@ void CBaseEntity::SetClassname( const char *className )
 
 void CBaseEntity::SetModelIndex( int index )
 {
-	if ( IsDynamicModelIndex( index ) && !(GetBaseAnimating() && m_bDynamicModelAllowed) )
-	{
-		AssertMsg( false, "dynamic model support not enabled on server entity" );
-		index = -1;
-	}
+	//if ( IsDynamicModelIndex( index ) && !(GetBaseAnimating() && m_bDynamicModelAllowed) )
+	//{
+	//	AssertMsg( false, "dynamic model support not enabled on server entity" );
+	//	index = -1;
+	//}
 
 	if ( index != m_nModelIndex )
 	{
-		if ( m_bDynamicModelPending )
-		{
-			sg_DynamicLoadHandlers.Remove( this );
-		}
+		//if ( m_bDynamicModelPending )
+		//{
+			//sg_DynamicLoadHandlers.Remove( this );
+		//}
 		
-		modelinfo->ReleaseDynamicModel( m_nModelIndex );
-		modelinfo->AddRefDynamicModel( index );
+		//modelinfo->ReleaseDynamicModel( m_nModelIndex );
+		//modelinfo->AddRefDynamicModel( index );
 		m_nModelIndex = index;
 		
-		m_bDynamicModelSetBounds = false;
+		//m_bDynamicModelSetBounds = false;
 
-		if ( IsDynamicModelIndex( index ) )
-		{
-			m_bDynamicModelPending = true;
-			sg_DynamicLoadHandlers[ sg_DynamicLoadHandlers.Insert( this ) ].Register( index );
-		}
-		else
-		{
-			m_bDynamicModelPending = false;
+		//if ( IsDynamicModelIndex( index ) )
+		//{
+		//	m_bDynamicModelPending = true;
+		//	sg_DynamicLoadHandlers[ sg_DynamicLoadHandlers.Insert( this ) ].Register( index );
+		//}
+		//else
+		//{
+			//m_bDynamicModelPending = false;
 			OnNewModel();
-		}
+		//}
 	}
 	DispatchUpdateTransmitState();
 }
@@ -2044,16 +2044,16 @@ void CBaseEntity::UpdateOnRemove( void )
 
 	SetGroundEntity( NULL );
 
-	if ( m_bDynamicModelPending )
-	{
-		sg_DynamicLoadHandlers.Remove( this );
-	}
+	//if ( m_bDynamicModelPending )
+	//{
+		//sg_DynamicLoadHandlers.Remove( this );
+	//}
 	
-	if ( IsDynamicModelIndex( m_nModelIndex ) )
-	{
-		modelinfo->ReleaseDynamicModel( m_nModelIndex ); // no-op if not dynamic
-		m_nModelIndex = -1;
-	}
+	//if ( IsDynamicModelIndex( m_nModelIndex ) )
+	//{
+	//	//modelinfo->ReleaseDynamicModel( m_nModelIndex ); // no-op if not dynamic
+	//	m_nModelIndex = -1;
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -7268,29 +7268,29 @@ void CBaseEntity::IncrementInterpolationFrame()
 
 void CBaseEntity::OnModelLoadComplete( const model_t* model )
 {
-	Assert( m_bDynamicModelPending && IsDynamicModelIndex( m_nModelIndex ) );
-	Assert( model == modelinfo->GetModel( m_nModelIndex ) );
-	
-	m_bDynamicModelPending = false;
-	
-	if ( m_bDynamicModelSetBounds )
-	{
-		m_bDynamicModelSetBounds = false;
-		SetCollisionBoundsFromModel();
-	}
-
-	OnNewModel();
+//	//Assert( m_bDynamicModelPending && IsDynamicModelIndex( m_nModelIndex ) );
+//	Assert( model == modelinfo->GetModel( m_nModelIndex ) );
+//	
+//	m_bDynamicModelPending = false;
+//	
+//	if ( m_bDynamicModelSetBounds )
+//	{
+//		m_bDynamicModelSetBounds = false;
+//		SetCollisionBoundsFromModel();
+//	}
+//
+//	OnNewModel();
 }
 
 //------------------------------------------------------------------------------
 
 void CBaseEntity::SetCollisionBoundsFromModel()
 {
-	if ( IsDynamicModelLoading() )
-	{
-		m_bDynamicModelSetBounds = true;
-		return;
-	}
+	//if ( IsDynamicModelLoading() )
+	//{
+	//	m_bDynamicModelSetBounds = true;
+	//	return;
+	//}
 
 	if ( const model_t *pModel = GetModel() )
 	{

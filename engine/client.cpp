@@ -463,7 +463,7 @@ bool CClientState::HookClientStringTable( char const *tableName )
 
 	if ( !Q_strcasecmp( tableName, "DynamicModels" ) )
 	{
-		m_pDynamicModelsTable = table;
+		//m_pDynamicModelsTable = table;
 		return true;
 	}
 
@@ -561,7 +561,7 @@ bool CClientState::InstallEngineStringTableCallback( char const *tableName )
 	if ( !Q_strcasecmp( tableName, "DynamicModels" ) )
 	{
 		table->SetStringChangedCallback( NULL, Callback_DynamicModelsChanged );
-		m_pDynamicModelsTable = table;
+		//m_pDynamicModelsTable = table;
 		return true;
 	}
 
@@ -664,7 +664,7 @@ void CClientState::Clear( void )
 	m_pLightStyleTable = NULL;
 	m_pUserInfoTable = NULL;
 	m_pServerStartupTable = NULL;
-	m_pDynamicModelsTable = NULL;
+	//m_pDynamicModelsTable = NULL;
 	m_pAreaBits = NULL;
 
 	// Clear all download vars.

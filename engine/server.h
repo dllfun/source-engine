@@ -127,7 +127,7 @@ public:
 	INetworkStringTable *GetSoundPrecacheTable( void ) const;
 	INetworkStringTable *GetDecalPrecacheTable( void ) const;
 	
-	INetworkStringTable *GetDynamicModelsTable( void ) const { return m_pDynamicModelsTable; }
+	//INetworkStringTable *GetDynamicModelsTable( void ) const { return m_pDynamicModelsTable; }
 
 
 	// Accessors to model precaching stuff

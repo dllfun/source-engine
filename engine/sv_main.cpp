@@ -377,7 +377,7 @@ void CGameServer::Clear( void )
 	m_pGenericPrecacheTable = NULL;
 	m_pSoundPrecacheTable = NULL;
 	m_pDecalPrecacheTable = NULL;
-	m_pDynamicModelsTable = NULL;
+	//m_pDynamicModelsTable = NULL;
 	m_bIsLevelMainMenuBackground = false;
 
 	m_bLoadgame = false;
@@ -488,7 +488,7 @@ void CGameServer::CreateEngineStringTables( void )
 		1<<ABSOLUTE_PLAYER_LIMIT_DW ); // make it a power of 2
 
 	// Fixed-size user data; bit value of either 0 or 1.
-	m_pDynamicModelsTable = m_StringTables->CreateStringTable( "DynamicModels", 2048, true, 1 );
+	//m_pDynamicModelsTable = m_StringTables->CreateStringTable( "DynamicModels", 2048, true, 1 );
 
 	// Send the query info..
 	m_pServerStartupTable = m_StringTables->CreateStringTable( 
@@ -505,8 +505,8 @@ void CGameServer::CreateEngineStringTables( void )
 			 m_pLightStyleTable &&
 			 m_pUserInfoTable &&
 			 m_pServerStartupTable &&
-			 m_pDownloadableFileTable &&
-			 m_pDynamicModelsTable );
+			 m_pDownloadableFileTable //&&
+			  );//m_pDynamicModelsTable
 
 	// create an empty lightstyle table with unique index names
 	for ( i = 0; i<MAX_LIGHTSTYLES; i++ )

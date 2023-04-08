@@ -379,7 +379,7 @@ public:
 private:
 	bool				m_bSequenceFinished;// flag set when StudioAdvanceFrame moves across a frame boundry
 	bool				m_bSequenceLoops;	// true if the sequence loops
-	bool				m_bResetSequenceInfoOnLoad; // true if a ResetSequenceInfo was queued up during dynamic load
+	//bool				m_bResetSequenceInfoOnLoad; // true if a ResetSequenceInfo was queued up during dynamic load
 	float				m_flDissolveStartTime;
 
 	// was pev->frame
@@ -432,8 +432,8 @@ friend class CBlendingCycler;
 //-----------------------------------------------------------------------------
 inline CStudioHdr *CBaseAnimating::GetModelPtr( void ) 
 { 
-	if ( IsDynamicModelLoading() )
-		return NULL;
+	//if ( IsDynamicModelLoading() )
+	//	return NULL;
 
 #ifdef _DEBUG
 	// GetModelPtr() is often called before OnNewModel() so go ahead and set it up first chance.

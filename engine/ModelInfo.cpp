@@ -107,18 +107,18 @@ public:
 //-----------------------------------------------------------------------------
 // shared implementation of IVModelInfo
 //-----------------------------------------------------------------------------
-abstract_class CModelInfo : public IVModelInfoClient
+abstract_class CModelInfo : virtual public IVModelInfo
 {
 public:
 	// GetModel, RegisterDynamicModel(name) are in CModelInfoClient/CModelInfoServer
 	virtual int GetModelIndex( const char *name ) const;
-	virtual int GetModelClientSideIndex( const char *name ) const;
+	//virtual int GetModelClientSideIndex( const char *name ) const;
 
-	virtual bool RegisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback, bool bCallImmediatelyIfLoaded );
-	virtual void UnregisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback );
-	virtual bool IsDynamicModelLoading( int modelIndex );
-	virtual void AddRefDynamicModel( int modelIndex );
-	virtual void ReleaseDynamicModel( int modelIndex );
+	//virtual bool RegisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback, bool bCallImmediatelyIfLoaded );
+	//virtual void UnregisterModelLoadCallback( int modelindex, IModelLoadCallback* pCallback );
+	//virtual bool IsDynamicModelLoading( int modelIndex );
+	//virtual void AddRefDynamicModel(int modelIndex);
+	//virtual void ReleaseDynamicModel( int modelIndex );
 
 	virtual void OnLevelChange();
 
@@ -128,15 +128,14 @@ public:
 	virtual int GetModelFrameCount( const model_t *model ) const;
 	virtual int GetModelType( const model_t *model ) const;
 	virtual void *GetModelExtraData( const model_t *model );
-	virtual bool ModelHasMaterialProxy( const model_t *model ) const;
 	virtual bool IsTranslucent( const model_t *model ) const;
 	virtual bool IsModelVertexLit( const model_t *model ) const;
 	virtual bool IsTranslucentTwoPass( const model_t *model ) const;
 	virtual void RecomputeTranslucency( const model_t *model, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate);
 	virtual int	GetModelMaterialCount( const model_t *model ) const;
 	virtual void GetModelMaterials( const model_t *model, int count, IMaterial** ppMaterials );
-	virtual void GetIlluminationPoint( const model_t *model, IClientRenderable *pRenderable, const Vector& origin, 
-		const QAngle& angles, Vector* pLightingOrigin );
+	//virtual void GetIlluminationPoint( const model_t *model, IClientRenderable *pRenderable, const Vector& origin, 
+	//	const QAngle& angles, Vector* pLightingOrigin );
 	virtual int GetModelContents( int modelIndex );
 	vcollide_t *GetVCollide( const model_t *model );
 	vcollide_t *GetVCollide( int modelIndex );
@@ -158,9 +157,8 @@ public:
 
 	int GetAutoplayList( const studiohdr_t *pStudioHdr, unsigned short **pAutoplayList ) const;
 	CPhysCollide *GetCollideForVirtualTerrain( int index );
-	virtual int GetSurfacepropsForVirtualTerrain( int index ) { return CM_SurfacepropsForDisp(index); }
+	//virtual int GetSurfacepropsForVirtualTerrain( int index ) { return CM_SurfacepropsForDisp(index); }
 
-	virtual bool IsUsingFBTexture( const model_t *model, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable ) const;
 
 	virtual MDLHandle_t	GetCacheHandle( const model_t *model ) const { return ( model->type == mod_studio ) ? model->studio : MDLHANDLE_INVALID; }
 
@@ -174,26 +172,26 @@ protected:
 	static int MODEL_TO_CLIENTSIDE( int i ) { return ( i <= -2 && (i & 1) ) ? (-2 - i) >> 1 : -1; }
 	static int MODEL_TO_NETDYNAMIC( int i ) { return ( i <= -2 && !(i & 1) ) ? (-2 - i) >> 1 : -1; }
 
-	model_t *LookupDynamicModel( int i );
+	//model_t *LookupDynamicModel( int i );
 
-	virtual INetworkStringTable *GetDynamicModelStringTable() const = 0;
+	//virtual INetworkStringTable *GetDynamicModelStringTable() const = 0;
 	virtual int LookupPrecachedModelIndex( const char *name ) const = 0;
 
-	void GrowNetworkedDynamicModels( int netidx )
-	{
-		if ( m_NetworkedDynamicModels.Count() <= netidx )
-		{
-			int origCount = m_NetworkedDynamicModels.Count();
-			m_NetworkedDynamicModels.SetCountNonDestructively( netidx + 1 );
-			for ( int i = origCount; i <= netidx; ++i )
-			{
-				m_NetworkedDynamicModels[i] = NULL;
-			}
-		}
-	}
+	//void GrowNetworkedDynamicModels( int netidx )
+	//{
+	//	if ( m_NetworkedDynamicModels.Count() <= netidx )
+	//	{
+	//		int origCount = m_NetworkedDynamicModels.Count();
+	//		m_NetworkedDynamicModels.SetCountNonDestructively( netidx + 1 );
+	//		for ( int i = origCount; i <= netidx; ++i )
+	//		{
+	//			m_NetworkedDynamicModels[i] = NULL;
+	//		}
+	//	}
+	//}
 
 	// Networked dynamic model indices are lookup indices for this vector
-	CUtlVector< model_t* > m_NetworkedDynamicModels;
+	//CUtlVector< model_t* > m_NetworkedDynamicModels;
 
 public:
 	struct ModelFileHandleHash
@@ -208,7 +206,7 @@ public:
 	};
 protected:
 	// Client-only dynamic model indices are iterators into this struct (only populated by CModelInfoClient subclass)
-	CUtlStableHashtable< model_t*, empty_t, ModelFileHandleHash, ModelFileHandleEq, int16, FileNameHandle_t > m_ClientDynamicModels;
+	//CUtlStableHashtable< model_t*, empty_t, ModelFileHandleHash, ModelFileHandleEq, int16, FileNameHandle_t > m_ClientDynamicModels;
 };
 
 int CModelInfo::GetModelIndex( const char *name ) const
@@ -221,164 +219,165 @@ int CModelInfo::GetModelIndex( const char *name ) const
 	if ( nIndex != -1 )
 		return nIndex;
 
-	INetworkStringTable* pTable = GetDynamicModelStringTable();
-	if ( pTable )
-	{
-		int netdyn = pTable->FindStringIndex( name );
-		if ( netdyn != INVALID_STRING_INDEX )
-		{
-			Assert( !m_NetworkedDynamicModels.IsValidIndex( netdyn ) || V_strcmp( m_NetworkedDynamicModels[netdyn]->strName, name ) == 0 );
-			return NETDYNAMIC_TO_MODEL( netdyn );
-		}
+//	INetworkStringTable* pTable = GetDynamicModelStringTable();
+//	if ( pTable )
+//	{
+//		int netdyn = pTable->FindStringIndex( name );
+//		if ( netdyn != INVALID_STRING_INDEX )
+//		{
+//			Assert( !m_NetworkedDynamicModels.IsValidIndex( netdyn ) || V_strcmp( m_NetworkedDynamicModels[netdyn]->strName, name ) == 0 );
+//			return NETDYNAMIC_TO_MODEL( netdyn );
+//		}
+//
+//#if defined( DEMO_BACKWARDCOMPATABILITY ) && !defined( SWDS )
+//		// dynamic model tables in old system did not have a full path with "models/" prefix
+//		if ( V_strnicmp( name, "models/", 7 ) == 0 && demoplayer && demoplayer->IsPlayingBack() && demoplayer->GetProtocolVersion() < PROTOCOL_VERSION_20 )
+//		{
+//			netdyn = pTable->FindStringIndex( name + 7 );
+//			if ( netdyn != INVALID_STRING_INDEX )
+//			{
+//				Assert( !m_NetworkedDynamicModels.IsValidIndex( netdyn ) || V_strcmp( m_NetworkedDynamicModels[netdyn]->strName, name ) == 0 );
+//				return NETDYNAMIC_TO_MODEL( netdyn );
+//			}
+//		}
+//#endif
+//	}
 
-#if defined( DEMO_BACKWARDCOMPATABILITY ) && !defined( SWDS )
-		// dynamic model tables in old system did not have a full path with "models/" prefix
-		if ( V_strnicmp( name, "models/", 7 ) == 0 && demoplayer && demoplayer->IsPlayingBack() && demoplayer->GetProtocolVersion() < PROTOCOL_VERSION_20 )
-		{
-			netdyn = pTable->FindStringIndex( name + 7 );
-			if ( netdyn != INVALID_STRING_INDEX )
-			{
-				Assert( !m_NetworkedDynamicModels.IsValidIndex( netdyn ) || V_strcmp( m_NetworkedDynamicModels[netdyn]->strName, name ) == 0 );
-				return NETDYNAMIC_TO_MODEL( netdyn );
-			}
-		}
-#endif
-	}
-
-	return GetModelClientSideIndex( name );
+	return -1;// GetModelClientSideIndex(name);
 }
 
-int CModelInfo::GetModelClientSideIndex( const char *name ) const
-{
-	if ( m_ClientDynamicModels.Count() != 0 )
-	{
-		FileNameHandle_t file = g_pFullFileSystem->FindFileName( name );
-		if ( file != FILENAMEHANDLE_INVALID )
-		{
-			UtlHashHandle_t h = m_ClientDynamicModels.Find( file );
-			if ( h != m_ClientDynamicModels.InvalidHandle() )
-			{
-				Assert( V_strcmp( m_ClientDynamicModels[h]->strName, name ) == 0 );
-				return CLIENTSIDE_TO_MODEL( h );
-			}
-		}
-	}
+//int CModelInfo::GetModelClientSideIndex( const char *name ) const
+//{
+	//if ( m_ClientDynamicModels.Count() != 0 )
+	//{
+	//	FileNameHandle_t file = g_pFullFileSystem->FindFileName( name );
+	//	if ( file != FILENAMEHANDLE_INVALID )
+	//	{
+	//		UtlHashHandle_t h = m_ClientDynamicModels.Find( file );
+	//		if ( h != m_ClientDynamicModels.InvalidHandle() )
+	//		{
+	//			Assert( V_strcmp( m_ClientDynamicModels[h]->strName, name ) == 0 );
+	//			return CLIENTSIDE_TO_MODEL( h );
+	//		}
+	//	}
+	//}
 
-	return -1;
-}
+//	return -1;
+//}
 
-model_t *CModelInfo::LookupDynamicModel( int i )
-{
-	Assert( IsDynamicModelIndex( i ) );
-	if ( IsClientOnlyModelIndex( i ) )
-	{
-		UtlHashHandle_t h = (UtlHashHandle_t) MODEL_TO_CLIENTSIDE( i );
-		return m_ClientDynamicModels.IsValidHandle( h ) ? m_ClientDynamicModels[ h ] : NULL;
-	}
-	else
-	{
-		int netidx = MODEL_TO_NETDYNAMIC( i );
-		if ( m_NetworkedDynamicModels.IsValidIndex( netidx ) && m_NetworkedDynamicModels[ netidx ] )
-			return m_NetworkedDynamicModels[ netidx ];
-
-		INetworkStringTable *pTable = GetDynamicModelStringTable();
-		if ( pTable && (uint) netidx < (uint) pTable->GetNumStrings() )
-		{
-			GrowNetworkedDynamicModels( netidx );
-			const char *name = pTable->GetString( netidx );
-
-#if defined( DEMO_BACKWARDCOMPATABILITY ) && !defined( SWDS )
-			// dynamic model tables in old system did not have a full path with "models/" prefix
-			char fixupBuf[MAX_PATH];
-			if ( V_strnicmp( name, "models/", 7 ) != 0 && demoplayer && demoplayer->IsPlayingBack() && demoplayer->GetProtocolVersion() < PROTOCOL_VERSION_20 )
-			{
-				V_snprintf( fixupBuf, MAX_PATH, "models/%s", name );
-				name = fixupBuf;
-			}
-#endif
-
-			model_t *pModel = modelloader->GetDynamicModel( name, false );
-			m_NetworkedDynamicModels[ netidx ] = pModel;
-			return pModel;
-		}
-
-		return NULL;
-	}
-}
-
-
-bool CModelInfo::RegisterModelLoadCallback( int modelIndex, IModelLoadCallback* pCallback, bool bCallImmediatelyIfLoaded )
-{
-	const model_t *pModel = GetModel( modelIndex );
-	Assert( pModel );
-	if ( pModel && IsDynamicModelIndex( modelIndex ) )
-	{
-		return modelloader->RegisterModelLoadCallback( const_cast< model_t *>( pModel ), IsClientOnlyModelIndex( modelIndex ), pCallback, bCallImmediatelyIfLoaded );
-	}
-	else if ( pModel && bCallImmediatelyIfLoaded )
-	{
-		pCallback->OnModelLoadComplete( pModel );
-		return true;
-	}
-	return false;
-}
-
-void CModelInfo::UnregisterModelLoadCallback( int modelIndex, IModelLoadCallback* pCallback )
-{
-	if ( modelIndex == -1 )
-	{
-		modelloader->UnregisterModelLoadCallback( NULL, false, pCallback );
-		modelloader->UnregisterModelLoadCallback( NULL, true, pCallback );
-	}
-	else if ( IsDynamicModelIndex( modelIndex ) )
-	{
-		const model_t *pModel = LookupDynamicModel( modelIndex );
-		Assert( pModel );
-		if ( pModel )
-		{
-			modelloader->UnregisterModelLoadCallback( const_cast< model_t *>( pModel ), IsClientOnlyModelIndex( modelIndex ), pCallback );
-		}
-	}
-}
+//model_t *CModelInfo::LookupDynamicModel( int i )
+//{
+//	Assert( IsDynamicModelIndex( i ) );
+//	if ( IsClientOnlyModelIndex( i ) )
+//	{
+//		//UtlHashHandle_t h = (UtlHashHandle_t) MODEL_TO_CLIENTSIDE( i );
+//		return NULL;// m_ClientDynamicModels.IsValidHandle(h) ? m_ClientDynamicModels[h] : NULL;
+//	}
+//	else
+//	{
+//		//int netidx = MODEL_TO_NETDYNAMIC( i );
+//		//if ( m_NetworkedDynamicModels.IsValidIndex( netidx ) && m_NetworkedDynamicModels[ netidx ] )
+//		//	return m_NetworkedDynamicModels[ netidx ];
+//
+////		INetworkStringTable *pTable = GetDynamicModelStringTable();
+////		if ( pTable && (uint) netidx < (uint) pTable->GetNumStrings() )
+////		{
+////			GrowNetworkedDynamicModels( netidx );
+////			const char *name = pTable->GetString( netidx );
+////
+////#if defined( DEMO_BACKWARDCOMPATABILITY ) && !defined( SWDS )
+////			// dynamic model tables in old system did not have a full path with "models/" prefix
+////			char fixupBuf[MAX_PATH];
+////			if ( V_strnicmp( name, "models/", 7 ) != 0 && demoplayer && demoplayer->IsPlayingBack() && demoplayer->GetProtocolVersion() < PROTOCOL_VERSION_20 )
+////			{
+////				V_snprintf( fixupBuf, MAX_PATH, "models/%s", name );
+////				name = fixupBuf;
+////			}
+////#endif
+////
+////			model_t *pModel = modelloader->GetDynamicModel( name, false );
+////			m_NetworkedDynamicModels[ netidx ] = pModel;
+////			return pModel;
+////		}
+//
+//		return NULL;
+//	}
+//}
 
 
-bool CModelInfo::IsDynamicModelLoading( int modelIndex )
-{
-	model_t *pModel = LookupDynamicModel( modelIndex );
-	return pModel && modelloader->IsDynamicModelLoading( pModel, IsClientOnlyModelIndex( modelIndex ) );
-}
+//bool CModelInfo::RegisterModelLoadCallback( int modelIndex, IModelLoadCallback* pCallback, bool bCallImmediatelyIfLoaded )
+//{
+//	const model_t *pModel = GetModel( modelIndex );
+//	Assert( pModel );
+//	//if ( pModel && IsDynamicModelIndex( modelIndex ) )
+//	//{
+//	//	return modelloader->RegisterModelLoadCallback( const_cast< model_t *>( pModel ), IsClientOnlyModelIndex( modelIndex ), pCallback, bCallImmediatelyIfLoaded );
+//	//}
+//	//else 
+//	if ( pModel && bCallImmediatelyIfLoaded )
+//	{
+//		pCallback->OnModelLoadComplete( pModel );
+//		return true;
+//	}
+//	return false;
+//}
+
+//void CModelInfo::UnregisterModelLoadCallback( int modelIndex, IModelLoadCallback* pCallback )
+//{
+//	if ( modelIndex == -1 )
+//	{
+//		modelloader->UnregisterModelLoadCallback( NULL, false, pCallback );
+//		modelloader->UnregisterModelLoadCallback( NULL, true, pCallback );
+//	}
+//	//else if ( IsDynamicModelIndex( modelIndex ) )
+//	//{
+//	//	//const model_t *pModel = LookupDynamicModel( modelIndex );
+//	//	//Assert( pModel );
+//	//	//if ( pModel )
+//	//	//{
+//	//	//	modelloader->UnregisterModelLoadCallback( const_cast< model_t *>( pModel ), IsClientOnlyModelIndex( modelIndex ), pCallback );
+//	//	//
+//	//}
+//}
 
 
-void CModelInfo::AddRefDynamicModel( int modelIndex )
-{
-	if ( IsDynamicModelIndex( modelIndex ) )
-	{
-		model_t *pModel = LookupDynamicModel( modelIndex );
-		Assert( pModel );
-		if ( pModel )
-		{
-			modelloader->AddRefDynamicModel( pModel, IsClientOnlyModelIndex( modelIndex ) );
-		}
-	}
-}
+//bool CModelInfo::IsDynamicModelLoading( int modelIndex )
+//{
+//	//model_t *pModel = LookupDynamicModel( modelIndex );
+//	return NULL;// pModel&& modelloader->IsDynamicModelLoading(pModel, IsClientOnlyModelIndex(modelIndex));
+//}
 
-void CModelInfo::ReleaseDynamicModel( int modelIndex )
-{
-	if ( IsDynamicModelIndex( modelIndex ) )
-	{
-		model_t *pModel = LookupDynamicModel( modelIndex );
-		Assert( pModel );
-		if ( pModel )
-		{
-			modelloader->ReleaseDynamicModel( pModel, IsClientOnlyModelIndex( modelIndex ) );
-		}
-	}
-}
+
+//void CModelInfo::AddRefDynamicModel( int modelIndex )
+//{
+//	if ( IsDynamicModelIndex( modelIndex ) )
+//	{
+//		//model_t *pModel = LookupDynamicModel( modelIndex );
+//		//Assert( pModel );
+//		//if ( pModel )
+//		//{
+//		//	modelloader->AddRefDynamicModel( pModel, IsClientOnlyModelIndex( modelIndex ) );
+//		//}
+//	}
+//}
+
+//void CModelInfo::ReleaseDynamicModel( int modelIndex )
+//{
+//	if ( IsDynamicModelIndex( modelIndex ) )
+//	{
+//		//model_t *pModel = LookupDynamicModel( modelIndex );
+//		//Assert( pModel );
+//		//if ( pModel )
+//		//{
+//		//	modelloader->ReleaseDynamicModel( pModel, IsClientOnlyModelIndex( modelIndex ) );
+//		//}
+//	}
+//}
 
 void CModelInfo::OnLevelChange()
 {
 	// Network string table has reset
-	m_NetworkedDynamicModels.Purge();
+	//m_NetworkedDynamicModels.Purge();
 
 	// Force-unload any server-side models
 	modelloader->ForceUnloadNonClientDynamicModels();
@@ -474,20 +473,20 @@ int CModelInfo::GetModelType( const model_t *model ) const
 
 	if ( model->type == mod_bad )
 	{
-		if ( m_ClientDynamicModels.Find( (model_t*) model ) != m_ClientDynamicModels.InvalidHandle() )
-			return mod_studio;
-		INetworkStringTable* pTable = GetDynamicModelStringTable();
-		if ( pTable && pTable->FindStringIndex( model->strName ) != INVALID_STRING_INDEX )
-			return mod_studio;
-
-#if defined( DEMO_BACKWARDCOMPATABILITY ) && !defined( SWDS )
-		// dynamic model tables in old system did not have a full path with "models/" prefix
-		if ( pTable && demoplayer && demoplayer->IsPlayingBack() && demoplayer->GetProtocolVersion() < PROTOCOL_VERSION_20 &&
-			 V_strnicmp( model->strName, "models/", 7 ) == 0 && pTable->FindStringIndex( model->strName + 7 ) != INVALID_STRING_INDEX )
-		{
-			return mod_studio;
-		}
-#endif
+		//if ( m_ClientDynamicModels.Find( (model_t*) model ) != m_ClientDynamicModels.InvalidHandle() )
+		//	return mod_studio;
+//		INetworkStringTable* pTable = GetDynamicModelStringTable();
+//		if ( pTable && pTable->FindStringIndex( model->strName ) != INVALID_STRING_INDEX )
+//			return mod_studio;
+//
+//#if defined( DEMO_BACKWARDCOMPATABILITY ) && !defined( SWDS )
+//		// dynamic model tables in old system did not have a full path with "models/" prefix
+//		if ( pTable && demoplayer && demoplayer->IsPlayingBack() && demoplayer->GetProtocolVersion() < PROTOCOL_VERSION_20 &&
+//			 V_strnicmp( model->strName, "models/", 7 ) == 0 && pTable->FindStringIndex( model->strName + 7 ) != INVALID_STRING_INDEX )
+//		{
+//			return mod_studio;
+//		}
+//#endif
 	}
 	
 	return model->type;
@@ -585,14 +584,7 @@ const studiohdr_t *virtualgroup_t::GetStudioHdr( void ) const
 }
 
 
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-bool CModelInfo::ModelHasMaterialProxy( const model_t *model ) const
-{
-	// Should we add skin & model to this function like IsUsingFBTexture()?
-	return (model && (model->flags & MODELFLAG_MATERIALPROXY));
-}
+
 
 bool CModelInfo::IsTranslucent( const model_t *model ) const
 {
@@ -610,57 +602,7 @@ bool CModelInfo::IsTranslucentTwoPass( const model_t *model ) const
 	return (model && (model->flags & MODELFLAG_TRANSLUCENT_TWOPASS));
 }
 
-bool CModelInfo::IsUsingFBTexture( const model_t *model, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable ) const
-{
-	bool bMightUseFbTextureThisFrame = (model && (model->flags & MODELFLAG_STUDIOHDR_USES_FB_TEXTURE));
 
-	if ( bMightUseFbTextureThisFrame )
-	{
-		// Check each material's NeedsPowerOfTwoFrameBufferTexture() virtual func
-		switch( model->type )
-		{
-			case mod_brush:
-			{
-				for (int i = 0; i < model->brush.nummodelsurfaces; ++i)
-				{
-					SurfaceHandle_t surfID = SurfaceHandleFromIndex( model->brush.firstmodelsurface+i, model->brush.pShared );
-					IMaterial* material = MSurf_TexInfo( surfID, model->brush.pShared )->material;
-					if ( material != NULL )
-					{
-						if ( material->NeedsPowerOfTwoFrameBufferTexture() )
-						{
-							return true;
-						}
-					}
-				}
-			}
-			break;
-
-			case mod_studio:
-			{
-				IMaterial *pMaterials[ 128 ];
-				int materialCount = g_pStudioRender->GetMaterialListFromBodyAndSkin( model->studio, nSkin, nBody, ARRAYSIZE( pMaterials ), pMaterials );
-				for ( int i = 0; i < materialCount; i++ )
-				{
-					if ( pMaterials[i] != NULL )
-					{
-						// Bind material first so all material proxies execute
-						CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
-						pRenderContext->Bind( pMaterials[i], pClientRenderable );
-
-						if ( pMaterials[i]->NeedsPowerOfTwoFrameBufferTexture() )
-						{
-							return true;
-						}
-					}
-				}
-			}
-			break;
-		}
-	}
-
-	return false;
-}
 
 void CModelInfo::RecomputeTranslucency( const model_t *model, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate )
 {
@@ -683,20 +625,7 @@ void CModelInfo::GetModelMaterials( const model_t *model, int count, IMaterial**
 		Mod_GetModelMaterials( (model_t *)model, count, ppMaterials );
 }
 
-void CModelInfo::GetIlluminationPoint( const model_t *model, IClientRenderable *pRenderable, const Vector& origin, 
-	const QAngle& angles, Vector* pLightingOrigin )
-{
-	Assert( model->type == mod_studio );
-	studiohdr_t* pStudioHdr = (studiohdr_t*)GetModelExtraData(model);
-	if (pStudioHdr)
-	{
-		R_StudioGetLightingCenter( pRenderable, pStudioHdr, origin, angles, pLightingOrigin );
-	}
-	else
-	{
-		*pLightingOrigin = origin;
-	}
-}
+
 
 int CModelInfo::GetModelContents( int modelIndex )
 {
@@ -887,92 +816,92 @@ void CModelInfo::GetBrushModelPlane( const model_t *model, int nIndex, cplane_t 
 class CModelInfoServer : public CModelInfo
 {
 public:
-	virtual int RegisterDynamicModel( const char *name, bool bClientSideOnly );
+	//virtual int RegisterDynamicModel( const char *name, bool bClientSideOnly );
 	virtual const model_t *GetModel( int modelindex );
-	virtual const model_t *FindOrLoadModel( const char *name );
-	virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData );
+	//virtual const model_t *FindOrLoadModel( const char *name );
+	//virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData );
 
-	virtual void GetModelMaterialColorAndLighting( const model_t *model, const Vector& origin,
-		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor );
+	//virtual void GetModelMaterialColorAndLighting( const model_t *model, const Vector& origin,
+	//	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor );
 
 protected:
-	virtual INetworkStringTable *GetDynamicModelStringTable() const;
+	//virtual INetworkStringTable *GetDynamicModelStringTable() const;
 	virtual int LookupPrecachedModelIndex( const char *name ) const;
 };
 
-INetworkStringTable *CModelInfoServer::GetDynamicModelStringTable() const
-{
-	return sv.GetDynamicModelsTable();
-}
+//INetworkStringTable *CModelInfoServer::GetDynamicModelStringTable() const
+//{
+//	return sv.GetDynamicModelsTable();
+//}
 
 int CModelInfoServer::LookupPrecachedModelIndex( const char *name ) const
 {
 	return sv.LookupModelIndex( name );
 }
 
-int CModelInfoServer::RegisterDynamicModel( const char *name, bool bClientSide )
-{
-	// Server should not know about client-side dynamic models!
-	Assert( !bClientSide );
-	if ( bClientSide )
-		return -1;
-
-	char buf[256];
-	V_strncpy( buf, name, ARRAYSIZE(buf) );
-	V_RemoveDotSlashes( buf, '/', true );
-	name = buf;
-
-	Assert( V_strnicmp( name, "models/", 7 ) == 0 && V_strstr( name, ".mdl" ) != NULL );
-
-	// Already known? bClientSide should always be false and is asserted above.
-	int index = GetModelIndex( name );
-	if ( index != -1 )
-		return index;
-
-	INetworkStringTable *pTable = GetDynamicModelStringTable();
-	Assert( pTable );
-	if ( !pTable )
-		return -1;
-
-	// Register this model with the dynamic model string table
-	Assert( pTable->FindStringIndex( name ) == INVALID_STRING_INDEX );
-	bool bWasLocked = static_cast<CNetworkStringTable_LockOverride*>( pTable )->LockWithRetVal( false );
-	char nIsLoaded = 0;
-	int netidx = pTable->AddString( true, name, 1, &nIsLoaded );	
-	static_cast<CNetworkStringTable*>( pTable )->Lock( bWasLocked );
-
-	// And also cache the model_t* pointer at this time
-	GrowNetworkedDynamicModels( netidx );
-	m_NetworkedDynamicModels[ netidx ] = modelloader->GetDynamicModel( name, bClientSide );
-
-	Assert( MODEL_TO_NETDYNAMIC( ( short ) NETDYNAMIC_TO_MODEL( netidx ) ) == netidx );
-	return NETDYNAMIC_TO_MODEL( netidx );
-}
+//int CModelInfoServer::RegisterDynamicModel( const char *name, bool bClientSide )
+//{
+//	// Server should not know about client-side dynamic models!
+//	Assert( !bClientSide );
+//	if ( bClientSide )
+//		return -1;
+//
+//	char buf[256];
+//	V_strncpy( buf, name, ARRAYSIZE(buf) );
+//	V_RemoveDotSlashes( buf, '/', true );
+//	name = buf;
+//
+//	Assert( V_strnicmp( name, "models/", 7 ) == 0 && V_strstr( name, ".mdl" ) != NULL );
+//
+//	// Already known? bClientSide should always be false and is asserted above.
+//	int index = GetModelIndex( name );
+//	if ( index != -1 )
+//		return index;
+//
+//	INetworkStringTable *pTable = GetDynamicModelStringTable();
+//	Assert( pTable );
+//	if ( !pTable )
+//		return -1;
+//
+//	// Register this model with the dynamic model string table
+//	Assert( pTable->FindStringIndex( name ) == INVALID_STRING_INDEX );
+//	bool bWasLocked = static_cast<CNetworkStringTable_LockOverride*>( pTable )->LockWithRetVal( false );
+//	char nIsLoaded = 0;
+//	int netidx = pTable->AddString( true, name, 1, &nIsLoaded );	
+//	static_cast<CNetworkStringTable*>( pTable )->Lock( bWasLocked );
+//
+//	// And also cache the model_t* pointer at this time
+//	GrowNetworkedDynamicModels( netidx );
+//	m_NetworkedDynamicModels[ netidx ] = modelloader->GetDynamicModel( name, bClientSide );
+//
+//	Assert( MODEL_TO_NETDYNAMIC( ( short ) NETDYNAMIC_TO_MODEL( netidx ) ) == netidx );
+//	return NETDYNAMIC_TO_MODEL( netidx );
+//}
 
 const model_t *CModelInfoServer::GetModel( int modelindex )
 {
-	if ( IsDynamicModelIndex( modelindex ) )
-		return LookupDynamicModel( modelindex );
+	//if (IsDynamicModelIndex(modelindex))
+	//	return NULL;// LookupDynamicModel(modelindex);
 
 	return sv.GetModel( modelindex );
 }
 
-void CModelInfoServer::OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData )
-{
-	AssertMsg( false, "CModelInfoServer::OnDynamicModelsStringTableChange should never be called" );
-}
+//void CModelInfoServer::OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData )
+//{
+//	AssertMsg( false, "CModelInfoServer::OnDynamicModelsStringTableChange should never be called" );
+//}
 
-void CModelInfoServer::GetModelMaterialColorAndLighting( const model_t *model, const Vector& origin,
-	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor )
-{
-	Msg( "GetModelMaterialColorAndLighting:  Available on client only!\n" );
-}
+//void CModelInfoServer::GetModelMaterialColorAndLighting( const model_t *model, const Vector& origin,
+//	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor )
+//{
+//	Msg( "GetModelMaterialColorAndLighting:  Available on client only!\n" );
+//}
 
-const model_t *CModelInfoServer::FindOrLoadModel( const char *name )
-{
-	AssertMsg( false, "CModelInfoServer::FindOrLoadModel should never be called" );
-	return NULL;
-}
+//const model_t *CModelInfoServer::FindOrLoadModel( const char *name )
+//{
+//	AssertMsg( false, "CModelInfoServer::FindOrLoadModel should never be called" );
+//	return NULL;
+//}
 
 
 static CModelInfoServer	g_ModelInfoServer;
@@ -987,66 +916,71 @@ IVModelInfo *modelinfo = &g_ModelInfoServer;
 //-----------------------------------------------------------------------------
 // implementation of IVModelInfo for client
 //-----------------------------------------------------------------------------
-class CModelInfoClient : public CModelInfo
+class CModelInfoClient : public CModelInfo, public IVModelInfoClient
 {
 public:
-	virtual int RegisterDynamicModel( const char *name, bool bClientSideOnly );
+	//virtual int RegisterDynamicModel( const char *name, bool bClientSideOnly );
 	virtual const model_t *GetModel( int modelindex );
-	virtual const model_t *FindOrLoadModel( const char *name );
+	//virtual const model_t *FindOrLoadModel( const char *name );
 	virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData );
 
 	virtual void GetModelMaterialColorAndLighting(const model_t* model, const Vector& origin,
 		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor);
+	virtual void GetIlluminationPoint(const model_t* model, IClientRenderable* pRenderable, Vector const& origin,
+		QAngle const& angles, Vector* pLightingCenter);
+
+	virtual bool IsUsingFBTexture(const model_t* model, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const;
+	virtual bool ModelHasMaterialProxy(const model_t* model) const;
 
 protected:
-	virtual INetworkStringTable* GetDynamicModelStringTable() const;
+	//virtual INetworkStringTable* GetDynamicModelStringTable() const;
 	virtual int LookupPrecachedModelIndex(const char* name) const;
 
 
 };
 
-INetworkStringTable *CModelInfoClient::GetDynamicModelStringTable() const
-{
-	return cl.m_pDynamicModelsTable;
-}
+//INetworkStringTable *CModelInfoClient::GetDynamicModelStringTable() const
+//{
+//	return cl.m_pDynamicModelsTable;
+//}
 
 int CModelInfoClient::LookupPrecachedModelIndex( const char *name ) const
 {
 	return cl.LookupModelIndex( name );
 }
 
-int CModelInfoClient::RegisterDynamicModel( const char *name, bool bClientSide )
-{
-	// Clients cannot register non-client-side dynamic models!
-	Assert( bClientSide );
-	if ( !bClientSide )
-		return -1;
-
-	char buf[256];
-	V_strncpy( buf, name, ARRAYSIZE(buf) );
-	V_RemoveDotSlashes( buf, '/', true );
-	name = buf;
-
-	Assert( V_strstr( name, ".mdl" ) != NULL );
-
-	// Already known? bClientSide should always be true and is asserted above.
-	int index = GetModelClientSideIndex( name );
-	if ( index != -1 )
-		return index;
-
-	// Lookup (or create) model_t* and register it to get a stable iterator index
-	model_t* pModel = modelloader->GetDynamicModel( name, true );
-	Assert( pModel );
-	UtlHashHandle_t localidx = m_ClientDynamicModels.Insert( pModel );
-	Assert( m_ClientDynamicModels.Count() < ((32767 >> 1) - 2) );
-	Assert( MODEL_TO_CLIENTSIDE( (short) CLIENTSIDE_TO_MODEL( localidx ) ) == (int) localidx );
-	return CLIENTSIDE_TO_MODEL( localidx );
-}
+//int CModelInfoClient::RegisterDynamicModel( const char *name, bool bClientSide )
+//{
+//	// Clients cannot register non-client-side dynamic models!
+//	Assert( bClientSide );
+//	if ( !bClientSide )
+//		return -1;
+//
+//	char buf[256];
+//	V_strncpy( buf, name, ARRAYSIZE(buf) );
+//	V_RemoveDotSlashes( buf, '/', true );
+//	name = buf;
+//
+//	Assert( V_strstr( name, ".mdl" ) != NULL );
+//
+//	// Already known? bClientSide should always be true and is asserted above.
+//	int index = GetModelClientSideIndex( name );
+//	if ( index != -1 )
+//		return index;
+//
+//	// Lookup (or create) model_t* and register it to get a stable iterator index
+//	model_t* pModel = modelloader->GetDynamicModel( name, true );
+//	Assert( pModel );
+//	UtlHashHandle_t localidx = m_ClientDynamicModels.Insert( pModel );
+//	Assert( m_ClientDynamicModels.Count() < ((32767 >> 1) - 2) );
+//	Assert( MODEL_TO_CLIENTSIDE( (short) CLIENTSIDE_TO_MODEL( localidx ) ) == (int) localidx );
+//	return CLIENTSIDE_TO_MODEL( localidx );
+//}
 
 const model_t *CModelInfoClient::GetModel( int modelindex )
 {
-	if ( IsDynamicModelIndex( modelindex ) )
-		return LookupDynamicModel( modelindex );
+	//if (IsDynamicModelIndex(modelindex))
+	//	return NULL;// LookupDynamicModel(modelindex);
 
 	return cl.GetModel( modelindex );
 }
@@ -1054,23 +988,23 @@ const model_t *CModelInfoClient::GetModel( int modelindex )
 void CModelInfoClient::OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData )
 {
 	// Do a lookup to force an immediate insertion into our local lookup tables
-	model_t* pModel = LookupDynamicModel( NETDYNAMIC_TO_MODEL( nStringIndex ) );
+	//model_t* pModel = LookupDynamicModel( NETDYNAMIC_TO_MODEL( nStringIndex ) );
 
-	// Notify model loader that the server-side state may have changed
-	bool bServerLoaded = pData ? ( *(char*)pData != 0 ) : ( g_ClientGlobalVariables.network_protocol <= PROTOCOL_VERSION_20 );
-	modelloader->Client_OnServerModelStateChanged( pModel, bServerLoaded );
+	//// Notify model loader that the server-side state may have changed
+	//bool bServerLoaded = pData ? ( *(char*)pData != 0 ) : ( g_ClientGlobalVariables.network_protocol <= PROTOCOL_VERSION_20 );
+	//modelloader->Client_OnServerModelStateChanged( pModel, bServerLoaded );
 }
 
-const model_t *CModelInfoClient::FindOrLoadModel( const char *name )
-{
-	// find the cached model from the server or client
-	const model_t *pModel = GetModel( GetModelIndex( name ) );
-	if ( pModel )
-		return pModel;
-
-	// load the model
-	return modelloader->GetModelForName( name, IModelLoader::FMODELLOADER_CLIENTDLL );
-}
+//const model_t *CModelInfoClient::FindOrLoadModel( const char *name )
+//{
+//	// find the cached model from the server or client
+//	const model_t *pModel = GetModel( GetModelIndex( name ) );
+//	if ( pModel )
+//		return pModel;
+//
+//	// load the model
+//	return modelloader->GetModelForName( name, IModelLoader::FMODELLOADER_CLIENTDLL );
+//}
 
 
 
@@ -1175,6 +1109,82 @@ void CModelInfoClient::GetModelMaterialColorAndLighting( const model_t *model, c
 			return;
 		}
 	}
+}
+
+void CModelInfoClient::GetIlluminationPoint(const model_t* model, IClientRenderable* pRenderable, const Vector& origin,
+	const QAngle& angles, Vector* pLightingOrigin)
+{
+	Assert(model->type == mod_studio);
+	studiohdr_t* pStudioHdr = (studiohdr_t*)GetModelExtraData(model);
+	if (pStudioHdr)
+	{
+		R_StudioGetLightingCenter(pRenderable, pStudioHdr, origin, angles, pLightingOrigin);
+	}
+	else
+	{
+		*pLightingOrigin = origin;
+	}
+}
+
+bool CModelInfoClient::IsUsingFBTexture(const model_t* model, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const
+{
+	bool bMightUseFbTextureThisFrame = (model && (model->flags & MODELFLAG_STUDIOHDR_USES_FB_TEXTURE));
+
+	if (bMightUseFbTextureThisFrame)
+	{
+		// Check each material's NeedsPowerOfTwoFrameBufferTexture() virtual func
+		switch (model->type)
+		{
+		case mod_brush:
+		{
+			for (int i = 0; i < model->brush.nummodelsurfaces; ++i)
+			{
+				SurfaceHandle_t surfID = SurfaceHandleFromIndex(model->brush.firstmodelsurface + i, model->brush.pShared);
+				IMaterial* material = MSurf_TexInfo(surfID, model->brush.pShared)->material;
+				if (material != NULL)
+				{
+					if (material->NeedsPowerOfTwoFrameBufferTexture())
+					{
+						return true;
+					}
+				}
+			}
+		}
+		break;
+
+		case mod_studio:
+		{
+			IMaterial* pMaterials[128];
+			int materialCount = g_pStudioRender->GetMaterialListFromBodyAndSkin(model->studio, nSkin, nBody, ARRAYSIZE(pMaterials), pMaterials);
+			for (int i = 0; i < materialCount; i++)
+			{
+				if (pMaterials[i] != NULL)
+				{
+					// Bind material first so all material proxies execute
+					CMatRenderContextPtr pRenderContext(g_pMaterialSystem);
+					pRenderContext->Bind(pMaterials[i], pClientRenderable);
+
+					if (pMaterials[i]->NeedsPowerOfTwoFrameBufferTexture())
+					{
+						return true;
+					}
+				}
+			}
+		}
+		break;
+		}
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+bool CModelInfoClient::ModelHasMaterialProxy(const model_t* model) const
+{
+	// Should we add skin & model to this function like IsUsingFBTexture()?
+	return (model && (model->flags & MODELFLAG_MATERIALPROXY));
 }
 
 static CModelInfoClient	g_ModelInfoClient;

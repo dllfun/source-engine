@@ -269,7 +269,7 @@ CBaseAnimating::CBaseAnimating()
 	m_vecForce.GetForModify().Init();
 	m_nForceBone = 0;
 
-	m_bResetSequenceInfoOnLoad = false;
+	//m_bResetSequenceInfoOnLoad = false;
 	m_bClientSideAnimation = false;
 	m_pIk = NULL;
 	m_iIKCounter = 0;
@@ -884,11 +884,11 @@ void CBaseAnimating::ResetSequenceInfo ( )
 		SetSequence( 0 );
 	}
 
-	if ( IsDynamicModelLoading() )
-	{
-		m_bResetSequenceInfoOnLoad = true;
-		return;
-	}
+	//if ( IsDynamicModelLoading() )
+	//{
+	//	m_bResetSequenceInfoOnLoad = true;
+	//	return;
+	//}
 
 	CStudioHdr *pStudioHdr = GetModelPtr();
 	m_flGroundSpeed = GetSequenceGroundSpeed( pStudioHdr, GetSequence() ) * GetModelScale();
@@ -925,7 +925,7 @@ bool CBaseAnimating::IsValidSequence( int iSequence )
 //=========================================================
 void CBaseAnimating::SetSequence( int nSequence )
 {
-	Assert( nSequence == 0 || IsDynamicModelLoading() || ( GetModelPtr( ) && ( nSequence < GetModelPtr( )->GetNumSeq() ) && ( GetModelPtr( )->GetNumSeq() < (1 << ANIMATION_SEQUENCE_BITS) ) ) );
+	Assert( nSequence == 0 || ( GetModelPtr( ) && ( nSequence < GetModelPtr( )->GetNumSeq() ) && ( GetModelPtr( )->GetNumSeq() < (1 << ANIMATION_SEQUENCE_BITS) ) ) );//|| IsDynamicModelLoading() 
 	m_nSequence = nSequence;
 }
 
@@ -2144,38 +2144,38 @@ void CBaseAnimating::SetBodygroup( int iGroup, int iValue )
 
 int CBaseAnimating::GetBodygroup( int iGroup )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? 0 : ::GetBodygroup( GetModelPtr( ), m_nBody, iGroup );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetBodygroup( GetModelPtr( ), m_nBody, iGroup );//IsDynamicModelLoading() ? 0 : 
 }
 
 const char *CBaseAnimating::GetBodygroupName( int iGroup )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? "" : ::GetBodygroupName( GetModelPtr( ), iGroup );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetBodygroupName( GetModelPtr( ), iGroup );//IsDynamicModelLoading() ? "" : 
 }
 
 int CBaseAnimating::FindBodygroupByName( const char *name )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? -1 : ::FindBodygroupByName( GetModelPtr( ), name );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::FindBodygroupByName( GetModelPtr( ), name );//IsDynamicModelLoading() ? -1 : 
 }
 
 int CBaseAnimating::GetBodygroupCount( int iGroup )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? 0 : ::GetBodygroupCount( GetModelPtr( ), iGroup );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetBodygroupCount( GetModelPtr( ), iGroup );//IsDynamicModelLoading() ? 0 : 
 }
 
 int CBaseAnimating::GetNumBodyGroups( void )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? 0 : ::GetNumBodyGroups( GetModelPtr( ) );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::GetNumBodyGroups( GetModelPtr( ) );//IsDynamicModelLoading() ? 0 : 
 }
 
 int CBaseAnimating::ExtractBbox( int sequence, Vector& mins, Vector& maxs )
 {
-	Assert( IsDynamicModelLoading() || GetModelPtr() );
-	return IsDynamicModelLoading() ? 0 : ::ExtractBbox( GetModelPtr( ), sequence, mins, maxs );
+	Assert( GetModelPtr() );//IsDynamicModelLoading() || 
+	return ::ExtractBbox( GetModelPtr( ), sequence, mins, maxs );//IsDynamicModelLoading() ? 0 : 
 }
 
 //=========================================================
@@ -3579,20 +3579,20 @@ CStudioHdr *CBaseAnimating::OnNewModel()
 	(void) BaseClass::OnNewModel();
 
 	// TODO: if dynamic, validate m_Sequence and apply queued body group settings?
-	if ( IsDynamicModelLoading() )
-	{
-		// Called while dynamic model still loading -> new model, clear deferred state
-		m_bResetSequenceInfoOnLoad = false;
-		return NULL;
-	}
+	//if ( IsDynamicModelLoading() )
+	//{
+	//	// Called while dynamic model still loading -> new model, clear deferred state
+	//	m_bResetSequenceInfoOnLoad = false;
+	//	return NULL;
+	//}
 
 	CStudioHdr *hdr = GetModelPtr(); 
 
-	if ( m_bResetSequenceInfoOnLoad )
-	{
-		m_bResetSequenceInfoOnLoad = false;
-		ResetSequenceInfo();
-	}
+	//if ( m_bResetSequenceInfoOnLoad )
+	//{
+	//	m_bResetSequenceInfoOnLoad = false;
+	//	ResetSequenceInfo();
+	//}
 
 	return hdr;
 }
