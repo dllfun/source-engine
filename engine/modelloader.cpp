@@ -6271,7 +6271,7 @@ void CModelLoader::DebugPrintDynamicModels()
 	for ( UtlHashHandle_t h = m_DynamicModels.FirstHandle(); h != m_DynamicModels.InvalidHandle(); h = m_DynamicModels.NextHandle(h) )
 	{
 		CDynamicModelInfo &dyn = m_DynamicModels[h];
-		int idx = modelinfo->GetModelIndex( m_DynamicModels.Key(h)->strName );
+		int idx = modelinfoclient->GetModelIndex( m_DynamicModels.Key(h)->strName );
 #ifndef SWDS
 		if ( idx == -1 ) idx = modelinfoclient->GetModelIndex( m_DynamicModels.Key(h)->strName );
 #endif

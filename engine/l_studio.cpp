@@ -1842,7 +1842,7 @@ matrix3x4_t* CModelRender::SetupModelState( IClientRenderable *pRenderable )
 	if ( !pModel )
 		return NULL;
 
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( const_cast<model_t*>(pModel) );
+	studiohdr_t *pStudioHdr = modelinfoclient->GetStudiomodel( const_cast<model_t*>(pModel) );
 	if ( pStudioHdr->numbodyparts == 0 )
 		return NULL;
 

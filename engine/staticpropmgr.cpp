@@ -492,7 +492,7 @@ bool CStaticProp::Init( int index, StaticPropLump_t &lump, model_t *pModel )
 
 	MDLCACHE_CRITICAL_SECTION_( g_pMDLCache );
 
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( m_pModel );
+	studiohdr_t *pStudioHdr = modelinfoclient->GetStudiomodel( m_pModel );
 
 	if ( pStudioHdr )
 	{
@@ -546,7 +546,7 @@ bool CStaticProp::Init( int index, StaticPropLump_t &lump, model_t *pModel )
 	AngleMatrix( lump.m_Angles, lump.m_Origin, m_ModelToWorld );
 
 	// Cache the collision bounding box since it'll never change.
-	modelinfo->GetModelRenderBounds( m_pModel, m_RenderBBoxMin, m_RenderBBoxMax );
+	modelinfoclient->GetModelRenderBounds( m_pModel, m_RenderBBoxMin, m_RenderBBoxMax );
 	m_flRadius = m_RenderBBoxMin.DistTo( m_RenderBBoxMax ) * 0.5f;
 	TransformAABB( m_ModelToWorld, m_RenderBBoxMin, m_RenderBBoxMax, m_WorldRenderBBoxMin, m_WorldRenderBBoxMax );
 
@@ -662,12 +662,12 @@ bool CStaticProp::GetAttachment( int number, matrix3x4_t &matrix )
 
 bool CStaticProp::IsTransparent( void )
 {
-	return (m_Alpha < 255) || modelinfo->IsTranslucent(m_pModel);
+	return (m_Alpha < 255) || modelinfoclient->IsTranslucent(m_pModel);
 }
 
 bool CStaticProp::IsTwoPass( void )
 {
-	return modelinfo->IsTranslucentTwoPass(m_pModel);
+	return modelinfoclient->IsTranslucentTwoPass(m_pModel);
 }
 
 bool CStaticProp::ShouldDraw()
@@ -991,7 +991,7 @@ int	CStaticProp::DrawModelSlow( int flags )
 		return 0;
 
 #ifdef _DEBUG
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( m_pModel );
+	studiohdr_t *pStudioHdr = modelinfoclient->GetStudiomodel( m_pModel );
 	Assert( pStudioHdr );
 	if ( !( pStudioHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP ) )
 	{
@@ -1278,7 +1278,7 @@ void CStaticPropMgr::UnserializeModelDict( CUtlBuffer& buf )
 
 		dict.m_pModel = (model_t *)modelloader->GetModelForName(
 			lump.m_Name, IModelLoader::FMODELLOADER_STATICPROP );
-		dict.m_hMDL = modelinfo->GetCacheHandle( dict.m_pModel );
+		dict.m_hMDL = modelinfoclient->GetCacheHandle( dict.m_pModel );
 		g_pMDLCache->LockStudioHdr( dict.m_hMDL );
 	}
 }

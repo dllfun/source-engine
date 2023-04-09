@@ -104,16 +104,33 @@ public:
 	virtual							~IVModelInfo( void ) { }
 
 	// Returns model_t* pointer for a model given a precached or dynamic model index.
-	virtual const model_t			*GetModel( int modelindex ) = 0;
+	virtual const model_t			*GetModel( int modelindex ) const = 0;
 
 	// Returns index of model by name for precached or known dynamic models.
 	// Does not adjust reference count for dynamic models.
 	virtual int						GetModelIndex( const char *name ) const = 0;
 
 	// Returns name of model
+	virtual const char*				GetModelName(int modelindex) const = 0;
+	virtual vcollide_t*				GetVCollide(int modelindex) = 0;
+	virtual void					GetModelBounds(int modelindex, Vector& mins, Vector& maxs) const = 0;
+	virtual	void					GetModelRenderBounds(int modelindex, Vector& mins, Vector& maxs) const = 0;
+	virtual int						GetModelFrameCount(int modelindex) const = 0;
+	virtual int						GetModelType(int modelindex) const = 0;
+	virtual void*					GetModelExtraData(int modelindex) = 0;
+	virtual bool					IsTranslucent(int modelindex) const = 0;
+	virtual bool					IsTranslucentTwoPass(int modelindex) const = 0;
+	virtual void					RecomputeTranslucency(int modelindex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate = 1.0f) = 0;
+	virtual int						GetModelMaterialCount(int modelindex) const = 0;
+	virtual void					GetModelMaterials(int modelindex, int count, IMaterial** ppMaterial) = 0;
+	virtual bool					IsModelVertexLit(int modelindex) const = 0;
+	virtual const char*				GetModelKeyValueText(int modelindex) = 0;
+	virtual bool					GetModelKeyValue(int modelindex, CUtlBuffer& buf) = 0; // supports keyvalue blocks in submodels
+	virtual float					GetModelRadius(int modelindex) = 0;
+
+	// Returns name of model
 	virtual const char				*GetModelName( const model_t *model ) const = 0;
 	virtual vcollide_t				*GetVCollide( const model_t *model ) = 0;
-	virtual vcollide_t				*GetVCollide( int modelindex ) = 0;
 	virtual void					GetModelBounds( const model_t *model, Vector& mins, Vector& maxs ) const = 0;
 	virtual	void					GetModelRenderBounds( const model_t *model, Vector& mins, Vector& maxs ) const = 0;
 	virtual int						GetModelFrameCount( const model_t *model ) const = 0;
@@ -142,6 +159,10 @@ public:
 	//									QAngle const& angles, Vector* pLightingCenter ) = 0;
 
 	virtual int						GetModelContents( int modelIndex ) = 0;
+	virtual studiohdr_t*			GetStudiomodel(int modelIndex) = 0;
+	virtual int						GetModelSpriteWidth(int modelIndex) const = 0;
+	virtual int						GetModelSpriteHeight(int modelIndex) const = 0;
+
 	virtual studiohdr_t				*GetStudiomodel( const model_t *mod ) = 0;
 	virtual int						GetModelSpriteWidth( const model_t *model ) const = 0;
 	virtual int						GetModelSpriteHeight( const model_t *model ) const = 0;
@@ -165,9 +186,12 @@ public:
 	//virtual void					UnreferenceModel( int modelindex ) { Warning( "IVModelInfo::UnreferenceModel is now obsolte.\n" ); }
 	//virtual void					CleanupDynamicModels( bool bForce = false ) { Warning( "IVModelInfo::CleanupDynamicModels is now obsolte.\n" ); }
 
+	virtual MDLHandle_t				GetCacheHandle(int modelIndex) const = 0;
 	virtual MDLHandle_t				GetCacheHandle( const model_t *model ) const = 0;
 
 	// Returns planes of non-nodraw brush model surfaces
+	virtual int						GetBrushModelPlaneCount(int modelIndex) const = 0;
+	virtual void					GetBrushModelPlane(int modelIndex, int nIndex, cplane_t& plane, Vector* pOrigin) const = 0;
 	virtual int						GetBrushModelPlaneCount( const model_t *model ) const = 0;
 	virtual void					GetBrushModelPlane( const model_t *model, int nIndex, cplane_t &plane, Vector *pOrigin ) const = 0;
 	//virtual int						GetSurfacepropsForVirtualTerrain( int index ) = 0;
@@ -201,6 +225,13 @@ public:
 
 	// For tools only!
 	//virtual const model_t *FindOrLoadModel( const char *name ) = 0;
+
+	virtual void GetModelMaterialColorAndLighting(int modelIndex, const Vector& origin,
+		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) = 0;
+	virtual void GetIlluminationPoint(int modelIndex, IClientRenderable* pRenderable, Vector const& origin,
+		QAngle const& angles, Vector* pLightingCenter) = 0;
+	virtual bool IsUsingFBTexture(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const = 0;
+	virtual bool					ModelHasMaterialProxy(int modelIndex) const = 0;
 
 	virtual void GetModelMaterialColorAndLighting(const model_t* model, const Vector& origin,
 		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) = 0;

@@ -122,6 +122,29 @@ public:
 
 	virtual void OnLevelChange();
 
+	virtual const char* GetModelName(int modelIndex) const;
+	virtual void GetModelBounds(int modelIndex, Vector& mins, Vector& maxs) const;
+	virtual void GetModelRenderBounds(int modelIndex, Vector& mins, Vector& maxs) const;
+	virtual int GetModelFrameCount(int modelIndex) const;
+	virtual int GetModelType(int modelIndex) const;
+	virtual void* GetModelExtraData(int modelIndex);
+	virtual bool IsTranslucent(int modelIndex) const;
+	virtual bool IsModelVertexLit(int modelIndex) const;
+	virtual bool IsTranslucentTwoPass(int modelIndex) const;
+	virtual void RecomputeTranslucency(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate);
+	virtual int	GetModelMaterialCount(int modelIndex) const;
+	virtual void GetModelMaterials(int modelIndex, int count, IMaterial** ppMaterials);
+	//virtual void GetIlluminationPoint( int modelIndex, IClientRenderable *pRenderable, const Vector& origin, 
+	//	const QAngle& angles, Vector* pLightingOrigin );
+	virtual int GetModelContents(int modelIndex);
+	vcollide_t* GetVCollide(int modelIndex);
+	virtual const char* GetModelKeyValueText(int modelIndex);
+	virtual bool GetModelKeyValue(int modelIndex, CUtlBuffer& buf);
+	virtual float GetModelRadius(int modelIndex);
+	virtual studiohdr_t* GetStudiomodel(int modelIndex);
+	virtual int GetModelSpriteWidth(int modelIndex) const;
+	virtual int GetModelSpriteHeight(int modelIndex) const;
+
 	virtual const char *GetModelName( const model_t *model ) const;
 	virtual void GetModelBounds( const model_t *model, Vector& mins, Vector& maxs ) const;
 	virtual void GetModelRenderBounds( const model_t *model, Vector& mins, Vector& maxs ) const;
@@ -136,9 +159,7 @@ public:
 	virtual void GetModelMaterials( const model_t *model, int count, IMaterial** ppMaterials );
 	//virtual void GetIlluminationPoint( const model_t *model, IClientRenderable *pRenderable, const Vector& origin, 
 	//	const QAngle& angles, Vector* pLightingOrigin );
-	virtual int GetModelContents( int modelIndex );
 	vcollide_t *GetVCollide( const model_t *model );
-	vcollide_t *GetVCollide( int modelIndex );
 	virtual const char *GetModelKeyValueText( const model_t *model );
 	virtual bool GetModelKeyValue( const model_t *model, CUtlBuffer &buf );
 	virtual float GetModelRadius( const model_t *model );
@@ -151,32 +172,32 @@ public:
 	virtual virtualmodel_t *GetVirtualModel( const studiohdr_t *pStudioHdr ) const;
 	virtual byte *GetAnimBlock( const studiohdr_t *pStudioHdr, int iBlock ) const;
 
-	byte *LoadAnimBlock( model_t *model, const studiohdr_t *pStudioHdr, int iBlock, cache_user_t *cache ) const;
-
-	
+	//byte *LoadAnimBlock( model_t *model, const studiohdr_t *pStudioHdr, int iBlock, cache_user_t *cache ) const;
 
 	int GetAutoplayList( const studiohdr_t *pStudioHdr, unsigned short **pAutoplayList ) const;
 	CPhysCollide *GetCollideForVirtualTerrain( int index );
 	//virtual int GetSurfacepropsForVirtualTerrain( int index ) { return CM_SurfacepropsForDisp(index); }
 
-
+	virtual MDLHandle_t	GetCacheHandle(int modelIndex) const { return (GetModel(modelIndex)->type == mod_studio) ? GetModel(modelIndex)->studio : MDLHANDLE_INVALID; }
 	virtual MDLHandle_t	GetCacheHandle( const model_t *model ) const { return ( model->type == mod_studio ) ? model->studio : MDLHANDLE_INVALID; }
 
 	// Returns planes of non-nodraw brush model surfaces
+	virtual int GetBrushModelPlaneCount(int modelIndex) const;
+	virtual void GetBrushModelPlane(int modelIndex, int nIndex, cplane_t& plane, Vector* pOrigin) const;
 	virtual int GetBrushModelPlaneCount( const model_t *model ) const;
 	virtual void GetBrushModelPlane( const model_t *model, int nIndex, cplane_t &plane, Vector *pOrigin ) const;
 
 protected:
-	static int CLIENTSIDE_TO_MODEL( int i ) { return i >= 0 ? (-2 - (i*2 + 1)) : -1; }
-	static int NETDYNAMIC_TO_MODEL( int i ) { return i >= 0 ? (-2 - (i*2)) : -1; }
-	static int MODEL_TO_CLIENTSIDE( int i ) { return ( i <= -2 && (i & 1) ) ? (-2 - i) >> 1 : -1; }
-	static int MODEL_TO_NETDYNAMIC( int i ) { return ( i <= -2 && !(i & 1) ) ? (-2 - i) >> 1 : -1; }
+	//static int CLIENTSIDE_TO_MODEL( int i ) { return i >= 0 ? (-2 - (i*2 + 1)) : -1; }
+	//static int NETDYNAMIC_TO_MODEL( int i ) { return i >= 0 ? (-2 - (i*2)) : -1; }
+	//static int MODEL_TO_CLIENTSIDE( int i ) { return ( i <= -2 && (i & 1) ) ? (-2 - i) >> 1 : -1; }
+	//static int MODEL_TO_NETDYNAMIC( int i ) { return ( i <= -2 && !(i & 1) ) ? (-2 - i) >> 1 : -1; }
 
 	//model_t *LookupDynamicModel( int i );
 
 	//virtual INetworkStringTable *GetDynamicModelStringTable() const = 0;
 	virtual int LookupPrecachedModelIndex( const char *name ) const = 0;
-
+	virtual const model_t* GetModel(int modelindex) const = 0;
 	//void GrowNetworkedDynamicModels( int netidx )
 	//{
 	//	if ( m_NetworkedDynamicModels.Count() <= netidx )
@@ -383,6 +404,11 @@ void CModelInfo::OnLevelChange()
 	modelloader->ForceUnloadNonClientDynamicModels();
 }
 
+const char* CModelInfo::GetModelName(int modelIndex) const
+{
+	return GetModelName(GetModel(modelIndex));
+}
+
 const char *CModelInfo::GetModelName( const model_t *pModel ) const
 {
 	if ( !pModel )
@@ -393,10 +419,19 @@ const char *CModelInfo::GetModelName( const model_t *pModel ) const
 	return modelloader->GetName( pModel );
 }
 
+void CModelInfo::GetModelBounds(int modelIndex, Vector& mins, Vector& maxs) const
+{
+	GetModelBounds(GetModel(modelIndex), mins, maxs);
+}
+
 void CModelInfo::GetModelBounds( const model_t *model, Vector& mins, Vector& maxs ) const
 {
 	VectorCopy( model->mins, mins );
 	VectorCopy( model->maxs, maxs );
+}
+
+void CModelInfo::GetModelRenderBounds(int modelIndex, Vector& mins, Vector& maxs) const {
+	GetModelRenderBounds(GetModel(modelIndex), mins, maxs);
 }
 
 void CModelInfo::GetModelRenderBounds( const model_t *model, Vector& mins, Vector& maxs ) const
@@ -443,6 +478,10 @@ void CModelInfo::GetModelRenderBounds( const model_t *model, Vector& mins, Vecto
 	}
 }
 
+int CModelInfo::GetModelSpriteWidth(int modelIndex) const {
+	return GetModelSpriteWidth(GetModel(modelIndex));
+}
+
 int CModelInfo::GetModelSpriteWidth( const model_t *model ) const
 {
 	// We must be a sprite to make this query
@@ -450,6 +489,11 @@ int CModelInfo::GetModelSpriteWidth( const model_t *model ) const
 		return 0;
 
 	return model->sprite.width;
+}
+
+int CModelInfo::GetModelSpriteHeight(int modelIndex) const
+{
+	return GetModelSpriteHeight(GetModel(modelIndex));
 }
 
 int CModelInfo::GetModelSpriteHeight( const model_t *model ) const
@@ -461,9 +505,19 @@ int CModelInfo::GetModelSpriteHeight( const model_t *model ) const
 	return model->sprite.height;
 }
 
+int CModelInfo::GetModelFrameCount(int modelIndex) const
+{
+	return GetModelFrameCount(GetModel(modelIndex));
+}
+
 int CModelInfo::GetModelFrameCount( const model_t *model ) const
 {
 	return ModelFrameCount( ( model_t *)model );
+}
+
+int CModelInfo::GetModelType(int modelIndex) const
+{
+	return GetModelType(GetModel(modelIndex));
 }
 
 int CModelInfo::GetModelType( const model_t *model ) const
@@ -490,6 +544,11 @@ int CModelInfo::GetModelType( const model_t *model ) const
 	}
 	
 	return model->type;
+}
+
+void* CModelInfo::GetModelExtraData(int modelIndex)
+{
+	return GetModelExtraData(GetModel(modelIndex));
 }
 
 void *CModelInfo::GetModelExtraData( const model_t *model )
@@ -584,11 +643,20 @@ const studiohdr_t *virtualgroup_t::GetStudioHdr( void ) const
 }
 
 
-
+bool CModelInfo::IsTranslucent(int modelIndex) const
+{
+	return IsTranslucent(GetModel(modelIndex));
+}
 
 bool CModelInfo::IsTranslucent( const model_t *model ) const
 {
 	return (model && (model->flags & MODELFLAG_TRANSLUCENT));
+}
+
+bool CModelInfo::IsModelVertexLit(int modelIndex) const
+{
+	// Should we add skin & model to this function like IsUsingFBTexture()?
+	return IsModelVertexLit(GetModel(modelIndex));
 }
 
 bool CModelInfo::IsModelVertexLit( const model_t *model ) const
@@ -597,12 +665,20 @@ bool CModelInfo::IsModelVertexLit( const model_t *model ) const
 	return (model && (model->flags & MODELFLAG_VERTEXLIT));
 }
 
+bool CModelInfo::IsTranslucentTwoPass(int modelIndex) const
+{
+	return IsTranslucentTwoPass(GetModel(modelIndex));
+}
+
 bool CModelInfo::IsTranslucentTwoPass( const model_t *model ) const
 {
 	return (model && (model->flags & MODELFLAG_TRANSLUCENT_TWOPASS));
 }
 
-
+void CModelInfo::RecomputeTranslucency(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate)
+{
+	RecomputeTranslucency(GetModel(modelIndex), nSkin, nBody, pClientRenderable, fInstanceAlphaModulate);
+}
 
 void CModelInfo::RecomputeTranslucency( const model_t *model, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate )
 {
@@ -612,11 +688,21 @@ void CModelInfo::RecomputeTranslucency( const model_t *model, int nSkin, int nBo
 	}
 }
 
+int	CModelInfo::GetModelMaterialCount(int modelIndex) const
+{
+	return GetModelMaterialCount(GetModel(modelIndex));
+}
+
 int	CModelInfo::GetModelMaterialCount( const model_t *model ) const
 {
 	if (!model)
 		return 0;
 	return Mod_GetMaterialCount( (model_t *)model );
+}
+
+void CModelInfo::GetModelMaterials(int modelIndex, int count, IMaterial** ppMaterials)
+{
+	GetModelMaterials(GetModel(modelIndex), count, ppMaterials);
 }
 
 void CModelInfo::GetModelMaterials( const model_t *model, int count, IMaterial** ppMaterials )
@@ -649,6 +735,41 @@ int CModelInfo::GetModelContents( int modelIndex )
 extern double g_flAccumulatedModelLoadTimeVCollideSync;
 #endif
 
+vcollide_t* CModelInfo::GetVCollide(int modelIndex)
+{
+	// First model (index 0 )is is empty
+	// Second model( index 1 ) is the world, then brushes/submodels, then players, etc.
+	// So, we must subtract 1 from the model index to map modelindex to CM_ index
+	// in cmodels, 0 is the world, then brushes, etc.
+	if (modelIndex < MAX_MODELS)
+	{
+		const model_t* pModel = GetModel(modelIndex);
+		if (pModel)
+		{
+			if (pModel->type == mod_studio)
+			{
+#if !defined( _RETAIL )
+				double t1 = Plat_FloatTime();
+#endif
+				vcollide_t* col = g_pMDLCache->GetVCollide(pModel->studio);
+#if !defined( _RETAIL )
+				double t2 = Plat_FloatTime();
+				g_flAccumulatedModelLoadTimeVCollideSync += (t2 - t1);
+#endif
+				return col;
+			}
+
+			return CM_GetVCollide(modelIndex - 1);
+		}
+		else
+		{
+			// we may have the cmodels loaded and not know the model/mod->type yet
+			return CM_GetVCollide(modelIndex - 1);
+		}
+	}
+	return NULL;
+}
+
 vcollide_t *CModelInfo::GetVCollide( const model_t *pModel )
 {
 	if ( !pModel )
@@ -667,51 +788,19 @@ vcollide_t *CModelInfo::GetVCollide( const model_t *pModel )
 		return col;
 	}
 
-	int i = GetModelIndex( GetModelName( pModel ) );
-	if ( i >= 0 )
+	int modelIndex = GetModelIndex( GetModelName( pModel ) );
+	if (modelIndex >= 0 )
 	{
-		return GetVCollide( i );
+		return CM_GetVCollide(modelIndex - 1);
 	}
 
 	return NULL;
 }
 
-vcollide_t *CModelInfo::GetVCollide( int modelIndex )
+// Client must instantiate a KeyValues, which will be filled by this method
+const char* CModelInfo::GetModelKeyValueText(int modelIndex)
 {
-	// First model (index 0 )is is empty
-	// Second model( index 1 ) is the world, then brushes/submodels, then players, etc.
-	// So, we must subtract 1 from the model index to map modelindex to CM_ index
-	// in cmodels, 0 is the world, then brushes, etc.
-	if ( modelIndex < MAX_MODELS )
-	{
-		const model_t *pModel = GetModel( modelIndex );
-		if ( pModel )
-		{
-			switch( pModel->type )
-			{
-			case mod_brush:
-				return CM_GetVCollide( modelIndex-1 );
-			case mod_studio:
-				{
-#if !defined( _RETAIL )
-					double t1 = Plat_FloatTime();
-#endif
-					vcollide_t *col = g_pMDLCache->GetVCollide( pModel->studio );
-#if !defined( _RETAIL )
-					double t2 = Plat_FloatTime();
-					g_flAccumulatedModelLoadTimeVCollideSync += ( t2 - t1 );
-#endif
-					return col;
-				}
-			}
-		}
-		else
-		{
-			// we may have the cmodels loaded and not know the model/mod->type yet
-			return CM_GetVCollide( modelIndex-1 );
-		}
-	}
-	return NULL;
+	return GetModelKeyValueText(GetModel(modelIndex));
 }
 
 // Client must instantiate a KeyValues, which will be filled by this method
@@ -727,7 +816,10 @@ const char *CModelInfo::GetModelKeyValueText( const model_t *model )
 	return pStudioHdr->KeyValueText();
 }
 
-
+bool CModelInfo::GetModelKeyValue(int modelIndex, CUtlBuffer& buf)
+{
+	return GetModelKeyValue(GetModel(modelIndex),buf);
+}
 
 bool CModelInfo::GetModelKeyValue( const model_t *model, CUtlBuffer &buf )
 {
@@ -760,6 +852,10 @@ bool CModelInfo::GetModelKeyValue( const model_t *model, CUtlBuffer &buf )
 	return true;
 }
 
+float CModelInfo::GetModelRadius(int modelIndex)
+{
+	return GetModelRadius(GetModel(modelIndex));
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -773,6 +869,10 @@ float CModelInfo::GetModelRadius( const model_t *model )
 	return model->radius;
 }
 
+studiohdr_t* CModelInfo::GetStudiomodel(int modelIndex)
+{
+	return GetStudiomodel(GetModel(modelIndex));
+}
 
 //-----------------------------------------------------------------------------
 // Lovely studiohdrs
@@ -790,6 +890,11 @@ CPhysCollide *CModelInfo::GetCollideForVirtualTerrain( int index )
 	return CM_PhysCollideForDisp( index );
 }
 
+int CModelInfo::GetBrushModelPlaneCount(int modelIndex) const
+{
+	return GetBrushModelPlaneCount(GetModel(modelIndex));
+}
+
 // Returns planes of non-nodraw brush model surfaces
 int CModelInfo::GetBrushModelPlaneCount( const model_t *model ) const
 {
@@ -797,6 +902,11 @@ int CModelInfo::GetBrushModelPlaneCount( const model_t *model ) const
 		return 0;
 
 	return R_GetBrushModelPlaneCount( model );
+}
+
+void CModelInfo::GetBrushModelPlane(int modelIndex, int nIndex, cplane_t& plane, Vector* pOrigin) const
+{
+	GetBrushModelPlane(GetModel(modelIndex), nIndex, plane, pOrigin);
 }
 
 void CModelInfo::GetBrushModelPlane( const model_t *model, int nIndex, cplane_t &plane, Vector *pOrigin ) const
@@ -817,7 +927,6 @@ class CModelInfoServer : public CModelInfo
 {
 public:
 	//virtual int RegisterDynamicModel( const char *name, bool bClientSideOnly );
-	virtual const model_t *GetModel( int modelindex );
 	//virtual const model_t *FindOrLoadModel( const char *name );
 	//virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData );
 
@@ -827,6 +936,8 @@ public:
 protected:
 	//virtual INetworkStringTable *GetDynamicModelStringTable() const;
 	virtual int LookupPrecachedModelIndex( const char *name ) const;
+
+	virtual const model_t* GetModel(int modelindex) const;
 };
 
 //INetworkStringTable *CModelInfoServer::GetDynamicModelStringTable() const
@@ -878,7 +989,7 @@ int CModelInfoServer::LookupPrecachedModelIndex( const char *name ) const
 //	return NETDYNAMIC_TO_MODEL( netidx );
 //}
 
-const model_t *CModelInfoServer::GetModel( int modelindex )
+const model_t *CModelInfoServer::GetModel( int modelindex ) const
 {
 	//if (IsDynamicModelIndex(modelindex))
 	//	return NULL;// LookupDynamicModel(modelindex);
@@ -920,9 +1031,16 @@ class CModelInfoClient : public CModelInfo, public IVModelInfoClient
 {
 public:
 	//virtual int RegisterDynamicModel( const char *name, bool bClientSideOnly );
-	virtual const model_t *GetModel( int modelindex );
 	//virtual const model_t *FindOrLoadModel( const char *name );
 	virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData );
+
+	virtual void GetModelMaterialColorAndLighting(int modelIndex, const Vector& origin,
+		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor);
+	virtual void GetIlluminationPoint(int modelIndex, IClientRenderable* pRenderable, Vector const& origin,
+		QAngle const& angles, Vector* pLightingCenter);
+
+	virtual bool IsUsingFBTexture(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const;
+	virtual bool ModelHasMaterialProxy(int modelIndex) const;
 
 	virtual void GetModelMaterialColorAndLighting(const model_t* model, const Vector& origin,
 		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor);
@@ -936,6 +1054,7 @@ protected:
 	//virtual INetworkStringTable* GetDynamicModelStringTable() const;
 	virtual int LookupPrecachedModelIndex(const char* name) const;
 
+	virtual const model_t* GetModel(int modelindex) const;
 
 };
 
@@ -977,7 +1096,7 @@ int CModelInfoClient::LookupPrecachedModelIndex( const char *name ) const
 //	return CLIENTSIDE_TO_MODEL( localidx );
 //}
 
-const model_t *CModelInfoClient::GetModel( int modelindex )
+const model_t *CModelInfoClient::GetModel( int modelindex ) const
 {
 	//if (IsDynamicModelIndex(modelindex))
 	//	return NULL;// LookupDynamicModel(modelindex);
@@ -1043,6 +1162,12 @@ IMaterial* BrushModel_GetLightingAndMaterial( const Vector &start,
 		}
 		return material;
 	}
+}
+
+void CModelInfoClient::GetModelMaterialColorAndLighting(int modelIndex, const Vector& origin,
+	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor)
+{
+	GetModelMaterialColorAndLighting(GetModel(modelIndex), origin, angles, pTrace, lighting, matColor);
 }
 
 void CModelInfoClient::GetModelMaterialColorAndLighting( const model_t *model, const Vector & origin,
@@ -1111,6 +1236,12 @@ void CModelInfoClient::GetModelMaterialColorAndLighting( const model_t *model, c
 	}
 }
 
+void CModelInfoClient::GetIlluminationPoint(int modelIndex, IClientRenderable* pRenderable, const Vector& origin,
+	const QAngle& angles, Vector* pLightingOrigin)
+{
+	GetIlluminationPoint(GetModel(modelIndex), pRenderable, origin, angles, pLightingOrigin);
+}
+
 void CModelInfoClient::GetIlluminationPoint(const model_t* model, IClientRenderable* pRenderable, const Vector& origin,
 	const QAngle& angles, Vector* pLightingOrigin)
 {
@@ -1124,6 +1255,11 @@ void CModelInfoClient::GetIlluminationPoint(const model_t* model, IClientRendera
 	{
 		*pLightingOrigin = origin;
 	}
+}
+
+bool CModelInfoClient::IsUsingFBTexture(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const
+{
+	return IsUsingFBTexture(GetModel(modelIndex), nSkin, nBody, pClientRenderable);
 }
 
 bool CModelInfoClient::IsUsingFBTexture(const model_t* model, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const
@@ -1176,6 +1312,12 @@ bool CModelInfoClient::IsUsingFBTexture(const model_t* model, int nSkin, int nBo
 	}
 
 	return false;
+}
+
+bool CModelInfoClient::ModelHasMaterialProxy(int modelIndex) const
+{
+	// Should we add skin & model to this function like IsUsingFBTexture()?
+	return ModelHasMaterialProxy(GetModel(modelIndex));
 }
 
 //-----------------------------------------------------------------------------
