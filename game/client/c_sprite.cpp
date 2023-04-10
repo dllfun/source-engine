@@ -353,7 +353,7 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 //-----------------------------------------------------------------------------
 int C_SpriteRenderer::DrawSprite( 
 	IClientEntity *entity,
-	const model_t *model, 
+	const IVModel* model, 
 	const Vector& origin, 
 	const QAngle& angles,
 	float frame,
@@ -371,13 +371,13 @@ int C_SpriteRenderer::DrawSprite(
 {
 	VPROF_BUDGET( "C_SpriteRenderer::DrawSprite", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 
-	if ( !r_drawsprites.GetBool() || !model || modelinfo->GetModelType( model ) != mod_sprite )
+	if ( !r_drawsprites.GetBool() || !model || model->GetModelType() != mod_sprite )// modelinfo
 	{
 		return 0;
 	}
 
 	// Get extra data
-	CEngineSprite *psprite = (CEngineSprite *)modelinfo->GetModelExtraData( model );
+	CEngineSprite *psprite = (CEngineSprite *)model->GetModelExtraData();//modelinfo
 	if ( !psprite )
 	{
 		return 0;
@@ -482,7 +482,7 @@ void CSprite::GetToolRecordingState( KeyValues *msg )
 	float renderscale = GetRenderScale();
 	if ( m_bWorldSpaceScale )
 	{
-		CEngineSprite *psprite = ( CEngineSprite * )modelinfo->GetModelExtraData( GetModel() );
+		CEngineSprite *psprite = ( CEngineSprite * )modelinfo->GetModelExtraData( GetModelIndex() );//GetModel()
 		float flMinSize = MIN( psprite->GetWidth(), psprite->GetHeight() );
 		renderscale /= flMinSize;
 	}

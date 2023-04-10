@@ -34,7 +34,7 @@ public:
 	Vector			m_vecDir;
 	bool			m_bExplosive;
 
-	const class model_t *m_pModel;
+	const class IVModel *m_pModel;
 };
 
 //-----------------------------------------------------------------------------

@@ -89,7 +89,7 @@ public:
 	virtual bool					UsesPowerOfTwoFrameBufferTexture();
 	//virtual ClientShadowHandle_t	GetShadowHandle() const { return m_hShadowHandle; };
 	//virtual ClientRenderHandle_t&	RenderHandle() { return m_hRenderHandle; };
-	//virtual const model_t*			GetModel( ) const;
+	//virtual const IVModel*			GetModel( ) const;
 	//virtual int						GetBody();
 	//virtual void					ComputeFxBlend( ) { return m_pGhostedRenderable->ComputeFxBlend(); };
 	//virtual int						GetFxBlend( void ) { return m_pGhostedRenderable->GetFxBlend(); };

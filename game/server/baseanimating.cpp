@@ -707,7 +707,7 @@ KeyValues *CBaseAnimating::GetSequenceKeyValues( int iSequence )
 	if (szText)
 	{
 		KeyValues *seqKeyValues = new KeyValues("");
-		if ( seqKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), szText ) )
+		if ( seqKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), szText ) )//GetModel()
 		{
 			return seqKeyValues;
 		}
@@ -2500,10 +2500,10 @@ void CBaseAnimating::SetModel( const char *szModelName )
 	if ( szModelName[0] )
 	{
 		int modelIndex = modelinfo->GetModelIndex( szModelName );
-		const model_t *model = modelinfo->GetModel( modelIndex );
-		if ( model && ( modelinfo->GetModelType( model ) != mod_studio ) )
+		const IVModel *model = modelinfo->GetModel( modelIndex );
+		if ( model && ( modelinfo->GetModelType(modelIndex) != mod_studio ) )//model
 		{
-			Msg( "Setting CBaseAnimating to non-studio model %s  (type:%i)\n",	szModelName, modelinfo->GetModelType( model ) );
+			Msg( "Setting CBaseAnimating to non-studio model %s  (type:%i)\n",	szModelName, modelinfo->GetModelType(modelIndex) );//model
 		}
 	}
 
@@ -2528,10 +2528,10 @@ void CBaseAnimating::SetModel( const char *szModelName )
 void CBaseAnimating::LockStudioHdr()
 {
 	AUTO_LOCK( m_StudioHdrInitLock );
-	const model_t *mdl = GetModel();
+	const IVModel *mdl = GetModel();
 	if (mdl)
 	{
-		MDLHandle_t hStudioHdr = modelinfo->GetCacheHandle( mdl );
+		MDLHandle_t hStudioHdr = modelinfo->GetCacheHandle(GetModelIndex());//mdl
 		if ( hStudioHdr != MDLHANDLE_INVALID )
 		{
 			const studiohdr_t *pStudioHdr = mdlcache->LockStudioHdr( hStudioHdr );
@@ -2565,10 +2565,10 @@ void CBaseAnimating::UnlockStudioHdr()
 {
 	if ( m_pStudioHdr )
 	{
-		const model_t *mdl = GetModel();
+		const IVModel *mdl = GetModel();
 		if (mdl)
 		{
-			mdlcache->UnlockStudioHdr( modelinfo->GetCacheHandle( mdl ) );
+			mdlcache->UnlockStudioHdr( modelinfo->GetCacheHandle(GetModelIndex()) );//mdl
 			if ( m_pStudioHdr->GetVirtualModel() )
 			{
 				MDLHandle_t hVirtualModel = VoidPtrToMDLHandle( m_pStudioHdr->GetRenderHdr()->VirtualModel() );

@@ -215,8 +215,8 @@ void C_TEExplosion::RecordExplosion( )
 
 	if ( clienttools->IsInRecordingMode() )
 	{
-		const model_t* pModel = (m_nModelIndex != 0) ? modelinfo->GetModel( m_nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+		const IVModel* pModel = (m_nModelIndex != 0) ? modelinfo->GetModel( m_nModelIndex ) : NULL;
+		const char *pModelName = pModel ? modelinfo->GetModelName(m_nModelIndex) : "";//pModel
 
 		KeyValues *msg = new KeyValues( "TempEntity" );
 

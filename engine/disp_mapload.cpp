@@ -108,7 +108,7 @@ static inline CDispInfo* GetModelDisp( model_t const *pWorld, int i )
 
 
 static void BuildDispSurfInit( 
-	model_t *pWorld, 
+	model_t *pWorld,
 	CCoreDispInfo *pBuildDisp,
 	SurfaceHandle_t worldSurfID )
 {

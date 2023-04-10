@@ -120,10 +120,10 @@ public:
 private:
 	void					FreeDeadTrails( BeamTrail_t **trail );
 	void					UpdateBeam( Beam_t *pbeam, float frametime );
-	void					DrawBeamWithHalo( Beam_t* pbeam,int frame,int rendermode,float *color, float *srcColor, const model_t *sprite,const model_t *halosprite, float flHDRColorScale );
-	void					DrawBeamFollow( const model_t* pSprite, Beam_t *pbeam, int frame, int rendermode, float frametime, const float* color, float flHDRColorScale = 1.0f );
-	void					DrawLaser( Beam_t* pBeam, int frame, int rendermode, float* color, model_t const* sprite, model_t const* halosprite, float flHDRColorScale = 1.0f );
-	void					DrawTesla( Beam_t* pBeam, int frame, int rendermode, float* color, model_t const* sprite, float flHDRColorScale = 1.0f );
+	void					DrawBeamWithHalo( Beam_t* pbeam,int frame,int rendermode,float *color, float *srcColor, const IVModel *sprite,const IVModel *halosprite, float flHDRColorScale );
+	void					DrawBeamFollow( const IVModel* pSprite, Beam_t *pbeam, int frame, int rendermode, float frametime, const float* color, float flHDRColorScale = 1.0f );
+	void					DrawLaser( Beam_t* pBeam, int frame, int rendermode, float* color, IVModel const* sprite, IVModel const* halosprite, float flHDRColorScale = 1.0f );
+	void					DrawTesla( Beam_t* pBeam, int frame, int rendermode, float* color, IVModel const* sprite, float flHDRColorScale = 1.0f );
 
 	bool					RecomputeBeamEndpoints( Beam_t *pbeam );
 
@@ -233,7 +233,7 @@ bool ComputeBeamEntPosition( C_BaseEntity *pEnt, int nAttachment, bool bInterpre
 		C_BaseAnimating *pAnimating = pEnt->GetBaseAnimating();
 		if ( pAnimating )
 		{
-			studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModel() );
+			studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModelIndex() );//pAnimating->GetModel()
 			if (pStudioHdr)
 			{
 				mstudiohitboxset_t *set = pStudioHdr->pHitboxSet( pAnimating->GetHitboxSet() );
@@ -695,7 +695,7 @@ void CViewRenderBeams::KillDeadBeams( C_BaseEntity *pDeadEntity )
 //-----------------------------------------------------------------------------
 void CViewRenderBeams::SetupBeam( Beam_t *pBeam, const BeamInfo_t &beamInfo )
 {
-	const model_t *pSprite = modelinfo->GetModel( beamInfo.m_nModelIndex );
+	const IVModel *pSprite = modelinfo->GetModel( beamInfo.m_nModelIndex );
 	if ( !pSprite )
 		return;
 
@@ -705,7 +705,7 @@ void CViewRenderBeams::SetupBeam( Beam_t *pBeam, const BeamInfo_t &beamInfo )
 	pBeam->haloScale		= beamInfo.m_flHaloScale;
 	pBeam->frame			= 0;
 	pBeam->frameRate		= 0;
-	pBeam->frameCount		= modelinfo->GetModelFrameCount( pSprite );
+	pBeam->frameCount		= modelinfo->GetModelFrameCount(beamInfo.m_nModelIndex);//pSprite
 	pBeam->freq				= gpGlobals->curtime * beamInfo.m_flSpeed;
 	pBeam->die				= gpGlobals->curtime + beamInfo.m_flLife;
 	pBeam->width			= beamInfo.m_flWidth;
@@ -1678,7 +1678,7 @@ void CViewRenderBeams::UpdateTempEntBeams( void )
 //			frametime - 
 //			*color - 
 //-----------------------------------------------------------------------------
-void CViewRenderBeams::DrawBeamFollow( const model_t* pSprite, Beam_t *pbeam, 
+void CViewRenderBeams::DrawBeamFollow( const IVModel* pSprite, Beam_t *pbeam, 
 	int frame, int rendermode, float frametime, const float* color, float flHDRColorScale )
 {
 	BeamTrail_t		*particles;
@@ -1773,8 +1773,8 @@ void CViewRenderBeams::DrawBeamWithHalo(	Beam_t*			pbeam,
 											int				rendermode,
 											float*			color,
 											float*			srcColor,
-											const model_t	*sprite,
-											const model_t	*halosprite,
+											const IVModel	*sprite,
+											const IVModel	*halosprite,
 											float			flHDRColorScale )
 {
 	Vector beamDir = pbeam->attachment[1] - pbeam->attachment[0];
@@ -1863,7 +1863,7 @@ void CViewRenderBeams::DrawBeamWithHalo(	Beam_t*			pbeam,
 //------------------------------------------------------------------------------
 // Purpose : Draw a beam based upon the viewpoint
 //------------------------------------------------------------------------------
-void CViewRenderBeams::DrawLaser( Beam_t *pbeam, int frame, int rendermode, float *color, const model_t *sprite, const model_t *halosprite, float flHDRColorScale )
+void CViewRenderBeams::DrawLaser( Beam_t *pbeam, int frame, int rendermode, float *color, const IVModel *sprite, const IVModel *halosprite, float flHDRColorScale )
 {
 	float	color2[3];
 	VectorCopy( color, color2 );
@@ -1918,7 +1918,7 @@ void CViewRenderBeams::DrawLaser( Beam_t *pbeam, int frame, int rendermode, floa
 //------------------------------------------------------------------------------
 // Purpose : Draw a fibrous tesla beam
 //------------------------------------------------------------------------------
-void CViewRenderBeams::DrawTesla( Beam_t *pbeam, int frame, int rendermode, float *color, const model_t *sprite, float flHDRColorScale )
+void CViewRenderBeams::DrawTesla( Beam_t *pbeam, int frame, int rendermode, float *color, const IVModel *sprite, float flHDRColorScale )
 {
 	DrawTeslaSegs( NOISE_DIVISIONS, pbeam->rgNoise, sprite, frame, rendermode, pbeam->attachment[0], pbeam->delta, pbeam->width, pbeam->endWidth, pbeam->amplitude, pbeam->freq, pbeam->speed, pbeam->segments, pbeam->flags, color, pbeam->fadeLength, flHDRColorScale );
 }
@@ -1941,8 +1941,8 @@ void CViewRenderBeams::DrawBeam( Beam_t *pbeam )
 		return;
 	}
 
-	const model_t	*sprite;
-	const model_t	*halosprite = NULL;
+	const IVModel	*sprite;
+	const IVModel	*halosprite = NULL;
 
 	if ( pbeam->modelIndex < 0 )
 	{

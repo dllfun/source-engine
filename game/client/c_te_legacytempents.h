@@ -12,12 +12,15 @@
 #pragma once
 #endif
 
+class CBasePlayer;
 class C_BaseEntity;
 class C_LocalTempEntity;
-class model_t;
+class IVModel;
 
 #include "mempool.h"
 #include "utllinkedlist.h"
+#include "icliententityinternal.h"
+#include <particlemgr.h>
 
 #if defined( CSTRIKE_DLL ) || defined( SDK_DLL )
 enum
@@ -50,11 +53,11 @@ public:
 	virtual C_LocalTempEntity	*FindTempEntByID( int nID, int nSubID ) = 0;
 
 	virtual void				BloodSprite( const Vector &org, int r, int g, int b, int a, int modelIndex, int modelIndex2, float size ) = 0;
-	virtual void				RicochetSprite( const Vector &pos, model_t *pmodel, float duration, float scale ) = 0;
+	virtual void				RicochetSprite( const Vector &pos, IVModel *pmodel, float duration, float scale ) = 0;
 	virtual void				MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachmentIndex, bool firstPerson ) = 0;
 	virtual void				MuzzleFlash( const Vector &pos1, const QAngle &angles, int type, ClientEntityHandle_t hEntity, bool firstPerson ) = 0;
 	virtual void				EjectBrass( const Vector& pos1, const QAngle& angles, const QAngle& gunAngles, int type ) = 0;
-	virtual C_LocalTempEntity   *SpawnTempModel( const model_t *pModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, float flLifeTime, int iFlags ) = 0;
+	virtual C_LocalTempEntity   *SpawnTempModel( const IVModel *pModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, float flLifeTime, int iFlags ) = 0;
 	virtual void				BreakModel( const Vector &pos, const QAngle &angles, const Vector &size, const Vector &dir, float random, float life, int count, int modelIndex, char flags) = 0;
 	virtual void				Bubbles( const Vector &mins, const Vector &maxs, float height, int modelIndex, int count, float speed ) = 0;
 	virtual void				BubbleTrail( const Vector &start, const Vector &end, float flWaterZ, int modelIndex, int count, float speed ) = 0;
@@ -102,7 +105,7 @@ public:
 
 	// Legacy temp entities still supported
 	virtual void			BloodSprite( const Vector &org, int r, int g, int b, int a, int modelIndex, int modelIndex2, float size );
-	virtual void			RicochetSprite( const Vector &pos, model_t *pmodel, float duration, float scale );
+	virtual void			RicochetSprite( const Vector &pos, IVModel *pmodel, float duration, float scale );
 
 	virtual void			MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachmentIndex, bool firstPerson );
 	virtual void			MuzzleFlash( const Vector &pos1, const QAngle &angles, int type, ClientEntityHandle_t hEntity, bool firstPerson = false );
@@ -122,7 +125,7 @@ public:
 
 	virtual void			PlaySound ( C_LocalTempEntity *pTemp, float damp );
 	virtual void			EjectBrass( const Vector &pos1, const QAngle &angles, const QAngle &gunAngles, int type );
-	virtual C_LocalTempEntity		*SpawnTempModel( const model_t *pModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, float flLifeTime, int iFlags );
+	virtual C_LocalTempEntity		*SpawnTempModel( const IVModel *pModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, float flLifeTime, int iFlags );
 	void					RocketFlare( const Vector& pos );
 	void					HL1EjectBrass( const Vector &vecPosition, const QAngle &angAngles, const Vector &vecVelocity, int nType );
 	void					CSEjectBrass( const Vector &vecPosition, const QAngle &angAngles, int nType, int nShellType, CBasePlayer *pShooter );
@@ -144,29 +147,29 @@ private:
 	CUtlLinkedList< C_LocalTempEntity *, unsigned short >	m_TempEnts;
 
 	// Muzzle flash sprites
-	class model_t			*m_pSpriteMuzzleFlash[10];
-	class model_t			*m_pSpriteAR2Flash[4];
-	class model_t			*m_pShells[3];
-	class model_t			*m_pSpriteCombineFlash[2];
+	class IVModel			*m_pSpriteMuzzleFlash[10];
+	class IVModel			*m_pSpriteAR2Flash[4];
+	class IVModel			*m_pShells[3];
+	class IVModel			*m_pSpriteCombineFlash[2];
 
 #if defined( HL1_CLIENT_DLL )
-	class model_t			*m_pHL1Shell;
-	class model_t			*m_pHL1ShotgunShell;
+	class IVModel			*m_pHL1Shell;
+	class IVModel			*m_pHL1ShotgunShell;
 #endif
 
 #if defined( CSTRIKE_DLL ) || defined ( SDK_DLL )
-	class model_t			*m_pCS_9MMShell;
-	class model_t			*m_pCS_57Shell;
-	class model_t			*m_pCS_12GaugeShell;
-	class model_t			*m_pCS_556Shell;
-	class model_t			*m_pCS_762NATOShell;
-	class model_t			*m_pCS_338MAGShell;
+	class IVModel			*m_pCS_9MMShell;
+	class IVModel			*m_pCS_57Shell;
+	class IVModel			*m_pCS_12GaugeShell;
+	class IVModel			*m_pCS_556Shell;
+	class IVModel			*m_pCS_762NATOShell;
+	class IVModel			*m_pCS_338MAGShell;
 #endif
 
 // Internal methods also available to children
 protected:
-	C_LocalTempEntity		*TempEntAlloc( const Vector& org, const model_t *model );
-	C_LocalTempEntity		*TempEntAllocHigh( const Vector& org, const model_t *model );
+	C_LocalTempEntity		*TempEntAlloc( const Vector& org, const IVModel *model );
+	C_LocalTempEntity		*TempEntAllocHigh( const Vector& org, const IVModel *model );
 
 // Material handle caches
 private:

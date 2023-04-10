@@ -109,7 +109,7 @@ C_LocalTempEntity::C_LocalTempEntity()
 // Input  : time - 
 //			*model - 
 //-----------------------------------------------------------------------------
-void C_LocalTempEntity::Prepare( const model_t *pmodel, float time )
+void C_LocalTempEntity::Prepare( const IVModel *pmodel, float time )
 {
 	Interp_SetupMappings( GetVarMapping() );
 
@@ -158,7 +158,7 @@ int C_LocalTempEntity::DrawStudioModel( int flags )
 	VPROF_BUDGET( "C_LocalTempEntity::DrawStudioModel", VPROF_BUDGETGROUP_MODEL_RENDERING );
 	int drawn = 0;
 
-	if ( !GetModel() || modelinfo->GetModelType( GetModel() ) != mod_studio )
+	if ( !GetModel() || GetModel()->GetModelType() != mod_studio )// modelinfo
 		return drawn;
 	
 	// Make sure m_pstudiohdr is valid for drawing
@@ -217,12 +217,12 @@ int	C_LocalTempEntity::DrawModel( int flags )
 		}
 	}
 
-	switch ( modelinfo->GetModelType( GetModel() ) )
+	switch (GetModel()->GetModelType() )// modelinfo
 	{
 	case mod_sprite:
 		drawn = DrawSprite( 
 			this,
-			GetModel(), 
+			GetModel(), //GetModel()
 			GetAbsOrigin(), 
 			GetAbsAngles(), 
 			m_flFrame,  // sprite frame to render
@@ -791,7 +791,7 @@ CTempEnts::~CTempEnts( void )
 void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int current )
 {
 	C_LocalTempEntity		*pTemp;
-	const model_t	*model;
+	const IVModel	*model;
 	int				i, width, depth, count, frameCount;
 	float			maxHeight, speed, xspeed, yspeed;
 	Vector			origin;
@@ -807,7 +807,7 @@ void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int
 	count = density + 1;
 	density = count * 3 + 6;
 
-	modelinfo->GetModelBounds( pent->GetModel(), mins, maxs );
+	pent->GetModel()->GetModelBounds( mins, maxs );// modelinfo pent->GetModelIndex(),
 
 	maxHeight = maxs[2] - mins[2];
 	width = maxs[0] - mins[0];
@@ -817,7 +817,7 @@ void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int
 	SinCos( pent->GetLocalAngles()[1]*M_PI/180, &yspeed, &xspeed );
 	xspeed *= speed;
 	yspeed *= speed;
-	frameCount = modelinfo->GetModelFrameCount( model );
+	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
 
 	for (i=0 ; i<count ; i++)
 	{
@@ -856,7 +856,7 @@ void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int
 void CTempEnts::Bubbles( const Vector &mins, const Vector &maxs, float height, int modelIndex, int count, float speed )
 {
 	C_LocalTempEntity			*pTemp;
-	const model_t		*model;
+	const IVModel		*model;
 	int					i, frameCount;
 	float				sine, cosine;
 	Vector				origin;
@@ -868,7 +868,7 @@ void CTempEnts::Bubbles( const Vector &mins, const Vector &maxs, float height, i
 	if ( !model )
 		return;
 
-	frameCount = modelinfo->GetModelFrameCount( model );
+	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
 
 	for (i=0 ; i<count ; i++)
 	{
@@ -910,7 +910,7 @@ void CTempEnts::Bubbles( const Vector &mins, const Vector &maxs, float height, i
 void CTempEnts::BubbleTrail( const Vector &start, const Vector &end, float flWaterZ, int modelIndex, int count, float speed )
 {
 	C_LocalTempEntity			*pTemp;
-	const model_t		*model;
+	const IVModel		*model;
 	int					i, frameCount;
 	float				dist, angle;
 	Vector				origin;
@@ -922,7 +922,7 @@ void CTempEnts::BubbleTrail( const Vector &start, const Vector &end, float flWat
 	if ( !model )
 		return;
 
-	frameCount = modelinfo->GetModelFrameCount( model );
+	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
 
 	for (i=0 ; i<count ; i++)
 	{
@@ -1001,7 +1001,7 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 {
 	int					i, frameCount;
 	C_LocalTempEntity			*pTemp;
-	const model_t		*pModel;
+	const IVModel		*pModel;
 
 	if (!modelIndex) 
 		return;
@@ -1013,7 +1013,7 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 	// See g_BreakableHelper above for notes...
 	bool isSlave = ( flags & BREAK_SLAVE ) ? true : false;
 
-	frameCount = modelinfo->GetModelFrameCount( pModel );
+	frameCount = modelinfo->GetModelFrameCount(modelIndex);//pModel
 
 	if (count == 0)
 	{
@@ -1046,11 +1046,11 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 		// keep track of break_type, so we know how to play sound on collision
 		pTemp->hitSound = flags;
 		
-		if ( modelinfo->GetModelType( pModel ) == mod_sprite )
+		if ( modelinfo->GetModelType(modelIndex) == mod_sprite )//pModel
 		{
 			pTemp->m_flFrame = random->RandomInt(0,frameCount-1);
 		}
-		else if ( modelinfo->GetModelType( pModel ) == mod_studio )
+		else if ( modelinfo->GetModelType(modelIndex) == mod_studio )//pModel
 		{
 			pTemp->m_nBody = random->RandomInt(0,frameCount-1);
 		}
@@ -1104,7 +1104,7 @@ void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const 
 	if ( !pEntity )
 		return;
 
-	const model_t *model = modelinfo->GetModel( modelindex );
+	const IVModel *model = modelinfo->GetModel( modelindex );
 
 	if ( !model )
 	{
@@ -1112,7 +1112,7 @@ void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const 
 		return;
 	}
 
-	pEntity->SetModelName(MAKE_STRING(modelinfo->GetModelName(model)) );
+	pEntity->SetModelName(MAKE_STRING(modelinfo->GetModelName(modelindex)) );//model
 	pEntity->m_nSkin = skin;
 	pEntity->SetAbsOrigin( pos );
 	pEntity->SetAbsAngles( angles );
@@ -1156,7 +1156,7 @@ void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const 
 C_LocalTempEntity *CTempEnts::ClientProjectile( const Vector& vecOrigin, const Vector& vecVelocity, const Vector& vecAcceleration, int modelIndex, int lifetime, CBaseEntity *pOwner, const char *pszImpactEffect, const char *pszParticleEffect )
 {
 	C_LocalTempEntity	*pTemp;
-	const model_t		*model;
+	const IVModel		*model;
 
 	if ( !modelIndex ) 
 		return NULL;
@@ -1212,7 +1212,7 @@ C_LocalTempEntity *CTempEnts::ClientProjectile( const Vector& vecOrigin, const V
 C_LocalTempEntity *CTempEnts::TempSprite( const Vector &pos, const Vector &dir, float scale, int modelIndex, int rendermode, int renderfx, float a, float life, int flags, const Vector &normal )
 {
 	C_LocalTempEntity			*pTemp;
-	const model_t		*model;
+	const IVModel		*model;
 	int					frameCount;
 
 	if ( !modelIndex ) 
@@ -1225,7 +1225,7 @@ C_LocalTempEntity *CTempEnts::TempSprite( const Vector &pos, const Vector &dir, 
 		return NULL;
 	}
 
-	frameCount = modelinfo->GetModelFrameCount( model );
+	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
 
 	pTemp = TempEntAlloc( pos, model );
 	if (!pTemp)
@@ -1265,7 +1265,7 @@ C_LocalTempEntity *CTempEnts::TempSprite( const Vector &pos, const Vector &dir, 
 void CTempEnts::Sprite_Spray( const Vector &pos, const Vector &dir, int modelIndex, int count, int speed, int iRand )
 {
 	C_LocalTempEntity			*pTemp;
-	const model_t		*pModel;
+	const IVModel		*pModel;
 	float				noise;
 	float				znoise;
 	int					frameCount;
@@ -1289,7 +1289,7 @@ void CTempEnts::Sprite_Spray( const Vector &pos, const Vector &dir, int modelInd
 		return;
 	}
 
-	frameCount = modelinfo->GetModelFrameCount( pModel ) - 1;
+	frameCount = modelinfo->GetModelFrameCount(modelIndex) - 1;//pModel
 
 	for ( i = 0; i < count; i++ )
 	{
@@ -1325,7 +1325,7 @@ void CTempEnts::Sprite_Spray( const Vector &pos, const Vector &dir, int modelInd
 void CTempEnts::Sprite_Trail( const Vector &vecStart, const Vector &vecEnd, int modelIndex, int nCount, float flLife, float flSize, float flAmplitude, int nRenderamt, float flSpeed )
 {
 	C_LocalTempEntity	*pTemp;
-	const model_t		*pModel;
+	const IVModel		*pModel;
 	int					flFrameCount;
 
 	pModel = modelinfo->GetModel( modelIndex );
@@ -1336,7 +1336,7 @@ void CTempEnts::Sprite_Trail( const Vector &vecStart, const Vector &vecEnd, int 
 		return;
 	}
 
-	flFrameCount = modelinfo->GetModelFrameCount( pModel );
+	flFrameCount = modelinfo->GetModelFrameCount(modelIndex);//pModel
 
 	Vector vecDelta;
 	VectorSubtract( vecEnd, vecStart, vecDelta );
@@ -1396,7 +1396,7 @@ void CTempEnts::Sprite_Trail( const Vector &vecStart, const Vector &vecEnd, int 
 void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, float life )
 {
 	C_LocalTempEntity			*pTemp;
-	const model_t		*pModel;
+	const IVModel		*pModel;
 	Vector				position;
 	int					frameCount;
 
@@ -1444,9 +1444,9 @@ void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, f
 	pTemp->flags |= FTENT_PLYRATTACHMENT | FTENT_PERSIST;
 
 	// is the model a sprite?
-	if ( modelinfo->GetModelType( pTemp->GetModel() ) == mod_sprite )
+	if (pTemp->GetModel()->GetModelType() == mod_sprite )// modelinfo pTemp->GetModelIndex() 
 	{
-		frameCount = modelinfo->GetModelFrameCount( pModel );
+		frameCount = modelinfo->GetModelFrameCount(modelIndex);//pModel
 		pTemp->m_flFrameMax = frameCount - 1;
 		pTemp->flags |= FTENT_SPRANIMATE | FTENT_SPRANIMATELOOP;
 		pTemp->m_flFrameRate = 10;
@@ -1496,7 +1496,7 @@ void CTempEnts::KillAttachedTents( int client )
 //			duration - 
 //			scale - 
 //-----------------------------------------------------------------------------
-void CTempEnts::RicochetSprite( const Vector &pos, model_t *pmodel, float duration, float scale )
+void CTempEnts::RicochetSprite( const Vector &pos, IVModel *pmodel, float duration, float scale )
 {
 	C_LocalTempEntity	*pTemp;
 
@@ -1532,13 +1532,13 @@ void CTempEnts::RicochetSprite( const Vector &pos, model_t *pmodel, float durati
 //-----------------------------------------------------------------------------
 void CTempEnts::BloodSprite( const Vector &org, int r, int g, int b, int a, int modelIndex, int modelIndex2, float size )
 {
-	const model_t			*model;
+	const IVModel			*model;
 
 	//Validate the model first
 	if ( modelIndex && (model = modelinfo->GetModel( modelIndex ) ) != NULL )
 	{
 		C_LocalTempEntity		*pTemp;
-		int						frameCount = modelinfo->GetModelFrameCount( model );
+		int						frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
 		color32					impactcolor = { (uint8)r, (uint8)g, (uint8)b, (uint8)a };
 
 		//Large, single blood sprite is a high-priority tent
@@ -1576,20 +1576,20 @@ C_LocalTempEntity *CTempEnts::DefaultSprite( const Vector &pos, int spriteIndex,
 {
 	C_LocalTempEntity		*pTemp;
 	int				frameCount;
-	const model_t	*pSprite;
+	const IVModel	*pSprite;
 
 	// don't spawn while paused
 	if ( gpGlobals->frametime == 0.0 )
 		return NULL;
 
 	pSprite = modelinfo->GetModel( spriteIndex );
-	if ( !spriteIndex || !pSprite || modelinfo->GetModelType( pSprite ) != mod_sprite )
+	if ( !spriteIndex || !pSprite || modelinfo->GetModelType(spriteIndex) != mod_sprite )//pSprite
 	{
 		DevWarning( 1,"No Sprite %d!\n", spriteIndex);
 		return NULL;
 	}
 
-	frameCount = modelinfo->GetModelFrameCount( pSprite );
+	frameCount = modelinfo->GetModelFrameCount(spriteIndex);//pSprite
 
 	pTemp = TempEntAlloc( pos, pSprite );
 	if (!pTemp)
@@ -1644,7 +1644,7 @@ void CTempEnts::EjectBrass( const Vector &pos1, const QAngle &angles, const QAng
 	if ( cl_ejectbrass.GetBool() == false )
 		return;
 
-	const model_t *pModel = m_pShells[type];
+	const IVModel *pModel = m_pShells[type];
 	
 	if ( pModel == NULL )
 		return;
@@ -1694,7 +1694,7 @@ void CTempEnts::EjectBrass( const Vector &pos1, const QAngle &angles, const QAng
 //-----------------------------------------------------------------------------
 // Purpose: Create some simple physically simulated models
 //-----------------------------------------------------------------------------
-C_LocalTempEntity * CTempEnts::SpawnTempModel( const model_t *pModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, float flLifeTime, int iFlags )
+C_LocalTempEntity * CTempEnts::SpawnTempModel( const IVModel *pModel, const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, float flLifeTime, int iFlags )
 {
 	Assert( pModel );
 
@@ -1963,7 +1963,7 @@ C_LocalTempEntity *CTempEnts::FindTempEntByID( int nID, int nSubID )
 //			*model - 
 // Output : C_LocalTempEntity
 //-----------------------------------------------------------------------------
-C_LocalTempEntity *CTempEnts::TempEntAlloc( const Vector& org, const model_t *model )
+C_LocalTempEntity *CTempEnts::TempEntAlloc( const Vector& org, const IVModel *model )
 {
 	C_LocalTempEntity		*pTemp;
 
@@ -2077,7 +2077,7 @@ bool CTempEnts::FreeLowPriorityTempEnt()
 //			*model - 
 // Output : C_LocalTempEntity
 //-----------------------------------------------------------------------------
-C_LocalTempEntity *CTempEnts::TempEntAllocHigh( const Vector& org, const model_t *model )
+C_LocalTempEntity *CTempEnts::TempEntAllocHigh( const Vector& org, const IVModel *model )
 {
 	C_LocalTempEntity		*pTemp;
 
@@ -2285,7 +2285,7 @@ int CTempEnts::AddVisibleTempEntity( C_LocalTempEntity *pEntity )
 	if ( !pEntity->GetModel() )
 		return 0;
 
-	modelinfo->GetModelBounds( pEntity->GetModel(), model_mins, model_maxs );
+	pEntity->GetModel()->GetModelBounds( model_mins, model_maxs );//modelinfo
 
 	for (i=0 ; i<3 ; i++)
 	{
@@ -2390,35 +2390,35 @@ void CTempEnts::Update(void)
 void CTempEnts::LevelInit()
 {
 #ifndef TF_CLIENT_DLL
-	m_pSpriteMuzzleFlash[0] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle1.vmt" );
-	m_pSpriteMuzzleFlash[1] = (model_t *)engineClient->LoadModel( "sprites/muzzleflash4.vmt" );
-	m_pSpriteMuzzleFlash[2] = (model_t *)engineClient->LoadModel( "sprites/muzzleflash4.vmt" );
+	m_pSpriteMuzzleFlash[0] = (IVModel *)engineClient->LoadModel( "sprites/ar2_muzzle1.vmt" );
+	m_pSpriteMuzzleFlash[1] = (IVModel *)engineClient->LoadModel( "sprites/muzzleflash4.vmt" );
+	m_pSpriteMuzzleFlash[2] = (IVModel *)engineClient->LoadModel( "sprites/muzzleflash4.vmt" );
 
-	m_pSpriteAR2Flash[0] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle1b.vmt" );
-	m_pSpriteAR2Flash[1] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle2b.vmt" );
-	m_pSpriteAR2Flash[2] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle3b.vmt" );
-	m_pSpriteAR2Flash[3] = (model_t *)engineClient->LoadModel( "sprites/ar2_muzzle4b.vmt" );
+	m_pSpriteAR2Flash[0] = (IVModel *)engineClient->LoadModel( "sprites/ar2_muzzle1b.vmt" );
+	m_pSpriteAR2Flash[1] = (IVModel *)engineClient->LoadModel( "sprites/ar2_muzzle2b.vmt" );
+	m_pSpriteAR2Flash[2] = (IVModel *)engineClient->LoadModel( "sprites/ar2_muzzle3b.vmt" );
+	m_pSpriteAR2Flash[3] = (IVModel *)engineClient->LoadModel( "sprites/ar2_muzzle4b.vmt" );
 
-	m_pSpriteCombineFlash[0] = (model_t *)engineClient->LoadModel( "effects/combinemuzzle1.vmt" );
-	m_pSpriteCombineFlash[1] = (model_t *)engineClient->LoadModel( "effects/combinemuzzle2.vmt" );
+	m_pSpriteCombineFlash[0] = (IVModel *)engineClient->LoadModel( "effects/combinemuzzle1.vmt" );
+	m_pSpriteCombineFlash[1] = (IVModel *)engineClient->LoadModel( "effects/combinemuzzle2.vmt" );
 
-	m_pShells[0] = (model_t *)engineClient->LoadModel( "models/weapons/shell.mdl" );
-	m_pShells[1] = (model_t *)engineClient->LoadModel( "models/weapons/rifleshell.mdl" );
-	m_pShells[2] = (model_t *)engineClient->LoadModel( "models/weapons/shotgun_shell.mdl" );
+	m_pShells[0] = (IVModel *)engineClient->LoadModel( "models/weapons/shell.mdl" );
+	m_pShells[1] = (IVModel *)engineClient->LoadModel( "models/weapons/rifleshell.mdl" );
+	m_pShells[2] = (IVModel *)engineClient->LoadModel( "models/weapons/shotgun_shell.mdl" );
 #endif
 
 #if defined( HL1_CLIENT_DLL )
-	m_pHL1Shell			= (model_t *)engineClient->LoadModel( "models/shell.mdl" );
-	m_pHL1ShotgunShell	= (model_t *)engineClient->LoadModel( "models/shotgunshell.mdl" );
+	m_pHL1Shell			= (IVModel *)engineClient->LoadModel( "models/shell.mdl" );
+	m_pHL1ShotgunShell	= (IVModel *)engineClient->LoadModel( "models/shotgunshell.mdl" );
 #endif
 
 #if defined( CSTRIKE_DLL ) || defined ( SDK_DLL )
-	m_pCS_9MMShell		= (model_t *)engineClient->LoadModel( "models/Shells/shell_9mm.mdl" );
-	m_pCS_57Shell		= (model_t *)engineClient->LoadModel( "models/Shells/shell_57.mdl" );
-	m_pCS_12GaugeShell	= (model_t *)engineClient->LoadModel( "models/Shells/shell_12gauge.mdl" );
-	m_pCS_556Shell		= (model_t *)engineClient->LoadModel( "models/Shells/shell_556.mdl" );
-	m_pCS_762NATOShell	= (model_t *)engineClient->LoadModel( "models/Shells/shell_762nato.mdl" );
-	m_pCS_338MAGShell	= (model_t *)engineClient->LoadModel( "models/Shells/shell_338mag.mdl" );
+	m_pCS_9MMShell		= (IVModel *)engineClient->LoadModel( "models/Shells/shell_9mm.mdl" );
+	m_pCS_57Shell		= (IVModel *)engineClient->LoadModel( "models/Shells/shell_57.mdl" );
+	m_pCS_12GaugeShell	= (IVModel *)engineClient->LoadModel( "models/Shells/shell_12gauge.mdl" );
+	m_pCS_556Shell		= (IVModel *)engineClient->LoadModel( "models/Shells/shell_556.mdl" );
+	m_pCS_762NATOShell	= (IVModel *)engineClient->LoadModel( "models/Shells/shell_762nato.mdl" );
+	m_pCS_338MAGShell	= (IVModel *)engineClient->LoadModel( "models/Shells/shell_338mag.mdl" );
 #endif
 }
 
@@ -3242,16 +3242,16 @@ void CTempEnts::MuzzleFlash_RPG_NPC( ClientEntityHandle_t hEntity, int attachmen
 void CTempEnts::RocketFlare( const Vector& pos )
 {
 	C_LocalTempEntity	*pTemp;
-	const model_t		*model;
+	const IVModel		*model;
 	int					nframeCount;
 
-	model = (model_t *)engineClient->LoadModel( "sprites/animglow01.vmt" );
+	model = (IVModel *)engineClient->LoadModel( "sprites/animglow01.vmt" );
 	if ( !model )
 	{
 		return;
 	}
-
-	nframeCount = modelinfo->GetModelFrameCount( model );
+	
+	nframeCount = model->ModelFrameCount(  );//modelinfo
 
 	pTemp = TempEntAlloc( pos, model );
 	if ( !pTemp )
@@ -3271,7 +3271,7 @@ void CTempEnts::RocketFlare( const Vector& pos )
 
 void CTempEnts::HL1EjectBrass( const Vector &vecPosition, const QAngle &angAngles, const Vector &vecVelocity, int nType )
 {
-	const model_t *pModel = NULL;
+	const IVModel *pModel = NULL;
 
 #if defined( HL1_CLIENT_DLL )
 	switch ( nType )
@@ -3329,7 +3329,7 @@ void CTempEnts::HL1EjectBrass( const Vector &vecPosition, const QAngle &angAngle
 
 void CTempEnts::CSEjectBrass( const Vector &vecPosition, const QAngle &angVelocity, int nVelocity, int shellType, CBasePlayer *pShooter )
 {
-	const model_t *pModel = NULL;
+	const IVModel *pModel = NULL;
 	int hitsound = TE_BOUNCE_SHELL;
 
 #if defined ( CSTRIKE_DLL ) || defined ( SDK_DLL )

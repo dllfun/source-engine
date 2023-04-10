@@ -26,7 +26,7 @@ class CViewSetup;
 class CEngineSprite;
 class IClientEntity;
 class IMaterial;
-class model_t;
+class IVModel;
 class IClientRenderable;
 
 
@@ -199,7 +199,7 @@ public:
 	// set this material rather than their regular material.
 	//virtual void			DrawBrushModel( 
 	//	IClientEntity *baseentity, 
-	//	model_t *model, 
+	//	IVModel *model, 
 	//	const Vector& origin, 
 	//	const QAngle& angles, 
 	//	bool bUnused ) = 0;
@@ -207,7 +207,7 @@ public:
 	// Draw brush model that has no origin/angles change ( uses identity transform )
 	// FIXME, Material proxy IClientEntity *baseentity is unused right now, use DrawBrushModel for brushes with
 	//  proxies for now.
-	virtual void			DrawIdentityBrushModel( IWorldRenderList *pList, model_t *model ) = 0;
+	virtual void			DrawIdentityBrushModel( IWorldRenderList *pList, IVModel *model ) = 0;
 
 	// Mark this dynamic light as having changed this frame ( so light maps affected will be recomputed )
 	virtual void			TouchLight( struct dlight_t *light ) = 0;
@@ -313,15 +313,15 @@ public:
 	//replaces the current view frustum with a rhyming replacement of your choice
 	virtual void			OverrideViewFrustum( Frustum custom ) = 0;
 
-	virtual void			DrawBrushModelShadowDepth( IClientEntity *baseentity, model_t *model, const Vector& origin, const QAngle& angles, ERenderDepthMode DepthMode ) = 0;
-	virtual void			UpdateBrushModelLightmap( model_t *model, IClientRenderable *pRenderable ) = 0;
+	virtual void			DrawBrushModelShadowDepth( IClientEntity *baseentity, IVModel *model, const Vector& origin, const QAngle& angles, ERenderDepthMode DepthMode ) = 0;
+	virtual void			UpdateBrushModelLightmap(IVModel *model, IClientRenderable *pRenderable ) = 0;
 	virtual void			BeginUpdateLightmaps( void ) = 0;
 	virtual void			EndUpdateLightmaps( void ) = 0;
 	virtual void			OLD_SetOffCenterProjectionMatrix( float fov, float zNear, float zFar, float flAspectRatio, float flBottom, float flTop, float flLeft, float flRight ) = 0;
 	virtual void			OLD_SetProjectionMatrixOrtho( float left, float top, float right, float bottom, float zNear, float zFar ) = 0;
 	virtual void			Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture ) = 0;
 	virtual void			GetMatricesForView( const CViewSetup &view, VMatrix *pWorldToView, VMatrix *pViewToProjection, VMatrix *pWorldToProjection, VMatrix *pWorldToPixels ) = 0;
-	virtual void			DrawBrushModelEx( IClientEntity *baseentity, model_t *model, const Vector& origin, const QAngle& angles, DrawBrushModelMode_t mode ) = 0;
+	virtual void			DrawBrushModelEx( IClientEntity *baseentity, IVModel *model, const Vector& origin, const QAngle& angles, DrawBrushModelMode_t mode ) = 0;
 
 	// Sets/gets a map-specified fade range (client only)
 	virtual void					SetLevelScreenFadeRange(float flMinSize, float flMaxSize) = 0;

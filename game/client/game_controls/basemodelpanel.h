@@ -211,7 +211,7 @@ protected:
 private:
 	void InitCubeMaps();
 	int FindAnimByName( const char *pszName );
-	void CalculateFrameDistanceInternal( const model_t *pModel );
+	void CalculateFrameDistanceInternal( const IVModel *pModel );
 
 public:
 	int								m_nFOV;

@@ -17,7 +17,7 @@
 #include "client_render_handle.h"
 #include "engine/ivmodelrender.h"
 
-class model_t;
+class IVModel;
 struct matrix3x4_t;
 
 extern void DefaultRenderBoundsWorldspace( IClientRenderable *pRenderable, Vector &absMins, Vector &absMaxs );
@@ -83,7 +83,7 @@ public:
 	virtual ClientRenderHandle_t&	RenderHandle() = 0;
 
 	// Render baby!
-	virtual const model_t*			GetModel( ) const = 0;
+	virtual const IVModel*			GetModel( ) const = 0;
 	virtual int						DrawModel( int flags ) = 0;
 
 	// Get the body parameter
@@ -207,7 +207,7 @@ public:
 	virtual int						GetSkin() { return 0; }
 	virtual bool					UsesFlexDelayedWeights() { return false; }
 
-	virtual const model_t*			GetModel( ) const		{ return NULL; }
+	virtual const IVModel*			GetModel( ) const		{ return NULL; }
 	virtual int						DrawModel( int flags )	{ return 0; }
 	virtual void					ComputeFxBlend( )		{ return; }
 	virtual int						GetFxBlend( )			{ return 255; }

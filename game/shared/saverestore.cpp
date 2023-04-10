@@ -1268,10 +1268,10 @@ bool CSave::WriteGameField( const char *pname, void *pData, datamap_t *pRootMap,
 			{
 				int nModelIndex = *(int*)pData;
 				string_t strModelName = NULL_STRING;
-				const model_t *pModel = modelinfo->GetModel( nModelIndex );
+				const IVModel *pModel = modelinfo->GetModel( nModelIndex );
 				if ( pModel )
 				{
-					strModelName = AllocPooledString( modelinfo->GetModelName( pModel ) );
+					strModelName = AllocPooledString( modelinfo->GetModelName(nModelIndex) );//pModel
 				}
 				WriteString( pField->fieldName, (string_t *)&strModelName, pField->fieldSize );
 			}
@@ -2916,12 +2916,12 @@ bool CEntitySaveRestoreBlockHandler::DoRestoreEntity( CBaseEntity *pEntity, IRes
 // changes in model space for global brush entities (designer models them in different coords!)
 Vector CEntitySaveRestoreBlockHandler::ModelSpaceLandmark( int modelIndex )
 {
-	const model_t *pModel = modelinfo->GetModel( modelIndex );
-	if ( modelinfo->GetModelType( pModel ) != mod_brush )
+	const IVModel *pModel = modelinfo->GetModel( modelIndex );
+	if ( modelinfo->GetModelType(modelIndex) != mod_brush )//pModel
 		return vec3_origin;
 
 	Vector mins, maxs;
-	modelinfo->GetModelBounds( pModel, mins, maxs );
+	modelinfo->GetModelBounds(modelIndex, mins, maxs );//pModel
 	return mins;
 }
 

@@ -189,7 +189,7 @@ public:
 	const char		*GetName( model_t const *model );
 
 	// Check cache for data, reload model if needed
-	void			*GetExtraData( model_t *model );
+	void			*GetExtraData( const model_t *model );
 
 	int				GetModelFileSize( char const *name );
 
@@ -3466,9 +3466,10 @@ model_t *CModelLoader::FindModel( const char *pName )
 	int i = m_Models.Find( fnHandle );
 	if ( i == m_Models.InvalidIndex() )
 	{
-		pModel = (model_t *)m_ModelPool.Alloc();
+		void* p = m_ModelPool.Alloc();
+		memset(p, 0, sizeof(model_t));
+		pModel =  new(p) model_t();
 		Assert( pModel );
-		memset( pModel, 0, sizeof( model_t ) );
 
 		pModel->fnHandle = fnHandle;
 
@@ -4048,30 +4049,30 @@ static void Mod_ComputeBrushModelFlags( model_t *mod )
 //-----------------------------------------------------------------------------
 // Recomputes translucency for the model...
 //-----------------------------------------------------------------------------
-void Mod_RecomputeTranslucency( model_t* mod, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate )
+void model_t::Mod_RecomputeTranslucency( int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate )//model_t* mod, 
 {
 	if (fInstanceAlphaModulate < 1.0f)
 	{
-		mod->flags |= MODELFLAG_TRANSLUCENT;
+		flags |= MODELFLAG_TRANSLUCENT;//mod->
 		return;
 	}
 
-	mod->flags &= ~MODELFLAG_TRANSLUCENT;
+	flags &= ~MODELFLAG_TRANSLUCENT;//mod->
 
-	switch( mod->type )
+	switch( type )//mod->
 	{
 	case mod_brush:
 		{
-			for (int i = 0; i < mod->brush.nummodelsurfaces; ++i)
+			for (int i = 0; i < brush.nummodelsurfaces; ++i)//mod->
 			{
-				SurfaceHandle_t surfID = SurfaceHandleFromIndex( mod->brush.firstmodelsurface+i, mod->brush.pShared );
+				SurfaceHandle_t surfID = SurfaceHandleFromIndex( brush.firstmodelsurface+i, brush.pShared );//mod-> mod->
 				if ( MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
 					continue;
 
-				IMaterial* material = MSurf_TexInfo( surfID, mod->brush.pShared )->material;
+				IMaterial* material = MSurf_TexInfo( surfID, brush.pShared )->material;//mod->
 				if ( material->IsTranslucent() )
 				{
-					mod->flags |= MODELFLAG_TRANSLUCENT;
+					flags |= MODELFLAG_TRANSLUCENT;//mod->
 					break;
 				}
 			}
@@ -4080,12 +4081,12 @@ void Mod_RecomputeTranslucency( model_t* mod, int nSkin, int nBody, void /*IClie
 
 	case mod_studio:
 		{
-			studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( mod->studio );
+			studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( studio );//mod->
 			if ( pStudioHdr->flags & STUDIOHDR_FLAGS_FORCE_OPAQUE )
 				return;
 
 			IMaterial *pMaterials[ 128 ];
-			int materialCount = g_pStudioRender->GetMaterialListFromBodyAndSkin( mod->studio, nSkin, nBody, ARRAYSIZE( pMaterials ), pMaterials );
+			int materialCount = g_pStudioRender->GetMaterialListFromBodyAndSkin( studio, nSkin, nBody, ARRAYSIZE( pMaterials ), pMaterials );//mod->
 			for ( int i = 0; i < materialCount; i++ )
 			{
 				if ( pMaterials[i] != NULL )
@@ -4097,7 +4098,7 @@ void Mod_RecomputeTranslucency( model_t* mod, int nSkin, int nBody, void /*IClie
 
 					if ( bIsTranslucent )
 					{
-						mod->flags |= MODELFLAG_TRANSLUCENT;
+						flags |= MODELFLAG_TRANSLUCENT;//mod->
 						break;
 					}
 				}
@@ -4378,11 +4379,11 @@ public:
 		//m_pShared = pBrush->brush.pShared;
 		m_count = 0;
 	}
-	bool EnumerateLeaf(model_t* world, int leaf, intp )
+	bool EnumerateLeaf(IVModel* world, int leaf, intp )
 	{
 		// garymcthack - need to test identity brush models
-		int flags = (world->brush.pShared->leafs[leaf].leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
-		MarkModelSurfaces(world, flags );
+		int flags = (((model_t*)world)->brush.pShared->leafs[leaf].leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
+		MarkModelSurfaces((model_t*)world, flags );
 		m_count++;
 		return true;
 	}
@@ -5234,7 +5235,7 @@ int CModelLoader::GetNumWorldSubmodels()
 // Purpose: Check cache or union data for info, reload studio model if needed 
 // Input  : *model - 
 //-----------------------------------------------------------------------------
-void *CModelLoader::GetExtraData( model_t *model )
+void *CModelLoader::GetExtraData(const model_t *model )
 {
 	if ( !model )
 	{

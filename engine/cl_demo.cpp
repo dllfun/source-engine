@@ -357,7 +357,7 @@ void CDemoRecorder::WriteBSPDecals()
 			continue;
 
 		
-		const model_t * pModel = clientEntity->GetModel();
+		const model_t * pModel = (model_t*)clientEntity->GetModel();
 
 		decal.m_Pos = entry->position;
 		decal.m_nEntityIndex = entry->entityIndex;

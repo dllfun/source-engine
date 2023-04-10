@@ -74,7 +74,7 @@ public:
 	virtual const char *GetName( const model_t *model ) = 0;
 
 	// Check for extra data, reload studio model if needed
-	virtual void		*GetExtraData( model_t *model ) = 0;
+	virtual void		*GetExtraData(const model_t *model ) = 0;
 
 	// Get disk size for model
 	virtual int			GetModelFileSize( const char *name ) = 0;
@@ -212,7 +212,7 @@ private:
 // Recomputes translucency for the model...
 //-----------------------------------------------------------------------------
 
-void Mod_RecomputeTranslucency( model_t* mod, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate );
+//void Mod_RecomputeTranslucency( model_t* mod, int nSkin, int nBody, void /*IClientRenderable*/ *pClientRenderable, float fInstanceAlphaModulate );
 
 //-----------------------------------------------------------------------------
 // game lumps

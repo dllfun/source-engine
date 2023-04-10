@@ -80,7 +80,7 @@ IPhysicsObject *CRagdoll::GetElement( int elementNum )
 void CRagdoll::BuildRagdollBounds( C_BaseEntity *ent )
 {
 	Vector mins, maxs, size;
-	modelinfo->GetModelBounds( ent->GetModel(), mins, maxs );
+	modelinfo->GetModelBounds( ent->GetModelIndex(), mins, maxs );//ent->GetModel()
 	size = (maxs - mins) * 0.5;
 	m_radius = size.Length();
 
@@ -487,7 +487,7 @@ CStudioHdr *C_ServerRagdoll::OnNewModel( void )
 		vcollide_t *pCollide = modelinfo->GetVCollide( GetModelIndex() );
 		if ( !pCollide )
 		{
-			const char *pszName = modelinfo->GetModelName( modelinfo->GetModel( GetModelIndex() ) );
+			const char *pszName = modelinfo->GetModelName(GetModelIndex());//modelinfo->GetModel( GetModelIndex() )
 			Msg( "*** ERROR: C_ServerRagdoll::InitModel: %s missing vcollide data ***\n", (pszName) ? pszName : "<null>" );
 			m_elementCount = 0;
 		}

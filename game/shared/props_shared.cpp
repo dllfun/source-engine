@@ -954,10 +954,10 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 	static matrix3x4_t localToWorld;
 
 	CStudioHdr studioHdr;
-	const model_t *model = modelinfo->GetModel( modelindex );
+	const IVModel *model = modelinfo->GetModel( modelindex );
 	if ( model )
 	{
-		studioHdr.Init( modelinfo->GetStudiomodel( model ) );
+		studioHdr.Init( modelinfo->GetStudiomodel(modelindex) );//model
 	}
 
 	Vector parentOrigin = vec3_origin;
@@ -1013,10 +1013,10 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 			AngleMatrix( params.angles, params.origin, matrix );
 
 			CStudioHdr studioHdr;
-			const model_t *model = modelinfo->GetModel( modelIndex );
+			const IVModel *model = modelinfo->GetModel( modelIndex );
 			if ( model )
 			{
-				studioHdr.Init( modelinfo->GetStudiomodel( model ) );
+				studioHdr.Init( modelinfo->GetStudiomodel(modelIndex) );//model
 			}
 
 			// Increment the number of breakable props this frame.
@@ -1341,10 +1341,10 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 	matrix3x4_t localToWorld;
 
 	CStudioHdr studioHdr;
-	const model_t *model = modelinfo->GetModel( modelindex );
+	const IVModel *model = modelinfo->GetModel( modelindex );
 	if ( model )
 	{
-		studioHdr.Init( modelinfo->GetStudiomodel( model ) );
+		studioHdr.Init( modelinfo->GetStudiomodel(modelindex) );//model
 	}
 
 	Vector parentOrigin = vec3_origin;
@@ -1401,10 +1401,10 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 			AngleMatrix( params.angles, params.origin, matrix );
 
 			CStudioHdr studioHdr;
-			const model_t *model = modelinfo->GetModel( modelIndex );
+			const IVModel *model = modelinfo->GetModel( modelIndex );
 			if ( model )
 			{
-				studioHdr.Init( modelinfo->GetStudiomodel( model ) );
+				studioHdr.Init( modelinfo->GetStudiomodel(modelIndex) );//model
 			}
 
 			// Increment the number of breakable props this frame.

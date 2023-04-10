@@ -1171,7 +1171,7 @@ static bool R_DecalUnProject( decal_t *pdecal, decallist_t *entry )
 
 
 // Shoots a decal onto the surface of the BSP.  position is the center of the decal in world coords
-static void R_DecalShoot_( IMaterial *pMaterial, int entity, const model_t *model, 
+static void R_DecalShoot_( IMaterial *pMaterial, int entity, const model_t *model,
 						  const Vector &position, const Vector *saxis, int flags, const color32 &rgbaColor, const Vector *pNormal, void *userdata = 0 )
 {
 	decalinfo_t decalInfo;
@@ -1252,7 +1252,7 @@ void R_DecalShoot( int textureIndex, int entity, const model_t *model, const Vec
 //			&rgbaColor - 
 //-----------------------------------------------------------------------------
 
-void R_PlayerDecalShoot( IMaterial *material, void *userdata, int entity, const model_t *model, 
+void R_PlayerDecalShoot( IMaterial *material, void *userdata, int entity, const model_t *model,
 	const Vector& position, const Vector *saxis, int flags, const color32 &rgbaColor )
 {
 	// The userdata that is passed in is actually 

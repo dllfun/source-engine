@@ -126,10 +126,10 @@ void GetColorForSurface( trace_t *trace, Vector *color )
 
 		ICollideable *pCollide = pEnt->GetCollideable();
 		int modelIndex = pCollide->GetCollisionModelIndex();
-		model_t* pModel = const_cast<model_t*>(modelinfo->GetModel( modelIndex ));
+		IVModel* pModel = const_cast<IVModel*>(modelinfo->GetModel( modelIndex ));
 
 		// Ask the model info about what we need to know
-		modelinfo->GetModelMaterialColorAndLighting( pModel, pCollide->GetCollisionOrigin(),
+		modelinfo->GetModelMaterialColorAndLighting(modelIndex, pCollide->GetCollisionOrigin(),//pModel
 			pCollide->GetCollisionAngles(), trace, diffuseColor, baseColor );
 	}
 

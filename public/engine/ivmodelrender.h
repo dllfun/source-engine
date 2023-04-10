@@ -22,7 +22,7 @@
 //-----------------------------------------------------------------------------
 struct mstudioanimdesc_t;
 struct mstudioseqdesc_t;
-class model_t;
+class IVModel;
 class IClientRenderable;
 class Vector;
 struct studiohdr_t;
@@ -66,7 +66,7 @@ struct ModelRenderInfo_t
 	Vector origin;
 	QAngle angles; 
 	IClientRenderable *pRenderable;
-	const model_t *pModel;
+	const IVModel *pModel;
 	const matrix3x4_t *pModelToWorld;
 	const matrix3x4_t *pLightingOffset;
 	const Vector *pLightingOrigin;
@@ -88,7 +88,7 @@ struct ModelRenderInfo_t
 struct StaticPropRenderInfo_t
 {
 	const matrix3x4_t		*pModelToWorld;
-	const model_t			*pModel;
+	const IVModel			*pModel;
 	IClientRenderable		*pRenderable;
 	Vector					*pLightingOrigin;
 	short					skin;
@@ -103,7 +103,7 @@ public:
 								IClientRenderable *pRenderable,
 								ModelInstanceHandle_t instance,
 								int entity_index, 
-								const model_t *model, 
+								const IVModel *model,
 								Vector const& origin, 
 								QAngle const& angles, 
 								int skin,

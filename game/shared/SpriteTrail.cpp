@@ -18,7 +18,7 @@
 #include "enginesprite.h"
 #include "tier0/vprof.h"
 
-extern CEngineSprite *Draw_SetSpriteTexture( const model_t *pSpriteModel, int frame, int rendermode );
+extern CEngineSprite *Draw_SetSpriteTexture( const IVModel *pSpriteModel, int frame, int rendermode );
 
 #endif // CLIENT_DLL
 

@@ -59,20 +59,20 @@ public:
 	// that passes the test; return true to continue enumerating,
 	// false to stop
 
-	virtual bool EnumerateLeaf(model_t* world, int leaf, intp context ) = 0;
+	virtual bool EnumerateLeaf(IVModel* world, int leaf, intp context ) = 0;
 };
 
 abstract_class ISpatialQuery
 {
 public:
 	// Returns the number of leaves
-	virtual int LeafCount(model_t* world) const = 0;
+	virtual int LeafCount(IVModel* world) const = 0;
 
 	// Enumerates the leaves along a ray, box, etc.
-	virtual bool EnumerateLeavesAtPoint(model_t* world, Vector const& pt, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
-	virtual bool EnumerateLeavesInBox(model_t* world, Vector const& mins, Vector const& maxs, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
-	virtual bool EnumerateLeavesInSphere(model_t* world, Vector const& center, float radius, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
-	virtual bool EnumerateLeavesAlongRay(model_t* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesAtPoint(IVModel* world, Vector const& pt, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesInBox(IVModel* world, Vector const& mins, Vector const& maxs, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesInSphere(IVModel* world, Vector const& center, float radius, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
+	virtual bool EnumerateLeavesAlongRay(IVModel* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context ) = 0;
 };
 
 

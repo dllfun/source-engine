@@ -292,7 +292,7 @@ public:
 	virtual void PopView( Frustum frustumPlanes );
 	virtual void SetMainView( const Vector &vecOrigin, const QAngle &angles );
 
-	virtual void UpdateBrushModelLightmap( model_t *model, IClientRenderable *Renderable );
+	virtual void UpdateBrushModelLightmap(IVModel *model, IClientRenderable *Renderable );
 	virtual void BeginUpdateLightmaps( void );
 	virtual void EndUpdateLightmaps( void );
 	virtual bool InLightmapUpdate( void ) const;
@@ -807,23 +807,23 @@ void CRender::BeginUpdateLightmaps( void )
 	}
 }
 
-void CRender::UpdateBrushModelLightmap( model_t *model, IClientRenderable *pRenderable )
+void CRender::UpdateBrushModelLightmap(IVModel *model, IClientRenderable *pRenderable )
 {
 	AssertOnce( m_iLightmapUpdateDepth );
 
 	if( !r_drawbrushmodels.GetBool() || !m_iLightmapUpdateDepth )
 		return;
 
-	R_MarkDlightsOnBrushModel( model, pRenderable );
-	if ( model->flags & MODELFLAG_HAS_DLIGHT )
+	R_MarkDlightsOnBrushModel((model_t*)model, pRenderable );
+	if (((model_t*)model)->flags & MODELFLAG_HAS_DLIGHT )
 	{
 		int transformIndex = g_LightmapTransformList.AddToTail();
 		LightmapTransformInfo_t &transform = g_LightmapTransformList[transformIndex];
-		transform.pModel = model;
+		transform.pModel = (model_t*)model;
 		AngleMatrix( pRenderable->GetRenderAngles(), pRenderable->GetRenderOrigin(), transform.xform );
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex( model->brush.firstmodelsurface, model->brush.pShared );
+		SurfaceHandle_t surfID = SurfaceHandleFromIndex(((model_t*)model)->brush.firstmodelsurface, ((model_t*)model)->brush.pShared );
 		bool bLight = false;
-		for (int i=0 ; i<model->brush.nummodelsurfaces ; i++, surfID++)
+		for (int i=0 ; i< ((model_t*)model)->brush.nummodelsurfaces ; i++, surfID++)
 		{
 			if ( MSurf_Flags(surfID) & (SURFDRAW_HASDLIGHT|SURFDRAW_HASLIGHTSYTLES) )
 			{
@@ -836,7 +836,7 @@ void CRender::UpdateBrushModelLightmap( model_t *model, IClientRenderable *pRend
 		}
 		if ( !bLight )
 		{
-			model->flags &= ~MODELFLAG_HAS_DLIGHT; // don't need to check again unless a dlight hits us
+			((model_t*)model)->flags &= ~MODELFLAG_HAS_DLIGHT; // don't need to check again unless a dlight hits us
 		}
 	}
 }

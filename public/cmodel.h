@@ -16,9 +16,19 @@
 #include "trace.h"
 #include "tier0/dbg.h"
 #include "basehandle.h"
+#include "studio.h"
+#include "iclientrenderable.h"
+#include "datacache/imdlcache.h"
+#include "model_types.h"
+#include "tier1/utlstring.h"
+#include "bspfile.h"
+#include "bitmap/cubemap.h"
+//#include "gametrace.h"
 
 struct edict_t;
-class model_t;
+class IVModel;
+class CGameTrace;
+typedef CGameTrace trace_t;
 
 /*
 ==============================================================
@@ -119,6 +129,35 @@ struct Ray_t
 private:
 };
 
+
+class IVModel
+{
+public:
+	
+	virtual int ModelFrameCount() const = 0;
+	virtual bool IsTranslucent() const = 0;
+	virtual int GetModelType() const = 0;
+	virtual void GetModelRenderBounds(Vector& mins, Vector& maxs) const = 0;
+	virtual studiohdr_t* GetStudiomodel() const = 0;
+	virtual bool IsModelVertexLit() const = 0;
+	virtual bool ModelHasMaterialProxy() const = 0;
+	virtual void Mod_RecomputeTranslucency(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate = 1.0f) = 0;
+	virtual void* GetModelExtraData() const = 0;
+	virtual const char* GetModelName() const = 0;
+	virtual void GetIlluminationPoint(IClientRenderable* pRenderable, Vector const& origin,
+		QAngle const& angles, Vector* pLightingCenter) const = 0;
+	virtual bool IsTranslucentTwoPass() const = 0;
+	virtual MDLHandle_t	GetCacheHandle() const = 0;
+	virtual void GetModelMaterialColorAndLighting(const Vector& origin,
+		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) const = 0;
+	virtual void GetModelBounds(Vector& mins, Vector& maxs) const = 0;
+	virtual int GetModelSpriteWidth() const = 0;
+	virtual int GetModelSpriteHeight() const = 0;
+	virtual const char* GetModelKeyValueText() const = 0;
+	virtual bool IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const = 0;
+
+	
+};
 
 #endif // CMODEL_H
 

@@ -56,7 +56,7 @@ public:
 	// Draws tempent as a sprite
 	int								DrawSprite( 
 										IClientEntity *entity,
-										const model_t *model, 
+										const IVModel* model, 
 										const Vector& origin, 
 										const QAngle& angles,
 										float frame,

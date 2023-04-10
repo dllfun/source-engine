@@ -80,7 +80,7 @@ bool C_SpotlightEnd::ShouldDraw()
 
 //-----------------------------------------------------------------------------
 // Purpose: YWB:  This is a hack, BaseClass::Interpolate skips this entity because model == NULL
-//   We could do something like model = (model_t *)0x00000001, but that's probably more evil.
+//   We could do something like model = (IVModel *)0x00000001, but that's probably more evil.
 // Input  : currentTime - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------

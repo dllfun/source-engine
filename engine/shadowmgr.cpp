@@ -148,9 +148,9 @@ public:
 	virtual const FlashlightState_t &GetFlashlightState( ShadowHandle_t handle );
 	virtual int ProjectAndClipVertices( ShadowHandle_t handle, int count, 
 		Vector** ppPosition, ShadowVertex_t*** ppOutVertex );
-	virtual void AddShadowToBrushModel( ShadowHandle_t handle, model_t* pModel, 	
+	virtual void AddShadowToBrushModel( ShadowHandle_t handle, IVModel* pModel,
 										const Vector& origin, const QAngle& angles );
-	virtual void RemoveAllShadowsFromBrushModel( model_t* pModel );
+	virtual void RemoveAllShadowsFromBrushModel(IVModel* pModel );
 	virtual void AddShadowToModel( ShadowHandle_t shadow, ModelInstanceHandle_t handle );
 	virtual void RemoveAllShadowsFromModel( ModelInstanceHandle_t handle );
  	virtual const ShadowInfo_t& GetInfo( ShadowHandle_t handle );
@@ -166,7 +166,7 @@ public:
 	virtual unsigned short InvalidShadowIndex( );
 
 	// Methods of ISpatialLeafEnumerator
-	virtual bool EnumerateLeaf(model_t* world, int leaf, intp context );
+	virtual bool EnumerateLeaf(IVModel* world, int leaf, intp context );
 
 	// Sets the texture coordinate range for a shadow...
 	virtual void SetShadowTexCoord( ShadowHandle_t handle, float x, float y, float w, float h );
@@ -1809,7 +1809,7 @@ void CShadowMgr::ApplyShadowToLeaf( const Shadow_t &shadow, mleaf_t* RESTRICT pL
 //-----------------------------------------------------------------------------
 // Applies a projected texture to all surfaces in the leaf
 //-----------------------------------------------------------------------------
-bool CShadowMgr::EnumerateLeaf(model_t* world, int leaf, intp context )
+bool CShadowMgr::EnumerateLeaf(IVModel* world, int leaf, intp context )
 {
 	VPROF( "CShadowMgr::EnumerateLeaf" );
 	ShadowBuildInfo_t* pBuild = (ShadowBuildInfo_t*)context;
@@ -1859,7 +1859,7 @@ bool CShadowMgr::EnumerateLeaf(model_t* world, int leaf, intp context )
 //-----------------------------------------------------------------------------
 // Adds a shadow to a brush model
 //-----------------------------------------------------------------------------
-void CShadowMgr::AddShadowToBrushModel( ShadowHandle_t handle, model_t* pModel, 	
+void CShadowMgr::AddShadowToBrushModel( ShadowHandle_t handle, IVModel* pModel,
 									const Vector& origin, const QAngle& angles )
 {
 	// Don't compute the surface cache if shadows are off..
@@ -1881,8 +1881,8 @@ void CShadowMgr::AddShadowToBrushModel( ShadowHandle_t handle, model_t* pModel,
 
 	// Just add all non-backfacing brush surfaces to the list of potential
 	// surfaces that we may be casting a shadow onto.
-	SurfaceHandleRestrict_t surfID = SurfaceHandleFromIndex( pModel->brush.firstmodelsurface, pModel->brush.pShared );
-	for (int i=0; i<pModel->brush.nummodelsurfaces; ++i, ++surfID)
+	SurfaceHandleRestrict_t surfID = SurfaceHandleFromIndex(((model_t*)pModel)->brush.firstmodelsurface, ((model_t*)pModel)->brush.pShared );
+	for (int i=0; i< ((model_t*)pModel)->brush.nummodelsurfaces; ++i, ++surfID)
 	{
 		// Don't bother with nodraw surfaces
 		int nFlags = MSurf_Flags( surfID );
@@ -1912,10 +1912,10 @@ void CShadowMgr::AddShadowToBrushModel( ShadowHandle_t handle, model_t* pModel,
 //-----------------------------------------------------------------------------
 // Removes all shadows from a brush model
 //-----------------------------------------------------------------------------
-void CShadowMgr::RemoveAllShadowsFromBrushModel( model_t* pModel )
+void CShadowMgr::RemoveAllShadowsFromBrushModel(IVModel* pModel )
 {
-	SurfaceHandle_t surfID = SurfaceHandleFromIndex( pModel->brush.firstmodelsurface, pModel->brush.pShared );
-	for (int i=0; i<pModel->brush.nummodelsurfaces; ++i, ++surfID)
+	SurfaceHandle_t surfID = SurfaceHandleFromIndex(((model_t*)pModel)->brush.firstmodelsurface, ((model_t*)pModel)->brush.pShared );
+	for (int i=0; i< ((model_t*)pModel)->brush.nummodelsurfaces; ++i, ++surfID)
 	{
 		RemoveAllShadowsFromSurface( surfID );
 	}

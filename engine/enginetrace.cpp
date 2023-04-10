@@ -850,7 +850,7 @@ bool CEngineTrace::ClipRayToVPhysics( const Ray_t &ray, unsigned int fMask, ICol
 	bool bTraced = false;
 
 	// use the vphysics model for rotated brushes and vphysics simulated objects
-	const model_t *pModel = pEntity->GetCollisionModel();
+	const model_t *pModel = (model_t*)pEntity->GetCollisionModel();
 
 	if ( !pModel )
 		return false;
@@ -1062,7 +1062,7 @@ void CEngineTrace::ClipRayToCollideable( const Ray_t &ray, unsigned int fMask, I
 	VectorAdd( ray.m_Start, ray.m_StartOffset, pTrace->startpos );
 	VectorAdd( pTrace->startpos, ray.m_Delta, pTrace->endpos );
 
-	const model_t *pModel = pEntity->GetCollisionModel();
+	const model_t *pModel = (model_t*)pEntity->GetCollisionModel();
 	bool bIsStudioModel = false;
 	studiohdr_t *pStudioHdr = NULL;
 	if ( pModel && pModel->type == mod_studio )

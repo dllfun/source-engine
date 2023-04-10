@@ -99,8 +99,8 @@ void C_Sun::OnDataChanged( DataUpdateType_t updateType )
 	m_Overlay.m_Sprites[0].m_flHorzSize = m_nSize;
 	m_Overlay.m_Sprites[0].m_flVertSize = m_nSize;
 
-	const model_t* pModel = (m_nMaterial != 0) ? modelinfo->GetModel( m_nMaterial ) : NULL;
-	const char *pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+	const IVModel* pModel = (m_nMaterial != 0) ? modelinfo->GetModel( m_nMaterial ) : NULL;
+	const char *pModelName = pModel ? modelinfo->GetModelName(m_nMaterial) : "";//pModel
 	m_Overlay.m_Sprites[0].m_pMaterial = materials->FindMaterial( pModelName, TEXTURE_GROUP_OTHER );
 	m_Overlay.m_flProxyRadius = 0.05f; // about 1/20th of the screen
 
@@ -116,7 +116,7 @@ void C_Sun::OnDataChanged( DataUpdateType_t updateType )
 	m_GlowOverlay.m_Sprites[0].m_flVertSize = m_nOverlaySize;
 
 	pModel = (m_nOverlayMaterial != 0) ? modelinfo->GetModel( m_nOverlayMaterial ) : NULL;
-	pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+	pModelName = pModel ? modelinfo->GetModelName(m_nOverlayMaterial) : "";//pModel
 	m_GlowOverlay.m_Sprites[0].m_pMaterial = materials->FindMaterial( pModelName, TEXTURE_GROUP_OTHER );
 
 	// This texture will fade away as the dot between camera and sun changes

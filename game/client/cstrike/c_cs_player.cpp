@@ -2070,10 +2070,10 @@ void C_CSPlayer::PlayReloadEffect()
 
 	// The weapon needs two models, world and view, but can only cache one. Synthesize the other.
 	const CCSWeaponInfo &info = pWeapon->GetCSWpnData();
-	const model_t *pModel = modelinfo->GetModel( modelinfo->GetModelIndex( info.szViewModel ) );
+	const IVModel *pModel = modelinfo->GetModel( modelinfo->GetModelIndex( info.szViewModel ) );
 	if ( !pModel )
 		return;
-	CStudioHdr studioHdr( modelinfo->GetStudiomodel( pModel ), mdlcache );
+	CStudioHdr studioHdr( modelinfo->GetStudiomodel(modelinfo->GetModelIndex(info.szViewModel)), mdlcache );//pModel
 	if ( !studioHdr.IsValid() )
 		return;
 

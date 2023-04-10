@@ -1309,19 +1309,20 @@ CON_COMMAND_F(surfaceprop, "Reports the surface properties at the cursor", FCVAR
 
 	if ( tr.DidHit() )
 	{
-		const model_t *pModel = modelinfo->GetModel( tr.m_pEnt->GetModelIndex() );
+		int modelIndex = tr.m_pEnt->GetModelIndex();
+		const IVModel *pModel = modelinfo->GetModel( tr.m_pEnt->GetModelIndex() );
 		const char *pModelName = STRING(tr.m_pEnt->GetModelName());
 		if ( tr.DidHitWorld() && tr.hitbox > 0 )
 		{
 			ICollideable *pCollide = staticpropmgr->GetStaticPropByIndex( tr.hitbox-1 );
 			pModel = pCollide->GetCollisionModel();
-			pModelName = modelinfo->GetModelName( pModel );
+			pModelName = modelinfo->GetModelName(modelIndex);//pModel
 		}
 		CFmtStr modelStuff;
 		if ( pModel )
 		{
-			modelStuff.sprintf("%s.%s ", modelinfo->IsTranslucent( pModel ) ? "Translucent" : "Opaque", 
-				modelinfo->IsTranslucentTwoPass( pModel ) ? "  Two-pass." : "" );
+			modelStuff.sprintf("%s.%s ", modelinfo->IsTranslucent(modelIndex) ? "Translucent" : "Opaque", //pModel
+				modelinfo->IsTranslucentTwoPass(modelIndex) ? "  Two-pass." : "" );//pModel
 		}
 		
 		// Calculate distance to surface that was hit

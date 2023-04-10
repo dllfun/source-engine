@@ -80,7 +80,7 @@ public:
 	virtual bool			TestCollision( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
 	virtual bool			TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
 	virtual int				GetCollisionModelIndex();
-	virtual const model_t*	GetCollisionModel();
+	virtual const IVModel*	GetCollisionModel();
 	virtual const Vector&	GetCollisionOrigin() const;
 	virtual const QAngle&	GetCollisionAngles() const;
 	virtual const matrix3x4_t&	CollisionToWorldTransform() const;

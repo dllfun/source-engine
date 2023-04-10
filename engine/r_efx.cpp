@@ -51,13 +51,13 @@ const char *CVEfx::Draw_DecalNameFromIndex( int nIndex )
 //			position - 
 //			flags - 
 //-----------------------------------------------------------------------------
-void CVEfx::DecalShoot( int textureIndex, int entity, const model_t *model, const Vector& model_origin, const QAngle& model_angles, const Vector& position, const Vector *saxis, int flags)
+void CVEfx::DecalShoot( int textureIndex, int entity, const IVModel *model, const Vector& model_origin, const QAngle& model_angles, const Vector& position, const Vector *saxis, int flags)
 {
 	color32 white = {255,255,255,255};
 	DecalColorShoot( textureIndex, entity, model, model_origin, model_angles, position, saxis, flags, white );
 }
 
-void CVEfx::DecalColorShoot( int textureIndex, int entity, const model_t *model, const Vector& model_origin, const QAngle& model_angles, 
+void CVEfx::DecalColorShoot( int textureIndex, int entity, const IVModel *model, const Vector& model_origin, const QAngle& model_angles,
 	const Vector& position, const Vector *saxis, int flags, const color32 &rgbaColor)
 {
 	Vector localPosition = position;
@@ -68,7 +68,7 @@ void CVEfx::DecalColorShoot( int textureIndex, int entity, const model_t *model,
 		VectorITransform( position, matrix, localPosition );
 	}
 
-	::R_DecalShoot( textureIndex, entity, model, localPosition, saxis, flags, rgbaColor, NULL );
+	::R_DecalShoot( textureIndex, entity, (model_t*)model, localPosition, saxis, flags, rgbaColor, NULL );
 }
 
 //-----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ void CVEfx::DecalColorShoot( int textureIndex, int entity, const model_t *model,
 //			flags - 
 //			&rgbaColor - 
 //-----------------------------------------------------------------------------
-void CVEfx::PlayerDecalShoot( IMaterial *material, void *userdata, int entity, const model_t *model, const Vector& model_origin, const QAngle& model_angles, 
+void CVEfx::PlayerDecalShoot( IMaterial *material, void *userdata, int entity, const IVModel *model, const Vector& model_origin, const QAngle& model_angles,
 	const Vector& position, const Vector *saxis, int flags, const color32 &rgbaColor )
 {
 	Vector localPosition = position;
@@ -93,7 +93,7 @@ void CVEfx::PlayerDecalShoot( IMaterial *material, void *userdata, int entity, c
 		VectorITransform( position, matrix, localPosition );
 	}
 
-	R_PlayerDecalShoot( material, userdata, entity, model, position, saxis, flags, rgbaColor );
+	R_PlayerDecalShoot( material, userdata, entity, (model_t*)model, position, saxis, flags, rgbaColor );
 }
 
 //-----------------------------------------------------------------------------

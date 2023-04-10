@@ -788,7 +788,7 @@ int CCollisionProperty::GetCollisionModelIndex()
 	return m_pOuter->GetModelIndex();
 }
 
-const model_t* CCollisionProperty::GetCollisionModel()
+const IVModel* CCollisionProperty::GetCollisionModel()
 {
 	return m_pOuter->GetModel();
 }

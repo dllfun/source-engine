@@ -24,7 +24,7 @@
 class IMaterial;
 class Vector;
 class Vector2D;
-class model_t;
+class IVModel;
 typedef unsigned short ModelInstanceHandle_t;
 class IClientRenderable;
 class ITexture;
@@ -147,10 +147,10 @@ public:
 
 	// Methods related to shadows on brush models
 	virtual void AddShadowToBrushModel( ShadowHandle_t handle, 
-		model_t* pModel, const Vector& origin, const QAngle& angles ) = 0;
+		IVModel* pModel, const Vector& origin, const QAngle& angles ) = 0;
 
 	// Removes all shadows from a brush model
-	virtual void RemoveAllShadowsFromBrushModel( model_t* pModel ) = 0;
+	virtual void RemoveAllShadowsFromBrushModel(IVModel* pModel ) = 0;
 
 	// Sets the texture coordinate range for a shadow...
 	virtual void SetShadowTexCoord( ShadowHandle_t handle, float x, float y, float w, float h ) = 0;

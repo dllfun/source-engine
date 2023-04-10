@@ -1802,7 +1802,7 @@ ClientShadowHandle_t CClientShadowMgr::CreateProjectedTexture( ClientEntityHandl
 	if( !( flags & SHADOW_FLAGS_FLASHLIGHT ) )
 	{
 		IClientRenderable *pRenderable = ClientEntityList().GetClientRenderableFromHandle( entity );
-		int modelType = modelinfo->GetModelType( pRenderable->GetModel() );
+		int modelType = pRenderable->GetModel()->GetModelType(  );//modelinfo
 		if (modelType == mod_brush)
 		{
 			flags |= SHADOW_FLAGS_BRUSH_MODEL;
@@ -2244,7 +2244,7 @@ inline ShadowType_t CClientShadowMgr::GetActualShadowCastType( IClientRenderable
 class CShadowLeafEnum : public ISpatialLeafEnumerator
 {
 public:
-	bool EnumerateLeaf(model_t* world, int leaf, intp context )
+	bool EnumerateLeaf(IVModel* world, int leaf, intp context )
 	{
 		m_LeafList.AddToTail( leaf );
 		return true;
@@ -2472,7 +2472,7 @@ void CClientShadowMgr::BuildRenderToTextureShadow( IClientRenderable* pRenderabl
 	Vector vecShadowDir = GetShadowDirection( pRenderable );
 
 //	Debugging aid
-//	const model_t *pModel = pRenderable->GetModel();
+//	const IVModel *pModel = pRenderable->GetModel();
 //	const char *pDebugName = modelinfo->GetModelName( pModel );
 
 	// Project the shadow casting direction into the space of the object
@@ -2665,7 +2665,7 @@ void CClientShadowMgr::BuildFlashlight( ClientShadowHandle_t handle )
 	C_BaseEntity *pChild = shadow.m_hTargetEntity->FirstMoveChild();
 	while( pChild )
 	{
-		int modelType = modelinfo->GetModelType( pChild->GetModel() );
+		int modelType = modelinfo->GetModelType( pChild->GetModelIndex() );//pChild->GetModel()
 		if (modelType == mod_brush)
 		{
 			AddShadowToReceiver( handle, pChild, SHADOW_RECEIVER_BRUSH_MODEL );
@@ -2678,7 +2678,7 @@ void CClientShadowMgr::BuildFlashlight( ClientShadowHandle_t handle )
 		pChild = pChild->NextMovePeer();
 	}
 
-	int modelType = modelinfo->GetModelType( shadow.m_hTargetEntity->GetModel() );
+	int modelType = modelinfo->GetModelType( shadow.m_hTargetEntity->GetModelIndex() );//shadow.m_hTargetEntity->GetModel()
 	if (modelType == mod_brush)
 	{
 		AddShadowToReceiver( handle, shadow.m_hTargetEntity, SHADOW_RECEIVER_BRUSH_MODEL );
@@ -3131,10 +3131,10 @@ void CClientShadowMgr::UpdateShadow( ClientShadowHandle_t handle, bool force )
 		VectorCopy( angles, shadow.m_LastAngles );
 
 		CMatRenderContextPtr pRenderContext( materials );
-		const model_t *pModel = pRenderable->GetModel();
+		const IVModel *pModel = pRenderable->GetModel();
 		MaterialFogMode_t fogMode = pRenderContext->GetFogMode();
 		pRenderContext->FogMode( MATERIAL_FOG_NONE );
-		switch( modelinfo->GetModelType( pModel ) )
+		switch(pModel->GetModelType(  ) )//modelinfo
 		{
 		case mod_brush:
 			UpdateBrushShadow( pRenderable, handle );
@@ -3460,7 +3460,7 @@ void CClientShadowMgr::AddShadowToReceiver( ClientShadowHandle_t handle,
 			if( (!shadow.m_hTargetEntity) || IsFlashlightTarget( handle, pRenderable ) )
 			{
 				shadowmgr->AddShadowToBrushModel( shadow.m_ShadowHandle, 
-					const_cast<model_t*>(pRenderable->GetModel()),
+					const_cast<IVModel*>(pRenderable->GetModel()),
 					pRenderable->GetRenderOrigin(), pRenderable->GetRenderAngles() );
 
 				shadowmgr->AddFlashlightRenderable( shadow.m_ShadowHandle, pRenderable );
@@ -3469,7 +3469,7 @@ void CClientShadowMgr::AddShadowToReceiver( ClientShadowHandle_t handle,
 		else
 		{
 			shadowmgr->AddShadowToBrushModel( shadow.m_ShadowHandle, 
-				const_cast<model_t*>(pRenderable->GetModel()),
+				const_cast<IVModel*>(pRenderable->GetModel()),
 				pRenderable->GetRenderOrigin(), pRenderable->GetRenderAngles() );
 		}
 		break;
@@ -3532,7 +3532,7 @@ void CClientShadowMgr::RemoveAllShadowsFromReceiver(
 	{
 	case SHADOW_RECEIVER_BRUSH_MODEL:
 		{
-			model_t* pModel = const_cast<model_t*>(pRenderable->GetModel());
+			IVModel* pModel = const_cast<IVModel*>(pRenderable->GetModel());
 			shadowmgr->RemoveAllShadowsFromBrushModel( pModel );
 		}
 		break;
@@ -3599,7 +3599,7 @@ bool CClientShadowMgr::BuildSetupShadowHierarchy( IClientRenderable *pRenderable
 		}
 		else
 		{
-			int nModelType = modelinfo->GetModelType( pRenderable->GetModel() );
+			int nModelType = pRenderable->GetModel()->GetModelType(  );//modelinfo
 			bDrawModelShadow = nModelType == mod_studio;
 		}
 
@@ -3659,7 +3659,7 @@ bool CClientShadowMgr::DrawShadowHierarchy( IClientRenderable *pRenderable, cons
 		}
 		else
 		{
-			int nModelType = modelinfo->GetModelType( pRenderable->GetModel() );
+			int nModelType = pRenderable->GetModel()->GetModelType(  );//modelinfo
 			bDrawModelShadow = nModelType == mod_studio;
 			bDrawBrushShadow = nModelType == mod_brush;
 		}

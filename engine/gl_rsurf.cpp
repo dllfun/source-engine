@@ -2662,7 +2662,7 @@ void CBrushBatchRender::ClearRenderHandles( void )
 	{
 		char szBrushModel[5]; // inline model names "*1", "*2" etc
 		Q_snprintf( szBrushModel, sizeof( szBrushModel ), "*%i", iBrush );
-		model_t *pModel = modelloader->GetModelForName( szBrushModel, IModelLoader::FMODELLOADER_SERVER );	
+		model_t *pModel = modelloader->GetModelForName( szBrushModel, IModelLoader::FMODELLOADER_SERVER );
 		if ( pModel )
 		{
 			pModel->brush.renderHandle = 0;
@@ -3222,7 +3222,7 @@ public:
 // Input  : *e - entity to draw
 // Output : void R_DrawBrushModel
 //-----------------------------------------------------------------------------
-void R_DrawBrushModel( IClientEntity *baseentity, model_t *model, 
+void R_DrawBrushModel( IClientEntity *baseentity, model_t *model,
 	const Vector& origin, const QAngle& angles, ERenderDepthMode DepthMode, bool bDrawOpaque, bool bDrawTranslucent )
 {
 	VPROF( "R_DrawBrushModel" );
@@ -3893,13 +3893,13 @@ class CEngineBSPTree : public IEngineSpatialQuery
 {
 public:
 	// Returns the number of leaves
-	int LeafCount(model_t* world) const;
+	int LeafCount(IVModel* world) const;
 
 	// Enumerates the leaves along a ray, box, etc.
-	bool EnumerateLeavesAtPoint(model_t* world, const Vector& pt, ISpatialLeafEnumerator* pEnum, intp context );
-	bool EnumerateLeavesInBox(model_t* world, const Vector& mins, const Vector& maxs, ISpatialLeafEnumerator* pEnum, intp context );
-	bool EnumerateLeavesInSphere(model_t* world, const Vector& center, float radius, ISpatialLeafEnumerator* pEnum, intp context );
-	bool EnumerateLeavesAlongRay(model_t* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesAtPoint(IVModel* world, const Vector& pt, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesInBox(IVModel* world, const Vector& mins, const Vector& maxs, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesInSphere(IVModel* world, const Vector& center, float radius, ISpatialLeafEnumerator* pEnum, intp context );
+	bool EnumerateLeavesAlongRay(IVModel* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context );
 };
 
 //-----------------------------------------------------------------------------
@@ -3914,16 +3914,16 @@ IEngineSpatialQuery* g_pToolBSPTree = &s_ToolBSPTree;
 // Returns the number of leaves
 //-----------------------------------------------------------------------------
 
-int CEngineBSPTree::LeafCount(model_t* world) const
+int CEngineBSPTree::LeafCount(IVModel* world) const
 {
-	return world->brush.pShared->numleafs;
+	return ((model_t*)world)->brush.pShared->numleafs;
 }
 
 //-----------------------------------------------------------------------------
 // Enumerates the leaves at a point
 //-----------------------------------------------------------------------------
 
-bool CEngineBSPTree::EnumerateLeavesAtPoint(model_t* world, const Vector& pt,
+bool CEngineBSPTree::EnumerateLeavesAtPoint(IVModel* world, const Vector& pt,
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if (!world)
@@ -3938,7 +3938,7 @@ bool CEngineBSPTree::EnumerateLeavesAtPoint(model_t* world, const Vector& pt,
 static ConVar opt_EnumerateLeavesFastAlgorithm( "opt_EnumerateLeavesFastAlgorithm", "1", FCVAR_NONE, "Use the new SIMD version of CEngineBSPTree::EnumerateLeavesInBox." ); 
 
 
-bool CEngineBSPTree::EnumerateLeavesInBox(model_t* world, const Vector& mins, const Vector& maxs,
+bool CEngineBSPTree::EnumerateLeavesInBox(IVModel* world, const Vector& mins, const Vector& maxs,
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if ( !world )
@@ -3961,12 +3961,12 @@ bool CEngineBSPTree::EnumerateLeavesInBox(model_t* world, const Vector& mins, co
 	else
 		return EnumerateLeafInBox_R( host_state.worldbrush->nodes, info );
 #else
-	return EnumerateLeafInBox_R(world, world->brush.pShared->nodes, info );
+	return EnumerateLeafInBox_R((model_t*)world, ((model_t*)world)->brush.pShared->nodes, info );
 #endif
 }
 
 
-bool CEngineBSPTree::EnumerateLeavesInSphere(model_t* world, const Vector& center, float radius,
+bool CEngineBSPTree::EnumerateLeavesInSphere(IVModel* world, const Vector& center, float radius,
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if (!world)
@@ -3982,11 +3982,11 @@ bool CEngineBSPTree::EnumerateLeavesInSphere(model_t* world, const Vector& cente
 	info.m_vecBoxCenter = center;
 	info.m_vecBoxHalfDiagonal.Init( radius, radius, radius );
 
-	return EnumerateLeafInSphere_R(world, world->brush.pShared->nodes, info, ENUM_SPHERE_TEST_ALL );
+	return EnumerateLeafInSphere_R((model_t*)world, ((model_t*)world)->brush.pShared->nodes, info, ENUM_SPHERE_TEST_ALL );
 }
 
 
-bool CEngineBSPTree::EnumerateLeavesAlongRay(model_t* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context )
+bool CEngineBSPTree::EnumerateLeavesAlongRay(IVModel* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if (!world)
 		world = host_state.worldmodel;
@@ -4007,11 +4007,11 @@ bool CEngineBSPTree::EnumerateLeavesAlongRay(model_t* world, Ray_t const& ray, I
 
 	if ( ray.m_IsRay )
 	{
-		return EnumerateLeavesAlongRay_R(world, world->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
+		return EnumerateLeavesAlongRay_R((model_t*)world, ((model_t*)world)->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
 	}
 	else
 	{
-		return EnumerateLeavesAlongExtrudedRay_R(world, world->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
+		return EnumerateLeavesAlongExtrudedRay_R((model_t*)world, ((model_t*)world)->brush.pShared->nodes, ray, 0.0f, 1.0f, pEnum, context );
 	}
 }
 

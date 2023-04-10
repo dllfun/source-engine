@@ -768,7 +768,7 @@ SurfaceHandle_t R_LightVec (const Vector& start, const Vector& end, bool bUseLig
 
 	c[0] = c[1] = c[2] = 0.0f;
 
-	model_t* model = s_pLightVecModel ? s_pLightVecModel : host_state.worldmodel; 
+	model_t* model = s_pLightVecModel ? s_pLightVecModel : host_state.worldmodel;
 	retSurfID = RecursiveLightPoint(&model->brush.pShared->nodes[model->brush.firstnode],
 		0.0f, 1.0f, c, state );
 

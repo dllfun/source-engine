@@ -57,7 +57,7 @@ public:
 
 #define VENGINETOOLFRAMEWORK_INTERFACE_VERSION	"VENGINETOOLFRAMEWORK003"
 
-class model_t;
+class IVModel;
 struct studiohdr_t;
 
 #include "toolframework/itoolentity.h"
@@ -155,7 +155,7 @@ public:
 	virtual void		ForceUpdateDuringPause() = 0;
 
 	// Maybe through modelcache???
-	virtual model_t		*GetModel( HTOOLHANDLE hEntity ) = 0;
+	virtual IVModel		*GetModel( HTOOLHANDLE hEntity ) = 0;
 	// Get the .mdl file used by entity (if it's a cbaseanimating)
 	virtual studiohdr_t *GetStudioModel( HTOOLHANDLE hEntity ) = 0;
 

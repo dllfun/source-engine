@@ -594,7 +594,7 @@ public:
 		int i = m_PhysObjectModels.Find( pObject );
 		if ( i == m_PhysObjectModels.InvalidIndex() )
 			return NULL_STRING;
-		return AllocPooledString( modelinfo->GetModelName( modelinfo->GetModel( m_PhysObjectModels[i] ) ) );
+		return AllocPooledString( modelinfo->GetModelName(m_PhysObjectModels[i]) );//modelinfo->GetModel( m_PhysObjectModels[i] )
 	}
 	
 	//---------------------------------

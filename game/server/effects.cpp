@@ -446,7 +446,7 @@ void CGibShooter::Spawn( void )
 
 	m_iGibCapacity = m_iGibs;
 
-	m_nMaxGibModelFrame = modelinfo->GetModelFrameCount( modelinfo->GetModel( m_iGibModelIndex ) );
+	m_nMaxGibModelFrame = modelinfo->GetModelFrameCount(m_iGibModelIndex);//modelinfo->GetModel( m_iGibModelIndex )
 }
 
 CGib *CGibShooter::CreateGib ( void )

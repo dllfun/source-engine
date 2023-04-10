@@ -772,7 +772,7 @@ C_BaseAnimating::~C_BaseAnimating()
 
 bool C_BaseAnimating::UsesPowerOfTwoFrameBufferTexture( void )
 {
-	return modelinfo->IsUsingFBTexture( GetModel(), GetSkin(), GetBody(), GetClientRenderable() );
+	return GetModel()->IsUsingFBTexture( GetSkin(), GetBody(), GetClientRenderable() );// modelinfo  GetModelIndex(),
 }
 
 //-----------------------------------------------------------------------------
@@ -908,11 +908,11 @@ void C_BaseAnimating::LockStudioHdr()
 		return;
 	}
 
-	const model_t *mdl = GetModel();
+	const IVModel *mdl = GetModel();
 	if ( !mdl )
 		return;
 
-	m_hStudioHdr = modelinfo->GetCacheHandle( mdl );
+	m_hStudioHdr = mdl->GetCacheHandle();// modelinfo GetModelIndex()
 	if ( m_hStudioHdr == MDLHANDLE_INVALID )
 		return;
 
@@ -970,7 +970,7 @@ void C_BaseAnimating::UnlockStudioHdr()
 	}
 }
 
-void C_BaseAnimating::OnModelLoadComplete( const model_t* pModel )
+void C_BaseAnimating::OnModelLoadComplete( const IVModel* pModel )
 {
 //	Assert( m_bDynamicModelPending && pModel == GetModel() );
 //	if ( m_bDynamicModelPending && pModel == GetModel() )
@@ -1008,7 +1008,7 @@ CStudioHdr *C_BaseAnimating::OnNewModel()
 
 	//m_AutoRefModelIndex.Clear();
 
-	if ( !GetModel() || modelinfo->GetModelType( GetModel() ) != mod_studio )
+	if ( !GetModel() || GetModel()->GetModelType() != mod_studio )// modelinfo  GetModelIndex() 
 		return NULL;
 
 	// Reference (and thus start loading) dynamic model
@@ -1016,7 +1016,7 @@ CStudioHdr *C_BaseAnimating::OnNewModel()
 	if ( modelinfo->GetModel( nNewIndex ) != GetModel() )
 	{
 		// XXX what's authoritative? the model pointer or the model index? what a mess.
-		nNewIndex = modelinfo->GetModelIndex( modelinfo->GetModelName( GetModel() ) );
+		nNewIndex = modelinfo->GetModelIndex(GetModel()->GetModelName());// modelinfo GetModelIndex() 
 		Assert( nNewIndex < 0 || modelinfo->GetModel( nNewIndex ) == GetModel() );
 		if ( nNewIndex < 0 )
 			nNewIndex = m_nModelIndex;
@@ -1238,7 +1238,7 @@ void C_BaseAnimating::DelayedInitModelEffects( void )
 
 	// Parse the keyvalues and see if they want to make ropes on this model.
 	KeyValues * modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
+	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//  modelinfo modelinfo  GetModelIndex()  GetModelIndex() 
 	{
 		// Do we have a cables section?
 		KeyValues *pkvAllCables = modelKeyValues->FindKey("Cables");
@@ -2209,7 +2209,7 @@ bool C_BaseAnimating::GetSoundSpatialization( SpatializationInfo_t& info )
 
 		Vector mins, maxs, center;
 
-		modelinfo->GetModelBounds( GetModel(), mins, maxs );
+		GetModel()->GetModelBounds( mins, maxs );// modelinfo GetModelIndex(),
 		VectorAdd( mins, maxs, center );
 		VectorScale( center, 0.5f, center );
 
@@ -2951,12 +2951,12 @@ C_BaseAnimating* C_BaseAnimating::FindFollowedEntity()
 		return NULL;
 	}
 
-	if ( modelinfo->GetModelType( follow->GetModel() ) != mod_studio )
+	if (follow->GetModel()->GetModelType() != mod_studio )// modelinfo follow->GetModelIndex() 
 	{
 		Warning( "Attached %s (mod_studio) to %s (%d)\n", 
-			modelinfo->GetModelName( GetModel() ), 
-			modelinfo->GetModelName( follow->GetModel() ), 
-			modelinfo->GetModelType( follow->GetModel() ) );
+			GetModel()->GetModelName(), // modelinfo GetModelIndex() 
+			follow->GetModel()->GetModelName(), // modelinfo follow->GetModelIndex() 
+			follow->GetModel()->GetModelType() );// modelinfo follow->GetModelIndex() 
 		return NULL;
 	}
 
@@ -3232,7 +3232,7 @@ int C_BaseAnimating::InternalDrawModel( int flags )
 
 	// This should never happen, but if the server class hierarchy has bmodel entities derived from CBaseAnimating or does a
 	//  SetModel with the wrong type of model, this could occur.
-	if ( modelinfo->GetModelType( GetModel() ) != mod_studio )
+	if (GetModel()->GetModelType() != mod_studio )// modelinfo GetModelIndex() 
 	{
 		return BaseClass::DrawModel( flags );
 	}
@@ -4565,8 +4565,8 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 
 	TermRopes();
 
-	const model_t *model = GetModel();
-	const char *pModelName = modelinfo->GetModelName( model );
+	const IVModel *model = GetModel();
+	const char *pModelName = model->GetModelName();// modelinfo GetModelIndex()
 
 	if ( pRagdoll->InitializeAsClientEntity( pModelName, RENDER_GROUP_OPAQUE_ENTITY ) == false )
 	{
@@ -4729,7 +4729,7 @@ void C_BaseAnimating::OnDataChanged( DataUpdateType_t updateType )
 
 	// UNDONE: The base class does this as well.  So this is kind of ugly
 	// but getting a model by index is pretty cheap...
-	const model_t *pModel = modelinfo->GetModel( GetModelIndex() );
+	const IVModel *pModel = modelinfo->GetModel( GetModelIndex() );
 	
 	if ( pModel != GetModel() )
 	{
@@ -5760,7 +5760,7 @@ KeyValues *C_BaseAnimating::GetSequenceKeyValues( int iSequence )
 	if (szText)
 	{
 		KeyValues *seqKeyValues = new KeyValues("");
-		if ( seqKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), szText ) )
+		if ( seqKeyValues->LoadFromBuffer(GetModel()->GetModelName(), szText ) )// modelinfo GetModelIndex() 
 		{
 			return seqKeyValues;
 		}

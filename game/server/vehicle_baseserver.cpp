@@ -976,7 +976,7 @@ void CBaseServerVehicle::ParseEntryExitAnims( void )
 {
 	// Try and find the right animation to play in the model's keyvalues
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( m_pVehicle->GetModel() ), modelinfo->GetModelKeyValueText( m_pVehicle->GetModel() ) ) )
+	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( m_pVehicle->GetModelIndex() ), modelinfo->GetModelKeyValueText( m_pVehicle->GetModelIndex() ) ) )//m_pVehicle->GetModel() m_pVehicle->GetModel()
 	{
 		// Do we have an entry section?
 		KeyValues *pkvEntryList = modelKeyValues->FindKey("vehicle_entry");

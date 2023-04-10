@@ -601,7 +601,7 @@ int C_EntityDissolve::DrawModel( int flags )
 	if ( pAnimating->HitboxToWorldTransforms( hitboxbones ) == false )
 		return 0;
 
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModel() );
+	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModelIndex() );//pAnimating->GetModel()
 	if ( pStudioHdr == NULL )
 		return false;
 

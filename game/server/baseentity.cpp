@@ -317,7 +317,7 @@ END_SEND_TABLE()
 //	{
 //	public:
 //		explicit Handler( CBaseEntity *pEntity ) : m_pEntity(pEntity) { }
-//		virtual void OnModelLoadComplete( const model_t *pModel );
+//		virtual void OnModelLoadComplete( const IVModel *pModel );
 //		CBaseEntity* m_pEntity;
 //	};
 //	Handler* m_pHandler;
@@ -335,7 +335,7 @@ END_SEND_TABLE()
 
 //static CUtlHashtable< CBaseEntityModelLoadProxy, empty_t, PointerHashFunctor, PointerEqualFunctor, CBaseEntity * > sg_DynamicLoadHandlers;
 
-//void CBaseEntityModelLoadProxy::Handler::OnModelLoadComplete( const model_t *pModel )
+//void CBaseEntityModelLoadProxy::Handler::OnModelLoadComplete( const IVModel *pModel )
 //{
 //	m_pEntity->OnModelLoadComplete( pModel );
 //	//sg_DynamicLoadHandlers.Remove( m_pEntity ); // NOTE: destroys *this!
@@ -2062,8 +2062,8 @@ void CBaseEntity::UpdateOnRemove( void )
 int CBaseEntity::ObjectCaps( void ) 
 {
 #if 1
-	model_t *pModel = GetModel();
-	bool bIsBrush = ( pModel && modelinfo->GetModelType( pModel ) == mod_brush );
+	IVModel *pModel = GetModel();
+	bool bIsBrush = ( pModel && modelinfo->GetModelType(GetModelIndex()) == mod_brush );//pModel
 
 	// We inherit our parent's use capabilities so that we can forward use commands
 	// to our parent.
@@ -2098,7 +2098,7 @@ int CBaseEntity::ObjectCaps( void )
 		parentCaps &= ( FCAP_IMPULSE_USE | FCAP_CONTINUOUS_USE | FCAP_ONOFF_USE | FCAP_DIRECTIONAL_USE );
 	}	
 
-	model_t *pModel = GetModel();
+	IVModel *pModel = GetModel();
 	if ( pModel && modelinfo->GetModelType( pModel ) == mod_brush )
 		return parentCaps;
 
@@ -4289,8 +4289,8 @@ void CBaseEntity::GetVectors(Vector* pForward, Vector* pRight, Vector* pUp) cons
 void CBaseEntity::SetModel( const char *szModelName )
 {
 	int modelIndex = modelinfo->GetModelIndex( szModelName );
-	const model_t *model = modelinfo->GetModel( modelIndex );
-	if ( model && modelinfo->GetModelType( model ) != mod_brush )
+	const IVModel *model = modelinfo->GetModel( modelIndex );
+	if ( model && modelinfo->GetModelType(modelIndex) != mod_brush )//model
 	{
 		Msg( "Setting CBaseEntity to non-brush model %s\n", szModelName );
 	}
@@ -4558,10 +4558,10 @@ CStudioHdr *ModelSoundsCache_LoadModel( const char *filename )
 	int idx = engineServer->PrecacheModel( filename, true );
 	if ( idx != -1 )
 	{
-		model_t *mdl = (model_t *)modelinfo->GetModel( idx );
+		IVModel *mdl = (IVModel*)modelinfo->GetModel( idx );
 		if ( mdl )
 		{
-			CStudioHdr *studioHdr = new CStudioHdr( modelinfo->GetStudiomodel( mdl ), mdlcache ); 
+			CStudioHdr *studioHdr = new CStudioHdr( modelinfo->GetStudiomodel(idx), mdlcache ); //mdl
 			if ( studioHdr->IsValid() )
 			{
 				return studioHdr;
@@ -4736,8 +4736,8 @@ void CBaseEntity::PrecacheSoundHelper( const char *pName )
 void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 {
 
-	model_t *pModel = (model_t *)modelinfo->GetModel( nModelIndex );
-	if ( !pModel || modelinfo->GetModelType( pModel ) != mod_studio )
+	IVModel *pModel = (IVModel*)modelinfo->GetModel( nModelIndex );
+	if ( !pModel || modelinfo->GetModelType(nModelIndex) != mod_studio )//pModel
 	{
 		return;
 	}
@@ -4745,7 +4745,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 	// sounds
 	if ( IsPC() )
 	{
-		const char *name = modelinfo->GetModelName( pModel );
+		const char *name = modelinfo->GetModelName(nModelIndex);//pModel
 		if ( !g_ModelSoundsCache.EntryExists( name ) )
 		{
 			char extension[ 8 ];
@@ -4782,7 +4782,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 		// Check keyvalues for auto-emitting particles
 		KeyValues *pModelKeyValues = new KeyValues("");
 		KeyValues::AutoDelete autodelete_pModelKeyValues( pModelKeyValues );
-		if ( pModelKeyValues->LoadFromBuffer( modelinfo->GetModelName( pModel ), modelinfo->GetModelKeyValueText( pModel ) ) )
+		if ( pModelKeyValues->LoadFromBuffer( modelinfo->GetModelName(nModelIndex), modelinfo->GetModelKeyValueText(nModelIndex) ) )//pModel pModel
 		{
 			KeyValues *pParticleEffects = pModelKeyValues->FindKey("Particles");
 			if ( pParticleEffects )
@@ -4800,7 +4800,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 	// model anim event owned components
 	{
 		// Check animevents for particle events
-		CStudioHdr studioHdr( modelinfo->GetStudiomodel( pModel ), mdlcache ); 
+		CStudioHdr studioHdr( modelinfo->GetStudiomodel(nModelIndex), mdlcache ); //pModel
 		if ( studioHdr.IsValid() )
 		{
 			// force animation event resolution!!!
@@ -5713,9 +5713,9 @@ void CBaseEntity::SetCheckUntouch( bool check )
 	}
 }
 
-model_t *CBaseEntity::GetModel( void )
+IVModel *CBaseEntity::GetModel( void )
 {
-	return (model_t *)modelinfo->GetModel( GetModelIndex() );
+	return (IVModel*)modelinfo->GetModel( GetModelIndex() );
 }
 
 
@@ -7266,7 +7266,7 @@ void CBaseEntity::IncrementInterpolationFrame()
 
 //------------------------------------------------------------------------------
 
-void CBaseEntity::OnModelLoadComplete( const model_t* model )
+void CBaseEntity::OnModelLoadComplete( const IVModel* model )
 {
 //	//Assert( m_bDynamicModelPending && IsDynamicModelIndex( m_nModelIndex ) );
 //	Assert( model == modelinfo->GetModel( m_nModelIndex ) );
@@ -7292,10 +7292,10 @@ void CBaseEntity::SetCollisionBoundsFromModel()
 	//	return;
 	//}
 
-	if ( const model_t *pModel = GetModel() )
+	if ( const IVModel *pModel = GetModel() )
 	{
 		Vector mns, mxs;
-		modelinfo->GetModelBounds( pModel, mns, mxs );
+		modelinfo->GetModelBounds(GetModelIndex(), mns, mxs );//pModel
 		UTIL_SetSize( this, mns, mxs );
 	}
 }

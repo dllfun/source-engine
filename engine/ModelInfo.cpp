@@ -67,20 +67,20 @@ static int R_StudioBodyVariations( studiohdr_t *pstudiohdr )
 	return count;
 }
 
-static int ModelFrameCount( model_t *model )
+int model_t::ModelFrameCount() const//model_t *model
 {
 	int count = 1;
 
-	if ( !model )
-		return count;
+	//if ( !model )
+	//	return count;
 
-	if ( model->type == mod_sprite )
+	if ( type == mod_sprite )//model->
 	{
-		return model->sprite.numframes;
+		return sprite.numframes;//model->
 	}
-	else if ( model->type == mod_studio )
+	else if ( type == mod_studio )//model->
 	{
-		count = R_StudioBodyVariations( ( studiohdr_t * )modelloader->GetExtraData( model ) );
+		count = R_StudioBodyVariations( ( studiohdr_t * )modelloader->GetExtraData( this ) );//model
 	}
 
 	if ( count < 1 )
@@ -404,6 +404,16 @@ void CModelInfo::OnLevelChange()
 	modelloader->ForceUnloadNonClientDynamicModels();
 }
 
+const char* model_t::GetModelName() const
+{
+	//if (!pModel)
+	//{
+	//	return "?";
+	//}
+
+	return modelloader->GetName(this);
+}
+
 const char* CModelInfo::GetModelName(int modelIndex) const
 {
 	return GetModelName(GetModel(modelIndex));
@@ -416,7 +426,13 @@ const char *CModelInfo::GetModelName( const model_t *pModel ) const
 		return "?";
 	}
 
-	return modelloader->GetName( pModel );
+	return pModel->GetModelName();
+}
+
+void model_t::GetModelBounds(Vector& mins, Vector& maxs) const//const model_t* model, 
+{
+	VectorCopy(this->mins, mins);
+	VectorCopy(this->maxs, maxs);
 }
 
 void CModelInfo::GetModelBounds(int modelIndex, Vector& mins, Vector& maxs) const
@@ -426,8 +442,51 @@ void CModelInfo::GetModelBounds(int modelIndex, Vector& mins, Vector& maxs) cons
 
 void CModelInfo::GetModelBounds( const model_t *model, Vector& mins, Vector& maxs ) const
 {
-	VectorCopy( model->mins, mins );
-	VectorCopy( model->maxs, maxs );
+	model->GetModelBounds(mins, maxs);
+}
+
+void model_t::GetModelRenderBounds(Vector& mins, Vector& maxs) const//const model_t* model, 
+{
+	//if (!model)
+	//{
+	//	mins.Init(0, 0, 0);
+	//	maxs.Init(0, 0, 0);
+	//	return;
+	//}
+
+	switch (type)//model->
+	{
+	case mod_studio:
+	{
+		studiohdr_t* pStudioHdr = (studiohdr_t*)modelloader->GetExtraData((model_t*)this);
+		Assert(pStudioHdr);
+
+		// NOTE: We're not looking at the sequence box here, although we could
+		if (!VectorCompare(vec3_origin, pStudioHdr->view_bbmin) || !VectorCompare(vec3_origin, pStudioHdr->view_bbmax))
+		{
+			// clipping bounding box
+			VectorCopy(pStudioHdr->view_bbmin, mins);
+			VectorCopy(pStudioHdr->view_bbmax, maxs);
+		}
+		else
+		{
+			// movement bounding box
+			VectorCopy(pStudioHdr->hull_min, mins);
+			VectorCopy(pStudioHdr->hull_max, maxs);
+		}
+	}
+	break;
+
+	case mod_brush:
+		VectorCopy(mins, mins);//model->
+		VectorCopy(maxs, maxs);//model->
+		break;
+
+	default:
+		mins.Init(0, 0, 0);
+		maxs.Init(0, 0, 0);
+		break;
+	}
 }
 
 void CModelInfo::GetModelRenderBounds(int modelIndex, Vector& mins, Vector& maxs) const {
@@ -443,39 +502,16 @@ void CModelInfo::GetModelRenderBounds( const model_t *model, Vector& mins, Vecto
 		return;
 	}
 
-	switch( model->type )
-	{
-	case mod_studio:
-		{
-			studiohdr_t *pStudioHdr = ( studiohdr_t * )modelloader->GetExtraData( (model_t*)model );
-			Assert( pStudioHdr );
+	model->GetModelRenderBounds(mins, maxs);
+}
 
-			// NOTE: We're not looking at the sequence box here, although we could
-			if (!VectorCompare( vec3_origin, pStudioHdr->view_bbmin ) || !VectorCompare( vec3_origin, pStudioHdr->view_bbmax ))
-			{
-				// clipping bounding box
-				VectorCopy ( pStudioHdr->view_bbmin, mins);
-				VectorCopy ( pStudioHdr->view_bbmax, maxs);
-			}
-			else
-			{
-				// movement bounding box
-				VectorCopy ( pStudioHdr->hull_min, mins);
-				VectorCopy ( pStudioHdr->hull_max, maxs);
-			}
-		}
-		break;
+int model_t::GetModelSpriteWidth() const//const model_t* model
+{
+	// We must be a sprite to make this query
+	if (type != mod_sprite)
+		return 0;
 
-	case mod_brush:
-		VectorCopy( model->mins, mins );
-		VectorCopy( model->maxs, maxs );
-		break;
-
-	default:
-		mins.Init( 0, 0, 0 );
-		maxs.Init( 0, 0, 0 );
-		break;
-	}
+	return sprite.width;
 }
 
 int CModelInfo::GetModelSpriteWidth(int modelIndex) const {
@@ -484,11 +520,16 @@ int CModelInfo::GetModelSpriteWidth(int modelIndex) const {
 
 int CModelInfo::GetModelSpriteWidth( const model_t *model ) const
 {
+	return model->GetModelSpriteWidth();
+}
+
+int model_t::GetModelSpriteHeight() const//const model_t* model
+{
 	// We must be a sprite to make this query
-	if ( model->type != mod_sprite )
+	if (type != mod_sprite)
 		return 0;
 
-	return model->sprite.width;
+	return sprite.height;
 }
 
 int CModelInfo::GetModelSpriteHeight(int modelIndex) const
@@ -498,11 +539,7 @@ int CModelInfo::GetModelSpriteHeight(int modelIndex) const
 
 int CModelInfo::GetModelSpriteHeight( const model_t *model ) const
 {
-	// We must be a sprite to make this query
-	if ( model->type != mod_sprite )
-		return 0;
-
-	return model->sprite.height;
+	return model->GetModelSpriteHeight();
 }
 
 int CModelInfo::GetModelFrameCount(int modelIndex) const
@@ -512,20 +549,15 @@ int CModelInfo::GetModelFrameCount(int modelIndex) const
 
 int CModelInfo::GetModelFrameCount( const model_t *model ) const
 {
-	return ModelFrameCount( ( model_t *)model );
+	return model == NULL? 1 : model->ModelFrameCount(  );//(model_t*)
 }
 
-int CModelInfo::GetModelType(int modelIndex) const
+int model_t::GetModelType() const//const model_t* model
 {
-	return GetModelType(GetModel(modelIndex));
-}
+	//if (!model)
+	//	return -1;
 
-int CModelInfo::GetModelType( const model_t *model ) const
-{
-	if ( !model )
-		return -1;
-
-	if ( model->type == mod_bad )
+	if (type == mod_bad)//model->
 	{
 		//if ( m_ClientDynamicModels.Find( (model_t*) model ) != m_ClientDynamicModels.InvalidHandle() )
 		//	return mod_studio;
@@ -542,8 +574,26 @@ int CModelInfo::GetModelType( const model_t *model ) const
 //		}
 //#endif
 	}
-	
-	return model->type;
+
+	return type;//model->
+}
+
+int CModelInfo::GetModelType(int modelIndex) const
+{
+	return GetModelType(GetModel(modelIndex));
+}
+
+int CModelInfo::GetModelType( const model_t *model ) const
+{
+	if ( !model )
+		return -1;
+
+	return model->GetModelType();
+}
+
+void* model_t::GetModelExtraData() const//const model_t* model
+{
+	return modelloader->GetExtraData((model_t*)this);
 }
 
 void* CModelInfo::GetModelExtraData(int modelIndex)
@@ -553,7 +603,7 @@ void* CModelInfo::GetModelExtraData(int modelIndex)
 
 void *CModelInfo::GetModelExtraData( const model_t *model )
 {
-	return modelloader->GetExtraData( (model_t *)model );
+	return model->GetModelExtraData();
 }
 
 
@@ -642,6 +692,10 @@ const studiohdr_t *virtualgroup_t::GetStudioHdr( void ) const
 	return g_pMDLCache->GetStudioHdr( VoidPtrToMDLHandle( cache ) );
 }
 
+bool model_t::IsTranslucent() const
+{
+	return (flags & MODELFLAG_TRANSLUCENT);//model && (model-> )
+}
 
 bool CModelInfo::IsTranslucent(int modelIndex) const
 {
@@ -650,7 +704,13 @@ bool CModelInfo::IsTranslucent(int modelIndex) const
 
 bool CModelInfo::IsTranslucent( const model_t *model ) const
 {
-	return (model && (model->flags & MODELFLAG_TRANSLUCENT));
+	return (model && (model->IsTranslucent()));
+}
+
+bool model_t::IsModelVertexLit() const//const model_t* model
+{
+	// Should we add skin & model to this function like IsUsingFBTexture()?
+	return flags & MODELFLAG_VERTEXLIT;//(model && (model-> ))
 }
 
 bool CModelInfo::IsModelVertexLit(int modelIndex) const
@@ -662,7 +722,12 @@ bool CModelInfo::IsModelVertexLit(int modelIndex) const
 bool CModelInfo::IsModelVertexLit( const model_t *model ) const
 {
 	// Should we add skin & model to this function like IsUsingFBTexture()?
-	return (model && (model->flags & MODELFLAG_VERTEXLIT));
+	return (model && (model->IsModelVertexLit()));
+}
+
+bool model_t::IsTranslucentTwoPass() const//const model_t* model
+{
+	return flags & MODELFLAG_TRANSLUCENT_TWOPASS;//(model && (model-> ))
 }
 
 bool CModelInfo::IsTranslucentTwoPass(int modelIndex) const
@@ -672,8 +737,11 @@ bool CModelInfo::IsTranslucentTwoPass(int modelIndex) const
 
 bool CModelInfo::IsTranslucentTwoPass( const model_t *model ) const
 {
-	return (model && (model->flags & MODELFLAG_TRANSLUCENT_TWOPASS));
+	return (model && (model->IsTranslucentTwoPass()));
 }
+
+MDLHandle_t	model_t::GetCacheHandle() const
+{ return (type == mod_studio) ? studio : MDLHANDLE_INVALID; }
 
 void CModelInfo::RecomputeTranslucency(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate)
 {
@@ -684,7 +752,7 @@ void CModelInfo::RecomputeTranslucency( const model_t *model, int nSkin, int nBo
 {
 	if ( model != NULL )
 	{
-		Mod_RecomputeTranslucency( (model_t *)model, nSkin, nBody, pClientRenderable, fInstanceAlphaModulate );
+		((model_t*)model)->Mod_RecomputeTranslucency( nSkin, nBody, pClientRenderable, fInstanceAlphaModulate );
 	}
 }
 
@@ -797,6 +865,18 @@ vcollide_t *CModelInfo::GetVCollide( const model_t *pModel )
 	return NULL;
 }
 
+const char* model_t::GetModelKeyValueText() const//const model_t* model
+{
+	if (type != mod_studio)//!model || model->
+		return NULL;
+
+	studiohdr_t* pStudioHdr = g_pMDLCache->GetStudioHdr(this->studio);
+	if (!pStudioHdr)
+		return NULL;
+
+	return pStudioHdr->KeyValueText();
+}
+
 // Client must instantiate a KeyValues, which will be filled by this method
 const char* CModelInfo::GetModelKeyValueText(int modelIndex)
 {
@@ -808,12 +888,7 @@ const char *CModelInfo::GetModelKeyValueText( const model_t *model )
 {
 	if (!model || model->type != mod_studio)
 		return NULL;
-
-	studiohdr_t* pStudioHdr = g_pMDLCache->GetStudioHdr( model->studio );
-	if (!pStudioHdr)
-		return NULL;
-
-	return pStudioHdr->KeyValueText();
+	return model->GetModelKeyValueText();
 }
 
 bool CModelInfo::GetModelKeyValue(int modelIndex, CUtlBuffer& buf)
@@ -869,6 +944,14 @@ float CModelInfo::GetModelRadius( const model_t *model )
 	return model->radius;
 }
 
+studiohdr_t* model_t::GetStudiomodel() const//const model_t* model
+{
+	if (type == mod_studio)//model->
+		return g_pMDLCache->GetStudioHdr(studio);//model->
+
+	return NULL;
+}
+
 studiohdr_t* CModelInfo::GetStudiomodel(int modelIndex)
 {
 	return GetStudiomodel(GetModel(modelIndex));
@@ -879,10 +962,7 @@ studiohdr_t* CModelInfo::GetStudiomodel(int modelIndex)
 //-----------------------------------------------------------------------------
 studiohdr_t *CModelInfo::GetStudiomodel( const model_t *model )
 {
-	if ( model->type == mod_studio )
-		return g_pMDLCache->GetStudioHdr( model->studio );
-
-	return NULL;
+	return model->GetStudiomodel();
 }
 
 CPhysCollide *CModelInfo::GetCollideForVirtualTerrain( int index )
@@ -1132,7 +1212,7 @@ void CModelInfoClient::OnDynamicModelsStringTableChange( int nStringIndex, const
 //-----------------------------------------------------------------------------
 // A method to get the material color + texture coordinate
 //-----------------------------------------------------------------------------
-IMaterial* BrushModel_GetLightingAndMaterial( const Vector &start, 
+IMaterial* BrushModel_GetLightingAndMaterial(const model_t* model, const Vector &start,
 	const Vector &end, Vector &diffuseLightColor, Vector &baseColor)
 {
 	float textureS, textureT;
@@ -1143,14 +1223,14 @@ IMaterial* BrushModel_GetLightingAndMaterial( const Vector &start,
 	textureT = 0;
 
 	SurfaceHandle_t surfID = R_LightVec( start, end, true, diffuseLightColor, &textureS, &textureT );
-	if( !IS_SURF_VALID( surfID ) || !MSurf_TexInfo( surfID ) )
+	if( !IS_SURF_VALID( surfID ) || !MSurf_TexInfo( surfID, model->brush.pShared) )
 	{
 //		ConMsg( "didn't hit anything\n" );
 		return 0;
 	}
 	else
 	{
-		material = MSurf_TexInfo( surfID )->material;
+		material = MSurf_TexInfo( surfID, model->brush.pShared)->material;
 		if ( material )
 		{
 			material->GetLowResColorSample( textureS, textureT, baseColor.Base() );
@@ -1164,6 +1244,72 @@ IMaterial* BrushModel_GetLightingAndMaterial( const Vector &start,
 	}
 }
 
+void model_t::GetModelMaterialColorAndLighting(const Vector& origin,//const model_t* model, 
+	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) const
+{
+	switch (type)//model->
+	{
+	case mod_brush:
+	{
+		Vector origin_l, delta, delta_l;
+		VectorSubtract(pTrace->endpos, pTrace->startpos, delta);
+
+		// subtract origin offset
+		VectorSubtract(pTrace->startpos, origin, origin_l);
+
+		// rotate start and end into the models frame of reference
+		if (angles[0] || angles[1] || angles[2])
+		{
+			Vector forward, right, up;
+			AngleVectors(angles, &forward, &right, &up);
+
+			// transform the direction into the local space of this entity
+			delta_l[0] = DotProduct(delta, forward);
+			delta_l[1] = -DotProduct(delta, right);
+			delta_l[2] = DotProduct(delta, up);
+		}
+		else
+		{
+			VectorCopy(delta, delta_l);
+		}
+
+		Vector end_l;
+		VectorMA(origin_l, 1.1f, delta_l, end_l);
+
+		R_LightVecUseModel((model_t*)this);
+		BrushModel_GetLightingAndMaterial(this, origin_l, end_l, lighting, matColor);
+		R_LightVecUseModel(0);
+		return;
+	}
+
+	case mod_studio:
+	{
+		// FIXME: Need some way of getting the material!
+		matColor.Init(0.5f, 0.5f, 0.5f);
+
+		// Get the lighting at the point
+		LightingState_t lightingState;
+		LightcacheGetDynamic_Stats stats;
+		LightcacheGetDynamic(pTrace->endpos, lightingState, stats, LIGHTCACHEFLAGS_STATIC | LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE | LIGHTCACHEFLAGS_ALLOWFAST);
+		// Convert the light parameters into something studiorender can digest
+		LightDesc_t desc[MAXLOCALLIGHTS];
+		int count = 0;
+		for (int i = 0; i < lightingState.numlights; ++i)
+		{
+			if (WorldLightToMaterialLight(lightingState.locallight[i], desc[count]))
+			{
+				++count;
+			}
+		}
+
+		// Ask studiorender to figure out the lighting
+		g_pStudioRender->ComputeLighting(lightingState.r_boxcolor,
+			count, desc, pTrace->endpos, pTrace->plane.normal, lighting);
+		return;
+	}
+	}
+}
+
 void CModelInfoClient::GetModelMaterialColorAndLighting(int modelIndex, const Vector& origin,
 	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor)
 {
@@ -1173,66 +1319,21 @@ void CModelInfoClient::GetModelMaterialColorAndLighting(int modelIndex, const Ve
 void CModelInfoClient::GetModelMaterialColorAndLighting( const model_t *model, const Vector & origin,
 	const QAngle & angles, trace_t* pTrace, Vector& lighting, Vector& matColor )
 {
-	switch( model->type )
+	model->GetModelMaterialColorAndLighting(origin, angles, pTrace, lighting, matColor);
+}
+
+void model_t::GetIlluminationPoint(IClientRenderable* pRenderable, const Vector& origin,
+	const QAngle& angles, Vector* pLightingOrigin) const
+{
+	Assert(type == mod_studio);
+	studiohdr_t* pStudioHdr = (studiohdr_t*)GetModelExtraData();
+	if (pStudioHdr)
 	{
-	case mod_brush:
-		{
-			Vector origin_l, delta, delta_l;
-			VectorSubtract( pTrace->endpos, pTrace->startpos, delta );
-
-			// subtract origin offset
-			VectorSubtract (pTrace->startpos, origin, origin_l);
-
-			// rotate start and end into the models frame of reference
-			if (angles[0] || angles[1] || angles[2])
-			{
-				Vector forward, right, up;
-				AngleVectors (angles, &forward, &right, &up);
-
-				// transform the direction into the local space of this entity
-				delta_l[0] = DotProduct (delta, forward);
-				delta_l[1] = -DotProduct (delta, right);
-				delta_l[2] = DotProduct (delta, up);
-			}
-			else
-			{
-				VectorCopy( delta, delta_l );
-			}
-
-			Vector end_l;
-			VectorMA( origin_l, 1.1f, delta_l, end_l );
-
-			R_LightVecUseModel( ( model_t * )model );
-			BrushModel_GetLightingAndMaterial( origin_l, end_l, lighting, matColor );
-			R_LightVecUseModel();
-			return;
-		}
-
-	case mod_studio:
-		{
-			// FIXME: Need some way of getting the material!
-			matColor.Init( 0.5f, 0.5f, 0.5f );
-
-			// Get the lighting at the point
-			LightingState_t lightingState;
-			LightcacheGetDynamic_Stats stats;
-			LightcacheGetDynamic( pTrace->endpos, lightingState, stats, LIGHTCACHEFLAGS_STATIC|LIGHTCACHEFLAGS_DYNAMIC|LIGHTCACHEFLAGS_LIGHTSTYLE|LIGHTCACHEFLAGS_ALLOWFAST );
-			// Convert the light parameters into something studiorender can digest
-			LightDesc_t desc[MAXLOCALLIGHTS];
-			int count = 0;
-			for (int i = 0; i < lightingState.numlights; ++i)
-			{
-				if (WorldLightToMaterialLight( lightingState.locallight[i], desc[count] ))
-				{
-					++count;
-				}
-			}
-
-			// Ask studiorender to figure out the lighting
-			g_pStudioRender->ComputeLighting( lightingState.r_boxcolor,
-				count, desc, pTrace->endpos, pTrace->plane.normal, lighting );
-			return;
-		}
+		R_StudioGetLightingCenter(pRenderable, pStudioHdr, origin, angles, pLightingOrigin);
+	}
+	else
+	{
+		*pLightingOrigin = origin;
 	}
 }
 
@@ -1255,6 +1356,58 @@ void CModelInfoClient::GetIlluminationPoint(const model_t* model, IClientRendera
 	{
 		*pLightingOrigin = origin;
 	}
+}
+
+bool model_t::IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const//const model_t* model, 
+{
+	bool bMightUseFbTextureThisFrame = flags & MODELFLAG_STUDIOHDR_USES_FB_TEXTURE;//(model && (model-> ))
+
+	if (bMightUseFbTextureThisFrame)
+	{
+		// Check each material's NeedsPowerOfTwoFrameBufferTexture() virtual func
+		switch (type)//model->
+		{
+		case mod_brush:
+		{
+			for (int i = 0; i <brush.nummodelsurfaces; ++i)// model->
+			{
+				SurfaceHandle_t surfID = SurfaceHandleFromIndex(brush.firstmodelsurface + i, brush.pShared);//model-> model->
+				IMaterial* material = MSurf_TexInfo(surfID, brush.pShared)->material;//model->
+				if (material != NULL)
+				{
+					if (material->NeedsPowerOfTwoFrameBufferTexture())
+					{
+						return true;
+					}
+				}
+			}
+		}
+		break;
+
+		case mod_studio:
+		{
+			IMaterial* pMaterials[128];
+			int materialCount = g_pStudioRender->GetMaterialListFromBodyAndSkin(studio, nSkin, nBody, ARRAYSIZE(pMaterials), pMaterials);//model->
+			for (int i = 0; i < materialCount; i++)
+			{
+				if (pMaterials[i] != NULL)
+				{
+					// Bind material first so all material proxies execute
+					CMatRenderContextPtr pRenderContext(g_pMaterialSystem);
+					pRenderContext->Bind(pMaterials[i], pClientRenderable);
+
+					if (pMaterials[i]->NeedsPowerOfTwoFrameBufferTexture())
+					{
+						return true;
+					}
+				}
+			}
+		}
+		break;
+		}
+	}
+
+	return false;
 }
 
 bool CModelInfoClient::IsUsingFBTexture(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const
@@ -1314,6 +1467,12 @@ bool CModelInfoClient::IsUsingFBTexture(const model_t* model, int nSkin, int nBo
 	return false;
 }
 
+bool model_t::ModelHasMaterialProxy() const//const model_t* model
+{
+	// Should we add skin & model to this function like IsUsingFBTexture()?
+	return flags & MODELFLAG_MATERIALPROXY;//(model && (model-> ))
+}
+
 bool CModelInfoClient::ModelHasMaterialProxy(int modelIndex) const
 {
 	// Should we add skin & model to this function like IsUsingFBTexture()?
@@ -1326,7 +1485,7 @@ bool CModelInfoClient::ModelHasMaterialProxy(int modelIndex) const
 bool CModelInfoClient::ModelHasMaterialProxy(const model_t* model) const
 {
 	// Should we add skin & model to this function like IsUsingFBTexture()?
-	return (model && (model->flags & MODELFLAG_MATERIALPROXY));
+	return (model && (model->ModelHasMaterialProxy()));
 }
 
 static CModelInfoClient	g_ModelInfoClient;

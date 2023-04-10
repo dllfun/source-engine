@@ -104,7 +104,7 @@
 //-----------------------------------------------------------------------------
 // forward declarations
 //-----------------------------------------------------------------------------
-IMaterial* BrushModel_GetLightingAndMaterial( const Vector &start, 
+IMaterial* BrushModel_GetLightingAndMaterial(const model_t* model, const Vector &start,
 	const Vector &end, Vector &diffuseLightColor, Vector &baseColor );
 const char *Key_NameForBinding( const char *pBinding );
 void CL_GetBackgroundLevelName( char *pszBackgroundName, int bufSize, bool bMapName );
@@ -337,7 +337,7 @@ public:
 	CEngineClient();
 
 	int		GetIntersectingSurfaces(
-		const model_t *model,
+		const IVModel *model,
 		const Vector &vCenter, 
 		const float radius,
 		const bool bOnlyVisible,
@@ -359,8 +359,8 @@ public:
 	bool Con_IsVisible( void );
 	int GetLocalPlayer( void );
 	float GetLastTimeStamp( void );
-	const model_t *LoadModel( const char *pName, bool bProp );
-	void UnloadModel( const model_t *model, bool bProp );
+	const IVModel *LoadModel( const char *pName, bool bProp );
+	void UnloadModel( const IVModel *model, bool bProp );
 	CSentence *GetSentence( CAudioSource *pAudioSource );
 	float GetSentenceLength( CAudioSource *pAudioSource );
 	bool IsStreaming( CAudioSource *pAudioSource ) const;
@@ -589,7 +589,7 @@ CEngineClient::CEngineClient()
 }
 
 int	CEngineClient::GetIntersectingSurfaces(
-	const model_t *model,
+	const IVModel *model,
 	const Vector &vCenter, 
 	const float radius,
 	const bool bOnlyVisible,
@@ -613,7 +613,7 @@ int	CEngineClient::GetIntersectingSurfaces(
 	// Go down the BSP.
 	GetIntersectingSurfaces_R(
 		&theStruct,
-		&model->brush.pShared->nodes[ model->brush.firstnode ] );
+		&((model_t*)model)->brush.pShared->nodes[((model_t*)model)->brush.firstnode ] );
 
 	return theStruct.m_nSetInfos;
 }
@@ -782,7 +782,7 @@ bool CEngineClient::MapHasHDRLighting( void)
 	return modelloader->LastLoadedMapHasHDRLighting();
 }
 
-const model_t *CEngineClient::LoadModel( const char *pName, bool bProp )
+const IVModel *CEngineClient::LoadModel( const char *pName, bool bProp )
 {
 	return modelloader->GetModelForName( pName, bProp ? IModelLoader::FMODELLOADER_DETAILPROP : IModelLoader::FMODELLOADER_CLIENTDLL );
 }
@@ -923,7 +923,7 @@ void CEngineClient::Con_NXPrintf( const struct con_nprint_s *info, const char *f
 IMaterial *CEngineClient::TraceLineMaterialAndLighting( const Vector &start, const Vector &end, 
 		                                 Vector &diffuseLightColor, Vector &baseColor )
 {
-	return BrushModel_GetLightingAndMaterial( start, end, diffuseLightColor, baseColor );
+	return BrushModel_GetLightingAndMaterial(host_state.worldmodel, start, end, diffuseLightColor, baseColor );
 }
 
 int	CEngineClient::IsBoxVisible( const Vector& mins, const Vector& maxs ) 

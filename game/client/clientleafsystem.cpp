@@ -132,7 +132,7 @@ public:
 	// methods of ISpatialLeafEnumerator
 public:
 
-	bool EnumerateLeaf(model_t* world, int leaf, intp context );
+	bool EnumerateLeaf(IVModel* world, int leaf, intp context );
 
 	// Adds a shadow to a leaf
 	void AddShadowToLeaf( int leaf, ClientLeafShadowHandle_t handle );
@@ -609,7 +609,7 @@ void CClientLeafSystem::NewRenderable( IClientRenderable* pRenderable, RenderGro
 	RenderableInfo_t &info = m_Renderables[handle];
 
 	// We need to know if it's a brush model for shadows
-	int modelType = modelinfo->GetModelType( pRenderable->GetModel() );
+	int modelType = pRenderable->GetModel()?pRenderable->GetModel()->GetModelType(  ):0;//modelinfo
 	if (modelType == mod_brush)
 	{
 		flags |= RENDER_FLAGS_BRUSH_MODEL;
@@ -1132,7 +1132,7 @@ void CClientLeafSystem::AddRenderableToLeaves( ClientRenderHandle_t handle, int 
 //-----------------------------------------------------------------------------
 // Inserts an element into the tree
 //-----------------------------------------------------------------------------
-bool CClientLeafSystem::EnumerateLeaf(model_t* world, int leaf, intp context )
+bool CClientLeafSystem::EnumerateLeaf(IVModel* world, int leaf, intp context )
 {
 	EnumResultList_t *pList = (EnumResultList_t *)context;
 	if ( ThreadInMainThread() )

@@ -1302,7 +1302,7 @@ public:
 	
 	void					SetModelName( string_t name );
 
-	model_t					*GetModel( void );
+	IVModel					*GetModel( void );
 
 	// These methods return a *world-aligned* box relative to the absorigin of the entity.
 	// This is used for collision purposes and is *not* guaranteed
@@ -1750,7 +1750,7 @@ private:
 	//bool m_bDynamicModelAllowed;
 	//bool m_bDynamicModelPending;
 	//bool m_bDynamicModelSetBounds;
-	void OnModelLoadComplete( const model_t* model );
+	void OnModelLoadComplete( const IVModel* model );
 	//friend class CBaseEntityModelLoadProxy;
 
 protected:

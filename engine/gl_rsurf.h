@@ -84,7 +84,7 @@ extern int R_MarkDlightsOnBrushModel( model_t *model, IClientRenderable *pRender
 
 void R_DrawBrushModel( 
 	IClientEntity *baseentity, 
-	model_t *model, 
+	model_t *model,
 	const Vector& origin, 
 	const QAngle& angles, 
 	ERenderDepthMode DepthMode, bool bDrawOpaque, bool bDrawTranslucent );

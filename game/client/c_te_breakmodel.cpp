@@ -93,8 +93,8 @@ static inline void RecordBreakModel( const Vector &start, const QAngle &angles, 
 
 	if ( clienttools->IsInRecordingMode() )
 	{
-		const model_t* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+		const IVModel* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
+		const char *pModelName = pModel ? modelinfo->GetModelName(nModelIndex) : "";//pModel
 
 		KeyValues *msg = new KeyValues( "TempEntity" );
 

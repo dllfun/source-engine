@@ -817,7 +817,7 @@ public:
 	virtual void ForcedMaterialOverride( IMaterial *newMaterial, OverrideType_t nOverrideType = OVERRIDE_NORMAL );
 	virtual int DrawModel( 	
 					int flags, IClientRenderable *cliententity,
-					ModelInstanceHandle_t instance, int entity_index, const model_t *model, 
+					ModelInstanceHandle_t instance, int entity_index, const IVModel *model,
 					const Vector& origin, QAngle const& angles,
 					int skin, int body, int hitboxset, 
 					const matrix3x4_t* pModelToWorld,
@@ -1639,7 +1639,7 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 		else
 		{
 			// If we have any lights and want to do ambient boost on this model
-			if ( (pState->numlights > 0) && (pInfo.pModel->flags & MODELFLAG_STUDIOHDR_AMBIENT_BOOST) && r_ambientboost.GetBool() )
+			if ( (pState->numlights > 0) && (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_AMBIENT_BOOST) && r_ambientboost.GetBool() )
 			{
 				Vector lumCoeff( 0.3f, 0.59f, 0.11f );
 				float avgCubeLuminance = 0.0f;
@@ -1838,11 +1838,11 @@ void CModelRender::ForcedMaterialOverride( IMaterial *newMaterial, OverrideType_
 //-----------------------------------------------------------------------------
 matrix3x4_t* CModelRender::SetupModelState( IClientRenderable *pRenderable )
 {
-	const model_t *pModel = pRenderable->GetModel();
+	const model_t *pModel = (model_t*)pRenderable->GetModel();
 	if ( !pModel )
 		return NULL;
 
-	studiohdr_t *pStudioHdr = modelinfoclient->GetStudiomodel( const_cast<model_t*>(pModel) );
+	studiohdr_t *pStudioHdr = pModel->GetStudiomodel(  );//modelinfoclient const_cast<model_t*>()
 	if ( pStudioHdr->numbodyparts == 0 )
 		return NULL;
 
@@ -2093,7 +2093,7 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 	bool bSSAODepth = ( pInfo.flags & STUDIO_SSAODEPTHTEXTURE ) != 0;
 
 	// Bail if we're rendering into shadow depth map and this model doesn't cast shadows
-	if ( bShadowDepth && ( ( pInfo.pModel->flags & MODELFLAG_STUDIOHDR_DO_NOT_CAST_SHADOWS ) != 0 ) )
+	if ( bShadowDepth && ( (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_DO_NOT_CAST_SHADOWS ) != 0 ) )
 		return;
 
 	// Shadow state...
@@ -2117,7 +2117,7 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 	}
 
 	// OPTIMIZE: Try to precompute part of this mess once a frame at the very least.
-	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && ( pInfo.pModel->flags & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING );
+	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING );
 
 	bool bStaticLighting = ( state.m_drawFlags & STUDIORENDER_DRAW_STATIC_LIGHTING ) &&
 								( state.m_pStudioHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP ) && 
@@ -2125,9 +2125,9 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 								( pInfo.instance != MODEL_INSTANCE_INVALID ) &&
 								g_pMaterialSystemHardwareConfig->SupportsColorOnSecondStream();
 
-	bool bVertexLit = ( pInfo.pModel->flags & MODELFLAG_VERTEXLIT ) != 0;
+	bool bVertexLit = (((model_t*)pInfo.pModel)->flags & MODELFLAG_VERTEXLIT ) != 0;
 
-	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || ( pInfo.pModel->flags & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP );
+	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP );
 	
 	if ( r_drawmodellightorigin.GetBool() && !bShadowDepth && !bSSAODepth )
 	{
@@ -2274,7 +2274,7 @@ int CModelRender::DrawModel(
 	IClientRenderable *pRenderable,
 	ModelInstanceHandle_t instance,
 	int entity_index, 
-	const model_t *pModel, 
+	const IVModel *pModel, 
 	const Vector &origin,
 	const QAngle &angles,
 	int skin,
@@ -2376,7 +2376,7 @@ bool CModelRender::DrawModelSetup( ModelRenderInfo_t &pInfo, DrawModelState_t *p
 	Assert( modelloader->IsLoaded( pInfo.pModel ) );
 
 	DrawModelState_t &state = *pState;
-	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr( pInfo.pModel->studio );
+	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr(((model_t*)pInfo.pModel)->studio );
 	state.m_pRenderable = pInfo.pRenderable;
 
 	// Quick exit if we're just supposed to draw a specific model...
@@ -2397,7 +2397,7 @@ bool CModelRender::DrawModelSetup( ModelRenderInfo_t &pInfo, DrawModelState_t *p
 
 	Assert ( pInfo.pRenderable );
 
-	state.m_pStudioHWData = g_pMDLCache->GetHardwareData( pInfo.pModel->studio );
+	state.m_pStudioHWData = g_pMDLCache->GetHardwareData(((model_t*)pInfo.pModel)->studio );
 	if ( !state.m_pStudioHWData )
 		return false;
 
@@ -2528,14 +2528,14 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 	Assert( modelloader->IsLoaded( pInfo.pModel ) );
 
 	DrawModelState_t state;
-	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr( pInfo.pModel->studio );
+	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr(((model_t*)pInfo.pModel)->studio );
 	state.m_pRenderable = pInfo.pRenderable;
 
 	// quick exit
 	if ( state.m_pStudioHdr->numbodyparts == 0 || g_bTextMode )
 		return 1;
 
-	state.m_pStudioHWData = g_pMDLCache->GetHardwareData( pInfo.pModel->studio );
+	state.m_pStudioHWData = g_pMDLCache->GetHardwareData(((model_t*)pInfo.pModel)->studio );
 	if ( !state.m_pStudioHWData )
 		return 0;
 
@@ -2588,7 +2588,7 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 	g_pShadowMgr->SetModelShadowState( pInfo.instance );
 
 	// OPTIMIZE: Try to precompute part of this mess once a frame at the very least.
-	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && ( pInfo.pModel->flags & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING );
+	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING );
 
 	bool bStaticLighting = (( drawFlags & STUDIORENDER_DRAW_STATIC_LIGHTING ) &&
 		( state.m_pStudioHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP ) && 
@@ -2596,8 +2596,8 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 		( pInfo.instance != MODEL_INSTANCE_INVALID ) &&
 		g_pMaterialSystemHardwareConfig->SupportsColorOnSecondStream() );
 
-	bool bVertexLit = ( pInfo.pModel->flags & MODELFLAG_VERTEXLIT ) != 0;
-	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || ( pInfo.pModel->flags & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP );
+	bool bVertexLit = (((model_t*)pInfo.pModel)->flags & MODELFLAG_VERTEXLIT ) != 0;
+	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP );
 
 	if ( r_drawmodellightorigin.GetBool() )
 	{
@@ -2826,11 +2826,11 @@ int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int c
 	{
 		drawnCount++;
 		// UNDONE: This is a perf hit in some scenes!  Use a hash?
-		int modelIndex = FindModel( modelList, pProps[i].pModel );
+		int modelIndex = FindModel( modelList, (model_t*)pProps[i].pModel );
 		if ( modelIndex < 0 )
 		{
 			modelIndex = modelList.AddToTail();
-			modelList[modelIndex].pModel = pProps[i].pModel;
+			modelList[modelIndex].pModel = (model_t*)pProps[i].pModel;
 			modelList[modelIndex].pStudioHWData = g_pMDLCache->GetHardwareData( modelList[modelIndex].pModel->studio );
 		}
 		if ( modelList[modelIndex].pStudioHWData )
@@ -3189,7 +3189,7 @@ matrix3x4_t* CModelRender::DrawModelShadowSetup( IClientRenderable *pRenderable,
 	static ConVar r_shadowlod("r_shadowlod", "-1");
 	static ConVar r_shadowlodbias("r_shadowlodbias", "2");
 
-	model_t const* pModel = pRenderable->GetModel();
+	model_t const* pModel = (model_t*)pRenderable->GetModel();
 	if ( !pModel )
 		return NULL;
 
@@ -4643,7 +4643,7 @@ bool CModelRender::IsModelInstanceValid( ModelInstanceHandle_t handle )
 	if ( inst.m_DecalHandle == STUDIORENDER_DECAL_INVALID )
 		return false;
 
-	model_t const* pModel = inst.m_pRenderable->GetModel();
+	model_t const* pModel = (model_t*)inst.m_pRenderable->GetModel();
 	return inst.m_pModel == pModel;
 }
 

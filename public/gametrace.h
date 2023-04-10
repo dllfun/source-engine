@@ -16,6 +16,8 @@
 #include "ihandleentity.h"
 #include "ispatialpartition.h"
 
+struct csurface_t;
+
 #if defined( CLIENT_DLL )
 	class C_BaseEntity;
 #else

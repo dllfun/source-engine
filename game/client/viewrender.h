@@ -246,7 +246,7 @@ private:
 //-----------------------------------------------------------------------------
 	static inline void UpdateBrushModelLightmap(IClientRenderable* pEnt)
 	{
-		model_t* pModel = (model_t*)pEnt->GetModel();
+		IVModel* pModel = (IVModel*)pEnt->GetModel();
 		render->UpdateBrushModelLightmap(pModel, pEnt);
 	}
 

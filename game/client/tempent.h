@@ -66,7 +66,7 @@ public:
 
 	C_LocalTempEntity();
 
-	virtual void					Prepare( const model_t *pmodel, float time );
+	virtual void					Prepare( const IVModel *pmodel, float time );
 
 	virtual bool					IsActive( void );
 	virtual bool					Frame( float frametime, int framenumber );

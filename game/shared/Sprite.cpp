@@ -198,7 +198,10 @@ void CSprite::Spawn( void )
 	SetModel( STRING( GetModelName() ) );
 	CollisionProp()->SetSurroundingBoundsType( USE_GAME_CODE );
 
-	m_flMaxFrame = (float)modelinfo->GetModelFrameCount( GetModel() ) - 1;
+	if (!GetModel()) {
+		int aaa = 0;
+	}
+	m_flMaxFrame = GetModel()?((float)GetModel()->ModelFrameCount() - 1):0;//modelinfo GetModelIndex()
 	AddEffects( EF_NOSHADOW | EF_NORECEIVESHADOW );
 
 #if defined( CLIENT_DLL )
@@ -268,8 +271,8 @@ void CSprite::ComputeWorldSpaceSurroundingBox( Vector *pVecWorldMins, Vector *pV
 	if ( m_bWorldSpaceScale == false )
 	{
 		// Find the height and width of the source of the sprite
-		float width = modelinfo->GetModelSpriteWidth( GetModel() );
-		float height = modelinfo->GetModelSpriteHeight( GetModel() );
+		float width = GetModel()->GetModelSpriteWidth();// modelinfo
+		float height = GetModel()->GetModelSpriteHeight();// modelinfo
 		flScale *= MAX( width, height );
 	}
 
@@ -287,8 +290,8 @@ void CSprite::ComputeWorldSpaceSurroundingBox( Vector *pVecWorldMins, Vector *pV
 void CSprite::SetModel( const char *szModelName )
 {
 	int index = modelinfo->GetModelIndex( szModelName );
-	const model_t *model = modelinfo->GetModel( index );
-	if ( model && modelinfo->GetModelType( model ) != mod_sprite )
+	const IVModel *model = modelinfo->GetModel( index );
+	if ( model && modelinfo->GetModelType(index) != mod_sprite )//model
 	{
 		Msg( "Setting CSprite to non-sprite model %s\n", szModelName?szModelName:"NULL" );
 	}
@@ -665,7 +668,7 @@ void CSprite::GetRenderBounds( Vector &vecMins, Vector &vecMaxs )
 	// If our scale is normalized we need to convert that to actual world units
 	if ( m_bWorldSpaceScale == false )
 	{
-		CEngineSprite *psprite = (CEngineSprite *) modelinfo->GetModelExtraData( GetModel() );
+		CEngineSprite *psprite = (CEngineSprite *)GetModel()->GetModelExtraData();// modelinfo GetModelIndex() 
 		if ( psprite )
 		{
 			float flSize = MAX( psprite->GetWidth(), psprite->GetHeight() );
@@ -775,7 +778,7 @@ int CSprite::DrawModel( int flags )
 	}
 
 	//Must be a sprite
-	if ( modelinfo->GetModelType( GetModel() ) != mod_sprite )
+	if (GetModel()->GetModelType() != mod_sprite )// modelinfo GetModelIndex() 
 	{
 		Assert( 0 );
 		return 0;
@@ -784,7 +787,7 @@ int CSprite::DrawModel( int flags )
 	float renderscale = GetRenderScale();
 	if ( m_bWorldSpaceScale )
 	{
-		CEngineSprite *psprite = ( CEngineSprite * )modelinfo->GetModelExtraData( GetModel() );
+		CEngineSprite *psprite = ( CEngineSprite * )GetModel()->GetModelExtraData();// modelinfo GetModelIndex() 
 		float flMinSize = MIN( psprite->GetWidth(), psprite->GetHeight() );
 		renderscale /= flMinSize;
 	}
@@ -792,7 +795,7 @@ int CSprite::DrawModel( int flags )
 	//Draw it
 	int drawn = DrawSprite( 
 		this,
-		GetModel(), 
+		GetModel(), //GetModel()
 		GetAbsOrigin(), 
 		GetAbsAngles(), 
 		m_flFrame,				// sprite frame to render

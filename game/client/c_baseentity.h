@@ -298,7 +298,7 @@ public:
 	virtual bool					UsesPowerOfTwoFrameBufferTexture();
 	virtual bool					UsesFullFrameBufferTexture();
 	virtual bool					IgnoresZBuffer( void ) const;
-	virtual const model_t			*GetModel( void ) const;
+	virtual const IVModel			*GetModel( void ) const;
 	virtual int						DrawModel( int flags );
 	virtual void					ComputeFxBlend( void );
 	virtual int						GetFxBlend( void );
@@ -1042,7 +1042,7 @@ public:
 	// Returns false if the model name is bogus or otherwise can't be loaded
 	bool				SetModel( const char *pModelName );
 
-	void				SetModelPointer( const model_t *pModel );
+	void				SetModelPointer( const IVModel *pModel );
 
 
 	// Access movetype and solid.
@@ -1278,7 +1278,7 @@ public:
 private:
 	
 	// Model for rendering
-	const model_t					*model;
+	const IVModel *model;
 
 public:
 	// Time animation sequence or frame was last changed
@@ -1773,7 +1773,7 @@ inline const QAngle& C_BaseEntity::GetNetworkAngles() const
 	return m_angNetworkAngles;
 }
 
-inline const model_t *C_BaseEntity::GetModel( void ) const
+inline const IVModel *C_BaseEntity::GetModel( void ) const
 {
 	return model;
 }

@@ -492,7 +492,7 @@ bool CStaticProp::Init( int index, StaticPropLump_t &lump, model_t *pModel )
 
 	MDLCACHE_CRITICAL_SECTION_( g_pMDLCache );
 
-	studiohdr_t *pStudioHdr = modelinfoclient->GetStudiomodel( m_pModel );
+	studiohdr_t *pStudioHdr = m_pModel->GetStudiomodel(  );//modelinfoclient
 
 	if ( pStudioHdr )
 	{
@@ -546,7 +546,7 @@ bool CStaticProp::Init( int index, StaticPropLump_t &lump, model_t *pModel )
 	AngleMatrix( lump.m_Angles, lump.m_Origin, m_ModelToWorld );
 
 	// Cache the collision bounding box since it'll never change.
-	modelinfoclient->GetModelRenderBounds( m_pModel, m_RenderBBoxMin, m_RenderBBoxMax );
+	m_pModel->GetModelRenderBounds( m_RenderBBoxMin, m_RenderBBoxMax );//modelinfoclient
 	m_flRadius = m_RenderBBoxMin.DistTo( m_RenderBBoxMax ) * 0.5f;
 	TransformAABB( m_ModelToWorld, m_RenderBBoxMin, m_RenderBBoxMax, m_WorldRenderBBoxMin, m_WorldRenderBBoxMax );
 
@@ -558,7 +558,7 @@ bool CStaticProp::Init( int index, StaticPropLump_t &lump, model_t *pModel )
 	}
 	else
 	{
-		modelinfoclient->GetIlluminationPoint( m_pModel, this, m_Origin, m_Angles, &m_LightingOrigin );
+		m_pModel->GetIlluminationPoint( this, m_Origin, m_Angles, &m_LightingOrigin );//modelinfoclient
 	}
 	g_MakingDevShots = CommandLine()->FindParm( "-makedevshots" ) ? true : false;
 
@@ -662,12 +662,12 @@ bool CStaticProp::GetAttachment( int number, matrix3x4_t &matrix )
 
 bool CStaticProp::IsTransparent( void )
 {
-	return (m_Alpha < 255) || modelinfoclient->IsTranslucent(m_pModel);
+	return (m_Alpha < 255) || m_pModel->IsTranslucent();//modelinfoclient
 }
 
 bool CStaticProp::IsTwoPass( void )
 {
-	return modelinfoclient->IsTranslucentTwoPass(m_pModel);
+	return m_pModel->IsTranslucentTwoPass();//modelinfoclient
 }
 
 bool CStaticProp::ShouldDraw()
@@ -1278,7 +1278,7 @@ void CStaticPropMgr::UnserializeModelDict( CUtlBuffer& buf )
 
 		dict.m_pModel = (model_t *)modelloader->GetModelForName(
 			lump.m_Name, IModelLoader::FMODELLOADER_STATICPROP );
-		dict.m_hMDL = modelinfoclient->GetCacheHandle( dict.m_pModel );
+		dict.m_hMDL = dict.m_pModel->GetCacheHandle();//modelinfoclient
 		g_pMDLCache->LockStudioHdr( dict.m_hMDL );
 	}
 }
@@ -2127,9 +2127,9 @@ void CStaticPropMgr::ChangeRenderGroup( CStaticProp &prop )
 void CStaticPropMgr::ComputePropOpacity( CStaticProp &prop )
 {
 #ifndef SWDS
-	if (modelinfoclient->ModelHasMaterialProxy( prop.GetModel() ))
+	if (prop.GetModel()->ModelHasMaterialProxy(  ))//modelinfoclient
 	{
-		modelinfoclient->RecomputeTranslucency( prop.GetModel(), prop.GetSkin(), prop.GetBody(), prop.GetClientRenderable(), (float)(prop.GetFxBlend()) / 255.0f );
+		((model_t*)prop.GetModel())->Mod_RecomputeTranslucency( prop.GetSkin(), prop.GetBody(), prop.GetClientRenderable(), (float)(prop.GetFxBlend()) / 255.0f );//modelinfoclient
 	}
 #endif
 
@@ -2375,7 +2375,7 @@ void CStaticPropMgr::GetStaticPropMaterialColorAndLighting( trace_t* pTrace,
 	CStaticProp& prop = m_StaticProps[staticPropIndex];
 
 	// Ask the model info about what we need to know
-	modelinfoclient->GetModelMaterialColorAndLighting( (model_t*)prop.GetModel(), 
+	prop.GetModel()->GetModelMaterialColorAndLighting( //modelinfoclient
 		prop.GetRenderOrigin(), prop.GetRenderAngles(), pTrace, lighting, matColor );
 #endif
 }

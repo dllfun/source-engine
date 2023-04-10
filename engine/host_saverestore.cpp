@@ -1715,7 +1715,7 @@ void CSaveRestore::ReapplyDecal( bool adjacent, RestoreLookupTable *table, decal
 			IClientEntity *clientEntity = entitylist->GetClientEntity( entityToHit );
 			if ( clientEntity )
 			{
-				pModel = clientEntity->GetModel();
+				pModel = (model_t*)clientEntity->GetModel();
 			}
 			else
 			{

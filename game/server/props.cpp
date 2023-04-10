@@ -327,7 +327,7 @@ void CBaseProp::CalculateBlockLOS( void )
 int CBaseProp::ParsePropData( void )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( !modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
+	if ( !modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
 	{
 		modelKeyValues->deleteThis();
 		return PARSE_FAILED_NO_DATA;
@@ -2035,7 +2035,7 @@ void CDynamicProp::CreateBoneFollowers()
 		return;
 
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
+	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
 	{
 		// Do we have a bone follower section?
 		KeyValues *pkvBoneFollowers = modelKeyValues->FindKey("bone_followers");
@@ -2818,7 +2818,7 @@ void CPhysicsProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 bool CPhysicsProp::GetPropDataAngles( const char *pKeyName, QAngle &vecAngles )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
+	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
 	{
 		KeyValues *pkvPropData = modelKeyValues->FindKey( "physgun_interactions" );
 		if ( pkvPropData )
@@ -2843,7 +2843,7 @@ bool CPhysicsProp::GetPropDataAngles( const char *pKeyName, QAngle &vecAngles )
 float CPhysicsProp::GetCarryDistanceOffset( void )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
+	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
 	{
 		KeyValues *pkvPropData = modelKeyValues->FindKey( "physgun_interactions" );
 		if ( pkvPropData )
@@ -3749,7 +3749,7 @@ void CBasePropDoor::CalcDoorSounds()
 	// Otherwise, use the sounds specified by the model keyvalues. These are looked up
 	// based on skin and hardware.
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
+	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
 	{
 		KeyValues *pkvDoorSounds = modelKeyValues->FindKey("door_options");
 		if ( pkvDoorSounds )
@@ -3803,7 +3803,7 @@ void CBasePropDoor::CalcDoorSounds()
 	modelKeyValues = NULL;
 	if ( !bFoundSkin && VPhysicsGetObject() )
 	{
-		Warning( "%s has Door model (%s) with no door_options! Verify that SKIN is valid, and has a corresponding options block in the model QC file\n", GetDebugName(), modelinfo->GetModelName( GetModel() ) );
+		Warning( "%s has Door model (%s) with no door_options! Verify that SKIN is valid, and has a corresponding options block in the model QC file\n", GetDebugName(), modelinfo->GetModelName( GetModelIndex() ) );//GetModel()
 		VPhysicsGetObject()->SetMaterialIndex( physprops->GetSurfaceIndex("wood") );
 	}
 
@@ -6072,11 +6072,11 @@ bool UTIL_CreateScaledPhysObject( CBaseAnimating *pInstance, float flScale )
 	pInstance->VPhysicsSetObject( pNewObject );
 
 	// Increase our model bounds
-	const model_t *pModel = modelinfo->GetModel( pInstance->GetModelIndex() );
+	const IVModel *pModel = modelinfo->GetModel( pInstance->GetModelIndex() );
 	if ( pModel )
 	{
 		Vector mins, maxs;
-		modelinfo->GetModelBounds( pModel, mins, maxs );
+		modelinfo->GetModelBounds(pInstance->GetModelIndex(), mins, maxs );//pModel
 		pInstance->SetCollisionBounds( mins*flScale, maxs*flScale );
 	}
 

@@ -284,11 +284,11 @@ public:
 	//	R_DrawBrushModel( baseentity, model, origin, angles, DEPTH_MODE_NORMAL, true, true );
 	//}
 
-	virtual void DrawBrushModelEx( IClientEntity *baseentity, model_t *model, const Vector& origin, const QAngle& angles, DrawBrushModelMode_t mode )
+	virtual void DrawBrushModelEx( IClientEntity *baseentity, IVModel *model, const Vector& origin, const QAngle& angles, DrawBrushModelMode_t mode )
 	{
 		bool bDrawOpaque = ( mode != DBM_DRAW_TRANSLUCENT_ONLY );
 		bool bDrawTranslucent = ( mode != DBM_DRAW_OPAQUE_ONLY );
-		R_DrawBrushModel( baseentity, model, origin, angles, DEPTH_MODE_NORMAL, bDrawOpaque, bDrawTranslucent );
+		R_DrawBrushModel( baseentity, (model_t*)model, origin, angles, DEPTH_MODE_NORMAL, bDrawOpaque, bDrawTranslucent );
 	}
 
 	// Draw brush model shadow
@@ -297,9 +297,9 @@ public:
 		R_DrawBrushModelShadow( pRenderable );
 	}
 
-	void DrawIdentityBrushModel( IWorldRenderList *pList, model_t *model )
+	void DrawIdentityBrushModel( IWorldRenderList *pList, IVModel *model )
 	{
-		R_DrawIdentityBrushModel( pList, model );
+		R_DrawIdentityBrushModel( pList, (model_t*)model );
 	}
 
 	void Draw3DDebugOverlays( void )
@@ -523,7 +523,7 @@ public:
 		int m_nLeafWaterDataID;
 	};
 	
-	bool EnumerateLeaf(model_t* world, int leaf, intp context )
+	bool EnumerateLeaf(IVModel* world, int leaf, intp context )
 	{
 		BoxIntersectWaterContext_t *pSearchContext = ( BoxIntersectWaterContext_t * )context;
 		mleaf_t *pLeaf = &host_state.worldmodel->brush.pShared->leafs[leaf];
@@ -573,15 +573,15 @@ public:
 
 	void DrawBrushModelShadowDepth( 
 		IClientEntity *baseentity, 
-		model_t *model, 
+		IVModel *model, 
 		const Vector& origin, 
 		const QAngle& angles, 
 		ERenderDepthMode DepthMode )
 	{
-		R_DrawBrushModel( baseentity, model, origin, angles, DepthMode, true, true );
+		R_DrawBrushModel( baseentity, (model_t*)model, origin, angles, DepthMode, true, true );
 	}
 
-	void UpdateBrushModelLightmap( model_t *model, IClientRenderable *pRenderable )
+	void UpdateBrushModelLightmap( IVModel *model, IClientRenderable *pRenderable )
 	{
 		g_EngineRenderer->UpdateBrushModelLightmap( model, pRenderable );
 	}

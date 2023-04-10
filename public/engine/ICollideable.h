@@ -15,7 +15,7 @@
 enum SolidType_t;
 class IHandleEntity;
 struct Ray_t;
-class model_t;
+class IVModel;
 class Vector;
 class QAngle;
 class CGameTrace;
@@ -52,7 +52,7 @@ public:
 	virtual int				GetCollisionModelIndex() = 0;
 
 	// Return the model, if it's a studio model.
-	virtual const model_t*	GetCollisionModel() = 0;
+	virtual const IVModel*	GetCollisionModel() = 0;
 
 	// Get angles and origin.
 	virtual const Vector&	GetCollisionOrigin() const = 0;

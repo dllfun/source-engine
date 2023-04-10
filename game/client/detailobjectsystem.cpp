@@ -45,7 +45,7 @@
 //-----------------------------------------------------------------------------
 // forward declarations
 //-----------------------------------------------------------------------------
-class model_t;
+class IVModel;
 
 
 ConVar cl_detaildist( "cl_detaildist", "1200", 0, "Distance at which detail props are no longer visible" );
@@ -113,7 +113,7 @@ public:
 
 	// Initialization
 	bool InitCommon( int index, const Vector& org, const QAngle& angles );
-	bool Init( int index, const Vector& org, const QAngle& angles, model_t* pModel, 
+	bool Init( int index, const Vector& org, const QAngle& angles, IVModel* pModel, 
 		ColorRGBExp32 lighting, int lightstyle, unsigned char lightstylecount, int orientation );
 
 	bool InitSprite( int index, bool bFlipped, const Vector& org, const QAngle& angles,
@@ -148,7 +148,7 @@ public:
 	virtual bool				IsTwoPass( void ) { return false; }
 	virtual void				OnThreadedDrawSetup() {}
 	virtual bool				IsTransparent( void );
-	virtual const model_t*		GetModel( ) const;
+	virtual const IVModel*		GetModel( ) const;
 	virtual int					DrawModel( int flags );
 	virtual void				ComputeFxBlend( );
 	virtual int					GetFxBlend( );
@@ -250,7 +250,7 @@ protected:
 #pragma warning( disable : 4201 ) //warning C4201: nonstandard extension used : nameless struct/union
 	union
 	{
-		model_t* m_pModel;
+		IVModel* m_pModel;
 		SptrintInfo_t m_SpriteInfo;
 	};
 #pragma warning( default : 4201 )
@@ -405,7 +405,7 @@ public:
 	void BeginTranslucentDetailRendering( );
 
 	// Method of ISpatialLeafEnumerator
-	bool EnumerateLeaf(model_t* world, int leaf, intp context );
+	bool EnumerateLeaf(IVModel* world, int leaf, intp context );
 
 	DetailPropLightstylesLump_t& DetailLighting( int i ) { return m_DetailLighting[i]; }
 	DetailPropSpriteDict_t& DetailSpriteDict( int i ) { return m_DetailSpriteDict[i]; }
@@ -413,7 +413,7 @@ public:
 private:
 	struct DetailModelDict_t
 	{
-		model_t* m_pModel;
+		IVModel* m_pModel;
 	};
 
 	struct EnumContext_t
@@ -581,7 +581,7 @@ bool CDetailModel::GetAttachment( int number, Vector &origin, QAngle &angles )
 
 bool CDetailModel::IsTransparent( void )
 {
-	return (m_Alpha < 255) || modelinfo->IsTranslucent(m_pModel);
+	return (m_Alpha < 255) || m_pModel->IsTranslucent();//modelinfo
 }
 
 bool CDetailModel::ShouldDraw()
@@ -592,10 +592,10 @@ bool CDetailModel::ShouldDraw()
 
 void CDetailModel::GetRenderBounds( Vector& mins, Vector& maxs )
 {
-	int nModelType = modelinfo->GetModelType( m_pModel );
+	int nModelType = m_pModel->GetModelType(  );//modelinfo
 	if (nModelType == mod_studio || nModelType == mod_brush)
 	{
-		modelinfo->GetModelRenderBounds( GetModel(), mins, maxs );
+		GetModel()->GetModelRenderBounds( mins, maxs );//modelinfo
 	}
 	else
 	{
@@ -664,7 +664,7 @@ bool CDetailModel::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, int 
 	parentTransform[2][3] = vRenderOrigin.z;
 
 	// Just copy it on down baby
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( m_pModel );
+	studiohdr_t *pStudioHdr = m_pModel->GetStudiomodel(  );//modelinfo
 	for (int i = 0; i < pStudioHdr->numbones; i++) 
 	{
 		MatrixCopy( parentTransform, pBoneToWorldOut[i] );
@@ -685,7 +685,7 @@ void	CDetailModel::DoAnimationEvents( void )
 //-----------------------------------------------------------------------------
 // Render baby!
 //-----------------------------------------------------------------------------
-const model_t* CDetailModel::GetModel( ) const
+const IVModel* CDetailModel::GetModel( ) const
 {
 	return m_pModel;
 }
@@ -762,7 +762,7 @@ CDetailModel::~CDetailModel()
 // Initialization
 //-----------------------------------------------------------------------------
 bool CDetailModel::Init( int index, const Vector& org, const QAngle& angles, 
-	model_t* pModel, ColorRGBExp32 lighting, int lightstyle, unsigned char lightstylecount, 
+	IVModel* pModel, ColorRGBExp32 lighting, int lightstyle, unsigned char lightstylecount, 
 	int orientation)
 {
 	m_Color = lighting;
@@ -939,7 +939,7 @@ bool CDetailModel::IsDetailModelTranslucent()
 	if (m_Type >= DETAIL_PROP_TYPE_SPRITE)
 		return true;
 
-	return modelinfo->IsTranslucent(GetModel());
+	return GetModel()->IsTranslucent();//modelinfo
 }
 
 
@@ -1593,13 +1593,13 @@ void CDetailObjectSystem::UnserializeModelDict( CUtlBuffer& buf )
 		buf.Get( &lump, sizeof(DetailObjectDictLump_t) );
 		
 		DetailModelDict_t dict;
-		dict.m_pModel = (model_t *)engineClient->LoadModel( lump.m_Name, true );
+		dict.m_pModel = (IVModel *)engineClient->LoadModel( lump.m_Name, true );
 
 		// Don't allow vertex-lit models
-		if (modelinfo->IsModelVertexLit(dict.m_pModel))
+		if (dict.m_pModel->IsModelVertexLit())//modelinfo
 		{
 			Warning("Detail prop model %s is using vertex-lit materials!\nIt must use unlit materials!\n", lump.m_Name );
-			dict.m_pModel = (model_t *)engineClient->LoadModel( "models/error.mdl" );
+			dict.m_pModel = (IVModel *)engineClient->LoadModel( "models/error.mdl" );
 		}
 
 		m_DetailObjectDict.AddToTail( dict );
@@ -2728,7 +2728,7 @@ void CDetailObjectSystem::RenderTranslucentDetailObjectsInLeaf( const Vector &vi
 //-----------------------------------------------------------------------------
 // Gets called each view
 //-----------------------------------------------------------------------------
-bool CDetailObjectSystem::EnumerateLeaf(model_t* world, int leaf, intp context )
+bool CDetailObjectSystem::EnumerateLeaf(IVModel* world, int leaf, intp context )
 {
 	VPROF_BUDGET( "CDetailObjectSystem::EnumerateLeaf", VPROF_BUDGETGROUP_DETAILPROP_RENDERING );
 	Vector v;
@@ -2793,9 +2793,9 @@ void CDetailObjectSystem::BuildDetailObjectRenderLists( const Vector &vViewOrigi
 	// We need to recompute translucency information for all detail props
 	for (int i = m_DetailObjectDict.Size(); --i >= 0; )
 	{
-		if (modelinfo->ModelHasMaterialProxy( m_DetailObjectDict[i].m_pModel ))
+		if (m_DetailObjectDict[i].m_pModel->ModelHasMaterialProxy(  ))//modelinfo
 		{
-			modelinfo->RecomputeTranslucency( m_DetailObjectDict[i].m_pModel, 0, 0, NULL );
+			m_DetailObjectDict[i].m_pModel->Mod_RecomputeTranslucency( 0, 0, NULL );//modelinfo
 		}
 	}
 

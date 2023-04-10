@@ -114,10 +114,10 @@ IPhysicsObject *PhysModelCreateBox( CBaseEntity *pEntity, const Vector &mins, co
 
 	if ( modelIndex )
 	{
-		const model_t *model = modelinfo->GetModel( modelIndex );
+		const IVModel *model = modelinfo->GetModel( modelIndex );
 		if ( model )
 		{
-			CStudioHdr studioHdr( modelinfo->GetStudiomodel( model ), mdlcache );
+			CStudioHdr studioHdr( modelinfo->GetStudiomodel(modelIndex), mdlcache );//model
 			if ( studioHdr.IsValid() )
 			{
 				pSurfaceProps = Studio_GetDefaultSurfaceProps( &studioHdr );
@@ -154,10 +154,10 @@ IPhysicsObject *PhysModelCreateOBB( CBaseEntity *pEntity, const Vector &mins, co
 
 	if ( modelIndex )
 	{
-		const model_t *model = modelinfo->GetModel( modelIndex );
+		const IVModel *model = modelinfo->GetModel( modelIndex );
 		if ( model )
 		{
-			CStudioHdr studioHdr( modelinfo->GetStudiomodel( model ), mdlcache );
+			CStudioHdr studioHdr( modelinfo->GetStudiomodel(modelIndex), mdlcache );//model
 			if (studioHdr.IsValid()) 
 			{
 				pSurfaceProps = Studio_GetDefaultSurfaceProps( &studioHdr );
@@ -328,7 +328,7 @@ IPhysicsObject *PhysModelCreate( CBaseEntity *pEntity, int modelIndex, const Vec
 
 	if ( pObject )
 	{
-		if ( modelinfo->GetModelType(modelinfo->GetModel(modelIndex)) == mod_brush )
+		if ( modelinfo->GetModelType(modelIndex) == mod_brush )//modelinfo->GetModel(modelIndex)
 		{
 			unsigned int contents = modelinfo->GetModelContents( modelIndex );
 			Assert(contents!=0);
@@ -388,7 +388,7 @@ IPhysicsObject *PhysModelCreateUnmoveable( CBaseEntity *pEntity, int modelIndex,
 	//PhysCheckAdd( pObject, STRING(pEntity->m_iClassname) );
 	if ( pObject )
 	{
-		if ( modelinfo->GetModelType(modelinfo->GetModel(modelIndex)) == mod_brush )
+		if ( modelinfo->GetModelType(modelIndex) == mod_brush )//modelinfo->GetModel(modelIndex)
 		{
 			unsigned int contents = modelinfo->GetModelContents( modelIndex );
 			Assert(contents!=0);

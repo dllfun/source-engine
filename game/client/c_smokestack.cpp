@@ -231,10 +231,10 @@ void C_SmokeStack::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs)
 	
 	// Figure out the material name.
 	char str[512] = "unset_material";
-	const model_t *pModel = modelinfo->GetModel( m_iMaterialModel );
+	const IVModel *pModel = modelinfo->GetModel( m_iMaterialModel );
 	if ( pModel )
 	{
-		Q_strncpy( str, modelinfo->GetModelName( pModel ), sizeof( str ) );
+		Q_strncpy( str, modelinfo->GetModelName(m_iMaterialModel), sizeof( str ) );//pModel
 
 		// Get rid of the extension because the material system doesn't want it.
 		char *pExt = Q_stristr( str, ".vmt" );

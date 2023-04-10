@@ -55,7 +55,7 @@ struct mvertex_t
 struct medge_t
 {
 	unsigned short	v[2];
-//	unsigned int	cachededgeoffset;
+	//	unsigned int	cachededgeoffset;
 };
 
 class IMaterial;
@@ -68,7 +68,7 @@ class IMaterialVar;
 struct mtexinfo_t
 {
 	Vector4D	textureVecsTexelsPerWorldUnits[2];	// [s/t] unit vectors in world space. 
-							                        // [i][3] is the s/t offset relative to the origin.
+	// [i][3] is the s/t offset relative to the origin.
 	Vector4D	lightmapVecsLuxelsPerWorldUnits[2];
 	float		luxelsPerWorldUnit;
 	float		worldUnitsPerLuxel;
@@ -100,9 +100,9 @@ struct mnode_t
 	VectorAligned		m_vecCenter;
 	VectorAligned		m_vecHalfDiagonal;
 
-// node specific
+	// node specific
 	cplane_t	*plane;
-	mnode_t		*children[2];	
+	mnode_t		*children[2];
 
 	unsigned short		firstsurface;
 	unsigned short		numsurfaces;
@@ -125,7 +125,7 @@ public:
 	VectorAligned		m_vecHalfDiagonal;
 
 
-// leaf specific
+	// leaf specific
 	short		cluster;
 	short		leafWaterDataID;
 
@@ -163,7 +163,7 @@ typedef struct mportal_s
 	int				numportalverts;
 	cplane_t		*plane;
 	unsigned short	cluster[2];
-//	int				visframe;
+	//	int				visframe;
 } mportal_t;
 
 
@@ -356,8 +356,33 @@ struct spritedata_t
 	CEngineSprite	*sprite;
 };
 
-class model_t
+
+class model_t : public IVModel
 {
+public:
+	virtual int ModelFrameCount() const;
+	virtual bool IsTranslucent() const;
+	virtual int GetModelType() const;
+	virtual void GetModelRenderBounds(Vector& mins, Vector& maxs) const;
+	virtual studiohdr_t* GetStudiomodel() const;
+	virtual bool IsModelVertexLit() const;
+	virtual bool ModelHasMaterialProxy() const;
+	virtual void Mod_RecomputeTranslucency(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate = 1.0f);
+	virtual void* GetModelExtraData() const;
+	virtual const char* GetModelName() const;
+	virtual void GetIlluminationPoint(IClientRenderable* pRenderable, Vector const& origin,
+		QAngle const& angles, Vector* pLightingCenter) const;
+	virtual bool IsTranslucentTwoPass() const;
+	virtual MDLHandle_t	GetCacheHandle() const;
+	virtual void GetModelMaterialColorAndLighting(const Vector& origin,
+		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) const;
+	virtual void GetModelBounds(Vector& mins, Vector& maxs) const;
+	virtual int GetModelSpriteWidth() const;
+	virtual int GetModelSpriteHeight() const;
+	virtual const char* GetModelKeyValueText() const;
+	virtual bool IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const;
+
+
 public:
 	FileNameHandle_t	fnHandle;
 	CUtlString			strName;

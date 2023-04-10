@@ -303,13 +303,13 @@ void CPredictionCopy::DescribeInt( difftype_t dt, int *outvalue, const int *inva
 	if ( m_pCurrentField->flags & FTYPEDESC_MODELINDEX )
 	{
 		int modelindex = outvalue[0];
-		model_t const *m = modelinfo->GetModel( modelindex );
-		if ( m )
+		IVModel const *model = modelinfo->GetModel( modelindex );
+		if (model)
 		{
 			described = true;
 			char shortfile[ 512 ];
 			shortfile[ 0 ] = 0;
-			Q_FileBase( modelinfo->GetModelName( m ), shortfile, sizeof( shortfile ) );
+			Q_FileBase( modelinfo->GetModelName(modelindex), shortfile, sizeof( shortfile ) );//model
 
 			DescribeFields( dt, "integer (%i->%s)\n", outvalue[0], shortfile );
 		}
@@ -334,13 +334,13 @@ void CPredictionCopy::WatchInt( difftype_t dt, int *outvalue, const int *invalue
 	if ( m_pCurrentField->flags & FTYPEDESC_MODELINDEX )
 	{
 		int modelindex = outvalue[0];
-		model_t const *m = modelinfo->GetModel( modelindex );
-		if ( m )
+		IVModel const *model = modelinfo->GetModel( modelindex );
+		if (model)
 		{
 			described = true;
 			char shortfile[ 512 ];
 			shortfile[ 0 ] = 0;
-			Q_FileBase( modelinfo->GetModelName( m ), shortfile, sizeof( shortfile ) );
+			Q_FileBase( modelinfo->GetModelName(modelindex), shortfile, sizeof( shortfile ) );//model
 
 			WatchMsg( "integer (%i->%s)", outvalue[0], shortfile );
 		}

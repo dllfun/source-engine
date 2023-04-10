@@ -354,7 +354,7 @@ const char *CModelPanel::GetModelName( void )
 		if ( m_pModelInfo->m_pszModelName_HWM && ( Q_strlen( m_pModelInfo->m_pszModelName_HWM  ) > 0 ) )
 		{
 			// does the file exist
-			model_t *pModel = (model_t *)engineClient->LoadModel( m_pModelInfo->m_pszModelName_HWM );
+			IVModel *pModel = (IVModel *)engineClient->LoadModel( m_pModelInfo->m_pszModelName_HWM );
 			if ( pModel )
 			{
 				return m_pModelInfo->m_pszModelName_HWM;
@@ -794,11 +794,11 @@ void CModelPanel::OnSetAnimation( KeyValues *data )
 	}
 }
 
-void CModelPanel::CalculateFrameDistanceInternal( const model_t *pModel )
+void CModelPanel::CalculateFrameDistanceInternal( const IVModel *pModel )
 {
 	// Get the model space render bounds.
 	Vector vecMin, vecMax;
-	modelinfo->GetModelRenderBounds( pModel, vecMin, vecMax );
+	pModel->GetModelRenderBounds( vecMin, vecMax );//modelinfo
 	Vector vecCenter = ( vecMax + vecMin ) * 0.5f;
 	vecMin -= vecCenter;
 	vecMax -= vecCenter;
@@ -910,7 +910,7 @@ void CModelPanel::CalculateFrameDistance( void )
 		return;
 
 	// Compute a bounding radius for the model
-	const model_t *mod = modelinfo->GetModel( m_hModel->GetModelIndex() );
+	const IVModel *mod = modelinfo->GetModel( m_hModel->GetModelIndex() );
 	if ( !mod )
 		return;
 
@@ -929,13 +929,13 @@ void CModelPanel::ZoomToFrameDistance( void )
 	if ( !m_flFrameDistance || !m_hModel )
 		return;
 
-	const model_t *mod = modelinfo->GetModel( m_hModel->GetModelIndex() );
-	if ( !mod )
+	const IVModel *model = modelinfo->GetModel( m_hModel->GetModelIndex() );
+	if ( !model)
 		return;
 
 	// Move the model to the midpoint
 	Vector mins, maxs, vecModelCenter;
-	modelinfo->GetModelRenderBounds( mod, mins, maxs );
+	model->GetModelRenderBounds( mins, maxs );//modelinfo
 	VectorLerp( mins, maxs, 0.5f, vecModelCenter );
 
 	vecModelCenter += m_pModelInfo->m_vecFramedOriginOffset;

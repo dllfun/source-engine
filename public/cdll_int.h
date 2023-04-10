@@ -28,7 +28,7 @@
 // forward declarations
 //-----------------------------------------------------------------------------
 class ClientClass;
-class model_t;
+class IVModel;
 class CSentence;
 struct vrect_t;
 struct cmodel_t;
@@ -197,7 +197,7 @@ public:
 	// Find the model's surfaces that intersect the given sphere.
 	// Returns the number of surfaces filled in.
 	virtual int					GetIntersectingSurfaces(
-									const model_t *model,
+									const IVModel *model,
 									const Vector &vCenter, 
 									const float radius,
 									const bool bOnlyVisibleSurfaces,	// Only return surfaces visible to vCenter.
@@ -242,8 +242,8 @@ public:
 	// Get the entity index of the local player
 	virtual int					GetLocalPlayer( void ) = 0;
 
-	// Client DLL is hooking a model, loads the model into memory and returns  pointer to the model_t
-	virtual const model_t		*LoadModel( const char *pName, bool bProp = false ) = 0;
+	// Client DLL is hooking a model, loads the model into memory and returns  pointer to the IVModel
+	virtual const IVModel		*LoadModel( const char *pName, bool bProp = false ) = 0;
 
 	// Get accurate, sub-frame clock ( profiling use )
 	virtual float				Time( void ) = 0; 

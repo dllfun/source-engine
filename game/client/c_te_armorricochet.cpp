@@ -35,7 +35,7 @@ public:
 	Vector			m_vecPos;
 	Vector			m_vecDir;
 
-	const class model_t *m_pModel;
+	const class IVModel *m_pModel;
 };
 
 //-----------------------------------------------------------------------------

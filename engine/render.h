@@ -161,7 +161,7 @@ public:
 	virtual void SetMainView( const Vector &vecOrigin, const QAngle &angles ) = 0;
 	virtual void ViewSetupVisEx( bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags ) = 0;
 	virtual void OverrideViewFrustum( Frustum custom ) = 0;
-	virtual void UpdateBrushModelLightmap( model_t *model, IClientRenderable *Renderable ) = 0;
+	virtual void UpdateBrushModelLightmap(IVModel *model, IClientRenderable *Renderable ) = 0;
 	virtual void BeginUpdateLightmaps( void ) = 0;
 	virtual void EndUpdateLightmaps( void ) = 0;
 	virtual bool InLightmapUpdate( void ) const = 0;

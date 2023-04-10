@@ -625,7 +625,7 @@ public:
 	//void							EnableDynamicModels() { m_bDynamicModelAllowed = true; }
 	//bool							IsDynamicModelLoading() const { return m_bDynamicModelPending; }
 private:
-	virtual void					OnModelLoadComplete( const model_t* pModel );
+	virtual void					OnModelLoadComplete( const IVModel* pModel );
 
 private:
 	void							LockStudioHdr();

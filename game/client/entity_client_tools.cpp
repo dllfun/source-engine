@@ -286,7 +286,7 @@ bool CClientTools::DrawSprite( IClientRenderable *pRenderable, float scale, floa
 	QAngle angles = pRenderable->GetRenderAngles();
 
 	// Get extra data
-	CEngineSprite *psprite = (CEngineSprite *)modelinfo->GetModelExtraData( pRenderable->GetModel() );
+	CEngineSprite *psprite = (CEngineSprite *)pRenderable->GetModel()->GetModelExtraData(  );//modelinfo
 	if ( !psprite )
 		return false;
 

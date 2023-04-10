@@ -1320,8 +1320,8 @@ static CBaseEntity *CreateSimplePhysicsObject( CBaseEntity *pEntity, bool create
 {
 	CBaseEntity *pPhysEntity = NULL;
 	int modelindex = pEntity->GetModelIndex();
-	const model_t *model = modelinfo->GetModel( modelindex );
-	if ( model && modelinfo->GetModelType(model) == mod_brush )
+	const IVModel *model = modelinfo->GetModel( modelindex );
+	if ( model && modelinfo->GetModelType(modelindex) == mod_brush )//model
 	{
 		pPhysEntity = CreateEntityByName( "simple_physics_brush" );
 	}

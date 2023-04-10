@@ -212,7 +212,7 @@ void C_PhysPropClientside::SetRespawnZone( C_FuncPhysicsRespawnZone *pZone )
 int C_PhysPropClientside::ParsePropData( void )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( !modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), modelinfo->GetModelKeyValueText( GetModel() ) ) )
+	if ( !modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
 	{
 		modelKeyValues->deleteThis();
 		return PARSE_FAILED_NO_DATA;
@@ -238,11 +238,11 @@ bool C_PhysPropClientside::Initialize()
 		return false;
 	}
 
-	const model_t *mod = GetModel();
-	if ( mod )
+	const IVModel *model = GetModel();
+	if (model)
 	{
 		Vector mins, maxs;
-		modelinfo->GetModelBounds( mod, mins, maxs );
+		modelinfo->GetModelBounds(GetModelIndex(), mins, maxs );//mod
 		SetCollisionBounds( mins, maxs );
 	}
 
@@ -854,11 +854,11 @@ bool C_FuncPhysicsRespawnZone::Initialize( void )
 	AddSolidFlags( FSOLID_TRIGGER );	
 	SetMoveType( MOVETYPE_NONE );
 
-	const model_t *mod = GetModel();
-	if ( mod )
+	const IVModel *model = GetModel();
+	if (model)
 	{
 		Vector mins, maxs;
-		modelinfo->GetModelBounds( mod, mins, maxs );
+		modelinfo->GetModelBounds(GetModelIndex(), mins, maxs );//model
 		SetCollisionBounds( mins, maxs );
 	}
 

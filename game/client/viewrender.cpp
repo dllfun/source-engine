@@ -3554,10 +3554,10 @@ void CRendering3dView::BuildRenderableRenderLists( int viewID )
 		int nTranslucent = m_pRenderablesList->m_RenderGroupCounts[RENDER_GROUP_TRANSLUCENT_ENTITY];
 		for( i=0; i < nTranslucent; ++i )
 		{
-			const model_t *pModel = pEntities[i].m_pRenderable->GetModel();
+			const IVModel *pModel = pEntities[i].m_pRenderable->GetModel();
 			if( pModel )
 			{
-				int nModelType = modelinfo->GetModelType( pModel );
+				int nModelType = pModel->GetModelType(  );//modelinfo
 				if( nModelType == mod_brush )
 				{
 					UpdateBrushModelLightmap( pEntities[i].m_pRenderable );

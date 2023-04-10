@@ -1123,7 +1123,7 @@ unsigned char UTIL_ComputeEntityFade( C_BaseEntity *pEntity, float flMinDist, fl
 		float flRadius = vecMins.DistTo( vecMaxs ) * 0.5f;
 
 		Vector vecAbsCenter;
-		if ( modelinfo->GetModelType( pEntity->GetModel() ) == mod_brush )
+		if ( modelinfo->GetModelType( pEntity->GetModelIndex() ) == mod_brush )//pEntity->GetModel()
 		{
 			Vector vecRenderMins, vecRenderMaxs;
 			pEntity->GetRenderBoundsWorldspace( vecRenderMins, vecRenderMaxs );
