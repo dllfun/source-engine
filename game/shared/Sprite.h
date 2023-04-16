@@ -92,6 +92,7 @@ public:
 
 	CSprite();
 	virtual void SetModel( const char *szModelName );
+	virtual void SetModelPointer(const IVModel* pModel);
 
 	void Spawn( void );
 	void Precache( void );

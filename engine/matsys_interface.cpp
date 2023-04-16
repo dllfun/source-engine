@@ -823,7 +823,7 @@ void InitMaterialSystemConfig( bool bInEditMode )
 //-----------------------------------------------------------------------------
 void UpdateMaterialSystemConfig( void )
 {
-	if (host_state.worldmodel && host_state.worldmodel->brush.pShared && !host_state.worldmodel->brush.pShared->lightdata )
+	if (g_pHost->host_state.worldmodel && g_pHost->host_state.worldmodel->brush.pShared && !g_pHost->host_state.worldmodel->brush.pShared->lightdata )
 	{
 		mat_fullbright.SetValue( 1 );
 	}
@@ -1603,7 +1603,7 @@ void ShutdownMaterialSystem( void )
 void ReleaseMaterialSystemObjects()
 {
 #ifndef SWDS
-	DispInfo_ReleaseMaterialSystemObjects( host_state.worldmodel );
+	DispInfo_ReleaseMaterialSystemObjects(g_pHost->host_state.worldmodel );
 
 	modelrender->ReleaseAllStaticPropColorData();
 #endif
@@ -1619,7 +1619,7 @@ void RestoreMaterialSystemObjects( int nChangeFlags )
 	if ( IsX360() )
 		return;
 
-	bool bThreadingAllowed = Host_AllowQueuedMaterialSystem( false );
+	bool bThreadingAllowed = g_pHost->Host_AllowQueuedMaterialSystem( false );
 	g_LostVideoMemory = false;
 
 	if ( nChangeFlags & MATERIAL_RESTORE_VERTEX_FORMAT_CHANGED )
@@ -1628,7 +1628,7 @@ void RestoreMaterialSystemObjects( int nChangeFlags )
 		modelrender->RemoveAllDecalsFromAllModels();
 	}
 
-	if (host_state.worldmodel)
+	if (g_pHost->host_state.worldmodel)
 	{
 		if ( (nChangeFlags & MATERIAL_RESTORE_VERTEX_FORMAT_CHANGED) || materials->GetNumSortIDs() == 0 )
 		{
@@ -1639,7 +1639,7 @@ void RestoreMaterialSystemObjects( int nChangeFlags )
 		}
 		else
 		{
-			modelloader->Map_LoadDisplacements( host_state.worldmodel, true );
+			modelloader->Map_LoadDisplacements(g_pHost->host_state.worldmodel, true );
 #ifndef SWDS
 			WorldStaticMeshCreate();
 			// Gotta recreate the lightmaps
@@ -1658,7 +1658,7 @@ void RestoreMaterialSystemObjects( int nChangeFlags )
 	cl.ForceFullUpdate();
 #endif
 
-	Host_AllowQueuedMaterialSystem( bThreadingAllowed );
+	g_pHost->Host_AllowQueuedMaterialSystem( bThreadingAllowed );
 }
 
 bool TangentSpaceSurfaceSetup( SurfaceHandle_t surfID, Vector &tVect )
@@ -2021,14 +2021,14 @@ int FindOrAddMesh( IMaterial *pMaterial, int vertexCount )
 
 void SetTexInfoBaseTexture2Flags()
 {
-	for ( int i=0; i < host_state.worldmodel->brush.pShared->numtexinfo; i++ )
+	for ( int i=0; i < g_pHost->host_state.worldmodel->brush.pShared->numtexinfo; i++ )
 	{
-		host_state.worldmodel->brush.pShared->texinfo[i].texinfoFlags &= ~TEXINFO_USING_BASETEXTURE2;
+		g_pHost->host_state.worldmodel->brush.pShared->texinfo[i].texinfoFlags &= ~TEXINFO_USING_BASETEXTURE2;
 	}
 	
-	for ( int i=0; i < host_state.worldmodel->brush.pShared->numtexinfo; i++ )
+	for ( int i=0; i < g_pHost->host_state.worldmodel->brush.pShared->numtexinfo; i++ )
 	{
-		mtexinfo_t *pTexInfo = &host_state.worldmodel->brush.pShared->texinfo[i];
+		mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[i];
 		IMaterial *pMaterial = pTexInfo->material;
 		if ( !pMaterial )
 			continue;
@@ -2101,7 +2101,7 @@ void WorldStaticMeshCreate( void )
 
 	int i;
 	// sort the surfaces into the sort arrays
-	for( int surfaceIndex = 0; surfaceIndex < host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
+	for( int surfaceIndex = 0; surfaceIndex < g_pHost->host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
 	{
 		SurfaceHandle_t surfID = SurfaceHandleFromIndex( surfaceIndex );
 		// set these flags here as they are determined by material data
@@ -2192,7 +2192,7 @@ void WorldStaticMeshCreate( void )
 				MSL_FOREACH_SURFACE_IN_GROUP_BEGIN(matSortArray, group, surfID);
 
 					MSurf_VertBufferIndex( surfID ) = vertBufferIndex;
-					BuildMSurfaceVertexArrays( host_state.worldmodel->brush.pShared, surfID, OVERBRIGHT, meshBuilder );
+					BuildMSurfaceVertexArrays(g_pHost->host_state.worldmodel->brush.pShared, surfID, OVERBRIGHT, meshBuilder );
 					vertBufferIndex += MSurf_VertCount( surfID );
 
 				MSL_FOREACH_SURFACE_IN_GROUP_END();

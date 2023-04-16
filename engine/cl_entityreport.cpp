@@ -163,10 +163,10 @@ void CL_RecordEntityBits( int entnum, int bitcount )
 	slot->average = ( BITCOUNT_AVERAGE ) * slot->average + ( 1.f - BITCOUNT_AVERAGE ) * bitcount;
 
 	// Recompute peak
-	if ( realtime >= slot->peaktime )
+	if (g_pHost->Host_GetRealTime() >= slot->peaktime )
 	{
 		slot->peak = 0.0f;
-		slot->peaktime = realtime + PEAK_LATCH_TIME;
+		slot->peaktime = g_pHost->Host_GetRealTime() + PEAK_LATCH_TIME;
 	}
 
 	// Store off peak
@@ -189,7 +189,7 @@ void CL_RecordAddEntity( int entnum )
 
 	ENTITYBITS *slot = &s_EntityBits[ entnum ];
 	slot->flags = FENTITYBITS_ADD;
-	slot->effectfinishtime = realtime + EFFECT_TIME;
+	slot->effectfinishtime = g_pHost->Host_GetRealTime() + EFFECT_TIME;
 }
 
 //-----------------------------------------------------------------------------
@@ -205,7 +205,7 @@ void CL_RecordLeavePVS( int entnum )
 
 	ENTITYBITS *slot = &s_EntityBits[ entnum ];
 	slot->flags = FENTITYBITS_LEAVEPVS;
-	slot->effectfinishtime = realtime + EFFECT_TIME;
+	slot->effectfinishtime = g_pHost->Host_GetRealTime() + EFFECT_TIME;
 }
 
 //-----------------------------------------------------------------------------
@@ -222,7 +222,7 @@ void CL_RecordDeleteEntity( int entnum, ClientClass *pclass )
 
 	ENTITYBITS *slot = &s_EntityBits[ entnum ];
 	slot->flags = FENTITYBITS_DELETE;
-	slot->effectfinishtime = realtime + EFFECT_TIME;
+	slot->effectfinishtime = g_pHost->Host_GetRealTime() + EFFECT_TIME;
 	slot->deletedclientclass = pclass;
 }
 
@@ -357,13 +357,13 @@ static int MungeColorValue( float cycle, int& value )
 //-----------------------------------------------------------------------------
 void CEntityReportPanel::ApplyEffect( ENTITYBITS *entry, int& r, int& g, int& b )
 {
-	bool effectactive = ( realtime <= entry->effectfinishtime ) ? true : false;
+	bool effectactive = (g_pHost->Host_GetRealTime() <= entry->effectfinishtime ) ? true : false;
 	if ( !effectactive )
 		return;
 
 	float frequency = 3.0f;
 
-	float frac = ( EFFECT_TIME - ( entry->effectfinishtime - realtime ) ) / EFFECT_TIME;
+	float frac = ( EFFECT_TIME - ( entry->effectfinishtime - g_pHost->Host_GetRealTime()) ) / EFFECT_TIME;
 	frac = min( 1.f, frac );
 	frac = max( 0.f, frac );
 
@@ -405,7 +405,7 @@ bool CEntityReportPanel::DrawEntry( int row, int col, int rowheight, int colwidt
 	
 	entry = &s_EntityBits[ entityIdx ];
 
-	effectactive = ( realtime <= entry->effectfinishtime ) ? true : false;
+	effectactive = (g_pHost->Host_GetRealTime() <= entry->effectfinishtime ) ? true : false;
 
 	if ( pNet && ((pClientClass = pNet->GetClientClass())) != NULL )
 	{
@@ -535,7 +535,7 @@ void CEntityReportPanel::Paint()
 
 		entry = &s_EntityBits[ lastused ];
 
-		effectactive = ( realtime <= entry->effectfinishtime ) ? true : false;
+		effectactive = (g_pHost->Host_GetRealTime() <= entry->effectfinishtime ) ? true : false;
 
 		if ( pNet && pNet->GetClientClass() )
 		{

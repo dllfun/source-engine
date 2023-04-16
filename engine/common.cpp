@@ -927,13 +927,13 @@ void COM_InitFilesystem( const char *pFullModPath )
 	initInfo.m_pDirectoryName = pFullModPath;
 	if ( !initInfo.m_pDirectoryName )
 	{
-		initInfo.m_pDirectoryName = GetCurrentGame();
+		initInfo.m_pDirectoryName = g_pHost->GetCurrentGame();
 	}
 
 	Host_CheckGore();
 
 	initInfo.m_bLowViolence = g_bLowViolence;
-	initInfo.m_bMountHDContent = BLoadHDContent( initInfo.m_pDirectoryName, GetBaseDirectory() );
+	initInfo.m_bMountHDContent = BLoadHDContent( initInfo.m_pDirectoryName, g_pHost->GetBaseDirectory() );
 
 	// Load gameinfo.txt and setup all the search paths, just like the tools do.
 	FileSystem_LoadSearchPaths( initInfo );
@@ -942,7 +942,7 @@ void COM_InitFilesystem( const char *pFullModPath )
 	Q_MakeAbsolutePath( com_gamedir, sizeof( com_gamedir ), initInfo.m_ModPath );
 							  	
 	// Set com_basedir.
-	Q_strncpy ( com_basedir, GetBaseDirectory(), sizeof( com_basedir ) ); // the "root" directory where hl2.exe is
+	Q_strncpy ( com_basedir, g_pHost->GetBaseDirectory(), sizeof( com_basedir ) ); // the "root" directory where hl2.exe is
 	Q_strlower( com_basedir );
 	Q_FixSlashes( com_basedir );
 	

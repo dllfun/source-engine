@@ -119,7 +119,7 @@ static ConVar async_serialize( "async_serialize", "0", 0, "Force async reads to 
 #endif
 
 extern ConVar host_timer_spin_ms;
-extern float host_nexttick;
+//extern float host_nexttick;
 extern IVEngineClient *engineClient;
 
 #ifdef WIN32
@@ -307,8 +307,8 @@ bool CEngine::FilterTime( float dt )
 {
 	if ( sv.IsDedicated() && !g_bDedicatedServerBenchmarkMode )
 	{
-		m_flMinFrameTime = host_nexttick;
-		return ( dt >= host_nexttick );
+		m_flMinFrameTime = g_pHost->host_nexttick;
+		return ( dt >= g_pHost->host_nexttick );
 	}
 
 	m_flMinFrameTime = 0.0f;
@@ -402,10 +402,10 @@ void CEngine::Frame( void )
 			// ... but if the clock ever went backwards due to a bug,
 			// we'd have no idea how much time has elapsed, so just 
 			// catch up to the next scheduled server tick.
-			m_flFrameTime = host_nexttick;
+			m_flFrameTime = g_pHost->host_nexttick;
 		}
 
-		if ( FilterTime( m_flFrameTime )  )
+		if ( FilterTime( m_flFrameTime )  || 1)
 		{
 			// Time to render our frame.
 			break;
@@ -498,7 +498,7 @@ void CEngine::Frame( void )
 	case DLL_CLOSE:				// closing down dll
 	case DLL_RESTART:			// engine is shutting down but will restart right away
 		// Run the engine frame
-		HostState_Frame( m_flFrameTime );
+		HostState_Frame(m_flFrameTime);
 		break;
 	}
 

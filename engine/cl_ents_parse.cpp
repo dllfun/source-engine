@@ -302,7 +302,7 @@ void CL_CopyNewEntity(
 {
 	if ( u.m_nNewEntity < 0 || u.m_nNewEntity >= MAX_EDICTS )
 	{
-		Host_Error ("CL_CopyNewEntity: u.m_nNewEntity < 0 || m_nNewEntity >= MAX_EDICTS");
+		g_pHost->Host_Error ("CL_CopyNewEntity: u.m_nNewEntity < 0 || m_nNewEntity >= MAX_EDICTS");
 		return;
 	}
 
@@ -311,7 +311,7 @@ void CL_CopyNewEntity(
 
 	if( iClass >= cl.m_nServerClasses )
 	{
-		Host_Error("CL_CopyNewEntity: invalid class index (%d).\n", iClass);
+		g_pHost->Host_Error("CL_CopyNewEntity: invalid class index (%d).\n", iClass);
 		return;
 	}
 
@@ -335,7 +335,7 @@ void CL_CopyNewEntity(
 		if( !ent )
 		{
 			const char *pNetworkName = cl.m_pServerClasses[iClass].m_pClientClass ? cl.m_pServerClasses[iClass].m_pClientClass->m_pNetworkName : "";
-			Host_Error( "CL_ParsePacketEntities:  Error creating entity %s(%i)\n", pNetworkName, u.m_nNewEntity );
+			g_pHost->Host_Error( "CL_ParsePacketEntities:  Error creating entity %s(%i)\n", pNetworkName, u.m_nNewEntity );
 			return;
 		}
 
@@ -375,7 +375,7 @@ void CL_CopyNewEntity(
 	RecvTable *pRecvTable = GetEntRecvTable( u.m_nNewEntity );
 
 	if( !pRecvTable )
-		Host_Error( "CL_ParseDelta: invalid recv table for ent %d.\n", u.m_nNewEntity );
+		g_pHost->Host_Error( "CL_ParseDelta: invalid recv table for ent %d.\n", u.m_nNewEntity );
 
 	if ( u.m_bUpdateBaselines )
 	{
@@ -447,7 +447,7 @@ void CL_PreserveExistingEntity( int nOldEntity )
 		Cbuf_Execute();
 #endif // STAGING_ONLY
 
-		Host_Error( "CL_PreserveExistingEntity: missing client entity %d.\n", nOldEntity );
+		g_pHost->Host_Error( "CL_PreserveExistingEntity: missing client entity %d.\n", nOldEntity );
 		return;
 	}
 
@@ -461,7 +461,7 @@ void CL_CopyExistingEntity( CEntityReadInfo &u )
 	IClientNetworkable *pEnt = entitylist->GetClientNetworkable( u.m_nNewEntity );
 	if ( !pEnt )
 	{
-		Host_Error( "CL_CopyExistingEntity: missing client entity %d.\n", u.m_nNewEntity );
+		g_pHost->Host_Error( "CL_CopyExistingEntity: missing client entity %d.\n", u.m_nNewEntity );
 		return;
 	}
 
@@ -474,7 +474,7 @@ void CL_CopyExistingEntity( CEntityReadInfo &u )
 
 	if( !pRecvTable )
 	{
-		Host_Error( "CL_ParseDelta: invalid recv table for ent %d.\n", u.m_nNewEntity );
+		g_pHost->Host_Error( "CL_ParseDelta: invalid recv table for ent %d.\n", u.m_nNewEntity );
 		return;
 	}
 
@@ -595,16 +595,16 @@ bool CL_ProcessPacketEntities ( SVC_PacketEntities *entmsg )
 		//  ask it for an instantaneous perf snapshot
 		if ( cl_debug_player_perf.GetBool() &&
 			( flDeltaSeconds > 0.5f ) &&							// delta is pretty out of date
-			( ( realtime - g_flLastPerfRequest ) > 5.0f ) )		// haven't requested in a while
+			( (g_pHost->Host_GetRealTime() - g_flLastPerfRequest ) > 5.0f ) )		// haven't requested in a while
 		{
-			g_flLastPerfRequest = realtime;
+			g_flLastPerfRequest = g_pHost->Host_GetRealTime();
 			Warning( "Gap in server data, requesting connection perf data\n" );
 			cl.SendStringCmd( "playerperf\n" );
 		}
 
 		if ( cl.GetServerTickCount() == entmsg->m_nDeltaFrom )
 		{
-			Host_Error( "Update self-referencing, connection dropped.\n" );
+			g_pHost->Host_Error( "Update self-referencing, connection dropped.\n" );
 			return false;
 		}
 

@@ -529,7 +529,7 @@ void CBaseClient::SpawnPlayer( void )
 	}
 
 	// Set client clock to match server's
-	NET_Tick tick( m_Server->GetTick(), host_frametime_unbounded, host_frametime_stddeviation );
+	NET_Tick tick( m_Server->GetTick(), g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
 	SendNetMsg( tick, true );
 	
 	// Spawned into server, not fully active, though
@@ -547,7 +547,7 @@ bool CBaseClient::SendSignonData( void )
 
 	if ( m_Server->m_Signon.IsOverflowed() )
 	{
-		Host_Error( "Signon buffer overflowed %i bytes!!!\n", m_Server->m_Signon.GetNumBytesWritten() );
+		g_pHost->Host_Error( "Signon buffer overflowed %i bytes!!!\n", m_Server->m_Signon.GetNumBytesWritten() );
 		return false;
 	}
 
@@ -727,7 +727,7 @@ bool CBaseClient::SendServerInfo( void )
 	if ( !m_NetChannel->IsLoopback() )
 	{
 		NET_SetConVar convars;
-		Host_BuildConVarUpdateMessage( &convars, FCVAR_REPLICATED, true );
+		g_pHost->Host_BuildConVarUpdateMessage( &convars, FCVAR_REPLICATED, true );
 
 		convars.WriteToBuffer( msg );
 	}
@@ -1078,8 +1078,8 @@ void CBaseClient::EndTrace( bf_write &msg )
 	CUtlBuffer logData( 0, 0, CUtlBuffer::TEXT_BUFFER );
 
 	logData.Printf( "%f/%d Player [%s][%d][adr:%s] was sent a datagram %d bits (%8.3f bytes), took %.2fms\n",
-		realtime, 
-		host_tickcount,
+		g_pHost->Host_GetRealTime(),
+		g_pHost->host_tickcount,
 		GetClientName(), 
 		GetPlayerSlot(), 
 		GetNetChannel()->GetAddress(),
@@ -1177,7 +1177,7 @@ write_again:
 	}
 
 	// send tick time
-	NET_Tick tickmsg( pFrame->tick_count, host_frametime_unbounded, host_frametime_stddeviation );
+	NET_Tick tickmsg( pFrame->tick_count, g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
 
 	StartTrace( msg );
 

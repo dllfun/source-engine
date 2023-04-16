@@ -798,7 +798,7 @@ void CEngineVGui::Init()
 	// Each mod acn have its own language.txt in addition to the valve_%%langauge%%.txt file under defaultgamedir.
 	// load mod-specific localization file for kb_act.lst, user.scr, settings.scr, etc.
 	char szFileName[MAX_PATH];
-	Q_snprintf( szFileName, sizeof( szFileName ) - 1, "resource/%s_%%language%%.txt", GetCurrentMod() );
+	Q_snprintf( szFileName, sizeof( szFileName ) - 1, "resource/%s_%%language%%.txt", g_pHost->GetCurrentMod() );
 	szFileName[ sizeof( szFileName ) - 1 ] = '\0';
 	g_pVGuiLocalize->AddFile( szFileName );
 

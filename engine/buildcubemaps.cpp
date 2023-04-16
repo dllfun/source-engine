@@ -1123,7 +1123,7 @@ CON_COMMAND( buildcubemaps, "Rebuild cubemaps." )
 {
 	extern void V_RenderVGuiOnly();
 
-	bool bAllow = Host_AllowQueuedMaterialSystem(false);
+	bool bAllow = g_pHost->Host_AllowQueuedMaterialSystem(false);
 
 	// do this to force a frame to render so the material system syncs up to single thread mode
 	V_RenderVGuiOnly();
@@ -1139,7 +1139,7 @@ CON_COMMAND( buildcubemaps, "Rebuild cubemaps." )
 	{
 		ConMsg( "Usage: buildcubemaps [numBounces]\n" );
 	}
-	Host_AllowQueuedMaterialSystem(bAllow);
+	g_pHost->Host_AllowQueuedMaterialSystem(bAllow);
 }
 #endif // SWDS
 

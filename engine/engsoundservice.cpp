@@ -98,7 +98,7 @@ public:
 	// Filtered local time
 	virtual float GetHostTime()
 	{
-		return host_time;
+		return g_pHost->Host_GetTickTime();
 	}
 
 	virtual int GetViewEntity()

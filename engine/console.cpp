@@ -881,7 +881,7 @@ void CConPanel::Con_NPrintf( int idx, const char *msg )
 	da_notify[idx].szNotify[ sizeof( da_notify[idx].szNotify ) / sizeof( wchar_t ) - 1 ] = L'\0';
 
 	// Reset values
-	da_notify[idx].expire = realtime + DBG_NOTIFY_TIMEOUT;
+	da_notify[idx].expire = g_pHost->Host_GetRealTime() + DBG_NOTIFY_TIMEOUT;
 	VectorCopy( da_default_color, da_notify[idx].color );
 	da_notify[idx].fixed_width_font = false;
 	m_bDrawDebugAreas = true;
@@ -906,7 +906,7 @@ void CConPanel::Con_NXPrintf( const struct con_nprint_s *info, const char *msg )
 	if ( info->time_to_live == -1 )
 		da_notify[ info->index ].expire = -1; // special marker means to just draw it once
 	else
-		da_notify[ info->index ].expire = realtime + info->time_to_live;
+		da_notify[ info->index ].expire = g_pHost->Host_GetRealTime() + info->time_to_live;
 	VectorCopy( info->color, da_notify[ info->index ].color );
 	da_notify[ info->index ].fixed_width_font = info->fixed_width_font;
 	m_bDrawDebugAreas = true;
@@ -931,7 +931,7 @@ static void safestrncat( wchar_t *text, int maxCharactersWithNullTerminator, wch
 
 void CConPanel::AddToNotify( const Color& clr, char const *msg )
 {
-	if ( !host_initialized )
+	if ( !g_pHost->host_initialized )
 		return;
 
 	// notify area only ever draws in developer mode - it should never be used for game messages
@@ -1072,7 +1072,7 @@ bool CConPanel::ShouldDraw()
 		{
 			CNotifyText *notify = &m_NotifyText[ i ];
 
-			notify->liferemaining -= host_frametime;
+			notify->liferemaining -= g_pHost->host_frametime;
 
 			if ( notify->liferemaining <= 0.0f )
 			{
@@ -1198,12 +1198,12 @@ int CConPanel::ProcessNotifyLines( int &left, int &top, int &right, int &bottom,
 
 	for ( int i = 0; i < MAX_DBG_NOTIFY; i++ )
 	{
-		if ( realtime < da_notify[i].expire || da_notify[i].expire == -1 )
+		if (g_pHost->Host_GetRealTime() < da_notify[i].expire || da_notify[i].expire == -1 )
 		{
 			// If it's marked this way, only draw it once.
 			if ( da_notify[i].expire == -1 && bDraw )
 			{
-				da_notify[i].expire = realtime - 1;
+				da_notify[i].expire = g_pHost->Host_GetRealTime() - 1;
 			}
 			
 			int len;

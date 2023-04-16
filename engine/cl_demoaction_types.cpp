@@ -875,7 +875,7 @@ DECLARE_DEMOACTION( DEMO_ACTION_PAUSE, CDemoActionPausePlayback );
 #include "tier0/memdbgon.h"
 
 extern float	scr_demo_override_fov;
-extern float	host_time;
+//extern float	host_time;
 
 CDemoActionZoom::CDemoActionZoom()
 {
@@ -922,7 +922,7 @@ bool CDemoActionZoom::Update( const DemoActionTimingContext& tc )
 	if ( GetActionFired() )
 	{
 		// See if we're done yet
-		float elapsed = host_time - m_flFOVStartTime;
+		float elapsed = g_pHost->Host_GetTickTime() - m_flFOVStartTime;
 		if ( elapsed > m_flFOVRateOut )
 		{
 			if ( m_bStayout )
@@ -990,7 +990,7 @@ void CDemoActionZoom::FireAction( void )
 {
 	m_flOriginalFOV	= g_EngineRenderer->GetFov();
 	scr_demo_override_fov = m_flOriginalFOV;
-	m_flFOVStartTime = host_time;
+	m_flFOVStartTime = g_pHost->Host_GetTickTime();
 }
 
 void CDemoActionZoom::SaveKeysToBuffer( int depth, CUtlBuffer& buf )

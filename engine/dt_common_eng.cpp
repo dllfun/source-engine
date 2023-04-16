@@ -238,7 +238,7 @@ void DataTable_CreateClientClassInfosFromServerClasses( CBaseClientState *pState
 	pState->m_pServerClasses = new C_ServerClassInfo[ pState->m_nServerClasses ];
 	if ( !pState->m_pServerClasses )
 	{
-		Host_EndGame(true, "CL_ParseClassInfo: can't allocate %d C_ServerClassInfos.\n", pState->m_nServerClasses);
+		g_pHost->Host_EndGame(true, "CL_ParseClassInfo: can't allocate %d C_ServerClassInfos.\n", pState->m_nServerClasses);
 		return;
 	}
 
@@ -376,7 +376,7 @@ bool DataTable_ParseClassInfosFromBuffer( CClientState *pState, bf_read *pBuf )
 
 	if ( !pState->m_pServerClasses )
 	{
-		Host_EndGame(true, "CL_ParseClassInfo: can't allocate %d C_ServerClassInfos.\n", pState->m_nServerClasses);
+		g_pHost->Host_EndGame(true, "CL_ParseClassInfo: can't allocate %d C_ServerClassInfos.\n", pState->m_nServerClasses);
 		return false;
 	}
 	
@@ -386,7 +386,7 @@ bool DataTable_ParseClassInfosFromBuffer( CClientState *pState, bf_read *pBuf )
 
 		if( classID >= pState->m_nServerClasses )
 		{
-			Host_EndGame(true, "DataTable_ParseClassInfosFromBuffer: invalid class index (%d).\n", classID);
+			g_pHost->Host_EndGame(true, "DataTable_ParseClassInfosFromBuffer: invalid class index (%d).\n", classID);
 			return false;
 		}
 
@@ -409,7 +409,7 @@ bool DataTable_LoadDataTablesFromBuffer( bf_read *pBuf, int nDemoProtocol )
 
 		if ( !RecvTable_RecvClassInfos( pBuf, bNeedsDecoder, nDemoProtocol ) )
 		{
-			Host_Error( "DataTable_ParseClientTablesFromBuffer failed.\n" );
+			g_pHost->Host_Error( "DataTable_ParseClientTablesFromBuffer failed.\n" );
 			return false;
 		}
 	}

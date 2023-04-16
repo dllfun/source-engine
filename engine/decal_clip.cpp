@@ -163,7 +163,7 @@ void R_SetupDecalVertsForMSurface(
 	Vector * RESTRICT pTextureSpaceBasis,
 	CDecalVert * RESTRICT pVerts )
 {
-	unsigned short * RESTRICT pIndices = &host_state.worldmodel->brush.pShared->vertindices[MSurf_FirstVertIndex( surfID )];
+	unsigned short * RESTRICT pIndices = &g_pHost->host_state.worldmodel->brush.pShared->vertindices[MSurf_FirstVertIndex( surfID )];
 	int count = MSurf_VertCount( surfID );
 	float uOffset = 0.5f - pDecal->dx;
 	float vOffset = 0.5f - pDecal->dy;
@@ -172,7 +172,7 @@ void R_SetupDecalVertsForMSurface(
 	{
 		int vertIndex = pIndices[j];
 		
-		pVerts[j].m_vPos = host_state.worldmodel->brush.pShared->vertexes[vertIndex].position; // Copy model space coordinates
+		pVerts[j].m_vPos = g_pHost->host_state.worldmodel->brush.pShared->vertexes[vertIndex].position; // Copy model space coordinates
 		// garymcthack - what about m_ParentTexCoords?
 		pVerts[j].m_ctCoords.x = DotProduct( pVerts[j].m_vPos, pTextureSpaceBasis[0] ) + uOffset;
 		pVerts[j].m_ctCoords.y = DotProduct( pVerts[j].m_vPos, pTextureSpaceBasis[1] ) + vOffset;

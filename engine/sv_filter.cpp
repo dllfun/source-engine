@@ -60,7 +60,7 @@ bool Filter_ShouldDiscard( const netadr_t& adr )
 	{
 		if ( ( g_IPFilters[i].compare != 0xffffffff) &&
 			 ( g_IPFilters[i].banEndTime != 0.0f ) &&
-			 ( g_IPFilters[i].banEndTime <= realtime ) )
+			 ( g_IPFilters[i].banEndTime <= g_pHost->Host_GetRealTime()) )
 		{
 			g_IPFilters.Remove(i);
 			continue;
@@ -182,7 +182,7 @@ static void Filter_Add_f( const CCommand& args )
 	g_IPFilters[i].banTime = banTime;
 
 	// Time to unban.
-	g_IPFilters[i].banEndTime = ( banTime != 0.0 ) ? ( realtime + 60.0 * banTime ) : 0.0;
+	g_IPFilters[i].banEndTime = ( banTime != 0.0 ) ? (g_pHost->Host_GetRealTime() + 60.0 * banTime ) : 0.0;
 
 	if ( !Filter_ConvertString( args[2], &g_IPFilters[i]) )
 	{
@@ -240,7 +240,7 @@ static void Filter_Add_f( const CCommand& args )
 
 		event->SetString( "ip", args[2] );
 		event->SetString( "duration", szDuration );
-		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : host_client->m_Name );
+		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
 		event->SetBool( "kicked", bKick && bFound && client  );
 
 		g_GameEventManager.FireEvent( event );
@@ -298,7 +298,7 @@ CON_COMMAND( removeip, "Remove an IP address from the ban list." )
 			{
 				event->SetString( "networkid", "" );
 				event->SetString( "ip", szIP );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
 
 				g_GameEventManager.FireEvent( event );
 			}
@@ -329,7 +329,7 @@ CON_COMMAND( removeip, "Remove an IP address from the ban list." )
 			{
 				event->SetString( "networkid", "" );
 				event->SetString( "ip", args[1] );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
 				g_GameEventManager.FireEvent( event );
 			}
 
@@ -439,7 +439,7 @@ bool Filter_IsUserBanned( const USERID_t& userid )
 	{
 		// Time out old filters
 		if ( ( g_UserFilters[i].banEndTime != 0.0f ) &&
-			 ( g_UserFilters[i].banEndTime <= realtime ) )
+			 ( g_UserFilters[i].banEndTime <= g_pHost->Host_GetRealTime()) )
 		{
 			g_UserFilters.Remove( i );
 			continue;
@@ -625,7 +625,7 @@ CON_COMMAND( removeid, "Remove a user ID from the ban list." )
 			{
 				event->SetString( "networkid", szSearchString );
 				event->SetString( "ip", "" );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
 				g_GameEventManager.FireEvent( event );
 			}
 
@@ -660,7 +660,7 @@ CON_COMMAND( removeid, "Remove a user ID from the ban list." )
 			{
 				event->SetString( "networkid", GetUserIDString( id ) );
 				event->SetString( "ip", "" );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
 				g_GameEventManager.FireEvent( event );
 			}
 		}
@@ -893,7 +893,7 @@ CON_COMMAND( banid, "Add a user ID to the ban list." )
 	}
 
 	g_UserFilters[i].banTime = banTime;
-	g_UserFilters[i].banEndTime = ( banTime != 0.0 ) ? ( realtime + 60.0 * banTime ) : 0.0;
+	g_UserFilters[i].banEndTime = ( banTime != 0.0 ) ? (g_pHost->Host_GetRealTime() + 60.0 * banTime ) : 0.0;
 	g_UserFilters[i].userid = *id;
 
 	// Build a duration string for the ban
@@ -926,7 +926,7 @@ CON_COMMAND( banid, "Add a user ID to the ban list." )
 
 		event->SetString( "ip", "" );
 		event->SetString( "duration", szDuration );
-		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : host_client->m_Name );
+		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
 		event->SetInt( "kicked", ( bKick && bPlaying && client ) ? 1 : 0 );
 
 		g_GameEventManager.FireEvent( event );

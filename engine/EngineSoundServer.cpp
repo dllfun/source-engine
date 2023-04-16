@@ -159,7 +159,7 @@ bool CEngineSoundServer::PrecacheSound( const char *pSample, bool bPreload, bool
 
 	if ( pSample[0] <= ' ' )
 	{
-		Host_Error( "CEngineSoundServer::PrecacheSound:  Bad string: %s", pSample );
+		g_pHost->Host_Error( "CEngineSoundServer::PrecacheSound:  Bad string: %s", pSample );
 	}
 	
 	// add the sound to the precache list
@@ -168,7 +168,7 @@ bool CEngineSoundServer::PrecacheSound( const char *pSample, bool bPreload, bool
 	if ( i >= 0 )
 		return true;
 
-	Host_Error( "CEngineSoundServer::PrecacheSound: '%s' overflow", pSample );
+	g_pHost->Host_Error( "CEngineSoundServer::PrecacheSound: '%s' overflow", pSample );
 	return false;
 }
 
@@ -403,7 +403,7 @@ float SV_GetSoundDuration( const char *pSample )
 //-----------------------------------------------------------------------------
 float CEngineSoundServer::GetSoundDuration( const char *pSample )
 {
-	return Host_GetSoundDuration( pSample );
+	return g_pHost->Host_GetSoundDuration( pSample );
 }
 
 float CEngineSoundServer::GetDistGainFromSoundLevel( soundlevel_t soundlevel, float dist )

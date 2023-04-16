@@ -263,7 +263,7 @@ float S_ComputeDelayForSoundtime( float soundtime, clocksync_index_t syncIndex )
 		// over the burst
 		// NOTE: The first sound after a sync MUST have a non-zero delay for the delay channel
 		// detection logic to work (otherwise we keep resetting the clock)
-		g_ClockSyncArray[syncIndex] = soundtime - host_state.interval_per_tick;
+		g_ClockSyncArray[syncIndex] = soundtime - g_pHost->host_state.interval_per_tick;
 		g_SoundClockPaintTime[syncIndex] = g_paintedtime;
 	}
 
@@ -697,7 +697,7 @@ void S_Init( void )
 	if ( CommandLine()->CheckParm( "-nosound" ) )
 	{
 		g_AudioDevice = Audio_GetNullDevice();
-		TRACEINIT( audiosourcecache->Init( host_parms.memsize >> 2 ), audiosourcecache->Shutdown() );
+		TRACEINIT( audiosourcecache->Init(g_pHost->host_parms.memsize >> 2 ), audiosourcecache->Shutdown() );
 		return;
 	}
 
@@ -714,7 +714,7 @@ void S_Init( void )
 
 	S_StopAllSounds( true );
 
-	TRACEINIT( audiosourcecache->Init( host_parms.memsize >> 2 ), audiosourcecache->Shutdown() );
+	TRACEINIT( audiosourcecache->Init(g_pHost->host_parms.memsize >> 2 ), audiosourcecache->Shutdown() );
 
 	AllocDsps( true );
 

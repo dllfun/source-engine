@@ -278,7 +278,7 @@ private:
 		encrypted.WriteLong( (int)uBuildNumber );
 
 		// WRite timestamp of engine
-		encrypted.WriteFloat( (float)realtime );
+		encrypted.WriteFloat( (float)g_pHost->Host_GetRealTime());
 
 		encrypted.WriteByte( msgtype );
 		if ( mapname != NULL )

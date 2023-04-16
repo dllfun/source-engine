@@ -387,7 +387,7 @@ void CMapReslistGenerator::LogToEngineReslist( char const *pLine )
 void CMapReslistGenerator::EnableReslistGeneration( bool usemaplistfile )
 {
 	//hackhack !!!! This is a work-around until CS precaches things on level start, not player spawn
-	if ( !Q_stricmp( "cstrike", GetCurrentMod() ))
+	if ( !Q_stricmp( "cstrike", g_pHost->GetCurrentMod() ))
 	{
 		m_iPauseTimeBetweenMaps = PAUSE_TIME_BETWEEN_MAPS * 3;
 		m_iPauseFramesBetweenMaps = PAUSE_FRAMES_BETWEEN_MAPS * 3;
@@ -738,11 +738,11 @@ void CMapReslistGenerator::OnResourcePrecachedFullPath(const char *fullPathFileN
 	}
 
 	// strip it down relative to the root directory of the game (for steam)
-	char const *relativeFileName = Q_stristr( fixed, GetBaseDirectory() );
+	char const *relativeFileName = Q_stristr( fixed, g_pHost->GetBaseDirectory() );
 	if ( relativeFileName )
 	{
 		// Skip the basedir and slash
-		relativeFileName += ( Q_strlen( GetBaseDirectory() ) + 1 );
+		relativeFileName += ( Q_strlen(g_pHost->GetBaseDirectory() ) + 1 );
 	}
 
 	if ( !relativeFileName )

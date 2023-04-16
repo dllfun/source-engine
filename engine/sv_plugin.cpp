@@ -93,7 +93,7 @@ bool CPlugin::Load( const char *fileName )
 		return false;
 #endif
 	// Only allow unsigned plugins in -insecure mode
-	if ( !Host_AllowLoadModule( fixedFileName, "GAME", false ) )
+	if ( !g_pHost->Host_AllowLoadModule( fixedFileName, "GAME", false ) )
 		return false;
 
 	m_pPluginModule = g_pFileSystem->LoadModule( fixedFileName, "GAME", false );

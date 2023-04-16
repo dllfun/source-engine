@@ -216,7 +216,7 @@ bool CHLTVClientState::SetSignonState ( int state, int count )
 											m_NetChannel->Clear();
 											// set user settings (rate etc)
 											NET_SetConVar convars;
-											Host_BuildConVarUpdateMessage( &convars, FCVAR_USERINFO, false );
+											g_pHost->Host_BuildConVarUpdateMessage( &convars, FCVAR_USERINFO, false );
 
 											// let server know that we are a proxy server:
 											NET_SetConVar::cvar_t acvar;
@@ -292,7 +292,7 @@ void CHLTVClientState::SendPacket()
 	
 	if ( IsActive() )
 	{
-		NET_Tick tick( m_nDeltaTick, host_frametime_unbounded, host_frametime_stddeviation );
+		NET_Tick tick( m_nDeltaTick, g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
 		m_NetChannel->SendNetMsg( tick );
 	}
 
@@ -302,7 +302,7 @@ void CHLTVClientState::SendPacket()
 	{
 		// use full update rate when active
 		float commandInterval = (2.0f/3.0f) / tv_snapshotrate.GetInt();
-		float maxDelta = min ( host_state.interval_per_tick, commandInterval );
+		float maxDelta = min (g_pHost->host_state.interval_per_tick, commandInterval );
 		float delta = clamp( (float)(net_time - m_flNextCmdTime), 0.0f, maxDelta );
 		m_flNextCmdTime = net_time + commandInterval - delta;
 	}
@@ -379,7 +379,7 @@ bool CHLTVClientState::ProcessServerInfo(SVC_ServerInfo *msg )
 	V_memcpy( m_pHLTV->worldmapMD5.bits, msg->m_nMapMD5.bits, MD5_DIGEST_LENGTH );
 	m_pHLTV->m_flTickInterval	= msg->m_fTickInterval;
 
-	host_state.interval_per_tick = msg->m_fTickInterval;
+	g_pHost->host_state.interval_per_tick = msg->m_fTickInterval;
 		
 	Q_strncpy( m_pHLTV->m_szMapname, msg->m_szMapName, sizeof(m_pHLTV->m_szMapname) );
 	Q_strncpy( m_pHLTV->m_szSkyname, msg->m_szSkyName, sizeof(m_pHLTV->m_szSkyname) );
@@ -416,7 +416,7 @@ bool CHLTVClientState::ProcessClassInfo( SVC_ClassInfo *msg )
 
 	if ( !RecvTable_CreateDecoders( serverGameDLL->GetStandardSendProxies(), bAllowMismatches ) ) // create receive table decoders
 	{
-		Host_EndGame( true, "CL_ParseClassInfo_EndClasses: CreateDecoders failed.\n" );
+		g_pHost->Host_EndGame( true, "CL_ParseClassInfo_EndClasses: CreateDecoders failed.\n" );
 		return false;
 	}
 
@@ -598,7 +598,7 @@ bool CHLTVClientState::ProcessPacketEntities( SVC_PacketEntities *entmsg )
 	{
 		if ( GetServerTickCount() == entmsg->m_nDeltaFrom )
 		{
-			Host_Error( "Update self-referencing, connection dropped.\n" );
+			g_pHost->Host_Error( "Update self-referencing, connection dropped.\n" );
 			return false;
 		}
 
@@ -792,7 +792,7 @@ void CHLTVClientState::ReadPreserveEnt( CEntityReadInfo &u )
 	//             overlooking.
 	if ( u.m_nOldEntity >= MAX_EDICTS || u.m_nOldEntity < 0 || u.m_nNewEntity >= MAX_EDICTS )
 	{
-		Host_Error( "CL_ReadPreserveEnt: Entity out of bounds. Old: %i, New: %i",
+		g_pHost->Host_Error( "CL_ReadPreserveEnt: Entity out of bounds. Old: %i, New: %i",
 		            u.m_nOldEntity, u.m_nNewEntity );
 	}
 

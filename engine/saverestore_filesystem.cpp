@@ -1029,13 +1029,13 @@ CON_COMMAND( dump_x360_saves, "Dump X360 save games to disk" )
 	FileFindHandle_t findHandle;
 	
 	char szSearchPath[MAX_PATH];
-	Q_snprintf( szSearchPath, sizeof( szSearchPath ), "%s:\\*.*", GetCurrentMod() );
+	Q_snprintf( szSearchPath, sizeof( szSearchPath ), "%s:\\*.*", g_pHost->GetCurrentMod() );
 	
 	const char *pFileName = g_pFileSystem->FindFirst( szSearchPath, &findHandle );
 	while (pFileName)
 	{		
 		// Create the proper read path
-		Q_snprintf( szInName, sizeof( szInName ), "%s:\\%s", GetCurrentMod(), pFileName );
+		Q_snprintf( szInName, sizeof( szInName ), "%s:\\%s", g_pHost->GetCurrentMod(), pFileName );
 		// Read the file and blat it out
 		CUtlBuffer buf( 0, 0, 0 );
 		if ( g_pFileSystem->ReadFile( szInName, NULL, buf ) )
@@ -1277,7 +1277,7 @@ public:
 			}
 			else
 			{
-				Q_snprintf( szName, sizeof( szName ), "%s:\\%s", GetCurrentMod(), list[i].szFileName );
+				Q_snprintf( szName, sizeof( szName ), "%s:\\%s", g_pHost->GetCurrentMod(), list[i].szFileName );
 			}
 
 			Q_FixSlashes( szName );
@@ -1323,7 +1323,7 @@ public:
 			}
 			else
 			{
-				Q_snprintf( szName, sizeof( szName ), "%s:\\%s", GetCurrentMod(), fileName );
+				Q_snprintf( szName, sizeof( szName ), "%s:\\%s", g_pHost->GetCurrentMod(), fileName );
 			}
 
 			Q_FixSlashes( szName );
@@ -1372,7 +1372,7 @@ public:
 			}
 			else
 			{
-				Q_snprintf( szPath, sizeof( szPath ), "%s:\\%s", GetCurrentMod(), findfn );
+				Q_snprintf( szPath, sizeof( szPath ), "%s:\\%s", g_pHost->GetCurrentMod(), findfn );
 			}
 
 			// Delete the temporary save file

@@ -196,7 +196,7 @@ int R_MarkLightsLeaf( dlight_t *light, int bit, mleaf_t *pLeaf )
 		}
 	}
 
-	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
 		SurfaceHandle_t surfID = pHandle[i];
@@ -293,7 +293,7 @@ R_PushDlights
 */
 void R_PushDlights (void)
 {
-	R_MarkDLightsOnSurface( host_state.worldmodel->brush.pShared->nodes );
+	R_MarkDLightsOnSurface(g_pHost->host_state.worldmodel->brush.pShared->nodes );
 	MarkDLightsOnStaticProps();
 }
 
@@ -430,7 +430,7 @@ static bool FASTCALL FindIntersectionAtSurface( SurfaceHandle_t surfID, float f,
 		t < pLighting->m_LightmapMins[1] )
 		return false;	
 
-	worldbrushdata_t* pBrushData = host_state.worldmodel->brush.pShared;
+	worldbrushdata_t* pBrushData = g_pHost->host_state.worldmodel->brush.pShared;
 	// assuming a square lightmap (FIXME: which ain't always the case),
 	// lets see if it lies in that rectangle. If not, punt...
 	float ds = s - pLighting->m_LightmapMins[0];
@@ -547,7 +547,7 @@ static SurfaceHandle_t R_LightVecDisplacementChain( LightVecState_t& state, bool
 	// test the ray against displacements
 	SurfaceHandle_t surfID = SURFACE_HANDLE_INVALID;
 
-	worldbrushdata_t* pBrushData = host_state.worldmodel->brush.pShared;
+	worldbrushdata_t* pBrushData = g_pHost->host_state.worldmodel->brush.pShared;
 
 	for ( int i = 0; i < state.m_LightTestDisps.Count(); i++ )
 	{
@@ -621,7 +621,7 @@ static SurfaceHandle_t FASTCALL FindIntersectionSurfaceAtLeaf( mleaf_t *pLeaf,
 
 	// Add non-displacement surfaces
 	// Since there's no BSP tree here, we gotta test *all* surfaces! (blech)
-	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	// NOTE: Skip all marknodesurfaces, only check detail/leaf faces
 	for ( int i = pLeaf->nummarknodesurfaces; i < pLeaf->nummarksurfaces; i++ )
 	{
@@ -768,7 +768,7 @@ SurfaceHandle_t R_LightVec (const Vector& start, const Vector& end, bool bUseLig
 
 	c[0] = c[1] = c[2] = 0.0f;
 
-	model_t* model = s_pLightVecModel ? s_pLightVecModel : host_state.worldmodel;
+	model_t* model = s_pLightVecModel ? s_pLightVecModel : g_pHost->host_state.worldmodel;
 	retSurfID = RecursiveLightPoint(&model->brush.pShared->nodes[model->brush.firstnode],
 		0.0f, 1.0f, c, state );
 

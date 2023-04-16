@@ -299,6 +299,9 @@ void CSprite::SetModel( const char *szModelName )
 #if !defined( CLIENT_DLL )
 	UTIL_SetModel( this, szModelName );
 #else
+	if (szModelName[0]) {
+		int aaa = 0;
+	}
 	BaseClass::SetModel( szModelName );
 #endif
 }
@@ -745,6 +748,16 @@ void CSprite::ClientThink( void )
 
 //extern bool g_bRenderingScreenshot;
 extern ConVar r_drawviewmodel;
+#ifdef CLIENT_DLL
+void CSprite::SetModelPointer(const IVModel* pModel)
+{
+	if (pModel) {
+		int aaa = 0;
+	}
+	BaseClass::SetModelPointer(pModel);
+}
+#endif // 
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

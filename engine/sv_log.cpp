@@ -277,7 +277,7 @@ void CLog::Reset( void )	// reset all logging streams
 	m_LogFilename = NULL;
 
 	m_bActive = false;
-	m_flLastLogFlush = realtime;
+	m_flLastLogFlush = g_pHost->Host_GetRealTime();
 	m_bFlushLog = false;
 #ifndef _XBOX
 	if ( CommandLine()->CheckParm( "-flushlog" ) )
@@ -314,9 +314,9 @@ void CLog::SetLoggingState( bool state )
 
 void CLog::RunFrame() 
 {
-	if ( m_bFlushLog && m_hLogFile != FILESYSTEM_INVALID_HANDLE && ( realtime - m_flLastLogFlush ) > 1.0f )
+	if ( m_bFlushLog && m_hLogFile != FILESYSTEM_INVALID_HANDLE && (g_pHost->Host_GetRealTime() - m_flLastLogFlush ) > 1.0f )
 	{
-		m_flLastLogFlush = realtime;
+		m_flLastLogFlush = g_pHost->Host_GetRealTime();
 		g_pFileSystem->Flush( m_hLogFile );
 	}
 }

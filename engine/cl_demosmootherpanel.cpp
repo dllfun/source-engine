@@ -684,7 +684,7 @@ bool CDemoSmootherPanel::OverrideView( democmdinfo_t& info, int tick )
 		// TODO:  Hook up previewing view
 		if ( !m_bPreviewPaused )
 		{
-			m_fPreviewCurrentTime += host_frametime;
+			m_fPreviewCurrentTime += g_pHost->host_frametime;
 		}
 
 		if ( GetInterpolatedViewPoint( info.viewOrigin, info.viewAngles ) )

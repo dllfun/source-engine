@@ -595,8 +595,8 @@ public:
 					char var1[ MAX_OSPATH ];
 					char var2[ MAX_OSPATH ];
 
-					Q_strncpy( var1, Host_CleanupConVarStringValue( pCvar->GetString() ), sizeof( var1 ) );
-					Q_strncpy( var2, Host_CleanupConVarStringValue( pCvar->GetDefault() ), sizeof( var2 ) );
+					Q_strncpy( var1, g_pHost->Host_CleanupConVarStringValue( pCvar->GetString() ), sizeof( var1 ) );
+					Q_strncpy( var2, g_pHost->Host_CleanupConVarStringValue( pCvar->GetDefault() ), sizeof( var2 ) );
 
 					if ( !Q_stricmp( var1, var2 ) )
 						continue;
@@ -608,7 +608,7 @@ public:
 				}
 
 				if ( !(pCvar->IsFlagSet( FCVAR_NEVER_AS_STRING ) ) )
-					CommentPrintf( "%s '%s' '%s'\n", pCvar->GetName(), Host_CleanupConVarStringValue( pCvar->GetString() ), pCvar->GetDefault() );
+					CommentPrintf( "%s '%s' '%s'\n", pCvar->GetName(), g_pHost->Host_CleanupConVarStringValue( pCvar->GetString() ), pCvar->GetDefault() );
 				else
 					CommentPrintf( "%s '%f' '%f'\n", pCvar->GetName(), pCvar->GetFloat(), Q_atof( pCvar->GetDefault() ) );
 			}
@@ -1103,7 +1103,7 @@ void CEngineAPI::SetStartupInfo( StartupInfo_t &info )
 	g_bTextMode = info.m_bTextMode;
 
 	// Set up the engineparms_t which contains global information about the mod
-	host_parms.basedir = const_cast<char*>( info.m_pBaseDirectory );
+	g_pHost->host_parms.basedir = const_cast<char*>( info.m_pBaseDirectory );
 
 	// Copy off all the startup info
 	m_StartupInfo = info;
@@ -1598,10 +1598,10 @@ bool CEngineAPI::InitVR()
 		{
 			// make sure that the sourcevr DLL we loaded is secure. If not, don't 
 			// let this client connect to secure servers.
-			if ( !Host_AllowLoadModule( "sourcevr" DLL_EXT_STRING, "EXECUTABLE_PATH", false ) )
+			if ( !g_pHost->Host_AllowLoadModule( "sourcevr" DLL_EXT_STRING, "EXECUTABLE_PATH", false ) )
 			{
 				Warning( "Preventing connections to secure servers because sourcevr.dll is not signed.\n" );
-				Host_DisallowSecureServers();
+				g_pHost->Host_DisallowSecureServers();
 			}
 		}
 	}
@@ -1707,12 +1707,12 @@ void CEngineAPI::OnShutdown()
 static bool IsValveMod( const char *pModName )
 {
 	// Figure out if we're running a Valve mod or not.
-	return ( Q_stricmp( GetCurrentMod(), "cstrike" ) == 0 ||
-		Q_stricmp( GetCurrentMod(), "dod" ) == 0 ||
-		Q_stricmp( GetCurrentMod(), "hl1mp" ) == 0 ||
-		Q_stricmp( GetCurrentMod(), "tf" ) == 0 || 
-		Q_stricmp( GetCurrentMod(), "tf_beta" ) == 0 ||
-		Q_stricmp( GetCurrentMod(), "hl2mp" ) == 0 );
+	return ( Q_stricmp(g_pHost->GetCurrentMod(), "cstrike" ) == 0 ||
+		Q_stricmp(g_pHost->GetCurrentMod(), "dod" ) == 0 ||
+		Q_stricmp(g_pHost->GetCurrentMod(), "hl1mp" ) == 0 ||
+		Q_stricmp(g_pHost->GetCurrentMod(), "tf" ) == 0 ||
+		Q_stricmp(g_pHost->GetCurrentMod(), "tf_beta" ) == 0 ||
+		Q_stricmp(g_pHost->GetCurrentMod(), "hl2mp" ) == 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1721,11 +1721,11 @@ static bool IsValveMod( const char *pModName )
 bool CEngineAPI::ModInit( const char *pModName, const char *pGameDir )
 {
 	// Set up the engineparms_t which contains global information about the mod
-	host_parms.mod = COM_StringCopy( GetModDirFromPath( pModName ) );
-	host_parms.game = COM_StringCopy( pGameDir );
+	g_pHost->host_parms.mod = COM_StringCopy( GetModDirFromPath( pModName ) );
+	g_pHost->host_parms.game = COM_StringCopy( pGameDir );
 
 	// By default, restrict server commands in Valve games and don't restrict them in mods.
-	cl.m_bRestrictServerCommands = IsValveMod( host_parms.mod );
+	cl.m_bRestrictServerCommands = IsValveMod(g_pHost->host_parms.mod );
 	cl.m_bRestrictClientCommands = cl.m_bRestrictServerCommands;
 
 	// build the registry path we're going to use for this mod
@@ -1759,8 +1759,8 @@ bool CEngineAPI::ModInit( const char *pModName, const char *pGameDir )
 
 void CEngineAPI::ModShutdown()
 {
-	COM_StringFree(host_parms.mod);
-	COM_StringFree(host_parms.game);
+	COM_StringFree(g_pHost->host_parms.mod);
+	COM_StringFree(g_pHost->host_parms.game);
 	
 	// Stop accepting input from the window
 	game->InputDetachFromGameWindow();
@@ -1891,7 +1891,7 @@ int CEngineAPI::Run()
 {
 	if ( CommandLine()->FindParm( "-insecure" ) || CommandLine()->FindParm( "-textmode" ) )
 	{
-		Host_DisallowSecureServers();
+		g_pHost->Host_DisallowSecureServers();
 	}
 
 #ifdef _X360
@@ -2101,7 +2101,7 @@ int CModAppSystemGroup::Main()
 			return false;
 		}
 		// Start up the game engine
-		if ( eng->Load( true, host_parms.basedir ) )
+		if ( eng->Load( true, g_pHost->host_parms.basedir ) )
 		{
 			// If we're using STEAM, pass the map cycle list as resource hints...
 			// Dedicated server drives frame loop manually
@@ -2126,7 +2126,7 @@ int CModAppSystemGroup::Main()
 		// Start up the game engine
 		static const char engineLoadMessage[] = "Calling CEngine::Load";
 		int64 nStartTime = ETWBegin( engineLoadMessage );
-		if ( eng->Load( false, host_parms.basedir ) )					
+		if ( eng->Load( false, g_pHost->host_parms.basedir ) )
 		{
 #if !defined(SWDS)
 			ETWEnd( engineLoadMessage, nStartTime );
@@ -2412,9 +2412,9 @@ bool CDedicatedServerAPI::ModInit( ModInfo_t &info )
 	eng->SetQuitting( IEngine::QUIT_NOTQUITTING );
 
 	// Set up the engineparms_t which contains global information about the mod
-	host_parms.basedir = const_cast<char*>(info.m_pBaseDirectory);
-	host_parms.mod = const_cast<char*>(GetModDirFromPath(info.m_pInitialMod));
-	host_parms.game = const_cast<char*>(info.m_pInitialGame);
+	g_pHost->host_parms.basedir = const_cast<char*>(info.m_pBaseDirectory);
+	g_pHost->host_parms.mod = const_cast<char*>(GetModDirFromPath(info.m_pInitialMod));
+	g_pHost->host_parms.game = const_cast<char*>(info.m_pInitialGame);
 
 	g_bTextMode = info.m_bTextMode;
 

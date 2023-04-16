@@ -731,7 +731,7 @@ void CServerRemoteAccess::GetStatsString(char *buf, int bufSize)
 				avgOut / 1024.0f,
 				(int)(Sys_FloatTime()) / 60,
 				sv.GetSpawnCount() - 1,
-				1.0/host_frametime, // frame rate
+				1.0/ g_pHost->host_frametime, // frame rate
 				sv.GetNumClients() - sv.GetNumProxies(),
 				sv.GetNumConnections());
 	buf[bufSize - 1] = 0;

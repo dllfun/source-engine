@@ -427,7 +427,7 @@ struct decallist_t
 };
 
 
-inline class IDispInfo *MLeaf_Disaplcement( mleaf_t *pLeaf, int index, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline class IDispInfo *MLeaf_Disaplcement( mleaf_t *pLeaf, int index, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	Assert(index<pLeaf->dispCount);
 	int dispIndex = pData->m_pDispInfoReferences[pLeaf->dispListStart+index];
@@ -549,7 +549,7 @@ inline unsigned short MSurf_AreDynamicShadowsEnabled( SurfaceHandle_t surfID )
 	return surfID->m_bDynamicShadowsEnabled;
 }
 
-inline int MSurf_Index( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline int MSurf_Index( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = surfID - pData->surfaces2;
 	Assert(surfaceIndex >= 0 && surfaceIndex < pData->numsurfaces);
@@ -561,7 +561,7 @@ inline const SurfaceHandle_t SurfaceHandleFromIndex( int surfaceIndex, const wor
 	return &pData->surfaces2[surfaceIndex];
 }
 
-inline SurfaceHandle_t SurfaceHandleFromIndex( int surfaceIndex, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline SurfaceHandle_t SurfaceHandleFromIndex( int surfaceIndex, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	return &pData->surfaces2[surfaceIndex];
 }
@@ -611,7 +611,7 @@ inline int& MSurf_DLightFrame( SurfaceHandle_t surfID, worldbrushdata_t *pData =
 	return pData->surfacelighting[surfID].dlightframe;
 }
 */
-inline int& MSurf_DLightBits( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline int& MSurf_DLightBits( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -640,7 +640,7 @@ inline void MSurf_SetVertCount( SurfaceHandle_t surfID, int vertCount )
 	surfID->flags |= flags;
 }
 
-inline int *MSurf_TextureMins( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline int *MSurf_TextureMins( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -648,7 +648,7 @@ inline int *MSurf_TextureMins( SurfaceHandle_t surfID, worldbrushdata_t *pData =
 	return pData->surfaces1[surfaceIndex].textureMins;
 }
 
-inline short *MSurf_TextureExtents( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline short *MSurf_TextureExtents( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -656,7 +656,7 @@ inline short *MSurf_TextureExtents( SurfaceHandle_t surfID, worldbrushdata_t *pD
 	return pData->surfaces1[surfaceIndex].textureExtents;
 }
 
-inline short *MSurf_LightmapMins( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline short *MSurf_LightmapMins( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -664,7 +664,7 @@ inline short *MSurf_LightmapMins( SurfaceHandle_t surfID, worldbrushdata_t *pDat
 	return pData->surfacelighting[surfaceIndex].m_LightmapMins;
 }
 
-inline short *MSurf_LightmapExtents( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline short *MSurf_LightmapExtents( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -684,7 +684,7 @@ inline short MSurf_MaxLightmapSizeWithoutBorder( SurfaceHandle_t surfID )
 	return SurfaceHasDispInfo( surfID ) ? MAX_DISP_LIGHTMAP_DIM_WITHOUT_BORDER : MAX_BRUSH_LIGHTMAP_DIM_WITHOUT_BORDER;
 }
 
-inline mtexinfo_t *MSurf_TexInfo( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline mtexinfo_t *MSurf_TexInfo( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	return &pData->texinfo[surfID->texinfo];
 }
@@ -705,7 +705,7 @@ inline ShadowDecalHandle_t& MSurf_ShadowDecals( SurfaceHandle_t surfID )
 }
 
 
-inline ColorRGBExp32 *MSurf_AvgLightColor( SurfaceHandle_t surfID, int nIndex, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline ColorRGBExp32 *MSurf_AvgLightColor( SurfaceHandle_t surfID, int nIndex, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -713,7 +713,7 @@ inline ColorRGBExp32 *MSurf_AvgLightColor( SurfaceHandle_t surfID, int nIndex, w
 	return pData->surfacelighting[surfaceIndex].AvgLightColor(nIndex);
 }
 
-inline byte *MSurf_Styles( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline byte *MSurf_Styles( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -737,7 +737,7 @@ inline short& MSurf_CachedDLight( SurfaceHandle_t surfID, worldbrushdata_t *pDat
 }
 */
 
-inline unsigned short MSurf_NumPrims( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline unsigned short MSurf_NumPrims( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	if ( SurfaceHasDispInfo( surfID ) || !SurfaceHasPrims( surfID ))
 		return 0;
@@ -748,7 +748,7 @@ inline unsigned short MSurf_NumPrims( SurfaceHandle_t surfID, worldbrushdata_t *
 	return pData->surfaces1[surfaceIndex].prims.numPrims;
 }
 
-inline unsigned short MSurf_FirstPrimID( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline unsigned short MSurf_FirstPrimID( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	if ( SurfaceHasDispInfo( surfID ) )
 		return 0;
@@ -758,7 +758,7 @@ inline unsigned short MSurf_FirstPrimID( SurfaceHandle_t surfID, worldbrushdata_
 	return pData->surfaces1[surfaceIndex].prims.firstPrimID;
 }
 
-inline ColorRGBExp32 *MSurf_Samples( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline ColorRGBExp32 *MSurf_Samples( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -766,13 +766,13 @@ inline ColorRGBExp32 *MSurf_Samples( SurfaceHandle_t surfID, worldbrushdata_t *p
 	return pData->surfacelighting[surfaceIndex].m_pSamples;
 }
 
-inline IDispInfo *MSurf_DispInfo( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline IDispInfo *MSurf_DispInfo( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	return surfID->pDispInfo;
 }
 
 //inline unsigned short &MSurf_FirstVertNormal( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldbrush )
-inline unsigned int &MSurf_FirstVertNormal( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline unsigned int &MSurf_FirstVertNormal( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -786,12 +786,12 @@ inline unsigned short &MSurf_VertBufferIndex( SurfaceHandle_t surfID )
 	return surfID->vertBufferIndex;
 }
 
-inline short& MSurf_MaterialSortID( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline short& MSurf_MaterialSortID( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	return surfID->materialSortID;
 }
 
-inline short *MSurf_OffsetIntoLightmapPage( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline short *MSurf_OffsetIntoLightmapPage( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 //	ASSERT_SURF_VALID( surfID );
@@ -799,7 +799,7 @@ inline short *MSurf_OffsetIntoLightmapPage( SurfaceHandle_t surfID, worldbrushda
 	return pData->surfacelighting[surfaceIndex].m_OffsetIntoLightmapPage;
 }
 
-inline VPlane MSurf_GetForwardFacingPlane( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline VPlane MSurf_GetForwardFacingPlane( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 //	ASSERT_SURF_VALID( surfID );
 	Assert( pData );
@@ -807,12 +807,12 @@ inline VPlane MSurf_GetForwardFacingPlane( SurfaceHandle_t surfID, worldbrushdat
 }
 
 
-inline OverlayFragmentHandle_t &MSurf_OverlayFragmentList( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline OverlayFragmentHandle_t &MSurf_OverlayFragmentList( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	return surfID->m_nFirstOverlayFragment;
 }
 
-inline msurfacelighting_t *SurfaceLighting( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared)
+inline msurfacelighting_t *SurfaceLighting( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared)
 {
 	int surfaceIndex = MSurf_Index(surfID,pData);
 	Assert( pData );

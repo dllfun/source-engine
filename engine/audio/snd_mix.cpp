@@ -13,6 +13,7 @@
 #include "sys_dll.h"
 #include "video/ivideoservices.h"
 #include "engine/IEngineSound.h"
+#include "host.h"
 
 #if defined( REPLAY_ENABLED )
 #include "demo.h"
@@ -54,8 +55,8 @@ void ChannelCopyVolumes( channel_t *pch, int *pvolume_dest, int ivol_start, int 
 float ChannelLoudestCurVolume( const channel_t * RESTRICT pch );
 
 extern int g_soundtime;
-extern float host_frametime;
-extern float host_frametime_unbounded;
+//extern float host_frametime;
+//extern float host_frametime_unbounded;
 
 
 #if !defined( NO_VOICE )
@@ -2209,7 +2210,7 @@ void MIX_BuildChannelList( CChannelList &list )
 	// we go ahead and reset the clock
 	// That way the clock is only used for short periods of time
 	// and we need no solution for drift
-	if ( bPaused || (host_frametime_unbounded > host_frametime) )
+	if ( bPaused || (g_pHost->host_frametime_unbounded > g_pHost->host_frametime) )
 	{
 		delayStartClient = false;
 		delayStartServer = false;

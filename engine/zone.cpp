@@ -37,7 +37,7 @@ static bool g_bWarnedOverflow;
 
 static int GetTargetCacheSize()
 {
-	int nMemLimit = host_parms.memsize - Hunk_Size();
+	int nMemLimit = g_pHost->host_parms.memsize - Hunk_Size();
 	if ( nMemLimit < 0x100000 )
 	{
 		nMemLimit = 0x100000;

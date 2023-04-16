@@ -13,6 +13,7 @@
 #include "net_ws_headers.h"
 #include "net_ws_queued_packet_sender.h"
 #include "fmtstr.h"
+#include "host.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -82,7 +83,7 @@ extern ConVar net_showudp;
 extern ConVar net_showtcp;
 extern ConVar net_blocksize;
 extern ConVar host_timescale;
-extern int host_framecount;
+//extern int host_framecount;
 
 void NET_ClearQueuedPacketsForChannel( INetChannel *chan );
 
@@ -2161,9 +2162,9 @@ void NET_ClearQueuedPacketsForChannel( INetChannel *channel )
 void NET_SendQueuedPackets()
 {
 	// Only do this once per frame
-	if ( host_framecount == g_SendQueue.m_nHostFrame )
+	if ( g_pHost->host_framecount == g_SendQueue.m_nHostFrame )
 		return;
-	g_SendQueue.m_nHostFrame = host_framecount;
+	g_SendQueue.m_nHostFrame = g_pHost->host_framecount;
 
 	CUtlLinkedList< SendQueueItem_t >& list = g_SendQueue.m_SendQueue;
 

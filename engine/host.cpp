@@ -151,7 +151,6 @@ extern ConVar host_map;
 extern ConVar sv_cheats;
 
 bool g_bDedicatedServerBenchmarkMode = false;
-bool g_bAllowSecureServers = true;
 bool g_bLowViolence = false;
 
 // These counters are for debugging in dumps.  If these are non-zero it may indicate some kind of 
@@ -162,9 +161,8 @@ int g_HostEndDemo = 0;
 
 char g_szDefaultLogoFileName[] = "materials/vgui/logos/spray.vtf";
 
-int host_frameticks = 0;
-int host_tickcount = 0;
-int host_currentframetick = 0;
+Host g_host;
+Host* g_pHost = &g_host;
 
 static const char g_pModuleExtension[] = DLL_EXT_STRING;
 
@@ -229,7 +227,7 @@ public:
 		g_EngineStats.SetFrameTime( frametime );
 		g_EngineStats.SetFPSVariability( m_flFPSVariability );
 
-		host_frametime_stddeviation = m_flFPSStdDeviationSeconds;
+		g_host.host_frametime_stddeviation = m_flFPSStdDeviationSeconds;
 	}
 
 private:
@@ -259,10 +257,6 @@ static CFrameTimer g_HostTimes;
 
 
 //------------------------------------------
-
-
-float host_time = 0.0;
-
 static ConVar	violence_hblood( "violence_hblood","1", 0, "Draw human blood" );
 static ConVar	violence_hgibs( "violence_hgibs","1", 0, "Show human gib entities" );
 static ConVar	violence_ablood( "violence_ablood","1", 0, "Draw alien blood" );
@@ -447,7 +441,6 @@ extern bool gfBackground;
 
 static bool host_checkheap = false;
 
-CCommonHostState host_state;
 
 
 //-----------------------------------------------------------------------------
@@ -563,26 +556,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 // Ear position + orientation
 static AudioState_t s_AudioState;
 
-engineparms_t host_parms;
 
-bool		host_initialized = false;		// true if into command execution
-
-float		host_frametime = 0.0f;
-float		host_frametime_unbounded = 0.0f;
-float		host_frametime_stddeviation = 0.0f;
-double		realtime = 0;			// without any filtering or bounding
-double		host_idealtime = 0;		// "ideal" server time assuming perfect tick rate
-float		host_nexttick = 0;		// next server tick in this many ms
-float		host_jitterhistory[128] = { 0 };
-unsigned int host_jitterhistorypos = 0;
-
-int			host_framecount;
-static int	host_hunklevel;
-
-CGameClient	*host_client;			// current client
-
-jmp_buf 	host_abortserver;
-jmp_buf     host_enddemo;
 
 static ConVar	host_profile( "host_profile","0" );
 
@@ -613,10 +587,10 @@ CON_COMMAND( host_timer_report, "Spew CPU timer jitter for the last 128 frames i
 {
 	if ( sv.IsDedicated() )
 	{
-		for (int i = 1; i <= ARRAYSIZE( host_jitterhistory ); ++i)
+		for (int i = 1; i <= ARRAYSIZE( g_host.host_jitterhistory ); ++i)
 		{
-			unsigned int slot = ( i + host_jitterhistorypos ) % ARRAYSIZE( host_jitterhistory );
-			Msg( "%1.3fms\n", host_jitterhistory[ slot ] * 1000 );
+			unsigned int slot = ( i + g_host.host_jitterhistorypos ) % ARRAYSIZE(g_host.host_jitterhistory );
+			Msg( "%1.3fms\n", g_host.host_jitterhistory[ slot ] * 1000 );
 		}
 	}
 }
@@ -697,7 +671,7 @@ void CCommonHostState::SetWorldModel( model_t *pModel )
 	}
 }
 
-void Host_DefaultMapFileName( const char *pFullMapName, /* out */ char *pDiskName, unsigned int nDiskNameSize )
+void Host::Host_DefaultMapFileName( const char *pFullMapName, /* out */ char *pDiskName, unsigned int nDiskNameSize )
 {
 	if ( IsPC() || !IsX360() )
 	{
@@ -710,12 +684,12 @@ void Host_DefaultMapFileName( const char *pFullMapName, /* out */ char *pDiskNam
 	}
 }
 
-void Host_SetAudioState( const AudioState_t &audioState )
+void Host::Host_SetAudioState( const AudioState_t &audioState )
 {
 	memcpy( &s_AudioState, &audioState, sizeof(AudioState_t) );
 }
 
-bool Host_IsSinglePlayerGame( void )
+bool Host::Host_IsSinglePlayerGame( void )
 {
 	if ( sv.IsActive() )
 	{
@@ -836,7 +810,7 @@ void CheckForFlushMemory( const char *pCurrentMapName, const char *pDestMapName 
 void Host_AbortServer()
 {
 	g_HostServerAbortCount++;
-	longjmp( host_abortserver, 1 );
+	longjmp( g_host.host_abortserver, 1 );
 }
 
 /*
@@ -844,7 +818,7 @@ void Host_AbortServer()
 Host_EndGame
 ================
 */
-void Host_EndGame (bool bShowMainMenu, const char *message, ...)
+void Host::Host_EndGame (bool bShowMainMenu, const char *message, ...)
 {
 	int oldn;
 	va_list		argptr;
@@ -862,7 +836,7 @@ void Host_EndGame (bool bShowMainMenu, const char *message, ...)
 	oldn = cl.demonum;
 	cl.demonum = -1;
 
-	Host_Disconnect(bShowMainMenu);
+	g_host.Host_Disconnect(bShowMainMenu);
 
 	cl.demonum = oldn;
 
@@ -878,7 +852,7 @@ void Host_EndGame (bool bShowMainMenu, const char *message, ...)
 		CL_NextDemo ();
 #endif		
 		g_HostEndDemo++;
-		longjmp (host_enddemo, 1);
+		longjmp (g_host.host_enddemo, 1);
 	}
 	else
 	{
@@ -900,7 +874,7 @@ Host_Error
 This shuts down both the client and server
 ================
 */
-void Host_Error (const char *error, ...)
+void Host::Host_Error (const char *error, ...)
 {
 	va_list		argptr;
 	char		string[1024];
@@ -937,7 +911,7 @@ void Host_Error (const char *error, ...)
 #endif
 	ConMsg( "\nHost_Error: %s\n\n", string );
 
-	Host_Disconnect( true, string );
+	g_host.Host_Disconnect( true, string );
 
 	cl.demonum = -1;
 
@@ -1210,7 +1184,7 @@ void Host_WriteConfiguration( const char *filename, bool bAllVars )
 	if ( !g_bConfigCfgExecuted )
 		return;
 	
-	if ( !host_initialized )
+	if ( !g_host.host_initialized )
 		return;
 
 	// Don't write config when in default--most of the values are defaults which is not what the player wants.
@@ -1686,10 +1660,10 @@ void Host_ReadConfiguration()
 	if ( saveconfig )
 	{
 		// An ugly hack, but we can probably save this safely
-		bool saveinit = host_initialized;
-		host_initialized = true;
+		bool saveinit = g_host.host_initialized;
+		g_host.host_initialized = true;
 		Host_WriteConfiguration();
-		host_initialized = saveinit;
+		g_host.host_initialized = saveinit;
 	}
 }
 
@@ -1815,21 +1789,21 @@ Host_ShutdownServer
 This only happens at the end of a game, not between levels
 ==================
 */
-void Host_ShutdownServer( void )
+void Host::Host_ShutdownServer( void )
 {
 	if ( !sv.IsActive() )
 		return;
 
-	Host_AllowQueuedMaterialSystem( false );
+	g_pHost->Host_AllowQueuedMaterialSystem( false );
 	// clear structures
 #if !defined( SWDS )
 	g_pShadowMgr->LevelShutdown();
 #endif
 	StaticPropMgr()->LevelShutdown();
 
-	Host_FreeStateAndWorld( true );
+	g_host.Host_FreeStateAndWorld( true );
 	sv.Shutdown();// sv.Shutdown() references some heap memory, so run it before Host_FreeToLowMark()
-	Host_FreeToLowMark( true ); 
+	g_host.Host_FreeToLowMark( true );
 
 	IGameEvent *event = g_GameEventManager.CreateEvent( "server_shutdown" );
 
@@ -1847,10 +1821,10 @@ void Host_ShutdownServer( void )
 // Input  : time - 
 // Output : bool
 //-----------------------------------------------------------------------------
-void Host_AccumulateTime( float dt )
+void Host::Host_AccumulateTime( float dt )
 {
 	// Accumulate some time
-	realtime += dt;
+	host_realtime += dt;
 
 	bool bUseNormalTickTime = true;
 #if !defined(SWDS)
@@ -2043,7 +2017,7 @@ static bool AppearsNumeric( char const *in )
 // Input  : *invalue - 
 // Output : char const
 //-----------------------------------------------------------------------------
-char const * Host_CleanupConVarStringValue( char const *invalue )
+char const * Host::Host_CleanupConVarStringValue( char const *invalue )
 {
 	static char clean[ 256 ];
 
@@ -2110,7 +2084,7 @@ int Host_CountVariablesWithFlags( int flags, bool nonDefault )
 // Purpose: 
 // Input  : msg - 
 //-----------------------------------------------------------------------------
-void Host_BuildConVarUpdateMessage( NET_SetConVar *cvarMsg, int flags, bool nonDefault )
+void Host::Host_BuildConVarUpdateMessage( NET_SetConVar *cvarMsg, int flags, bool nonDefault )
 {
 	int count = Host_CountVariablesWithFlags( flags, nonDefault );
 
@@ -2206,7 +2180,7 @@ void CL_ProcessVoiceData()
 	VPROF_BUDGET( "CL_ProcessVoiceData", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 
 #if !defined( NO_VOICE )
-	Voice_Idle(host_frametime);
+	Voice_Idle(g_host.host_frametime);
 	CL_SendVoicePacket(false);
 #endif
 
@@ -2300,7 +2274,7 @@ void CFrameTimer::MarkFrame()
 
 	ResetDeltas();
 
-	frameTime = host_frametime;
+	frameTime = g_host.host_frametime;
 	//frameTime /= 1000.0;
 	if ( frameTime < 0.0001 )
 	{
@@ -2317,8 +2291,8 @@ void CFrameTimer::MarkFrame()
 		int i;
 		static int last_host_tickcount;
 
-		int ticks = host_tickcount - last_host_tickcount;
-		last_host_tickcount = host_tickcount;
+		int ticks = g_host.host_tickcount - last_host_tickcount;
+		last_host_tickcount = g_host.host_tickcount;
 
 		// count used entities
 		for (i=0 ; i<sv.num_edicts ; i++)
@@ -2475,7 +2449,7 @@ void Host_Speeds()
 //  next frame.
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool Host_ShouldRun( void )
+bool Host::Host_ShouldRun( void )
 {
 	static int current_tick = -1;
 
@@ -2596,17 +2570,17 @@ void Host_CheckDumpMemoryStats( void )
 void _Host_SetGlobalTime()
 {
 	// Server
-	g_ServerGlobalVariables.realtime			= realtime;
-	g_ServerGlobalVariables.framecount			= host_framecount;
-	g_ServerGlobalVariables.absoluteframetime	= host_frametime;
-	g_ServerGlobalVariables.interval_per_tick	= host_state.interval_per_tick;
-	g_ServerGlobalVariables.serverCount			= Host_GetServerCount();
+	g_ServerGlobalVariables.realtime			= g_host.host_realtime;
+	g_ServerGlobalVariables.framecount			= g_host.host_framecount;
+	g_ServerGlobalVariables.absoluteframetime	= g_host.host_frametime;
+	g_ServerGlobalVariables.interval_per_tick	= g_host.host_state.interval_per_tick;
+	g_ServerGlobalVariables.serverCount			= g_pHost->Host_GetServerCount();
 #ifndef SWDS
 	// Client
-	g_ClientGlobalVariables.realtime			= realtime;
-	g_ClientGlobalVariables.framecount			= host_framecount;
-	g_ClientGlobalVariables.absoluteframetime	= host_frametime;
-	g_ClientGlobalVariables.interval_per_tick	= host_state.interval_per_tick;
+	g_ClientGlobalVariables.realtime			= g_host.host_realtime;
+	g_ClientGlobalVariables.framecount			= g_host.host_framecount;
+	g_ClientGlobalVariables.absoluteframetime	= g_host.host_frametime;
+	g_ClientGlobalVariables.interval_per_tick	= g_host.host_state.interval_per_tick;
 #endif
 }
 
@@ -2730,7 +2704,7 @@ void _Host_RunFrame_Client( bool framefinished )
 //-----------------------------------------------------------------------------
 bool CheckVarRange_Generic( ConVar *pVar, int minVal, int maxVal )
 {
-	if ( !CanCheat() && !Host_IsSinglePlayerGame() )
+	if ( !CanCheat() && !g_host.Host_IsSinglePlayerGame() )
 	{
 		int clampedValue = clamp( pVar->GetInt(), minVal, maxVal );
 		if ( clampedValue != pVar->GetInt() )
@@ -2847,7 +2821,7 @@ void CL_FindInterpolatedAddAngle( float t, float& frac, AddAngle **prev, AddAngl
 
 void CL_DiscardOldAddAngleEntries( float t )
 {
-	float killtime = t - host_state.interval_per_tick - 0.1f;
+	float killtime = t - g_host.host_state.interval_per_tick - 0.1f;
 
 	for ( int i = 0; i < cl.addangle.Count(); i++ )
 	{
@@ -2871,7 +2845,7 @@ void CL_ApplyAddAngle()
 {
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
-	float curtime = cl.GetTime() - host_state.interval_per_tick;
+	float curtime = cl.GetTime() - g_host.host_state.interval_per_tick;
 
 	AddAngle *prev = NULL, *next = NULL;
 	float frac = 0.0f;
@@ -2917,7 +2891,7 @@ void _Host_RunFrame_Sound()
 #endif
 }
 
-float Host_GetSoundDuration( const char *pSample )
+float Host::Host_GetSoundDuration( const char *pSample )
 {
 #ifndef SWDS
 	if (!sv.IsDedicated())
@@ -2983,8 +2957,8 @@ void Host_ShowIPCCallCount()
 		return;
 	
 	static float s_flLastTime = 0;
-	static int s_nLastTick = host_tickcount;
-	static int s_nLastFrame = host_framecount;
+	static int s_nLastTick = g_host.host_tickcount;
+	static int s_nLastFrame = g_host.host_framecount;
 	
 	// Figure out how often they want to update.
 	double flInterval = 0;
@@ -3010,8 +2984,8 @@ void Host_ShowIPCCallCount()
 		}
 
 		// Avoid a divide by zero.
-		int frameCount = host_framecount - s_nLastFrame;
-		int tickCount = host_tickcount - s_nLastTick;
+		int frameCount = g_host.host_framecount - s_nLastFrame;
+		int tickCount = g_host.host_tickcount - s_nLastTick;
 		if ( frameCount == 0 || tickCount == 0 )
 			return;
 			
@@ -3019,8 +2993,8 @@ void Host_ShowIPCCallCount()
 			callCount, frameCount, tickCount, (float)callCount / frameCount, (float)callCount / tickCount );
 			
 		s_flLastTime = flCurTime;
-		s_nLastTick = host_tickcount;
-		s_nLastFrame = host_framecount;
+		s_nLastTick = g_host.host_tickcount;
+		s_nLastFrame = g_host.host_framecount;
 	}
 }
 
@@ -3091,11 +3065,11 @@ void _Host_RunFrame (float time)
 
 		static int lastrunoffsecond = -1;
 
-		if ( setjmp ( host_enddemo ) )
+		if ( setjmp ( g_host.host_enddemo ) )
 			return;			// demo finished.
 
 		// decide the simulation time
-		Host_AccumulateTime ( time );
+		g_host.Host_AccumulateTime ( time );
 		_Host_SetGlobalTime();
 
 		shouldrender = !sv.IsDedicated();
@@ -3109,18 +3083,18 @@ void _Host_RunFrame (float time)
 		if ( !demoplayer->IsPlaybackPaused() )
 	#endif
 		{
-			host_remainder += host_frametime;
+			host_remainder += g_host.host_frametime;
 		}
 
 		numticks = 0;	// how many ticks we will simulate this frame
-		if ( host_remainder >= host_state.interval_per_tick )
+		if ( host_remainder >= g_host.host_state.interval_per_tick )
 		{
-			numticks = (int)( floor( host_remainder / host_state.interval_per_tick ) );
+			numticks = (int)( floor( host_remainder / g_host.host_state.interval_per_tick ) );
 
 			// round to nearest even ending tick in alternate ticks mode so the last
 			// tick is always simulated prior to updating the network data
 			// NOTE: alternate ticks only applies in SP!!!
-			if ( Host_IsSinglePlayerGame() &&
+			if (g_host.Host_IsSinglePlayerGame() &&
 				sv_alternateticks.GetBool() )
 			{
 				int startTick = g_ServerGlobalVariables.tickcount;
@@ -3129,10 +3103,10 @@ void _Host_RunFrame (float time)
 				numticks = endTick - startTick;
 			}
 
-			host_remainder -= numticks * host_state.interval_per_tick;
+			host_remainder -= numticks * g_host.host_state.interval_per_tick;
 		}
 
-		host_nexttick = host_state.interval_per_tick - host_remainder;
+		g_host.host_nexttick = g_host.host_state.interval_per_tick - host_remainder;
 
 		g_pMDLCache->MarkFrame();
 	}
@@ -3161,8 +3135,8 @@ void _Host_RunFrame (float time)
 		cl.insimulation = true;
 #endif
 
-		host_frameticks = numticks;
-		host_currentframetick = 0;
+		g_host.host_frameticks = numticks;
+		g_host.host_currentframetick = 0;
 
 #if !defined( SWDS )
 		// This is to make the tool do both sim + rendering on the initial frame
@@ -3181,33 +3155,33 @@ void _Host_RunFrame (float time)
 #ifndef SWDS
 			if ( g_ClientDLL )
 			{
-				g_ClientDLL->IN_SetSampleTime(host_frametime);
+				g_ClientDLL->IN_SetSampleTime(g_host.host_frametime);
 			}
 			g_ClientGlobalVariables.simTicksThisFrame = 1;
 #endif
 			cl.m_tickRemainder = host_remainder;
 			g_ServerGlobalVariables.simTicksThisFrame = 1;
-			cl.SetFrameTime( host_frametime );
+			cl.SetFrameTime(g_host.host_frametime );
 			for ( int tick = 0; tick < numticks; tick++ )
 			{ 
 				// Emit an ETW event every simulation frame.
 				ETWSimFrameMark( sv.IsDedicated() );
 
 				double now = Plat_FloatTime();
-				float jitter = now - host_idealtime;
+				float jitter = now - g_host.host_idealtime;
 
 				// Track jitter (delta between ideal time and actual tick execution time)
-				host_jitterhistory[ host_jitterhistorypos ] = jitter;
-				host_jitterhistorypos = ( host_jitterhistorypos + 1 ) % ARRAYSIZE(host_jitterhistory);
+				g_host.host_jitterhistory[g_host.host_jitterhistorypos ] = jitter;
+				g_host.host_jitterhistorypos = (g_host.host_jitterhistorypos + 1 ) % ARRAYSIZE(g_host.host_jitterhistory);
 
 				// Very slowly decay "ideal" towards current wall clock unless delta is large
 				if ( fabs( jitter ) > 1.0f )
 				{
-					host_idealtime = now;
+					g_host.host_idealtime = now;
 				}
 				else
 				{
-					host_idealtime = 0.99 * host_idealtime + 0.01 * now;
+					g_host.host_idealtime = 0.99 * g_host.host_idealtime + 0.01 * now;
 				}
 
 				// process any asynchronous network traffic (TCP), set net_time
@@ -3222,8 +3196,8 @@ void _Host_RunFrame (float time)
 
 				g_ServerGlobalVariables.tickcount = sv.m_nTickCount;
 				// NOTE:  Do we want do this at start or end of this loop?
-				++host_tickcount;
-				++host_currentframetick;
+				++g_host.host_tickcount;
+				++g_host.host_currentframetick;
 #ifndef SWDS
 				g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
 
@@ -3259,7 +3233,7 @@ void _Host_RunFrame (float time)
 				toolframework->Think( bFinalTick );
 #endif
 
-				host_idealtime += host_state.interval_per_tick;
+				g_host.host_idealtime += g_host.host_state.interval_per_tick;
 			}
 			
 			// run HLTV if active
@@ -3305,7 +3279,7 @@ void _Host_RunFrame (float time)
 				// This causes cl.gettime() to return the true clock being used for rendering (tickcount * rate + remainder)
 				Host_SetClientInSimulation( false );
 				// Now allow for interpolation on client
-				g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / host_state.interval_per_tick );
+				g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / g_host.host_state.interval_per_tick );
 
 #if defined( REPLAY_ENABLED )
 				// Update client-side replay history manager - called here since interpolation_amount is set
@@ -3363,7 +3337,7 @@ void _Host_RunFrame (float time)
 				g_ClientDLL->IN_SetSampleTime(last_frame_time);
 			}
 
-			last_frame_time = host_frametime;
+			last_frame_time = g_host.host_frametime;
 
 			serverticks = numticks;
 			g_ClientGlobalVariables.simTicksThisFrame = clientticks;
@@ -3411,7 +3385,7 @@ void _Host_RunFrame (float time)
 			// This causes cl.gettime() to return the true clock being used for rendering (tickcount * rate + remainder)
 			Host_SetClientInSimulation( false );
 			// Now allow for interpolation on client
-			g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / host_state.interval_per_tick );
+			g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / g_host.host_state.interval_per_tick );
 
 			//-------------------
 			// Run prediction if it hasn't been run yet
@@ -3431,9 +3405,9 @@ void _Host_RunFrame (float time)
 			for ( int tick = 0; tick < serverticks; tick++ )
 			{
 				// NOTE:  Do we want do this at start or end of this loop?
-				++host_tickcount;
-				++host_currentframetick;
-				g_ClientGlobalVariables.tickcount = host_tickcount;
+				++g_host.host_tickcount;
+				++g_host.host_currentframetick;
+				g_ClientGlobalVariables.tickcount = g_host.host_tickcount;
 				bool bFinalTick = tick==(serverticks-1) ? true : false;
 				_Host_RunFrame_Input( prevremainder, bFinalTick );
 				prevremainder = 0;
@@ -3532,7 +3506,7 @@ void _Host_RunFrame (float time)
 		{
 			{
 				VPROF_BUDGET( "WaitForAsyncServer", "AsyncServer" );
-				if ( Host_IsSinglePlayerGame() )
+				if (g_host.Host_IsSinglePlayerGame() )
 				{
 					// This should change to a YieldWait if the server starts wanting to parallel process. If
 					// so, will need some route for the server to queue up work it wants to execute outside
@@ -3554,17 +3528,17 @@ void _Host_RunFrame (float time)
 
 		Host_Speeds();
 
-		Host_UpdateMapList();
+		g_host.Host_UpdateMapList();
 
-		host_framecount++;
+		g_host.host_framecount++;
 #if !defined(SWDS)
 		if ( !demoplayer->IsPlaybackPaused() )
 #endif
 		{
-			host_time = host_tickcount * host_state.interval_per_tick + cl.m_tickRemainder;
+			g_host.host_tick_time = g_host.host_tickcount * g_host.host_state.interval_per_tick + cl.m_tickRemainder;
 		}
 
-		Host_PostFrameRate( host_frametime );
+		Host_PostFrameRate(g_host.host_frametime );
 
 		if ( host_checkheap )
 		{
@@ -3589,7 +3563,7 @@ Host_Frame
 
 ==============================
 */
-void Host_RunFrame( float time )
+void Host::Host_RunFrame( float time )
 {
 	static  double	timetotal = 0;
 	static  int		timecount = 0;
@@ -3739,7 +3713,7 @@ void Host_CheckGore( void )
 	// Next check the new method of enabling low violence based on country of purchase
 	// and other means that are inaccessible by the user.
 	//
-	if ( GetCurrentMod() && Q_stricmp( GetCurrentMod(), "cstrike" ) != 0 )
+	if (g_host.GetCurrentMod() && Q_stricmp(g_host.GetCurrentMod(), "cstrike" ) != 0 )
 		bLowViolenceSecure = IsLowViolence_Secure();
 
 	//
@@ -3856,7 +3830,7 @@ void Host_InitProcessor( void )
 // Specifically used by the model loading code to mark models
 // touched by the current map
 //-----------------------------------------------------------------------------
-int Host_GetServerCount( void )
+int Host::Host_GetServerCount( void )
 {
 	if (cl.m_nSignonState >= SIGNONSTATE_NEW)
 	{
@@ -3996,7 +3970,7 @@ bool DLL_LOCAL Host_IsValidSignature( const char *pFilename, bool bAllowUnknown 
 // Ask steam if it is ok to load this DLL.  Unsigned DLLs should not be loaded unless
 // the client is running -insecure (testing a plugin for example)
 // This keeps legitimate users with modified binaries from getting VAC banned because of them
-bool DLL_LOCAL Host_AllowLoadModule( const char *pFilename, const char *pPathID, bool bAllowUnknown, bool bIsServerOnly /* = false */ )
+bool DLL_LOCAL Host::Host_AllowLoadModule( const char *pFilename, const char *pPathID, bool bAllowUnknown, bool bIsServerOnly /* = false */ )
 {
 #if defined( SWDS ) || defined ( OSX ) || defined( LINUX )
 	// dedicated servers and Mac and Linux binaries don't check signatures
@@ -4014,7 +3988,7 @@ bool DLL_LOCAL Host_AllowLoadModule( const char *pFilename, const char *pPathID,
 		bool bSignatureIsValid = false;
 
 		// Do we need to do the signature checking? If secure servers are disabled, just skip it.
-		if ( Host_IsSecureServerAllowed() )
+		if (g_pHost->Host_IsSecureServerAllowed() )
 		{
 			if ( Steam3Client().SteamUtils() )
 			{
@@ -4044,7 +4018,7 @@ bool DLL_LOCAL Host_AllowLoadModule( const char *pFilename, const char *pPathID,
 			else
 			{
 				Warning("Steam is not active, running in -insecure mode.\n");
-				Host_DisallowSecureServers();
+				g_host.Host_DisallowSecureServers();
 			}
 		}
 		else
@@ -4058,7 +4032,7 @@ bool DLL_LOCAL Host_AllowLoadModule( const char *pFilename, const char *pPathID,
 #endif // SWDS
 }
 
-bool DLL_LOCAL Host_IsSecureServerAllowed()
+bool DLL_LOCAL Host::Host_IsSecureServerAllowed()
 {
 	if ( CommandLine()->FindParm( "-insecure" ) || CommandLine()->FindParm( "-textmode" ) )
 		g_bAllowSecureServers = false;
@@ -4069,10 +4043,10 @@ bool DLL_LOCAL Host_IsSecureServerAllowed()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Host_Init( bool bDedicated )
+void Host::Host_Init( bool bDedicated )
 {
-	realtime = 0;
-	host_idealtime = 0;
+	g_host.host_realtime = 0;
+	g_host.host_idealtime = 0;
 
 #if defined(_WIN32)
 	if ( CommandLine()->FindParm( "-pme" ) )
@@ -4081,13 +4055,13 @@ void Host_Init( bool bDedicated )
 	}
 #endif
 
-	if ( Host_IsSecureServerAllowed() )
+	if ( g_host.Host_IsSecureServerAllowed() )
 	{
 		// double check the engine's signature in case it was hooked/modified
-		if ( !Host_AllowLoadModule( "engine" DLL_EXT_STRING, "EXECUTABLE_PATH", false, bDedicated ) )
+		if ( !g_host.Host_AllowLoadModule( "engine" DLL_EXT_STRING, "EXECUTABLE_PATH", false, bDedicated ) )
 		{
 			// not supposed to load this but we will anyway
-			Host_DisallowSecureServers();
+			g_host.Host_DisallowSecureServers();
 		}
 	}
 
@@ -4107,7 +4081,7 @@ void Host_Init( bool bDedicated )
 		g_pThreadPool->Start( startParams, "CmpJob" );
 
 	// From const.h, the loaded game .dll will give us the correct value which is transmitted to the client
-	host_state.interval_per_tick = DEFAULT_TICK_INTERVAL;
+	g_host.host_state.interval_per_tick = DEFAULT_TICK_INTERVAL;
 
 	InstallBitBufErrorHandler();
 
@@ -4179,7 +4153,7 @@ void Host_Init( bool bDedicated )
 
 	TRACEINIT( HLTV_Init(), HLTV_Shutdown() );
 
-	ConDMsg( "Heap: %5.2f Mb\n", host_parms.memsize/(1024.0f*1024.0f) );
+	ConDMsg( "Heap: %5.2f Mb\n", g_host.host_parms.memsize/(1024.0f*1024.0f) );
 
 #if !defined( SWDS )
 	if ( !bDedicated )
@@ -4265,7 +4239,7 @@ void Host_Init( bool bDedicated )
 
 	// Mark hunklevel at end of startup
 	Hunk_AllocName( 0, "-HOST_HUNKLEVEL-" );
-	host_hunklevel = Hunk_LowMark();
+	g_host.host_hunklevel = Hunk_LowMark();
 
 #ifdef SOURCE_MT
 	if ( CommandLine()->FindParm( "-swapcores" ) )
@@ -4275,10 +4249,10 @@ void Host_Init( bool bDedicated )
 	}
 #endif
 
-	Host_AllowQueuedMaterialSystem( false );
+	g_pHost->Host_AllowQueuedMaterialSystem( false );
 
 	// Finished initializing
-	host_initialized = true;
+	g_host.host_initialized = true;
 
 	host_checkheap = CommandLine()->FindParm( "-heapcheck" ) ? true : false;
 
@@ -4401,7 +4375,7 @@ void AddTransitionResources( CSaveRestoreData *pSaveData, const char *pLevelName
 	}
 }
 
-bool Host_Changelevel( bool loadfromsavedgame, const char *mapname, const char *start )
+bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const char *start )
 {
 	char			_startspot[MAX_QPATH];
 	char			*startspot;
@@ -4443,7 +4417,7 @@ bool Host_Changelevel( bool loadfromsavedgame, const char *mapname, const char *
 	// The file to load the map from.
 	char szMapFile[MAX_PATH] = { 0 };
 	Q_strncpy( szMapName, mapname, sizeof( szMapName ) );
-	Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
+	g_host.Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
 
 	// Ask serverDLL to prepare this load
 	if ( g_iServerGameDLLVersion >= 10 )
@@ -4631,7 +4605,7 @@ SERVER TRANSITIONS
 
 ===============================================================================
 */
-bool Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, const char *pszOldMap, const char *pszLandmark, bool bOldSave )
+bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, const char *pszOldMap, const char *pszLandmark, bool bOldSave )
 {
 	VPROF( "Host_NewGame" );
 	COM_TimestampedLog( "Host_NewGame" );
@@ -4648,7 +4622,7 @@ bool Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, const ch
 	// The file to load the map from.
 	char szMapFile[MAX_PATH] = { 0 };
 	Q_strncpy( szMapName, mapName, sizeof( szMapName ) );
-	Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
+	g_host.Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
 
 	// Steam may not have been started yet, ensure it is available to the game DLL before we ask it to prepare level
 	// resources
@@ -4771,7 +4745,7 @@ bool Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, const ch
 	return true;
 }
 
-void Host_FreeStateAndWorld( bool server )
+void Host::Host_FreeStateAndWorld( bool server )
 {
 	bool bNeedsPurge = false;
 
@@ -4824,7 +4798,7 @@ void Host_FreeStateAndWorld( bool server )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Host_FreeToLowMark( bool server )
+void Host::Host_FreeToLowMark( bool server )
 {
 	Assert( host_initialized );
 	Assert( host_hunklevel );
@@ -4844,7 +4818,7 @@ void Host_FreeToLowMark( bool server )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void Host_Shutdown(void)
+void Host::Host_Shutdown(void)
 {
 #ifndef ANDROID
 	extern void ShutdownMixerControls();
@@ -4878,7 +4852,7 @@ void Host_Shutdown(void)
 #endif
 
 	// Disconnect from server
-	Host_Disconnect(true);
+	g_host.Host_Disconnect(true);
 
 #ifndef SWDS
 	// keep ConMsg from trying to update the screen
@@ -4892,7 +4866,7 @@ void Host_Shutdown(void)
 	// TODO, Trace this
 	CM_FreeMap();
 
-	host_initialized = false;
+	g_host.host_initialized = false;
 
 #if defined(VPROF_ENABLED)
 	VProfRecord_Shutdown();
@@ -5015,7 +4989,7 @@ void Host_Shutdown(void)
 //-----------------------------------------------------------------------------
 // Centralize access to enabling QMS.
 //-----------------------------------------------------------------------------
-bool Host_AllowQueuedMaterialSystem( bool bAllow )
+bool Host::Host_AllowQueuedMaterialSystem( bool bAllow )
 {
 #if !defined DEDICATED
 	// g_bAllowThreadedSound = bAllow;
@@ -5023,4 +4997,40 @@ bool Host_AllowQueuedMaterialSystem( bool bAllow )
 	return g_pMaterialSystem->AllowThreading( bAllow, g_nMaterialSystemThread );
 #endif
 	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Shut down client connection and any server
+//-----------------------------------------------------------------------------
+void Host::Host_Disconnect(bool bShowMainMenu, const char* pszReason)
+{
+	if (IsX360())
+	{
+		g_pQueuedLoader->EndMapLoading(false);
+	}
+
+#ifndef SWDS
+	if (!sv.IsDedicated())
+	{
+		cl.Disconnect(pszReason, bShowMainMenu);
+	}
+#endif
+	Host_AllowQueuedMaterialSystem(false);
+	HostState_GameShutdown();
+}
+
+void Host::Disconnect()
+{
+	cl.demonum = -1;
+	g_pHost->Host_Disconnect(true);
+
+#if defined( REPLAY_ENABLED )
+	// Finalize the recording replay on the server, if is recording.
+	// NOTE: We don't want this in Host_Disconnect() as that would be called more
+	// than necessary.
+	if (g_pReplay && g_pReplay->IsReplayEnabled() && sv.IsDedicated())
+	{
+		g_pReplay->SV_EndRecordingSession();
+	}
+#endif
 }

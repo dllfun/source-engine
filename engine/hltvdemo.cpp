@@ -96,7 +96,7 @@ void CHLTVDemoRecorder::StartRecording( const char *filename, bool bContinuously
 
 	m_nFrameCount = 0;
 
-	m_nStartTick = host_tickcount;
+	m_nStartTick = g_pHost->host_tickcount;
 
 	// Demo playback should read this as an incoming message.
 	// Write the client's realtime value out so we can synchronize the reads.
@@ -123,7 +123,7 @@ void CHLTVDemoRecorder::StopRecording()
 
 	// update demo header info
 	m_DemoFile.m_DemoHeader.playback_ticks = GetRecordingTick();
-	m_DemoFile.m_DemoHeader.playback_time =  host_state.interval_per_tick *	GetRecordingTick();
+	m_DemoFile.m_DemoHeader.playback_time = g_pHost->host_state.interval_per_tick *	GetRecordingTick();
 	m_DemoFile.m_DemoHeader.playback_frames = m_nFrameCount;
 
 	// write updated version
@@ -153,7 +153,7 @@ CDemoFile *CHLTVDemoRecorder::GetDemoFile()
 
 int CHLTVDemoRecorder::GetRecordingTick( void )
 {
-	return host_tickcount - m_nStartTick;
+	return g_pHost->host_tickcount - m_nStartTick;
 }
 
 
@@ -186,7 +186,7 @@ void CHLTVDemoRecorder::WriteServerInfo()
 	NET_SetConVar convars;
 
 	// build a list of all replicated convars
-	Host_BuildConVarUpdateMessage( &convars, FCVAR_REPLICATED, true );
+	g_pHost->Host_BuildConVarUpdateMessage( &convars, FCVAR_REPLICATED, true );
 
 	if ( hltv->IsMasterProxy() )
 	{
@@ -345,7 +345,7 @@ void CHLTVDemoRecorder::WriteFrame( CHLTVFrame *pFrame )
 	//now send snapshot data
 
 	// send tick time
-	NET_Tick tickmsg( pFrame->tick_count, host_frametime_unbounded, host_frametime_stddeviation );
+	NET_Tick tickmsg( pFrame->tick_count, g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
 	tickmsg.WriteToBuffer( msg );
 
 

@@ -460,32 +460,32 @@ float CEngineTool::Time()
 // Real time is unscaled, but is updated once per frame
 float CEngineTool::GetRealTime()
 {
-	return realtime;
+	return g_pHost->Host_GetRealTime();
 }
 
 float CEngineTool::GetRealFrameTime()
 {
-	return host_frametime;
+	return g_pHost->host_frametime;
 }
 
 float CEngineTool::HostFrameTime()
 {
-	return host_frametime;
+	return g_pHost->host_frametime;
 }
 
 float CEngineTool::HostTime()
 {
-	return host_time;
+	return g_pHost->Host_GetTickTime();
 }
 
 int CEngineTool::HostTick()
 {
-	return host_tickcount;
+	return g_pHost->host_tickcount;
 }
 
 int CEngineTool::HostFrameCount()
 {
-	return host_framecount;
+	return g_pHost->host_framecount;
 }
 
 float CEngineTool::ServerTime()
@@ -719,7 +719,7 @@ void CEngineTool::TraceRayServer( const Ray_t &ray, unsigned int fMask, ITraceFi
 
 void CEngineTool::SetAudioState( const AudioState_t &audioState )
 {
-	Host_SetAudioState( audioState );
+	g_pHost->Host_SetAudioState( audioState );
 }
 
 

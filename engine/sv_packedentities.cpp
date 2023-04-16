@@ -52,7 +52,7 @@ static inline bool SV_EnsurePrivateData(edict_t *pEdict)
 	}
 	else
 	{
-		Host_Error("SV_EnsurePrivateData: pEdict->pvPrivateData==NULL (ent %d).\n", pEdict - sv.edicts);
+		g_pHost->Host_Error("SV_EnsurePrivateData: pEdict->pvPrivateData==NULL (ent %d).\n", pEdict - sv.edicts);
 		return false;
 	}
 }
@@ -146,7 +146,7 @@ static inline void SV_PackEntity(
 
 	if( !SendTable_Encode( pSendTable, edict->GetUnknown(), &writeBuf, edictIdx, &recip, false ) )
 	{							 
-		Host_Error( "SV_PackEntity: SendTable_Encode returned false (ent %d).\n", edictIdx );
+		g_pHost->Host_Error( "SV_PackEntity: SendTable_Encode returned false (ent %d).\n", edictIdx );
 	}
 
 #ifndef NO_VCR
@@ -515,7 +515,7 @@ void SV_ComputeClientPacks(
 		cl.SetClientTickCount( sv.m_nTickCount );
 		cl.SetServerTickCount( sv.m_nTickCount );
 
-		cl.m_flLastServerTickTime = sv.m_nTickCount * host_state.interval_per_tick;
+		cl.m_flLastServerTickTime = sv.m_nTickCount * g_pHost->host_state.interval_per_tick;
 		g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
 		g_ClientGlobalVariables.curtime = cl.GetTime();
 #endif

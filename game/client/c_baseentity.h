@@ -1042,7 +1042,7 @@ public:
 	// Returns false if the model name is bogus or otherwise can't be loaded
 	bool				SetModel( const char *pModelName );
 
-	void				SetModelPointer( const IVModel *pModel );
+	virtual void				SetModelPointer( const IVModel *pModel );
 
 
 	// Access movetype and solid.

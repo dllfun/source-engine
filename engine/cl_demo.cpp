@@ -481,7 +481,7 @@ void CDemoRecorder::WriteDemoCvars()
 		char cvarcmd[MAX_OSPATH];
 
 		Q_snprintf( cvarcmd, sizeof(cvarcmd),"%s \"%s\"",
-			pCvar->GetName(), Host_CleanupConVarStringValue( pCvar->GetString() ) );
+			pCvar->GetName(), g_pHost->Host_CleanupConVarStringValue( pCvar->GetString() ) );
 
 		m_DemoFile.WriteConsoleCommand( cvarcmd, GetRecordingTick() );
 	}
@@ -590,7 +590,7 @@ void CDemoRecorder::StartupDemoFile( void )
 	dh->networkprotocol = PROTOCOL_VERSION;
 	Q_strncpy(dh->demofilestamp, DEMO_HEADER_ID, sizeof(dh->demofilestamp) );
 
-	Q_FileBase( modelloader->GetName( host_state.worldmodel ), dh->mapname, sizeof( dh->mapname ) );
+	Q_FileBase( modelloader->GetName(g_pHost->host_state.worldmodel ), dh->mapname, sizeof( dh->mapname ) );
 
 	char szGameDir[MAX_OSPATH];
 	Q_strncpy(szGameDir, com_gamedir, sizeof( szGameDir ) );
@@ -669,7 +669,7 @@ void CDemoRecorder::CloseDemoFile()
 
 			// update demo header infos
 			m_DemoFile.m_DemoHeader.playback_ticks	= GetRecordingTick();
-			m_DemoFile.m_DemoHeader.playback_time	= host_state.interval_per_tick * GetRecordingTick();
+			m_DemoFile.m_DemoHeader.playback_time	= g_pHost->host_state.interval_per_tick * GetRecordingTick();
 			m_DemoFile.m_DemoHeader.playback_frames = m_nFrameCount;
 
 			// go back to header and write demoHeader with correct time and #frame again
@@ -861,7 +861,7 @@ void CDemoPlayer::StopPlayback( void )
 	}
 	else
 	{
-		int framecount = host_framecount - m_nTimeDemoStartFrame;
+		int framecount = g_pHost->host_framecount - m_nTimeDemoStartFrame;
 		float demotime = Sys_FloatTime() - m_flTimeDemoStartTime;
 
 		if ( demotime > 0.0f )
@@ -1089,7 +1089,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 	if ( ! m_DemoFile.IsOpen() )
 	{
 		m_bPlayingBack = false;
-		Host_EndGame( true, "Tried to read a demo message with no demo file\n" );
+		g_pHost->Host_EndGame( true, "Tried to read a demo message with no demo file\n" );
 		return NULL;
 	}
 
@@ -1160,7 +1160,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 			}
 			else
 			{
-				if ( m_nTimeDemoCurrentFrame == host_framecount )
+				if ( m_nTimeDemoCurrentFrame == g_pHost->host_framecount )
 				{
 					// If we are playing back a timedemo, and we've already passed on a 
 					//  frame update for this host_frame tag, then we'll just skip this mess
@@ -1237,7 +1237,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 				// support for older engine demos
 				if ( !DataTable_LoadDataTablesFromBuffer( &buf, m_DemoFile.m_DemoHeader.demoprotocol ) )
 				{
-					Host_Error( "Error parsing network data tables during demo playback." );
+					g_pHost->Host_Error( "Error parsing network data tables during demo playback." );
 				}
 				free( data );
 			}
@@ -1256,7 +1256,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 						buf.Seek( 0 );
 						if ( !networkStringTableContainerClient->ReadStringTables( buf ) )
 						{
-							Host_Error( "Error parsing string tables during demo playback." );
+							g_pHost->Host_Error( "Error parsing string tables during demo playback." );
 						}
 						break;
 					}
@@ -1303,7 +1303,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 				if ( IsSkipping() )
 				{
 					// adjust playback host_tickcount when skipping
-					m_nStartTick = host_tickcount - tick;
+					m_nStartTick = g_pHost->host_tickcount - tick;
 				}
 			}
 			break;
@@ -1313,7 +1313,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 	if ( cmd == dem_packet )
 	{
 		// remember last frame we read a dem_packet update
-		m_nTimeDemoCurrentFrame = host_framecount;
+		m_nTimeDemoCurrentFrame = g_pHost->host_framecount;
 	}
 	
 	int inseq, outseqack, outseq = 0;
@@ -1333,7 +1333,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 	if ( length > 0 )
 	{
 		// succsessfully read new demopacket
-		m_DemoPacket.received = realtime;
+		m_DemoPacket.received = g_pHost->Host_GetRealTime();
 		m_DemoPacket.size = length;
 		m_DemoPacket.message.StartReading( m_DemoPacket.data,  m_DemoPacket.size );
 	
@@ -1351,7 +1351,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 	// Skip a few ticks before doing any timing
 	if ( (m_nTimeDemoStartFrame < 0) && GetPlaybackTick() > 100 )
 	{
-		m_nTimeDemoStartFrame = host_framecount;
+		m_nTimeDemoStartFrame = g_pHost->host_framecount;
 		m_flTimeDemoStartTime = Sys_FloatTime();
 		m_flTotalFPSVariability = 0.0f;
 
@@ -1650,7 +1650,7 @@ bool CDemoPlayer::StartPlayback( const char *filename, bool bAsTimeDemo )
 	// Disconnect from server or stop running one
 	int oldn = cl.demonum;
 	cl.demonum = -1;
-	Host_Disconnect(false);
+	g_pHost->Host_Disconnect(false);
 	cl.demonum = oldn;
 
 	if ( !m_DemoFile.Open( filename, true )  )
@@ -1686,7 +1686,7 @@ bool CDemoPlayer::StartPlayback( const char *filename, bool bAsTimeDemo )
 		ConMsg ("CDemo::Play: failed to create demo net channel\n" );
 		m_DemoFile.Close();
 		cl.demonum = -1;		// stop demo loop
-		Host_Disconnect(true);
+		g_pHost->Host_Disconnect(true);
 	}
 	
 	cl.m_NetChannel->SetTimeout( -1.0f );	// never timeout
@@ -1736,7 +1736,7 @@ void CDemoPlayer::WriteTimeDemoResults( void )
 {
 	int		frames;
 	float	time;
-	frames = (host_framecount - m_nTimeDemoStartFrame) - 1;
+	frames = (g_pHost->host_framecount - m_nTimeDemoStartFrame) - 1;
 	time = Sys_FloatTime() - m_flTimeDemoStartTime;
 	if (!time)
 	{
@@ -1920,12 +1920,12 @@ int CDemoPlayer::GetPlaybackStartTick( void )
 
 int CDemoPlayer::GetPlaybackTick( void )
 {
-	return host_tickcount - m_nStartTick;
+	return g_pHost->host_tickcount - m_nStartTick;
 }
 
 void CDemoPlayer::ResyncDemoClock()
 {
-	m_nStartTick = host_tickcount;
+	m_nStartTick = g_pHost->host_tickcount;
 	m_nPreviousTick = m_nStartTick;
 }
 

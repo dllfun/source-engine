@@ -309,8 +309,8 @@ void MaterialSystem_RegisterLightmapSurfaces( void )
 
 	// Add all the surfaces to a list, sorted by lightmapped
 	// then by material enumeration then by area
-	CUtlRBTree< SurfaceHandle_t, int >	surfaces( 0, host_state.worldmodel->brush.pShared->numsurfaces, LightmapLess );
-	for( int surfaceIndex = 0; surfaceIndex < host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
+	CUtlRBTree< SurfaceHandle_t, int >	surfaces( 0, g_pHost->host_state.worldmodel->brush.pShared->numsurfaces, LightmapLess );
+	for( int surfaceIndex = 0; surfaceIndex < g_pHost->host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
 	{
 		surfID = SurfaceHandleFromIndex( surfaceIndex );
 		if( ( MSurf_TexInfo( surfID )->flags & SURF_NOLIGHT ) || 
@@ -350,7 +350,7 @@ static void TestBumpSanity( SurfaceHandle_t surfID )
 	ASSERT_SURF_VALID( surfID );
 	// use the last one to check if we need a bumped lightmap, but don't have it so that we can warn.
 	bool needsBumpmap = SurfNeedsBumpedLightmaps( surfID );
-	bool hasBumpmap = SurfHasBumpedLightmaps( surfID , host_state.worldmodel->brush.pShared);
+	bool hasBumpmap = SurfHasBumpedLightmaps( surfID , g_pHost->host_state.worldmodel->brush.pShared);
 	
 	if ( needsBumpmap && !hasBumpmap && MSurf_Samples( surfID ) )
 	{
@@ -371,7 +371,7 @@ void MaterialSytsem_DoBumpWarnings( void )
 			continue;
 		}
 		// Find one surface in each material sort info type
-		for ( int surfaceIndex = 0; surfaceIndex < host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
+		for ( int surfaceIndex = 0; surfaceIndex < g_pHost->host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
 		{
 			SurfaceHandle_t surfID = SurfaceHandleFromIndex( surfaceIndex );
 
@@ -391,7 +391,7 @@ void MaterialSytsem_DoBumpWarnings( void )
 static void GenerateTexCoordsForPrimVerts( void )
 {
 	int j, k, l;
-	for ( int surfaceIndex = 0; surfaceIndex < host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
+	for ( int surfaceIndex = 0; surfaceIndex < g_pHost->host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
 	{
 		SurfaceHandle_t surfID = SurfaceHandleFromIndex( surfaceIndex );
 /*
@@ -407,8 +407,8 @@ static void GenerateTexCoordsForPrimVerts( void )
 		for( j = 0; j < MSurf_NumPrims( surfID ); j++ )
 		{
 			mprimitive_t *pPrim;
-			assert( MSurf_FirstPrimID( surfID ) + j < host_state.worldmodel->brush.pShared->numprimitives );
-			pPrim = &host_state.worldmodel->brush.pShared->primitives[MSurf_FirstPrimID( surfID ) + j];
+			assert( MSurf_FirstPrimID( surfID ) + j < g_pHost->host_state.worldmodel->brush.pShared->numprimitives );
+			pPrim = &g_pHost->host_state.worldmodel->brush.pShared->primitives[MSurf_FirstPrimID( surfID ) + j];
 			for( k = 0; k < pPrim->vertCount; k++ )
 			{
 				int lightmapSize[2];
@@ -432,8 +432,8 @@ static void GenerateTexCoordsForPrimVerts( void )
 				for ( l = 0; l < pPrim->vertCount; l++ )
 				{
 					// world-space vertex
-					assert( l+pPrim->firstVert < host_state.worldmodel->brush.pShared->numprimverts );
-					mprimvert_t &vert = host_state.worldmodel->brush.pShared->primverts[l+pPrim->firstVert];
+					assert( l+pPrim->firstVert < g_pHost->host_state.worldmodel->brush.pShared->numprimverts );
+					mprimvert_t &vert = g_pHost->host_state.worldmodel->brush.pShared->primverts[l+pPrim->firstVert];
 					Vector& vec = vert.pos;
 
 					// base texture coordinate
@@ -526,7 +526,7 @@ void MaterialSystem_CreateSortinfo( void )
 		//Msg("Material %s, lightmap %d ", materialSortInfoArray[i].material->GetName(), materialSortInfoArray[i].lightmapPageID );
 	}
 
-	for ( int surfaceIndex = 0; surfaceIndex < host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
+	for ( int surfaceIndex = 0; surfaceIndex < g_pHost->host_state.worldmodel->brush.pShared->numsurfaces; surfaceIndex++ )
 	{
 		SurfaceHandle_t surfID = SurfaceHandleFromIndex( surfaceIndex );
 		int sortID = MSurf_MaterialSortID( surfID );
@@ -579,7 +579,7 @@ bool SurfHasLightmap( SurfaceHandle_t surfID )
 
 	bool hasLightmap = false;
 	if( ( !( MSurf_TexInfo( surfID )->flags & SURF_NOLIGHT ) ) &&
-		( host_state.worldmodel->brush.pShared->lightdata ) &&
+		(g_pHost->host_state.worldmodel->brush.pShared->lightdata ) &&
 		( MSurf_Samples( surfID ) ) )
 	{
 		hasLightmap = true;

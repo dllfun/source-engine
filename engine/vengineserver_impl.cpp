@@ -160,7 +160,7 @@ void SeedRandomNumberGenerator( bool random_invariant )
 static void PR_CheckEmptyString (const char *s)
 {
 	if (s[0] <= ' ')
-		Host_Error ("Bad string: %s", s);
+		g_pHost->Host_Error ("Bad string: %s", s);
 }
 
 // Average a list a vertices to find an approximate "center"
@@ -365,7 +365,7 @@ public:
 			return i;
 		}
 		
-		Host_Error( "CVEngineServer::PrecacheDecal: '%s' overflow, too many decals", name );
+		g_pHost->Host_Error( "CVEngineServer::PrecacheDecal: '%s' overflow, too many decals", name );
 		return 0;
 	}
 	
@@ -378,7 +378,7 @@ public:
 			return i;
 		}
 		
-		Host_Error( "CVEngineServer::PrecacheModel: '%s' overflow, too many models", s );
+		g_pHost->Host_Error( "CVEngineServer::PrecacheModel: '%s' overflow, too many models", s );
 		return 0;
 	}
 	
@@ -394,7 +394,7 @@ public:
 			return i;
 		}
 		
-		Host_Error ("CVEngineServer::PrecacheGeneric: '%s' overflow", s);
+		g_pHost->Host_Error ("CVEngineServer::PrecacheGeneric: '%s' overflow", s);
 		return 0;
 	}
 	
@@ -632,7 +632,7 @@ public:
 
 		char szDiskName[MAX_PATH] = { 0 };
 		// Check if we can directly use this as a map
-		Host_DefaultMapFileName( pMapName, szDiskName, sizeof( szDiskName ) );
+		g_pHost->Host_DefaultMapFileName( pMapName, szDiskName, sizeof( szDiskName ) );
 		if ( *szDiskName && modelloader->Map_IsValid( szDiskName, true ) )
 		{
 			return eFindMap_Found;
@@ -642,7 +642,7 @@ public:
 		char match[1][64] = { {0} };
 		if ( MapList_ListMaps( pMapName, false, false, 1, sizeof( match[0] ), match ) && *(match[0]) )
 		{
-			Host_DefaultMapFileName( match[0], szDiskName, sizeof( szDiskName ) );
+			g_pHost->Host_DefaultMapFileName( match[0], szDiskName, sizeof( szDiskName ) );
 			if ( modelloader->Map_IsValid( szDiskName, true ) )
 			{
 				V_strncpy( pMapName, match[0], nMapNameMax );
@@ -1303,7 +1303,7 @@ public:
 	{
 		int clientnum = NUM_FOR_EDICT( clientent );
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
-			Host_Error ("DLL_SetView: not a client");
+			g_pHost->Host_Error ("DLL_SetView: not a client");
 		
 		CGameClient *client = sv.Client(clientnum-1);
 
@@ -1323,7 +1323,7 @@ public:
 		int clientnum = NUM_FOR_EDICT( clientent );
 
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
-			Host_Error ("DLL_Crosshairangle: not a client");
+			g_pHost->Host_Error ("DLL_Crosshairangle: not a client");
 		
 		IClient *client = sv.Client(clientnum-1);
 
@@ -1428,12 +1428,12 @@ public:
 
 	virtual void		DrawMapToScratchPad( IScratchPad3D *pPad, unsigned long iFlags )
 	{
-		worldbrushdata_t *pData = host_state.worldmodel->brush.pShared;
+		worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared;
 		if ( !pData )
 			return;
 
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex( host_state.worldmodel->brush.firstmodelsurface, pData );
-		for (int i=0; i< host_state.worldmodel->brush.nummodelsurfaces; ++i, ++surfID)
+		SurfaceHandle_t surfID = SurfaceHandleFromIndex(g_pHost->host_state.worldmodel->brush.firstmodelsurface, pData );
+		for (int i=0; i< g_pHost->host_state.worldmodel->brush.nummodelsurfaces; ++i, ++surfID)
 		{
 			// Don't bother with nodraw surfaces
 			if( MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
@@ -1477,7 +1477,7 @@ public:
 	{
 		int clientnum = NUM_FOR_EDICT( pEntity );
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
-			Host_Error ("DLL_SetView: not a client");
+			g_pHost->Host_Error ("DLL_SetView: not a client");
 
 		CGameClient *client = sv.Client(clientnum-1);
 		if ( client->IsFakeClient() )
@@ -1501,7 +1501,7 @@ public:
 	{
 		int clientnum = NUM_FOR_EDICT( pPlayerEntity );
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
-			Host_Error( "StartQueryCvarValue: not a client" );
+			g_pHost->Host_Error( "StartQueryCvarValue: not a client" );
 
 		CGameClient *client = sv.Client( clientnum-1 );
 		return SendCvarValueQueryToClient( client, pCvarName, false );
@@ -1678,7 +1678,7 @@ public:
 	virtual int GetAllClusterBounds( bbox_t *pBBoxList, int maxBBox )
 	{
 		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->GetVis() && host_state.worldmodel->brush.pShared)
+		if ( pBSPData && pBSPData->GetVis() && g_pHost->host_state.worldmodel->brush.pShared)
 		{
 			// clamp to max clusters in the map
 			if ( maxBBox > pBSPData->GetVis()->numclusters)
@@ -1691,9 +1691,9 @@ public:
 				ClearBounds( pBBoxList[i].mins, pBBoxList[i].maxs );
 			}
 			// add each leaf's bounds to the bounds for that cluster
-			for ( int i = 0; i < host_state.worldmodel->brush.pShared->numleafs; i++ )
+			for ( int i = 0; i < g_pHost->host_state.worldmodel->brush.pShared->numleafs; i++ )
 			{
-				mleaf_t *pLeaf = &host_state.worldmodel->brush.pShared->leafs[i];
+				mleaf_t *pLeaf = &g_pHost->host_state.worldmodel->brush.pShared->leafs[i];
 				// skip solid leaves and leaves with cluster < 0
 				if ( !(pLeaf->contents & CONTENTS_SOLID) && pLeaf->cluster >= 0 && pLeaf->cluster < maxBBox )
 				{
@@ -1826,7 +1826,7 @@ void CVEngineServer::PlaybackTempEntity( IRecipientFilter& filter, float delay, 
 	// write all properties, if init or reliable message delta against zero values
 	if( !SendTable_Encode( pST, pSender, &buffer, classID, NULL, false ) )
 	{
-		Host_Error( "PlaybackTempEntity: SendTable_Encode returned false (ent %d), overflow? %i\n", classID, buffer.IsOverflowed() ? 1 : 0 );
+		g_pHost->Host_Error( "PlaybackTempEntity: SendTable_Encode returned false (ent %d), overflow? %i\n", classID, buffer.IsOverflowed() ? 1 : 0 );
 		return;
 	}
 	

@@ -144,7 +144,7 @@ struct ResourceLocker
 		g_pFileSystem->AsyncSuspend();
 
 		// Need to temporarily disable queued material system, then lock it
-		m_QMS = Host_AllowQueuedMaterialSystem( false );
+		m_QMS = g_pHost->Host_AllowQueuedMaterialSystem( false );
 		m_MatLock = g_pMaterialSystem->Lock();
 	}
 
@@ -152,7 +152,7 @@ struct ResourceLocker
 	{
 		// Restore QMS
 		materials->Unlock( m_MatLock );
-		Host_AllowQueuedMaterialSystem( m_QMS );
+		g_pHost->Host_AllowQueuedMaterialSystem( m_QMS );
 		g_pFileSystem->AsyncResume();
 
 		// ??? What?  Why?
@@ -404,7 +404,7 @@ void CL_CheckClientState( void )
 						sv.IsActive() &&
 						!demorecorder->IsRecording() &&
 						!demoplayer->IsPlayingBack() &&
-						Host_IsSinglePlayerGame();
+						g_pHost->Host_IsSinglePlayerGame();
 
 	CL_SetupLocalNetworkBackDoor( useBackdoor );
 }
@@ -453,12 +453,12 @@ bool CL_CheckCRCs( const char *pszMap )
 		if ( nSize != -1 )
 		{
 			COM_ExplainDisconnection( true, "Couldn't CRC map %s, disconnecting\n", pszMap);
-			Host_Error( "Bad map" );
+			g_pHost->Host_Error( "Bad map" );
 		}
 		else
 		{
 			COM_ExplainDisconnection( true, "Missing map %s,  disconnecting\n", pszMap);
-			Host_Error( "Map is missing" );
+			g_pHost->Host_Error( "Map is missing" );
 		}
 
 		return false;
@@ -478,7 +478,7 @@ bool CL_CheckCRCs( const char *pszMap )
 			Warning( "Disconnect: BSP CRC failed!\n" );
 		}
 		COM_ExplainDisconnection( true, "Your map [%s] differs from the server's.\n", pszMap );
-		Host_Error( "Client's map differs from the server's" );
+		g_pHost->Host_Error( "Client's map differs from the server's" );
 		return false;
 	}
 
@@ -511,7 +511,7 @@ void CL_ReadPackets ( bool bFinalTick )
 	VPROF_BUDGET( "CL_ReadPackets", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
-	if ( !Host_ShouldRun() )
+	if ( !g_pHost->Host_ShouldRun() )
 		return;
 	
 	// update client times/tick
@@ -568,7 +568,7 @@ void CL_ReadPackets ( bool bFinalTick )
 			EngineVGui()->ShowErrorMessage();
 		}
 
-		Host_Disconnect( true, "Lost connection" );
+		g_pHost->Host_Disconnect( true, "Lost connection" );
 		return;
 	}
 #endif
@@ -597,10 +597,10 @@ void CL_ClearState ( void )
 	// shutdown this level in the client DLL
 	if ( g_ClientDLL )
 	{
-		if ( host_state.worldmodel )
+		if (g_pHost->host_state.worldmodel )
 		{
 			char mapname[256];
-			CL_SetupMapName( modelloader->GetName( host_state.worldmodel ), mapname, sizeof( mapname ) );
+			CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), mapname, sizeof( mapname ) );
 			phonehome->Message( IPhoneHome::PHONE_MSG_MAPEND, mapname );
 		}
 		audiosourcecache->LevelShutdown();
@@ -623,8 +623,8 @@ void CL_ClearState ( void )
 	memset (cl_elights, 0, sizeof(cl_elights));
 
 	// Wipe the hunk ( unless the server is active )
-	Host_FreeStateAndWorld( false );
-	Host_FreeToLowMark( false );
+	g_pHost->Host_FreeStateAndWorld( false );
+	g_pHost->Host_FreeToLowMark( false );
 
 	PhonemeMP3Shutdown();
 
@@ -697,7 +697,7 @@ void CL_DispatchSound( const SoundInfo_t &sound )
 	if ( snd_show.GetInt() >= 2 )
 	{
 		DevMsg( "%i (seq %i) %s : src %d : ch %d : %d dB : vol %.2f : time %.3f (%.4f delay) @%.1f %.1f %.1f\n", 
-			host_framecount,
+			g_pHost->host_framecount,
 			sound.nSequenceNumber,
 			name, 
 			sound.nEntityIndex, 
@@ -734,7 +734,7 @@ void CL_DispatchSound( const SoundInfo_t &sound )
 			float soundtime = cl.m_flLastServerTickTime + sound.fDelay;
 			// this adjusts for host_thread_mode or any other cases where we're running more than one
 			// tick at a time, but we get network updates on the first tick
-			soundtime -= ((g_ClientGlobalVariables.simTicksThisFrame-1) * host_state.interval_per_tick);
+			soundtime -= ((g_ClientGlobalVariables.simTicksThisFrame-1) * g_pHost->host_state.interval_per_tick);
 			// this sound was networked over from the server, use server clock
 			params.delay = S_ComputeDelayForSoundtime( soundtime, CLOCK_SYNC_SERVER );
 #if 0
@@ -844,7 +844,7 @@ void CL_Connect( const char *address, const char *pszSourceTag )
 	// If it's not a single player connection to "localhost", initialize networking & stop listenserver
 	if ( Q_strncmp( address, "localhost", 9 ) )
 	{
-		Host_Disconnect(false);	
+		g_pHost->Host_Disconnect(false);
 
 		// allow remote
 		NET_SetMutiplayer( true );		
@@ -1019,10 +1019,10 @@ Clean up and move to next part of sequence.
 void CL_RegisterResources( void )
 {
 	// All done precaching.
-	host_state.SetWorldModel( cl.GetModel( 1 ) );
-	if ( !host_state.worldmodel )
+	g_pHost->host_state.SetWorldModel( cl.GetModel( 1 ) );
+	if ( !g_pHost->host_state.worldmodel )
 	{
-		Host_Error( "CL_RegisterResources:  host_state.worldmodel/cl.GetModel( 1 )==NULL\n" );
+		g_pHost->Host_Error( "CL_RegisterResources:  host_state.worldmodel/cl.GetModel( 1 )==NULL\n" );
 	}
 
 	// Force main window to repaint... (only does something if running shaderapi
@@ -1161,13 +1161,13 @@ void CL_FullyConnected( void )
 	if ( !engineClient->IsLevelMainMenuBackground() )
 	{
 		// map load complete, safe to allow QMS
-		Host_AllowQueuedMaterialSystem( true );
+		g_pHost->Host_AllowQueuedMaterialSystem( true );
 	}
 
 	// This is a Hack, but we need to suppress rendering for a bit in single player to let values settle on the client
 	if ( (cl.m_nMaxClients == 1) && !demoplayer->IsPlayingBack() )
 	{
-		scr_nextdrawtick = host_tickcount + TIME_TO_TICKS( 0.25f );
+		scr_nextdrawtick = g_pHost->host_tickcount + TIME_TO_TICKS( 0.25f );
 	}
 
 #ifdef _X360
@@ -1255,7 +1255,7 @@ void CL_NextDemo (void)
 		{
 			cl.demonum = -1;
 			scr_disabled_for_loading = false;
-			Host_Disconnect( true );
+			g_pHost->Host_Disconnect( true );
 
 			demoplayer->OnLastDemoInLoopPlayed();
 
@@ -2047,7 +2047,7 @@ void CL_ExtraMouseUpdate( float frametime )
 	if ( !cl.IsActive() )
 		return;
 
-	if ( !Host_ShouldRun() )
+	if ( !g_pHost->Host_ShouldRun() )
 		return;
 
 	// Don't create usercmds here during playback, they were encoded into the packet already
@@ -2122,7 +2122,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 	if ( !cl.IsConnected() )
 		return;
 
-	if ( !Host_ShouldRun() )
+	if ( !g_pHost->Host_ShouldRun() )
 		return;
 
 	tmZoneFiltered( TELEMETRY_LEVEL0, 50, TMZF_NONE, "%s", __FUNCTION__ );
@@ -2166,7 +2166,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 		// Have client .dll create and store usercmd structure
 		g_ClientDLL->CreateMove( 
 			nextcommandnr, 
-			host_state.interval_per_tick - accumulated_extra_samples,
+			g_pHost->host_state.interval_per_tick - accumulated_extra_samples,
 			!cl.IsPaused() );
 
 		// Store new usercmd to dem file
@@ -2218,7 +2218,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 
 	if ( cl.IsActive() )
 	{
-		NET_Tick mymsg( cl.m_nDeltaTick, host_frametime_unbounded, host_frametime_stddeviation );
+		NET_Tick mymsg( cl.m_nDeltaTick, g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
 		cl.m_NetChannel->SendNetMsg( mymsg );
 	}
 
@@ -2235,7 +2235,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 	{
 		// use full update rate when active
 		float commandInterval = 1.0f / cl_cmdrate->GetFloat();
-		float maxDelta = min ( host_state.interval_per_tick, commandInterval );
+		float maxDelta = min (g_pHost->host_state.interval_per_tick, commandInterval );
 		float delta = clamp( (float)(net_time - cl.m_flNextCmdTime), 0.0f, maxDelta );
 		cl.m_flNextCmdTime = net_time + commandInterval - delta;
 	}
@@ -2247,7 +2247,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 
 }
 
-#define TICK_INTERVAL			(host_state.interval_per_tick)
+#define TICK_INTERVAL			(g_pHost->host_state.interval_per_tick)
 #define ROUND_TO_TICKS( t )		( TICK_INTERVAL * TIME_TO_TICKS( t ) )
 
 void CL_LatchInterpolationAmount()
@@ -2334,7 +2334,7 @@ bool CL_ShouldLoadBackgroundLevel( const CCommand &args )
 		if ( !Q_stricmp( args[1], "force" ) )
 		{
 			// Adrian: Have to do this so the menu shows up if we ever call this while in a level.
-			Host_Disconnect( true );
+			g_pHost->Host_Disconnect( true );
 			// pc can't get into background maps fast enough, so just show main menu
 			return false;
 		}
@@ -2618,9 +2618,9 @@ void CL_SetSteamCrashComment()
 	misc[ 0 ] = 0;
 	osversion[ 0 ] = 0;
 
-	if ( host_state.worldmodel )
+	if (g_pHost->host_state.worldmodel )
 	{
-		CL_SetupMapName( modelloader->GetName( host_state.worldmodel ), map, sizeof( map ) );
+		CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), map, sizeof( map ) );
 	}
 
 	DisplaySystemVersion( osversion, sizeof( osversion ) );

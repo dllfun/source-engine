@@ -12,6 +12,7 @@
 #include "utldict.h"
 #include "filesystem/IQueuedLoader.h"
 #include "cdll_int.h"
+#include "host.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -19,7 +20,7 @@
 extern IVEngineClient *engineClient;
 extern IFileSystem *g_pFileSystem;
 extern IDataCache *g_pDataCache;
-extern double realtime;
+//extern double realtime;
 
 // console streaming buffer implementation, appropriate for high latency and low memory
 // shift this many buffers through the wave
@@ -418,7 +419,7 @@ bool CAsyncWaveData::BlockingCopyData( void *destbuffer, int destbufsize, int st
 			float st = ( float )Plat_FloatTime();
 			g_pFileSystem->AsyncFinish( m_hAsyncControl, true );
 			float ed = ( float )Plat_FloatTime();
-			Warning( "%f BCD:  Async I/O Force %s (%8.2f msec / %8.2f msec total)\n", realtime, GetFileName(), 1000.0f * (float)( ed - st ), 1000.0f * (float)( m_arrival - m_start ) );
+			Warning( "%f BCD:  Async I/O Force %s (%8.2f msec / %8.2f msec total)\n", g_pHost->Host_GetRealTime(), GetFileName(), 1000.0f * (float)( ed - st ), 1000.0f * (float)( m_arrival - m_start ) );
 		}
 		else
 		{
@@ -445,7 +446,7 @@ bool CAsyncWaveData::BlockingCopyData( void *destbuffer, int destbufsize, int st
 	}
 	else if ( m_arrival != 0 && snd_async_spew.GetBool() )
 	{
-		DevMsg( "%f Async I/O Read successful %s (%8.2f msec)\n", realtime, GetFileName(), 1000.0f * (float)( m_arrival - m_start ) );
+		DevMsg( "%f Async I/O Read successful %s (%8.2f msec)\n", g_pHost->Host_GetRealTime(), GetFileName(), 1000.0f * (float)( m_arrival - m_start ) );
 		m_arrival = 0;
 	}
 
@@ -496,7 +497,7 @@ bool CAsyncWaveData::BlockingGetDataPointer( void **ppData )
 			float st = ( float )Plat_FloatTime();
 			g_pFileSystem->AsyncFinish( m_hAsyncControl, true );
 			float ed = ( float )Plat_FloatTime();
-			Warning( "%f BlockingGetDataPointer:  Async I/O Force %s (%8.2f msec / %8.2f msec total )\n", realtime, GetFileName(), 1000.0f * (float)( ed - st ), 1000.0f * (float)( m_arrival - m_start ) );
+			Warning( "%f BlockingGetDataPointer:  Async I/O Force %s (%8.2f msec / %8.2f msec total )\n", g_pHost->Host_GetRealTime(), GetFileName(), 1000.0f * (float)( ed - st ), 1000.0f * (float)( m_arrival - m_start ) );
 		}
 		else
 		{
@@ -523,7 +524,7 @@ bool CAsyncWaveData::BlockingGetDataPointer( void **ppData )
 	}
 	else if ( m_arrival != 0 && snd_async_spew.GetBool() )
 	{
-		DevMsg( "%f Async I/O Read successful %s (%8.2f msec)\n", realtime, GetFileName(), 1000.0f * (float)( m_arrival - m_start ) );
+		DevMsg( "%f Async I/O Read successful %s (%8.2f msec)\n", g_pHost->Host_GetRealTime(), GetFileName(), 1000.0f * (float)( m_arrival - m_start ) );
 		m_arrival = 0;
 	}
 
@@ -543,7 +544,7 @@ void CAsyncWaveData::SetAsyncPriority( int priority )
 		g_pFileSystem->AsyncSetPriority( m_hAsyncControl, m_async.priority );
 		if ( snd_async_spew.GetBool() )
 		{
-			DevMsg( "%f Async I/O Bumped priority for %s (%8.2f msec)\n", realtime, GetFileName(), 1000.0f * (float)( Plat_FloatTime() - m_start ) );
+			DevMsg( "%f Async I/O Bumped priority for %s (%8.2f msec)\n", g_pHost->Host_GetRealTime(), GetFileName(), 1000.0f * (float)( Plat_FloatTime() - m_start ) );
 		}
 	}
 }

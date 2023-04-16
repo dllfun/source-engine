@@ -132,7 +132,7 @@ static int CreateExecutionMarker()
 	if ( g_ExecutionMarkers.Count() >= MAX_EXECUTION_MARKERS )
 	{
 		// Callers to this function should call Cbuf_HasRoomForExecutionMarkers first.
-		Host_Error( "CreateExecutionMarker called, but the max has already been reached." );
+		g_pHost->Host_Error( "CreateExecutionMarker called, but the max has already been reached." );
 	}
 
 	int nRandomNumber;
@@ -348,7 +348,7 @@ bool Cbuf_AddTextWithMarkers( ECmdExecutionMarker markerLeft, const char *text, 
 	if ( !bSuccess )
 	{
 		// If we screwed up the validation, don't allow us to get stuck in a bad state.
-		Host_Error( "Cbuf_AddTextWithMarkers: buffer overflow\n" );
+		g_pHost->Host_Error( "Cbuf_AddTextWithMarkers: buffer overflow\n" );
 	}
 
 	return true;
@@ -880,7 +880,7 @@ static void HandleExecutionMarker( const char *pCommand, const char *pMarkerCode
 
 static bool ShouldPreventServerCommand( const ConCommandBase *pCommand )
 {
-	if ( !Host_IsSinglePlayerGame() )
+	if ( !g_pHost->Host_IsSinglePlayerGame() )
 	{
 		if ( g_iFilterCommandsByServerCanExecute > 0 )
 		{
@@ -1016,7 +1016,7 @@ const ConCommandBase *Cmd_ExecuteCommand( const CCommand &command, cmd_source_t 
 			// Allow cheat commands in singleplayer, debug, or multiplayer with sv_cheats on
 			if ( pCommand->IsFlagSet( FCVAR_CHEAT ) )
 			{
-				if ( !Host_IsSinglePlayerGame() && !CanCheat() )
+				if ( !g_pHost->Host_IsSinglePlayerGame() && !CanCheat() )
 				{
 					// But.. if the server is allowed to run this command and the server DID run this command, then let it through.
 					// (used by soundscape_flush)
@@ -1030,7 +1030,7 @@ const ConCommandBase *Cmd_ExecuteCommand( const CCommand &command, cmd_source_t 
 
 			if ( pCommand->IsFlagSet( FCVAR_SPONLY ) )
 			{
-				if ( !Host_IsSinglePlayerGame() )
+				if ( !g_pHost->Host_IsSinglePlayerGame() )
 				{
 					Msg( "Can't use command %s in multiplayer.\n", pCommand->GetName() );
 					return NULL;

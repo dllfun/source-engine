@@ -230,14 +230,14 @@ CNetworkStringTable::CNetworkStringTable( TABLEID id, const char *tableName, int
 
 	if ( m_nUserDataSizeBits > CNetworkStringTableItem::MAX_USERDATA_BITS )
 	{
-		Host_Error( "String tables user data bits restricted to %i bits, requested %i is too large\n", 
+		g_pHost->Host_Error( "String tables user data bits restricted to %i bits, requested %i is too large\n",
 			CNetworkStringTableItem::MAX_USERDATA_BITS,
 			m_nUserDataSizeBits );
 	}
 
 	if ( m_nUserDataSize > CNetworkStringTableItem::MAX_USERDATA_SIZE )
 	{
-		Host_Error( "String tables user data size restricted to %i bytes, requested %i is too large\n", 
+		g_pHost->Host_Error( "String tables user data size restricted to %i bytes, requested %i is too large\n",
 			CNetworkStringTableItem::MAX_USERDATA_SIZE,
 			m_nUserDataSize );
 	}
@@ -245,7 +245,7 @@ CNetworkStringTable::CNetworkStringTable( TABLEID id, const char *tableName, int
 	// Make sure maxentries is power of 2
 	if ( ( 1 << m_nEntryBits ) != maxentries )
 	{
-		Host_Error( "String tables must be powers of two in size!, %i is not a power of 2\n", maxentries );
+		g_pHost->Host_Error( "String tables must be powers of two in size!, %i is not a power of 2\n", maxentries );
 	}
 
 	if ( IsXbox() || bIsFilenames )
@@ -630,7 +630,7 @@ void CNetworkStringTable::ParseUpdate( bf_read &buf, int entries )
 		
 		if ( entryIndex < 0 || entryIndex >= GetMaxStrings() )
 		{
-			Host_Error( "Server sent bogus string index %i for table %s\n", entryIndex, GetTableName() );
+			g_pHost->Host_Error( "Server sent bogus string index %i for table %s\n", entryIndex, GetTableName() );
 		}
 
 		const char *pEntry = NULL;
@@ -647,7 +647,7 @@ void CNetworkStringTable::ParseUpdate( bf_read &buf, int entries )
 				unsigned int bytestocopy = buf.ReadUBitLong( SUBSTRING_BITS );
 				if ( index >= (unsigned int)history.Count() )
 				{
-					Host_Error( "Server sent bogus substring index %i for table %s\n",
+					g_pHost->Host_Error( "Server sent bogus substring index %i for table %s\n",
 					            entryIndex, GetTableName() );
 				}
 				Q_strncpy( entry, history[ index ].string, Min( sizeof( entry ), (size_t)bytestocopy + 1 ) );
@@ -1403,7 +1403,7 @@ void CNetworkStringTableContainer::WriteBaselines( bf_write &buf )
 	char *msg_buffer = new char[ msg_buffer_size ];
 	if ( !msg_buffer )
 	{
-		Host_Error( "Failed to allocate %llu bytes of memory in CNetworkStringTableContainer::WriteBaselines\n", (uint64)msg_buffer_size );
+		g_pHost->Host_Error( "Failed to allocate %llu bytes of memory in CNetworkStringTableContainer::WriteBaselines\n", (uint64)msg_buffer_size );
 	}
 
 	for ( int i = 0 ; i < m_Tables.Count() ; i++ )
@@ -1413,7 +1413,7 @@ void CNetworkStringTableContainer::WriteBaselines( bf_write &buf )
 		int before = buf.GetNumBytesWritten();
 		if ( !table->WriteBaselines( msg, msg_buffer, msg_buffer_size ) )
 		{
-			Host_Error( "Index error writing string table baseline %s\n", table->GetTableName() );
+			g_pHost->Host_Error( "Index error writing string table baseline %s\n", table->GetTableName() );
 		}
 
 		if ( msg.m_DataOut.IsOverflowed() )
@@ -1454,7 +1454,7 @@ void CNetworkStringTableContainer::WriteBaselines( bf_write &buf )
 
 		if ( !msg.WriteToBuffer( buf ) )
 		{
-			Host_Error( "Overflow error writing string table baseline %s\n", table->GetTableName() );
+			g_pHost->Host_Error( "Overflow error writing string table baseline %s\n", table->GetTableName() );
 		}
 
 		int after = buf.GetNumBytesWritten();
@@ -1495,7 +1495,7 @@ bool CNetworkStringTableContainer::ReadStringTables( bf_read& buf )
 		// Now read the data for the table
 		if ( table && !table->ReadStringTable( buf ) )
 		{
-			Host_Error( "Error reading string table %s\n", tablename );
+			g_pHost->Host_Error( "Error reading string table %s\n", tablename );
 		}
 		else
 		{

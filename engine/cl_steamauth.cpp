@@ -259,7 +259,7 @@ void CSteam3Client::OnClientGameServerDeny( ClientGameServerDeny_t *pClientGameS
 
 		Warning( "Disconnect: %s\n", pszReason );
 
-		Host_Disconnect( true );
+		g_pHost->Host_Disconnect( true );
 	}
 	
 }
@@ -282,7 +282,7 @@ void CSteam3Client::OnGameServerChangeRequested( GameServerChangeRequested_t *pG
 void CSteam3Client::OnGameOverlayActivated( GameOverlayActivated_t *pGameOverlayActivated )
 {
 #ifndef SWDS
-	if ( Host_IsSinglePlayerGame() )
+	if (g_pHost->Host_IsSinglePlayerGame() )
 	{
 		if ( !EngineVGui()->IsGameUIVisible() && 
 			!EngineVGui()->IsConsoleVisible() )

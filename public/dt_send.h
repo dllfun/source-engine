@@ -548,10 +548,6 @@ inline void SendTable::SetHasPropsEncodedAgainstTickcount( bool bState )
 
 // If you don't want to interit a base class's properties, use BEGIN_SEND_TABLE_NOBASE.
 // ------------------------------------------------------------------------------------------------------ //
-#define BEGIN_SEND_TABLE(className, tableName) \
-	BEGIN_SEND_TABLE_NOBASE(className, tableName) \
-		SendPropDataTable("baseclass", 0, className::BaseClass::m_pClassSendTable, SendProxy_DataTableToDataTable),
-
 #define BEGIN_SEND_TABLE_NOBASE(className, tableName) \
 	template <typename T> int ServerClassInit(T *); \
 	namespace tableName { \
@@ -575,6 +571,12 @@ inline void SendTable::SetHasPropsEncodedAgainstTickcount( bool bState )
 		sendTable.Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, g_pSendTableName);\
 		return 1; \
 	} 
+
+
+#define BEGIN_SEND_TABLE(className, tableName) \
+	BEGIN_SEND_TABLE_NOBASE(className, tableName) \
+		SendPropDataTable("baseclass", 0, className::BaseClass::m_pClassSendTable, SendProxy_DataTableToDataTable),
+
 
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the
 // legit offsetof from the C headers, so we'll use the old impl here to avoid exposing temptation to others

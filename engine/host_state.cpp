@@ -268,7 +268,7 @@ void HostState_SetSpawnPoint(Vector &position, QAngle &angle)
 //-----------------------------------------------------------------------------
 static void WatchDogHandler()
 {
-	Host_Error( "WatchdogHandler called - server exiting.\n" );
+	g_pHost->Host_Error( "WatchdogHandler called - server exiting.\n" );
 }
 
 //-----------------------------------------------------------------------------
@@ -352,7 +352,7 @@ void CHostState::State_NewGame()
 		}
 		else
 		{
-			if ( Host_NewGame( m_levelName, false, m_bBackgroundLevel ) )
+			if (g_pHost->Host_NewGame( m_levelName, false, m_bBackgroundLevel ) )
 			{
 				// succesfully started the new game
 				SetState( HS_RUN, true );
@@ -411,7 +411,7 @@ void CHostState::State_ChangeLevelMP()
 		// start progress bar immediately for multiplayer level transitions
 		EngineVGui()->EnabledProgressBarForNextLoad();
 #endif
-		if ( Host_Changelevel( false, m_levelName, m_landmarkName ) )
+		if (g_pHost->Host_Changelevel( false, m_levelName, m_landmarkName ) )
 		{
 			SetState( HS_RUN, true );
 			return;
@@ -434,7 +434,7 @@ void CHostState::State_ChangeLevelSP()
 {
 	if ( Host_ValidGame() )
 	{
-		Host_Changelevel( true, m_levelName, m_landmarkName );
+		g_pHost->Host_Changelevel( true, m_levelName, m_landmarkName );
 		SetState( HS_RUN, true );
 		return;
 	}
@@ -484,7 +484,7 @@ void CHostState::State_Run( float frameTime )
 		// Only clamp time if client is in process of connecting or is already connected.
 		if ( IsClientConnected() )
 		{
-			frameTime = min( frameTime, host_state.interval_per_tick );
+			frameTime = min( frameTime, g_pHost->host_state.interval_per_tick );
 		}
 	}
 
@@ -502,7 +502,7 @@ void CHostState::State_Run( float frameTime )
 		Plat_BeginWatchdogTimer( nTimerWaitSeconds );
 	}
 
-	Host_RunFrame( frameTime );
+	g_pHost->Host_RunFrame( frameTime );
 
 	if ( sv.IsDedicated() )
 	{
@@ -557,7 +557,7 @@ void CHostState::State_GameShutdown()
 #ifndef SWDS
 	saverestore->ClearSaveDir();
 #endif
-	Host_ShutdownServer();
+	g_pHost->Host_ShutdownServer();
 
 	switch( m_nextState )
 	{
@@ -613,7 +613,7 @@ void CHostState::FrameUpdate( float time )
 	int loopCount = 0;
 #endif
 
-	if ( setjmp (host_abortserver) )
+	if ( setjmp (g_pHost->host_abortserver) )
 	{
 		Init();
 		return;

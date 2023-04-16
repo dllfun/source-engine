@@ -185,7 +185,7 @@ private:
 // Singleton manager object
 static CMapListManager g_MapListMgr;
 
-void Host_UpdateMapList( void )
+void Host::Host_UpdateMapList( void )
 {
 	g_MapListMgr.Think();
 }
@@ -256,7 +256,7 @@ void CMapListManager::RefreshList( void )
 		return;
 	}
 
-	if ( realtime < m_flLastRefreshTime + MIN_REFRESH_INTERVAL )
+	if (g_pHost->Host_GetRealTime() < m_flLastRefreshTime + MIN_REFRESH_INTERVAL )
 		return;
 
 	ConDMsg( "Refreshing map list...\n" );
@@ -324,7 +324,7 @@ void CMapListManager::RefreshList( void )
 
 	Sys_FindClose();
 
-	m_flLastRefreshTime = realtime;
+	m_flLastRefreshTime = g_pHost->Host_GetRealTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -428,7 +428,7 @@ void CMapListManager::BuildList( void )
 	Sys_FindClose();
 
 	// Remember time we build the list
-	m_flLastRefreshTime = realtime;
+	m_flLastRefreshTime = g_pHost->Host_GetRealTime();
 
 	m_bDirty = true;
 }

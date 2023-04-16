@@ -399,7 +399,7 @@ bool CCvarUtilities::IsCommand( const CCommand &args )
 	// Allow cheat commands in singleplayer, debug, or multiplayer with sv_cheats on
 	if ( v->IsFlagSet( FCVAR_CHEAT ) )
 	{
-		if ( !Host_IsSinglePlayerGame() && !CanCheat() 
+		if ( !g_pHost->Host_IsSinglePlayerGame() && !CanCheat()
 #if !defined(SWDS)
 			&& !cl.ishltv
 #if defined( REPLAY_ENABLED )
@@ -531,7 +531,7 @@ bool CCvarUtilities::IsValidToggleCommand( const char *cmd )
 	// Allow cheat commands in singleplayer, debug, or multiplayer with sv_cheats on
 	if ( v->IsFlagSet( FCVAR_CHEAT ) )
 	{
-		if ( !Host_IsSinglePlayerGame() && !CanCheat() 
+		if ( !g_pHost->Host_IsSinglePlayerGame() && !CanCheat()
 #if !defined(SWDS) && !defined(_XBOX)
 			&& !demoplayer->IsPlayingBack() 
 #endif

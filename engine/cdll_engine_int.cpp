@@ -119,7 +119,7 @@ bool g_bClientGameDLLGreaterThanV13;
 
 void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct *pStruct )
 {
-	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int iSurf=0; iSurf < pLeaf->nummarksurfaces; iSurf++ )
 	{
 		SurfaceHandle_t surfID = pHandle[iSurf];
@@ -923,7 +923,7 @@ void CEngineClient::Con_NXPrintf( const struct con_nprint_s *info, const char *f
 IMaterial *CEngineClient::TraceLineMaterialAndLighting( const Vector &start, const Vector &end, 
 		                                 Vector &diffuseLightColor, Vector &baseColor )
 {
-	return BrushModel_GetLightingAndMaterial(host_state.worldmodel, start, end, diffuseLightColor, baseColor );
+	return BrushModel_GetLightingAndMaterial(g_pHost->host_state.worldmodel, start, end, diffuseLightColor, baseColor );
 }
 
 int	CEngineClient::IsBoxVisible( const Vector& mins, const Vector& maxs ) 
@@ -1000,7 +1000,7 @@ bool CEngineClient::LoadGameLump( int lumpId, void* pBuffer, int size )
 // Returns the number of leaves in the level
 int	CEngineClient::LevelLeafCount() const
 {
-	return host_state.worldmodel->brush.pShared->numleafs;
+	return g_pHost->host_state.worldmodel->brush.pShared->numleafs;
 }
 
 ISpatialQuery* CEngineClient::GetBSPTreeQuery()
@@ -1185,10 +1185,10 @@ int CEngineClient::GetLeavesArea( int *pLeaves, int nLeaves )
 	if ( nLeaves == 0 )
 		return -1;
 
-	int iArea = host_state.worldmodel->brush.pShared->leafs[pLeaves[0]].area;
+	int iArea = g_pHost->host_state.worldmodel->brush.pShared->leafs[pLeaves[0]].area;
 	for ( int i=1; i < nLeaves; i++ )
 	{
-		int iTestArea = host_state.worldmodel->brush.pShared->leafs[pLeaves[i]].area;
+		int iTestArea = g_pHost->host_state.worldmodel->brush.pShared->leafs[pLeaves[i]].area;
 		if ( iTestArea != iArea )
 			return -1;
 	}
@@ -1207,7 +1207,7 @@ bool CEngineClient::DoesBoxTouchAreaFrustum( const Vector &mins, const Vector &m
 //-----------------------------------------------------------------------------
 void CEngineClient::SetAudioState( const AudioState_t &audioState )
 {
-	Host_SetAudioState( audioState );
+	g_pHost->Host_SetAudioState( audioState );
 }
 
 
@@ -1541,7 +1541,7 @@ void CEngineClient::StartXboxExitingProcess()
 	S_StopAllSounds( true );
 
 	// Shutdown QMS, need to go back to single threaded
-	Host_AllowQueuedMaterialSystem( false );
+	g_pHost->Host_AllowQueuedMaterialSystem( false );
 }
 
 bool CEngineClient::IsSaveInProgress()
@@ -1652,7 +1652,7 @@ bool CEngineClient::IsActiveApp( void )
 //-----------------------------------------------------------------------------
 void CEngineClient::DisconnectInternal( void )
 {
-	Disconnect();
+	g_pHost->Disconnect();
 }
 
 //-----------------------------------------------------------------------------
@@ -1717,11 +1717,11 @@ bool ClientDLL_Load()
 
 	// Check the signature on the client dll.  If this fails we load it anyway but put this client
 	// into insecure mode so it won't connect to secure servers and get VAC banned
-	if ( !Host_AllowLoadModule( "client.dll", "GAMEBIN", true ) )
+	if ( !g_pHost->Host_AllowLoadModule( "client.dll", "GAMEBIN", true ) )
 	{
 		// not supposed to load this but we will anyway
-		Host_DisallowSecureServers();
-		Host_AllowLoadModule( "client.dll","GAMEBIN", true );
+		g_pHost->Host_DisallowSecureServers();
+		g_pHost->Host_AllowLoadModule( "client.dll","GAMEBIN", true );
 	}
 
 	g_ClientDLLModule = g_pFileSystem->LoadModule( "client", "GAMEBIN", false );

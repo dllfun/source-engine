@@ -1049,7 +1049,7 @@ int CBaseServer::GetChallengeType(netadr_t &adr)
 
 #ifndef SWDS	
 	// don't auth SP games or local mp games if steam isn't running
-	if ( Host_IsSinglePlayerGame() || ( !Steam3Client().SteamUser() && !IsDedicated() ))
+	if (g_pHost->Host_IsSinglePlayerGame() || ( !Steam3Client().SteamUser() && !IsDedicated() ))
 	{
 		return PROTOCOL_HASHEDCDKEY;
 	}
@@ -1589,7 +1589,7 @@ float CBaseServer::GetTime() const
 
 float CBaseServer::GetFinalTickTime() const
 {
-	return (m_nTickCount + (host_frameticks - host_currentframetick)) * m_flTickInterval;
+	return (m_nTickCount + (g_pHost->host_frameticks - g_pHost->host_currentframetick)) * m_flTickInterval;
 }
 
 void CBaseServer::DisconnectClient(IClient *client, const char *reason )
@@ -2218,7 +2218,7 @@ void CBaseServer::BroadcastMessage( INetMessage &msg, IRecipientFilter &filter )
 						index, num );
 
 				if ( msg.IsReliable() )
-					Host_Error( "Reliable message (type %i) discarded.", msg.GetType() );
+					g_pHost->Host_Error( "Reliable message (type %i) discarded.", msg.GetType() );
 
 				continue;
 			}

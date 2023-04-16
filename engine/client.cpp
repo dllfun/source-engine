@@ -270,7 +270,7 @@ bool CClientState::SetSignonState ( int state, int count )
 				
 				// set user settings (rate etc)
 				NET_SetConVar convars;
-				Host_BuildConVarUpdateMessage( &convars, FCVAR_USERINFO, false );
+				g_pHost->Host_BuildConVarUpdateMessage( &convars, FCVAR_USERINFO, false );
 				m_NetChannel->SendNetMsg( convars );
 			}
 			break;
@@ -307,7 +307,7 @@ bool CClientState::SetSignonState ( int state, int count )
 
 				// Tell client .dll about the transition
 				char mapname[256];
-				CL_SetupMapName( modelloader->GetName( host_state.worldmodel ), mapname, sizeof( mapname ) );
+				CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), mapname, sizeof( mapname ) );
 
 				COM_TimestampedLog( "LevelInitPreEntity: start %d", state );
 				g_ClientDLL->LevelInitPreEntity(mapname);
@@ -581,8 +581,8 @@ void CClientState::InstallStringTableCallback( char const *tableName )
 
 bool CClientState::IsPaused() const
 {
-	return m_bPaused || ( g_LostVideoMemory && Host_IsSinglePlayerGame() ) ||
-		!host_initialized || 
+	return m_bPaused || ( g_LostVideoMemory && g_pHost->Host_IsSinglePlayerGame() ) ||
+		!g_pHost->host_initialized ||
 		demoplayer->IsPlaybackPaused() ||
 		EngineVGui()->ShouldPause();
 }
@@ -590,7 +590,7 @@ bool CClientState::IsPaused() const
 float CClientState::GetTime() const
 {
 	int nTickCount = GetClientTickCount();
-	float flTickTime = nTickCount * host_state.interval_per_tick;
+	float flTickTime = nTickCount * g_pHost->host_state.interval_per_tick;
 	
 	// Timestamps are rounded to exact tick during simulation
 	if ( insimulation )
@@ -612,7 +612,7 @@ float CClientState::GetFrameTime() const
 		if ( insimulation )
 		{
 			int nElapsedTicks = ( GetClientTickCount() - oldtickcount );
-			return nElapsedTicks * host_state.interval_per_tick;
+			return nElapsedTicks * g_pHost->host_state.interval_per_tick;
 		}
 		else
 		{
@@ -797,7 +797,7 @@ model_t *CClientState::GetModel( int index )
 		if ( data && ( data->flags & RES_FATALIFMISSING ) )
 		{
 			COM_ExplainDisconnection( true, "Cannot continue without model %s, disconnecting\n", name );
-			Host_Disconnect( true, "Missing model" );
+			g_pHost->Host_Disconnect( true, "Missing model" );
 		}
 	}
 
@@ -1390,7 +1390,7 @@ void CClientState::ReadPreserveEnt( CEntityReadInfo &u )
 	//             overlooking.
 	if ( u.m_nOldEntity >= MAX_EDICTS || u.m_nOldEntity < 0 || u.m_nNewEntity >= MAX_EDICTS )
 	{
-		Host_Error( "CL_ReadPreserveEnt: Entity out of bounds. Old: %i, New: %i",
+		g_pHost->Host_Error( "CL_ReadPreserveEnt: Entity out of bounds. Old: %i, New: %i",
 		            u.m_nOldEntity, u.m_nNewEntity );
 	}
 
@@ -1553,7 +1553,7 @@ void CClientState::CheckUpdatingSteamResources()
 			}
 			else
 			{
-				Host_Error( "Invalid download file table." );
+				g_pHost->Host_Error( "Invalid download file table." );
 			}
 		}
 		else if (flProgress > 0.0f)
@@ -1787,7 +1787,7 @@ void CClientState::FinishSignonState_New()
 	// Verify the map and player .mdl crc's now that we've finished downloading missing resources (maps etc)
 	if ( !CL_CheckCRCs( m_szLevelFileName ) )
 	{
-		Host_Error( "Unable to verify map %s", ( m_szLevelFileName && m_szLevelFileName[0] ) ? m_szLevelFileName : "unknown" );
+		g_pHost->Host_Error( "Unable to verify map %s", ( m_szLevelFileName && m_szLevelFileName[0] ) ? m_szLevelFileName : "unknown" );
 		return;
 	}
 
@@ -1997,7 +1997,7 @@ void CClientState::ConsistencyCheck(bool bChanged )
 	if ( errorFilename && *errorFilename )
 	{
 		COM_ExplainDisconnection( true, "%s:\n%s\n", errorMsg, errorFilename );
-		Host_Error( "%s: %s\n", errorMsg, errorFilename );
+		g_pHost->Host_Error( "%s: %s\n", errorMsg, errorFilename );
 	}
 }
 

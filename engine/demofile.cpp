@@ -13,12 +13,13 @@
 #include "demo.h"
 #include "proto_version.h"
 #include "convar.h"	// For dbg_demofile
+#include "host.h"
 
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
 
 
-void Host_EndGame (bool bShowMainMenu, const char *message, ...);
+//void Host_EndGame (bool bShowMainMenu, const char *message, ...);
 
 // Debug helpers - this class prints in a nested format
 ConVar dbg_demofile( "dbg_demofile", "0", FCVAR_DEVELOPMENTONLY | FCVAR_HIDDEN );
@@ -347,7 +348,7 @@ int CDemoFile::ReadRawData( char *buffer, int length )
 	Assert( m_pBuffer && m_pBuffer->IsValid() );
 	if ( !m_pBuffer || !m_pBuffer->IsValid() )
 	{
-		Host_EndGame(true, "Error reading demo message data.\n");
+		g_pHost->Host_EndGame(true, "Error reading demo message data.\n");
 		return -1;
 	}
 

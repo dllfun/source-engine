@@ -17,11 +17,12 @@
 #include "dt_stack.h"
 #include "common.h"
 #include "packed_entity.h"
+#include "host.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
 
-extern int host_framecount;
+//extern int host_framecount;
 CRC32_t SendTable_ComputeCRC();
 
 class CSendTablePrecalc;
@@ -254,9 +255,9 @@ static inline void ShowEncodeDeltaWatchInfo(
 		return;
 	
 	static int lastframe = -1;
-	if ( host_framecount != lastframe )
+	if ( g_pHost->host_framecount != lastframe )
 	{
-		lastframe = host_framecount;
+		lastframe = g_pHost->host_framecount;
 		ConDMsg( "delta entity: %i\n", objectID );
 	}
 

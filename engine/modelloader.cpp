@@ -446,7 +446,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 	s_MapFileHandle = g_pFileSystem->OpenEx( s_szMapName, "rb", IsX360() ? FSOPEN_NEVERINPACK : 0, IsX360() ? "GAME" : NULL );
 	if ( s_MapFileHandle == FILESYSTEM_INVALID_HANDLE )
 	{
-		Host_Error( "CMapLoadHelper::Init, unable to open %s\n", s_szMapName );
+		g_pHost->Host_Error( "CMapLoadHelper::Init, unable to open %s\n", s_szMapName );
 		return;
 	}
 
@@ -455,7 +455,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 	{
 		g_pFileSystem->Close( s_MapFileHandle );
 		s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
-		Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", s_szMapName );
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", s_szMapName );
 		return;
 	}
 
@@ -463,7 +463,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 	{
 		g_pFileSystem->Close( s_MapFileHandle );
 		s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
-		Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", s_szMapName,
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", s_szMapName,
 			s_MapHeader.version, BSPVERSION );
 		return;
 	}
@@ -504,7 +504,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 			FileHandle_t lumpFile = g_pFileSystem->Open( lumpfilename, "rb" );
 			if ( lumpFile == FILESYSTEM_INVALID_HANDLE )
 			{
-				Host_Error( "CMapLoadHelper::Init, failed to load lump file %s\n", lumpfilename );
+				g_pHost->Host_Error( "CMapLoadHelper::Init, failed to load lump file %s\n", lumpfilename );
 				return;
 			}
 
@@ -561,13 +561,13 @@ void CMapLoadHelper::InitFromMemory( model_t *pMapModel, const void *pData, int 
 
 	if ( s_MapHeader.ident != IDBSPHEADER )
 	{
-		Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", s_szMapName );
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", s_szMapName );
 		return;
 	}
 
 	if ( s_MapHeader.version < MINBSPVERSION || s_MapHeader.version > BSPVERSION )
 	{
-		Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", s_szMapName, s_MapHeader.version, BSPVERSION );
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", s_szMapName, s_MapHeader.version, BSPVERSION );
 		return;
 	}
 
@@ -1188,7 +1188,7 @@ void Mod_LoadWorldlights(worldbrushdata_t* pBrushData, CMapLoadHelper &lh, bool 
 		}
 
 		default:
-			Host_Error( "Invalid worldlight lump version!\n" );
+			g_pHost->Host_Error( "Invalid worldlight lump version!\n" );
 			break;
 	}
 
@@ -1252,7 +1252,7 @@ void Mod_LoadVertices(worldbrushdata_t* pBrushData)
 	in = (dvertex_t *)lh.LumpBase();
 	if ( lh.LumpSize() % sizeof(*in) )
 	{
-		Host_Error( "Mod_LoadVertices: funny lump size in %s", lh.GetMapName() );
+		g_pHost->Host_Error( "Mod_LoadVertices: funny lump size in %s", lh.GetMapName() );
 	}
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mvertex_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "vertexes" ) );
@@ -1299,7 +1299,7 @@ void Mod_LoadSubmodels(worldbrushdata_t* pBrushData, CUtlVector<mmodel_t> &submo
 
 	in = (dmodel_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error("Mod_LoadSubmodels: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error("Mod_LoadSubmodels: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 
 	submodelList.SetCount( count );
@@ -1335,7 +1335,7 @@ medge_t *Mod_LoadEdges (worldbrushdata_t* pBrushData)
 
 	in = (dedge_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadEdges: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadEdges: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	medge_t *pedges = new medge_t[count];
 
@@ -1443,7 +1443,7 @@ void Mod_LoadOcclusion(worldbrushdata_t* pBrushData)
 		break;
 
 	default:
-		Host_Error("Invalid occlusion lump version!\n");
+		g_pHost->Host_Error("Invalid occlusion lump version!\n");
 		break;
 	}
 }
@@ -1480,7 +1480,7 @@ void Mod_LoadTexinfo(worldbrushdata_t* pBrushData)
 
 	in = (texinfo_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadTexinfo: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadTexinfo: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mtexinfo_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "texinfo" ) );
 
@@ -1684,7 +1684,7 @@ void Mod_LoadVertNormals(worldbrushdata_t* pBrushData)
     // verify vertnormals data size
     //
     if( lh.LumpSize() % sizeof( *pVertNormals ) )
-        Host_Error( "Mod_LoadVertNormals: funny lump size in %s!\n", lh.GetMapName() );
+		g_pHost->Host_Error( "Mod_LoadVertNormals: funny lump size in %s!\n", lh.GetMapName() );
 
 	int count = lh.LumpSize() / sizeof(*pVertNormals);
 	Vector *out = (Vector *)Hunk_AllocName( lh.LumpSize(), va( "%s [%s]", lh.GetLoadName(), "vertnormals" ) );
@@ -1738,7 +1738,7 @@ void Mod_LoadPrimitives(worldbrushdata_t* pBrushData)
 
 	in = (dprimitive_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadPrimitives: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadPrimitives: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mprimitive_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "primitives" ) );
 	memset( out, 0, count * sizeof( mprimitive_t ) );
@@ -1771,7 +1771,7 @@ void Mod_LoadPrimVerts(worldbrushdata_t* pBrushData)
 
 	in = (dprimvert_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadPrimVerts: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadPrimVerts: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mprimvert_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "primverts" ) );
 	memset( out, 0, count * sizeof( mprimvert_t ) );
@@ -1800,7 +1800,7 @@ void Mod_LoadPrimIndices(worldbrushdata_t* pBrushData)
 
 	in = (unsigned short *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadPrimIndices: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadPrimIndices: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va("%s [%s]", lh.GetLoadName(), "primindices" ) );
 	memset( out, 0, count * sizeof( unsigned short ) );
@@ -1825,7 +1825,7 @@ void Mod_LoadLump(
 
 	if ( lh.LumpSize() % elementSize )
 	{
-		Host_Error( "Mod_LoadLump: funny lump size in %s", loadmodel->strName.String() );
+		g_pHost->Host_Error( "Mod_LoadLump: funny lump size in %s", loadmodel->strName.String() );
 	}
 
 	// How many elements?
@@ -1910,7 +1910,7 @@ void Mod_LoadFaces(worldbrushdata_t* pBrushData)
 	
 	in = (dface_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadFaces: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadFaces: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 
 	// align these allocations
@@ -1965,7 +1965,7 @@ void Mod_LoadFaces(worldbrushdata_t* pBrushData)
 		ti = in->texinfo;
 		if (ti < 0 || ti >= pBrushData->numtexinfo)
 		{
-			Host_Error( "Mod_LoadFaces: bad texinfo number" );
+			g_pHost->Host_Error( "Mod_LoadFaces: bad texinfo number" );
 		}
 		surfID->texinfo = ti;
 		surfID->m_bDynamicShadowsEnabled = in->AreDynamicShadowsEnabled();
@@ -2103,7 +2103,7 @@ void Mod_LoadNodes(worldbrushdata_t* pBrushData)
 
 	in = (dnode_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadNodes: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadNodes: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mnode_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "nodes" ) );
 
@@ -2179,7 +2179,7 @@ void Mod_LoadLeafs_Version_0(worldbrushdata_t* pBrushData, CMapLoadHelper &lh )
 
 	in = (dleaf_version_0_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleaf_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafs" ) );
 
@@ -2245,7 +2245,7 @@ void Mod_LoadLeafs_Version_1(worldbrushdata_t* pBrushData, CMapLoadHelper &lh, C
 
 	in = (dleaf_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleaf_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafs" ) );
 
@@ -2385,7 +2385,7 @@ void Mod_LoadLeafWaterData(worldbrushdata_t* pBrushData)
 
 	in = (dleafwaterdata_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleafwaterdata_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafwaterdata" ) );
 
@@ -2429,7 +2429,7 @@ void Mod_LoadCubemapSamples(worldbrushdata_t* pBrushData)
 
 	in = (dcubemapsample_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadCubemapSamples: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadCubemapSamples: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mcubemapsample_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "cubemapsample" ) );
 
@@ -2540,7 +2540,7 @@ void Mod_LoadLeafMinDistToWater(worldbrushdata_t* pBrushData)
 
 		in = (unsigned short *)lh.LumpBase();
 		if (lh.LumpSize() % sizeof(*in))
-			Host_Error ("Mod_LoadLeafMinDistToWater: funny lump size in %s",lh.GetMapName());
+			g_pHost->Host_Error ("Mod_LoadLeafMinDistToWater: funny lump size in %s",lh.GetMapName());
 		count = lh.LumpSize() / sizeof(*in);
 		out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafmindisttowater" ) );
 
@@ -2561,7 +2561,7 @@ void Mod_LoadMarksurfaces(worldbrushdata_t* pBrushData)
 	
 	in = (unsigned short *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadMarksurfaces: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadMarksurfaces: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	SurfaceHandle_t	*tempDiskData = new SurfaceHandle_t[count];
 
@@ -2575,7 +2575,7 @@ void Mod_LoadMarksurfaces(worldbrushdata_t* pBrushData)
 	{
 		j = in[i];
 		if (j >= pBrushData->numsurfaces)
-			Host_Error ("Mod_LoadMarksurfaces: bad surface number");
+			g_pHost->Host_Error ("Mod_LoadMarksurfaces: bad surface number");
 		SurfaceHandle_t surfID = SurfaceHandleFromIndex( j, pBrushData );
 		tempDiskData[i] = surfID;
 		if ( !SurfaceHasDispInfo( surfID ) && !(MSurf_Flags(surfID) & SURFDRAW_NODRAW) )
@@ -2649,10 +2649,10 @@ void Mod_LoadSurfedges(worldbrushdata_t* pBrushData, medge_t *pedges )
 
 	in = (int *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		Host_Error ("Mod_LoadSurfedges: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadSurfedges: funny lump size in %s",lh.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	if (count < 1 || count >= MAX_MAP_SURFEDGES)
-		Host_Error ("Mod_LoadSurfedges: bad surfedges count in %s: %i",
+		g_pHost->Host_Error ("Mod_LoadSurfedges: bad surfedges count in %s: %i",
 		lh.GetMapName(), count);
 	out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "surfedges" ) );
 
@@ -3553,7 +3553,7 @@ model_t	*CModelLoader::LoadModel( model_t *mod, REFERENCETYPE *pReferencetype )
 	// models that get marked, touch *all* their sub data to ensure the cache is pre-populated
 	// and hitches less during gameplay
 	bool bTouchAllData = false;
-	int nServerCount = Host_GetServerCount();
+	int nServerCount = g_pHost->Host_GetServerCount();
 	if ( mod->nServerCount != nServerCount )
 	{
 		// server has changed
@@ -3952,7 +3952,7 @@ void CModelLoader::UnloadUnreferencedModels( void )
 //-----------------------------------------------------------------------------
 void CModelLoader::PurgeUnusedModels( void )
 {
-	int nServerCount = Host_GetServerCount();
+	int nServerCount = g_pHost->Host_GetServerCount();
 	FOR_EACH_MAP_FAST( m_Models, i )
 	{
 		model_t *pModel = m_Models[i].modelpointer;
@@ -4343,7 +4343,7 @@ static int SurfFlagsToSortGroup( SurfaceHandle_t surfID, int flags )
 bool Mod_MarkWaterSurfaces( model_t *pModel )
 {
 	bool bHasWaterSurfaces = false;
-	model_t *pSaveModel = host_state.worldmodel;
+	model_t *pSaveModel = g_pHost->host_state.worldmodel;
 
 	// garymcthack!!!!!!!!
 	// host_state.worldmodel isn't set at this point, so. . . . 
@@ -5129,7 +5129,7 @@ void CModelLoader::Studio_LoadModel( model_t *pModel, bool bTouchAllData )
 	// a preloaded model must touch its children
 	if ( bTouchAllData || bPreLoaded )
 	{
-		Mod_TouchAllData( pModel, Host_GetServerCount() );
+		Mod_TouchAllData( pModel, g_pHost->Host_GetServerCount() );
 	}
 }
 
@@ -6077,19 +6077,19 @@ void Mod_LeafAmbientColorAtPos( Vector *pOut, const Vector &pos, int leafIndex )
 	{
 		pOut[i].Init();
 	}
-	mleafambientindex_t *pAmbient = &host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
+	mleafambientindex_t *pAmbient = &g_pHost->host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
 	if ( !pAmbient->ambientSampleCount && pAmbient->firstAmbientSample )
 	{
 		// this leaf references another leaf, move there (this leaf is a solid leaf so it borrows samples from a neighbor)
 		leafIndex = pAmbient->firstAmbientSample;
-		pAmbient = &host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
+		pAmbient = &g_pHost->host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
 	}
 	int count = pAmbient->ambientSampleCount;
 	if ( count > 0 )
 	{
-		int start = host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex].firstAmbientSample;
-		mleafambientlighting_t *pSamples = host_state.worldmodel->brush.pShared->m_pAmbientSamples + start;
-		mleaf_t *pLeaf = &host_state.worldmodel->brush.pShared->leafs[leafIndex];
+		int start = g_pHost->host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex].firstAmbientSample;
+		mleafambientlighting_t *pSamples = g_pHost->host_state.worldmodel->brush.pShared->m_pAmbientSamples + start;
+		mleaf_t *pLeaf = &g_pHost->host_state.worldmodel->brush.pShared->leafs[leafIndex];
 		float totalFactor = 0;
 		for ( int i = 0; i < count; i++ )
 		{

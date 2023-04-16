@@ -541,7 +541,7 @@ void CBaseClientState::SendConnectPacket (int challengeNr, int authProtocol, uin
 									}
 									break;
 
-		default: 					Host_Error( "Unexepected authentication protocol %i!\n", authProtocol );
+		default: 					g_pHost->Host_Error( "Unexepected authentication protocol %i!\n", authProtocol );
 									return;
 	}
 
@@ -1246,7 +1246,7 @@ bool CBaseClientState::ProcessServerInfo( SVC_ServerInfo *msg )
 	}
 
 	// Set default filename, but this is finalized by ClientState later, so it should not be depended on yet. See PrepareLevelResources call
-	Host_DefaultMapFileName( msg->m_szMapName, m_szLevelFileName, sizeof( m_szLevelFileName ) );
+	g_pHost->Host_DefaultMapFileName( msg->m_szMapName, m_szLevelFileName, sizeof( m_szLevelFileName ) );
 
 	COM_TimestampedLog( " CBaseClient::ProcessServerInfo(done)" );
 
@@ -1259,7 +1259,7 @@ bool CBaseClientState::ProcessSendTable( SVC_SendTable *msg )
 
 	if ( !RecvTable_RecvClassInfos( &msg->m_DataIn, msg->m_bNeedsDecoder ) )
 	{
-		Host_EndGame(true, "ProcessSendTable: RecvTable_RecvClassInfos failed.\n" );
+		g_pHost->Host_EndGame(true, "ProcessSendTable: RecvTable_RecvClassInfos failed.\n" );
 		return false;
 	}
 
@@ -1289,7 +1289,7 @@ bool CBaseClientState::ProcessClassInfo( SVC_ClassInfo *msg )
 
 	if ( !m_pServerClasses )
 	{
-		Host_EndGame(true, "ProcessClassInfo: can't allocate %d C_ServerClassInfos.\n", m_nServerClasses);
+		g_pHost->Host_EndGame(true, "ProcessClassInfo: can't allocate %d C_ServerClassInfos.\n", m_nServerClasses);
 		return false;
 	}
 
@@ -1300,7 +1300,7 @@ bool CBaseClientState::ProcessClassInfo( SVC_ClassInfo *msg )
 
 		if( svclass->classID >= m_nServerClasses )
 		{
-			Host_EndGame(true, "ProcessClassInfo: invalid class index (%d).\n", svclass->classID);
+			g_pHost->Host_EndGame(true, "ProcessClassInfo: invalid class index (%d).\n", svclass->classID);
 			return false;
 		}
 
@@ -1548,7 +1548,7 @@ void CBaseClientState::ReadPacketEntities( CEntityReadInfo &u )
 	// Something didn't parse...
 	if ( u.m_pBuf->IsOverflowed() )							
 	{	
-		Host_Error ( "CL_ParsePacketEntities:  buffer read overflow\n" );
+		g_pHost->Host_Error ( "CL_ParsePacketEntities:  buffer read overflow\n" );
 	}
 
 	// If we get an uncompressed packet, then the server is waiting for us to ack the validsequence
@@ -1614,7 +1614,7 @@ bool CBaseClientState::LinkClasses()
 
 			if ( Q_stricmp( pServerName, pClientName ) != 0 )
 			{
-				Host_EndGame( true, "CL_ParseClassInfo_EndClasses: server and client classes for '%s' use different datatables (server: %s, client: %s)",
+				g_pHost->Host_EndGame( true, "CL_ParseClassInfo_EndClasses: server and client classes for '%s' use different datatables (server: %s, client: %s)",
 					pServerClass->m_ClassName, pServerName, pClientName );
 				
 				return false;

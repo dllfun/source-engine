@@ -275,7 +275,7 @@ DispDecalHandle_t CDispInfo::NotifyAddDecal( decal_t *pDecal, float flSize )
 #ifndef SWDS
 		if ( nDecalCount >= MAX_DISP_DECALS )
 		{
-			R_DecalUnlink( s_DispDecals[iLastDecal].m_pDecal, host_state.worldmodel->brush.pShared);
+			R_DecalUnlink( s_DispDecals[iLastDecal].m_pDecal, g_pHost->host_state.worldmodel->brush.pShared);
 		}
 #endif
 		

@@ -72,7 +72,7 @@ void SCR_BeginLoadingPlaque( void )
 		EngineVGui()->SetNotAllowedToShowGameUI( false );
 
 		// force QMS to serialize during loading
-		Host_AllowQueuedMaterialSystem( false );
+		g_pHost->Host_AllowQueuedMaterialSystem( false );
 
 		scr_drawloading = true;
 
@@ -98,12 +98,12 @@ void SCR_BeginLoadingPlaque( void )
 		// Don't run any more simulation on the client!!!
 		g_ClientGlobalVariables.frametime = 0.0f;
 
-		host_framecount++;
-		g_ClientGlobalVariables.framecount = host_framecount;
+		g_pHost->host_framecount++;
+		g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
 		// Ensure the screen is painted to reflect the loading state
 		SCR_UpdateScreen();
-		host_framecount++;
-		g_ClientGlobalVariables.framecount = host_framecount;
+		g_pHost->host_framecount++;
+		g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
 		SCR_UpdateScreen();
 
 		g_ClientGlobalVariables.frametime = cl.GetFrameTime();
@@ -190,7 +190,7 @@ inline void SCR_ShowVCRPlaybackAmount()
 	info.fixed_width_font = false;
 
 	double flCurPercent = VCRGetPercentCompleted();
-	Con_NXPrintf( &info, "VCR Playback: %.2f percent, frame %d", flCurPercent * 100.0, host_framecount );
+	Con_NXPrintf( &info, "VCR Playback: %.2f percent, frame %d", flCurPercent * 100.0, g_pHost->host_framecount );
 	info.index++;
 
 	Con_NXPrintf( &info, "'+' to speed up, '-' to slow down [current sleep: %d]", g_iVCRPlaybackSleepInterval );
@@ -223,7 +223,7 @@ void SCR_UpdateScreen( void )
 	// NOTE: If you remove scr_nextdrawtick, remove it from enginetool.cpp too
 	if ( scr_nextdrawtick != 0 )
 	{
-		if ( host_tickcount < scr_nextdrawtick )
+		if (g_pHost->host_tickcount < scr_nextdrawtick )
 			return;
 
 		scr_nextdrawtick = 0;
@@ -231,7 +231,7 @@ void SCR_UpdateScreen( void )
 
 	if ( scr_disabled_for_loading )
 	{
-		if ( !Host_IsSinglePlayerGame() )
+		if ( !g_pHost->Host_IsSinglePlayerGame() )
 		{
 			V_RenderVGuiOnly();
 		}
@@ -252,7 +252,7 @@ void SCR_UpdateScreen( void )
 		demoplayer->InterpolateViewpoint();
 	}
 
-	materials->BeginFrame( host_frametime );
+	materials->BeginFrame(g_pHost->host_frametime );
 	{
 		tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "EngineVGui_Simulate" );
 		EngineVGui()->Simulate();

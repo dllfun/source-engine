@@ -475,7 +475,7 @@ void Sys_Error_Internal( bool bMinidump, const char *error, va_list argsList )
 
 #endif // _X360
 
-	host_initialized = false;
+	g_pHost->host_initialized = false;
 #if defined(_WIN32) && !defined( _X360 )
 	// We don't want global destructors in our process OR in any DLL to get executed.
 	// _exit() avoids calling global destructors in our module, but not in other DLLs.
@@ -570,11 +570,11 @@ void Sys_InitMemory( void )
 	// Allow overrides
 	if ( CommandLine()->FindParm( "-minmemory" ) )
 	{
-		host_parms.memsize = MINIMUM_WIN_MEMORY;
+		g_pHost->host_parms.memsize = MINIMUM_WIN_MEMORY;
 		return;
 	}
 
-	host_parms.memsize = 0;
+	g_pHost->host_parms.memsize = 0;
 
 #ifdef _WIN32
 #if (_MSC_VER > 1200)
@@ -596,11 +596,11 @@ void Sys_InitMemory( void )
 				{
 					if ( memStat.ullTotalPhys > 0xFFFFFFFFUL )
 					{
-						host_parms.memsize = 0xFFFFFFFFUL;
+						g_pHost->host_parms.memsize = 0xFFFFFFFFUL;
 					}
 					else
 					{
-						host_parms.memsize = memStat.ullTotalPhys;
+						g_pHost->host_parms.memsize = memStat.ullTotalPhys;
 					}
 				}
 			}
@@ -610,7 +610,7 @@ void Sys_InitMemory( void )
 
 	if ( !IsX360() )
 	{
-		if ( host_parms.memsize == 0 )
+		if (g_pHost->host_parms.memsize == 0 )
 		{
 			MEMORYSTATUS lpBuffer;
 			// Get OS Memory status
@@ -619,51 +619,51 @@ void Sys_InitMemory( void )
 
 			if ( lpBuffer.dwTotalPhys <= 0 )
 			{
-				host_parms.memsize = MAXIMUM_WIN_MEMORY;
+				g_pHost->host_parms.memsize = MAXIMUM_WIN_MEMORY;
 			}
 			else
 			{
-				host_parms.memsize = lpBuffer.dwTotalPhys;
+				g_pHost->host_parms.memsize = lpBuffer.dwTotalPhys;
 			}	
 		}
-		if ( host_parms.memsize < ONE_HUNDRED_TWENTY_EIGHT_MB )
+		if (g_pHost->host_parms.memsize < ONE_HUNDRED_TWENTY_EIGHT_MB )
 		{
-			Sys_Error( "Available memory less than 128MB!!! %i\n", host_parms.memsize );
+			Sys_Error( "Available memory less than 128MB!!! %i\n", g_pHost->host_parms.memsize );
 		}
 
 		// take one quarter the physical memory
-		if ( host_parms.memsize <= 512*1024*1024)
+		if (g_pHost->host_parms.memsize <= 512*1024*1024)
 		{
-			host_parms.memsize >>= 2;
+			g_pHost->host_parms.memsize >>= 2;
 			// Apply cap of 64MB for 512MB systems
 			// this keeps the code the same as HL2 gold
 			// but allows us to use more memory on 1GB+ systems
-			if (host_parms.memsize > MAXIMUM_DEDICATED_MEMORY)
+			if (g_pHost->host_parms.memsize > MAXIMUM_DEDICATED_MEMORY)
 			{
-				host_parms.memsize = MAXIMUM_DEDICATED_MEMORY;
+				g_pHost->host_parms.memsize = MAXIMUM_DEDICATED_MEMORY;
 			}
 		}
 		else
 		{
 			// just take one quarter, no cap
-			host_parms.memsize >>= 2;
+			g_pHost->host_parms.memsize >>= 2;
 		}
 
 		// At least MINIMUM_WIN_MEMORY mb, even if we have to swap a lot.
-		if (host_parms.memsize < MINIMUM_WIN_MEMORY)
+		if (g_pHost->host_parms.memsize < MINIMUM_WIN_MEMORY)
 		{
-			host_parms.memsize = MINIMUM_WIN_MEMORY;
+			g_pHost->host_parms.memsize = MINIMUM_WIN_MEMORY;
 		}
 
 		// Apply cap
-		if (host_parms.memsize > MAXIMUM_WIN_MEMORY)
+		if (g_pHost->host_parms.memsize > MAXIMUM_WIN_MEMORY)
 		{
-			host_parms.memsize = MAXIMUM_WIN_MEMORY;
+			g_pHost->host_parms.memsize = MAXIMUM_WIN_MEMORY;
 		}
 	}
 	else
 	{
-		host_parms.memsize = 128*1024*1024;
+		g_pHost->host_parms.memsize = 128*1024*1024;
 	}
 #elif defined(POSIX)
 	uint64_t memsize = ONE_HUNDRED_TWENTY_EIGHT_MB;
@@ -774,7 +774,7 @@ void Sys_InitMemory( void )
 //-----------------------------------------------------------------------------
 void Sys_ShutdownMemory( void )
 {
-	host_parms.memsize = 0;
+	g_pHost->host_parms.memsize = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -1023,7 +1023,7 @@ int Sys_InitGame( CreateInterfaceFn appSystemFactory, const char* pBaseDir, void
 	SpewOutputFunc( Sys_SpewFunc );
 	
 	// Assume failure
-	host_initialized = false;
+	g_pHost->host_initialized = false;
 
 #ifdef PLATFORM_WINDOWS
 	// Grab main window pointer
@@ -1039,7 +1039,7 @@ int Sys_InitGame( CreateInterfaceFn appSystemFactory, const char* pBaseDir, void
 	Q_strncpy( s_pBaseDir, pBaseDir, sizeof( s_pBaseDir ) );
 	Q_strlower( s_pBaseDir );
 	Q_FixSlashes( s_pBaseDir );
-	host_parms.basedir = s_pBaseDir;
+	g_pHost->host_parms.basedir = s_pBaseDir;
 
 #ifndef _X360
 	if ( CommandLine()->FindParm ( "-pidfile" ) )
@@ -1075,9 +1075,9 @@ int Sys_InitGame( CreateInterfaceFn appSystemFactory, const char* pBaseDir, void
 
 	TRACEINIT( Sys_InitMemory(), Sys_ShutdownMemory() );
 
-	TRACEINIT( Host_Init( s_bIsDedicated ), Host_Shutdown() );
+	TRACEINIT(g_pHost->Host_Init( s_bIsDedicated ), g_pHost->Host_Shutdown() );
 
-	if ( !host_initialized )
+	if ( !g_pHost->host_initialized )
 	{
 		return 0;
 	}
@@ -1097,7 +1097,7 @@ void Sys_ShutdownGame( void )
 {
 	TRACESHUTDOWN( Sys_ShutdownAuthentication() );
 
-	TRACESHUTDOWN( Host_Shutdown() );
+	TRACESHUTDOWN(g_pHost->Host_Shutdown() );
 
 	TRACESHUTDOWN( Sys_ShutdownMemory() );
 
@@ -1124,11 +1124,11 @@ static bool LoadThisDll( char *szDllFilename, bool bIsServerOnly )
 	CSysModule *pDLL = NULL;
 
 	// check signature, don't let users with modified binaries connect to secure servers, they will get VAC banned
-	if ( !Host_AllowLoadModule( szDllFilename, "GAMEBIN", true, bIsServerOnly ) )
+	if ( !g_pHost->Host_AllowLoadModule( szDllFilename, "GAMEBIN", true, bIsServerOnly ) )
 	{
 		// not supposed to load this but we will anyway
-		Host_DisallowSecureServers();
-		Host_AllowLoadModule( szDllFilename, "GAMEBIN", true, bIsServerOnly );
+		g_pHost->Host_DisallowSecureServers();
+		g_pHost->Host_AllowLoadModule( szDllFilename, "GAMEBIN", true, bIsServerOnly );
 	}
 	// Load DLL, ignore if cannot
 	// ensures that the game.dll is running under Steam

@@ -94,7 +94,7 @@ static void BuildUploadDataMessage( bf_write& buf, char const *tablename, KeyVal
 
 	if ( fieldCount > 255 )
 	{
-		Host_Error( "Too many fields in uploaddata (%i max = 255)\n", fieldCount );
+		g_pHost->Host_Error( "Too many fields in uploaddata (%i max = 255)\n", fieldCount );
 	}
 
 	encrypted.WriteByte( (byte)fieldCount );

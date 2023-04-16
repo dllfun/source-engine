@@ -1096,10 +1096,10 @@ void CVideoMode_Common::DrawNullBackground( void *hHDC, int w, int h )
 
         rc.top = rc.bottom - 30;
 
-        if ( host_state.worldmodel != NULL )
+        if (g_pHost->host_state.worldmodel != NULL )
         {
             rc.left += 10;
-            DrawText( hdc, modelloader->GetName( host_state.worldmodel ), -1, &rc, DT_NOPREFIX | DT_VCENTER | DT_SINGLELINE  );
+            DrawText( hdc, modelloader->GetName(g_pHost->host_state.worldmodel ), -1, &rc, DT_NOPREFIX | DT_VCENTER | DT_SINGLELINE  );
         }
 
         SetTextColor( hdc, oldFgColor );

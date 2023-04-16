@@ -194,7 +194,7 @@ extern	ConVar	deathmatch;
 extern	ConVar	coop;
 
 extern	CGameServer	sv;				// local server
-extern	CGameClient	*host_client;	// current processing client
+//extern	CGameClient	*host_client;	// current processing client
 
 
 #endif // SERVER_H

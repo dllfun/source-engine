@@ -393,16 +393,16 @@ void Host_Client_Printf(const char *fmt, ...)
 	Q_vsnprintf (string, sizeof( string ), fmt,argptr);
 	va_end (argptr);
 
-	host_client->ClientPrintf( "%s", string );
+	g_pHost->host_client->ClientPrintf( "%s", string );
 }
 
 #define LIMIT_PER_CLIENT_COMMAND_EXECUTION_ONCE_PER_INTERVAL(seconds) \
 	{ \
 		static float g_flLastTime__Limit[ABSOLUTE_PLAYER_LIMIT] = { 0.0f }; /* we don't have access to any of the three MAX_PLAYERS #define's here unfortunately */ \
 		int playerindex = cmd_clientslot; \
-		if ( playerindex >= 0 && playerindex < (ARRAYSIZE(g_flLastTime__Limit)) && realtime - g_flLastTime__Limit[playerindex] > (seconds) ) \
+		if ( playerindex >= 0 && playerindex < (ARRAYSIZE(g_flLastTime__Limit)) && g_pHost->Host_GetRealTime() - g_flLastTime__Limit[playerindex] > (seconds) ) \
 		{ \
-			g_flLastTime__Limit[playerindex] = realtime; \
+			g_flLastTime__Limit[playerindex] = g_pHost->Host_GetRealTime(); \
 		} \
 		else \
 		{ \
@@ -675,7 +675,7 @@ CON_COMMAND( ping, "Display ping to server." )
 	// limit this to once per 5 seconds
 	LIMIT_PER_CLIENT_COMMAND_EXECUTION_ONCE_PER_INTERVAL(5.0);
 
-	host_client->ClientPrintf( "Client ping times:\n" );
+	g_pHost->host_client->ClientPrintf( "Client ping times:\n" );
 
 	for ( int i=0; i< sv.GetClientCount(); i++ )
 	{
@@ -684,7 +684,7 @@ CON_COMMAND( ping, "Display ping to server." )
 		if ( !client->IsConnected() || client->IsFakeClient() )
 			continue;
 
-		host_client->ClientPrintf ("%4.0f ms : %s\n", 
+		g_pHost->host_client->ClientPrintf ("%4.0f ms : %s\n",
 			1000.0f * client->GetNetChannel()->GetAvgLatency( FLOW_OUTGOING ), client->GetClientName() );
 	}
 }
@@ -833,7 +833,7 @@ void Host_Map_Helper( const CCommand &args, bool bEditmode, bool bBackground, bo
 	// Stop demo loop
 	cl.demonum = -1;
 
-	Host_Disconnect( false );	// stop old game
+	g_pHost->Host_Disconnect( false );	// stop old game
 
 	HostState_NewGame( szMapName, false, bBackground );
 
@@ -923,7 +923,7 @@ CON_COMMAND( restart, "Restart the game on the same level (add setpos to jump to
 
 	bool bRememberLocation = ( args.ArgC() == 2 && !Q_stricmp( args[1], "setpos" ) );
 
-	Host_Disconnect(false);	// stop old game
+	g_pHost->Host_Disconnect(false);	// stop old game
 
 	if ( !CL_HL2Demo_MapCheck( sv.GetMapName() ) )
 	{
@@ -980,7 +980,7 @@ CON_COMMAND( reload, "Reload the most recent saved game (add setpos to jump to c
 	// Put up loading plaque
   	SCR_BeginLoadingPlaque();
 
-	Host_Disconnect( false );	// stop old game
+	g_pHost->Host_Disconnect( false );	// stop old game
 
 	if ( pSaveName && saverestore->SaveFileExists( pSaveName ) )
 	{
@@ -1126,43 +1126,6 @@ void Host_Changelevel2_f( const CCommand &args )
 	HostState_ChangeLevelSP( szName, args[2] );
 }
 
-
-//-----------------------------------------------------------------------------
-// Purpose: Shut down client connection and any server
-//-----------------------------------------------------------------------------
-void Host_Disconnect( bool bShowMainMenu, const char *pszReason )
-{
-	if ( IsX360() )
-	{
-		g_pQueuedLoader->EndMapLoading( false );
-	}
-
-#ifndef SWDS
-	if ( !sv.IsDedicated() )
-	{
-		cl.Disconnect( pszReason, bShowMainMenu );
-	}
-#endif
-	Host_AllowQueuedMaterialSystem( false );
-	HostState_GameShutdown();
-}
-
-void Disconnect()
-{
-	cl.demonum = -1;
-	Host_Disconnect(true);
-
-#if defined( REPLAY_ENABLED )
-	// Finalize the recording replay on the server, if is recording.
-	// NOTE: We don't want this in Host_Disconnect() as that would be called more
-	// than necessary.
-	if ( g_pReplay && g_pReplay->IsReplayEnabled() && sv.IsDedicated() )
-	{
-		g_pReplay->SV_EndRecordingSession();
-	}
-#endif
-}
-
 //-----------------------------------------------------------------------------
 // Kill the client and any local server.
 //-----------------------------------------------------------------------------
@@ -1172,10 +1135,10 @@ CON_COMMAND( disconnect, "Disconnect game from server." )
 	// Just run the regular Disconnect function if we're not the client or the client didn't handle it for us
 	if( !g_ClientDLL || !g_ClientDLL->DisconnectAttempt() )
 	{
-		Disconnect();
+		g_pHost->Disconnect();
 	}
 #else
-	Disconnect();
+	g_pHost->Disconnect();
 #endif
 }
 
@@ -1232,7 +1195,7 @@ CON_COMMAND( pause, "Toggle the server pause state." )
 	sv.SetPaused( !sv.IsPaused() );
 	
 	// send text messaage who paused the game
-	sv.BroadcastPrintf( "%s %s the game\n", host_client->GetClientName(), sv.IsPaused() ? "paused" : "unpaused" );
+	sv.BroadcastPrintf( "%s %s the game\n", g_pHost->host_client->GetClientName(), sv.IsPaused() ? "paused" : "unpaused" );
 }
 
 
@@ -1445,11 +1408,11 @@ CON_COMMAND( kickid, "Kick a player by userid or uniqueid, with a message." )
 	{
 		if ( cmd_source != src_command )
 		{
-			who = host_client->m_Name;
+			who = g_pHost->host_client->m_Name;
 		}
 
 		// can't kick yourself!
-		if ( cmd_source != src_command && host_client == client && !sv.IsDedicated() )
+		if ( cmd_source != src_command && g_pHost->host_client == client && !sv.IsDedicated() )
 		{
 			return;
 		}
@@ -1557,11 +1520,11 @@ CON_COMMAND( kick, "Kick a player by name." )
 		{
 			if ( cmd_source != src_command )
 			{
-				who = host_client->m_Name;
+				who = g_pHost->host_client->m_Name;
 			}
 
 			// can't kick yourself!
-			if ( cmd_source != src_command && host_client == client && !sv.IsDedicated() )
+			if ( cmd_source != src_command && g_pHost->host_client == client && !sv.IsDedicated() )
 				return;
 
 			if ( who )
@@ -1596,7 +1559,7 @@ CON_COMMAND( kickall, "Kicks everybody connected with a message." )
 
 	if ( cmd_source != src_command )
 	{
-		who = host_client->m_Name;
+		who = g_pHost->host_client->m_Name;
 	}
 
 	for ( i = 0; i < sv.GetClientCount(); i++ )
@@ -1607,7 +1570,7 @@ CON_COMMAND( kickall, "Kicks everybody connected with a message." )
 			continue;
 
 		// can't kick yourself!
-		if ( cmd_source != src_command && host_client == client && !sv.IsDedicated() )
+		if ( cmd_source != src_command && g_pHost->host_client == client && !sv.IsDedicated() )
 			continue;
 
 #if defined( REPLAY_ENABLED )
@@ -1811,7 +1774,7 @@ CON_COMMAND( demos, "Demo demo file sequence." )
 {
 	int oldn = cl.demonum;
 	cl.demonum = -1;
-	Host_Disconnect(false);
+	g_pHost->Host_Disconnect(false);
 	cl.demonum = oldn;
 
 	if (cl.demonum == -1)
@@ -1840,7 +1803,7 @@ CON_COMMAND_F( stopdemo, "Stop playing back a demo.", FCVAR_DONTRECORD )
 	if ( !demoplayer->IsPlayingBack() )
 		return;
 	
-	Host_Disconnect (true);
+	g_pHost->Host_Disconnect (true);
 }
 
 //-----------------------------------------------------------------------------
@@ -1857,7 +1820,7 @@ CON_COMMAND( nextdemo, "Play next demo in sequence." )
 			DevMsg( "Jumping to %s\n", cl.demos[ cl.demonum ].Get() );
 		}
 	}
-	Host_EndGame( false, "Moving to next demo..." );
+	g_pHost->Host_EndGame( false, "Moving to next demo..." );
 }
 
 //-----------------------------------------------------------------------------
@@ -1908,7 +1871,7 @@ CON_COMMAND_F( soundfade, "Fade client volume.", FCVAR_SERVER_CAN_EXECUTE )
 //-----------------------------------------------------------------------------
 CON_COMMAND( killserver, "Shutdown the server." )
 {
-	Host_Disconnect(true);
+	g_pHost->Host_Disconnect(true);
 	
 	if ( !sv.IsDedicated() )
 	{

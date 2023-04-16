@@ -564,9 +564,9 @@ void R_DecalInit( void )
 	// Traverse all surfaces of map and throw away current decals
 	//
 	// sort the surfaces into the sort arrays
-	if ( host_state.worldmodel->brush.pShared)
+	if (g_pHost->host_state.worldmodel->brush.pShared)
 	{
-		for( i = 0; i < host_state.worldmodel->brush.pShared->numsurfaces; i++ )
+		for( i = 0; i < g_pHost->host_state.worldmodel->brush.pShared->numsurfaces; i++ )
 		{
 			SurfaceHandle_t surfID = SurfaceHandleFromIndex(i);
 			MSurf_Decals( surfID ) = WORLD_DECAL_HANDLE_INVALID;
@@ -625,7 +625,7 @@ void R_DecalTermAll()
 	for ( int i = 0; i<s_aDecalPool.Count(); i++ )
 	{
 		if (s_aDecalPool[i]) {
-			R_DecalUnlink(s_aDecalPool[i], host_state.worldmodel->brush.pShared);
+			R_DecalUnlink(s_aDecalPool[i], g_pHost->host_state.worldmodel->brush.pShared);
 		}
 	}
 }
@@ -650,7 +650,7 @@ void R_DecalFlushDestroyList( void )
 	while ( pDecal )
 	{
 		decal_t *pNext = pDecal->pDestroyList;
-		R_DecalUnlink( pDecal, host_state.worldmodel->brush.pShared);
+		R_DecalUnlink( pDecal, g_pHost->host_state.worldmodel->brush.pShared);
 		pDecal = pNext;
 	}
 	s_pDecalDestroyList = NULL;
@@ -837,7 +837,7 @@ static decal_t *R_DecalAlloc( int flags )
 			iSlot = 0;
 		}
 
-		R_DecalUnlink( s_aDecalPool[iSlot], host_state.worldmodel->brush.pShared);
+		R_DecalUnlink( s_aDecalPool[iSlot], g_pHost->host_state.worldmodel->brush.pShared);
 		g_iLastReplacedDynamic = iSlot;
 	}
 	
@@ -964,7 +964,7 @@ static void R_DecalNodeSurfaces( mnode_t* node, decalinfo_t *decalinfo )
 
 void R_DecalLeaf( mleaf_t *pLeaf, decalinfo_t *decalinfo )
 {
-	SurfaceHandle_t *pHandle = &host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
 		SurfaceHandle_t surfID = pHandle[i];
@@ -1113,7 +1113,7 @@ int DecalListCreate( decallist_t *pList )
 	int total = 0;
 	int i, depth;
 
-	if ( host_state.worldmodel )
+	if (g_pHost->host_state.worldmodel )
 	{
 		for ( i = 0; i < g_nMaxDecals; i++ )
 		{
@@ -1283,7 +1283,7 @@ void R_PlayerDecalShoot( IMaterial *material, void *userdata, int entity, const 
 	// remove all the sprays we found
 	for ( i = 0; i < decalVec.Count(); i++ )
 	{
-		R_DecalUnlink( decalVec[i], host_state.worldmodel->brush.pShared);
+		R_DecalUnlink( decalVec[i], g_pHost->host_state.worldmodel->brush.pShared);
 	}
 
 	// set this to be a player spray so it is timed out appropriately.
@@ -1471,7 +1471,7 @@ static decal_t *R_DecalFindOverlappingDecals( decalinfo_t* decalinfo, SurfaceHan
 		int last = coveredList.Count() - r_decal_cover_count.GetInt();
 		for ( int i = 0; i < last; i++ )
 		{
-			R_DecalUnlink( coveredList[i], host_state.worldmodel->brush.pShared);
+			R_DecalUnlink( coveredList[i], g_pHost->host_state.worldmodel->brush.pShared);
 		}
 	}
 
@@ -1697,7 +1697,7 @@ static void R_DecalCreate( decalinfo_t* decalinfo, SurfaceHandle_t surfID, float
 	decal_t *pold = R_DecalFindOverlappingDecals( decalinfo, surfID );
 	if ( pold ) 
 	{
-		R_DecalUnlink( pold, host_state.worldmodel->brush.pShared);
+		R_DecalUnlink( pold, g_pHost->host_state.worldmodel->brush.pShared);
 		pold = NULL;
 	}
 
@@ -1744,7 +1744,7 @@ static void R_DecalCreate( decalinfo_t* decalinfo, SurfaceHandle_t surfID, float
 		R_DecalVertsClip( NULL, pdecal, surfID, decalinfo->m_pMaterial );
 		if ( !pdecal->clippedVertCount )
 		{
-			R_DecalUnlink( pdecal, host_state.worldmodel->brush.pShared);
+			R_DecalUnlink( pdecal, g_pHost->host_state.worldmodel->brush.pShared);
 			return;
 		}
 	}
@@ -1926,7 +1926,7 @@ void DecalUpdateAndDrawSingle( decalcontext_t &context, SurfaceHandle_t surfID, 
 
 	if( retire )
 	{
-		R_DecalUnlink( pDecal, host_state.worldmodel->brush.pShared);
+		R_DecalUnlink( pDecal, g_pHost->host_state.worldmodel->brush.pShared);
 	}
 }
 

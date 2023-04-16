@@ -105,7 +105,7 @@ void CClientState::ConnectionClosing( const char * reason )
 			COM_ExplainDisconnection( true, "Disconnect: %s.\n", reason );
 		}
 		SCR_EndLoadingPlaque();
-		Host_Disconnect( true, reason );
+		g_pHost->Host_Disconnect( true, reason );
 	}
 }
 
@@ -119,7 +119,7 @@ void CClientState::ConnectionCrashed( const char * reason )
 
 		COM_ExplainDisconnection( true, "Disconnect: %s.\n", reason );
 		SCR_EndLoadingPlaque();
-		Host_EndGame ( true, "%s", reason );
+		g_pHost->Host_EndGame ( true, "%s", reason );
 	}
 }
 
@@ -294,12 +294,12 @@ bool CClientState::ProcessTick( NET_Tick *msg )
 	m_ClockDriftMgr.SetServerTick( tick );
 
 	// Remember this for GetLastTimeStamp().
-	m_flLastServerTickTime = tick * host_state.interval_per_tick;
+	m_flLastServerTickTime = tick * g_pHost->host_state.interval_per_tick;
 
 	// Use the server tick while reading network data (used for interpolation samples, etc).
 	g_ClientGlobalVariables.tickcount = tick;	
-	g_ClientGlobalVariables.curtime = tick * host_state.interval_per_tick;
-	g_ClientGlobalVariables.frametime = (tick - oldtickcount) * host_state.interval_per_tick;	// We used to call GetFrameTime() here, but 'insimulation' is always
+	g_ClientGlobalVariables.curtime = tick * g_pHost->host_state.interval_per_tick;
+	g_ClientGlobalVariables.frametime = (tick - oldtickcount) * g_pHost->host_state.interval_per_tick;	// We used to call GetFrameTime() here, but 'insimulation' is always
 																								// true so we have this code right in here to keep it simple.
 
 	return true;
@@ -373,16 +373,16 @@ bool CClientState::ProcessServerInfo( SVC_ServerInfo *msg )
 	
 	if ( sv.IsPaused() )
 	{
-		if ( msg->m_fTickInterval != host_state.interval_per_tick )
+		if ( msg->m_fTickInterval != g_pHost->host_state.interval_per_tick )
 		{
-			Host_Error( "Expecting interval_per_tick %f, got %f\n", 
-				host_state.interval_per_tick, msg->m_fTickInterval );
+			g_pHost->Host_Error( "Expecting interval_per_tick %f, got %f\n",
+				g_pHost->host_state.interval_per_tick, msg->m_fTickInterval );
 			return false;
 		}
 	}
 	else
 	{
-		host_state.interval_per_tick = msg->m_fTickInterval;
+		g_pHost->host_state.interval_per_tick = msg->m_fTickInterval;
 	}
 
 	// Re-init hud video, especially if we changed game directories
@@ -434,7 +434,7 @@ bool CClientState::ProcessClassInfo( SVC_ClassInfo *msg )
 
 	if ( !RecvTable_CreateDecoders( serverGameDLL->GetStandardSendProxies(), bAllowMismatches ) ) // create receive table decoders
 	{
-		Host_EndGame( true, "CL_ParseClassInfo_EndClasses: CreateDecoders failed.\n" );
+		g_pHost->Host_EndGame( true, "CL_ParseClassInfo_EndClasses: CreateDecoders failed.\n" );
 		return false;
 	}
 
@@ -716,7 +716,7 @@ bool CClientState::ProcessBSPDecal( SVC_BSPDecal *msg )
 	}
 	else
 	{
-		model = host_state.worldmodel;
+		model = g_pHost->host_state.worldmodel;
 		if ( !model )
 		{
 			Warning( "ProcessBSPDecal:  Trying to project on world before host_state.worldmodel is set!!!\n" );
