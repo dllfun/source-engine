@@ -405,7 +405,7 @@ void CEngine::Frame( void )
 			m_flFrameTime = g_pHost->host_nexttick;
 		}
 
-		if ( FilterTime( m_flFrameTime )  || 1)
+		if ( FilterTime( m_flFrameTime ) )
 		{
 			// Time to render our frame.
 			break;
