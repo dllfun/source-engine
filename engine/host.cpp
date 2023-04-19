@@ -836,7 +836,7 @@ void Host::Host_EndGame (bool bShowMainMenu, const char *message, ...)
 	oldn = cl.demonum;
 	cl.demonum = -1;
 
-	g_host.Host_Disconnect(bShowMainMenu);
+	Host_Disconnect(bShowMainMenu);
 
 	cl.demonum = oldn;
 
@@ -852,7 +852,7 @@ void Host::Host_EndGame (bool bShowMainMenu, const char *message, ...)
 		CL_NextDemo ();
 #endif		
 		g_HostEndDemo++;
-		longjmp (g_host.host_enddemo, 1);
+		longjmp (host_enddemo, 1);
 	}
 	else
 	{
@@ -911,7 +911,7 @@ void Host::Host_Error (const char *error, ...)
 #endif
 	ConMsg( "\nHost_Error: %s\n\n", string );
 
-	g_host.Host_Disconnect( true, string );
+	Host_Disconnect( true, string );
 
 	cl.demonum = -1;
 
@@ -1801,9 +1801,9 @@ void Host::Host_ShutdownServer( void )
 #endif
 	StaticPropMgr()->LevelShutdown();
 
-	g_host.Host_FreeStateAndWorld( true );
+	Host_FreeStateAndWorld( true );
 	sv.Shutdown();// sv.Shutdown() references some heap memory, so run it before Host_FreeToLowMark()
-	g_host.Host_FreeToLowMark( true );
+	Host_FreeToLowMark( true );
 
 	IGameEvent *event = g_GameEventManager.CreateEvent( "server_shutdown" );
 
@@ -4045,8 +4045,8 @@ bool DLL_LOCAL Host::Host_IsSecureServerAllowed()
 //-----------------------------------------------------------------------------
 void Host::Host_Init( bool bDedicated )
 {
-	g_host.host_realtime = 0;
-	g_host.host_idealtime = 0;
+	host_realtime = 0;
+	host_idealtime = 0;
 
 #if defined(_WIN32)
 	if ( CommandLine()->FindParm( "-pme" ) )
@@ -4055,13 +4055,13 @@ void Host::Host_Init( bool bDedicated )
 	}
 #endif
 
-	if ( g_host.Host_IsSecureServerAllowed() )
+	if ( Host_IsSecureServerAllowed() )
 	{
 		// double check the engine's signature in case it was hooked/modified
-		if ( !g_host.Host_AllowLoadModule( "engine" DLL_EXT_STRING, "EXECUTABLE_PATH", false, bDedicated ) )
+		if ( !Host_AllowLoadModule( "engine" DLL_EXT_STRING, "EXECUTABLE_PATH", false, bDedicated ) )
 		{
 			// not supposed to load this but we will anyway
-			g_host.Host_DisallowSecureServers();
+			Host_DisallowSecureServers();
 		}
 	}
 
@@ -4081,7 +4081,7 @@ void Host::Host_Init( bool bDedicated )
 		g_pThreadPool->Start( startParams, "CmpJob" );
 
 	// From const.h, the loaded game .dll will give us the correct value which is transmitted to the client
-	g_host.host_state.interval_per_tick = DEFAULT_TICK_INTERVAL;
+	host_state.interval_per_tick = DEFAULT_TICK_INTERVAL;
 
 	InstallBitBufErrorHandler();
 
@@ -4153,7 +4153,7 @@ void Host::Host_Init( bool bDedicated )
 
 	TRACEINIT( HLTV_Init(), HLTV_Shutdown() );
 
-	ConDMsg( "Heap: %5.2f Mb\n", g_host.host_parms.memsize/(1024.0f*1024.0f) );
+	ConDMsg( "Heap: %5.2f Mb\n", host_parms.memsize/(1024.0f*1024.0f) );
 
 #if !defined( SWDS )
 	if ( !bDedicated )
@@ -4239,7 +4239,7 @@ void Host::Host_Init( bool bDedicated )
 
 	// Mark hunklevel at end of startup
 	Hunk_AllocName( 0, "-HOST_HUNKLEVEL-" );
-	g_host.host_hunklevel = Hunk_LowMark();
+	host_hunklevel = Hunk_LowMark();
 
 #ifdef SOURCE_MT
 	if ( CommandLine()->FindParm( "-swapcores" ) )
@@ -4252,7 +4252,7 @@ void Host::Host_Init( bool bDedicated )
 	g_pHost->Host_AllowQueuedMaterialSystem( false );
 
 	// Finished initializing
-	g_host.host_initialized = true;
+	host_initialized = true;
 
 	host_checkheap = CommandLine()->FindParm( "-heapcheck" ) ? true : false;
 
@@ -4417,7 +4417,7 @@ bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const 
 	// The file to load the map from.
 	char szMapFile[MAX_PATH] = { 0 };
 	Q_strncpy( szMapName, mapname, sizeof( szMapName ) );
-	g_host.Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
+	Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
 
 	// Ask serverDLL to prepare this load
 	if ( g_iServerGameDLLVersion >= 10 )
@@ -4622,7 +4622,7 @@ bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, co
 	// The file to load the map from.
 	char szMapFile[MAX_PATH] = { 0 };
 	Q_strncpy( szMapName, mapName, sizeof( szMapName ) );
-	g_host.Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
+	Host_DefaultMapFileName( szMapName, szMapFile, sizeof( szMapFile ) );
 
 	// Steam may not have been started yet, ensure it is available to the game DLL before we ask it to prepare level
 	// resources
@@ -4852,7 +4852,7 @@ void Host::Host_Shutdown(void)
 #endif
 
 	// Disconnect from server
-	g_host.Host_Disconnect(true);
+	Host_Disconnect(true);
 
 #ifndef SWDS
 	// keep ConMsg from trying to update the screen
@@ -4866,7 +4866,7 @@ void Host::Host_Shutdown(void)
 	// TODO, Trace this
 	CM_FreeMap();
 
-	g_host.host_initialized = false;
+	host_initialized = false;
 
 #if defined(VPROF_ENABLED)
 	VProfRecord_Shutdown();

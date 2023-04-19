@@ -180,10 +180,10 @@ private:
 	double			m_flCurrentTime;
 	double			m_flFrameTime;
 	double			m_flPreviousTime;
-	float			m_flFilteredTime;
+	//float			m_flFilteredTime;
 	float			m_flMinFrameTime; // Expected duration of a frame, or zero if it is unlimited.
-	float			m_flLastRemainder; // 'Unused' time on the last render loop.
-	bool			m_bCatchupTime;
+	//float			m_flLastRemainder; // 'Unused' time on the last render loop.
+	//bool			m_bCatchupTime;
 };
 
 static CEngine g_Engine;
@@ -205,10 +205,10 @@ CEngine::CEngine( void )
 	m_flCurrentTime		= 0.0;
 	m_flFrameTime		= 0.0f;
 	m_flPreviousTime	= 0.0;
-	m_flFilteredTime	= 0.0f;
+	//m_flFilteredTime	= 0.0f;
 	m_flMinFrameTime	= 0.0f;
-	m_flLastRemainder	= 0.0f;
-	m_bCatchupTime		= false;
+	//m_flLastRemainder	= 0.0f;
+	//m_bCatchupTime		= false;
 
 	m_nQuitting			= QUIT_NOTQUITTING;
 
@@ -464,7 +464,7 @@ void CEngine::Frame( void )
 #endif
 	
 	// Reset swallowed time...
-	m_flFilteredTime = 0.0f;
+	//m_flFilteredTime = 0.0f;
 
 #ifndef SWDS
 	if ( !sv.IsDedicated() )
