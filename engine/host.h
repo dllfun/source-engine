@@ -50,6 +50,44 @@ class CGameClient;
 class Host {
 public:
 
+	unsigned int GetMemSize() {
+		return host_parms.memsize;
+	}
+
+	void SetMemSize(unsigned int memSize) {
+		host_parms.memsize = memSize;
+	}
+
+	
+
+	
+
+	const char* GetMod()
+	{
+		return host_parms.mod;
+	}
+
+	void SetMod(char* mod) {
+		host_parms.mod = mod;
+	}
+
+	const char* GetGameDir()
+	{
+		return host_parms.game;
+	}
+
+	void SetGameDir(char* gameDir) {
+		host_parms.game = gameDir;
+	}
+
+	const char* GetBaseDir() {
+		return host_parms.basedir;
+	}
+
+	void SetBaseDir(char* baseDir) {
+		host_parms.basedir = baseDir;
+	}
+
 	void Host_Init(bool bIsDedicated);
 	void Host_Shutdown(void);
 	//int  Host_Frame (float time, int iState );
@@ -98,20 +136,7 @@ public:
 	//-----------------------------------------------------------------------------
 // Human readable methods to get at engineparms info
 //-----------------------------------------------------------------------------
-	inline const char* GetCurrentMod()
-	{
-		return host_parms.mod;
-	}
-
-	inline const char* GetCurrentGame()
-	{
-		return host_parms.game;
-	}
-
-	inline const char* GetBaseDirectory()
-	{
-		return host_parms.basedir;
-	}
+	
 	double Host_GetRealTime() {
 		return host_realtime;
 	}
@@ -131,7 +156,6 @@ public:
 	int			host_currentframetick = 0;
 	double		host_idealtime = 0;		// "ideal" server time assuming perfect tick rate
 	CCommonHostState host_state;
-	engineparms_t host_parms;
 	int	host_hunklevel;
 	bool g_bAllowSecureServers = true;
 
@@ -142,7 +166,8 @@ public:
 	CGameClient* host_client;			// current client
 
 private:
-	
+	engineparms_t host_parms;
+
 	friend class CFrameTimer;
 };
 

@@ -570,11 +570,11 @@ void Sys_InitMemory( void )
 	// Allow overrides
 	if ( CommandLine()->FindParm( "-minmemory" ) )
 	{
-		g_pHost->host_parms.memsize = MINIMUM_WIN_MEMORY;
+		g_pHost->SetMemSize(MINIMUM_WIN_MEMORY);
 		return;
 	}
 
-	g_pHost->host_parms.memsize = 0;
+	g_pHost->SetMemSize(0);
 
 #ifdef _WIN32
 #if (_MSC_VER > 1200)
@@ -596,11 +596,11 @@ void Sys_InitMemory( void )
 				{
 					if ( memStat.ullTotalPhys > 0xFFFFFFFFUL )
 					{
-						g_pHost->host_parms.memsize = 0xFFFFFFFFUL;
+						g_pHost->SetMemSize(0xFFFFFFFFUL);
 					}
 					else
 					{
-						g_pHost->host_parms.memsize = memStat.ullTotalPhys;
+						g_pHost->SetMemSize(memStat.ullTotalPhys);
 					}
 				}
 			}
@@ -610,7 +610,7 @@ void Sys_InitMemory( void )
 
 	if ( !IsX360() )
 	{
-		if (g_pHost->host_parms.memsize == 0 )
+		if (g_pHost->GetMemSize() == 0)
 		{
 			MEMORYSTATUS lpBuffer;
 			// Get OS Memory status
@@ -619,51 +619,51 @@ void Sys_InitMemory( void )
 
 			if ( lpBuffer.dwTotalPhys <= 0 )
 			{
-				g_pHost->host_parms.memsize = MAXIMUM_WIN_MEMORY;
+				g_pHost->SetMemSize(MAXIMUM_WIN_MEMORY);
 			}
 			else
 			{
-				g_pHost->host_parms.memsize = lpBuffer.dwTotalPhys;
+				g_pHost->SetMemSize(lpBuffer.dwTotalPhys);
 			}	
 		}
-		if (g_pHost->host_parms.memsize < ONE_HUNDRED_TWENTY_EIGHT_MB )
+		if (g_pHost->GetMemSize() < ONE_HUNDRED_TWENTY_EIGHT_MB )
 		{
-			Sys_Error( "Available memory less than 128MB!!! %i\n", g_pHost->host_parms.memsize );
+			Sys_Error( "Available memory less than 128MB!!! %i\n", g_pHost->GetMemSize() );
 		}
 
 		// take one quarter the physical memory
-		if (g_pHost->host_parms.memsize <= 512*1024*1024)
+		if (g_pHost->GetMemSize() <= 512*1024*1024)
 		{
-			g_pHost->host_parms.memsize >>= 2;
+			g_pHost->SetMemSize(g_pHost->GetMemSize() >> 2);
 			// Apply cap of 64MB for 512MB systems
 			// this keeps the code the same as HL2 gold
 			// but allows us to use more memory on 1GB+ systems
-			if (g_pHost->host_parms.memsize > MAXIMUM_DEDICATED_MEMORY)
+			if (g_pHost->GetMemSize() > MAXIMUM_DEDICATED_MEMORY)
 			{
-				g_pHost->host_parms.memsize = MAXIMUM_DEDICATED_MEMORY;
+				g_pHost->SetMemSize(MAXIMUM_DEDICATED_MEMORY);
 			}
 		}
 		else
 		{
 			// just take one quarter, no cap
-			g_pHost->host_parms.memsize >>= 2;
+			g_pHost->SetMemSize(g_pHost->GetMemSize() >> 2);
 		}
 
 		// At least MINIMUM_WIN_MEMORY mb, even if we have to swap a lot.
-		if (g_pHost->host_parms.memsize < MINIMUM_WIN_MEMORY)
+		if (g_pHost->GetMemSize() < MINIMUM_WIN_MEMORY)
 		{
-			g_pHost->host_parms.memsize = MINIMUM_WIN_MEMORY;
+			g_pHost->SetMemSize(MINIMUM_WIN_MEMORY);
 		}
 
 		// Apply cap
-		if (g_pHost->host_parms.memsize > MAXIMUM_WIN_MEMORY)
+		if (g_pHost->GetMemSize() > MAXIMUM_WIN_MEMORY)
 		{
-			g_pHost->host_parms.memsize = MAXIMUM_WIN_MEMORY;
+			g_pHost->SetMemSize(MAXIMUM_WIN_MEMORY);
 		}
 	}
 	else
 	{
-		g_pHost->host_parms.memsize = 128*1024*1024;
+		g_pHost->SetMemSize(128*1024*1024);
 	}
 #elif defined(POSIX)
 	uint64_t memsize = ONE_HUNDRED_TWENTY_EIGHT_MB;
@@ -774,7 +774,7 @@ void Sys_InitMemory( void )
 //-----------------------------------------------------------------------------
 void Sys_ShutdownMemory( void )
 {
-	g_pHost->host_parms.memsize = 0;
+	g_pHost->SetMemSize(0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1039,7 +1039,7 @@ int Sys_InitGame( CreateInterfaceFn appSystemFactory, const char* pBaseDir, void
 	Q_strncpy( s_pBaseDir, pBaseDir, sizeof( s_pBaseDir ) );
 	Q_strlower( s_pBaseDir );
 	Q_FixSlashes( s_pBaseDir );
-	g_pHost->host_parms.basedir = s_pBaseDir;
+	g_pHost->SetBaseDir(s_pBaseDir);
 
 #ifndef _X360
 	if ( CommandLine()->FindParm ( "-pidfile" ) )

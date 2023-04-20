@@ -560,14 +560,14 @@ void CSaveRestore::AgeSaveFile( const char *pName, const char *ext, int count, b
 	{
 		if ( count == 1 )
 		{
-			Q_snprintf( oldName, sizeof( oldName ), "%s:\\%s.%s", g_pHost->GetCurrentMod(), pName, ext );
+			Q_snprintf( oldName, sizeof( oldName ), "%s:\\%s.%s", g_pHost->GetMod(), pName, ext );
 		}
 		else
 		{
-			Q_snprintf( oldName, sizeof( oldName ), "%s:\\%s%02d.%s", g_pHost->GetCurrentMod(), pName, count-1, ext );
+			Q_snprintf( oldName, sizeof( oldName ), "%s:\\%s%02d.%s", g_pHost->GetMod(), pName, count-1, ext );
 		}
 
-		Q_snprintf( newName, sizeof( newName ), "%s:\\%s%02d.%s", g_pHost->GetCurrentMod(), pName, count, ext );
+		Q_snprintf( newName, sizeof( newName ), "%s:\\%s%02d.%s", g_pHost->GetMod(), pName, count, ext );
 	}
 
 	// Scroll the name list down (rename quick04.sav to quick05.sav)
@@ -706,11 +706,11 @@ int CSaveRestore::SaveGameSlot( const char *pSaveName, const char *pSaveComment,
 	{
 		if ( onlyThisLevel )
 		{
-			Q_snprintf( hlPath, sizeof( hlPath ), "%s:\\%s*.HL?", g_pHost->GetCurrentMod(), sv.GetMapName() );
+			Q_snprintf( hlPath, sizeof( hlPath ), "%s:\\%s*.HL?", g_pHost->GetMod(), sv.GetMapName() );
 		}
 		else
 		{
-			Q_snprintf( hlPath, sizeof( hlPath ), "%s:\\*.HL?", g_pHost->GetCurrentMod() );
+			Q_snprintf( hlPath, sizeof( hlPath ), "%s:\\*.HL?", g_pHost->GetMod() );
 		}
 	}
 
@@ -1014,7 +1014,7 @@ bool CSaveRestore::CalcSaveGameName( const char *pName, char *output, int output
 
 	if ( IsXSave() )
 	{
-		Q_snprintf( output, outputStringLength, "%s:/%s", g_pHost->GetCurrentMod(), pName );
+		Q_snprintf( output, outputStringLength, "%s:/%s", g_pHost->GetMod(), pName );
 	}
 	else
 	{
@@ -1483,7 +1483,7 @@ bool CSaveRestore::SaveGameState( bool bTransition, CSaveRestoreData **ppReturnS
 	}
 	else
 	{
-		Q_snprintf( name, 256, "%s:/%s.HL1", g_pHost->GetCurrentMod(), GetSaveGameMapName( sv.GetMapName() ) ); // DON'T FixSlashes on this, it needs to be //MOD
+		Q_snprintf( name, 256, "%s:/%s.HL1", g_pHost->GetMod(), GetSaveGameMapName( sv.GetMapName() ) ); // DON'T FixSlashes on this, it needs to be //MOD
 	}
 
 	S_ExtraUpdate();
@@ -1510,7 +1510,7 @@ bool CSaveRestore::SaveGameState( bool bTransition, CSaveRestoreData **ppReturnS
 	}
 	else
 	{
-		Q_snprintf(name, sizeof( name ), "%s:/%s.HL2", g_pHost->GetCurrentMod(), GetSaveGameMapName( sv.GetMapName() ) );// DON'T FixSlashes on this, it needs to be //MOD
+		Q_snprintf(name, sizeof( name ), "%s:/%s.HL2", g_pHost->GetMod(), GetSaveGameMapName( sv.GetMapName() ) );// DON'T FixSlashes on this, it needs to be //MOD
 	}
 	// Let the client see the server entity to id lookup tables, etc.
 	S_ExtraUpdate();
@@ -1947,7 +1947,7 @@ void CSaveRestore::RestoreAdjacenClientState( char const *map )
 	}
 	else
 	{
-		Q_snprintf( name, sizeof( name ), "%s:/%s.HL2", g_pHost->GetCurrentMod(), GetSaveGameMapName( map ) );// DON'T FixSlashes on this, it needs to be //MOD
+		Q_snprintf( name, sizeof( name ), "%s:/%s.HL2", g_pHost->GetMod(), GetSaveGameMapName( map ) );// DON'T FixSlashes on this, it needs to be //MOD
 	}
 	COM_CreatePath( name );
 
@@ -2224,7 +2224,7 @@ CSaveRestoreData *CSaveRestore::LoadSaveData( const char *level )
 	}
 	else
 	{
-		Q_snprintf( name, sizeof( name ), "%s:/%s.HL1", g_pHost->GetCurrentMod(), level);// DON'T FixSlashes on this, it needs to be //MOD
+		Q_snprintf( name, sizeof( name ), "%s:/%s.HL1", g_pHost->GetMod(), level);// DON'T FixSlashes on this, it needs to be //MOD
 	}
 	ConMsg ("Loading game from %s...\n", name);
 
@@ -2379,7 +2379,7 @@ void CSaveRestore::EntityPatchWrite( CSaveRestoreData *pSaveData, const char *le
 	}
 	else
 	{
-		Q_snprintf( name, sizeof( name ), "%s:/%s.HL3", g_pHost->GetCurrentMod(), level);// DON'T FixSlashes on this, it needs to be //MOD
+		Q_snprintf( name, sizeof( name ), "%s:/%s.HL3", g_pHost->GetMod(), level);// DON'T FixSlashes on this, it needs to be //MOD
 	}
 
 	size = 0;
@@ -2432,7 +2432,7 @@ void CSaveRestore::EntityPatchRead( CSaveRestoreData *pSaveData, const char *lev
 	}
 	else
 	{
-		Q_snprintf(name, sizeof( name ), "%s:/%s.HL3", g_pHost->GetCurrentMod(), GetSaveGameMapName( level ) );// DON'T FixSlashes on this, it needs to be //MOD
+		Q_snprintf(name, sizeof( name ), "%s:/%s.HL3", g_pHost->GetMod(), GetSaveGameMapName( level ) );// DON'T FixSlashes on this, it needs to be //MOD
 	}
 
 	pFile = g_pSaveRestoreFileSystem->Open( name, "rb" );
@@ -2766,7 +2766,7 @@ void CSaveRestore::DoClearSaveDir( bool bIsXSave )
 	}
 	else
 	{
-		Q_snprintf( szName, sizeof( szName ), "%s:\\", g_pHost->GetCurrentMod() );
+		Q_snprintf( szName, sizeof( szName ), "%s:\\", g_pHost->GetMod() );
 	}
 
 	Q_strncat( szName, "*.HL?", sizeof( szName ), COPY_ALL_CHARACTERS );
@@ -2849,8 +2849,8 @@ void CSaveRestore::AutoSaveDangerousIsSafe()
 	}
 	else
 	{
-		Q_snprintf( szOldName, sizeof( szOldName ), "%s:\\autosavedangerous%s.sav", g_pHost->GetCurrentMod(), GetPlatformExt() );
-		Q_snprintf( szNewName, sizeof( szNewName ), "%s:\\autosave%s.sav", g_pHost->GetCurrentMod(), GetPlatformExt() );
+		Q_snprintf( szOldName, sizeof( szOldName ), "%s:\\autosavedangerous%s.sav", g_pHost->GetMod(), GetPlatformExt() );
+		Q_snprintf( szNewName, sizeof( szNewName ), "%s:\\autosave%s.sav", g_pHost->GetMod(), GetPlatformExt() );
 	}
 
 	// there could be an old version, remove it

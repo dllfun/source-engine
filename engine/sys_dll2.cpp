@@ -1103,7 +1103,7 @@ void CEngineAPI::SetStartupInfo( StartupInfo_t &info )
 	g_bTextMode = info.m_bTextMode;
 
 	// Set up the engineparms_t which contains global information about the mod
-	g_pHost->host_parms.basedir = const_cast<char*>( info.m_pBaseDirectory );
+	g_pHost->SetBaseDir( const_cast<char*>( info.m_pBaseDirectory ));
 
 	// Copy off all the startup info
 	m_StartupInfo = info;
@@ -1707,12 +1707,12 @@ void CEngineAPI::OnShutdown()
 static bool IsValveMod( const char *pModName )
 {
 	// Figure out if we're running a Valve mod or not.
-	return ( Q_stricmp(g_pHost->GetCurrentMod(), "cstrike" ) == 0 ||
-		Q_stricmp(g_pHost->GetCurrentMod(), "dod" ) == 0 ||
-		Q_stricmp(g_pHost->GetCurrentMod(), "hl1mp" ) == 0 ||
-		Q_stricmp(g_pHost->GetCurrentMod(), "tf" ) == 0 ||
-		Q_stricmp(g_pHost->GetCurrentMod(), "tf_beta" ) == 0 ||
-		Q_stricmp(g_pHost->GetCurrentMod(), "hl2mp" ) == 0 );
+	return ( Q_stricmp(g_pHost->GetMod(), "cstrike" ) == 0 ||
+		Q_stricmp(g_pHost->GetMod(), "dod" ) == 0 ||
+		Q_stricmp(g_pHost->GetMod(), "hl1mp" ) == 0 ||
+		Q_stricmp(g_pHost->GetMod(), "tf" ) == 0 ||
+		Q_stricmp(g_pHost->GetMod(), "tf_beta" ) == 0 ||
+		Q_stricmp(g_pHost->GetMod(), "hl2mp" ) == 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1721,11 +1721,12 @@ static bool IsValveMod( const char *pModName )
 bool CEngineAPI::ModInit( const char *pModName, const char *pGameDir )
 {
 	// Set up the engineparms_t which contains global information about the mod
-	g_pHost->host_parms.mod = COM_StringCopy( GetModDirFromPath( pModName ) );
-	g_pHost->host_parms.game = COM_StringCopy( pGameDir );
+	const char* mod = GetModDirFromPath(pModName);
+	g_pHost->SetMod(COM_StringCopy( mod ));
+	g_pHost->SetGameDir(COM_StringCopy(pGameDir));
 
 	// By default, restrict server commands in Valve games and don't restrict them in mods.
-	cl.m_bRestrictServerCommands = IsValveMod(g_pHost->host_parms.mod );
+	cl.m_bRestrictServerCommands = IsValveMod( mod );
 	cl.m_bRestrictClientCommands = cl.m_bRestrictServerCommands;
 
 	// build the registry path we're going to use for this mod
@@ -1759,8 +1760,8 @@ bool CEngineAPI::ModInit( const char *pModName, const char *pGameDir )
 
 void CEngineAPI::ModShutdown()
 {
-	COM_StringFree(g_pHost->host_parms.mod);
-	COM_StringFree(g_pHost->host_parms.game);
+	COM_StringFree(g_pHost->GetMod());
+	COM_StringFree(g_pHost->GetGameDir());
 	
 	// Stop accepting input from the window
 	game->InputDetachFromGameWindow();
@@ -2101,7 +2102,7 @@ int CModAppSystemGroup::Main()
 			return false;
 		}
 		// Start up the game engine
-		if ( eng->Load( true, g_pHost->host_parms.basedir ) )
+		if ( eng->Load( true, g_pHost->GetBaseDir() ) )
 		{
 			// If we're using STEAM, pass the map cycle list as resource hints...
 			// Dedicated server drives frame loop manually
@@ -2126,7 +2127,7 @@ int CModAppSystemGroup::Main()
 		// Start up the game engine
 		static const char engineLoadMessage[] = "Calling CEngine::Load";
 		int64 nStartTime = ETWBegin( engineLoadMessage );
-		if ( eng->Load( false, g_pHost->host_parms.basedir ) )
+		if ( eng->Load( false, g_pHost->GetBaseDir() ) )
 		{
 #if !defined(SWDS)
 			ETWEnd( engineLoadMessage, nStartTime );
@@ -2412,9 +2413,9 @@ bool CDedicatedServerAPI::ModInit( ModInfo_t &info )
 	eng->SetQuitting( IEngine::QUIT_NOTQUITTING );
 
 	// Set up the engineparms_t which contains global information about the mod
-	g_pHost->host_parms.basedir = const_cast<char*>(info.m_pBaseDirectory);
-	g_pHost->host_parms.mod = const_cast<char*>(GetModDirFromPath(info.m_pInitialMod));
-	g_pHost->host_parms.game = const_cast<char*>(info.m_pInitialGame);
+	g_pHost->SetBaseDir(const_cast<char*>(info.m_pBaseDirectory));
+	g_pHost->SetMod(const_cast<char*>(GetModDirFromPath(info.m_pInitialMod)));
+	g_pHost->SetGameDir(const_cast<char*>(info.m_pInitialGame));
 
 	g_bTextMode = info.m_bTextMode;
 

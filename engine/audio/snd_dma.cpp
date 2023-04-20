@@ -697,7 +697,7 @@ void S_Init( void )
 	if ( CommandLine()->CheckParm( "-nosound" ) )
 	{
 		g_AudioDevice = Audio_GetNullDevice();
-		TRACEINIT( audiosourcecache->Init(g_pHost->host_parms.memsize >> 2 ), audiosourcecache->Shutdown() );
+		TRACEINIT( audiosourcecache->Init(g_pHost->GetMemSize() >> 2), audiosourcecache->Shutdown());
 		return;
 	}
 
@@ -714,7 +714,7 @@ void S_Init( void )
 
 	S_StopAllSounds( true );
 
-	TRACEINIT( audiosourcecache->Init(g_pHost->host_parms.memsize >> 2 ), audiosourcecache->Shutdown() );
+	TRACEINIT( audiosourcecache->Init(g_pHost->GetMemSize() >> 2), audiosourcecache->Shutdown());
 
 	AllocDsps( true );
 

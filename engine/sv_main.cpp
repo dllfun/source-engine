@@ -822,7 +822,7 @@ static ModDirPermissions_t g_ModDirPermissions[] =
 bool ServerDLL_Load( bool bIsServerOnly )
 {
 	// Load in the game .dll
-	LoadEntityDLLs(g_pHost->GetBaseDirectory(), bIsServerOnly );
+	LoadEntityDLLs(g_pHost->GetBaseDir(), bIsServerOnly );
 	return true;
 }
 
@@ -1776,7 +1776,7 @@ void CGameServer::FinishRestore()
 	}
 	else
 	{
-		Q_snprintf( name, sizeof( name ), "%s:\\%s.HL2", g_pHost->GetCurrentMod(), m_szMapname );
+		Q_snprintf( name, sizeof( name ), "%s:\\%s.HL2", g_pHost->GetMod(), m_szMapname );
 	}
 
 	Q_FixSlashes( name );
