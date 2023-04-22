@@ -98,12 +98,12 @@ void SCR_BeginLoadingPlaque( void )
 		// Don't run any more simulation on the client!!!
 		g_ClientGlobalVariables.frametime = 0.0f;
 
-		g_pHost->host_framecount++;
-		g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
+		//g_pHost->host_framecount++;//aaa
+		//g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
 		// Ensure the screen is painted to reflect the loading state
 		SCR_UpdateScreen();
-		g_pHost->host_framecount++;
-		g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
+		//g_pHost->host_framecount++;
+		//g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
 		SCR_UpdateScreen();
 
 		g_ClientGlobalVariables.frametime = cl.GetFrameTime();
@@ -190,7 +190,7 @@ inline void SCR_ShowVCRPlaybackAmount()
 	info.fixed_width_font = false;
 
 	double flCurPercent = VCRGetPercentCompleted();
-	Con_NXPrintf( &info, "VCR Playback: %.2f percent, frame %d", flCurPercent * 100.0, g_pHost->host_framecount );
+	Con_NXPrintf( &info, "VCR Playback: %.2f percent, frame %d", flCurPercent * 100.0, g_pHost->Host_GetFrameCount() );
 	info.index++;
 
 	Con_NXPrintf( &info, "'+' to speed up, '-' to slow down [current sleep: %d]", g_iVCRPlaybackSleepInterval );
@@ -223,7 +223,7 @@ void SCR_UpdateScreen( void )
 	// NOTE: If you remove scr_nextdrawtick, remove it from enginetool.cpp too
 	if ( scr_nextdrawtick != 0 )
 	{
-		if (g_pHost->host_tickcount < scr_nextdrawtick )
+		if (g_pHost->Host_GetTickCount() < scr_nextdrawtick )
 			return;
 
 		scr_nextdrawtick = 0;
@@ -252,7 +252,7 @@ void SCR_UpdateScreen( void )
 		demoplayer->InterpolateViewpoint();
 	}
 
-	materials->BeginFrame(g_pHost->host_frametime );
+	materials->BeginFrame(g_pHost->Host_GetFrameTime() );
 	{
 		tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "EngineVGui_Simulate" );
 		EngineVGui()->Simulate();

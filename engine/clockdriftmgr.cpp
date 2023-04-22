@@ -127,7 +127,7 @@ float CClockDriftMgr::AdjustFrameTime( float inputFrameTime )
 		)
 	{
 		// Get the clock difference in seconds.
-		float flCurDiffInSeconds = GetCurrentClockDifference() * g_pHost->host_state.interval_per_tick;
+		float flCurDiffInSeconds = GetCurrentClockDifference() * g_pHost->Host_GetIntervalPerTick();
 		float flCurDiffInMS = flCurDiffInSeconds * 1000.0f;
 
 		// Is the server ahead or behind us?
@@ -200,7 +200,7 @@ void CClockDriftMgr::AdjustAverageDifferenceBy( float flAmountInSeconds )
 	if ( c < 0.05f )
 		return;
 
-	float flAmountInTicks = flAmountInSeconds / g_pHost->host_state.interval_per_tick;
+	float flAmountInTicks = flAmountInSeconds / g_pHost->Host_GetIntervalPerTick();
 	float factor = 1 + flAmountInTicks / c;
 
 	for ( int i=0; i < NUM_CLOCKDRIFT_SAMPLES; i++ )

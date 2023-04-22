@@ -597,10 +597,10 @@ void CL_ClearState ( void )
 	// shutdown this level in the client DLL
 	if ( g_ClientDLL )
 	{
-		if (g_pHost->host_state.worldmodel )
+		if (g_pHost->Host_GetWorldModel())
 		{
 			char mapname[256];
-			CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), mapname, sizeof( mapname ) );
+			CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
 			phonehome->Message( IPhoneHome::PHONE_MSG_MAPEND, mapname );
 		}
 		audiosourcecache->LevelShutdown();
@@ -697,7 +697,7 @@ void CL_DispatchSound( const SoundInfo_t &sound )
 	if ( snd_show.GetInt() >= 2 )
 	{
 		DevMsg( "%i (seq %i) %s : src %d : ch %d : %d dB : vol %.2f : time %.3f (%.4f delay) @%.1f %.1f %.1f\n", 
-			g_pHost->host_framecount,
+			g_pHost->Host_GetFrameCount(),
 			sound.nSequenceNumber,
 			name, 
 			sound.nEntityIndex, 
@@ -734,7 +734,7 @@ void CL_DispatchSound( const SoundInfo_t &sound )
 			float soundtime = cl.m_flLastServerTickTime + sound.fDelay;
 			// this adjusts for host_thread_mode or any other cases where we're running more than one
 			// tick at a time, but we get network updates on the first tick
-			soundtime -= ((g_ClientGlobalVariables.simTicksThisFrame-1) * g_pHost->host_state.interval_per_tick);
+			soundtime -= ((g_ClientGlobalVariables.simTicksThisFrame-1) * g_pHost->Host_GetIntervalPerTick());
 			// this sound was networked over from the server, use server clock
 			params.delay = S_ComputeDelayForSoundtime( soundtime, CLOCK_SYNC_SERVER );
 #if 0
@@ -1019,8 +1019,8 @@ Clean up and move to next part of sequence.
 void CL_RegisterResources( void )
 {
 	// All done precaching.
-	g_pHost->host_state.SetWorldModel( cl.GetModel( 1 ) );
-	if ( !g_pHost->host_state.worldmodel )
+	g_pHost->Host_SetWorldModel( cl.GetModel( 1 ) );
+	if ( !g_pHost->Host_GetWorldModel())
 	{
 		g_pHost->Host_Error( "CL_RegisterResources:  host_state.worldmodel/cl.GetModel( 1 )==NULL\n" );
 	}
@@ -1167,7 +1167,7 @@ void CL_FullyConnected( void )
 	// This is a Hack, but we need to suppress rendering for a bit in single player to let values settle on the client
 	if ( (cl.m_nMaxClients == 1) && !demoplayer->IsPlayingBack() )
 	{
-		scr_nextdrawtick = g_pHost->host_tickcount + TIME_TO_TICKS( 0.25f );
+		scr_nextdrawtick = g_pHost->Host_GetTickCount() + TIME_TO_TICKS(0.25f);
 	}
 
 #ifdef _X360
@@ -2166,7 +2166,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 		// Have client .dll create and store usercmd structure
 		g_ClientDLL->CreateMove( 
 			nextcommandnr, 
-			g_pHost->host_state.interval_per_tick - accumulated_extra_samples,
+			g_pHost->Host_GetIntervalPerTick() - accumulated_extra_samples,
 			!cl.IsPaused() );
 
 		// Store new usercmd to dem file
@@ -2218,7 +2218,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 
 	if ( cl.IsActive() )
 	{
-		NET_Tick mymsg( cl.m_nDeltaTick, g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
+		NET_Tick mymsg( cl.m_nDeltaTick, g_pHost->Host_GetFrameTimeUnbounded(), g_pHost->Host_GetFrameTimeStddeviation());
 		cl.m_NetChannel->SendNetMsg( mymsg );
 	}
 
@@ -2235,7 +2235,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 	{
 		// use full update rate when active
 		float commandInterval = 1.0f / cl_cmdrate->GetFloat();
-		float maxDelta = min (g_pHost->host_state.interval_per_tick, commandInterval );
+		float maxDelta = min (g_pHost->Host_GetIntervalPerTick(), commandInterval );
 		float delta = clamp( (float)(net_time - cl.m_flNextCmdTime), 0.0f, maxDelta );
 		cl.m_flNextCmdTime = net_time + commandInterval - delta;
 	}
@@ -2247,7 +2247,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 
 }
 
-#define TICK_INTERVAL			(g_pHost->host_state.interval_per_tick)
+#define TICK_INTERVAL			(g_pHost->Host_GetIntervalPerTick())
 #define ROUND_TO_TICKS( t )		( TICK_INTERVAL * TIME_TO_TICKS( t ) )
 
 void CL_LatchInterpolationAmount()
@@ -2618,9 +2618,9 @@ void CL_SetSteamCrashComment()
 	misc[ 0 ] = 0;
 	osversion[ 0 ] = 0;
 
-	if (g_pHost->host_state.worldmodel )
+	if (g_pHost->Host_GetWorldModel())
 	{
-		CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), map, sizeof( map ) );
+		CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), map, sizeof( map ) );
 	}
 
 	DisplaySystemVersion( osversion, sizeof( osversion ) );

@@ -150,14 +150,7 @@ extern char	*CM_EntityString( void );
 extern ConVar host_map;
 extern ConVar sv_cheats;
 
-bool g_bDedicatedServerBenchmarkMode = false;
-bool g_bLowViolence = false;
 
-// These counters are for debugging in dumps.  If these are non-zero it may indicate some kind of 
-// heap problem caused by the setjmp/longjmp error handling
-int g_HostServerAbortCount = 0;
-int g_HostErrorCount = 0;
-int g_HostEndDemo = 0;
 
 char g_szDefaultLogoFileName[] = "materials/vgui/logos/spray.vtf";
 
@@ -317,7 +310,6 @@ static ConCommand snd_restart( "snd_restart", Snd_Restart_f, "Restart sound syst
 void Shader_Shutdown( void );
 void R_Shutdown( void );
 
-bool g_bAbortServerSet = false;
 
 #ifdef _WIN32
 static bool s_bInitPME = false;
@@ -583,14 +575,16 @@ void HostTimerSpinMsChangedCallback( IConVar *var, const char *pOldString, float
 	}
 }
 
+static float		host_jitterhistory[128] = { 0 };
+static unsigned int host_jitterhistorypos = 0;
 CON_COMMAND( host_timer_report, "Spew CPU timer jitter for the last 128 frames in microseconds (dedicated only)" )
 {
 	if ( sv.IsDedicated() )
 	{
-		for (int i = 1; i <= ARRAYSIZE( g_host.host_jitterhistory ); ++i)
+		for (int i = 1; i <= ARRAYSIZE( host_jitterhistory ); ++i)
 		{
-			unsigned int slot = ( i + g_host.host_jitterhistorypos ) % ARRAYSIZE(g_host.host_jitterhistory );
-			Msg( "%1.3fms\n", g_host.host_jitterhistory[ slot ] * 1000 );
+			unsigned int slot = ( i + host_jitterhistorypos ) % ARRAYSIZE(host_jitterhistory );
+			Msg( "%1.3fms\n", host_jitterhistory[ slot ] * 1000 );
 		}
 	}
 }
@@ -807,11 +801,7 @@ void CheckForFlushMemory( const char *pCurrentMapName, const char *pDestMapName 
 #endif
 }
 
-void Host_AbortServer()
-{
-	g_HostServerAbortCount++;
-	longjmp( g_host.host_abortserver, 1 );
-}
+
 
 /*
 ================
@@ -1174,7 +1164,7 @@ Writes key bindings and archived cvars to config.cfg
 ===============
 */
 
-void Host_WriteConfiguration( const char *filename, bool bAllVars )
+void Host::Host_WriteConfiguration( const char *filename, bool bAllVars )
 {
 	const bool cbIsUserRequested = ( filename != NULL );
 
@@ -1184,7 +1174,7 @@ void Host_WriteConfiguration( const char *filename, bool bAllVars )
 	if ( !g_bConfigCfgExecuted )
 		return;
 	
-	if ( !g_host.host_initialized )
+	if ( !g_host.Host_initialized() )
 		return;
 
 	// Don't write config when in default--most of the values are defaults which is not what the player wants.
@@ -1559,7 +1549,7 @@ void Host_ReadConfiguration_360( void )
 // Purpose: 
 // Input  : false - 
 //-----------------------------------------------------------------------------
-void Host_ReadConfiguration()
+void Host::Host_ReadConfiguration()
 {
 	if ( sv.IsDedicated() )
 		return;
@@ -1690,13 +1680,13 @@ CON_COMMAND( host_writeconfig, "Store current settings to config.cfg (or specifi
 		char outfile[ MAX_QPATH ];
 		// Strip path and extension from filename
 		Q_FileBase( filename, outfile, sizeof( outfile ) );
-		Host_WriteConfiguration( va( "%s.cfg", outfile ), bWriteAll );
+		g_pHost->Host_WriteConfiguration( va( "%s.cfg", outfile ), bWriteAll );
 		if  ( !bWriteAll )
 			ConMsg( "Wrote partial config file \"%s\" out, to write full file use host_writeconfig \"%s\" full\n", outfile, outfile );
 	}
 	else
 	{
-		Host_WriteConfiguration( NULL, true );
+		g_pHost->Host_WriteConfiguration( NULL, true );
 	}
 }
 
@@ -2180,7 +2170,7 @@ void CL_ProcessVoiceData()
 	VPROF_BUDGET( "CL_ProcessVoiceData", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 
 #if !defined( NO_VOICE )
-	Voice_Idle(g_host.host_frametime);
+	Voice_Idle(g_host.Host_GetFrameTime());
 	CL_SendVoicePacket(false);
 #endif
 
@@ -2567,7 +2557,7 @@ void Host_CheckDumpMemoryStats( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void _Host_SetGlobalTime()
+void Host::_Host_SetGlobalTime()
 {
 	// Server
 	g_ServerGlobalVariables.realtime			= g_host.host_realtime;
@@ -2821,7 +2811,7 @@ void CL_FindInterpolatedAddAngle( float t, float& frac, AddAngle **prev, AddAngl
 
 void CL_DiscardOldAddAngleEntries( float t )
 {
-	float killtime = t - g_host.host_state.interval_per_tick - 0.1f;
+	float killtime = t - g_host.Host_GetIntervalPerTick() - 0.1f;
 
 	for ( int i = 0; i < cl.addangle.Count(); i++ )
 	{
@@ -2845,7 +2835,7 @@ void CL_ApplyAddAngle()
 {
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
-	float curtime = cl.GetTime() - g_host.host_state.interval_per_tick;
+	float curtime = cl.GetTime() - g_host.Host_GetIntervalPerTick();
 
 	AddAngle *prev = NULL, *next = NULL;
 	float frac = 0.0f;
@@ -2950,7 +2940,7 @@ S_API int SteamGameServer_GetIPCCallCount();
 #else
 S_API int SteamGameServer_GetIPCCallCount() { return 0; }
 #endif
-void Host_ShowIPCCallCount()
+void Host::Host_ShowIPCCallCount()
 {
 	// If set to 0 then get out.
 	if ( host_ShowIPCCallCount.GetInt() == 0 )
@@ -3019,7 +3009,7 @@ static ConVar host_Sleep( "host_sleep", "0", FCVAR_CHEAT, "Force the host to sle
 extern ConVar sv_alternateticks;
 #define LOG_FRAME_OUTPUT 0
 
-void _Host_RunFrame (float time)
+void Host::_Host_RunFrame (float time)
 {
 	MDLCACHE_COARSE_LOCK_(g_pMDLCache);
 	static double host_remainder = 0.0f;
@@ -3065,6 +3055,13 @@ void _Host_RunFrame (float time)
 
 		static int lastrunoffsecond = -1;
 
+		if (setjmp(g_pHost->host_abortserver))
+		{
+			HostState_Init();
+			return;
+		}
+
+		g_bAbortServerSet = true;
 		if ( setjmp ( g_host.host_enddemo ) )
 			return;			// demo finished.
 
@@ -3171,8 +3168,8 @@ void _Host_RunFrame (float time)
 				float jitter = now - g_host.host_idealtime;
 
 				// Track jitter (delta between ideal time and actual tick execution time)
-				g_host.host_jitterhistory[g_host.host_jitterhistorypos ] = jitter;
-				g_host.host_jitterhistorypos = (g_host.host_jitterhistorypos + 1 ) % ARRAYSIZE(g_host.host_jitterhistory);
+				host_jitterhistory[host_jitterhistorypos ] = jitter;
+				host_jitterhistorypos = (host_jitterhistorypos + 1 ) % ARRAYSIZE(host_jitterhistory);
 
 				// Very slowly decay "ideal" towards current wall clock unless delta is large
 				if ( fabs( jitter ) > 1.0f )
@@ -3698,7 +3695,7 @@ bool IsLowViolence_Registry()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void Host_CheckGore( void )
+void Host::Host_CheckGore( void )
 {
 	bool bLowViolenceRegistry = false;
 	bool bLowViolenceSecure = false;
@@ -4984,6 +4981,8 @@ void Host::Host_Shutdown(void)
 		}
 #endif
 	}
+
+	//host_initialized = false;
 }
 
 //-----------------------------------------------------------------------------

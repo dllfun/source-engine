@@ -867,7 +867,7 @@ bool BLoadHDContent( const char *pchModDir, const char *pchBaseDir )
 }
 
 
-extern void Host_CheckGore( void );
+//extern void Host_CheckGore( void );
 
 /*
 ================
@@ -930,9 +930,9 @@ void COM_InitFilesystem( const char *pFullModPath )
 		initInfo.m_pDirectoryName = g_pHost->GetGameDir();
 	}
 
-	Host_CheckGore();
+	g_pHost->Host_CheckGore();
 
-	initInfo.m_bLowViolence = g_bLowViolence;
+	initInfo.m_bLowViolence = g_pHost->g_bLowViolence;
 	initInfo.m_bMountHDContent = BLoadHDContent( initInfo.m_pDirectoryName, g_pHost->GetBaseDir() );
 
 	// Load gameinfo.txt and setup all the search paths, just like the tools do.

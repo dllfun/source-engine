@@ -292,7 +292,7 @@ void CGame::AppActivate( bool fActive )
 		}
 	}
 
-	if (g_pHost->host_initialized )
+	if (g_pHost->Host_initialized() )
 	{
 		if ( fActive )
 		{

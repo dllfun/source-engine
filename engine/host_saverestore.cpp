@@ -873,8 +873,8 @@ void CSaveRestore::UpdateSaveGameScreenshots()
 #ifndef SWDS
 	if ( m_szSaveGameScreenshotFile[0] )
 	{
-		g_pHost->host_framecount++;
-		g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
+		//g_pHost->host_framecount++;//aaa
+		//g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
 		g_ClientDLL->WriteSaveGameScreenshot( m_szSaveGameScreenshotFile );
 		m_szSaveGameScreenshotFile[0] = 0;
 	}
@@ -2491,7 +2491,7 @@ int CSaveRestore::LoadGameState( char const *level, bool createPlayers )
 
 	Finish( pSaveData );
 
-	sv.m_nTickCount = (int)( header.time__USE_VCR_MODE / g_pHost->host_state.interval_per_tick );
+	sv.m_nTickCount = (int)( header.time__USE_VCR_MODE / g_pHost->Host_GetIntervalPerTick());
 	// SUCCESS!
 	return 1;
 }

@@ -475,7 +475,7 @@ void Sys_Error_Internal( bool bMinidump, const char *error, va_list argsList )
 
 #endif // _X360
 
-	g_pHost->host_initialized = false;
+	//g_pHost->host_initialized = false;
 #if defined(_WIN32) && !defined( _X360 )
 	// We don't want global destructors in our process OR in any DLL to get executed.
 	// _exit() avoids calling global destructors in our module, but not in other DLLs.
@@ -1023,7 +1023,7 @@ int Sys_InitGame( CreateInterfaceFn appSystemFactory, const char* pBaseDir, void
 	SpewOutputFunc( Sys_SpewFunc );
 	
 	// Assume failure
-	g_pHost->host_initialized = false;
+	//g_pHost->host_initialized = false;
 
 #ifdef PLATFORM_WINDOWS
 	// Grab main window pointer
@@ -1077,7 +1077,7 @@ int Sys_InitGame( CreateInterfaceFn appSystemFactory, const char* pBaseDir, void
 
 	TRACEINIT(g_pHost->Host_Init( s_bIsDedicated ), g_pHost->Host_Shutdown() );
 
-	if ( !g_pHost->host_initialized )
+	if ( !g_pHost->Host_initialized() )
 	{
 		return 0;
 	}

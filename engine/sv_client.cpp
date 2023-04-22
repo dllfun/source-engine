@@ -177,7 +177,7 @@ bool CGameClient::ProcessMove(CLC_Move *msg)
 
 	// Make sure player knows of correct server time
 	g_ServerGlobalVariables.curtime = sv.GetTime();
-	g_ServerGlobalVariables.frametime = g_pHost->host_state.interval_per_tick;
+	g_ServerGlobalVariables.frametime = g_pHost->Host_GetIntervalPerTick();
 
 //	COM_Log( "sv.log", "  executing %i move commands from client starting with command %i(%i)\n",
 //		numcmds, 
@@ -1333,7 +1333,7 @@ void CGameClient::PacketStart(int incoming_sequence, int outgoing_acknowledged)
 	// make sure m_LastMovementTick != sv.tickcount
 	m_LastMovementTick = ( sv.m_nTickCount - 1 );
 
-	g_pHost->host_client = this;
+	g_pHost->Host_SetClient(this);
 
 	// During connection, only respond if client sends a packet
 	m_bReceivedPacket = true; 
@@ -1342,7 +1342,7 @@ void CGameClient::PacketStart(int incoming_sequence, int outgoing_acknowledged)
 void CGameClient::PacketEnd()
 {
 	// Fix up clock in case prediction/etc. code reset it.
-	g_ServerGlobalVariables.frametime = g_pHost->host_state.interval_per_tick;
+	g_ServerGlobalVariables.frametime = g_pHost->Host_GetIntervalPerTick();
 }
 
 void CGameClient::ConnectionClosing(const char *reason)

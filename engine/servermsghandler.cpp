@@ -294,12 +294,12 @@ bool CClientState::ProcessTick( NET_Tick *msg )
 	m_ClockDriftMgr.SetServerTick( tick );
 
 	// Remember this for GetLastTimeStamp().
-	m_flLastServerTickTime = tick * g_pHost->host_state.interval_per_tick;
+	m_flLastServerTickTime = tick * g_pHost->Host_GetIntervalPerTick();
 
 	// Use the server tick while reading network data (used for interpolation samples, etc).
 	g_ClientGlobalVariables.tickcount = tick;	
-	g_ClientGlobalVariables.curtime = tick * g_pHost->host_state.interval_per_tick;
-	g_ClientGlobalVariables.frametime = (tick - oldtickcount) * g_pHost->host_state.interval_per_tick;	// We used to call GetFrameTime() here, but 'insimulation' is always
+	g_ClientGlobalVariables.curtime = tick * g_pHost->Host_GetIntervalPerTick();
+	g_ClientGlobalVariables.frametime = (tick - oldtickcount) * g_pHost->Host_GetIntervalPerTick();	// We used to call GetFrameTime() here, but 'insimulation' is always
 																								// true so we have this code right in here to keep it simple.
 
 	return true;
@@ -327,7 +327,7 @@ bool CClientState::ProcessServerInfo( SVC_ServerInfo *msg )
 	{
 		// Because a server doesn't run during
 		// demoplayback, but the decal system relies on this...
-		m_nServerCount = gHostSpawnCount;    
+		m_nServerCount = g_pHost->gHostSpawnCount;    
 	}
 	else
 	{
@@ -373,16 +373,16 @@ bool CClientState::ProcessServerInfo( SVC_ServerInfo *msg )
 	
 	if ( sv.IsPaused() )
 	{
-		if ( msg->m_fTickInterval != g_pHost->host_state.interval_per_tick )
+		if ( msg->m_fTickInterval != g_pHost->Host_GetIntervalPerTick())
 		{
 			g_pHost->Host_Error( "Expecting interval_per_tick %f, got %f\n",
-				g_pHost->host_state.interval_per_tick, msg->m_fTickInterval );
+				g_pHost->Host_GetIntervalPerTick(), msg->m_fTickInterval );
 			return false;
 		}
 	}
 	else
 	{
-		g_pHost->host_state.interval_per_tick = msg->m_fTickInterval;
+		g_pHost->Host_SetIntervalPerTick(msg->m_fTickInterval);
 	}
 
 	// Re-init hud video, especially if we changed game directories
@@ -392,7 +392,7 @@ bool CClientState::ProcessServerInfo( SVC_ServerInfo *msg )
 	// been downloaded.  This will still occur before requesting the rest of the signon.
 
 
-	gHostSpawnCount = m_nServerCount;
+	g_pHost->gHostSpawnCount = m_nServerCount;
 	
 	videomode->MarkClientViewRectDirty();	// leave intermission full screen
 	return true;
@@ -716,7 +716,7 @@ bool CClientState::ProcessBSPDecal( SVC_BSPDecal *msg )
 	}
 	else
 	{
-		model = g_pHost->host_state.worldmodel;
+		model = g_pHost->Host_GetWorldModel();
 		if ( !model )
 		{
 			Warning( "ProcessBSPDecal:  Trying to project on world before host_state.worldmodel is set!!!\n" );

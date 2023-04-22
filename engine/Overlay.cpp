@@ -852,7 +852,7 @@ void COverlayMgr::Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_
 
 	// Create the sort ID for this fragment
 	const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[MSurf_MaterialSortID( surfID )];
-	mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+	mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
 	pFragment->m_nMaterialSortID = GetMaterialSortID( pTexInfo->material, sortInfo.lightmapPageID );
 
 	// Add to list of fragments for this overlay
@@ -948,16 +948,16 @@ void COverlayMgr::Surf_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t su
 		// 3 Points in a triangle.
 		surfaceFrag.m_aPrimVerts.SetCount( 3 );
 		
-		int iVert = g_pHost->host_state.worldmodel->brush.pShared->vertindices[(iFirstVert)];
-		mvertex_t *pVert = &g_pHost->host_state.worldmodel->brush.pShared->vertexes[iVert];
+		int iVert = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert)];
+		mvertex_t *pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVert];
 		surfaceFrag.m_aPrimVerts[0].pos = pVert->position;
 		
-		iVert = g_pHost->host_state.worldmodel->brush.pShared->vertindices[(iFirstVert+iTri+1)];
-		pVert = &g_pHost->host_state.worldmodel->brush.pShared->vertexes[iVert];
+		iVert = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iTri+1)];
+		pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVert];
 		surfaceFrag.m_aPrimVerts[1].pos = pVert->position;
 		
-		iVert = g_pHost->host_state.worldmodel->brush.pShared->vertindices[(iFirstVert+iTri+2)];
-		pVert = &g_pHost->host_state.worldmodel->brush.pShared->vertexes[iVert];
+		iVert = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iTri+2)];
+		pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVert];
 		surfaceFrag.m_aPrimVerts[2].pos = pVert->position;
 
 		if ( TriangleArea( surfaceFrag.m_aPrimVerts[0].pos, surfaceFrag.m_aPrimVerts[1].pos, surfaceFrag.m_aPrimVerts[2].pos ) > 1.0f )
@@ -1026,7 +1026,7 @@ void COverlayMgr::CreateFragments( void )
 				if ( !pVert->pos.IsValid() )
 				{
 					Assert( 0 );
-					mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+					mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
 					DevMsg( 1, "Bad overlay vert - %d at (%f, %f, %f) with material '%s'\n", iOverlay,
 						pOverlay->m_vecOrigin.x, pOverlay->m_vecOrigin.y, pOverlay->m_vecOrigin.z,
 						( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
@@ -1035,7 +1035,7 @@ void COverlayMgr::CreateFragments( void )
 				if ( !pVert->normal.IsValid() )
 				{
 					Assert( 0 );
-					mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+					mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
 					DevMsg( 1, "Bad overlay normal - %d at (%f, %f, %f) with material '%s'\n", iOverlay,
 						pOverlay->m_vecOrigin.x, pOverlay->m_vecOrigin.y, pOverlay->m_vecOrigin.z,
 						( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
@@ -1044,7 +1044,7 @@ void COverlayMgr::CreateFragments( void )
 				if ( !pVert->texCoord[0].IsValid() || !pVert->texCoord[1].IsValid() )
 				{
 					Assert( 0 );
-					mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+					mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
 					DevMsg( 1, "Bad overlay texture coords - %d at (%f, %f, %f) with material '%s'\n", iOverlay,
 						pOverlay->m_vecOrigin.x, pOverlay->m_vecOrigin.y, pOverlay->m_vecOrigin.z,
 						( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
@@ -1076,7 +1076,7 @@ void COverlayMgr::ReSortMaterials( void )
 		if ( !pOverlay )
 			continue;
 
-		mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+		mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
 		if ( !pTexInfo )
 			continue;
 
@@ -1302,8 +1302,8 @@ bool COverlayMgr::Disp_PreClipFragment( moverlay_t *pOverlay, OverlayFragmentVec
 	surfaceFrag.m_aPrimVerts.SetCount( 4 );
 	for( int iVert = 0; iVert < 4; ++iVert )
 	{
-		int iVertex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[(iFirstVert+iVert)];
-		mvertex_t *pVert = &g_pHost->host_state.worldmodel->brush.pShared->vertexes[iVertex];
+		int iVertex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iVert)];
+		mvertex_t *pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVertex];
 		surfaceFrag.m_aPrimVerts[iVert].pos = pVert->position;
 	}
 
@@ -1339,7 +1339,7 @@ bool COverlayMgr::Disp_PreClipFragment( moverlay_t *pOverlay, OverlayFragmentVec
 								  vecTmpUV );
 		if ( !vecTmpUV.IsValid() )
 		{
-			mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+			mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
 			DevWarning( 1, "Bad overlay geometry at %s with material '%s'\n", VecToString(pOverlay->m_vecOrigin), 
 				( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
 			return false;
@@ -1376,8 +1376,8 @@ void COverlayMgr::Disp_PostClipFragment( CDispInfo *pDisp, CMeshReader *pReader,
 	surfaceFrag.m_aPrimVerts.SetCount( 4 );
 	for( int iVert = 0; iVert < 4; ++iVert )
 	{
-		int iVertex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[(iFirstVert+iVert)];
-		mvertex_t *pVert = &g_pHost->host_state.worldmodel->brush.pShared->vertexes[iVertex];
+		int iVertex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iVert)];
+		mvertex_t *pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVertex];
 		surfaceFrag.m_aPrimVerts[iVert].pos = pVert->position;
 	}
 
@@ -1452,7 +1452,7 @@ void COverlayMgr::Disp_PostClipFragment( CDispInfo *pDisp, CMeshReader *pReader,
 
 		// Create the sort ID for this fragment
 		const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[MSurf_MaterialSortID( surfID )];
-		mtexinfo_t *pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+		mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
 		pFragment->m_nMaterialSortID = GetMaterialSortID( pTexInfo->material, sortInfo.lightmapPageID );
 
 		// Add to list of fragments for this overlay

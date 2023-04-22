@@ -484,7 +484,7 @@ void CHostState::State_Run( float frameTime )
 		// Only clamp time if client is in process of connecting or is already connected.
 		if ( IsClientConnected() )
 		{
-			frameTime = min( frameTime, g_pHost->host_state.interval_per_tick );
+			frameTime = min( frameTime, g_pHost->Host_GetIntervalPerTick());
 		}
 	}
 
@@ -613,13 +613,7 @@ void CHostState::FrameUpdate( float time )
 	int loopCount = 0;
 #endif
 
-	if ( setjmp (g_pHost->host_abortserver) )
-	{
-		Init();
-		return;
-	}
-
-	g_bAbortServerSet = true;
+	
 
 	while ( true )
 	{

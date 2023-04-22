@@ -4343,7 +4343,7 @@ static int SurfFlagsToSortGroup( SurfaceHandle_t surfID, int flags )
 bool Mod_MarkWaterSurfaces( model_t *pModel )
 {
 	bool bHasWaterSurfaces = false;
-	model_t *pSaveModel = g_pHost->host_state.worldmodel;
+	//model_t *pSaveModel = g_pHost->Host_GetWorldModel();
 
 	// garymcthack!!!!!!!!
 	// host_state.worldmodel isn't set at this point, so. . . . 
@@ -6077,19 +6077,19 @@ void Mod_LeafAmbientColorAtPos( Vector *pOut, const Vector &pos, int leafIndex )
 	{
 		pOut[i].Init();
 	}
-	mleafambientindex_t *pAmbient = &g_pHost->host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
+	mleafambientindex_t *pAmbient = &g_pHost->Host_GetWorldModel()->brush.pShared->m_pLeafAmbient[leafIndex];
 	if ( !pAmbient->ambientSampleCount && pAmbient->firstAmbientSample )
 	{
 		// this leaf references another leaf, move there (this leaf is a solid leaf so it borrows samples from a neighbor)
 		leafIndex = pAmbient->firstAmbientSample;
-		pAmbient = &g_pHost->host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex];
+		pAmbient = &g_pHost->Host_GetWorldModel()->brush.pShared->m_pLeafAmbient[leafIndex];
 	}
 	int count = pAmbient->ambientSampleCount;
 	if ( count > 0 )
 	{
-		int start = g_pHost->host_state.worldmodel->brush.pShared->m_pLeafAmbient[leafIndex].firstAmbientSample;
-		mleafambientlighting_t *pSamples = g_pHost->host_state.worldmodel->brush.pShared->m_pAmbientSamples + start;
-		mleaf_t *pLeaf = &g_pHost->host_state.worldmodel->brush.pShared->leafs[leafIndex];
+		int start = g_pHost->Host_GetWorldModel()->brush.pShared->m_pLeafAmbient[leafIndex].firstAmbientSample;
+		mleafambientlighting_t *pSamples = g_pHost->Host_GetWorldModel()->brush.pShared->m_pAmbientSamples + start;
+		mleaf_t *pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leafIndex];
 		float totalFactor = 0;
 		for ( int i = 0; i < count; i++ )
 		{

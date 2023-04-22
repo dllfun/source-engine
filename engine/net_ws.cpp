@@ -2162,9 +2162,9 @@ void NET_ClearQueuedPacketsForChannel( INetChannel *channel )
 void NET_SendQueuedPackets()
 {
 	// Only do this once per frame
-	if ( g_pHost->host_framecount == g_SendQueue.m_nHostFrame )
+	if ( g_pHost->Host_GetFrameCount() == g_SendQueue.m_nHostFrame)
 		return;
-	g_SendQueue.m_nHostFrame = g_pHost->host_framecount;
+	g_SendQueue.m_nHostFrame = g_pHost->Host_GetFrameCount();
 
 	CUtlLinkedList< SendQueueItem_t >& list = g_SendQueue.m_SendQueue;
 

@@ -547,7 +547,7 @@ bool CDispInfo::Render( CGroupMesh *pGroup, bool bAllowDebugModes )
 			VectorAdd( bbMin, bbMax, vecCenter );
 			vecCenter *= 0.5f;
 
-			intp nInt = ( mat_surfaceid.GetInt() != 2 ) ? (intp)m_ParentSurfID : (SurfaceHandle_t)m_ParentSurfID - g_pHost->host_state.worldmodel->brush.pShared->surfaces2;
+			intp nInt = ( mat_surfaceid.GetInt() != 2 ) ? (intp)m_ParentSurfID : (SurfaceHandle_t)m_ParentSurfID - g_pHost->Host_GetWorldModel()->brush.pShared->surfaces2;
 			char buf[32];
 			Q_snprintf( buf, sizeof( buf ), "%d", (int)nInt );
 			CDebugOverlay::AddTextOverlay( vecCenter, 0, buf );
@@ -1067,7 +1067,7 @@ bool CDispInfo::TestRay( Ray_t const& ray, float start, float end, float& dist,
 						Vector2D* luv, Vector2D* tuv )
 {
 	// Get the index associated with this disp info....
-	int idx = DispInfo_ComputeIndex(g_pHost->host_state.worldmodel->brush.pShared->hDispInfos, this );
+	int idx = DispInfo_ComputeIndex(g_pHost->Host_GetWorldModel()->brush.pShared->hDispInfos, this );
 	CDispCollTree* pTree = CollisionBSPData_GetCollisionTree( idx );
 	if (!pTree)
 		return false;

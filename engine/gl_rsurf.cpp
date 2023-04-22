@@ -71,13 +71,13 @@ void Shader_DrawSurfaceDynamic(IMatRenderContext* pRenderContext, SurfaceHandle_
 		IMesh* pMesh = pRenderContext->GetDynamicMesh();
 		CMeshBuilder meshBuilder;
 		meshBuilder.Begin(pMesh, MATERIAL_POLYGON, MSurf_VertCount(surfID));
-		BuildMSurfaceVertexArrays(g_pHost->host_state.worldmodel->brush.pShared, surfID, OVERBRIGHT, meshBuilder);
+		BuildMSurfaceVertexArrays(g_pHost->Host_GetWorldModel()->brush.pShared, surfID, OVERBRIGHT, meshBuilder);
 		meshBuilder.End();
 		pMesh->Draw();
 		return;
 	}
 
-	mprimitive_t* pPrim = &g_pHost->host_state.worldmodel->brush.pShared->primitives[MSurf_FirstPrimID(surfID)];
+	mprimitive_t* pPrim = &g_pHost->Host_GetWorldModel()->brush.pShared->primitives[MSurf_FirstPrimID(surfID)];
 
 	if (pPrim->vertCount)
 	{
@@ -103,8 +103,8 @@ void Shader_DrawSurfaceDynamic(IMatRenderContext* pRenderContext, SurfaceHandle_
 				return;
 			}
 			Assert(pPrim->indexCount);
-			BuildMSurfacePrimVerts(g_pHost->host_state.worldmodel->brush.pShared, pPrim, meshBuilder, surfID);
-			BuildMSurfacePrimIndices(g_pHost->host_state.worldmodel->brush.pShared, pPrim, meshBuilder);
+			BuildMSurfacePrimVerts(g_pHost->Host_GetWorldModel()->brush.pShared, pPrim, meshBuilder, surfID);
+			BuildMSurfacePrimIndices(g_pHost->Host_GetWorldModel()->brush.pShared, pPrim, meshBuilder);
 			meshBuilder.End();
 			pMesh->Draw();
 		}
@@ -115,10 +115,10 @@ void Shader_DrawSurfaceDynamic(IMatRenderContext* pRenderContext, SurfaceHandle_
 		IMesh* pMesh = pRenderContext->GetDynamicMesh();
 		CMeshBuilder meshBuilder;
 		meshBuilder.Begin(pMesh, MATERIAL_TRIANGLES, MSurf_VertCount(surfID), pPrim->indexCount);
-		BuildMSurfaceVertexArrays(g_pHost->host_state.worldmodel->brush.pShared, surfID, OVERBRIGHT, meshBuilder);
+		BuildMSurfaceVertexArrays(g_pHost->Host_GetWorldModel()->brush.pShared, surfID, OVERBRIGHT, meshBuilder);
 		for (int primIndex = 0; primIndex < pPrim->indexCount; primIndex++)
 		{
-			meshBuilder.FastIndex(g_pHost->host_state.worldmodel->brush.pShared->primindices[pPrim->firstIndex + primIndex]);
+			meshBuilder.FastIndex(g_pHost->Host_GetWorldModel()->brush.pShared->primindices[pPrim->firstIndex + primIndex]);
 		}
 
 		meshBuilder.End();
@@ -240,7 +240,7 @@ void DrawSurfaceID(SurfaceHandle_t surfID, const Vector& vecCentroid)
 
 void DrawSurfaceIDAsInt(SurfaceHandle_t surfID, const Vector& vecCentroid)
 {
-	int nInt = (SurfaceHandle_t)surfID - g_pHost->host_state.worldmodel->brush.pShared->surfaces2;
+	int nInt = (SurfaceHandle_t)surfID - g_pHost->Host_GetWorldModel()->brush.pShared->surfaces2;
 	char buf[32];
 	Q_snprintf(buf, sizeof(buf), "%d", nInt);
 	CDebugOverlay::AddTextOverlay(vecCentroid, 0, buf);
@@ -320,13 +320,13 @@ void Shader_DrawWireframePolygons(const CUtlVector<SurfaceHandle_t>& surfaceList
 		if (nCount >= 3)
 		{
 			int nFirstVertIndex = MSurf_FirstVertIndex(surfID);
-			int nVertIndex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[nFirstVertIndex + nCount - 1];
-			Vector vecPrevPos = g_pHost->host_state.worldmodel->brush.pShared->vertexes[nVertIndex].position;
+			int nVertIndex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[nFirstVertIndex + nCount - 1];
+			Vector vecPrevPos = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[nVertIndex].position;
 			for (int v = 0; v < nCount; ++v)
 			{
 				// world-space vertex
-				nVertIndex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[nFirstVertIndex + v];
-				Vector& vec = g_pHost->host_state.worldmodel->brush.pShared->vertexes[nVertIndex].position;
+				nVertIndex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[nFirstVertIndex + v];
+				Vector& vec = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[nVertIndex].position;
 
 				// output to mesh
 				meshBuilder.Position3fv(vecPrevPos.Base());
@@ -389,7 +389,7 @@ void Shader_DrawChainNormals(const CUtlVector<SurfaceHandle_t>& surfaceList)
 
 	CMatRenderContextPtr pRenderContext(materials);
 
-	worldbrushdata_t* pBrushData = g_pHost->host_state.worldmodel->brush.pShared;
+	worldbrushdata_t* pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	pRenderContext->Bind(g_pMaterialWireframeVertexColor);
 
 	for (int i = 0; i < surfaceList.Count(); i++)
@@ -449,7 +449,7 @@ void Shader_DrawChainBumpBasis(const CUtlVector<SurfaceHandle_t>& surfaceList)
 
 	CMatRenderContextPtr pRenderContext(materials);
 
-	worldbrushdata_t* pBrushData = g_pHost->host_state.worldmodel->brush.pShared;
+	worldbrushdata_t* pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	pRenderContext->Bind(g_pMaterialWireframeVertexColor);
 
 	for (int i = 0; i < surfaceList.Count(); i++)
@@ -641,14 +641,14 @@ void Surf_ComputeCentroid( SurfaceHandle_t surfID, Vector *pVecCentroid )
 	float flTotalArea = 0.0f;
 	Vector vecNormal;
 	pVecCentroid->Init(0,0,0);
-	int vertIndex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[nFirstVertIndex];
-	Vector vecApex = g_pHost->host_state.worldmodel->brush.pShared->vertexes[vertIndex].position;
+	int vertIndex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[nFirstVertIndex];
+	Vector vecApex = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[vertIndex].position;
 	for (int v = 1; v < nCount - 1; ++v )
 	{
-		vertIndex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[nFirstVertIndex+v];
-		Vector v1 = g_pHost->host_state.worldmodel->brush.pShared->vertexes[vertIndex].position;
-		vertIndex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[nFirstVertIndex+v+1];
-		Vector v2 = g_pHost->host_state.worldmodel->brush.pShared->vertexes[vertIndex].position;
+		vertIndex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[nFirstVertIndex+v];
+		Vector v1 = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[vertIndex].position;
+		vertIndex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[nFirstVertIndex+v+1];
+		Vector v2 = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[vertIndex].position;
 		CrossProduct( v2 - v1, v1 - vecApex, vecNormal );
 		float flArea = vecNormal.Length();
 		flTotalArea += flArea;
@@ -809,7 +809,7 @@ private:
 	void Shader_WorldZFillSurfChain(const CMSurfaceSortList& sortList, const surfacesortgroup_t& group, CMeshBuilder& meshBuilder, int& nStartVertIn, unsigned int includeFlags)
 	{
 		int nStartVert = nStartVertIn;
-		mvertex_t* pWorldVerts = g_pHost->host_state.worldmodel->brush.pShared->vertexes;
+		mvertex_t* pWorldVerts = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes;
 
 		MSL_FOREACH_SURFACE_IN_GROUP_BEGIN(sortList, group, nSurfID)
 		{
@@ -822,24 +822,24 @@ private:
 
 			int nSurfTriangleCount = MSurf_VertCount(nSurfID) - 2;
 
-			unsigned short* pVertIndex = &(g_pHost->host_state.worldmodel->brush.pShared->vertindices[MSurf_FirstVertIndex(nSurfID)]);
+			unsigned short* pVertIndex = &(g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[MSurf_FirstVertIndex(nSurfID)]);
 
 			// add surface to this batch
 			if (SurfaceHasPrims(nSurfID))
 			{
-				mprimitive_t* pPrim = &g_pHost->host_state.worldmodel->brush.pShared->primitives[MSurf_FirstPrimID(nSurfID)];
+				mprimitive_t* pPrim = &g_pHost->Host_GetWorldModel()->brush.pShared->primitives[MSurf_FirstPrimID(nSurfID)];
 				if (pPrim->vertCount == 0)
 				{
 					int firstVert = MSurf_FirstVertIndex(nSurfID);
 					for (int i = 0; i < MSurf_VertCount(nSurfID); i++)
 					{
-						int vertIndex = g_pHost->host_state.worldmodel->brush.pShared->vertindices[firstVert + i];
+						int vertIndex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[firstVert + i];
 						meshBuilder.Position3fv(pWorldVerts[vertIndex].position.Base());
 						meshBuilder.AdvanceVertex();
 					}
 					for (int primIndex = 0; primIndex < pPrim->indexCount; primIndex++)
 					{
-						meshBuilder.FastIndex(g_pHost->host_state.worldmodel->brush.pShared->primindices[pPrim->firstIndex + primIndex] + nStartVert);
+						meshBuilder.FastIndex(g_pHost->Host_GetWorldModel()->brush.pShared->primindices[pPrim->firstIndex + primIndex] + nStartVert);
 					}
 				}
 			}
@@ -937,7 +937,7 @@ CObjectPool<CWorldRenderList> CWorldRenderList::g_Pool;
 
 IWorldRenderList *AllocWorldRenderList()
 {
-	return CWorldRenderList::FindOrCreateList( g_pHost->host_state.worldmodel->brush.pShared->numsurfaces );
+	return CWorldRenderList::FindOrCreateList( g_pHost->Host_GetWorldModel()->brush.pShared->numsurfaces );
 }
 
 
@@ -1313,7 +1313,7 @@ void Shader_DrawChainsStatic( const CMSurfaceSortList &sortList, int nSortGroup,
 				BuildIndicesForWorldSurface( indexBufferBuilder, surfIDList, g_pHost->host_state.worldbrush );
 #else
 				Assert( meshBuilder.m_nFirstVertex == 0 );
-				BuildIndicesForWorldSurface( meshBuilder, surfIDList, g_pHost->host_state.worldmodel->brush.pShared);
+				BuildIndicesForWorldSurface( meshBuilder, surfIDList, g_pHost->Host_GetWorldModel()->brush.pShared);
 #endif
 			}
 			MSL_FOREACH_SURFACE_IN_GROUP_END()
@@ -1525,24 +1525,24 @@ static void ComputeFogVolumeInfo( FogVolumeInfo_t *pFogVolume )
 {
 	pFogVolume->m_InFogVolume = false;
 	int leafID = CM_PointLeafnum( CurrentViewOrigin() );
-	if( leafID < 0 || leafID >= g_pHost->host_state.worldmodel->brush.pShared->numleafs )
+	if( leafID < 0 || leafID >= g_pHost->Host_GetWorldModel()->brush.pShared->numleafs )
 		return;
 
-	mleaf_t* pLeaf = &g_pHost->host_state.worldmodel->brush.pShared->leafs[leafID];
+	mleaf_t* pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leafID];
 	pFogVolume->m_FogVolumeID = pLeaf->leafWaterDataID;
 	if( pFogVolume->m_FogVolumeID == -1 )
 		return;
 
 	pFogVolume->m_InFogVolume = true;
 
-	mleafwaterdata_t* pLeafWaterData = &g_pHost->host_state.worldmodel->brush.pShared->leafwaterdata[pLeaf->leafWaterDataID];
+	mleafwaterdata_t* pLeafWaterData = &g_pHost->Host_GetWorldModel()->brush.pShared->leafwaterdata[pLeaf->leafWaterDataID];
 	if( pLeafWaterData->surfaceTexInfoID == -1 )
 	{
 		// Should this ever happen?????
 		pFogVolume->m_FogEnabled = false;
 		return;
 	}
-	mtexinfo_t* pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pLeafWaterData->surfaceTexInfoID];
+	mtexinfo_t* pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pLeafWaterData->surfaceTexInfoID];
 
 	IMaterial* pMaterial = pTexInfo->material;
 	if( pMaterial )
@@ -1641,20 +1641,20 @@ static ConVar r_frustumcullworld( "r_frustumcullworld", "1" );
 #define INVALID_WATER_HEIGHT 1000000.0f
 inline float R_GetWaterHeight( int nFogVolume )
 {
-	if( nFogVolume < 0 || nFogVolume > g_pHost->host_state.worldmodel->brush.pShared->numleafwaterdata )
+	if( nFogVolume < 0 || nFogVolume > g_pHost->Host_GetWorldModel()->brush.pShared->numleafwaterdata )
 		return INVALID_WATER_HEIGHT;
 
-	mleafwaterdata_t* pLeafWaterData = &g_pHost->host_state.worldmodel->brush.pShared->leafwaterdata[nFogVolume];
+	mleafwaterdata_t* pLeafWaterData = &g_pHost->Host_GetWorldModel()->brush.pShared->leafwaterdata[nFogVolume];
 	return pLeafWaterData->surfaceZ;
 }
 
 IMaterial *R_GetFogVolumeMaterial( int nFogVolume, bool bEyeInFogVolume )
 {
-	if( nFogVolume < 0 || nFogVolume > g_pHost->host_state.worldmodel->brush.pShared->numleafwaterdata )
+	if( nFogVolume < 0 || nFogVolume > g_pHost->Host_GetWorldModel()->brush.pShared->numleafwaterdata )
 		return NULL;
 
-	mleafwaterdata_t* pLeafWaterData = &g_pHost->host_state.worldmodel->brush.pShared->leafwaterdata[nFogVolume];
-	mtexinfo_t* pTexInfo = &g_pHost->host_state.worldmodel->brush.pShared->texinfo[pLeafWaterData->surfaceTexInfoID];
+	mleafwaterdata_t* pLeafWaterData = &g_pHost->Host_GetWorldModel()->brush.pShared->leafwaterdata[nFogVolume];
+	mtexinfo_t* pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pLeafWaterData->surfaceTexInfoID];
 
 	IMaterial* pMaterial = pTexInfo->material;
 	if( bEyeInFogVolume )
@@ -1677,7 +1677,7 @@ void R_SetFogVolumeState( int fogVolume, bool useHeightFog )
 	// useHeightFog == eye out of water
 	// !useHeightFog == eye in water
 	IMaterial *pMaterial = R_GetFogVolumeMaterial( fogVolume, !useHeightFog );
-	mleafwaterdata_t* pLeafWaterData = &g_pHost->host_state.worldmodel->brush.pShared->leafwaterdata[fogVolume];
+	mleafwaterdata_t* pLeafWaterData = &g_pHost->Host_GetWorldModel()->brush.pShared->leafwaterdata[fogVolume];
 	IMaterialVar* pFogColorVar	= pMaterial->FindVar( "$fogcolor", NULL );
 	IMaterialVar* pFogEnableVar = pMaterial->FindVar( "$fogenable", NULL );
 	IMaterialVar* pFogStartVar	= pMaterial->FindVar( "$fogstart", NULL );
@@ -1769,7 +1769,7 @@ void CVisibleFogVolumeQuery::FindVisibleFogVolume( const Vector &vecViewPoint, i
 	m_nVisibleFogVolume = -1;
 	m_nVisibleFogVolumeLeaf = -1;
 
-	RecursiveGetVisibleFogVolume( g_pHost->host_state.worldmodel->brush.pShared->nodes );
+	RecursiveGetVisibleFogVolume( g_pHost->Host_GetWorldModel()->brush.pShared->nodes );
 
 	*pVisibleFogVolume = m_nVisibleFogVolume;
 	*pVisibleFogVolumeLeaf = m_nVisibleFogVolumeLeaf;
@@ -1812,7 +1812,7 @@ bool CVisibleFogVolumeQuery::RecursiveGetVisibleFogVolume( mnode_t *node )
 			return true;
 
 		m_nVisibleFogVolume = pLeaf->leafWaterDataID;
-		m_nVisibleFogVolumeLeaf = pLeaf - g_pHost->host_state.worldmodel->brush.pShared->leafs;
+		m_nVisibleFogVolumeLeaf = pLeaf - g_pHost->Host_GetWorldModel()->brush.pShared->leafs;
 		return false;  // found it, so stop searching
 	}
 
@@ -1862,14 +1862,14 @@ void R_GetVisibleFogVolume( const Vector& vEyePoint, VisibleFogVolumeInfo_t *pIn
 {
 	VPROF_BUDGET( "R_GetVisibleFogVolume", VPROF_BUDGETGROUP_WORLD_RENDERING );
 
-	if ( g_pHost->host_state.worldmodel->brush.pShared->numleafwaterdata == 0 )
+	if ( g_pHost->Host_GetWorldModel()->brush.pShared->numleafwaterdata == 0 )
 	{
 		ClearFogInfo( pInfo );
 		return;
 	}
 
 	int nLeafID = CM_PointLeafnum( vEyePoint );
-	mleaf_t* pLeaf = &g_pHost->host_state.worldmodel->brush.pShared->leafs[nLeafID];
+	mleaf_t* pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[nLeafID];
 
 	int nLeafContents = pLeaf->contents;
 	if ( pLeaf->leafWaterDataID != -1 )
@@ -1884,10 +1884,10 @@ void R_GetVisibleFogVolume( const Vector& vEyePoint, VisibleFogVolumeInfo_t *pIn
 	else if ( nLeafContents & CONTENTS_TESTFOGVOLUME )
 	{
 		Assert( (nLeafContents & (CONTENTS_SLIME | CONTENTS_WATER)) == 0 );
-		if ( fast_fogvolume.GetBool() && g_pHost->host_state.worldmodel->brush.pShared->numleafwaterdata == 1 )
+		if ( fast_fogvolume.GetBool() && g_pHost->Host_GetWorldModel()->brush.pShared->numleafwaterdata == 1 )
 		{
 			pInfo->m_nVisibleFogVolume = 0;
-			pInfo->m_nVisibleFogVolumeLeaf = g_pHost->host_state.worldmodel->brush.pShared->leafwaterdata[0].firstLeafIndex;
+			pInfo->m_nVisibleFogVolumeLeaf = g_pHost->Host_GetWorldModel()->brush.pShared->leafwaterdata[0].firstLeafIndex;
 		}
 		else
 		{
@@ -1904,9 +1904,9 @@ void R_GetVisibleFogVolume( const Vector& vEyePoint, VisibleFogVolumeInfo_t *pIn
 		ClearFogInfo( pInfo );
 	}
 
-	if( g_pHost->host_state.worldmodel->brush.pShared->m_LeafMinDistToWater )
+	if( g_pHost->Host_GetWorldModel()->brush.pShared->m_LeafMinDistToWater )
 	{
-		pInfo->m_flDistanceToWater = ( float )g_pHost->host_state.worldmodel->brush.pShared->m_LeafMinDistToWater[nLeafID];
+		pInfo->m_flDistanceToWater = ( float )g_pHost->Host_GetWorldModel()->brush.pShared->m_LeafMinDistToWater[nLeafID];
 	}
 	else
 	{
@@ -1958,7 +1958,7 @@ void Shader_DrawLightmapPageSurface( SurfaceHandle_t surfID, float red, float gr
 		count = 1;
 	}
 
-	BuildMSurfaceVerts( g_pHost->host_state.worldmodel->brush.pShared, surfID, NULL, NULL, lightCoords );
+	BuildMSurfaceVerts( g_pHost->Host_GetWorldModel()->brush.pShared, surfID, NULL, NULL, lightCoords );
 
 	int lightmapPageWidth, lightmapPageHeight;
 
@@ -2092,7 +2092,7 @@ void CBrushSurface::GetVertexData( BrushVertex_t* pVerts )
 	if( !SurfaceHasPrims( m_SurfaceID ) )
 	{
 		// Fill in the vertex data
-		BuildBrushModelVertexArray( g_pHost->host_state.worldmodel->brush.pShared, m_SurfaceID, pVerts );
+		BuildBrushModelVertexArray( g_pHost->Host_GetWorldModel()->brush.pShared, m_SurfaceID, pVerts );
 	}
 	else
 	{
@@ -2658,7 +2658,7 @@ void CBrushBatchRender::LevelInit()
 
 void CBrushBatchRender::ClearRenderHandles( void )
 {
-	for ( int iBrush = 1 ; iBrush < g_pHost->host_state.worldmodel->brush.pShared->numsubmodels ; ++iBrush )
+	for ( int iBrush = 1 ; iBrush < g_pHost->Host_GetWorldModel()->brush.pShared->numsubmodels ; ++iBrush )
 	{
 		char szBrushModel[5]; // inline model names "*1", "*2" etc
 		Q_snprintf( szBrushModel, sizeof( szBrushModel ), "*%i", iBrush );
@@ -3927,7 +3927,7 @@ bool CEngineBSPTree::EnumerateLeavesAtPoint(IVModel* world, const Vector& pt,
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if (!world)
-		world = g_pHost->host_state.worldmodel;
+		world = g_pHost->Host_GetWorldModel();
 	if (!world)
 		return false;
 	int leaf = CM_PointLeafnum( pt );
@@ -3942,7 +3942,7 @@ bool CEngineBSPTree::EnumerateLeavesInBox(IVModel* world, const Vector& mins, co
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if ( !world )
-		world = g_pHost->host_state.worldmodel;
+		world = g_pHost->Host_GetWorldModel();
 	if ( !world )
 		return false;
 
@@ -3970,7 +3970,7 @@ bool CEngineBSPTree::EnumerateLeavesInSphere(IVModel* world, const Vector& cente
 									ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if (!world)
-		world = g_pHost->host_state.worldmodel;
+		world = g_pHost->Host_GetWorldModel();
 	if (!world)
 		return false;
 
@@ -3989,7 +3989,7 @@ bool CEngineBSPTree::EnumerateLeavesInSphere(IVModel* world, const Vector& cente
 bool CEngineBSPTree::EnumerateLeavesAlongRay(IVModel* world, Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context )
 {
 	if (!world)
-		world = g_pHost->host_state.worldmodel;
+		world = g_pHost->Host_GetWorldModel();
 	if (!world)
 		return false;
 
@@ -4254,16 +4254,16 @@ void CWorldRenderList::R_BuildWorldLists(WorldListInfo_t* pInfo,
 
 		if (bShadowDepth)
 		{
-			this->R_RecursiveWorldNodeNoCull(g_pHost->host_state.worldmodel->brush.pShared->nodes, r_frustumcullworld.GetBool() ? FRUSTUM_CLIP_ALL : FRUSTUM_SUPPRESS_CLIPPING);
+			this->R_RecursiveWorldNodeNoCull(g_pHost->Host_GetWorldModel()->brush.pShared->nodes, r_frustumcullworld.GetBool() ? FRUSTUM_CLIP_ALL : FRUSTUM_SUPPRESS_CLIPPING);
 		}
 		else
 		{
-			this->R_RecursiveWorldNode(g_pHost->host_state.worldmodel->brush.pShared->nodes, r_frustumcullworld.GetBool() ? FRUSTUM_CLIP_ALL : FRUSTUM_SUPPRESS_CLIPPING);
+			this->R_RecursiveWorldNode(g_pHost->Host_GetWorldModel()->brush.pShared->nodes, r_frustumcullworld.GetBool() ? FRUSTUM_CLIP_ALL : FRUSTUM_SUPPRESS_CLIPPING);
 		}
 	}
 	else
 	{
-		this->R_RenderWorldTopView(g_pHost->host_state.worldmodel->brush.pShared->nodes);
+		this->R_RenderWorldTopView(g_pHost->Host_GetWorldModel()->brush.pShared->nodes);
 	}
 
 	// This builds all lightmaps, including those for translucent surfaces
@@ -4378,7 +4378,7 @@ void FASTCALL CWorldRenderList::R_DrawLeaf(mleaf_t* pleaf)
 
 	// Debugging to only draw at a particular leaf
 #ifdef USE_CONVARS
-	if ((s_ShaderConvars.m_nDrawLeaf >= 0) && (s_ShaderConvars.m_nDrawLeaf != LeafToIndex(g_pHost->host_state.worldmodel, pleaf)))
+	if ((s_ShaderConvars.m_nDrawLeaf >= 0) && (s_ShaderConvars.m_nDrawLeaf != LeafToIndex(g_pHost->Host_GetWorldModel(), pleaf)))
 		return;
 #endif
 
@@ -4393,7 +4393,7 @@ void FASTCALL CWorldRenderList::R_DrawLeaf(mleaf_t* pleaf)
 	// Add non-displacement surfaces
 	int i;
 	int nSurfaceCount = pleaf->nummarknodesurfaces;
-	SurfaceHandle_t* pSurfID = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pleaf->firstmarksurface];
+	SurfaceHandle_t* pSurfID = &g_pHost->Host_GetWorldModel()->brush.pShared->marksurfaces[pleaf->firstmarksurface];
 	CVisitedSurfs& visitedSurfs = this->m_VisitedSurfs;
 	for (i = 0; i < nSurfaceCount; ++i)
 	{
@@ -4634,7 +4634,7 @@ void FASTCALL CWorldRenderList::R_DrawLeafNoCull(mleaf_t* pleaf)
 	// add displacement surfaces
 	this->DrawDisplacementsInLeaf(pleaf);
 	int i;
-	SurfaceHandle_t* pSurfID = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pleaf->firstmarksurface];
+	SurfaceHandle_t* pSurfID = &g_pHost->Host_GetWorldModel()->brush.pShared->marksurfaces[pleaf->firstmarksurface];
 	CVisitedSurfs& visitedSurfs = this->m_VisitedSurfs;
 	for (i = 0; i < pleaf->nummarksurfaces; i++)
 	{
@@ -4829,7 +4829,7 @@ void CWorldRenderList::R_DrawTopViewLeaf(mleaf_t* pleaf)
 #endif
 
 	// Add non-displacement surfaces
-	SurfaceHandle_t* pHandle = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pleaf->firstmarksurface];
+	SurfaceHandle_t* pHandle = &g_pHost->Host_GetWorldModel()->brush.pShared->marksurfaces[pleaf->firstmarksurface];
 	CVisitedSurfs& visitedSurfs = this->m_VisitedSurfs;
 	for (int i = 0; i < pleaf->nummarksurfaces; i++)
 	{
@@ -4879,7 +4879,7 @@ inline void CWorldRenderList::UpdateVisibleLeafLists(mleaf_t* pLeaf)
 	MEM_ALLOC_CREDIT();
 
 	// Add this leaf to the list of visible leafs
-	int nLeafIndex = LeafToIndex(g_pHost->host_state.worldmodel, pLeaf);
+	int nLeafIndex = LeafToIndex(g_pHost->Host_GetWorldModel(), pLeaf);
 	this->m_VisibleLeaves.AddToTail(nLeafIndex);
 	int leafCount = this->m_VisibleLeaves.Count();
 	this->m_VisibleLeafFogVolumes.AddToTail(pLeaf->leafWaterDataID);

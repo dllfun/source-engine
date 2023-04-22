@@ -96,10 +96,7 @@ extern IXboxSystem *g_pXboxSystem;
 
 #define KICKED_BY_CONSOLE "Kicked from server"
 
-#ifndef SWDS
-bool g_bInEditMode = false;
-bool g_bInCommentaryMode = false;
-#endif
+
 
 static void host_name_changed_f( IConVar *var, const char *pOldValue, float flOldValue )
 {
@@ -206,8 +203,7 @@ EUniverse GetSteamUniverse()
 	return k_EUniverseInvalid;
 }
 
-// Globals
-int	gHostSpawnCount = 0;
+
 
 // If any quit handlers balk, then aborts quit sequence
 bool EngineTool_CheckQuitHandlers();
@@ -393,7 +389,7 @@ void Host_Client_Printf(const char *fmt, ...)
 	Q_vsnprintf (string, sizeof( string ), fmt,argptr);
 	va_end (argptr);
 
-	g_pHost->host_client->ClientPrintf( "%s", string );
+	g_pHost->Host_GetClient()->ClientPrintf( "%s", string );
 }
 
 #define LIMIT_PER_CLIENT_COMMAND_EXECUTION_ONCE_PER_INTERVAL(seconds) \
@@ -675,7 +671,7 @@ CON_COMMAND( ping, "Display ping to server." )
 	// limit this to once per 5 seconds
 	LIMIT_PER_CLIENT_COMMAND_EXECUTION_ONCE_PER_INTERVAL(5.0);
 
-	g_pHost->host_client->ClientPrintf( "Client ping times:\n" );
+	g_pHost->Host_GetClient()->ClientPrintf( "Client ping times:\n" );
 
 	for ( int i=0; i< sv.GetClientCount(); i++ )
 	{
@@ -684,7 +680,7 @@ CON_COMMAND( ping, "Display ping to server." )
 		if ( !client->IsConnected() || client->IsFakeClient() )
 			continue;
 
-		g_pHost->host_client->ClientPrintf ("%4.0f ms : %s\n",
+		g_pHost->Host_GetClient()->ClientPrintf ("%4.0f ms : %s\n",
 			1000.0f * client->GetNetChannel()->GetAvgLatency( FLOW_OUTGOING ), client->GetClientName() );
 	}
 }
@@ -795,19 +791,19 @@ void Host_Map_Helper( const CCommand &args, bool bEditmode, bool bBackground, bo
 #if !defined(SWDS)
 	if ( !bEditmode )
 	{
-		if ( g_bInEditMode )
+		if (g_pHost->g_bInEditMode )
 		{
 			// Re-read config from disk
-			Host_ReadConfiguration();
-			g_bInEditMode = false;
+			g_pHost->Host_ReadConfiguration();
+			g_pHost->g_bInEditMode = false;
 		}
 	}
 	else
 	{
-		g_bInEditMode = true;
+		g_pHost->g_bInEditMode = true;
 	}
 
-	g_bInCommentaryMode = bCommentary;
+	g_pHost->g_bInCommentaryMode = bCommentary;
 #endif
 
 	if ( !CL_HL2Demo_MapCheck( szMapName ) )
@@ -1195,7 +1191,7 @@ CON_COMMAND( pause, "Toggle the server pause state." )
 	sv.SetPaused( !sv.IsPaused() );
 	
 	// send text messaage who paused the game
-	sv.BroadcastPrintf( "%s %s the game\n", g_pHost->host_client->GetClientName(), sv.IsPaused() ? "paused" : "unpaused" );
+	sv.BroadcastPrintf( "%s %s the game\n", g_pHost->Host_GetClient()->GetClientName(), sv.IsPaused() ? "paused" : "unpaused" );
 }
 
 
@@ -1408,11 +1404,11 @@ CON_COMMAND( kickid, "Kick a player by userid or uniqueid, with a message." )
 	{
 		if ( cmd_source != src_command )
 		{
-			who = g_pHost->host_client->m_Name;
+			who = g_pHost->Host_GetClient()->m_Name;
 		}
 
 		// can't kick yourself!
-		if ( cmd_source != src_command && g_pHost->host_client == client && !sv.IsDedicated() )
+		if ( cmd_source != src_command && g_pHost->Host_GetClient() == client && !sv.IsDedicated() )
 		{
 			return;
 		}
@@ -1520,11 +1516,11 @@ CON_COMMAND( kick, "Kick a player by name." )
 		{
 			if ( cmd_source != src_command )
 			{
-				who = g_pHost->host_client->m_Name;
+				who = g_pHost->Host_GetClient()->m_Name;
 			}
 
 			// can't kick yourself!
-			if ( cmd_source != src_command && g_pHost->host_client == client && !sv.IsDedicated() )
+			if ( cmd_source != src_command && g_pHost->Host_GetClient() == client && !sv.IsDedicated() )
 				return;
 
 			if ( who )
@@ -1559,7 +1555,7 @@ CON_COMMAND( kickall, "Kicks everybody connected with a message." )
 
 	if ( cmd_source != src_command )
 	{
-		who = g_pHost->host_client->m_Name;
+		who = g_pHost->Host_GetClient()->m_Name;
 	}
 
 	for ( i = 0; i < sv.GetClientCount(); i++ )
@@ -1570,7 +1566,7 @@ CON_COMMAND( kickall, "Kicks everybody connected with a message." )
 			continue;
 
 		// can't kick yourself!
-		if ( cmd_source != src_command && g_pHost->host_client == client && !sv.IsDedicated() )
+		if ( cmd_source != src_command && g_pHost->Host_GetClient() == client && !sv.IsDedicated() )
 			continue;
 
 #if defined( REPLAY_ENABLED )

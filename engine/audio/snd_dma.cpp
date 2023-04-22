@@ -263,7 +263,7 @@ float S_ComputeDelayForSoundtime( float soundtime, clocksync_index_t syncIndex )
 		// over the burst
 		// NOTE: The first sound after a sync MUST have a non-zero delay for the delay channel
 		// detection logic to work (otherwise we keep resetting the clock)
-		g_ClockSyncArray[syncIndex] = soundtime - g_pHost->host_state.interval_per_tick;
+		g_ClockSyncArray[syncIndex] = soundtime - g_pHost->Host_GetIntervalPerTick();
 		g_SoundClockPaintTime[syncIndex] = g_paintedtime;
 	}
 

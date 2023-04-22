@@ -32,7 +32,7 @@ void SV_RedirectFlush( void )
 	}
 	else if ( sv_redirected == RD_CLIENT )   // Send to client on message stream.
 	{
-		g_pHost->host_client->ClientPrintf( "%s", sv_redirect_buffer );
+		g_pHost->Host_GetClient()->ClientPrintf( "%s", sv_redirect_buffer );
 	}
 	else if ( sv_redirected == RD_SOCKET )
 	{

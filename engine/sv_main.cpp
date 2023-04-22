@@ -382,7 +382,7 @@ void CGameServer::Clear( void )
 
 	m_bLoadgame = false;
 	
-	g_pHost->host_state.SetWorldModel( NULL );
+	g_pHost->Host_SetWorldModel( NULL );
 
 	Q_memset( m_szStartspot, 0, sizeof( m_szStartspot ) );
 	
@@ -941,11 +941,11 @@ void SV_InitGameDLL( void )
 	// Make extra copies of data tables if they have SendPropExcludes.
 	SV_InitSendTables( serverGameDLL->GetAllServerClasses() );
 
-	g_pHost->host_state.interval_per_tick = serverGameDLL->GetTickInterval();
-	if (g_pHost->host_state.interval_per_tick < MINIMUM_TICK_INTERVAL ||
-		g_pHost->host_state.interval_per_tick > MAXIMUM_TICK_INTERVAL )
+	g_pHost->Host_SetIntervalPerTick(serverGameDLL->GetTickInterval());
+	if (g_pHost->Host_GetIntervalPerTick() < MINIMUM_TICK_INTERVAL ||
+		g_pHost->Host_GetIntervalPerTick() > MAXIMUM_TICK_INTERVAL )
 	{
-		Sys_Error( "GetTickInterval returned bogus tick interval (%f)[%f to %f is valid range]", g_pHost->host_state.interval_per_tick,
+		Sys_Error( "GetTickInterval returned bogus tick interval (%f)[%f to %f is valid range]", g_pHost->Host_GetIntervalPerTick(),
 			MINIMUM_TICK_INTERVAL, MAXIMUM_TICK_INTERVAL );
 	}
 
@@ -2166,15 +2166,15 @@ bool SV_ActivateServer()
 
 	COM_TimestampedLog( "serverGameDLL->ServerActivate" );
 
-	g_pHost->host_state.interval_per_tick = serverGameDLL->GetTickInterval();
-	if (g_pHost->host_state.interval_per_tick < MINIMUM_TICK_INTERVAL ||
-		g_pHost->host_state.interval_per_tick > MAXIMUM_TICK_INTERVAL )
+	g_pHost->Host_SetIntervalPerTick(serverGameDLL->GetTickInterval());
+	if (g_pHost->Host_GetIntervalPerTick() < MINIMUM_TICK_INTERVAL ||
+		g_pHost->Host_GetIntervalPerTick() > MAXIMUM_TICK_INTERVAL )
 	{
-		Sys_Error( "GetTickInterval returned bogus tick interval (%f)[%f to %f is valid range]", g_pHost->host_state.interval_per_tick,
+		Sys_Error( "GetTickInterval returned bogus tick interval (%f)[%f to %f is valid range]", g_pHost->Host_GetIntervalPerTick(),
 			MINIMUM_TICK_INTERVAL, MAXIMUM_TICK_INTERVAL );
 	}
 
-	Msg( "SV_ActivateServer: setting tickrate to %.1f\n", 1.0f / g_pHost->host_state.interval_per_tick );
+	Msg( "SV_ActivateServer: setting tickrate to %.1f\n", 1.0f / g_pHost->Host_GetIntervalPerTick());
 
 	bool bPrevState = networkStringTableContainerServer->Lock( false );
 	// Activate the DLL server code
@@ -2435,7 +2435,7 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	}
 
 	// Any partially connected client will be restarted if the spawncount is not matched.
-	gHostSpawnCount = ++m_nSpawnCount;
+	g_pHost->gHostSpawnCount = ++m_nSpawnCount;
 
 	//
 	// make cvars consistant
@@ -2572,8 +2572,8 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	m_State = ss_loading;
 	
 	// Set initial time values.
-	m_flTickInterval = g_pHost->host_state.interval_per_tick;
-	m_nTickCount = (int)( 1.0 / g_pHost->host_state.interval_per_tick ) + 1; // Start at appropriate 1
+	m_flTickInterval = g_pHost->Host_GetIntervalPerTick();
+	m_nTickCount = (int)( 1.0 / g_pHost->Host_GetIntervalPerTick()) + 1; // Start at appropriate 1
 
 	g_ServerGlobalVariables.tickcount = m_nTickCount;
 	g_ServerGlobalVariables.curtime = GetTime();
@@ -2592,8 +2592,8 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 
 	COM_TimestampedLog( "modelloader->GetModelForName(%s) -- Start", szMapFile );
 
-	g_pHost->host_state.SetWorldModel( modelloader->GetModelForName( szMapFile, IModelLoader::FMODELLOADER_SERVER ) );
-	if ( !g_pHost->host_state.worldmodel )
+	g_pHost->Host_SetWorldModel( modelloader->GetModelForName( szMapFile, IModelLoader::FMODELLOADER_SERVER ) );
+	if ( !g_pHost->Host_GetWorldModel())
 	{
 		ConMsg( "Couldn't spawn server %s\n", szMapFile );
 		m_State = ss_dead;
@@ -2649,12 +2649,12 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	EngineVGui()->UpdateProgressBar(PROGRESS_PRECACHEWORLD);
 #endif
 	// Add in world
-	PrecacheModel( szMapFile, RES_FATALIFMISSING | RES_PRELOAD, g_pHost->host_state.worldmodel );
+	PrecacheModel( szMapFile, RES_FATALIFMISSING | RES_PRELOAD, g_pHost->Host_GetWorldModel());
 
 	COM_TimestampedLog( "Precache brush models" );
 
 	// Add world submodels to the model cache
-	for ( i = 1 ; i < g_pHost->host_state.worldmodel->brush.pShared->numsubmodels ; i++ )
+	for ( i = 1 ; i < g_pHost->Host_GetWorldModel()->brush.pShared->numsubmodels ; i++ )
 	{
 		// Add in world brush models
 		char localmodel[5]; // inline model names "*1", "*2" etc
@@ -2848,7 +2848,7 @@ void SV_Think( bool bIsSimulating )
 
 	g_ServerGlobalVariables.tickcount   = sv.m_nTickCount;
 	g_ServerGlobalVariables.curtime		= sv.GetTime();
-	g_ServerGlobalVariables.frametime	= bIsSimulating ? g_pHost->host_state.interval_per_tick : 0;
+	g_ServerGlobalVariables.frametime	= bIsSimulating ? g_pHost->Host_GetIntervalPerTick() : 0;
 
 	// in singleplayer only run think/simulation if localplayer is connected
 	bIsSimulating =  bIsSimulating && ( sv.IsMultiplayer() || cl.IsActive() );
@@ -2924,7 +2924,7 @@ void SV_Frame( bool finalTick )
 		return;
 	}
 
-	g_ServerGlobalVariables.frametime = g_pHost->host_state.interval_per_tick;
+	g_ServerGlobalVariables.frametime = g_pHost->Host_GetIntervalPerTick();
 
 	bool bIsSimulating = SV_IsSimulating();
 	bool bSendDuringPause = sv_noclipduringpause ? sv_noclipduringpause->GetBool() : false;

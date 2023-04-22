@@ -145,7 +145,7 @@ void R_RemoveAllDecalsFromAllModels();
 //-----------------------------------------------------------------------------
 CON_COMMAND_F( r_cleardecals, "Usage r_cleardecals <permanent>.", FCVAR_CLIENTCMD_CAN_EXECUTE | FCVAR_SERVER_CAN_EXECUTE  )
 {
-	if (g_pHost->host_state.worldmodel  )
+	if (g_pHost->Host_GetWorldModel())
 	{
 		bool bPermanent = false;
 		if ( args.ArgC() == 2 )
@@ -156,7 +156,7 @@ CON_COMMAND_F( r_cleardecals, "Usage r_cleardecals <permanent>.", FCVAR_CLIENTCM
 			}
 		}
 
-		R_DecalTerm(g_pHost->host_state.worldmodel->brush.pShared, bPermanent );
+		R_DecalTerm(g_pHost->Host_GetWorldModel()->brush.pShared, bPermanent );
 	}
 
 	R_RemoveAllDecalsFromAllModels();
@@ -186,7 +186,7 @@ void R_LoadWorldGeometry( bool bDXChange )
 		if ( !modelloader->Map_GetRenderInfoAllocated() )
 		{
 			// create the displacement surfaces for the map
-			modelloader->Map_LoadDisplacements(g_pHost->host_state.worldmodel, false );
+			modelloader->Map_LoadDisplacements(g_pHost->Host_GetWorldModel(), false );
 			//if( !DispInfo_CreateStaticBuffers( host_state.worldmodel, materialSortInfoArray, false ) )
 			//	Sys_Error( "Can't create static meshes for displacements" );
 			
@@ -196,16 +196,16 @@ void R_LoadWorldGeometry( bool bDXChange )
 	else
 	{
 		// create the displacement surfaces for the map
-		modelloader->Map_LoadDisplacements(g_pHost->host_state.worldmodel, true );
+		modelloader->Map_LoadDisplacements(g_pHost->Host_GetWorldModel(), true );
 	}
 
 	if ( bDXChange )
 	{
 		// Must be done before MarkWaterSurfaces
-		modelloader->RecomputeSurfaceFlags(g_pHost->host_state.worldmodel );
+		modelloader->RecomputeSurfaceFlags(g_pHost->Host_GetWorldModel());
 	}
 
-	Mod_MarkWaterSurfaces(g_pHost->host_state.worldmodel );
+	Mod_MarkWaterSurfaces(g_pHost->Host_GetWorldModel());
 
 	// make sure and rebuild lightmaps when the level gets started.
 	GL_RebuildLightmaps();
@@ -243,15 +243,15 @@ void R_LevelInit( void )
 	{
 		g_pShadowMgr->LevelShutdown();
 		StaticPropMgr()->LevelShutdown();
-		SpatialPartition()->Init(g_pHost->host_state.worldmodel->mins, g_pHost->host_state.worldmodel->maxs );
+		SpatialPartition()->Init(g_pHost->Host_GetWorldModel()->mins, g_pHost->Host_GetWorldModel()->maxs );
 		StaticPropMgr()->LevelInit();
-		g_pShadowMgr->LevelInit(g_pHost->host_state.worldmodel->brush.pShared->numsurfaces );
+		g_pShadowMgr->LevelInit(g_pHost->Host_GetWorldModel()->brush.pShared->numsurfaces );
 	}
 
 	// We've fully loaded the new level, unload any models that we don't care about any more
 	modelloader->UnloadUnreferencedModels();
 
-	if (g_pHost->host_state.worldmodel->brush.pShared->numworldlights == 0 )
+	if (g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights == 0 )
 	{
 		ConDMsg( "Level unlit, setting 'mat_fullbright 1'\n" );
 		mat_fullbright.SetValue( 1 );

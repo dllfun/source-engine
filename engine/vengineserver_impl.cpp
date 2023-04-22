@@ -324,7 +324,7 @@ public:
 #ifdef SWDS
 		return false;
 #else
-		return g_bInEditMode;
+		return g_pHost->g_bInEditMode;
 #endif
 	}
 
@@ -333,7 +333,7 @@ public:
 #ifdef SWDS
 		return false;
 #else
-		return g_bInCommentaryMode;
+		return g_pHost->g_bInCommentaryMode;
 #endif
 	}
 	
@@ -1428,12 +1428,12 @@ public:
 
 	virtual void		DrawMapToScratchPad( IScratchPad3D *pPad, unsigned long iFlags )
 	{
-		worldbrushdata_t *pData = g_pHost->host_state.worldmodel->brush.pShared;
+		worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared;
 		if ( !pData )
 			return;
 
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex(g_pHost->host_state.worldmodel->brush.firstmodelsurface, pData );
-		for (int i=0; i< g_pHost->host_state.worldmodel->brush.nummodelsurfaces; ++i, ++surfID)
+		SurfaceHandle_t surfID = SurfaceHandleFromIndex(g_pHost->Host_GetWorldModel()->brush.firstmodelsurface, pData );
+		for (int i=0; i< g_pHost->Host_GetWorldModel()->brush.nummodelsurfaces; ++i, ++surfID)
 		{
 			// Don't bother with nodraw surfaces
 			if( MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
@@ -1611,7 +1611,7 @@ public:
 
 	void SetDedicatedServerBenchmarkMode( bool bBenchmarkMode )
 	{
-		g_bDedicatedServerBenchmarkMode = bBenchmarkMode;
+		g_pHost->g_bDedicatedServerBenchmarkMode = bBenchmarkMode;
 		if ( bBenchmarkMode )
 		{
 			extern ConVar sv_stressbots;
@@ -1678,7 +1678,7 @@ public:
 	virtual int GetAllClusterBounds( bbox_t *pBBoxList, int maxBBox )
 	{
 		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->GetVis() && g_pHost->host_state.worldmodel->brush.pShared)
+		if ( pBSPData && pBSPData->GetVis() && g_pHost->Host_GetWorldModel()->brush.pShared)
 		{
 			// clamp to max clusters in the map
 			if ( maxBBox > pBSPData->GetVis()->numclusters)
@@ -1691,9 +1691,9 @@ public:
 				ClearBounds( pBBoxList[i].mins, pBBoxList[i].maxs );
 			}
 			// add each leaf's bounds to the bounds for that cluster
-			for ( int i = 0; i < g_pHost->host_state.worldmodel->brush.pShared->numleafs; i++ )
+			for ( int i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numleafs; i++ )
 			{
-				mleaf_t *pLeaf = &g_pHost->host_state.worldmodel->brush.pShared->leafs[i];
+				mleaf_t *pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[i];
 				// skip solid leaves and leaves with cluster < 0
 				if ( !(pLeaf->contents & CONTENTS_SOLID) && pLeaf->cluster >= 0 && pLeaf->cluster < maxBBox )
 				{
@@ -2100,5 +2100,5 @@ void CVEngineServer::TriggerMoved( edict_t *pTriggerEnt, bool accurateBboxTrigge
 //-----------------------------------------------------------------------------
 bool CVEngineServer::IsLowViolence()
 {
-	return g_bLowViolence;
+	return g_pHost->g_bLowViolence;
 }

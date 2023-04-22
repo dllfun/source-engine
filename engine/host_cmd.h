@@ -27,7 +27,7 @@
 
 extern ConVar host_name;
 
-extern int  gHostSpawnCount;
+//extern int  gHostSpawnCount;
 
 #endif // LAUNCHERONLY
 #endif // HOST_CMD_H

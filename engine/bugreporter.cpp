@@ -356,11 +356,11 @@ void DisplaySystemVersion( char *osversion, int maxlen )
 
 static int GetNumberForMap()
 {
-	if ( !g_pHost->host_state.worldmodel )
+	if ( !g_pHost->Host_GetWorldModel())
 		return 1;
 
 	char mapname[256];
-	CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), mapname, sizeof( mapname ) );
+	CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
 
 	KeyValues *resfilekeys = new KeyValues( "mapnumber" );
 	if ( resfilekeys->LoadFromFile( g_pFileSystem, "scripts/bugreport_mapnumber.txt", "GAME" ) )
@@ -1004,7 +1004,7 @@ void CBugUIPanel::OnTick()
 			return;
 		}
 
-		if (g_pHost->host_framecount < m_nSnapShotFrame + 2 )
+		if (g_pHost->Host_GetFrameCount() < m_nSnapShotFrame + 2 )
 			return;;
 
 		m_bTakingSnapshot = false;
@@ -1145,7 +1145,7 @@ void CBugUIPanel::OnTakeSnapshot()
 {
 	GetDataFileBase( GetSubmitter(), m_szScreenShotName, sizeof( m_szScreenShotName ) );
 	
-	m_nSnapShotFrame = g_pHost->host_framecount;
+	m_nSnapShotFrame = g_pHost->Host_GetFrameCount();
 	m_bTakingSnapshot = true;
 	
 	if ( EngineVGui()->IsGameUIVisible() )
@@ -1773,10 +1773,10 @@ void CBugUIPanel::OnSubmit()
 	char temp[ 80 ];
 	m_pTitle->GetText( temp, sizeof( temp ) );
 
-	if (g_pHost->host_state.worldmodel )
+	if (g_pHost->Host_GetWorldModel())
 	{
 		char mapname[256];
-		CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), mapname, sizeof( mapname ) );
+		CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
 
 		Q_snprintf( title, sizeof( title ), "%s: %s", mapname, temp );
 	}
@@ -1852,13 +1852,13 @@ void CBugUIPanel::OnSubmit()
 		ai_strong_optimizations.GetInt()
 	);
 
-	if ( cl.IsActive() && g_ServerGlobalVariables.mapversion != 0 && g_pHost->host_state.worldmodel )
+	if ( cl.IsActive() && g_ServerGlobalVariables.mapversion != 0 && g_pHost->Host_GetWorldModel())
 	{
 		// Note, this won't work in multiplayer, oh well...
 		extern CGlobalVars g_ServerGlobalVariables;
 		char misc2[ 256 ];
 
-		time_t mapfiletime = g_pFileSystem->GetFileTime( modelloader->GetName(g_pHost->host_state.worldmodel ), "GAME" );
+		time_t mapfiletime = g_pFileSystem->GetFileTime( modelloader->GetName(g_pHost->Host_GetWorldModel()), "GAME" );
 		if ( !isPublic && mapfiletime != 0L )
 		{
 			char filetimebuf[ 64 ];
@@ -3035,9 +3035,9 @@ int CBugUIPanel::GetArea()
 	char mapname[256] = "";
 	int iNewTitleLength = 80;
 
-	if (g_pHost->host_state.worldmodel )
+	if (g_pHost->Host_GetWorldModel())
 	{		
-		CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), mapname, sizeof( mapname ) );
+		CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
 		iNewTitleLength = (80 - (strlen( mapname )+2)); 		
 	}
 	m_pTitle->SetMaximumCharCount( iNewTitleLength );

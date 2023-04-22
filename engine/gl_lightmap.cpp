@@ -1183,7 +1183,7 @@ void R_BuildLightMapGuts( dlight_t *pLights, SurfaceHandle_t surfID, const matri
 	if (size == 0)
 		return;
 
-	bool hasBumpmap = SurfHasBumpedLightmaps( surfID , g_pHost->host_state.worldmodel->brush.pShared);
+	bool hasBumpmap = SurfHasBumpedLightmaps( surfID , g_pHost->Host_GetWorldModel()->brush.pShared);
 	bool hasLightmap = SurfHasLightmap( surfID );
 
 	// clear to no light
@@ -1299,7 +1299,7 @@ void CacheAndUnloadLightmapData()
 		return;
 	}
 
-	worldbrushdata_t *pBrushData = g_pHost->host_state.worldmodel->brush.pShared;
+	worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	msurfacelighting_t *pLighting = pBrushData->surfacelighting;
 	int numSurfaces = pBrushData->numsurfaces;
 
@@ -1328,9 +1328,9 @@ void CacheAndUnloadLightmapData()
 	}
 
 	// Update the lightdata pointer
-	free(g_pHost->host_state.worldmodel->brush.pShared->lightdata );
-	g_pHost->host_state.worldmodel->brush.pShared->lightdata = (ColorRGBExp32*)pDestBase;
-	g_pHost->host_state.worldmodel->brush.pShared->unloadedlightmaps = true;
+	free(g_pHost->Host_GetWorldModel()->brush.pShared->lightdata );
+	g_pHost->Host_GetWorldModel()->brush.pShared->lightdata = (ColorRGBExp32*)pDestBase;
+	g_pHost->Host_GetWorldModel()->brush.pShared->unloadedlightmaps = true;
 }
 
 //sorts the surfaces in place
@@ -1396,9 +1396,9 @@ void R_RedownloadAllLightmaps()
 	// Can't build lightmaps if the source data has been dumped
 	CMatRenderContextPtr pRenderContext( materials );
 	ICallQueue *pCallQueue = pRenderContext->GetCallQueue();
-	if ( !g_pHost->host_state.worldmodel->brush.pShared->unloadedlightmaps )
+	if ( !g_pHost->Host_GetWorldModel()->brush.pShared->unloadedlightmaps )
 	{		
-		int iSurfaceCount = g_pHost->host_state.worldmodel->brush.pShared->numsurfaces;
+		int iSurfaceCount = g_pHost->Host_GetWorldModel()->brush.pShared->numsurfaces;
 		
 		SurfaceHandle_t *pSortedSurfaces = (SurfaceHandle_t *)stackalloc( sizeof( SurfaceHandle_t ) * iSurfaceCount );
 		for( int surfaceIndex = 0; surfaceIndex < iSurfaceCount; surfaceIndex++ )

@@ -1589,7 +1589,7 @@ float CBaseServer::GetTime() const
 
 float CBaseServer::GetFinalTickTime() const
 {
-	return (m_nTickCount + (g_pHost->host_frameticks - g_pHost->host_currentframetick)) * m_flTickInterval;
+	return (m_nTickCount + (g_pHost->Host_GetFrameTicks() - g_pHost->Host_GetCurrentFrameTick())) * m_flTickInterval;
 }
 
 void CBaseServer::DisconnectClient(IClient *client, const char *reason )

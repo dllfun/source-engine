@@ -255,9 +255,9 @@ static inline void ShowEncodeDeltaWatchInfo(
 		return;
 	
 	static int lastframe = -1;
-	if ( g_pHost->host_framecount != lastframe )
+	if ( g_pHost->Host_GetFrameCount() != lastframe )
 	{
-		lastframe = g_pHost->host_framecount;
+		lastframe = g_pHost->Host_GetFrameCount();
 		ConDMsg( "delta entity: %i\n", objectID );
 	}
 

@@ -1553,9 +1553,9 @@ void CHLTVServer::RunFrame()
 	if ( !IsActive() )
 		return;
 
-	if (g_pHost->host_frametime > 0 )
+	if (g_pHost->Host_GetFrameTime() > 0)
 	{
-		m_flFPS = m_flFPS * 0.99f + 0.01f/ g_pHost->host_frametime;
+		m_flFPS = m_flFPS * 0.99f + 0.01f/ g_pHost->Host_GetFrameTime();
 	}
 
 	if ( IsPlayingBack() )
@@ -1803,7 +1803,7 @@ void CHLTVServer::SetPlaybackTimeScale(float timescale)
 
 void CHLTVServer::ResyncDemoClock()
 {
-	m_nStartTick = g_pHost->host_tickcount;
+	m_nStartTick = g_pHost->Host_GetTickCount();
 }
 
 int CHLTVServer::GetPlaybackStartTick( void )
@@ -1813,7 +1813,7 @@ int CHLTVServer::GetPlaybackStartTick( void )
 
 int	CHLTVServer::GetPlaybackTick( void )
 {
-	return g_pHost->host_tickcount - m_nStartTick;
+	return g_pHost->Host_GetTickCount() - m_nStartTick;
 }
 
 int CHLTVServer::GetTotalTicks(void)
@@ -2204,7 +2204,7 @@ CON_COMMAND( tv_status, "Show SourceTV server status." )
 	if ( hltv->m_DemoRecorder.IsRecording() )
 	{
 		ConMsg("Recording to \"%s\", length %s.\n", hltv->m_DemoRecorder.GetDemoFile()->m_szFileName, 
-			COM_FormatSeconds(g_pHost->host_state.interval_per_tick * hltv->m_DemoRecorder.GetRecordingTick() ) );
+			COM_FormatSeconds(g_pHost->Host_GetIntervalPerTick() * hltv->m_DemoRecorder.GetRecordingTick() ) );
 	}		
 }
 

@@ -2210,7 +2210,7 @@ void MIX_BuildChannelList( CChannelList &list )
 	// we go ahead and reset the clock
 	// That way the clock is only used for short periods of time
 	// and we need no solution for drift
-	if ( bPaused || (g_pHost->host_frametime_unbounded > g_pHost->host_frametime) )
+	if ( bPaused || (g_pHost->Host_GetFrameTimeUnbounded() > g_pHost->Host_GetFrameTime()))
 	{
 		delayStartClient = false;
 		delayStartServer = false;

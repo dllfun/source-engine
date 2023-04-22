@@ -110,15 +110,15 @@ public:
 
 	// Real time is unscaled, but is updated once per frame
 	virtual float		GetRealTime();
-	virtual float		GetRealFrameTime(); // unscaled
+	//virtual float		GetRealFrameTime(); // unscaled
 
 	virtual float		Time(); // Get high precision timer (for profiling?)
 
 	// Host time is scaled
-	virtual float		HostFrameTime(); // host_frametime
+	//virtual float		HostFrameTime(); // host_frametime
 	virtual float		HostTime(); // host_time
-	virtual int			HostTick(); // host_tickcount
-	virtual int			HostFrameCount(); // total famecount
+	//virtual int			HostTick(); // host_tickcount
+	//virtual int			HostFrameCount(); // total famecount
 
 	virtual float		ServerTime(); // gpGlobals->curtime on server
 	virtual float		ServerFrameTime(); // gpGlobals->frametime on server
@@ -463,30 +463,30 @@ float CEngineTool::GetRealTime()
 	return g_pHost->Host_GetRealTime();
 }
 
-float CEngineTool::GetRealFrameTime()
-{
-	return g_pHost->host_frametime;
-}
+//float CEngineTool::GetRealFrameTime()
+//{
+//	return g_pHost->host_frametime;
+//}
 
-float CEngineTool::HostFrameTime()
-{
-	return g_pHost->host_frametime;
-}
+//float CEngineTool::HostFrameTime()
+//{
+//	return g_pHost->host_frametime;
+//}
 
 float CEngineTool::HostTime()
 {
 	return g_pHost->Host_GetTickTime();
 }
 
-int CEngineTool::HostTick()
-{
-	return g_pHost->host_tickcount;
-}
+//int CEngineTool::HostTick()
+//{
+//	return g_pHost->host_tickcount;
+//}
 
-int CEngineTool::HostFrameCount()
-{
-	return g_pHost->host_framecount;
-}
+//int CEngineTool::HostFrameCount()
+//{
+//	return g_pHost->host_framecount;
+//}
 
 float CEngineTool::ServerTime()
 {

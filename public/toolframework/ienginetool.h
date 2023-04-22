@@ -128,16 +128,16 @@ public:
 
 	// Real time is unscaled, but is updated once per frame
 	virtual float		GetRealTime() = 0;
-	virtual float		GetRealFrameTime() = 0; // unscaled
+	//virtual float		GetRealFrameTime() = 0; // unscaled
 
 	// Get high precision timer (for profiling?)
 	virtual float		Time() = 0; 
 
 	// Host time is scaled
-	virtual float		HostFrameTime() = 0; // host_frametime
+	//virtual float		HostFrameTime() = 0; // host_frametime
 	virtual float		HostTime() = 0; // host_time
-	virtual int			HostTick() = 0; // host_tickcount
-	virtual int			HostFrameCount() = 0; // total famecount
+	//virtual int			HostTick() = 0; // host_tickcount
+	//virtual int			HostFrameCount() = 0; // total famecount
 
 	virtual float		ServerTime() = 0; // gpGlobals->curtime on server
 	virtual float		ServerFrameTime() = 0; // gpGlobals->frametime on server

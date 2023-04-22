@@ -119,7 +119,7 @@ bool g_bClientGameDLLGreaterThanV13;
 
 void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct *pStruct )
 {
-	SurfaceHandle_t *pHandle = &g_pHost->host_state.worldmodel->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
+	SurfaceHandle_t *pHandle = &g_pHost->Host_GetWorldModel()->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
 	for ( int iSurf=0; iSurf < pLeaf->nummarksurfaces; iSurf++ )
 	{
 		SurfaceHandle_t surfID = pHandle[iSurf];
@@ -855,7 +855,7 @@ bool CEngineClient::MapLoadFailed( void )
 
 void CEngineClient::ReadConfiguration( const bool readDefault /*= false*/ )
 {
-	Host_ReadConfiguration();
+	g_pHost->Host_ReadConfiguration();
 }
 
 const char *CEngineClient::Key_LookupBinding( const char *pBinding )
@@ -923,7 +923,7 @@ void CEngineClient::Con_NXPrintf( const struct con_nprint_s *info, const char *f
 IMaterial *CEngineClient::TraceLineMaterialAndLighting( const Vector &start, const Vector &end, 
 		                                 Vector &diffuseLightColor, Vector &baseColor )
 {
-	return BrushModel_GetLightingAndMaterial(g_pHost->host_state.worldmodel, start, end, diffuseLightColor, baseColor );
+	return BrushModel_GetLightingAndMaterial(g_pHost->Host_GetWorldModel(), start, end, diffuseLightColor, baseColor );
 }
 
 int	CEngineClient::IsBoxVisible( const Vector& mins, const Vector& maxs ) 
@@ -1000,7 +1000,7 @@ bool CEngineClient::LoadGameLump( int lumpId, void* pBuffer, int size )
 // Returns the number of leaves in the level
 int	CEngineClient::LevelLeafCount() const
 {
-	return g_pHost->host_state.worldmodel->brush.pShared->numleafs;
+	return g_pHost->Host_GetWorldModel()->brush.pShared->numleafs;
 }
 
 ISpatialQuery* CEngineClient::GetBSPTreeQuery()
@@ -1185,10 +1185,10 @@ int CEngineClient::GetLeavesArea( int *pLeaves, int nLeaves )
 	if ( nLeaves == 0 )
 		return -1;
 
-	int iArea = g_pHost->host_state.worldmodel->brush.pShared->leafs[pLeaves[0]].area;
+	int iArea = g_pHost->Host_GetWorldModel()->brush.pShared->leafs[pLeaves[0]].area;
 	for ( int i=1; i < nLeaves; i++ )
 	{
-		int iTestArea = g_pHost->host_state.worldmodel->brush.pShared->leafs[pLeaves[i]].area;
+		int iTestArea = g_pHost->Host_GetWorldModel()->brush.pShared->leafs[pLeaves[i]].area;
 		if ( iTestArea != iArea )
 			return -1;
 	}
@@ -1388,12 +1388,12 @@ const char* CEngineClient::GetMapEntitiesString()
 
 bool CEngineClient::IsInEditMode( void )
 {
-	return g_bInEditMode;
+	return g_pHost->g_bInEditMode;
 }
 
 bool CEngineClient::IsInCommentaryMode( void )
 {
-	return g_bInCommentaryMode;
+	return g_pHost->g_bInCommentaryMode;
 }
 
 float CEngineClient::GetScreenAspectRatio()
@@ -1507,7 +1507,7 @@ IAchievementMgr *CEngineClient::GetAchievementMgr()
 //-----------------------------------------------------------------------------
 bool CEngineClient::IsLowViolence()
 {
-	return g_bLowViolence;
+	return g_pHost->g_bLowViolence;
 }
 
 const char *CEngineClient::GetMostRecentSaveGame( void )

@@ -154,7 +154,7 @@ void V_RenderVGuiOnly_NoSwap()
 //-----------------------------------------------------------------------------
 void V_RenderVGuiOnly( void )
 {
-	materials->BeginFrame(g_pHost->host_frametime );
+	materials->BeginFrame(g_pHost->Host_GetFrameTime() );
 	EngineVGui()->Simulate();
 
 	g_EngineRenderer->FrameBegin();
@@ -214,7 +214,7 @@ void V_RenderView( void )
 	VPROF( "V_RenderView" );
 	MDLCACHE_COARSE_LOCK_(g_pMDLCache);
 
-	bool bCanRenderWorld = (g_pHost->host_state.worldmodel != NULL ) && cl.IsActive();
+	bool bCanRenderWorld = (g_pHost->Host_GetWorldModel() != NULL ) && cl.IsActive();
 
 #if defined( REPLAY_ENABLED )
 	if ( g_pClientReplay && Replay_IsSupportedModAndPlatform() )
@@ -440,7 +440,7 @@ public:
 
 	bool AreAnyLeavesVisible( int *leafList, int nLeaves )
 	{
-		return Map_AreAnyLeavesVisible( *g_pHost->host_state.worldmodel->brush.pShared, leafList, nLeaves );
+		return Map_AreAnyLeavesVisible( *g_pHost->Host_GetWorldModel()->brush.pShared, leafList, nLeaves );
 	}
 
 	// For backward compatibility only!!!
@@ -526,7 +526,7 @@ public:
 	bool EnumerateLeaf(IVModel* world, int leaf, intp context )
 	{
 		BoxIntersectWaterContext_t *pSearchContext = ( BoxIntersectWaterContext_t * )context;
-		mleaf_t *pLeaf = &g_pHost->host_state.worldmodel->brush.pShared->leafs[leaf];
+		mleaf_t *pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leaf];
 		if( pLeaf->leafWaterDataID == pSearchContext->m_nLeafWaterDataID )
 		{
 			pSearchContext->m_bFoundWaterLeaf = true;
@@ -541,7 +541,7 @@ public:
 		BoxIntersectWaterContext_t context;
 		context.m_bFoundWaterLeaf = false;
 		context.m_nLeafWaterDataID = leafWaterDataID;
-		g_pToolBSPTree->EnumerateLeavesInBox(g_pHost->host_state.worldmodel, mins, maxs, this, ( intp )&context );
+		g_pToolBSPTree->EnumerateLeavesInBox(g_pHost->Host_GetWorldModel(), mins, maxs, this, ( intp )&context );
 		return context.m_bFoundWaterLeaf;
 	}
 

@@ -931,7 +931,7 @@ static void safestrncat( wchar_t *text, int maxCharactersWithNullTerminator, wch
 
 void CConPanel::AddToNotify( const Color& clr, char const *msg )
 {
-	if ( !g_pHost->host_initialized )
+	if ( !g_pHost->Host_initialized() )
 		return;
 
 	// notify area only ever draws in developer mode - it should never be used for game messages
@@ -1072,7 +1072,7 @@ bool CConPanel::ShouldDraw()
 		{
 			CNotifyText *notify = &m_NotifyText[ i ];
 
-			notify->liferemaining -= g_pHost->host_frametime;
+			notify->liferemaining -= g_pHost->Host_GetFrameTime();
 
 			if ( notify->liferemaining <= 0.0f )
 			{

@@ -240,7 +240,7 @@ static void Filter_Add_f( const CCommand& args )
 
 		event->SetString( "ip", args[2] );
 		event->SetString( "duration", szDuration );
-		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
+		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->Host_GetClient()->m_Name );
 		event->SetBool( "kicked", bKick && bFound && client  );
 
 		g_GameEventManager.FireEvent( event );
@@ -298,7 +298,7 @@ CON_COMMAND( removeip, "Remove an IP address from the ban list." )
 			{
 				event->SetString( "networkid", "" );
 				event->SetString( "ip", szIP );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->Host_GetClient()->m_Name );
 
 				g_GameEventManager.FireEvent( event );
 			}
@@ -329,7 +329,7 @@ CON_COMMAND( removeip, "Remove an IP address from the ban list." )
 			{
 				event->SetString( "networkid", "" );
 				event->SetString( "ip", args[1] );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->Host_GetClient()->m_Name );
 				g_GameEventManager.FireEvent( event );
 			}
 
@@ -625,7 +625,7 @@ CON_COMMAND( removeid, "Remove a user ID from the ban list." )
 			{
 				event->SetString( "networkid", szSearchString );
 				event->SetString( "ip", "" );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->Host_GetClient()->m_Name );
 				g_GameEventManager.FireEvent( event );
 			}
 
@@ -660,7 +660,7 @@ CON_COMMAND( removeid, "Remove a user ID from the ban list." )
 			{
 				event->SetString( "networkid", GetUserIDString( id ) );
 				event->SetString( "ip", "" );
-				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
+				event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->Host_GetClient()->m_Name );
 				g_GameEventManager.FireEvent( event );
 			}
 		}
@@ -926,7 +926,7 @@ CON_COMMAND( banid, "Add a user ID to the ban list." )
 
 		event->SetString( "ip", "" );
 		event->SetString( "duration", szDuration );
-		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->host_client->m_Name );
+		event->SetString( "by", ( cmd_source == src_command ) ? "Console" : g_pHost->Host_GetClient()->m_Name );
 		event->SetInt( "kicked", ( bKick && bPlaying && client ) ? 1 : 0 );
 
 		g_GameEventManager.FireEvent( event );

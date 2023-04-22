@@ -250,11 +250,11 @@ extern PAGED_POOL_INFO_t g_pagedpoolinfo;
 extern bool g_bUpdateMinidumpComment;
 void GetSpew( char *buf, size_t buflen );
 
-extern int gHostSpawnCount;
+//extern int gHostSpawnCount;
 extern int g_nMapLoadCount;
-extern int g_HostServerAbortCount;
-extern int g_HostErrorCount;
-extern int g_HostEndDemo;
+//extern int g_HostServerAbortCount;
+//extern int g_HostErrorCount;
+//extern int g_HostEndDemo;
 
 // Turn this to 1 to allow for expanded spew in minidump comments.
 static ConVar sys_minidumpexpandedspew( "sys_minidumpexpandedspew", "1" );
@@ -437,11 +437,11 @@ public:
 			CommentPrintf( "memallocfail? = %u\nActive: %s\nSpawnCount %d MapLoad Count %d\nError count %d, end demo %d, abort count %d\n",
 			            MemAlloc_MemoryAllocFailed(),
 			            ( game && game->IsActiveApp() ) ? "active" : "inactive", 
-			            gHostSpawnCount, 
+			            g_pHost->gHostSpawnCount, 
 			            g_nMapLoadCount,
-			            g_HostErrorCount,
-			            g_HostEndDemo,
-			            g_HostServerAbortCount );
+						g_pHost->g_HostErrorCount,
+						g_pHost->g_HostEndDemo,
+						g_pHost->g_HostServerAbortCount );
 
 			// Latch in case extended stuff below crashes
 			Steam_SetMiniDumpComment();

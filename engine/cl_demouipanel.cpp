@@ -200,8 +200,8 @@ void CDemoUIPanel::OnTick()
 	m_pProgress->SetProgress( fProgress );
 	m_pProgressLabelFrame->SetText( va( "Tick: %i / %i", curtick, totalticks ) );
 
-	Q_strncpy( curtime, COM_FormatSeconds(g_pHost->host_state.interval_per_tick * curtick ), 32 );
-	Q_strncpy( totaltime, COM_FormatSeconds(g_pHost->host_state.interval_per_tick * totalticks ), 32 );
+	Q_strncpy( curtime, COM_FormatSeconds(g_pHost->Host_GetIntervalPerTick() * curtick ), 32 );
+	Q_strncpy( totaltime, COM_FormatSeconds(g_pHost->Host_GetIntervalPerTick() * totalticks ), 32 );
 	m_pProgressLabelTime->SetText( va( "Time: %s / %s", curtime, totaltime ) );
 
 	m_pFastForward->SetEnabled( demoplayer->IsPlayingBack() && !demoplayer->IsPlaybackPaused() );
@@ -504,27 +504,27 @@ void CDemoUIPanel::HandleInput( bool active )
 
 		if ( vgui::input()->IsKeyDown( KEY_W ) )
 		{
-			f = movespeed * g_pHost->host_frametime;
+			f = movespeed * g_pHost->Host_GetFrameTime();
 		}
 		if ( vgui::input()->IsKeyDown( KEY_S ) )
 		{
-			f = -movespeed * g_pHost->host_frametime;
+			f = -movespeed * g_pHost->Host_GetFrameTime();
 		}
 		if ( vgui::input()->IsKeyDown( KEY_A ) )
 		{
-			s = -movespeed * g_pHost->host_frametime;
+			s = -movespeed * g_pHost->Host_GetFrameTime();
 		}
 		if ( vgui::input()->IsKeyDown( KEY_D ) )
 		{
-			s = movespeed * g_pHost->host_frametime;
+			s = movespeed * g_pHost->Host_GetFrameTime();
 		}
 		if ( vgui::input()->IsKeyDown( KEY_X ) )
 		{
-			u = movespeed * g_pHost->host_frametime;
+			u = movespeed * g_pHost->Host_GetFrameTime();
 		}
 		if ( vgui::input()->IsKeyDown( KEY_Z ) )
 		{
-			u = -movespeed * g_pHost->host_frametime;
+			u = -movespeed * g_pHost->Host_GetFrameTime();
 		}
 
 		int mx, my;
@@ -752,8 +752,8 @@ void CDemoUIPanel2::OnTick()
 	// Color in red when dragging back
 	m_pProgressLabelFrame->SetFgColor( ( m_pProgress->GetValue() < curtick ) ? Color( 255, 0, 0, 255 ) : m_pProgressLabelTime->GetFgColor() );
 
-	Q_strncpy( curtime, COM_FormatSeconds(g_pHost->host_state.interval_per_tick * curtick ), 32 );
-	Q_strncpy( totaltime, COM_FormatSeconds(g_pHost->host_state.interval_per_tick * totalticks ), 32 );
+	Q_strncpy( curtime, COM_FormatSeconds(g_pHost->Host_GetIntervalPerTick() * curtick ), 32 );
+	Q_strncpy( totaltime, COM_FormatSeconds(g_pHost->Host_GetIntervalPerTick() * totalticks ), 32 );
 	m_pProgressLabelTime->SetText( va( "Time: %s / %s", curtime, totaltime ) );
 
 	m_pFastForward->SetEnabled( demoplayer->IsPlayingBack() && !demoplayer->IsPlaybackPaused() );

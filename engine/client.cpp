@@ -307,7 +307,7 @@ bool CClientState::SetSignonState ( int state, int count )
 
 				// Tell client .dll about the transition
 				char mapname[256];
-				CL_SetupMapName( modelloader->GetName(g_pHost->host_state.worldmodel ), mapname, sizeof( mapname ) );
+				CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
 
 				COM_TimestampedLog( "LevelInitPreEntity: start %d", state );
 				g_ClientDLL->LevelInitPreEntity(mapname);
@@ -582,7 +582,7 @@ void CClientState::InstallStringTableCallback( char const *tableName )
 bool CClientState::IsPaused() const
 {
 	return m_bPaused || ( g_LostVideoMemory && g_pHost->Host_IsSinglePlayerGame() ) ||
-		!g_pHost->host_initialized ||
+		!g_pHost->Host_initialized() ||
 		demoplayer->IsPlaybackPaused() ||
 		EngineVGui()->ShouldPause();
 }
@@ -590,7 +590,7 @@ bool CClientState::IsPaused() const
 float CClientState::GetTime() const
 {
 	int nTickCount = GetClientTickCount();
-	float flTickTime = nTickCount * g_pHost->host_state.interval_per_tick;
+	float flTickTime = nTickCount * g_pHost->Host_GetIntervalPerTick();
 	
 	// Timestamps are rounded to exact tick during simulation
 	if ( insimulation )
@@ -612,7 +612,7 @@ float CClientState::GetFrameTime() const
 		if ( insimulation )
 		{
 			int nElapsedTicks = ( GetClientTickCount() - oldtickcount );
-			return nElapsedTicks * g_pHost->host_state.interval_per_tick;
+			return nElapsedTicks * g_pHost->Host_GetIntervalPerTick();
 		}
 		else
 		{

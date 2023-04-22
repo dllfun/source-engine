@@ -192,7 +192,7 @@ void R_DrawPortals()
 	CMatRenderContextPtr pRenderContext( materials );
 	IMesh *pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
 
-	worldbrushdata_t *pBrushData = g_pHost->host_state.worldmodel->brush.pShared;
+	worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	for( int i=0; i < pBrushData->m_nAreaPortals; i++ )
 	{
 		dareaportal_t *pAreaPortal = &pBrushData->m_pAreaPortals[i];
@@ -394,7 +394,7 @@ CRender::CRender()
 //-----------------------------------------------------------------------------
 void CRender::FrameBegin( void )
 {
-	if (g_pHost->host_state.worldmodel )
+	if (g_pHost->Host_GetWorldModel())
 	{
 		// This has to be before R_AnimateLight because it uses it to
 		// set the frame number of changed lightstyles
@@ -464,7 +464,7 @@ void CRender::ViewSetupVis( bool novis, int numorigins, const Vector origin[] )
 
 void CRender::ViewSetupVisEx( bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags )
 {
-	Map_VisSetup(g_pHost->host_state.worldmodel, numorigins, origin, novis, returnFlags );
+	Map_VisSetup(g_pHost->Host_GetWorldModel(), numorigins, origin, novis, returnFlags );
 }
 
 //-----------------------------------------------------------------------------
@@ -802,7 +802,7 @@ void CRender::BeginUpdateLightmaps( void )
 		// UNDONE: Move this to an init or constructor?
 		g_LightmapTransformList.RemoveAll();
 		int index = g_LightmapTransformList.AddToTail();
-		g_LightmapTransformList[index].pModel = g_pHost->host_state.worldmodel;
+		g_LightmapTransformList[index].pModel = g_pHost->Host_GetWorldModel();
 		SetIdentityMatrix( g_LightmapTransformList[index].xform );
 	}
 }

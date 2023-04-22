@@ -74,11 +74,11 @@ void CBenchmarkResults::StartBenchmark( const CCommand &args )
 	//host_framerate.SetValue( (float)(1.0f / host_state.interval_per_tick) );
 
 	// get the current frame and time
-	m_iStartFrame = g_pHost->host_framecount;
+	m_iStartFrame = g_pHost->Host_GetFrameCount();
 	m_flStartTime = g_pHost->Host_GetRealTime();
 
 	m_flNextSecondTime = g_pHost->Host_GetRealTime() + 1.0f;
-	m_iNextSecondFrame = g_pHost->host_framecount;
+	m_iNextSecondFrame = g_pHost->Host_GetFrameCount();
 }
 
 //-----------------------------------------------------------------------------
@@ -92,8 +92,8 @@ void CBenchmarkResults::StopBenchmark()
 	//host_framerate.SetValue( 0 );
 
 	// print out some stats
-	int numticks = g_pHost->host_framecount - m_iStartFrame;
-	float framerate = numticks / (g_pHost->Host_GetRealTime() - m_flStartTime );
+	int numframes = g_pHost->Host_GetFrameCount() - m_iStartFrame;
+	float framerate = numframes / (g_pHost->Host_GetRealTime() - m_flStartTime );
 	Msg( "Average framerate: %.2f\n", framerate );
 	
 	// work out where to write the file
@@ -173,9 +173,9 @@ void CBenchmarkResults::Frame()
 
 	if( m_flNextSecondTime <= g_pHost->Host_GetRealTime())
 	{
-		m_FPSInfo.AddToTail(g_pHost->host_framecount-m_iNextSecondFrame );
+		m_FPSInfo.AddToTail(g_pHost->Host_GetFrameCount() - m_iNextSecondFrame);
 		m_flNextSecondTime += 1.0f;
-		m_iNextSecondFrame = g_pHost->host_framecount;
+		m_iNextSecondFrame = g_pHost->Host_GetFrameCount();
 	}
 }
 

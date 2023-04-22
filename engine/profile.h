@@ -16,7 +16,6 @@
 #pragma once
 #endif
 
-void Host_ReadConfiguration();
-void Host_WriteConfiguration( const char *filename = NULL, bool bAllVars = false );
+
 
 #endif // PROFILE_H

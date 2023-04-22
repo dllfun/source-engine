@@ -590,7 +590,7 @@ void CDemoRecorder::StartupDemoFile( void )
 	dh->networkprotocol = PROTOCOL_VERSION;
 	Q_strncpy(dh->demofilestamp, DEMO_HEADER_ID, sizeof(dh->demofilestamp) );
 
-	Q_FileBase( modelloader->GetName(g_pHost->host_state.worldmodel ), dh->mapname, sizeof( dh->mapname ) );
+	Q_FileBase( modelloader->GetName(g_pHost->Host_GetWorldModel()), dh->mapname, sizeof( dh->mapname ) );
 
 	char szGameDir[MAX_OSPATH];
 	Q_strncpy(szGameDir, com_gamedir, sizeof( szGameDir ) );
@@ -669,7 +669,7 @@ void CDemoRecorder::CloseDemoFile()
 
 			// update demo header infos
 			m_DemoFile.m_DemoHeader.playback_ticks	= GetRecordingTick();
-			m_DemoFile.m_DemoHeader.playback_time	= g_pHost->host_state.interval_per_tick * GetRecordingTick();
+			m_DemoFile.m_DemoHeader.playback_time	= g_pHost->Host_GetIntervalPerTick() * GetRecordingTick();
 			m_DemoFile.m_DemoHeader.playback_frames = m_nFrameCount;
 
 			// go back to header and write demoHeader with correct time and #frame again
@@ -861,7 +861,7 @@ void CDemoPlayer::StopPlayback( void )
 	}
 	else
 	{
-		int framecount = g_pHost->host_framecount - m_nTimeDemoStartFrame;
+		int framecount = g_pHost->Host_GetFrameCount() - m_nTimeDemoStartFrame;
 		float demotime = Sys_FloatTime() - m_flTimeDemoStartTime;
 
 		if ( demotime > 0.0f )
@@ -1160,7 +1160,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 			}
 			else
 			{
-				if ( m_nTimeDemoCurrentFrame == g_pHost->host_framecount )
+				if ( m_nTimeDemoCurrentFrame == g_pHost->Host_GetFrameCount() )
 				{
 					// If we are playing back a timedemo, and we've already passed on a 
 					//  frame update for this host_frame tag, then we'll just skip this mess
@@ -1303,7 +1303,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 				if ( IsSkipping() )
 				{
 					// adjust playback host_tickcount when skipping
-					m_nStartTick = g_pHost->host_tickcount - tick;
+					m_nStartTick = g_pHost->Host_GetTickCount() - tick;
 				}
 			}
 			break;
@@ -1313,7 +1313,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 	if ( cmd == dem_packet )
 	{
 		// remember last frame we read a dem_packet update
-		m_nTimeDemoCurrentFrame = g_pHost->host_framecount;
+		m_nTimeDemoCurrentFrame = g_pHost->Host_GetFrameCount();
 	}
 	
 	int inseq, outseqack, outseq = 0;
@@ -1351,7 +1351,7 @@ netpacket_t *CDemoPlayer::ReadPacket( void )
 	// Skip a few ticks before doing any timing
 	if ( (m_nTimeDemoStartFrame < 0) && GetPlaybackTick() > 100 )
 	{
-		m_nTimeDemoStartFrame = g_pHost->host_framecount;
+		m_nTimeDemoStartFrame = g_pHost->Host_GetFrameCount();
 		m_flTimeDemoStartTime = Sys_FloatTime();
 		m_flTotalFPSVariability = 0.0f;
 
@@ -1736,7 +1736,7 @@ void CDemoPlayer::WriteTimeDemoResults( void )
 {
 	int		frames;
 	float	time;
-	frames = (g_pHost->host_framecount - m_nTimeDemoStartFrame) - 1;
+	frames = (g_pHost->Host_GetFrameCount() - m_nTimeDemoStartFrame) - 1;
 	time = Sys_FloatTime() - m_flTimeDemoStartTime;
 	if (!time)
 	{
@@ -1920,12 +1920,12 @@ int CDemoPlayer::GetPlaybackStartTick( void )
 
 int CDemoPlayer::GetPlaybackTick( void )
 {
-	return g_pHost->host_tickcount - m_nStartTick;
+	return g_pHost->Host_GetTickCount() - m_nStartTick;
 }
 
 void CDemoPlayer::ResyncDemoClock()
 {
-	m_nStartTick = g_pHost->host_tickcount;
+	m_nStartTick = g_pHost->Host_GetTickCount();
 	m_nPreviousTick = m_nStartTick;
 }
 

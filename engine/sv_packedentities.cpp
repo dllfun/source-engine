@@ -515,7 +515,7 @@ void SV_ComputeClientPacks(
 		cl.SetClientTickCount( sv.m_nTickCount );
 		cl.SetServerTickCount( sv.m_nTickCount );
 
-		cl.m_flLastServerTickTime = sv.m_nTickCount * g_pHost->host_state.interval_per_tick;
+		cl.m_flLastServerTickTime = sv.m_nTickCount * g_pHost->Host_GetIntervalPerTick();
 		g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
 		g_ClientGlobalVariables.curtime = cl.GetTime();
 #endif

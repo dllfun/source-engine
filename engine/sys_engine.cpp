@@ -305,10 +305,10 @@ bool CEngine::Load( bool bDedicated, const char *rootdir )
 //-----------------------------------------------------------------------------
 bool CEngine::FilterTime( float dt )
 {
-	if ( sv.IsDedicated() && !g_bDedicatedServerBenchmarkMode )
+	if ( sv.IsDedicated() && !g_pHost->g_bDedicatedServerBenchmarkMode )
 	{
-		m_flMinFrameTime = g_pHost->host_nexttick;
-		return ( dt >= g_pHost->host_nexttick );
+		m_flMinFrameTime = g_pHost->Host_GetNextTick();
+		return ( dt >= g_pHost->Host_GetNextTick() );
 	}
 
 	m_flMinFrameTime = 0.0f;
@@ -341,7 +341,7 @@ bool CEngine::FilterTime( float dt )
 #if !defined(SWDS)
 		    !demoplayer->IsPlayingTimeDemo() && 
 #endif
-			!g_bDedicatedServerBenchmarkMode && 
+			!g_pHost->g_bDedicatedServerBenchmarkMode &&
 			dt < minframetime )
 		{
 			// framerate is too high
@@ -402,7 +402,7 @@ void CEngine::Frame( void )
 			// ... but if the clock ever went backwards due to a bug,
 			// we'd have no idea how much time has elapsed, so just 
 			// catch up to the next scheduled server tick.
-			m_flFrameTime = g_pHost->host_nexttick;
+			m_flFrameTime = g_pHost->Host_GetNextTick();
 		}
 
 		if ( FilterTime( m_flFrameTime ) )

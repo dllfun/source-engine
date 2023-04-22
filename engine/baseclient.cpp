@@ -529,7 +529,7 @@ void CBaseClient::SpawnPlayer( void )
 	}
 
 	// Set client clock to match server's
-	NET_Tick tick( m_Server->GetTick(), g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
+	NET_Tick tick( m_Server->GetTick(), g_pHost->Host_GetFrameTimeUnbounded(), g_pHost->Host_GetFrameTimeStddeviation());
 	SendNetMsg( tick, true );
 	
 	// Spawned into server, not fully active, though
@@ -1079,7 +1079,7 @@ void CBaseClient::EndTrace( bf_write &msg )
 
 	logData.Printf( "%f/%d Player [%s][%d][adr:%s] was sent a datagram %d bits (%8.3f bytes), took %.2fms\n",
 		g_pHost->Host_GetRealTime(),
-		g_pHost->host_tickcount,
+		g_pHost->Host_GetTickCount(),
 		GetClientName(), 
 		GetPlayerSlot(), 
 		GetNetChannel()->GetAddress(),
@@ -1177,7 +1177,7 @@ write_again:
 	}
 
 	// send tick time
-	NET_Tick tickmsg( pFrame->tick_count, g_pHost->host_frametime_unbounded, g_pHost->host_frametime_stddeviation );
+	NET_Tick tickmsg( pFrame->tick_count, g_pHost->Host_GetFrameTimeUnbounded(), g_pHost->Host_GetFrameTimeStddeviation());
 
 	StartTrace( msg );
 

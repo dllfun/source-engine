@@ -58,10 +58,6 @@ public:
 		host_parms.memsize = memSize;
 	}
 
-	
-
-	
-
 	const char* GetMod()
 	{
 		return host_parms.mod;
@@ -88,7 +84,85 @@ public:
 		host_parms.basedir = baseDir;
 	}
 
+	float Host_GetFrameTime() {
+		return host_frametime;
+	}
+
+	float Host_GetFrameTimeUnbounded() {
+		return host_frametime_unbounded;
+	}
+
+	float Host_GetFrameTimeStddeviation() {
+		return host_frametime_stddeviation;
+	}
+
+	int Host_GetTickCount() {
+		return host_tickcount;
+	}
+
+	// Accumulated filtered time on machine ( i.e., host_framerate can alter host_time )
+	double Host_GetRealTime() {
+		return host_realtime;
+	}
+
+	//extern float host_tick_time;
+	float Host_GetTickTime() {
+		return host_tick_time;
+	}
+
+	int Host_GetFrameCount() {
+		return host_framecount;
+	}
+
+	float Host_GetNextTick() {
+		return host_nexttick;
+	}
+
+	int Host_GetFrameTicks() {
+		return host_frameticks;
+	}
+
+	int Host_GetCurrentFrameTick() {
+		return host_currentframetick;
+	}
+
+	double Host_GetIdealTime() {
+		return host_idealtime;
+	}
+
+	float Host_GetIntervalPerTick() {
+		return host_state.interval_per_tick;
+	}
+
+	void Host_SetIntervalPerTick(float interval_per_tick) {
+		host_state.interval_per_tick= interval_per_tick;
+	}
+
+	model_t* Host_GetWorldModel() {
+		return host_state.worldmodel;
+	}
+
+	void Host_SetWorldModel(model_t* model) {
+		host_state.worldmodel = model;
+	}
+
+	bool Host_initialized() {
+		return host_initialized;
+	}
+
+	CGameClient* Host_GetClient() {
+		return host_client;
+	}
+
+	void Host_SetClient(CGameClient* client) {
+		host_client = client;
+	}
+
+	void Host_CheckGore(void);
+
 	void Host_Init(bool bIsDedicated);
+	void Host_ReadConfiguration();
+	void Host_WriteConfiguration(const char* filename = NULL, bool bAllVars = false);
 	void Host_Shutdown(void);
 	//int  Host_Frame (float time, int iState );
 	void Host_ShutdownServer(void);
@@ -121,14 +195,7 @@ public:
 #endif
 	}
 
-	bool Host_AllowLoadModule(const char* pFilename, const char* pPathID, bool bAllowUnknown, bool bIsServerOnly = false);
-
-	// Accumulated filtered time on machine ( i.e., host_framerate can alter host_time )
-//extern float host_tick_time;
-	float Host_GetTickTime() {
-		return host_tick_time;
-	}
-
+	bool		Host_AllowLoadModule(const char* pFilename, const char* pPathID, bool bAllowUnknown, bool bIsServerOnly = false);
 	void		Host_BuildConVarUpdateMessage(NET_SetConVar* cvarMsg, int flags, bool nonDefault);
 	char const* Host_CleanupConVarStringValue(char const* invalue);
 	void		Host_SetAudioState(const AudioState_t& audioState);
@@ -137,16 +204,46 @@ public:
 // Human readable methods to get at engineparms info
 //-----------------------------------------------------------------------------
 	
-	double Host_GetRealTime() {
-		return host_realtime;
-	}
-
 	void Host_AccumulateTime(float dt);
 
-	float		host_tick_time = 0.0;
-	float		host_jitterhistory[128] = { 0 };
-	unsigned int host_jitterhistorypos = 0;
+	// Globals
+	int	gHostSpawnCount = 0;
+	int g_HostErrorCount = 0;
+	// These counters are for debugging in dumps.  If these are non-zero it may indicate some kind of 
+	// heap problem caused by the setjmp/longjmp error handling
+	int g_HostServerAbortCount = 0;
+	int g_HostEndDemo = 0;
+#ifndef SWDS
+	bool g_bInEditMode = false;
+	bool g_bInCommentaryMode = false;
+#endif
+	bool g_bLowViolence = false;
+	bool g_bDedicatedServerBenchmarkMode = false;
+
+private:
+	void _Host_SetGlobalTime();
+	void _Host_RunFrame(float time);
+	void Host_ShowIPCCallCount();
+	void Host_AbortServer()
+	{
+		g_HostServerAbortCount++;
+		longjmp(host_abortserver, 1);
+	}
+
 	bool		host_initialized = false;		// true if into command execution
+	int			host_hunklevel;
+	bool		g_bAllowSecureServers = true;
+	bool		g_bAbortServerSet = false;
+
+	float		host_frametime_unbounded = 0.0f;
+	float		host_frametime_stddeviation = 0.0f;
+	jmp_buf 	host_abortserver;
+	jmp_buf     host_enddemo;
+	CGameClient* host_client;			// current client
+
+	engineparms_t host_parms;
+	CCommonHostState host_state;
+	float		host_tick_time = 0.0;
 	float		host_frametime = 0.0f;
 	int			host_tickcount = 0;
 	double		host_realtime = 0;			// without any filtering or bounding
@@ -155,19 +252,6 @@ public:
 	int			host_frameticks = 0;
 	int			host_currentframetick = 0;
 	double		host_idealtime = 0;		// "ideal" server time assuming perfect tick rate
-	CCommonHostState host_state;
-	int	host_hunklevel;
-	bool g_bAllowSecureServers = true;
-
-	float		host_frametime_unbounded = 0.0f;
-	float		host_frametime_stddeviation = 0.0f;
-	jmp_buf 	host_abortserver;
-	jmp_buf     host_enddemo;
-	CGameClient* host_client;			// current client
-
-private:
-	engineparms_t host_parms;
-
 	friend class CFrameTimer;
 };
 
@@ -203,10 +287,10 @@ extern  ConVar		host_limitlocal;
 // Print a debug message when the client or server cache is missed
 extern	ConVar		host_showcachemiss;
 
-extern bool			g_bInEditMode;
-extern bool			g_bInCommentaryMode;
-extern bool			g_bAllowSecureServers;
-extern bool			g_bLowViolence;
+//extern bool			g_bInEditMode;
+//extern bool			g_bInCommentaryMode;
+//extern bool			g_bAllowSecureServers;
+//extern bool			g_bLowViolence;
 
 
 // Force the voice stuff to send a packet out.
@@ -231,8 +315,8 @@ bool CheckVarRange_Generic( ConVar *pVar, int minVal, int maxVal );
 #define MAX_FRAMETIME	0.1
 #define MIN_FRAMETIME	0.001
 
-#define TIME_TO_TICKS( dt )		( (int)( 0.5f + (float)(dt) / g_pHost->host_state.interval_per_tick ) )
-#define TICKS_TO_TIME( dt )		( g_pHost->host_state.interval_per_tick * (float)(dt) )
+#define TIME_TO_TICKS( dt )		( (int)( 0.5f + (float)(dt) / g_pHost->Host_GetIntervalPerTick() ) )
+#define TICKS_TO_TIME( dt )		( g_pHost->Host_GetIntervalPerTick() * (float)(dt) )
 
 // Normally, this is off, and it keeps the VCR file size smaller, but it can help
 // to turn it on when tracking down out-of-sync errors, because it verifies that more
@@ -240,7 +324,7 @@ bool CheckVarRange_Generic( ConVar *pVar, int minVal, int maxVal );
 extern ConVar vcr_verbose;
 
 // Set by the game DLL to tell us to do the same timing tricks as timedemo.
-extern bool g_bDedicatedServerBenchmarkMode;
+//extern bool g_bDedicatedServerBenchmarkMode;
 
 extern uint GetSteamAppID();
 extern EUniverse GetSteamUniverse();

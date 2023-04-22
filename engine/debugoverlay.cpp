@@ -1044,7 +1044,7 @@ void PurgeServerOverlays( void )
 	{
 		if ( pCurrOverlay->m_flEndTime == NDEBUG_PERSIST_TILL_NEXT_SERVER )
 		{
-			pCurrOverlay->m_flEndTime = cl.GetTime() + g_pHost->host_state.interval_per_tick;
+			pCurrOverlay->m_flEndTime = cl.GetTime() + g_pHost->Host_GetIntervalPerTick();
 		}
 
 		pCurrOverlay = pCurrOverlay->m_pNextOverlay;
@@ -1055,7 +1055,7 @@ void PurgeServerOverlays( void )
 	{
 		if ( pCurrText->m_flEndTime == NDEBUG_PERSIST_TILL_NEXT_SERVER )
 		{
-			pCurrText->m_flEndTime = cl.GetTime() + g_pHost->host_state.interval_per_tick;
+			pCurrText->m_flEndTime = cl.GetTime() + g_pHost->Host_GetIntervalPerTick();
 		}
 
 		pCurrText = pCurrText->nextOverlayText;
