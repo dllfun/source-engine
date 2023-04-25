@@ -64,7 +64,7 @@ extern ConVar r_flashlight_version2;
 //-----------------------------------------------------------------------------
 // Forward declarations
 //-----------------------------------------------------------------------------
-void R_StudioInitLightingCache( void );
+void R_StudioInitLightingCache( model_t* pWorld );
 float Engine_WorldLightDistanceFalloff( const dworldlight_t *wl, const Vector& delta, bool bNoRadiusCheck = false );
 void SetRootLOD_f( IConVar *var, const char *pOldString, float flOldValue );
 void r_lod_f( IConVar *var, const char *pOldValue, float flOldValue );
@@ -160,10 +160,10 @@ void UpdateStudioRenderConfig( void )
 	g_pStudioRender->UpdateConfig( s_StudioRenderConfig );
 }
 
-void R_InitStudio( void )
+void R_InitStudio( model_t* pWorld )
 {
 #ifndef SWDS
-	R_StudioInitLightingCache();
+	R_StudioInitLightingCache(pWorld);
 #endif
 }
 
@@ -816,6 +816,7 @@ public:
 	// members of the IVModelRender interface
 	virtual void ForcedMaterialOverride( IMaterial *newMaterial, OverrideType_t nOverrideType = OVERRIDE_NORMAL );
 	virtual int DrawModel( 	
+					IVModel* pWorld,
 					int flags, IClientRenderable *cliententity,
 					ModelInstanceHandle_t instance, int entity_index, const IVModel *model,
 					const Vector& origin, QAngle const& angles,
@@ -826,7 +827,7 @@ public:
 	virtual void  SetViewTarget( const CStudioHdr *pStudioHdr, int nBodyIndex, const Vector& target );
 
 	// Creates, destroys instance data to be associated with the model
-	virtual ModelInstanceHandle_t CreateInstance( IClientRenderable *pRenderable, LightCacheHandle_t* pHandle );
+	virtual ModelInstanceHandle_t CreateInstance(IVModel* pWorld, IClientRenderable *pRenderable, LightCacheHandle_t* pHandle );
 	virtual void SetStaticLighting( ModelInstanceHandle_t handle, LightCacheHandle_t* pCache );
 	virtual LightCacheHandle_t GetStaticLighting( ModelInstanceHandle_t handle );
 	virtual void DestroyInstance( ModelInstanceHandle_t handle );
@@ -856,20 +857,20 @@ public:
 	unsigned short& FirstShadowOnModelInstance( ModelInstanceHandle_t handle ) { return m_ModelInstances[handle].m_FirstShadow; }
 
 	// This gets called when overbright, etc gets changed to recompute static prop lighting.
-	virtual bool RecomputeStaticLighting( ModelInstanceHandle_t handle );
+	virtual bool RecomputeStaticLighting(IVModel* pWorld, ModelInstanceHandle_t handle );
 
 	// Handlers for alt-tab
 	virtual void ReleaseAllStaticPropColorData( void );
-	virtual void RestoreAllStaticPropColorData( void );
+	virtual void RestoreAllStaticPropColorData( IVModel* pWorld );
 
 	// Extended version of drawmodel
 	virtual bool DrawModelSetup( ModelRenderInfo_t &pInfo, DrawModelState_t *pState, matrix3x4_t *pBoneToWorld, matrix3x4_t** ppBoneToWorldOut );
-	virtual int	DrawModelEx( ModelRenderInfo_t &pInfo );
-	virtual int	DrawModelExStaticProp( ModelRenderInfo_t &pInfo );
-	virtual int DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int count, bool bShadowDepth );
+	virtual int	DrawModelEx(IVModel* pWorld, ModelRenderInfo_t &pInfo );
+	virtual int	DrawModelExStaticProp(IVModel* pWorld, ModelRenderInfo_t &pInfo );
+	virtual int DrawStaticPropArrayFast(IVModel* pWorld, StaticPropRenderInfo_t *pProps, int count, bool bShadowDepth );
 
 	// Sets up lighting context for a point in space
-	virtual void SetupLighting( const Vector &vecCenter );
+	virtual void SetupLighting(IVModel* pWorld, const Vector &vecCenter );
 	virtual void SuppressEngineLighting( bool bSuppress );
 
 	inline vertexFileHeader_t *CacheVertexData() { return g_pMDLCache->GetVertexData( VoidPtrToMDLHandle( m_pStudioHdr->VirtualModel() ) ); }
@@ -945,12 +946,12 @@ private:
 
 	int ComputeLOD( const ModelRenderInfo_t &info, studiohwdata_t *pStudioHWData );
 
-	void DrawModelExecute( const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld = NULL );
+	void DrawModelExecute(IVModel* pWorld, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld = NULL );
 
 	void InitColormeshParams( ModelInstance_t &instance, studiohwdata_t *pStudioHWData, colormeshparams_t *pColorMeshParams );
 	CColorMeshData *FindOrCreateStaticPropColorData( ModelInstanceHandle_t handle );
 	void DestroyStaticPropColorData( ModelInstanceHandle_t handle );
-	bool UpdateStaticPropColorData( IHandleEntity *pEnt, ModelInstanceHandle_t handle );
+	bool UpdateStaticPropColorData(model_t* pWorld, IHandleEntity *pEnt, ModelInstanceHandle_t handle );
 	void ProtectColorDataIfQueued( DataCacheHandle_t );
 
 	void ValidateStaticPropColorData( ModelInstanceHandle_t handle );
@@ -968,7 +969,7 @@ private:
 	void SnapCurrentLightingState( ModelInstance_t &inst, LightingState_t *pLightingState );
 
 	// Sets up lighting state for rendering
-	void StudioSetupLighting( const DrawModelState_t &state, const Vector& absEntCenter, 
+	void StudioSetupLighting(model_t* pWorld, const DrawModelState_t &state, const Vector& absEntCenter, 
 		LightCacheHandle_t* pLightcache, bool bVertexLit, bool bNeedsEnvCubemap, bool &bStaticLighting, 
 		DrawModelInfo_t &drawInfo, const ModelRenderInfo_t &pInfo, int drawFlags );
 
@@ -982,7 +983,7 @@ private:
 		bool bUseConstDirLighting, float flConstDirLightAmount );
 
 	// New-style computation of vertex lighting
-	void ComputeModelVertexLighting( IHandleEntity *pProp, 
+	void ComputeModelVertexLighting(model_t* pWorld, IHandleEntity *pProp, 
 		mstudiomodel_t *pModel, OptimizedModel::ModelLODHeader_t *pVtxLOD,
 		matrix3x4_t& matrix, Vector4D *pTempMem, color24 *pLighting );
 
@@ -1388,7 +1389,7 @@ static ConVar r_drawlightcache ("r_drawlightcache", "0", FCVAR_CHEAT, "0: off\n1
 //-----------------------------------------------------------------------------
 // Sets up lighting state for rendering
 //-----------------------------------------------------------------------------
-void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vector& absEntCenter, 
+void CModelRender::StudioSetupLighting(model_t* pWorld, const DrawModelState_t &state, const Vector& absEntCenter, 
 	LightCacheHandle_t* pLightcache, bool bVertexLit, bool bNeedsEnvCubemap, bool &bStaticLighting, 
 	DrawModelInfo_t &drawInfo, const ModelRenderInfo_t &pInfo, int drawFlags )
 {
@@ -1452,12 +1453,12 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 				// We already have the static part baked into a color mesh, so just get the dynamic stuff.
 				if ( StaticLightCacheAffectedByDynamicLight( *pLightcache ) )
 				{
-					pLightingState = LightcacheGetStatic( *pLightcache, &pEnvCubemapTexture );
+					pLightingState = LightcacheGetStatic(pWorld, *pLightcache, &pEnvCubemapTexture );
 					Assert( lightingState.numlights >= 0 && lightingState.numlights <= MAXLOCALLIGHTS );
 				}
 				else
 				{
-					pLightingState = LightcacheGetStatic( *pLightcache, &pEnvCubemapTexture, LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE );
+					pLightingState = LightcacheGetStatic(pWorld, *pLightcache, &pEnvCubemapTexture, LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE );
 					Assert( lightingState.numlights >= 0 && lightingState.numlights <= MAXLOCALLIGHTS );
 				}
 				lightingState = *pLightingState;
@@ -1466,21 +1467,21 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 			{
 				// dx6 and dx7 case. . .hardware can either do software lighting or baked lighting only.
 				if ( StaticLightCacheAffectedByDynamicLight( *pLightcache ) || 
-					StaticLightCacheAffectedByAnimatedLightStyle( *pLightcache ) )
+					StaticLightCacheAffectedByAnimatedLightStyle(pWorld, *pLightcache ) )
 				{
 					bStaticLighting = false;
 				}
-				else if ( StaticLightCacheNeedsSwitchableLightUpdate( *pLightcache ) )
+				else if ( StaticLightCacheNeedsSwitchableLightUpdate(pWorld, *pLightcache ) )
 				{
 					// Need to rebake lighting since a switch has turned off/on.
-					UpdateStaticPropColorData( state.m_pRenderable->GetIClientUnknown(), pInfo.instance );
+					UpdateStaticPropColorData(pWorld, state.m_pRenderable->GetIClientUnknown(), pInfo.instance );
 				}
 			}
 		}
 
 		if ( !bStaticLighting )
 		{
-			lightingState = *(LightcacheGetStatic( *pLightcache, &pEnvCubemapTexture ));
+			lightingState = *(LightcacheGetStatic(pWorld, *pLightcache, &pEnvCubemapTexture ));
 			Assert( lightingState.numlights >= 0 && lightingState.numlights <= MAXLOCALLIGHTS );
 		}
 
@@ -1507,7 +1508,7 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 		if ( bStaticLighting )
 		{
 			LightcacheGetDynamic_Stats stats;
-			pEnvCubemapTexture = LightcacheGetDynamic( vLightingOrigin, lightingState, 
+			pEnvCubemapTexture = LightcacheGetDynamic(pWorld, vLightingOrigin, lightingState,
 				stats, LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE );
 			Assert( lightingState.numlights >= 0 && lightingState.numlights <= MAXLOCALLIGHTS );
 
@@ -1524,7 +1525,7 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 				else if ( stats.m_bNeedsSwitchableLightStyleUpdate )
 				{
 					// Need to rebake lighting since a switch has turned off/on.
-					UpdateStaticPropColorData( state.m_pRenderable->GetIClientUnknown(), pInfo.instance );
+					UpdateStaticPropColorData(pWorld, state.m_pRenderable->GetIClientUnknown(), pInfo.instance );
 				}
 			}
 		}
@@ -1537,14 +1538,14 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 			bool bDebugModel = false;
 			if( r_drawlightcache.GetInt() == 5 )
 			{
-				if ( pModelInst && pModelInst->m_pModel && !pModelInst->m_pModel->strName.IsEmpty() )
+				if ( pModelInst && pModelInst->m_pModel && pModelInst->m_pModel->GetModelName() && pModelInst->m_pModel->GetModelName()[0])
 				{
 					const char *szModelName = r_lightcachemodel.GetString();
-					bDebugModel = V_stristr( pModelInst->m_pModel->strName, szModelName ) != NULL;
+					bDebugModel = V_stristr( pModelInst->m_pModel->GetModelName(), szModelName) != NULL;
 				}
 			}
 	
-			pEnvCubemapTexture = LightcacheGetDynamic( vLightingOrigin, lightingState, stats, 
+			pEnvCubemapTexture = LightcacheGetDynamic(pWorld, vLightingOrigin, lightingState, stats,
 				LIGHTCACHEFLAGS_STATIC|LIGHTCACHEFLAGS_DYNAMIC|LIGHTCACHEFLAGS_LIGHTSTYLE|LIGHTCACHEFLAGS_ALLOWFAST, bDebugModel );
 
 			Assert( lightingState.numlights >= 0 && lightingState.numlights <= MAXLOCALLIGHTS );
@@ -1564,7 +1565,7 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 		{
 			// Only do this on dx8/dx9.
 			LightcacheGetDynamic_Stats stats;
-			LightcacheGetDynamic( vLightingOrigin, lightingDecalState, stats,
+			LightcacheGetDynamic(pWorld, vLightingOrigin, lightingDecalState, stats,
 				LIGHTCACHEFLAGS_STATIC|LIGHTCACHEFLAGS_DYNAMIC|LIGHTCACHEFLAGS_LIGHTSTYLE|LIGHTCACHEFLAGS_ALLOWFAST );
 
 			Assert( lightingDecalState.numlights >= 0 && lightingDecalState.numlights <= MAXLOCALLIGHTS);
@@ -1639,7 +1640,7 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 		else
 		{
 			// If we have any lights and want to do ambient boost on this model
-			if ( (pState->numlights > 0) && (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_AMBIENT_BOOST) && r_ambientboost.GetBool() )
+			if ( (pState->numlights > 0) && (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_STUDIOHDR_AMBIENT_BOOST) && r_ambientboost.GetBool())
 			{
 				Vector lumCoeff( 0.3f, 0.59f, 0.11f );
 				float avgCubeLuminance = 0.0f;
@@ -1728,13 +1729,13 @@ void CModelRender::StudioSetupLighting( const DrawModelState_t &state, const Vec
 //-----------------------------------------------------------------------------
 
 // FIXME: a duplicate of what's in CEngineTool::GetLightingConditions
-int GetLightingConditions( const Vector &vecLightingOrigin, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights, ITexture *&pEnvCubemapTexture )
+int GetLightingConditions(model_t* pWorld, const Vector &vecLightingOrigin, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights, ITexture *&pEnvCubemapTexture )
 {
 #ifndef SWDS
 	LightcacheGetDynamic_Stats stats;
 	LightingState_t state;
 	pEnvCubemapTexture = NULL;
-	pEnvCubemapTexture = LightcacheGetDynamic( vecLightingOrigin, state, stats );
+	pEnvCubemapTexture = LightcacheGetDynamic(pWorld, vecLightingOrigin, state, stats );
 	Assert( state.numlights >= 0 && state.numlights <= MAXLOCALLIGHTS );
 	memcpy( pColors, state.r_boxcolor, sizeof(state.r_boxcolor) );
 
@@ -1762,7 +1763,7 @@ int GetLightingConditions( const Vector &vecLightingOrigin, Vector *pColors, int
 }
 
 // FIXME: a duplicate of what's in CCDmeMdlRenderable<T>::SetUpLighting and CDmeEmitter::SetUpLighting
-void CModelRender::SetupLighting( const Vector &vecCenter )
+void CModelRender::SetupLighting(IVModel* pWorld, const Vector &vecCenter )
 {
 #ifndef SWDS
 	// Set up lighting conditions
@@ -1770,7 +1771,7 @@ void CModelRender::SetupLighting( const Vector &vecCenter )
 	Vector4D vecAmbient4D[6];
 	LightDesc_t desc[2];
 	ITexture *pEnvCubemapTexture = NULL;
-	int nLightCount = GetLightingConditions( vecCenter, vecAmbient, 2, desc, pEnvCubemapTexture );
+	int nLightCount = GetLightingConditions((model_t*)pWorld, vecCenter, vecAmbient, 2, desc, pEnvCubemapTexture );
 	int nMaxLights = g_pMaterialSystemHardwareConfig->MaxNumLights();
 	if( nLightCount > nMaxLights )
 	{
@@ -2086,14 +2087,14 @@ void CModelRender::DebugDrawLightingOrigin( const DrawModelState_t& state, const
 //-----------------------------------------------------------------------------
 // Actually renders the model
 //-----------------------------------------------------------------------------
-void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pBoneToWorld )
+void CModelRender::DrawModelExecute(IVModel* pWorld, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pBoneToWorld )
 {
 #ifndef SWDS
 	bool bShadowDepth = (pInfo.flags & STUDIO_SHADOWDEPTHTEXTURE) != 0;
 	bool bSSAODepth = ( pInfo.flags & STUDIO_SSAODEPTHTEXTURE ) != 0;
 
 	// Bail if we're rendering into shadow depth map and this model doesn't cast shadows
-	if ( bShadowDepth && ( (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_DO_NOT_CAST_SHADOWS ) != 0 ) )
+	if ( bShadowDepth && ( (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_STUDIOHDR_DO_NOT_CAST_SHADOWS) != 0))
 		return;
 
 	// Shadow state...
@@ -2117,7 +2118,7 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 	}
 
 	// OPTIMIZE: Try to precompute part of this mess once a frame at the very least.
-	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING );
+	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING);
 
 	bool bStaticLighting = ( state.m_drawFlags & STUDIORENDER_DRAW_STATIC_LIGHTING ) &&
 								( state.m_pStudioHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP ) && 
@@ -2125,9 +2126,9 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 								( pInfo.instance != MODEL_INSTANCE_INVALID ) &&
 								g_pMaterialSystemHardwareConfig->SupportsColorOnSecondStream();
 
-	bool bVertexLit = (((model_t*)pInfo.pModel)->flags & MODELFLAG_VERTEXLIT ) != 0;
+	bool bVertexLit = (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_VERTEXLIT) != 0;
 
-	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP );
+	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP);
 	
 	if ( r_drawmodellightorigin.GetBool() && !bShadowDepth && !bSSAODepth )
 	{
@@ -2144,7 +2145,7 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 		if ( !pColorMeshData || pColorMeshData->m_bNeedsRetry )
 		{
 			// color meshes are not present, try to re-establish
-			if ( RecomputeStaticLighting( pInfo.instance ) )
+			if ( RecomputeStaticLighting(pWorld, pInfo.instance ) )
 			{
 				pColorMeshData = CacheGet( hColorMeshData );
 			}
@@ -2192,7 +2193,7 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 		R_ComputeLightingOrigin( state.m_pRenderable, state.m_pStudioHdr, *state.m_pModelToWorld, entOrigin );
 
 		// Set up lighting based on the lighting origin
-		StudioSetupLighting( state, entOrigin, pLightCache, bVertexLit, bNeedsEnvCubemap, bStaticLighting, info, pInfo, state.m_drawFlags );
+		StudioSetupLighting((model_t*)pWorld, state, entOrigin, pLightCache, bVertexLit, bNeedsEnvCubemap, bStaticLighting, info, pInfo, state.m_drawFlags );
 	}
 
 	// Set up the camera state
@@ -2270,6 +2271,7 @@ void CModelRender::DrawModelExecute( const DrawModelState_t &state, const ModelR
 // Main entry point for model rendering in the engine
 //-----------------------------------------------------------------------------
 int CModelRender::DrawModel( 	
+	IVModel* pWorld,
 	int flags,
 	IClientRenderable *pRenderable,
 	ModelInstanceHandle_t instance,
@@ -2299,7 +2301,7 @@ int CModelRender::DrawModel(
 
 	if ( (r_entity.GetInt() == -1) || (r_entity.GetInt() == entity_index) )
 	{
-		return DrawModelEx( sInfo );
+		return DrawModelEx((model_t*)pWorld, sInfo );
 	}
 
 	return 0;
@@ -2376,7 +2378,7 @@ bool CModelRender::DrawModelSetup( ModelRenderInfo_t &pInfo, DrawModelState_t *p
 	Assert( modelloader->IsLoaded( pInfo.pModel ) );
 
 	DrawModelState_t &state = *pState;
-	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr(((model_t*)pInfo.pModel)->studio );
+	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr(((model_t*)pInfo.pModel)->GetStudio() );
 	state.m_pRenderable = pInfo.pRenderable;
 
 	// Quick exit if we're just supposed to draw a specific model...
@@ -2397,7 +2399,7 @@ bool CModelRender::DrawModelSetup( ModelRenderInfo_t &pInfo, DrawModelState_t *p
 
 	Assert ( pInfo.pRenderable );
 
-	state.m_pStudioHWData = g_pMDLCache->GetHardwareData(((model_t*)pInfo.pModel)->studio );
+	state.m_pStudioHWData = g_pMDLCache->GetHardwareData(((model_t*)pInfo.pModel)->GetStudio() );
 	if ( !state.m_pStudioHWData )
 		return false;
 
@@ -2481,7 +2483,7 @@ bool CModelRender::DrawModelSetup( ModelRenderInfo_t &pInfo, DrawModelState_t *p
 	return true;
 }
 
-int	CModelRender::DrawModelEx( ModelRenderInfo_t &pInfo )
+int	CModelRender::DrawModelEx(IVModel* pWorld, ModelRenderInfo_t &pInfo )
 {
 #ifndef SWDS
 	DrawModelState_t state;
@@ -2501,7 +2503,7 @@ int	CModelRender::DrawModelEx( ModelRenderInfo_t &pInfo )
 
 	if ( pInfo.flags & STUDIO_RENDER )
 	{
-		DrawModelExecute( state, pInfo, pBoneToWorld );
+		DrawModelExecute((model_t*)pWorld, state, pInfo, pBoneToWorld );
 	}
 
 	return 1;
@@ -2510,7 +2512,7 @@ int	CModelRender::DrawModelEx( ModelRenderInfo_t &pInfo )
 #endif
 }
 
-int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
+int	CModelRender::DrawModelExStaticProp(IVModel* pWorld, ModelRenderInfo_t &pInfo )
 {
 #ifndef SWDS
 	bool bShadowDepth = ( pInfo.flags & STUDIO_SHADOWDEPTHTEXTURE ) != 0;
@@ -2528,14 +2530,14 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 	Assert( modelloader->IsLoaded( pInfo.pModel ) );
 
 	DrawModelState_t state;
-	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr(((model_t*)pInfo.pModel)->studio );
+	state.m_pStudioHdr = g_pMDLCache->GetStudioHdr(((model_t*)pInfo.pModel)->GetStudio() );
 	state.m_pRenderable = pInfo.pRenderable;
 
 	// quick exit
 	if ( state.m_pStudioHdr->numbodyparts == 0 || g_bTextMode )
 		return 1;
 
-	state.m_pStudioHWData = g_pMDLCache->GetHardwareData(((model_t*)pInfo.pModel)->studio );
+	state.m_pStudioHWData = g_pMDLCache->GetHardwareData(((model_t*)pInfo.pModel)->GetStudio() );
 	if ( !state.m_pStudioHWData )
 		return 0;
 
@@ -2588,7 +2590,7 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 	g_pShadowMgr->SetModelShadowState( pInfo.instance );
 
 	// OPTIMIZE: Try to precompute part of this mess once a frame at the very least.
-	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING );
+	bool bUsesBumpmapping = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 80 ) && (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_STUDIOHDR_USES_BUMPMAPPING);
 
 	bool bStaticLighting = (( drawFlags & STUDIORENDER_DRAW_STATIC_LIGHTING ) &&
 		( state.m_pStudioHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP ) && 
@@ -2596,8 +2598,8 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 		( pInfo.instance != MODEL_INSTANCE_INVALID ) &&
 		g_pMaterialSystemHardwareConfig->SupportsColorOnSecondStream() );
 
-	bool bVertexLit = (((model_t*)pInfo.pModel)->flags & MODELFLAG_VERTEXLIT ) != 0;
-	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || (((model_t*)pInfo.pModel)->flags & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP );
+	bool bVertexLit = (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_VERTEXLIT) != 0;
+	bool bNeedsEnvCubemap = r_showenvcubemap.GetInt() || (((model_t*)pInfo.pModel)->GetModelFlag() & MODELFLAG_STUDIOHDR_USES_ENV_CUBEMAP);
 
 	if ( r_drawmodellightorigin.GetBool() )
 	{
@@ -2614,7 +2616,7 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 		if ( !pColorMeshData || pColorMeshData->m_bNeedsRetry )
 		{
 			// color meshes are not present, try to re-establish
-			if ( RecomputeStaticLighting( pInfo.instance ) )
+			if ( RecomputeStaticLighting(pWorld, pInfo.instance ) )
 			{
 				pColorMeshData = CacheGet( hColorMeshData );
 			}
@@ -2666,7 +2668,7 @@ int	CModelRender::DrawModelExStaticProp( ModelRenderInfo_t &pInfo )
 		}
 
 		// Set up lighting based on the lighting origin
-		StudioSetupLighting( state, entOrigin, pLightCache, bVertexLit, bNeedsEnvCubemap, bStaticLighting, info, pInfo, drawFlags );
+		StudioSetupLighting((model_t*)pWorld, state, entOrigin, pLightCache, bVertexLit, bNeedsEnvCubemap, bStaticLighting, info, pInfo, drawFlags );
 	}
 
 	Assert( modelloader->IsLoaded( pInfo.pModel ) );
@@ -2801,7 +2803,7 @@ inline int FindModel( const CUtlVector<rmodel_t> &list, const model_t *pModel )
 // UNDONE: Build a similar pipeline for non-static prop models
 // UNDONE: Split this into several functions in a sub-object
 ConVar r_staticprop_lod("r_staticprop_lod", "-1");
-int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int count, bool bShadowDepth )
+int CModelRender::DrawStaticPropArrayFast(IVModel* pWorld, StaticPropRenderInfo_t *pProps, int count, bool bShadowDepth )
 {
 #ifndef SWDS
 	MDLCACHE_CRITICAL_SECTION_( g_pMDLCache );
@@ -2831,7 +2833,7 @@ int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int c
 		{
 			modelIndex = modelList.AddToTail();
 			modelList[modelIndex].pModel = (model_t*)pProps[i].pModel;
-			modelList[modelIndex].pStudioHWData = g_pMDLCache->GetHardwareData( modelList[modelIndex].pModel->studio );
+			modelList[modelIndex].pStudioHWData = g_pMDLCache->GetHardwareData( modelList[modelIndex].pModel->GetStudio() );
 		}
 		if ( modelList[modelIndex].pStudioHWData )
 		{
@@ -2856,8 +2858,8 @@ int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int c
 	{
 		const model_t *pModel = modelList[i].pModel;
 		Assert( modelloader->IsLoaded( pModel ) );
-		unsigned int flags = pModel->flags;
-		modelList[i].pStudioHdr = g_pMDLCache->GetStudioHdr( pModel->studio );
+		unsigned int flags = ((model_t*)pModel)->GetModelFlag();
+		modelList[i].pStudioHdr = g_pMDLCache->GetStudioHdr( pModel->GetStudio() );
 		modelList[i].maxArea = 1.0f;
 		modelList[i].lodStart = lodStart;
 		modelList[i].lodCount = modelList[i].pStudioHWData ? modelList[i].pStudioHWData->m_NumLODs : 0;
@@ -2941,7 +2943,7 @@ int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int c
 				{
 					// color meshes are not present, try to re-establish
 					
-					if ( UpdateStaticPropColorData( obj.pRenderable->GetIClientUnknown(), obj.instance ) )
+					if ( UpdateStaticPropColorData((model_t*)pWorld, obj.pRenderable->GetIClientUnknown(), obj.instance ) )
 					{
 						pColorMeshData = CacheGet( hColorMeshData );
 					}
@@ -2999,12 +3001,12 @@ int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int c
 					// We already have the static part baked into a color mesh, so just get the dynamic stuff.
 					if ( !bStaticLighting || StaticLightCacheAffectedByDynamicLight( *pLightCache ) )
 					{
-						pState = LightcacheGetStatic( *pLightCache, &pEnvCubemapTexture, LIGHTCACHEFLAGS_STATIC | LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE );
+						pState = LightcacheGetStatic((model_t*)pWorld, *pLightCache, &pEnvCubemapTexture, LIGHTCACHEFLAGS_STATIC | LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE );
 						Assert( pState->numlights >= 0 && pState->numlights <= MAXLOCALLIGHTS );
 					}
 					else
 					{
-						pState = LightcacheGetStatic( *pLightCache, &pEnvCubemapTexture, LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE );
+						pState = LightcacheGetStatic((model_t*)pWorld, *pLightCache, &pEnvCubemapTexture, LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE );
 						Assert( pState->numlights >= 0 && pState->numlights <= MAXLOCALLIGHTS );
 					}
 					if ( bHasDecals )
@@ -3024,7 +3026,7 @@ int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int c
 					int lightCacheFlags = bStaticLighting ? (LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE)
 						: (LIGHTCACHEFLAGS_STATIC|LIGHTCACHEFLAGS_DYNAMIC|LIGHTCACHEFLAGS_LIGHTSTYLE|LIGHTCACHEFLAGS_ALLOWFAST);
 					LightcacheGetDynamic_Stats stats;
-					pEnvCubemapTexture = LightcacheGetDynamic( vLightingOrigin, lightingState, 
+					pEnvCubemapTexture = LightcacheGetDynamic((model_t*)pWorld, vLightingOrigin, lightingState,
 						stats, lightCacheFlags, false );
 					Assert( lightingState.numlights >= 0 && lightingState.numlights <= MAXLOCALLIGHTS );
 					pState = &lightingState;
@@ -3032,7 +3034,7 @@ int CModelRender::DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int c
 					if ( bHasDecals )
 					{
 						LightcacheGetDynamic_Stats tempStats;
-						LightcacheGetDynamic( vLightingOrigin, *pDecalLightState, tempStats,
+						LightcacheGetDynamic((model_t*)pWorld, vLightingOrigin, *pDecalLightState, tempStats,
 							LIGHTCACHEFLAGS_STATIC|LIGHTCACHEFLAGS_DYNAMIC|LIGHTCACHEFLAGS_LIGHTSTYLE|LIGHTCACHEFLAGS_ALLOWFAST );
 					}
 				}
@@ -3194,12 +3196,12 @@ matrix3x4_t* CModelRender::DrawModelShadowSetup( IClientRenderable *pRenderable,
 		return NULL;
 
 	// FIXME: Make brush shadows work
-	if ( pModel->type != mod_studio )
+	if ( pModel->GetModelType() != mod_studio )
 		return NULL;
 
 	Assert( modelloader->IsLoaded( pModel ) && ( pModel->type == mod_studio ) );
 
-	info.m_pStudioHdr = g_pMDLCache->GetStudioHdr( pModel->studio );
+	info.m_pStudioHdr = g_pMDLCache->GetStudioHdr( pModel->GetStudio() );
 	info.m_pColorMeshes = NULL;
 
 	// quick exit
@@ -3207,7 +3209,7 @@ matrix3x4_t* CModelRender::DrawModelShadowSetup( IClientRenderable *pRenderable,
 		return NULL;
 
 	Assert ( pRenderable );
-	info.m_pHardwareData = g_pMDLCache->GetHardwareData( pModel->studio );
+	info.m_pHardwareData = g_pMDLCache->GetHardwareData( pModel->GetStudio() );
 	if ( !info.m_pHardwareData )
 		return NULL;
 
@@ -3348,7 +3350,7 @@ CColorMeshData *CModelRender::FindOrCreateStaticPropColorData( ModelInstanceHand
 	}
 
 	Assert( modelloader->IsLoaded( instance.m_pModel ) && ( instance.m_pModel->type == mod_studio ) );
-	studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( instance.m_pModel->studio );
+	studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( instance.m_pModel->GetStudio() );
 	Assert( pStudioHWData );
 	if ( !pStudioHWData )
 		return NULL;
@@ -3362,7 +3364,7 @@ CColorMeshData *CModelRender::FindOrCreateStaticPropColorData( ModelInstanceHand
 	}
 
 	// create the meshes
-	params.m_fnHandle = instance.m_pModel->fnHandle;
+	params.m_fnHandle = instance.m_pModel->GetFnHandle();
 	instance.m_ColorMeshHandle = CacheCreate( params );
 	ProtectColorDataIfQueued( instance.m_ColorMeshHandle );
 	pColorMeshData = CacheGet( instance.m_ColorMeshHandle );
@@ -3483,7 +3485,7 @@ void CModelRender::ComputeModelVertexLightingOld( mstudiomodel_t *pModel,
 //-----------------------------------------------------------------------------
 // New-style computation of vertex lighting ( Not Used Yet )
 //-----------------------------------------------------------------------------
-void CModelRender::ComputeModelVertexLighting( IHandleEntity *pProp, 
+void CModelRender::ComputeModelVertexLighting(model_t* pWorld, IHandleEntity *pProp, 
 	mstudiomodel_t *pModel, OptimizedModel::ModelLODHeader_t *pVtxLOD,
 	matrix3x4_t& matrix, Vector4D *pTempMem, color24 *pLighting )
 {
@@ -3506,7 +3508,7 @@ void CModelRender::ComputeModelVertexLighting( IHandleEntity *pProp,
 		const Vector &normal = *vertData->Normal( i );
 		VectorTransform( pos, matrix, worldPos );
 		VectorRotate( normal, matrix, worldNormal );
-		bool bNonSolid = ComputeVertexLightingFromSphericalSamples( worldPos, worldNormal, pProp, &(pTempMem[i].AsVector3D()) );
+		bool bNonSolid = ComputeVertexLightingFromSphericalSamples(pWorld, worldPos, worldNormal, pProp, &(pTempMem[i].AsVector3D()) );
 		
 		int nByte = i >> 3;
 		int nBit = i & 0x7;
@@ -3665,7 +3667,7 @@ void CModelRender::ValidateStaticPropColorData( ModelInstanceHandle_t handle )
 		return;
 	}
 
-	studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( pInstance->m_pModel->studio );
+	studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( pInstance->m_pModel->GetStudio() );
 
 	HardwareVerts::FileHeader_t *pVhvHdr = (HardwareVerts::FileHeader_t *)utlBuf.Base();
 	if ( pVhvHdr->m_nVersion != VHV_VERSION || 
@@ -4021,7 +4023,7 @@ bool CModelRender::LoadStaticPropColorData( IHandleEntity *pProp, DataCacheHandl
 // Returns FALSE if data not available or error. For retry polling pattern.
 // Resturns TRUE if operation succesful or in progress (succeeds later).
 //-----------------------------------------------------------------------------
-bool CModelRender::UpdateStaticPropColorData( IHandleEntity *pProp, ModelInstanceHandle_t handle )
+bool CModelRender::UpdateStaticPropColorData(model_t* pWorld, IHandleEntity *pProp, ModelInstanceHandle_t handle )
 {
 	MDLCACHE_CRITICAL_SECTION_( g_pMDLCache );
 
@@ -4096,8 +4098,8 @@ bool CModelRender::UpdateStaticPropColorData( IHandleEntity *pProp, ModelInstanc
 		bDebugColor = true;
 	}
 
-	studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( inst.m_pModel->studio );
-	studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( inst.m_pModel->studio );
+	studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( inst.m_pModel->GetStudio() );
+	studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( inst.m_pModel->GetStudio() );
 	Assert( pStudioHdr && pStudioHWData );
 
 	if ( !bDebugColor && ( inst.m_nFlags & MODEL_INSTANCE_HAS_DISKCOMPILED_COLOR ) )
@@ -4150,7 +4152,7 @@ bool CModelRender::UpdateStaticPropColorData( IHandleEntity *pProp, ModelInstanc
 	LightingState_t lightingState;
 	if ( (inst.m_nFlags & MODEL_INSTANCE_HAS_STATIC_LIGHTING) && inst.m_LightCacheHandle )
 	{
-		lightingState = *(LightcacheGetStatic( inst.m_LightCacheHandle, NULL, lightCacheFlags ));
+		lightingState = *(LightcacheGetStatic(pWorld, inst.m_LightCacheHandle, NULL, lightCacheFlags ));
 	}
 	else
 	{
@@ -4158,7 +4160,7 @@ bool CModelRender::UpdateStaticPropColorData( IHandleEntity *pProp, ModelInstanc
 		Vector entOrigin;
 		R_ComputeLightingOrigin( inst.m_pRenderable, pStudioHdr, matrix, entOrigin );
 		LightcacheGetDynamic_Stats stats;
-		LightcacheGetDynamic( entOrigin, lightingState, stats, lightCacheFlags );
+		LightcacheGetDynamic(pWorld, entOrigin, lightingState, stats, lightCacheFlags );
 	}
 
 	// See if the studiohdr wants to use constant directional light, ie
@@ -4289,33 +4291,33 @@ void CModelRender::ReleaseAllStaticPropColorData( void )
 }
 
 
-void CModelRender::RestoreAllStaticPropColorData( void )
+void CModelRender::RestoreAllStaticPropColorData( IVModel* pWorld )
 {
 #if !defined( SWDS )
-	if ( !g_pHost->Host_GetWorldModel())
+	if ( !pWorld)//g_pHost->Host_GetWorldModel()
 		return;
 
 	// invalidate all static lighting cache data
-	InvalidateStaticLightingCache();
+	InvalidateStaticLightingCache((model_t*)pWorld);
 
 	// rebake
 	FOR_EACH_LL( m_ModelInstances, i )
 	{
-		UpdateStaticPropColorData( m_ModelInstances[i].m_pRenderable->GetIClientUnknown(), i );
+		UpdateStaticPropColorData((model_t*)pWorld, m_ModelInstances[i].m_pRenderable->GetIClientUnknown(), i );
 	}
 #endif
 }
 
-void RestoreAllStaticPropColorData( void )
+void RestoreAllStaticPropColorData( model_t* pWorld )
 {
-	s_ModelRender.RestoreAllStaticPropColorData();
+	s_ModelRender.RestoreAllStaticPropColorData(pWorld);
 }
 
 
 //-----------------------------------------------------------------------------
 // Creates, destroys instance data to be associated with the model
 //-----------------------------------------------------------------------------
-ModelInstanceHandle_t CModelRender::CreateInstance( IClientRenderable *pRenderable, LightCacheHandle_t *pCache )
+ModelInstanceHandle_t CModelRender::CreateInstance(IVModel* pWorld, IClientRenderable *pRenderable, LightCacheHandle_t *pCache )
 {
 	Assert( pRenderable );
 
@@ -4358,12 +4360,12 @@ ModelInstanceHandle_t CModelRender::CreateInstance( IClientRenderable *pRenderab
 		if ( !IsX360() || instance.m_ColorMeshHandle == DC_INVALID_HANDLE )
 		{
 			// builds out color meshes or loads disk colors, now at load/create time
-			RecomputeStaticLighting( handle );
+			RecomputeStaticLighting((model_t*)pWorld, handle );
 		}
 		else
 			if ( r_decalstaticprops.GetBool() && instance.m_LightCacheHandle )
 			{
-				instance.m_AmbientLightingState = *(LightcacheGetStatic( *pCache, NULL, LIGHTCACHEFLAGS_STATIC ));
+				instance.m_AmbientLightingState = *(LightcacheGetStatic((model_t*)pWorld, *pCache, NULL, LIGHTCACHEFLAGS_STATIC ));
 			}
 	}
 	
@@ -4422,7 +4424,7 @@ LightCacheHandle_t CModelRender::GetStaticLighting( ModelInstanceHandle_t handle
 // Callers use this to track state in a retry pattern, so the expensive computation
 // only happens once as needed or can continue to be polled until success.
 //-----------------------------------------------------------------------------
-bool CModelRender::RecomputeStaticLighting( ModelInstanceHandle_t handle )
+bool CModelRender::RecomputeStaticLighting(IVModel* pWorld, ModelInstanceHandle_t handle )
 {
 #ifndef SWDS
 	if ( handle == MODEL_INSTANCE_INVALID )
@@ -4440,7 +4442,7 @@ bool CModelRender::RecomputeStaticLighting( ModelInstanceHandle_t handle )
 	Assert( modelloader->IsLoaded( instance.m_pModel ) && ( instance.m_pModel->type == mod_studio ) );
 
 	// get data, possibly delayed due to async
-	studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( instance.m_pModel->studio );
+	studiohdr_t *pStudioHdr = g_pMDLCache->GetStudioHdr( instance.m_pModel->GetStudio() );
 	if ( !pStudioHdr )
 	{
 		// data not available
@@ -4450,7 +4452,7 @@ bool CModelRender::RecomputeStaticLighting( ModelInstanceHandle_t handle )
 	if ( pStudioHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP )
 	{
 		// get data, possibly delayed due to async
-		studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( instance.m_pModel->studio );
+		studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( instance.m_pModel->GetStudio() );
 		if ( !pStudioHWData )
 		{
 			// data not available
@@ -4459,10 +4461,10 @@ bool CModelRender::RecomputeStaticLighting( ModelInstanceHandle_t handle )
 
 		if ( r_decalstaticprops.GetBool() && instance.m_LightCacheHandle )
 		{
-			instance.m_AmbientLightingState = *(LightcacheGetStatic( instance.m_LightCacheHandle, NULL, LIGHTCACHEFLAGS_STATIC ));
+			instance.m_AmbientLightingState = *(LightcacheGetStatic((model_t*)pWorld, instance.m_LightCacheHandle, NULL, LIGHTCACHEFLAGS_STATIC ));
 		}
 
-		return UpdateStaticPropColorData( instance.m_pRenderable->GetIClientUnknown(), handle );
+		return UpdateStaticPropColorData((model_t*)pWorld, instance.m_pRenderable->GetIClientUnknown(), handle );
 	}
 
 #endif
@@ -4719,12 +4721,12 @@ void CModelRender::AddDecalInternal( ModelInstanceHandle_t handle, Ray_t const& 
 	Assert( modelloader->IsLoaded( inst.m_pModel ) && ( inst.m_pModel->type == mod_studio ) );
 	if ( inst.m_DecalHandle == STUDIORENDER_DECAL_INVALID )
 	{
-		studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( inst.m_pModel->studio );
+		studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( inst.m_pModel->GetStudio() );
 		inst.m_DecalHandle = g_pStudioRender->CreateDecalList( pStudioHWData );
 	}
 
 	matrix3x4_t *pBoneToWorld = SetupModelState( inst.m_pRenderable );
-	g_pStudioRender->AddDecal( inst.m_DecalHandle, g_pMDLCache->GetStudioHdr( inst.m_pModel->studio ),
+	g_pStudioRender->AddDecal( inst.m_DecalHandle, g_pMDLCache->GetStudioHdr( inst.m_pModel->GetStudio() ),
 		pBoneToWorld, ray, decalUp, pDecalMaterial, radius, body, noPokeThru, maxLODToDecal );
 }
 

@@ -209,7 +209,7 @@ public:
 	virtual bool		IsConsoleVisible();
 	virtual int			GetPointContents( const Vector &vecPosition );
 	virtual int			GetActiveDLights( dlight_t *pList[MAX_DLIGHTS] );
-	virtual int			GetLightingConditions( const Vector &vecPosition, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights );
+	virtual int			GetLightingConditions(IVModel* pWorld, const Vector &vecPosition, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights );
 
 	// precache methods
 	virtual bool		PrecacheSound( const char *pName, bool bPreload = false );
@@ -318,11 +318,11 @@ int CEngineTool::GetActiveDLights( dlight_t *pList[MAX_DLIGHTS] )
 
 bool WorldLightToMaterialLight( dworldlight_t* pWorldLight, LightDesc_t& light );
 
-int CEngineTool::GetLightingConditions( const Vector &vecLightingOrigin, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights )
+int CEngineTool::GetLightingConditions(IVModel* pWorld, const Vector &vecLightingOrigin, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights )
 {
 	LightcacheGetDynamic_Stats stats;
 	LightingState_t state;
-	LightcacheGetDynamic( vecLightingOrigin, state, stats );
+	LightcacheGetDynamic((model_t*)pWorld, vecLightingOrigin, state, stats );
 	Assert( state.numlights >= 0 && state.numlights < MAXLOCALLIGHTS );
 	memcpy( pColors, state.r_boxcolor, sizeof(state.r_boxcolor) );
 

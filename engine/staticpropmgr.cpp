@@ -184,7 +184,7 @@ public:
 	virtual bool			IsTwoPass( void );
 	virtual void			OnThreadedDrawSetup() {}
 	virtual const model_t*	GetModel( ) const;
-	virtual int				DrawModel( int flags );
+	virtual int				DrawModel(IVModel* pWorld, int flags );
 	virtual void			ComputeFxBlend( );
 	virtual int				GetFxBlend( );
 	virtual void			GetColorModulation( float* color );
@@ -249,8 +249,8 @@ public:
 	void InsertPropIntoKDTree();
 	void RemovePropFromKDTree();
 
-	void PrecacheLighting();
-	void RecomputeStaticLighting();
+	void PrecacheLighting(model_t* pWorld);
+	void RecomputeStaticLighting(model_t* pWorld);
 
 	int LeafCount() const;
 	int FirstLeaf() const;
@@ -270,7 +270,7 @@ public:
 	void SetFadeIndex( unsigned short nIndex ) { m_FadeIndex = nIndex; }
 	unsigned short FadeIndex() const { return m_FadeIndex; }
 	float ForcedFadeScale() const { return m_flForcedFadeScale; }
-	int	DrawModelSlow( int flags );
+	int	DrawModelSlow(model_t* pWorld, int flags );
 
 private:
 	// Diagnostic information for static props
@@ -326,7 +326,7 @@ private:
 	Vector					m_LightingOrigin;
 };
 
-
+CStaticProp aaa;
 //-----------------------------------------------------------------------------
 // The engine's static prop manager
 //-----------------------------------------------------------------------------
@@ -341,12 +341,12 @@ public:
 	virtual bool Init();
 	virtual void Shutdown();
 	virtual void LevelInit();
-	virtual void LevelInitClient();
+	virtual void LevelInitClient(model_t* pWorld);
 	virtual void LevelShutdown();
 	virtual void LevelShutdownClient();
 	virtual bool IsPropInPVS( IHandleEntity *pHandleEntity, const byte *pVis ) const;
 	virtual ICollideable *GetStaticProp( IHandleEntity *pHandleEntity );
-	virtual void RecomputeStaticLighting( );
+	virtual void RecomputeStaticLighting( model_t* pWorld);
 	virtual LightCacheHandle_t GetLightCacheHandleForStaticProp( IHandleEntity *pHandleEntity );
 	virtual bool IsStaticProp( IHandleEntity *pHandleEntity ) const;
 	virtual bool IsStaticProp( CBaseHandle handle ) const;
@@ -362,7 +362,7 @@ public:
 		int staticPropIndex, int decalIndex, bool doTrace, trace_t& tr, bool bUseColor, Color cColor );
 	virtual void AddShadowToStaticProp( unsigned short shadowHandle, IClientRenderable* pRenderable );
 	virtual void RemoveAllShadowsFromStaticProp( IClientRenderable* pRenderable );
-	virtual void GetStaticPropMaterialColorAndLighting( trace_t* pTrace,
+	virtual void GetStaticPropMaterialColorAndLighting(IVModel* pWorld, trace_t* pTrace,
 		int staticPropIndex, Vector& lighting, Vector& matColor );
 	virtual void CreateVPhysicsRepresentations( IPhysicsEnvironment	*physenv, IVPhysicsKeyHandler *pDefaults, void *pGameData );
 
@@ -382,14 +382,14 @@ public:
 
 	// Computes the opacity for a single static prop
 	void ComputePropOpacity( CStaticProp &prop );
-	void DrawStaticProps( IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe );
-	void DrawStaticProps_Slow( IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe );
-	void DrawStaticProps_Fast( IClientRenderable **pProps, int count, bool bShadowDepth );
-	void DrawStaticProps_FastPipeline( IClientRenderable **pProps, int count, bool bShadowDepth );
+	void DrawStaticProps(IVModel* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe );
+	void DrawStaticProps_Slow(model_t* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe );
+	void DrawStaticProps_Fast(model_t* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth );
+	void DrawStaticProps_FastPipeline(model_t* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth );
 
 private:
 	void OutputLevelStats( void );
-	void PrecacheLighting();
+	void PrecacheLighting(model_t* pWorld);
 
 	// Methods associated with unserializing static props
 	void UnserializeModelDict( CUtlBuffer& buf );
@@ -596,7 +596,7 @@ const Vector& CStaticProp::OBBMins( ) const
 {
 	if ( GetSolid() == SOLID_VPHYSICS )
 	{
-		return m_pModel->mins;
+		return m_pModel->GetMins();
 	}
 	Vector& tv = AllocTempVector();
 	// FIXME: why doesn't this just return m_RenderBBoxMin?
@@ -608,7 +608,7 @@ const Vector& CStaticProp::OBBMaxs( ) const
 {
 	if ( GetSolid() == SOLID_VPHYSICS )
 	{
-		return m_pModel->maxs;
+		return m_pModel->GetMaxs();
 	}
 	Vector& tv = AllocTempVector();
 	// FIXME: why doesn't this just return m_RenderBBoxMax?
@@ -854,7 +854,7 @@ bool CStaticProp::UsesPowerOfTwoFrameBufferTexture( void )
 	if ( !m_pModel )
 		return false;
 
-	return ( m_pModel->flags & MODELFLAG_STUDIOHDR_USES_FB_TEXTURE ) ? true : false;
+	return ( m_pModel->GetModelFlag() & MODELFLAG_STUDIOHDR_USES_FB_TEXTURE) ? true : false;
 }
 
 bool CStaticProp::UsesFullFrameBufferTexture( void )
@@ -903,22 +903,22 @@ bool CStaticProp::ShouldCacheRenderInfo()
 }
 
 
-void CStaticProp::PrecacheLighting()
+void CStaticProp::PrecacheLighting(model_t* pWorld)
 {
 #ifndef SWDS
 	if ( m_ModelInstance == MODEL_INSTANCE_INVALID )
 	{
-		LightCacheHandle_t lightCacheHandle = CreateStaticLightingCache( m_LightingOrigin, m_WorldRenderBBoxMin, m_WorldRenderBBoxMax );
-		m_ModelInstance = modelrender->CreateInstance( this, &lightCacheHandle );
+		LightCacheHandle_t lightCacheHandle = CreateStaticLightingCache(pWorld, m_LightingOrigin, m_WorldRenderBBoxMin, m_WorldRenderBBoxMax );
+		m_ModelInstance = modelrender->CreateInstance(pWorld, this, &lightCacheHandle );
 	}
 #endif
 }
 
 
-void CStaticProp::RecomputeStaticLighting( void )
+void CStaticProp::RecomputeStaticLighting( model_t* pWorld )
 {
 #ifndef SWDS
-	modelrender->RecomputeStaticLighting( m_ModelInstance );
+	modelrender->RecomputeStaticLighting(pWorld, m_ModelInstance );
 #endif
 }
 
@@ -966,7 +966,7 @@ void CStaticProp::DisplayStaticPropInfo( int nInfoType )
 //-----------------------------------------------------------------------------
 // Draws the model
 //-----------------------------------------------------------------------------
-int	CStaticProp::DrawModelSlow( int flags )
+int	CStaticProp::DrawModelSlow(model_t* pWorld, int flags )
 {
 #ifndef SWDS
 	VPROF_BUDGET( "CStaticProp::DrawModel", VPROF_BUDGETGROUP_STATICPROP_RENDERING );
@@ -1032,7 +1032,7 @@ int	CStaticProp::DrawModelSlow( int flags )
 	pRenderContext->MatrixMode( MATERIAL_MODEL );
 	pRenderContext->PushMatrix();
 	pRenderContext->LoadIdentity();
-	int drawn = modelrender->DrawModelEx( sInfo );
+	int drawn = modelrender->DrawModelEx(pWorld, sInfo );
 	pRenderContext->MatrixMode( MATERIAL_MODEL );
 	pRenderContext->PopMatrix();
 
@@ -1052,7 +1052,7 @@ int	CStaticProp::DrawModelSlow( int flags )
 		else if ( m_nSolidType == SOLID_BBOX )
 		{
 			static Color debugColor( 0, 255, 255, 255 );
-			RenderWireframeBox( m_Origin, vec3_angle, m_pModel->mins, m_pModel->maxs, debugColor, true );
+			RenderWireframeBox( m_Origin, vec3_angle, m_pModel->GetMins(), m_pModel->GetMaxs(), debugColor, true);
 		}
 	}
 
@@ -1062,7 +1062,7 @@ int	CStaticProp::DrawModelSlow( int flags )
 #endif
 }
 
-int CStaticProp::DrawModel( int flags )
+int CStaticProp::DrawModel(IVModel* pWorld, int flags )
 {
 #ifndef SWDS
 	VPROF_BUDGET( "CStaticProp::DrawModel", VPROF_BUDGETGROUP_STATICPROP_RENDERING );
@@ -1071,7 +1071,7 @@ int CStaticProp::DrawModel( int flags )
 		return 0;
 
 	if ( IsUsingStaticPropDebugModes() || (flags & STUDIO_WIREFRAME_VCOLLIDE) )
-		return DrawModelSlow(flags);
+		return DrawModelSlow((model_t*)pWorld,flags);
 
 	flags |= STUDIO_STATIC_LIGHTING;
 
@@ -1084,7 +1084,7 @@ int CStaticProp::DrawModel( int flags )
 	pRenderContext->MatrixMode( MATERIAL_MODEL );
 	pRenderContext->PushMatrix();
 	pRenderContext->LoadIdentity();
-	int drawn = modelrender->DrawModelExStaticProp( sInfo );
+	int drawn = modelrender->DrawModelExStaticProp(pWorld, sInfo );
 	pRenderContext->MatrixMode( MATERIAL_MODEL );
 	pRenderContext->PopMatrix();
 
@@ -1107,7 +1107,7 @@ void CStaticProp::InsertPropIntoKDTree()
 	Vector mins, maxs;
 	matrix3x4_t propToWorld;
 	AngleMatrix( m_Angles, m_Origin, propToWorld );
-	TransformAABB( propToWorld, m_pModel->mins, m_pModel->maxs, mins, maxs ); 
+	TransformAABB( propToWorld, m_pModel->GetMins(), m_pModel->GetMaxs(), mins, maxs);
 
 	// If it's using vphysics, get a good AABB
 	if ( m_nSolidType == SOLID_VPHYSICS )
@@ -1202,7 +1202,7 @@ void CStaticProp::CreateVPhysics( IPhysicsEnvironment *pPhysEnv, IVPhysicsKeyHan
 #endif
 
 		// If there's no collide, we need a bbox...
-		pPhysCollide = physcollision->BBoxToCollide( m_pModel->mins, m_pModel->maxs );
+		pPhysCollide = physcollision->BBoxToCollide( m_pModel->GetMins(), m_pModel->GetMaxs());
 		solid.params = g_PhysDefaultObjectParams;
 	}
 
@@ -1536,7 +1536,7 @@ void CStaticPropMgr::LevelShutdown()
 	m_StaticPropFade.Purge();
 }
 
-void CStaticPropMgr::LevelInitClient()
+void CStaticPropMgr::LevelInitClient(model_t* pWorld)
 {
 #ifndef SWDS
 	if ( sv.IsDedicated() ) 
@@ -1578,7 +1578,7 @@ void CStaticPropMgr::LevelInitClient()
 		}
 	}
 
-	PrecacheLighting();
+	PrecacheLighting(pWorld);
 
 	m_bClientInitialized = true;
 
@@ -1853,7 +1853,7 @@ bool CStaticPropMgr::PropHasBakedLightingDisabled( IHandleEntity *pHandleEntity 
 //-----------------------------------------------------------------------------
 // Compute static lighting
 //-----------------------------------------------------------------------------
-void CStaticPropMgr::PrecacheLighting()
+void CStaticPropMgr::PrecacheLighting(model_t* pWorld)
 {
 	COM_TimestampedLog( "CStaticPropMgr::PrecacheLighting - start");
 
@@ -1871,7 +1871,7 @@ void CStaticPropMgr::PrecacheLighting()
 					continue;
 				}
 
-				studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( ( (model_t*)m_StaticProps[i].GetModel() )->studio );
+				studiohwdata_t *pStudioHWData = g_pMDLCache->GetHardwareData( ( (model_t*)m_StaticProps[i].GetModel() )->GetStudio() );
 				for ( int lodID = pStudioHWData->m_RootLOD; lodID < pStudioHWData->m_NumLODs; lodID++ )
 				{
 					studioloddata_t *pLOD = &pStudioHWData->m_pLODs[lodID];
@@ -1895,20 +1895,20 @@ void CStaticPropMgr::PrecacheLighting()
 		MDLCACHE_CRITICAL_SECTION_( g_pMDLCache );
 		if ( !m_StaticProps[i].ShouldDraw() )
 			continue;
-		m_StaticProps[i].PrecacheLighting();
+		m_StaticProps[i].PrecacheLighting(pWorld);
 	}
 
 	COM_TimestampedLog( "CStaticPropMgr::PrecacheLighting - end");
 }
 
-void CStaticPropMgr::RecomputeStaticLighting( )
+void CStaticPropMgr::RecomputeStaticLighting(model_t* pWorld )
 {
 	int i = m_StaticProps.Count();
 	while ( --i >= 0 )
 	{
 		if ( !m_StaticProps[i].ShouldDraw() )
 			continue;
-		m_StaticProps[i].RecomputeStaticLighting();
+		m_StaticProps[i].RecomputeStaticLighting(pWorld);
 	}
 }
 
@@ -1939,7 +1939,7 @@ bool CStaticPropMgr::IsPropInPVS( IHandleEntity *pHandleEntity, const byte *pVis
 }
 
 
-void CStaticPropMgr::DrawStaticProps_Slow( IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe )
+void CStaticPropMgr::DrawStaticProps_Slow(model_t* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe )
 {
 	// slow mode
 	MDLCACHE_CRITICAL_SECTION_( g_pMDLCache );
@@ -1952,11 +1952,11 @@ void CStaticPropMgr::DrawStaticProps_Slow( IClientRenderable **pProps, int count
 	for ( int i = 0; i < count; i++ )
 	{
 		CStaticProp *pProp = (CStaticProp *)(pProps[i]);
-		pProp->DrawModelSlow( flags );
+		pProp->DrawModelSlow(pWorld, flags );
 	}
 }
 
-void CStaticPropMgr::DrawStaticProps_Fast( IClientRenderable **pProps, int count, bool bShadowDepth )
+void CStaticPropMgr::DrawStaticProps_Fast(model_t* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth )
 {
 #ifndef SWDS
 	float color[3];
@@ -1991,7 +1991,7 @@ void CStaticPropMgr::DrawStaticProps_Fast( IClientRenderable **pProps, int count
 		sInfo.pLightingOrigin = &pProp->m_LightingOrigin;
 		sInfo.pModelToWorld = &pProp->m_ModelToWorld;
 		sInfo.pRenderable = pProps[i];
-		modelrender->DrawModelExStaticProp( sInfo );
+		modelrender->DrawModelExStaticProp(pWorld, sInfo );
 	}
 	// Restore the matrices if we're skinning
 	pRenderContext->MatrixMode( MATERIAL_MODEL );
@@ -2001,14 +2001,14 @@ void CStaticPropMgr::DrawStaticProps_Fast( IClientRenderable **pProps, int count
 
 
 // NOTE: This is a work in progress for a new static prop (eventually new model) rendering pipeline
-void CStaticPropMgr::DrawStaticProps_FastPipeline( IClientRenderable **pProps, int count, bool bShadowDepth )
+void CStaticPropMgr::DrawStaticProps_FastPipeline(model_t* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth )
 {
 	const int MAX_OBJECTS = 2048;
 	StaticPropRenderInfo_t propList[MAX_OBJECTS];
 	int listCount = 0;
 	if ( count > MAX_OBJECTS )
 	{
-		DrawStaticProps_FastPipeline( pProps + MAX_OBJECTS, count - MAX_OBJECTS, bShadowDepth );
+		DrawStaticProps_FastPipeline(pWorld, pProps + MAX_OBJECTS, count - MAX_OBJECTS, bShadowDepth );
 	}
 
 	for ( int i = 0; i < count; i++ )
@@ -2024,12 +2024,12 @@ void CStaticPropMgr::DrawStaticProps_FastPipeline( IClientRenderable **pProps, i
 		propList[listCount].pLightingOrigin = &pProp->m_LightingOrigin;
 		listCount++;
 	}
-	modelrender->DrawStaticPropArrayFast( propList, listCount, bShadowDepth );
+	modelrender->DrawStaticPropArrayFast(pWorld, propList, listCount, bShadowDepth );
 }
 
 // NOTE: Set this to zero to revert to the previous static prop lighting behavior
 ConVar pipeline_static_props("pipeline_static_props", "1");
-void CStaticPropMgr::DrawStaticProps( IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe )
+void CStaticPropMgr::DrawStaticProps(IVModel* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe )
 {
 	VPROF_BUDGET( "CStaticPropMgr::DrawStaticProps", VPROF_BUDGETGROUP_STATICPROP_RENDERING );
 
@@ -2038,7 +2038,7 @@ void CStaticPropMgr::DrawStaticProps( IClientRenderable **pProps, int count, boo
 
 	if ( IsUsingStaticPropDebugModes() || drawVCollideWireframe )
 	{
-		DrawStaticProps_Slow( pProps, count, bShadowDepth, drawVCollideWireframe );
+		DrawStaticProps_Slow((model_t*)pWorld, pProps, count, bShadowDepth, drawVCollideWireframe );
 	}
 	else
 	{
@@ -2048,11 +2048,11 @@ void CStaticPropMgr::DrawStaticProps( IClientRenderable **pProps, int count, boo
 			g_pMaterialSystemHardwareConfig->SupportsColorOnSecondStream() &&
 			g_pMaterialSystemHardwareConfig->SupportsStaticPlusDynamicLighting() )
 		{
-			DrawStaticProps_FastPipeline( pProps, count, bShadowDepth );
+			DrawStaticProps_FastPipeline((model_t*)pWorld, pProps, count, bShadowDepth );
 		}
 		else
 		{
-			DrawStaticProps_Fast( pProps, count, bShadowDepth );
+			DrawStaticProps_Fast((model_t*)pWorld, pProps, count, bShadowDepth );
 		}
 	}
 }
@@ -2359,7 +2359,7 @@ void CStaticPropMgr::RemoveAllShadowsFromStaticProp( IClientRenderable* pRendera
 //-----------------------------------------------------------------------------
 // Gets the lighting + material color of a static prop
 //-----------------------------------------------------------------------------
-void CStaticPropMgr::GetStaticPropMaterialColorAndLighting( trace_t* pTrace,
+void CStaticPropMgr::GetStaticPropMaterialColorAndLighting(IVModel* pWorld, trace_t* pTrace,
 														   int staticPropIndex, Vector& lighting, Vector& matColor )
 {
 #ifndef SWDS
@@ -2375,7 +2375,7 @@ void CStaticPropMgr::GetStaticPropMaterialColorAndLighting( trace_t* pTrace,
 	CStaticProp& prop = m_StaticProps[staticPropIndex];
 
 	// Ask the model info about what we need to know
-	prop.GetModel()->GetModelMaterialColorAndLighting( //modelinfoclient
+	prop.GetModel()->GetModelMaterialColorAndLighting(pWorld, //modelinfoclient
 		prop.GetRenderOrigin(), prop.GetRenderAngles(), pTrace, lighting, matColor );
 #endif
 }

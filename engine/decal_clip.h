@@ -48,6 +48,7 @@ CDecalVert* R_DoDecalSHClip(
 
 // Generate clipped vertex list for decal pdecal projected onto polygon psurf
 CDecalVert* R_DecalVertsClip( 
+	model_t* pWorld,
 	CDecalVert *pOutVerts, 
 	decal_t *pDecal, 
 	SurfaceHandle_t surfID, 

@@ -70,7 +70,7 @@ END_NETWORK_TABLE()
 		}
 	}
 
-	int CBaseCSGrenadeProjectile::DrawModel( int flags )
+	int CBaseCSGrenadeProjectile::DrawModel(IVModel* pWorld, int flags )
 	{
 		// During the first half-second of our life, don't draw ourselves if he's
 		// still playing his throw animation.
@@ -87,7 +87,7 @@ END_NETWORK_TABLE()
 			}
 		}
 
-		return BaseClass::DrawModel( flags );
+		return BaseClass::DrawModel(pWorld, flags );
 	}
 
 	void CBaseCSGrenadeProjectile::Spawn()

@@ -484,7 +484,7 @@ public:
 	bool					IsCarrierAlive() const;
 
 	// Returns the aiment render origin + angles
-	virtual int				DrawModel( int flags );
+	virtual int				DrawModel(IVModel* pWorld, int flags );
 	virtual bool			ShouldDraw( void );
 	virtual bool			ShouldDrawPickup( void );
 	virtual void			HandleInput( void ) { return; };

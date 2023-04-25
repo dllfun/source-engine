@@ -42,31 +42,31 @@ extern MaterialSystem_SortInfo_t *materialSortInfoArray;
 extern bool g_LostVideoMemory;
 
 void MaterialSystem_DestroySortinfo( void );
-void MaterialSystem_CreateSortinfo( void );
+void MaterialSystem_CreateSortinfo( model_t* pWorld );
 
-void InitMaterialSystem( void );
+void InitMaterialSystem(void);
 void ShutdownMaterialSystem( void );
 void InitStartupScreen();
-void UpdateMaterialSystemConfig( void );
+void UpdateMaterialSystemConfig(void);
 bool MaterialConfigLightingChanged();
 void ClearMaterialConfigLightingChanged();
 void OverrideMaterialSystemConfig( MaterialSystem_Config_t &config );
-void MaterialSystem_RegisterLightmapSurfaces( void );
+void MaterialSystem_RegisterLightmapSurfaces(model_t* pWorld);
 
 
-IMaterial *GetMaterialAtCrossHair( void );
+IMaterial *GetMaterialAtCrossHair(model_t* pWorld );
 
-bool SurfHasBumpedLightmaps( SurfaceHandle_t surfID ,worldbrushdata_t* pBrushData);
-bool SurfNeedsBumpedLightmaps( SurfaceHandle_t surfID );
-bool SurfHasLightmap( SurfaceHandle_t surfID );
-bool SurfNeedsLightmap( SurfaceHandle_t surfID );
+bool SurfHasBumpedLightmaps(model_t* pWorld, SurfaceHandle_t surfID );
+bool SurfNeedsBumpedLightmaps(model_t* pWorld, SurfaceHandle_t surfID );
+bool SurfHasLightmap(model_t* pWorld, SurfaceHandle_t surfID );
+bool SurfNeedsLightmap(model_t* pWorld, SurfaceHandle_t surfID );
 
 void InitWellKnownRenderTargets( void );
 void ShutdownWellKnownRenderTargets( void );
 
 void HandleServerAllowColorCorrection();
 
-void InitMaterialSystemConfig( bool bInEditMode );
+void InitMaterialSystemConfig(bool bInEditMode );
 
 #ifndef SWDS
 #	ifdef NEWMESH
@@ -102,7 +102,7 @@ public:
 	void Init( int maxSortIDs, int minMaterialLists );
 	void Shutdown();
 	void Reset();
-	void AddSurfaceToTail(SurfaceHandle_t pSurface, int nSortGroup, int sortID );
+	void AddSurfaceToTail(model_t* pWorld,SurfaceHandle_t pSurface, int nSortGroup, int sortID );
 	SurfaceHandle_t GetSurfaceAtHead( const surfacesortgroup_t &group ) const;
 	void GetSurfaceListForGroup( CUtlVector<SurfaceHandle_t> &list, const surfacesortgroup_t &group ) const;
 	inline int GetIndexForSortID( int nSortGroup, int sortID ) const
@@ -191,10 +191,10 @@ private:
 //-----------------------------------------------------------------------------
 int SortInfoToLightmapPage( int sortID );
 
-void BuildMSurfaceVerts( const struct worldbrushdata_t *pBrushData, SurfaceHandle_t surfID, Vector *verts, Vector2D *texCoords, Vector2D lightCoords[][4] );
-void BuildMSurfacePrimVerts( worldbrushdata_t *pBrushData, mprimitive_t *prim, CMeshBuilder &builder, SurfaceHandle_t surfID );
-void BuildMSurfacePrimIndices( worldbrushdata_t *pBrushData, mprimitive_t *prim, CMeshBuilder &builder );
-void BuildBrushModelVertexArray(worldbrushdata_t *pBrushData, SurfaceHandle_t surfID, BrushVertex_t* pVerts );
+void BuildMSurfaceVerts(model_t* pWorld, SurfaceHandle_t surfID, Vector *verts, Vector2D *texCoords, Vector2D lightCoords[][4] );
+void BuildMSurfacePrimVerts(model_t* pWorld, mprimitive_t *prim, CMeshBuilder &builder, SurfaceHandle_t surfID );
+void BuildMSurfacePrimIndices(model_t* pWorld, mprimitive_t *prim, CMeshBuilder &builder );
+void BuildBrushModelVertexArray(model_t* pWorld, SurfaceHandle_t surfID, BrushVertex_t* pVerts );
 
 // Used for debugging - force it to release and restore all material system objects.
 void ForceMatSysRestore();
@@ -213,12 +213,12 @@ struct SurfaceCtx_t
 };
 
 // Compute a context necessary for creating vertex data
-void SurfSetupSurfaceContext( SurfaceCtx_t& ctx, SurfaceHandle_t surfID );
+void SurfSetupSurfaceContext(model_t* pWorld, SurfaceCtx_t& ctx, SurfaceHandle_t surfID );
 
 // Compute texture and lightmap coordinates
-void SurfComputeTextureCoordinate( SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
+void SurfComputeTextureCoordinate(model_t* pWorld, SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
 									    Vector const& vec, Vector2D& uv );
-void SurfComputeLightmapCoordinate( SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
+void SurfComputeLightmapCoordinate(model_t* pWorld, SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
 										 Vector const& vec, Vector2D& uv );
 
 extern ConVar mat_fastspecular;

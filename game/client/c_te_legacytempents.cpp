@@ -173,6 +173,7 @@ int C_LocalTempEntity::DrawStudioModel( int flags )
 	else
 	{
 		drawn = modelrender->DrawModel( 
+			engineClient->GetWorldModel(),
 			flags, 
 			this,
 			MODEL_INSTANCE_INVALID,
@@ -981,7 +982,7 @@ int BreakModelDrawHelper( C_LocalTempEntity *entity, int flags )
 		sInfo.pLightingOrigin = pLightingOrigin;
 	}
 
-	int drawn = modelrender->DrawModelEx( sInfo );
+	int drawn = modelrender->DrawModelEx(engineClient->GetWorldModel(), sInfo );
 	return drawn;
 }
 

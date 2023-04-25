@@ -96,11 +96,11 @@ class ITexture;
 
 
 // Called each frame to check for reinitializing the lightcache based on cvar changes.
-void R_StudioCheckReinitLightingCache();
+void R_StudioCheckReinitLightingCache(model_t* pWorld);
 
 
 // static prop version
-LightingState_t *LightcacheGetStatic( LightCacheHandle_t cache, ITexture **pEnvCubemap,
+LightingState_t *LightcacheGetStatic(model_t* pWorld, LightCacheHandle_t cache, ITexture **pEnvCubemap,
 				    unsigned int flags = ( LIGHTCACHEFLAGS_STATIC | 
 						                   LIGHTCACHEFLAGS_DYNAMIC | 
 					                       LIGHTCACHEFLAGS_LIGHTSTYLE ) );
@@ -112,38 +112,38 @@ struct LightcacheGetDynamic_Stats
 	bool m_bHasDLights;
 	bool m_bNeedsSwitchableLightStyleUpdate;
 };
-ITexture *LightcacheGetDynamic( const Vector& origin, LightingState_t& lightingState, 
+ITexture *LightcacheGetDynamic(model_t* pWorld, const Vector& origin, LightingState_t& lightingState, 
 							   LightcacheGetDynamic_Stats &stats,
 							   unsigned int flags = ( LIGHTCACHEFLAGS_STATIC | 
 						                              LIGHTCACHEFLAGS_DYNAMIC | 
 					                                  LIGHTCACHEFLAGS_LIGHTSTYLE ), bool bDebugModel=false );
 
 // Reset the light cache.
-void R_StudioInitLightingCache( void );
+void R_StudioInitLightingCache( model_t* pWorld );
 
 // force recomputation for static lighting cache entries
-void InvalidateStaticLightingCache(void);
+void InvalidateStaticLightingCache(model_t* pWorld);
 
 // Compute the comtribution of D- and E- lights at a point + normal
 void ComputeDynamicLighting( const Vector& pt, const Vector* pNormal, Vector& color );
 
 // Computes an average color (of sorts) at a particular point + optional normal
-void ComputeLighting( const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors );
+void ComputeLighting(model_t* pWorld, const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors );
 
 // Finds ambient lights
-dworldlight_t* FindAmbientLight();
+dworldlight_t* FindAmbientLight(model_t* pWorld);
 
 // Precache lighting
-LightCacheHandle_t CreateStaticLightingCache( const Vector& origin, const Vector& mins, const Vector& maxs );
+LightCacheHandle_t CreateStaticLightingCache(model_t* pWorld, const Vector& origin, const Vector& mins, const Vector& maxs );
 void ClearStaticLightingCache();
 
 // Computes the static vertex lighting term from a large number of spherical samples
-bool ComputeVertexLightingFromSphericalSamples( const Vector& vecVertex, 
+bool ComputeVertexLightingFromSphericalSamples(model_t* pWorld, const Vector& vecVertex, 
 	const Vector &vecNormal, IHandleEntity *pIgnoreEnt, Vector *pLinearColor );
 
 bool StaticLightCacheAffectedByDynamicLight( LightCacheHandle_t handle );
-bool StaticLightCacheAffectedByAnimatedLightStyle( LightCacheHandle_t handle );
-bool StaticLightCacheNeedsSwitchableLightUpdate( LightCacheHandle_t handle );
+bool StaticLightCacheAffectedByAnimatedLightStyle(model_t* pWorld, LightCacheHandle_t handle );
+bool StaticLightCacheNeedsSwitchableLightUpdate(model_t* pWorld, LightCacheHandle_t handle );
 
 //-----------------------------------------------------------------------------
 // Adds a world light to the ambient cube

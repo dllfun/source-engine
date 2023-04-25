@@ -299,7 +299,7 @@ public:
 	virtual bool					UsesFullFrameBufferTexture();
 	virtual bool					IgnoresZBuffer( void ) const;
 	virtual const IVModel			*GetModel( void ) const;
-	virtual int						DrawModel( int flags );
+	virtual int						DrawModel(IVModel* pWorld, int flags );
 	virtual void					ComputeFxBlend( void );
 	virtual int						GetFxBlend( void );
 	virtual bool					LODTest() { return true; }   // NOTE: UNUSED

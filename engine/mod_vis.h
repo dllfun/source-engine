@@ -11,7 +11,7 @@
 #endif
 
 
-bool Map_AreAnyLeavesVisible( const struct worldbrushdata_t &worldBrush, int *leafList, int nLeaves );
+bool Map_AreAnyLeavesVisible( model_t* pWorld, int *leafList, int nLeaves );
 
 
 #endif // MOD_VIS_H

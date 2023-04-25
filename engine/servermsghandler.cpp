@@ -239,7 +239,7 @@ void CClientState::Disconnect( const char *pszReason, bool bShowMainMenu )
 
 	S_StopAllSounds( true );
 	
-	R_DecalTermAll();
+	R_DecalTermAll(g_pHost->Host_GetWorldModel());
 
 	if ( m_nMaxClients > 1 )
 	{

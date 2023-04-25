@@ -24,6 +24,7 @@
 #include "bspfile.h"
 #include "bitmap/cubemap.h"
 //#include "gametrace.h"
+#include "bsptreedata.h"
 
 struct edict_t;
 class IVModel;
@@ -148,7 +149,7 @@ public:
 		QAngle const& angles, Vector* pLightingCenter) const = 0;
 	virtual bool IsTranslucentTwoPass() const = 0;
 	virtual MDLHandle_t	GetCacheHandle() const = 0;
-	virtual void GetModelMaterialColorAndLighting(const Vector& origin,
+	virtual void GetModelMaterialColorAndLighting(IVModel* pWorld, const Vector& origin,
 		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) const = 0;
 	virtual void GetModelBounds(Vector& mins, Vector& maxs) const = 0;
 	virtual int GetModelSpriteWidth() const = 0;
@@ -156,7 +157,13 @@ public:
 	virtual const char* GetModelKeyValueText() const = 0;
 	virtual bool IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const = 0;
 
-	
+	// Returns the number of leaves
+	int LeafCount() const;
+	// Enumerates the leaves along a ray, box, etc.
+	virtual bool EnumerateLeavesAtPoint(const Vector& pt, ISpatialLeafEnumerator* pEnum, intp context) = 0;
+	virtual bool EnumerateLeavesInBox(const Vector& mins, const Vector& maxs, ISpatialLeafEnumerator* pEnum, intp context) = 0;
+	virtual bool EnumerateLeavesInSphere(const Vector& center, float radius, ISpatialLeafEnumerator* pEnum, intp context) = 0;
+	virtual bool EnumerateLeavesAlongRay(Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context) = 0;
 };
 
 #endif // CMODEL_H

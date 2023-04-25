@@ -105,7 +105,7 @@ void CParticleSystemQuery::GetLightingAtPoint( const Vector& vecOrigin, Color &c
 	{
 		s_LightMutex.Lock();
 		// Compute our lighting at our position
-		Vector totalColor = engineClient->GetLightForPoint( vecOrigin, true );
+		Vector totalColor = engineClient->GetLightForPoint(engineClient->GetWorldModel(), vecOrigin, true );
 		s_LightMutex.Unlock();
 
 		// Get our lighting information
@@ -127,7 +127,7 @@ void CParticleSystemQuery::SetUpLightingEnvironment( const Vector& pos )
 		return;
 
 	s_LightMutex.Lock();
-	modelrender->SetupLighting( pos );
+	modelrender->SetupLighting(engineClient->GetWorldModel(), pos );
 	s_LightMutex.Unlock();
 #endif
 }

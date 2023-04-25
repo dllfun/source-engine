@@ -962,11 +962,11 @@ void UpdateClassImageEntity(
 	float color[3] = { 1.0f, 1.0f, 1.0f };
 	render->SetColorModulation( color );
 	render->SetBlend( 1.0f );
-	pPlayerModel->DrawModel( STUDIO_RENDER );
+	pPlayerModel->DrawModel(engineClient->GetWorldModel(), STUDIO_RENDER );
 
 	if ( pWeaponModel )
 	{
-		pWeaponModel->DrawModel( STUDIO_RENDER );
+		pWeaponModel->DrawModel(engineClient->GetWorldModel(), STUDIO_RENDER );
 	}
 
 	modelrender->SuppressEngineLighting( false );

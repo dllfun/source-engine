@@ -48,17 +48,17 @@ void SV_ClearWorld (void)
 
 	for ( int i = 0; i < 3; i++ )
 	{
-		if (g_pHost->Host_GetWorldModel()->mins[i] < MIN_COORD_INTEGER || g_pHost->Host_GetWorldModel()->maxs[i] > MAX_COORD_INTEGER )
+		if (g_pHost->Host_GetWorldModel()->GetMins()[i] < MIN_COORD_INTEGER || g_pHost->Host_GetWorldModel()->GetMaxs()[i] > MAX_COORD_INTEGER )
 		{
 			g_pHost->Host_EndGame(true, "Map coordinate extents are too large!!\nCheck for errors!\n" );
 		}
 	}
-	SpatialPartition()->Init(g_pHost->Host_GetWorldModel()->mins, g_pHost->Host_GetWorldModel()->maxs );
+	SpatialPartition()->Init(g_pHost->Host_GetWorldModel()->GetMins(), g_pHost->Host_GetWorldModel()->GetMaxs());
 
 	// Load all static props into the spatial partition
 	StaticPropMgr()->LevelInit();
 #if !defined( SWDS )
-	g_pShadowMgr->LevelInit(g_pHost->Host_GetWorldModel()->brush.pShared->numsurfaces );
+	g_pShadowMgr->LevelInit(g_pHost->Host_GetWorldModel()->GetSurfacesCount() );
 #endif
 }
 

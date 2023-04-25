@@ -3057,7 +3057,7 @@ ConVar r_drawothermodels( "r_drawothermodels", "1", FCVAR_CHEAT, "0=Off, 1=Norma
 // Purpose: Draws the object
 // Input  : flags - 
 //-----------------------------------------------------------------------------
-int C_BaseAnimating::DrawModel( int flags )
+int C_BaseAnimating::DrawModel(IVModel* pWorld, int flags )
 {
 	VPROF_BUDGET( "C_BaseAnimating::DrawModel", VPROF_BUDGETGROUP_MODEL_RENDERING );
 	if ( !m_bReadyToDraw )
@@ -3109,7 +3109,7 @@ int C_BaseAnimating::DrawModel( int flags )
 			if ( follow )
 			{
 				// recompute master entity bone structure
-				int baseDrawn = follow->DrawModel( 0 );
+				int baseDrawn = follow->DrawModel(pWorld, 0 );
 
 				// draw entity
 				// FIXME: Currently only draws if aiment is drawn.  
@@ -3188,7 +3188,7 @@ void C_BaseAnimating::DoInternalDrawModel( ClientModelRenderInfo_t *pInfo, DrawM
 {
 	if ( pState)
 	{
-		modelrender->DrawModelExecute( *pState, *pInfo, pBoneToWorldArray );
+		modelrender->DrawModelExecute(engineClient->GetWorldModel(), *pState, *pInfo, pBoneToWorldArray );
 	}
 
 	if ( vcollide_wireframe.GetBool() )
@@ -3234,7 +3234,7 @@ int C_BaseAnimating::InternalDrawModel( int flags )
 	//  SetModel with the wrong type of model, this could occur.
 	if (GetModel()->GetModelType() != mod_studio )// modelinfo GetModelIndex() 
 	{
-		return BaseClass::DrawModel( flags );
+		return BaseClass::DrawModel(engineClient->GetWorldModel(), flags );
 	}
 
 	// Make sure hdr is valid for drawing
@@ -5925,7 +5925,7 @@ public:
 	}
 
 	bool	ShouldDraw( void );
-	int		DrawModel( int flags );
+	int		DrawModel(IVModel* pWorld, int flags );
 	bool	TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
 
 private:
@@ -5957,7 +5957,7 @@ bool C_BoneFollower::ShouldDraw( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int C_BoneFollower::DrawModel( int flags )
+int C_BoneFollower::DrawModel(IVModel* pWorld, int flags )
 {
 	vcollide_t *pCollide = modelinfo->GetVCollide( m_modelIndex );
 	if ( pCollide )

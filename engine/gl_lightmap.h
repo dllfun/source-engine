@@ -38,11 +38,11 @@ bool R_CanUseVisibleDLight( int dlight );
 
 struct msurfacelighting_t;
 
-void R_AddDynamicLights( SurfaceHandle_t surfID, msurfacelighting_t *pLighting, const matrix3x4_t& entityToWorld );
-void R_BuildLightMap( struct dlight_t *pLights, class ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld );
-void R_RedownloadAllLightmaps();
+void R_AddDynamicLights(model_t* pWorld, SurfaceHandle_t surfID, msurfacelighting_t *pLighting, const matrix3x4_t& entityToWorld );
+void R_BuildLightMap(model_t* pWorld, struct dlight_t *pLights, class ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld );
+void R_RedownloadAllLightmaps(model_t* pWorld);
 void GL_RebuildLightmaps( void );
-void FASTCALL R_RenderDynamicLightmaps( dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld );
+void FASTCALL R_RenderDynamicLightmaps(model_t* pWorld, dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld );
 int R_AddLightmapPolyChain( SurfaceHandle_t surfID );
 int R_AddLightmapSurfaceChain( SurfaceHandle_t surfID );
 void R_SetLightmapBlendingMode( void );

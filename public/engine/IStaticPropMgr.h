@@ -15,6 +15,7 @@
 #include "mathlib/vector.h"
 #include "utlvector.h"
 #include "basehandle.h"
+#include "cmodel.h"
 
 
 struct vcollide_t;
@@ -68,7 +69,7 @@ public:
 	virtual void	RemoveAllShadowsFromStaticProp( IClientRenderable* pRenderable ) = 0;
 
 	// Gets the lighting + material color of a static prop
-	virtual void	GetStaticPropMaterialColorAndLighting( trace_t* pTrace,
+	virtual void	GetStaticPropMaterialColorAndLighting(IVModel* pWorld, trace_t* pTrace,
 		int staticPropIndex, Vector& lighting, Vector& matColor ) = 0;
 
 	//Changes made specifically to support the Portal mod (smack Dave Kircher if something breaks) (Added separately to both client and server to not mess with versioning)
@@ -78,7 +79,7 @@ public:
 	virtual void GetAllStaticPropsInOBB( const Vector &ptOrigin, const Vector &vExtent1, const Vector &vExtent2, const Vector &vExtent3, CUtlVector<ICollideable *> *pOutput ) = 0; //get all static props that exist wholly or partially in an OBB
 	//===================================================================
 
-	virtual void DrawStaticProps( IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe ) = 0;
+	virtual void DrawStaticProps(IVModel* pWorld, IClientRenderable **pProps, int count, bool bShadowDepth, bool drawVCollideWireframe ) = 0;
 	virtual void AddColorDecalToStaticProp( Vector const& rayStart, Vector const& rayEnd,
 		int staticPropIndex, int decalIndex, bool doTrace, trace_t& tr, bool bUseColor, Color cColor ) = 0;
 };

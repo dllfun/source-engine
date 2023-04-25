@@ -107,7 +107,7 @@ ConCommand linefile("linefile", Linefile_Read_f, "Parses map leak data from .lin
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void R_Init (void)
+void R_Init ()
 {	
 	extern byte *hunk_base;
 
@@ -156,7 +156,7 @@ CON_COMMAND_F( r_cleardecals, "Usage r_cleardecals <permanent>.", FCVAR_CLIENTCM
 			}
 		}
 
-		R_DecalTerm(g_pHost->Host_GetWorldModel()->brush.pShared, bPermanent );
+		R_DecalTerm(g_pHost->Host_GetWorldModel(), bPermanent );
 	}
 
 	R_RemoveAllDecalsFromAllModels();
@@ -166,15 +166,15 @@ CON_COMMAND_F( r_cleardecals, "Usage r_cleardecals <permanent>.", FCVAR_CLIENTCM
 //-----------------------------------------------------------------------------
 // Loads world geometry. Called when map changes or dx level changes
 //-----------------------------------------------------------------------------
-void R_LoadWorldGeometry( bool bDXChange )
+void R_LoadWorldGeometry(model_t* pWorld, bool bDXChange )
 {
 	// Recreate the sortinfo arrays ( ack, uses new/delete right now ) because doing it with Hunk_AllocName will
 	//  leak through every connect that doesn't wipe the hunk ( "reconnect" )
 	MaterialSystem_DestroySortinfo();
 
-	MaterialSystem_RegisterLightmapSurfaces();
+	MaterialSystem_RegisterLightmapSurfaces(pWorld);
 
-	MaterialSystem_CreateSortinfo();
+	MaterialSystem_CreateSortinfo(pWorld);
 
 	// UNDONE: This is a really crappy place to do this - shouldn't this stuff be in the modelloader?
 
@@ -212,9 +212,9 @@ void R_LoadWorldGeometry( bool bDXChange )
 
 	if ( bDXChange )
 	{
-		R_BrushBatchInit();
-		R_DecalReSortMaterials();
-		OverlayMgr()->ReSortMaterials();
+		R_BrushBatchInit(pWorld);
+		R_DecalReSortMaterials(pWorld);
+		OverlayMgr()->ReSortMaterials(pWorld);
 	}
 }
 
@@ -224,7 +224,7 @@ void R_LoadWorldGeometry( bool bDXChange )
 R_LevelInit
 ===============
 */
-void R_LevelInit( void )
+void R_LevelInit( model_t* pWorld )
 {
 	ConDMsg( "Initializing renderer...\n" );
 
@@ -234,24 +234,24 @@ void R_LevelInit( void )
 
 	r_framecount = 1; 
 	R_ResetLightStyles();
-	R_DecalInit();
+	R_DecalInit(pWorld);
 	R_LoadSkys();
-	R_InitStudio();
+	R_InitStudio(pWorld);
 
 	// FIXME: Is this the best place to initialize the kd tree when we're client-only?
 	if ( !sv.IsActive() )
 	{
 		g_pShadowMgr->LevelShutdown();
 		StaticPropMgr()->LevelShutdown();
-		SpatialPartition()->Init(g_pHost->Host_GetWorldModel()->mins, g_pHost->Host_GetWorldModel()->maxs );
+		SpatialPartition()->Init(pWorld->GetMins(), pWorld->GetMaxs());//g_pHost->Host_GetWorldModel()
 		StaticPropMgr()->LevelInit();
-		g_pShadowMgr->LevelInit(g_pHost->Host_GetWorldModel()->brush.pShared->numsurfaces );
+		g_pShadowMgr->LevelInit(pWorld->GetSurfacesCount() );//g_pHost->Host_GetWorldModel()->brush.pShared
 	}
 
 	// We've fully loaded the new level, unload any models that we don't care about any more
 	modelloader->UnloadUnreferencedModels();
 
-	if (g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights == 0 )
+	if (pWorld->GetWorldlightsCount() == 0)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
 		ConDMsg( "Level unlit, setting 'mat_fullbright 1'\n" );
 		mat_fullbright.SetValue( 1 );
@@ -271,13 +271,13 @@ void R_LevelInit( void )
 	materials->CacheUsedMaterials();
 
 	// Loads the world geometry
-	R_LoadWorldGeometry();
+	R_LoadWorldGeometry(pWorld);
 
-	R_Surface_LevelInit();
-	R_Areaportal_LevelInit();
+	R_Surface_LevelInit(pWorld);
+	R_Areaportal_LevelInit(pWorld);
 	
 	// Build the overlay fragments.
-	OverlayMgr()->CreateFragments();
+	OverlayMgr()->CreateFragments(pWorld);
 
 #ifdef _XBOX
 	extern void CompactTextureHeap();

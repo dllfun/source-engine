@@ -95,10 +95,10 @@ struct WorldListInfo_t
 class IWorldRenderList : public IRefCounted
 {
 public:
-	virtual void R_BuildWorldLists(WorldListInfo_t* pInfo, int iForceViewLeaf, const struct VisOverrideData_t* pVisData, bool bShadowDepth = false, float* pWaterReflectionHeight = NULL) = 0;
-	virtual void R_DrawWorldLists(unsigned long flags, float waterZAdjust) = 0;
-	virtual void Shader_DrawLightmapPageChains(int pageId) = 0;
-	virtual void Shader_DrawTranslucentSurfaces(int sortIndex, unsigned long flags, bool bShadowDepth) = 0;
+	virtual void R_BuildWorldLists(IVModel* pWorld, WorldListInfo_t* pInfo, int iForceViewLeaf, const struct VisOverrideData_t* pVisData, bool bShadowDepth = false, float* pWaterReflectionHeight = NULL) = 0;
+	virtual void R_DrawWorldLists(IVModel* pWorld,unsigned long flags, float waterZAdjust) = 0;
+	virtual void Shader_DrawLightmapPageChains(IVModel* pWorld,int pageId) = 0;
+	virtual void Shader_DrawTranslucentSurfaces(IVModel* pWorld, int sortIndex, unsigned long flags, bool bShadowDepth) = 0;
 	virtual bool Shader_LeafContainsTranslucentSurfaces(int sortIndex, unsigned long flags) = 0;
 	// Resets a world render list
 	virtual void ResetWorldRenderList() = 0;
@@ -153,12 +153,12 @@ class IBrushSurface
 {
 public:
 	// Computes texture coordinates + lightmap coordinates given a world position
-	virtual void ComputeTextureCoordinate( Vector const& worldPos, Vector2D& texCoord ) = 0;
-	virtual void ComputeLightmapCoordinate( Vector const& worldPos, Vector2D& lightmapCoord ) = 0;
+	virtual void ComputeTextureCoordinate(Vector const& worldPos, Vector2D& texCoord ) = 0;
+	virtual void ComputeLightmapCoordinate(Vector const& worldPos, Vector2D& lightmapCoord ) = 0;
 
 	// Gets the vertex data for this surface
 	virtual int  GetVertexCount() const = 0;
-	virtual void GetVertexData( BrushVertex_t* pVerts ) = 0;
+	virtual void GetVertexData(BrushVertex_t* pVerts ) = 0;
 
 	// Gets at the material properties for this surface
 	virtual IMaterial* GetMaterial() = 0;
@@ -222,37 +222,37 @@ public:
 	virtual void			GetColorModulation( float* blend ) = 0;
 
 	// Wrap entire scene drawing
-	virtual void			SceneBegin( void ) = 0;
+	virtual void			SceneBegin( IVModel* pWorld ) = 0;
 	virtual void			SceneEnd( void ) = 0;
 
 	// Gets the fog volume for a particular point
-	virtual void			GetVisibleFogVolume( const Vector& eyePoint, VisibleFogVolumeInfo_t *pInfo ) = 0;
+	virtual void			GetVisibleFogVolume(IVModel* pWorld, const Vector& eyePoint, VisibleFogVolumeInfo_t *pInfo ) = 0;
 
 	// Wraps world drawing
 	// If iForceViewLeaf is not -1, then it uses the specified leaf as your starting area for setting up area portal culling.
 	// This is used by water since your reflected view origin is often in solid space, but we still want to treat it as though
 	// the first portal we're looking out of is a water portal, so our view effectively originates under the water.
-	virtual IWorldRenderList * CreateWorldList() = 0;
+	virtual IWorldRenderList * CreateWorldList(IVModel* pWorld) = 0;
 
-	virtual void			BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceFViewLeaf, const VisOverrideData_t* pVisData = NULL, bool bShadowDepth = false, float *pReflectionWaterHeight = NULL ) = 0;
-	virtual void			DrawWorldLists( IWorldRenderList *pList, unsigned long flags, float waterZAdjust ) = 0;
+	virtual void			BuildWorldLists(IVModel* pWorld, IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceFViewLeaf, const VisOverrideData_t* pVisData = NULL, bool bShadowDepth = false, float *pReflectionWaterHeight = NULL ) = 0;
+	virtual void			DrawWorldLists(IVModel* pWorld, IWorldRenderList *pList, unsigned long flags, float waterZAdjust ) = 0;
 
 	// Optimization for top view
 	virtual void			DrawTopView( bool enable ) = 0;
 	virtual void			TopViewBounds( Vector2D const& mins, Vector2D const& maxs ) = 0;
 
 	// Draw lights
-	virtual void			DrawLights( void ) = 0;
+	virtual void			DrawLights( IVModel* pWorld ) = 0;
 	// FIXME:  This function is a stub, doesn't do anything in the engine right now
 	virtual void			DrawMaskEntities( void ) = 0;
 
 	// Draw surfaces with alpha
-	virtual void			DrawTranslucentSurfaces( IWorldRenderList *pList, int sortIndex, unsigned long flags, bool bShadowDepth ) = 0;
+	virtual void			DrawTranslucentSurfaces(IVModel* pWorld, IWorldRenderList *pList, int sortIndex, unsigned long flags, bool bShadowDepth ) = 0;
 
 	// Draw Particles ( just draws the linefine for debugging map leaks )
 	virtual void			DrawLineFile( void ) = 0;
 	// Draw lightmaps
-	virtual void			DrawLightmaps( IWorldRenderList *pList, int pageId ) = 0;
+	virtual void			DrawLightmaps(IVModel* pWorld, IWorldRenderList *pList, int pageId ) = 0;
 	// Wraps view render sequence, sets up a view
 	virtual void			ViewSetupVis( bool novis, int numorigins, const Vector origin[] ) = 0;
 
@@ -265,7 +265,7 @@ public:
 	// Sets up the projection matrix for the specified field of view
 	virtual void			OLD_SetProjectionMatrix( float fov, float zNear, float zFar ) = 0;
 	// Determine lighting at specified position
-	virtual colorVec		GetLightAtPoint( Vector& pos ) = 0;
+	virtual colorVec		GetLightAtPoint(IVModel* pWorld, Vector& pos ) = 0;
 	// Whose eyes are we looking through?
 	virtual int				GetViewEntity( void ) = 0;
 	// Get engine field of view setting
@@ -274,7 +274,7 @@ public:
 	virtual unsigned char	**GetAreaBits( void ) = 0;
 
 	// Set up fog for a particular leaf
-	virtual void			SetFogVolumeState( int nVisibleFogVolume, bool bUseHeightFog ) = 0;
+	virtual void			SetFogVolumeState(IVModel* pWorld, int nVisibleFogVolume, bool bUseHeightFog ) = 0;
 
 	// Installs a brush surface draw override method, null means use normal renderer
 	virtual void			InstallBrushSurfaceRenderer( IBrushRenderer* pBrushRenderer ) = 0;
@@ -285,7 +285,7 @@ public:
 	// Does the leaf contain translucent surfaces?
 	virtual	bool			LeafContainsTranslucentSurfaces( IWorldRenderList *pList, int sortIndex, unsigned long flags ) = 0;
 
-	virtual bool			DoesBoxIntersectWaterVolume( const Vector &mins, const Vector &maxs, int leafWaterDataID ) = 0;
+	virtual bool			DoesBoxIntersectWaterVolume(IVModel* pWorld, const Vector &mins, const Vector &maxs, int leafWaterDataID ) = 0;
 
 	virtual void			SetAreaState( 
 			unsigned char chAreaBits[MAX_AREA_STATE_BYTES],
@@ -316,7 +316,7 @@ public:
 	virtual void			DrawBrushModelShadowDepth( IClientEntity *baseentity, IVModel *model, const Vector& origin, const QAngle& angles, ERenderDepthMode DepthMode ) = 0;
 	virtual void			UpdateBrushModelLightmap(IVModel *model, IClientRenderable *pRenderable ) = 0;
 	virtual void			BeginUpdateLightmaps( void ) = 0;
-	virtual void			EndUpdateLightmaps( void ) = 0;
+	virtual void			EndUpdateLightmaps( IVModel* pWorld ) = 0;
 	virtual void			OLD_SetOffCenterProjectionMatrix( float fov, float zNear, float zFar, float flAspectRatio, float flBottom, float flTop, float flLeft, float flRight ) = 0;
 	virtual void			OLD_SetProjectionMatrixOrtho( float left, float top, float right, float bottom, float zNear, float zFar ) = 0;
 	virtual void			Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture ) = 0;

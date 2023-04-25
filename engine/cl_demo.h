@@ -152,7 +152,7 @@ protected:
 	void	CloseDemoFile( void );
 	void	GetClientCmdInfo( democmdinfo_t& info );
 	void	WriteDemoCvars( void );
-	void	WriteBSPDecals( void );
+	void	WriteBSPDecals( model_t* pWorld );
 	void	WriteMessages( bf_write &message );
 	bool	ComputeNextIncrementalDemoFilename( char *name, int namesize );
 

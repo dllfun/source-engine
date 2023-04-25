@@ -65,7 +65,7 @@ public:
 	// Builds a list of displacement triangles intersecting the sphere.
 	virtual void		GetIntersectingSurfaces( GetIntersectingSurfaces_Struct *pStruct ) = 0;
 
-	virtual void		RenderWireframeInLightmapPage( int pageId ) = 0;
+	virtual void		RenderWireframeInLightmapPage(model_t* pWorld, int pageId ) = 0;
 	
 	virtual void		GetBoundingBox( Vector &bbMin, Vector &bbMax ) = 0;
 
@@ -74,13 +74,13 @@ public:
 	virtual SurfaceHandle_t	GetParent() = 0;
 
 	// Add dynamic lights to the lightmap for this surface.
-	virtual void AddDynamicLights( struct dlight_t *pLights, unsigned int lightMask ) = 0;
+	virtual void AddDynamicLights(model_t* pWorld, struct dlight_t *pLights, unsigned int lightMask ) = 0;
 	// Compute the mask for the lights hitting this surface.
-	virtual unsigned int ComputeDynamicLightMask( struct dlight_t *pLights ) = 0;
+	virtual unsigned int ComputeDynamicLightMask(model_t* pWorld, struct dlight_t *pLights ) = 0;
 
 	// Add and remove decals.
 	// flSize is like the radius of the decal so the decal isn't put on any disp faces it's too far away from.
-	virtual DispDecalHandle_t	NotifyAddDecal( decal_t *pDecal, float flSize ) = 0;
+	virtual DispDecalHandle_t	NotifyAddDecal(model_t* pWorld, decal_t *pDecal, float flSize ) = 0;
 	virtual void				NotifyRemoveDecal( DispDecalHandle_t h ) = 0;
 	
 	virtual DispShadowHandle_t	AddShadowDecal( ShadowHandle_t shadowHandle ) = 0;
@@ -97,10 +97,10 @@ public:
 	virtual void		SetTag() = 0;
 
 	// Cast a ray against this surface
-	virtual	bool	TestRay( Ray_t const& ray, float start, float end, float& dist, Vector2D* lightmapUV, Vector2D* textureUV ) = 0;
+	virtual	bool	TestRay(model_t* pWorld, Ray_t const& ray, float start, float end, float& dist, Vector2D* lightmapUV, Vector2D* textureUV ) = 0;
 
 	// Computes the texture + lightmap coordinate given a displacement uv
-	virtual void	ComputeLightmapAndTextureCoordinate( RayDispOutput_t const& uv, Vector2D* luv, Vector2D* tuv ) = 0;
+	virtual void	ComputeLightmapAndTextureCoordinate(model_t* pWorld, RayDispOutput_t const& uv, Vector2D* luv, Vector2D* tuv ) = 0;
 };
 
 
@@ -131,7 +131,7 @@ void			DispInfo_ClearAllTags( HDISPINFOARRAY hArray );
 
 // Call this to render a list of displacements.
 // If bOrtho is true, then no backface removal is done on dispinfos.
-void			DispInfo_RenderList( int nSortGroup, SurfaceHandle_t *pList, int listCount, bool bOrtho, unsigned long flags, ERenderDepthMode DepthMode );
+void			DispInfo_RenderList(model_t* pWorld, int nSortGroup, SurfaceHandle_t *pList, int listCount, bool bOrtho, unsigned long flags, ERenderDepthMode DepthMode );
 
 
 // This should be called from Map_LoadDisplacements (while the map file is open).

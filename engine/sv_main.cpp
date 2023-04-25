@@ -2654,7 +2654,7 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	COM_TimestampedLog( "Precache brush models" );
 
 	// Add world submodels to the model cache
-	for ( i = 1 ; i < g_pHost->Host_GetWorldModel()->brush.pShared->numsubmodels ; i++ )
+	for ( i = 1 ; i < g_pHost->Host_GetWorldModel()->GetSubmodelsCount() ; i++ )
 	{
 		// Add in world brush models
 		char localmodel[5]; // inline model names "*1", "*2" etc

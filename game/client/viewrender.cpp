@@ -1621,7 +1621,7 @@ void CViewRender::DrawRenderablesInList( CUtlVector< IClientRenderable * > &list
 		if ( pRenderable->ShouldDraw() )
 		{
 			m_pCurrentlyDrawingEntity = pUnk->GetBaseEntity();
-			pRenderable->DrawModel( STUDIO_RENDER | flags );
+			pRenderable->DrawModel(engineClient->GetWorldModel(), STUDIO_RENDER | flags );
 		}
 	}
 	m_pCurrentlyDrawingEntity = NULL;
@@ -2202,7 +2202,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		g_bRenderingView = true;
 
 		// Must be first 
-		render->SceneBegin();
+		render->SceneBegin(engineClient->GetWorldModel());
 
 		pRenderContext.GetFrom( materials );
 		pRenderContext->TurnOnToneMapping();
@@ -2245,7 +2245,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		s_bCanAccessCurrentView = true;
 
 
-		engineClient->DrawPortals();
+		engineClient->DrawPortals(engineClient->GetWorldModel());
 
 		DisableFog();
 
@@ -2253,7 +2253,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		render->SceneEnd();
 
 		// Draw lightsources if enabled
-		render->DrawLights();
+		render->DrawLights(engineClient->GetWorldModel());
 
 		RenderPlayerSprites();
 
@@ -2779,7 +2779,7 @@ void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CViewSetup &view
 		render->GetVisibleFogVolume( g_pPortalRender->GetExitPortalFogOrigin(), &fogVolumeInfo );
 	}
 #else
-	render->GetVisibleFogVolume( viewIn.origin, &fogInfo);
+	render->GetVisibleFogVolume(engineClient->GetWorldModel(), viewIn.origin, &fogInfo);
 #endif
 
 	WaterRenderInfo_t info;
@@ -3442,10 +3442,10 @@ void CRendering3dView::BuildWorldRenderLists( bool bDrawEntities, int iForceView
 	if ( !bUseCache || pVisData || !g_WorldListCache.Find( *this, &m_pWorldRenderList, &m_pWorldListInfo ) )
 	{
         // @MULTICORE (toml 8/18/2006): when make parallel, will have to change caching to be atomic, where follow ons receive a pointer to a list that is not yet built
-		m_pWorldRenderList =  render->CreateWorldList();
+		m_pWorldRenderList =  render->CreateWorldList(engineClient->GetWorldModel());
 		m_pWorldListInfo = new ClientWorldListInfo_t;
 
-		render->BuildWorldLists( m_pWorldRenderList, m_pWorldListInfo, 
+		render->BuildWorldLists(engineClient->GetWorldModel(), m_pWorldRenderList, m_pWorldListInfo,
 			( m_pCustomVisibility ) ? m_pCustomVisibility->m_iForceViewLeaf : iForceViewLeaf, 
 			pVisData, bShadowDepth, pReflectionWaterHeight );
 
@@ -3565,7 +3565,7 @@ void CRendering3dView::BuildRenderableRenderLists( int viewID )
 			}
 		}
 
-		render->EndUpdateLightmaps();
+		render->EndUpdateLightmaps(engineClient->GetWorldModel());
 	}
 }
 
@@ -3583,7 +3583,7 @@ void CRendering3dView::DrawWorld( float waterZAdjust )
 
 	unsigned long engineFlags = BuildEngineDrawWorldListFlags( m_DrawFlags );
 
-	render->DrawWorldLists( m_pWorldRenderList, engineFlags, waterZAdjust );
+	render->DrawWorldLists(engineClient->GetWorldModel(), m_pWorldRenderList, engineFlags, waterZAdjust );
 }
 
 //-------------------------------------
@@ -3821,7 +3821,7 @@ void CRendering3dView::DrawTranslucentWorldInLeaves( bool bShadowDepth )
 		if ( render->LeafContainsTranslucentSurfaces( m_pWorldRenderList, nActualLeafIndex, m_DrawFlags ) )
 		{
 			// Now draw the surfaces in this leaf
-			render->DrawTranslucentSurfaces( m_pWorldRenderList, nActualLeafIndex, m_DrawFlags, bShadowDepth );
+			render->DrawTranslucentSurfaces(engineClient->GetWorldModel(), m_pWorldRenderList, nActualLeafIndex, m_DrawFlags, bShadowDepth );
 		}
 	}
 }
@@ -3844,7 +3844,7 @@ void CRendering3dView::DrawTranslucentWorldAndDetailPropsInLeaves( int iCurLeafI
 			nDetailLeafCount = 0;
 
 			// Now draw the surfaces in this leaf
-			render->DrawTranslucentSurfaces( m_pWorldRenderList, nActualLeafIndex, nEngineDrawFlags, bShadowDepth );
+			render->DrawTranslucentSurfaces(engineClient->GetWorldModel(), m_pWorldRenderList, nActualLeafIndex, nEngineDrawFlags, bShadowDepth );
 		}
 
 		// Queue up detail props that existed in this leaf
@@ -4217,7 +4217,7 @@ int CRendering3dView::GetDrawFlags()
 //-----------------------------------------------------------------------------
 void CRendering3dView::SetFogVolumeState( const VisibleFogVolumeInfo_t &fogInfo, bool bUseHeightFog )
 {
-	render->SetFogVolumeState( fogInfo.m_nVisibleFogVolume, bUseHeightFog );
+	render->SetFogVolumeState(engineClient->GetWorldModel(), fogInfo.m_nVisibleFogVolume, bUseHeightFog );
 
 #ifdef PORTAL
 
@@ -4387,7 +4387,7 @@ void CSkyboxView::DrawInternal( view_id_t iSkyBoxViewID, bool bInvokePreAndPostR
 	render->BeginUpdateLightmaps();
 	BuildWorldRenderLists( true, true, -1 );
 	BuildRenderableRenderLists( iSkyBoxViewID );
-	render->EndUpdateLightmaps();
+	render->EndUpdateLightmaps(engineClient->GetWorldModel());
 
 	g_pClientShadowMgr->ComputeShadowTextures( (*this), m_pWorldListInfo->m_LeafCount, m_pWorldListInfo->m_pLeafList );
 
@@ -4879,7 +4879,7 @@ void CBaseWorldView::DrawSetup( float waterHeight, int nSetupFlags, float waterZ
 		BuildRenderableRenderLists( savedViewID );
 	}
 
-	render->EndUpdateLightmaps();
+	render->EndUpdateLightmaps(engineClient->GetWorldModel());
 
 	if ( bViewChanged )
 	{

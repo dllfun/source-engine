@@ -226,7 +226,7 @@ public:
 	// For tools only!
 	//virtual const IVModel *FindOrLoadModel( const char *name ) = 0;
 
-	virtual void GetModelMaterialColorAndLighting(int modelIndex, const Vector& origin,
+	virtual void GetModelMaterialColorAndLighting(IVModel* pWorld, int modelIndex, const Vector& origin,
 		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) = 0;
 	virtual void GetIlluminationPoint(int modelIndex, IClientRenderable* pRenderable, Vector const& origin,
 		QAngle const& angles, Vector* pLightingCenter) = 0;

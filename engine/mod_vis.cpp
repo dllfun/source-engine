@@ -94,7 +94,7 @@ static void SortVisViewClusters()
 	}
 }
 
-static void VisMark_Cached( const VisCacheEntry &cache, const worldbrushdata_t &worldbrush )
+static void VisMark_Cached(model_t* pWorld, const VisCacheEntry &cache)
 {
 	int count, visframe;
 
@@ -120,20 +120,20 @@ static void VisMark_Cached( const VisCacheEntry &cache, const worldbrushdata_t &
 		__dcbt( offsetLeaf, (void *)(worldbrush.leafs + pSrc[6]) );
 		__dcbt( offsetLeaf, (void *)(worldbrush.leafs + pSrc[7]) );
 #endif
-		worldbrush.leafs[pSrc[0]].visframe = visframe;
-		worldbrush.leafs[pSrc[1]].visframe = visframe;
-		worldbrush.leafs[pSrc[2]].visframe = visframe;
-		worldbrush.leafs[pSrc[3]].visframe = visframe;
-		worldbrush.leafs[pSrc[4]].visframe = visframe;
-		worldbrush.leafs[pSrc[5]].visframe = visframe;
-		worldbrush.leafs[pSrc[6]].visframe = visframe;
-		worldbrush.leafs[pSrc[7]].visframe = visframe;
+		pWorld->GetLeafs(pSrc[0])->visframe = visframe;
+		pWorld->GetLeafs(pSrc[1])->visframe = visframe;
+		pWorld->GetLeafs(pSrc[2])->visframe = visframe;
+		pWorld->GetLeafs(pSrc[3])->visframe = visframe;
+		pWorld->GetLeafs(pSrc[4])->visframe = visframe;
+		pWorld->GetLeafs(pSrc[5])->visframe = visframe;
+		pWorld->GetLeafs(pSrc[6])->visframe = visframe;
+		pWorld->GetLeafs(pSrc[7])->visframe = visframe;
 		pSrc += 8;
 		count -= 8;
 	}
 	while ( count )
 	{
-		worldbrush.leafs[pSrc[0]].visframe = visframe;
+		pWorld->GetLeafs(pSrc[0])->visframe = visframe;
 		count--;
 		pSrc++;
 	}
@@ -153,26 +153,26 @@ static void VisMark_Cached( const VisCacheEntry &cache, const worldbrushdata_t &
 		__dcbt( offsetNode, (void *)(worldbrush.nodes + pSrc[6]) );
 		__dcbt( offsetNode, (void *)(worldbrush.nodes + pSrc[7]) );
 #endif
-		worldbrush.nodes[pSrc[0]].visframe = visframe;
-		worldbrush.nodes[pSrc[1]].visframe = visframe;
-		worldbrush.nodes[pSrc[2]].visframe = visframe;
-		worldbrush.nodes[pSrc[3]].visframe = visframe;
-		worldbrush.nodes[pSrc[4]].visframe = visframe;
-		worldbrush.nodes[pSrc[5]].visframe = visframe;
-		worldbrush.nodes[pSrc[6]].visframe = visframe;
-		worldbrush.nodes[pSrc[7]].visframe = visframe;
+		pWorld->GetNode(pSrc[0])->visframe = visframe;
+		pWorld->GetNode(pSrc[1])->visframe = visframe;
+		pWorld->GetNode(pSrc[2])->visframe = visframe;
+		pWorld->GetNode(pSrc[3])->visframe = visframe;
+		pWorld->GetNode(pSrc[4])->visframe = visframe;
+		pWorld->GetNode(pSrc[5])->visframe = visframe;
+		pWorld->GetNode(pSrc[6])->visframe = visframe;
+		pWorld->GetNode(pSrc[7])->visframe = visframe;
 		pSrc += 8;
 		count -= 8;
 	}
 	while ( count )
 	{
-		worldbrush.nodes[pSrc[0]].visframe = visframe;
+		pWorld->GetNode(pSrc[0])->visframe = visframe;
 		count--;
 		pSrc++;
 	}
 }
 
-static void VisCache_Build( VisCacheEntry &cache, const worldbrushdata_t &worldbrush )
+static void VisCache_Build(model_t* pWorld, VisCacheEntry &cache )
 {
 	VPROF_INCREMENT_COUNTER( "VisCache misses", 1 );
 	int			i;
@@ -190,7 +190,7 @@ static void VisCache_Build( VisCacheEntry &cache, const worldbrushdata_t &worldb
 
 	int visframe = r_visframecount;
 
-	for ( i = 0, leaf = worldbrush.leafs ; i < worldbrush.numleafs ; i++, leaf++)
+	for ( i = 0, leaf = pWorld->GetLeafs(0) ; i < pWorld->GetLeafCount() ; i++, leaf++)
 	{
 		MEM_ALLOC_CREDIT();
 		cluster = leaf->cluster;
@@ -204,7 +204,7 @@ static void VisCache_Build( VisCacheEntry &cache, const worldbrushdata_t &worldb
 			mnode_t *node = leaf->parent;
 			while (node && node->visframe != visframe)
 			{
-				cache.nodelist.AddToTail( node - worldbrush.nodes );
+				cache.nodelist.AddToTail( node - pWorld->GetNode(0) );
 				node->visframe = visframe;
 				node = node->parent;
 			}
@@ -213,11 +213,11 @@ static void VisCache_Build( VisCacheEntry &cache, const worldbrushdata_t &worldb
 }
 
 
-bool Map_AreAnyLeavesVisible( const worldbrushdata_t &worldbrush, int *leafList, int nLeaves )
+bool Map_AreAnyLeavesVisible( model_t* pWorld, int *leafList, int nLeaves )
 {
 	for ( int i=0; i < nLeaves; i++ )
 	{
-		const mleaf_t *leaf = &worldbrush.leafs[leafList[i]];
+		const mleaf_t *leaf = pWorld->GetLeafs(leafList[i]);
 		int cluster = leaf->cluster;
 		if ( cluster == -1 )
 			continue;
@@ -283,13 +283,13 @@ void Map_VisMark( bool forcenovis, model_t *worldmodel )
 	if ( r_novis.GetInt() || forcenovis || outsideWorld )
 	{
 		// mark everything
-		for (i=0 ; i<worldmodel->brush.pShared->numleafs ; i++)
+		for (i=0 ; i<worldmodel->GetLeafCount() ; i++)
 		{
-			worldmodel->brush.pShared->leafs[i].visframe = r_visframecount;
+			worldmodel->GetLeafs(i)->visframe = r_visframecount;
 		}
-		for (i=0 ; i<worldmodel->brush.pShared->numnodes ; i++)
+		for (i=0 ; i<worldmodel->GetNodesCount() ; i++)
 		{
-			worldmodel->brush.pShared->nodes[i].visframe = r_visframecount;
+			worldmodel->GetNode(i)->visframe = r_visframecount;
 		}
 		return;
 	}
@@ -335,7 +335,7 @@ void Map_VisMark( bool forcenovis, model_t *worldmodel )
 		}
 
 		viscache.LinkToHead( i );
-		VisMark_Cached( cache, *worldmodel->brush.pShared );
+		VisMark_Cached(worldmodel,cache  );
 
 		return;
 
@@ -353,7 +353,7 @@ next_cache_check:;
 	}
 
 	// this also will mark the visleafs in order to build the cache data
-	VisCache_Build( viscache[viscache.Head()], *worldmodel->brush.pShared );
+	VisCache_Build(worldmodel, viscache[viscache.Head()]);
 }
 
 //-----------------------------------------------------------------------------

@@ -758,7 +758,7 @@ protected:
 	//-----------------------------------------------------------------------------
 // Returns true if the view plane intersects the water
 //-----------------------------------------------------------------------------
-	bool DoesViewPlaneIntersectWater(float waterZ, int leafWaterDataID)
+	bool DoesViewPlaneIntersectWater( float waterZ, int leafWaterDataID)
 	{
 		if (leafWaterDataID == -1)
 			return false;
@@ -813,7 +813,7 @@ protected:
 
 		// the near plane does cross the z value for the visible water volume.  Call into
 		// the engine to find out if the near plane intersects the water volume.
-		return render->DoesBoxIntersectWaterVolume(mins, maxs, leafWaterDataID);
+		return render->DoesBoxIntersectWaterVolume(engineClient->GetWorldModel(), mins, maxs, leafWaterDataID);
 	}
 
 	//-----------------------------------------------------------------------------
@@ -1668,7 +1668,7 @@ public:
 				DrawClippedDepthBox(pEnt, pRenderClipPlane);
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
 			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
-			pEnt->DrawModel(flags);
+			pEnt->DrawModel(engineClient->GetWorldModel(), flags);
 			this->SetCurrentlyDrawingEntity(NULL);
 			if (pRenderClipPlane && !materials->UsingFastClipping())
 				pRenderContext->PopCustomClipPlane();
@@ -1677,7 +1677,7 @@ public:
 		{
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
 			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
-			pEnt->DrawModel(flags);
+			pEnt->DrawModel(engineClient->GetWorldModel(), flags);
 			this->SetCurrentlyDrawingEntity(NULL);
 		}
 	}
@@ -1723,7 +1723,7 @@ public:
 				DrawClippedDepthBox(pEnt, pRenderClipPlane);
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
 			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
-			pEnt->DrawModel(flags);
+			pEnt->DrawModel(engineClient->GetWorldModel(), flags);
 			this->SetCurrentlyDrawingEntity(NULL);
 
 			if (pRenderClipPlane && !materials->UsingFastClipping())
@@ -1733,7 +1733,7 @@ public:
 		{
 			Assert(view->GetCurrentlyDrawingEntity() == NULL);
 			this->SetCurrentlyDrawingEntity(pEnt->GetIClientUnknown()->GetBaseEntity());
-			pEnt->DrawModel(flags);
+			pEnt->DrawModel(engineClient->GetWorldModel(), flags);
 			this->SetCurrentlyDrawingEntity(NULL);
 		}
 	}
@@ -1778,13 +1778,13 @@ public:
 			if (--numAvailable > 0)
 				continue; // place a hint for compiler to predict more common case in the loop
 
-			staticpropmgr->DrawStaticProps(pStatics, numScheduled, DepthMode, vcollide_wireframe.GetBool());
+			staticpropmgr->DrawStaticProps(engineClient->GetWorldModel(), pStatics, numScheduled, DepthMode, vcollide_wireframe.GetBool());
 			numScheduled = 0;
 			numAvailable = MAX_STATICS_PER_BATCH;
 		}
 
 		if (numScheduled)
-			staticpropmgr->DrawStaticProps(pStatics, numScheduled, DepthMode, vcollide_wireframe.GetBool());
+			staticpropmgr->DrawStaticProps(engineClient->GetWorldModel(), pStatics, numScheduled, DepthMode, vcollide_wireframe.GetBool());
 	}
 
 	virtual void DrawOpaqueRenderables_DrawBrushModels(CClientRenderablesList::CEntry* pEntitiesBegin, CClientRenderablesList::CEntry* pEntitiesEnd, ERenderDepthMode DepthMode)

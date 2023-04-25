@@ -158,13 +158,14 @@ CDecalVert* R_DoDecalSHClip( CDecalVert *pInVerts, CDecalVert *pOutVerts, decal_
 
 // Build the initial list of vertices from the surface verts into the global array, 'verts'.
 void R_SetupDecalVertsForMSurface( 
+	model_t* pWorld,
 	decal_t * RESTRICT pDecal, 
 	SurfaceHandle_t surfID, 
 	Vector * RESTRICT pTextureSpaceBasis,
 	CDecalVert * RESTRICT pVerts )
 {
-	unsigned short * RESTRICT pIndices = &g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[MSurf_FirstVertIndex( surfID )];
-	int count = MSurf_VertCount( surfID );
+	unsigned short * RESTRICT pIndices = pWorld->GetVertindices(pWorld->MSurf_FirstVertIndex( surfID ));
+	int count = pWorld->MSurf_VertCount( surfID );
 	float uOffset = 0.5f - pDecal->dx;
 	float vOffset = 0.5f - pDecal->dy;
 
@@ -172,7 +173,7 @@ void R_SetupDecalVertsForMSurface(
 	{
 		int vertIndex = pIndices[j];
 		
-		pVerts[j].m_vPos = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[vertIndex].position; // Copy model space coordinates
+		pVerts[j].m_vPos = pWorld->GetVertexes(vertIndex)->position; // Copy model space coordinates
 		// garymcthack - what about m_ParentTexCoords?
 		pVerts[j].m_ctCoords.x = DotProduct( pVerts[j].m_vPos, pTextureSpaceBasis[0] ) + uOffset;
 		pVerts[j].m_ctCoords.y = DotProduct( pVerts[j].m_vPos, pTextureSpaceBasis[1] ) + vOffset;
@@ -314,16 +315,16 @@ void R_SetupDecalClip( CDecalVert* &pOutVerts, decal_t *pDecal, Vector &vSurfNor
 //-----------------------------------------------------------------------------
 // Generate clipped vertex list for decal pdecal projected onto polygon psurf
 //-----------------------------------------------------------------------------
-CDecalVert* R_DecalVertsClip( CDecalVert *pOutVerts, decal_t *pDecal, SurfaceHandle_t surfID, IMaterial *pMaterial )
+CDecalVert* R_DecalVertsClip(model_t* pWorld, CDecalVert *pOutVerts, decal_t *pDecal, SurfaceHandle_t surfID, IMaterial *pMaterial )
 {
 	float decalWorldScale[2];
 	Vector textureSpaceBasis[3]; 
 
 	// Figure out where the decal maps onto the surface.
-	R_SetupDecalClip( pOutVerts, pDecal, MSurf_Plane( surfID ).normal, pMaterial, textureSpaceBasis, decalWorldScale );
+	R_SetupDecalClip( pOutVerts, pDecal, pWorld->MSurf_Plane( surfID ).normal, pMaterial, textureSpaceBasis, decalWorldScale );
 
 	// Build the initial list of vertices from the surface verts.
-	R_SetupDecalVertsForMSurface( pDecal, surfID, textureSpaceBasis, g_DecalClipVerts );
+	R_SetupDecalVertsForMSurface(pWorld, pDecal, surfID, textureSpaceBasis, g_DecalClipVerts );
 
-	return R_DoDecalSHClip( g_DecalClipVerts, pOutVerts, pDecal, MSurf_VertCount( surfID ), MSurf_Plane( surfID ).normal );
+	return R_DoDecalSHClip( g_DecalClipVerts, pOutVerts, pDecal, pWorld->MSurf_VertCount( surfID ), pWorld->MSurf_Plane( surfID ).normal );
 }

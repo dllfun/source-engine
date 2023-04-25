@@ -21,7 +21,7 @@ void ScratchPad_DrawWorldToScratchPad(
 
 	if ( flags & SPDRAWWORLD_DRAW_WORLD )
 	{
-		engineServer->DrawMapToScratchPad( pPad, 0 );
+		engineServer->DrawMapToScratchPad(engineServer->GetWorldModel(), pPad, 0 );
 	}
 
 	if ( flags & (SPDRAWWORLD_DRAW_PLAYERS | SPDRAWWORLD_DRAW_ENTITIES) )

@@ -1167,8 +1167,8 @@ void CClientLeafSystem::InsertIntoTree( ClientRenderHandle_t &handle )
 	CalcRenderableWorldSpaceAABB_Fast( pRenderable, absMins, absMaxs );
 	Assert( absMins.IsValid() && absMaxs.IsValid() );
 
-	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
-	pQuery->EnumerateLeavesInBox(NULL, absMins, absMaxs, this, (intp)&list );
+	//ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
+	engineClient->GetWorldModel()->EnumerateLeavesInBox(absMins, absMaxs, this, (intp)&list );
 
 	if ( list.pHead )
 	{
@@ -1584,7 +1584,7 @@ void CClientLeafSystem::CollateRenderablesInLeaf( int leaf, int worldListLeafInd
 		if ( renderable.m_Flags & RENDER_FLAGS_STUDIO_MODEL )
 		{
 			// test to see if this renderable is occluded by the engine's occlusion system
-			if (engineClient->IsOccluded( absMins, absMaxs ) )
+			if (engineClient->IsOccluded(engineClient->GetWorldModel(), absMins, absMaxs ) )
 				continue;
 		}
 

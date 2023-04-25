@@ -59,8 +59,8 @@ bool g_bIsBlendingOrModulating = false;
 
 bool g_bIsRenderingVGuiOnly = false;
 
-colorVec R_LightPoint (Vector& p);
-void R_DrawLightmaps( IWorldRenderList *pList, int pageId );
+colorVec R_LightPoint (model_t* pWorld,Vector& p);
+void R_DrawLightmaps(model_t* pWorld, IWorldRenderList *pList, int pageId );
 void R_DrawIdentityBrushModel( IWorldRenderList *pRenderList, model_t *model );
 
 static ConVar mat_color_projection( "mat_color_projection", "0", FCVAR_ARCHIVE );
@@ -209,12 +209,12 @@ void FullViewColorAdjustment( )
 //-----------------------------------------------------------------------------
 // Purpose: Render the world
 //-----------------------------------------------------------------------------
-void V_RenderView( void )
+void V_RenderView( model_t* pWorld )
 {
 	VPROF( "V_RenderView" );
 	MDLCACHE_COARSE_LOCK_(g_pMDLCache);
 
-	bool bCanRenderWorld = (g_pHost->Host_GetWorldModel() != NULL ) && cl.IsActive();
+	bool bCanRenderWorld = (pWorld != NULL ) && cl.IsActive();//g_pHost->Host_GetWorldModel()
 
 #if defined( REPLAY_ENABLED )
 	if ( g_pClientReplay && Replay_IsSupportedModAndPlatform() )
@@ -244,7 +244,7 @@ void V_RenderView( void )
 	{
 		// since we know we're going to render the world, check for lightmap updates while it is easy
 		// to tear down and rebuild
-		R_CheckForLightingConfigChanges();
+		R_CheckForLightingConfigChanges(pWorld);
 		// We can get into situations where some other material system app
 		// is trying to start up; in those cases, we shouldn't render...
 		vrect_t scr_vrect = videomode->GetClientViewRect();
@@ -352,9 +352,9 @@ public:
 		VectorCopy( r_colormod, blend );
 	}
 
-	void SceneBegin( void )
+	void SceneBegin( IVModel* pWorld )
 	{
-		g_EngineRenderer->DrawSceneBegin();
+		g_EngineRenderer->DrawSceneBegin(pWorld);
 	}
 
 	void SceneEnd( void )
@@ -362,24 +362,24 @@ public:
 		g_EngineRenderer->DrawSceneEnd();
 	}
 	 
-	void GetVisibleFogVolume( const Vector& vEyePoint, VisibleFogVolumeInfo_t *pInfo )
+	void GetVisibleFogVolume(IVModel* pWorld, const Vector& vEyePoint, VisibleFogVolumeInfo_t *pInfo )
 	{
-		R_GetVisibleFogVolume( vEyePoint, pInfo );
+		R_GetVisibleFogVolume((model_t*)pWorld, vEyePoint, pInfo );
 	}
 	
-	IWorldRenderList * CreateWorldList()
+	IWorldRenderList * CreateWorldList(IVModel* pWorld)
 	{
-		return g_EngineRenderer->CreateWorldList();
+		return g_EngineRenderer->CreateWorldList(pWorld);
 	}
 
-	void BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceFViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pReflectionWaterHeight )
+	void BuildWorldLists(IVModel* pWorld, IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceFViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pReflectionWaterHeight )
 	{
-		g_EngineRenderer->BuildWorldLists( pList, pInfo, iForceFViewLeaf, pVisData, bShadowDepth, pReflectionWaterHeight );
+		g_EngineRenderer->BuildWorldLists(pWorld, pList, pInfo, iForceFViewLeaf, pVisData, bShadowDepth, pReflectionWaterHeight );
 	}
 
-	void DrawWorldLists( IWorldRenderList *pList, unsigned long flags, float waterZAdjust )
+	void DrawWorldLists(IVModel* pWorld, IWorldRenderList *pList, unsigned long flags, float waterZAdjust )
 	{
-		g_EngineRenderer->DrawWorldLists( pList, flags, waterZAdjust );
+		g_EngineRenderer->DrawWorldLists(pWorld, pList, flags, waterZAdjust );
 	}
 
 	// Optimization for top view
@@ -393,12 +393,12 @@ public:
 		R_TopViewBounds( mins, maxs );
 	}
 
-	void DrawLights( void )
+	void DrawLights( IVModel* pWorld )
 	{
-		DrawLightSprites();
+		DrawLightSprites((model_t*)pWorld);
 
 #ifdef USE_CONVARS
-		DrawLightDebuggingInfo();
+		DrawLightDebuggingInfo((model_t*)pWorld);
 #endif
 	}
 
@@ -408,9 +408,9 @@ public:
 		// R_DrawMaskEntities()
 	}
 
-	void DrawTranslucentSurfaces( IWorldRenderList *pList, int sortIndex, unsigned long flags, bool bShadowDepth )
+	void DrawTranslucentSurfaces(IVModel* pWorld, IWorldRenderList *pList, int sortIndex, unsigned long flags, bool bShadowDepth )
 	{
-		pList->Shader_DrawTranslucentSurfaces( sortIndex, flags, bShadowDepth );
+		pList->Shader_DrawTranslucentSurfaces(pWorld, sortIndex, flags, bShadowDepth );
 	}
 
 	bool LeafContainsTranslucentSurfaces( IWorldRenderList *pList, int sortIndex, unsigned long flags )
@@ -423,9 +423,9 @@ public:
 		Linefile_Draw();
 	}
 
-	void DrawLightmaps( IWorldRenderList *pList, int pageId )
+	void DrawLightmaps(IVModel* pWorld, IWorldRenderList *pList, int pageId )
 	{
-		R_DrawLightmaps( pList, pageId );
+		R_DrawLightmaps((model_t*)pWorld, pList, pageId );
 	}
 
 	void ViewSetupVis( bool novis, int numorigins, const Vector origin[] )
@@ -440,7 +440,7 @@ public:
 
 	bool AreAnyLeavesVisible( int *leafList, int nLeaves )
 	{
-		return Map_AreAnyLeavesVisible( *g_pHost->Host_GetWorldModel()->brush.pShared, leafList, nLeaves );
+		return Map_AreAnyLeavesVisible( g_pHost->Host_GetWorldModel(), leafList, nLeaves );
 	}
 
 	// For backward compatibility only!!!
@@ -476,9 +476,9 @@ public:
 		// Here to preserve backwards compat
 	}
 
-	colorVec GetLightAtPoint( Vector& pos )
+	colorVec GetLightAtPoint(IVModel* pWorld, Vector& pos )
 	{
-		return R_LightPoint( pos );
+		return R_LightPoint((model_t*)pWorld, pos );
 	}
 
 	int GetViewEntity( void )
@@ -507,9 +507,9 @@ public:
 	}
 
 	// World fog for world rendering
-	void SetFogVolumeState( int fogVolume, bool useHeightFog )
+	void SetFogVolumeState(IVModel* pWorld, int fogVolume, bool useHeightFog )
 	{
-		R_SetFogVolumeState(fogVolume, useHeightFog );
+		R_SetFogVolumeState((model_t*)pWorld, fogVolume, useHeightFog );
 	}
 
 	virtual void InstallBrushSurfaceRenderer( IBrushRenderer* pBrushRenderer )
@@ -526,7 +526,7 @@ public:
 	bool EnumerateLeaf(IVModel* world, int leaf, intp context )
 	{
 		BoxIntersectWaterContext_t *pSearchContext = ( BoxIntersectWaterContext_t * )context;
-		mleaf_t *pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leaf];
+		mleaf_t *pLeaf = ((model_t*)world)->GetLeafs(leaf);
 		if( pLeaf->leafWaterDataID == pSearchContext->m_nLeafWaterDataID )
 		{
 			pSearchContext->m_bFoundWaterLeaf = true;
@@ -536,12 +536,12 @@ public:
 		return true;
 	}
 
-	bool DoesBoxIntersectWaterVolume( const Vector &mins, const Vector &maxs, int leafWaterDataID )
+	bool DoesBoxIntersectWaterVolume(IVModel* pWorld, const Vector &mins, const Vector &maxs, int leafWaterDataID )
 	{
 		BoxIntersectWaterContext_t context;
 		context.m_bFoundWaterLeaf = false;
 		context.m_nLeafWaterDataID = leafWaterDataID;
-		g_pToolBSPTree->EnumerateLeavesInBox(g_pHost->Host_GetWorldModel(), mins, maxs, this, ( intp )&context );
+		((model_t*)pWorld)->EnumerateLeavesInBox( mins, maxs, this, (intp)&context);//g_pHost->Host_GetWorldModel(),
 		return context.m_bFoundWaterLeaf;
 	}
 
@@ -591,9 +591,9 @@ public:
 		g_EngineRenderer->BeginUpdateLightmaps();
 	}
 
-	void EndUpdateLightmaps( void )
+	void EndUpdateLightmaps( IVModel* pWorld )
 	{
-		g_EngineRenderer->EndUpdateLightmaps();
+		g_EngineRenderer->EndUpdateLightmaps(pWorld);
 	}
 
 	virtual void Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture )

@@ -149,7 +149,7 @@ public:
 	virtual void				OnThreadedDrawSetup() {}
 	virtual bool				IsTransparent( void );
 	virtual const IVModel*		GetModel( ) const;
-	virtual int					DrawModel( int flags );
+	virtual int					DrawModel(IVModel* pWorld, int flags );
 	virtual void				ComputeFxBlend( );
 	virtual int					GetFxBlend( );
 	virtual bool				SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime );
@@ -690,12 +690,13 @@ const IVModel* CDetailModel::GetModel( ) const
 	return m_pModel;
 }
 
-int CDetailModel::DrawModel( int flags )
+int CDetailModel::DrawModel(IVModel* pWorld, int flags )
 {
 	if ((m_Alpha == 0) || (!m_pModel))
 		return 0;
 
 	int drawn = modelrender->DrawModel( 
+		pWorld,
 		flags, 
 		this,
 		MODEL_INSTANCE_INVALID,
@@ -2825,8 +2826,8 @@ void CDetailObjectSystem::BuildDetailObjectRenderLists( const Vector &vViewOrigi
 	m_flCurFalloffFactor = 255.0f / ( m_flCurMaxSqDist - m_flCurFadeSqDist );
 
 
-	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
-	pQuery->EnumerateLeavesInSphere(NULL, g_pView->CurrentViewOrigin(),
+	//ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
+	engineClient->GetWorldModel()->EnumerateLeavesInSphere( g_pView->CurrentViewOrigin(),
 									 cl_detaildist.GetFloat(), this, (intp)&ctx );
 }
 

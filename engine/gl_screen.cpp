@@ -37,7 +37,7 @@
 
 // In other C files.
 extern bool V_CheckGamma( void );
-extern void	V_RenderView( void );
+extern void	V_RenderView( model_t* pWorld );
 extern void V_RenderVGuiOnly( void );
 
 bool		scr_initialized;		// ready to draw
@@ -213,7 +213,9 @@ void SCR_UpdateScreen( void )
 {
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
-	R_StudioCheckReinitLightingCache();
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+
+	R_StudioCheckReinitLightingCache(pWorld);
 	
 	// Always force the Gamma Table to be rebuilt. Otherwise,
 	// we'll load textures with an all white gamma lookup table.
@@ -275,7 +277,7 @@ void SCR_UpdateScreen( void )
 	Shader_BeginRendering();
 				
 	// Draw world, etc.
-	V_RenderView();
+	V_RenderView(pWorld);
 
 	CL_TakeSnapshotAndSwap();	   
 	

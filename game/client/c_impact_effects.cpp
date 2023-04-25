@@ -108,7 +108,7 @@ void GetColorForSurface( trace_t *trace, Vector *color )
 		else
 		{
 			// In this case we hit a static prop.
-			staticpropmgr->GetStaticPropMaterialColorAndLighting( trace, trace->hitbox - 1, diffuseColor, baseColor );
+			staticpropmgr->GetStaticPropMaterialColorAndLighting(engineClient->GetWorldModel(), trace, trace->hitbox - 1, diffuseColor, baseColor );
 		}
 	}
 	else
@@ -129,7 +129,7 @@ void GetColorForSurface( trace_t *trace, Vector *color )
 		IVModel* pModel = const_cast<IVModel*>(modelinfo->GetModel( modelIndex ));
 
 		// Ask the model info about what we need to know
-		modelinfo->GetModelMaterialColorAndLighting(modelIndex, pCollide->GetCollisionOrigin(),//pModel
+		modelinfo->GetModelMaterialColorAndLighting(engineClient->GetWorldModel(), modelIndex, pCollide->GetCollisionOrigin(),//pModel
 			pCollide->GetCollisionAngles(), trace, diffuseColor, baseColor );
 	}
 
@@ -483,7 +483,7 @@ void FX_GlassImpact( const Vector &pos, const Vector &normal )
 	pGlassEmitter->SetSortOrigin( pos );
 
 	Vector vecColor;
-	engineClient->ComputeLighting( pos, NULL, true, vecColor );
+	engineClient->ComputeLighting(engineClient->GetWorldModel(), pos, NULL, true, vecColor );
 
 	// HACK: Blend a little toward white to match the materials...
 	VectorLerp( vecColor, Vector( 1, 1, 1 ), 0.3, vecColor );

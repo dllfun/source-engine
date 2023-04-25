@@ -99,7 +99,8 @@ struct StaticPropRenderInfo_t
 abstract_class IVModelRender
 {
 public:
-	virtual int		DrawModel(	int flags,
+	virtual int		DrawModel(	IVModel* pWorld,
+								int flags,
 								IClientRenderable *pRenderable,
 								ModelInstanceHandle_t instance,
 								int entity_index, 
@@ -119,7 +120,7 @@ public:
 	virtual void	SetViewTarget( const CStudioHdr *pStudioHdr, int nBodyIndex, const Vector& target ) = 0;
 
 	// Creates, destroys instance data to be associated with the model
-	virtual ModelInstanceHandle_t CreateInstance( IClientRenderable *pRenderable, LightCacheHandle_t *pCache = NULL ) = 0;
+	virtual ModelInstanceHandle_t CreateInstance(IVModel* pWorld, IClientRenderable *pRenderable, LightCacheHandle_t *pCache = NULL ) = 0;
 	virtual void DestroyInstance( ModelInstanceHandle_t handle ) = 0;
 
 	// Associates a particular lighting condition with a model instance handle.
@@ -150,25 +151,25 @@ public:
 	virtual void DrawModelShadow(  IClientRenderable *pRenderable, const DrawModelInfo_t &info, matrix3x4_t *pCustomBoneToWorld = NULL ) = 0;
 
 	// This gets called when overbright, etc gets changed to recompute static prop lighting.
-	virtual bool RecomputeStaticLighting( ModelInstanceHandle_t handle ) = 0;
+	virtual bool RecomputeStaticLighting(IVModel* pWorld, ModelInstanceHandle_t handle ) = 0;
 
 	virtual void ReleaseAllStaticPropColorData( void ) = 0;
-	virtual void RestoreAllStaticPropColorData( void ) = 0;
+	virtual void RestoreAllStaticPropColorData( IVModel* pWorld ) = 0;
 
 	// Extended version of drawmodel
-	virtual int	DrawModelEx( ModelRenderInfo_t &pInfo ) = 0;
+	virtual int	DrawModelEx(IVModel* pWorld, ModelRenderInfo_t &pInfo ) = 0;
 
-	virtual int	DrawModelExStaticProp( ModelRenderInfo_t &pInfo ) = 0;
+	virtual int	DrawModelExStaticProp(IVModel* pWorld, ModelRenderInfo_t &pInfo ) = 0;
 
 	virtual bool DrawModelSetup( ModelRenderInfo_t &pInfo, DrawModelState_t *pState, matrix3x4_t *pCustomBoneToWorld, matrix3x4_t** ppBoneToWorldOut ) = 0;
-	virtual void DrawModelExecute( const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld = NULL ) = 0;
+	virtual void DrawModelExecute(IVModel* pWorld, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld = NULL ) = 0;
 
 	// Sets up lighting context for a point in space
-	virtual void SetupLighting( const Vector &vecCenter ) = 0;
+	virtual void SetupLighting(IVModel* pWorld, const Vector &vecCenter ) = 0;
 	
 	// doesn't support any debug visualization modes or other model options, but draws static props in the
 	// fastest way possible
-	virtual int DrawStaticPropArrayFast( StaticPropRenderInfo_t *pProps, int count, bool bShadowDepth ) = 0;
+	virtual int DrawStaticPropArrayFast(IVModel* pWorld, StaticPropRenderInfo_t *pProps, int count, bool bShadowDepth ) = 0;
 
 	// Allow client to override lighting state
 	virtual void SuppressEngineLighting( bool bSuppress ) = 0;

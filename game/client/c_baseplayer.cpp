@@ -1388,7 +1388,7 @@ bool C_BasePlayer::ShouldDraw()
 	return ShouldDrawThisPlayer() && BaseClass::ShouldDraw();
 }
 
-int C_BasePlayer::DrawModel( int flags )
+int C_BasePlayer::DrawModel(IVModel* pWorld, int flags )
 {
 #ifndef PORTAL
 	// In Portal this check is already performed as part of
@@ -1398,7 +1398,7 @@ int C_BasePlayer::DrawModel( int flags )
 		return 0;
 	}
 #endif
-	return BaseClass::DrawModel( flags );
+	return BaseClass::DrawModel(pWorld, flags );
 }
 
 //-----------------------------------------------------------------------------

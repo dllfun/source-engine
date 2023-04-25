@@ -278,7 +278,7 @@ bool C_BaseViewModel::ShouldDraw()
 // Purpose: Render the weapon. Draw the Viewmodel if the weapon's being carried
 //			by this player, otherwise draw the worldmodel.
 //-----------------------------------------------------------------------------
-int C_BaseViewModel::DrawModel( int flags )
+int C_BaseViewModel::DrawModel(IVModel* pWorld, int flags )
 {
 	if ( !m_bReadyToDraw )
 		return 0;
@@ -314,7 +314,7 @@ int C_BaseViewModel::DrawModel( int flags )
 	}
 	else
 	{
-		ret = BaseClass::DrawModel( flags );
+		ret = BaseClass::DrawModel(pWorld, flags );
 	}
 
 	// Now that we've rendered, reset the animation restart flag
@@ -355,7 +355,7 @@ int C_BaseViewModel::InternalDrawModel( int flags )
 //-----------------------------------------------------------------------------
 int C_BaseViewModel::DrawOverriddenViewmodel( int flags )
 {
-	return BaseClass::DrawModel( flags );
+	return BaseClass::DrawModel(engineClient->GetWorldModel(), flags );
 }
 
 //-----------------------------------------------------------------------------

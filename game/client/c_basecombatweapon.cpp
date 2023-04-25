@@ -466,7 +466,7 @@ bool C_BaseCombatWeapon::ShouldDrawPickup( void )
 // Purpose: Render the weapon. Draw the Viewmodel if the weapon's being carried
 //			by this player, otherwise draw the worldmodel.
 //-----------------------------------------------------------------------------
-int C_BaseCombatWeapon::DrawModel( int flags )
+int C_BaseCombatWeapon::DrawModel(IVModel* pWorld, int flags )
 {
 	VPROF_BUDGET( "C_BaseCombatWeapon::DrawModel", VPROF_BUDGETGROUP_MODEL_RENDERING );
 	if ( !m_bReadyToDraw )
@@ -489,7 +489,7 @@ int C_BaseCombatWeapon::DrawModel( int flags )
 			return false;
 	}
 
-	return BaseClass::DrawModel( flags );
+	return BaseClass::DrawModel(pWorld, flags );
 }
 
 

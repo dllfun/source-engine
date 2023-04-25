@@ -116,7 +116,7 @@ bool R_CanUseVisibleDLight( int dlight )
 //-----------------------------------------------------------------------------
 // Adds a single dynamic light
 //-----------------------------------------------------------------------------
-static bool AddSingleDynamicLight( dlight_t& dl, SurfaceHandle_t surfID, const Vector &lightOrigin, float perpDistSq, float lightRadiusSq )
+static bool AddSingleDynamicLight(model_t* pWorld, dlight_t& dl, SurfaceHandle_t surfID, const Vector &lightOrigin, float perpDistSq, float lightRadiusSq )
 {
 	// transform the light into brush local space
 	Vector local;
@@ -126,13 +126,13 @@ static bool AddSingleDynamicLight( dlight_t& dl, SurfaceHandle_t surfID, const V
 		if (dl.m_OuterAngle < 180.0f)
 		{
 			// Can't light anything from the rear...
-			if (DotProduct(dl.m_Direction, MSurf_Plane( surfID ).normal) >= 0.0f)
+			if (DotProduct(dl.m_Direction, pWorld->MSurf_Plane( surfID ).normal) >= 0.0f)
 				return false;
 		}
 	}
 
 	// Transform the light center point into (u,v) space of the lightmap
-	mtexinfo_t* tex = MSurf_TexInfo( surfID );
+	mtexinfo_t* tex = pWorld->MSurf_TexInfo( surfID );
 	local[0] = DotProduct (lightOrigin, tex->lightmapVecsLuxelsPerWorldUnits[0].AsVector3D()) + 
 			   tex->lightmapVecsLuxelsPerWorldUnits[0][3];
 	local[1] = DotProduct (lightOrigin, tex->lightmapVecsLuxelsPerWorldUnits[1].AsVector3D()) + 
@@ -140,8 +140,8 @@ static bool AddSingleDynamicLight( dlight_t& dl, SurfaceHandle_t surfID, const V
 
 	// Now put the center points into the space of the lightmap rectangle
 	// defined by the lightmapMins + lightmapExtents
-	local[0] -= MSurf_LightmapMins( surfID )[0];
-	local[1] -= MSurf_LightmapMins( surfID )[1];
+	local[0] -= pWorld->MSurf_LightmapMins( surfID )[0];
+	local[1] -= pWorld->MSurf_LightmapMins( surfID )[1];
 	
 	// Figure out the quadratic attenuation factor...
 	Vector intensity;
@@ -157,8 +157,8 @@ static bool AddSingleDynamicLight( dlight_t& dl, SurfaceHandle_t surfID, const V
 	// Compute a color at each luxel
 	// We want to know the square distance from luxel center to light
 	// so we can compute an 1/r^2 falloff in light color
-	int smax = MSurf_LightmapExtents( surfID )[0] + 1;
-	int tmax = MSurf_LightmapExtents( surfID )[1] + 1;
+	int smax = pWorld->MSurf_LightmapExtents( surfID )[0] + 1;
+	int tmax = pWorld->MSurf_LightmapExtents( surfID )[1] + 1;
 	for (int t=0; t<tmax; ++t)
 	{
 		float td = (local[1] - t) * tex->worldUnitsPerLuxel;
@@ -195,7 +195,7 @@ static bool AddSingleDynamicLight( dlight_t& dl, SurfaceHandle_t surfID, const V
 //-----------------------------------------------------------------------------
 // Adds a dynamic light to the bumped lighting
 //-----------------------------------------------------------------------------
-static void AddSingleDynamicLightToBumpLighting( dlight_t& dl, SurfaceHandle_t surfID, 
+static void AddSingleDynamicLightToBumpLighting(model_t* pWorld, dlight_t& dl, SurfaceHandle_t surfID, 
 	const Vector &lightOrigin, float perpDistSq, float lightRadiusSq, Vector* pBumpBasis, const Vector& luxelBasePosition )
 {
 	Vector local;
@@ -204,7 +204,7 @@ static void AddSingleDynamicLightToBumpLighting( dlight_t& dl, SurfaceHandle_t s
 	Assert( dl.m_OuterAngle == 0.0f );
 
 	// Transform the light center point into (u,v) space of the lightmap
-	mtexinfo_t *pTexInfo = MSurf_TexInfo( surfID );
+	mtexinfo_t *pTexInfo = pWorld->MSurf_TexInfo( surfID );
 	local[0] = DotProduct (lightOrigin, pTexInfo->lightmapVecsLuxelsPerWorldUnits[0].AsVector3D()) + 
 			   pTexInfo->lightmapVecsLuxelsPerWorldUnits[0][3];
 	local[1] = DotProduct (lightOrigin, pTexInfo->lightmapVecsLuxelsPerWorldUnits[1].AsVector3D()) + 
@@ -212,8 +212,8 @@ static void AddSingleDynamicLightToBumpLighting( dlight_t& dl, SurfaceHandle_t s
 
 	// Now put the center points into the space of the lightmap rectangle
 	// defined by the lightmapMins + lightmapExtents
-	local[0] -= MSurf_LightmapMins( surfID )[0];
-	local[1] -= MSurf_LightmapMins( surfID )[1];
+	local[0] -= pWorld->MSurf_LightmapMins( surfID )[0];
+	local[1] -= pWorld->MSurf_LightmapMins( surfID )[1];
 
 	// Figure out the quadratic attenuation factor...
 	Vector intensity;
@@ -250,8 +250,8 @@ static void AddSingleDynamicLightToBumpLighting( dlight_t& dl, SurfaceHandle_t s
 	// Compute a color at each luxel
 	// We want to know the square distance from luxel center to light
 	// so we can compute an 1/r^2 falloff in light color
-	int smax = MSurf_LightmapExtents( surfID )[0] + 1;
-	int tmax = MSurf_LightmapExtents( surfID )[1] + 1;
+	int smax = pWorld->MSurf_LightmapExtents( surfID )[0] + 1;
+	int tmax = pWorld->MSurf_LightmapExtents( surfID )[1] + 1;
 	for (int t=0; t<tmax; ++t)
 	{
 		float td = (local[1] - t) * pTexInfo->worldUnitsPerLuxel;
@@ -290,7 +290,7 @@ static void AddSingleDynamicLightToBumpLighting( dlight_t& dl, SurfaceHandle_t s
 					VectorNormalize( lightDirection );
 				}
 				
-				float lDotN = DotProduct( lightDirection, MSurf_Plane( surfID ).normal );
+				float lDotN = DotProduct( lightDirection, pWorld->MSurf_Plane( surfID ).normal );
 				if (lDotN < 1e-3)
 					lDotN = 1e-3;
 				scale /= lDotN;
@@ -323,55 +323,55 @@ static void AddSingleDynamicLightToBumpLighting( dlight_t& dl, SurfaceHandle_t s
 //-----------------------------------------------------------------------------
 // Compute the bumpmap basis for this surface
 //-----------------------------------------------------------------------------
-static void R_ComputeSurfaceBasis( SurfaceHandle_t surfID, Vector *pBumpNormals, Vector &luxelBasePosition )
+static void R_ComputeSurfaceBasis(model_t* pWorld, SurfaceHandle_t surfID, Vector *pBumpNormals, Vector &luxelBasePosition )
 {
 	// Get the bump basis vects in the space of the surface.
 	Vector sVect, tVect;
-	VectorCopy( MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[0].AsVector3D(), sVect );
+	VectorCopy(pWorld->MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[0].AsVector3D(), sVect );
 	VectorNormalize( sVect );
-	VectorCopy( MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[1].AsVector3D(), tVect );
+	VectorCopy(pWorld->MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[1].AsVector3D(), tVect );
 	VectorNormalize( tVect );
-	GetBumpNormals( sVect, tVect, MSurf_Plane( surfID ).normal, MSurf_Plane( surfID ).normal, pBumpNormals );
+	GetBumpNormals( sVect, tVect, pWorld->MSurf_Plane( surfID ).normal, pWorld->MSurf_Plane( surfID ).normal, pBumpNormals );
 
 	// Compute the location of the first luxel in worldspace
 
 	// Since there's a scale factor used when going from world to luxel,
 	// we gotta undo that scale factor when going from luxel to world
 	float fixupFactor = 
-		MSurf_TexInfo( surfID )->worldUnitsPerLuxel * 
-		MSurf_TexInfo( surfID )->worldUnitsPerLuxel;
+		pWorld->MSurf_TexInfo( surfID )->worldUnitsPerLuxel *
+		pWorld->MSurf_TexInfo( surfID )->worldUnitsPerLuxel;
 
 	// The starting u of the surface is surf->lightmapMins[0];
 	// since N * P + D = u, N * P = u - D, therefore we gotta move (u-D) along uvec
-	VectorMultiply( MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[0].AsVector3D(),
-		(MSurf_LightmapMins( surfID )[0] - MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[0][3]) * fixupFactor,
+	VectorMultiply(pWorld->MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[0].AsVector3D(),
+		(pWorld->MSurf_LightmapMins( surfID )[0] - pWorld->MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[0][3]) * fixupFactor,
 		luxelBasePosition );
 
 	// Do the same thing for the v direction.
 	VectorMA( luxelBasePosition, 
-		(MSurf_LightmapMins( surfID )[1] - 
-		MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[1][3]) * fixupFactor,
-		MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[1].AsVector3D(),
+		(pWorld->MSurf_LightmapMins( surfID )[1] -
+		pWorld->MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[1][3]) * fixupFactor,
+		pWorld->MSurf_TexInfo( surfID )->lightmapVecsLuxelsPerWorldUnits[1].AsVector3D(),
 		luxelBasePosition );
 
 	// Move out in the direction of the plane normal...
-	VectorMA( luxelBasePosition, MSurf_Plane( surfID ).dist, MSurf_Plane( surfID ).normal, luxelBasePosition ); 
+	VectorMA( luxelBasePosition, pWorld->MSurf_Plane( surfID ).dist, pWorld->MSurf_Plane( surfID ).normal, luxelBasePosition );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Compute the mask of which dlights affect a surface
 //			NOTE: Also has the side effect of updating the surface lighting dlight flags!
 //-----------------------------------------------------------------------------
-unsigned int R_ComputeDynamicLightMask( dlight_t *pLights, SurfaceHandle_t surfID, msurfacelighting_t *pLighting, const matrix3x4_t& entityToWorld )
+unsigned int R_ComputeDynamicLightMask(model_t* pWorld, dlight_t *pLights, SurfaceHandle_t surfID, msurfacelighting_t *pLighting, const matrix3x4_t& entityToWorld )
 {
 	ASSERT_SURF_VALID( surfID );
 	Vector bumpNormals[3];
 	Vector luxelBasePosition;
 
 	// Displacements do dynamic lights different
-	if( SurfaceHasDispInfo( surfID ) )
+	if(pWorld->SurfaceHasDispInfo( surfID ) )
 	{
-		return MSurf_DispInfo( surfID )->ComputeDynamicLightMask(pLights);
+		return pWorld->MSurf_DispInfo( surfID )->ComputeDynamicLightMask(pWorld,pLights);
 	}
 
 	if ( !g_bActiveDlights )
@@ -401,7 +401,7 @@ unsigned int R_ComputeDynamicLightMask( dlight_t *pLights, SurfaceHandle_t surfI
 
 			// NOTE: Dist can be negative because muzzle flashes can actually get behind walls
 			// since the gun isn't checked for collision tests.
-			float perpDistSq = DotProduct (lightOrigin, MSurf_Plane( surfID ).normal) - MSurf_Plane( surfID ).dist;
+			float perpDistSq = DotProduct (lightOrigin, pWorld->MSurf_Plane( surfID ).normal) - pWorld->MSurf_Plane( surfID ).dist;
 			if (perpDistSq < DLIGHT_BEHIND_PLANE_DIST)
 			{
 				// update the surfacelighting and remove this light's bit
@@ -434,7 +434,7 @@ unsigned int R_ComputeDynamicLightMask( dlight_t *pLights, SurfaceHandle_t surfI
 //			NOTE: Can be threaded, should not reference or modify any global state 
 //			other than blocklights.
 //-----------------------------------------------------------------------------
-void R_AddDynamicLights( dlight_t *pLights, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld, bool needsBumpmap, unsigned int lightMask )
+void R_AddDynamicLights(model_t* pWorld, dlight_t *pLights, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld, bool needsBumpmap, unsigned int lightMask )
 {
 	ASSERT_SURF_VALID( surfID );
 	VPROF( "R_AddDynamicLights" );
@@ -444,9 +444,9 @@ void R_AddDynamicLights( dlight_t *pLights, SurfaceHandle_t surfID, const matrix
 	Vector luxelBasePosition;
 
 	// Displacements do dynamic lights different
-	if( SurfaceHasDispInfo( surfID ) )
+	if(pWorld->SurfaceHasDispInfo( surfID ) )
 	{
-		MSurf_DispInfo( surfID )->AddDynamicLights(pLights, lightMask);
+		pWorld->MSurf_DispInfo( surfID )->AddDynamicLights(pWorld, pLights, lightMask);
 		return;
 	}
 
@@ -464,7 +464,7 @@ void R_AddDynamicLights( dlight_t *pLights, SurfaceHandle_t surfID, const matrix
 
 			// NOTE: Dist can be negative because muzzle flashes can actually get behind walls
 			// since the gun isn't checked for collision tests.
-			float perpDistSq = DotProduct (lightOrigin, MSurf_Plane( surfID ).normal) - MSurf_Plane( surfID ).dist;
+			float perpDistSq = DotProduct (lightOrigin, pWorld->MSurf_Plane( surfID ).normal) - pWorld->MSurf_Plane( surfID ).dist;
 			if (perpDistSq < DLIGHT_BEHIND_PLANE_DIST)
 				continue;
 
@@ -477,7 +477,7 @@ void R_AddDynamicLights( dlight_t *pLights, SurfaceHandle_t surfID, const matrix
 
 			if (!needsBumpmap)
 			{
-				AddSingleDynamicLight( pLights[lnum], surfID, lightOrigin, perpDistSq, lightRadiusSq );
+				AddSingleDynamicLight(pWorld, pLights[lnum], surfID, lightOrigin, perpDistSq, lightRadiusSq );
 				continue;
 			}
 
@@ -485,11 +485,11 @@ void R_AddDynamicLights( dlight_t *pLights, SurfaceHandle_t surfID, const matrix
 			// are the same for a surface...
 			if (!computedBumpBasis)
 			{
-				R_ComputeSurfaceBasis( surfID, bumpNormals, luxelBasePosition );
+				R_ComputeSurfaceBasis(pWorld, surfID, bumpNormals, luxelBasePosition );
 				computedBumpBasis = true;
 			}
 
-			AddSingleDynamicLightToBumpLighting( pLights[lnum], surfID, lightOrigin, perpDistSq, lightRadiusSq, bumpNormals, luxelBasePosition );
+			AddSingleDynamicLightToBumpLighting(pWorld, pLights[lnum], surfID, lightOrigin, perpDistSq, lightRadiusSq, bumpNormals, luxelBasePosition );
 		}
 	}
 }
@@ -517,17 +517,17 @@ static void InitLMSamples( Vector4D *pSamples, int nSamples, float value )
 //-----------------------------------------------------------------------------
 // Computes the lightmap size
 //-----------------------------------------------------------------------------
-static int ComputeLightmapSize( SurfaceHandle_t surfID )
+static int ComputeLightmapSize(model_t* pWorld, SurfaceHandle_t surfID )
 {
-	int smax = ( MSurf_LightmapExtents( surfID )[0] ) + 1;
-	int tmax = ( MSurf_LightmapExtents( surfID )[1] ) + 1;
+	int smax = (pWorld->MSurf_LightmapExtents( surfID )[0] ) + 1;
+	int tmax = (pWorld->MSurf_LightmapExtents( surfID )[1] ) + 1;
 	int size = smax * tmax;
 
-	int nMaxSize = MSurf_MaxLightmapSizeWithBorder( surfID );
+	int nMaxSize = pWorld->MSurf_MaxLightmapSizeWithBorder( surfID );
 	if (size > nMaxSize * nMaxSize)
 	{
 		ConMsg("Bad lightmap extents on material \"%s\"\n", 
-			materialSortInfoArray[MSurf_MaterialSortID( surfID )].material->GetName());
+			materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID )].material->GetName());
 		return 0;
 	}
 	
@@ -1099,7 +1099,7 @@ void MarkPage( int pageID )
 //-----------------------------------------------------------------------------
 // Update the lightmaps...
 //-----------------------------------------------------------------------------
-static void UpdateLightmapTextures( SurfaceHandle_t surfID, bool needsBumpmap )
+static void UpdateLightmapTextures(model_t* pWorld, SurfaceHandle_t surfID, bool needsBumpmap )
 {
 	ASSERT_SURF_VALID( surfID );
 
@@ -1107,10 +1107,10 @@ static void UpdateLightmapTextures( SurfaceHandle_t surfID, bool needsBumpmap )
 	{
 		int lightmapSize[2];
 		int offsetIntoLightmapPage[2];
-		lightmapSize[0] = ( MSurf_LightmapExtents( surfID )[0] ) + 1;
-		lightmapSize[1] = ( MSurf_LightmapExtents( surfID )[1] ) + 1;
-		offsetIntoLightmapPage[0] = MSurf_OffsetIntoLightmapPage( surfID )[0];
-		offsetIntoLightmapPage[1] = MSurf_OffsetIntoLightmapPage( surfID )[1];
+		lightmapSize[0] = (pWorld->MSurf_LightmapExtents( surfID )[0] ) + 1;
+		lightmapSize[1] = (pWorld->MSurf_LightmapExtents( surfID )[1] ) + 1;
+		offsetIntoLightmapPage[0] = pWorld->MSurf_OffsetIntoLightmapPage( surfID )[0];
+		offsetIntoLightmapPage[1] = pWorld->MSurf_OffsetIntoLightmapPage( surfID )[1];
 		Assert( MSurf_MaterialSortID( surfID ) >= 0 && 
 			MSurf_MaterialSortID( surfID ) < g_WorldStaticMeshes.Count() );
 		// FIXME: Should differentiate between bumped and unbumped since the perf characteristics
@@ -1119,13 +1119,13 @@ static void UpdateLightmapTextures( SurfaceHandle_t surfID, bool needsBumpmap )
 
 		if( needsBumpmap )
 		{
-			materials->UpdateLightmap( materialSortInfoArray[MSurf_MaterialSortID( surfID )].lightmapPageID,
+			materials->UpdateLightmap( materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID )].lightmapPageID,
 				lightmapSize, offsetIntoLightmapPage, 
 				&blocklights[0][0][0], &blocklights[1][0][0], &blocklights[2][0][0], &blocklights[3][0][0] );
 		}
 		else
 		{
-			materials->UpdateLightmap( materialSortInfoArray[MSurf_MaterialSortID( surfID )].lightmapPageID,
+			materials->UpdateLightmap( materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID )].lightmapPageID,
 				lightmapSize, offsetIntoLightmapPage, 
 				&blocklights[0][0][0], NULL, NULL, NULL );
 		}
@@ -1133,11 +1133,11 @@ static void UpdateLightmapTextures( SurfaceHandle_t surfID, bool needsBumpmap )
 }
 
 
-unsigned int R_UpdateDlightState( dlight_t *pLights, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld, bool bOnlyUseLightStyles, bool bLightmap )
+unsigned int R_UpdateDlightState(model_t* pWorld, dlight_t *pLights, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld, bool bOnlyUseLightStyles, bool bLightmap )
 {
 	unsigned int dlightMask = 0;
 	// Mark the surface with the particular cached light values...
-	msurfacelighting_t *pLighting = SurfaceLighting( surfID );
+	msurfacelighting_t *pLighting = pWorld->SurfaceLighting( surfID );
 
 	// Retire dlights that are no longer active
 	pLighting->m_fDLightBits &= r_dlightactive;
@@ -1149,13 +1149,13 @@ unsigned int R_UpdateDlightState( dlight_t *pLights, SurfaceHandle_t surfID, con
 		// add all the dynamic lights
 		if( bLightmap && ( pLighting->m_nDLightFrame == r_framecount ) )
 		{
-			dlightMask = R_ComputeDynamicLightMask( pLights, surfID, pLighting, entityToWorld );
+			dlightMask = R_ComputeDynamicLightMask(pWorld, pLights, surfID, pLighting, entityToWorld );
 		}
 
 		if ( !dlightMask || !pLighting->m_fDLightBits )
 		{
 			pLighting->m_fDLightBits = 0;
-			MSurf_Flags(surfID) &= ~SURFDRAW_HASDLIGHT;
+			pWorld->MSurf_Flags(surfID) &= ~SURFDRAW_HASDLIGHT;
 		}
 	}
 	return dlightMask;
@@ -1168,7 +1168,7 @@ unsigned int R_UpdateDlightState( dlight_t *pLights, SurfaceHandle_t surfID, con
 //			*dest - texture pointer to receive copy in lightmap texture format
 //			stride - stride of *dest memory
 //-----------------------------------------------------------------------------
-void R_BuildLightMapGuts( dlight_t *pLights, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld, unsigned int dlightMask, bool needsBumpmap, bool needsLightmap )
+void R_BuildLightMapGuts(model_t* pWorld, dlight_t *pLights, SurfaceHandle_t surfID, const matrix3x4_t& entityToWorld, unsigned int dlightMask, bool needsBumpmap, bool needsLightmap )
 {
 	VPROF_("R_BuildLightMapGuts", 1, VPROF_BUDGETGROUP_DLIGHT_RENDERING, false, 0);
 	int bumpID;
@@ -1177,14 +1177,14 @@ void R_BuildLightMapGuts( dlight_t *pLights, SurfaceHandle_t surfID, const matri
 	Assert( !host_state.worldmodel->brush.pShared->unloadedlightmaps );
 
 	// Mark the surface with the particular cached light values...
-	msurfacelighting_t *pLighting = SurfaceLighting( surfID );
+	msurfacelighting_t *pLighting = pWorld->SurfaceLighting( surfID );
 
-	int size = ComputeLightmapSize( surfID );
+	int size = ComputeLightmapSize(pWorld, surfID );
 	if (size == 0)
 		return;
 
-	bool hasBumpmap = SurfHasBumpedLightmaps( surfID , g_pHost->Host_GetWorldModel()->brush.pShared);
-	bool hasLightmap = SurfHasLightmap( surfID );
+	bool hasBumpmap = SurfHasBumpedLightmaps(pWorld, surfID );
+	bool hasLightmap = SurfHasLightmap(pWorld, surfID );
 
 	// clear to no light
 	if( needsLightmap )
@@ -1244,17 +1244,17 @@ void R_BuildLightMapGuts( dlight_t *pLights, SurfaceHandle_t surfID, const matri
 	// add all the dynamic lights
 	if ( dlightMask && (needsLightmap || needsBumpmap) )
 	{
-		R_AddDynamicLights( pLights, surfID, entityToWorld, needsBumpmap, dlightMask );
+		R_AddDynamicLights(pWorld, pLights, surfID, entityToWorld, needsBumpmap, dlightMask );
 	}
 
 	// Update the texture state
-	UpdateLightmapTextures( surfID, needsBumpmap );
+	UpdateLightmapTextures(pWorld, surfID, needsBumpmap );
 }
 
-void R_BuildLightMap( dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t &entityToWorld, bool bOnlyUseLightStyles )
+void R_BuildLightMap(model_t* pWorld, dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t &entityToWorld, bool bOnlyUseLightStyles )
 {
-	bool needsBumpmap = SurfNeedsBumpedLightmaps( surfID );
-	bool needsLightmap = SurfNeedsLightmap( surfID );
+	bool needsBumpmap = SurfNeedsBumpedLightmaps(pWorld, surfID );
+	bool needsLightmap = SurfNeedsLightmap(pWorld, surfID );
 
 	if( !needsBumpmap && !needsLightmap )
 		return;
@@ -1263,15 +1263,15 @@ void R_BuildLightMap( dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t
 	{
 		Assert( MSurf_MaterialSortID( surfID ) >= 0 && 
 			    MSurf_MaterialSortID( surfID ) < g_WorldStaticMeshes.Count() );
-		if (( materialSortInfoArray[MSurf_MaterialSortID( surfID )].lightmapPageID == MATERIAL_SYSTEM_LIGHTMAP_PAGE_WHITE )	||
-		   ( materialSortInfoArray[MSurf_MaterialSortID( surfID )].lightmapPageID == MATERIAL_SYSTEM_LIGHTMAP_PAGE_WHITE_BUMP ) )
+		if (( materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID )].lightmapPageID == MATERIAL_SYSTEM_LIGHTMAP_PAGE_WHITE )	||
+		   ( materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID )].lightmapPageID == MATERIAL_SYSTEM_LIGHTMAP_PAGE_WHITE_BUMP ) )
 		{
 			return;
 		}
 	}
 
 	bool bDlightsInLightmap = needsLightmap || needsBumpmap;
-	unsigned int dlightMask = R_UpdateDlightState( pLights, surfID, entityToWorld, bOnlyUseLightStyles, bDlightsInLightmap );
+	unsigned int dlightMask = R_UpdateDlightState(pWorld, pLights, surfID, entityToWorld, bOnlyUseLightStyles, bDlightsInLightmap );
 
 	// update the state, but don't render any dlights if only lightstyles requested
 	if ( bOnlyUseLightStyles )
@@ -1279,11 +1279,11 @@ void R_BuildLightMap( dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t
 
 	if ( !pCallQueue )
 	{
-		R_BuildLightMapGuts( pLights, surfID, entityToWorld, dlightMask, needsBumpmap, needsLightmap );
+		R_BuildLightMapGuts(pWorld, pLights, surfID, entityToWorld, dlightMask, needsBumpmap, needsLightmap );
 	}
 	else
 	{
-		pCallQueue->QueueCall( R_BuildLightMapGuts, pLights, surfID, RefToVal( entityToWorld ), dlightMask, needsBumpmap, needsLightmap );
+		//pCallQueue->QueueCall( R_BuildLightMapGuts, pLights, surfID, RefToVal( entityToWorld ), dlightMask, needsBumpmap, needsLightmap );//need check
 	}
 }
 
@@ -1291,7 +1291,7 @@ void R_BuildLightMap( dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t
 // Purpose: Save off the average light values, and dump the rest of the lightmap data.
 // Can be used to save memory, at the expense of dynamic lights and lightstyles.
 //-----------------------------------------------------------------------------
-void CacheAndUnloadLightmapData()
+void CacheAndUnloadLightmapData(model_t* pWorld)
 {
 	Assert( !g_bHunkAllocLightmaps );
 	if ( g_bHunkAllocLightmaps )
@@ -1299,9 +1299,9 @@ void CacheAndUnloadLightmapData()
 		return;
 	}
 
-	worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
-	msurfacelighting_t *pLighting = pBrushData->surfacelighting;
-	int numSurfaces = pBrushData->numsurfaces;
+	//worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
+	msurfacelighting_t *pLighting = pWorld->GetSurfacelighting();
+	int numSurfaces = pWorld->GetSurfacesCount();
 
 	// This will allocate more data than necessary, but only 1-2K max
 	byte *pDestBase = (byte*)malloc( numSurfaces * MAXLIGHTMAPS * sizeof( ColorRGBExp32 ) );
@@ -1328,13 +1328,13 @@ void CacheAndUnloadLightmapData()
 	}
 
 	// Update the lightdata pointer
-	free(g_pHost->Host_GetWorldModel()->brush.pShared->lightdata );
-	g_pHost->Host_GetWorldModel()->brush.pShared->lightdata = (ColorRGBExp32*)pDestBase;
-	g_pHost->Host_GetWorldModel()->brush.pShared->unloadedlightmaps = true;
+	free(g_pHost->Host_GetWorldModel()->GetLightdata() );
+	g_pHost->Host_GetWorldModel()->SetLightdata((ColorRGBExp32*)pDestBase);
+	g_pHost->Host_GetWorldModel()->SetUnloadedlightmaps(true);
 }
 
 //sorts the surfaces in place
-static void SortSurfacesByLightmapID( SurfaceHandle_t *pToSort, int iSurfaceCount )
+static void SortSurfacesByLightmapID(model_t* pWorld, SurfaceHandle_t *pToSort, int iSurfaceCount )
 {
 	SurfaceHandle_t *pSortTemp = (SurfaceHandle_t *)stackalloc( sizeof( SurfaceHandle_t ) * iSurfaceCount );
 	
@@ -1352,7 +1352,7 @@ static void SortSurfacesByLightmapID( SurfaceHandle_t *pToSort, int iSurfaceCoun
 		int iBitOffset = radix * 8;
 		for( int i = 0; i != iSurfaceCount; ++i )
 		{
-			uint8 val = (materialSortInfoArray[MSurf_MaterialSortID( pSortTemp[i] )].lightmapPageID >> iBitOffset) & 0xFF;
+			uint8 val = (materialSortInfoArray[pWorld->MSurf_MaterialSortID( pSortTemp[i] )].lightmapPageID >> iBitOffset) & 0xFF;
 			++iCounts[val];
 		}
 
@@ -1365,7 +1365,7 @@ static void SortSurfacesByLightmapID( SurfaceHandle_t *pToSort, int iSurfaceCoun
 
 		for( int i = 0; i != iSurfaceCount; ++i )
 		{
-			uint8 val = (materialSortInfoArray[MSurf_MaterialSortID( pSortTemp[i] )].lightmapPageID >> iBitOffset) & 0xFF;
+			uint8 val = (materialSortInfoArray[pWorld->MSurf_MaterialSortID( pSortTemp[i] )].lightmapPageID >> iBitOffset) & 0xFF;
 			int iWriteIndex = iOffsetTable[val];
 			pToSort[iWriteIndex] = pSortTemp[i];
 			++iOffsetTable[val];
@@ -1373,7 +1373,7 @@ static void SortSurfacesByLightmapID( SurfaceHandle_t *pToSort, int iSurfaceCoun
 	}
 }
 
-void R_RedownloadAllLightmaps()
+void R_RedownloadAllLightmaps(model_t* pWorld)
 {
 #ifdef _DEBUG
 	static bool initializedBlockLights = false;
@@ -1396,18 +1396,18 @@ void R_RedownloadAllLightmaps()
 	// Can't build lightmaps if the source data has been dumped
 	CMatRenderContextPtr pRenderContext( materials );
 	ICallQueue *pCallQueue = pRenderContext->GetCallQueue();
-	if ( !g_pHost->Host_GetWorldModel()->brush.pShared->unloadedlightmaps )
+	if ( !pWorld->GetUnloadedlightmaps() )
 	{		
-		int iSurfaceCount = g_pHost->Host_GetWorldModel()->brush.pShared->numsurfaces;
+		int iSurfaceCount = pWorld->GetSurfacesCount();
 		
 		SurfaceHandle_t *pSortedSurfaces = (SurfaceHandle_t *)stackalloc( sizeof( SurfaceHandle_t ) * iSurfaceCount );
 		for( int surfaceIndex = 0; surfaceIndex < iSurfaceCount; surfaceIndex++ )
 		{
-			SurfaceHandle_t surfID = SurfaceHandleFromIndex( surfaceIndex );
+			SurfaceHandle_t surfID = pWorld->SurfaceHandleFromIndex( surfaceIndex );
 			pSortedSurfaces[surfaceIndex] = surfID;
 		}
 
-		SortSurfacesByLightmapID( pSortedSurfaces, iSurfaceCount ); //sorts in place, so now the array really is sorted
+		SortSurfacesByLightmapID(pWorld, pSortedSurfaces, iSurfaceCount ); //sorts in place, so now the array really is sorted
 
 		if( pCallQueue )
 			pCallQueue->QueueCall( materials, &IMaterialSystem::BeginUpdateLightmaps );
@@ -1421,7 +1421,7 @@ void R_RedownloadAllLightmaps()
 			SurfaceHandle_t surfID = pSortedSurfaces[surfaceIndex];
 
 			ASSERT_SURF_VALID( surfID );
-			R_BuildLightMap( &cl_dlights[0], pCallQueue, surfID, xform, bOnlyUseLightStyles );
+			R_BuildLightMap(pWorld, &cl_dlights[0], pCallQueue, surfID, xform, bOnlyUseLightStyles );
 		}
 
 		if( pCallQueue )
@@ -1434,11 +1434,11 @@ void R_RedownloadAllLightmaps()
 			// Delete the lightmap data from memory
 			if ( !pCallQueue )
 			{
-				CacheAndUnloadLightmapData();
+				CacheAndUnloadLightmapData(pWorld);
 			}
 			else
 			{
-				pCallQueue->QueueCall( CacheAndUnloadLightmapData );
+				//pCallQueue->QueueCall( CacheAndUnloadLightmapData );//need check
 			}
 		}
 	}
@@ -1468,19 +1468,19 @@ void GL_RebuildLightmaps( void )
 #ifdef UPDATE_LIGHTSTYLES_EVERY_FRAME
 ConVar mat_updatelightstyleseveryframe( "mat_updatelightstyleseveryframe", "0" );
 #endif
-void FASTCALL R_RenderDynamicLightmaps ( dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t &xform )
+void FASTCALL R_RenderDynamicLightmaps (model_t* pWorld, dlight_t *pLights, ICallQueue *pCallQueue, SurfaceHandle_t surfID, const matrix3x4_t &xform )
 {
 	VPROF_BUDGET( "R_RenderDynamicLightmaps", VPROF_BUDGETGROUP_DLIGHT_RENDERING );
 	ASSERT_SURF_VALID( surfID );
 
-	int fSurfFlags = MSurf_Flags( surfID );
+	int fSurfFlags = pWorld->MSurf_Flags( surfID );
 
 	if( fSurfFlags & SURFDRAW_NOLIGHT )
 		return;
 
 	// check for lightmap modification
 	bool bChanged = false;
-	msurfacelighting_t *pLighting = SurfaceLighting( surfID );
+	msurfacelighting_t *pLighting = pWorld->SurfaceLighting( surfID );
 	if( fSurfFlags & SURFDRAW_HASLIGHTSYTLES )
 	{
 #ifdef UPDATE_LIGHTSTYLES_EVERY_FRAME
@@ -1512,6 +1512,6 @@ void FASTCALL R_RenderDynamicLightmaps ( dlight_t *pLights, ICallQueue *pCallQue
 
 	if ( bChanged || bDLightChanged )
 	{
-		R_BuildLightMap( pLights, pCallQueue, surfID, xform, bOnlyUseLightStyles );
+		R_BuildLightMap(pWorld, pLights, pCallQueue, surfID, xform, bOnlyUseLightStyles );
 	}
 }

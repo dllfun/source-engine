@@ -86,7 +86,7 @@ void CPupilProxy::OnBind( C_BaseEntity *pBaseEntity )
 
 	Vector eyePt = pBaseEntity->EyePosition();
 	Vector color;
-	engineClient->ComputeLighting( eyePt, &forward, false, color );
+	engineClient->ComputeLighting(engineClient->GetWorldModel(), eyePt, &forward, false, color );
 
 	// Compute the intensity...
 	float flIntensity = ( 0.299f * color[0] + 0.587f * color[1] + 0.114f * color[2] ) * 0.5;

@@ -105,7 +105,7 @@ abstract_class IShadowMgr
 public:
 	// Create, destroy shadows (see ShadowCreateFlags_t for creationFlags)
 	virtual ShadowHandle_t CreateShadow( IMaterial* pMaterial, IMaterial* pModelMaterial, void* pBindProxy, int creationFlags ) = 0;
-	virtual void DestroyShadow( ShadowHandle_t handle ) = 0;
+	virtual void DestroyShadow(IVModel* pWorld, ShadowHandle_t handle ) = 0;
 
 	// Resets the shadow material (useful for shadow LOD.. doing blobby at distance) 
 	virtual void SetShadowMaterial( ShadowHandle_t handle, IMaterial* pMaterial, IMaterial* pModelMaterial, void* pBindProxy ) = 0;
@@ -133,12 +133,12 @@ public:
 	// the shadow size measured in the space of the shadow matrix; the
 	// shadow goes from +/- size.x/2 along the x axis of the shadow matrix
 	// and +/- size.y/2 along the y axis of the shadow matrix.
-	virtual void ProjectShadow( ShadowHandle_t handle, const Vector &origin, 
+	virtual void ProjectShadow(IVModel* pWorld, ShadowHandle_t handle, const Vector &origin,
 		const Vector& projectionDir, const VMatrix& worldToShadow, const Vector2D& size,
 		int nLeafCount, const int *pLeafList,
 		float maxHeight, float falloffOffset, float falloffAmount, const Vector &vecCasterOrigin ) = 0;
 
-	virtual void ProjectFlashlight( ShadowHandle_t handle, const VMatrix &worldToShadow, int nLeafCount, const int *pLeafList ) = 0;
+	virtual void ProjectFlashlight(IVModel* pWorld, ShadowHandle_t handle, const VMatrix &worldToShadow, int nLeafCount, const int *pLeafList ) = 0;
 
 	// Gets at information about a particular shadow
 	virtual const ShadowInfo_t &GetInfo( ShadowHandle_t handle ) = 0;
@@ -165,7 +165,7 @@ public:
 	virtual void AddExtraClipPlane( ShadowHandle_t shadow, const Vector& normal, float dist ) = 0;
 
 	// Allows us to disable particular shadows
-	virtual void EnableShadow( ShadowHandle_t shadow, bool bEnable ) = 0;
+	virtual void EnableShadow(IVModel* pWorld, ShadowHandle_t shadow, bool bEnable ) = 0;
 
 	// Set the darkness falloff bias
 	virtual void SetFalloffBias( ShadowHandle_t shadow, unsigned char ucBias ) = 0;

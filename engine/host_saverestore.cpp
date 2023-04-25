@@ -1989,7 +1989,7 @@ bool CSaveRestore::SaveClientState( const char *name )
 	sections.decaldata = pSaveData->AccessCurPos();
 
 	decalList = (decallist_t*)malloc( sizeof(decallist_t) * Draw_DecalMax() );
-	sections.decalcount = DecalListCreate( decalList );
+	sections.decalcount = DecalListCreate(g_pHost->Host_GetWorldModel(), decalList );
 
 	for ( i = 0; i < sections.decalcount; i++ )
 	{

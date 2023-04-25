@@ -19,10 +19,10 @@
 
 // Initialize and shutdown the decal stuff.
 // R_DecalTerm unlinks all the active decals (which frees their counterparts in displacements).
-void R_DecalInit();
-void R_DecalTerm( worldbrushdata_t *pBrushData, bool term_permanent_decals );
-void R_DecalTermAll();
-float ComputeDecalLightmapOffset( SurfaceHandle_t surfID );
+void R_DecalInit(model_t* pWorld);
+void R_DecalTerm( model_t* pWorld, bool term_permanent_decals);
+void R_DecalTermAll(model_t* pWorld);
+float ComputeDecalLightmapOffset(model_t* pWorld, SurfaceHandle_t surfID );
 // get the max vertex/index to lock in a dynamic VB
 void R_DecalsGetMaxMesh( IMatRenderContext *pRenderContext, int &nDecalSortMaxVerts, int &nDecalSortMaxIndices );
 
@@ -158,13 +158,13 @@ struct DecalMeshList_t
 	CUtlVectorFixed<DecalBatchList_t, 128>	m_aBatches;
 };
 
-void DecalSurfacesInit( bool bBrushModel );
-void DecalSurfaceAdd( SurfaceHandle_t surfID, int renderGroup );
-void DecalSurfaceDraw( IMatRenderContext *pRenderContext, int renderGroup, float flFade = 1.0f );
-void DrawDecalsOnSingleSurface( IMatRenderContext *pRenderContext, SurfaceHandle_t surfID );
+void DecalSurfacesInit(model_t* pWorld, bool bBrushModel );
+void DecalSurfaceAdd(model_t* pWorld, SurfaceHandle_t surfID, int renderGroup );
+void DecalSurfaceDraw(model_t* pWorld, IMatRenderContext *pRenderContext, int renderGroup, float flFade = 1.0f );
+void DrawDecalsOnSingleSurface(model_t* pWorld, IMatRenderContext *pRenderContext, SurfaceHandle_t surfID );
 
-void R_DecalReSortMaterials( void );
-void R_DecalFlushDestroyList( void );
+void R_DecalReSortMaterials(model_t* pWorld);
+void R_DecalFlushDestroyList( model_t* pWorld );
 
 extern VMatrix g_BrushToWorldMatrix;
 #include "tier0/memdbgoff.h"

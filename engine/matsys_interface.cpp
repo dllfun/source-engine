@@ -73,7 +73,7 @@ bool g_LostVideoMemory = false;
 IMaterial*	g_materialEmpty;	// purple checkerboard for missing textures
 
 void ReleaseMaterialSystemObjects();
-void RestoreMaterialSystemObjects( int nChangeFlags );
+void RestoreMaterialSystemObjects(int nChangeFlags );
 
 extern ConVar mat_colorcorrection;
 extern ConVar sv_allow_color_correction;
@@ -97,7 +97,7 @@ static CTextureReference g_FullFrameFBTexture2;
 static CTextureReference g_FullFrameDepth;
 static CTextureReference g_ResolvedFullFrameDepth;
 
-void WorldStaticMeshCreate( void );
+void WorldStaticMeshCreate( model_t* pWorld );
 void WorldStaticMeshDestroy( void );
 
 ConVar	r_norefresh( "r_norefresh","0");
@@ -744,7 +744,7 @@ void HandleServerAllowColorCorrection()
 //-----------------------------------------------------------------------------
 // Purpose: Initializes configuration
 //-----------------------------------------------------------------------------
-void InitMaterialSystemConfig( bool bInEditMode )
+void InitMaterialSystemConfig(bool bInEditMode )
 {
 	// get the default config for the current card as a starting point.
 	g_pMaterialSystemConfig = &materials->GetCurrentConfigForVideoCard();
@@ -821,9 +821,10 @@ void InitMaterialSystemConfig( bool bInEditMode )
 //-----------------------------------------------------------------------------
 // Updates the material system config
 //-----------------------------------------------------------------------------
-void UpdateMaterialSystemConfig( void )
+void UpdateMaterialSystemConfig()
 {
-	if (g_pHost->Host_GetWorldModel() && g_pHost->Host_GetWorldModel()->brush.pShared && !g_pHost->Host_GetWorldModel()->brush.pShared->lightdata )
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	if (pWorld && !pWorld->GetLightdata() )//g_pHost->Host_GetWorldModel()->brush.pShared && !g_pHost->Host_GetWorldModel()->brush.pShared
 	{
 		mat_fullbright.SetValue( 1 );
 	}
@@ -1563,7 +1564,7 @@ CON_COMMAND( mat_info, "Shows material system info" )
 	materials->SpewDriverInfo();
 }
 
-void InitMaterialSystem( void )
+void InitMaterialSystem(  )
 {
 	materials->AddReleaseFunc( ReleaseMaterialSystemObjects );
 	materials->AddRestoreFunc( RestoreMaterialSystemObjects );
@@ -1614,7 +1615,7 @@ void ReleaseMaterialSystemObjects()
 	g_LostVideoMemory = true;
 }
 
-void RestoreMaterialSystemObjects( int nChangeFlags )
+void RestoreMaterialSystemObjects(int nChangeFlags )
 {
 	if ( IsX360() )
 		return;
@@ -1628,29 +1629,30 @@ void RestoreMaterialSystemObjects( int nChangeFlags )
 		modelrender->RemoveAllDecalsFromAllModels();
 	}
 
-	if (g_pHost->Host_GetWorldModel())
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	if (pWorld)
 	{
 		if ( (nChangeFlags & MATERIAL_RESTORE_VERTEX_FORMAT_CHANGED) || materials->GetNumSortIDs() == 0 )
 		{
 #ifndef SWDS
 			// Reload lightmaps, world meshes, etc. because we may have switched from bumped to unbumped
-			R_LoadWorldGeometry( true );
+			R_LoadWorldGeometry(pWorld, true );
 #endif
 		}
 		else
 		{
-			modelloader->Map_LoadDisplacements(g_pHost->Host_GetWorldModel(), true );
+			modelloader->Map_LoadDisplacements(pWorld, true );
 #ifndef SWDS
-			WorldStaticMeshCreate();
+			WorldStaticMeshCreate(pWorld);
 			// Gotta recreate the lightmaps
-			R_RedownloadAllLightmaps();
+			R_RedownloadAllLightmaps(pWorld);
 #endif
 		}
 
 #ifndef SWDS
 		// Need to re-figure out the env_cubemaps, so blow away the lightcache.
-		R_StudioInitLightingCache();
-		modelrender->RestoreAllStaticPropColorData();
+		R_StudioInitLightingCache(pWorld);
+		modelrender->RestoreAllStaticPropColorData(pWorld);
 #endif
 	}
 
@@ -1661,17 +1663,17 @@ void RestoreMaterialSystemObjects( int nChangeFlags )
 	g_pHost->Host_AllowQueuedMaterialSystem( bThreadingAllowed );
 }
 
-bool TangentSpaceSurfaceSetup( SurfaceHandle_t surfID, Vector &tVect )
+bool TangentSpaceSurfaceSetup(model_t* pWorld, SurfaceHandle_t surfID, Vector &tVect )
 {
 	Vector sVect;
-	VectorCopy( MSurf_TexInfo( surfID )->textureVecsTexelsPerWorldUnits[0].AsVector3D(), sVect );
-	VectorCopy( MSurf_TexInfo( surfID )->textureVecsTexelsPerWorldUnits[1].AsVector3D(), tVect );
+	VectorCopy(pWorld->MSurf_TexInfo( surfID )->textureVecsTexelsPerWorldUnits[0].AsVector3D(), sVect );
+	VectorCopy(pWorld->MSurf_TexInfo( surfID )->textureVecsTexelsPerWorldUnits[1].AsVector3D(), tVect );
 	VectorNormalize( sVect );
 	VectorNormalize( tVect );
 	Vector tmpVect;
 	CrossProduct( sVect, tVect, tmpVect );
 	// Make sure that the tangent space works if textures are mapped "backwards".
-	if( DotProduct( MSurf_Plane( surfID ).normal, tmpVect ) > 0.0f )
+	if( DotProduct(pWorld->MSurf_Plane( surfID ).normal, tmpVect ) > 0.0f )
 	{
 		return true;
 	}
@@ -1716,12 +1718,12 @@ void MaterialSystem_DestroySortinfo( void )
 // alpha, so we didn't care about the vertex color or vertex alpha. But now if they're
 // using it, we have to make sure the vertex has the color and alpha specified correctly
 // or it will look weird.
-static inline bool CheckMSurfaceBaseTexture2( worldbrushdata_t *pBrushData, SurfaceHandle_t surfID )
+static inline bool CheckMSurfaceBaseTexture2( model_t* pWorld, SurfaceHandle_t surfID )
 {
-	if ( !SurfaceHasDispInfo( surfID ) && 
-			(MSurf_TexInfo( surfID )->texinfoFlags & TEXINFO_USING_BASETEXTURE2) )
+	if ( !pWorld->SurfaceHasDispInfo( surfID ) &&
+			(pWorld->MSurf_TexInfo( surfID )->texinfoFlags & TEXINFO_USING_BASETEXTURE2) )
 	{
-		const char *pMaterialName = MSurf_TexInfo( surfID )->material->GetName();
+		const char *pMaterialName = pWorld->MSurf_TexInfo( surfID )->material->GetName();
 		if ( pMaterialName )
 		{
 			bool bShowIt = false;
@@ -1743,12 +1745,12 @@ static inline bool CheckMSurfaceBaseTexture2( worldbrushdata_t *pBrushData, Surf
 			{
 				// Calculate the surface's centerpoint.
 				Vector vCenter( 0, 0, 0 );
-				for ( int i = 0; i < MSurf_VertCount( surfID ); i++ )
+				for ( int i = 0; i < pWorld->MSurf_VertCount( surfID ); i++ )
 				{
-					int vertIndex = pBrushData->vertindices[MSurf_FirstVertIndex( surfID ) + i];
-					vCenter += pBrushData->vertexes[vertIndex].position;
+					int vertIndex = *pWorld->GetVertindices(pWorld->MSurf_FirstVertIndex( surfID ) + i);
+					vCenter += pWorld->GetVertexes(vertIndex)->position;
 				}
-				vCenter /= (float)MSurf_VertCount( surfID );
+				vCenter /= (float)pWorld->MSurf_VertCount( surfID );
 				
 				// Spit out the warning.				
 				Warning( "Warning: using WorldTwoTextureBlend on a non-displacement surface.\n"
@@ -1862,42 +1864,42 @@ void BuildMSurfaceVertexArrays( worldbrushdata_t *pBrushData, SurfaceHandle_t su
 //			overbright - overbright factor (for colors)
 //			&builder - mesh that holds the vertex buffer
 //-----------------------------------------------------------------------------
-void BuildMSurfaceVertexArrays( worldbrushdata_t *pBrushData, SurfaceHandle_t surfID, float overbright, 
+void BuildMSurfaceVertexArrays( model_t* pWorld, SurfaceHandle_t surfID, float overbright, 
 							   CMeshBuilder &builder )
 {
 	SurfaceCtx_t ctx;
-	SurfSetupSurfaceContext( ctx, surfID );
+	SurfSetupSurfaceContext(pWorld, ctx, surfID );
 
 	byte flatColor[4] = { 255, 255, 255, 255 };
 
 	Vector tVect;
 	bool negate = false;
-	if ( MSurf_Flags( surfID ) & SURFDRAW_TANGENTSPACE )
+	if (pWorld->MSurf_Flags( surfID ) & SURFDRAW_TANGENTSPACE )
 	{
-		negate = TangentSpaceSurfaceSetup( surfID, tVect );
+		negate = TangentSpaceSurfaceSetup(pWorld, surfID, tVect );
 	}
 
-	CheckMSurfaceBaseTexture2( pBrushData, surfID );
+	CheckMSurfaceBaseTexture2( pWorld, surfID );
 
-	for ( int i = 0; i < MSurf_VertCount( surfID ); i++ )
+	for ( int i = 0; i < pWorld->MSurf_VertCount( surfID ); i++ )
 	{
-		int vertIndex = pBrushData->vertindices[MSurf_FirstVertIndex( surfID ) + i];
+		int vertIndex = *pWorld->GetVertindices(pWorld->MSurf_FirstVertIndex( surfID ) + i);
 
 		// world-space vertex
-		Vector& vec = pBrushData->vertexes[vertIndex].position;
+		Vector& vec = pWorld->GetVertexes(vertIndex)->position;
 
 		// output to mesh
 		builder.Position3fv( vec.Base() );
 
 		Vector2D uv;
-		SurfComputeTextureCoordinate( ctx, surfID, vec, uv );
+		SurfComputeTextureCoordinate(pWorld, ctx, surfID, vec, uv );
 		builder.TexCoord2fv( 0, uv.Base() );
 
 		// garymct: normalized (within space of surface) lightmap texture coordinates
-		SurfComputeLightmapCoordinate( ctx, surfID, vec, uv );
+		SurfComputeLightmapCoordinate(pWorld, ctx, surfID, vec, uv );
 		builder.TexCoord2fv( 1, uv.Base() );
 
-		if ( MSurf_Flags( surfID ) & SURFDRAW_BUMPLIGHT )
+		if (pWorld->MSurf_Flags( surfID ) & SURFDRAW_BUMPLIGHT )
 		{
 			// bump maps appear left to right in lightmap page memory, calculate 
 			// the offset for the width of a single map. The pixel shader will use 
@@ -1907,15 +1909,15 @@ void BuildMSurfaceVertexArrays( worldbrushdata_t *pBrushData, SurfaceHandle_t su
 			{
 				Assert(0);
 
-				SurfComputeLightmapCoordinate( ctx, surfID, vec, uv );
+				SurfComputeLightmapCoordinate(pWorld, ctx, surfID, vec, uv );
 			}
 			builder.TexCoord2f( 2, ctx.m_BumpSTexCoordOffset, 0.0f );
 		}
 
-		Vector& normal = pBrushData->vertnormals[ pBrushData->vertnormalindices[MSurf_FirstVertNormal( surfID ) + i] ];
+		Vector& normal = pWorld->GetVertnormals(pWorld->GetVertnormalindices(pWorld->MSurf_FirstVertNormal( surfID ) + i) );
 		builder.Normal3fv( normal.Base() );
 
-		if ( MSurf_Flags( surfID ) & SURFDRAW_TANGENTSPACE )
+		if (pWorld->MSurf_Flags( surfID ) & SURFDRAW_TANGENTSPACE )
 		{
 			Vector tangentS, tangentT;
 			TangentSpaceComputeBasis( tangentS, tangentT, normal, tVect, negate );
@@ -1927,13 +1929,13 @@ void BuildMSurfaceVertexArrays( worldbrushdata_t *pBrushData, SurfaceHandle_t su
 		// alpha, so we didn't care about the vertex color or vertex alpha. But now if they're
 		// using it, we have to make sure the vertex has the color and alpha specified correctly
 		// or it will look weird.
-		if ( !SurfaceHasDispInfo( surfID ) && 
-			 (MSurf_TexInfo( surfID )->texinfoFlags & TEXINFO_USING_BASETEXTURE2) )
+		if ( !pWorld->SurfaceHasDispInfo( surfID ) &&
+			 (pWorld->MSurf_TexInfo( surfID )->texinfoFlags & TEXINFO_USING_BASETEXTURE2) )
 		{
 			static bool bWarned = false;
 			if ( !bWarned )
 			{
-				const char *pMaterialName = MSurf_TexInfo( surfID )->material->GetName();
+				const char *pMaterialName = pWorld->MSurf_TexInfo( surfID )->material->GetName();
 				bWarned = true;
 				Warning( "Warning: WorldTwoTextureBlend found on a non-displacement surface (material: %s). This wastes perf for no benefit.\n", pMaterialName );
 			}
@@ -1950,11 +1952,11 @@ void BuildMSurfaceVertexArrays( worldbrushdata_t *pBrushData, SurfaceHandle_t su
 }
 #endif // NEWMESH
 
-static int VertexCountForSurfaceList( const CMSurfaceSortList &list, const surfacesortgroup_t &group )
+static int VertexCountForSurfaceList(model_t* pWorld, const CMSurfaceSortList &list, const surfacesortgroup_t &group )
 {
 	int vertexCount = 0;
 	MSL_FOREACH_SURFACE_IN_GROUP_BEGIN(list, group, surfID)
-		vertexCount += MSurf_VertCount(surfID);
+		vertexCount += pWorld->MSurf_VertCount(surfID);
 	MSL_FOREACH_SURFACE_IN_GROUP_END();
 	return vertexCount;
 }
@@ -2019,16 +2021,16 @@ int FindOrAddMesh( IMaterial *pMaterial, int vertexCount )
 	return index;
 }
 
-void SetTexInfoBaseTexture2Flags()
+void SetTexInfoBaseTexture2Flags(model_t* pWorld)
 {
-	for ( int i=0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numtexinfo; i++ )
+	for ( int i=0; i < pWorld->GetTexinfoCount(); i++ )
 	{
-		g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[i].texinfoFlags &= ~TEXINFO_USING_BASETEXTURE2;
+		pWorld->GetTexinfo(i)->texinfoFlags &= ~TEXINFO_USING_BASETEXTURE2;
 	}
 	
-	for ( int i=0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numtexinfo; i++ )
+	for ( int i=0; i < pWorld->GetTexinfoCount(); i++ )
 	{
-		mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[i];
+		mtexinfo_t *pTexInfo = pWorld->GetTexinfo(i);
 		IMaterial *pMaterial = pTexInfo->material;
 		if ( !pMaterial )
 			continue;
@@ -2066,13 +2068,13 @@ VertexFormat_t ComputeWorldStaticMeshVertexFormat( const IMaterial * pMaterial )
 //-----------------------------------------------------------------------------
 // Builds static meshes for all the world geometry
 //-----------------------------------------------------------------------------
-void WorldStaticMeshCreate( void )
+void WorldStaticMeshCreate( model_t* pWorld )
 {
 	r_framecount = 1;
 	WorldStaticMeshDestroy();
 	g_Meshes.RemoveAll();
 
-	SetTexInfoBaseTexture2Flags();
+	SetTexInfoBaseTexture2Flags(pWorld);
 
 	int nSortIDs = materials->GetNumSortIDs();
 	if ( nSortIDs == 0 )
@@ -2101,40 +2103,40 @@ void WorldStaticMeshCreate( void )
 
 	int i;
 	// sort the surfaces into the sort arrays
-	for( int surfaceIndex = 0; surfaceIndex < g_pHost->Host_GetWorldModel()->brush.pShared->numsurfaces; surfaceIndex++ )
+	for( int surfaceIndex = 0; surfaceIndex < pWorld->GetSurfacesCount(); surfaceIndex++ )
 	{
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex( surfaceIndex );
+		SurfaceHandle_t surfID = pWorld->SurfaceHandleFromIndex( surfaceIndex );
 		// set these flags here as they are determined by material data
-		MSurf_Flags( surfID ) &= ~(SURFDRAW_TANGENTSPACE);
+		pWorld->MSurf_Flags( surfID ) &= ~(SURFDRAW_TANGENTSPACE);
 
 		// do we need to compute tangent space here?
-		if ( bTools || ( MSurf_TexInfo( surfID )->material->GetVertexFormat() & VERTEX_TANGENT_SPACE ) )
+		if ( bTools || (pWorld->MSurf_TexInfo( surfID )->material->GetVertexFormat() & VERTEX_TANGENT_SPACE ) )
 		{
-			MSurf_Flags( surfID ) |= SURFDRAW_TANGENTSPACE;
+			pWorld->MSurf_Flags( surfID ) |= SURFDRAW_TANGENTSPACE;
 		}
 		
 		// don't create vertex buffers for nodraw faces, water faces, or faces with dynamic data
 //		if ( (MSurf_Flags( surfID ) & (SURFDRAW_NODRAW|SURFDRAW_WATERSURFACE|SURFDRAW_DYNAMIC)) 
 //			|| SurfaceHasDispInfo( surfID ) )
-		if( SurfaceHasDispInfo( surfID ) )
+		if(pWorld->SurfaceHasDispInfo( surfID ) )
 		{
-			MSurf_VertBufferIndex( surfID ) = 0xFFFF;
+			pWorld->MSurf_VertBufferIndex( surfID ) = 0xFFFF;
 			continue;
 		}
 
 		// attach to head of list
-		matSortArray.AddSurfaceToTail( surfID, 0, MSurf_MaterialSortID( surfID ) );
+		matSortArray.AddSurfaceToTail(pWorld, surfID, 0, pWorld->MSurf_MaterialSortID( surfID ) );
 	}
 
 	// iterate the arrays and create buffers
 	for ( i = 0; i < g_WorldStaticMeshes.Count(); i++ )
 	{
 		const surfacesortgroup_t &group = matSortArray.GetGroupForSortID(0,i);
-		int vertexCount = VertexCountForSurfaceList( matSortArray, group );
+		int vertexCount = VertexCountForSurfaceList(pWorld, matSortArray, group );
 
 		SurfaceHandle_t surfID = matSortArray.GetSurfaceAtHead( group );
 		g_WorldStaticMeshes[i] = NULL;
-		sortIndex[i] = surfID ? FindOrAddMesh( MSurf_TexInfo( surfID )->material, vertexCount ) : -1;
+		sortIndex[i] = surfID ? FindOrAddMesh(pWorld->MSurf_TexInfo( surfID )->material, vertexCount ) : -1;
 	}
 
 	CMatRenderContextPtr pRenderContext( materials );
@@ -2191,9 +2193,9 @@ void WorldStaticMeshCreate( void )
 				const surfacesortgroup_t &group = matSortArray.GetGroupForSortID(0,j);
 				MSL_FOREACH_SURFACE_IN_GROUP_BEGIN(matSortArray, group, surfID);
 
-					MSurf_VertBufferIndex( surfID ) = vertBufferIndex;
-					BuildMSurfaceVertexArrays(g_pHost->Host_GetWorldModel()->brush.pShared, surfID, OVERBRIGHT, meshBuilder );
-					vertBufferIndex += MSurf_VertCount( surfID );
+					pWorld->MSurf_VertBufferIndex( surfID ) = vertBufferIndex;
+					BuildMSurfaceVertexArrays(pWorld, surfID, OVERBRIGHT, meshBuilder );
+					vertBufferIndex += pWorld->MSurf_VertCount( surfID );
 
 				MSL_FOREACH_SURFACE_IN_GROUP_END();
 			}
@@ -2229,10 +2231,10 @@ void WorldStaticMeshDestroy( void )
 // Compute texture and lightmap coordinates
 //-----------------------------------------------------------------------------
 
-void SurfComputeTextureCoordinate( SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
+void SurfComputeTextureCoordinate(model_t* pWorld, SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
 									    Vector const& vec, Vector2D& uv )
 {
-	mtexinfo_t* pTexInfo = MSurf_TexInfo( surfID );
+	mtexinfo_t* pTexInfo = pWorld->MSurf_TexInfo( surfID );
 
 	// base texture coordinate
 	uv.x = DotProduct (vec, pTexInfo->textureVecsTexelsPerWorldUnits[0].AsVector3D()) + 
@@ -2251,29 +2253,29 @@ void CheckTexCoord( float coord )
 }
 #endif
 
-void SurfComputeLightmapCoordinate( SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
+void SurfComputeLightmapCoordinate(model_t* pWorld, SurfaceCtx_t const& ctx, SurfaceHandle_t surfID, 
 										 Vector const& vec, Vector2D& uv )
 {
-	if ( (MSurf_Flags( surfID ) & SURFDRAW_NOLIGHT) )
+	if ( (pWorld->MSurf_Flags( surfID ) & SURFDRAW_NOLIGHT) )
 	{
 		uv.x = uv.y = 0.5f;
 	}
-	else if ( MSurf_LightmapExtents( surfID )[0] == 0 )
+	else if (pWorld->MSurf_LightmapExtents( surfID )[0] == 0 )
 	{
 		uv = (0.5f * ctx.m_Scale + ctx.m_Offset);
 	}
 	else
 	{
-		mtexinfo_t* pTexInfo = MSurf_TexInfo( surfID );
+		mtexinfo_t* pTexInfo = pWorld->MSurf_TexInfo( surfID );
 
 		uv.x = DotProduct (vec, pTexInfo->lightmapVecsLuxelsPerWorldUnits[0].AsVector3D()) + 
 			pTexInfo->lightmapVecsLuxelsPerWorldUnits[0][3];
-		uv.x -= MSurf_LightmapMins( surfID )[0];
+		uv.x -= pWorld->MSurf_LightmapMins( surfID )[0];
 		uv.x += 0.5f;
 
 		uv.y = DotProduct (vec, pTexInfo->lightmapVecsLuxelsPerWorldUnits[1].AsVector3D()) + 
 			pTexInfo->lightmapVecsLuxelsPerWorldUnits[1][3];
-		uv.y -= MSurf_LightmapMins( surfID )[1];
+		uv.y -= pWorld->MSurf_LightmapMins( surfID )[1];
 		uv.y += 0.5f;
 
 		uv *= ctx.m_Scale;
@@ -2295,19 +2297,19 @@ void SurfComputeLightmapCoordinate( SurfaceCtx_t const& ctx, SurfaceHandle_t sur
 // Compute a context necessary for creating vertex data
 //-----------------------------------------------------------------------------
 
-void SurfSetupSurfaceContext( SurfaceCtx_t& ctx, SurfaceHandle_t surfID )
+void SurfSetupSurfaceContext(model_t* pWorld, SurfaceCtx_t& ctx, SurfaceHandle_t surfID )
 {
 	materials->GetLightmapPageSize( 
-		SortInfoToLightmapPage( MSurf_MaterialSortID( surfID ) ), 
+		SortInfoToLightmapPage(pWorld->MSurf_MaterialSortID( surfID ) ),
 		&ctx.m_LightmapPageSize[0], &ctx.m_LightmapPageSize[1] );
-	ctx.m_LightmapSize[0] = ( MSurf_LightmapExtents( surfID )[0] ) + 1;
-	ctx.m_LightmapSize[1] = ( MSurf_LightmapExtents( surfID )[1] ) + 1;
+	ctx.m_LightmapSize[0] = (pWorld->MSurf_LightmapExtents( surfID )[0] ) + 1;
+	ctx.m_LightmapSize[1] = (pWorld->MSurf_LightmapExtents( surfID )[1] ) + 1;
 
 	ctx.m_Scale.x = 1.0f / ( float )ctx.m_LightmapPageSize[0];
 	ctx.m_Scale.y = 1.0f / ( float )ctx.m_LightmapPageSize[1];
 
-	ctx.m_Offset.x = ( float )MSurf_OffsetIntoLightmapPage( surfID )[0] * ctx.m_Scale.x;
-	ctx.m_Offset.y = ( float )MSurf_OffsetIntoLightmapPage( surfID )[1] * ctx.m_Scale.y;
+	ctx.m_Offset.x = ( float )pWorld->MSurf_OffsetIntoLightmapPage( surfID )[0] * ctx.m_Scale.x;
+	ctx.m_Offset.y = ( float )pWorld->MSurf_OffsetIntoLightmapPage( surfID )[1] * ctx.m_Scale.y;
 
 	if ( ctx.m_LightmapPageSize[0] != 0.0f )
 	{

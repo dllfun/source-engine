@@ -38,12 +38,12 @@ class IOverlayMgr
 {
 public:
 	// Memory allocation/de-allocation.
-	virtual bool	LoadOverlays(worldbrushdata_t* pBrushData) = 0;
+	virtual bool	LoadOverlays(model_t* pModel) = 0;
 	virtual void	UnloadOverlays( ) = 0;
 
-	virtual void	CreateFragments( void ) = 0;
+	virtual void	CreateFragments(model_t* pWorld) = 0;
 
-	virtual void	ReSortMaterials( void ) = 0;
+	virtual void	ReSortMaterials(model_t* pWorld) = 0;
 
 	// Drawing
 	// clears all
@@ -51,7 +51,7 @@ public:
 	// clears a particular sort group
 	virtual void	ClearRenderLists( int nSortGroup ) = 0;
 	virtual void	AddFragmentListToRenderList( int nSortGroup, OverlayFragmentHandle_t iFragment, bool bDisp ) = 0;
-	virtual void	RenderOverlays( int nSortGroup ) = 0;
+	virtual void	RenderOverlays(model_t* pWorld, int nSortGroup ) = 0;
 
 	// Sets the client renderable for an overlay's material proxy to bind to
 	virtual void	SetOverlayBindProxy( int iOverlayID, void *pBindProxy ) = 0;

@@ -31,9 +31,9 @@ inline bool R_CullBoxSkipNear( const Vector& mins, const Vector& maxs )
 // Draw a rectangle in screenspace. The screen window is (-1,-1) to (1,1).
 void R_DrawScreenRect( float left, float top, float right, float bottom );
 
-void R_DrawPortals();
+void R_DrawPortals(model_t* pWorld);
 float GetScreenAspect( );
-void R_CheckForLightingConfigChanges();
+void R_CheckForLightingConfigChanges(model_t* pWorld);
 
 // Methods related to view/projection matrices
 void ComputeViewMatrix( VMatrix *pViewMatrix, const Vector &origin, const QAngle &angles );

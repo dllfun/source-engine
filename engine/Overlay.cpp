@@ -98,14 +98,14 @@ struct moverlay_t
 };
 
 // Going away!
-void Overlay_BuildBasisOrigin( Vector &vecBasisOrigin, SurfaceHandle_t surfID );
+void Overlay_BuildBasisOrigin(model_t* pWorld, Vector &vecBasisOrigin, SurfaceHandle_t surfID );
 void Overlay_BuildBasis( const Vector &vecBasisNormal, Vector &vecBasisU, Vector &vecBasisV, bool bFlip );
 void Overlay_OverlayUVToOverlayPlane( const Vector &vecBasisOrigin, const Vector &vecBasisU,
 									  const Vector &vecBasisV, const Vector &vecUVPoint,
 									  Vector &vecPlanePoint );
 void Overlay_WorldToOverlayPlane( const Vector &vecBasisOrigin, const Vector &vecBasisNormal,
 								  const Vector &vecWorldPoint, Vector &vecPlanePoint );
-void Overlay_OverlayPlaneToWorld( const Vector &vecBasisNormal, SurfaceHandle_t surfID,
+void Overlay_OverlayPlaneToWorld(model_t* pWorld, const Vector &vecBasisNormal, SurfaceHandle_t surfID,
 								  const Vector &vecPlanePoint, Vector &vecWorldPoint );
 void Overlay_DispUVToWorld( CDispInfo *pDisp, CMeshReader *pReader, const Vector2D &vecUV, Vector &vecWorld, moverlayfragment_t &surfaceFrag );
 
@@ -130,15 +130,15 @@ public:
 	~COverlayMgr();
 
 	// Implementation of IOverlayMgr interface
-	virtual bool	LoadOverlays(worldbrushdata_t* pBrushData);
+	virtual bool	LoadOverlays(model_t* pWorld);
 	virtual void	UnloadOverlays( );
 
-	virtual void	CreateFragments( void );
-	virtual void	ReSortMaterials( void );
+	virtual void	CreateFragments( model_t* pWorld );
+	virtual void	ReSortMaterials( model_t* pWorld );
 	virtual void	ClearRenderLists();
 	virtual void	ClearRenderLists( int nSortGroup );
 	virtual void	AddFragmentListToRenderList( int nSortGroup, OverlayFragmentHandle_t iFragment, bool bDisp );
-	virtual void	RenderOverlays( int nSortGroup );
+	virtual void	RenderOverlays(model_t* pWorld, int nSortGroup );
 
 	virtual void	SetOverlayBindProxy( int iOverlayID, void *pBindProxy );
 
@@ -151,15 +151,15 @@ private:
 	moverlayfragment_t	*GetOverlayFragment( OverlayFragmentHandle_t iFragment );
 
 	// Surfaces
-	void				Surf_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t surfID );
+	void				Surf_CreateFragments(model_t* pWorld, moverlay_t *pOverlay, SurfaceHandle_t surfID );
 	bool				Surf_PreClipFragment( moverlay_t *pOverlay, moverlayfragment_t &overlayFrag, SurfaceHandle_t surfID, moverlayfragment_t &surfaceFrag );
-	void				Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_t &overlayFrag, SurfaceHandle_t surfID );
+	void				Surf_PostClipFragment(model_t* pWorld, moverlay_t *pOverlay, moverlayfragment_t &overlayFrag, SurfaceHandle_t surfID );
 	void				Surf_ClipFragment( moverlay_t *pOverlay, moverlayfragment_t &overlayFrag, SurfaceHandle_t surfID, moverlayfragment_t &surfaceFrag );
 
 	// Displacements
-	void				Disp_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t surfID );
-	bool				Disp_PreClipFragment( moverlay_t *pOverlay, OverlayFragmentVector_t &aDispFragments, SurfaceHandle_t surfID );
-	void				Disp_PostClipFragment( CDispInfo *pDisp, CMeshReader *pReader, moverlay_t *pOverlay, OverlayFragmentVector_t &aDispFragments, SurfaceHandle_t surfID );
+	void				Disp_CreateFragments(model_t* pWorld, moverlay_t *pOverlay, SurfaceHandle_t surfID );
+	bool				Disp_PreClipFragment(model_t* pWorld, moverlay_t *pOverlay, OverlayFragmentVector_t &aDispFragments, SurfaceHandle_t surfID );
+	void				Disp_PostClipFragment(model_t* pWorld, CDispInfo *pDisp, CMeshReader *pReader, moverlay_t *pOverlay, OverlayFragmentVector_t &aDispFragments, SurfaceHandle_t surfID );
 	void				Disp_ClipFragment( CDispInfo *pDisp, OverlayFragmentVector_t &aDispFragments );
 	void				Disp_DoClip( CDispInfo *pDisp, OverlayFragmentVector_t &aCurrentFragments, cplane_t &clipPlane, 
 									 float clipDistStart, int nInterval, int nLoopStart, int nLoopEnd, int nLoopInc );
@@ -573,7 +573,7 @@ void COverlayMgr::ClearRenderLists( int nSortGroup )
 //-----------------------------------------------------------------------------
 // Renders all queued up overlays
 //-----------------------------------------------------------------------------
-void COverlayMgr::RenderOverlays( int nSortGroup )
+void COverlayMgr::RenderOverlays(model_t* pWorld, int nSortGroup )
 {
 #ifndef SWDS
 	VPROF_BUDGET( "COverlayMgr::RenderOverlays", VPROF_BUDGETGROUP_OVERLAYS );
@@ -695,7 +695,7 @@ void COverlayMgr::RenderOverlays( int nSortGroup )
 
 					if ( bLightmappedMaterial )
 					{
-						float flOffset = ComputeDecalLightmapOffset( pFragment->m_SurfId );
+						float flOffset = ComputeDecalLightmapOffset(pWorld, pFragment->m_SurfId );
 						for ( iVert = 0; iVert < nVertCount; ++iVert, ++pVert )
 						{
 							unsigned char nAlpha = FastFToC( pVert->flAlpha );
@@ -779,7 +779,7 @@ bool COverlayMgr::Surf_PreClipFragment( moverlay_t *pOverlay, moverlayfragment_t
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void COverlayMgr::Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_t &overlayFrag,
+void COverlayMgr::Surf_PostClipFragment(model_t* pWorld, moverlay_t *pOverlay, moverlayfragment_t &overlayFrag,
 								         SurfaceHandle_t surfID )
 {
 #ifndef SWDS
@@ -795,12 +795,12 @@ void COverlayMgr::Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_
 
 	// Get surface context.
 	SurfaceCtx_t ctx;
-	SurfSetupSurfaceContext( ctx, surfID );	
+	SurfSetupSurfaceContext(pWorld, ctx, surfID );
 
 	pFragment->m_iOverlay = pOverlay->m_nId;
 	pFragment->m_SurfId = surfID;
 
-	const Vector &vNormal = MSurf_Plane( surfID ).normal;
+	const Vector &vNormal = pWorld->MSurf_Plane( surfID ).normal;
 
 	moverlayfragment_t origOverlay;
 	origOverlay.m_aPrimVerts.SetSize( 4 );
@@ -821,7 +821,7 @@ void COverlayMgr::Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_
 								  origOverlay.m_aPrimVerts[1].pos,
 								  overlayFrag.m_aPrimVerts[iVert].pos, vecUV );
 
-		Overlay_OverlayPlaneToWorld( pOverlay->m_vecBasis[2], surfID, 
+		Overlay_OverlayPlaneToWorld(pWorld, pOverlay->m_vecBasis[2], surfID, 
 			                         overlayFrag.m_aPrimVerts[iVert].pos,
 			                         pFragment->m_aPrimVerts[iVert].pos );
 
@@ -842,7 +842,7 @@ void COverlayMgr::Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_
 		
 		// Lightmap coordinates.
 		Vector2D uv;
-		SurfComputeLightmapCoordinate( ctx, surfID, pFragment->m_aPrimVerts[iVert].pos, uv );
+		SurfComputeLightmapCoordinate(pWorld, ctx, surfID, pFragment->m_aPrimVerts[iVert].pos, uv );
 		pFragment->m_aPrimVerts[iVert].lightCoord[0] = uv.x;
 		pFragment->m_aPrimVerts[iVert].lightCoord[1] = uv.y;
 
@@ -851,8 +851,8 @@ void COverlayMgr::Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_
 	}
 
 	// Create the sort ID for this fragment
-	const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[MSurf_MaterialSortID( surfID )];
-	mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+	const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID )];
+	mtexinfo_t *pTexInfo = pWorld->GetTexinfo(pOverlay->m_nTexInfo);//g_pHost->Host_GetWorldModel()->brush.pShared
 	pFragment->m_nMaterialSortID = GetMaterialSortID( pTexInfo->material, sortInfo.lightmapPageID );
 
 	// Add to list of fragments for this overlay
@@ -866,8 +866,8 @@ void COverlayMgr::Surf_PostClipFragment( moverlay_t *pOverlay, moverlayfragment_
 	// NOTE: Store them in *reverse* order so that when we pull them off for
 	// rendering, we can do *that* in reverse order too? Reduces the amount of iteration necessary
 	// Therefore, we need to add to the head of the list
-	m_aFragments.LinkBefore( MSurf_OverlayFragmentList( surfID ), hFragment );
-	MSurf_OverlayFragmentList( surfID ) = hFragment;
+	m_aFragments.LinkBefore( pWorld->MSurf_OverlayFragmentList( surfID ), hFragment );
+	pWorld->MSurf_OverlayFragmentList( surfID ) = hFragment;
 #endif // !SWDS
 }
 
@@ -934,30 +934,30 @@ inline float TriangleArea( const Vector &v0, const Vector &v1, const Vector &v2 
 //-----------------------------------------------------------------------------
 // Creates overlay fragments for a particular surface
 //-----------------------------------------------------------------------------
-void COverlayMgr::Surf_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t surfID )
+void COverlayMgr::Surf_CreateFragments(model_t* pWorld, moverlay_t *pOverlay, SurfaceHandle_t surfID )
 {
 	moverlayfragment_t overlayFrag, surfaceFrag;
 
 	// The faces get fan tesselated into triangles when rendered - do the same to
 	// create the fragments!
-	int iFirstVert = MSurf_FirstVertIndex( surfID );
+	int iFirstVert = pWorld->MSurf_FirstVertIndex( surfID );
 	
-	int nSurfTriangleCount = MSurf_VertCount( surfID ) - 2;
+	int nSurfTriangleCount = pWorld->MSurf_VertCount( surfID ) - 2;
 	for( int iTri = 0; iTri < nSurfTriangleCount; ++iTri )
 	{
 		// 3 Points in a triangle.
 		surfaceFrag.m_aPrimVerts.SetCount( 3 );
 		
-		int iVert = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert)];
-		mvertex_t *pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVert];
+		int iVert = *pWorld->GetVertindices((iFirstVert));//g_pHost->Host_GetWorldModel()->brush.pShared
+		mvertex_t *pVert = pWorld->GetVertexes(iVert);//g_pHost->Host_GetWorldModel()->brush.pShared
 		surfaceFrag.m_aPrimVerts[0].pos = pVert->position;
 		
-		iVert = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iTri+1)];
-		pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVert];
+		iVert = *pWorld->GetVertindices((iFirstVert+iTri+1));//g_pHost->Host_GetWorldModel()->brush.pShared
+		pVert = pWorld->GetVertexes(iVert);//g_pHost->Host_GetWorldModel()->brush.pShared
 		surfaceFrag.m_aPrimVerts[1].pos = pVert->position;
 		
-		iVert = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iTri+2)];
-		pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVert];
+		iVert = *pWorld->GetVertindices((iFirstVert+iTri+2));//g_pHost->Host_GetWorldModel()->brush.pShared
+		pVert = pWorld->GetVertexes(iVert);//g_pHost->Host_GetWorldModel()->brush.pShared
 		surfaceFrag.m_aPrimVerts[2].pos = pVert->position;
 
 		if ( TriangleArea( surfaceFrag.m_aPrimVerts[0].pos, surfaceFrag.m_aPrimVerts[1].pos, surfaceFrag.m_aPrimVerts[2].pos ) > 1.0f )
@@ -965,7 +965,7 @@ void COverlayMgr::Surf_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t su
 			if ( Surf_PreClipFragment( pOverlay, overlayFrag, surfID, surfaceFrag ) )
 			{
 				Surf_ClipFragment( pOverlay, overlayFrag, surfID, surfaceFrag );
-				Surf_PostClipFragment( pOverlay, overlayFrag, surfID );
+				Surf_PostClipFragment(pWorld, pOverlay, overlayFrag, surfID );
 			}
 		}
 		
@@ -979,7 +979,7 @@ void COverlayMgr::Surf_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t su
 //-----------------------------------------------------------------------------
 // Creates fragments from the overlays loaded in from file
 //-----------------------------------------------------------------------------
-void COverlayMgr::CreateFragments( void )
+void COverlayMgr::CreateFragments( model_t* pWorld )
 {
 	int nOverlayCount = m_aOverlays.Count();
 	for ( int iOverlay = 0; iOverlay < nOverlayCount; ++iOverlay )
@@ -999,13 +999,13 @@ void COverlayMgr::CreateFragments( void )
 		{
 			SurfaceHandle_t surfID = pOverlay->m_aFaces[iFace];
 		
-			if ( SurfaceHasDispInfo( surfID ) )
+			if (pWorld->SurfaceHasDispInfo( surfID ) )
 			{
-				Disp_CreateFragments( pOverlay, surfID );
+				Disp_CreateFragments(pWorld, pOverlay, surfID );
 			}
 			else
 			{
-				Surf_CreateFragments( pOverlay, surfID );
+				Surf_CreateFragments(pWorld, pOverlay, surfID );
 			}
 		}
 	}
@@ -1026,7 +1026,7 @@ void COverlayMgr::CreateFragments( void )
 				if ( !pVert->pos.IsValid() )
 				{
 					Assert( 0 );
-					mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+					mtexinfo_t *pTexInfo = pWorld->GetTexinfo(pOverlay->m_nTexInfo);//g_pHost->Host_GetWorldModel()->brush.pShared
 					DevMsg( 1, "Bad overlay vert - %d at (%f, %f, %f) with material '%s'\n", iOverlay,
 						pOverlay->m_vecOrigin.x, pOverlay->m_vecOrigin.y, pOverlay->m_vecOrigin.z,
 						( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
@@ -1035,7 +1035,7 @@ void COverlayMgr::CreateFragments( void )
 				if ( !pVert->normal.IsValid() )
 				{
 					Assert( 0 );
-					mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+					mtexinfo_t *pTexInfo = pWorld->GetTexinfo(pOverlay->m_nTexInfo);//g_pHost->Host_GetWorldModel()->brush.pShared
 					DevMsg( 1, "Bad overlay normal - %d at (%f, %f, %f) with material '%s'\n", iOverlay,
 						pOverlay->m_vecOrigin.x, pOverlay->m_vecOrigin.y, pOverlay->m_vecOrigin.z,
 						( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
@@ -1044,7 +1044,7 @@ void COverlayMgr::CreateFragments( void )
 				if ( !pVert->texCoord[0].IsValid() || !pVert->texCoord[1].IsValid() )
 				{
 					Assert( 0 );
-					mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+					mtexinfo_t *pTexInfo = pWorld->GetTexinfo(pOverlay->m_nTexInfo);//g_pHost->Host_GetWorldModel()->brush.pShared
 					DevMsg( 1, "Bad overlay texture coords - %d at (%f, %f, %f) with material '%s'\n", iOverlay,
 						pOverlay->m_vecOrigin.x, pOverlay->m_vecOrigin.y, pOverlay->m_vecOrigin.z,
 						( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
@@ -1058,7 +1058,7 @@ void COverlayMgr::CreateFragments( void )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void COverlayMgr::ReSortMaterials( void )
+void COverlayMgr::ReSortMaterials( model_t* pWorld )
 {
 #ifndef SWDS
 	// Clear the old render queue.
@@ -1076,7 +1076,7 @@ void COverlayMgr::ReSortMaterials( void )
 		if ( !pOverlay )
 			continue;
 
-		mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+		mtexinfo_t *pTexInfo = pWorld->GetTexinfo(pOverlay->m_nTexInfo);//g_pHost->Host_GetWorldModel()->brush.pShared
 		if ( !pTexInfo )
 			continue;
 
@@ -1087,19 +1087,19 @@ void COverlayMgr::ReSortMaterials( void )
 			moverlayfragment_t *pFrag = &m_aFragments[iFrag];
 			if ( pFrag )
 			{
-				const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[MSurf_MaterialSortID( pFrag->m_SurfId )];
+				const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[pWorld->MSurf_MaterialSortID( pFrag->m_SurfId )];
 				pFrag->m_nMaterialSortID = GetMaterialSortID( pTexInfo->material, sortInfo.lightmapPageID );
 				
 				// Get surface context.
 				SurfaceCtx_t ctx;
-				SurfSetupSurfaceContext( ctx, pFrag->m_SurfId );	
+				SurfSetupSurfaceContext(pWorld, ctx, pFrag->m_SurfId );	
 
 				int nVertCount = pFrag->m_aPrimVerts.Count();
 				for ( int iVert = 0; iVert < nVertCount; ++iVert )
 				{
 					// Lightmap coordinates.
 					Vector2D uv;
-					SurfComputeLightmapCoordinate( ctx, pFrag->m_SurfId, pFrag->m_aPrimVerts[iVert].pos, uv );
+					SurfComputeLightmapCoordinate(pWorld, ctx, pFrag->m_SurfId, pFrag->m_aPrimVerts[iVert].pos, uv );
 					pFrag->m_aPrimVerts[iVert].lightCoord[0] = uv.x;
 					pFrag->m_aPrimVerts[iVert].lightCoord[1] = uv.y;
 				}
@@ -1113,7 +1113,7 @@ void COverlayMgr::ReSortMaterials( void )
 //-----------------------------------------------------------------------------
 // Loads overlays from the lump
 //-----------------------------------------------------------------------------
-bool COverlayMgr::LoadOverlays(worldbrushdata_t* pBrushData)
+bool COverlayMgr::LoadOverlays(model_t* pModel)
 {
 	CMapLoadHelper lh( LUMP_OVERLAYS );
 	CMapLoadHelper lh2( LUMP_WATEROVERLAYS );
@@ -1200,7 +1200,7 @@ bool COverlayMgr::LoadOverlays(worldbrushdata_t* pBrushData)
 		pOverlayOut->m_aFaces.SetSize( pOverlayIn->GetFaceCount() );
 		for( int iFace = 0; iFace < pOverlayIn->GetFaceCount(); ++iFace )
 		{
-			pOverlayOut->m_aFaces[iFace] = SurfaceHandleFromIndex( pOverlayIn->aFaces[iFace], pBrushData);
+			pOverlayOut->m_aFaces[iFace] = pModel->SurfaceHandleFromIndex( pOverlayIn->aFaces[iFace]);
 		}
 
 		pOverlayOut->m_hFirstFragment = OVERLAY_FRAGMENT_LIST_INVALID;
@@ -1251,7 +1251,7 @@ bool COverlayMgr::LoadOverlays(worldbrushdata_t* pBrushData)
 		pOverlayOut->m_aFaces.SetSize( pWaterOverlayIn->GetFaceCount() );
 		for( int iFace = 0; iFace < pWaterOverlayIn->GetFaceCount(); ++iFace )
 		{
-			pOverlayOut->m_aFaces[iFace] = SurfaceHandleFromIndex( pWaterOverlayIn->aFaces[iFace], pBrushData);
+			pOverlayOut->m_aFaces[iFace] = pModel->SurfaceHandleFromIndex( pWaterOverlayIn->aFaces[iFace]);
 		}
 
 		pOverlayOut->m_hFirstFragment = OVERLAY_FRAGMENT_LIST_INVALID;
@@ -1265,18 +1265,18 @@ bool COverlayMgr::LoadOverlays(worldbrushdata_t* pBrushData)
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void COverlayMgr::Disp_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t surfID )
+void COverlayMgr::Disp_CreateFragments(model_t* pWorld, moverlay_t *pOverlay, SurfaceHandle_t surfID )
 {
 	OverlayFragmentVector_t aDispFragments;
 
-	if ( Disp_PreClipFragment( pOverlay, aDispFragments, surfID ) )
+	if ( Disp_PreClipFragment(pWorld, pOverlay, aDispFragments, surfID ) )
 	{
-		IDispInfo *pIDisp = MSurf_DispInfo( surfID );
+		IDispInfo *pIDisp = pWorld->MSurf_DispInfo( surfID );
 		CDispInfo *pDisp = static_cast<CDispInfo*>( pIDisp );
 		if ( pDisp )
 		{
 			Disp_ClipFragment( pDisp, aDispFragments );
-			Disp_PostClipFragment( pDisp, &pDisp->m_MeshReader, pOverlay, aDispFragments, surfID );
+			Disp_PostClipFragment(pWorld, pDisp, &pDisp->m_MeshReader, pOverlay, aDispFragments, surfID );
 		}
 	}
 
@@ -1289,21 +1289,21 @@ void COverlayMgr::Disp_CreateFragments( moverlay_t *pOverlay, SurfaceHandle_t su
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-bool COverlayMgr::Disp_PreClipFragment( moverlay_t *pOverlay, OverlayFragmentVector_t &aDispFragments, 
+bool COverlayMgr::Disp_PreClipFragment(model_t* pWorld, moverlay_t *pOverlay, OverlayFragmentVector_t &aDispFragments, 
 								        SurfaceHandle_t surfID )
 {
 	MEM_ALLOC_CREDIT();
 
 	// The faces are not tesselated when they are displaced faces.
-	int iFirstVert = MSurf_FirstVertIndex( surfID );
+	int iFirstVert = pWorld->MSurf_FirstVertIndex( surfID );
 
 	// Displaced faces are quads.
 	moverlayfragment_t surfaceFrag;
 	surfaceFrag.m_aPrimVerts.SetCount( 4 );
 	for( int iVert = 0; iVert < 4; ++iVert )
 	{
-		int iVertex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iVert)];
-		mvertex_t *pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVertex];
+		int iVertex = *pWorld->GetVertindices((iFirstVert+iVert));//g_pHost->Host_GetWorldModel()->brush.pShared
+		mvertex_t *pVert = pWorld->GetVertexes(iVertex);//g_pHost->Host_GetWorldModel()->brush.pShared
 		surfaceFrag.m_aPrimVerts[iVert].pos = pVert->position;
 	}
 
@@ -1324,7 +1324,7 @@ bool COverlayMgr::Disp_PreClipFragment( moverlay_t *pOverlay, OverlayFragmentVec
 	moverlayfragment_t *pFragment = CopyTempFragment( &overlayFrag );
 	aDispFragments.AddToTail( pFragment );
 
-	IDispInfo *pIDispInfo = MSurf_DispInfo( surfID );
+	IDispInfo *pIDispInfo = pWorld->MSurf_DispInfo( surfID );
 	CDispInfo *pDispInfo = static_cast<CDispInfo*>( pIDispInfo );
 	int iPointStart = pDispInfo->m_iPointStart;
 
@@ -1339,7 +1339,7 @@ bool COverlayMgr::Disp_PreClipFragment( moverlay_t *pOverlay, OverlayFragmentVec
 								  vecTmpUV );
 		if ( !vecTmpUV.IsValid() )
 		{
-			mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+			mtexinfo_t *pTexInfo = pWorld->GetTexinfo(pOverlay->m_nTexInfo);//g_pHost->Host_GetWorldModel()->brush.pShared
 			DevWarning( 1, "Bad overlay geometry at %s with material '%s'\n", VecToString(pOverlay->m_vecOrigin), 
 				( pTexInfo && pTexInfo->material ) ? pTexInfo->material->GetName() : ""	);
 			return false;
@@ -1357,7 +1357,7 @@ bool COverlayMgr::Disp_PreClipFragment( moverlay_t *pOverlay, OverlayFragmentVec
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void COverlayMgr::Disp_PostClipFragment( CDispInfo *pDisp, CMeshReader *pReader, moverlay_t *pOverlay, 
+void COverlayMgr::Disp_PostClipFragment(model_t* pWorld, CDispInfo *pDisp, CMeshReader *pReader, moverlay_t *pOverlay, 
 										 OverlayFragmentVector_t &aDispFragments, SurfaceHandle_t surfID )
 {
 #ifndef SWDS
@@ -1366,18 +1366,18 @@ void COverlayMgr::Disp_PostClipFragment( CDispInfo *pDisp, CMeshReader *pReader,
 
 	// Get surface context.
 	SurfaceCtx_t ctx;
-	SurfSetupSurfaceContext( ctx, surfID );	
+	SurfSetupSurfaceContext(pWorld, ctx, surfID );
 
 	// The faces are not tesselated when they are displaced faces.
-	int iFirstVert = MSurf_FirstVertIndex( surfID );
+	int iFirstVert = pWorld->MSurf_FirstVertIndex( surfID );
 
 	// Displaced faces are quads.
 	moverlayfragment_t surfaceFrag;
 	surfaceFrag.m_aPrimVerts.SetCount( 4 );
 	for( int iVert = 0; iVert < 4; ++iVert )
 	{
-		int iVertex = g_pHost->Host_GetWorldModel()->brush.pShared->vertindices[(iFirstVert+iVert)];
-		mvertex_t *pVert = &g_pHost->Host_GetWorldModel()->brush.pShared->vertexes[iVertex];
+		int iVertex = *pWorld->GetVertindices((iFirstVert+iVert));//g_pHost->Host_GetWorldModel()->brush.pShared
+		mvertex_t *pVert = pWorld->GetVertexes(iVertex);//g_pHost->Host_GetWorldModel()->brush.pShared
 		surfaceFrag.m_aPrimVerts[iVert].pos = pVert->position;
 	}
 
@@ -1451,8 +1451,8 @@ void COverlayMgr::Disp_PostClipFragment( CDispInfo *pDisp, CMeshReader *pReader,
 		}
 
 		// Create the sort ID for this fragment
-		const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[MSurf_MaterialSortID( surfID )];
-		mtexinfo_t *pTexInfo = &g_pHost->Host_GetWorldModel()->brush.pShared->texinfo[pOverlay->m_nTexInfo];
+		const MaterialSystem_SortInfo_t &sortInfo = materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID )];
+		mtexinfo_t *pTexInfo = pWorld->GetTexinfo(pOverlay->m_nTexInfo);//g_pHost->Host_GetWorldModel()->brush.pShared
 		pFragment->m_nMaterialSortID = GetMaterialSortID( pTexInfo->material, sortInfo.lightmapPageID );
 
 		// Add to list of fragments for this overlay
@@ -1467,8 +1467,8 @@ void COverlayMgr::Disp_PostClipFragment( CDispInfo *pDisp, CMeshReader *pReader,
 		// NOTE: Store them in *reverse* order so that when we pull them off for
 		// rendering, we can do *that* in reverse order too? Reduces the amount of iteration necessary
 		// Therefore, we need to add to the head of the list
-		m_aFragments.LinkBefore( MSurf_OverlayFragmentList( surfID ), hFragment );
-		MSurf_OverlayFragmentList( surfID ) = hFragment;
+		m_aFragments.LinkBefore(pWorld->MSurf_OverlayFragmentList( surfID ), hFragment );
+		pWorld->MSurf_OverlayFragmentList( surfID ) = hFragment;
 	}
 #endif // !SWDS
 }
@@ -1824,9 +1824,9 @@ void COverlayMgr::BuildClipPlanes( SurfaceHandle_t surfID, moverlayfragment_t &s
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void Overlay_BuildBasisOrigin( Vector &vecBasisOrigin, SurfaceHandle_t surfID )
+void Overlay_BuildBasisOrigin(model_t* pWorld, Vector &vecBasisOrigin, SurfaceHandle_t surfID )
 {
-	cplane_t surfacePlane = MSurf_Plane( surfID );
+	cplane_t surfacePlane = pWorld->MSurf_Plane( surfID );
 	VectorNormalize( surfacePlane.normal );
 
 	// Get the distance from entity origin to face plane.
@@ -2336,10 +2336,10 @@ void Overlay_WorldToOverlayPlane( const Vector &vecBasisOrigin, const Vector &ve
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void Overlay_OverlayPlaneToWorld( const Vector &vecBasisNormal, SurfaceHandle_t surfID,
+void Overlay_OverlayPlaneToWorld(model_t* pWorld, const Vector &vecBasisNormal, SurfaceHandle_t surfID,
 								  const Vector &vecPlanePoint, Vector &vecWorldPoint )
 {
-	cplane_t surfacePlane = MSurf_Plane( surfID );
+	cplane_t surfacePlane = pWorld->MSurf_Plane( surfID );
 	VectorNormalize( surfacePlane.normal );
 	float flDistanceToSurface = surfacePlane.normal.Dot( vecPlanePoint ) - surfacePlane.dist;
 

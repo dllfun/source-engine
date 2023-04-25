@@ -664,13 +664,13 @@ void CModelPanel::Paint()
 	float color[3] = { 1.0f, 1.0f, 1.0f };
 	render->SetColorModulation( color );
 	render->SetBlend( 1.0f );
-	m_hModel->DrawModel( STUDIO_RENDER );
+	m_hModel->DrawModel(engineClient->GetWorldModel(), STUDIO_RENDER );
 
 	for ( i = 0 ; i < m_AttachedModels.Count() ; i++ )
 	{
 		if ( m_AttachedModels[i].Get() )
 		{
-			m_AttachedModels[i]->DrawModel( STUDIO_RENDER );
+			m_AttachedModels[i]->DrawModel(engineClient->GetWorldModel(), STUDIO_RENDER );
 		}
 	}
 

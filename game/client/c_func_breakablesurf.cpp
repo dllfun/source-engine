@@ -109,7 +109,7 @@ public:
 	bool		IsTransparent( void );
 	bool		HavePanel(int nWidth, int nHeight);
 	bool		RenderBrushModelSurface( IClientEntity* pBaseEntity, IBrushSurface* pBrushSurface ); 
-	int			DrawModel( int flags );
+	int			DrawModel(IVModel* pWorld, int flags );
 	void		DrawSolidBlocks( IBrushSurface* pBrushSurface );
 
 	virtual void	OnRestore();
@@ -509,7 +509,7 @@ bool C_BreakableSurface::IsTransparent( void )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-int C_BreakableSurface::DrawModel( int flags )
+int C_BreakableSurface::DrawModel(IVModel* pWorld, int flags )
 {
 	if ( !m_bReadyToDraw )
 		return 0;
@@ -519,7 +519,7 @@ int C_BreakableSurface::DrawModel( int flags )
 		render->InstallBrushSurfaceRenderer( this );
 
 	// If it's broken, always draw it translucent
-	BaseClass::DrawModel( m_bIsBroken ? flags | STUDIO_TRANSPARENCY : flags );
+	BaseClass::DrawModel(pWorld, m_bIsBroken ? flags | STUDIO_TRANSPARENCY : flags );
 
 	// Remove our nonstandard brush surface renderer...
 	render->InstallBrushSurfaceRenderer( 0 );

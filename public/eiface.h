@@ -118,6 +118,7 @@ public:
 	virtual bool		IsDecalPrecached( char const *s ) const = 0;
 	virtual bool		IsGenericPrecached( char const *s ) const = 0;
 
+	virtual IVModel* GetWorldModel() = 0;
 	// Note that sounds are precached using the IEngineSound interface
 
 	// Special purpose PVS checking
@@ -292,7 +293,7 @@ public:
 
 	// Draw the brush geometry in the map into the scratch pad.
 	// Flags is currently unused.
-	virtual void		DrawMapToScratchPad( IScratchPad3D *pPad, unsigned long iFlags ) = 0;
+	virtual void		DrawMapToScratchPad(IVModel* pWorld, IScratchPad3D *pPad, unsigned long iFlags ) = 0;
 
 	// This returns which entities, to the best of the server's knowledge, the client currently knows about.
 	// This is really which entities were in the snapshot that this client last acked.
@@ -404,7 +405,7 @@ public:
 	virtual const CSteamID	*GetClientSteamIDByPlayerIndex( int entnum ) = 0;
 	// Gets a list of all clusters' bounds.  Returns total number of clusters.
 	virtual int GetClusterCount() = 0;
-	virtual int GetAllClusterBounds( bbox_t *pBBoxList, int maxBBox ) = 0;
+	virtual int GetAllClusterBounds(IVModel* pWorld, bbox_t *pBBoxList, int maxBBox ) = 0;
 
 	// Create a bot with the given name.  Returns NULL if fake client can't be created
 	virtual edict_t		*CreateFakeClientEx( const char *netname, bool bReportFakeClient = true ) = 0;

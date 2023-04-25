@@ -1243,7 +1243,7 @@ void C_BaseEntity::CreateModelInstance()
 {
 	if ( m_ModelInstance == MODEL_INSTANCE_INVALID )
 	{
-		m_ModelInstance = modelrender->CreateInstance( this );
+		m_ModelInstance = modelrender->CreateInstance(engineClient->GetWorldModel(), this );
 	}
 }
 
@@ -1970,7 +1970,7 @@ int C_BaseEntity::DrawBrushModel( bool bDrawingTranslucency, int nFlags, bool bT
 // Purpose: Draws the object
 // Input  : flags - 
 //-----------------------------------------------------------------------------
-int C_BaseEntity::DrawModel( int flags )
+int C_BaseEntity::DrawModel(IVModel* pWorld, int flags )
 {
 	if ( !m_bReadyToDraw )
 		return 0;

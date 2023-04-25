@@ -110,8 +110,7 @@ public:
 	// Validate version/header of a .bsp file
 	virtual bool		Map_IsValid( char const *mapname, bool bQuiet = false ) = 0;
 
-	// Recomputes surface flags
-	virtual void		RecomputeSurfaceFlags( model_t *mod ) = 0;
+	
 
 	// Reloads all models
 	virtual void		Studio_ReloadModels( ReloadType_t reloadType ) = 0;
@@ -152,6 +151,9 @@ public:
 	virtual void		UnregisterModelLoadCallback( model_t *pModel, bool bClientOnly, IModelLoadCallback *pCallback ) = 0;
 
 	virtual void		Client_OnServerModelStateChanged( model_t *pModel, bool bServerLoaded ) = 0;
+
+	// Recomputes surface flags
+	virtual void	RecomputeSurfaceFlags(model_t* pWorld) = 0;
 };
 
 extern IModelLoader *modelloader;

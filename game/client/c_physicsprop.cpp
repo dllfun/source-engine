@@ -69,7 +69,7 @@ bool C_PhysicsProp::OnInternalDrawModel( ClientModelRenderInfo_t *pInfo )
 		if ( m_bAwakeLastTime && !m_bAwake )
 		{
 			// transition to sleep, bake lighting now, once
-			if ( !modelrender->RecomputeStaticLighting( GetModelInstance() ) )
+			if ( !modelrender->RecomputeStaticLighting(engineClient->GetWorldModel(), GetModelInstance() ) )
 			{
 				// not valid for drawing
 				return false;

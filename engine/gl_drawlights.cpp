@@ -334,15 +334,15 @@ void DrawSpotLight( dworldlight_t *pLight )
 // Draws sprites over all visible lights
 // NOTE: This is used to render env-cubemaps
 //-----------------------------------------------------------------------------
-void DrawLightSprites( void )
+void DrawLightSprites( model_t* pWorld )
 {
 	if (!s_bActivateLightSprites)
 		return;
 
 	int i;	
-	for (i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; i++)
+	for (i = 0; i < pWorld->GetWorldlightsCount(); i++)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
-		dworldlight_t *pLight = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+		dworldlight_t *pLight = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 		trace_t tr;
 		CTraceFilterWorldAndPropsOnly traceFilter;
 		Ray_t ray;
@@ -387,7 +387,7 @@ void DrawLightSprites( void )
 //-----------------------------------------------------------------------------
 // Draws debugging information for the lights
 //-----------------------------------------------------------------------------
-void DrawLightDebuggingInfo( void )
+void DrawLightDebuggingInfo(model_t* pWorld)
 {
 	int		i;
 	char	buf[256];
@@ -397,9 +397,9 @@ void DrawLightDebuggingInfo( void )
 
 	if ( r_drawlightinfo.GetBool() )
 	{
-		for (i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; i++)
+		for (i = 0; i < pWorld->GetWorldlightsCount(); i++)//g_pHost->Host_GetWorldModel()->brush.pShared
 		{	
-			dworldlight_t *pLight = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+			dworldlight_t *pLight = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 
 			lineOffset = 0;
 			Q_snprintf( buf, sizeof( buf ), "light:  %d\n", i+1 );
@@ -418,12 +418,12 @@ void DrawLightDebuggingInfo( void )
 	if (!nLight)
 		return;
 
-	for (i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; i++)
+	for (i = 0; i < pWorld->GetWorldlightsCount(); i++)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
 		if ((nLight > 0) && (i != nLight-1))
 			continue;
 
-		dworldlight_t *pLight = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+		dworldlight_t *pLight = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 		Vector lightToEye;
 		float angleAttenFactor = 0.0f;
 		switch( pLight->type )

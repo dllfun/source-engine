@@ -73,10 +73,10 @@ static void AddPlaneToList( CUtlVector<cplane_t> &list, const Vector& normal, fl
 
 static void PlaneList( int leafIndex, model_t *model, CUtlVector<cplane_t> &planeList )
 {
-	if (!model || !model->brush.pShared || !model->brush.pShared->nodes)
+	if (!model )//|| !model->brush.pShared || !model->brush.pShared->nodes
 		Sys_Error ("PlaneList: bad model");
 
-	mleaf_t *pLeaf = &model->brush.pShared->leafs[leafIndex];
+	mleaf_t *pLeaf = model->GetLeafs(leafIndex);
 	mnode_t *pNode = pLeaf->parent;
 	mnode_t *pChild = (mnode_t *)pLeaf;
 	while (pNode)
@@ -238,8 +238,8 @@ void LeafVisBuild( const Vector &p )
 		{
 		case 2:
 			{
-				const mleaf_t *pLeaf = g_pHost->Host_GetWorldModel()->brush.pShared->leafs;
-				int leafCount = g_pHost->Host_GetWorldModel()->brush.pShared->numleafs;
+				const mleaf_t *pLeaf = g_pHost->Host_GetWorldModel()->GetLeafs(0);
+				int leafCount = g_pHost->Host_GetWorldModel()->GetLeafCount();
 				int visCluster = pLeaf[leafIndex].cluster;
 				// do entire viscluster
 				for ( int i = 0; i < leafCount; i++ )
@@ -255,8 +255,8 @@ void LeafVisBuild( const Vector &p )
 			{
 				// do entire pvs
 				byte pvs[ MAX_MAP_LEAFS/8 ];
-				const mleaf_t *pLeaf = g_pHost->Host_GetWorldModel()->brush.pShared->leafs;
-				int leafCount = g_pHost->Host_GetWorldModel()->brush.pShared->numleafs;
+				const mleaf_t *pLeaf = g_pHost->Host_GetWorldModel()->GetLeafs(0);
+				int leafCount = g_pHost->Host_GetWorldModel()->GetLeafCount();
 				int visCluster = pLeaf[leafIndex].cluster;
 				CM_Vis( pvs, sizeof( pvs ), visCluster, DVIS_PVS );
 
@@ -444,7 +444,7 @@ static ConVar r_drawclipbrushes( "r_drawclipbrushes", "0", FCVAR_CHEAT, "Draw cl
 
 static Vector LeafAmbientSamplePos( int leafIndex, const mleafambientlighting_t &sample )
 {
-	mleaf_t *pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leafIndex];
+	mleaf_t *pLeaf = g_pHost->Host_GetWorldModel()->GetLeafs(leafIndex);
 	Vector out = pLeaf->m_vecCenter - pLeaf->m_vecHalfDiagonal;
 	out.x += float(sample.x) * pLeaf->m_vecHalfDiagonal.x * (2.0f / 255.0f);
 	out.y += float(sample.y) * pLeaf->m_vecHalfDiagonal.y * (2.0f / 255.0f);
@@ -529,19 +529,19 @@ void LeafVisDraw( void )
 		pRenderContext->Bind( g_pMaterialDebugFlat );
 		float cubesize = 12.0f;
 		int leafIndex = g_LeafVis->leafIndex;
-		mleafambientindex_t *pAmbient = &g_pHost->Host_GetWorldModel()->brush.pShared->m_pLeafAmbient[leafIndex];
+		mleafambientindex_t *pAmbient = g_pHost->Host_GetWorldModel()->GetLeafAmbient(leafIndex);
 		if ( !pAmbient->ambientSampleCount && pAmbient->firstAmbientSample )
 		{
 			// this leaf references another leaf, move there (this leaf is a solid leaf so it borrows samples from a neighbor)
 			leafIndex = pAmbient->firstAmbientSample;
-			pAmbient = &g_pHost->Host_GetWorldModel()->brush.pShared->m_pLeafAmbient[leafIndex];
+			pAmbient = g_pHost->Host_GetWorldModel()->GetLeafAmbient(leafIndex);
 		}
 		for ( int i = 0; i < pAmbient->ambientSampleCount; i++ )
 		{
 			IMesh *pMesh = pRenderContext->GetDynamicMesh( );
 			CMeshBuilder meshBuilder;
 			meshBuilder.Begin( pMesh, MATERIAL_QUADS, 6 );
-			const mleafambientlighting_t &sample = g_pHost->Host_GetWorldModel()->brush.pShared->m_pAmbientSamples[pAmbient->firstAmbientSample+i];
+			const mleafambientlighting_t &sample = g_pHost->Host_GetWorldModel()->GetAmbientSamples(pAmbient->firstAmbientSample+i);
 			Vector pos = LeafAmbientSamplePos( leafIndex, sample );
 			// x axis
 			color32 color;

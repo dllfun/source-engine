@@ -84,7 +84,7 @@ public:
 
 	// Render baby!
 	virtual const IVModel*			GetModel( ) const = 0;
-	virtual int						DrawModel( int flags ) = 0;
+	virtual int						DrawModel(IVModel* pWorld, int flags ) = 0;
 
 	// Get the body parameter
 	virtual int		GetBody() = 0;
@@ -208,7 +208,7 @@ public:
 	virtual bool					UsesFlexDelayedWeights() { return false; }
 
 	virtual const IVModel*			GetModel( ) const		{ return NULL; }
-	virtual int						DrawModel( int flags )	{ return 0; }
+	virtual int						DrawModel(IVModel* pWorld, int flags )	{ return 0; }
 	virtual void					ComputeFxBlend( )		{ return; }
 	virtual int						GetFxBlend( )			{ return 255; }
 	virtual bool					LODTest()				{ return true; }

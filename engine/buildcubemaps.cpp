@@ -539,7 +539,8 @@ CON_COMMAND( lightprobe,
 	// Get the lighting at the point
 	LightingState_t lightingState;
 	LightcacheGetDynamic_Stats stats;
-	LightcacheGetDynamic( MainViewOrigin(), lightingState, stats );
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	LightcacheGetDynamic(pWorld, MainViewOrigin(), lightingState, stats );
 
 	Q_snprintf( pBasePath, sizeof(pBasePath), "materials/lightprobes/%s", args[1] );
 	WriteLightProbe( pBasePath, lightingState, bHDR );
@@ -812,7 +813,7 @@ static bool bSaveMatSpecular = true;
 static int nOldOcclusionVal = 1;
 static int nOldBloomDisable = 0;
 static int originaldrawMRMModelsVal = 1; 
-void R_BuildCubemapSamples_PreBuild()
+void R_BuildCubemapSamples_PreBuild(model_t* pWorld)
 {
 	// disable the mouse so that it won't be recentered all the bloody time.
 	ConVarRef cl_mouseenable( "cl_mouseenable" );
@@ -842,7 +843,7 @@ void R_BuildCubemapSamples_PreBuild()
 	{
 		nSaveLightStyle = r_lightstyleRef.GetInt();
 		r_lightstyleRef.SetValue( 0 );
-		R_RedownloadAllLightmaps();
+		R_RedownloadAllLightmaps(pWorld);
 	}
 
 	bSaveDrawBeams = r_DrawBeams.GetInt();
@@ -897,7 +898,7 @@ void R_BuildCubemapSamples_PreBuild()
 
 
 }
-void R_BuildCubemapSamples_PostBuild()
+void R_BuildCubemapSamples_PostBuild(model_t* pWorld)
 {
 	// re-enable the mouse.
 	ConVarRef cl_mouseenable( "cl_mouseenable" );
@@ -928,7 +929,7 @@ void R_BuildCubemapSamples_PostBuild()
 	if( r_lightstyleRef.IsValid() )
 	{
 		r_lightstyleRef.SetValue( nSaveLightStyle );
-		R_RedownloadAllLightmaps();
+		R_RedownloadAllLightmaps(pWorld);
 	}
 
 	ConVarRef r_portalsopenall( "r_portalsopenall" );
@@ -957,7 +958,7 @@ void R_BuildCubemapSamples_PostBuild()
 	building_cubemaps.SetValue( 0 );
 
 }
-void R_BuildCubemapSamples( int numIterations )
+void R_BuildCubemapSamples(model_t* pWorld, int numIterations )
 {
 	if ( IsX360() )
 		return;
@@ -970,7 +971,7 @@ void R_BuildCubemapSamples( int numIterations )
 		return;
 	}
 
-	R_BuildCubemapSamples_PreBuild();
+	R_BuildCubemapSamples_PreBuild(pWorld);
 
 	int bounce;
 	for( bounce = 0; bounce < numIterations; bounce++ )
@@ -990,7 +991,7 @@ void R_BuildCubemapSamples( int numIterations )
 		if( !world || !world->GetModel() )
 		{
 			ConDMsg( "R_BuildCubemapSamples: No map loaded!\n" );
-			R_BuildCubemapSamples_PostBuild(); 
+			R_BuildCubemapSamples_PostBuild(pWorld);
 			return;
 		}
 
@@ -1027,9 +1028,9 @@ void R_BuildCubemapSamples( int numIterations )
 
 		model_t *pWorldModel = ( model_t *)world->GetModel();
 		int i;
-		for( i = 0; i < pWorldModel->brush.pShared->m_nCubemapSamples; i++ )
+		for( i = 0; i < pWorldModel->GetCubemapSamplesCount(); i++ )
 		{
-			mcubemapsample_t  *pCubemapSample = &pWorldModel->brush.pShared->m_pCubemapSamples[i];
+			mcubemapsample_t  *pCubemapSample = pWorldModel->GetCubemapSamples(i);
 
 			int tgaSize = ( pCubemapSample->size == 0 ) ? mat_envmaptgasize.GetInt() : 1 << ( pCubemapSample->size-1 );
 			int screenBufSize = 4 * tgaSize;
@@ -1037,17 +1038,17 @@ void R_BuildCubemapSamples( int numIterations )
 			{
 				Warning( "Cube map buffer size %d x %d is bigger than screen!\nRun at a higher resolution! or reduce your cubemap resolution (needs 4X)\n", screenBufSize, screenBufSize );
 				// BUGBUG: We'll leak DLLs/handles if we break out here, but this should be infrequent.
-				R_BuildCubemapSamples_PostBuild();
+				R_BuildCubemapSamples_PostBuild(pWorld);
 				return;
 			}
 		}
 
 		bool bSupportsHDR = true; //g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE;
 
-		for( i = 0; i < pWorldModel->brush.pShared->m_nCubemapSamples; i++ )
+		for( i = 0; i < pWorldModel->GetCubemapSamplesCount(); i++ )
 		{
-			Warning( "bounce: %d/%d sample: %d/%d\n", bounce+1, numIterations, i+1, pWorldModel->brush.pShared->m_nCubemapSamples );
-			mcubemapsample_t  *pCubemapSample = &pWorldModel->brush.pShared->m_pCubemapSamples[i];
+			Warning( "bounce: %d/%d sample: %d/%d\n", bounce+1, numIterations, i+1, pWorldModel->GetCubemapSamplesCount() );
+			mcubemapsample_t  *pCubemapSample = pWorldModel->GetCubemapSamples(i);
 
 			char pVTFName[ MAX_PATH ];
 			Q_snprintf( pVTFName, sizeof( pVTFName ), "%s/c%d_%d_%d", pMaterialSrcDir, 
@@ -1076,7 +1077,7 @@ void R_BuildCubemapSamples( int numIterations )
 		if( !iBSPPack )
 		{
 			ConMsg( "Can't load bsppack.dll\n" );
-			R_BuildCubemapSamples_PostBuild();
+			R_BuildCubemapSamples_PostBuild(pWorld);
 			return;
 		}
 
@@ -1086,9 +1087,9 @@ void R_BuildCubemapSamples( int numIterations )
 
 		// Cram the textures into the bsp.
 		Q_snprintf( matDir, sizeof(matDir), "materials/maps/%s", cl.m_szLevelBaseName );
-		for ( i=0 ; i < pWorldModel->brush.pShared->m_nCubemapSamples ; i++ )
+		for ( i=0 ; i < pWorldModel->GetCubemapSamplesCount() ; i++ )
 		{
-			mcubemapsample_t *pSample = &pWorldModel->brush.pShared->m_pCubemapSamples[i];
+			mcubemapsample_t *pSample = pWorldModel->GetCubemapSamples(i);
 			AddSampleToBSPFile( bSupportsHDR, pSample, matDir, iBSPPack );
 		}
 		Cubemap_CreateDefaultCubemap( cl.m_szLevelBaseName, iBSPPack );
@@ -1100,7 +1101,7 @@ void R_BuildCubemapSamples( int numIterations )
 		if ( !*szAbsFile )
 		{
 			ConMsg( "Failed to resolve absolute path of map: %s\n", cl.m_szLevelFileName );
-			R_BuildCubemapSamples_PostBuild();
+			R_BuildCubemapSamples_PostBuild(pWorld);
 			return;
 		}
 		iBSPPack->WriteBSPFile( szAbsFile );
@@ -1110,7 +1111,7 @@ void R_BuildCubemapSamples( int numIterations )
 		Cbuf_AddText( "restart setpos\n" );
 	}
 
-	R_BuildCubemapSamples_PostBuild();
+	R_BuildCubemapSamples_PostBuild(pWorld);
 
 	UpdateMaterialSystemConfig();
 
@@ -1129,11 +1130,11 @@ CON_COMMAND( buildcubemaps, "Rebuild cubemaps." )
 	V_RenderVGuiOnly();
 	if ( args.ArgC() == 1 )
 	{
-		R_BuildCubemapSamples( 1 );
+		R_BuildCubemapSamples(g_pHost->Host_GetWorldModel(), 1 );
 	}
 	else if( args.ArgC() == 2 )
 	{
-		R_BuildCubemapSamples( atoi( args[ 1 ] ) );
+		R_BuildCubemapSamples(g_pHost->Host_GetWorldModel(), atoi( args[ 1 ] ) );
 	}
 	else
 	{

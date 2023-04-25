@@ -72,7 +72,7 @@ public:
 		//s_bCanAccessCurrentView = false;
 		g_pView->AllowCurrentViewAccess(false);
 
-		render->DrawLightmaps( m_pWorldRenderList, mat_showlightmappage.GetInt() );
+		render->DrawLightmaps(engineClient->GetWorldModel(), m_pWorldRenderList, mat_showlightmappage.GetInt() );
 	}
 
 

@@ -51,7 +51,7 @@ ConVar r_dynamiclighting( "r_dynamiclighting", "1", FCVAR_CHEAT );
 extern ConVar building_cubemaps;
 extern float scr_demo_override_fov;	
 
-extern colorVec R_LightPoint (Vector& p);
+//extern colorVec R_LightPoint (model_t* pWorld,Vector& p);
 
 CEngineStats g_EngineStats;
 
@@ -182,7 +182,7 @@ void R_DrawScreenRect( float left, float top, float right, float bottom )
 }
 
 
-void R_DrawPortals()
+void R_DrawPortals(model_t* pWorld)
 {
 	// Draw the portals.
 	if( !r_DrawPortals.GetInt() )
@@ -192,10 +192,10 @@ void R_DrawPortals()
 	CMatRenderContextPtr pRenderContext( materials );
 	IMesh *pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
 
-	worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
-	for( int i=0; i < pBrushData->m_nAreaPortals; i++ )
+	//worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
+	for( int i=0; i < pWorld->GetAreaPortalsCount(); i++ )
 	{
-		dareaportal_t *pAreaPortal = &pBrushData->m_pAreaPortals[i];
+		dareaportal_t *pAreaPortal = pWorld->GetAreaPortals(i);
 
 		if( !R_IsAreaVisible( pAreaPortal->otherarea ) )
 			continue;
@@ -208,12 +208,12 @@ void R_DrawPortals()
 			unsigned short iVert;
 
 			iVert = pAreaPortal->m_FirstClipPortalVert + j;
-			builder.Position3f( VectorExpand( pBrushData->m_pClipPortalVerts[iVert] ) );
+			builder.Position3f( VectorExpand( pWorld->GetClipPortalVerts(iVert) ) );
 			builder.Color4f( 0, 0, 0, 1 );
 			builder.AdvanceVertex();
 
 			iVert = pAreaPortal->m_FirstClipPortalVert + (j+1) % pAreaPortal->m_nClipPortalVerts;
-			builder.Position3f( VectorExpand( pBrushData->m_pClipPortalVerts[iVert] ) );
+			builder.Position3f( VectorExpand( pWorld->GetClipPortalVerts(iVert) ) );
 			builder.Color4f( 0, 0, 0, 1 );
 			builder.AdvanceVertex();
 		}
@@ -251,11 +251,11 @@ public:
 
 	void ViewDrawFade( byte *color, IMaterial* pMaterial );
 
-	IWorldRenderList * CreateWorldList();
-	void BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pWaterReflectionHeight );
-	void DrawWorldLists( IWorldRenderList *pList, unsigned long flags, float waterZAdjust );
+	IWorldRenderList * CreateWorldList(IVModel* pWorld);
+	void BuildWorldLists(IVModel* pWorld, IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pWaterReflectionHeight );
+	void DrawWorldLists(IVModel* pWorld, IWorldRenderList *pList, unsigned long flags, float waterZAdjust );
 
-	void DrawSceneBegin( void );
+	void DrawSceneBegin( IVModel* pWorld );
 	void DrawSceneEnd( void );
 
 	// utility functions
@@ -294,7 +294,7 @@ public:
 
 	virtual void UpdateBrushModelLightmap(IVModel *model, IClientRenderable *Renderable );
 	virtual void BeginUpdateLightmaps( void );
-	virtual void EndUpdateLightmaps( void );
+	virtual void EndUpdateLightmaps( IVModel* pWorld );
 	virtual bool InLightmapUpdate( void ) const;
 
 private:
@@ -394,7 +394,8 @@ CRender::CRender()
 //-----------------------------------------------------------------------------
 void CRender::FrameBegin( void )
 {
-	if (g_pHost->Host_GetWorldModel())
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	if (pWorld)
 	{
 		// This has to be before R_AnimateLight because it uses it to
 		// set the frame number of changed lightstyles
@@ -403,7 +404,7 @@ void CRender::FrameBegin( void )
 		// or some other client-side simulation of state?
 		r_framecount++;
 		R_AnimateLight ();
-		R_PushDlights();
+		R_PushDlights(pWorld);
 
 		if (!r_norefresh.GetInt())
 		{
@@ -815,17 +816,17 @@ void CRender::UpdateBrushModelLightmap(IVModel *model, IClientRenderable *pRende
 		return;
 
 	R_MarkDlightsOnBrushModel((model_t*)model, pRenderable );
-	if (((model_t*)model)->flags & MODELFLAG_HAS_DLIGHT )
+	if (((model_t*)model)->GetModelFlag() & MODELFLAG_HAS_DLIGHT)
 	{
 		int transformIndex = g_LightmapTransformList.AddToTail();
 		LightmapTransformInfo_t &transform = g_LightmapTransformList[transformIndex];
 		transform.pModel = (model_t*)model;
 		AngleMatrix( pRenderable->GetRenderAngles(), pRenderable->GetRenderOrigin(), transform.xform );
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex(((model_t*)model)->brush.firstmodelsurface, ((model_t*)model)->brush.pShared );
+		SurfaceHandle_t surfID = ((model_t*)model)->SurfaceHandleFromIndex(((model_t*)model)->GetFirstmodelsurface());//, ((model_t*)model)->brush.pShared
 		bool bLight = false;
-		for (int i=0 ; i< ((model_t*)model)->brush.nummodelsurfaces ; i++, surfID++)
+		for (int i=0 ; i< ((model_t*)model)->GetModelsurfacesCount() ; i++, surfID++)
 		{
-			if ( MSurf_Flags(surfID) & (SURFDRAW_HASDLIGHT|SURFDRAW_HASLIGHTSYTLES) )
+			if (((model_t*)model)->MSurf_Flags(surfID) & (SURFDRAW_HASDLIGHT|SURFDRAW_HASLIGHTSYTLES) )
 			{
 				LightmapUpdateInfo_t tmp;
 				tmp.m_SurfHandle = surfID;
@@ -836,12 +837,12 @@ void CRender::UpdateBrushModelLightmap(IVModel *model, IClientRenderable *pRende
 		}
 		if ( !bLight )
 		{
-			((model_t*)model)->flags &= ~MODELFLAG_HAS_DLIGHT; // don't need to check again unless a dlight hits us
+			((model_t*)model)->GetModelFlag() &= ~MODELFLAG_HAS_DLIGHT; // don't need to check again unless a dlight hits us
 		}
 	}
 }
 
-void CRender::EndUpdateLightmaps( void )
+void CRender::EndUpdateLightmaps( IVModel* pWorld )
 {
 	Assert( m_iLightmapUpdateDepth > 0 );
 	if ( --m_iLightmapUpdateDepth == 0 )
@@ -872,9 +873,9 @@ void CRender::EndUpdateLightmaps( void )
 				const LightmapUpdateInfo_t &lightmapUpdateInfo = g_LightmapUpdateList.Element(i);
 				// a surface can get queued more than once if it's visible in multiple views (e.g. water reflection can do this)
 				// so check frame to make sure we only recompute once
-				if ( SurfaceLighting(lightmapUpdateInfo.m_SurfHandle)->m_nLastComputedFrame != r_framecount )
+				if (((model_t*)pWorld)->SurfaceLighting(lightmapUpdateInfo.m_SurfHandle)->m_nLastComputedFrame != r_framecount )
 				{
-					R_RenderDynamicLightmaps( pLights, pCallQueue, lightmapUpdateInfo.m_SurfHandle, g_LightmapTransformList[lightmapUpdateInfo.transformIndex].xform );
+					R_RenderDynamicLightmaps((model_t*)pWorld, pLights, pCallQueue, lightmapUpdateInfo.m_SurfHandle, g_LightmapTransformList[lightmapUpdateInfo.transformIndex].xform );
 				}
 			}
 		}
@@ -1209,18 +1210,18 @@ void DrawLightmapPage( int lightmapPageID )
 //hack
 extern void DebugDrawLightmapAtCrossHair();
 
-void R_DrawLightmaps( IWorldRenderList *pList, int pageId )
+void R_DrawLightmaps(model_t* pWorld, IWorldRenderList *pList, int pageId )
 {
 #ifdef USE_CONVARS
 	if ( pageId != -1 )
 	{
 		DrawLightmapPage( pageId );
-		pList->Shader_DrawLightmapPageChains( pageId );
+		pList->Shader_DrawLightmapPageChains(pWorld, pageId );
 	}
 #endif
 }
 
-void R_CheckForLightingConfigChanges()
+void R_CheckForLightingConfigChanges(model_t* pWorld)
 {
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
@@ -1231,14 +1232,14 @@ void R_CheckForLightingConfigChanges()
 		ClearMaterialConfigLightingChanged();
 		ConMsg( "Redownloading all lightmaps\n" );
 		BuildGammaTable( 2.2f, 2.2f, 0.0f, OVERBRIGHT );
-		R_RedownloadAllLightmaps();
-		StaticPropMgr()->RecomputeStaticLighting();
+		R_RedownloadAllLightmaps(pWorld);
+		StaticPropMgr()->RecomputeStaticLighting(pWorld);
 	}
 }
 
-void CRender::DrawSceneBegin( void )
+void CRender::DrawSceneBegin( IVModel* pWorld )
 {
-	R_CheckForLightingConfigChanges();
+	R_CheckForLightingConfigChanges((model_t*)pWorld);
 }
 
 void CRender::DrawSceneEnd( void )
@@ -1247,14 +1248,14 @@ void CRender::DrawSceneEnd( void )
 	LeafVisDraw();
 }
 
-IWorldRenderList * CRender::CreateWorldList()
+IWorldRenderList * CRender::CreateWorldList(IVModel* pWorld)
 {
-	return AllocWorldRenderList();
+	return AllocWorldRenderList((model_t*)pWorld);
 }
 
 
 // JasonM TODO: optimize in the case of shadow depth mapping (i.e. don't update lightmaps)
-void CRender::BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pWaterReflectionHeight )
+void CRender::BuildWorldLists(IVModel* pWorld, IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pWaterReflectionHeight )
 {
 	Assert( pList );
 	Assert( m_iLightmapUpdateDepth > 0 || g_LightmapUpdateList.Count() == 0 );
@@ -1264,20 +1265,20 @@ void CRender::BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, 
 		BeginUpdateLightmaps();
 	}
 
-	pList->R_BuildWorldLists( pInfo, iForceViewLeaf, pVisData, bShadowDepth, pWaterReflectionHeight );
+	pList->R_BuildWorldLists(pWorld, pInfo, iForceViewLeaf, pVisData, bShadowDepth, pWaterReflectionHeight );
 
 	if ( !bShadowDepth )
 	{
-		EndUpdateLightmaps();
+		EndUpdateLightmaps(pWorld);
 	}
 
 	Assert( m_iLightmapUpdateDepth > 0 || g_LightmapUpdateList.Count() == 0 );
 }
 
-void CRender::DrawWorldLists( IWorldRenderList *pList, unsigned long flags, float flWaterZAdjust )
+void CRender::DrawWorldLists(IVModel* pWorld, IWorldRenderList *pList, unsigned long flags, float flWaterZAdjust )
 {
 	Assert( pList );
-	pList->R_DrawWorldLists( flags, flWaterZAdjust );
+	pList->R_DrawWorldLists(pWorld, flags, flWaterZAdjust );
 }
 
 //-----------------------------------------------------------------------------

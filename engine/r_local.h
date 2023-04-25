@@ -34,17 +34,17 @@ extern VMatrix g_BrushToWorldMatrix;
 
 class IClientEntity;
 
-colorVec R_LightPoint (Vector& p);
+colorVec R_LightPoint (model_t* pWorld,Vector& p);
 
 // returns surfID
-SurfaceHandle_t R_LightVec (const Vector& start, const Vector& end, bool bUseLightStyles, Vector& c, float *textureS = NULL, float *textureT = NULL, float *lightmapS = NULL, float *lightmapT = NULL);
+SurfaceHandle_t R_LightVec (model_t* pWorld, const Vector& start, const Vector& end, bool bUseLightStyles, Vector& c, float *textureS = NULL, float *textureT = NULL, float *lightmapS = NULL, float *lightmapT = NULL);
 
 // This is to allow us to do R_LightVec on a brush model
 void R_LightVecUseModel(model_t* pModel = 0);
 
-void R_InitStudio( void );
+void R_InitStudio( model_t* pWorld );
 void R_LoadSkys (void);
-void R_DecalInit ( void );
+void R_DecalInit ( model_t* pWorld );
 void R_AnimateLight (void);
 
 void MarkDLightsOnStaticProps( void );

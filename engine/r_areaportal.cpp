@@ -79,9 +79,9 @@ static VMatrix g_ScreenFromWorldProjection;
 // ------------------------------------------------------------------------------------ //
 // Functions.
 // ------------------------------------------------------------------------------------ //
-void R_Areaportal_LevelInit()
+void R_Areaportal_LevelInit(model_t* pWorld)
 {
-	g_AreaCullInfo.SetCount(g_pHost->Host_GetWorldModel()->brush.pShared->m_nAreas );
+	g_AreaCullInfo.SetCount(pWorld->GetAreasCount() );//g_pHost->Host_GetWorldModel()->brush.pShared
 }
 
 void R_Areaportal_LevelShutdown()
@@ -119,13 +119,13 @@ struct portalclip_t
 
 // Transforms and clips the portal's verts to the view frustum. Returns false
 // if the verts lie outside the frustum.
-static inline bool GetPortalScreenExtents( dareaportal_t *pPortal, 
+static inline bool GetPortalScreenExtents(model_t* pWorld, dareaportal_t *pPortal, 
 	portalclip_t * RESTRICT clip, CPortalRect &portalRect , float *pReflectionWaterHeight )
 {
 	portalRect.left = portalRect.bottom = 1e24;
 	portalRect.right = portalRect.top   = -1e24;
 	bool bValidExtents = false;
-	worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
+	//worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	
 	int nStartVerts = min( (int)pPortal->m_nClipPortalVerts, MAX_PORTAL_VERTS );
 
@@ -138,7 +138,7 @@ static inline bool GetPortalScreenExtents( dareaportal_t *pPortal,
 		int i;
 		for( i=0; i < nStartVerts; i++ )
 		{
-			clip->v0[i] = pBrushData->m_pClipPortalVerts[pPortal->m_FirstClipPortalVert+i];
+			clip->v0[i] = pWorld->GetClipPortalVerts(pPortal->m_FirstClipPortalVert+i);
 
 			// 2nd pass is to compute the reflected areaportal position
 			if ( j == 1 )
@@ -246,7 +246,7 @@ inline bool GetRectIntersection( CPortalRect const *pRect1, CPortalRect const *p
 	return true;
 }
 
-static void R_FlowThroughArea( int area, const Vector &vecVisOrigin, const CPortalRect *pClipRect, 
+static void R_FlowThroughArea(model_t* pWorld, int area, const Vector &vecVisOrigin, const CPortalRect *pClipRect, 
 	const VisOverrideData_t* pVisData, float *pReflectionWaterHeight )
 {
 #ifndef SWDS
@@ -275,10 +275,10 @@ static void R_FlowThroughArea( int area, const Vector &vecVisOrigin, const CPort
 	// Set that we're in this area on the stack.
 	R_SetBit( g_AreaStack, area );
 
-	worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
+	//worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 
 	Assert( area < host_state.worldbrush->m_nAreas );
-	darea_t *pArea = &g_pHost->Host_GetWorldModel()->brush.pShared->m_pAreas[area];
+	darea_t *pArea = pWorld->GetAreas(area);//g_pHost->Host_GetWorldModel()->brush.pShared
 	// temp buffer for clipping
 	portalclip_t clipTmp;
 
@@ -286,7 +286,7 @@ static void R_FlowThroughArea( int area, const Vector &vecVisOrigin, const CPort
 	for( int iAreaPortal=0; iAreaPortal < pArea->numareaportals; iAreaPortal++ )
 	{
 		Assert( pArea->firstareaportal + iAreaPortal < pBrushData->m_nAreaPortals );
-		dareaportal_t *pAreaPortal = &pBrushData->m_pAreaPortals[ pArea->firstareaportal + iAreaPortal ];
+		dareaportal_t *pAreaPortal = pWorld->GetAreaPortals( pArea->firstareaportal + iAreaPortal );
 
 		// Don't flow back into a portal on the stack.
 		if( R_TestBit( g_AreaStack, pAreaPortal->otherarea ) )
@@ -297,7 +297,7 @@ static void R_FlowThroughArea( int area, const Vector &vecVisOrigin, const CPort
 			continue;
 
 		// Make sure the viewer is on the right side of the portal to see through it.
-		cplane_t *pPlane = &pBrushData->planes[ pAreaPortal->planenum ];
+		cplane_t *pPlane = &pWorld->GetPlanes( pAreaPortal->planenum );
 		// Use the specified vis origin to test backface culling, or the main view if none was specified
 		float flDist = pPlane->normal.Dot( vecVisOrigin ) - pPlane->dist;
 		if( flDist < -0.1f )
@@ -314,7 +314,7 @@ static void R_FlowThroughArea( int area, const Vector &vecVisOrigin, const CPort
 		float fDistTolerance = (pVisData)?(pVisData->m_fDistToAreaPortalTolerance):(0.1f);
 		if ( flDist > fDistTolerance )
 		{
-			portalVis = GetPortalScreenExtents( pAreaPortal, &clipTmp, portalRect, pReflectionWaterHeight );
+			portalVis = GetPortalScreenExtents(pWorld, pAreaPortal, &clipTmp, portalRect, pReflectionWaterHeight );
 		}
 		else
 		{
@@ -337,7 +337,7 @@ static void R_FlowThroughArea( int area, const Vector &vecVisOrigin, const CPort
 #endif
 
 				// Ok, we can see into this area.
-				R_FlowThroughArea( pAreaPortal->otherarea, vecVisOrigin, &intersection, pVisData, pReflectionWaterHeight );
+				R_FlowThroughArea(pWorld, pAreaPortal->otherarea, vecVisOrigin, &intersection, pVisData, pReflectionWaterHeight );
 			}
 		}
 	}
@@ -615,7 +615,7 @@ static ConVar r_portalscloseall( "r_portalscloseall", "0", FCVAR_CHEAT | FCVAR_D
 static ConVar r_portalsopenall( "r_portalsopenall", "0", FCVAR_CHEAT, "Open all portals" );
 static ConVar r_ShowViewerArea( "r_ShowViewerArea", "0" );
 
-void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pVisData /* = NULL */, float *pWaterReflectionHeight /* = NULL */ )
+void R_SetupAreaBits(model_t* pWorld, int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pVisData /* = NULL */, float *pWaterReflectionHeight /* = NULL */ )
 {
 	IncrementGlobalCounter();
 
@@ -644,7 +644,7 @@ void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pV
 		{
 			// Clear the visible area bits.
 			memset( g_RenderAreaBits, 0, sizeof( g_RenderAreaBits ) );
-			int area = g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leaf].area;
+			int area = pWorld->GetLeafs(leaf)->area;//g_pHost->Host_GetWorldModel()->brush.pShared
 			R_SetBit( g_RenderAreaBits, area );
 			
 			g_VisibleAreas[0] = area;
@@ -667,7 +667,7 @@ void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pV
 	if ( host_state.worldbrush->leafs[leaf].contents & CONTENTS_SOLID ||
 		 cl.ishltv || cl.isreplay || !cl.m_bAreaBitsValid || r_portalsopenall.GetBool()  )
 #else
-	if (g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leaf].contents & CONTENTS_SOLID ||
+	if (pWorld->GetLeafs(leaf)->contents & CONTENTS_SOLID ||//g_pHost->Host_GetWorldModel()->brush.pShared
 		 cl.ishltv || !cl.m_bAreaBitsValid || r_portalsopenall.GetBool()  )
 #endif
 	{
@@ -679,7 +679,7 @@ void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pV
 	}
 	else
 	{
-		int area = g_pHost->Host_GetWorldModel()->brush.pShared->leafs[leaf].area;
+		int area = pWorld->GetLeafs(leaf)->area;//g_pHost->Host_GetWorldModel()->brush.pShared
 		
 		if ( r_ShowViewerArea.GetInt() )
 			Con_NPrintf( 3, "Viewer area: %d", area );
@@ -687,7 +687,7 @@ void R_SetupAreaBits( int iForceViewLeaf /* = -1 */, const VisOverrideData_t* pV
 		g_nVisibleAreas = 0;		
 		Vector vecVisOrigin = (pVisData)?(pVisData->m_vecVisOrigin):(g_EngineRenderer->ViewOrigin());
 		R_SetupGlobalFrustum();
-		R_FlowThroughArea ( area, vecVisOrigin, &rect, pVisData, pWaterReflectionHeight );
+		R_FlowThroughArea (pWorld, area, vecVisOrigin, &rect, pVisData, pWaterReflectionHeight );
 		R_SetupVisibleAreaFrustums();
 	}
 }

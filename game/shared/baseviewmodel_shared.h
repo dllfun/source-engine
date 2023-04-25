@@ -132,7 +132,7 @@ public:
 	virtual void			ApplyBoneMatrixTransform( matrix3x4_t& transform );
 
 	virtual bool			ShouldDraw();
-	virtual int				DrawModel( int flags );
+	virtual int				DrawModel(IVModel* pWorld, int flags );
 	virtual int				InternalDrawModel( int flags );
 	int						DrawOverriddenViewmodel( int flags );
 	virtual int				GetFxBlend( void );

@@ -2032,7 +2032,7 @@ void C_RopeKeyframe::CalcLightValues()
 	for( int i=0; i < m_RopePhysics.NumNodes(); i++ )
 	{
 		const Vector &vPos = m_RopePhysics.GetNode(i)->m_vPredicted;
-		engineClient->ComputeLighting( vPos, NULL, true, m_LightValues[i], boxColors );
+		engineClient->ComputeLighting(engineClient->GetWorldModel(), vPos, NULL, true, m_LightValues[i], boxColors );
 
 		if ( !rope_averagelight.GetInt() )
 		{

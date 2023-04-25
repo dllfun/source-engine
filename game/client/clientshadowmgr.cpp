@@ -1515,7 +1515,7 @@ void CClientShadowMgr::LevelInitPreEntity()
 	m_bUpdatingDirtyShadows = false;
 
 	Vector ambientColor;
-	engineClient->GetAmbientLightColor( ambientColor );
+	engineClient->GetAmbientLightColor(engineClient->GetWorldModel(), ambientColor );
 	ambientColor *= 3;
 	ambientColor += Vector( 0.3f, 0.3f, 0.3f );
 
@@ -1938,7 +1938,7 @@ void CClientShadowMgr::DestroyShadow( ClientShadowHandle_t handle )
 {
 	Assert( m_Shadows.IsValidIndex(handle) );
 	RemoveShadowFromDirtyList( handle );
-	shadowmgr->DestroyShadow( m_Shadows[handle].m_ShadowHandle );
+	shadowmgr->DestroyShadow(engineClient->GetWorldModel(), m_Shadows[handle].m_ShadowHandle );
 	ClientLeafSystem()->RemoveShadow( m_Shadows[handle].m_ClientLeafShadowHandle );
 	CleanUpRenderToTextureShadow( handle );
 	m_Shadows.Remove(handle);
@@ -2270,8 +2270,8 @@ static void BuildShadowLeafList( CShadowLeafEnum *pEnum, const Vector& origin,
 	ray.m_IsRay = false;
 	ray.m_IsSwept = true;
 
-	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
-	pQuery->EnumerateLeavesAlongRay(NULL, ray, pEnum, 0 );
+	//ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
+	engineClient->GetWorldModel()->EnumerateLeavesAlongRay(ray, pEnum, 0 );
 }
 
 
@@ -2367,7 +2367,7 @@ void CClientShadowMgr::BuildOrthoShadow( IClientRenderable* pRenderable,
 	int nCount = leafList.m_LeafList.Count();
 	const int *pLeafList = leafList.m_LeafList.Base();
 
-	shadowmgr->ProjectShadow( m_Shadows[handle].m_ShadowHandle, worldOrigin,
+	shadowmgr->ProjectShadow(engineClient->GetWorldModel(), m_Shadows[handle].m_ShadowHandle, worldOrigin,
 		vecShadowDir, matWorldToTexture, size, nCount, pLeafList, maxHeight, falloffStart, MAX_FALLOFF_AMOUNT, pRenderable->GetRenderOrigin() );
 
 	// Compute extra clip planes to prevent poke-thru
@@ -2547,7 +2547,7 @@ void CClientShadowMgr::BuildRenderToTextureShadow( IClientRenderable* pRenderabl
 	int nCount = leafList.m_LeafList.Count();
 	const int *pLeafList = leafList.m_LeafList.Base();
 
-	shadowmgr->ProjectShadow( m_Shadows[handle].m_ShadowHandle, worldOrigin, 
+	shadowmgr->ProjectShadow(engineClient->GetWorldModel(), m_Shadows[handle].m_ShadowHandle, worldOrigin,
 		vecShadowDir, matWorldToTexture, size, nCount, pLeafList, maxHeight, falloffStart, MAX_FALLOFF_AMOUNT, pRenderable->GetRenderOrigin() );
 
 	// Compute extra clip planes to prevent poke-thru
@@ -2604,8 +2604,8 @@ static void BuildFlashlightLeafList( CShadowLeafEnum *pEnum, const VMatrix &worl
 	// Use an AABB around the frustum to enumerate leaves.
 	Vector mins, maxs;
 	CalculateAABBFromProjectionMatrix( worldToShadow, &mins, &maxs );
-	ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
-	pQuery->EnumerateLeavesInBox(NULL, mins, maxs, pEnum, 0 );
+	//ISpatialQuery* pQuery = engineClient->GetBSPTreeQuery();
+	engineClient->GetWorldModel()->EnumerateLeavesInBox(mins, maxs, pEnum, 0 );
 }
 
 
@@ -2617,7 +2617,7 @@ void CClientShadowMgr::BuildFlashlight( ClientShadowHandle_t handle )
 	if ( IsX360() || r_flashlight_version2.GetInt() )
 	{
 		// This will update the matrices, but not do work to add the flashlight to surfaces
-		shadowmgr->ProjectFlashlight( shadow.m_ShadowHandle, shadow.m_WorldToShadow, 0, NULL );
+		shadowmgr->ProjectFlashlight(engineClient->GetWorldModel(), shadow.m_ShadowHandle, shadow.m_WorldToShadow, 0, NULL );
 		return;
 	}
 
@@ -2639,13 +2639,13 @@ void CClientShadowMgr::BuildFlashlight( ClientShadowHandle_t handle )
 
 	if( bLightWorld )
 	{
-		shadowmgr->ProjectFlashlight( shadow.m_ShadowHandle, shadow.m_WorldToShadow, nCount, pLeafList );
+		shadowmgr->ProjectFlashlight(engineClient->GetWorldModel(), shadow.m_ShadowHandle, shadow.m_WorldToShadow, nCount, pLeafList );
 	}
 	else
 	{
 		// This should clear all models and surfaces from this shadow
-		shadowmgr->EnableShadow( shadow.m_ShadowHandle, false );
-		shadowmgr->EnableShadow( shadow.m_ShadowHandle, true );
+		shadowmgr->EnableShadow(engineClient->GetWorldModel(), shadow.m_ShadowHandle, false );
+		shadowmgr->EnableShadow(engineClient->GetWorldModel(), shadow.m_ShadowHandle, true );
 	}
 
 	if ( !bLightModels )
@@ -3096,7 +3096,7 @@ void CClientShadowMgr::UpdateShadow( ClientShadowHandle_t handle, bool force )
 	const ShadowInfo_t &shadowInfo = shadowmgr->GetInfo( shadow.m_ShadowHandle );
 	if ( shadowInfo.m_FalloffBias == 255 )
 	{
-		shadowmgr->EnableShadow( shadow.m_ShadowHandle, false );
+		shadowmgr->EnableShadow(engineClient->GetWorldModel(), shadow.m_ShadowHandle, false );
 		m_TransparentShadows.AddToTail( handle );
 		return;
 	}
@@ -3111,12 +3111,12 @@ void CClientShadowMgr::UpdateShadow( ClientShadowHandle_t handle, bool force )
 	// Check to see if it's a child of an entity with a render-to-texture shadow...
 	if ( ShouldUseParentShadow( pRenderable ) || WillParentRenderBlobbyShadow( pRenderable ) )
 	{
-		shadowmgr->EnableShadow( shadow.m_ShadowHandle, false );
+		shadowmgr->EnableShadow(engineClient->GetWorldModel(), shadow.m_ShadowHandle, false );
 		pRenderable->MarkShadowDirty( false );
 		return;
 	}
 
-	shadowmgr->EnableShadow( shadow.m_ShadowHandle, true );
+	shadowmgr->EnableShadow(engineClient->GetWorldModel(), shadow.m_ShadowHandle, true );
 
 	// Figure out if the shadow moved...
 	// Even though we have dirty bits, some entities
@@ -3173,7 +3173,7 @@ void CClientShadowMgr::UpdateProjectedTextureInternal( ClientShadowHandle_t hand
 		Assert( ( shadow.m_Flags & SHADOW_FLAGS_SHADOW ) == 0 );
 		ClientShadow_t& shadow = m_Shadows[handle];
 
-		shadowmgr->EnableShadow( shadow.m_ShadowHandle, true );
+		shadowmgr->EnableShadow(engineClient->GetWorldModel(), shadow.m_ShadowHandle, true );
 
 		// FIXME: What's the difference between brush and model shadows for light projectors? Answer: nothing.
 		UpdateBrushShadow( NULL, handle );

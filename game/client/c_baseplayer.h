@@ -283,7 +283,7 @@ public:
 	virtual bool				ShouldInterpolate();
 
 	virtual bool				ShouldDraw();
-	virtual int					DrawModel( int flags );
+	virtual int					DrawModel(IVModel* pWorld, int flags );
 
 	// Called when not in tactical mode. Allows view to be overriden for things like driving a tank.
 	virtual void				OverrideView( CViewSetup *pSetup );

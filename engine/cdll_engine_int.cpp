@@ -117,15 +117,15 @@ extern	CGlobalVars g_ServerGlobalVariables;
 CSysModule		*g_ClientDLLModule = NULL; // also used by materialproxyfactory.cpp
 bool g_bClientGameDLLGreaterThanV13;
 
-void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct *pStruct )
+void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct *pStruct)
 {
-	SurfaceHandle_t *pHandle = &g_pHost->Host_GetWorldModel()->brush.pShared->marksurfaces[pLeaf->firstmarksurface];
+	//SurfaceHandle_t *pHandle = &g_pHost->Host_GetWorldModel()->brush.pShared->marksurfaces[];
 	for ( int iSurf=0; iSurf < pLeaf->nummarksurfaces; iSurf++ )
 	{
-		SurfaceHandle_t surfID = pHandle[iSurf];
+		SurfaceHandle_t surfID = *pStruct->m_pModel->GetMarkSurface(pLeaf->firstmarksurface+iSurf);
 		ASSERT_SURF_VALID( surfID );
 		
-		if ( MSurf_Flags(surfID) & SURFDRAW_SKY )
+		if (pStruct->m_pModel->MSurf_Flags(surfID) & SURFDRAW_SKY )
 			continue;
 
 		// Make sure we haven't already processed this one.
@@ -151,11 +151,11 @@ void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct
 		// Build vertex list and bounding box.			
 		Vector vMin( 1000000.0f,  1000000.0f,  1000000.0f);
 		Vector vMax(-1000000.0f, -1000000.0f, -1000000.0f);
-		for(int iVert=0; iVert < MSurf_VertCount( surfID ); iVert++)
+		for(int iVert=0; iVert < pStruct->m_pModel->MSurf_VertCount( surfID ); iVert++)
 		{
-			int vertIndex = pStruct->m_pModel->brush.pShared->vertindices[MSurf_FirstVertIndex( surfID ) + iVert];
+			int vertIndex = *pStruct->m_pModel->GetVertindices(pStruct->m_pModel->MSurf_FirstVertIndex( surfID ) + iVert);
 
-			pOut->m_Verts[pOut->m_nVerts] = pStruct->m_pModel->brush.pShared->vertexes[vertIndex].position;
+			pOut->m_Verts[pOut->m_nVerts] = pStruct->m_pModel->GetVertexes(vertIndex)->position;
 			vMin = vMin.Min(pOut->m_Verts[pOut->m_nVerts]);
 			vMax = vMax.Max(pOut->m_Verts[pOut->m_nVerts]);
 
@@ -178,7 +178,7 @@ void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct
 		if(iDim == 3)
 		{
 			// (Couldn't reject the sphere in the loop above).
-			pOut->m_Plane = MSurf_GetForwardFacingPlane( surfID );
+			pOut->m_Plane = pStruct->m_pModel->MSurf_GetForwardFacingPlane( surfID );
 			++pStruct->m_nSetInfos;
 		}
 	}
@@ -209,7 +209,7 @@ void GetIntersectingSurfaces_R(
 		// First, add tris from displacements.
 		for ( int i = 0; i < pLeaf->dispCount; i++ )
 		{
-			IDispInfo *pDispInfo = MLeaf_Disaplcement( pLeaf, i );
+			IDispInfo *pDispInfo = pStruct->m_pModel->MLeaf_Disaplcement( pLeaf, i );
 			pDispInfo->GetIntersectingSurfaces( pStruct );
 		}
 
@@ -344,7 +344,7 @@ public:
 		SurfInfo *pInfos, 
 		const int nMaxInfos);
 
-	Vector	GetLightForPoint(const Vector &pos, bool bClamp);
+	Vector	GetLightForPoint(IVModel* pWorld, const Vector &pos, bool bClamp);
 	Vector	GetLightForPointFast(const Vector &pos, bool bClamp);
 	const char *ParseFile( const char *data, char *token, int maxlen );
 	virtual bool CopyLocalFile( const char *source, const char *destination );
@@ -359,6 +359,7 @@ public:
 	bool Con_IsVisible( void );
 	int GetLocalPlayer( void );
 	float GetLastTimeStamp( void );
+	IVModel* GetWorldModel( void );
 	const IVModel *LoadModel( const char *pName, bool bProp );
 	void UnloadModel( const IVModel *model, bool bProp );
 	CSentence *GetSentence( CAudioSource *pAudioSource );
@@ -401,14 +402,14 @@ public:
 
 	// Returns the number of leaves in the level
 	int		LevelLeafCount() const;
-	virtual ISpatialQuery* GetBSPTreeQuery();
+	//virtual ISpatialQuery* GetBSPTreeQuery();
 
 	// Convert texlight to gamma...
 	virtual void LinearToGamma( float* linear, float* gamma );
 
 	// Get the lightstyle value
 	virtual float LightStyleValue( int style );
-	virtual void DrawPortals();
+	virtual void DrawPortals(IVModel* pWorld);
 
 	// Computes light due to dynamic lighting at a point
 	// If the normal isn't specified, then it'll return the maximum lighting
@@ -417,10 +418,10 @@ public:
 	// Computes light due to dynamic lighting at a point
 	// If the normal isn't specified, then it'll return the maximum lighting
 	// If pBoxColors is specified (it's an array of 6), then it'll copy the light contribution at each box side.
-	virtual void ComputeLighting( const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors );
+	virtual void ComputeLighting(IVModel* pWorld, const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors );
 
 	// Returns the color of the ambient light
-	virtual void GetAmbientLightColor( Vector& color );
+	virtual void GetAmbientLightColor(IVModel* pWorld, Vector& color );
 
 	// Returns the dx support level
 	virtual int	GetDXSupportLevel();
@@ -472,8 +473,8 @@ public:
 	virtual void DebugDrawPhysCollide( const CPhysCollide *pCollide, IMaterial *pMaterial, matrix3x4_t& transform, const color32 &color );
 
 	// Activates/deactivates an occluder...
-	virtual void ActivateOccluder( int nOccluderIndex, bool bActive );
-	virtual bool IsOccluded( const Vector &vecAbsMins, const Vector &vecAbsMaxs );
+	virtual void ActivateOccluder(IVModel* pWorld, int nOccluderIndex, bool bActive );
+	virtual bool IsOccluded(IVModel* pWorld, const Vector &vecAbsMins, const Vector &vecAbsMaxs );
 	virtual void *SaveAllocMemory( size_t num, size_t size );
 	virtual void SaveFreeMemory( void *pSaveMem );
 	virtual INetChannelInfo *GetNetChannelInfo( void );
@@ -613,15 +614,15 @@ int	CEngineClient::GetIntersectingSurfaces(
 	// Go down the BSP.
 	GetIntersectingSurfaces_R(
 		&theStruct,
-		&((model_t*)model)->brush.pShared->nodes[((model_t*)model)->brush.firstnode ] );
+		((model_t*)model)->GetFirstNode() );
 
 	return theStruct.m_nSetInfos;
 }
 
-Vector	CEngineClient::GetLightForPoint(const Vector &pos, bool bClamp)
+Vector	CEngineClient::GetLightForPoint(IVModel* pWorld, const Vector &pos, bool bClamp)
 {
 	Vector vRet;
-	ComputeLighting( pos, NULL, bClamp, vRet, NULL );
+	ComputeLighting(pWorld, pos, NULL, bClamp, vRet, NULL );
 	return vRet;
 }
 
@@ -780,6 +781,10 @@ float CEngineClient::GetLastTimeStamp( void )
 bool CEngineClient::MapHasHDRLighting( void)
 {
 	return modelloader->LastLoadedMapHasHDRLighting();
+}
+
+IVModel* CEngineClient::GetWorldModel(void) {
+	return g_pHost->Host_GetWorldModel();
 }
 
 const IVModel *CEngineClient::LoadModel( const char *pName, bool bProp )
@@ -1000,13 +1005,13 @@ bool CEngineClient::LoadGameLump( int lumpId, void* pBuffer, int size )
 // Returns the number of leaves in the level
 int	CEngineClient::LevelLeafCount() const
 {
-	return g_pHost->Host_GetWorldModel()->brush.pShared->numleafs;
+	return g_pHost->Host_GetWorldModel()->GetLeafCount();
 }
 
-ISpatialQuery* CEngineClient::GetBSPTreeQuery()
-{
-	return g_pToolBSPTree;
-}
+//ISpatialQuery* CEngineClient::GetBSPTreeQuery()
+//{
+//	return g_pToolBSPTree;
+//}
 
 // Convert texlight to gamma...
 void CEngineClient::LinearToGamma( float* linear, float* gamma )
@@ -1023,9 +1028,9 @@ float CEngineClient::LightStyleValue( int style )
 }
 
 
-void CEngineClient::DrawPortals()
+void CEngineClient::DrawPortals(IVModel* pWorld)
 {
-	R_DrawPortals();
+	R_DrawPortals((model_t*)pWorld);
 }
 
 // Computes light due to dynamic lighting at a point
@@ -1037,15 +1042,15 @@ void CEngineClient::ComputeDynamicLighting( Vector const& pt, Vector const* pNor
 
 // Computes light due to dynamic lighting at a point
 // If the normal isn't specified, then it'll return the maximum lighting
-void CEngineClient::ComputeLighting( const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors )
+void CEngineClient::ComputeLighting(IVModel* pWorld, const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors )
 {
-	::ComputeLighting( pt, pNormal, bClamp, color, pBoxColors );
+	::ComputeLighting((model_t*)pWorld, pt, pNormal, bClamp, color, pBoxColors );
 }
 
 // Returns the color of the ambient light
-void CEngineClient::GetAmbientLightColor( Vector& color )
+void CEngineClient::GetAmbientLightColor(IVModel* pWorld, Vector& color )
 {
-	dworldlight_t* pWorldLight = FindAmbientLight();
+	dworldlight_t* pWorldLight = FindAmbientLight((model_t*)pWorld);
 	if (!pWorldLight)
 		color.Init( 0, 0, 0 );
 	else
@@ -1185,10 +1190,10 @@ int CEngineClient::GetLeavesArea( int *pLeaves, int nLeaves )
 	if ( nLeaves == 0 )
 		return -1;
 
-	int iArea = g_pHost->Host_GetWorldModel()->brush.pShared->leafs[pLeaves[0]].area;
+	int iArea = g_pHost->Host_GetWorldModel()->GetLeafArea(pLeaves[0]);
 	for ( int i=1; i < nLeaves; i++ )
 	{
-		int iTestArea = g_pHost->Host_GetWorldModel()->brush.pShared->leafs[pLeaves[i]].area;
+		int iTestArea = g_pHost->Host_GetWorldModel()->GetLeafArea(pLeaves[i]);
 		if ( iTestArea != iArea )
 			return -1;
 	}
@@ -1265,14 +1270,14 @@ void CEngineClient::DebugDrawPhysCollide( const CPhysCollide *pCollide, IMateria
 }
 
 // Activates/deactivates an occluder...
-void CEngineClient::ActivateOccluder( int nOccluderIndex, bool bActive )
+void CEngineClient::ActivateOccluder(IVModel* pWorld, int nOccluderIndex, bool bActive )
 {
-	OcclusionSystem()->ActivateOccluder( nOccluderIndex, bActive );
+	OcclusionSystem()->ActivateOccluder((model_t*)pWorld, nOccluderIndex, bActive );
 }
 
-bool CEngineClient::IsOccluded( const Vector &vecAbsMins, const Vector &vecAbsMaxs )
+bool CEngineClient::IsOccluded(IVModel* pWorld, const Vector &vecAbsMins, const Vector &vecAbsMaxs )
 {
-	return OcclusionSystem()->IsOccluded( vecAbsMins, vecAbsMaxs );
+	return OcclusionSystem()->IsOccluded((model_t*)pWorld, vecAbsMins, vecAbsMaxs );
 }
 
 void *CEngineClient::SaveAllocMemory( size_t num, size_t size )

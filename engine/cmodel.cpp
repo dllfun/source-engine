@@ -363,13 +363,13 @@ vcollide_t* CM_VCollideForModel( int modelindex, const model_t* pModel )
 {
 	if ( pModel )
 	{
-		switch( pModel->type )
+		switch( pModel->GetModelType() )
 		{
 		case mod_brush:
 			return CM_GetVCollide( modelindex-1 );
 		case mod_studio:
 			Assert( modelloader->IsLoaded( pModel ) );
-			return g_pMDLCache->GetVCollide( pModel->studio );
+			return g_pMDLCache->GetVCollide( pModel->GetStudio() );
 		}
 	}
 

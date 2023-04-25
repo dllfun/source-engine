@@ -214,7 +214,7 @@ public:
 	virtual int			GetPointContents( const Vector &vecPosition ) = 0;
 
 	virtual int			GetActiveDLights( dlight_t *pList[MAX_DLIGHTS] ) = 0;
-	virtual int			GetLightingConditions( const Vector &vecPosition, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights ) = 0;
+	virtual int			GetLightingConditions(IVModel* pWorld, const Vector &vecPosition, Vector *pColors, int nMaxLocalLights, LightDesc_t *pLocalLights ) = 0;
 
 	virtual void		GetWorldToScreenMatrixForView( const CViewSetup &view, VMatrix *pVMatrix ) = 0;
 

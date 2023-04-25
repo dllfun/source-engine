@@ -1038,7 +1038,7 @@ void CL_FullyConnected( void )
 	// This has to happen here, in phase 3, because it is in this phase
 	// that raycasts against the world is supported (owing to the fact
 	// that the world entity has been created by this point)
-	StaticPropMgr()->LevelInitClient();
+	StaticPropMgr()->LevelInitClient(g_pHost->Host_GetWorldModel());
 
 	if ( IsX360() )
 	{

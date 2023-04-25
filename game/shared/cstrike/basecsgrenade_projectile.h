@@ -40,7 +40,7 @@ public:
 #ifdef CLIENT_DLL
 	CBaseCSGrenadeProjectile() {}
 	CBaseCSGrenadeProjectile( const CBaseCSGrenadeProjectile& ) {}
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 	virtual void PostDataUpdate( DataUpdateType_t type );
 	
 	float m_flSpawnTime;

@@ -425,7 +425,7 @@ inline Vector WorldGetLightForPoint(const Vector &vPos, bool bClamp)
 	#if defined(PARTICLEPROTOTYPE_APP)
 		return Vector(1,1,1);
 	#else
-		return engineClient->GetLightForPoint(vPos, bClamp);
+		return engineClient->GetLightForPoint(engineClient->GetWorldModel(), vPos, bClamp);
 	#endif
 }
 

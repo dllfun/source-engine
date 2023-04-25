@@ -50,31 +50,31 @@ class IEngineSpatialQuery : public ISpatialQuery
 public:
 };
 
-extern IEngineSpatialQuery* g_pToolBSPTree;
+//extern IEngineSpatialQuery* g_pToolBSPTree;
 
 class IWorldRenderList;
-IWorldRenderList *AllocWorldRenderList();
+IWorldRenderList *AllocWorldRenderList(model_t* pWorld);
 
-void R_Surface_LevelInit();
+void R_Surface_LevelInit(model_t* pWorld);
 void R_Surface_LevelShutdown();
 void R_SceneBegin( void );
 void R_SceneEnd( void );
 
 
 
-void R_GetVisibleFogVolume( const Vector& vEyePoint, VisibleFogVolumeInfo_t *pInfo );
-void R_SetFogVolumeState( int fogVolume, bool useHeightFog );
-IMaterial *R_GetFogVolumeMaterial( int fogVolume, bool bEyeInFogVolume );
+void R_GetVisibleFogVolume(model_t* pWorld, const Vector& vEyePoint, VisibleFogVolumeInfo_t *pInfo );
+void R_SetFogVolumeState(model_t* pWorld, int fogVolume, bool useHeightFog );
+IMaterial *R_GetFogVolumeMaterial(model_t* pWorld, int fogVolume, bool bEyeInFogVolume );
 void R_SetupSkyTexture( model_t *pWorld );
 
-void Shader_DrawLightmapPageSurface( SurfaceHandle_t surfID, float red, float green, float blue );
+void Shader_DrawLightmapPageSurface(model_t* pWorld, SurfaceHandle_t surfID, float red, float green, float blue );
 void R_DrawTopView( bool enable );
 void R_TopViewBounds( const Vector2D & mins, const Vector2D & maxs );
 
 
 
 // Computes the centroid of a surface
-void Surf_ComputeCentroid( SurfaceHandle_t surfID, Vector *pVecCentroid );
+void Surf_ComputeCentroid(model_t* pWorld, SurfaceHandle_t surfID, Vector *pVecCentroid );
 
 // Installs a client-side renderer for brush models
 void R_InstallBrushRenderOverride( IBrushRenderer* pBrushRenderer );
@@ -90,19 +90,19 @@ void R_DrawBrushModel(
 	ERenderDepthMode DepthMode, bool bDrawOpaque, bool bDrawTranslucent );
 
 void R_DrawBrushModelShadow( IClientRenderable* pRender );
-void R_BrushBatchInit( void );
+void R_BrushBatchInit( model_t* pWorld );
 
 int R_GetBrushModelPlaneCount( const model_t *model );
 const cplane_t &R_GetBrushModelPlane( const model_t *model, int nIndex, Vector *pOrigin );
 
-bool TangentSpaceSurfaceSetup( SurfaceHandle_t surfID, Vector &tVect );
+bool TangentSpaceSurfaceSetup(model_t* pWorld, SurfaceHandle_t surfID, Vector &tVect );
 void TangentSpaceComputeBasis( Vector& tangentS, Vector& tangentT, const Vector& normal, const Vector& tVect, bool negateTangent );
 
 #ifndef NEWMESH
-inline void BuildIndicesForSurface( CMeshBuilder &meshBuilder, SurfaceHandle_t surfID )
+inline void BuildIndicesForSurface( CMeshBuilder &meshBuilder, SurfaceHandle_t surfID ,model_t* model)
 {
-	int nSurfTriangleCount = MSurf_VertCount( surfID ) - 2;
-	unsigned short startVert = MSurf_VertBufferIndex( surfID );
+	int nSurfTriangleCount = model->MSurf_VertCount( surfID ) - 2;
+	unsigned short startVert = model->MSurf_VertBufferIndex( surfID );
 	Assert(startVert!=0xFFFF);
 
 	// NOTE: This switch appears to help performance
@@ -137,23 +137,23 @@ inline void BuildIndicesForSurface( CMeshBuilder &meshBuilder, SurfaceHandle_t s
 	}
 }
 
-inline void BuildIndicesForWorldSurface( CMeshBuilder &meshBuilder, SurfaceHandle_t surfID, worldbrushdata_t *pData )
+inline void BuildIndicesForWorldSurface( CMeshBuilder &meshBuilder, SurfaceHandle_t surfID, model_t* model )
 {
-	if ( SurfaceHasPrims(surfID) )
+	if (model->SurfaceHasPrims(surfID) )
 	{
-		mprimitive_t *pPrim = &pData->primitives[MSurf_FirstPrimID( surfID, pData )];
+		mprimitive_t *pPrim = model->GetPrimitives(model->MSurf_FirstPrimID( surfID ));
 		Assert(pPrim->vertCount==0);
-		unsigned short startVert = MSurf_VertBufferIndex( surfID );
+		unsigned short startVert = model->MSurf_VertBufferIndex( surfID );
 		Assert( pPrim->indexCount == ((MSurf_VertCount( surfID ) - 2)*3));
 
 		for ( int primIndex = 0; primIndex < pPrim->indexCount; primIndex++ )
 		{
-			meshBuilder.FastIndex( pData->primindices[pPrim->firstIndex + primIndex] + startVert );
+			meshBuilder.FastIndex( model->GetPrimindices(pPrim->firstIndex + primIndex) + startVert );
 		}
 	}
 	else
 	{
-		BuildIndicesForSurface( meshBuilder, surfID );
+		BuildIndicesForSurface( meshBuilder, surfID ,model);
 	}
 }
 

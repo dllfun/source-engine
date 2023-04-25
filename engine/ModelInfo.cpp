@@ -178,8 +178,8 @@ public:
 	CPhysCollide *GetCollideForVirtualTerrain( int index );
 	//virtual int GetSurfacepropsForVirtualTerrain( int index ) { return CM_SurfacepropsForDisp(index); }
 
-	virtual MDLHandle_t	GetCacheHandle(int modelIndex) const { return (GetModel(modelIndex)->type == mod_studio) ? GetModel(modelIndex)->studio : MDLHANDLE_INVALID; }
-	virtual MDLHandle_t	GetCacheHandle( const model_t *model ) const { return ( model->type == mod_studio ) ? model->studio : MDLHANDLE_INVALID; }
+	virtual MDLHandle_t	GetCacheHandle(int modelIndex) const { return (GetModel(modelIndex)->GetModelType() == mod_studio) ? GetModel(modelIndex)->GetStudio() : MDLHANDLE_INVALID; }
+	virtual MDLHandle_t	GetCacheHandle( const model_t *model ) const { return ( model->GetModelType() == mod_studio) ? model->GetStudio() : MDLHANDLE_INVALID; }
 
 	// Returns planes of non-nodraw brush model surfaces
 	virtual int GetBrushModelPlaneCount(int modelIndex) const;
@@ -217,13 +217,13 @@ protected:
 public:
 	struct ModelFileHandleHash
 	{
-		uint operator()( model_t *p ) const { return PointerHashFunctor()( p->fnHandle ); }
+		uint operator()( model_t *p ) const { return PointerHashFunctor()( p->GetFnHandle() ); }
 		uint operator()( FileNameHandle_t fn ) const { return PointerHashFunctor()( fn ); }
 	};
 	struct ModelFileHandleEq
 	{
 		bool operator()( model_t *a, model_t *b ) const { return a == b; }
-		bool operator()( model_t *a, FileNameHandle_t b ) const { return a->fnHandle == b; }
+		bool operator()( model_t *a, FileNameHandle_t b ) const { return a->GetFnHandle() == b; }
 	};
 protected:
 	// Client-only dynamic model indices are iterators into this struct (only populated by CModelInfoClient subclass)
@@ -786,7 +786,7 @@ int CModelInfo::GetModelContents( int modelIndex )
 	const model_t *pModel = GetModel( modelIndex );
 	if ( pModel )
 	{
-		switch( pModel->type )
+		switch( pModel->GetModelType() )
 		{
 		case mod_brush:
 			return CM_InlineModelContents( modelIndex-1 );
@@ -814,12 +814,12 @@ vcollide_t* CModelInfo::GetVCollide(int modelIndex)
 		const model_t* pModel = GetModel(modelIndex);
 		if (pModel)
 		{
-			if (pModel->type == mod_studio)
+			if (pModel->GetModelType() == mod_studio)
 			{
 #if !defined( _RETAIL )
 				double t1 = Plat_FloatTime();
 #endif
-				vcollide_t* col = g_pMDLCache->GetVCollide(pModel->studio);
+				vcollide_t* col = g_pMDLCache->GetVCollide(pModel->GetStudio());
 #if !defined( _RETAIL )
 				double t2 = Plat_FloatTime();
 				g_flAccumulatedModelLoadTimeVCollideSync += (t2 - t1);
@@ -843,12 +843,12 @@ vcollide_t *CModelInfo::GetVCollide( const model_t *pModel )
 	if ( !pModel )
 		return NULL;
 
-	if ( pModel->type == mod_studio )
+	if ( pModel->GetModelType() == mod_studio)
 	{
 #if !defined( _RETAIL )
 		double t1 = Plat_FloatTime();
 #endif
-		vcollide_t *col = g_pMDLCache->GetVCollide( pModel->studio );
+		vcollide_t *col = g_pMDLCache->GetVCollide( pModel->GetStudio() );
 #if !defined( _RETAIL )
 		double t2 = Plat_FloatTime();
 		g_flAccumulatedModelLoadTimeVCollideSync += ( t2 - t1 );
@@ -886,7 +886,7 @@ const char* CModelInfo::GetModelKeyValueText(int modelIndex)
 // Client must instantiate a KeyValues, which will be filled by this method
 const char *CModelInfo::GetModelKeyValueText( const model_t *model )
 {
-	if (!model || model->type != mod_studio)
+	if (!model || model->GetModelType() != mod_studio)
 		return NULL;
 	return model->GetModelKeyValueText();
 }
@@ -898,10 +898,10 @@ bool CModelInfo::GetModelKeyValue(int modelIndex, CUtlBuffer& buf)
 
 bool CModelInfo::GetModelKeyValue( const model_t *model, CUtlBuffer &buf )
 {
-	if (!model || model->type != mod_studio)
+	if (!model || model->GetModelType() != mod_studio)
 		return false;
 
-	studiohdr_t* pStudioHdr = g_pMDLCache->GetStudioHdr( model->studio );
+	studiohdr_t* pStudioHdr = g_pMDLCache->GetStudioHdr( model->GetStudio() );
 	if (!pStudioHdr)
 		return false;
 
@@ -941,7 +941,7 @@ float CModelInfo::GetModelRadius( const model_t *model )
 {
 	if ( !model )
 		return 0.0f;
-	return model->radius;
+	return model->GetRadius();
 }
 
 studiohdr_t* model_t::GetStudiomodel() const//const model_t* model
@@ -978,7 +978,7 @@ int CModelInfo::GetBrushModelPlaneCount(int modelIndex) const
 // Returns planes of non-nodraw brush model surfaces
 int CModelInfo::GetBrushModelPlaneCount( const model_t *model ) const
 {
-	if ( !model || model->type != mod_brush )
+	if ( !model || model->GetModelType() != mod_brush )
 		return 0;
 
 	return R_GetBrushModelPlaneCount( model );
@@ -991,7 +991,7 @@ void CModelInfo::GetBrushModelPlane(int modelIndex, int nIndex, cplane_t& plane,
 
 void CModelInfo::GetBrushModelPlane( const model_t *model, int nIndex, cplane_t &plane, Vector *pOrigin ) const
 {
-	if ( !model || model->type != mod_brush )
+	if ( !model || model->GetModelType() != mod_brush )
 		return;
 
 	plane = R_GetBrushModelPlane( model, nIndex, pOrigin );
@@ -1114,7 +1114,7 @@ public:
 	//virtual const model_t *FindOrLoadModel( const char *name );
 	virtual void OnDynamicModelsStringTableChange( int nStringIndex, const char *pString, const void *pData );
 
-	virtual void GetModelMaterialColorAndLighting(int modelIndex, const Vector& origin,
+	virtual void GetModelMaterialColorAndLighting(IVModel* pWorld, int modelIndex, const Vector& origin,
 		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor);
 	virtual void GetIlluminationPoint(int modelIndex, IClientRenderable* pRenderable, Vector const& origin,
 		QAngle const& angles, Vector* pLightingCenter);
@@ -1122,7 +1122,7 @@ public:
 	virtual bool IsUsingFBTexture(int modelIndex, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const;
 	virtual bool ModelHasMaterialProxy(int modelIndex) const;
 
-	virtual void GetModelMaterialColorAndLighting(const model_t* model, const Vector& origin,
+	virtual void GetModelMaterialColorAndLighting(IVModel* pWorld, const model_t* model, const Vector& origin,
 		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor);
 	virtual void GetIlluminationPoint(const model_t* model, IClientRenderable* pRenderable, Vector const& origin,
 		QAngle const& angles, Vector* pLightingCenter);
@@ -1222,15 +1222,15 @@ IMaterial* BrushModel_GetLightingAndMaterial(const model_t* model, const Vector 
 	textureS = 0;
 	textureT = 0;
 
-	SurfaceHandle_t surfID = R_LightVec( start, end, true, diffuseLightColor, &textureS, &textureT );
-	if( !IS_SURF_VALID( surfID ) || !MSurf_TexInfo( surfID, model->brush.pShared) )
+	SurfaceHandle_t surfID = R_LightVec((model_t*)model, start, end, true, diffuseLightColor, &textureS, &textureT );
+	if( !IS_SURF_VALID( surfID ) || !((model_t*)model)->MSurf_TexInfo( surfID ) )//model->brush.pShared
 	{
 //		ConMsg( "didn't hit anything\n" );
 		return 0;
 	}
 	else
 	{
-		material = MSurf_TexInfo( surfID, model->brush.pShared)->material;
+		material = ((model_t*)model)->MSurf_TexInfo( surfID)->material;
 		if ( material )
 		{
 			material->GetLowResColorSample( textureS, textureT, baseColor.Base() );
@@ -1244,7 +1244,7 @@ IMaterial* BrushModel_GetLightingAndMaterial(const model_t* model, const Vector 
 	}
 }
 
-void model_t::GetModelMaterialColorAndLighting(const Vector& origin,//const model_t* model, 
+void model_t::GetModelMaterialColorAndLighting(IVModel* pWorld, const Vector& origin,//const model_t* model, 
 	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) const
 {
 	switch (type)//model->
@@ -1290,7 +1290,7 @@ void model_t::GetModelMaterialColorAndLighting(const Vector& origin,//const mode
 		// Get the lighting at the point
 		LightingState_t lightingState;
 		LightcacheGetDynamic_Stats stats;
-		LightcacheGetDynamic(pTrace->endpos, lightingState, stats, LIGHTCACHEFLAGS_STATIC | LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE | LIGHTCACHEFLAGS_ALLOWFAST);
+		LightcacheGetDynamic((model_t*)pWorld, pTrace->endpos, lightingState, stats, LIGHTCACHEFLAGS_STATIC | LIGHTCACHEFLAGS_DYNAMIC | LIGHTCACHEFLAGS_LIGHTSTYLE | LIGHTCACHEFLAGS_ALLOWFAST);
 		// Convert the light parameters into something studiorender can digest
 		LightDesc_t desc[MAXLOCALLIGHTS];
 		int count = 0;
@@ -1310,16 +1310,16 @@ void model_t::GetModelMaterialColorAndLighting(const Vector& origin,//const mode
 	}
 }
 
-void CModelInfoClient::GetModelMaterialColorAndLighting(int modelIndex, const Vector& origin,
+void CModelInfoClient::GetModelMaterialColorAndLighting(IVModel* pWorld, int modelIndex, const Vector& origin,
 	const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor)
 {
-	GetModelMaterialColorAndLighting(GetModel(modelIndex), origin, angles, pTrace, lighting, matColor);
+	GetModelMaterialColorAndLighting(pWorld, GetModel(modelIndex), origin, angles, pTrace, lighting, matColor);
 }
 
-void CModelInfoClient::GetModelMaterialColorAndLighting( const model_t *model, const Vector & origin,
+void CModelInfoClient::GetModelMaterialColorAndLighting(IVModel* pWorld, const model_t *model, const Vector & origin,
 	const QAngle & angles, trace_t* pTrace, Vector& lighting, Vector& matColor )
 {
-	model->GetModelMaterialColorAndLighting(origin, angles, pTrace, lighting, matColor);
+	model->GetModelMaterialColorAndLighting((model_t*)pWorld, origin, angles, pTrace, lighting, matColor);
 }
 
 void model_t::GetIlluminationPoint(IClientRenderable* pRenderable, const Vector& origin,
@@ -1371,8 +1371,8 @@ bool model_t::IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/*
 		{
 			for (int i = 0; i <brush.nummodelsurfaces; ++i)// model->
 			{
-				SurfaceHandle_t surfID = SurfaceHandleFromIndex(brush.firstmodelsurface + i, brush.pShared);//model-> model->
-				IMaterial* material = MSurf_TexInfo(surfID, brush.pShared)->material;//model->
+				SurfaceHandle_t surfID = SurfaceHandleFromIndex(brush.firstmodelsurface + i);//model-> model->
+				IMaterial* material = ((model_t*)this)->MSurf_TexInfo(surfID)->material;//model->
 				if (material != NULL)
 				{
 					if (material->NeedsPowerOfTwoFrameBufferTexture())
@@ -1417,19 +1417,19 @@ bool CModelInfoClient::IsUsingFBTexture(int modelIndex, int nSkin, int nBody, vo
 
 bool CModelInfoClient::IsUsingFBTexture(const model_t* model, int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const
 {
-	bool bMightUseFbTextureThisFrame = (model && (model->flags & MODELFLAG_STUDIOHDR_USES_FB_TEXTURE));
+	bool bMightUseFbTextureThisFrame = (model && (((model_t*)model)->GetModelFlag() & MODELFLAG_STUDIOHDR_USES_FB_TEXTURE));
 
 	if (bMightUseFbTextureThisFrame)
 	{
 		// Check each material's NeedsPowerOfTwoFrameBufferTexture() virtual func
-		switch (model->type)
+		switch (model->GetModelType())
 		{
 		case mod_brush:
 		{
-			for (int i = 0; i < model->brush.nummodelsurfaces; ++i)
+			for (int i = 0; i < model->GetModelsurfacesCount(); ++i)
 			{
-				SurfaceHandle_t surfID = SurfaceHandleFromIndex(model->brush.firstmodelsurface + i, model->brush.pShared);
-				IMaterial* material = MSurf_TexInfo(surfID, model->brush.pShared)->material;
+				SurfaceHandle_t surfID = model->SurfaceHandleFromIndex(model->GetFirstmodelsurface() + i);//, model->brush.pShared
+				IMaterial* material = ((model_t*)model)->MSurf_TexInfo(surfID )->material;//model->brush.pShared
 				if (material != NULL)
 				{
 					if (material->NeedsPowerOfTwoFrameBufferTexture())
@@ -1444,7 +1444,7 @@ bool CModelInfoClient::IsUsingFBTexture(const model_t* model, int nSkin, int nBo
 		case mod_studio:
 		{
 			IMaterial* pMaterials[128];
-			int materialCount = g_pStudioRender->GetMaterialListFromBodyAndSkin(model->studio, nSkin, nBody, ARRAYSIZE(pMaterials), pMaterials);
+			int materialCount = g_pStudioRender->GetMaterialListFromBodyAndSkin(model->GetStudio(), nSkin, nBody, ARRAYSIZE(pMaterials), pMaterials);
 			for (int i = 0; i < materialCount; i++)
 			{
 				if (pMaterials[i] != NULL)

@@ -325,8 +325,8 @@ void Host_LightCrosshair (void)
 
 	// max_range * sqrt(3)
 	VectorMA( MainViewOrigin(), COORD_EXTENT * 1.74f, MainViewForward(), endPoint );
-	
-	R_LightVec( MainViewOrigin(), endPoint, true, lightmapColor );
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	R_LightVec(pWorld, MainViewOrigin(), endPoint, true, lightmapColor );
 	int r = LinearToTexture( lightmapColor.x );
 	int g = LinearToTexture( lightmapColor.y );
 	int b = LinearToTexture( lightmapColor.z );

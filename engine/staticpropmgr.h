@@ -17,6 +17,7 @@
 
 // FIXME: Remove! Only here for the test against old code
 #include "enginetrace.h"
+#include "gl_model_private.h"
 
 
 //-----------------------------------------------------------------------------
@@ -41,7 +42,7 @@ public:
 	virtual void LevelInit() = 0;
 
 	// Call this when there's a client, *after* LevelInit, and after the world entity is loaded
-	virtual void LevelInitClient() = 0;
+	virtual void LevelInitClient(model_t* pWorld) = 0;
 
 	// Call this when there's a client, *before* LevelShutdown
 	virtual void LevelShutdownClient() = 0;
@@ -50,7 +51,7 @@ public:
 	virtual void LevelShutdown() = 0;
 
 	// Call this to recompute static prop lighting when necessary
-	virtual void RecomputeStaticLighting() = 0;
+	virtual void RecomputeStaticLighting(model_t* pWorld) = 0;
 
 	// Check if a static prop is in a particular PVS.
 	virtual bool IsPropInPVS( IHandleEntity *pHandleEntity, const byte *pVis ) const = 0;

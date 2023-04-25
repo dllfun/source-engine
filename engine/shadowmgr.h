@@ -70,19 +70,19 @@ public:
 
 	// This surface has been rendered; and we'll want to render the shadows
 	// on this surface
-	virtual void AddShadowsOnSurfaceToRenderList( ShadowDecalHandle_t decalHandle ) = 0;
+	virtual void AddShadowsOnSurfaceToRenderList(model_t* pWorld, ShadowDecalHandle_t decalHandle ) = 0;
 
 	// This will render all shadows that were previously added using
 	// AddShadowsOnSurfaceToRenderList. If there's a model to world transform
 	// for the shadow receiver, then send it in!
 	// NOTE: This draws both shadows and projected textures.
-	virtual void RenderProjectedTextures( VMatrix const* pModelToWorld = 0 ) = 0;
+	virtual void RenderProjectedTextures(model_t* pWorld, VMatrix const* pModelToWorld = 0 ) = 0;
 
 	// NOTE: This draws shadows
-	virtual void RenderShadows( VMatrix const* pModelToWorld = 0 ) = 0;
+	virtual void RenderShadows(model_t* pWorld, VMatrix const* pModelToWorld = 0 ) = 0;
 
 	// NOTE: This draws flashlights
-	virtual void RenderFlashlights( bool bDoMasking, VMatrix const* pModelToWorld = 0 ) = 0;
+	virtual void RenderFlashlights(model_t* pWorld, bool bDoMasking, VMatrix const* pModelToWorld = 0 ) = 0;
 
 	// Clears the list of shadows to render 
 	virtual void ClearShadowRenderList() = 0;
@@ -104,15 +104,15 @@ public:
 
 	virtual void SetNumWorldMaterialBuckets( int numMaterialSortBins ) = 0;
 
-	virtual void DrawFlashlightDecals( int sortGroup, bool bDoMasking ) = 0;
+	virtual void DrawFlashlightDecals(model_t* pWorld, int sortGroup, bool bDoMasking ) = 0;
 
-	virtual void DrawFlashlightDecalsOnSingleSurface( SurfaceHandle_t surfID, bool bDoMasking ) = 0;
+	virtual void DrawFlashlightDecalsOnSingleSurface(model_t* pWorld, SurfaceHandle_t surfID, bool bDoMasking ) = 0;
 
-	virtual void DrawFlashlightOverlays( int nSortGroup, bool bDoMasking ) = 0;
+	virtual void DrawFlashlightOverlays(model_t* pWorld, int nSortGroup, bool bDoMasking ) = 0;
 
 	virtual void DrawFlashlightDepthTexture( ) = 0;
 
-	virtual void DrawFlashlightDecalsOnDisplacements( int sortGroup, CDispInfo **visibleDisps, int nVisibleDisps, bool bDoMasking ) = 0;
+	virtual void DrawFlashlightDecalsOnDisplacements(model_t* pWorld, int sortGroup, CDispInfo **visibleDisps, int nVisibleDisps, bool bDoMasking ) = 0;
 
 	virtual void SetFlashlightStencilMasks( bool bDoMasking ) = 0;
 	virtual bool ModelHasShadows( ModelInstanceHandle_t instance ) = 0;

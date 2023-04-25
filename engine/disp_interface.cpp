@@ -92,7 +92,7 @@ void CDispInfo::GetIntersectingSurfaces( GetIntersectingSurfaces_Struct *pStruct
 // ----------------------------------------------------------------------------- //
 // CDispInfo implementation of IDispInfo.
 // ----------------------------------------------------------------------------- //
-void CDispInfo::RenderWireframeInLightmapPage( int pageId )
+void CDispInfo::RenderWireframeInLightmapPage(model_t* pWorld, int pageId )
 {
 #ifndef SWDS
     // render displacement as wireframe into lightmap pages
@@ -100,10 +100,10 @@ void CDispInfo::RenderWireframeInLightmapPage( int pageId )
 
 	Assert( ( MSurf_MaterialSortID( surfID ) >= 0 ) && ( MSurf_MaterialSortID( surfID ) < g_WorldStaticMeshes.Count() ) );
 
-	if( materialSortInfoArray[MSurf_MaterialSortID( surfID ) ].lightmapPageID != pageId )
+	if( materialSortInfoArray[pWorld->MSurf_MaterialSortID( surfID ) ].lightmapPageID != pageId )
 		return;
 
-	Shader_DrawLightmapPageSurface( surfID, 0.0f, 0.0f, 1.0f );
+	Shader_DrawLightmapPageSurface(pWorld, surfID, 0.0f, 0.0f, 1.0f );
 #endif
 }
 
@@ -128,7 +128,7 @@ SurfaceHandle_t CDispInfo::GetParent( void )
 }
 
 
-unsigned int CDispInfo::ComputeDynamicLightMask( dlight_t *pLights )
+unsigned int CDispInfo::ComputeDynamicLightMask(model_t* pWorld, dlight_t *pLights )
 {
 	int lightMask = 0;
 
@@ -144,7 +144,7 @@ unsigned int CDispInfo::ComputeDynamicLightMask( dlight_t *pLights )
 		if ( mask & 1 )
 		{
 			// not lit by this light
-			if ( !(MSurf_DLightBits( m_ParentSurfID ) & testBit ) )
+			if ( !(pWorld->MSurf_DLightBits( m_ParentSurfID ) & testBit ) )
 				continue;
 
 			// This light doesn't affect the world
@@ -162,7 +162,7 @@ unsigned int CDispInfo::ComputeDynamicLightMask( dlight_t *pLights )
 	return lightMask;
 }
 
-void CDispInfo::AddDynamicLights( dlight_t *pLights, unsigned int mask )
+void CDispInfo::AddDynamicLights(model_t* pWorld, dlight_t *pLights, unsigned int mask )
 {
 #ifndef SWDS
 	if( !IS_SURF_VALID( m_ParentSurfID ) )
@@ -177,18 +177,18 @@ void CDispInfo::AddDynamicLights( dlight_t *pLights, unsigned int mask )
 		{
 			if ( (pLights[lnum].flags & DLIGHT_DISPLACEMENT_MASK) == 0)
 			{
-				if( NumLightMaps() == 1 )
+				if( NumLightMaps(pWorld) == 1 )
 				{
-					AddSingleDynamicLight( pLights[lnum] );
+					AddSingleDynamicLight(pWorld, pLights[lnum] );
 				}
 				else
 				{
-					AddSingleDynamicLightBumped( pLights[lnum] );
+					AddSingleDynamicLightBumped(pWorld, pLights[lnum] );
 				}
 			}
 			else
 			{
-				AddSingleDynamicAlphaLight( pLights[lnum]);
+				AddSingleDynamicAlphaLight(pWorld, pLights[lnum]);
 			}
 		}
 	}
@@ -256,7 +256,7 @@ void CDispInfo::ClearAllDecalFragments()
 // ----------------------------------------------------------------------------- //
 // Add/remove decals
 // ----------------------------------------------------------------------------- //
-DispDecalHandle_t CDispInfo::NotifyAddDecal( decal_t *pDecal, float flSize )
+DispDecalHandle_t CDispInfo::NotifyAddDecal(model_t* pWorld, decal_t *pDecal, float flSize )
 {
 	// Create a new decal, link it in
 	DispDecalHandle_t h = s_DispDecals.Alloc( true );
@@ -275,7 +275,7 @@ DispDecalHandle_t CDispInfo::NotifyAddDecal( decal_t *pDecal, float flSize )
 #ifndef SWDS
 		if ( nDecalCount >= MAX_DISP_DECALS )
 		{
-			R_DecalUnlink( s_DispDecals[iLastDecal].m_pDecal, g_pHost->Host_GetWorldModel()->brush.pShared);
+			R_DecalUnlink(pWorld, s_DispDecals[iLastDecal].m_pDecal);//, g_pHost->Host_GetWorldModel()->brush.pShared
 		}
 #endif
 		
@@ -291,7 +291,7 @@ DispDecalHandle_t CDispInfo::NotifyAddDecal( decal_t *pDecal, float flSize )
 		
 		// Setup a basis for it.
 		CDecalVert *pOutVerts = NULL;
-		R_SetupDecalClip( pOutVerts, pDispDecal->m_pDecal, MSurf_Plane( m_ParentSurfID ).normal, pDispDecal->m_pDecal->material,
+		R_SetupDecalClip( pOutVerts, pDispDecal->m_pDecal, pWorld->MSurf_Plane( m_ParentSurfID ).normal, pDispDecal->m_pDecal->material,
 			pDispDecal->m_TextureSpaceBasis, pDispDecal->m_DecalWorldScale );
 		
 		// Recurse and precalculate which nodes this thing can touch.
@@ -534,7 +534,7 @@ void CDispInfo::SetTag()
 #endif
 #pragma optimize( "", on )
 
-void DispInfo_BuildPrimLists( int nSortGroup, SurfaceHandle_t *pList, int listCount, bool bDepthOnly,
+void DispInfo_BuildPrimLists(model_t* pWorld, int nSortGroup, SurfaceHandle_t *pList, int listCount, bool bDepthOnly,
 	CDispInfo *visibleDisps[MAX_MAP_DISPINFO], int &nVisibleDisps )
 {
 	VPROF("DispInfo_BuildPrimLists");
@@ -544,7 +544,7 @@ void DispInfo_BuildPrimLists( int nSortGroup, SurfaceHandle_t *pList, int listCo
 	for( int i = 0; i < listCount; i++ )
 	{
 		CDispInfo *pDisp = static_cast<CDispInfo*>( pList[i]->pDispInfo );
-		if( !pDisp->Render( pDisp->m_pMesh, bDebugConvars ) )
+		if( !pDisp->Render(pWorld, pDisp->m_pMesh, bDebugConvars ) )
 			continue;
 
 		// Add it to the list of visible displacements.
@@ -557,7 +557,7 @@ void DispInfo_BuildPrimLists( int nSortGroup, SurfaceHandle_t *pList, int listCo
 			continue;
 
 #ifndef SWDS
-		OverlayMgr()->AddFragmentListToRenderList( nSortGroup, MSurf_OverlayFragmentList( pList[i] ), true );
+		OverlayMgr()->AddFragmentListToRenderList( nSortGroup, pWorld->MSurf_OverlayFragmentList( pList[i] ), true );
 #endif
 	}
 }
@@ -814,7 +814,7 @@ inline void DispInfo_DrawDecalMeshList( DecalMeshList_t &meshList )
 	}
 }
 
-void DispInfo_DrawDecalsGroup( int iGroup, int iTreeType )
+void DispInfo_DrawDecalsGroup(model_t* pWorld, int iGroup, int iTreeType )
 {
 #ifndef SWDS
 	CMatRenderContextPtr pRenderContext( materials );
@@ -941,7 +941,7 @@ void DispInfo_DrawDecalsGroup( int iGroup, int iTreeType )
 						{
 							pBatch->m_pMaterial = pDecalHead->material;
 							pBatch->m_pProxy = pDecalHead->userdata;
-							pBatch->m_iLightmapPage = materialSortInfoArray[MSurf_MaterialSortID( pDecalHead->surfID )].lightmapPageID;
+							pBatch->m_iLightmapPage = materialSortInfoArray[pWorld->MSurf_MaterialSortID( pDecalHead->surfID )].lightmapPageID;
 						}
 						else
 						{
@@ -960,7 +960,7 @@ void DispInfo_DrawDecalsGroup( int iGroup, int iTreeType )
 
 						meshBuilder.Position3fv( vert.m_vPos.Base() );
 						// FIXME!!  Really want the normal from the displacement, not from the base surface.
-						Vector &normal = MSurf_Plane( fragment.m_pDecal->surfID ).normal;
+						Vector &normal = pWorld->MSurf_Plane( fragment.m_pDecal->surfID ).normal;
 						meshBuilder.Normal3fv( normal.Base() );
 						meshBuilder.Color4ub( fragment.m_pDecal->color.r, fragment.m_pDecal->color.g, fragment.m_pDecal->color.b, fragment.m_pDecal->color.a );
 						meshBuilder.TexCoord2f( 0, vert.m_ctCoords.x, vert.m_ctCoords.y );
@@ -995,7 +995,7 @@ void DispInfo_DrawDecalsGroup( int iGroup, int iTreeType )
 #endif
 }
 
-void DispInfo_DrawDecals( CDispInfo **visibleDisps, int nVisibleDisps )
+void DispInfo_DrawDecals(model_t* pWorld, CDispInfo **visibleDisps, int nVisibleDisps )
 {
 #ifndef SWDS
 	VPROF( "DispInfo_DrawDecals" );
@@ -1003,13 +1003,13 @@ void DispInfo_DrawDecals( CDispInfo **visibleDisps, int nVisibleDisps )
 	int iGroup = 0;
 
 	// Draw world decals.
- 	DispInfo_DrawDecalsGroup( iGroup, PERMANENT_LIGHTMAP );
+ 	DispInfo_DrawDecalsGroup(pWorld, iGroup, PERMANENT_LIGHTMAP );
 
 	// Draw lightmapped non-world decals.
-	DispInfo_DrawDecalsGroup( iGroup, LIGHTMAP );
+	DispInfo_DrawDecalsGroup(pWorld, iGroup, LIGHTMAP );
 
 	// Draw non-lit(mod2x) decals.
-	DispInfo_DrawDecalsGroup( iGroup, NONLIGHTMAP );
+	DispInfo_DrawDecalsGroup(pWorld, iGroup, NONLIGHTMAP );
 #endif
 }
 
@@ -1407,7 +1407,7 @@ static void DispInfo_DrawDebugInformation( SurfaceHandle_t *pList, int listCount
 //-----------------------------------------------------------------------------
 // Renders all displacements in sorted order 
 //-----------------------------------------------------------------------------
-void DispInfo_RenderList( int nSortGroup, SurfaceHandle_t *pList, int listCount, bool bOrtho, unsigned long flags, ERenderDepthMode DepthMode )
+void DispInfo_RenderList(model_t* pWorld, int nSortGroup, SurfaceHandle_t *pList, int listCount, bool bOrtho, unsigned long flags, ERenderDepthMode DepthMode )
 {
 #ifndef SWDS
 	if( !r_DrawDisp.GetInt() || !listCount )
@@ -1419,7 +1419,7 @@ void DispInfo_RenderList( int nSortGroup, SurfaceHandle_t *pList, int listCount,
 	CDispInfo *visibleDisps[MAX_MAP_DISPINFO];
 	int nVisibleDisps;
 
-	DispInfo_BuildPrimLists( nSortGroup, pList, listCount, ( DepthMode != DEPTH_MODE_NORMAL ), visibleDisps, nVisibleDisps );
+	DispInfo_BuildPrimLists(pWorld, nSortGroup, pList, listCount, ( DepthMode != DEPTH_MODE_NORMAL ), visibleDisps, nVisibleDisps );
 
 	// Draw..
 	DispInfo_DrawPrimLists( DepthMode );
@@ -1432,34 +1432,34 @@ void DispInfo_RenderList( int nSortGroup, SurfaceHandle_t *pList, int listCount,
 	for ( int i = 0; i < listCount; i++ )
 	{
 		SurfaceHandle_t pCur = pList[i];
-		ShadowDecalHandle_t decalHandle = MSurf_ShadowDecals( pCur );
+		ShadowDecalHandle_t decalHandle = pWorld->MSurf_ShadowDecals( pCur );
 		if (decalHandle != SHADOW_DECAL_HANDLE_INVALID)
 		{
-			g_pShadowMgr->AddShadowsOnSurfaceToRenderList( decalHandle );
+			g_pShadowMgr->AddShadowsOnSurfaceToRenderList(pWorld, decalHandle );
 		}
 	}
 
 	bool bFlashlightMask = !( (flags & DRAWWORLDLISTS_DRAW_REFRACTION ) || (flags & DRAWWORLDLISTS_DRAW_REFLECTION ));
 
 	// Draw flashlight lighting for displacements
-	g_pShadowMgr->RenderFlashlights( bFlashlightMask );
+	g_pShadowMgr->RenderFlashlights(pWorld, bFlashlightMask );
 
 	// Draw overlays
-	OverlayMgr()->RenderOverlays( nSortGroup );
+	OverlayMgr()->RenderOverlays(pWorld, nSortGroup );
 
 	// Draw flashlight overlays	
-	g_pShadowMgr->DrawFlashlightOverlays( nSortGroup, bFlashlightMask );
+	g_pShadowMgr->DrawFlashlightOverlays(pWorld, nSortGroup, bFlashlightMask );
 	OverlayMgr()->ClearRenderLists( nSortGroup );
 	  
 	// Draw decals
 	DispInfo_BatchDecals( visibleDisps, nVisibleDisps );
-	DispInfo_DrawDecals( visibleDisps, nVisibleDisps );
+	DispInfo_DrawDecals(pWorld, visibleDisps, nVisibleDisps );
 
 	// Draw flashlight decals
-	g_pShadowMgr->DrawFlashlightDecalsOnDisplacements( nSortGroup, visibleDisps, nVisibleDisps, bFlashlightMask );
+	g_pShadowMgr->DrawFlashlightDecalsOnDisplacements(pWorld, nSortGroup, visibleDisps, nVisibleDisps, bFlashlightMask );
 
 	// draw shadows
-	g_pShadowMgr->RenderShadows();
+	g_pShadowMgr->RenderShadows(pWorld);
 	g_pShadowMgr->ClearShadowRenderList();
 
 	// Debugging rendering..

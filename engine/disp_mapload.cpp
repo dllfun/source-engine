@@ -103,7 +103,7 @@ static CDispGroup* AddCombo( CUtlVector<CDispGroup*> &combos, int idLMPage, IMat
 static inline CDispInfo* GetModelDisp( model_t const *pWorld, int i )
 {
 	return static_cast< CDispInfo* >(
-		DispInfo_IndexArray( pWorld->brush.pShared->hDispInfos, i ) );
+		DispInfo_IndexArray( pWorld->GetDispInfos(), i));
 }			
 
 
@@ -121,11 +121,11 @@ static void BuildDispSurfInit(
 	Vector2D surfTexCoords[4];
 	Vector2D surfLightCoords[4][4];
 
-	if ( MSurf_VertCount( worldSurfID ) != 4 )
+	if (pWorld->MSurf_VertCount( worldSurfID ) != 4 )
 		return;
 
 #ifndef SWDS
-	BuildMSurfaceVerts( pWorld->brush.pShared, worldSurfID, surfPoints, surfTexCoords, surfLightCoords );
+	BuildMSurfaceVerts( pWorld, worldSurfID, surfPoints, surfTexCoords, surfLightCoords );
 #endif
 	BuildDispGetSurfNormals( surfPoints, surfNormals );
 
@@ -133,7 +133,7 @@ static void BuildDispSurfInit(
 
 	int surfFlag = pDispSurf->GetFlags();
 	int nLMVects = 1;
-	if( MSurf_Flags( worldSurfID ) & SURFDRAW_BUMPLIGHT )
+	if(pWorld->MSurf_Flags( worldSurfID ) & SURFDRAW_BUMPLIGHT )
 	{
 		surfFlag |= CCoreDispInfo::SURF_BUMPED;
 		nLMVects = NUM_BUMP_VECTS + 1;
@@ -152,8 +152,8 @@ static void BuildDispSurfInit(
 		}
 	}
 
-	Vector vecS = MSurf_TexInfo( worldSurfID )->textureVecsTexelsPerWorldUnits[0].AsVector3D();
-	Vector vecT = MSurf_TexInfo( worldSurfID )->textureVecsTexelsPerWorldUnits[1].AsVector3D();
+	Vector vecS = pWorld->MSurf_TexInfo( worldSurfID )->textureVecsTexelsPerWorldUnits[0].AsVector3D();
+	Vector vecT = pWorld->MSurf_TexInfo( worldSurfID )->textureVecsTexelsPerWorldUnits[1].AsVector3D();
 	VectorNormalize( vecS );
 	VectorNormalize( vecT );
 	pDispSurf->SetSAxis( vecS );
@@ -170,9 +170,9 @@ static void BuildDispSurfInit(
 	// This is here to get things running for (GDC, E3)
 	//
 	SurfaceCtx_t ctx;
-	SurfSetupSurfaceContext( ctx, worldSurfID );
-	int lightmapWidth = MSurf_LightmapExtents( worldSurfID )[0];
-	int lightmapHeight = MSurf_LightmapExtents( worldSurfID )[1];
+	SurfSetupSurfaceContext(pWorld, ctx, worldSurfID );
+	int lightmapWidth = pWorld->MSurf_LightmapExtents( worldSurfID )[0];
+	int lightmapHeight = pWorld->MSurf_LightmapExtents( worldSurfID )[1];
 
 	Vector2D uv( 0.0f, 0.0f );
 	for ( int ndxLuxel = 0; ndxLuxel < 4; ndxLuxel++ )
@@ -265,6 +265,7 @@ void AddEmptyMesh(
 
 
 void FillStaticBuffer( 
+	model_t* pWorld,
 	CGroupMesh *pMesh,
 	CDispInfo *pDisp,
 	const CCoreDispInfo *pCoreDisp,
@@ -280,7 +281,7 @@ void FillStaticBuffer(
 	builder.BeginModify( pMesh->m_pMesh, pDisp->m_iVertOffset, nVerts, 0, 0 );
 	
 	SurfaceCtx_t ctx;
-	SurfSetupSurfaceContext( ctx, pDisp->GetParent() );
+	SurfSetupSurfaceContext(pWorld, ctx, pDisp->GetParent() );
 	
 	for( int i=0; i < nVerts; i++ )
 	{
@@ -316,7 +317,7 @@ void FillStaticBuffer(
 		
 		if( nLightmaps > 1 )
 		{
-			SurfComputeLightmapCoordinate( ctx, pDisp->GetParent(), pDisp->m_Verts[i].m_vPos, lightCoord );
+			SurfComputeLightmapCoordinate(pWorld, ctx, pDisp->GetParent(), pDisp->m_Verts[i].m_vPos, lightCoord );
 			builder.TexCoord2f( 2, ctx.m_BumpSTexCoordOffset, 0.0f );
 		}
 		
@@ -353,15 +354,15 @@ void CDispInfo::CopyMapDispData( const ddispinfo_t *pBuildDisp )
 
 void DispInfo_CreateMaterialGroups( model_t *pWorld, const MaterialSystem_SortInfo_t *pSortInfos )
 {
-	for ( int iDisp=0; iDisp < pWorld->brush.pShared->numDispInfos; iDisp++ )
+	for ( int iDisp=0; iDisp < pWorld->GetDispInfosCount(); iDisp++ )
 	{
 		CDispInfo *pDisp = GetModelDisp( pWorld, iDisp );
 
-		int idLMPage = pSortInfos[MSurf_MaterialSortID( pDisp->m_ParentSurfID )].lightmapPageID;
+		int idLMPage = pSortInfos[pWorld->MSurf_MaterialSortID( pDisp->m_ParentSurfID )].lightmapPageID;
 		
-		CDispGroup *pCombo = FindCombo( g_DispGroups, idLMPage, MSurf_TexInfo( pDisp->m_ParentSurfID )->material );
+		CDispGroup *pCombo = FindCombo( g_DispGroups, idLMPage, pWorld->MSurf_TexInfo( pDisp->m_ParentSurfID )->material );
 		if( !pCombo )
-			pCombo = AddCombo( g_DispGroups, idLMPage, MSurf_TexInfo( pDisp->m_ParentSurfID )->material );
+			pCombo = AddCombo( g_DispGroups, idLMPage, pWorld->MSurf_TexInfo( pDisp->m_ParentSurfID )->material );
 
 		MEM_ALLOC_CREDIT();
 		pCombo->m_DispInfos.AddToTail( iDisp );
@@ -377,7 +378,7 @@ void DispInfo_LinkToParentFaces( model_t *pWorld, const ddispinfo_t *pMapDisps, 
 		CDispInfo *pDisp = GetModelDisp( pWorld, iDisp );
 
 		// Set its parent.
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex( pMapDisp->m_iMapFace );
+		SurfaceHandle_t surfID = pWorld->SurfaceHandleFromIndex( pMapDisp->m_iMapFace );
 		Assert( pMapDisp->m_iMapFace >= 0 && pMapDisp->m_iMapFace < pWorld->brush.pShared->numsurfaces );
 		Assert( MSurf_Flags( surfID ) & SURFDRAW_HAS_DISP );
 		surfID->pDispInfo = pDisp;
@@ -499,7 +500,7 @@ void DispInfo_CreateStaticBuffersAndTags( model_t *pWorld, int iDisp, CCoreDispI
 	CDispInfo *pDisp = GetModelDisp( pWorld, iDisp );
 
 	// Now copy the CCoreDisp's data into the static buffer.
-	FillStaticBuffer( pDisp->m_pMesh, pDisp, pCoreDisp, pVerts, pDisp->NumLightMaps() );
+	FillStaticBuffer(pWorld, pDisp->m_pMesh, pDisp, pCoreDisp, pVerts, pDisp->NumLightMaps(pWorld) );
 
 	// Now build the tagged data for visualization.
 	BuildTagData( pCoreDisp, pDisp );
@@ -560,20 +561,20 @@ bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
 	if ( bRestoring )
 	{
 		/* Breakpoint-able: */
-		if (pWorld->brush.pShared->numDispInfos != nDisplacements)
+		if (pWorld->GetDispInfosCount() != nDisplacements)
 		{ 
 			volatile int a = 0; a = a + 1; 
 		}
 
-		if ( !pWorld->brush.pShared->numDispInfos && nDisplacements )
+		if ( !pWorld->GetDispInfosCount() && nDisplacements)
 		{
 			// Attempting to restore displacements before displacements got loaded
 			return false;
 		}
 
 		ErrorIfNot( 
-			pWorld->brush.pShared->numDispInfos == nDisplacements,
-			("DispInfo_LoadDisplacments: dispcounts (%d and %d) don't match.", pWorld->brush.pShared->numDispInfos, nDisplacements)
+			pWorld->GetDispInfosCount() == nDisplacements,
+			("DispInfo_LoadDisplacments: dispcounts (%d and %d) don't match.", pWorld->GetDispInfosCount(), nDisplacements)
 			);
 
 		ErrorIfNot(
@@ -584,8 +585,8 @@ bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
 	else
 	{
 		// Create the displacements.
-		pWorld->brush.pShared->numDispInfos = nDisplacements;
-		pWorld->brush.pShared->hDispInfos = DispInfo_CreateArray( pWorld->brush.pShared->numDispInfos );
+		pWorld->SetDispInfosCount(nDisplacements);
+		pWorld->SetDispInfos( DispInfo_CreateArray( pWorld->GetDispInfosCount() ));
 
 		// Load lightmap alphas.
 		{
@@ -702,7 +703,7 @@ bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
 		
 		// Copy over the now blended normals
 		CDispInfo *pDisp = GetModelDisp( pWorld, iDisp );
-		pDisp->CopyCoreDispVertData( aCoreDisps[iDisp], pDisp->m_BumpSTexCoordOffset );
+		pDisp->CopyCoreDispVertData(pWorld, aCoreDisps[iDisp], pDisp->m_BumpSTexCoordOffset );
 
 	}
 
@@ -758,7 +759,7 @@ void DispInfo_ReleaseMaterialSystemObjects( model_t *pWorld )
 	// Clear pointers in the dispinfos.
 	if( pWorld )
 	{
-		for( int iDisp=0; iDisp < pWorld->brush.pShared->numDispInfos; iDisp++ )
+		for( int iDisp=0; iDisp < pWorld->GetDispInfosCount(); iDisp++ )
 		{
 			CDispInfo *pDisp = GetModelDisp( pWorld, iDisp );
 			if ( !pDisp )
@@ -832,10 +833,10 @@ CDispInfo::~CDispInfo()
 }
 
 
-void CDispInfo::CopyCoreDispVertData( const CCoreDispInfo *pCoreDisp, float bumpSTexCoordOffset )
+void CDispInfo::CopyCoreDispVertData(model_t* pWorld, const CCoreDispInfo *pCoreDisp, float bumpSTexCoordOffset )
 {
 #ifndef SWDS
-	if( NumLightMaps() <= 1 )
+	if( NumLightMaps(pWorld) <= 1 )
 	{
 		bumpSTexCoordOffset = 0.0f;
 	}
@@ -863,11 +864,11 @@ bool CDispInfo::CopyCoreDispData(
 	const CCoreDispInfo *pCoreDisp,
 	bool bRestoring )
 {
-	m_idLMPage = pSortInfos[MSurf_MaterialSortID( GetParent() )].lightmapPageID;
+	m_idLMPage = pSortInfos[pWorld->MSurf_MaterialSortID( GetParent() )].lightmapPageID;
 
 #ifndef SWDS
 	SurfaceCtx_t ctx;
-	SurfSetupSurfaceContext( ctx, GetParent() );
+	SurfSetupSurfaceContext(pWorld, ctx, GetParent() );
 #endif
 
 	// Restoring is only for alt+tabbing, which can't happen on consoles
@@ -875,7 +876,7 @@ bool CDispInfo::CopyCoreDispData(
 	{
 #ifndef SWDS
 		// When restoring, have to recompute lightmap coords
-		if( NumLightMaps() > 1 )
+		if( NumLightMaps(pWorld) > 1 )
 		{
 			m_BumpSTexCoordOffset = ctx.m_BumpSTexCoordOffset;
 		}
@@ -900,7 +901,7 @@ bool CDispInfo::CopyCoreDispData(
 	}
 
 #ifndef SWDS
-	CopyCoreDispVertData( pCoreDisp, ctx.m_BumpSTexCoordOffset );
+	CopyCoreDispVertData(pWorld, pCoreDisp, ctx.m_BumpSTexCoordOffset );
 #endif
 
 	// Copy neighbor info.
@@ -918,9 +919,9 @@ bool CDispInfo::CopyCoreDispData(
 }
 
 
-int CDispInfo::NumLightMaps()
+int CDispInfo::NumLightMaps(model_t* pWorld)
 {
-	return (MSurf_Flags( m_ParentSurfID ) & SURFDRAW_BUMPLIGHT) ? NUM_BUMP_VECTS+1 : 1;
+	return (pWorld->MSurf_Flags( m_ParentSurfID ) & SURFDRAW_BUMPLIGHT) ? NUM_BUMP_VECTS+1 : 1;
 }
 
 //-----------------------------------------------------------------------------

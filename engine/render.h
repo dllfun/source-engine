@@ -14,6 +14,7 @@
 #endif
 
 #include "mathlib/vector.h"
+#include "gl_model_private.h"
 
 // render.h -- public interface to refresh functions
 
@@ -94,12 +95,12 @@ inline const Vector &MainViewUp()
 }
 
 
-void R_Init (void);
-void R_LevelInit(void);
+void R_Init ();
+void R_LevelInit(model_t* pWorld);
 void R_LevelShutdown(void);
 
 // Loads world geometry. Called when map changes or dx level changes
-void R_LoadWorldGeometry( bool bDXChange = false );
+void R_LoadWorldGeometry(model_t* pWorld, bool bDXChange = false );
 
 #include "view_shared.h"
 #include "ivrenderview.h"
@@ -116,12 +117,12 @@ public:
 
 	virtual void	ViewDrawFade( byte *color, IMaterial* pFadeMaterial ) = 0;
 
-	virtual void	DrawSceneBegin( void ) = 0;
+	virtual void	DrawSceneBegin( IVModel* pWorld ) = 0;
 	virtual void	DrawSceneEnd( void ) = 0;
 
-	virtual IWorldRenderList * CreateWorldList() = 0;
-	virtual void	BuildWorldLists( IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pReflectionWaterHeight ) = 0;
-	virtual void	DrawWorldLists( IWorldRenderList *pList, unsigned long flags, float waterZAdjust ) = 0;
+	virtual IWorldRenderList * CreateWorldList(IVModel* pWorld) = 0;
+	virtual void	BuildWorldLists(IVModel* pWorld, IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pReflectionWaterHeight ) = 0;
+	virtual void	DrawWorldLists(IVModel* pWorld, IWorldRenderList *pList, unsigned long flags, float waterZAdjust ) = 0;
 
 	// UNDONE: these are temporary functions that will end up on the other
 	// side of this interface
@@ -163,7 +164,7 @@ public:
 	virtual void OverrideViewFrustum( Frustum custom ) = 0;
 	virtual void UpdateBrushModelLightmap(IVModel *model, IClientRenderable *Renderable ) = 0;
 	virtual void BeginUpdateLightmaps( void ) = 0;
-	virtual void EndUpdateLightmaps( void ) = 0;
+	virtual void EndUpdateLightmaps( IVModel* pWorld ) = 0;
 	virtual bool InLightmapUpdate( void ) const = 0;
 
 	// Sets/gets a map-specified fade range (client only)
@@ -178,7 +179,7 @@ public:
 	virtual unsigned char			ComputeViewScreenFade(const Vector& vecAbsOrigin, float flRadius, float flFadeScale) = 0;
 };
 
-void R_PushDlights (void);
+void R_PushDlights (model_t* pWorld);
 
 // UNDONE Remove this - pass this around to functions/systems that need it.
 extern IRender *g_EngineRenderer;

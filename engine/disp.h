@@ -45,7 +45,7 @@ public:
 	virtual				~CDispInfo();
 
 	virtual void		GetIntersectingSurfaces( GetIntersectingSurfaces_Struct *pStruct );
-	virtual void		RenderWireframeInLightmapPage( int pageId );
+	virtual void		RenderWireframeInLightmapPage(model_t* pWorld, int pageId );
 	
 	virtual void		GetBoundingBox( Vector& bbMin, Vector& bbMax );
 
@@ -53,11 +53,11 @@ public:
 	virtual SurfaceHandle_t GetParent(); // returns surfID
 
 	// add the dlights on this surface to the lightmap buffer for updload
-	virtual void		AddDynamicLights( dlight_t *pLights, unsigned int lightMask );
+	virtual void		AddDynamicLights(model_t* pWorld, dlight_t *pLights, unsigned int lightMask );
 	// compute which dlights affect this surface
-	virtual unsigned int ComputeDynamicLightMask( dlight_t *pLights );
+	virtual unsigned int ComputeDynamicLightMask(model_t* pWorld, dlight_t *pLights );
 
-	virtual DispDecalHandle_t	NotifyAddDecal( decal_t *pDecal, float flSize );
+	virtual DispDecalHandle_t	NotifyAddDecal(model_t* pWorld, decal_t *pDecal, float flSize );
 	virtual void				NotifyRemoveDecal( DispDecalHandle_t h );
 	virtual DispShadowHandle_t	AddShadowDecal( ShadowHandle_t shadowHandle );
 	virtual void				RemoveShadowDecal( DispShadowHandle_t handle );
@@ -94,17 +94,17 @@ public:
 	void		ClearLOD();
 	
 	void		DrawDispAxes();
-	bool		Render( CGroupMesh *pGroup, bool bAllowDebugModes );
+	bool		Render(model_t* pWorld, CGroupMesh *pGroup, bool bAllowDebugModes );
 	
 	// Add in the contribution of a dynamic light.
-	void		AddSingleDynamicLight( dlight_t& dl );
-	void		AddSingleDynamicLightBumped( dlight_t& dl );
+	void		AddSingleDynamicLight(model_t* pWorld, dlight_t& dl );
+	void		AddSingleDynamicLightBumped(model_t* pWorld, dlight_t& dl );
 
 	// Add in the contribution of a dynamic alpha light.
-	void		AddSingleDynamicAlphaLight( dlight_t& dl );
+	void		AddSingleDynamicAlphaLight(model_t* pWorld, dlight_t& dl );
 
 	// Cast a ray against this surface
-	bool		TestRay( Ray_t const& ray, float start, float end, float& dist, 
+	bool		TestRay(model_t* pWorld, Ray_t const& ray, float start, float end, float& dist, 
 						Vector2D* lightmapUV, Vector2D* texureUV );
 
 // CDispUtilsHelper implementation.
@@ -143,11 +143,11 @@ public:
 		bool bRestoring );
 
 	// called by CopyCoreDispData, just copies the vert data
-	void CopyCoreDispVertData( const CCoreDispInfo *pInfo, float bumpSTexCoordOffset );
+	void CopyCoreDispVertData(model_t* pWorld, const CCoreDispInfo *pInfo, float bumpSTexCoordOffset );
 
 	// Checks the SURFDRAW_BUMPLIGHT flag and returns NUM_BUMP_VECTS+1 if it's set
 	// and 1 if not.
-	int			NumLightMaps();
+	int			NumLightMaps(model_t* pWorld);
 
 	// This calculates the vertex's position on the base surface.
 	// (Same result as CCoreDisp::GetFlatVert).
@@ -191,7 +191,7 @@ public:
 
 	// Methods to compute lightmap coordinates, texture coordinates,
 	// and lightmap color based on displacement u,v
-	void ComputeLightmapAndTextureCoordinate( RayDispOutput_t const& output, 
+	void ComputeLightmapAndTextureCoordinate(model_t* pWorld, RayDispOutput_t const& output,
 		Vector2D* luv, Vector2D* tuv );
 
 	// This little beastie generate decal fragments
@@ -393,6 +393,6 @@ inline int CDispInfo::VertIndex( CVertIndex const &vert ) const
 
 
 void DispInfo_BatchDecals( CDispInfo **pVisibleDisps, int nVisibleDisps );
-void DispInfo_DrawDecals( CDispInfo **pVisibleDisps, int nVisibleDisps );
+void DispInfo_DrawDecals(model_t* pWorld, CDispInfo **pVisibleDisps, int nVisibleDisps );
 
 #endif // DISPINFO_H

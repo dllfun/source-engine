@@ -316,7 +316,7 @@ public:
 			return false;
 
 		model_t* pModel = (model_t*)pCollide->GetCollisionModel();
-		if ( pModel && pModel->type == mod_brush )
+		if ( pModel && pModel->GetModelType() == mod_brush)
 		{
 			Assert( pCollide->GetCollisionModelIndex() < MAX_MODELS && pCollide->GetCollisionModelIndex() >= 0 );
 			int nHeadNode = GetModelHeadNode( pCollide );
@@ -858,7 +858,7 @@ bool CEngineTrace::ClipRayToVPhysics( const Ray_t &ray, unsigned int fMask, ICol
 	if ( pStudioHdr )
 	{
 		CStudioConvexInfo studioConvex( pStudioHdr );
-		vcollide_t *pCollide = g_pMDLCache->GetVCollide( pModel->studio );
+		vcollide_t *pCollide = g_pMDLCache->GetVCollide( pModel->GetStudio() );
 		if ( pCollide && pCollide->solidCount )
 		{
 			physcollision->TraceBox( 
@@ -877,7 +877,7 @@ bool CEngineTrace::ClipRayToVPhysics( const Ray_t &ray, unsigned int fMask, ICol
 		Assert(pModel->type != mod_studio);
 		// use the regular code for raytraces against brushes
 		// do ray traces with normal code, but use vphysics to do box traces
-		if ( !ray.m_IsRay || pModel->type != mod_brush )
+		if ( !ray.m_IsRay || pModel->GetModelType() != mod_brush )
 		{
 			int nModelIndex = pEntity->GetCollisionModelIndex();
 
@@ -888,7 +888,7 @@ bool CEngineTrace::ClipRayToVPhysics( const Ray_t &ray, unsigned int fMask, ICol
 			{
 				CBrushConvexInfo brushConvex;
 
-				IConvexInfo *pConvexInfo = (pModel->type) == mod_brush ? &brushConvex : NULL;
+				IConvexInfo *pConvexInfo = (pModel->GetModelType()) == mod_brush ? &brushConvex : NULL;
 				physcollision->TraceBox( 
 					ray,
 					fMask,
@@ -1065,7 +1065,7 @@ void CEngineTrace::ClipRayToCollideable( const Ray_t &ray, unsigned int fMask, I
 	const model_t *pModel = (model_t*)pEntity->GetCollisionModel();
 	bool bIsStudioModel = false;
 	studiohdr_t *pStudioHdr = NULL;
-	if ( pModel && pModel->type == mod_studio )
+	if ( pModel && pModel->GetModelType() == mod_studio )
 	{
 		bIsStudioModel = true;
 		pStudioHdr = (studiohdr_t *)modelloader->GetExtraData( (model_t*)pModel );
@@ -1096,7 +1096,7 @@ void CEngineTrace::ClipRayToCollideable( const Ray_t &ray, unsigned int fMask, I
 	}
 
 	// FIXME: Why aren't we using solid type to check what kind of collisions to test against?!?!
-	if ( !bTraced && pModel && pModel->type == mod_brush )
+	if ( !bTraced && pModel && pModel->GetModelType() == mod_brush )
 	{
 		bTraced = ClipRayToBSP( ray, fMask, pEntity, pTrace );
 	}

@@ -18,10 +18,10 @@
 bool ActivateLightSprites( bool bActive );
 
 // Draws sprites over all visible lights
-void DrawLightSprites( void );
+void DrawLightSprites( model_t* pWorld );
 
 // Draws lighting debugging information
-void DrawLightDebuggingInfo( void );
+void DrawLightDebuggingInfo(model_t* pWorld);
 
 float ComputeLightRadius( dworldlight_t *pLight, bool bIsHDR );
 

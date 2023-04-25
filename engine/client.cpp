@@ -1848,7 +1848,7 @@ void CClientState::FinishSignonState_New()
 	// Include server count in case server disconnects and changes level during d/l
 
 	// Tell rendering system we have a new set of models.
-	R_LevelInit();
+	R_LevelInit(g_pHost->Host_GetWorldModel());
 
 	// Balanced against SuspendTextureStreaming above
 	materials->ResumeTextureStreaming();
@@ -1953,22 +1953,22 @@ void CClientState::ConsistencyCheck(bool bChanged )
 			}
 			else
 			{
-				if ( pModel->mins.x < boundsData->mins.x ||
-					pModel->mins.y < boundsData->mins.y ||
-					pModel->mins.z < boundsData->mins.z )
+				if ( pModel->GetMins().x < boundsData->mins.x ||
+					pModel->GetMins().y < boundsData->mins.y ||
+					pModel->GetMins().z < boundsData->mins.z)
 				{
 					ConColorMsg( red, "Model %s exceeds mins (%.1f %.1f %.1f vs. %.1f %.1f %.1f)\n", filename,
-						pModel->mins.x, pModel->mins.y, pModel->mins.z,
+						pModel->GetMins().x, pModel->GetMins().y, pModel->GetMins().z,
 						boundsData->mins.x, boundsData->mins.y, boundsData->mins.z);
 					errorMsg = "Server is enforcing model bounds";
 					errorFilename = filename;
 				}
-				if ( pModel->maxs.x > boundsData->maxs.x ||
-					pModel->maxs.y > boundsData->maxs.y ||
-					pModel->maxs.z > boundsData->maxs.z )
+				if ( pModel->GetMaxs().x > boundsData->maxs.x ||
+					pModel->GetMaxs().y > boundsData->maxs.y ||
+					pModel->GetMaxs().z > boundsData->maxs.z)
 				{
 					ConColorMsg( red, "Model %s exceeds maxs (%.1f %.1f %.1f vs. %.1f %.1f %.1f)\n", filename,
-						pModel->maxs.x, pModel->maxs.y, pModel->maxs.z,
+						pModel->GetMaxs().x, pModel->GetMaxs().y, pModel->GetMaxs().z,
 						boundsData->maxs.x, boundsData->maxs.y, boundsData->maxs.z);
 					errorMsg = "Server is enforcing model bounds";
 					errorFilename = filename;

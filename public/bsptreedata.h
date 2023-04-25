@@ -10,7 +10,6 @@
 //=============================================================================//
 
 #include "tier0/platform.h"
-#include "../engine/gl_model_private.h"
 
 #if !defined( BSPTREEDATA )
 #define BSPTREEDATA
@@ -24,7 +23,7 @@
 
 class Vector;
 struct Ray_t;
-
+class IVModel;
 
 //-----------------------------------------------------------------------------
 // Handle to an renderable in the client leaf system

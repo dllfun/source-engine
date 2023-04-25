@@ -199,14 +199,14 @@ static void CenterVerts( Vector verts[], int vertCount, Vector& center )
 // Copy the list of verts from an msurface_t int a linear array
 static void SurfaceToVerts( model_t *model, SurfaceHandle_t surfID, Vector verts[], int *vertCount )
 {
-	if ( *vertCount > MSurf_VertCount( surfID ) )
-		*vertCount = MSurf_VertCount( surfID );
+	if ( *vertCount > model->MSurf_VertCount( surfID ) )
+		*vertCount = model->MSurf_VertCount( surfID );
 
 	// Build the list of verts from 0 to n
 	for ( int i = 0; i < *vertCount; i++ )
 	{
-		int vertIndex = model->brush.pShared->vertindices[ MSurf_FirstVertIndex( surfID ) + i ];
-		Vector& vert = model->brush.pShared->vertexes[ vertIndex ].position;
+		int vertIndex = *model->GetVertindices(model->MSurf_FirstVertIndex( surfID ) + i );//->brush.pShared
+		Vector& vert = model->GetVertexes( vertIndex )->position;//->brush.pShared
 		VectorCopy( vert, verts[i] );
 	}
 	// vert[0] is the first and last vert, there is no copy
@@ -1426,24 +1426,28 @@ public:
 		CM_SetAreaPortalStates( portalNumbers, isOpen, nPortals );
 	}
 
-	virtual void		DrawMapToScratchPad( IScratchPad3D *pPad, unsigned long iFlags )
+	virtual IVModel* GetWorldModel() {
+		return g_pHost->Host_GetWorldModel();
+	}
+
+	virtual void		DrawMapToScratchPad(IVModel* pWorld, IScratchPad3D *pPad, unsigned long iFlags )
 	{
-		worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared;
-		if ( !pData )
+		//worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared;
+		if ( !pWorld )
 			return;
 
-		SurfaceHandle_t surfID = SurfaceHandleFromIndex(g_pHost->Host_GetWorldModel()->brush.firstmodelsurface, pData );
-		for (int i=0; i< g_pHost->Host_GetWorldModel()->brush.nummodelsurfaces; ++i, ++surfID)
+		SurfaceHandle_t surfID = ((model_t*)pWorld)->SurfaceHandleFromIndex(((model_t*)pWorld)->GetFirstmodelsurface());//g_pHost->Host_GetWorldModel()
+		for (int i=0; i< ((model_t*)pWorld)->GetModelsurfacesCount(); ++i, ++surfID)//g_pHost->Host_GetWorldModel()
 		{
 			// Don't bother with nodraw surfaces
-			if( MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
+			if(((model_t*)pWorld)->MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
 				continue;
 
 			CSPVertList vertList;
-			for ( int iVert=0; iVert < MSurf_VertCount( surfID ); iVert++ )
+			for ( int iVert=0; iVert < ((model_t*)pWorld)->MSurf_VertCount( surfID ); iVert++ )
 			{
-				int iWorldVert = pData->vertindices[surfID->firstvertindex + iVert];
-				const Vector &vPos = pData->vertexes[iWorldVert].position;
+				int iWorldVert = *((model_t*)pWorld)->GetVertindices(surfID->firstvertindex + iVert);
+				const Vector &vPos = ((model_t*)pWorld)->GetVertexes(iWorldVert)->position;
 
 				vertList.m_Verts.AddToTail( CSPVert( vPos ) );
 			}
@@ -1675,10 +1679,10 @@ public:
 		return 0;
 	}
 
-	virtual int GetAllClusterBounds( bbox_t *pBBoxList, int maxBBox )
+	virtual int GetAllClusterBounds(IVModel* pWorld, bbox_t *pBBoxList, int maxBBox )
 	{
 		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->GetVis() && g_pHost->Host_GetWorldModel()->brush.pShared)
+		if ( pBSPData && pBSPData->GetVis() && pWorld)//g_pHost->Host_GetWorldModel()->brush.pShared
 		{
 			// clamp to max clusters in the map
 			if ( maxBBox > pBSPData->GetVis()->numclusters)
@@ -1691,9 +1695,9 @@ public:
 				ClearBounds( pBBoxList[i].mins, pBBoxList[i].maxs );
 			}
 			// add each leaf's bounds to the bounds for that cluster
-			for ( int i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numleafs; i++ )
+			for ( int i = 0; i < ((model_t*)pWorld)->GetLeafCount(); i++ )//g_pHost->Host_GetWorldModel()->brush.pShared
 			{
-				mleaf_t *pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[i];
+				mleaf_t *pLeaf = ((model_t*)pWorld)->GetLeafs(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 				// skip solid leaves and leaves with cluster < 0
 				if ( !(pLeaf->contents & CONTENTS_SOLID) && pLeaf->cluster >= 0 && pLeaf->cluster < maxBBox )
 				{

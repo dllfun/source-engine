@@ -77,6 +77,6 @@ struct decal_t
 extern int g_nMaxDecals;
 
 struct worldbrushdata_t;
-void R_DecalUnlink( decal_t *pdecal, worldbrushdata_t *model );
+void R_DecalUnlink(model_t* pWorld, decal_t *pdecal);//, worldbrushdata_t *model 
 
 #endif			// DECAL_PRIVATE_H

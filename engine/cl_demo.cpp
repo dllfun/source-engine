@@ -331,11 +331,11 @@ void CDemoRecorder::GetClientCmdInfo( democmdinfo_t& info )
 	info.localViewAngles2.Init();
 }
 
-void CDemoRecorder::WriteBSPDecals()
+void CDemoRecorder::WriteBSPDecals(model_t* pWorld)
 {
 	decallist_t	*decalList = (decallist_t*)malloc( sizeof(decallist_t) * Draw_DecalMax() );
 	
-	int decalcount = DecalListCreate( decalList );
+	int decalcount = DecalListCreate(pWorld, decalList );
 
 	char		data[NET_MAX_PAYLOAD];
 	bf_write	msg;
@@ -625,7 +625,7 @@ void CDemoRecorder::StartupDemoFile( void )
 	// Demo playback should read this as an incoming message.
 	WriteDemoCvars(); // save all cvars marked with FCVAR_DEMO
 
-	WriteBSPDecals();
+	WriteBSPDecals(g_pHost->Host_GetWorldModel());
 
 	g_ClientDLL->HudReset();
 

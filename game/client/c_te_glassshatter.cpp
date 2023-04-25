@@ -169,7 +169,7 @@ void C_TEShatterSurface::PostDataUpdate( DataUpdateType_t updateType )
 	pGlassEmitter->SetSortOrigin( m_vecOrigin );
 
 	Vector vecColor;
-	engineClient->ComputeLighting( m_vecOrigin, NULL, true, vecColor );
+	engineClient->ComputeLighting(engineClient->GetWorldModel(), m_vecOrigin, NULL, true, vecColor );
 
 	// HACK: Blend a little toward white to match the materials...
 	VectorLerp( vecColor, Vector( 1, 1, 1 ), 0.3, vecColor );

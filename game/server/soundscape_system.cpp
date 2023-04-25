@@ -204,7 +204,7 @@ void CSoundscapeSystem::LevelInitPostEntity()
 	CUtlVector<bbox_t> clusterbounds;
 	int clusterCount = engineServer->GetClusterCount();
 	clusterbounds.SetCount( clusterCount );
-	engineServer->GetAllClusterBounds( clusterbounds.Base(), clusterCount );
+	engineServer->GetAllClusterBounds(engineServer->GetWorldModel(), clusterbounds.Base(), clusterCount );
 	m_soundscapesInCluster.SetCount(clusterCount);
 	for ( int i = 0; i < clusterCount; i++ )
 	{

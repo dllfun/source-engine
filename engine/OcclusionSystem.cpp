@@ -2052,9 +2052,9 @@ public:
 	~COcclusionSystem();
 
 	// Inherited from IOcclusionSystem
-	virtual void ActivateOccluder( int nOccluderIndex, bool bActive );
+	virtual void ActivateOccluder(model_t* pWorld, int nOccluderIndex, bool bActive );
 	virtual void SetView( const Vector &vecCameraPos, float flFOV, const VMatrix &worldToCamera, const VMatrix &cameraToProjection, const VPlane &nearClipPlane );
-	virtual bool IsOccluded( const Vector &vecAbsMins, const Vector &vecAbsMaxs );
+	virtual bool IsOccluded(model_t* pWorld, const Vector &vecAbsMins, const Vector &vecAbsMaxs );
 	virtual void SetOcclusionParameters( float flMaxOccludeeArea, float flMinOccluderArea );
 	virtual float MinOccluderArea() const;
 	virtual void DrawDebugOverlays();
@@ -2068,7 +2068,7 @@ private:
 	};
 
 	// Recomputes the edge list for occluders
-	void RecomputeOccluderEdgeList();
+	void RecomputeOccluderEdgeList(model_t* pWorld);
 
 	// Is the point inside the near plane?
 	bool IsPointInsideNearPlane( const Vector &vecPos ) const;
@@ -2456,7 +2456,7 @@ void COcclusionSystem::AddPolygonToEdgeList( CEdgeList &edgeList, Vector **ppPol
 //-----------------------------------------------------------------------------
 // Recomputes the occluder edge list
 //-----------------------------------------------------------------------------
-void COcclusionSystem::RecomputeOccluderEdgeList()
+void COcclusionSystem::RecomputeOccluderEdgeList(model_t* pWorld)
 {
 	if ( !m_bEdgeListDirty )
 		return;
@@ -2470,12 +2470,12 @@ void COcclusionSystem::RecomputeOccluderEdgeList()
 	m_WingedEdgeList.Clear();
 	m_ClippedVerts.RemoveAll();
 
-	mvertex_t *pVertices = g_pHost->Host_GetWorldModel()->brush.pShared->vertexes;
-	int *pIndices = g_pHost->Host_GetWorldModel()->brush.pShared->occludervertindices;
-	doccluderdata_t *pOccluders = g_pHost->Host_GetWorldModel()->brush.pShared->occluders;
+	mvertex_t *pVertices = pWorld->GetVertexes(0);//g_pHost->Host_GetWorldModel()->brush.pShared
+	int *pIndices = pWorld->GetOccludervertindices(0);//g_pHost->Host_GetWorldModel()->brush.pShared
+	doccluderdata_t *pOccluders = pWorld->GetOccluders(0);//g_pHost->Host_GetWorldModel()->brush.pShared
 
 	int i, j, k;
-	for ( i = g_pHost->Host_GetWorldModel()->brush.pShared->numoccluders ; --i >= 0; )
+	for ( i = pWorld->GetOccludersCount() ; --i >= 0; )//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
 		if ( pOccluders[i].flags & OCCLUDER_FLAGS_INACTIVE )
 			continue;
@@ -2489,13 +2489,13 @@ void COcclusionSystem::RecomputeOccluderEdgeList()
 		int nSurfCount = pOccluders[i].polycount;
 		for ( j = 0; j < nSurfCount; ++j, ++nSurfID )
 		{
-			doccluderpolydata_t *pSurf = &g_pHost->Host_GetWorldModel()->brush.pShared->occluderpolys[nSurfID];
+			doccluderpolydata_t *pSurf = pWorld->GetOccluderpolys(nSurfID);//g_pHost->Host_GetWorldModel()->brush.pShared
 
 			int nFirstVertexIndex = pSurf->firstvertexindex;
 			int nVertexCount = pSurf->vertexcount;
 
 			// If the surface is backfacing, blow it off...
-			const cplane_t &surfPlane = g_pHost->Host_GetWorldModel()->brush.pShared->planes[ pSurf->planenum ];
+			const cplane_t &surfPlane = pWorld->GetPlanes( pSurf->planenum );//g_pHost->Host_GetWorldModel()->brush.pShared
 			if ( DotProduct( surfPlane.normal, m_vecCameraPosition ) <= surfPlane.dist )
 				continue;
 
@@ -2538,18 +2538,18 @@ void COcclusionSystem::RecomputeOccluderEdgeList()
 //-----------------------------------------------------------------------------
 // Occluder list management
 //-----------------------------------------------------------------------------
-void COcclusionSystem::ActivateOccluder( int nOccluderIndex, bool bActive )
+void COcclusionSystem::ActivateOccluder(model_t* pWorld, int nOccluderIndex, bool bActive )
 {
-	if ( ( nOccluderIndex >= g_pHost->Host_GetWorldModel()->brush.pShared->numoccluders ) || ( nOccluderIndex < 0 ) )
+	if ( ( nOccluderIndex >= pWorld->GetOccludersCount() ) || ( nOccluderIndex < 0 ) )//g_pHost->Host_GetWorldModel()->brush.pShared
 		return;
 
 	if ( bActive )
 	{
-		g_pHost->Host_GetWorldModel()->brush.pShared->occluders[nOccluderIndex].flags &= ~OCCLUDER_FLAGS_INACTIVE;
+		pWorld->GetOccluders(nOccluderIndex)->flags &= ~OCCLUDER_FLAGS_INACTIVE;//g_pHost->Host_GetWorldModel()->brush.pShared
 	}
 	else
 	{
-		g_pHost->Host_GetWorldModel()->brush.pShared->occluders[nOccluderIndex].flags |= OCCLUDER_FLAGS_INACTIVE;
+		pWorld->GetOccluders(nOccluderIndex)->flags |= OCCLUDER_FLAGS_INACTIVE;//g_pHost->Host_GetWorldModel()->brush.pShared
 	}
 
 	m_bEdgeListDirty = true;
@@ -2697,7 +2697,7 @@ public:
 	}
 };
 
-bool COcclusionSystem::IsOccluded( const Vector &vecAbsMins, const Vector &vecAbsMaxs )
+bool COcclusionSystem::IsOccluded(model_t* pWorld, const Vector &vecAbsMins, const Vector &vecAbsMaxs )
 {
 	if ( r_occlusion.GetInt() == 0 )
 		return false;
@@ -2708,7 +2708,7 @@ bool COcclusionSystem::IsOccluded( const Vector &vecAbsMins, const Vector &vecAb
 	static CThreadFastMutex mutex;
 	AUTO_LOCK( mutex );
 
-	RecomputeOccluderEdgeList();
+	RecomputeOccluderEdgeList(pWorld);
 
 	// No occluders? Then the edge list isn't occluded
 	if ( m_WingedEdgeList.EdgeCount() == 0 )

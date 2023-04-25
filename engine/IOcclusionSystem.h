@@ -28,14 +28,14 @@ class IOcclusionSystem
 {
 public:
 	// Activate/deactivate an occluder brush model
-	virtual void ActivateOccluder( int nOccluderIndex, bool bActive ) = 0;
+	virtual void ActivateOccluder(model_t* pWorld, int nOccluderIndex, bool bActive ) = 0;
 
 	// Sets the view transform
 	virtual void SetView( const Vector &vecCameraPos, float flFOV, const VMatrix &worldToCamera, 
 		const VMatrix &cameraToProjection, const VPlane &nearClipPlane ) = 0;
 
 	// Test for occlusion (bounds specified in abs space)
-	virtual bool IsOccluded( const Vector &vecAbsMins, const Vector &vecAbsMaxs ) = 0;
+	virtual bool IsOccluded(model_t* pWorld, const Vector &vecAbsMins, const Vector &vecAbsMaxs ) = 0;
 
 	// Sets global occlusion parameters
 	virtual void SetOcclusionParameters( float flMaxOccludeeArea, float flMinOccluderArea ) = 0;

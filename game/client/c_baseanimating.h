@@ -147,7 +147,7 @@ public:
 	virtual void UpdateIKLocks( float currentTime );
 	virtual void CalculateIKLocks( float currentTime );
 	virtual bool ShouldDraw();
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 	virtual int	InternalDrawModel( int flags );
 	virtual bool OnInternalDrawModel( ClientModelRenderInfo_t *pInfo );
 	virtual bool OnPostInternalDrawModel( ClientModelRenderInfo_t *pInfo );

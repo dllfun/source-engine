@@ -32,7 +32,7 @@ bool	Map_VisForceFullSky();
 // reconstruct the ambient lighting for a leaf at the given position in worldspace
 void	Mod_LeafAmbientColorAtPos( Vector *pOut, const Vector &pos, int leafIndex );
 
-extern int			DecalListCreate( decallist_t *pList );
+extern int			DecalListCreate(model_t* pWorld, decallist_t *pList );
 
 extern int		r_visframecount;
 

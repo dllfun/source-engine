@@ -90,7 +90,7 @@ ConVar r_ambientlightingonly(
 
 ConVar r_oldlightselection("r_oldlightselection", "0", FCVAR_CHEAT, "Set this to revert to HL2's method of selecting lights"); 
 
-static void ComputeAmbientFromSphericalSamples( const Vector& start, 
+static void ComputeAmbientFromSphericalSamples(model_t* pWorld, const Vector& start, 
 						Vector* lightBoxColor );
 
 
@@ -309,7 +309,7 @@ inline lightcache_t& GetLightLRUTail()
 //-----------------------------------------------------------------------------
 // Purpose: Set up the LRU
 //-----------------------------------------------------------------------------
-void R_StudioInitLightingCache( void )
+void R_StudioInitLightingCache( model_t* pWorld )
 {
 	unsigned short i;
 
@@ -350,11 +350,11 @@ void R_StudioInitLightingCache( void )
 	cached_r_lightcache_numambientsamples = r_lightcache_numambientsamples.GetInt();
 
 	// Recompute all static lighting
-	InvalidateStaticLightingCache();
+	InvalidateStaticLightingCache(pWorld);
 }
 
 
-void R_StudioCheckReinitLightingCache()
+void R_StudioCheckReinitLightingCache(model_t* pWorld)
 {
 	// Make sure this stays clamped to match hardware capabilities
 	if ( g_pMaterialSystemHardwareConfig->MaxNumLights() < r_worldlights.GetInt() )
@@ -369,7 +369,7 @@ void R_StudioCheckReinitLightingCache()
 		cached_mat_fullbright != g_pMaterialSystemConfig->nFullbright ||
 		cached_r_lightcache_numambientsamples != r_lightcache_numambientsamples.GetInt() )
 	{
-		R_StudioInitLightingCache();
+		R_StudioInitLightingCache(pWorld);
 	}
 }	
 
@@ -580,14 +580,14 @@ static inline void OriginToCacheOrigin( const Vector &origin, int &x, int &y, in
 //-----------------------------------------------------------------------------
 // Finds ambient lights
 //-----------------------------------------------------------------------------
-dworldlight_t* FindAmbientLight()
+dworldlight_t* FindAmbientLight(model_t* pWorld)
 {
 	// find any ambient lights
-	for (int i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; i++)
+	for (int i = 0; i < pWorld->GetWorldlightsCount(); i++)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
-		if (g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i].type == emit_skyambient)
+		if (pWorld->GetWorldlights(i)->type == emit_skyambient)//g_pHost->Host_GetWorldModel()->brush.pShared
 		{
-			return &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+			return pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 		}
 	}
 
@@ -598,13 +598,13 @@ dworldlight_t* FindAmbientLight()
 //-----------------------------------------------------------------------------
 // Computes the ambient term from a particular surface
 //-----------------------------------------------------------------------------
-static void ComputeAmbientFromSurface( SurfaceHandle_t surfID, dworldlight_t* pSkylight, 
+static void ComputeAmbientFromSurface(model_t* pWorld, SurfaceHandle_t surfID, dworldlight_t* pSkylight, 
 									   Vector& radcolor )
 {
 	if (IS_SURF_VALID( surfID ) )
 	{
 		// If we hit the sky, use the sky ambient
-		if (MSurf_Flags( surfID ) & SURFDRAW_SKY)
+		if (pWorld->MSurf_Flags( surfID ) & SURFDRAW_SKY)
 		{
 			if (pSkylight)
 			{
@@ -615,7 +615,7 @@ static void ComputeAmbientFromSurface( SurfaceHandle_t surfID, dworldlight_t* pS
 		else
 		{
 			Vector reflectivity;
-			MSurf_TexInfo( surfID )->material->GetReflectivity( reflectivity );
+			pWorld->MSurf_TexInfo( surfID )->material->GetReflectivity( reflectivity );
 			VectorMultiply( radcolor, reflectivity, radcolor );
 		}
 	}
@@ -625,12 +625,12 @@ static void ComputeAmbientFromSurface( SurfaceHandle_t surfID, dworldlight_t* pS
 // Computes the ambient term from a large number of spherical samples
 //-----------------------------------------------------------------------------
 
-static void ComputeAmbientFromSphericalSamples( const Vector& start, 
+static void ComputeAmbientFromSphericalSamples( model_t* pWorld, const Vector& start, 
 						Vector* lightBoxColor )
 {
 	VPROF( "ComputeAmbientFromSphericalSamples" );
 	// find any ambient lights
-	dworldlight_t *pSkylight = FindAmbientLight();
+	dworldlight_t *pSkylight = FindAmbientLight(pWorld);
 
 	Vector radcolor[NUMRANDOMNORMALS];
 	Assert( cached_r_lightcache_numambientsamples <= ARRAYSIZE( radcolor ) );
@@ -644,11 +644,11 @@ static void ComputeAmbientFromSphericalSamples( const Vector& start,
 		VectorMA( start, COORD_EXTENT * 1.74, g_anorms[i], upend );
 
 		// Now that we've got a ray, see what surface we've hit
-		SurfaceHandle_t surfID = R_LightVec (start, upend, false, radcolor[i] );
+		SurfaceHandle_t surfID = R_LightVec (pWorld, start, upend, false, radcolor[i] );
 		if (!IS_SURF_VALID(surfID) )
 			continue;
 
-		ComputeAmbientFromSurface( surfID, pSkylight, radcolor[i] );
+		ComputeAmbientFromSurface(pWorld, surfID, pSkylight, radcolor[i] );
 	}
 
 	// accumulate samples into radiant box
@@ -697,13 +697,13 @@ static void ComputeAmbientFromLeaf( const Vector &start, int leafID, Vector *lig
 //-----------------------------------------------------------------------------
 // Computes the ambient term from 6 cardinal directions
 //-----------------------------------------------------------------------------
-static void ComputeAmbientFromAxisAlignedSamples( const Vector& start, 
+static void ComputeAmbientFromAxisAlignedSamples(model_t* pWorld, const Vector& start, 
 						Vector* lightBoxColor )
 {
 	Vector upend;
 
 	// find any ambient lights
-	dworldlight_t *pSkylight = FindAmbientLight();
+	dworldlight_t *pSkylight = FindAmbientLight(pWorld);
 
 	// sample world only along cardinal axes
 	const Vector* pBoxDirs = g_pStudioRender->GetAmbientLightDirections();
@@ -712,11 +712,11 @@ static void ComputeAmbientFromAxisAlignedSamples( const Vector& start,
 		VectorMA( start, COORD_EXTENT * 1.74, pBoxDirs[i], upend );
 
 		// Now that we've got a ray, see what surface we've hit
-		SurfaceHandle_t surfID = R_LightVec (start, upend, false, lightBoxColor[i] );
+		SurfaceHandle_t surfID = R_LightVec (pWorld, start, upend, false, lightBoxColor[i] );
 		if (!IS_SURF_VALID( surfID ) )
 			continue;
 
-		ComputeAmbientFromSurface( surfID, pSkylight, lightBoxColor[i] );
+		ComputeAmbientFromSurface(pWorld, surfID, pSkylight, lightBoxColor[i] );
 
 	}
 }
@@ -726,6 +726,7 @@ static void ComputeAmbientFromAxisAlignedSamples( const Vector& start,
 // Computes the ambient lighting at a point, and sets the lightstyles bitfield
 //-----------------------------------------------------------------------------
 static void R_StudioGetAmbientLightForPoint( 
+	model_t* pWorld,
 	int leafID, 
 	const Vector& start, 
 	Vector* pLightBoxColor, 
@@ -748,23 +749,23 @@ static void R_StudioGetAmbientLightForPoint(
 	switch( r_radiosity.GetInt() )
 	{
 	case 1:
-		ComputeAmbientFromAxisAlignedSamples( start, pLightBoxColor );
+		ComputeAmbientFromAxisAlignedSamples(pWorld, start, pLightBoxColor );
 		break;
 
 	case 2:
-		ComputeAmbientFromSphericalSamples( start, pLightBoxColor );
+		ComputeAmbientFromSphericalSamples(pWorld, start, pLightBoxColor );
 		break;
 
 	case 3:
 		if (bIsStaticProp)
-			ComputeAmbientFromSphericalSamples( start, pLightBoxColor );
+			ComputeAmbientFromSphericalSamples(pWorld, start, pLightBoxColor );
 		else
-			ComputeAmbientFromAxisAlignedSamples( start, pLightBoxColor );
+			ComputeAmbientFromAxisAlignedSamples(pWorld, start, pLightBoxColor );
 		break;
 
 	case 4:
 		if (bIsStaticProp)
-			ComputeAmbientFromSphericalSamples( start, pLightBoxColor );
+			ComputeAmbientFromSphericalSamples(pWorld, start, pLightBoxColor );
 		else
 			ComputeAmbientFromLeaf( start, leafID, pLightBoxColor, bAddedLeafAmbientCube );
 		break;
@@ -1153,7 +1154,7 @@ static float LightIntensityAndDirectionInBox( dworldlight_t* pLight,
 //-----------------------------------------------------------------------------
 // Computes the static vertex lighting term from a large number of spherical samples
 //-----------------------------------------------------------------------------
-bool ComputeVertexLightingFromSphericalSamples( const Vector& vecVertex, 
+bool ComputeVertexLightingFromSphericalSamples(model_t* pWorld, const Vector& vecVertex, 
 	const Vector &vecNormal, IHandleEntity *pIgnoreEnt, Vector *pLinearColor )
 {
 	if ( IsX360() )
@@ -1171,7 +1172,7 @@ bool ComputeVertexLightingFromSphericalSamples( const Vector& vecVertex,
 	pLinearColor->Init( 0, 0, 0 );
 
 	// find any ambient lights
-	dworldlight_t *pSkylight = FindAmbientLight();
+	dworldlight_t *pSkylight = FindAmbientLight(pWorld);
 
 	// sample world by casting N rays distributed across a sphere
 	float t = 0.0f;
@@ -1187,14 +1188,14 @@ bool ComputeVertexLightingFromSphericalSamples( const Vector& vecVertex,
 		VectorMA( vecVertex, COORD_EXTENT * 1.74, s_raddir[i], upend );
 
 		// Now that we've got a ray, see what surface we've hit
-		SurfaceHandle_t surfID = R_LightVec( vecVertex, upend, false, color );
+		SurfaceHandle_t surfID = R_LightVec(pWorld, vecVertex, upend, false, color );
 		if ( !IS_SURF_VALID(surfID) )
 			continue;
 
 		// FIXME: Maybe make sure we aren't obstructed by static props?
 		// To do this, R_LightVec would need to return distance of hit...
 		// Or, we need another arg to R_LightVec to return black when hitting a static prop
-		ComputeAmbientFromSurface( surfID, pSkylight, color );
+		ComputeAmbientFromSurface(pWorld, surfID, pSkylight, color );
 
 		t += flDot;
 		VectorMA( *pLinearColor, flDot, color, *pLinearColor );
@@ -1214,9 +1215,9 @@ bool ComputeVertexLightingFromSphericalSamples( const Vector& vecVertex,
 
 	// Now add in the direct lighting
 	Vector vecDirection;
-	for (i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; ++i)
+	for (i = 0; i < pWorld->GetWorldlightsCount(); ++i)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
-		dworldlight_t *wl = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+		dworldlight_t *wl = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 
 		// FIXME: This is sort of a hack; only one skylight is allowed in the
 		// lighting...
@@ -1308,6 +1309,7 @@ void AddWorldLightToAmbientCube( dworldlight_t* pWorldLight, const Vector &vecLi
 
 
 static inline const byte* FastRejectLightSource( 
+	model_t* pWorld,
 	bool bIgnoreVis, 
 	const byte *pVis, 
 	const Vector &bucketOrigin,
@@ -1328,7 +1330,7 @@ static inline const byte* FastRejectLightSource(
 		if ( lightType == emit_skylight )
 		{
  			int  bucketOriginLeaf = CM_PointLeafnum( bucketOrigin );
-			mleaf_t *pLeaf = &g_pHost->Host_GetWorldModel()->brush.pShared->leafs[bucketOriginLeaf];
+			mleaf_t *pLeaf = pWorld->GetLeafs(bucketOriginLeaf);//g_pHost->Host_GetWorldModel()->brush.pShared
 			if ( pLeaf && !( pLeaf->flags & ( LEAF_FLAGS_SKY | LEAF_FLAGS_SKY2D ) ) )
 			{
 				bReject = true;
@@ -1347,7 +1349,7 @@ static inline const byte* FastRejectLightSource(
 //-----------------------------------------------------------------------------
 // Adds a world light to the list of lights
 //-----------------------------------------------------------------------------
-static const byte *AddWorldLightToLightingState( dworldlight_t* pWorldLight, 
+static const byte *AddWorldLightToLightingState(model_t* pWorld, dworldlight_t* pWorldLight, 
 												 lightzbuffer_t* pZBuf,
 												 LightingState_t& lightingState, LightingStateInfo_t& info,
 												 const Vector& bucketOrigin, const byte* pVis, bool dynamic = false, 
@@ -1365,7 +1367,7 @@ static const byte *AddWorldLightToLightingState( dworldlight_t* pWorldLight,
 	if ( !bIgnoreVisTest )
 	{
 		bool bReject;
-		pVis = FastRejectLightSource( bIgnoreVis, pVis, bucketOrigin, pWorldLight->type, pWorldLight->cluster, bReject );
+		pVis = FastRejectLightSource(pWorld, bIgnoreVis, pVis, bucketOrigin, pWorldLight->type, pWorldLight->cluster, bReject );
 		if ( bReject )
 			return pVis;
 	}
@@ -1506,7 +1508,7 @@ static void WorldLightFromDynamicLight( dlight_t const& dynamicLight,
 //-----------------------------------------------------------------------------
 // Add in dynamic worldlights (lightstyles)
 //-----------------------------------------------------------------------------
-static const byte *ComputeLightStyles( lightcache_t* pCache, LightingState_t& lightingState,
+static const byte *ComputeLightStyles(model_t* pWorld, lightcache_t* pCache, LightingState_t& lightingState,
 									  const Vector& origin, int leaf, const byte* pVis )
 {
 	VPROF_INCREMENT_COUNTER( "ComputeLightStyles", 1 );
@@ -1515,9 +1517,9 @@ static const byte *ComputeLightStyles( lightcache_t* pCache, LightingState_t& li
 	lightingState.ZeroLightingState();
 	// Next, add each world light with a lightstyle into the lighting state,
 	// ejecting less relevant local lights + folding them into the ambient cube
-	for ( int i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; ++i)
+	for ( int i = 0; i < pWorld->GetWorldlightsCount(); ++i)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
-		dworldlight_t *wl = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+		dworldlight_t *wl = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 		if (wl->style == 0)
 			continue;
 
@@ -1536,7 +1538,7 @@ static const byte *ComputeLightStyles( lightcache_t* pCache, LightingState_t& li
 		}
 
 		// Now add that world light into our list of worldlights
-		AddWorldLightToLightingState( wl, NULL, lightingState, info, origin, pVis );
+		AddWorldLightToLightingState(pWorld, wl, NULL, lightingState, info, origin, pVis );
 	}
 	pCache->m_LastFrameUpdated_LightStyles = r_framecount;
 	return pVis;
@@ -1546,19 +1548,19 @@ static const byte *ComputeLightStyles( lightcache_t* pCache, LightingState_t& li
 //-----------------------------------------------------------------------------
 // Add in dynamic worldlights (lightstyles)
 //-----------------------------------------------------------------------------
-static void AddLightStylesForStaticProp( PropLightcache_t *pcache, LightingState_t& lightingState )
+static void AddLightStylesForStaticProp(model_t* pWorld, PropLightcache_t *pcache, LightingState_t& lightingState )
 {
 	// Next, add each world light with a lightstyle into the lighting state,
 	// ejecting less relevant local lights + folding them into the ambient cube
 	for( int i = 0; i < pcache->m_LightStyleWorldLights.Count(); ++i )
 	{
 		Assert( pcache->m_LightStyleWorldLights[i] >= 0 );
-		Assert( pcache->m_LightStyleWorldLights[i] < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights );
-		dworldlight_t *wl = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[pcache->m_LightStyleWorldLights[i]];
+		Assert( pcache->m_LightStyleWorldLights[i] < pWorld->GetWorldlightsCount() );//g_pHost->Host_GetWorldModel()->brush.pShared
+		dworldlight_t *wl = pWorld->GetWorldlights(pcache->m_LightStyleWorldLights[i]);//g_pHost->Host_GetWorldModel()->brush.pShared
 		Assert( wl->style != 0 );
 
 		// Now add that world light into our list of worldlights
-		AddWorldLightToLightingState( wl, NULL, lightingState, *pcache, pcache->m_LightingOrigin, NULL, 
+		AddWorldLightToLightingState(pWorld, wl, NULL, lightingState, *pcache, pcache->m_LightingOrigin, NULL, 
 			false /*dynamic*/, true /*ignorevis*/ );
 	}
 }
@@ -1569,7 +1571,7 @@ static void AddLightStylesForStaticProp( PropLightcache_t *pcache, LightingState
 //-----------------------------------------------------------------------------
 static dworldlight_t s_pDynamicLight[MAX_DLIGHTS + MAX_ELIGHTS];
 
-static const byte* AddDLights( LightingStateInfo_t& info, LightingState_t& lightingState, 
+static const byte* AddDLights(model_t* pWorld, LightingStateInfo_t& info, LightingState_t& lightingState, 
 			const Vector& origin, int leaf, const byte* pVis )
 {
 	if ( !g_bActiveDlights )
@@ -1594,7 +1596,7 @@ static const byte* AddDLights( LightingStateInfo_t& info, LightingState_t& light
 		// Fast reject. If we can reject it here, then we don't have to call WorldLightFromDynamicLight..
 		bool bReject;
 		int lightCluster = CM_LeafCluster( g_DLightLeafAccessors[i].GetLeaf( dl->origin ) );
-		pVis = FastRejectLightSource( bIgnoreVis, pVis, origin, emit_point, lightCluster, bReject );
+		pVis = FastRejectLightSource(pWorld, bIgnoreVis, pVis, origin, emit_point, lightCluster, bReject );
 		if ( bReject )
 			continue;
 
@@ -1604,13 +1606,13 @@ static const byte* AddDLights( LightingStateInfo_t& info, LightingState_t& light
 		WorldLightFromDynamicLight( *dl, s_pDynamicLight[i] );
 
 		// Now add that world light into our list of worldlights
-		pVis = AddWorldLightToLightingState( &s_pDynamicLight[i], NULL, lightingState,
+		pVis = AddWorldLightToLightingState(pWorld, &s_pDynamicLight[i], NULL, lightingState,
 			info, origin, pVis, true, bIgnoreVis, bIgnoreVisTest );
 	}
 	return pVis;
 }
 
-static const byte* AddELights( LightingStateInfo_t& info, LightingState_t& lightingState, 
+static const byte* AddELights(model_t* pWorld, LightingStateInfo_t& info, LightingState_t& lightingState, 
 			const Vector& origin, int leaf, const byte* pVis )
 {
 	if ( !g_bActiveElights )
@@ -1635,7 +1637,7 @@ static const byte* AddELights( LightingStateInfo_t& info, LightingState_t& light
 		// Fast reject. If we can reject it here, then we don't have to call WorldLightFromDynamicLight..
 		bool bReject;
 		int lightCluster = CM_LeafCluster( g_ELightLeafAccessors[i].GetLeaf( dl->origin ) );
-		pVis = FastRejectLightSource( bIgnoreVis, pVis, origin, emit_point, lightCluster, bReject );
+		pVis = FastRejectLightSource(pWorld, bIgnoreVis, pVis, origin, emit_point, lightCluster, bReject );
 		if ( bReject )
 			continue;
 
@@ -1645,7 +1647,7 @@ static const byte* AddELights( LightingStateInfo_t& info, LightingState_t& light
 		WorldLightFromDynamicLight( *dl, s_pDynamicLight[i+MAX_DLIGHTS] );
 
 		// Now add that world light into our list of worldlights
-		pVis = AddWorldLightToLightingState( &s_pDynamicLight[i+MAX_DLIGHTS], NULL, lightingState,
+		pVis = AddWorldLightToLightingState(pWorld, &s_pDynamicLight[i+MAX_DLIGHTS], NULL, lightingState,
 			info, origin, pVis, true, bIgnoreVis, bIgnoreVisTest );
 	}
 	return pVis;
@@ -1655,7 +1657,7 @@ static const byte* AddELights( LightingStateInfo_t& info, LightingState_t& light
 //-----------------------------------------------------------------------------
 // Given static + dynamic lighting, figure out the total light
 //-----------------------------------------------------------------------------
-static const byte *ComputeDynamicLighting( lightcache_t* pCache, LightingState_t& lightingState, 
+static const byte *ComputeDynamicLighting(model_t* pWorld, lightcache_t* pCache, LightingState_t& lightingState, 
 			const Vector& origin, int leaf, const byte* pVis = 0 )
 {
 	if (pCache->m_LastFrameUpdated_DynamicLighting != r_framecount)
@@ -1668,11 +1670,11 @@ static const byte *ComputeDynamicLighting( lightcache_t* pCache, LightingState_t
 		pCache->m_DynamicLightingState.ZeroLightingState();
 
 		// Next, add each dlight one at a time 
-		pVis = AddDLights( info, pCache->m_DynamicLightingState, origin, leaf, pVis );
+		pVis = AddDLights(pWorld, info, pCache->m_DynamicLightingState, origin, leaf, pVis );
 
 		// Finally, add in elights
 		// FIXME: Do we actually use these?
- 		pVis = AddELights( info, pCache->m_DynamicLightingState, origin, leaf, pVis );
+ 		pVis = AddELights(pWorld, info, pCache->m_DynamicLightingState, origin, leaf, pVis );
 
 		pCache->m_LastFrameUpdated_DynamicLighting = r_framecount;
 	}
@@ -1820,6 +1822,7 @@ static void AddDLightsForStaticProps( LightingStateInfo_t& info, LightingState_t
 ConVar r_lightcache_zbuffercache( "r_lightcache_zbuffercache", "0", FCVAR_ALLOWED_IN_COMPETITIVE );
 
 static void AddStaticLighting( 
+	model_t* pWorld,
 	CBaseLightCache* pCache, 
 	const Vector& origin, 
 	const byte* pVis, 
@@ -1843,12 +1846,12 @@ static void AddStaticLighting(
 	// Next, add each static light one at a time into the lighting state,
 	// ejecting less relevant local lights + folding them into the ambient cube
 	// Also, we need to add *all* new lights into the total box color
-	for (i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; ++i)
+	for (i = 0; i < pWorld->GetWorldlightsCount(); ++i)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
-		dworldlight_t *wl = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+		dworldlight_t *wl = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 		lightzbuffer_t *pZBuf;
 		if ( r_lightcache_zbuffercache.GetInt() )
-			pZBuf = &g_pHost->Host_GetWorldModel()->brush.pShared->shadowzbuffers[i];
+			pZBuf = pWorld->GetShadowzbuffers(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 		else
 			pZBuf = NULL;
 
@@ -1863,7 +1866,7 @@ static void AddStaticLighting(
 		if (wl->style == 0)
 		{
 			// Now add that world light into our list of worldlights
-			AddWorldLightToLightingState( wl, pZBuf, pCache->m_StaticLightingState, *pCache, origin, pVis,  
+			AddWorldLightToLightingState(pWorld, wl, pZBuf, pCache->m_StaticLightingState, *pCache, origin, pVis,
 				false, false );
 		}
 		else
@@ -2067,7 +2070,7 @@ bool IdentifyLightingErrors( int leaf, LightingState_t& lightingState )
 //-----------------------------------------------------------------------------
 // Compute the cache...
 //-----------------------------------------------------------------------------
-static const byte* ComputeStaticLightingForCacheEntry( CBaseLightCache *pcache, const Vector& origin, int leaf, bool bStaticProp = false )
+static const byte* ComputeStaticLightingForCacheEntry(model_t* pWorld, CBaseLightCache *pcache, const Vector& origin, int leaf, bool bStaticProp = false )
 {
 	VPROF_INCREMENT_COUNTER( "ComputeStaticLightingForCacheEntry", 1 );
 	
@@ -2078,6 +2081,7 @@ static const byte* ComputeStaticLightingForCacheEntry( CBaseLightCache *pcache, 
 	bool bAddedLeafAmbientCube;
 
 	R_StudioGetAmbientLightForPoint( 
+		pWorld,
 		leaf, 
 		origin, 
 		pcache->m_StaticLightingState.r_boxcolor,
@@ -2087,23 +2091,23 @@ static const byte* ComputeStaticLightingForCacheEntry( CBaseLightCache *pcache, 
 	// get direct lighting from world light sources (point lights, etc.)
 	if ( !r_ambientlightingonly.GetInt() )
 	{
-		AddStaticLighting( pcache, origin, pVis, bStaticProp, bAddedLeafAmbientCube );
+		AddStaticLighting(pWorld, pcache, origin, pVis, bStaticProp, bAddedLeafAmbientCube );
 	}
 
 	return pVis;
 }
 
 
-static void BuildStaticLightingCacheLightStyleInfo( PropLightcache_t* pcache, const Vector& mins, const Vector& maxs )
+static void BuildStaticLightingCacheLightStyleInfo(model_t* pWorld, PropLightcache_t* pcache, const Vector& mins, const Vector& maxs )
 {
 	const byte *pVis = NULL;
 	Assert( pcache->m_LightStyleWorldLights.Count() == 0 );
 	pcache->m_LightingFlags &= ~( HACKLIGHTCACHEFLAGS_HASSWITCHABLELIGHTSTYLE | HACKLIGHTCACHEFLAGS_HASSWITCHABLELIGHTSTYLE );
 	// clear lightstyles
 	memset( pcache->m_pLightstyles, 0, MAX_LIGHTSTYLE_BYTES );
-	for ( short i = 0; i < g_pHost->Host_GetWorldModel()->brush.pShared->numworldlights; ++i)
+	for ( short i = 0; i < pWorld->GetWorldlightsCount(); ++i)//g_pHost->Host_GetWorldModel()->brush.pShared
 	{
-		dworldlight_t *wl = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[i];
+		dworldlight_t *wl = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
 		if (wl->style == 0)
 			continue;
 
@@ -2149,17 +2153,17 @@ static void BuildStaticLightingCacheLightStyleInfo( PropLightcache_t* pcache, co
 	}
 }
 
-static ITexture *FindEnvCubemapForPoint( const Vector& origin )
+static ITexture *FindEnvCubemapForPoint(model_t* pWorld, const Vector& origin )
 {
-	worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
-	if( pBrushData && pBrushData->m_nCubemapSamples > 0 )
+	//worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
+	if(pWorld && pWorld->GetCubemapSamplesCount() > 0)
 	{
 		int smallestIndex = 0;
-		Vector blah = origin - pBrushData->m_pCubemapSamples[0].origin;
+		Vector blah = origin - pWorld->GetCubemapSamples(0)->origin;
 		float smallestDist = DotProduct( blah, blah );
-		for( int i = 1; i < pBrushData->m_nCubemapSamples; i++ )
+		for( int i = 1; i < pWorld->GetCubemapSamplesCount(); i++ )
 		{
-			Vector ign = origin - pBrushData->m_pCubemapSamples[i].origin;
+			Vector ign = origin - pWorld->GetCubemapSamples(i)->origin;
 			float dist = DotProduct( ign, ign );
 			if( dist < smallestDist )
 			{
@@ -2168,7 +2172,7 @@ static ITexture *FindEnvCubemapForPoint( const Vector& origin )
 			}
 		}
 		
-		return pBrushData->m_pCubemapSamples[smallestIndex].pTexture;
+		return pWorld->GetCubemapSamples(smallestIndex)->pTexture;
 	}
 	else
 	{
@@ -2179,7 +2183,7 @@ static ITexture *FindEnvCubemapForPoint( const Vector& origin )
 //-----------------------------------------------------------------------------
 // Create static light cache entry
 //-----------------------------------------------------------------------------
-LightCacheHandle_t CreateStaticLightingCache( const Vector& origin, const Vector& mins, const Vector& maxs )
+LightCacheHandle_t CreateStaticLightingCache(model_t* pWorld, const Vector& origin, const Vector& mins, const Vector& maxs )
 {
 	PropLightcache_t* pcache = s_PropCache.Alloc();
 
@@ -2197,8 +2201,8 @@ LightCacheHandle_t CreateStaticLightingCache( const Vector& origin, const Vector
 	s_pAllStaticProps = pcache;
 	
 	pcache->m_Flags = 0; // must set this to zero so that this cache entry will be invalid.
-	pcache->m_pEnvCubemapTexture = FindEnvCubemapForPoint( origin );
-	BuildStaticLightingCacheLightStyleInfo( pcache, mins, maxs );
+	pcache->m_pEnvCubemapTexture = FindEnvCubemapForPoint(pWorld, origin );
+	BuildStaticLightingCacheLightStyleInfo(pWorld, pcache, mins, maxs );
 	return (LightCacheHandle_t)pcache;
 }
 
@@ -2208,7 +2212,7 @@ bool StaticLightCacheAffectedByDynamicLight( LightCacheHandle_t handle )
 	return pcache->HasDlights();
 }
 
-bool StaticLightCacheAffectedByAnimatedLightStyle( LightCacheHandle_t handle )
+bool StaticLightCacheAffectedByAnimatedLightStyle(model_t* pWorld, LightCacheHandle_t handle )
 {
 	PropLightcache_t *pcache = ( PropLightcache_t *)handle;
 	if( !pcache->HasLightStyle() )
@@ -2220,8 +2224,8 @@ bool StaticLightCacheAffectedByAnimatedLightStyle( LightCacheHandle_t handle )
 		for( int i = 0; i < pcache->m_LightStyleWorldLights.Count(); ++i )
 		{
 			Assert( pcache->m_LightStyleWorldLights[i] >= 0 );
-			Assert( pcache->m_LightStyleWorldLights[i] < host_state.worldbrush->numworldlights );
-			dworldlight_t *wl = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[pcache->m_LightStyleWorldLights[i]];
+			Assert( pcache->m_LightStyleWorldLights[i] < pWorld->GetWorldlightsCount() );//host_state.worldbrush
+			dworldlight_t *wl = pWorld->GetWorldlights(pcache->m_LightStyleWorldLights[i]);//g_pHost->Host_GetWorldModel()->brush.pShared
 			Assert( wl->style != 0 );
 			if( d_lightstylenumframes[wl->style] > 1 )
 			{
@@ -2232,7 +2236,7 @@ bool StaticLightCacheAffectedByAnimatedLightStyle( LightCacheHandle_t handle )
 	}
 }
 
-bool StaticLightCacheNeedsSwitchableLightUpdate( LightCacheHandle_t handle )
+bool StaticLightCacheNeedsSwitchableLightUpdate(model_t* pWorld, LightCacheHandle_t handle )
 {
 	PropLightcache_t *pcache = ( PropLightcache_t *)handle;
 	if( !pcache->HasSwitchableLightStyle() )
@@ -2244,8 +2248,8 @@ bool StaticLightCacheNeedsSwitchableLightUpdate( LightCacheHandle_t handle )
 		for( int i = 0; i < pcache->m_LightStyleWorldLights.Count(); ++i )
 		{
 			Assert( pcache->m_LightStyleWorldLights[i] >= 0 );
-			Assert( pcache->m_LightStyleWorldLights[i] < host_state.worldbrush->numworldlights );
-			dworldlight_t *wl = &g_pHost->Host_GetWorldModel()->brush.pShared->worldlights[pcache->m_LightStyleWorldLights[i]];
+			Assert( pcache->m_LightStyleWorldLights[i] < pWorld->GetWorldlightsCount() );
+			dworldlight_t *wl = pWorld->GetWorldlights(pcache->m_LightStyleWorldLights[i]);//g_pHost->Host_GetWorldModel()->brush.pShared
 			Assert( wl->style != 0 );
 			// Is it a switchable light?
 			if( d_lightstylenumframes[wl->style] <= 1 )
@@ -2276,7 +2280,7 @@ void ClearStaticLightingCache()
 //-----------------------------------------------------------------------------
 // Recomputes all static prop lighting
 //-----------------------------------------------------------------------------
-void InvalidateStaticLightingCache(void)
+void InvalidateStaticLightingCache(model_t* pWorld)
 {
 	for ( PropLightcache_t *pCur=s_pAllStaticProps; pCur; pCur=pCur->m_pNextPropLightcache )
 	{
@@ -2284,14 +2288,14 @@ void InvalidateStaticLightingCache(void)
 		pCur->m_Flags = 0;
 		pCur->m_LightingFlags &=~HACKLIGHTCACHEFLAGS_HASDONESTATICLIGHTING;
 		
-		LightcacheGetStatic( ( LightCacheHandle_t )pCur, NULL, LIGHTCACHEFLAGS_STATIC );
+		LightcacheGetStatic(pWorld, ( LightCacheHandle_t )pCur, NULL, LIGHTCACHEFLAGS_STATIC );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Gets the lightcache entry for a static prop
 //-----------------------------------------------------------------------------
-LightingState_t *LightcacheGetStatic( LightCacheHandle_t cache, ITexture **pEnvCubemapTexture, unsigned int flags )
+LightingState_t *LightcacheGetStatic(model_t* pWorld, LightCacheHandle_t cache, ITexture **pEnvCubemapTexture, unsigned int flags )
 {
 	PropLightcache_t *pcache = ( PropLightcache_t * )cache;
 	Assert( pcache );
@@ -2343,7 +2347,7 @@ LightingState_t *LightcacheGetStatic( LightCacheHandle_t cache, ITexture **pEnvC
 		// want static lighting data
 		if ( bRecalcStaticLighting && !(pcache->m_LightingFlags & HACKLIGHTCACHEFLAGS_HASDONESTATICLIGHTING) )
 		{	
-			ComputeStaticLightingForCacheEntry( pcache, pcache->m_LightingOrigin, pcache->leaf, true );
+			ComputeStaticLightingForCacheEntry(pWorld, pcache, pcache->m_LightingOrigin, pcache->leaf, true );
 			pcache->m_LightingFlags |= HACKLIGHTCACHEFLAGS_HASDONESTATICLIGHTING;
 		}
 
@@ -2362,7 +2366,7 @@ LightingState_t *LightcacheGetStatic( LightCacheHandle_t cache, ITexture **pEnvC
 		if ( bRecalcLightStyles )
 		{
 			// accumulate lightstyles
-			AddLightStylesForStaticProp( pcache, accumulatedState );
+			AddLightStylesForStaticProp(pWorld, pcache, accumulatedState );
 			pcache->m_LightStyleLightingState = accumulatedState;
 			pcache->m_LastFrameUpdated_LightStyles = r_framecount;
 		}
@@ -2398,6 +2402,7 @@ LightingState_t *LightcacheGetStatic( LightCacheHandle_t cache, ITexture **pEnvC
 
 
 inline const byte *AddLightingState( 
+	model_t* pWorld,
 	LightingState_t &dst, 
 	const LightingState_t &src, 
 	LightingStateInfo_t &info,
@@ -2409,7 +2414,7 @@ inline const byte *AddLightingState(
 	int i;
 	for( i = 0; i < src.numlights; i++ )
 	{
-		pVis = AddWorldLightToLightingState( src.locallight[i], NULL, dst, info, bucketOrigin, pVis, 
+		pVis = AddWorldLightToLightingState(pWorld, src.locallight[i], NULL, dst, info, bucketOrigin, pVis,
 			bDynamic, bIgnoreVis );
 	}
 	for( i = 0; i < 6; i++ )
@@ -2424,7 +2429,7 @@ inline const byte *AddLightingState(
 // This is the version for dynamic objects.
 //-----------------------------------------------------------------------------
 
-const byte* PrecalcLightingState( lightcache_t *pCache, const byte *pVis )
+const byte* PrecalcLightingState(model_t* pWorld, lightcache_t *pCache, const byte *pVis )
 {
 	LightingState_t lightingState;
 	lightingState.ZeroLightingState();
@@ -2435,6 +2440,7 @@ const byte* PrecalcLightingState( lightcache_t *pCache, const byte *pVis )
 	for( i = 0; i < pCache->m_StaticLightingState.numlights; i++ )
 	{
 		pVis = AddWorldLightToLightingState( 
+			pWorld,
 			pCache->m_StaticLightingState.locallight[i], 
 			NULL,
 			lightingState, 
@@ -2606,7 +2612,7 @@ lightcache_t *FindNearestCache( int x, int y, int z, int leafIndex )
 }
 
 
-ITexture *LightcacheGetDynamic( const Vector& origin, LightingState_t& lightingState, 
+ITexture *LightcacheGetDynamic(model_t* pWorld, const Vector& origin, LightingState_t& lightingState, 
 							   LightcacheGetDynamic_Stats &stats, unsigned int flags, bool bDebugModel )
 {
 	VPROF_BUDGET( "LightcacheGet", VPROF_BUDGETGROUP_LIGHTCACHE );
@@ -2676,11 +2682,11 @@ ITexture *LightcacheGetDynamic( const Vector& origin, LightingState_t& lightingS
 		}
 
 		// Figure out which env_cubemap is used for this cache entry.
-		pCache->m_pEnvCubemapTexture = FindEnvCubemapForPoint( pCache->m_LightingOrigin );
+		pCache->m_pEnvCubemapTexture = FindEnvCubemapForPoint(pWorld, pCache->m_LightingOrigin );
 		
 		// Compute the static portion of the cache
-		pVis = ComputeStaticLightingForCacheEntry( pCache, pCache->m_LightingOrigin, originLeaf );	
-		pVis = PrecalcLightingState( pCache, pVis );
+		pVis = ComputeStaticLightingForCacheEntry(pWorld, pCache, pCache->m_LightingOrigin, originLeaf );
+		pVis = PrecalcLightingState(pWorld, pCache, pVis );
 	}
 
 	// NOTE: On a cache miss, this has to be after ComputeStaticLightingForCacheEntry since these flags are computed there.
@@ -2689,7 +2695,7 @@ ITexture *LightcacheGetDynamic( const Vector& origin, LightingState_t& lightingS
 	
 	if ( bComputeLightStyles )
 	{
-		pVis = ComputeLightStyles( pCache, pCache->m_LightStyleLightingState, pCache->m_LightingOrigin, originLeaf, pVis );
+		pVis = ComputeLightStyles(pWorld, pCache, pCache->m_LightStyleLightingState, pCache->m_LightingOrigin, originLeaf, pVis );
 		stats.m_bNeedsSwitchableLightStyleUpdate = true;
 	}
 	else
@@ -2700,7 +2706,7 @@ ITexture *LightcacheGetDynamic( const Vector& origin, LightingState_t& lightingS
 	stats.m_bHasDLights = false;
 	if ( flags & LIGHTCACHEFLAGS_DYNAMIC )
 	{
-		pVis = ComputeDynamicLighting( pCache, pCache->m_DynamicLightingState, pCache->m_LightingOrigin, originLeaf, pVis );
+		pVis = ComputeDynamicLighting(pWorld, pCache, pCache->m_DynamicLightingState, pCache->m_LightingOrigin, originLeaf, pVis );
 		if( pCache->m_DynamicLightingState.numlights > 0 )
 		{
 			stats.m_bHasDLights = true;
@@ -2718,13 +2724,13 @@ ITexture *LightcacheGetDynamic( const Vector& origin, LightingState_t& lightingS
 	
 	if ( flags & LIGHTCACHEFLAGS_LIGHTSTYLE )
 	{
-		pVis = AddLightingState( lightingState, pCache->m_LightStyleLightingState, info, pCache->m_LightingOrigin, pVis,
+		pVis = AddLightingState(pWorld, lightingState, pCache->m_LightStyleLightingState, info, pCache->m_LightingOrigin, pVis,
 			true /*bDynamic*/, false /*bIgnoreVis*/ );
 	}
 	
 	if ( flags & LIGHTCACHEFLAGS_DYNAMIC )
 	{
-		pVis = AddLightingState( lightingState, pCache->m_DynamicLightingState, info, pCache->m_LightingOrigin, pVis,
+		pVis = AddLightingState(pWorld, lightingState, pCache->m_DynamicLightingState, info, pCache->m_LightingOrigin, pVis,
 			true /*bDynamic*/, false /*bIgnoreVis*/ );
 	}
 	
@@ -2837,11 +2843,11 @@ static bool IsDynamicLight( dworldlight_t *pWorldLight )
 //-----------------------------------------------------------------------------
 // Computes an average color (of sorts) at a particular point + optional normal
 //-----------------------------------------------------------------------------
-void ComputeLighting( const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors )
+void ComputeLighting(model_t* pWorld, const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors )
 {
 	LightingState_t lightingState;
 	LightcacheGetDynamic_Stats stats;
-	LightcacheGetDynamic( pt, lightingState, stats, LIGHTCACHEFLAGS_STATIC|LIGHTCACHEFLAGS_DYNAMIC|LIGHTCACHEFLAGS_LIGHTSTYLE|LIGHTCACHEFLAGS_ALLOWFAST );
+	LightcacheGetDynamic(pWorld, pt, lightingState, stats, LIGHTCACHEFLAGS_STATIC|LIGHTCACHEFLAGS_DYNAMIC|LIGHTCACHEFLAGS_LIGHTSTYLE|LIGHTCACHEFLAGS_ALLOWFAST );
 	int i;
 	if ( pNormal )
 	{

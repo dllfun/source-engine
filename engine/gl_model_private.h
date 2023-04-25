@@ -32,6 +32,7 @@
 #include "mathlib/compressed_light_cube.h"
 #include "datacache/imdlcache.h"
 #include "bitmap/cubemap.h"
+#include "bsptreedata.h"
 
 
 //-----------------------------------------------------------------------------
@@ -356,84 +357,6 @@ struct spritedata_t
 	CEngineSprite	*sprite;
 };
 
-
-class model_t : public IVModel
-{
-public:
-	virtual int ModelFrameCount() const;
-	virtual bool IsTranslucent() const;
-	virtual int GetModelType() const;
-	virtual void GetModelRenderBounds(Vector& mins, Vector& maxs) const;
-	virtual studiohdr_t* GetStudiomodel() const;
-	virtual bool IsModelVertexLit() const;
-	virtual bool ModelHasMaterialProxy() const;
-	virtual void Mod_RecomputeTranslucency(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate = 1.0f);
-	virtual void* GetModelExtraData() const;
-	virtual const char* GetModelName() const;
-	virtual void GetIlluminationPoint(IClientRenderable* pRenderable, Vector const& origin,
-		QAngle const& angles, Vector* pLightingCenter) const;
-	virtual bool IsTranslucentTwoPass() const;
-	virtual MDLHandle_t	GetCacheHandle() const;
-	virtual void GetModelMaterialColorAndLighting(const Vector& origin,
-		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) const;
-	virtual void GetModelBounds(Vector& mins, Vector& maxs) const;
-	virtual int GetModelSpriteWidth() const;
-	virtual int GetModelSpriteHeight() const;
-	virtual const char* GetModelKeyValueText() const;
-	virtual bool IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const;
-
-
-public:
-	FileNameHandle_t	fnHandle;
-	CUtlString			strName;
-
-	int					nLoadFlags;		// mark loaded/not loaded
-	int					nServerCount;	// marked at load
-	IMaterial			**ppMaterials;	// null-terminated runtime material cache; ((intptr_t*)(ppMaterials))[-1] == nMaterials
-
-	modtype_t			type;
-	int					flags;			// MODELFLAG_???
-
-	// volume occupied by the model graphics	
-	Vector				mins, maxs;
-	float				radius;
-
-	union
-	{
-		brushdata_t		brush;
-		MDLHandle_t		studio;
-		spritedata_t	sprite;
-	};
-};
-
-
-//-----------------------------------------------------------------------------
-// Decals
-//-----------------------------------------------------------------------------
-
-struct decallist_t
-{
-	DECLARE_SIMPLE_DATADESC();
-
-	Vector		position;
-	char		name[ 128 ];
-	short		entityIndex;
-	byte		depth;
-	byte		flags;
-
-	// This is the surface plane that we hit so that we can move certain decals across
-	//  transitions if they hit similar geometry
-	Vector		impactPlaneNormal;
-};
-
-
-inline class IDispInfo *MLeaf_Disaplcement( mleaf_t *pLeaf, int index, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	Assert(index<pLeaf->dispCount);
-	int dispIndex = pData->m_pDispInfoReferences[pLeaf->dispListStart+index];
-	return DispInfo_IndexArray( pData->hDispInfos, dispIndex );
-}
-
 #define	MAXLIGHTMAPS	4
 
 // drawing surface flags
@@ -483,9 +406,9 @@ struct msurface1_t
 struct msurfacenormal_t
 {
 	unsigned int firstvertnormal;
-//	unsigned short	firstvertnormal;
-	// FIXME: Should I just point to the leaf here since it has this data?????????????
-//	short fogVolumeID;			// -1 if not in fog  
+	//	unsigned short	firstvertnormal;
+		// FIXME: Should I just point to the leaf here since it has this data?????????????
+	//	short fogVolumeID;			// -1 if not in fog  
 };
 #pragma pack()
 
@@ -493,7 +416,7 @@ struct msurfacenormal_t
 struct msurfacelighting_t
 {
 	// You read that minus sign right. See the comment below.
-	ColorRGBExp32 *AvgLightColor( int nLightStyleIndex ) { return m_pSamples - (nLightStyleIndex + 1); }
+	ColorRGBExp32* AvgLightColor(int nLightStyleIndex) { return m_pSamples - (nLightStyleIndex + 1); }
 
 	// Lightmap info
 	short m_LightmapMins[2];
@@ -505,16 +428,16 @@ struct msurfacelighting_t
 	int m_nDLightFrame;			// Indicates the last frame in which dlights illuminated this surface
 
 	unsigned char m_nStyles[MAXLIGHTMAPS];	// index into d_lightstylevalue[] for animated lights 
-											// no one surface can be effected by more than 4 
-											// animated lights.
+	// no one surface can be effected by more than 4 
+	// animated lights.
 
-	// NOTE: This is tricky. To get this to fit in a single cache line,
-	// and to save the extra memory of not having to store average light colors for
-	// lightstyles that are not used, I store between 0 and 4 average light colors +before+
-	// the samples, depending on how many lightstyles there are. Naturally, accessing
-	// an average color for an undefined lightstyle on the surface results in undefined results.
-	// 0->4 avg light colors, *in reverse order from m_nStyles* + [numstyles*surfsize]
-	ColorRGBExp32 *m_pSamples;
+// NOTE: This is tricky. To get this to fit in a single cache line,
+// and to save the extra memory of not having to store average light colors for
+// lightstyles that are not used, I store between 0 and 4 average light colors +before+
+// the samples, depending on how many lightstyles there are. Naturally, accessing
+// an average color for an undefined lightstyle on the surface results in undefined results.
+// 0->4 avg light colors, *in reverse order from m_nStyles* + [numstyles*surfsize]
+	ColorRGBExp32* m_pSamples;
 };
 
 const int WORLD_DECAL_HANDLE_INVALID = 0xFFFF;
@@ -528,7 +451,7 @@ struct msurface2_t
 	// These are packed in to flags now
 	//unsigned char			vertCount;		// number of verts for this surface
 	//unsigned char			sortGroup;		// only uses 2 bits, subdivide?
-	cplane_t				*plane;			// pointer to shared plane	
+	cplane_t* plane;			// pointer to shared plane	
 	int						firstvertindex;	// look up in model->vertindices[] (only uses 17-18 bits?)
 	WorldDecalHandle_t		decals;
 	ShadowDecalHandle_t		m_ShadowDecals; // unsigned short
@@ -539,284 +462,563 @@ struct msurface2_t
 	unsigned short			m_bDynamicShadowsEnabled : 1;	// Can this surface receive dynamic shadows?
 	unsigned short			texinfo : 15;
 
-	IDispInfo				*pDispInfo;         // displacement map information
+	IDispInfo* pDispInfo;         // displacement map information
 	int						visframe;		// should be drawn when node is crossed
 };
 #pragma pack()
 
-inline unsigned short MSurf_AreDynamicShadowsEnabled( SurfaceHandle_t surfID )
+class model_t : public IVModel
 {
-	return surfID->m_bDynamicShadowsEnabled;
-}
+public:
+	virtual int ModelFrameCount() const;
+	virtual bool IsTranslucent() const;
+	virtual int GetModelType() const;
+	virtual void GetModelRenderBounds(Vector& mins, Vector& maxs) const;
+	virtual studiohdr_t* GetStudiomodel() const;
+	virtual bool IsModelVertexLit() const;
+	virtual bool ModelHasMaterialProxy() const;
+	virtual void Mod_RecomputeTranslucency(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable, float fInstanceAlphaModulate = 1.0f);
+	virtual void* GetModelExtraData() const;
+	virtual const char* GetModelName() const;
+	virtual void GetIlluminationPoint(IClientRenderable* pRenderable, Vector const& origin,
+		QAngle const& angles, Vector* pLightingCenter) const;
+	virtual bool IsTranslucentTwoPass() const;
+	virtual MDLHandle_t	GetCacheHandle() const;
+	virtual void GetModelMaterialColorAndLighting(IVModel* pWorld, const Vector& origin,
+		const QAngle& angles, trace_t* pTrace, Vector& lighting, Vector& matColor) const;
+	virtual void GetModelBounds(Vector& mins, Vector& maxs) const;
+	virtual int GetModelSpriteWidth() const;
+	virtual int GetModelSpriteHeight() const;
+	virtual const char* GetModelKeyValueText() const;
+	virtual bool IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const;
 
-inline int MSurf_Index( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = surfID - pData->surfaces2;
-	Assert(surfaceIndex >= 0 && surfaceIndex < pData->numsurfaces);
-	return surfaceIndex;
-}
+	
+	void		SetupSubModels(CUtlVector<model_t>&	m_InlineModels,	CUtlVector<mmodel_t>& list);
 
-inline const SurfaceHandle_t SurfaceHandleFromIndex( int surfaceIndex, const worldbrushdata_t *pData )
-{
-	return &pData->surfaces2[surfaceIndex];
-}
+	// Returns the number of leaves
+	int LeafCount() const;
+	// Enumerates the leaves along a ray, box, etc.
+	bool EnumerateLeavesAtPoint(const Vector& pt, ISpatialLeafEnumerator* pEnum, intp context);
+	bool EnumerateLeavesInBox(const Vector& mins, const Vector& maxs, ISpatialLeafEnumerator* pEnum, intp context);
+	bool EnumerateLeavesInSphere(const Vector& center, float radius, ISpatialLeafEnumerator* pEnum, intp context);
+	bool EnumerateLeavesAlongRay(Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context);
+	int LeafToIndex(mleaf_t* pLeaf);
 
-inline SurfaceHandle_t SurfaceHandleFromIndex( int surfaceIndex, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	return &pData->surfaces2[surfaceIndex];
-}
+	inline class IDispInfo* MLeaf_Disaplcement(mleaf_t* pLeaf, int index)
+	{
+		Assert(index < pLeaf->dispCount);
+		int dispIndex = brush.pShared->m_pDispInfoReferences[pLeaf->dispListStart + index];
+		return DispInfo_IndexArray(brush.pShared->hDispInfos, dispIndex);
+	}
+	inline int MSurf_Index(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = surfID - brush.pShared->surfaces2;
+		Assert(surfaceIndex >= 0 && surfaceIndex < brush.pShared->numsurfaces);
+		return surfaceIndex;
+	}
+	inline SurfaceHandle_t SurfaceHandleFromIndex(int surfaceIndex) const
+	{
+		return &brush.pShared->surfaces2[surfaceIndex];
+	}
+	inline int& MSurf_DLightBits(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfacelighting[surfaceIndex].m_fDLightBits;
+	}
+	inline int* MSurf_TextureMins(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfaces1[surfaceIndex].textureMins;
+	}
+	inline short* MSurf_TextureExtents(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfaces1[surfaceIndex].textureExtents;
+	}
+	inline short* MSurf_LightmapMins(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfacelighting[surfaceIndex].m_LightmapMins;
+	}
+	inline short* MSurf_LightmapExtents(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfacelighting[surfaceIndex].m_LightmapExtents;
+	}
+	inline mtexinfo_t* MSurf_TexInfo(SurfaceHandle_t surfID)
+	{
+		return &brush.pShared->texinfo[surfID->texinfo];
+	}
+	inline ColorRGBExp32* MSurf_AvgLightColor(SurfaceHandle_t surfID, int nIndex)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfacelighting[surfaceIndex].AvgLightColor(nIndex);
+	}
+	inline byte* MSurf_Styles(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfacelighting[surfaceIndex].m_nStyles;
+	}
+	inline bool SurfaceHasDispInfo(SurfaceHandle_t surfID)
+	{
+		return (MSurf_Flags(surfID) & SURFDRAW_HAS_DISP) ? true : false;
+	}
+	inline bool SurfaceHasPrims(SurfaceHandle_t surfID)
+	{
+		return (MSurf_Flags(surfID) & SURFDRAW_HAS_PRIMS) ? true : false;
+	}
+	inline unsigned short MSurf_NumPrims(SurfaceHandle_t surfID)
+	{
+		if (SurfaceHasDispInfo(surfID) || !SurfaceHasPrims(surfID))
+			return 0;
 
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfaces1[surfaceIndex].prims.numPrims;
+	}
+	inline unsigned short MSurf_FirstPrimID(SurfaceHandle_t surfID)
+	{
+		if (SurfaceHasDispInfo(surfID))
+			return 0;
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfaces1[surfaceIndex].prims.firstPrimID;
+	}
+	inline ColorRGBExp32* MSurf_Samples(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfacelighting[surfaceIndex].m_pSamples;
+	}
+	inline IDispInfo* MSurf_DispInfo(SurfaceHandle_t surfID)
+	{
+		return surfID->pDispInfo;
+	}
+	//inline unsigned short &MSurf_FirstVertNormal( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldbrush )
+	inline unsigned int& MSurf_FirstVertNormal(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		Assert(brush.pShared->surfacenormals[surfaceIndex].firstvertnormal < MAX_MAP_VERTNORMALINDICES);
+		return brush.pShared->surfacenormals[surfaceIndex].firstvertnormal;
+	}
+	inline short& MSurf_MaterialSortID(SurfaceHandle_t surfID)
+	{
+		return surfID->materialSortID;
+	}
+	inline short* MSurf_OffsetIntoLightmapPage(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return brush.pShared->surfacelighting[surfaceIndex].m_OffsetIntoLightmapPage;
+	}
+	inline cplane_t& MSurf_Plane(SurfaceHandle_t surfID)
+	{
+		return *surfID->plane;
+	}
+	inline VPlane MSurf_GetForwardFacingPlane(SurfaceHandle_t surfID)
+	{
+		//	ASSERT_SURF_VALID( surfID );
+		Assert(brush.pShared);
+		return VPlane(MSurf_Plane(surfID).normal, MSurf_Plane(surfID).dist);
+	}
+	inline OverlayFragmentHandle_t& MSurf_OverlayFragmentList(SurfaceHandle_t surfID)
+	{
+		return surfID->m_nFirstOverlayFragment;
+	}
+	inline msurfacelighting_t* SurfaceLighting(SurfaceHandle_t surfID)
+	{
+		int surfaceIndex = MSurf_Index(surfID);
+		Assert(brush.pShared);
+		return &brush.pShared->surfacelighting[surfaceIndex];
+	}
+	inline unsigned short MSurf_AreDynamicShadowsEnabled(SurfaceHandle_t surfID)
+	{
+		return surfID->m_bDynamicShadowsEnabled;
+	}
+	//inline const SurfaceHandle_t SurfaceHandleFromIndex(int surfaceIndex)
+	//{
+	//	return &brush.pShared->surfaces2[surfaceIndex];
+	//}
 #if _DEBUG
 #define ASSERT_SURF_VALID(surfID) MSurf_Index(surfID)
 #else
 #define ASSERT_SURF_VALID(surfID)
 #endif
 
-inline unsigned int& MSurf_Flags( SurfaceHandle_t surfID )
-{
-	return surfID->flags;
-}
+	inline unsigned int& MSurf_Flags(SurfaceHandle_t surfID)
+	{
+		return surfID->flags;
+	}
+	inline int& MSurf_VisFrame(SurfaceHandle_t surfID)
+	{
+		return surfID->visframe;
+	}
 
-inline bool SurfaceHasDispInfo( SurfaceHandle_t surfID )
-{
-	return ( MSurf_Flags( surfID ) & SURFDRAW_HAS_DISP ) ? true : false;
-}
+	inline int MSurf_SortGroup(SurfaceHandle_t surfID)
+	{
+		return (surfID->flags & SURFDRAW_SORTGROUP_MASK) >> SURFDRAW_SORTGROUP_SHIFT;
+	}
 
-inline bool SurfaceHasPrims( SurfaceHandle_t surfID )
-{
-	return ( MSurf_Flags( surfID ) & SURFDRAW_HAS_PRIMS ) ? true : false;
-}
+	inline void MSurf_SetSortGroup(SurfaceHandle_t surfID, int sortGroup)
+	{
+		unsigned int flags = (sortGroup << SURFDRAW_SORTGROUP_SHIFT) & SURFDRAW_SORTGROUP_MASK;
+		surfID->flags |= flags;
+	}
+	/*
+	inline int& MSurf_DLightFrame( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldbrush )
+	{
+	//	ASSERT_SURF_VALID( surfID );
+		Assert( pData );
+		return pData->surfacelighting[surfID].dlightframe;
+	}
+	*/
+	inline int& MSurf_FirstVertIndex(SurfaceHandle_t surfID)
+	{
+		return surfID->firstvertindex;
+	}
 
-inline int& MSurf_VisFrame( SurfaceHandle_t surfID )
-{
-	return surfID->visframe;
-}
+	inline int MSurf_VertCount(SurfaceHandle_t surfID) const
+	{
+		return (surfID->flags >> SURFDRAW_VERTCOUNT_SHIFT) & 0xFF;
+	}
 
-inline int MSurf_SortGroup( SurfaceHandle_t surfID )
-{
-	return (surfID->flags & SURFDRAW_SORTGROUP_MASK) >> SURFDRAW_SORTGROUP_SHIFT;
-}
+	inline void MSurf_SetVertCount(SurfaceHandle_t surfID, int vertCount)
+	{
+		int flags = (vertCount << SURFDRAW_VERTCOUNT_SHIFT) & SURFDRAW_VERTCOUNT_MASK;
+		surfID->flags |= flags;
+	}
+	inline short MSurf_MaxLightmapSizeWithBorder(SurfaceHandle_t surfID)
+	{
+		//	ASSERT_SURF_VALID( surfID );
+		return SurfaceHasDispInfo(surfID) ? MAX_DISP_LIGHTMAP_DIM_INCLUDING_BORDER : MAX_BRUSH_LIGHTMAP_DIM_INCLUDING_BORDER;
+	}
 
-inline void MSurf_SetSortGroup( SurfaceHandle_t surfID, int sortGroup )
-{
-	unsigned int flags = (sortGroup << SURFDRAW_SORTGROUP_SHIFT) & SURFDRAW_SORTGROUP_MASK;
-	surfID->flags |= flags;
-}
+	inline short MSurf_MaxLightmapSizeWithoutBorder(SurfaceHandle_t surfID)
+	{
+		//	ASSERT_SURF_VALID( surfID );
+		return SurfaceHasDispInfo(surfID) ? MAX_DISP_LIGHTMAP_DIM_WITHOUT_BORDER : MAX_BRUSH_LIGHTMAP_DIM_WITHOUT_BORDER;
+	}
+	inline WorldDecalHandle_t& MSurf_Decals(SurfaceHandle_t surfID)
+	{
+		return surfID->decals;
+	}
+	inline bool SurfaceHasDecals(SurfaceHandle_t surfID)
+	{
+		return (MSurf_Decals(surfID) != WORLD_DECAL_HANDLE_INVALID) ? true : false;
+	}
 
-/*
-inline int& MSurf_DLightFrame( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldbrush )
-{
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfID].dlightframe;
-}
-*/
-inline int& MSurf_DLightBits( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfaceIndex].m_fDLightBits;
-}
+	inline ShadowDecalHandle_t& MSurf_ShadowDecals(SurfaceHandle_t surfID)
+	{
+		return surfID->m_ShadowDecals;
+	}
+	/*
+	inline int *MSurf_CachedLight( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared )
+	{
+	//	ASSERT_SURF_VALID( surfID );
+		Assert( pData );
+		return pData->surfacelighting[surfID].cached_light;
+	}
 
-inline cplane_t& MSurf_Plane( SurfaceHandle_t surfID )
-{
-	return *surfID->plane;
-}
+	inline short& MSurf_CachedDLight( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared )
+	{
+	//	ASSERT_SURF_VALID( surfID );
+		Assert( pData );
+		return pData->surfacelighting[surfID].cached_dlight;
+	}
+	*/
+	inline unsigned short& MSurf_VertBufferIndex(SurfaceHandle_t surfID)
+	{
+		return surfID->vertBufferIndex;
+	}
+	Vector GetMins() {
+		return mins;
+	}
+	Vector GetMaxs() {
+		return maxs;
+	}
+	int GetPrimitivesCount() {
+		return brush.pShared->numprimitives;
+	}
+	mprimitive_t* GetPrimitives(unsigned short index) {
+		return &brush.pShared->primitives[index];
+	}
+	unsigned short GetPrimindices(unsigned short index) {
+		return brush.pShared->primindices[index];
+	}
+	int GetCubemapSamplesCount() {
+		return brush.pShared->m_nCubemapSamples;
+	}
+	mcubemapsample_t* GetCubemapSamples(int index) {
+		return &brush.pShared->m_pCubemapSamples[index];
+	}
+	SurfaceHandle_t* GetMarkSurface(unsigned short index) {
+		return &brush.pShared->marksurfaces[index];
+	}
+	unsigned short* GetVertindices(int index) {
+		return &brush.pShared->vertindices[index];
+	}
+	mvertex_t* GetVertexes(int index){
+		return &brush.pShared->vertexes[index];
+	}
+	Vector& GetVertnormals(int index) {
+		return brush.pShared->vertnormals[index];
+	}
+	unsigned short GetVertnormalindices(int index) {
+		return brush.pShared->vertnormalindices[index];
+	}
+	int GetLeafCount() {
+		return brush.pShared->numleafs;
+	}
+	mleaf_t* GetLeafs(int index) {
+		return &brush.pShared->leafs[index];
+	}
+	int GetLeafArea(int index) {
+		return brush.pShared->leafs[index].area;
+	}
+	int GetNodesCount() {
+		return brush.pShared->numnodes;
+	}
+	mnode_t* GetNode(int index) {
+		return &brush.pShared->nodes[index];
+	}
+	mnode_t* GetFirstNode() {
+		return &brush.pShared->nodes[brush.firstnode];
+	}
+	HDISPINFOARRAY GetDispInfos() const{
+		return brush.pShared->hDispInfos;
+	}
+	void SetDispInfos(HDISPINFOARRAY hDispInfos) {
+		brush.pShared->hDispInfos = hDispInfos;
+	}
+	int GetPrimvertsCount() {
+		return brush.pShared->numprimverts;
+	}
+	mprimvert_t& GetPrimverts(int index) {
+		return brush.pShared->primverts[index];
+	}
+	ColorRGBExp32* GetLightdata() {
+		return brush.pShared->lightdata;
+	}
+	void SetLightdata(ColorRGBExp32* lightdata) {
+		brush.pShared->lightdata = lightdata;
+	}
+	int GetSurfacesCount() {
+		return brush.pShared->numsurfaces;
+	}
+	msurfacelighting_t* GetSurfacelighting() {
+		return brush.pShared->surfacelighting;
+	}
+	void SetUnloadedlightmaps(bool unloadedlightmaps) {
+		brush.pShared->unloadedlightmaps = unloadedlightmaps;
+	}
+	bool GetUnloadedlightmaps() {
+		return brush.pShared->unloadedlightmaps;
+	}
+	modtype_t GetModelType() {
+		return type;
+	}
+	MDLHandle_t		GetStudio() const{
+		return studio;
+	}
+	mleafambientindex_t* GetLeafAmbient(int index) {
+		return &brush.pShared->m_pLeafAmbient[index];
+	}
+	mleafambientlighting_t& GetAmbientSamples(int index) {
+		return brush.pShared->m_pAmbientSamples[index];
+	}
+	int GetTexinfoCount() {
+		return brush.pShared->numtexinfo;
+	}
+	mtexinfo_t* GetTexinfo(int index) {
+		return &brush.pShared->texinfo[index];
+	}
+	int GetModelsurfacesCount() const{
+		return brush.nummodelsurfaces;
+	}
+	int GetFirstmodelsurface() const{
+		return brush.firstmodelsurface;
+	}
+	int GetLeafwaterdataCount() {
+		return brush.pShared->numleafwaterdata;
+	}
+	mleafwaterdata_t* GetLeafwaterdata(int index) {
+		return &brush.pShared->leafwaterdata[index];
+	}
+	unsigned short* GetLeafMinDistToWater(int index) {
+		return &brush.pShared->m_LeafMinDistToWater[index];
+	}
+	int			GetSubmodelsCount() {
+		return brush.pShared->numsubmodels;
+	}
+	void SetRenderHandle(unsigned short	renderHandle) {
+		brush.renderHandle= renderHandle;
+	}
+	unsigned short	GetRenderHandle() {
+		return brush.renderHandle;
+	}
+	int GetDispInfosCount() {
+		return brush.pShared->numDispInfos;
+	}
+	void SetDispInfosCount(int numDispInfos) {
+		brush.pShared->numDispInfos = numDispInfos;
+	}
+	int& GetModelFlag() {
+		return flags;
+	}
+	int& GetLoadFlags() {
+		return nLoadFlags;
+	}
+	int& GetServerCount() {
+		return nServerCount;
+	}
+	void SetBoundsFromStudioHdr(MDLHandle_t handle);
+	void SetModelType(modtype_t	type) {
+		this->type = type;
+	}
+	void SetStudio(MDLHandle_t		studio) {
+		this->studio = studio;
+	}
+	IMaterial** GetMaterials() {
+		return ppMaterials;
+	}
+	int	GetWorldlightsCount() {
+		return brush.pShared->numworldlights;
+	}
+	dworldlight_t* GetWorldlights(int index) {
+		return &brush.pShared->worldlights[index];
+	}
 
-inline int& MSurf_FirstVertIndex( SurfaceHandle_t surfID )
-{
-	return surfID->firstvertindex;
-}
+	int	GetAreaPortalsCount() {
+		return brush.pShared->m_nAreaPortals;
+	}
+	dareaportal_t* GetAreaPortals(int index) {
+		return &brush.pShared->m_pAreaPortals[index];
+	}
+	Vector GetClipPortalVerts(int index) {
+		return brush.pShared->m_pClipPortalVerts[index];
+	}
+	lightzbuffer_t* GetShadowzbuffers(int index) {
+		return &brush.pShared->shadowzbuffers[index];
+	}
+	FileNameHandle_t	GetFnHandle() {
+		return fnHandle;
+	}
+	float				GetRadius() const{
+		return radius;
+	}
+	int* GetOccludervertindices(int index) {
+		return &brush.pShared->occludervertindices[index];
+	}
+	doccluderdata_t* GetOccluders(int index) {
+		return &brush.pShared->occluders[index];
+	}
+	int			GetOccludersCount() {
+		return brush.pShared->numoccluders;
+	}
+	doccluderpolydata_t* GetOccluderpolys(int index) {
+		return &brush.pShared->occluderpolys[index];
+	}
+	cplane_t& GetPlanes(int index) {
+		return brush.pShared->planes[index];
+	}
+	int	GetAreasCount() {
+		return brush.pShared->m_nAreas;
+	}
+	darea_t* GetAreas(int index) {
+		return &brush.pShared->m_pAreas[index];
+	}
+private:
+	void Mod_LoadLighting(CMapLoadHelper& lh);
+	void Mod_LoadWorldlights(CMapLoadHelper& lh, bool bIsHDR);
+	void Mod_LoadVertices();
+	void Mod_LoadSubmodels(CUtlVector<mmodel_t>& submodelList);
+	medge_t* Mod_LoadEdges();
+	void Mod_LoadOcclusion();
+	void Mod_LoadTexdata();
+	void Mod_LoadTexinfo();
+	void Mod_LoadVertNormals();
+	void Mod_LoadVertNormalIndices();
+	void Mod_LoadPrimitives();
+	void Mod_LoadPrimVerts();
+	void Mod_LoadPrimIndices();
+	void Mod_LoadFaces();
+	void Mod_LoadNodes();
+	void Mod_LoadLeafs_Version_0(CMapLoadHelper& lh);
+	void Mod_LoadLeafs_Version_1(CMapLoadHelper& lh, CMapLoadHelper& ambientLightingLump, CMapLoadHelper& ambientLightingTable);
+	void Mod_LoadLeafs();
+	void Mod_LoadLeafWaterData();
+	void Mod_LoadCubemapSamples();
+	void Mod_LoadLeafMinDistToWater();
+	void Mod_LoadMarksurfaces();
+	void Mod_LoadSurfedges(medge_t* pedges);
+	void Mod_LoadPlanes();
 
-inline int MSurf_VertCount( SurfaceHandle_t surfID )
-{
-	return (surfID->flags >> SURFDRAW_VERTCOUNT_SHIFT) & 0xFF;
-}
+	FileNameHandle_t	fnHandle;
+	CUtlString			strName;
 
-inline void MSurf_SetVertCount( SurfaceHandle_t surfID, int vertCount )
-{
-	int flags = (vertCount << SURFDRAW_VERTCOUNT_SHIFT) & SURFDRAW_VERTCOUNT_MASK;
-	surfID->flags |= flags;
-}
+	int					nLoadFlags;		// mark loaded/not loaded
+	int					nServerCount;	// marked at load
+	IMaterial			**ppMaterials;	// null-terminated runtime material cache; ((intptr_t*)(ppMaterials))[-1] == nMaterials
 
-inline int *MSurf_TextureMins( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfaces1[surfaceIndex].textureMins;
-}
+	modtype_t			type;
+	int					flags;			// MODELFLAG_???
 
-inline short *MSurf_TextureExtents( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfaces1[surfaceIndex].textureExtents;
-}
+	// volume occupied by the model graphics	
+	Vector				mins, maxs;
+	float				radius;
 
-inline short *MSurf_LightmapMins( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfaceIndex].m_LightmapMins;
-}
+	union
+	{
+		brushdata_t		brush;
+		MDLHandle_t		studio;
+		spritedata_t	sprite;
+	};
 
-inline short *MSurf_LightmapExtents( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfaceIndex].m_LightmapExtents;
-}
+	friend class CModelLoader;
+};
 
-inline short MSurf_MaxLightmapSizeWithBorder( SurfaceHandle_t surfID )
-{
-//	ASSERT_SURF_VALID( surfID );
-	return SurfaceHasDispInfo( surfID ) ? MAX_DISP_LIGHTMAP_DIM_INCLUDING_BORDER : MAX_BRUSH_LIGHTMAP_DIM_INCLUDING_BORDER;
-}
-
-inline short MSurf_MaxLightmapSizeWithoutBorder( SurfaceHandle_t surfID )
-{
-//	ASSERT_SURF_VALID( surfID );
-	return SurfaceHasDispInfo( surfID ) ? MAX_DISP_LIGHTMAP_DIM_WITHOUT_BORDER : MAX_BRUSH_LIGHTMAP_DIM_WITHOUT_BORDER;
-}
-
-inline mtexinfo_t *MSurf_TexInfo( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	return &pData->texinfo[surfID->texinfo];
-}
-
-inline WorldDecalHandle_t& MSurf_Decals( SurfaceHandle_t surfID )
-{
-	return surfID->decals;
-}
-
-inline bool SurfaceHasDecals( SurfaceHandle_t surfID )
-{
-	return ( MSurf_Decals( surfID ) != WORLD_DECAL_HANDLE_INVALID ) ? true : false;
-}
-
-inline ShadowDecalHandle_t& MSurf_ShadowDecals( SurfaceHandle_t surfID )
-{
-	return surfID->m_ShadowDecals;
-}
-
-
-inline ColorRGBExp32 *MSurf_AvgLightColor( SurfaceHandle_t surfID, int nIndex, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfaceIndex].AvgLightColor(nIndex);
-}
-
-inline byte *MSurf_Styles( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfaceIndex].m_nStyles;
-}
-
-/*
-inline int *MSurf_CachedLight( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared )
-{
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfID].cached_light;
-}
-
-inline short& MSurf_CachedDLight( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldmodel->brush.pShared )
-{
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfID].cached_dlight;
-}
-*/
-
-inline unsigned short MSurf_NumPrims( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	if ( SurfaceHasDispInfo( surfID ) || !SurfaceHasPrims( surfID ))
-		return 0;
-
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfaces1[surfaceIndex].prims.numPrims;
-}
-
-inline unsigned short MSurf_FirstPrimID( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	if ( SurfaceHasDispInfo( surfID ) )
-		return 0;
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfaces1[surfaceIndex].prims.firstPrimID;
-}
-
-inline ColorRGBExp32 *MSurf_Samples( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfaceIndex].m_pSamples;
-}
-
-inline IDispInfo *MSurf_DispInfo( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	return surfID->pDispInfo;
-}
-
-//inline unsigned short &MSurf_FirstVertNormal( SurfaceHandle_t surfID, worldbrushdata_t *pData = host_state.worldbrush )
-inline unsigned int &MSurf_FirstVertNormal( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	Assert( pData->surfacenormals[surfaceIndex].firstvertnormal < MAX_MAP_VERTNORMALINDICES );
-	return pData->surfacenormals[surfaceIndex].firstvertnormal;
-}
-
-inline unsigned short &MSurf_VertBufferIndex( SurfaceHandle_t surfID )
-{
-	return surfID->vertBufferIndex;
-}
-
-inline short& MSurf_MaterialSortID( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
+inline short& MSurf_MaterialSortID(SurfaceHandle_t surfID)
 {
 	return surfID->materialSortID;
 }
+//-----------------------------------------------------------------------------
+// Decals
+//-----------------------------------------------------------------------------
 
-inline short *MSurf_OffsetIntoLightmapPage( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
+struct decallist_t
 {
-	int surfaceIndex = MSurf_Index(surfID,pData);
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return pData->surfacelighting[surfaceIndex].m_OffsetIntoLightmapPage;
-}
+	DECLARE_SIMPLE_DATADESC();
 
-inline VPlane MSurf_GetForwardFacingPlane( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-//	ASSERT_SURF_VALID( surfID );
-	Assert( pData );
-	return VPlane( MSurf_Plane( surfID).normal, MSurf_Plane( surfID ).dist );
-}
+	Vector		position;
+	char		name[ 128 ];
+	short		entityIndex;
+	byte		depth;
+	byte		flags;
 
+	// This is the surface plane that we hit so that we can move certain decals across
+	//  transitions if they hit similar geometry
+	Vector		impactPlaneNormal;
+};
 
-inline OverlayFragmentHandle_t &MSurf_OverlayFragmentList( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	return surfID->m_nFirstOverlayFragment;
-}
-
-inline msurfacelighting_t *SurfaceLighting( SurfaceHandle_t surfID, worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared)
-{
-	int surfaceIndex = MSurf_Index(surfID,pData);
-	Assert( pData );
-	return &pData->surfacelighting[surfaceIndex];
-}
 
 #endif // GL_MODEL_PRIVATE_H

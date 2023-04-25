@@ -35,12 +35,12 @@ public:
 
 // Copies cl.pAreaBits, finds the area the viewer is in, and figures out what
 // other areas are visible. The new bits are placed in g_RenderAreaBits.
-void R_SetupAreaBits( int iForceViewLeaf = -1, const VisOverrideData_t* pVisData = NULL, float *pWaterReflectionHeight = NULL );
+void R_SetupAreaBits(model_t* pWorld, int iForceViewLeaf = -1, const VisOverrideData_t* pVisData = NULL, float *pWaterReflectionHeight = NULL );
 
 // Ask if an area is visible to the renderer.
 unsigned char R_IsAreaVisible( int area );
 
-void R_Areaportal_LevelInit();
+void R_Areaportal_LevelInit(model_t* pWorld);
 void R_Areaportal_LevelShutdown();
 
 // Decides if the node can be seen through the area portals (ie: if you're

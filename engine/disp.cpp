@@ -487,7 +487,7 @@ bool DispInfoRenderDebugModes()
 	return false;
 }
 
-bool CDispInfo::Render( CGroupMesh *pGroup, bool bAllowDebugModes )
+bool CDispInfo::Render(model_t* pWorld, CGroupMesh *pGroup, bool bAllowDebugModes )
 {
 #ifndef SWDS
 	if( !m_pMesh )
@@ -515,7 +515,7 @@ bool CDispInfo::Render( CGroupMesh *pGroup, bool bAllowDebugModes )
 		
 		if( mat_luxels.GetInt() )
 		{
-			pRenderContext->Bind( MSurf_TexInfo( m_ParentSurfID )->material );
+			pRenderContext->Bind(pWorld->MSurf_TexInfo( m_ParentSurfID )->material );
 			//SpecifyDynamicMesh();
 
 			pGroup->m_pMesh->Draw( m_iIndexOffset, m_nIndices );
@@ -527,7 +527,7 @@ bool CDispInfo::Render( CGroupMesh *pGroup, bool bAllowDebugModes )
 
 		if ( r_DispWalkable.GetInt() || r_DispBuildable.GetInt() )
 		{
-			pRenderContext->Bind( MSurf_TexInfo( m_ParentSurfID )->material );
+			pRenderContext->Bind(pWorld->MSurf_TexInfo( m_ParentSurfID )->material );
 			pGroup->m_pMesh->Draw( m_iIndexOffset, m_nIndices );
 
 			if ( r_DispWalkable.GetInt() )
@@ -547,7 +547,7 @@ bool CDispInfo::Render( CGroupMesh *pGroup, bool bAllowDebugModes )
 			VectorAdd( bbMin, bbMax, vecCenter );
 			vecCenter *= 0.5f;
 
-			intp nInt = ( mat_surfaceid.GetInt() != 2 ) ? (intp)m_ParentSurfID : (SurfaceHandle_t)m_ParentSurfID - g_pHost->Host_GetWorldModel()->brush.pShared->surfaces2;
+			intp nInt = (mat_surfaceid.GetInt() != 2) ? (intp)m_ParentSurfID : pWorld->MSurf_Index((SurfaceHandle_t)m_ParentSurfID);// -pWorld->brush.pShared->surfaces2;
 			char buf[32];
 			Q_snprintf( buf, sizeof( buf ), "%d", (int)nInt );
 			CDebugOverlay::AddTextOverlay( vecCenter, 0, buf );
@@ -560,7 +560,7 @@ bool CDispInfo::Render( CGroupMesh *pGroup, bool bAllowDebugModes )
 			VectorAdd( bbMin, bbMax, vecCenter );
 			vecCenter *= 0.5f;
 
-			mtexinfo_t * pTexInfo = MSurf_TexInfo(m_ParentSurfID);
+			mtexinfo_t * pTexInfo = pWorld->MSurf_TexInfo(m_ParentSurfID);
 
 			const char *pFullMaterialName = pTexInfo->material ? pTexInfo->material->GetName() : "no material";
 			const char *pSlash = strrchr( pFullMaterialName, '/' );
@@ -707,12 +707,12 @@ static void	ProcessLightmapSampleAlpha( const ProcessLightmapSampleData_t &data,
 
 // This iterates over all the lightmap samples and for each one, calls:
 // T::ProcessLightmapSample( Vector const &vPos, int t, int s, int tmax, int smax );
-void IterateLightmapSamples( CDispInfo *pDisp, const ProcessLightmapSampleData_t &data )
+void IterateLightmapSamples(model_t* pWorld, CDispInfo *pDisp, const ProcessLightmapSampleData_t &data )
 {
 	ASSERT_SURF_VALID( pDisp->m_ParentSurfID );
 
-	int smax = MSurf_LightmapExtents( pDisp->m_ParentSurfID )[0] + 1;
-	int tmax = MSurf_LightmapExtents( pDisp->m_ParentSurfID )[1] + 1;
+	int smax = pWorld->MSurf_LightmapExtents( pDisp->m_ParentSurfID )[0] + 1;
+	int tmax = pWorld->MSurf_LightmapExtents( pDisp->m_ParentSurfID )[1] + 1;
 
 	unsigned char *pCurSample = &g_DispLightmapSamplePositions[pDisp->m_iLightmapSamplePositionStart];
 
@@ -746,7 +746,7 @@ void IterateLightmapSamples( CDispInfo *pDisp, const ProcessLightmapSampleData_t
 				pDisp->m_MeshReader.Position( pTri->m_Indices[1] ) * b +
 				pDisp->m_MeshReader.Position( pTri->m_Indices[2] ) * c;
 			Vector vNormal, vTangentS, vTangentT;
-			if( pDisp->NumLightMaps() > 1 )
+			if( pDisp->NumLightMaps(pWorld) > 1 )
 			{
 				vNormal = 
 					pDisp->m_MeshReader.Normal( pTri->m_Indices[0] ) * a +
@@ -767,7 +767,7 @@ void IterateLightmapSamples( CDispInfo *pDisp, const ProcessLightmapSampleData_t
 	}
 }
 
-void CDispInfo::AddSingleDynamicLight( dlight_t& dl )
+void CDispInfo::AddSingleDynamicLight(model_t* pWorld, dlight_t& dl )
 {
 #ifndef SWDS
 	ProcessLightmapSampleData_t data;
@@ -787,11 +787,11 @@ void CDispInfo::AddSingleDynamicLight( dlight_t& dl )
 	data.pProcessLightmapSampleDataFunc = &ProcessLightmapSample;
 
 	// Touch all the lightmap samples.
-	IterateLightmapSamples( this, data );
+	IterateLightmapSamples(pWorld, this, data );
 #endif
 }
 
-void CDispInfo::AddSingleDynamicLightBumped( dlight_t& dl )
+void CDispInfo::AddSingleDynamicLightBumped(model_t* pWorld, dlight_t& dl )
 {
 #ifndef SWDS
 	ProcessLightmapSampleData_t data;
@@ -812,11 +812,11 @@ void CDispInfo::AddSingleDynamicLightBumped( dlight_t& dl )
 	data.pProcessLightmapSampleDataFunc = &ProcessLightmapSampleBumped;
 
 	// Touch all the lightmap samples.
-	IterateLightmapSamples( this, data );
+	IterateLightmapSamples(pWorld, this, data );
 #endif
 }
 
-void CDispInfo::AddSingleDynamicAlphaLight( dlight_t& dl )
+void CDispInfo::AddSingleDynamicAlphaLight(model_t* pWorld, dlight_t& dl )
 {
 #ifndef SWDS
 	ProcessLightmapSampleData_t data;
@@ -837,7 +837,7 @@ void CDispInfo::AddSingleDynamicAlphaLight( dlight_t& dl )
 	data.pProcessLightmapSampleDataFunc = &ProcessLightmapSampleAlpha;
 
 	// Touch all the lightmap samples.
-	IterateLightmapSamples( this, data );
+	IterateLightmapSamples(pWorld, this, data );
 #endif
 }
 
@@ -1004,7 +1004,7 @@ Vector CDispInfo::GetFlatVert( int iVertex )
 // Computes the texture + lightmap coordinate given a displacement uv
 //-----------------------------------------------------------------------------
 
-void CDispInfo::ComputeLightmapAndTextureCoordinate( RayDispOutput_t const& output, 
+void CDispInfo::ComputeLightmapAndTextureCoordinate(model_t* pWorld, RayDispOutput_t const& output,
 													Vector2D* luv, Vector2D* tuv )
 {	
 #ifndef SWDS
@@ -1021,14 +1021,14 @@ void CDispInfo::ComputeLightmapAndTextureCoordinate( RayDispOutput_t const& outp
 		// it to be in the space of the surface
 		int lightmapPageWidth, lightmapPageHeight;
 		materials->GetLightmapPageSize( 
-			SortInfoToLightmapPage(MSurf_MaterialSortID( m_ParentSurfID ) ),
+			SortInfoToLightmapPage(pWorld->MSurf_MaterialSortID( m_ParentSurfID ) ),
 			&lightmapPageWidth, &lightmapPageHeight );
 
 		luv->x *= lightmapPageWidth;
 		luv->y *= lightmapPageHeight;
 
-		luv->x -= 0.5f + MSurf_OffsetIntoLightmapPage( m_ParentSurfID )[0];
-		luv->y -= 0.5f + MSurf_OffsetIntoLightmapPage( m_ParentSurfID )[1];
+		luv->x -= 0.5f + pWorld->MSurf_OffsetIntoLightmapPage( m_ParentSurfID )[0];
+		luv->y -= 0.5f + pWorld->MSurf_OffsetIntoLightmapPage( m_ParentSurfID )[1];
 	}
 
 	// texture coordinate
@@ -1063,11 +1063,11 @@ void CDispInfo::ComputeLightmapAndTextureCoordinate( RayDispOutput_t const& outp
 // Cast a ray against this surface
 //-----------------------------------------------------------------------------
 
-bool CDispInfo::TestRay( Ray_t const& ray, float start, float end, float& dist, 
+bool CDispInfo::TestRay(model_t* pWorld, Ray_t const& ray, float start, float end, float& dist,
 						Vector2D* luv, Vector2D* tuv )
 {
 	// Get the index associated with this disp info....
-	int idx = DispInfo_ComputeIndex(g_pHost->Host_GetWorldModel()->brush.pShared->hDispInfos, this );
+	int idx = DispInfo_ComputeIndex(pWorld->GetDispInfos(), this);
 	CDispCollTree* pTree = CollisionBSPData_GetCollisionTree( idx );
 	if (!pTree)
 		return false;
@@ -1094,7 +1094,7 @@ bool CDispInfo::TestRay( Ray_t const& ray, float start, float end, float& dist,
 		dist = start * (1.0f - output.dist) + end * output.dist;
 
 		// Compute lightmap + texture coordinates
-		ComputeLightmapAndTextureCoordinate( output, luv, tuv );
+		ComputeLightmapAndTextureCoordinate(pWorld, output, luv, tuv );
 		return true;
 	}
 

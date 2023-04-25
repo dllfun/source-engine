@@ -206,7 +206,7 @@ public:
 	
 	// Get the lighting intensivty for a specified point
 	// If bClamp is specified, the resulting Vector is restricted to the 0.0 to 1.0 for each element
-	virtual Vector				GetLightForPoint(const Vector &pos, bool bClamp) = 0;
+	virtual Vector				GetLightForPoint(IVModel* pWorld, const Vector &pos, bool bClamp) = 0;
 
 	// Traces the line and reports the material impacted as well as the lighting information for the impact point
 	virtual IMaterial			*TraceLineMaterialAndLighting( const Vector &start, const Vector &end, 
@@ -241,6 +241,8 @@ public:
 
 	// Get the entity index of the local player
 	virtual int					GetLocalPlayer( void ) = 0;
+
+	virtual IVModel*		GetWorldModel(void) = 0;
 
 	// Client DLL is hooking a model, loads the model into memory and returns  pointer to the IVModel
 	virtual const IVModel		*LoadModel( const char *pName, bool bProp = false ) = 0;
@@ -327,7 +329,7 @@ public:
 	virtual int					LevelLeafCount() const = 0;
 	
 	// Gets a way to perform spatial queries on the BSP tree
-	virtual ISpatialQuery*		GetBSPTreeQuery() = 0;
+	//virtual ISpatialQuery*		GetBSPTreeQuery() = 0;
 	
 	// Convert texlight to gamma...
 	virtual void		LinearToGamma( float* linear, float* gamma ) = 0;
@@ -340,7 +342,7 @@ public:
 	virtual void		ComputeDynamicLighting( const Vector& pt, const Vector* pNormal, Vector& color ) = 0;
 
 	// Returns the color of the ambient light
-	virtual void		GetAmbientLightColor( Vector& color ) = 0;
+	virtual void		GetAmbientLightColor(IVModel* pWorld, Vector& color ) = 0;
 
 	// Returns the dx support level
 	virtual int			GetDXSupportLevel() = 0;
@@ -389,11 +391,11 @@ public:
 	// Computes light due to dynamic lighting at a point
 	// If the normal isn't specified, then it'll return the maximum lighting
 	// If pBoxColors is specified (it's an array of 6), then it'll copy the light contribution at each box side.
-	virtual void		ComputeLighting( const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors=NULL ) = 0;
+	virtual void		ComputeLighting(IVModel* pWorld, const Vector& pt, const Vector* pNormal, bool bClamp, Vector& color, Vector *pBoxColors=NULL ) = 0;
 
 	// Activates/deactivates an occluder...
-	virtual void		ActivateOccluder( int nOccluderIndex, bool bActive ) = 0;
-	virtual bool		IsOccluded( const Vector &vecAbsMins, const Vector &vecAbsMaxs ) = 0;
+	virtual void		ActivateOccluder(IVModel* pWorld, int nOccluderIndex, bool bActive ) = 0;
+	virtual bool		IsOccluded(IVModel* pWorld, const Vector &vecAbsMins, const Vector &vecAbsMaxs ) = 0;
 
 	// The save restore system allocates memory from a shared memory pool, use this allocator to allocate/free saverestore 
 	//  memory.
@@ -409,7 +411,7 @@ public:
 	// This can be used to notify test scripts that we're at a particular spot in the code.
 	virtual void		CheckPoint( const char *pName ) = 0;
 	// Draw portals if r_DrawPortals is set (Debugging only)
-	virtual void		DrawPortals() = 0;
+	virtual void		DrawPortals(IVModel* pWorld) = 0;
 	// Determine whether the client is playing back or recording a demo
 	virtual bool		IsPlayingDemo( void ) = 0;
 	virtual bool		IsRecordingDemo( void ) = 0;
