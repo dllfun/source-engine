@@ -658,7 +658,7 @@ void CModelPanel::Paint()
 	}
 
 	Frustum dummyFrustum;
-	render->Push3DView( view, 0, NULL, dummyFrustum );
+	render->Push3DView(engineClient->GetWorldModel(), view, 0, NULL, dummyFrustum );
 
 	modelrender->SuppressEngineLighting( true );
 	float color[3] = { 1.0f, 1.0f, 1.0f };
@@ -676,7 +676,7 @@ void CModelPanel::Paint()
 
 	modelrender->SuppressEngineLighting( false );
 	
-	render->PopView( dummyFrustum );
+	render->PopView(engineClient->GetWorldModel(), dummyFrustum );
 
 	pRenderContext->BindLocalCubemap( NULL );
 

@@ -340,9 +340,9 @@ void DrawLightSprites( model_t* pWorld )
 		return;
 
 	int i;	
-	for (i = 0; i < pWorld->GetWorldlightsCount(); i++)//g_pHost->Host_GetWorldModel()->brush.pShared
+	for (i = 0; i < pWorld->GetWorldlightsCount(); i++)
 	{
-		dworldlight_t *pLight = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
+		dworldlight_t *pLight = pWorld->GetWorldlights(i);
 		trace_t tr;
 		CTraceFilterWorldAndPropsOnly traceFilter;
 		Ray_t ray;
@@ -397,9 +397,9 @@ void DrawLightDebuggingInfo(model_t* pWorld)
 
 	if ( r_drawlightinfo.GetBool() )
 	{
-		for (i = 0; i < pWorld->GetWorldlightsCount(); i++)//g_pHost->Host_GetWorldModel()->brush.pShared
+		for (i = 0; i < pWorld->GetWorldlightsCount(); i++)
 		{	
-			dworldlight_t *pLight = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
+			dworldlight_t *pLight = pWorld->GetWorldlights(i);
 
 			lineOffset = 0;
 			Q_snprintf( buf, sizeof( buf ), "light:  %d\n", i+1 );
@@ -418,12 +418,12 @@ void DrawLightDebuggingInfo(model_t* pWorld)
 	if (!nLight)
 		return;
 
-	for (i = 0; i < pWorld->GetWorldlightsCount(); i++)//g_pHost->Host_GetWorldModel()->brush.pShared
+	for (i = 0; i < pWorld->GetWorldlightsCount(); i++)
 	{
 		if ((nLight > 0) && (i != nLight-1))
 			continue;
 
-		dworldlight_t *pLight = pWorld->GetWorldlights(i);//g_pHost->Host_GetWorldModel()->brush.pShared
+		dworldlight_t *pLight = pWorld->GetWorldlights(i);
 		Vector lightToEye;
 		float angleAttenFactor = 0.0f;
 		switch( pLight->type )

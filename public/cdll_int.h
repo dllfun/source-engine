@@ -209,7 +209,7 @@ public:
 	virtual Vector				GetLightForPoint(IVModel* pWorld, const Vector &pos, bool bClamp) = 0;
 
 	// Traces the line and reports the material impacted as well as the lighting information for the impact point
-	virtual IMaterial			*TraceLineMaterialAndLighting( const Vector &start, const Vector &end, 
+	virtual IMaterial			*TraceLineMaterialAndLighting(IVModel* pWorld, const Vector &start, const Vector &end, 
 									Vector &diffuseLightColor, Vector& baseColor ) = 0;
 
 	// Given an input text buffer data pointer, parses a single token into the variable token and returns the new
@@ -326,7 +326,7 @@ public:
 	virtual bool				LoadGameLump( int lumpId, void* pBuffer, int size ) = 0;
 
 	// Returns the number of leaves in the level
-	virtual int					LevelLeafCount() const = 0;
+	virtual int					LevelLeafCount(IVModel* pWorld) const = 0;
 	
 	// Gets a way to perform spatial queries on the BSP tree
 	//virtual ISpatialQuery*		GetBSPTreeQuery() = 0;
@@ -370,7 +370,7 @@ public:
 	virtual void		FireEvents() = 0;
 
 	// Returns an area index if all the leaves are in the same area. If they span multple areas, then it returns -1.
-	virtual int			GetLeavesArea( int *pLeaves, int nLeaves ) = 0;
+	virtual int			GetLeavesArea(IVModel* pWorld, int *pLeaves, int nLeaves ) = 0;
 
 	// Returns true if the box touches the specified area's frustum.
 	virtual bool		DoesBoxTouchAreaFrustum( const Vector &mins, const Vector &maxs, int iArea ) = 0;
@@ -480,7 +480,7 @@ public:
 	virtual int	GetAppID() = 0;
 
 	// Just get the leaf ambient light - no caching, no samples
-	virtual Vector			GetLightForPointFast(const Vector &pos, bool bClamp) = 0;
+	virtual Vector			GetLightForPointFast(IVModel* pWorld, const Vector &pos, bool bClamp) = 0;
 
 	// This version does NOT check against FCVAR_CLIENTCMD_CAN_EXECUTE.
 	virtual void			ClientCmd_Unrestricted( const char *szCmdString ) = 0;

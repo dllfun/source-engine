@@ -933,7 +933,7 @@ void UpdateClassImageEntity(
 	view.zFar = 1000;
 
 	Frustum dummyFrustum;
-	render->Push3DView( view, 0, NULL, dummyFrustum );
+	render->Push3DView(engineClient->GetWorldModel(), view, 0, NULL, dummyFrustum );
 
 	//=============================================================================
 	// HPE_BEGIN:
@@ -974,7 +974,7 @@ void UpdateClassImageEntity(
 	// HPE_END
 	//=============================================================================
 
-	render->PopView( dummyFrustum );
+	render->PopView(engineClient->GetWorldModel(), dummyFrustum );
 }
 
 

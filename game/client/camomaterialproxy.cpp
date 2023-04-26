@@ -285,7 +285,7 @@ void CCamoMaterialProxy::GetColors( Vector &diffuseColor, Vector &baseColor, int
 	
 	// baseColor is already in gamma space
 //	engine->TraceLineMaterialAndLighting( g_vecInstantaneousRenderOrigin, endPoint, diffuseColor, baseColor );
-	engineClient->TraceLineMaterialAndLighting( transformedPosition, endPoint, diffuseColor, baseColor );
+	engineClient->TraceLineMaterialAndLighting(engineClient->GetWorldModel(), transformedPosition, endPoint, diffuseColor, baseColor );
 
 	// hack - optimize! - convert from linear to gamma space - this should be hidden
 	diffuseColor[0] = pow( diffuseColor[0], 1.0f / 2.2f );

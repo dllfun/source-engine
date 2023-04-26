@@ -475,7 +475,7 @@ void CClientLeafSystem::LevelInitPreEntity()
 	m_DirtyRenderables.EnsureCapacity( 256 );
 
 	// Add all the leaves we'll need
-	int leafCount = engineClient->LevelLeafCount();
+	int leafCount = engineClient->LevelLeafCount(engineClient->GetWorldModel());
 	m_Leaf.EnsureCapacity( leafCount );
 
 	ClientLeaf_t newLeaf;
@@ -848,7 +848,7 @@ bool CClientLeafSystem::IsRenderableInPVS( IClientRenderable *pRenderable )
 		return false;
 
 	// Ask the engine if this guy is visible.
-	return render->AreAnyLeavesVisible( leaves, nLeaves );
+	return render->AreAnyLeavesVisible(engineClient->GetWorldModel(), leaves, nLeaves );
 }
 
 short CClientLeafSystem::GetRenderableArea( ClientRenderHandle_t handle )
@@ -859,7 +859,7 @@ short CClientLeafSystem::GetRenderableArea( ClientRenderHandle_t handle )
 		return 0;
 
 	// Now ask the 
-	return engineClient->GetLeavesArea( leaves, nLeaves );
+	return engineClient->GetLeavesArea(engineClient->GetWorldModel(), leaves, nLeaves );
 }
 
 

@@ -1432,12 +1432,11 @@ public:
 
 	virtual void		DrawMapToScratchPad(IVModel* pWorld, IScratchPad3D *pPad, unsigned long iFlags )
 	{
-		//worldbrushdata_t *pData = g_pHost->Host_GetWorldModel()->brush.pShared;
 		if ( !pWorld )
 			return;
 
-		SurfaceHandle_t surfID = ((model_t*)pWorld)->SurfaceHandleFromIndex(((model_t*)pWorld)->GetFirstmodelsurface());//g_pHost->Host_GetWorldModel()
-		for (int i=0; i< ((model_t*)pWorld)->GetModelsurfacesCount(); ++i, ++surfID)//g_pHost->Host_GetWorldModel()
+		SurfaceHandle_t surfID = ((model_t*)pWorld)->SurfaceHandleFromIndex(((model_t*)pWorld)->GetFirstmodelsurface());
+		for (int i=0; i< ((model_t*)pWorld)->GetModelsurfacesCount(); ++i, ++surfID)
 		{
 			// Don't bother with nodraw surfaces
 			if(((model_t*)pWorld)->MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
@@ -1682,7 +1681,7 @@ public:
 	virtual int GetAllClusterBounds(IVModel* pWorld, bbox_t *pBBoxList, int maxBBox )
 	{
 		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->GetVis() && pWorld)//g_pHost->Host_GetWorldModel()->brush.pShared
+		if ( pBSPData && pBSPData->GetVis() && pWorld)
 		{
 			// clamp to max clusters in the map
 			if ( maxBBox > pBSPData->GetVis()->numclusters)
@@ -1695,9 +1694,9 @@ public:
 				ClearBounds( pBBoxList[i].mins, pBBoxList[i].maxs );
 			}
 			// add each leaf's bounds to the bounds for that cluster
-			for ( int i = 0; i < ((model_t*)pWorld)->GetLeafCount(); i++ )//g_pHost->Host_GetWorldModel()->brush.pShared
+			for ( int i = 0; i < ((model_t*)pWorld)->GetLeafCount(); i++ )
 			{
-				mleaf_t *pLeaf = ((model_t*)pWorld)->GetLeafs(i);//g_pHost->Host_GetWorldModel()->brush.pShared
+				mleaf_t *pLeaf = ((model_t*)pWorld)->GetLeafs(i);
 				// skip solid leaves and leaves with cluster < 0
 				if ( !(pLeaf->contents & CONTENTS_SOLID) && pLeaf->cluster >= 0 && pLeaf->cluster < maxBBox )
 				{

@@ -2470,12 +2470,12 @@ void COcclusionSystem::RecomputeOccluderEdgeList(model_t* pWorld)
 	m_WingedEdgeList.Clear();
 	m_ClippedVerts.RemoveAll();
 
-	mvertex_t *pVertices = pWorld->GetVertexes(0);//g_pHost->Host_GetWorldModel()->brush.pShared
-	int *pIndices = pWorld->GetOccludervertindices(0);//g_pHost->Host_GetWorldModel()->brush.pShared
-	doccluderdata_t *pOccluders = pWorld->GetOccluders(0);//g_pHost->Host_GetWorldModel()->brush.pShared
+	mvertex_t *pVertices = pWorld->GetVertexes(0);
+	int *pIndices = pWorld->GetOccludervertindices(0);
+	doccluderdata_t *pOccluders = pWorld->GetOccluders(0);
 
 	int i, j, k;
-	for ( i = pWorld->GetOccludersCount() ; --i >= 0; )//g_pHost->Host_GetWorldModel()->brush.pShared
+	for ( i = pWorld->GetOccludersCount() ; --i >= 0; )
 	{
 		if ( pOccluders[i].flags & OCCLUDER_FLAGS_INACTIVE )
 			continue;
@@ -2489,13 +2489,13 @@ void COcclusionSystem::RecomputeOccluderEdgeList(model_t* pWorld)
 		int nSurfCount = pOccluders[i].polycount;
 		for ( j = 0; j < nSurfCount; ++j, ++nSurfID )
 		{
-			doccluderpolydata_t *pSurf = pWorld->GetOccluderpolys(nSurfID);//g_pHost->Host_GetWorldModel()->brush.pShared
+			doccluderpolydata_t *pSurf = pWorld->GetOccluderpolys(nSurfID);
 
 			int nFirstVertexIndex = pSurf->firstvertexindex;
 			int nVertexCount = pSurf->vertexcount;
 
 			// If the surface is backfacing, blow it off...
-			const cplane_t &surfPlane = pWorld->GetPlanes( pSurf->planenum );//g_pHost->Host_GetWorldModel()->brush.pShared
+			const cplane_t &surfPlane = pWorld->GetPlanes( pSurf->planenum );
 			if ( DotProduct( surfPlane.normal, m_vecCameraPosition ) <= surfPlane.dist )
 				continue;
 
@@ -2540,16 +2540,16 @@ void COcclusionSystem::RecomputeOccluderEdgeList(model_t* pWorld)
 //-----------------------------------------------------------------------------
 void COcclusionSystem::ActivateOccluder(model_t* pWorld, int nOccluderIndex, bool bActive )
 {
-	if ( ( nOccluderIndex >= pWorld->GetOccludersCount() ) || ( nOccluderIndex < 0 ) )//g_pHost->Host_GetWorldModel()->brush.pShared
+	if ( ( nOccluderIndex >= pWorld->GetOccludersCount() ) || ( nOccluderIndex < 0 ) )
 		return;
 
-	if ( bActive )
+	if (bActive)
 	{
-		pWorld->GetOccluders(nOccluderIndex)->flags &= ~OCCLUDER_FLAGS_INACTIVE;//g_pHost->Host_GetWorldModel()->brush.pShared
+		pWorld->GetOccluders(nOccluderIndex)->flags &= ~OCCLUDER_FLAGS_INACTIVE;
 	}
 	else
 	{
-		pWorld->GetOccluders(nOccluderIndex)->flags |= OCCLUDER_FLAGS_INACTIVE;//g_pHost->Host_GetWorldModel()->brush.pShared
+		pWorld->GetOccluders(nOccluderIndex)->flags |= OCCLUDER_FLAGS_INACTIVE;
 	}
 
 	m_bEdgeListDirty = true;

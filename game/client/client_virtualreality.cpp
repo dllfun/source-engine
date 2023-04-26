@@ -417,9 +417,9 @@ void CClientVirtualReality::DrawMainMenu()
 
 		ITexture *pColor = g_pSourceVR->GetRenderTarget( (ISourceVirtualReality::VREye)(nView-1), ISourceVirtualReality::RT_Color );
 		ITexture *pDepth = g_pSourceVR->GetRenderTarget( (ISourceVirtualReality::VREye)(nView-1), ISourceVirtualReality::RT_Depth );
-		render->Push3DView( viewEye[nView], VIEW_CLEAR_DEPTH|VIEW_CLEAR_COLOR, pColor, NULL, pDepth );
+		render->Push3DView(engineClient->GetWorldModel(), viewEye[nView], VIEW_CLEAR_DEPTH|VIEW_CLEAR_COLOR, pColor, NULL, pDepth );
 		RenderHUDQuad( false,  false );
-		render->PopView( NULL );
+		render->PopView(engineClient->GetWorldModel(), NULL );
 
 		PostProcessFrame( (StereoEye_t)nView );
 

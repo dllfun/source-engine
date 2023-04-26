@@ -186,7 +186,7 @@ void R_LoadWorldGeometry(model_t* pWorld, bool bDXChange )
 		if ( !modelloader->Map_GetRenderInfoAllocated() )
 		{
 			// create the displacement surfaces for the map
-			modelloader->Map_LoadDisplacements(g_pHost->Host_GetWorldModel(), false );
+			modelloader->Map_LoadDisplacements(pWorld, false );
 			//if( !DispInfo_CreateStaticBuffers( host_state.worldmodel, materialSortInfoArray, false ) )
 			//	Sys_Error( "Can't create static meshes for displacements" );
 			
@@ -196,16 +196,16 @@ void R_LoadWorldGeometry(model_t* pWorld, bool bDXChange )
 	else
 	{
 		// create the displacement surfaces for the map
-		modelloader->Map_LoadDisplacements(g_pHost->Host_GetWorldModel(), true );
+		modelloader->Map_LoadDisplacements(pWorld, true );
 	}
 
 	if ( bDXChange )
 	{
 		// Must be done before MarkWaterSurfaces
-		modelloader->RecomputeSurfaceFlags(g_pHost->Host_GetWorldModel());
+		modelloader->RecomputeSurfaceFlags(pWorld);
 	}
 
-	Mod_MarkWaterSurfaces(g_pHost->Host_GetWorldModel());
+	Mod_MarkWaterSurfaces(pWorld);
 
 	// make sure and rebuild lightmaps when the level gets started.
 	GL_RebuildLightmaps();
@@ -243,15 +243,15 @@ void R_LevelInit( model_t* pWorld )
 	{
 		g_pShadowMgr->LevelShutdown();
 		StaticPropMgr()->LevelShutdown();
-		SpatialPartition()->Init(pWorld->GetMins(), pWorld->GetMaxs());//g_pHost->Host_GetWorldModel()
+		SpatialPartition()->Init(pWorld->GetMins(), pWorld->GetMaxs());
 		StaticPropMgr()->LevelInit();
-		g_pShadowMgr->LevelInit(pWorld->GetSurfacesCount() );//g_pHost->Host_GetWorldModel()->brush.pShared
+		g_pShadowMgr->LevelInit(pWorld->GetSurfacesCount() );
 	}
 
 	// We've fully loaded the new level, unload any models that we don't care about any more
 	modelloader->UnloadUnreferencedModels();
 
-	if (pWorld->GetWorldlightsCount() == 0)//g_pHost->Host_GetWorldModel()->brush.pShared
+	if (pWorld->GetWorldlightsCount() == 0)
 	{
 		ConDMsg( "Level unlit, setting 'mat_fullbright 1'\n" );
 		mat_fullbright.SetValue( 1 );

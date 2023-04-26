@@ -1757,6 +1757,67 @@ void NET_ProcessPending( void )
 	}
 }
 
+void NET_ListenSocket(int sock, bool bListen)
+{
+	Assert((sock >= 0) && (sock < net_sockets.Count()));
+
+	netsocket_t* netsock = &net_sockets[sock];
+
+	if (netsock->hTCP)
+	{
+		NET_CloseSocket(netsock->hTCP, sock);
+	}
+
+	if (!NET_IsMultiplayer() || net_notcp)
+		return;
+
+	if (bListen)
+	{
+		const char* net_interface = ipname.GetString();
+
+		netsock->hTCP = NET_OpenSocket(net_interface, netsock->nPort, true);
+
+		if (!netsock->hTCP)
+		{
+			Msg("Warning! NET_ListenSocket failed opening socket %i, port %i.\n", sock, net_sockets[sock].nPort);
+			return;
+		}
+
+		struct sockaddr_in	address;
+
+		if (!net_interface || !net_interface[0] || !Q_strcmp(net_interface, "localhost"))
+		{
+			address.sin_addr.s_addr = INADDR_ANY;
+		}
+		else
+		{
+			NET_StringToSockaddr(net_interface, (struct sockaddr*)&address);
+		}
+
+		address.sin_family = AF_INET;
+		address.sin_port = NET_HostToNetShort((short)(netsock->nPort));
+
+		int ret;
+		VCR_NONPLAYBACKFN(bind(netsock->hTCP, (struct sockaddr*)&address, sizeof(address)), ret, "bind");
+		if (ret == -1)
+		{
+			NET_GetLastError();
+			Msg("WARNING: NET_ListenSocket bind failed on socket %i, port %i.\n", netsock->hTCP, netsock->nPort);
+			return;
+		}
+
+		VCR_NONPLAYBACKFN(listen(netsock->hTCP, TCP_MAX_ACCEPTS), ret, "listen");
+		if (ret == -1)
+		{
+			NET_GetLastError();
+			Msg("WARNING: NET_ListenSocket listen failed on socket %i, port %i.\n", netsock->hTCP, netsock->nPort);
+			return;
+		}
+
+		netsock->bListening = true;
+	}
+}
+
 void NET_ProcessListen(int sock)
 {
 	netsocket_t * netsock = &net_sockets[sock];
@@ -3100,66 +3161,7 @@ void NET_SetDedicated ()
 	net_dedicated = true;
 }
 
-void NET_ListenSocket( int sock, bool bListen )
-{
-	Assert( (sock >= 0) && (sock < net_sockets.Count()) );
 
-	netsocket_t * netsock = &net_sockets[sock];
-
-	if ( netsock->hTCP )
-	{
-		NET_CloseSocket( netsock->hTCP, sock );
-	}
-
-	if ( !NET_IsMultiplayer() || net_notcp )
-		return;
-
-	if ( bListen )
-	{
-		const char * net_interface = ipname.GetString();
-
-		netsock->hTCP = NET_OpenSocket( net_interface, netsock->nPort, true );
-
-		if ( !netsock->hTCP )
-		{
-			Msg( "Warning! NET_ListenSocket failed opening socket %i, port %i.\n", sock, net_sockets[sock].nPort );
-			return;
-		}
-
-		struct sockaddr_in	address;
-
-		if (!net_interface || !net_interface[0] || !Q_strcmp(net_interface, "localhost"))
-		{
-			address.sin_addr.s_addr = INADDR_ANY;
-		}
-		else
-		{
-			NET_StringToSockaddr (net_interface, (struct sockaddr *)&address);
-		}
-
-		address.sin_family = AF_INET;
-		address.sin_port = NET_HostToNetShort((short)( netsock->nPort ));
-
-		int ret;
-		VCR_NONPLAYBACKFN( bind( netsock->hTCP, (struct sockaddr *)&address, sizeof(address)), ret, "bind" );
-		if ( ret == -1 )
-		{
-			NET_GetLastError();
-			Msg ("WARNING: NET_ListenSocket bind failed on socket %i, port %i.\n", netsock->hTCP, netsock->nPort );
-			return;
-		}
-
-		VCR_NONPLAYBACKFN( listen( netsock->hTCP, TCP_MAX_ACCEPTS), ret, "listen" );
-		if ( ret == -1 )
-		{
-			NET_GetLastError();
-			Msg ("WARNING: NET_ListenSocket listen failed on socket %i, port %i.\n", netsock->hTCP, netsock->nPort );
-			return;
-		}
-
-		netsock->bListening = true;
-	}
-}
 
 void NET_SetMutiplayer(bool multiplayer)
 {

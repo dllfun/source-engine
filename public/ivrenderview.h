@@ -223,7 +223,7 @@ public:
 
 	// Wrap entire scene drawing
 	virtual void			SceneBegin( IVModel* pWorld ) = 0;
-	virtual void			SceneEnd( void ) = 0;
+	virtual void			SceneEnd( IVModel* pWorld ) = 0;
 
 	// Gets the fog volume for a particular point
 	virtual void			GetVisibleFogVolume(IVModel* pWorld, const Vector& eyePoint, VisibleFogVolumeInfo_t *pInfo ) = 0;
@@ -254,10 +254,10 @@ public:
 	// Draw lightmaps
 	virtual void			DrawLightmaps(IVModel* pWorld, IWorldRenderList *pList, int pageId ) = 0;
 	// Wraps view render sequence, sets up a view
-	virtual void			ViewSetupVis( bool novis, int numorigins, const Vector origin[] ) = 0;
+	virtual void			ViewSetupVis(IVModel* pWorld, bool novis, int numorigins, const Vector origin[] ) = 0;
 
 	// Return true if any of these leaves are visible in the current PVS.
-	virtual bool			AreAnyLeavesVisible( int *leafList, int nLeaves ) = 0;
+	virtual bool			AreAnyLeavesVisible(IVModel* pWorld, int *leafList, int nLeaves ) = 0;
 
 	virtual	void			VguiPaint( void ) = 0;
 	// Sets up view fade parameters
@@ -295,9 +295,9 @@ public:
 	virtual void			VGui_Paint( int mode ) = 0;
 
 	// Push, pop views (see PushViewFlags_t above for flags)
-	virtual void			Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes ) = 0;
+	virtual void			Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes ) = 0;
 	virtual void			Push2DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes ) = 0;
-	virtual void			PopView( Frustum frustumPlanes ) = 0;
+	virtual void			PopView(IVModel* pWorld, Frustum frustumPlanes ) = 0;
 
 	// Sets the main view
 	virtual void			SetMainView( const Vector &vecOrigin, const QAngle &angles ) = 0;
@@ -308,18 +308,18 @@ public:
 	};
 
 	// Wraps view render sequence, sets up a view
-	virtual void			ViewSetupVisEx( bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags ) = 0;
+	virtual void			ViewSetupVisEx(IVModel* pWorld, bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags ) = 0;
 
 	//replaces the current view frustum with a rhyming replacement of your choice
 	virtual void			OverrideViewFrustum( Frustum custom ) = 0;
 
 	virtual void			DrawBrushModelShadowDepth( IClientEntity *baseentity, IVModel *model, const Vector& origin, const QAngle& angles, ERenderDepthMode DepthMode ) = 0;
 	virtual void			UpdateBrushModelLightmap(IVModel *model, IClientRenderable *pRenderable ) = 0;
-	virtual void			BeginUpdateLightmaps( void ) = 0;
+	virtual void			BeginUpdateLightmaps( IVModel* pWorld ) = 0;
 	virtual void			EndUpdateLightmaps( IVModel* pWorld ) = 0;
 	virtual void			OLD_SetOffCenterProjectionMatrix( float fov, float zNear, float zFar, float flAspectRatio, float flBottom, float flTop, float flLeft, float flRight ) = 0;
 	virtual void			OLD_SetProjectionMatrixOrtho( float left, float top, float right, float bottom, float zNear, float zFar ) = 0;
-	virtual void			Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture ) = 0;
+	virtual void			Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture ) = 0;
 	virtual void			GetMatricesForView( const CViewSetup &view, VMatrix *pWorldToView, VMatrix *pViewToProjection, VMatrix *pWorldToProjection, VMatrix *pWorldToPixels ) = 0;
 	virtual void			DrawBrushModelEx( IClientEntity *baseentity, IVModel *model, const Vector& origin, const QAngle& angles, DrawBrushModelMode_t mode ) = 0;
 

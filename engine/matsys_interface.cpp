@@ -824,7 +824,7 @@ void InitMaterialSystemConfig(bool bInEditMode )
 void UpdateMaterialSystemConfig()
 {
 	model_t* pWorld = g_pHost->Host_GetWorldModel();
-	if (pWorld && !pWorld->GetLightdata() )//g_pHost->Host_GetWorldModel()->brush.pShared && !g_pHost->Host_GetWorldModel()->brush.pShared
+	if (pWorld && !pWorld->GetLightdata() )
 	{
 		mat_fullbright.SetValue( 1 );
 	}

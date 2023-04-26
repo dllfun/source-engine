@@ -147,7 +147,7 @@ public:
 protected:
 
 	void	ResyncDemoClock( void );
-	void	StartupDemoFile( void );
+	void	StartupDemoFile( model_t* pWorld );
 	void	StartupDemoHeader( void );
 	void	CloseDemoFile( void );
 	void	GetClientCmdInfo( democmdinfo_t& info );

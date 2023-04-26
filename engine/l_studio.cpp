@@ -4294,7 +4294,7 @@ void CModelRender::ReleaseAllStaticPropColorData( void )
 void CModelRender::RestoreAllStaticPropColorData( IVModel* pWorld )
 {
 #if !defined( SWDS )
-	if ( !pWorld)//g_pHost->Host_GetWorldModel()
+	if ( !pWorld)
 		return;
 
 	// invalidate all static lighting cache data

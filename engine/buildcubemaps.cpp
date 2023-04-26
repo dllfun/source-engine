@@ -1128,13 +1128,14 @@ CON_COMMAND( buildcubemaps, "Rebuild cubemaps." )
 
 	// do this to force a frame to render so the material system syncs up to single thread mode
 	V_RenderVGuiOnly();
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
 	if ( args.ArgC() == 1 )
 	{
-		R_BuildCubemapSamples(g_pHost->Host_GetWorldModel(), 1 );
+		R_BuildCubemapSamples(pWorld, 1 );
 	}
 	else if( args.ArgC() == 2 )
 	{
-		R_BuildCubemapSamples(g_pHost->Host_GetWorldModel(), atoi( args[ 1 ] ) );
+		R_BuildCubemapSamples(pWorld, atoi( args[ 1 ] ) );
 	}
 	else
 	{

@@ -652,18 +652,18 @@ bool GetFileFromRemoteStorage( ISteamRemoteStorage *pRemoteStorage, const char *
 }
 
 
-void CCommonHostState::SetWorldModel( model_t *pModel )
-{
-	worldmodel = pModel;
-	if ( pModel )
-	{
-		//worldbrush = pModel->brush.pShared;
-	}
-	else
-	{
-		//worldbrush = NULL;
-	}
-}
+//void CCommonHostState::SetWorldModel( model_t *pModel )
+//{
+//	worldmodel = pModel;
+//	if ( pModel )
+//	{
+//		//worldbrush = pModel->brush.pShared;
+//	}
+//	else
+//	{
+//		//worldbrush = NULL;
+//	}
+//}
 
 void Host::Host_DefaultMapFileName( const char *pFullMapName, /* out */ char *pDiskName, unsigned int nDiskNameSize )
 {
@@ -1831,7 +1831,7 @@ void Host::Host_AccumulateTime( float dt )
 	else
 	{
 		// Used to help increase reproducibility of timedemos
-		host_frametime	= host_state.interval_per_tick;
+		host_frametime	= interval_per_tick;
 	}
 
 #if 1
@@ -2563,14 +2563,14 @@ void Host::_Host_SetGlobalTime()
 	g_ServerGlobalVariables.realtime			= g_host.host_realtime;
 	g_ServerGlobalVariables.framecount			= g_host.host_framecount;
 	g_ServerGlobalVariables.absoluteframetime	= g_host.host_frametime;
-	g_ServerGlobalVariables.interval_per_tick	= g_host.host_state.interval_per_tick;
+	g_ServerGlobalVariables.interval_per_tick	= g_host.interval_per_tick;
 	g_ServerGlobalVariables.serverCount			= g_pHost->Host_GetServerCount();
 #ifndef SWDS
 	// Client
 	g_ClientGlobalVariables.realtime			= g_host.host_realtime;
 	g_ClientGlobalVariables.framecount			= g_host.host_framecount;
 	g_ClientGlobalVariables.absoluteframetime	= g_host.host_frametime;
-	g_ClientGlobalVariables.interval_per_tick	= g_host.host_state.interval_per_tick;
+	g_ClientGlobalVariables.interval_per_tick	= g_host.interval_per_tick;
 #endif
 }
 
@@ -3084,9 +3084,9 @@ void Host::_Host_RunFrame (float time)
 		}
 
 		numticks = 0;	// how many ticks we will simulate this frame
-		if ( host_remainder >= g_host.host_state.interval_per_tick )
+		if ( host_remainder >= interval_per_tick )
 		{
-			numticks = (int)( floor( host_remainder / g_host.host_state.interval_per_tick ) );
+			numticks = (int)( floor( host_remainder / interval_per_tick ) );
 
 			// round to nearest even ending tick in alternate ticks mode so the last
 			// tick is always simulated prior to updating the network data
@@ -3100,10 +3100,10 @@ void Host::_Host_RunFrame (float time)
 				numticks = endTick - startTick;
 			}
 
-			host_remainder -= numticks * g_host.host_state.interval_per_tick;
+			host_remainder -= numticks * interval_per_tick;
 		}
 
-		g_host.host_nexttick = g_host.host_state.interval_per_tick - host_remainder;
+		g_host.host_nexttick = interval_per_tick - host_remainder;
 
 		g_pMDLCache->MarkFrame();
 	}
@@ -3230,7 +3230,7 @@ void Host::_Host_RunFrame (float time)
 				toolframework->Think( bFinalTick );
 #endif
 
-				g_host.host_idealtime += g_host.host_state.interval_per_tick;
+				g_host.host_idealtime += interval_per_tick;
 			}
 			
 			// run HLTV if active
@@ -3276,7 +3276,7 @@ void Host::_Host_RunFrame (float time)
 				// This causes cl.gettime() to return the true clock being used for rendering (tickcount * rate + remainder)
 				Host_SetClientInSimulation( false );
 				// Now allow for interpolation on client
-				g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / g_host.host_state.interval_per_tick );
+				g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / interval_per_tick );
 
 #if defined( REPLAY_ENABLED )
 				// Update client-side replay history manager - called here since interpolation_amount is set
@@ -3382,7 +3382,7 @@ void Host::_Host_RunFrame (float time)
 			// This causes cl.gettime() to return the true clock being used for rendering (tickcount * rate + remainder)
 			Host_SetClientInSimulation( false );
 			// Now allow for interpolation on client
-			g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / g_host.host_state.interval_per_tick );
+			g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / interval_per_tick );
 
 			//-------------------
 			// Run prediction if it hasn't been run yet
@@ -3532,7 +3532,7 @@ void Host::_Host_RunFrame (float time)
 		if ( !demoplayer->IsPlaybackPaused() )
 #endif
 		{
-			g_host.host_tick_time = g_host.host_tickcount * g_host.host_state.interval_per_tick + cl.m_tickRemainder;
+			g_host.host_tick_time = g_host.host_tickcount * interval_per_tick + cl.m_tickRemainder;
 		}
 
 		Host_PostFrameRate(g_host.host_frametime );
@@ -4078,7 +4078,7 @@ void Host::Host_Init( bool bDedicated )
 		g_pThreadPool->Start( startParams, "CmpJob" );
 
 	// From const.h, the loaded game .dll will give us the correct value which is transmitted to the client
-	host_state.interval_per_tick = DEFAULT_TICK_INTERVAL;
+	interval_per_tick = DEFAULT_TICK_INTERVAL;
 
 	InstallBitBufErrorHandler();
 
@@ -4756,19 +4756,22 @@ void Host::Host_FreeStateAndWorld( bool server )
 	// HACKHACK: You can't clear the hunk unless the client data is free
 	// since this gets called by the server, it's necessary to wipe the client
 	// in case we are on a listen server
+
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
 #ifndef SWDS
 	if ( server && !sv.IsDedicated() )
 	{
-		CL_ClearState();
+		CL_ClearState(pWorld);
 	}
 #endif
 
 	// The world model relies on the low hunk, so we need to force it to unload
-	if ( host_state.worldmodel )
+	if (pWorld)
 	{
-		modelloader->UnreferenceModel( host_state.worldmodel, IModelLoader::FMODELLOADER_SERVER );
-		modelloader->UnreferenceModel( host_state.worldmodel, IModelLoader::FMODELLOADER_CLIENT );
-		host_state.SetWorldModel( NULL );
+		modelloader->UnreferenceModel(pWorld, IModelLoader::FMODELLOADER_SERVER );
+		modelloader->UnreferenceModel(pWorld, IModelLoader::FMODELLOADER_CLIENT );
+		//host_state.SetWorldModel( NULL );
+		g_pHost->Host_SetWorldModel(NULL);
 		bNeedsPurge = server && true;
 	}
 

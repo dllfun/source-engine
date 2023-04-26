@@ -192,7 +192,6 @@ void R_DrawPortals(model_t* pWorld)
 	CMatRenderContextPtr pRenderContext( materials );
 	IMesh *pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
 
-	//worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	for( int i=0; i < pWorld->GetAreaPortalsCount(); i++ )
 	{
 		dareaportal_t *pAreaPortal = pWorld->GetAreaPortals(i);
@@ -244,8 +243,8 @@ public:
 	void FrameBegin( void );
 	void FrameEnd( void );
 
-	void ViewSetupVis( bool novis, int numorigins, const Vector origin[] );
-	void ViewSetupVisEx( bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags );
+	void ViewSetupVis(IVModel* pWorld, bool novis, int numorigins, const Vector origin[] );
+	void ViewSetupVisEx(IVModel* pWorld, bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags );
 
 	void ViewEnd( void );
 
@@ -256,7 +255,7 @@ public:
 	void DrawWorldLists(IVModel* pWorld, IWorldRenderList *pList, unsigned long flags, float waterZAdjust );
 
 	void DrawSceneBegin( IVModel* pWorld );
-	void DrawSceneEnd( void );
+	void DrawSceneEnd( IVModel* pWorld );
 
 	// utility functions
 	void ExtractMatrices( void );
@@ -286,20 +285,20 @@ public:
 	virtual bool	ClipTransform( const Vector& point, Vector* pClip );
 	virtual bool	ScreenTransform( const Vector& point, Vector* pScreen );
 
-	virtual void Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes );
-	virtual void Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture );
+	virtual void Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes );
+	virtual void Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture );
 	virtual void Push2DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes );
-	virtual void PopView( Frustum frustumPlanes );
+	virtual void PopView(IVModel* pWorld, Frustum frustumPlanes );
 	virtual void SetMainView( const Vector &vecOrigin, const QAngle &angles );
 
 	virtual void UpdateBrushModelLightmap(IVModel *model, IClientRenderable *Renderable );
-	virtual void BeginUpdateLightmaps( void );
+	virtual void BeginUpdateLightmaps( IVModel* pWorld );
 	virtual void EndUpdateLightmaps( IVModel* pWorld );
 	virtual bool InLightmapUpdate( void ) const;
 
 private:
 	// Called when a particular view becomes active
-	void OnViewActive( Frustum frustumPlanes );
+	void OnViewActive(model_t* pWorld, Frustum frustumPlanes );
 
 	// Clear the view (assumes the render target has already been pushed)
 	void ClearView( CViewSetup &view, int nFlags, ITexture* pRenderTarget, ITexture* pDepthTexture = NULL );
@@ -404,7 +403,7 @@ void CRender::FrameBegin( void )
 		// or some other client-side simulation of state?
 		r_framecount++;
 		R_AnimateLight ();
-		R_PushDlights(pWorld);
+		R_PushDlights((model_t*)pWorld);
 
 		if (!r_norefresh.GetInt())
 		{
@@ -457,21 +456,21 @@ const VMatrix &CRender::WorldToScreenMatrix( void )
 	return m_matrixWorldToScreen;
 }
 
-void CRender::ViewSetupVis( bool novis, int numorigins, const Vector origin[] )
+void CRender::ViewSetupVis(IVModel* pWorld, bool novis, int numorigins, const Vector origin[] )
 {
 	unsigned int returnFlags = 0;
-	ViewSetupVisEx( novis, numorigins, origin, returnFlags );
+	ViewSetupVisEx(pWorld, novis, numorigins, origin, returnFlags );
 }
 
-void CRender::ViewSetupVisEx( bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags )
+void CRender::ViewSetupVisEx(IVModel* pWorld, bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags )
 {
-	Map_VisSetup(g_pHost->Host_GetWorldModel(), numorigins, origin, novis, returnFlags );
+	Map_VisSetup((model_t*)pWorld, numorigins, origin, novis, returnFlags );
 }
 
 //-----------------------------------------------------------------------------
 // Called when a particular view becomes active
 //-----------------------------------------------------------------------------
-void CRender::OnViewActive( Frustum frustumPlanes )
+void CRender::OnViewActive(model_t* pWorld, Frustum frustumPlanes )
 {
 	const CViewSetup &view = CurrentView();
 
@@ -507,7 +506,7 @@ void CRender::OnViewActive( Frustum frustumPlanes )
 	// the g_LeafVis here because it is global.  This need to be resolved more correctly some other way!
 	if ( VectorCompare( g_MainViewOrigin, view.origin ) )
 	{
-		LeafVisBuild( view.origin );
+		LeafVisBuild(pWorld, view.origin );
 	}
 }
 
@@ -565,9 +564,9 @@ void CRender::ClearView( CViewSetup &view, int nFlags, ITexture* pRenderTarget, 
 //-----------------------------------------------------------------------------
 // Push, pop views
 //-----------------------------------------------------------------------------
-void CRender::Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes )
+void CRender::Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes )
 {
-	Push3DView( view, nFlags, pRenderTarget, frustumPlanes, NULL );
+	Push3DView(pWorld, view, nFlags, pRenderTarget, frustumPlanes, NULL );
 }
 
 
@@ -639,7 +638,7 @@ void ComputeWorldToScreenMatrix( VMatrix *pWorldToScreen, const VMatrix &worldTo
 //-----------------------------------------------------------------------------
 // Push, pop views
 //-----------------------------------------------------------------------------
-void CRender::Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture )
+void CRender::Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture )
 {
 	Assert( !IsX360() || (pDepthTexture == NULL) ); //Don't render to a depth texture on the 360. Instead, render using a normal depth buffer and use IDirect3DDevice9::Resolve()
 
@@ -693,7 +692,7 @@ void CRender::Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderT
 		pRenderContext->MatrixMode( MATERIAL_MODEL );
 		pRenderContext->PushMatrix();
 
-		OnViewActive( frustumPlanes );
+		OnViewActive((model_t*)pWorld, frustumPlanes );
 	}
 }
 
@@ -738,7 +737,7 @@ void CRender::Push2DView( const CViewSetup &view, int nFlags, ITexture* pRenderT
 	pRenderContext->LoadIdentity();
 }
 
-void CRender::PopView( Frustum frustumPlanes )
+void CRender::PopView(IVModel* pWorld, Frustum frustumPlanes )
 {
 	if ( !m_ViewStack.Top().m_bNoDraw )
 	{
@@ -767,7 +766,7 @@ void CRender::PopView( Frustum frustumPlanes )
 		if ( !m_ViewStack.Top().m_bIs2DView )
 		{
 			ExtractMatrices();
-			OnViewActive( frustumPlanes );
+			OnViewActive((model_t*)pWorld, frustumPlanes );
 		}
 	}
 }
@@ -794,7 +793,7 @@ int __cdecl LightmapPageCompareFunc( const void *pElem0, const void *pElem1 )
 	return page0 - page1;
 }
 
-void CRender::BeginUpdateLightmaps( void )
+void CRender::BeginUpdateLightmaps( IVModel* pWorld )
 {
 	if ( ++m_iLightmapUpdateDepth  == 1)
 	{
@@ -803,7 +802,7 @@ void CRender::BeginUpdateLightmaps( void )
 		// UNDONE: Move this to an init or constructor?
 		g_LightmapTransformList.RemoveAll();
 		int index = g_LightmapTransformList.AddToTail();
-		g_LightmapTransformList[index].pModel = g_pHost->Host_GetWorldModel();
+		g_LightmapTransformList[index].pModel = (model_t*)pWorld;
 		SetIdentityMatrix( g_LightmapTransformList[index].xform );
 	}
 }
@@ -1242,10 +1241,10 @@ void CRender::DrawSceneBegin( IVModel* pWorld )
 	R_CheckForLightingConfigChanges((model_t*)pWorld);
 }
 
-void CRender::DrawSceneEnd( void )
+void CRender::DrawSceneEnd( IVModel* pWorld )
 {
 	R_SceneEnd();
-	LeafVisDraw();
+	LeafVisDraw((model_t*)pWorld);
 }
 
 IWorldRenderList * CRender::CreateWorldList(IVModel* pWorld)
@@ -1262,7 +1261,7 @@ void CRender::BuildWorldLists(IVModel* pWorld, IWorldRenderList *pList, WorldLis
 
 	if ( !bShadowDepth )
 	{
-		BeginUpdateLightmaps();
+		BeginUpdateLightmaps(pWorld);
 	}
 
 	pList->R_BuildWorldLists(pWorld, pInfo, iForceViewLeaf, pVisData, bShadowDepth, pWaterReflectionHeight );

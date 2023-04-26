@@ -196,7 +196,7 @@ int R_MarkLightsLeaf(model_t* pWorld, dlight_t *light, int bit, mleaf_t *pLeaf )
 		}
 	}
 
-	SurfaceHandle_t *pHandle = pWorld->GetMarkSurface(pLeaf->firstmarksurface);//g_pHost->Host_GetWorldModel()->brush.pShared
+	SurfaceHandle_t *pHandle = pWorld->GetMarkSurface(pLeaf->firstmarksurface);
 	for ( int i = 0; i < pLeaf->nummarksurfaces; i++ )
 	{
 		SurfaceHandle_t surfID = pHandle[i];
@@ -293,7 +293,7 @@ R_PushDlights
 */
 void R_PushDlights (model_t* pWorld)
 {
-	R_MarkDLightsOnSurface(pWorld, pWorld->GetNode(0) );//g_pHost->Host_GetWorldModel()->brush.pShared
+	R_MarkDLightsOnSurface(pWorld, pWorld->GetNode(0) );
 	MarkDLightsOnStaticProps();
 }
 
@@ -430,7 +430,6 @@ static bool FASTCALL FindIntersectionAtSurface(model_t* pWorld, SurfaceHandle_t 
 		t < pLighting->m_LightmapMins[1] )
 		return false;	
 
-	//worldbrushdata_t* pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	// assuming a square lightmap (FIXME: which ain't always the case),
 	// lets see if it lies in that rectangle. If not, punt...
 	float ds = s - pLighting->m_LightmapMins[0];
@@ -547,7 +546,6 @@ static SurfaceHandle_t R_LightVecDisplacementChain(model_t* pWorld, LightVecStat
 	// test the ray against displacements
 	SurfaceHandle_t surfID = SURFACE_HANDLE_INVALID;
 
-	//worldbrushdata_t* pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 
 	for ( int i = 0; i < state.m_LightTestDisps.Count(); i++ )
 	{
@@ -621,7 +619,7 @@ static SurfaceHandle_t FASTCALL FindIntersectionSurfaceAtLeaf(model_t* pWorld, m
 
 	// Add non-displacement surfaces
 	// Since there's no BSP tree here, we gotta test *all* surfaces! (blech)
-	SurfaceHandle_t *pHandle = pWorld->GetMarkSurface(pLeaf->firstmarksurface);//g_pHost->Host_GetWorldModel()->brush.pShared
+	SurfaceHandle_t *pHandle = pWorld->GetMarkSurface(pLeaf->firstmarksurface);
 	// NOTE: Skip all marknodesurfaces, only check detail/leaf faces
 	for ( int i = pLeaf->nummarknodesurfaces; i < pLeaf->nummarksurfaces; i++ )
 	{
@@ -768,7 +766,7 @@ SurfaceHandle_t R_LightVec (model_t* pWorld, const Vector& start, const Vector& 
 
 	c[0] = c[1] = c[2] = 0.0f;
 
-	model_t* model = s_pLightVecModel ? s_pLightVecModel : pWorld;// g_pHost->Host_GetWorldModel();
+	model_t* model = s_pLightVecModel ? s_pLightVecModel : pWorld;
 	retSurfID = RecursiveLightPoint(pWorld, model->GetFirstNode(),//&model->brush.pShared->nodes[model->brush.firstnode]
 		0.0f, 1.0f, c, state );
 

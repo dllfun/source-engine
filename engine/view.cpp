@@ -214,7 +214,7 @@ void V_RenderView( model_t* pWorld )
 	VPROF( "V_RenderView" );
 	MDLCACHE_COARSE_LOCK_(g_pMDLCache);
 
-	bool bCanRenderWorld = (pWorld != NULL ) && cl.IsActive();//g_pHost->Host_GetWorldModel()
+	bool bCanRenderWorld = (pWorld != NULL ) && cl.IsActive();
 
 #if defined( REPLAY_ENABLED )
 	if ( g_pClientReplay && Replay_IsSupportedModAndPlatform() )
@@ -357,9 +357,9 @@ public:
 		g_EngineRenderer->DrawSceneBegin(pWorld);
 	}
 
-	void SceneEnd( void )
+	void SceneEnd( IVModel* pWorld )
 	{
-		g_EngineRenderer->DrawSceneEnd();
+		g_EngineRenderer->DrawSceneEnd(pWorld);
 	}
 	 
 	void GetVisibleFogVolume(IVModel* pWorld, const Vector& vEyePoint, VisibleFogVolumeInfo_t *pInfo )
@@ -428,19 +428,19 @@ public:
 		R_DrawLightmaps((model_t*)pWorld, pList, pageId );
 	}
 
-	void ViewSetupVis( bool novis, int numorigins, const Vector origin[] )
+	void ViewSetupVis(IVModel* pWorld, bool novis, int numorigins, const Vector origin[] )
 	{
-		g_EngineRenderer->ViewSetupVis( novis, numorigins, origin );
+		g_EngineRenderer->ViewSetupVis(pWorld, novis, numorigins, origin );
 	}
 
-	void ViewSetupVisEx( bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags )
+	void ViewSetupVisEx(IVModel* pWorld, bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags )
 	{
-		g_EngineRenderer->ViewSetupVisEx( novis, numorigins, origin, returnFlags );
+		g_EngineRenderer->ViewSetupVisEx(pWorld, novis, numorigins, origin, returnFlags );
 	}
 
-	bool AreAnyLeavesVisible( int *leafList, int nLeaves )
+	bool AreAnyLeavesVisible(IVModel* pWorld, int *leafList, int nLeaves )
 	{
-		return Map_AreAnyLeavesVisible( g_pHost->Host_GetWorldModel(), leafList, nLeaves );
+		return Map_AreAnyLeavesVisible((model_t*)pWorld, leafList, nLeaves );
 	}
 
 	// For backward compatibility only!!!
@@ -541,14 +541,14 @@ public:
 		BoxIntersectWaterContext_t context;
 		context.m_bFoundWaterLeaf = false;
 		context.m_nLeafWaterDataID = leafWaterDataID;
-		((model_t*)pWorld)->EnumerateLeavesInBox( mins, maxs, this, (intp)&context);//g_pHost->Host_GetWorldModel(),
+		((model_t*)pWorld)->EnumerateLeavesInBox( mins, maxs, this, (intp)&context);
 		return context.m_bFoundWaterLeaf;
 	}
 
 	// Push, pop views
-	virtual void Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes )
+	virtual void Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes )
 	{
-		g_EngineRenderer->Push3DView( view, nFlags, pRenderTarget, frustumPlanes, NULL );
+		g_EngineRenderer->Push3DView(pWorld, view, nFlags, pRenderTarget, frustumPlanes, NULL );
 	}
 
 	virtual void Push2DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes )
@@ -556,9 +556,9 @@ public:
 		g_EngineRenderer->Push2DView( view, nFlags, pRenderTarget, frustumPlanes );
 	}
 
-	virtual void PopView( Frustum frustumPlanes )
+	virtual void PopView(IVModel* pWorld, Frustum frustumPlanes )
  	{
-		g_EngineRenderer->PopView( frustumPlanes );
+		g_EngineRenderer->PopView(pWorld, frustumPlanes );
 	}
 
 	virtual void SetMainView( const Vector &vecOrigin, const QAngle &angles )
@@ -586,9 +586,9 @@ public:
 		g_EngineRenderer->UpdateBrushModelLightmap( model, pRenderable );
 	}
 	
-	void BeginUpdateLightmaps( void )
+	void BeginUpdateLightmaps( IVModel* pWorld )
 	{
-		g_EngineRenderer->BeginUpdateLightmaps();
+		g_EngineRenderer->BeginUpdateLightmaps(pWorld);
 	}
 
 	void EndUpdateLightmaps( IVModel* pWorld )
@@ -596,9 +596,9 @@ public:
 		g_EngineRenderer->EndUpdateLightmaps(pWorld);
 	}
 
-	virtual void Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture )
+	virtual void Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture )
 	{
-		g_EngineRenderer->Push3DView( view, nFlags, pRenderTarget, frustumPlanes, pDepthTexture );
+		g_EngineRenderer->Push3DView(pWorld, view, nFlags, pRenderTarget, frustumPlanes, pDepthTexture );
 	}
 
 	void GetMatricesForView( const CViewSetup &view, VMatrix *pWorldToView, VMatrix *pViewToProjection, VMatrix *pWorldToProjection, VMatrix *pWorldToPixels )

@@ -103,7 +103,7 @@ void GetColorForSurface( trace_t *trace, Vector *color )
 		if ( trace->hitbox == 0 )
 		{
 			// If we hit the world, then ask the world for the fleck color
-			engineClient->TraceLineMaterialAndLighting( trace->startpos, end, diffuseColor, baseColor );
+			engineClient->TraceLineMaterialAndLighting(engineClient->GetWorldModel(), trace->startpos, end, diffuseColor, baseColor );
 		}
 		else
 		{

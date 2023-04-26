@@ -276,7 +276,7 @@ void CDemoRecorder::SetSignonState(int state)
 	{
 		if ( m_bRecording )
 		{
-			StartupDemoFile();
+			StartupDemoFile(g_pHost->Host_GetWorldModel());
 		}
 	}
 }
@@ -533,7 +533,7 @@ void CDemoRecorder::StartupDemoHeader( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CDemoRecorder::StartupDemoFile( void )
+void CDemoRecorder::StartupDemoFile( model_t* pWorld )
 {
 	if ( !m_bRecording )
 		return;
@@ -590,7 +590,7 @@ void CDemoRecorder::StartupDemoFile( void )
 	dh->networkprotocol = PROTOCOL_VERSION;
 	Q_strncpy(dh->demofilestamp, DEMO_HEADER_ID, sizeof(dh->demofilestamp) );
 
-	Q_FileBase( modelloader->GetName(g_pHost->Host_GetWorldModel()), dh->mapname, sizeof( dh->mapname ) );
+	Q_FileBase( modelloader->GetName(pWorld), dh->mapname, sizeof( dh->mapname ) );
 
 	char szGameDir[MAX_OSPATH];
 	Q_strncpy(szGameDir, com_gamedir, sizeof( szGameDir ) );
@@ -625,7 +625,7 @@ void CDemoRecorder::StartupDemoFile( void )
 	// Demo playback should read this as an incoming message.
 	WriteDemoCvars(); // save all cvars marked with FCVAR_DEMO
 
-	WriteBSPDecals(g_pHost->Host_GetWorldModel());
+	WriteBSPDecals(pWorld);
 
 	g_ClientDLL->HudReset();
 

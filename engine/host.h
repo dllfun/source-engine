@@ -21,14 +21,12 @@ class model_t;
 struct AudioState_t;
 
 
-class CCommonHostState
-{
-public:
-	model_t		*worldmodel;	// cl_entitites[0].model
-	//struct worldbrushdata_t *worldbrush;
-	float		interval_per_tick;		// Tick interval for game
-	void SetWorldModel( model_t *pModel );
-};
+//class CCommonHostState
+//{
+//public:
+//	
+//	void SetWorldModel( model_t *pModel );
+//};
 
 //extern CCommonHostState host_state;
 
@@ -131,19 +129,19 @@ public:
 	}
 
 	float Host_GetIntervalPerTick() {
-		return host_state.interval_per_tick;
+		return interval_per_tick;
 	}
 
 	void Host_SetIntervalPerTick(float interval_per_tick) {
-		host_state.interval_per_tick= interval_per_tick;
+		this->interval_per_tick= interval_per_tick;
 	}
 
 	model_t* Host_GetWorldModel() {
-		return host_state.worldmodel;
+		return worldmodel;
 	}
 
 	void Host_SetWorldModel(model_t* model) {
-		host_state.worldmodel = model;
+		worldmodel = model;
 	}
 
 	bool Host_initialized() {
@@ -242,7 +240,10 @@ private:
 	CGameClient* host_client;			// current client
 
 	engineparms_t host_parms;
-	CCommonHostState host_state;
+	//CCommonHostState host_state;
+	model_t* worldmodel;	// cl_entitites[0].model
+	//struct worldbrushdata_t *worldbrush;
+	float		interval_per_tick;		// Tick interval for game
 	float		host_tick_time = 0.0;
 	float		host_frametime = 0.0f;
 	int			host_tickcount = 0;

@@ -324,7 +324,8 @@ bool CClientState::SetSignonState ( int state, int count )
 
 		case SIGNONSTATE_FULL:
 			{
-				CL_FullyConnected();
+			model_t* pWorld = g_pHost->Host_GetWorldModel();
+				CL_FullyConnected(pWorld);
 				if ( m_NetChannel )
 				{
 					m_NetChannel->SetTimeout( cl_timeout.GetFloat() );
@@ -1842,13 +1843,15 @@ void CClientState::FinishSignonState_New()
 	// force a consistency check
 	ConsistencyCheck( true );
 
-	CL_RegisterResources();
+	model_t* pWorld = cl.GetModel(1);
+
+	CL_RegisterResources(pWorld);
 
 	// Done with all resources, issue prespawn command.
 	// Include server count in case server disconnects and changes level during d/l
 
 	// Tell rendering system we have a new set of models.
-	R_LevelInit(g_pHost->Host_GetWorldModel());
+	R_LevelInit(pWorld);
 
 	// Balanced against SuspendTextureStreaming above
 	materials->ResumeTextureStreaming();
@@ -1859,7 +1862,7 @@ void CClientState::FinishSignonState_New()
 
 	SendClientInfo();
 
-	CL_SetSteamCrashComment();
+	CL_SetSteamCrashComment(pWorld);
 
 	// tell server that we entered now that state
 	m_NetChannel->SendNetMsg( NET_SignonState( m_nSignonState, m_nServerCount ) );

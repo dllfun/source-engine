@@ -119,7 +119,6 @@ bool g_bClientGameDLLGreaterThanV13;
 
 void AddIntersectingLeafSurfaces( mleaf_t *pLeaf, GetIntersectingSurfaces_Struct *pStruct)
 {
-	//SurfaceHandle_t *pHandle = &g_pHost->Host_GetWorldModel()->brush.pShared->marksurfaces[];
 	for ( int iSurf=0; iSurf < pLeaf->nummarksurfaces; iSurf++ )
 	{
 		SurfaceHandle_t surfID = *pStruct->m_pModel->GetMarkSurface(pLeaf->firstmarksurface+iSurf);
@@ -345,7 +344,7 @@ public:
 		const int nMaxInfos);
 
 	Vector	GetLightForPoint(IVModel* pWorld, const Vector &pos, bool bClamp);
-	Vector	GetLightForPointFast(const Vector &pos, bool bClamp);
+	Vector	GetLightForPointFast(IVModel* pWorld, const Vector &pos, bool bClamp);
 	const char *ParseFile( const char *data, char *token, int maxlen );
 	virtual bool CopyLocalFile( const char *source, const char *destination );
 	void GetScreenSize( int& w, int &h );
@@ -382,7 +381,7 @@ public:
 	bool IsDrawingLoadingImage( void );
 	void Con_NPrintf( int pos, const char *fmt, ... );
 	void Con_NXPrintf( const struct con_nprint_s *info, const char *fmt, ... );
-	IMaterial *TraceLineMaterialAndLighting( const Vector &start, const Vector &end, 
+	IMaterial *TraceLineMaterialAndLighting(IVModel* pWorld, const Vector &start, const Vector &end, 
 		                                     Vector &diffuseLightColor, Vector &baseColor );
 	int		IsBoxVisible( const Vector& mins, const Vector& maxs );
 	int		IsBoxInViewCluster( const Vector& mins, const Vector& maxs );
@@ -401,7 +400,7 @@ public:
 	bool	LoadGameLump( int lumpId, void* pBuffer, int size );
 
 	// Returns the number of leaves in the level
-	int		LevelLeafCount() const;
+	int		LevelLeafCount(IVModel* pWorld) const;
 	//virtual ISpatialQuery* GetBSPTreeQuery();
 
 	// Convert texlight to gamma...
@@ -451,7 +450,7 @@ public:
 	virtual void EngineStats_EndFrame( void );
 	virtual void FireEvents();
 	virtual void CheckPoint( const char *pName );
-	virtual int GetLeavesArea( int *pLeaves, int nLeaves );
+	virtual int GetLeavesArea(IVModel* pWorld, int *pLeaves, int nLeaves );
 	virtual bool DoesBoxTouchAreaFrustum( const Vector &mins, const Vector &maxs, int iArea );
 
 	// Sets the hearing origin
@@ -626,13 +625,13 @@ Vector	CEngineClient::GetLightForPoint(IVModel* pWorld, const Vector &pos, bool 
 	return vRet;
 }
 
-Vector CEngineClient::GetLightForPointFast(const Vector &pos, bool bClamp)
+Vector CEngineClient::GetLightForPointFast(IVModel* pWorld, const Vector &pos, bool bClamp)
 {
 	Vector vRet;
 	int leafIndex = CM_PointLeafnum(pos);
 	vRet.Init();
 	Vector cube[6];
-	Mod_LeafAmbientColorAtPos( cube, pos, leafIndex );
+	Mod_LeafAmbientColorAtPos((model_t*)pWorld, cube, pos, leafIndex );
 	for ( int i = 0; i < 6; i++ )
 	{
 		vRet.x = fpmax(vRet.x, cube[i].x );
@@ -925,10 +924,10 @@ void CEngineClient::Con_NXPrintf( const struct con_nprint_s *info, const char *f
 	::Con_NXPrintf( info, "%s", text );
 }
 
-IMaterial *CEngineClient::TraceLineMaterialAndLighting( const Vector &start, const Vector &end, 
+IMaterial *CEngineClient::TraceLineMaterialAndLighting(IVModel* pWorld, const Vector &start, const Vector &end, 
 		                                 Vector &diffuseLightColor, Vector &baseColor )
 {
-	return BrushModel_GetLightingAndMaterial(g_pHost->Host_GetWorldModel(), start, end, diffuseLightColor, baseColor );
+	return BrushModel_GetLightingAndMaterial((model_t*)pWorld, start, end, diffuseLightColor, baseColor );
 }
 
 int	CEngineClient::IsBoxVisible( const Vector& mins, const Vector& maxs ) 
@@ -1003,9 +1002,9 @@ bool CEngineClient::LoadGameLump( int lumpId, void* pBuffer, int size )
 }
 
 // Returns the number of leaves in the level
-int	CEngineClient::LevelLeafCount() const
+int	CEngineClient::LevelLeafCount(IVModel* pWorld) const
 {
-	return g_pHost->Host_GetWorldModel()->GetLeafCount();
+	return ((model_t*)pWorld)->GetLeafCount();
 }
 
 //ISpatialQuery* CEngineClient::GetBSPTreeQuery()
@@ -1185,15 +1184,15 @@ void CEngineClient::CheckPoint( const char *pName )
 	GetTestScriptMgr()->CheckPoint( pName );
 }
 
-int CEngineClient::GetLeavesArea( int *pLeaves, int nLeaves )
+int CEngineClient::GetLeavesArea(IVModel* pWorld, int *pLeaves, int nLeaves )
 {
 	if ( nLeaves == 0 )
 		return -1;
 
-	int iArea = g_pHost->Host_GetWorldModel()->GetLeafArea(pLeaves[0]);
+	int iArea = ((model_t*)pWorld)->GetLeafArea(pLeaves[0]);
 	for ( int i=1; i < nLeaves; i++ )
 	{
-		int iTestArea = g_pHost->Host_GetWorldModel()->GetLeafArea(pLeaves[i]);
+		int iTestArea = ((model_t*)pWorld)->GetLeafArea(pLeaves[i]);
 		if ( iTestArea != iArea )
 			return -1;
 	}
@@ -1807,14 +1806,14 @@ void InitExtraClientCmdCanExecuteVars()
 //-----------------------------------------------------------------------------
 void ClientDLL_Init( void )
 {
-	extern void CL_SetSteamCrashComment();
+	extern void CL_SetSteamCrashComment(model_t * pWorld);
 
 	// Assert ClientDLL_Load successfully created these interfaces, as we need them to init properly
 	Assert ( g_ClientDLL );
 	Assert ( g_ClientFactory );
 
 	// this will get updated after we load a map, but this gets video info if we sys_error() prior to loading a map
-	CL_SetSteamCrashComment();
+	CL_SetSteamCrashComment(NULL);
 
 	if ( g_ClientDLL )
 	{

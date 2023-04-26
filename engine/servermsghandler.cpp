@@ -239,7 +239,8 @@ void CClientState::Disconnect( const char *pszReason, bool bShowMainMenu )
 
 	S_StopAllSounds( true );
 	
-	R_DecalTermAll(g_pHost->Host_GetWorldModel());
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	R_DecalTermAll(pWorld);
 
 	if ( m_nMaxClients > 1 )
 	{
@@ -250,7 +251,7 @@ void CClientState::Disconnect( const char *pszReason, bool bShowMainMenu )
 		}
 	}
 
-	CL_ClearState();
+	CL_ClearState(pWorld);
 
 #ifndef _XBOX
 	// End any in-progress downloads
@@ -315,7 +316,8 @@ bool CClientState::ProcessStringCmd( NET_StringCmd *msg )
 bool CClientState::ProcessServerInfo( SVC_ServerInfo *msg )
 {
 	// Reset client state
-	CL_ClearState();
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	CL_ClearState(pWorld);
 
 	if ( !CBaseClientState::ProcessServerInfo( msg ) )
 	{

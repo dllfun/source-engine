@@ -578,7 +578,7 @@ void CL_ReadPackets ( bool bFinalTick )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CL_ClearState ( void )
+void CL_ClearState ( model_t* pWorld )
 {
 	// clear out the current whitelist
 	IFileList *pFilesToReload = NULL;
@@ -597,10 +597,10 @@ void CL_ClearState ( void )
 	// shutdown this level in the client DLL
 	if ( g_ClientDLL )
 	{
-		if (g_pHost->Host_GetWorldModel())
+		if (pWorld)
 		{
 			char mapname[256];
-			CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
+			CL_SetupMapName( modelloader->GetName(pWorld), mapname, sizeof( mapname ) );
 			phonehome->Message( IPhoneHome::PHONE_MSG_MAPEND, mapname );
 		}
 		audiosourcecache->LevelShutdown();
@@ -1016,11 +1016,11 @@ CL_RegisterResources
 Clean up and move to next part of sequence.
 ==================
 */
-void CL_RegisterResources( void )
+void CL_RegisterResources( model_t* pWorld )
 {
 	// All done precaching.
-	g_pHost->Host_SetWorldModel( cl.GetModel( 1 ) );
-	if ( !g_pHost->Host_GetWorldModel())
+	g_pHost->Host_SetWorldModel( pWorld );
+	if ( !pWorld)
 	{
 		g_pHost->Host_Error( "CL_RegisterResources:  host_state.worldmodel/cl.GetModel( 1 )==NULL\n" );
 	}
@@ -1029,7 +1029,7 @@ void CL_RegisterResources( void )
 	videomode->InvalidateWindow();
 }
 
-void CL_FullyConnected( void )
+void CL_FullyConnected( model_t* pWorld )
 {
 	CETWScope timer( "CL_FullyConnected" );
 
@@ -1038,7 +1038,7 @@ void CL_FullyConnected( void )
 	// This has to happen here, in phase 3, because it is in this phase
 	// that raycasts against the world is supported (owing to the fact
 	// that the world entity has been created by this point)
-	StaticPropMgr()->LevelInitClient(g_pHost->Host_GetWorldModel());
+	StaticPropMgr()->LevelInitClient(pWorld);
 
 	if ( IsX360() )
 	{
@@ -2601,7 +2601,7 @@ void CL_SetPagedPoolInfo()
 #endif
 }
 
-void CL_SetSteamCrashComment()
+void CL_SetSteamCrashComment(model_t* pWorld)
 {
 	if ( IsX360() )
 		return;
@@ -2618,9 +2618,9 @@ void CL_SetSteamCrashComment()
 	misc[ 0 ] = 0;
 	osversion[ 0 ] = 0;
 
-	if (g_pHost->Host_GetWorldModel())
+	if (pWorld)
 	{
-		CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), map, sizeof( map ) );
+		CL_SetupMapName( modelloader->GetName(pWorld), map, sizeof( map ) );
 	}
 
 	DisplaySystemVersion( osversion, sizeof( osversion ) );

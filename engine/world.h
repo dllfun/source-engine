@@ -18,7 +18,7 @@
 struct edict_t;
 class ICollideable;
 
-void SV_ClearWorld (void);
+void SV_ClearWorld (model_t* pWorld);
 // called after the world model has been loaded, before linking any entities
 
 void SV_SolidMoved( edict_t *pSolidEnt, ICollideable *pSolidCollide, const Vector *pPrevAbsOrigin, bool testSurroundingBoundsOnly );

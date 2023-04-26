@@ -16,8 +16,8 @@
 #pragma once
 
 
-extern void LeafVisBuild( const Vector& p );
-extern void LeafVisDraw( void );
+extern void LeafVisBuild(model_t* pWorld, const Vector& p );
+extern void LeafVisDraw( model_t* pWorld );
 
 
 #endif // DEBUG_LEAFVIS_H

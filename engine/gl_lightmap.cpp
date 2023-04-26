@@ -1299,7 +1299,6 @@ void CacheAndUnloadLightmapData(model_t* pWorld)
 		return;
 	}
 
-	//worldbrushdata_t *pBrushData = g_pHost->Host_GetWorldModel()->brush.pShared;
 	msurfacelighting_t *pLighting = pWorld->GetSurfacelighting();
 	int numSurfaces = pWorld->GetSurfacesCount();
 
@@ -1328,9 +1327,9 @@ void CacheAndUnloadLightmapData(model_t* pWorld)
 	}
 
 	// Update the lightdata pointer
-	free(g_pHost->Host_GetWorldModel()->GetLightdata() );
-	g_pHost->Host_GetWorldModel()->SetLightdata((ColorRGBExp32*)pDestBase);
-	g_pHost->Host_GetWorldModel()->SetUnloadedlightmaps(true);
+	free(pWorld->GetLightdata() );
+	pWorld->SetLightdata((ColorRGBExp32*)pDestBase);
+	pWorld->SetUnloadedlightmaps(true);
 }
 
 //sorts the surfaces in place

@@ -113,12 +113,12 @@ public:
 	virtual void	FrameBegin( void ) = 0;
 	virtual void	FrameEnd( void ) = 0;
 	
-	virtual void	ViewSetupVis( bool novis, int numorigins, const Vector origin[] ) = 0;
+	virtual void	ViewSetupVis(IVModel* pWorld, bool novis, int numorigins, const Vector origin[] ) = 0;
 
 	virtual void	ViewDrawFade( byte *color, IMaterial* pFadeMaterial ) = 0;
 
 	virtual void	DrawSceneBegin( IVModel* pWorld ) = 0;
-	virtual void	DrawSceneEnd( void ) = 0;
+	virtual void	DrawSceneEnd( IVModel* pWorld ) = 0;
 
 	virtual IWorldRenderList * CreateWorldList(IVModel* pWorld) = 0;
 	virtual void	BuildWorldLists(IVModel* pWorld, IWorldRenderList *pList, WorldListInfo_t* pInfo, int iForceViewLeaf, const VisOverrideData_t* pVisData, bool bShadowDepth, float *pReflectionWaterHeight ) = 0;
@@ -155,15 +155,15 @@ public:
 	// Returns true if the point is behind the camera
 	virtual bool ScreenTransform( Vector const& point, Vector* pScreen ) = 0;
 
-	virtual void Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes ) = 0;
-	virtual void Push3DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture ) = 0;
+	virtual void Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes ) = 0;
+	virtual void Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes, ITexture* pDepthTexture ) = 0;
 	virtual void Push2DView( const CViewSetup &view, int nFlags, ITexture* pRenderTarget, Frustum frustumPlanes ) = 0;
-	virtual void PopView( Frustum frustumPlanes ) = 0;
+	virtual void PopView(IVModel* pWorld, Frustum frustumPlanes ) = 0;
 	virtual void SetMainView( const Vector &vecOrigin, const QAngle &angles ) = 0;
-	virtual void ViewSetupVisEx( bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags ) = 0;
+	virtual void ViewSetupVisEx(IVModel* pWorld, bool novis, int numorigins, const Vector origin[], unsigned int &returnFlags ) = 0;
 	virtual void OverrideViewFrustum( Frustum custom ) = 0;
 	virtual void UpdateBrushModelLightmap(IVModel *model, IClientRenderable *Renderable ) = 0;
-	virtual void BeginUpdateLightmaps( void ) = 0;
+	virtual void BeginUpdateLightmaps( IVModel* pWorld ) = 0;
 	virtual void EndUpdateLightmaps( IVModel* pWorld ) = 0;
 	virtual bool InLightmapUpdate( void ) const = 0;
 

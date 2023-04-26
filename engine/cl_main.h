@@ -152,7 +152,7 @@ void CL_HookClientStringTables();
 void CL_LatchInterpolationAmount();
 
 // Resource
-void CL_RegisterResources ( void );
+void CL_RegisterResources ( model_t* pWorld );
 
 //
 // cl_input
@@ -160,13 +160,13 @@ void CL_RegisterResources ( void );
 void CL_Move( float accumulated_extra_samples, bool bFinalTick );
 void CL_ExtraMouseUpdate( float remainder );
 
-void CL_ClearState (void);
+void CL_ClearState (model_t* pWorld);
 void CL_ReadPackets ( bool framefinished );        // Read packets from server and other sources (ping requests, etc.)
 
 //
 // cl_main.cpp
 //
-void CL_FullyConnected( void );
+void CL_FullyConnected( model_t* pWorld );
 void CL_Retry( void );
 void CL_HudMessage( const char *pMessage );
 void CL_CheckClientState( void );
@@ -178,7 +178,7 @@ bool CL_ShouldLoadBackgroundLevel( const CCommand &args );
 
 bool CL_IsHL2Demo();
 bool CL_IsPortalDemo();
-void CL_SetSteamCrashComment();
+void CL_SetSteamCrashComment(model_t* pWorld);
 
 void CL_CheckForPureServerWhitelist( /* out */ IFileList *&pFilesToReload );
 void CL_ReloadFilesInList( IFileList *pFilesToReload );

@@ -2592,8 +2592,9 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 
 	COM_TimestampedLog( "modelloader->GetModelForName(%s) -- Start", szMapFile );
 
-	g_pHost->Host_SetWorldModel( modelloader->GetModelForName( szMapFile, IModelLoader::FMODELLOADER_SERVER ) );
-	if ( !g_pHost->Host_GetWorldModel())
+	model_t* pWorld = modelloader->GetModelForName(szMapFile, IModelLoader::FMODELLOADER_SERVER);
+	g_pHost->Host_SetWorldModel(pWorld);
+	if ( !pWorld)
 	{
 		ConMsg( "Couldn't spawn server %s\n", szMapFile );
 		m_State = ss_dead;
@@ -2649,12 +2650,12 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	EngineVGui()->UpdateProgressBar(PROGRESS_PRECACHEWORLD);
 #endif
 	// Add in world
-	PrecacheModel( szMapFile, RES_FATALIFMISSING | RES_PRELOAD, g_pHost->Host_GetWorldModel());
+	PrecacheModel( szMapFile, RES_FATALIFMISSING | RES_PRELOAD, pWorld);
 
 	COM_TimestampedLog( "Precache brush models" );
 
 	// Add world submodels to the model cache
-	for ( i = 1 ; i < g_pHost->Host_GetWorldModel()->GetSubmodelsCount() ; i++ )
+	for ( i = 1 ; i < pWorld->GetSubmodelsCount() ; i++ )
 	{
 		// Add in world brush models
 		char localmodel[5]; // inline model names "*1", "*2" etc
@@ -2670,7 +2671,7 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 
 	// Clear world interaction links
 	// Loads and inserts static props
-	SV_ClearWorld();
+	SV_ClearWorld(pWorld);
 
 	//
 	// load the rest of the entities
