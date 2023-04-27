@@ -18,6 +18,7 @@
 #include "netmessages.h"
 #include "net.h"
 #include "event_system.h"
+#include "tier2/tier2.h"
 
 class CNetworkStringTableContainer;
 class PackedEntity;
@@ -65,7 +66,7 @@ public: // IServer implementation
 	virtual int		GetNumProxies( void ) const; // returns number of attached HLTV proxies
 	virtual int		GetNumFakeClients() const; // returns number of fake clients/bots
 	virtual int		GetMaxClients( void ) const { return m_nMaxclients; } // returns current client limit
-	virtual int		GetUDPPort( void ) const { return NET_GetUDPPort( m_Socket );	}
+	virtual int		GetUDPPort( void ) const { return g_pNetworkSystem->NET_GetUDPPort( m_Socket );	}
 	virtual IClient	*GetClient( int index ) { return m_Clients[index]; } // returns interface to client 
 	virtual int		GetClientCount() const { return m_Clients.Count(); } // for iteration;
 	virtual float	GetTime( void ) const;

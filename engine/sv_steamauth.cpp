@@ -178,7 +178,7 @@ void CSteam3Server::Activate( EServerType serverType )
 	if ( ipname.IsValid() )
 	{
 		netadr_t ipaddr;
-		NET_StringToAdr( ipname.GetString(), &ipaddr );
+		g_pNetworkSystem->NET_StringToAdr( ipname.GetString(), &ipaddr );
 		if ( !ipaddr.IsLoopback() && !ipaddr.IsLocalhost() )
 		{
 			m_unIP = ipaddr.GetIPHostByteOrder();
@@ -195,7 +195,7 @@ void CSteam3Server::Activate( EServerType serverType )
 	uint16 usGamePort = 0;
 	if ( serverType == eServerTypeNormal )
 	{
-		usGamePort = NET_GetUDPPort( NS_SERVER );
+		usGamePort = g_pNetworkSystem->NET_GetUDPPort( NS_SERVER );
 	}
 
 	uint16 usMasterServerUpdaterPort;
@@ -204,7 +204,7 @@ void CSteam3Server::Activate( EServerType serverType )
 		m_bMasterServerUpdaterSharingGameSocket = true;
 		usMasterServerUpdaterPort = MASTERSERVERUPDATERPORT_USEGAMESOCKETSHARE;
 		if ( serverType == eServerTypeTVRelay )
-			m_QueryPort = NET_GetUDPPort( NS_HLTV );
+			m_QueryPort = g_pNetworkSystem->NET_GetUDPPort( NS_HLTV );
 		else
 			m_QueryPort = usGamePort;
 	}
@@ -951,7 +951,7 @@ void CSteam3Server::SendUpdatedServerDetails()
 	if ( hltv && hltv->IsActive() )
 	{
 		// This is also the case when we're a relay, in which case we never set a game port, so we'll only have a spectator port
-		SteamGameServer()->SetSpectatorPort( NET_GetUDPPort( NS_HLTV ) );
+		SteamGameServer()->SetSpectatorPort(g_pNetworkSystem->NET_GetUDPPort( NS_HLTV ) );
 		SteamGameServer()->SetSpectatorServerName( hltv->GetName() );
 	}
 	else

@@ -542,10 +542,7 @@ const char *CLC_SaveReplay::ToString() const
 // CmdKeyValues message
 //
 
-Base_CmdKeyValues::Base_CmdKeyValues( KeyValues *pKeyValues /* = NULL */ ) :
-	m_pKeyValues( pKeyValues )
-{
-}
+
 
 Base_CmdKeyValues::~Base_CmdKeyValues()
 {
@@ -619,9 +616,7 @@ const char * Base_CmdKeyValues::ToString(void) const
 	return s_text;
 }
 
-CLC_CmdKeyValues::CLC_CmdKeyValues( KeyValues *pKeyValues /* = NULL */ ) : Base_CmdKeyValues( pKeyValues )
-{
-}
+
 
 bool CLC_CmdKeyValues::WriteToBuffer( bf_write &buffer )
 {
@@ -638,9 +633,7 @@ const char *CLC_CmdKeyValues::ToString(void) const
 	return Base_CmdKeyValues::ToString();
 }
 
-SVC_CmdKeyValues::SVC_CmdKeyValues( KeyValues *pKeyValues /* = NULL */ ) : Base_CmdKeyValues( pKeyValues )
-{
-}
+
 
 bool SVC_CmdKeyValues::WriteToBuffer( bf_write &buffer )
 {
@@ -1228,10 +1221,10 @@ const char *SVC_UpdateStringTable::ToString(void) const
 	return s_text;
 }
 
-SVC_CreateStringTable::SVC_CreateStringTable()
-{
-
-}
+//SVC_CreateStringTable::SVC_CreateStringTable()
+//{
+//
+//}
 
 bool SVC_CreateStringTable::WriteToBuffer( bf_write &buffer )
 {
@@ -1302,7 +1295,7 @@ bool SVC_CreateStringTable::ReadFromBuffer( bf_read &buffer )
 		m_nUserDataSizeBits = 0;
 	}
 
-	if ( m_pMessageHandler->GetDemoProtocolVersion() > PROTOCOL_VERSION_14 )
+	if ( dynamic_cast<IServerMessageHandler*>(m_pMessageHandler)->GetDemoProtocolVersion() > PROTOCOL_VERSION_14 )
 	{
 		m_bDataCompressed = buffer.ReadOneBit() != 0;
 	}
@@ -1391,7 +1384,7 @@ bool SVC_Prefetch::ReadFromBuffer( bf_read &buffer )
 	VPROF( "SVC_Prefetch::ReadFromBuffer" );
 
 	m_fType = SOUND; // buffer.ReadUBitLong( 1 );
-	if( m_pMessageHandler->GetDemoProtocolVersion() > 22 )
+	if(dynamic_cast<IServerMessageHandler*>(m_pMessageHandler)->GetDemoProtocolVersion() > 22 )
 	{
 		m_nSoundIndex = buffer.ReadUBitLong( MAX_SOUND_INDEX_BITS );
 	}
@@ -1429,7 +1422,7 @@ bool SVC_TempEntities::ReadFromBuffer( bf_read &buffer )
 	VPROF( "SVC_TempEntities::ReadFromBuffer" );
 
 	m_nNumEntries = buffer.ReadUBitLong( CEventInfo::EVENT_INDEX_BITS );
-	if ( m_pMessageHandler->GetDemoProtocolVersion() > PROTOCOL_VERSION_23 )
+	if (dynamic_cast<IServerMessageHandler*>(m_pMessageHandler)->GetDemoProtocolVersion() > PROTOCOL_VERSION_23 )
 		m_nLength = buffer.ReadVarInt32();
 	else
 		m_nLength = buffer.ReadUBitLong( NET_MAX_PAYLOAD_BITS_V23 );
@@ -1704,14 +1697,7 @@ const char *SVC_PacketEntities::ToString(void) const
 	return s_text;
 } 
 
-SVC_Menu::SVC_Menu( DIALOG_TYPE type, KeyValues *data )
-{
-	m_bReliable = true;
 
-	m_Type = type;
-	m_MenuKeyValues = data->MakeCopy();
-	m_iLength = -1;
-}
 
 SVC_Menu::~SVC_Menu()
 {

@@ -1679,7 +1679,7 @@ bool CDemoPlayer::StartPlayback( const char *filename, bool bAsTimeDemo )
 	ResyncDemoClock(); 
 
 	// create a fake channel with a NULL address
-	cl.m_NetChannel = NET_CreateNetChannel( NS_CLIENT, NULL, "DEMO", &cl, false, dh->networkprotocol );
+	cl.m_NetChannel = g_pNetworkSystem->NET_CreateNetChannel( NS_CLIENT, NULL, "DEMO", &cl, false, dh->networkprotocol );
 
 	if ( !cl.m_NetChannel )
 	{

@@ -8,7 +8,8 @@
 #include "baseclientstate.h"
 #include "vstdlib/random.h"
 #include <inetchannel.h>
-#include <netmessages.h>
+#include "netmessages.h"
+#include "inetmsghandler.h"
 #include <proto_oob.h>
 #include <ctype.h>
 #include "cl_main.h"
@@ -385,15 +386,15 @@ void CBaseClientState::FileSent(const char *fileName, unsigned int transferID )
 	ConMsg( "File '%s' sent.\n", fileName );
 }
 
-#define REGISTER_NET_MSG( name )				\
-	NET_##name * p##name = new NET_##name();	\
-	p##name->m_pMessageHandler = this;			\
-	chan->RegisterMessage( p##name );			\
-
-#define REGISTER_SVC_MSG( name )				\
-	SVC_##name * p##name = new SVC_##name();	\
-	p##name->m_pMessageHandler = this;			\
-	chan->RegisterMessage( p##name );			\
+//#define REGISTER_NET_MSG( name )				\
+//	NET_##name * p##name = new NET_##name();	\
+//	p##name->m_pMessageHandler = this;			\
+//	chan->RegisterMessage( p##name );			\
+//
+//#define REGISTER_SVC_MSG( name )				\
+//	SVC_##name * p##name = new SVC_##name();	\
+//	p##name->m_pMessageHandler = this;			\
+//	chan->RegisterMessage( p##name );			\
 
 void CBaseClientState::ConnectionStart(INetChannel *chan)
 {
@@ -427,6 +428,136 @@ void CBaseClientState::ConnectionStart(INetChannel *chan)
 	REGISTER_SVC_MSG( GetCvarValue );
 	REGISTER_SVC_MSG( CmdKeyValues );
 	REGISTER_SVC_MSG( SetPauseTimed );
+}
+
+INetMessage* CBaseClientState::CreateMessage(int msgtype) {
+	switch (msgtype) {
+	case net_Tick:
+		return new NET_Tick();
+	case net_StringCmd:
+		return new NET_StringCmd();
+	case net_SetConVar:
+		return new NET_SetConVar();
+	case net_SignonState:
+		return new NET_SignonState();
+	case svc_Print:
+		return new SVC_Print();
+	case svc_ServerInfo:
+		return new SVC_ServerInfo();
+	case svc_SendTable:
+		return new SVC_SendTable();
+	case svc_ClassInfo:
+		return new SVC_ClassInfo();
+	case svc_SetPause:
+		return new SVC_SetPause();
+	case svc_CreateStringTable:
+		return new SVC_CreateStringTable();
+	case svc_UpdateStringTable:
+		return new SVC_UpdateStringTable();
+	case svc_VoiceInit:
+		return new SVC_VoiceInit();
+	case svc_VoiceData:
+		return new SVC_VoiceData();
+	case svc_Sounds:
+		return new SVC_Sounds();
+	case svc_SetView:
+		return new SVC_SetView();
+	case svc_FixAngle:
+		return new SVC_FixAngle();
+	case svc_CrosshairAngle:
+		return new SVC_CrosshairAngle();
+	case svc_BSPDecal:
+		return new SVC_BSPDecal();
+	case svc_GameEvent:
+		return new SVC_GameEvent();
+	case svc_UserMessage:
+		return new SVC_UserMessage();
+	case svc_EntityMessage:
+		return new SVC_EntityMessage();
+	case svc_PacketEntities:
+		return new SVC_PacketEntities();
+	case svc_TempEntities:
+		return new SVC_TempEntities();
+	case svc_Prefetch:
+		return new SVC_Prefetch();
+	case svc_Menu:
+		return new SVC_Menu();
+	case svc_GameEventList:
+		return new SVC_GameEventList();
+	case svc_GetCvarValue:
+		return new SVC_GetCvarValue();
+	case svc_CmdKeyValues:
+		return new SVC_CmdKeyValues();
+	case svc_SetPauseTimed:
+		return new SVC_SetPauseTimed();
+	default:
+		return NULL;
+	}
+}
+
+bool CBaseClientState::ProcessMessage(INetMessage* msg, INetChannel* pChan) {
+	switch (msg->GetType()) {
+	case net_Tick:
+		return ProcessTick((NET_Tick*)msg);
+	case net_StringCmd:
+		return ProcessStringCmd((NET_StringCmd *) msg);
+	case net_SetConVar:
+		return ProcessSetConVar((NET_SetConVar *) msg);
+	case net_SignonState:
+		return ProcessSignonState((NET_SignonState *) msg);
+	case svc_Print:
+		return ProcessPrint((SVC_Print *) msg);
+	case svc_ServerInfo:
+		return ProcessServerInfo((SVC_ServerInfo *) msg);
+	case svc_SendTable:
+		return ProcessSendTable((SVC_SendTable *) msg);
+	case svc_ClassInfo:
+		return ProcessClassInfo((SVC_ClassInfo *) msg);
+	case svc_SetPause:
+		return ProcessSetPause((SVC_SetPause *) msg);
+	case svc_CreateStringTable:
+		return ProcessCreateStringTable((SVC_CreateStringTable *) msg);
+	case svc_UpdateStringTable:
+		return ProcessUpdateStringTable((SVC_UpdateStringTable *) msg);
+	case svc_VoiceInit:
+		return ProcessVoiceInit((SVC_VoiceInit *) msg);
+	case svc_VoiceData:
+		return ProcessVoiceData((SVC_VoiceData *) msg);
+	case svc_Sounds:
+		return ProcessSounds((SVC_Sounds *) msg);
+	case svc_SetView:
+		return ProcessSetView((SVC_SetView *) msg);
+	case svc_FixAngle:
+		return ProcessFixAngle((SVC_FixAngle *) msg);
+	case svc_CrosshairAngle:
+		return ProcessCrosshairAngle((SVC_CrosshairAngle *) msg);
+	case svc_BSPDecal:
+		return ProcessBSPDecal((SVC_BSPDecal *) msg);
+	case svc_GameEvent:
+		return ProcessGameEvent((SVC_GameEvent *) msg);
+	case svc_UserMessage:
+		return ProcessUserMessage((SVC_UserMessage *) msg);
+	case svc_EntityMessage:
+		return ProcessEntityMessage((SVC_EntityMessage *) msg);
+	case svc_PacketEntities:
+		return ProcessPacketEntities((SVC_PacketEntities *) msg);
+	case svc_TempEntities:
+		return ProcessTempEntities((SVC_TempEntities *) msg);
+	case svc_Prefetch:
+		return ProcessPrefetch((SVC_Prefetch *) msg);
+	case svc_Menu:
+		return ProcessMenu((SVC_Menu *) msg);
+	case svc_GameEventList:
+		return ProcessGameEventList((SVC_GameEventList *) msg);
+	case svc_GetCvarValue:
+		return ProcessGetCvarValue((SVC_GetCvarValue *) msg);
+	case svc_CmdKeyValues:
+		return ProcessCmdKeyValues((SVC_CmdKeyValues *) msg);
+	case svc_SetPauseTimed:
+		return ProcessSetPauseTimed((SVC_SetPauseTimed *) msg);
+	default:
+		return true;
+	}
 }
 
 void CBaseClientState::ConnectionClosing( const char *reason )
@@ -501,7 +632,7 @@ void CBaseClientState::SendConnectPacket (int challengeNr, int authProtocol, uin
 
 	Q_strncpy(szServerName, m_szRetryAddress, MAX_OSPATH);
 
-	if ( !NET_StringToAdr (szServerName, &adr) )
+	if ( !g_pNetworkSystem->NET_StringToAdr (szServerName, &adr) )
 	{
 		ConMsg ("Bad server address (%s)\n", szServerName );
 		Disconnect( "Bad server address", true );
@@ -555,7 +686,7 @@ void CBaseClientState::SendConnectPacket (int challengeNr, int authProtocol, uin
 	m_ulGameServerSteamID = unGSSteamID;
 
 	// Send protocol and challenge value
-	NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 
@@ -684,7 +815,7 @@ void CBaseClientState::FullConnect( netadr_t &adr )
 	
 	COM_TimestampedLog( "CBaseClientState::FullConnect" );
 
-	m_NetChannel = NET_CreateNetChannel( m_Socket, &adr, "CLIENT", this );
+	m_NetChannel = g_pNetworkSystem->NET_CreateNetChannel( m_Socket, &adr, "CLIENT", this );
 
 	Assert( m_NetChannel );
 	
@@ -747,7 +878,7 @@ void CBaseClientState::Disconnect( const char *pszReason, bool bShowMainMenu )
 	}
 	else 
 	{
-		NET_StringToAdr (m_szRetryAddress, &adr);
+		g_pNetworkSystem->NET_StringToAdr (m_szRetryAddress, &adr);
 	}
 
 #ifndef SWDS
@@ -806,7 +937,7 @@ void CBaseClientState::CheckForResend (void)
 
 	netadr_t	adr;
 
-	if (!NET_StringToAdr (m_szRetryAddress, &adr))
+	if (!g_pNetworkSystem->NET_StringToAdr (m_szRetryAddress, &adr))
 	{
 		ConMsg ("Bad server address (%s)\n", m_szRetryAddress);
 		//Host_Disconnect();
@@ -865,7 +996,7 @@ void CBaseClientState::CheckForResend (void)
 		msg.WriteByte( A2S_GETCHALLENGE );
 		msg.WriteLong( m_retryChallenge );
 		msg.WriteString( "0000000000" ); // pad out
-		NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+		g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
 	}
 }
 
@@ -886,7 +1017,7 @@ bool CBaseClientState::ProcessConnectionlessPacket( netpacket_t *packet )
 	char string[MAX_ROUTABLE_PAYLOAD];
 
 	netadr_t adrServerConnectingTo;
-	NET_StringToAdr ( m_szRetryAddress, &adrServerConnectingTo );
+	g_pNetworkSystem->NET_StringToAdr ( m_szRetryAddress, &adrServerConnectingTo );
 	if ( ( packet->from.GetType() != NA_LOOPBACK ) && ( packet->from.GetIPNetworkByteOrder() != adrServerConnectingTo.GetIPNetworkByteOrder() ) )
 	{
 		if ( cl_show_connectionless_packet_warnings.GetBool() )
@@ -998,6 +1129,8 @@ bool CBaseClientState::ProcessConnectionlessPacket( netpacket_t *packet )
 
 	return true;
 }
+
+
 
 bool CBaseClientState::ProcessTick( NET_Tick *msg )
 {

@@ -745,7 +745,7 @@ CBugUIPanel::CBugUIPanel( bool bIsPublic, vgui::Panel *parent ) :
 	// NOTE:  If you need to override the CSER Ip, make sure you tweak the code in
 	//  CheckContinueQueryingSteamForCSERList!!!!!!!!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	NET_StringToAdr( cserIP, &m_cserIP );
+	g_pNetworkSystem->NET_StringToAdr( cserIP, &m_cserIP );
 
 	m_bValidated = false;
 	m_szScreenShotName[ 0 ] = 0;

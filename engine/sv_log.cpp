@@ -166,7 +166,7 @@ CON_COMMAND( logaddress_add, "Set address and port for remote host <ip:port>." )
 	char szAdr[32];
 	Q_snprintf( szAdr, sizeof( szAdr ), "%s:%s", pszIP, pszPort );
 
-	if ( NET_StringToAdr( szAdr, &adr ) )
+	if (g_pNetworkSystem->NET_StringToAdr( szAdr, &adr ) )
 	{
 		if ( g_Log.AddLogAddress( adr ) )
 		{
@@ -237,7 +237,7 @@ CON_COMMAND( logaddress_del, "Remove address and port for remote host <ip:port>.
 	char szAdr[32];
 	Q_snprintf( szAdr, sizeof( szAdr ), "%s:%s", pszIP, pszPort );
 
-	if ( NET_StringToAdr( szAdr, &adr ) )
+	if (g_pNetworkSystem->NET_StringToAdr( szAdr, &adr ) )
 	{
 		if ( g_Log.DelLogAddress( adr ) )
 		{
@@ -519,9 +519,9 @@ void CLog::Print( const char * text )
 		for ( int i = 0 ; i < m_LogAddresses.Count() ; i++ )
 		{
 			if ( sv_logsecret.GetInt() != 0 )
-				NET_OutOfBandPrintf(NS_SERVER, m_LogAddresses.Element(i), "%c%s%s", S2A_LOGSTRING2, sv_logsecret.GetString(), string );
+				g_pNetworkSystem->NET_OutOfBandPrintf(NS_SERVER, m_LogAddresses.Element(i), "%c%s%s", S2A_LOGSTRING2, sv_logsecret.GetString(), string );
 			else
-				NET_OutOfBandPrintf(NS_SERVER, m_LogAddresses.Element(i), "%c%s", S2A_LOGSTRING, string );
+				g_pNetworkSystem->NET_OutOfBandPrintf(NS_SERVER, m_LogAddresses.Element(i), "%c%s", S2A_LOGSTRING, string );
 			
 		}
 	}

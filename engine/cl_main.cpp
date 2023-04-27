@@ -545,7 +545,7 @@ void CL_ReadPackets ( bool bFinalTick )
 		{
 			tmZoneFiltered( TELEMETRY_LEVEL0, 50, TMZF_NONE, "ProcessSocket" );
 			// process data from net socket
-			NET_ProcessSocket( NS_CLIENT, &cl );
+			g_pNetworkSystem->NET_ProcessSocket( NS_CLIENT, &cl );
 		}
 	}
 
@@ -847,7 +847,7 @@ void CL_Connect( const char *address, const char *pszSourceTag )
 		g_pHost->Host_Disconnect(false);
 
 		// allow remote
-		NET_SetMutiplayer( true );		
+		g_pNetworkSystem->NET_SetMutiplayer( true );
 
 		// start progress bar immediately for remote connection
 		EngineVGui()->EnabledProgressBarForNextLoad();

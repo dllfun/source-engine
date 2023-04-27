@@ -6,7 +6,7 @@
 //
 //=============================================================================//
 #include <proto_version.h>
-#include <netmessages.h>
+#include "netmessages.h"
 #include "hltvclientstate.h"
 #include "hltvserver.h"
 #include "quakedef.h"

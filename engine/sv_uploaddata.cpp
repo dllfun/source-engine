@@ -22,6 +22,7 @@
 #include "bitbuf.h"
 #include "mathlib/IceKey.H"
 #include "net.h"
+#include "tier2/tier2.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -139,7 +140,7 @@ bool UploadData( char const *cserIP, char const *tablename, KeyValues *fields )
 
 	netadr_t cseradr;
 
-	if ( NET_StringToAdr( cserIP, &cseradr ) )
+	if (g_pNetworkSystem->NET_StringToAdr( cserIP, &cseradr ) )
 	{
 		CBlockingUDPSocket *socket = new CBlockingUDPSocket();
 		if ( socket )

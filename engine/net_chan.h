@@ -15,11 +15,13 @@
 #include "qlimits.h"
 #include "bitbuf.h"
 #include <inetmessage.h>
+#include <inetmsghandler.h>
 #include <filesystem.h>
 #include "utlvector.h"
 #include "utlbuffer.h"
 #include "const.h"
 #include "inetchannel.h"
+#include "tier2/tier2.h"
 
 // How fast to converge flow estimates
 #define FLOW_AVG ( 3.0 / 4.0 )
@@ -149,7 +151,7 @@ public:	// INetChannelInfo interface
 public:	// INetChannel interface
 
 	void		SetDataRate(float rate);
-	bool		RegisterMessage(INetMessage *msg);
+	bool		RegisterMessage(INetMessage *msg, INetMessageHandler* handler);
 	bool		StartStreaming( unsigned int challengeNr );
 	void		ResetStreaming( void );
 	void		SetTimeout(float seconds);

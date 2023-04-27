@@ -1881,9 +1881,9 @@ void CGameServer::SendClientMessages ( bool bSendSnapshots )
 				
 			// if client never send a netchannl packet yet, send S2C_CONNECTION 
 			// because it could get lost in multiplayer
-			if ( NET_IsMultiplayer() && client->m_NetChannel->GetSequenceNr(FLOW_INCOMING) == 0 )
+			if (g_pNetworkSystem->NET_IsMultiplayer() && client->m_NetChannel->GetSequenceNr(FLOW_INCOMING) == 0 )
 			{
-				NET_OutOfBandPrintf ( m_Socket, client->m_NetChannel->GetRemoteAddress(), "%c00000000000000", S2C_CONNECTION );
+				g_pNetworkSystem->NET_OutOfBandPrintf ( m_Socket, client->m_NetChannel->GetRemoteAddress(), "%c00000000000000", S2C_CONNECTION );
 			}
 
 #ifdef SHARED_NET_STRING_TABLES
@@ -2264,7 +2264,7 @@ bool SV_ActivateServer()
 			if ( !hltv )
 			{
 				hltv = new CHLTVServer;
-				hltv->Init( NET_IsDedicated() );
+				hltv->Init(g_pNetworkSystem->NET_IsDedicated() );
 			}
 
 			if ( hltv->IsActive() && hltv->IsMasterProxy() )

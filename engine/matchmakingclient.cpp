@@ -13,6 +13,7 @@
 #include "Session.h"
 #include "convar.h"
 #include "cmd.h"
+#include "tier2/tier2.h"
 
 extern IVEngineClient *engineClient;
 
@@ -29,7 +30,7 @@ extern IXboxSystem *g_pXboxSystem;
 //-----------------------------------------------------------------------------
 void CMatchmaking::StartClient( bool bSystemLink )
 {
-	NET_SetMutiplayer( true );
+	g_pNetworkSystem->NET_SetMutiplayer( true );
 
 	InitializeLocalClient( false );
 
@@ -260,7 +261,7 @@ void CMatchmaking::UpdateSearch()
 			adr.SetType( NA_BROADCAST );
 			adr.SetPort( PORT_SYSTEMLINK );
 
-			NET_SendPacket( NULL, NS_SYSTEMLINK, adr, msg.GetData(), msg.GetNumBytesWritten() );
+			g_pNetworkSystem->NET_SendPacket( NULL, NS_SYSTEMLINK, adr, msg.GetData(), msg.GetNumBytesWritten() );
 
 			m_fSendTimer = GetTime();
 			++m_nSendCount;
@@ -658,7 +659,7 @@ void CMatchmaking::JoinInviteSession( XSESSION_INFO *pHostInfo )
 	}
 
 	// Initialize our state to accept the new connection
-	NET_SetMutiplayer( true );
+	g_pNetworkSystem->NET_SetMutiplayer( true );
 	InitializeLocalClient( false );
 
 	// Allow us to access private channels due to invite
@@ -760,7 +761,7 @@ void CMatchmaking::SendJoinRequest( netadr_t *adr )
 	}
 
 	// Send message
-	NET_SendPacket( NULL, NS_MATCHMAKING, *adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->NET_SendPacket( NULL, NS_MATCHMAKING, *adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 //-----------------------------------------------------------------------------

@@ -12,6 +12,7 @@
 #include "matchmaking.h"
 #include "Session.h"
 #include "convar.h"
+#include "tier2/tier2.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -24,7 +25,7 @@ static ConVar mm_max_spectators( "mm_max_spectators", "4", 0, "Max players allow
 //-----------------------------------------------------------------------------
 void CMatchmaking::StartHost( bool bSystemLink )
 {
-	NET_SetMutiplayer( true );
+	g_pNetworkSystem->NET_SetMutiplayer( true );
 
 	InitializeLocalClient( true );
 
@@ -164,7 +165,7 @@ void CMatchmaking::HandleSystemLinkSearch( netpacket_t *pPacket )
 	adr.SetPort( PORT_SYSTEMLINK );
 
 	// Send message
-	NET_SendPacket( NULL, NS_SYSTEMLINK, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->NET_SendPacket( NULL, NS_SYSTEMLINK, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 //-----------------------------------------------------------------------------

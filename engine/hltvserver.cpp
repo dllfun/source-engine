@@ -584,7 +584,7 @@ void CHLTVServer::StartMaster(CGameClient *client)
 	Q_strncpy( m_szMapname, m_Server->m_szMapname, sizeof(m_szMapname) );
 	Q_strncpy( m_szSkyname, m_Server->m_szSkyname, sizeof(m_szSkyname) );
 
-	NET_ListenSocket( m_Socket, true );	// activated HLTV TCP socket
+	g_pNetworkSystem->NET_ListenSocket( m_Socket, true );	// activated HLTV TCP socket
 
 	m_MasterClient->ExecuteStringCommand( "spectate" ); // become a spectator
 
@@ -1537,12 +1537,12 @@ void CHLTVServer::RunFrame()
 	VPROF_BUDGET( "CHLTVServer::RunFrame", "HLTV" );
 
 	// update network time etc
-	NET_RunFrame( Plat_FloatTime() );
+	g_pNetworkSystem->NET_RunFrame( Plat_FloatTime() );
 
 	if ( m_ClientState.m_nSignonState > SIGNONSTATE_NONE )
 	{
 		// process data from net socket
-		NET_ProcessSocket( m_ClientState.m_Socket, &m_ClientState );
+		g_pNetworkSystem->NET_ProcessSocket( m_ClientState.m_Socket, &m_ClientState );
 
 		m_ClientState.RunFrame();
 		
@@ -1841,7 +1841,7 @@ bool CHLTVServer::StartPlayback( const char *filename, bool bAsTimeDemo )
 	}
 	
 	// create a fake channel with a NULL address
-	m_ClientState.m_NetChannel = NET_CreateNetChannel( NS_CLIENT, NULL, "DEMO", &m_ClientState );
+	m_ClientState.m_NetChannel = g_pNetworkSystem->NET_CreateNetChannel( NS_CLIENT, NULL, "DEMO", &m_ClientState );
 
 	if ( !m_ClientState.m_NetChannel )
 	{
@@ -1867,7 +1867,7 @@ bool CHLTVServer::StartPlayback( const char *filename, bool bAsTimeDemo )
 
 	ConMsg( "Reading time :%.4f\n", diff );
 
-	NET_RemoveNetChannel( m_ClientState.m_NetChannel, true );
+	g_pNetworkSystem->NET_RemoveNetChannel( m_ClientState.m_NetChannel, true );
 	m_ClientState.m_NetChannel = NULL;
 
 	return true;
@@ -2132,7 +2132,7 @@ void CHLTVServer::ReplyInfo( const netadr_t &adr )
 		buf.PutUint64( LittleQWord( CGameID( GetSteamAppID() ).ToUint64() ) );
 	}
 
-	NET_SendPacket( NULL, m_Socket, adr, (unsigned char *)buf.Base(), buf.TellPut() );
+	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, (unsigned char *)buf.Base(), buf.TellPut() );
 }
 #endif // #ifndef NO_STEAM
 
@@ -2228,7 +2228,7 @@ CON_COMMAND( tv_relay, "Connect to SourceTV server and relay broadcast." )
 	if ( !hltv )
 	{
 		hltv = new CHLTVServer;
-		hltv->Init( NET_IsDedicated() );
+		hltv->Init(g_pNetworkSystem->NET_IsDedicated() );
 	}
 
 	if ( hltv->m_bMasterOnlyMode )
@@ -2241,7 +2241,7 @@ CON_COMMAND( tv_relay, "Connect to SourceTV server and relay broadcast." )
 	g_pHost->Host_Disconnect( false );
 
 	// start networking
-	NET_SetMutiplayer( true );	
+	g_pNetworkSystem->NET_SetMutiplayer( true );
 
 	hltv->ConnectRelay( address );
 }

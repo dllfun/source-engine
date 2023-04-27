@@ -310,6 +310,52 @@ void CMatchmaking::ConnectionStart( INetChannel *chan )
 	REGISTER_CLC_MSG( VoiceData );
 }
 
+INetMessage* CMatchmaking::CreateMessage(int msgtype) {
+	switch (msgtype) {
+	case mm_JoinResponse:
+		return new MM_JoinResponse();
+	case mm_ClientInfo:
+		return new MM_ClientInfo();
+	case mm_RegisterResponse:
+		return new MM_RegisterResponse();
+	case mm_Migrate:
+		return new MM_Migrate();
+	case mm_Mutelist:
+		return new MM_Mutelist();
+	case mm_Checkpoint:
+		return new MM_Checkpoint();
+	case mm_Heartbeat:
+		return new MM_Heartbeat();
+	case clc_VoiceData:
+		return new CLC_VoiceData();
+	default:
+		return NULL;
+	}
+}
+
+bool CMatchmaking::ProcessMessage(INetMessage* msg, INetChannel* pChan) {
+	switch (msg->GetType()) {
+	case mm_JoinResponse:
+		return ProcessJoinResponse((MM_JoinResponse *) msg);
+	case mm_ClientInfo:
+		return ProcessClientInfo((MM_ClientInfo *) msg);
+	case mm_RegisterResponse:
+		return ProcessRegisterResponse((MM_RegisterResponse *) msg);
+	case mm_Migrate:
+		return ProcessMigrate((MM_Migrate *) msg);
+	case mm_Mutelist:
+		return ProcessMutelist((MM_Mutelist *) msg);
+	case mm_Checkpoint:
+		return ProcessCheckpoint((MM_Checkpoint *) msg);
+	case mm_Heartbeat:
+		return ProcessHeartbeat((MM_Heartbeat*)msg);
+	case clc_VoiceData:
+		return ProcessVoiceData((CLC_VoiceData *) msg);
+	default:
+		return true;
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Process a networked voice packet
 //-----------------------------------------------------------------------------
@@ -446,7 +492,7 @@ INetChannel *CMatchmaking::CreateNetChannel( netadr_t *adr )
 	INetChannel *pNewChannel = FindChannel( adr->GetIPNetworkByteOrder() );
 	if ( !pNewChannel )
 	{
-		pNewChannel = NET_CreateNetChannel( NS_MATCHMAKING, adr, "MATCHMAKING", this );
+		pNewChannel = g_pNetworkSystem->NET_CreateNetChannel( NS_MATCHMAKING, adr, "MATCHMAKING", this );
 	}
 
 	if( pNewChannel )
@@ -2133,13 +2179,13 @@ void CMatchmaking::RunFrame()
 		return;
 	}
 
-	if ( NET_IsMultiplayer() )
+	if (g_pNetworkSystem->NET_IsMultiplayer() )
 	{
-		NET_ProcessSocket( NS_MATCHMAKING, this );
+		g_pNetworkSystem->NET_ProcessSocket( NS_MATCHMAKING, this );
 
 		if ( m_Session.IsSystemLink() )
 		{
-			NET_ProcessSocket( NS_SYSTEMLINK, this );
+			g_pNetworkSystem->NET_ProcessSocket( NS_SYSTEMLINK, this );
 		}
 	}
 

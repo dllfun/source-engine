@@ -530,7 +530,7 @@ IClient *CBaseServer::ConnectClient ( netadr_t &adr, int protocol, int challenge
 	COM_TimestampedLog( "CBaseServer::ConnectClient:  NET_CreateNetChannel" );
 
 	// create network channel
-	INetChannel * netchan = NET_CreateNetChannel( m_Socket, &adr, adr.ToString(), client );
+	INetChannel * netchan = g_pNetworkSystem->NET_CreateNetChannel( m_Socket, &adr, adr.ToString(), client );
 
 	if ( !netchan )
 	{
@@ -573,7 +573,7 @@ IClient *CBaseServer::ConnectClient ( netadr_t &adr, int protocol, int challenge
 		msg.WriteLong( clientChallenge );
 		msg.WriteString( "0000000000" ); // pad out
 
-		NET_SendPacket ( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+		g_pNetworkSystem->NET_SendPacket ( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
 	}
 
 	// Set up client structure.
@@ -1009,7 +1009,7 @@ void CBaseServer::ReplyChallenge(netadr_t &adr, int clientChallenge )
 #endif
 	msg.WriteString( "000000" );	// padding bytes
 
-	NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 
@@ -1034,7 +1034,7 @@ void CBaseServer::ReplyServerChallenge(netadr_t &adr)
 	msg.WriteLong( CONNECTIONLESS_HEADER );
 	msg.WriteByte( S2C_CHALLENGE );
 	msg.WriteLong( challengeNr );
-	NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 const char *CBaseServer::GetName( void ) const
@@ -1658,7 +1658,7 @@ void CBaseServer::RejectConnection( const netadr_t &adr, int clientChallenge, co
 	msg.WriteLong( clientChallenge );
 	msg.WriteString( s );
 
-	NET_SendPacket ( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->NET_SendPacket ( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 void CBaseServer::SetPaused(bool paused)
@@ -1823,7 +1823,7 @@ void CBaseServer::UpdateMasterServer()
 	CheckMasterServerRequestRestart();
 	
 
-	if ( NET_IsDedicated() && sv_region.GetInt() == -1 )
+	if (g_pNetworkSystem->NET_IsDedicated() && sv_region.GetInt() == -1 )
     {
 		sv_region.SetValue( 255 ); // HACK!HACK! undo me once we want to enforce regions
 
@@ -1908,7 +1908,7 @@ void CBaseServer::ForwardPacketsFromMasterServerUpdater()
 		
 		// Send this packet for them..
 		netadr_t adr( netadrAddress, netadrPort );
-		NET_SendPacket( NULL, m_Socket, adr, packetData, len );
+		g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, packetData, len );
 	}
 }
 
@@ -1926,7 +1926,7 @@ void CBaseServer::RunFrame( void )
 	VPROF_BUDGET( "CBaseServer::RunFrame", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "CBaseServer::RunFrame" );
 
-	NET_ProcessSocket( m_Socket, this );	
+	g_pNetworkSystem->NET_ProcessSocket( m_Socket, this );
 
 #ifdef LINUX
 	// Process the linux sv lan port if it's open.
@@ -2065,7 +2065,7 @@ CBaseClient *CBaseServer::CreateFakeClient( const char *name )
 	if ( sv_stressbots.GetBool() )
 	{
 		netadr_t adrNull( 0, 0 ); // 0.0.0.0:0 signifies a bot. It'll plumb all the way down to winsock calls but it won't make them.
-		netchan = NET_CreateNetChannel( m_Socket, &adrNull, adrNull.ToString(), fakeclient, true );
+		netchan = g_pNetworkSystem->NET_CreateNetChannel( m_Socket, &adrNull, adrNull.ToString(), fakeclient, true );
 	}
 
 	// a NULL netchannel signals a fakeclient

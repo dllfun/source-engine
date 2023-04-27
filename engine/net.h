@@ -17,6 +17,7 @@
 #include "bitbuf.h"
 #include "netadr.h"
 #include "proto_version.h"
+#include "networksystem/inetworksystem.h"
 
 // Flow control bytes per second limits
 #define MAX_RATE		(1024*1024)				
@@ -123,56 +124,101 @@ extern	double		net_time;
 class INetChannelHandler;
 class IConnectionlessPacketHandler;
 
-// Start up networking
-void		NET_Init( bool bDedicated );
-// Shut down networking
-void		NET_Shutdown (void);
-// Read any incoming packets, dispatch to known netchannels and call handler for connectionless packets
-void		NET_ProcessSocket( int sock, IConnectionlessPacketHandler * handler );
-// Set a port to listen mode
-void		NET_ListenSocket( int sock, bool listen );
-// Send connectionsless string over the wire
-void		NET_OutOfBandPrintf(int sock, const netadr_t &adr, PRINTF_FORMAT_STRING const char *format, ...) FMTFUNCTION( 3, 4 );
-// Send a raw packet, connectionless must be provided (chan can be NULL)
-int			NET_SendPacket ( INetChannel *chan, int sock,  const netadr_t &to, const  unsigned char *data, int length, bf_write *pVoicePayload = NULL, bool bUseCompression = false );
-// Called periodically to maybe send any queued packets (up to 4 per frame)
-void		NET_SendQueuedPackets();
-// Start set current network configuration
-void		NET_SetMutiplayer(bool multiplayer);
-// Set net_time
-void		NET_SetTime( double realtime );
-// RunFrame must be called each system frame before reading/sending on any socket
-void		NET_RunFrame( double realtime );
-// Check configuration state
-bool		NET_IsMultiplayer( void );
-bool		NET_IsDedicated( void );
-// Writes a error file with bad packet content
-void		NET_LogBadPacket(netpacket_t * packet);
+enum
+{
+	OSOCKET_FLAG_USE_IPNAME = 0x00000001, // Use ipname convar for net_interface.
+	OSOCKET_FLAG_FAIL = 0x00000002, // Call Sys_exit on error.
+};
 
-// bForceNew (used for bots) tells it not to share INetChannels (bots will crash when disconnecting if they
-// share an INetChannel).
-INetChannel	*NET_CreateNetChannel(int socketnumber, netadr_t *adr, const char * name, INetChannelHandler * handler, bool bForceNew=false,
-								  int nProtocolVersion=PROTOCOL_VERSION );
-void		NET_RemoveNetChannel(INetChannel *netchan, bool bDeleteNetChan);
-void		NET_PrintChannelStatus( INetChannel * chan );
+class CNetworkSystem :public INetworkSystem{
 
-void		NET_WriteStringCmd( const char * cmd, bf_write *buf );
+public:
+	// Here's where the app systems get to learn about each other 
+	virtual bool Connect(CreateInterfaceFn factory) { return true; }
+	virtual void Disconnect() {}
 
-// Address conversion
-bool		NET_StringToAdr ( const char *s, netadr_t *a);
-// Convert from host to network byte ordering
-unsigned short NET_HostToNetShort( unsigned short us_in );
-// and vice versa
-unsigned short NET_NetToHostShort( unsigned short us_in );
+	// Here's where systems can access other interfaces implemented by this object
+	// Returns NULL if it doesn't implement the requested interface
+	virtual void* QueryInterface(const char* pInterfaceName) { return NULL; }
 
-// Find out what port is mapped to a local socket
-unsigned short NET_GetUDPPort(int socket);
+	// Init, shutdown
+	virtual InitReturnVal_t Init() { return INIT_OK; }
+	virtual void Shutdown() {}
 
-// add/remove extra sockets for testing
-int NET_AddExtraSocket( int port );
-void NET_RemoveAllExtraSockets();
+	// Start up networking
+	void		NET_Init(bool bDedicated);
+	// Shut down networking
+	void		NET_Shutdown(void);
+	// Read any incoming packets, dispatch to known netchannels and call handler for connectionless packets
+	void		NET_ProcessSocket(int sock, IConnectionlessPacketHandler* handler);
+	// Set a port to listen mode
+	void		NET_ListenSocket(int sock, bool listen);
+	// Send connectionsless string over the wire
+	void		NET_OutOfBandPrintf(int sock, const netadr_t& adr, PRINTF_FORMAT_STRING const char* format, ...) FMTFUNCTION(3, 4);
+	// Send a raw packet, connectionless must be provided (chan can be NULL)
+	int			NET_SendPacket(INetChannel* chan, int sock, const netadr_t& to, const  unsigned char* data, int length, bf_write* pVoicePayload = NULL, bool bUseCompression = false);
+	// Called periodically to maybe send any queued packets (up to 4 per frame)
+	void		NET_SendQueuedPackets();
+	// Start set current network configuration
+	void		NET_SetMutiplayer(bool multiplayer);
+	// Set net_time
+	void		NET_SetTime(double realtime);
+	// RunFrame must be called each system frame before reading/sending on any socket
+	void		NET_RunFrame(double realtime);
+	// Check configuration state
+	bool		NET_IsMultiplayer(void);
+	bool		NET_IsDedicated(void);
+	// Writes a error file with bad packet content
+	void		NET_LogBadPacket(netpacket_t* packet);
 
-const char *NET_ErrorString (int code); // translate a socket error into a friendly string
+	// bForceNew (used for bots) tells it not to share INetChannels (bots will crash when disconnecting if they
+	// share an INetChannel).
+	INetChannel* NET_CreateNetChannel(int socket, netadr_t* adr, const char* name, INetChannelHandler* handler, bool bForceNew = false,
+		int nProtocolVersion = PROTOCOL_VERSION);
+	void		NET_RemoveNetChannel(INetChannel* netchan, bool bDeleteNetChan);
+	void		NET_PrintChannelStatus(INetChannel* chan);
+
+	//void		NET_WriteStringCmd(const char* cmd, bf_write* buf);
+
+	// Address conversion
+	bool		NET_StringToAdr(const char* s, netadr_t* a);
+	bool		NET_StringToSockaddr(const char* s, struct sockaddr* sadr);
+	// Convert from host to network byte ordering
+	unsigned short NET_HostToNetShort(unsigned short us_in);
+	// and vice versa
+	unsigned short NET_NetToHostShort(unsigned short us_in);
+
+	// Find out what port is mapped to a local socket
+	unsigned short NET_GetUDPPort(int socket);
+
+	// add/remove extra sockets for testing
+	int NET_AddExtraSocket(int port);
+	void NET_RemoveAllExtraSockets();
+
+	const char* NET_ErrorString(int code); // translate a socket error into a friendly string
+
+	void NET_Config(void);
+
+private:
+	int NET_OpenSocket(const char* net_interface, int& port, int protocol);
+	void NET_CloseSocket(int hSocket, int sock = -1);
+	int NET_ConnectSocket(int sock, const netadr_t& addr);
+	int NET_SendStream(int nSock, const char* buf, int len, int flags);
+	int NET_ReceiveStream(int nSock, char* buf, int len, int flags);
+	bool NET_ReceiveDatagram(const int sock, netpacket_t* packet);
+	bool NET_ReceiveValidDatagram(const int sock, netpacket_t* packet);
+	netpacket_t* NET_GetPacket(int sock, byte* scratch);
+	void NET_ProcessPending(void);
+	void NET_ProcessListen(int sock);
+	void NET_CloseAllSockets(void);
+	bool OpenSocketInternal(int nModule, int nSetPort, int nDefaultPort, const char* pName, int nProtocol, bool bTryAny,
+		int flags = (OSOCKET_FLAG_USE_IPNAME | OSOCKET_FLAG_FAIL));
+	void NET_OpenSockets(void);
+	void NET_GetLocalAddress(void);
+	friend class CNetChan;
+};
+
+extern CNetworkSystem* g_pLocalNetworkSystem;
 
 //============================================================================
 

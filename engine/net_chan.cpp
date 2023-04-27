@@ -21,7 +21,6 @@
 #include "net_ws_headers.h"
 #include "net_ws_queued_packet_sender.h"
 #include "filesystem_init.h"
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -48,10 +47,10 @@ static ConVar net_maxpacketdrop( "net_maxpacketdrop", "5000", 0, "Ignore any pac
 
 extern ConVar net_maxroutable;
 
-extern int  NET_ConnectSocket( int nSock, const netadr_t &addr );
-extern void NET_CloseSocket( int hSocket, int sock = -1 );
-extern int  NET_SendStream( int nSock, const char * buf, int len, int flags );
-extern int  NET_ReceiveStream( int nSock, char * buf, int len, int flags );
+//extern int  NET_ConnectSocket( int nSock, const netadr_t &addr );
+//extern void NET_CloseSocket( int hSocket, int sock = -1 );
+//extern int  NET_SendStream( int nSock, const char * buf, int len, int flags );
+//extern int  NET_ReceiveStream( int nSock, char * buf, int len, int flags );
 
 
 // If the network connection hasn't been active in this many seconds, display some warning text.
@@ -67,7 +66,7 @@ static bool ShouldChecksumPackets()
 	if ( !IsPC() )
 		return false;
 
-	return NET_IsMultiplayer();
+	return g_pNetworkSystem->NET_IsMultiplayer();
 }
 
 bool CNetChan::IsLoopback() const
@@ -377,7 +376,7 @@ void CNetChan::Shutdown(const char *pReason)
 
 	if ( m_StreamSocket )
 	{
-		NET_CloseSocket( m_StreamSocket, m_Socket );
+		g_pLocalNetworkSystem->NET_CloseSocket( m_StreamSocket, m_Socket );
 		m_StreamSocket = 0;
 		m_StreamActive = false;
 	}
@@ -406,12 +405,12 @@ void CNetChan::Shutdown(const char *pReason)
 
 	if ( m_bProcessingMessages )
 	{
-		NET_RemoveNetChannel( this, false );	// Delay the deletion or it'll crash in the message-processing loop.
+		g_pNetworkSystem->NET_RemoveNetChannel( this, false );	// Delay the deletion or it'll crash in the message-processing loop.
 		m_bShouldDelete = true;
 	}
 	else
 	{
-		NET_RemoveNetChannel( this, true );
+		g_pNetworkSystem->NET_RemoveNetChannel( this, true );
 	}
 }
 
@@ -491,7 +490,7 @@ void CNetChan::Setup(int sock, netadr_t *adr, const char * name, INetChannelHand
 
 	if ( m_StreamSocket )
 	{
-		NET_CloseSocket( m_StreamSocket );
+		g_pLocalNetworkSystem->NET_CloseSocket( m_StreamSocket );
 		m_StreamSocket = 0;
 	}
 
@@ -554,7 +553,7 @@ void CNetChan::Setup(int sock, netadr_t *adr, const char * name, INetChannelHand
 	
 	ResetStreaming();
 
-	if ( NET_IsMultiplayer() )
+	if (g_pNetworkSystem->NET_IsMultiplayer() )
 	{
 		m_MaxReliablePayloadSize = 	net_blocksize.GetInt();
 	}
@@ -585,7 +584,7 @@ bool CNetChan::StartStreaming( unsigned int challengeNr )
 
 	m_ChallengeNr = challengeNr;
 	
-	if ( !NET_IsMultiplayer() )
+	if ( !g_pNetworkSystem->NET_IsMultiplayer() )
 	{
 		m_StreamSocket = 0;
 		return true;	// streaming is done via loopback buffers in SP mode
@@ -598,7 +597,7 @@ bool CNetChan::StartStreaming( unsigned int challengeNr )
 
 	MEM_ALLOC_CREDIT();
 
-	m_StreamSocket = NET_ConnectSocket( m_Socket, remote_address );
+	m_StreamSocket = g_pLocalNetworkSystem->NET_ConnectSocket( m_Socket, remote_address );
 	m_StreamData.EnsureCapacity( NET_MAX_PAYLOAD );
 
 	return (m_StreamSocket != 0);
@@ -1768,7 +1767,7 @@ int CNetChan::SendDatagram(bf_write *datagram)
 	}
 
 	// Send the datagram
-	int	bytesSent = NET_SendPacket ( this, m_Socket, remote_address, send.GetData(), send.GetNumBytesWritten(), bSendVoice ? &m_StreamVoice : 0, bCompress );
+	int	bytesSent = g_pNetworkSystem->NET_SendPacket ( this, m_Socket, remote_address, send.GetData(), send.GetNumBytesWritten(), bSendVoice ? &m_StreamVoice : 0, bCompress );
 
 	if ( bSendVoice || !IsX360() )
 	{
@@ -1931,6 +1930,13 @@ bool CNetChan::ProcessMessages( bf_read &buf  )
 			
 			int nMsgStartBit = buf.GetNumBitsRead();
 
+			INetMessageHandler* handler = netmsg->GetMessageHandler();
+
+			netmsg = handler->CreateMessage(cmd);
+
+			netmsg->SetNetChannel(this);
+			netmsg->SetMessageHandler(handler);
+
 			if ( !netmsg->ReadFromBuffer( buf ) )
 			{
 				ConMsg( "Netchannel: failed reading message %s from %s.\n", msgname, remote_address.ToString() );
@@ -1959,9 +1965,9 @@ bool CNetChan::ProcessMessages( bf_read &buf  )
 			
 			// netmessage calls the Process function that was registered by it's MessageHandler
 			m_bProcessingMessages = true;
-			bool bRet = netmsg->Process();
+			bool bRet = handler->ProcessMessage(netmsg,this);//  netmsg->Process();
 			m_bProcessingMessages = false;
-
+			delete netmsg;
 			// This means we were deleted during the processing of that message.
 			if ( m_bShouldDelete )
 			{
@@ -2572,7 +2578,7 @@ INetMessage *CNetChan::FindMessage(int type)
 	return NULL;
 }
 
-bool CNetChan::RegisterMessage(INetMessage *msg)
+bool CNetChan::RegisterMessage(INetMessage *msg, INetMessageHandler* handler)
 {
 	Assert( msg );
 
@@ -2636,9 +2642,9 @@ bool CNetChan::SendReliableViaStream( dataFragments_t *data)
 		ConMsg ("TCP -> %s: sz=%i seq=%i\n", remote_address.ToString(), data->bytes, m_nOutSequenceNr );
 	}
 	
-	NET_SendStream( m_StreamSocket, (char*)header.GetData(), header.GetNumBytesWritten(), 0	);
+	g_pLocalNetworkSystem->NET_SendStream( m_StreamSocket, (char*)header.GetData(), header.GetNumBytesWritten(), 0	);
 
-	return NET_SendStream( m_StreamSocket, data->buffer, data->bytes, 0 ) != -1;
+	return g_pLocalNetworkSystem->NET_SendStream( m_StreamSocket, data->buffer, data->bytes, 0 ) != -1;
 }
 
 bool CNetChan::SendReliableAcknowledge(int seqnr)
@@ -2656,7 +2662,7 @@ bool CNetChan::SendReliableAcknowledge(int seqnr)
 		ConMsg ("TCP -> %s: ACKN seq=%i\n", remote_address.ToString(), seqnr );
 	}
 
-	return NET_SendStream( m_StreamSocket, (char*)header.GetData(), header.GetNumBytesWritten(), 0 ) > 0;
+	return g_pLocalNetworkSystem->NET_SendStream( m_StreamSocket, (char*)header.GetData(), header.GetNumBytesWritten(), 0 ) > 0;
 }
 
 bool CNetChan::ProcessStream( void )
@@ -2670,7 +2676,7 @@ bool CNetChan::ProcessStream( void )
 	if ( m_SteamType == STREAM_CMD_NONE )
 	{
 		// read command byte
-		int ret = NET_ReceiveStream( m_StreamSocket, &cmd, 1, 0 );
+		int ret = g_pLocalNetworkSystem->NET_ReceiveStream( m_StreamSocket, &cmd, 1, 0 );
 
 		if ( ret == 0)
 		{
@@ -2705,7 +2711,7 @@ bool CNetChan::ProcessStream( void )
 
 	if ( (m_SteamType==STREAM_CMD_DATA) && (m_StreamLength==0) )
 	{
-		int ret = NET_ReceiveStream( m_StreamSocket, (char*)&headerBuf, 6, 0 ) ;
+		int ret = g_pLocalNetworkSystem->NET_ReceiveStream( m_StreamSocket, (char*)&headerBuf, 6, 0 ) ;
 		
 		if ( ret == 0)
 		{
@@ -2737,7 +2743,7 @@ bool CNetChan::ProcessStream( void )
 
 	if ( (m_SteamType==STREAM_CMD_ACKN) && (m_StreamSeqNr==0) )
 	{
-		int ret = NET_ReceiveStream( m_StreamSocket, (char*)&headerBuf, 4, 0 );
+		int ret = g_pLocalNetworkSystem->NET_ReceiveStream( m_StreamSocket, (char*)&headerBuf, 4, 0 );
 		
 		if ( ret == 0)
 		{
@@ -2780,7 +2786,7 @@ bool CNetChan::ProcessStream( void )
 		// read in 4kB chuncks
 		int bytesLeft = ( m_StreamLength - m_StreamReceived );	
 
-		int bytesRecv = NET_ReceiveStream( m_StreamSocket, (char*)m_StreamData.Base() + m_StreamReceived, bytesLeft, 0 );
+		int bytesRecv = g_pLocalNetworkSystem->NET_ReceiveStream( m_StreamSocket, (char*)m_StreamData.Base() + m_StreamReceived, bytesLeft, 0 );
 		
 		if ( bytesRecv == 0 )
 		{

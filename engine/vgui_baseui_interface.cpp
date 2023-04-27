@@ -1290,7 +1290,7 @@ void CEngineVGui::OnLevelLoadingStarted()
 	m_ProgressBias = 0;
 
 	// choose which progress bar to use
-	if (NET_IsMultiplayer())
+	if (g_pNetworkSystem->NET_IsMultiplayer())
 	{
 		// we're connecting
 		g_pLoadingProgressDescriptions = g_RemoteConnectLoadingProgressDescriptions;

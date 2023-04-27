@@ -707,7 +707,7 @@ namespace CDebugOverlay
 void CL_PreprocessEntities( void )
 {
 	// Zero latency!!! (single player or listen server?)
-	bool bIsUsingMultiplayerNetworking = NET_IsMultiplayer();
+	bool bIsUsingMultiplayerNetworking = g_pNetworkSystem->NET_IsMultiplayer();
 	bool bLastOutgoingCommandEqualsLastAcknowledgedCommand = cl.lastoutgoingcommand == cl.command_ack;
 
 	// We always want to re-run prediction when using the multiplayer networking, or if we're the listen server and we get a packet

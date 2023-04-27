@@ -16,6 +16,7 @@
 
 class	IDemoRecorder;
 class	INetMessage;
+class	INetMessageHandler;
 class	INetChannelHandler;
 class	INetChannelInfo;
 typedef struct netpacket_s netpacket_t;
@@ -27,7 +28,7 @@ public:
 	virtual	~INetChannel( void ) {};
 
 	virtual void	SetDataRate(float rate) = 0;
-	virtual bool	RegisterMessage(INetMessage *msg) = 0;
+	virtual bool	RegisterMessage(INetMessage *msg, INetMessageHandler* handler) = 0;
 	virtual bool	StartStreaming( unsigned int challengeNr ) = 0;
 	virtual void	ResetStreaming( void ) = 0;
 	virtual void	SetTimeout(float seconds) = 0;

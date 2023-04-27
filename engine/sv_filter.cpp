@@ -36,7 +36,7 @@ CUtlVector< userfilter_t > g_UserFilters;
 //-----------------------------------------------------------------------------
 void Filter_SendBan( const netadr_t& adr )
 {
-	NET_OutOfBandPrintf( NS_SERVER, adr, "%cBanned by server\n", A2A_PRINT );
+	g_pNetworkSystem->NET_OutOfBandPrintf( NS_SERVER, adr, "%cBanned by server\n", A2A_PRINT );
 }
 
 //-----------------------------------------------------------------------------

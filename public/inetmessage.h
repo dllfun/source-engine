@@ -10,9 +10,10 @@
 
 #include "tier1/bitbuf.h"
 
-class INetMsgHandler;
+//class INetMsgHandler;
 class INetMessage;
 class INetChannel;
+class INetMessageHandler;
 
 // typedef bool (INetMsgHandler::*PROCESSFUNCPTR)(INetMessage*);
 // #define CASTPROCPTR( fn ) static_cast <bool (INetMsgHandler::*)(INetMessage*)> (fn)
@@ -28,7 +29,7 @@ public:
 	virtual void	SetNetChannel(INetChannel * netchan) = 0; // netchannel this message is from/for
 	virtual void	SetReliable( bool state ) = 0;	// set to true if it's a reliable message
 	
-	virtual bool	Process( void ) = 0; // calles the recently set handler to process this message
+	//virtual bool	Process( void ) = 0; // calles the recently set handler to process this message
 	
 	virtual	bool	ReadFromBuffer( bf_read &buffer ) = 0; // returns true if parsing was OK
 	virtual	bool	WriteToBuffer( bf_write &buffer ) = 0;	// returns true if writing was OK
@@ -40,6 +41,8 @@ public:
 	virtual const char		*GetName( void ) const = 0;	// returns network message name, eg "svc_serverinfo"
 	virtual INetChannel		*GetNetChannel( void ) const = 0;
 	virtual const char		*ToString( void ) const = 0; // returns a human readable string about message content
+	virtual void SetMessageHandler(INetMessageHandler* pNetMessageHandler) = 0;
+	virtual INetMessageHandler* GetMessageHandler() = 0;
 };
 
 

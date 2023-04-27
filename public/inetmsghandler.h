@@ -58,24 +58,25 @@ public:
 
 #define REGISTER_NET_MSG( name )				\
 	NET_##name * p##name = new NET_##name();	\
-	p##name->m_pMessageHandler = this;			\
-	chan->RegisterMessage( p##name );			\
+	p##name->SetMessageHandler(this);			\
+	chan->RegisterMessage( p##name, this );			\
 
 #define REGISTER_SVC_MSG( name )				\
 	SVC_##name * p##name = new SVC_##name();	\
-	p##name->m_pMessageHandler = this;			\
-	chan->RegisterMessage( p##name );			\
+	p##name->SetMessageHandler(this);			\
+	chan->RegisterMessage( p##name, this );			\
 
 #define REGISTER_CLC_MSG( name )				\
 	CLC_##name * p##name = new CLC_##name();	\
-	p##name->m_pMessageHandler = this;			\
-	chan->RegisterMessage( p##name );			\
+	p##name->SetMessageHandler(this);			\
+	chan->RegisterMessage( p##name, this );			\
 
 #define REGISTER_MM_MSG( name )					\
 	MM_##name * p##name = new MM_##name();		\
-	p##name->m_pMessageHandler = this;			\
-	chan->RegisterMessage( p##name );			\
+	p##name->SetMessageHandler(this);			\
+	chan->RegisterMessage( p##name, this );			\
 
+class INetMessage;
 class NET_Tick;
 class NET_StringCmd;
 class NET_SetConVar;
@@ -86,6 +87,10 @@ class INetMessageHandler
 {
 public:
 	virtual ~INetMessageHandler( void ) {};
+
+	virtual INetMessage* CreateMessage(int msgtype) = 0;
+
+	virtual bool ProcessMessage(INetMessage* msg, INetChannel* pChan) = 0;
 
 	PROCESS_NET_MESSAGE( Tick ) = 0;
 	PROCESS_NET_MESSAGE( StringCmd ) = 0;
@@ -104,10 +109,14 @@ class CLC_FileMD5Check;
 class CLC_SaveReplay;
 class CLC_CmdKeyValues;
 
-class IClientMessageHandler : public INetMessageHandler
+class IClientMessageHandler : virtual public INetMessageHandler
 {
 public:
 	virtual ~IClientMessageHandler( void ) {};
+
+	virtual INetMessage* CreateMessage(int msgtype) = 0;
+
+	virtual bool ProcessMessage(INetMessage* msg, INetChannel* pChan) = 0;
 
 	PROCESS_CLC_MESSAGE( ClientInfo ) = 0;
 	PROCESS_CLC_MESSAGE( Move ) = 0;
@@ -149,10 +158,14 @@ class SVC_GetCvarValue;
 class SVC_CmdKeyValues;
 class SVC_SetPauseTimed;
 
-class IServerMessageHandler : public INetMessageHandler
+class IServerMessageHandler : virtual public INetMessageHandler
 {
 public:
 	virtual ~IServerMessageHandler( void ) {};
+
+	virtual INetMessage* CreateMessage(int msgtype) = 0;
+
+	virtual bool ProcessMessage(INetMessage* msg, INetChannel* pChan) = 0;
 
 	// Returns dem file protocol version, or, if not playing a demo, just returns PROTOCOL_VERSION
 	virtual int GetDemoProtocolVersion() const = 0;
@@ -192,10 +205,14 @@ class MM_Migrate;
 class MM_Mutelist;
 class MM_Checkpoint;
 
-class IMatchmakingMessageHandler : public INetMessageHandler
+class IMatchmakingMessageHandler : virtual public INetMessageHandler
 {
 public:
 	virtual ~IMatchmakingMessageHandler( void ) {};
+
+	virtual INetMessage* CreateMessage(int msgtype) = 0;
+
+	virtual bool ProcessMessage(INetMessage* msg, INetChannel* pChan) = 0;
 
 	PROCESS_MM_MESSAGE( Heartbeat ) = 0;
 	PROCESS_MM_MESSAGE( ClientInfo ) = 0;

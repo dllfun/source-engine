@@ -27,6 +27,7 @@
 #include "mathlib/IceKey.H"
 #include "tier0/vcrmode.h"
 #include "blockingudpsocket.h"
+#include "tier2/tier2.h"
 
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -94,7 +95,7 @@ public:
 			}
 			
 			// FIXME:  Don't hardcode CSER ip, get from Steam!!!
-			if ( NET_StringToAdr( "207.173.177.12:27013", &m_cserIP ) )
+			if (g_pNetworkSystem->NET_StringToAdr( "207.173.177.12:27013", &m_cserIP ) )
 			{
 				m_bPhoneHome = true;
 				

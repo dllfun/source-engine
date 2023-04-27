@@ -172,7 +172,7 @@ bool CRConServer::IsPassword( const char *pPassword ) const
 //-----------------------------------------------------------------------------
 void CRConServer::SetAddress( const char *pNetAddress )
 {
-	NET_StringToAdr( pNetAddress, &m_Address );
+	g_pNetworkSystem->NET_StringToAdr( pNetAddress, &m_Address );
 	if ( m_Address.GetPort() == 0 )
 	{
 		m_Address.SetPort( PORT_RCON );
@@ -302,7 +302,7 @@ void CRConServer::RunFrame()
 				
 				if ( recvLen < 0 && !SocketWouldBlock() )
 				{
-					Warning( "RCON Cmd: recv error (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+					Warning( "RCON Cmd: recv error (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 					break;
 				}
 

@@ -218,7 +218,7 @@ bool CClockDriftMgr::IsClockCorrectionEnabled()
 	return false;
 #else
 
-	bool bIsMultiplayer = NET_IsMultiplayer();
+	bool bIsMultiplayer = g_pNetworkSystem->NET_IsMultiplayer();
 	// Assume we always want it in multiplayer
 	bool bWantsClockDriftMgr = bIsMultiplayer;
 	// If we're a multiplayer listen server, we can back off of that if we have zero latency (faked or due to sockets)

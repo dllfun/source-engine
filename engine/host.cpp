@@ -3119,8 +3119,8 @@ void Host::_Host_RunFrame (float time)
 		Cbuf_Execute ();
 
 		// initialize networking for dedicated server after commandline & autoexec.cfg have been parsed
-		if ( NET_IsDedicated() && !NET_IsMultiplayer() )
-			NET_SetMutiplayer( true );
+		if (g_pNetworkSystem->NET_IsDedicated() && !g_pNetworkSystem->NET_IsMultiplayer() )
+			g_pNetworkSystem->NET_SetMutiplayer( true );
 
 		g_HostTimes.EndFrameSegment( FRAME_SEGMENT_CMD_EXECUTE );
 
@@ -3182,14 +3182,14 @@ void Host::_Host_RunFrame (float time)
 				}
 
 				// process any asynchronous network traffic (TCP), set net_time
-				NET_RunFrame( now );
+				g_pNetworkSystem->NET_RunFrame( now );
 
 				// Only send updates on final tick so we don't re-encode network data multiple times per frame unnecessarily
 				bool bFinalTick = ( tick == (numticks - 1) );
 
 				// initialize networking for dedicated server after commandline & autoexec.cfg have been parsed
-				if ( NET_IsDedicated() && !NET_IsMultiplayer() )
-					NET_SetMutiplayer( true );
+				if (g_pNetworkSystem->NET_IsDedicated() && !g_pNetworkSystem->NET_IsMultiplayer() )
+					g_pNetworkSystem->NET_SetMutiplayer( true );
 
 				g_ServerGlobalVariables.tickcount = sv.m_nTickCount;
 				// NOTE:  Do we want do this at start or end of this loop?
@@ -3215,7 +3215,7 @@ void Host::_Host_RunFrame (float time)
 				_Host_RunFrame_Server( bFinalTick );
 
 				// Additional networking ops for SPLITPACKET stuff (99.9% of the time this will be an empty list of work)
-				NET_SendQueuedPackets();
+				g_pNetworkSystem->NET_SendQueuedPackets();
 				//-------------------
 				//
 				// client operations
@@ -3346,20 +3346,20 @@ void Host::_Host_RunFrame (float time)
 			for ( int tick = 0; tick < clientticks; tick++ )
 			{ 
 				// process any asynchronous network traffic (TCP), set net_time
-				NET_RunFrame(  Plat_FloatTime() );
+				g_pNetworkSystem->NET_RunFrame(  Plat_FloatTime() );
 
 				// Only send updates on final tick so we don't re-encode network data multiple times per frame unnecessarily
 				bool bFinalTick = ( tick == (clientticks - 1) );
 
 				// initialize networking for dedicated server after commandline & autoexec.cfg have been parsed
-				if ( NET_IsDedicated() && !NET_IsMultiplayer() )
-					NET_SetMutiplayer( true );
+				if (g_pNetworkSystem->NET_IsDedicated() && !g_pNetworkSystem->NET_IsMultiplayer() )
+					g_pNetworkSystem->NET_SetMutiplayer( true );
 				g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
 
 				// Make sure state is correct
 				CL_CheckClientState();
 				// Additional networking ops for SPLITPACKET stuff (99.9% of the time this will be an empty list of work)
-				NET_SendQueuedPackets();
+				g_pNetworkSystem->NET_SendQueuedPackets();
 				//-------------------
 				//
 				// client operations
@@ -3409,7 +3409,7 @@ void Host::_Host_RunFrame (float time)
 				_Host_RunFrame_Input( prevremainder, bFinalTick );
 				prevremainder = 0;
 				// process any asynchronous network traffic (TCP), set net_time
-				NET_RunFrame(  Plat_FloatTime() );
+				g_pNetworkSystem->NET_RunFrame(  Plat_FloatTime() );
 			}
 
 			Host_SetClientInSimulation( false );
@@ -3428,7 +3428,7 @@ void Host::_Host_RunFrame (float time)
 			// THREADED: Run Server
 			// -------------------
 			// set net_time once before running the server
-			NET_SetTime( Plat_FloatTime() );
+			g_pNetworkSystem->NET_SetTime( Plat_FloatTime() );
 			pGameJob = new CFunctorJob( CreateFunctor( _Host_RunFrame_Server_Async, serverticks ) );
 			if ( IsX360() )
 			{
@@ -4128,7 +4128,7 @@ void Host::Host_Init( bool bDedicated )
 		Sys_NoCrashDialog();
 	}
 
-	TRACEINIT( NET_Init( bDedicated ), NET_Shutdown() );     
+	TRACEINIT(g_pNetworkSystem->NET_Init( bDedicated ), g_pNetworkSystem->NET_Shutdown() );
 
 	TRACEINIT( g_GameEventManager.Init(), g_GameEventManager.Shutdown() );
 
@@ -4664,9 +4664,9 @@ bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, co
 	// init network mode
 	VPROF_SCOPE_BEGIN( "Host_NewGame_SpawnServer" );
 
-	NET_SetMutiplayer( sv.IsMultiplayer() );
+	g_pNetworkSystem->NET_SetMutiplayer( sv.IsMultiplayer() );
 
-	NET_ListenSocket( sv.m_Socket, true );	// activated server TCP socket
+	g_pNetworkSystem->NET_ListenSocket( sv.m_Socket, true );	// activated server TCP socket
 
 	// let's not have any servers with no name
 	if ( host_name.GetString()[0] == 0 )
@@ -4930,7 +4930,7 @@ void Host::Host_Shutdown(void)
 
 	TRACESHUTDOWN( sv.Shutdown() );
 
-	TRACESHUTDOWN( NET_Shutdown() );
+	TRACESHUTDOWN(g_pNetworkSystem->NET_Shutdown() );
 
 #ifndef SWDS
 	TRACESHUTDOWN( Key_Shutdown() );

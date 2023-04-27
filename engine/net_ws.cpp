@@ -194,12 +194,17 @@ static CUtlVectorMT< CUtlVector< pendingsocket_t > >	s_PendingSockets;
 CTSQueue<loopback_t *> s_LoopBacks[LOOPBACK_SOCKETS];
 static netpacket_t*	s_pLagData[MAX_SOCKETS];  // List of lag structures, if fakelag is set.
 
-unsigned short NET_HostToNetShort( unsigned short us_in )
+CNetworkSystem s_NetworkSystem;
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CNetworkSystem, INetworkSystem,
+	NETWORKSYSTEM_INTERFACE_VERSION, s_NetworkSystem);
+CNetworkSystem* g_pLocalNetworkSystem = &s_NetworkSystem;
+
+unsigned short CNetworkSystem::NET_HostToNetShort( unsigned short us_in )
 {
 	return htons( us_in );
 }
 
-unsigned short NET_NetToHostShort( unsigned short us_in )
+unsigned short CNetworkSystem::NET_NetToHostShort( unsigned short us_in )
 {
 	return ntohs( us_in );
 }
@@ -229,7 +234,7 @@ unsigned short NET_NetToHostShort( unsigned short us_in )
 NET_ErrorString
 ====================
 */
-const char *NET_ErrorString (int code)
+const char *CNetworkSystem::NET_ErrorString (int code)
 {
 #if defined( _WIN32 )
 	switch (code)
@@ -291,7 +296,7 @@ const char *NET_ErrorString (int code)
 //			*sadr - 
 // Output : bool	NET_StringToSockaddr
 //-----------------------------------------------------------------------------
-bool NET_StringToSockaddr( const char *s, struct sockaddr *sadr )
+bool CNetworkSystem::NET_StringToSockaddr( const char *s, struct sockaddr *sadr )
 {
 	char	*colon;
 	char	copy[128];
@@ -392,7 +397,7 @@ idnewt:28000
 192.246.40.70:28000
 =============
 */
-bool NET_StringToAdr ( const char *s, netadr_t *a)
+bool CNetworkSystem::NET_StringToAdr ( const char *s, netadr_t *a)
 {
 	struct sockaddr saddr;
 
@@ -440,7 +445,7 @@ CNetChan *NET_FindNetChannel(int socket, netadr_t &adr)
 	return NULL;	// no channel found
 }
 
-void NET_CloseSocket( int hSocket, int sock = -1)
+void CNetworkSystem::NET_CloseSocket( int hSocket, int sock )
 {
 	if ( !hSocket )
 		return;
@@ -470,7 +475,7 @@ void NET_CloseSocket( int hSocket, int sock = -1)
 NET_IPSocket
 ====================
 */
-int NET_OpenSocket ( const char *net_interface, int& port, int protocol )
+int CNetworkSystem::NET_OpenSocket ( const char *net_interface, int& port, int protocol )
 {
 	struct sockaddr_in	address;
 	unsigned int		opt;
@@ -697,7 +702,7 @@ int NET_OpenSocket ( const char *net_interface, int& port, int protocol )
 	return newsocket;
 }
 
-int NET_ConnectSocket( int sock, const netadr_t &addr )
+int CNetworkSystem::NET_ConnectSocket( int sock, const netadr_t &addr )
 {
 	Assert( (sock >= 0) && (sock < net_sockets.Count()) );
 
@@ -741,7 +746,7 @@ int NET_ConnectSocket( int sock, const netadr_t &addr )
 	return net_sockets[sock].hTCP;
 }
 
-int NET_SendStream( int nSock, const char * buf, int len, int flags )
+int CNetworkSystem::NET_SendStream( int nSock, const char * buf, int len, int flags )
 {
 	//int ret = send( nSock, buf, len, flags );
 	int ret = VCRHook_send( nSock, buf, len, flags );
@@ -760,7 +765,7 @@ int NET_SendStream( int nSock, const char * buf, int len, int flags )
 	return ret;
 }
 
-int NET_ReceiveStream( int nSock, char * buf, int len, int flags )
+int CNetworkSystem::NET_ReceiveStream( int nSock, char * buf, int len, int flags )
 {
 	int ret = VCRHook_recv( nSock, buf, len, flags );
 	if ( ret == -1 )
@@ -779,7 +784,7 @@ int NET_ReceiveStream( int nSock, char * buf, int len, int flags )
 	return ret;
 }
 
-INetChannel *NET_CreateNetChannel(int socket, netadr_t *adr, const char * name, INetChannelHandler * handler, bool bForceNewChannel/*=false*/,
+INetChannel *CNetworkSystem::NET_CreateNetChannel(int socket, netadr_t *adr, const char * name, INetChannelHandler * handler, bool bForceNewChannel/*=false*/,
 								  int nProtocolVersion/*=PROTOCOL_VERSION*/)
 {
 	CNetChan *chan = NULL;
@@ -811,7 +816,7 @@ INetChannel *NET_CreateNetChannel(int socket, netadr_t *adr, const char * name, 
 	return chan;
 }
 
-void NET_RemoveNetChannel(INetChannel *netchan, bool bDeleteNetChan)
+void CNetworkSystem::NET_RemoveNetChannel(INetChannel *netchan, bool bDeleteNetChan)
 {
 	if ( !netchan )
 	{
@@ -1400,7 +1405,7 @@ bool NET_GetLoopPacket ( netpacket_t * packet )
 	return ( NET_LagPacket( true, packet ) );	
 }
 
-bool NET_ReceiveDatagram ( const int sock, netpacket_t * packet )
+bool CNetworkSystem::NET_ReceiveDatagram ( const int sock, netpacket_t * packet )
 {
 	VPROF_BUDGET( "NET_ReceiveDatagram", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 
@@ -1576,7 +1581,7 @@ bool NET_ReceiveDatagram ( const int sock, netpacket_t * packet )
 	return false;
 }
 
-bool NET_ReceiveValidDatagram ( const int sock, netpacket_t * packet )
+bool CNetworkSystem::NET_ReceiveValidDatagram ( const int sock, netpacket_t * packet )
 {
 #ifdef _DEBUG
 	if ( recvpackets.GetInt() >= 0 )
@@ -1621,7 +1626,7 @@ bool NET_ReceiveValidDatagram ( const int sock, netpacket_t * packet )
 }
 
 
-netpacket_t *NET_GetPacket (int sock, byte *scratch )
+netpacket_t *CNetworkSystem::NET_GetPacket (int sock, byte *scratch )
 {
 	VPROF_BUDGET( "NET_GetPacket", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 
@@ -1676,7 +1681,7 @@ netpacket_t *NET_GetPacket (int sock, byte *scratch )
 	return &inpacket;
 }
 
-void NET_ProcessPending( void )
+void CNetworkSystem::NET_ProcessPending( void )
 {
 	AUTO_LOCK_FM( s_PendingSockets );
 	for ( int i=0; i<s_PendingSockets.Count();i++ )
@@ -1757,7 +1762,7 @@ void NET_ProcessPending( void )
 	}
 }
 
-void NET_ListenSocket(int sock, bool bListen)
+void CNetworkSystem::NET_ListenSocket(int sock, bool bListen)
 {
 	Assert((sock >= 0) && (sock < net_sockets.Count()));
 
@@ -1818,7 +1823,7 @@ void NET_ListenSocket(int sock, bool bListen)
 	}
 }
 
-void NET_ProcessListen(int sock)
+void CNetworkSystem::NET_ProcessListen(int sock)
 {
 	netsocket_t * netsock = &net_sockets[sock];
 		
@@ -1875,7 +1880,7 @@ struct NetScratchBuffer_t : TSLNodeBase_t
 };
 CTSSimpleList<NetScratchBuffer_t> g_NetScratchBuffers;
 
-void NET_ProcessSocket( int sock, IConnectionlessPacketHandler *handler )
+void CNetworkSystem::NET_ProcessSocket( int sock, IConnectionlessPacketHandler *handler )
 {
 	VPROF_BUDGET( "NET_ProcessSocket", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 
@@ -1949,7 +1954,7 @@ void NET_ProcessSocket( int sock, IConnectionlessPacketHandler *handler )
 	g_NetScratchBuffers.Push( scratch );
 }
 
-void NET_LogBadPacket(netpacket_t * packet)
+void CNetworkSystem::NET_LogBadPacket(netpacket_t * packet)
 {
 	FileHandle_t fp;
 	int i = 0;
@@ -2220,7 +2225,7 @@ void NET_ClearQueuedPacketsForChannel( INetChannel *channel )
 	}
 }
 
-void NET_SendQueuedPackets()
+void CNetworkSystem::NET_SendQueuedPackets()
 {
 	// Only do this once per frame
 	if ( g_pHost->Host_GetFrameCount() == g_SendQueue.m_nHostFrame)
@@ -2398,7 +2403,7 @@ int NET_SendLong( INetChannel *chan, int sock, SOCKET s, const char FAR * buf, i
 // Output : void NET_SendPacket
 //-----------------------------------------------------------------------------
 
-int NET_SendPacket ( INetChannel *chan, int sock,  const netadr_t &to, const unsigned char *data, int length, bf_write *pVoicePayload /* = NULL */, bool bUseCompression /*=false*/ )
+int CNetworkSystem::NET_SendPacket ( INetChannel *chan, int sock,  const netadr_t &to, const unsigned char *data, int length, bf_write *pVoicePayload /* = NULL */, bool bUseCompression /*=false*/ )
 {
 	VPROF_BUDGET( "NET_SendPacket", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 	ETWSendPacket( to.ToString() , length , 0 , 0 );
@@ -2576,7 +2581,7 @@ int NET_SendPacket ( INetChannel *chan, int sock,  const netadr_t &to, const uns
 	return ret;
 }
 
-void NET_OutOfBandPrintf(int sock, const netadr_t &adr, const char *format, ...)
+void CNetworkSystem::NET_OutOfBandPrintf(int sock, const netadr_t &adr, const char *format, ...)
 {
 	va_list		argptr;
 	char		string[MAX_ROUTABLE_PAYLOAD];
@@ -2597,7 +2602,7 @@ void NET_OutOfBandPrintf(int sock, const netadr_t &adr, const char *format, ...)
 NET_CloseAllSockets
 ====================
 */
-void NET_CloseAllSockets (void)
+void CNetworkSystem::NET_CloseAllSockets (void)
 {
 	// shut down any existing and open sockets
 	for (int i=0 ; i<net_sockets.Count() ; i++)
@@ -2651,14 +2656,10 @@ void NET_FlushAllSockets( void )
 	}
 }
 
-enum
-{
-	OSOCKET_FLAG_USE_IPNAME  = 0x00000001, // Use ipname convar for net_interface.
-	OSOCKET_FLAG_FAIL        = 0x00000002, // Call Sys_exit on error.
-};
 
-static bool OpenSocketInternal( int nModule, int nSetPort, int nDefaultPort, const char *pName, int nProtocol, bool bTryAny,
-								int flags = ( OSOCKET_FLAG_USE_IPNAME | OSOCKET_FLAG_FAIL ) )
+
+bool CNetworkSystem::OpenSocketInternal( int nModule, int nSetPort, int nDefaultPort, const char *pName, int nProtocol, bool bTryAny,
+								int flags )
 {
 	int port = nSetPort ? nSetPort : nDefaultPort;
 	int *handle = NULL;
@@ -2711,7 +2712,7 @@ static bool OpenSocketInternal( int nModule, int nSetPort, int nDefaultPort, con
 NET_OpenSockets
 ====================
 */
-void NET_OpenSockets (void)
+void CNetworkSystem::NET_OpenSockets (void)
 {	
 	// Xbox 360 uses VDP protocol to combine encrypted game data with clear voice data
 	const int nProtocol = X360SecureNetwork() ? IPPROTO_VDP : IPPROTO_UDP;
@@ -2781,7 +2782,7 @@ void NET_OpenSockets (void)
 #endif // LINUX
 }
 
-int NET_AddExtraSocket( int port )
+int CNetworkSystem::NET_AddExtraSocket( int port )
 {
 	int newSocket = net_sockets.AddToTail();
 
@@ -2795,7 +2796,7 @@ int NET_AddExtraSocket( int port )
 	return newSocket;
 }
 
-void NET_RemoveAllExtraSockets()
+void CNetworkSystem::NET_RemoveAllExtraSockets()
 {
 	for (int i=MAX_SOCKETS ; i<net_sockets.Count() ; i++)
 	{
@@ -2810,7 +2811,7 @@ void NET_RemoveAllExtraSockets()
 	Assert( net_sockets.Count() == MAX_SOCKETS );
 }
 
-unsigned short NET_GetUDPPort(int socket)
+unsigned short CNetworkSystem::NET_GetUDPPort(int socket)
 {
 	if ( socket < 0 || socket >= net_sockets.Count() )
 		return 0;
@@ -2826,7 +2827,7 @@ NET_GetLocalAddress
 Returns the servers' ip address as a string.
 ================
 */
-void NET_GetLocalAddress (void)
+void CNetworkSystem::NET_GetLocalAddress (void)
 {
 	net_local_adr.Clear();
 
@@ -2868,12 +2869,12 @@ NET_IsConfigured
 Is winsock ip initialized?
 ====================
 */
-bool NET_IsMultiplayer( void )
+bool CNetworkSystem::NET_IsMultiplayer( void )
 {
 	return net_multiplayer;
 }
 
-bool NET_IsDedicated( void )
+bool CNetworkSystem::NET_IsDedicated( void )
 {
 	return net_dedicated;
 }
@@ -3003,7 +3004,7 @@ NET_SetTime
 Updates net_time
 ====================
 */
-void NET_SetTime( double flRealtime )
+void CNetworkSystem::NET_SetTime( double flRealtime )
 {
 	static double s_last_realtime = 0;
 
@@ -3032,7 +3033,7 @@ NET_RunFrame
 RunFrame must be called each system frame before reading/sending on any socket
 ====================
 */
-void NET_RunFrame( double flRealtime )
+void CNetworkSystem::NET_RunFrame( double flRealtime )
 {
 	NET_SetTime( flRealtime );
 
@@ -3102,7 +3103,7 @@ A single player game will only use the loopback code
 ====================
 */
 
-void NET_Config ( void )
+void CNetworkSystem::NET_Config ( void )
 {
 	// free anything
 	NET_CloseAllSockets();	// close all UDP/TCP sockets
@@ -3163,7 +3164,7 @@ void NET_SetDedicated ()
 
 
 
-void NET_SetMutiplayer(bool multiplayer)
+void CNetworkSystem::NET_SetMutiplayer(bool multiplayer)
 {
 	if ( net_noip && multiplayer )
 	{
@@ -3195,7 +3196,7 @@ void NET_SetMutiplayer(bool multiplayer)
 // Purpose: 
 // Input  : bIsDedicated - 
 //-----------------------------------------------------------------------------
-void NET_Init( bool bIsDedicated )
+void CNetworkSystem::NET_Init( bool bIsDedicated )
 {
 
 	if ( CommandLine()->FindParm( "-NoQueuedPacketThread" ) )
@@ -3317,7 +3318,7 @@ NET_Shutdown
 
 ====================
 */
-void NET_Shutdown (void)
+void CNetworkSystem::NET_Shutdown (void)
 {
 	int nError = 0;
 
@@ -3356,7 +3357,7 @@ void NET_Shutdown (void)
 	Assert( s_PendingSockets.Count() == 0);
 }
 
-void NET_PrintChannelStatus( INetChannel * chan )
+void CNetworkSystem::NET_PrintChannelStatus( INetChannel * chan )
 {
 	Msg( "NetChannel '%s':\n", chan->GetName() );
 	Msg( "- remote IP: %s %s\n", chan->GetAddress(), chan->IsPlayback()?"(Demo)":"" );
@@ -3382,14 +3383,14 @@ CON_COMMAND( net_channels, "Shows net channel info" )
 	AUTO_LOCK_FM( s_NetChannels );
 	for ( int i = 0; i < numChannels; i++ )
 	{
-		NET_PrintChannelStatus( s_NetChannels[i] );
+		s_NetworkSystem.NET_PrintChannelStatus( s_NetChannels[i] );
 	}
 }
 
 CON_COMMAND( net_start, "Inits multiplayer network sockets" )
 {
 	net_multiplayer = true;
-	NET_Config();
+	s_NetworkSystem.NET_Config();
 }
 
 CON_COMMAND( net_status, "Shows current network status" )

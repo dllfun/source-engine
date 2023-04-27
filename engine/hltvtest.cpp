@@ -46,8 +46,8 @@ bool CHLTVTestSystem::StartTest(int nClients, const char *pszAddress)
 	{
 		CHLTVServer *pServer = new CHLTVServer();
 		m_Servers.AddToTail( pServer );
-		pServer->Init( NET_IsDedicated() );
-		pServer->m_ClientState.m_Socket = NET_AddExtraSocket( PORT_ANY );
+		pServer->Init(g_pNetworkSystem->NET_IsDedicated() );
+		pServer->m_ClientState.m_Socket = g_pNetworkSystem->NET_AddExtraSocket( PORT_ANY );
 	}
 
 	for( int i=0; i<nClients; i++ )
@@ -78,7 +78,7 @@ bool CHLTVTestSystem::StopsTest()
 
 	m_Servers.PurgeAndDeleteElements();
 
-	NET_RemoveAllExtraSockets();
+	g_pNetworkSystem->NET_RemoveAllExtraSockets();
 
 	return true;
 }

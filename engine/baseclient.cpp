@@ -337,7 +337,7 @@ void CBaseClient::Inactivate( void )
 		// don't do that for fakeclients
 		m_NetChannel->Clear();
 		
-		if ( NET_IsMultiplayer() )
+		if (g_pNetworkSystem->NET_IsMultiplayer() )
 		{
 			NET_SignonState signon( m_nSignonState, m_Server->GetSpawnCount() );
 			SendNetMsg( signon );
@@ -787,6 +787,80 @@ void CBaseClient::ConnectionStart(INetChannel *chan)
 #endif
 
 	REGISTER_CLC_MSG( CmdKeyValues );
+}
+
+INetMessage* CBaseClient::CreateMessage(int msgtype) {
+	switch(msgtype) {
+	case net_Tick:
+		return new NET_Tick();
+	case net_StringCmd:
+		return new NET_StringCmd();
+	case net_SetConVar:
+		return new NET_SetConVar();
+	case net_SignonState:
+		return new NET_SignonState();
+	case clc_ClientInfo:
+		return new CLC_ClientInfo();
+	case clc_Move:
+		return new CLC_Move();
+	case clc_VoiceData:
+		return new CLC_VoiceData();
+	case clc_BaselineAck:
+		return new CLC_BaselineAck();
+	case clc_ListenEvents:
+		return new CLC_ListenEvents();
+	case clc_RespondCvarValue:
+		return new CLC_RespondCvarValue();
+	case clc_FileCRCCheck:
+		return new CLC_FileCRCCheck();
+	case clc_FileMD5Check:
+		return new CLC_FileMD5Check();
+#if defined( REPLAY_ENABLED )
+	case clc_SaveReplay:
+		return new CLC_SaveReplay();
+#endif
+	case clc_CmdKeyValues:
+		return new CLC_CmdKeyValues();
+	default:
+		return NULL;
+	}
+}
+
+bool CBaseClient::ProcessMessage(INetMessage* msg, INetChannel* pChan) {
+	switch (msg->GetType()) {
+	case net_Tick:
+		return ProcessTick((NET_Tick *) msg);
+	case net_StringCmd:
+		return ProcessStringCmd((NET_StringCmd *) msg);
+	case net_SetConVar:
+		return ProcessSetConVar((NET_SetConVar *) msg);
+	case net_SignonState:
+		return ProcessSignonState((NET_SignonState *) msg);
+	case clc_ClientInfo:
+		return ProcessClientInfo((CLC_ClientInfo *) msg);
+	case clc_Move:
+		return ProcessMove((CLC_Move *) msg);
+	case clc_VoiceData:
+		return ProcessVoiceData((CLC_VoiceData *) msg);
+	case clc_BaselineAck:
+		return ProcessBaselineAck((CLC_BaselineAck *) msg);
+	case clc_ListenEvents:
+		return ProcessListenEvents((CLC_ListenEvents *) msg);
+	case clc_RespondCvarValue:
+		return ProcessRespondCvarValue((CLC_RespondCvarValue *) msg);
+	case clc_FileCRCCheck:
+		return ProcessFileCRCCheck((CLC_FileCRCCheck *) msg);
+	case clc_FileMD5Check:
+		return ProcessFileMD5Check((CLC_FileMD5Check *) msg);
+#if defined( REPLAY_ENABLED )
+	case clc_SaveReplay:
+		return ProcessSaveReplay((CLC_SaveReplay *) pMsg);
+#endif
+	case clc_CmdKeyValues:
+		return ProcessCmdKeyValues((CLC_CmdKeyValues *) msg);
+	default:
+		return true;
+	}
 }
 
 bool CBaseClient::ProcessTick( NET_Tick *msg )

@@ -531,7 +531,7 @@ CON_COMMAND( status, "Display map and connection status." )
 	print( "version : %s/%d %d %s%s%s\n", GetSteamInfIDVersionInfo().szVersionString,
 		PROTOCOL_VERSION, build_number(), bGSSecure ? "secure" : "insecure", pchSecureReasonString, pchUniverse );
 
-	if ( NET_IsMultiplayer() )
+	if (g_pNetworkSystem->NET_IsMultiplayer() )
 	{
 		CUtlString sPublicIPInfo;
 		if ( !Steam3Server().BLanOnly() )
@@ -1872,7 +1872,7 @@ CON_COMMAND( killserver, "Shutdown the server." )
 	if ( !sv.IsDedicated() )
 	{
 		// close network sockets
-		NET_SetMutiplayer( false );
+		g_pNetworkSystem->NET_SetMutiplayer( false );
 	}
 }
 

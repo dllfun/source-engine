@@ -83,7 +83,7 @@ static void RconAddressChanged_f( IConVar *pConVar, const char *pOldString, floa
 	{
 		to = cl.m_NetChannel->GetRemoteAddress();
 	}
-	else if ( !NET_StringToAdr( cmdargs, &to ) )
+	else if ( !g_pNetworkSystem->NET_StringToAdr( cmdargs, &to ) )
 	{
 		Msg( "Unable to resolve rcon address %s\n", var.GetString() );
 		return;
@@ -409,7 +409,7 @@ void CRConClient::RunFrame()
 	if ( pendingLen < 0 )
 	{
 		CloseSocket();
-		Warning( "Lost RCON connection, please retry command (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+		Warning( "Lost RCON connection, please retry command (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 		return;
 	}
 
@@ -435,7 +435,7 @@ void CRConClient::RunFrame()
 		
 		if ( recvLen < 0 && !SocketWouldBlock() )
 		{
-			Warning( "RCON Cmd: recv error (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+			Warning( "RCON Cmd: recv error (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 			break;
 		}
 

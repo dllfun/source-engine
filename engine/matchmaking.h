@@ -151,6 +151,10 @@ public:
 	virtual void	ConnectionStart(INetChannel *chan);	// called first time network channel is established
 	virtual void	PacketEnd();						// all messages have been parsed
 
+	virtual INetMessage* CreateMessage(int msgtype);
+
+	virtual bool ProcessMessage(INetMessage* msg, INetChannel* pChan);
+
 	// NetChannel message handlers
  	PROCESS_NET_MESSAGE( Tick ) { return true; }
  	PROCESS_NET_MESSAGE( SetConVar ) { return true; }

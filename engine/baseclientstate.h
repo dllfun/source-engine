@@ -90,6 +90,10 @@ public: // INetMsgHandler interface:
 
 public: // IServerMessageHandlers
 	
+	virtual INetMessage* CreateMessage(int msgtype);
+
+	virtual bool ProcessMessage(INetMessage* msg, INetChannel* pChan);
+
 	PROCESS_NET_MESSAGE( Tick );
 	PROCESS_NET_MESSAGE( StringCmd );
 	PROCESS_NET_MESSAGE( SetConVar );

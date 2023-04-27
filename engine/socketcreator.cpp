@@ -83,7 +83,7 @@ bool CSocketCreator::CreateListenSocket( const netadr_t &netAdr )
 	m_hListenSocket = socket (PF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if ( m_hListenSocket == -1 )
 	{
-		Warning( "Socket unable to create socket (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+		Warning( "Socket unable to create socket (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 		return false;
 	}
 
@@ -98,7 +98,7 @@ bool CSocketCreator::CreateListenSocket( const netadr_t &netAdr )
 	int ret = bind( m_hListenSocket, (struct sockaddr *)&s, sizeof(struct sockaddr_in) );
 	if ( ret == -1 )
 	{
-		Warning( "Socket bind failed (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+		Warning( "Socket bind failed (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 		CloseListenSocket();
 		return false;
 	}
@@ -106,7 +106,7 @@ bool CSocketCreator::CreateListenSocket( const netadr_t &netAdr )
 	ret = listen( m_hListenSocket, SOCKET_TCP_MAX_ACCEPTS );
 	if ( ret == -1 )
 	{
-		Warning( "Socket listen failed (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+		Warning( "Socket listen failed (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 		CloseListenSocket();
 		return false;
 	}
@@ -156,7 +156,7 @@ void CSocketCreator::ProcessAccept()
 #endif
 		 )
 		{
-			Warning ("Socket ProcessAccept Error: %s\n", NET_ErrorString( WSAGetLastError() ) );
+			Warning ("Socket ProcessAccept Error: %s\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 		}
 		return;
 	}
@@ -204,7 +204,7 @@ int CSocketCreator::ConnectSocket( const netadr_t &netAdr, bool bSingleSocket )
 	SocketHandle_t hSocket = socket( PF_INET, SOCK_STREAM, IPPROTO_TCP );
 	if ( hSocket == -1 )
 	{
-		Warning( "Unable to create socket (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+		Warning( "Unable to create socket (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 		return -1;
 	}
 
@@ -212,7 +212,7 @@ int CSocketCreator::ConnectSocket( const netadr_t &netAdr, bool bSingleSocket )
 	ret = ioctlsocket( hSocket, FIONBIO, (unsigned long*)&opt ); // non-blocking
 	if ( ret == -1 )
 	{
-		Warning( "Socket ioctl(FIONBIO) failed (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+		Warning( "Socket ioctl(FIONBIO) failed (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 		closesocket( hSocket );
 		return -1;																	   
 	}
@@ -229,7 +229,7 @@ int CSocketCreator::ConnectSocket( const netadr_t &netAdr, bool bSingleSocket )
 	{
 		if ( !SocketWouldBlock() )
 		{	
-			Warning( "Socket connection failed (%s)\n", NET_ErrorString( WSAGetLastError() ) );
+			Warning( "Socket connection failed (%s)\n", g_pNetworkSystem->NET_ErrorString( WSAGetLastError() ) );
 			closesocket( hSocket );
 			return -1;
 		}
