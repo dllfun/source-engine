@@ -1422,7 +1422,7 @@ bool CBaseClient::ShouldSendMessages( void )
 	}
 
 	// check, if it's time to send the next packet
-	bool bSendMessage = m_fNextMessageTime <= net_time ;
+	bool bSendMessage = m_fNextMessageTime <= g_pNetworkSystem->NET_GetTime();
 
 	if ( !bSendMessage && !IsActive() )
 	{
@@ -1455,15 +1455,15 @@ void CBaseClient::UpdateSendState( void )
 	// in single player mode always send messages
 	if ( !m_Server->IsMultiplayer() && !host_limitlocal.GetFloat() )
 	{
-		m_fNextMessageTime = net_time; // send ASAP and 
+		m_fNextMessageTime = g_pNetworkSystem->NET_GetTime(); // send ASAP and 
 		m_bReceivedPacket = true;	// don't wait for incoming packets
 	}
 	else if ( IsActive() )	// multiplayer mode
 	{
 		// snapshot mode: send snapshots frequently
 		float maxDelta = min ( m_Server->GetTickInterval(), m_fSnapshotInterval );
-		float delta = clamp( (float)( net_time - m_fNextMessageTime ), 0.0f, maxDelta );
-		m_fNextMessageTime = net_time + m_fSnapshotInterval - delta;
+		float delta = clamp( (float)(g_pNetworkSystem->NET_GetTime() - m_fNextMessageTime ), 0.0f, maxDelta );
+		m_fNextMessageTime = g_pNetworkSystem->NET_GetTime() + m_fSnapshotInterval - delta;
 	}
 	else // multiplayer signon mode
 	{
@@ -1471,12 +1471,12 @@ void CBaseClient::UpdateSendState( void )
 			m_NetChannel->GetTimeSinceLastReceived() < 1.0f )
 		{
 			// if we have pending reliable data send as fast as possible
-			m_fNextMessageTime = net_time;
+			m_fNextMessageTime = g_pNetworkSystem->NET_GetTime();
 		}
 		else
 		{
 			// signon mode: only respond on request or after 1 second
-			m_fNextMessageTime = net_time + 1.0f;
+			m_fNextMessageTime = g_pNetworkSystem->NET_GetTime() + 1.0f;
 		}
 	}
 }

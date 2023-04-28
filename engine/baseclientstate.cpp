@@ -286,7 +286,7 @@ static inline void CL_ParseDeltaHeader( CEntityReadInfo &u )
 
 CBaseClientState::CBaseClientState()
 {
-	m_Socket = NS_CLIENT;
+	m_Socket = NULL;// g_pNetworkSystem->GetClientSocket();
 	m_pServerClasses = NULL;
 	m_StringTableContainer = NULL;
 	m_NetChannel = NULL;
@@ -677,7 +677,7 @@ void CBaseClientState::SendConnectPacket (int challengeNr, int authProtocol, uin
 	}
 
 	// Mark time of this attempt for retransmit requests
-	m_flConnectTime = net_time;
+	m_flConnectTime = g_pNetworkSystem->NET_GetTime();
 
 	// remember challengenr for TCP connection
 	m_nChallengeNr = challengeNr;
@@ -686,7 +686,7 @@ void CBaseClientState::SendConnectPacket (int challengeNr, int authProtocol, uin
 	m_ulGameServerSteamID = unGSSteamID;
 
 	// Send protocol and challenge value
-	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	GetSocket()->NET_SendPacket(NULL, adr, msg.GetData(), msg.GetNumBytesWritten());
 }
 
 
@@ -815,7 +815,7 @@ void CBaseClientState::FullConnect( netadr_t &adr )
 	
 	COM_TimestampedLog( "CBaseClientState::FullConnect" );
 
-	m_NetChannel = g_pNetworkSystem->NET_CreateNetChannel( m_Socket, &adr, "CLIENT", this );
+	m_NetChannel = GetSocket()->NET_CreateNetChannel( &adr, "CLIENT", this );
 
 	Assert( m_NetChannel );
 	
@@ -823,13 +823,13 @@ void CBaseClientState::FullConnect( netadr_t &adr )
 
 	// Bump connection time to now so we don't resend a connection
 	// Request	
-	m_flConnectTime = net_time; 
+	m_flConnectTime = g_pNetworkSystem->NET_GetTime();
 
 	// We'll request a full delta from the baseline
 	m_nDeltaTick = -1;
 
 	// We can send a cmd right away
-	m_flNextCmdTime = net_time;
+	m_flNextCmdTime = g_pNetworkSystem->NET_GetTime();
 
 	// Mark client as connected
 	SetSignonState( SIGNONSTATE_CONNECTED, -1 );
@@ -932,7 +932,7 @@ void CBaseClientState::CheckForResend (void)
 		return;
 
 	// Wait at least the resend # of seconds.
-	if ( ( net_time - m_flConnectTime ) < cl_resend.GetFloat())
+	if ( (g_pNetworkSystem->NET_GetTime() - m_flConnectTime ) < cl_resend.GetFloat())
 		return;
 
 	netadr_t	adr;
@@ -959,7 +959,7 @@ void CBaseClientState::CheckForResend (void)
 	}
 	
 	// Mark time of this attempt.
-	m_flConnectTime = net_time;	// for retransmit requests
+	m_flConnectTime = g_pNetworkSystem->NET_GetTime();	// for retransmit requests
 
 	// Display appropriate message
 	if ( Q_strncmp(m_szRetryAddress, "localhost", 9) )
@@ -996,7 +996,7 @@ void CBaseClientState::CheckForResend (void)
 		msg.WriteByte( A2S_GETCHALLENGE );
 		msg.WriteLong( m_retryChallenge );
 		msg.WriteString( "0000000000" ); // pad out
-		g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+		GetSocket()->NET_SendPacket( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
 	}
 }
 

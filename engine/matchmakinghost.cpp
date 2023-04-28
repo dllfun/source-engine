@@ -165,7 +165,7 @@ void CMatchmaking::HandleSystemLinkSearch( netpacket_t *pPacket )
 	adr.SetPort( PORT_SYSTEMLINK );
 
 	// Send message
-	g_pNetworkSystem->NET_SendPacket( NULL, NS_SYSTEMLINK, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->GetSystemLinkSocket()->NET_SendPacket(NULL, adr, msg.GetData(), msg.GetNumBytesWritten());
 }
 
 //-----------------------------------------------------------------------------

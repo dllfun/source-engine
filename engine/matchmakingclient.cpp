@@ -261,7 +261,7 @@ void CMatchmaking::UpdateSearch()
 			adr.SetType( NA_BROADCAST );
 			adr.SetPort( PORT_SYSTEMLINK );
 
-			g_pNetworkSystem->NET_SendPacket( NULL, NS_SYSTEMLINK, adr, msg.GetData(), msg.GetNumBytesWritten() );
+			g_pNetworkSystem->GetSystemLinkSocket()->NET_SendPacket(NULL, adr, msg.GetData(), msg.GetNumBytesWritten());
 
 			m_fSendTimer = GetTime();
 			++m_nSendCount;
@@ -761,7 +761,7 @@ void CMatchmaking::SendJoinRequest( netadr_t *adr )
 	}
 
 	// Send message
-	g_pNetworkSystem->NET_SendPacket( NULL, NS_MATCHMAKING, *adr, msg.GetData(), msg.GetNumBytesWritten() );
+	g_pNetworkSystem->GetMatchMakingSocket()->NET_SendPacket(NULL, *adr, msg.GetData(), msg.GetNumBytesWritten());
 }
 
 //-----------------------------------------------------------------------------

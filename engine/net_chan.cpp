@@ -376,12 +376,11 @@ void CNetChan::Shutdown(const char *pReason)
 
 	if ( m_StreamSocket )
 	{
-		g_pLocalNetworkSystem->NET_CloseSocket( m_StreamSocket, m_Socket );
+		g_pLocalNetworkSystem->NET_CloseSocket( m_StreamSocket, (CNetSocket*)m_Socket );
 		m_StreamSocket = 0;
 		m_StreamActive = false;
 	}
 
-	m_Socket = -1; // signals that netchannel isn't valid anymore
 
 	remote_address.Clear();
 
@@ -405,13 +404,15 @@ void CNetChan::Shutdown(const char *pReason)
 
 	if ( m_bProcessingMessages )
 	{
-		g_pNetworkSystem->NET_RemoveNetChannel( this, false );	// Delay the deletion or it'll crash in the message-processing loop.
+		m_Socket->NET_RemoveNetChannel( this, false );	// Delay the deletion or it'll crash in the message-processing loop.
 		m_bShouldDelete = true;
 	}
 	else
 	{
-		g_pNetworkSystem->NET_RemoveNetChannel( this, true );
+		m_Socket->NET_RemoveNetChannel( this, true );
 	}
+
+	m_Socket = NULL; // signals that netchannel isn't valid anymore
 }
 
 CNetChan::CNetChan()
@@ -422,7 +423,7 @@ CNetChan::CNetChan()
 	m_bShouldDelete = false;
 	m_bClearedDuringProcessing = false;
 	m_bStreamContainsChallenge = false;
-	m_Socket = -1; // invalid
+	m_Socket = NULL; // invalid
 	remote_address.Clear();
 	last_received = 0;
 	connect_time = 0;
@@ -480,7 +481,7 @@ CNetChan::Setup
 called to open a channel to a remote system
 ==============
 */
-void CNetChan::Setup(int sock, netadr_t *adr, const char * name, INetChannelHandler * handler,
+void CNetChan::Setup(CNetSocket* sock, netadr_t *adr, const char * name, INetChannelHandler * handler,
 					 int nProtocolVersion )
 {
 	Assert( name ); 
@@ -505,8 +506,8 @@ void CNetChan::Setup(int sock, netadr_t *adr, const char * name, INetChannelHand
 		remote_address.SetType( NA_NULL );
 	}
 	
-	last_received		= net_time;
-	connect_time		= net_time;
+	last_received		= g_pNetworkSystem->NET_GetTime();
+	connect_time		= g_pNetworkSystem->NET_GetTime();
 	
 	Q_strncpy( m_Name, name, sizeof(m_Name) ); 
 
@@ -597,7 +598,7 @@ bool CNetChan::StartStreaming( unsigned int challengeNr )
 
 	MEM_ALLOC_CREDIT();
 
-	m_StreamSocket = g_pLocalNetworkSystem->NET_ConnectSocket( m_Socket, remote_address );
+	m_StreamSocket = m_Socket->NET_ConnectSocket( remote_address );
 	m_StreamData.EnsureCapacity( NET_MAX_PAYLOAD );
 
 	return (m_StreamSocket != 0);
@@ -759,7 +760,7 @@ bool CNetChan::CanPacket () const
 		return false;
 	}
 
-	return m_fClearTime < net_time;
+	return m_fClearTime < g_pNetworkSystem->NET_GetTime();
 }
 
 bool CNetChan::IsPlayback( void ) const
@@ -801,7 +802,7 @@ void CNetChan::FlowNewPacket(int flow, int seqnr, int acknr, int nChoked, int nD
 
 			pframe = &pflow->frames[ i & NET_FRAMES_MASK ];
 
-			pframe->time = net_time;	// now
+			pframe->time = g_pNetworkSystem->NET_GetTime();	// now
 			pframe->valid = false;
 			pframe->size = 0;
 			pframe->latency = -1.0f; // not acknowledged yet
@@ -855,7 +856,7 @@ void CNetChan::FlowNewPacket(int flow, int seqnr, int acknr, int nChoked, int nD
 	{
 		// update ping for acknowledged packet, if not already acknowledged before
 		
-		aframe->latency = net_time - aframe->time;
+		aframe->latency = g_pNetworkSystem->NET_GetTime() - aframe->time;
 
 		if ( aframe->latency < 0.0f )
 			aframe->latency = 0.0f;
@@ -868,10 +869,10 @@ void CNetChan::FlowUpdate(int flow, int addbytes)
 	netflow_t * pflow = &m_DataFlow[ flow ];
 	pflow->totalbytes += addbytes;
 
-	if ( pflow->nextcompute > net_time )
+	if ( pflow->nextcompute > g_pNetworkSystem->NET_GetTime())
 		return;
 
-	pflow->nextcompute = net_time + FLOW_INTERVAL;
+	pflow->nextcompute = g_pNetworkSystem->NET_GetTime() + FLOW_INTERVAL;
 
 	int		totalvalid = 0;
 	int		totalinvalid = 0;
@@ -1584,7 +1585,7 @@ int CNetChan::SendDatagram(bf_write *datagram)
 #endif
 	
 	// Make sure for the client that the max routable payload size is up to date
-	if ( m_Socket == NS_CLIENT )
+	if ( m_Socket == g_pNetworkSystem->GetClientSocket() )
 	{
 		if ( net_maxroutable.GetInt() != GetMaxRoutablePayloadSize() )
 		{
@@ -1767,7 +1768,7 @@ int CNetChan::SendDatagram(bf_write *datagram)
 	}
 
 	// Send the datagram
-	int	bytesSent = g_pNetworkSystem->NET_SendPacket ( this, m_Socket, remote_address, send.GetData(), send.GetNumBytesWritten(), bSendVoice ? &m_StreamVoice : 0, bCompress );
+	int	bytesSent = m_Socket->NET_SendPacket ( this, remote_address, send.GetData(), send.GetNumBytesWritten(), bSendVoice ? &m_StreamVoice : 0, bCompress );
 
 	if ( bSendVoice || !IsX360() )
 	{
@@ -1792,7 +1793,7 @@ int CNetChan::SendDatagram(bf_write *datagram)
 			, m_nInSequenceNr & mask
 			, (flags & PACKET_FLAG_RELIABLE) ? 1 : 0
 			, flags & PACKET_FLAG_CHALLENGE ? 1 : 0
-			, (float)net_time
+			, (float)g_pNetworkSystem->NET_GetTime()
 			, (float)Plat_FloatTime()
 			, comp );
 	}
@@ -1805,9 +1806,9 @@ int CNetChan::SendDatagram(bf_write *datagram)
 
 	FlowUpdate( FLOW_OUTGOING, nTotalSize );
 	
-	if ( m_fClearTime < net_time )
+	if ( m_fClearTime < g_pNetworkSystem->NET_GetTime())
 	{
-		m_fClearTime = net_time;
+		m_fClearTime = g_pNetworkSystem->NET_GetTime();
 	}
 
 	// calculate net_time when channel will be ready for next packet (throttling)
@@ -1818,7 +1819,7 @@ int CNetChan::SendDatagram(bf_write *datagram)
 
 	if ( net_maxcleartime.GetFloat() > 0.0f )
 	{
-		double m_flLatestClearTime = net_time + net_maxcleartime.GetFloat();
+		double m_flLatestClearTime = g_pNetworkSystem->NET_GetTime() + net_maxcleartime.GetFloat();
 		if ( m_fClearTime > m_flLatestClearTime )
 		{
 			m_fClearTime = m_flLatestClearTime;
@@ -2023,7 +2024,7 @@ void CNetChan::ProcessPlayback( void )
 		// Update data flow stats
 		FlowNewPacket( FLOW_INCOMING, m_nInSequenceNr, m_nOutSequenceNrAck, 0, 0, packet->wiresize );
 
-		last_received = net_time;
+		last_received = g_pNetworkSystem->NET_GetTime();
 
 		m_MessageHandler->PacketStart( m_nInSequenceNr, m_nOutSequenceNrAck );
 		
@@ -2462,12 +2463,12 @@ void CNetChan::ProcessPacket( netpacket_t * packet, bool bHasHeader )
 			, m_nOutSequenceNrAck & 63 
 			, flags & PACKET_FLAG_RELIABLE ? 1 : 0
 			, flags & PACKET_FLAG_CHALLENGE ? 1 : 0
-			, net_time
+			, g_pNetworkSystem->NET_GetTime()
 			, (float)Plat_FloatTime()
 			, packet->wiresize );
 	}
 	
-	last_received = net_time;
+	last_received = g_pNetworkSystem->NET_GetTime();
 
 // tell message handler that a new packet has arrived
 	m_MessageHandler->PacketStart( m_nInSequenceNr, m_nOutSequenceNrAck );
@@ -2837,7 +2838,7 @@ bool CNetChan::HasPendingReliableData( void )
 
 float CNetChan::GetTimeConnected() const
 {
-	float t = net_time - connect_time;
+	float t = g_pNetworkSystem->NET_GetTime() - connect_time;
 	return (t>0.0f) ? t : 0.0f ;
 }
 
@@ -2856,7 +2857,7 @@ bool CNetChan::IsTimedOut() const
 	if ( m_Timeout == -1.0f )
 		return false;
 	else
-		return (last_received + m_Timeout) < net_time;
+		return (last_received + m_Timeout) < g_pNetworkSystem->NET_GetTime();
 }
 
 bool CNetChan::IsTimingOut() const
@@ -2864,7 +2865,7 @@ bool CNetChan::IsTimingOut() const
 	if ( m_Timeout == -1.0f )
 		return false;
 	else
-		return (last_received + CONNECTION_PROBLEM_TIME) < net_time;
+		return (last_received + CONNECTION_PROBLEM_TIME) < g_pNetworkSystem->NET_GetTime();
 }
 
 float CNetChan::GetTimeoutSeconds() const
@@ -2874,7 +2875,7 @@ float CNetChan::GetTimeoutSeconds() const
 
 float CNetChan::GetTimeSinceLastReceived() const
 {
-	float t = net_time - last_received;
+	float t = g_pNetworkSystem->NET_GetTime() - last_received;
 	return (t>0.0f) ? t : 0.0f ;
 }
 
@@ -2894,7 +2895,7 @@ void CNetChan::Reset()
 	m_nSplitPacketSequence = 1;
 }
 
-int CNetChan::GetSocket() const
+INetSocket* CNetChan::GetSocket() const
 {
 	return m_Socket;
 }
@@ -3002,7 +3003,7 @@ float CNetChan::GetAvgLoss( int flow ) const
 
 float CNetChan::GetTime( void ) const
 {
-	return net_time;
+	return g_pNetworkSystem->NET_GetTime();
 }
 
 bool CNetChan::GetStreamProgress( int flow, int *received, int *total ) const

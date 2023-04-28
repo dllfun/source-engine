@@ -111,6 +111,39 @@ class CNetPacket;
 //	//INetworkMessage *m_pNetworkMessage;
 //};
 
+abstract_class INetSocket
+{
+public:
+	virtual const char* Net_GetSocketName() = 0;
+	// Read any incoming packets, dispatch to known netchannels and call handler for connectionless packets
+	virtual void		NET_ProcessSocket(IConnectionlessPacketHandler* handler) = 0;
+	// Set a port to listen mode
+	virtual void		NET_ListenSocket(bool listen) = 0;
+
+	virtual int			NET_ConnectSocket(const netadr_t& addr) = 0;
+	// Send connectionsless string over the wire
+	virtual void		NET_OutOfBandPrintf(const netadr_t& adr, PRINTF_FORMAT_STRING const char* format, ...) FMTFUNCTION(3, 4) = 0;
+	// Send a raw packet, connectionless must be provided (chan can be NULL)
+	virtual int			NET_SendPacket(INetChannel* chan, const netadr_t& to, const  unsigned char* data, int length, bf_write* pVoicePayload = NULL, bool bUseCompression = false) = 0;
+
+	virtual int			GetNetChannelCount() = 0;
+
+	virtual INetChannel* GetNetChannel(int index) = 0;
+
+	virtual CUtlVectorMT< CUtlVector< INetChannel* > >& GetNetChannels() = 0;
+	// bForceNew (used for bots) tells it not to share INetChannels (bots will crash when disconnecting if they
+		// share an INetChannel).
+	virtual INetChannel* NET_CreateNetChannel(netadr_t* adr, const char* name, INetChannelHandler* handler, bool bForceNew = false,
+		int nProtocolVersion = PROTOCOL_VERSION) = 0;
+
+	virtual void		NET_RemoveNetChannel(INetChannel* netchan, bool bDeleteNetChan) = 0;
+
+	virtual void		NET_PrintChannelStatus(INetChannel* chan) = 0;
+
+	// Find out what port is mapped to a local socket
+	virtual unsigned short NET_GetUDPPort() = 0;
+
+};
 
 //-----------------------------------------------------------------------------
 // Main interface for low-level networking (packet sending). This is a low-level interface
@@ -124,50 +157,47 @@ public:
 	virtual void		NET_Init(bool bDedicated) = 0;
 	// Shut down networking
 	virtual void		NET_Shutdown(void) = 0;
-	// Read any incoming packets, dispatch to known netchannels and call handler for connectionless packets
-	virtual void		NET_ProcessSocket(int sock, IConnectionlessPacketHandler* handler) = 0;
-	// Set a port to listen mode
-	virtual void		NET_ListenSocket(int sock, bool listen) = 0;
-	// Send connectionsless string over the wire
-	virtual void		NET_OutOfBandPrintf(int sock, const netadr_t& adr, PRINTF_FORMAT_STRING const char* format, ...) FMTFUNCTION(3, 4) = 0;
-	// Send a raw packet, connectionless must be provided (chan can be NULL)
-	virtual int			NET_SendPacket(INetChannel* chan, int sock, const netadr_t& to, const  unsigned char* data, int length, bf_write* pVoicePayload = NULL, bool bUseCompression = false) = 0;
+	
+	virtual INetSocket*	GetServerSocket() = 0;
+
+	virtual INetSocket*	GetClientSocket() = 0;
+
+	virtual INetSocket*	GetHLTVSocket() = 0;
+
+	virtual INetSocket*	GetMatchMakingSocket() = 0;
+
+	virtual INetSocket*	GetSystemLinkSocket() = 0;
+
 	// Called periodically to maybe send any queued packets (up to 4 per frame)
 	virtual void		NET_SendQueuedPackets() = 0;
 	// Start set current network configuration
 	virtual void		NET_SetMutiplayer(bool multiplayer) = 0;
+
+	virtual double		NET_GetTime() = 0;
 	// Set net_time
 	virtual void		NET_SetTime(double realtime) = 0;
 	// RunFrame must be called each system frame before reading/sending on any socket
 	virtual void		NET_RunFrame(double realtime) = 0;
 	// Check configuration state
 	virtual bool		NET_IsMultiplayer(void) = 0;
+
 	virtual bool		NET_IsDedicated(void) = 0;
 	// Writes a error file with bad packet content
 	virtual void		NET_LogBadPacket(netpacket_t* packet) = 0;
 
-	// bForceNew (used for bots) tells it not to share INetChannels (bots will crash when disconnecting if they
-	// share an INetChannel).
-	virtual INetChannel* NET_CreateNetChannel(int socket, netadr_t* adr, const char* name, INetChannelHandler* handler, bool bForceNew = false,
-		int nProtocolVersion = PROTOCOL_VERSION) = 0;
-	virtual void		NET_RemoveNetChannel(INetChannel* netchan, bool bDeleteNetChan) = 0;
-	virtual void		NET_PrintChannelStatus(INetChannel* chan) = 0;
-
 	//virtual void		NET_WriteStringCmd(const char* cmd, bf_write* buf) = 0;
-
 	// Address conversion
 	virtual bool		NET_StringToAdr(const char* s, netadr_t* a) = 0;
+
 	virtual bool		NET_StringToSockaddr(const char* s, struct sockaddr* sadr) = 0;
 	// Convert from host to network byte ordering
 	virtual unsigned short NET_HostToNetShort(unsigned short us_in) = 0;
 	// and vice versa
 	virtual unsigned short NET_NetToHostShort(unsigned short us_in) = 0;
 
-	// Find out what port is mapped to a local socket
-	virtual unsigned short NET_GetUDPPort(int socket) = 0;
-
 	// add/remove extra sockets for testing
-	virtual int NET_AddExtraSocket(int port) = 0;
+	virtual INetSocket* NET_AddExtraSocket(int port) = 0;
+
 	virtual void NET_RemoveAllExtraSockets() = 0;
 
 	virtual const char* NET_ErrorString(int code) = 0; // translate a socket error into a friendly string

@@ -287,7 +287,7 @@ void CHLTVClientState::SendPacket()
 	if ( !IsConnected() )
 		return;
 
-	if ( ( net_time < m_flNextCmdTime ) || !m_NetChannel->CanPacket() )  
+	if ( (g_pNetworkSystem->NET_GetTime() < m_flNextCmdTime ) || !m_NetChannel->CanPacket() )
 		return;
 	
 	if ( IsActive() )
@@ -303,13 +303,13 @@ void CHLTVClientState::SendPacket()
 		// use full update rate when active
 		float commandInterval = (2.0f/3.0f) / tv_snapshotrate.GetInt();
 		float maxDelta = min (g_pHost->Host_GetIntervalPerTick(), commandInterval );
-		float delta = clamp( (float)(net_time - m_flNextCmdTime), 0.0f, maxDelta );
-		m_flNextCmdTime = net_time + commandInterval - delta;
+		float delta = clamp( (float)(g_pNetworkSystem->NET_GetTime() - m_flNextCmdTime), 0.0f, maxDelta );
+		m_flNextCmdTime = g_pNetworkSystem->NET_GetTime() + commandInterval - delta;
 	}
 	else
 	{
 		// during signon process send only 5 packets/second
-		m_flNextCmdTime = net_time + ( 1.0f / 5.0f );
+		m_flNextCmdTime = g_pNetworkSystem->NET_GetTime() + ( 1.0f / 5.0f );
 	}
 }
 
@@ -874,10 +874,10 @@ void CHLTVClientState::UpdateStats()
 		return;
 	}
 
-	if ( m_fNextSendUpdateTime > net_time )
+	if ( m_fNextSendUpdateTime > g_pNetworkSystem->NET_GetTime())
 		return;
 
-	m_fNextSendUpdateTime = net_time + 8.0f;
+	m_fNextSendUpdateTime = g_pNetworkSystem->NET_GetTime() + 8.0f;
 
 	int proxies, slots, clients;
 

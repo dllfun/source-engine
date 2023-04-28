@@ -4666,7 +4666,7 @@ bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, co
 
 	g_pNetworkSystem->NET_SetMutiplayer( sv.IsMultiplayer() );
 
-	g_pNetworkSystem->NET_ListenSocket( sv.m_Socket, true );	// activated server TCP socket
+	sv.GetSocket()->NET_ListenSocket( true );	// activated server TCP socket
 
 	// let's not have any servers with no name
 	if ( host_name.GetString()[0] == 0 )

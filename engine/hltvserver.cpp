@@ -584,7 +584,7 @@ void CHLTVServer::StartMaster(CGameClient *client)
 	Q_strncpy( m_szMapname, m_Server->m_szMapname, sizeof(m_szMapname) );
 	Q_strncpy( m_szSkyname, m_Server->m_szSkyname, sizeof(m_szSkyname) );
 
-	g_pNetworkSystem->NET_ListenSocket( m_Socket, true );	// activated HLTV TCP socket
+	GetSocket()->NET_ListenSocket( true );	// activated HLTV TCP socket
 
 	m_MasterClient->ExecuteStringCommand( "spectate" ); // become a spectator
 
@@ -605,7 +605,7 @@ void CHLTVServer::StartMaster(CGameClient *client)
 
 	m_nSpawnCount++;
 
-	m_flStartTime = net_time;
+	m_flStartTime = g_pNetworkSystem->NET_GetTime();
 
 	m_State = ss_active;
 
@@ -757,7 +757,7 @@ void CHLTVServer::StartRelay()
 
 	m_bSignonState = true;
 
-	m_flStartTime = net_time;
+	m_flStartTime = g_pNetworkSystem->NET_GetTime();
 
 	m_State = ss_loading;
 
@@ -771,7 +771,7 @@ int	CHLTVServer::GetHLTVSlot( void )
 
 float CHLTVServer::GetOnlineTime( void )
 {
-	return max(0., net_time - m_flStartTime);
+	return max(0., g_pNetworkSystem->NET_GetTime() - m_flStartTime);
 }
 
 void CHLTVServer::GetLocalStats( int &proxies, int &slots, int &clients )
@@ -1396,16 +1396,16 @@ void CHLTVServer::SendClientMessages ( bool bSendSnapshots )
 		}
 
 		client->UpdateSendState();
-		client->m_fLastSendTime = net_time;
+		client->m_fLastSendTime = g_pNetworkSystem->NET_GetTime();
 	}
 }
 
 void CHLTVServer::UpdateStats( void )
 {
-	if ( m_fNextSendUpdateTime > net_time )
+	if ( m_fNextSendUpdateTime > g_pNetworkSystem->NET_GetTime())
 		return;
 
-	m_fNextSendUpdateTime = net_time + 8.0f;
+	m_fNextSendUpdateTime = g_pNetworkSystem->NET_GetTime() + 8.0f;
 	
 	// fire game event for everyone
 	IGameEvent *event = NULL; 
@@ -1542,7 +1542,7 @@ void CHLTVServer::RunFrame()
 	if ( m_ClientState.m_nSignonState > SIGNONSTATE_NONE )
 	{
 		// process data from net socket
-		g_pNetworkSystem->NET_ProcessSocket( m_ClientState.m_Socket, &m_ClientState );
+		m_ClientState.GetSocket()->NET_ProcessSocket( &m_ClientState );
 
 		m_ClientState.RunFrame();
 		
@@ -1716,7 +1716,7 @@ void CHLTVServer::Init(bool bIsDedicated)
 {
 	CBaseServer::Init( bIsDedicated );
 
-	m_Socket = NS_HLTV;
+	m_Socket = g_pNetworkSystem->GetServerSocket();
 	
 	// check if only master proxy is allowed, no broadcasting
 	if ( CommandLine()->FindParm("-tvmasteronly") )
@@ -1841,7 +1841,7 @@ bool CHLTVServer::StartPlayback( const char *filename, bool bAsTimeDemo )
 	}
 	
 	// create a fake channel with a NULL address
-	m_ClientState.m_NetChannel = g_pNetworkSystem->NET_CreateNetChannel( NS_CLIENT, NULL, "DEMO", &m_ClientState );
+	m_ClientState.m_NetChannel = g_pNetworkSystem->GetClientSocket()->NET_CreateNetChannel( NULL, "DEMO", &m_ClientState);
 
 	if ( !m_ClientState.m_NetChannel )
 	{
@@ -1867,7 +1867,7 @@ bool CHLTVServer::StartPlayback( const char *filename, bool bAsTimeDemo )
 
 	ConMsg( "Reading time :%.4f\n", diff );
 
-	g_pNetworkSystem->NET_RemoveNetChannel( m_ClientState.m_NetChannel, true );
+	m_ClientState.GetSocket()->NET_RemoveNetChannel( m_ClientState.m_NetChannel, true );
 	m_ClientState.m_NetChannel = NULL;
 
 	return true;
@@ -2132,7 +2132,7 @@ void CHLTVServer::ReplyInfo( const netadr_t &adr )
 		buf.PutUint64( LittleQWord( CGameID( GetSteamAppID() ).ToUint64() ) );
 	}
 
-	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, (unsigned char *)buf.Base(), buf.TellPut() );
+	GetSocket()->NET_SendPacket( NULL, adr, (unsigned char *)buf.Base(), buf.TellPut() );
 }
 #endif // #ifndef NO_STEAM
 

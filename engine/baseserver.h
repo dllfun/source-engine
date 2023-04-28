@@ -66,7 +66,7 @@ public: // IServer implementation
 	virtual int		GetNumProxies( void ) const; // returns number of attached HLTV proxies
 	virtual int		GetNumFakeClients() const; // returns number of fake clients/bots
 	virtual int		GetMaxClients( void ) const { return m_nMaxclients; } // returns current client limit
-	virtual int		GetUDPPort( void ) const { return g_pNetworkSystem->NET_GetUDPPort( m_Socket );	}
+	virtual int		GetUDPPort( void ) const { return GetSocket()->NET_GetUDPPort();	}
 	virtual IClient	*GetClient( int index ) { return m_Clients[index]; } // returns interface to client 
 	virtual int		GetClientCount() const { return m_Clients.Count(); } // for iteration;
 	virtual float	GetTime( void ) const;
@@ -196,9 +196,16 @@ protected:
 
 	// Data
 public:
-
+	INetSocket* GetSocket() const{
+		if (m_Socket) {
+			return m_Socket;
+		}
+		else {
+			return g_pNetworkSystem->GetServerSocket();
+		}
+	}
 	server_state_t	m_State;		// some actions are only valid during load
-	int				m_Socket;		// network socket 
+	INetSocket*				m_Socket;		// network socket 
 	int				m_nTickCount;	// current server tick
 	bool			m_bSimulatingTicks;		// whether or not the server is currently simulating ticks
 	char			m_szMapname[64];		// map name

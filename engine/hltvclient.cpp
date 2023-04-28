@@ -197,10 +197,10 @@ bool CHLTVClient::ExecuteStringCommand( const char *pCommandString )
 		if ( tv_chattimelimit.GetFloat() <= 0 )
 			return true;
 
-		if ( (m_flLastChatTime + tv_chattimelimit.GetFloat()) > net_time )
+		if ( (m_flLastChatTime + tv_chattimelimit.GetFloat()) > g_pNetworkSystem->NET_GetTime())
 			return true;
 
-		m_flLastChatTime = net_time;
+		m_flLastChatTime = g_pNetworkSystem->NET_GetTime();
 
 		char chattext[128];
 
@@ -297,7 +297,7 @@ bool CHLTVClient::ShouldSendMessages( void )
 	bool bSendMessage = ( m_nLastSendTick != m_Server->m_nTickCount );
 
 	// send a packet at least every 2 seconds
-	if ( !bSendMessage && (m_fLastSendTime + 2.0f) < net_time )
+	if ( !bSendMessage && (m_fLastSendTime + 2.0f) < g_pNetworkSystem->NET_GetTime())
 	{
 		bSendMessage = true;	// force sending a message even if server didn't update
 	}
@@ -322,7 +322,7 @@ void CHLTVClient::SpawnPlayer( void )
 
 	m_pHLTV->BroadcastLocalTitle( this ); 
 
-	m_flLastChatTime = net_time;
+	m_flLastChatTime = g_pNetworkSystem->NET_GetTime();
 
 	CBaseClient::SpawnPlayer();
 }

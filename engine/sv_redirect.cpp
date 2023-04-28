@@ -28,7 +28,7 @@ void SV_RedirectFlush( void )
 	bInFlush = true;
 	if ( sv_redirected == RD_PACKET )   // Print to remote address.
 	{
-		g_pNetworkSystem->NET_OutOfBandPrintf( sv.m_Socket, sv_redirectto, "%c%s", A2A_PRINT, sv_redirect_buffer );
+		sv.GetSocket()->NET_OutOfBandPrintf( sv_redirectto, "%c%s", A2A_PRINT, sv_redirect_buffer );
 	}
 	else if ( sv_redirected == RD_CLIENT )   // Send to client on message stream.
 	{

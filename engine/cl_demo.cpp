@@ -285,7 +285,7 @@ int CDemoRecorder::GetRecordingTick( void )
 {
 	if ( cl.m_nMaxClients > 1 )
 	{
-		return TIME_TO_TICKS( net_time ) - m_nStartTick;
+		return TIME_TO_TICKS(g_pNetworkSystem->NET_GetTime()) - m_nStartTick;
 	}
 	else
 	{
@@ -297,7 +297,7 @@ void CDemoRecorder::ResyncDemoClock()
 {
 	if ( cl.m_nMaxClients > 1 )
 	{
-		m_nStartTick = TIME_TO_TICKS( net_time );
+		m_nStartTick = TIME_TO_TICKS( g_pNetworkSystem->NET_GetTime() );
 	}
 	else
 	{
@@ -1679,7 +1679,7 @@ bool CDemoPlayer::StartPlayback( const char *filename, bool bAsTimeDemo )
 	ResyncDemoClock(); 
 
 	// create a fake channel with a NULL address
-	cl.m_NetChannel = g_pNetworkSystem->NET_CreateNetChannel( NS_CLIENT, NULL, "DEMO", &cl, false, dh->networkprotocol );
+	cl.m_NetChannel = g_pNetworkSystem->GetClientSocket()->NET_CreateNetChannel( NULL, "DEMO", &cl, false, dh->networkprotocol);
 
 	if ( !cl.m_NetChannel )
 	{
@@ -1699,7 +1699,7 @@ bool CDemoPlayer::StartPlayback( const char *filename, bool bAsTimeDemo )
 		
 	cl.chokedcommands = 0;
 	cl.lastoutgoingcommand = -1;
- 	cl.m_flNextCmdTime = net_time;
+ 	cl.m_flNextCmdTime = g_pNetworkSystem->NET_GetTime();
 
 	m_bTimeDemo = bAsTimeDemo;
 	m_nTimeDemoCurrentFrame = -1;

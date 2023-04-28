@@ -263,7 +263,7 @@ CBaseServer::CBaseServer()
 	m_fLastCPUCheckTime = 0;
 	m_fStartTime = 0;
 	m_fCPUPercent = 0;
-	m_Socket = NS_SERVER;
+	m_Socket = NULL;// g_pNetworkSystem->GetServerSocket();
 	m_nTickCount = 0;
 	
 	m_szMapname[0] = 0;
@@ -530,7 +530,7 @@ IClient *CBaseServer::ConnectClient ( netadr_t &adr, int protocol, int challenge
 	COM_TimestampedLog( "CBaseServer::ConnectClient:  NET_CreateNetChannel" );
 
 	// create network channel
-	INetChannel * netchan = g_pNetworkSystem->NET_CreateNetChannel( m_Socket, &adr, adr.ToString(), client );
+	INetChannel * netchan = GetSocket()->NET_CreateNetChannel( &adr, adr.ToString(), client );
 
 	if ( !netchan )
 	{
@@ -556,7 +556,7 @@ IClient *CBaseServer::ConnectClient ( netadr_t &adr, int protocol, int challenge
 
 	// Will get reset from userinfo, but this value comes from sv_updaterate ( the default )
 	client->m_fSnapshotInterval = 1.0f/20.0f;
-	client->m_fNextMessageTime = net_time + client->m_fSnapshotInterval;
+	client->m_fNextMessageTime = g_pNetworkSystem->NET_GetTime() + client->m_fSnapshotInterval;
 	// Force a full delta update on first packet.
 	client->m_nDeltaTick = -1;
 	client->m_nSignonTick = 0;
@@ -573,7 +573,7 @@ IClient *CBaseServer::ConnectClient ( netadr_t &adr, int protocol, int challenge
 		msg.WriteLong( clientChallenge );
 		msg.WriteString( "0000000000" ); // pad out
 
-		g_pNetworkSystem->NET_SendPacket ( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+		GetSocket()->NET_SendPacket ( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
 	}
 
 	// Set up client structure.
@@ -1009,7 +1009,7 @@ void CBaseServer::ReplyChallenge(netadr_t &adr, int clientChallenge )
 #endif
 	msg.WriteString( "000000" );	// padding bytes
 
-	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	GetSocket()->NET_SendPacket( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 
@@ -1034,7 +1034,7 @@ void CBaseServer::ReplyServerChallenge(netadr_t &adr)
 	msg.WriteLong( CONNECTIONLESS_HEADER );
 	msg.WriteByte( S2C_CHALLENGE );
 	msg.WriteLong( challengeNr );
-	g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	GetSocket()->NET_SendPacket( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 const char *CBaseServer::GetName( void ) const
@@ -1658,7 +1658,7 @@ void CBaseServer::RejectConnection( const netadr_t &adr, int clientChallenge, co
 	msg.WriteLong( clientChallenge );
 	msg.WriteString( s );
 
-	g_pNetworkSystem->NET_SendPacket ( NULL, m_Socket, adr, msg.GetData(), msg.GetNumBytesWritten() );
+	GetSocket()->NET_SendPacket ( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 void CBaseServer::SetPaused(bool paused)
@@ -1694,7 +1694,7 @@ void CBaseServer::Init (bool bIsDedicated)
 	m_nUserid = 1;
 	m_nNumConnections = 0;
 	m_bIsDedicated = bIsDedicated;
-	m_Socket = NS_SERVER;	
+	m_Socket = g_pNetworkSystem->GetServerSocket();	
 	
 	m_Signon.SetDebugName( "m_Signon" );
 	
@@ -1908,7 +1908,7 @@ void CBaseServer::ForwardPacketsFromMasterServerUpdater()
 		
 		// Send this packet for them..
 		netadr_t adr( netadrAddress, netadrPort );
-		g_pNetworkSystem->NET_SendPacket( NULL, m_Socket, adr, packetData, len );
+		GetSocket()->NET_SendPacket( NULL, adr, packetData, len );
 	}
 }
 
@@ -1926,7 +1926,7 @@ void CBaseServer::RunFrame( void )
 	VPROF_BUDGET( "CBaseServer::RunFrame", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "CBaseServer::RunFrame" );
 
-	g_pNetworkSystem->NET_ProcessSocket( m_Socket, this );
+	GetSocket()->NET_ProcessSocket( this );
 
 #ifdef LINUX
 	// Process the linux sv lan port if it's open.
@@ -2065,7 +2065,7 @@ CBaseClient *CBaseServer::CreateFakeClient( const char *name )
 	if ( sv_stressbots.GetBool() )
 	{
 		netadr_t adrNull( 0, 0 ); // 0.0.0.0:0 signifies a bot. It'll plumb all the way down to winsock calls but it won't make them.
-		netchan = g_pNetworkSystem->NET_CreateNetChannel( m_Socket, &adrNull, adrNull.ToString(), fakeclient, true );
+		netchan = GetSocket()->NET_CreateNetChannel( &adrNull, adrNull.ToString(), fakeclient, true );
 	}
 
 	// a NULL netchannel signals a fakeclient

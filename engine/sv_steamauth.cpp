@@ -193,9 +193,9 @@ void CSteam3Server::Activate( EServerType serverType )
 
 	// Figure out the game port. If we're doing a SrcTV relay, then ignore the NS_SERVER port and don't tell Steam that we have a game server.
 	uint16 usGamePort = 0;
-	if ( serverType == eServerTypeNormal )
+	if ( serverType == eServerTypeNormal && g_pNetworkSystem->GetServerSocket())
 	{
-		usGamePort = g_pNetworkSystem->NET_GetUDPPort( NS_SERVER );
+		usGamePort = g_pNetworkSystem->GetServerSocket()->NET_GetUDPPort();
 	}
 
 	uint16 usMasterServerUpdaterPort;
@@ -203,8 +203,8 @@ void CSteam3Server::Activate( EServerType serverType )
 	{
 		m_bMasterServerUpdaterSharingGameSocket = true;
 		usMasterServerUpdaterPort = MASTERSERVERUPDATERPORT_USEGAMESOCKETSHARE;
-		if ( serverType == eServerTypeTVRelay )
-			m_QueryPort = g_pNetworkSystem->NET_GetUDPPort( NS_HLTV );
+		if ( serverType == eServerTypeTVRelay && g_pNetworkSystem->GetHLTVSocket())
+			m_QueryPort = g_pNetworkSystem->GetHLTVSocket()->NET_GetUDPPort();
 		else
 			m_QueryPort = usGamePort;
 	}
@@ -951,7 +951,7 @@ void CSteam3Server::SendUpdatedServerDetails()
 	if ( hltv && hltv->IsActive() )
 	{
 		// This is also the case when we're a relay, in which case we never set a game port, so we'll only have a spectator port
-		SteamGameServer()->SetSpectatorPort(g_pNetworkSystem->NET_GetUDPPort( NS_HLTV ) );
+		SteamGameServer()->SetSpectatorPort(g_pNetworkSystem->GetHLTVSocket()->NET_GetUDPPort());
 		SteamGameServer()->SetSpectatorServerName( hltv->GetName() );
 	}
 	else

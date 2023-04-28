@@ -18,6 +18,8 @@
 #include "netadr.h"
 #include "proto_version.h"
 #include "networksystem/inetworksystem.h"
+#include "tier1/mempool.h"
+//#include "net_chan.h"
 
 // Flow control bytes per second limits
 #define MAX_RATE		(1024*1024)				
@@ -92,23 +94,23 @@
 
 class INetChannel;
 
-enum
-{
-	NS_CLIENT = 0,	// client socket
-	NS_SERVER,	// server socket
-	NS_HLTV,
-	NS_MATCHMAKING,
-	NS_SYSTEMLINK,
-#ifdef LINUX
-	NS_SVLAN,	// LAN udp port for Linux. See NET_OpenSockets for info.
-#endif
-	MAX_SOCKETS
-};
+//enum
+//{
+//	NS_CLIENT = 0,	// client socket
+//	NS_SERVER,	// server socket
+//	NS_HLTV,
+//	NS_MATCHMAKING,
+//	NS_SYSTEMLINK,
+//#ifdef LINUX
+//	NS_SVLAN,	// LAN udp port for Linux. See NET_OpenSockets for info.
+//#endif
+//	MAX_SOCKETS
+//};
 
 typedef struct netpacket_s
 {
 	netadr_t		from;		// sender IP
-	int				source;		// received source 
+//	int				source;		// received source 
 	double			received;	// received time
 	unsigned char	*data;		// pointer to raw packet data
 	bf_read			message;	// easy bitbuf data access
@@ -119,7 +121,7 @@ typedef struct netpacket_s
 } netpacket_t;
 
 extern	netadr_t	net_local_adr;
-extern	double		net_time;
+//extern	double		net_time;
 
 class INetChannelHandler;
 class IConnectionlessPacketHandler;
@@ -130,92 +132,304 @@ enum
 	OSOCKET_FLAG_FAIL = 0x00000002, // Call Sys_exit on error.
 };
 
+// Split long packets.  Anything over 1460 is failing on some routers
+typedef struct
+{
+	int		currentSequence;
+	int		splitCount;
+	int		totalSize;
+	int		nExpectedSplitSize;
+	char	buffer[NET_MAX_MESSAGE];	// This has to be big enough to hold the largest message
+} LONGPACKET;
+
+// Use this to pick apart the network stream, must be packed
+#pragma pack(1)
+typedef struct
+{
+	int		netID;
+	int		sequenceNumber;
+	int		packetID : 16;
+	int		nSplitSize : 16;
+} SPLITPACKET;
+#pragma pack()
+
+#define MIN_USER_MAXROUTABLE_SIZE	576  // ( X.25 Networks )
+#define MAX_USER_MAXROUTABLE_SIZE	MAX_ROUTABLE_PAYLOAD
+
+
+#define MAX_SPLIT_SIZE	(MAX_USER_MAXROUTABLE_SIZE - sizeof( SPLITPACKET ))
+#define MIN_SPLIT_SIZE	(MIN_USER_MAXROUTABLE_SIZE - sizeof( SPLITPACKET ))
+
+// For metering out splitpackets, don't do them too fast as remote UDP socket will drop some payloads causing them to always fail to be reconstituted
+// This problem is largely solved by increasing the buffer sizes for UDP sockets on Windows
+#define SPLITPACKET_MAX_DATA_BYTES_PER_SECOND V_STRINGIFY(DEFAULT_RATE)
+
+
+// Calculate MAX_SPLITPACKET_SPLITS according to the smallest split size
+#define MAX_SPLITPACKET_SPLITS ( NET_MAX_MESSAGE / MIN_SPLIT_SIZE )
+#define SPLIT_PACKET_STALE_TIME		2.0f
+#define SPLIT_PACKET_TRACKING_MAX 256  // most number of outstanding split packets to allow
+
+class CSplitPacketEntry
+{
+public:
+	CSplitPacketEntry()
+	{
+		memset(&from, 0, sizeof(from));
+
+		int i;
+		for (i = 0; i < MAX_SPLITPACKET_SPLITS; i++)
+		{
+			splitflags[i] = -1;
+		}
+
+		memset(&netsplit, 0, sizeof(netsplit));
+		lastactivetime = 0.0f;
+	}
+
+public:
+	netadr_t		from;
+	int				splitflags[MAX_SPLITPACKET_SPLITS];
+	LONGPACKET		netsplit;
+	// host_time the last time any entry was received for this entry
+	float			lastactivetime;
+};
+
+typedef struct
+{
+	int				newsock;	// handle of new socket
+	//int				netsock;	// handle of listen socket
+	float			time;
+	netadr_t		addr;
+} pendingsocket_t;
+
+#define DEF_LOOPBACK_SIZE 2048
+
+struct loopback_t
+{
+	char* data;		// loopback buffer
+	int			datalen;	// current data length
+	char		defbuffer[DEF_LOOPBACK_SIZE];
+
+	DECLARE_FIXEDSIZE_ALLOCATOR(loopback_t);
+};
+
+class CNetSocket : public INetSocket
+{
+public:
+	CNetSocket(const char* Name) :m_Name(Name)
+	{
+	}
+	const char* Net_GetSocketName() { return m_Name; };
+	// Read any incoming packets, dispatch to known netchannels and call handler for connectionless packets
+	void		NET_ProcessSocket(IConnectionlessPacketHandler* handler);
+	// Set a port to listen mode
+	void		NET_ListenSocket(bool listen);
+
+	int NET_ConnectSocket(const netadr_t& addr);
+
+	// Send connectionsless string over the wire
+	void		NET_OutOfBandPrintf(const netadr_t& adr, PRINTF_FORMAT_STRING const char* format, ...) FMTFUNCTION(3, 4);
+	// Send a raw packet, connectionless must be provided (chan can be NULL)
+	int			NET_SendPacket(INetChannel* chan, const netadr_t& to, const  unsigned char* data, int length, bf_write* pVoicePayload = NULL, bool bUseCompression = false);
+	// bForceNew (used for bots) tells it not to share INetChannels (bots will crash when disconnecting if they
+	// share an INetChannel).
+	int			GetNetChannelCount() { return s_NetChannels.Count(); }
+
+	INetChannel* GetNetChannel(int index) { return s_NetChannels[index]; }
+
+	CUtlVectorMT< CUtlVector< INetChannel* > >& GetNetChannels() { return s_NetChannels; }
+
+	INetChannel* NET_CreateNetChannel(netadr_t* adr, const char* name, INetChannelHandler* handler, bool bForceNew = false,
+		int nProtocolVersion = PROTOCOL_VERSION);
+
+	void		NET_RemoveNetChannel(INetChannel* netchan, bool bDeleteNetChan);
+
+	void		NET_PrintChannelStatus(INetChannel* chan);
+
+	// Find out what port is mapped to a local socket
+	unsigned short NET_GetUDPPort();
+
+	void SetLoopBackSocket(CNetSocket* socket) {
+		m_LoopBackSocket = socket;
+	}
+
+	volatile int32& GetSplitPacketSequenceNumber() {
+		return s_SplitPacketSequenceNumber;
+	}
+private:
+
+	netpacket_t* NET_GetPacket(byte* scratch);
+
+	bool NET_GetLoopPacket(netpacket_t* packet);
+
+	void NET_ProcessListen();
+
+	void NET_ProcessPending(void);
+
+	void NET_ClosePending(void);
+
+	bool OpenSocketInternal(int nSetPort, int nDefaultPort, const char* pName, int nProtocol, bool bTryAny,
+		int flags = (OSOCKET_FLAG_USE_IPNAME | OSOCKET_FLAG_FAIL));
+	
+	bool NET_GetLong(netpacket_t* packet);
+
+	CSplitPacketEntry* NET_FindOrCreateSplitPacketEntry(netadr_t* from);
+
+	void NET_DiscardStaleSplitpackets();
+
+	void NET_SendLoopPacket(int length, const unsigned char* data, const netadr_t& to);
+
+	INetChannel* NET_FindNetChannel(netadr_t& adr);
+
+	bool NET_LagPacket(bool newdata, netpacket_t* packet);
+
+	void NET_ClearLagData();
+
+	void NET_ClearLoopbackBuffer();
+
+	const char*		m_Name;
+	CNetSocket* m_LoopBackSocket = NULL;
+	int			nPort = 0;		// UDP/TCP use same port number
+	bool		bListening = false;	// true if TCP port is listening
+	int			hUDP = 0;		// handle to UDP socket from socket()
+	int			hTCP = 0;		// handle to TCP socket from socket()
+	netpacket_t	net_packet;
+	CUtlVectorMT< CUtlVector< INetChannel* > >			s_NetChannels;
+	netpacket_t* s_pLagData = NULL;  // List of lag structures, if fakelag is set.
+	CUtlVectorMT< CUtlVector< pendingsocket_t > >	s_PendingSockets;
+	typedef CUtlVector< CSplitPacketEntry > vecSplitPacketEntries_t;
+	vecSplitPacketEntries_t net_splitpacket;
+	CTSQueue<loopback_t*> s_LoopBack;
+	volatile int32 s_SplitPacketSequenceNumber = 1;
+	int losscount;
+	friend class CNetworkSystem;
+};
+
 class CNetworkSystem :public INetworkSystem{
 
 public:
 	// Here's where the app systems get to learn about each other 
 	virtual bool Connect(CreateInterfaceFn factory) { return true; }
-	virtual void Disconnect() {}
 
+	virtual void Disconnect() {}
 	// Here's where systems can access other interfaces implemented by this object
 	// Returns NULL if it doesn't implement the requested interface
 	virtual void* QueryInterface(const char* pInterfaceName) { return NULL; }
-
 	// Init, shutdown
 	virtual InitReturnVal_t Init() { return INIT_OK; }
+
 	virtual void Shutdown() {}
 
 	// Start up networking
 	void		NET_Init(bool bDedicated);
 	// Shut down networking
 	void		NET_Shutdown(void);
-	// Read any incoming packets, dispatch to known netchannels and call handler for connectionless packets
-	void		NET_ProcessSocket(int sock, IConnectionlessPacketHandler* handler);
-	// Set a port to listen mode
-	void		NET_ListenSocket(int sock, bool listen);
-	// Send connectionsless string over the wire
-	void		NET_OutOfBandPrintf(int sock, const netadr_t& adr, PRINTF_FORMAT_STRING const char* format, ...) FMTFUNCTION(3, 4);
-	// Send a raw packet, connectionless must be provided (chan can be NULL)
-	int			NET_SendPacket(INetChannel* chan, int sock, const netadr_t& to, const  unsigned char* data, int length, bf_write* pVoicePayload = NULL, bool bUseCompression = false);
+	
+	INetSocket* GetServerSocket() { return m_pServerSocket; };
+
+	INetSocket* GetClientSocket() { return m_pClientSocket; };
+
+	INetSocket* GetHLTVSocket() { return m_pHLTVSocket; }
+
+	INetSocket* GetMatchMakingSocket() { return m_pMatchMakingSocket; };
+
+	INetSocket* GetSystemLinkSocket() { return m_pSystemLinkSocket; };
+
+	int			GetSocketCount() { return net_sockets.Count(); }
+
+	INetSocket* GetSocket(int index) { return net_sockets[index]; }
+	
 	// Called periodically to maybe send any queued packets (up to 4 per frame)
 	void		NET_SendQueuedPackets();
 	// Start set current network configuration
 	void		NET_SetMutiplayer(bool multiplayer);
+
+	double		NET_GetTime() { return net_time; }
 	// Set net_time
 	void		NET_SetTime(double realtime);
 	// RunFrame must be called each system frame before reading/sending on any socket
 	void		NET_RunFrame(double realtime);
 	// Check configuration state
 	bool		NET_IsMultiplayer(void);
+
 	bool		NET_IsDedicated(void);
+
+	void		NET_SetDedicated();
 	// Writes a error file with bad packet content
 	void		NET_LogBadPacket(netpacket_t* packet);
 
-	// bForceNew (used for bots) tells it not to share INetChannels (bots will crash when disconnecting if they
-	// share an INetChannel).
-	INetChannel* NET_CreateNetChannel(int socket, netadr_t* adr, const char* name, INetChannelHandler* handler, bool bForceNew = false,
-		int nProtocolVersion = PROTOCOL_VERSION);
-	void		NET_RemoveNetChannel(INetChannel* netchan, bool bDeleteNetChan);
-	void		NET_PrintChannelStatus(INetChannel* chan);
-
 	//void		NET_WriteStringCmd(const char* cmd, bf_write* buf);
-
 	// Address conversion
 	bool		NET_StringToAdr(const char* s, netadr_t* a);
+
 	bool		NET_StringToSockaddr(const char* s, struct sockaddr* sadr);
 	// Convert from host to network byte ordering
 	unsigned short NET_HostToNetShort(unsigned short us_in);
 	// and vice versa
 	unsigned short NET_NetToHostShort(unsigned short us_in);
 
-	// Find out what port is mapped to a local socket
-	unsigned short NET_GetUDPPort(int socket);
+	const char* NET_ErrorString(int code); // translate a socket error into a friendly string
 
 	// add/remove extra sockets for testing
-	int NET_AddExtraSocket(int port);
-	void NET_RemoveAllExtraSockets();
+	INetSocket* NET_AddExtraSocket(int port);
 
-	const char* NET_ErrorString(int code); // translate a socket error into a friendly string
+	void NET_RemoveAllExtraSockets();
 
 	void NET_Config(void);
 
+	int GetDefaultSocketCount() {
+		return m_DefaultSocketCount;
+	}
+
 private:
+
 	int NET_OpenSocket(const char* net_interface, int& port, int protocol);
-	void NET_CloseSocket(int hSocket, int sock = -1);
-	int NET_ConnectSocket(int sock, const netadr_t& addr);
-	int NET_SendStream(int nSock, const char* buf, int len, int flags);
-	int NET_ReceiveStream(int nSock, char* buf, int len, int flags);
-	bool NET_ReceiveDatagram(const int sock, netpacket_t* packet);
-	bool NET_ReceiveValidDatagram(const int sock, netpacket_t* packet);
-	netpacket_t* NET_GetPacket(int sock, byte* scratch);
-	void NET_ProcessPending(void);
-	void NET_ProcessListen(int sock);
+
+	void NET_CloseSocket(int hSocket, CNetSocket* sock = NULL);
+
+	int NET_SendStream(int nSocket, const char* buf, int len, int flags);
+
+	int NET_ReceiveStream(int nSocket, char* buf, int len, int flags);
+
+	bool NET_ReceiveDatagram(CNetSocket* sock, netpacket_t* packet);
+
+	bool NET_ReceiveValidDatagram(CNetSocket* sock, netpacket_t* packet);
+
 	void NET_CloseAllSockets(void);
-	bool OpenSocketInternal(int nModule, int nSetPort, int nDefaultPort, const char* pName, int nProtocol, bool bTryAny,
-		int flags = (OSOCKET_FLAG_USE_IPNAME | OSOCKET_FLAG_FAIL));
+
+	void NET_FlushAllSockets(void);
+
 	void NET_OpenSockets(void);
+
 	void NET_GetLocalAddress(void);
+
+	void NET_ConfigLoopbackBuffers(bool bAlloc);
+
+	void NET_ClearLoopbackBuffers();
+
+	int NET_GetLastError(void);
+
+	void NET_ClearLastError(void);
+
+	double		net_time = 0.0f;	// current time, updated each frame
+	bool net_multiplayer = false;	// if true, configured for Multiplayer
+	bool net_noip = false;	// Disable IP support, can't switch to MP mode
+	bool net_nodns = false;	// Disable DNS request to avoid long timeouts
+	bool net_notcp = true;	// Disable TCP support
+	bool net_nohltv = false; // disable HLTV support
+	bool net_dedicated = false;	// true is dedicated system
+	int  net_error = 0;			// global error code updated with NET_GetLastError()
+	int			m_DefaultSocketCount = 0;
+	CNetSocket* m_pServerSocket = NULL;
+	CNetSocket* m_pClientSocket = NULL;
+	CNetSocket* m_pHLTVSocket = NULL;
+	CNetSocket* m_pMatchMakingSocket = NULL;
+	CNetSocket* m_pSystemLinkSocket = NULL;
+	CUtlVector<CNetSocket*> net_sockets;	// the 4 sockets, Server, Client, HLTV, Matchmaking
+
 	friend class CNetChan;
+	friend class CNetSocket;
 };
 
 extern CNetworkSystem* g_pLocalNetworkSystem;

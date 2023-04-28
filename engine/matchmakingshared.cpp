@@ -492,7 +492,7 @@ INetChannel *CMatchmaking::CreateNetChannel( netadr_t *adr )
 	INetChannel *pNewChannel = FindChannel( adr->GetIPNetworkByteOrder() );
 	if ( !pNewChannel )
 	{
-		pNewChannel = g_pNetworkSystem->NET_CreateNetChannel( NS_MATCHMAKING, adr, "MATCHMAKING", this );
+		pNewChannel = g_pNetworkSystem->GetMatchMakingSocket()->NET_CreateNetChannel( adr, "MATCHMAKING", this);
 	}
 
 	if( pNewChannel )
@@ -2181,11 +2181,11 @@ void CMatchmaking::RunFrame()
 
 	if (g_pNetworkSystem->NET_IsMultiplayer() )
 	{
-		g_pNetworkSystem->NET_ProcessSocket( NS_MATCHMAKING, this );
+		g_pNetworkSystem->GetMatchMakingSocket()->NET_ProcessSocket( this);
 
 		if ( m_Session.IsSystemLink() )
 		{
-			g_pNetworkSystem->NET_ProcessSocket( NS_SYSTEMLINK, this );
+			g_pNetworkSystem->GetSystemLinkSocket()->NET_ProcessSocket( this);
 		}
 	}
 

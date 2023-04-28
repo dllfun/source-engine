@@ -1883,7 +1883,7 @@ void CGameServer::SendClientMessages ( bool bSendSnapshots )
 			// because it could get lost in multiplayer
 			if (g_pNetworkSystem->NET_IsMultiplayer() && client->m_NetChannel->GetSequenceNr(FLOW_INCOMING) == 0 )
 			{
-				g_pNetworkSystem->NET_OutOfBandPrintf ( m_Socket, client->m_NetChannel->GetRemoteAddress(), "%c00000000000000", S2C_CONNECTION );
+				GetSocket()->NET_OutOfBandPrintf ( client->m_NetChannel->GetRemoteAddress(), "%c00000000000000", S2C_CONNECTION );
 			}
 
 #ifdef SHARED_NET_STRING_TABLES

@@ -19,6 +19,8 @@
 #include "clockdriftmgr.h"
 #include "convar.h"
 #include "cl_bounded_cvars.h"
+#include "networksystem/inetworksystem.h"
+#include "tier2/tier2.h"
 
 
  // Only send this many requests before timing out.
@@ -173,10 +175,18 @@ public:
 
 private:
 	bool PrepareSteamConnectResponse( uint64 unGSSteamID, bool bGSSecure, const netadr_t &adr, bf_write &msg );
-
+	
 public:
+	INetSocket* GetSocket() const{
+		if (m_Socket) {
+			return m_Socket;
+		}
+		else {
+			return g_pNetworkSystem->GetClientSocket();
+		}
+	}
 	// Connection to server.			
-	int				m_Socket;		// network socket 
+	INetSocket*				m_Socket;		// network socket 
 	INetChannel		*m_NetChannel;		// Our sequenced channel to the remote server.
 	unsigned int	m_nChallengeNr;	// connection challenge number
 	double			m_flConnectTime;	// If gap of connect_time to net_time > 3000, then resend connect packet

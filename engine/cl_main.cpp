@@ -541,11 +541,11 @@ void CL_ReadPackets ( bool bFinalTick )
 	}
 	else
 	{
-		if ( !cl_ignorepackets.GetInt() )
+		if ( !cl_ignorepackets.GetInt() && g_pNetworkSystem->GetClientSocket())
 		{
 			tmZoneFiltered( TELEMETRY_LEVEL0, 50, TMZF_NONE, "ProcessSocket" );
 			// process data from net socket
-			g_pNetworkSystem->NET_ProcessSocket( NS_CLIENT, &cl );
+			g_pNetworkSystem->GetClientSocket()->NET_ProcessSocket( &cl );
 		}
 	}
 
@@ -2152,7 +2152,7 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 	// in loopback mode don't send only if host_limitlocal is enabled
 
 	if ( ( !cl.m_NetChannel->IsLoopback() || host_limitlocal.GetInt() ) &&
-		 ( ( net_time < cl.m_flNextCmdTime ) || !cl.m_NetChannel->CanPacket()  || !bFinalTick ) )
+		 ( (g_pNetworkSystem->NET_GetTime() < cl.m_flNextCmdTime ) || !cl.m_NetChannel->CanPacket()  || !bFinalTick ) )
 	{
 		bSendPacket = false;
 	}
@@ -2236,13 +2236,13 @@ void CL_Move(float accumulated_extra_samples, bool bFinalTick )
 		// use full update rate when active
 		float commandInterval = 1.0f / cl_cmdrate->GetFloat();
 		float maxDelta = min (g_pHost->Host_GetIntervalPerTick(), commandInterval );
-		float delta = clamp( (float)(net_time - cl.m_flNextCmdTime), 0.0f, maxDelta );
-		cl.m_flNextCmdTime = net_time + commandInterval - delta;
+		float delta = clamp( (float)(g_pNetworkSystem->NET_GetTime() - cl.m_flNextCmdTime), 0.0f, maxDelta );
+		cl.m_flNextCmdTime = g_pNetworkSystem->NET_GetTime() + commandInterval - delta;
 	}
 	else
 	{
 		// during signon process send only 5 packets/second
-		cl.m_flNextCmdTime = net_time + ( 1.0f / 5.0f );
+		cl.m_flNextCmdTime = g_pNetworkSystem->NET_GetTime() + ( 1.0f / 5.0f );
 	}
 
 }

@@ -181,7 +181,7 @@ public:	// INetChannel interface
 	const netadr_t	&GetRemoteAddress( void ) const;
 	INetChannelHandler *GetMsgHandler( void ) const;
 	int				GetDropNumber( void ) const;
-	int				GetSocket( void ) const;
+	INetSocket*				GetSocket( void ) const;
 	unsigned int	GetChallengeNr( void ) const;
 	void			GetSequenceData( int &nOutSequenceNr, int &nInSequenceNr, int &nOutSequenceNrAck );
 	void			SetSequenceData( int nOutSequenceNr, int nInSequenceNr, int nOutSequenceNrAck );
@@ -208,7 +208,7 @@ public:
 
 	static bool	IsValidFileForTransfer( const char *pFilename );
 
-	void		Setup(int sock, netadr_t *adr, const char * name, INetChannelHandler * handler, int nProtocolVersion);
+	void		Setup(CNetSocket* sock, netadr_t *adr, const char * name, INetChannelHandler * handler, int nProtocolVersion);
 	// Send queue management
 	void		IncrementQueuedPackets();
 	void		DecrementQueuedPackets();
@@ -287,7 +287,7 @@ public:
 
 // don't use any vars below this (only in net_ws.cpp)
 
-	int			m_Socket;   // NS_SERVER or NS_CLIENT index, depending on channel.
+	INetSocket*			m_Socket;   // NS_SERVER or NS_CLIENT index, depending on channel.
 	int			m_StreamSocket;	// TCP socket handle
 
 	unsigned int m_MaxReliablePayloadSize;	// max size of reliable payload in a single packet	
