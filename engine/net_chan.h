@@ -181,7 +181,7 @@ public:	// INetChannel interface
 	const netadr_t	&GetRemoteAddress( void ) const;
 	INetChannelHandler *GetMsgHandler( void ) const;
 	int				GetDropNumber( void ) const;
-	INetSocket*				GetSocket( void ) const;
+	//INetSocket*				GetSocket( void ) const;
 	unsigned int	GetChallengeNr( void ) const;
 	void			GetSequenceData( int &nOutSequenceNr, int &nInSequenceNr, int &nOutSequenceNrAck );
 	void			SetSequenceData( int nOutSequenceNr, int nInSequenceNr, int nOutSequenceNrAck );
@@ -287,7 +287,7 @@ public:
 
 // don't use any vars below this (only in net_ws.cpp)
 
-	INetSocket*			m_Socket;   // NS_SERVER or NS_CLIENT index, depending on channel.
+	INetSocket*			m_NetSocket;   // NS_SERVER or NS_CLIENT index, depending on channel.
 	int			m_StreamSocket;	// TCP socket handle
 
 	unsigned int m_MaxReliablePayloadSize;	// max size of reliable payload in a single packet	

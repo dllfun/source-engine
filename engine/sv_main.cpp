@@ -1883,7 +1883,7 @@ void CGameServer::SendClientMessages ( bool bSendSnapshots )
 			// because it could get lost in multiplayer
 			if (g_pNetworkSystem->NET_IsMultiplayer() && client->m_NetChannel->GetSequenceNr(FLOW_INCOMING) == 0 )
 			{
-				GetSocket()->NET_OutOfBandPrintf ( client->m_NetChannel->GetRemoteAddress(), "%c00000000000000", S2C_CONNECTION );
+				GetNetSocket()->NET_OutOfBandPrintf ( client->m_NetChannel->GetRemoteAddress(), "%c00000000000000", S2C_CONNECTION );
 			}
 
 #ifdef SHARED_NET_STRING_TABLES
@@ -2039,7 +2039,7 @@ SV_CreateBaseline
 */
 void SV_CreateBaseline (void)
 {
-	SV_WriteVoiceCodec( sv.m_Signon );
+	SV_WriteVoiceCodec( sv.GetSignon());
 
 	ServerClass *pClasses = serverGameDLL->GetAllServerClasses();
 
@@ -2134,7 +2134,7 @@ void SV_CreateBaseline (void)
 	gameevents.m_DataOut.StartWriting( data, sizeof(data) );
 
 	g_GameEventManager.WriteEventList( &gameevents );
-	gameevents.WriteToBuffer( sv.m_Signon );
+	gameevents.WriteToBuffer( sv.GetSignon());
 }
 
 //-----------------------------------------------------------------------------
@@ -2181,7 +2181,7 @@ bool SV_ActivateServer()
 	g_pServerPluginHandler->ServerActivate( sv.edicts, sv.num_edicts, sv.GetMaxClients() );
 
 	// all setup is completed, any further precache statements are errors
-	sv.m_State = ss_active;
+	sv.SetState(ss_active);
 	
 	COM_TimestampedLog( "SV_CreateBaseline" );
 
@@ -2195,11 +2195,11 @@ bool SV_ActivateServer()
 
 	if ( skyname )
 	{
-		Q_strncpy( sv.m_szSkyname, skyname->GetString(), sizeof( sv.m_szSkyname ) );
+		Q_strncpy( sv.GetSkyname(), skyname->GetString(), 64);
 	}
 	else
 	{
-		Q_strncpy( sv.m_szSkyname, "unknown", sizeof( sv.m_szSkyname ) );
+		Q_strncpy( sv.GetSkyname(), "unknown", 64);
 	}
 
 	COM_TimestampedLog( "Send Reconnects" );
@@ -2847,7 +2847,7 @@ void SV_Think( bool bIsSimulating )
 //		}
 //	}
 
-	g_ServerGlobalVariables.tickcount   = sv.m_nTickCount;
+	g_ServerGlobalVariables.tickcount   = sv.GetTickCount();
 	g_ServerGlobalVariables.curtime		= sv.GetTime();
 	g_ServerGlobalVariables.frametime	= bIsSimulating ? g_pHost->Host_GetIntervalPerTick() : 0;
 
@@ -2908,7 +2908,7 @@ void SV_SendClientUpdates( bool bIsSimulating, bool bSendDuringPause )
 	// tricky, increase stringtable tick at least one tick
 	// so changes made after this point are not counted to this server
 	// frame since we already send out the client snapshots
-	networkStringTableContainerServer->SetTick( sv.m_nTickCount + 1 );
+	networkStringTableContainerServer->SetTick( sv.GetTickCount() + 1 );
 }
 
 void SV_Frame( bool finalTick )
@@ -2945,9 +2945,9 @@ void SV_Frame( bool finalTick )
 		if ( serverCanSimulate && ( bIsSimulating || bSendDuringPause ) )
 		{
 			simulated = true;
-			sv.m_nTickCount++;
+			sv.SetTickCount( sv.GetTickCount()+1);
 
-			networkStringTableContainerServer->SetTick( sv.m_nTickCount );
+			networkStringTableContainerServer->SetTick( sv.GetTickCount());
 		}
 
 		SV_Think( bIsSimulating );
@@ -2958,7 +2958,7 @@ void SV_Frame( bool finalTick )
 	}
 
 	// This value is read on another thread, so this needs to only happen once per frame and be atomic.
-	sv.m_bSimulatingTicks = simulated;
+	sv.SetSimulatingTicks(simulated);
 
 	// Send the results of movement and physics to the clients
 	if ( finalTick )

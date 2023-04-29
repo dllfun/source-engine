@@ -834,7 +834,7 @@ public:
 			sound.WriteDelta( &defaultSound, sndmsg.m_DataOut );
 			
 			 // write into signon buffer
-			if ( !sndmsg.WriteToBuffer( sv.m_Signon ) )
+			if ( !sndmsg.WriteToBuffer( sv.GetSignon()) )
 			{
 				Sys_Error( "EmitAmbientSound: Init message would overflow signon buffer!\n" );
 				return;
@@ -1086,7 +1086,7 @@ public:
 		
 		if ( sv.allowsignonwrites )
 		{
-			decal.WriteToBuffer( sv.m_Signon );
+			decal.WriteToBuffer( sv.GetSignon());
 		}
 		else
 		{

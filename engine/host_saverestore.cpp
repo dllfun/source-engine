@@ -2475,7 +2475,7 @@ int CSaveRestore::LoadGameState( char const *level, bool createPlayers )
 		skill.SetValue( header.skillLevel );
 	}
 
-	Q_strncpy( sv.m_szMapname, header.mapName, sizeof( sv.m_szMapname ) );
+	Q_strncpy( sv.GetMapname(), header.mapName, 64);
 	ConVarRef skyname( "sv_skyname" );
 	if ( skyname.IsValid() )
 	{
@@ -2491,7 +2491,7 @@ int CSaveRestore::LoadGameState( char const *level, bool createPlayers )
 
 	Finish( pSaveData );
 
-	sv.m_nTickCount = (int)( header.time__USE_VCR_MODE / g_pHost->Host_GetIntervalPerTick());
+	sv.SetTickCount((int)( header.time__USE_VCR_MODE / g_pHost->Host_GetIntervalPerTick()));
 	// SUCCESS!
 	return 1;
 }
@@ -2904,8 +2904,8 @@ static void SaveGame( const CCommand &args )
 	{
 		// HACK: The bug is going to make a copy of this map, so replace the global state to
 		// fool the system
-		Q_strncpy( szMapName, sv.m_szMapname, sizeof(szMapName) );
-		Q_strncpy( sv.m_szMapname, args[1], sizeof(sv.m_szMapname) );
+		Q_strncpy( szMapName, sv.GetMapname(), sizeof(szMapName) );
+		Q_strncpy( sv.GetMapname(), args[1], 64);
 	}
 
 	int iAdditionalSeconds = g_ServerGlobalVariables.curtime - saverestore->GetMostRecentElapsedTimeSet();
@@ -2929,7 +2929,7 @@ static void SaveGame( const CCommand &args )
 	if ( bRenameMap )
 	{
 		// HACK: Put the original name back
-		Q_strncpy( sv.m_szMapname, szMapName, sizeof(sv.m_szMapname) );
+		Q_strncpy( sv.GetMapname(), szMapName, 64);
 	}
 
 #if !defined (SWDS)
@@ -2959,7 +2959,7 @@ CON_COMMAND_F( save, "Saves current game.", FCVAR_DONTRECORD )
 		return;
 	}
 
-	if ( strstr(sv.m_szMapname, "background" ) )
+	if ( strstr(sv.GetMapname(), "background" ) )
 	{
 		ConDMsg ("\"background\" is a reserved map name and cannot be saved or loaded.\n");
 		return;
@@ -2991,7 +2991,7 @@ CON_COMMAND_F( xsave, "Saves current game to a 360 storage device.", FCVAR_DONTR
 		return;
 	}
 
-	if ( strstr(sv.m_szMapname, "background" ) )
+	if ( strstr(sv.GetMapname(), "background" ) )
 	{
 		ConDMsg ("\"background\" is a reserved map name and cannot be saved or loaded.\n");
 		return;

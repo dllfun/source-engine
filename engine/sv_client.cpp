@@ -154,13 +154,13 @@ bool CGameClient::ProcessMove(CLC_Move *msg)
 	if ( !IsActive() )
 		return true;	
 
-	if ( m_LastMovementTick == sv.m_nTickCount )  
+	if ( m_LastMovementTick == sv.GetTickCount())
 	{
 		// Only one movement command per frame, someone is cheating.
 		return true;
 	}
 
-	m_LastMovementTick = sv.m_nTickCount; 
+	m_LastMovementTick = sv.GetTickCount();
 
 
 	int totalcmds =msg->m_nBackupCommands + msg->m_nNewCommands;
@@ -969,7 +969,7 @@ bool CGameClient::SendSignonData( void )
 	else
 	{
 		// use your class infos, CRC is correct
-		SVC_ClassInfo classmsg( true, m_Server->serverclasses );
+		SVC_ClassInfo classmsg( true, m_Server->GetServerclassesCount());
 		m_NetChannel->SendNetMsg( classmsg );
 	}
 
@@ -1260,7 +1260,7 @@ bool CGameClient::ShouldSendMessages( void )
 		int nSnapshotInterval = 1.0f / ( m_Server->GetTickInterval() * tv_snapshotrate.GetFloat() );
 
 		// I am the HLTV client, record every nSnapshotInterval tick
-		return ( sv.m_nTickCount >= (hltv->m_nLastTick + nSnapshotInterval) );
+		return ( sv.GetTickCount() >= (hltv->m_nLastTick + nSnapshotInterval) );
 	}
 	
 #if defined( REPLAY_ENABLED )
@@ -1331,7 +1331,7 @@ void CGameClient::FileSent( const char *fileName, unsigned int transferID )
 void CGameClient::PacketStart(int incoming_sequence, int outgoing_acknowledged)
 {
 	// make sure m_LastMovementTick != sv.tickcount
-	m_LastMovementTick = ( sv.m_nTickCount - 1 );
+	m_LastMovementTick = ( sv.GetTickCount() - 1 );
 
 	g_pHost->Host_SetClient(this);
 
@@ -1408,7 +1408,7 @@ CClientFrame *CGameClient::GetSendFrame()
 		if ( !pFollowPlayer )
 			return NULL;
 
-		pFrame = pFollowPlayer->GetClientFrame( sv.GetTick() - delayTicks, false );
+		pFrame = pFollowPlayer->GetClientFrame( sv.GetTickCount() - delayTicks, false );
 
 		if ( !pFrame )
 			return NULL;

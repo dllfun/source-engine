@@ -179,7 +179,7 @@ void CHLTVDemoRecorder::WriteServerInfo()
 	// write stringtable baselines
 
 #ifndef SHARED_NET_STRING_TABLES
-	pServer->m_StringTables->WriteBaselines( msg );
+	pServer->GetStringTables()->WriteBaselines( msg );
 #endif
 	
 	// Write replicated ConVars to non-listen server clients only
@@ -292,7 +292,7 @@ int CHLTVDemoRecorder::WriteSignonData()
 	// on the master demos are using sv object, on relays hltv
 	CBaseServer *pServer = hltv->IsMasterProxy()?(CBaseServer*)(&sv):(CBaseServer*)(hltv);
 
-	m_nSignonTick = pServer->m_nTickCount;		
+	m_nSignonTick = pServer->GetTickCount();
 
 	WriteServerInfo();
 
@@ -303,11 +303,11 @@ int CHLTVDemoRecorder::WriteSignonData()
 	bf_write	msg( "CHLTVDemo::WriteSignonData", buffer, sizeof( buffer ) );
 
 	// use your class infos, CRC is correct
-	SVC_ClassInfo classmsg( true, pServer->serverclasses );
+	SVC_ClassInfo classmsg( true, pServer->GetServerclassesCount());
 	classmsg.WriteToBuffer( msg );
 
 	// Write the regular signon now
-	msg.WriteBits( hltv->m_Signon.GetData(), hltv->m_Signon.GetNumBitsWritten() );
+	msg.WriteBits( hltv->GetSignon().GetData(), hltv->GetSignon().GetNumBitsWritten() );
 
 	// write new state
 	NET_SignonState signonMsg1( SIGNONSTATE_PRESPAWN, pServer->GetSpawnCount() );
@@ -351,7 +351,7 @@ void CHLTVDemoRecorder::WriteFrame( CHLTVFrame *pFrame )
 
 #ifndef SHARED_NET_STRING_TABLES
 	// Update shared client/server string tables. Must be done before sending entities
-	sv.m_StringTables->WriteUpdateMessage( NULL, max( m_nSignonTick, m_nDeltaTick ), msg );
+	sv.GetStringTables()->WriteUpdateMessage( NULL, max( m_nSignonTick, m_nDeltaTick ), msg );
 #endif
 
 	// get delta frame

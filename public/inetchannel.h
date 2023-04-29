@@ -59,7 +59,7 @@ public:
 	virtual const netadr_t	&GetRemoteAddress( void ) const = 0;
 	virtual INetChannelHandler *GetMsgHandler( void ) const = 0;
 	virtual int				GetDropNumber( void ) const = 0;
-	virtual INetSocket*				GetSocket( void ) const = 0;
+	//virtual INetSocket*				GetSocket( void ) const = 0;
 	virtual unsigned int	GetChallengeNr( void ) const = 0;
 	virtual void			GetSequenceData( int &nOutSequenceNr, int &nInSequenceNr, int &nOutSequenceNrAck ) = 0;
 	virtual void			SetSequenceData( int nOutSequenceNr, int nInSequenceNr, int nOutSequenceNrAck ) = 0;

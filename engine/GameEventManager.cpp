@@ -419,7 +419,7 @@ bool CGameEventManager::FireEventIntern( IGameEvent *event, bool bServerOnly, bo
 		}
 		else if ( net_showevents.GetInt() > 1 )
 		{
-			ConMsg( "Server event \"%s\", Tick %i:\n", descriptor->name, sv.GetTick() );
+			ConMsg( "Server event \"%s\", Tick %i:\n", descriptor->name, sv.GetTickCount() );
 			ConPrintEvent( event );
 		}
 	}

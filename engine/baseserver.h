@@ -66,11 +66,11 @@ public: // IServer implementation
 	virtual int		GetNumProxies( void ) const; // returns number of attached HLTV proxies
 	virtual int		GetNumFakeClients() const; // returns number of fake clients/bots
 	virtual int		GetMaxClients( void ) const { return m_nMaxclients; } // returns current client limit
-	virtual int		GetUDPPort( void ) const { return GetSocket()->NET_GetUDPPort();	}
+	virtual int		GetUDPPort( void ) const { return GetNetSocket()->NET_GetUDPPort();	}
 	virtual IClient	*GetClient( int index ) { return m_Clients[index]; } // returns interface to client 
 	virtual int		GetClientCount() const { return m_Clients.Count(); } // for iteration;
 	virtual float	GetTime( void ) const;
-	virtual int		GetTick( void ) const { return m_nTickCount; }
+	virtual int		GetTickCount( void ) const { return m_nTickCount; }
 	virtual float	GetTickInterval( void ) const { return m_flTickInterval; }
 	virtual const char *GetName( void ) const;
 	virtual const char *GetMapName( void ) const { return m_szMapname; }
@@ -106,6 +106,62 @@ public: // IServer implementation
 	virtual void	WriteDeltaEntities( CBaseClient *client, CClientFrame *to, CClientFrame *from,	bf_write &pBuf );
 	virtual void	WriteTempEntities( CBaseClient *client, CFrameSnapshot *to, CFrameSnapshot *from, bf_write &pBuf, int nMaxEnts );
 	
+	INetSocket* GetNetSocket() const {
+		if (m_Socket) {
+			return m_Socket;
+		}
+		else {
+			return g_pNetworkSystem->GetServerSocket();
+		}
+	}
+
+	bf_write& GetSignon() {
+		return m_Signon;
+	}
+
+	CNetworkStringTableContainer* GetStringTables() {
+		return m_StringTables;
+	}
+
+	server_state_t	GetState() {
+		return m_State;
+	}
+
+	int			GetServerclassesCount() {
+		return serverclasses;
+	}
+
+	int			GetServerclassbits() {
+		return serverclassbits;
+	}
+
+	MD5Value_t&		GetWorldmapMD5() {
+		return worldmapMD5;
+	}
+
+	char* GetMapname() {
+		return m_szMapname;
+	}
+
+	char* GetSkyname() {
+		return m_szSkyname;
+	}
+
+	void SetTickCount(int tickCount) {
+		m_nTickCount = tickCount;
+	}
+
+	void SetState(server_state_t	state) {
+		m_State = state;
+	}
+
+	bool GetSimulatingTicks() {
+		return m_bSimulatingTicks;
+	}
+
+	void SetSimulatingTicks(bool SimulatingTicks) {
+		m_bSimulatingTicks = SimulatingTicks;
+	}
 public: // IConnectionlessPacketHandler implementation
 
 	virtual bool	ProcessConnectionlessPacket( netpacket_t * packet );
@@ -195,15 +251,8 @@ protected:
 	bool ValidInfoChallenge( netadr_t & adr, const char *nugget );
 
 	// Data
-public:
-	INetSocket* GetSocket() const{
-		if (m_Socket) {
-			return m_Socket;
-		}
-		else {
-			return g_pNetworkSystem->GetServerSocket();
-		}
-	}
+protected:
+	
 	server_state_t	m_State;		// some actions are only valid during load
 	INetSocket*				m_Socket;		// network socket 
 	int				m_nTickCount;	// current server tick

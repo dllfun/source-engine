@@ -44,7 +44,7 @@
 #define PORT_TRY_MAX			32
 #define TCP_MAX_ACCEPTS			8
 
-#define LOOPBACK_SOCKETS	2
+//#define LOOPBACK_SOCKETS	2
 
 #define STREAM_CMD_NONE		0	// waiting for next blob
 #define STREAM_CMD_AUTH		1	// first command, send back challengenr
@@ -234,11 +234,11 @@ public:
 	int			NET_SendPacket(INetChannel* chan, const netadr_t& to, const  unsigned char* data, int length, bf_write* pVoicePayload = NULL, bool bUseCompression = false);
 	// bForceNew (used for bots) tells it not to share INetChannels (bots will crash when disconnecting if they
 	// share an INetChannel).
-	int			GetNetChannelCount() { return s_NetChannels.Count(); }
+	int			GetNetChannelCount() { return m_NetChannels.Count(); }
 
-	INetChannel* GetNetChannel(int index) { return s_NetChannels[index]; }
+	INetChannel* GetNetChannel(int index) { return m_NetChannels[index]; }
 
-	CUtlVectorMT< CUtlVector< INetChannel* > >& GetNetChannels() { return s_NetChannels; }
+	CUtlVectorMT< CUtlVector< INetChannel* > >& GetNetChannels() { return m_NetChannels; }
 
 	INetChannel* NET_CreateNetChannel(netadr_t* adr, const char* name, INetChannelHandler* handler, bool bForceNew = false,
 		int nProtocolVersion = PROTOCOL_VERSION);
@@ -295,7 +295,7 @@ private:
 	int			hUDP = 0;		// handle to UDP socket from socket()
 	int			hTCP = 0;		// handle to TCP socket from socket()
 	netpacket_t	net_packet;
-	CUtlVectorMT< CUtlVector< INetChannel* > >			s_NetChannels;
+	CUtlVectorMT< CUtlVector< INetChannel* > >			m_NetChannels;
 	netpacket_t* s_pLagData = NULL;  // List of lag structures, if fakelag is set.
 	CUtlVectorMT< CUtlVector< pendingsocket_t > >	s_PendingSockets;
 	typedef CUtlVector< CSplitPacketEntry > vecSplitPacketEntries_t;

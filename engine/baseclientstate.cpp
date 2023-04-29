@@ -686,7 +686,7 @@ void CBaseClientState::SendConnectPacket (int challengeNr, int authProtocol, uin
 	m_ulGameServerSteamID = unGSSteamID;
 
 	// Send protocol and challenge value
-	GetSocket()->NET_SendPacket(NULL, adr, msg.GetData(), msg.GetNumBytesWritten());
+	GetNetSocket()->NET_SendPacket(NULL, adr, msg.GetData(), msg.GetNumBytesWritten());
 }
 
 
@@ -815,7 +815,7 @@ void CBaseClientState::FullConnect( netadr_t &adr )
 	
 	COM_TimestampedLog( "CBaseClientState::FullConnect" );
 
-	m_NetChannel = GetSocket()->NET_CreateNetChannel( &adr, "CLIENT", this );
+	m_NetChannel = GetNetSocket()->NET_CreateNetChannel( &adr, "CLIENT", this );
 
 	Assert( m_NetChannel );
 	
@@ -996,7 +996,7 @@ void CBaseClientState::CheckForResend (void)
 		msg.WriteByte( A2S_GETCHALLENGE );
 		msg.WriteLong( m_retryChallenge );
 		msg.WriteString( "0000000000" ); // pad out
-		GetSocket()->NET_SendPacket( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
+		GetNetSocket()->NET_SendPacket( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
 	}
 }
 

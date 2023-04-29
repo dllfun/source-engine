@@ -37,7 +37,7 @@ ConVar enable_debug_overlays( "enable_debug_overlays", "1", FCVAR_GAMEDLL | FCVA
 int GetOverlayTick()
 {
 	if ( sv.IsActive() )
-		return sv.m_nTickCount;
+		return sv.GetTickCount();
 
 	return cl.GetClientTickCount();
 }

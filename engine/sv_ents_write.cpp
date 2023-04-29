@@ -649,13 +649,13 @@ static inline void SV_WriteEnterPVS( CEntityWriteInfo &u )
 	
 	TRACE_PACKET(( "  SV Enter Class %s\n", pClass->m_pNetworkName ) );
 
-	if ( pClass->m_ClassID >= u.m_pServer->serverclasses )
+	if ( pClass->m_ClassID >= u.m_pServer->GetServerclassesCount())
 	{
-		ConMsg( "pClass->m_ClassID(%i) >= %i\n", pClass->m_ClassID, u.m_pServer->serverclasses );
+		ConMsg( "pClass->m_ClassID(%i) >= %i\n", pClass->m_ClassID, u.m_pServer->GetServerclassesCount());
 		Assert( 0 );
 	}
 
-	u.m_pBuf->WriteUBitLong( pClass->m_ClassID, u.m_pServer->serverclassbits );
+	u.m_pBuf->WriteUBitLong( pClass->m_ClassID, u.m_pServer->GetServerclassbits());
 	
 	// Write some of the serial number's bits. 
 	u.m_pBuf->WriteUBitLong( entry->m_nSerialNumber, NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS );

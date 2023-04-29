@@ -71,7 +71,7 @@ bool CHLTVClient::SendSignonData( void )
 	else
 	{
 		// use your class infos, CRC is correct
-		SVC_ClassInfo classmsg( true, m_Server->serverclasses );
+		SVC_ClassInfo classmsg( true, m_Server->GetServerclassesCount());
 		m_NetChannel->SendNetMsg( classmsg );
 	}
 
@@ -294,7 +294,7 @@ bool CHLTVClient::ShouldSendMessages( void )
 	}
 
 	// send a packet if server has a new tick we didn't already send
-	bool bSendMessage = ( m_nLastSendTick != m_Server->m_nTickCount );
+	bool bSendMessage = ( m_nLastSendTick != m_Server->GetTickCount());
 
 	// send a packet at least every 2 seconds
 	if ( !bSendMessage && (m_fLastSendTime + 2.0f) < g_pNetworkSystem->NET_GetTime())
@@ -477,7 +477,7 @@ void CHLTVClient::SendSnapshot( CClientFrame * pFrame )
 	tickmsg.WriteToBuffer( msg );
 
 	// Update shared client/server string tables. Must be done before sending entities
-	m_Server->m_StringTables->WriteUpdateMessage( NULL, GetMaxAckTickCount(), msg );
+	m_Server->GetStringTables()->WriteUpdateMessage( NULL, GetMaxAckTickCount(), msg );
 
 	// TODO delta cache whole snapshots, not just packet entities. then use net_Align
 	// send entity update, delta compressed if deltaFrame != NULL

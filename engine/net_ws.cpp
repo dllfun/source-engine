@@ -353,13 +353,13 @@ bool CNetworkSystem::NET_StringToAdr ( const char *s, netadr_t *a)
 
 INetChannel*CNetSocket::NET_FindNetChannel(netadr_t &adr)
 {
-	AUTO_LOCK_FM( s_NetChannels );
+	AUTO_LOCK_FM(m_NetChannels);
 
-	int numChannels = s_NetChannels.Count();
+	int numChannels = m_NetChannels.Count();
 
 	for ( int i = 0; i < numChannels; i++ )
 	{
-		INetChannel* chan = s_NetChannels[i];
+		INetChannel* chan = m_NetChannels[i];
 
 		// sockets must match
 		//if ( socket != chan->GetSocket() )
@@ -652,7 +652,7 @@ int CNetSocket::NET_ConnectSocket( const netadr_t &addr )
 
 	int anyport = PORT_ANY;
 
-	hTCP = g_pLocalNetworkSystem->NET_OpenSocket( ipname.GetString(), anyport, true );
+	hTCP = g_pLocalNetworkSystem->NET_OpenSocket( ipname.GetString(), anyport, IPPROTO_TCP);//true
 
 	if ( !hTCP )
 	{
@@ -734,8 +734,8 @@ INetChannel *CNetSocket::NET_CreateNetChannel(netadr_t *adr, const char * name, 
 		// create new channel
 		chan = new CNetChan();
 
-		AUTO_LOCK_FM( s_NetChannels );
-		s_NetChannels.AddToTail( chan );
+		AUTO_LOCK_FM(m_NetChannels);
+		m_NetChannels.AddToTail( chan );
 	}
 
 	NET_ClearLagData();
@@ -753,14 +753,14 @@ void CNetSocket::NET_RemoveNetChannel(INetChannel *netchan, bool bDeleteNetChan)
 		return;
 	}
 
-	AUTO_LOCK_FM( s_NetChannels );
-	if ( s_NetChannels.Find( static_cast<CNetChan*>(netchan) ) == s_NetChannels.InvalidIndex() )
+	AUTO_LOCK_FM(m_NetChannels);
+	if (m_NetChannels.Find( static_cast<CNetChan*>(netchan) ) == m_NetChannels.InvalidIndex() )
 	{
 		DevMsg(1, "NET_CloseNetChannel: unknown channel.\n");
 		return;
 	}
 
-	s_NetChannels.FindAndRemove( static_cast<CNetChan*>(netchan) );
+	m_NetChannels.FindAndRemove( static_cast<CNetChan*>(netchan) );
 
 	NET_ClearQueuedPacketsForChannel( netchan );
 	
@@ -1614,10 +1614,10 @@ void CNetSocket::NET_ProcessPending( void )
 
 		if ( cmd == STREAM_CMD_ACKN )
 		{
-			AUTO_LOCK_FM( s_NetChannels );
-			for ( int j = 0; j < s_NetChannels.Count(); j++ )
+			AUTO_LOCK_FM(m_NetChannels);
+			for ( int j = 0; j < m_NetChannels.Count(); j++ )
 			{
-				CNetChan * chan = (CNetChan*)s_NetChannels[j];
+				CNetChan * chan = (CNetChan*)m_NetChannels[j];
 
 				//if ( chan->GetSocket() != psock->netsock )
 				//	continue;
@@ -1676,7 +1676,7 @@ void CNetSocket::NET_ListenSocket( bool bListen)
 	{
 		const char* net_interface = ipname.GetString();
 
-		hTCP = g_pLocalNetworkSystem->NET_OpenSocket(net_interface, nPort, true);
+		hTCP = g_pLocalNetworkSystem->NET_OpenSocket(net_interface, nPort, IPPROTO_TCP);//true
 
 		if (!hTCP)
 		{
@@ -1786,14 +1786,14 @@ void CNetSocket::NET_ProcessSocket( IConnectionlessPacketHandler *handler )
 
 	// Scope for the auto_lock
 	{
-		AUTO_LOCK_FM( s_NetChannels );
+		AUTO_LOCK_FM(m_NetChannels);
 
 		// get streaming data from channel sockets
-		int numChannels = s_NetChannels.Count();
+		int numChannels = m_NetChannels.Count();
 
 		for ( int i = (numChannels-1); i >= 0 ; i-- )
 		{
-			INetChannel *netchan = s_NetChannels[i];
+			INetChannel *netchan = m_NetChannels[i];
 
 			// sockets must match
 			//if ( sock != netchan->GetSocket() )
@@ -2735,7 +2735,7 @@ void CNetworkSystem::NET_RemoveAllExtraSockets()
 	}
 	net_sockets.RemoveMultiple(m_DefaultSocketCount, net_sockets.Count()- m_DefaultSocketCount);
 
-	Assert( net_sockets.Count() == MAX_SOCKETS );
+	//Assert( net_sockets.Count() == MAX_SOCKETS );
 }
 
 unsigned short CNetSocket::NET_GetUDPPort()
@@ -2826,8 +2826,8 @@ void NET_LogServerStatus( void )
 		return;
 	}
 
-	AUTO_LOCK_FM( s_NetChannels );
-	int numChannels = s_NetChannels.Count();
+	AUTO_LOCK_FM(m_NetChannels);
+	int numChannels = m_NetChannels.Count();
 
 	if ( numChannels == 0 )
 	{
@@ -2853,7 +2853,7 @@ void NET_LogServerStatus( void )
 
 	for ( int i = 0; i < numChannels; ++i )
 	{
-		INetChannel *chan = s_NetChannels[i];
+		INetChannel *chan = m_NetChannels[i];
 		fStats[NET_LATENCY] += chan->GetAvgLatency(FLOW_OUTGOING);
 		fStats[NET_LOSS] += chan->GetAvgLoss(FLOW_INCOMING);
 		fStats[NET_PACKETS_IN] += chan->GetAvgPackets(FLOW_INCOMING);
@@ -3285,7 +3285,7 @@ void CNetworkSystem::NET_Shutdown (void)
 	}
 #endif	// _WIN32
 
-	Assert( s_NetChannels.Count() == 0 );
+	Assert(m_NetChannels.Count() == 0 );
 	Assert( s_PendingSockets.Count() == 0);
 }
 

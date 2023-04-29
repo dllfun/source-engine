@@ -1945,8 +1945,8 @@ void Host_GetHostInfo(float *fps, int *nActive, int *nMaxPlayers, char *pszMap, 
 
 	if (pszMap)
 	{
-		if (sv.m_szMapname && sv.m_szMapname[0])
-			Q_strncpy(pszMap, sv.m_szMapname, maxlen );
+		if (sv.GetMapname() && sv.GetMapname()[0])
+			Q_strncpy(pszMap, sv.GetMapname(), maxlen );
 		else
 			pszMap[0] = '\0';
 	}
@@ -2643,7 +2643,7 @@ void _Host_RunFrame_Server_Async( int numticks )
 
 	for ( int tick = 0; tick < numticks; tick++ )
 	{ 
-		g_ServerGlobalVariables.tickcount = sv.m_nTickCount;
+		g_ServerGlobalVariables.tickcount = sv.GetTickCount();
 		g_ServerGlobalVariables.simTicksThisFrame = numticks - tick;
 		bool bFinalTick = ( tick == (numticks - 1) );
 		_Host_RunFrame_Server( bFinalTick );
@@ -3191,7 +3191,7 @@ void Host::_Host_RunFrame (float time)
 				if (g_pNetworkSystem->NET_IsDedicated() && !g_pNetworkSystem->NET_IsMultiplayer() )
 					g_pNetworkSystem->NET_SetMutiplayer( true );
 
-				g_ServerGlobalVariables.tickcount = sv.m_nTickCount;
+				g_ServerGlobalVariables.tickcount = sv.GetTickCount();
 				// NOTE:  Do we want do this at start or end of this loop?
 				++g_host.host_tickcount;
 				++g_host.host_currentframetick;
@@ -3339,7 +3339,7 @@ void Host::_Host_RunFrame (float time)
 			serverticks = numticks;
 			g_ClientGlobalVariables.simTicksThisFrame = clientticks;
 			g_ServerGlobalVariables.simTicksThisFrame = serverticks;
-			g_ServerGlobalVariables.tickcount = sv.m_nTickCount;
+			g_ServerGlobalVariables.tickcount = sv.GetTickCount();
 
 			// THREADED: Run Client
 			// -------------------
@@ -3835,7 +3835,7 @@ int Host::Host_GetServerCount( void )
 		// the new state guarantees its validity
 		return cl.m_nServerCount;
 	}
-	else if (sv.m_State >= ss_loading)
+	else if (sv.GetState() >= ss_loading)
 	{
 		return sv.GetSpawnCount();
 	}
@@ -4666,7 +4666,7 @@ bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, co
 
 	g_pNetworkSystem->NET_SetMutiplayer( sv.IsMultiplayer() );
 
-	sv.GetSocket()->NET_ListenSocket( true );	// activated server TCP socket
+	sv.GetNetSocket()->NET_ListenSocket( true );	// activated server TCP socket
 
 	// let's not have any servers with no name
 	if ( host_name.GetString()[0] == 0 )

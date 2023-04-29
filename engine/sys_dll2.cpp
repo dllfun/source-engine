@@ -2223,9 +2223,9 @@ DWORD __stdcall LongTickWatcherThread( void *voidPtr )
 	IEngine* eng = GetEngineInstance();
 	while ( eng->GetQuitting() == IEngine::QUIT_NOTQUITTING && !g_bQuitLongTickWatcherThread )
 	{
-		if ( sv.m_State == ss_active && sv.m_bSimulatingTicks )
+		if ( sv.GetState() == ss_active && sv.GetSimulatingTicks() )
 		{
-			int curTick = sv.m_nTickCount;
+			int curTick = sv.GetTickCount();
 			double curTime = Plat_FloatTime();
 			if ( nLastTick > 0 && nLastTick == curTick )
 			{

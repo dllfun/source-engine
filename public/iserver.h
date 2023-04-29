@@ -33,7 +33,7 @@ public:
 	virtual int		GetClientCount() const = 0; // returns number of clients slots (used & unused)
 	virtual int		GetUDPPort( void ) const = 0; // returns current used UDP port
 	virtual float	GetTime( void ) const = 0;	// returns game world time
-	virtual int		GetTick( void ) const = 0;	// returns game world tick
+	virtual int		GetTickCount( void ) const = 0;	// returns game world tick
 	virtual float	GetTickInterval( void ) const = 0; // tick interval in seconds
 	virtual const char *GetName( void ) const = 0;	// public server name
 	virtual const char *GetMapName( void ) const = 0; // current map name (BSP)

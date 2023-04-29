@@ -542,9 +542,9 @@ void CHLTVServer::StartMaster(CGameClient *client)
 	// copy server settings from m_Server
 
 	m_nGameServerMaxClients = m_Server->GetMaxClients(); // maxclients is different on proxy (128)
-	serverclasses	= m_Server->serverclasses;
-	serverclassbits	= m_Server->serverclassbits;
-	V_memcpy( worldmapMD5.bits, m_Server->worldmapMD5.bits, MD5_DIGEST_LENGTH );
+	serverclasses	= m_Server->GetServerclassesCount();
+	serverclassbits	= m_Server->GetServerclassbits();
+	V_memcpy( worldmapMD5.bits, m_Server->GetWorldmapMD5().bits, MD5_DIGEST_LENGTH );
 	m_flTickInterval= m_Server->GetTickInterval();
 
 	// allocate buffers for input frame
@@ -578,13 +578,13 @@ void CHLTVServer::StartMaster(CGameClient *client)
 	}
 	
 	// copy signon buffers
-	m_Signon.StartWriting( m_Server->m_Signon.GetBasePointer(), m_Server->m_Signon.m_nDataBytes, 
-		m_Server->m_Signon.GetNumBitsWritten() );
+	m_Signon.StartWriting( m_Server->GetSignon().GetBasePointer(), m_Server->GetSignon().m_nDataBytes,
+		m_Server->GetSignon().GetNumBitsWritten() );
 
-	Q_strncpy( m_szMapname, m_Server->m_szMapname, sizeof(m_szMapname) );
-	Q_strncpy( m_szSkyname, m_Server->m_szSkyname, sizeof(m_szSkyname) );
+	Q_strncpy( m_szMapname, m_Server->GetMapname(), sizeof(m_szMapname) );
+	Q_strncpy( m_szSkyname, m_Server->GetSkyname(), sizeof(m_szSkyname) );
 
-	GetSocket()->NET_ListenSocket( true );	// activated HLTV TCP socket
+	GetNetSocket()->NET_ListenSocket( true );	// activated HLTV TCP socket
 
 	m_MasterClient->ExecuteStringCommand( "spectate" ); // become a spectator
 
@@ -1031,7 +1031,7 @@ void CHLTVServer::InstallStringTables( void )
 {
 #ifndef SHARED_NET_STRING_TABLES
 
-	int numTables = m_Server->m_StringTables->GetNumTables();
+	int numTables = m_Server->GetStringTables()->GetNumTables();
 
 	m_StringTables = &m_NetworkStringTables;
 
@@ -1046,7 +1046,7 @@ void CHLTVServer::InstallStringTables( void )
 	{
 		// iterate through server tables
 		CNetworkStringTable *serverTable = 
-			(CNetworkStringTable*)m_Server->m_StringTables->GetTable( i );
+			(CNetworkStringTable*)m_Server->GetStringTables()->GetTable( i );
 
 		if ( !serverTable )
 			continue;
@@ -1542,7 +1542,7 @@ void CHLTVServer::RunFrame()
 	if ( m_ClientState.m_nSignonState > SIGNONSTATE_NONE )
 	{
 		// process data from net socket
-		m_ClientState.GetSocket()->NET_ProcessSocket( &m_ClientState );
+		m_ClientState.GetNetSocket()->NET_ProcessSocket( &m_ClientState );
 
 		m_ClientState.RunFrame();
 		
@@ -1867,7 +1867,7 @@ bool CHLTVServer::StartPlayback( const char *filename, bool bAsTimeDemo )
 
 	ConMsg( "Reading time :%.4f\n", diff );
 
-	m_ClientState.GetSocket()->NET_RemoveNetChannel( m_ClientState.m_NetChannel, true );
+	m_ClientState.GetNetSocket()->NET_RemoveNetChannel( m_ClientState.m_NetChannel, true );
 	m_ClientState.m_NetChannel = NULL;
 
 	return true;
@@ -2132,7 +2132,7 @@ void CHLTVServer::ReplyInfo( const netadr_t &adr )
 		buf.PutUint64( LittleQWord( CGameID( GetSteamAppID() ).ToUint64() ) );
 	}
 
-	GetSocket()->NET_SendPacket( NULL, adr, (unsigned char *)buf.Base(), buf.TellPut() );
+	GetNetSocket()->NET_SendPacket( NULL, adr, (unsigned char *)buf.Base(), buf.TellPut() );
 }
 #endif // #ifndef NO_STEAM
 

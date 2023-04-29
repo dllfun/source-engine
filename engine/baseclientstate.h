@@ -177,7 +177,7 @@ private:
 	bool PrepareSteamConnectResponse( uint64 unGSSteamID, bool bGSSecure, const netadr_t &adr, bf_write &msg );
 	
 public:
-	INetSocket* GetSocket() const{
+	INetSocket* GetNetSocket() const{
 		if (m_Socket) {
 			return m_Socket;
 		}

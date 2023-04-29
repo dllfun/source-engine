@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\common\netmessages.h" />
     <ClInclude Include="..\..\..\engine\cmodel_private.h" />
+    <ClInclude Include="..\..\..\engine\net.h" />
     <ClInclude Include="..\..\..\public\inetmessage.h" />
     <ClInclude Include="..\..\..\public\inetmsghandler.h" />
     <ClInclude Include="..\..\..\public\tier1\utlmemory.h" />

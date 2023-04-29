@@ -529,7 +529,7 @@ void CBaseClient::SpawnPlayer( void )
 	}
 
 	// Set client clock to match server's
-	NET_Tick tick( m_Server->GetTick(), g_pHost->Host_GetFrameTimeUnbounded(), g_pHost->Host_GetFrameTimeStddeviation());
+	NET_Tick tick( m_Server->GetTickCount(), g_pHost->Host_GetFrameTimeUnbounded(), g_pHost->Host_GetFrameTimeStddeviation());
 	SendNetMsg( tick, true );
 	
 	// Spawned into server, not fully active, though
@@ -545,13 +545,13 @@ bool CBaseClient::SendSignonData( void )
 	EngineVGui()->UpdateProgressBar(PROGRESS_SENDSIGNONDATA);
 #endif
 
-	if ( m_Server->m_Signon.IsOverflowed() )
+	if ( m_Server->GetSignon().IsOverflowed())
 	{
-		g_pHost->Host_Error( "Signon buffer overflowed %i bytes!!!\n", m_Server->m_Signon.GetNumBytesWritten() );
+		g_pHost->Host_Error( "Signon buffer overflowed %i bytes!!!\n", m_Server->GetSignon().GetNumBytesWritten() );
 		return false;
 	}
 
-	m_NetChannel->SendData( m_Server->m_Signon );
+	m_NetChannel->SendData( m_Server->GetSignon());
 		
 	m_nSignonState = SIGNONSTATE_PRESPAWN;
 	NET_SignonState signonState( m_nSignonState, m_Server->GetSpawnCount() );
@@ -713,14 +713,14 @@ bool CBaseClient::SendServerInfo( void )
 	}
 
 	// send first tick
-	m_nSignonTick = m_Server->m_nTickCount;
+	m_nSignonTick = m_Server->GetTickCount();
 	
 	NET_Tick signonTick( m_nSignonTick, 0, 0 );
 	signonTick.WriteToBuffer( msg );
 
 	// write stringtable baselines
 #ifndef SHARED_NET_STRING_TABLES
-	m_Server->m_StringTables->WriteBaselines( msg );
+	m_Server->GetStringTables()->WriteBaselines(msg);
 #endif
 	
 	// Write replicated ConVars to non-listen server clients only
@@ -1267,7 +1267,7 @@ write_again:
 	if ( !g_pLocalNetworkBackdoor )
 	{
 		// Update shared client/server string tables. Must be done before sending entities
-		m_Server->m_StringTables->WriteUpdateMessage( this, GetMaxAckTickCount(), msg );
+		m_Server->GetStringTables()->WriteUpdateMessage( this, GetMaxAckTickCount(), msg );
 	}
 #endif
 

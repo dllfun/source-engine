@@ -361,7 +361,7 @@ void CNetChan::Shutdown(const char *pReason)
 {
 	// send discconect
 
-	if ( m_Socket < 0 )
+	if ( !m_NetSocket)
 		return;
 
 	Clear(); // free all buffers (reliable & unreliable)
@@ -376,7 +376,7 @@ void CNetChan::Shutdown(const char *pReason)
 
 	if ( m_StreamSocket )
 	{
-		g_pLocalNetworkSystem->NET_CloseSocket( m_StreamSocket, (CNetSocket*)m_Socket );
+		g_pLocalNetworkSystem->NET_CloseSocket( m_StreamSocket, (CNetSocket*)m_NetSocket);
 		m_StreamSocket = 0;
 		m_StreamActive = false;
 	}
@@ -404,15 +404,15 @@ void CNetChan::Shutdown(const char *pReason)
 
 	if ( m_bProcessingMessages )
 	{
-		m_Socket->NET_RemoveNetChannel( this, false );	// Delay the deletion or it'll crash in the message-processing loop.
+		m_NetSocket->NET_RemoveNetChannel( this, false );	// Delay the deletion or it'll crash in the message-processing loop.
 		m_bShouldDelete = true;
 	}
 	else
 	{
-		m_Socket->NET_RemoveNetChannel( this, true );
+		m_NetSocket->NET_RemoveNetChannel( this, true );
 	}
 
-	m_Socket = NULL; // signals that netchannel isn't valid anymore
+	m_NetSocket = NULL; // signals that netchannel isn't valid anymore
 }
 
 CNetChan::CNetChan()
@@ -423,7 +423,7 @@ CNetChan::CNetChan()
 	m_bShouldDelete = false;
 	m_bClearedDuringProcessing = false;
 	m_bStreamContainsChallenge = false;
-	m_Socket = NULL; // invalid
+	m_NetSocket = NULL; // invalid
 	remote_address.Clear();
 	last_received = 0;
 	connect_time = 0;
@@ -487,7 +487,7 @@ void CNetChan::Setup(CNetSocket* sock, netadr_t *adr, const char * name, INetCha
 	Assert( name ); 
 	Assert ( handler );
 
-	m_Socket = sock;
+	m_NetSocket = sock;
 
 	if ( m_StreamSocket )
 	{
@@ -598,7 +598,7 @@ bool CNetChan::StartStreaming( unsigned int challengeNr )
 
 	MEM_ALLOC_CREDIT();
 
-	m_StreamSocket = m_Socket->NET_ConnectSocket( remote_address );
+	m_StreamSocket = m_NetSocket->NET_ConnectSocket( remote_address );
 	m_StreamData.EnsureCapacity( NET_MAX_PAYLOAD );
 
 	return (m_StreamSocket != 0);
@@ -1585,7 +1585,7 @@ int CNetChan::SendDatagram(bf_write *datagram)
 #endif
 	
 	// Make sure for the client that the max routable payload size is up to date
-	if ( m_Socket == g_pNetworkSystem->GetClientSocket() )
+	if (m_NetSocket == g_pNetworkSystem->GetClientSocket() )
 	{
 		if ( net_maxroutable.GetInt() != GetMaxRoutablePayloadSize() )
 		{
@@ -1768,7 +1768,7 @@ int CNetChan::SendDatagram(bf_write *datagram)
 	}
 
 	// Send the datagram
-	int	bytesSent = m_Socket->NET_SendPacket ( this, remote_address, send.GetData(), send.GetNumBytesWritten(), bSendVoice ? &m_StreamVoice : 0, bCompress );
+	int	bytesSent = m_NetSocket->NET_SendPacket ( this, remote_address, send.GetData(), send.GetNumBytesWritten(), bSendVoice ? &m_StreamVoice : 0, bCompress );
 
 	if ( bSendVoice || !IsX360() )
 	{
@@ -2895,10 +2895,10 @@ void CNetChan::Reset()
 	m_nSplitPacketSequence = 1;
 }
 
-INetSocket* CNetChan::GetSocket() const
-{
-	return m_Socket;
-}
+//INetSocket* CNetChan::GetSocket() const
+//{
+//	return m_Socket;
+//}
 
 float CNetChan::GetAvgData( int flow ) const
 {

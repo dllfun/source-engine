@@ -500,7 +500,7 @@ void SV_ComputeClientPacks(
 #ifdef SHARED_NET_STRING_TABLES
 		sv.m_StringTables->TriggerCallbacks( clients[0]->m_nDeltaTick );
 #else
-		sv.m_StringTables->DirectUpdate( clients[0]->GetMaxAckTickCount() );
+		sv.GetStringTables()->DirectUpdate( clients[0]->GetMaxAckTickCount() );
 #endif
 		
 		g_pLocalNetworkBackdoor->StartEntityStateUpdate();
@@ -512,10 +512,10 @@ void SV_ComputeClientPacks(
 		float flSaveLastServerTickTime = cl.m_flLastServerTickTime;
 
 		cl.insimulation = true;
-		cl.SetClientTickCount( sv.m_nTickCount );
-		cl.SetServerTickCount( sv.m_nTickCount );
+		cl.SetClientTickCount( sv.GetTickCount());
+		cl.SetServerTickCount( sv.GetTickCount());
 
-		cl.m_flLastServerTickTime = sv.m_nTickCount * g_pHost->Host_GetIntervalPerTick();
+		cl.m_flLastServerTickTime = sv.GetTickCount() * g_pHost->Host_GetIntervalPerTick();
 		g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
 		g_ClientGlobalVariables.curtime = cl.GetTime();
 #endif

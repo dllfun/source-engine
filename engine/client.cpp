@@ -1798,7 +1798,7 @@ void CClientState::FinishSignonState_New()
 
 	// Only do this if our server is shut down and we're acting as a client. Otherwise the server handles this when it
 	// starts the load.
-	if ( sv.m_State < ss_loading )
+	if ( sv.GetState() < ss_loading )
 	{
 		// Reset the last used count on all models before beginning the new load -- The nServerCount value on models should
 		// always resolve as different from values from previous servers.
