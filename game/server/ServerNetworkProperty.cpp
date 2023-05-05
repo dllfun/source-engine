@@ -75,7 +75,7 @@ void CServerNetworkProperty::Init( CBaseEntity *pEntity )
 void CServerNetworkProperty::AttachEdict( edict_t *pRequiredEdict )
 {
 	Assert ( !m_pPev );
-
+	
 	// see if there is an edict allocated for it, otherwise get one from the engine
 	if ( !pRequiredEdict )
 	{

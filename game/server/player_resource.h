@@ -12,6 +12,8 @@
 #endif
 
 #include "shareddefs.h"
+#include "baseentity.h"
+
 
 class CPlayerResource : public CBaseEntity
 {

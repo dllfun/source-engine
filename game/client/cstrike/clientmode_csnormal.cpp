@@ -689,7 +689,7 @@ void ClientModeCSNormal::FireGameEvent( IGameEvent *event )
             if ( g_PR )
             {
                 wchar_t wszPlayerName[MAX_PLAYER_NAME_LENGTH];
-                g_pVGuiLocalize->ConvertANSIToUnicode( g_PR->GetPlayerName( iPlayerIndex ), wszPlayerName, sizeof( wszPlayerName ) );
+                g_pVGuiLocalize->ConvertANSIToUnicode(g_PR?g_PR->GetPlayerName( iPlayerIndex ):"aaa", wszPlayerName, sizeof(wszPlayerName));
 
                 wchar_t achievementName[1024];
                 const wchar_t* constAchievementName = &achievementName[0];

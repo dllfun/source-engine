@@ -1501,7 +1501,7 @@ void CCSMapOverview::DrawMapPlayers()
 				// Make them flash a halo
 				DrawIconCS(m_radioFlash, m_radioFlashOffscreen, player->position, sizeForRing, player->angle[YAW], playerCS->currentFlashAlpha);
 			}
-			else if( showTalkRing && pCSPR->IsAlive( i + 1 ) && GetClientVoiceMgr()->IsPlayerSpeaking( i + 1) ) // Or solid on type
+			else if( showTalkRing && pCSPR && pCSPR->IsAlive( i + 1 ) && GetClientVoiceMgr()->IsPlayerSpeaking( i + 1) ) // Or solid on type
 			{
 				// Make them show a halo
 				DrawIconCS(m_radioFlash, m_radioFlashOffscreen, player->position, sizeForRing, player->angle[YAW], 255);

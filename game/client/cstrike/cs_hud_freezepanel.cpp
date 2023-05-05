@@ -265,7 +265,7 @@ void CCSFreezePanel::FireGameEvent( IGameEvent * event )
 			m_pKillerHealth->SetPercent( (float)iKillerHealth / iMaxHealth );
 
 			char killerName[128];
-			V_snprintf( killerName, sizeof(killerName), "%s", g_PR->GetPlayerName(iKillerIndex) );
+			V_snprintf( killerName, sizeof(killerName), "%s", (g_PR ?g_PR->GetPlayerName(iKillerIndex):"aaa"));
 //			V_strupr( killerName );
 
 			m_pBackgroundPanel->SetDialogVariable( "killername", killerName);

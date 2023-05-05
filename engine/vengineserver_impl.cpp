@@ -528,6 +528,10 @@ public:
 		
 		return true;
 	}
+
+	virtual int			GetPlayerCount() {
+		return sv.GetClientCount();
+	}
 	
 	virtual int GetPlayerUserId( const edict_t *e )
 	{

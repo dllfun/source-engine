@@ -2489,6 +2489,30 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 		if ( nFlags & FL_EDICT_DONTSEND )
 			continue;
 		
+		if (iEdict > engineServer->GetPlayerCount()) {//pInfo->m_pClientEnt != pEdict && iEdict != 0 && 
+			
+			continue;
+
+			CServerNetworkProperty* pEnt = static_cast<CServerNetworkProperty*>(pEdict->GetNetworkable());
+			if (!pEnt)
+				continue;
+
+			const char* className = pEnt->GetClassName();
+
+			if (!strcmp(className, "aaa")) {
+
+			}
+			else {
+
+				CServerNetworkProperty* pParent = pEnt->GetNetworkParent();
+				if (!pParent)
+					continue;
+
+				if (pInfo->m_pClientEnt != pParent->edict())
+					continue;
+
+			}
+		}
 		// entity is already marked for sending
 		if ( pInfo->m_pTransmitEdict->Get( iEdict ) )
 			continue;
@@ -2500,6 +2524,9 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 			while ( true )
 			{
 				// mark entity for sending
+				if (iEdict != 1) {
+					int aaa = 0;
+				}
 				pInfo->m_pTransmitEdict->Set( iEdict );
 	
 #ifndef _X360

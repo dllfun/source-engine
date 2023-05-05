@@ -1176,7 +1176,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 				if ( g_PR )
 				{
 					wchar_t wszPlayerName[MAX_PLAYER_NAME_LENGTH];
-					g_pVGuiLocalize->ConvertANSIToUnicode( g_PR->GetPlayerName( iPlayerIndex ), wszPlayerName, sizeof( wszPlayerName ) );
+					g_pVGuiLocalize->ConvertANSIToUnicode(g_PR?g_PR->GetPlayerName( iPlayerIndex ):"aaa", wszPlayerName, sizeof(wszPlayerName));
 
 					const wchar_t *pchLocalizedAchievement = ACHIEVEMENT_LOCALIZED_NAME_FROM_STR( pAchievement->GetName() );
 					if ( pchLocalizedAchievement )
@@ -1209,7 +1209,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 		if ( g_PR )
 		{
 			wchar_t wszPlayerName[MAX_PLAYER_NAME_LENGTH];
-			g_pVGuiLocalize->ConvertANSIToUnicode( g_PR->GetPlayerName( iPlayerIndex ), wszPlayerName, sizeof( wszPlayerName ) );
+			g_pVGuiLocalize->ConvertANSIToUnicode(g_PR?g_PR->GetPlayerName( iPlayerIndex ):"aaa", wszPlayerName, sizeof(wszPlayerName));
 
 			if ( iMethod < 0 || iMethod >= ARRAYSIZE( g_pszItemFoundMethodStrings ) )
 			{

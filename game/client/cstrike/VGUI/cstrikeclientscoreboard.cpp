@@ -662,10 +662,10 @@ void CCSClientScoreBoardDialog::UpdateTeamInfo()
 			int numAlive = 0;
             for ( int playerIndex = 1 ; playerIndex <= MAX_PLAYERS; playerIndex++ )
             {
-                if ( g_PR->IsConnected( playerIndex ) && g_PR->GetTeam( playerIndex ) == teamIndex )
+                if (g_PR && g_PR->IsConnected( playerIndex ) && g_PR->GetTeam( playerIndex ) == teamIndex )
                 {
                     numPlayers++;
-					if ( g_PR->IsAlive( playerIndex ) )
+					if (g_PR && g_PR->IsAlive( playerIndex ) )
 					{
 						++numAlive;
 					}
@@ -743,7 +743,7 @@ void CCSClientScoreBoardDialog::UpdatePlayerList()
 
     for( int playerIndex = 1 ; playerIndex <= MAX_PLAYERS; playerIndex++ )
     {
-        if( g_PR->IsConnected( playerIndex ) )
+        if(g_PR && g_PR->IsConnected( playerIndex ) )
         {
             PlayerScoreInfo* playerScoreInfo = new PlayerScoreInfo;
             if ( !GetPlayerScoreInfo( playerIndex, *playerScoreInfo ) )
@@ -752,11 +752,11 @@ void CCSClientScoreBoardDialog::UpdatePlayerList()
 				continue;
 			}
 
-            if ( g_PR->GetTeam( playerIndex ) == TEAM_TERRORIST )
+            if (g_PR && g_PR->GetTeam( playerIndex ) == TEAM_TERRORIST )
             {
                 m_teamDisplayT.playerScores.AddToTail(playerScoreInfo);
             }
-            else if ( g_PR->GetTeam( playerIndex ) == TEAM_CT )
+            else if (g_PR && g_PR->GetTeam( playerIndex ) == TEAM_CT )
             {
                 m_teamDisplayCT.playerScores.AddToTail(playerScoreInfo);
             }
@@ -1000,7 +1000,7 @@ void CCSClientScoreBoardDialog::UpdateSpectatorList()
 	{
 		if ( ShouldShowAsSpectator( playerIndex ) )
 		{
-			const char *playerName = g_PR->GetPlayerName( playerIndex );
+			const char *playerName = g_PR ?g_PR->GetPlayerName( playerIndex ):"aaa";
 			if ( playerName != NULL )
 			{
 				// Convert the name to wide char.
@@ -1313,19 +1313,19 @@ bool CCSClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, PlayerScore
 		return false;
 
     // Clean up the player name
-    const char *oldName = g_PR->GetPlayerName( playerIndex );
+    const char *oldName = g_PR ?g_PR->GetPlayerName( playerIndex ):"aaa";
 	if ( oldName == NULL )
 		return false;
 
-	playerScoreInfo.szName = g_PR->GetPlayerName( playerIndex );
+	playerScoreInfo.szName = g_PR ? g_PR->GetPlayerName( playerIndex ):"aaa";
 
     playerScoreInfo.playerIndex = playerIndex;
-    playerScoreInfo.frags = g_PR->GetPlayerScore( playerIndex );
-    playerScoreInfo.deaths = g_PR->GetDeaths( playerIndex );
+    playerScoreInfo.frags = g_PR ?g_PR->GetPlayerScore( playerIndex ):999;
+    playerScoreInfo.deaths = g_PR ?g_PR->GetDeaths( playerIndex ):999;
 
-    if ( g_PR->GetPing( playerIndex ) < 1 )
+    if (g_PR && g_PR->GetPing( playerIndex ) < 1 )
     {
-        if ( g_PR->IsFakePlayer( playerIndex ) )
+        if (g_PR && g_PR->IsFakePlayer( playerIndex ) )
         {
 			playerScoreInfo.ping = -1;
         }
@@ -1336,7 +1336,7 @@ bool CCSClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, PlayerScore
     }
     else
     {
-		playerScoreInfo.ping = g_PR->GetPing( playerIndex );
+		playerScoreInfo.ping = g_PR ?g_PR->GetPing( playerIndex ):999;
     }
 
     // get CS specific infos
@@ -1356,7 +1356,7 @@ bool CCSClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, PlayerScore
         ( pLocalPlayer->GetTeamNumber() == TEAM_UNASSIGNED ) || // we're not spawned yet
         ( pLocalPlayer->GetTeamNumber() == TEAM_SPECTATOR ) || // we are a spectator
         ( pLocalPlayer->IsPlayerDead() && mp_forcecamera.GetInt() == OBS_ALLOW_ALL ) ||	 // we are dead and allowed to spectate opponents
-        ( pLocalPlayer->GetTeamNumber() == g_PR->GetTeam( playerIndex ) ); // we're on the same team
+        ( pLocalPlayer->GetTeamNumber() == (g_PR ?g_PR->GetTeam( playerIndex ):0) ); // we're on the same team
 
 	playerScoreInfo.szStatus = NULL;
 	playerScoreInfo.bStatusPlayerColor = false;
@@ -1369,12 +1369,12 @@ bool CCSClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, PlayerScore
 		playerScoreInfo.bStatusPlayerColor = true;
 	}
 
-	if ( !g_PR->IsAlive( playerIndex ) && g_PR->GetTeam( playerIndex ) > TEAM_SPECTATOR )
+	if (g_PR && !g_PR->IsAlive( playerIndex ) && g_PR->GetTeam( playerIndex ) > TEAM_SPECTATOR )
 	{
 		playerScoreInfo.szStatus = "../hud/scoreboard_dead";
 	}
 
-    if ( g_PR->IsHLTV( playerIndex ) )
+    if (g_PR && g_PR->IsHLTV( playerIndex ) )
     {
 //         // show #spectators in class field, it's transmitted as player's score
 //         char numspecs[32];
@@ -1385,7 +1385,7 @@ bool CCSClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, PlayerScore
     // Set the dominated icon
 	if ( pLocalPlayer->IsPlayerDominatingMe( playerIndex ) )
 	{
-		if ( g_PR->IsAlive( playerIndex ) )
+		if (g_PR && g_PR->IsAlive( playerIndex ) )
 		{
 			playerScoreInfo.szStatus = "../hud/scoreboard_nemesis";
 		}
@@ -1397,7 +1397,7 @@ bool CCSClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, PlayerScore
 
 	if ( pLocalPlayer->IsPlayerDominated(playerIndex) )
 	{
-		if ( g_PR->IsAlive( playerIndex ) )
+		if (g_PR && g_PR->IsAlive( playerIndex ) )
 		{
 			playerScoreInfo.szStatus = "../hud/scoreboard_dominated";
 		}

@@ -53,7 +53,7 @@ public:
 	const edict_t *edict() const;
 
 	// Sets the edict pointer (for swapping edicts)
-	void SetEdict( edict_t *pEdict );
+	//void SetEdict( edict_t *pEdict );
 
 	// All these functions call through to CNetStateMgr. 
 	// See CNetStateMgr for details about these functions.
@@ -242,10 +242,10 @@ inline const edict_t *CServerNetworkProperty::edict() const
 //-----------------------------------------------------------------------------
 // Sets the edict pointer (for swapping edicts)
 //-----------------------------------------------------------------------------
-inline void CServerNetworkProperty::SetEdict( edict_t *pEdict )
-{
-	m_pPev = pEdict;
-}
+//inline void CServerNetworkProperty::SetEdict( edict_t *pEdict )
+//{
+//	m_pPev = pEdict;
+//}
 
 
 inline int CServerNetworkProperty::AreaNum() const

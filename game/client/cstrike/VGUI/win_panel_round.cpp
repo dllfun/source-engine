@@ -199,10 +199,10 @@ void WinPanel_Round::FireGameEvent( IGameEvent* event )
 			int param3 = event->GetInt("funfact_data3");
 			if ( iFunFactPlayer >= 1 && iFunFactPlayer <= MAX_PLAYERS )
 			{
-				const char* playerName = g_PR->GetPlayerName( iFunFactPlayer );
+				const char* playerName = g_PR ?g_PR->GetPlayerName( iFunFactPlayer ):"aaa";
 				if( playerName && Q_strcmp( playerName, PLAYER_UNCONNECTED_NAME ) != 0 && Q_strcmp( playerName, PLAYER_ERROR_NAME ) != 0 )
 				{
-					V_strtowcs( g_PR->GetPlayerName( iFunFactPlayer ), 64, playerText, sizeof( playerText ) );
+					V_strtowcs(g_PR ?g_PR->GetPlayerName( iFunFactPlayer ):"aaa", 64, playerText, sizeof(playerText));
 				}
 				else
 				{

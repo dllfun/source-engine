@@ -180,7 +180,7 @@ void CHudChat::MsgFunc_SayText2( bf_read &msg )
 		int iFilter = CHAT_FILTER_NONE;
 		bool playChatSound = true;
 
-		if ( client > 0 && (g_PR->GetTeam( client ) != g_PR->GetTeam( GetLocalPlayerIndex() )) )
+		if ( client > 0 && g_PR && (g_PR->GetTeam( client ) != g_PR->GetTeam( GetLocalPlayerIndex() )) )
 		{
 			iFilter = CHAT_FILTER_PUBLICCHAT;
 			if ( !( iFilter & GetFilterFlags() ) )

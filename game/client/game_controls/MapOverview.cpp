@@ -254,16 +254,16 @@ void CMapOverview::UpdatePlayers()
 		{
 			MapPlayer_t *player = &m_Players[i-1];
 
-			player->health = g_PR->GetHealth( i );
+			player->health = g_PR ?g_PR->GetHealth( i ):0;
 
-			if ( !g_PR->IsAlive( i ) )
+			if (g_PR && !g_PR->IsAlive( i ) )
 			{
 				player->health = 0;
 			}
 
-			if ( player->team != g_PR->GetTeam( i ) )
+			if ( player->team != (g_PR ?g_PR->GetTeam( i ):0) )
 			{
-				player->team = g_PR->GetTeam( i );
+				player->team = g_PR ?g_PR->GetTeam( i ):0;
 				player->icon = m_TeamIcons[ GetIconNumberFromTeamNumber(player->team)  ];
 				player->color = m_TeamColors[ GetIconNumberFromTeamNumber(player->team) ];
 			}

@@ -2310,7 +2310,7 @@ bool C_CSPlayer::HasC4( void )
 	{
 		C_CS_PlayerResource *pCSPR = (C_CS_PlayerResource*)GameResources();
 
-		return pCSPR->HasC4( entindex() );
+		return pCSPR && pCSPR->HasC4( entindex() );
 	}
 }
 

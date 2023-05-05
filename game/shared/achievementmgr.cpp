@@ -1189,7 +1189,7 @@ bool CalcPlayersOnFriendsList( int iMinFriends )
 	for( int iPlayerIndex = 1 ; iPlayerIndex <= MAX_PLAYERS; iPlayerIndex++ )
 	{
 		// find all players who are on the local player's team
-		if( ( iPlayerIndex != iLocalPlayerIndex ) && ( g_PR->IsConnected( iPlayerIndex ) ) )
+		if( ( iPlayerIndex != iLocalPlayerIndex ) && (g_PR && g_PR->IsConnected( iPlayerIndex ) ) )
 		{
 			if ( IsPC() )
 			{
@@ -1254,7 +1254,7 @@ bool CalcHasNumClanPlayers( int iClanTeammates )
 			// enumerate all players
 			for( int iPlayerIndex = 1 ; iPlayerIndex <= MAX_PLAYERS; iPlayerIndex++ )
 			{
-				if( ( iPlayerIndex != iLocalPlayerIndex ) && ( g_PR->IsConnected( iPlayerIndex ) ) )
+				if( ( iPlayerIndex != iLocalPlayerIndex ) && (g_PR && g_PR->IsConnected( iPlayerIndex ) ) )
 				{
 					player_info_t pi;
 					if (engineClient->GetPlayerInfo( iPlayerIndex, &pi ) && ( pi.friendsID ) )
@@ -1295,13 +1295,13 @@ int	CalcTeammateCount()
 
 	// determine local player team
 	int iLocalPlayerIndex =  GetLocalPlayerIndex();
-	int iLocalPlayerTeam = g_PR->GetTeam( iLocalPlayerIndex );
+	int iLocalPlayerTeam = g_PR ?g_PR->GetTeam( iLocalPlayerIndex ):0;
 
 	int iNumTeammates = 0;
 	for( int iPlayerIndex = 1 ; iPlayerIndex <= MAX_PLAYERS; iPlayerIndex++ )
 	{
 		// find all players who are on the local player's team
-		if( ( iPlayerIndex != iLocalPlayerIndex ) && ( g_PR->IsConnected( iPlayerIndex ) ) && ( g_PR->GetTeam( iPlayerIndex ) == iLocalPlayerTeam ) )
+		if( ( iPlayerIndex != iLocalPlayerIndex ) && (g_PR && g_PR->IsConnected( iPlayerIndex ) ) && (g_PR && g_PR->GetTeam( iPlayerIndex ) == iLocalPlayerTeam ) )
 		{
 			iNumTeammates++;
 		}
@@ -1318,7 +1318,7 @@ int	CalcPlayerCount()
 	for( int iPlayerIndex = 1 ; iPlayerIndex <= MAX_PLAYERS; iPlayerIndex++ )
 	{
 		// find all players who are on the local player's team
-		if( g_PR->IsConnected( iPlayerIndex ) )
+		if(g_PR && g_PR->IsConnected( iPlayerIndex ) )
 		{
 			iCount++;
 		}

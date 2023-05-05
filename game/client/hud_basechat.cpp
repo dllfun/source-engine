@@ -855,7 +855,7 @@ void CBaseHudChat::MsgFunc_SayText2( bf_read &msg )
 	{
 		int iFilter = CHAT_FILTER_NONE;
 
-		if ( client > 0 && (g_PR->GetTeam( client ) != g_PR->GetTeam( GetLocalPlayerIndex() )) )
+		if ( client > 0 && g_PR && (g_PR->GetTeam( client ) != g_PR->GetTeam( GetLocalPlayerIndex() )) )
 		{
 			iFilter = CHAT_FILTER_PUBLICCHAT;
 		}
@@ -1029,7 +1029,7 @@ void CBaseHudChat::MsgFunc_VoiceSubtitle( bf_read &msg )
 
 const char *CBaseHudChat::GetDisplayedSubtitlePlayerName( int clientIndex )
 {
-	return g_PR->GetPlayerName( clientIndex );
+	return g_PR ?g_PR->GetPlayerName( clientIndex ):"";
 }
 
 #ifndef _XBOX

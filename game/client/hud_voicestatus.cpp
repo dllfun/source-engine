@@ -352,12 +352,12 @@ void CHudVoiceStatus::Paint()
 	FOR_EACH_LL(m_SpeakingList, i)
 	{
 		int playerId = m_SpeakingList[i].playerId;
-		bool bIsAlive = g_PR->IsAlive( playerId );
+		bool bIsAlive = g_PR ?g_PR->IsAlive( playerId ):false;
 
 		float oldAlphaMultiplier = vgui::surface()->DrawGetAlphaMultiplier();
 		vgui::surface()->DrawSetAlphaMultiplier(oldAlphaMultiplier * m_SpeakingList[i].fAlpha);
 
-		Color c = g_PR->GetTeamColor( g_PR ? g_PR->GetTeam(playerId) : TEAM_UNASSIGNED );
+		Color c = g_PR? g_PR->GetTeamColor( g_PR ? g_PR->GetTeam(playerId) : TEAM_UNASSIGNED ):Color(0,0,0);
 
 		c[3] = 128;
 

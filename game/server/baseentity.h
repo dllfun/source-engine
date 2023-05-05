@@ -38,20 +38,20 @@ class CStudioHdr;
 
 typedef CHandle<CBaseEntity> EHANDLE;
 
-#define MANUALMODE_GETSET_PROP(type, accessorName, varName) \
-	private:\
-		type varName;\
-	public:\
-		inline const type& Get##accessorName##() const { return varName; } \
-		inline type& Get##accessorName##() { return varName; } \
-		inline void Set##accessorName##( const type &val ) { varName = val; m_NetStateMgr.StateChanged(); }
-
-#define MANUALMODE_GETSET_EHANDLE(type, accessorName, varName) \
-	private:\
-		CHandle<type> varName;\
-	public:\
-		inline type* Get##accessorName##() { return varName.Get(); } \
-		inline void Set##accessorName##( type *pType ) { varName = pType; m_NetStateMgr.StateChanged(); }
+//#define MANUALMODE_GETSET_PROP(type, accessorName, varName) \
+//	private:\
+//		type varName;\
+//	public:\
+//		inline const type& Get##accessorName##() const { return varName; } \
+//		inline type& Get##accessorName##() { return varName; } \
+//		inline void Set##accessorName##( const type &val ) { varName = val; m_NetStateMgr.StateChanged(); }
+//
+//#define MANUALMODE_GETSET_EHANDLE(type, accessorName, varName) \
+//	private:\
+//		CHandle<type> varName;\
+//	public:\
+//		inline type* Get##accessorName##() { return varName.Get(); } \
+//		inline void Set##accessorName##( type *pType ) { varName = pType; m_NetStateMgr.StateChanged(); }
 
 
 // saverestore.h declarations

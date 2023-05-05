@@ -394,8 +394,8 @@ void CHudDeathNotice::FireGameEvent( IGameEvent *event )
 	}
 
 	// Get the names of the players
-	const char *killer_name = iKiller > 0 ? g_PR->GetPlayerName( iKiller ) : NULL;
-	const char *victim_name = iVictim > 0 ? g_PR->GetPlayerName( iVictim ) : NULL;
+	const char *killer_name = iKiller > 0 ? (g_PR ? g_PR->GetPlayerName( iKiller ):"aaa") : NULL;
+	const char *victim_name = iVictim > 0 ? (g_PR ? g_PR->GetPlayerName( iVictim ):"aaa") : NULL;
 
 	if ( !killer_name )
 		killer_name = "";
@@ -415,8 +415,8 @@ void CHudDeathNotice::FireGameEvent( IGameEvent *event )
 	DeathNoticeItem deathMsg;
 	deathMsg.Killer.iEntIndex = iKiller;
 	deathMsg.Victim.iEntIndex = iVictim;
-	deathMsg.Killer.color = iKiller > 0 ? m_teamColors[g_PR->GetTeam(iKiller)] : COLOR_WHITE;
-	deathMsg.Victim.color = iVictim > 0 ? m_teamColors[g_PR->GetTeam(iVictim)] : COLOR_WHITE;
+	deathMsg.Killer.color = iKiller > 0 ? m_teamColors[g_PR ?g_PR->GetTeam(iKiller):0] : COLOR_WHITE;
+	deathMsg.Victim.color = iVictim > 0 ? m_teamColors[g_PR ?g_PR->GetTeam(iVictim):0] : COLOR_WHITE;
 	Q_snprintf( deathMsg.Killer.szClan, sizeof( deathMsg.Killer.szClan ), "%s ", killer_clan );
 	Q_snprintf( deathMsg.Victim.szClan, sizeof( deathMsg.Victim.szClan ), "%s ", victim_clan );
 	Q_strncpy( deathMsg.Killer.szName, killer_name, MAX_PLAYER_NAME_LENGTH );
