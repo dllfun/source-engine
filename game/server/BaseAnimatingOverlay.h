@@ -20,6 +20,8 @@ class CAnimationLayer
 {
 public:	
 	DECLARE_CLASS_NOBASE( CAnimationLayer );
+
+	DECLARE_SEND_TABLE_ACCESS(DT_Animationlayer);
 	
 	CAnimationLayer( void );
 	void	Init( CBaseAnimatingOverlay *pOverlay );
@@ -125,6 +127,8 @@ inline float CAnimationLayer::GetFadeout( float flCurTime )
 class CBaseAnimatingOverlay : public CBaseAnimating
 {
 	DECLARE_CLASS( CBaseAnimatingOverlay, CBaseAnimating );
+	DECLARE_SEND_TABLE_ACCESS(DT_OverlayVars);
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseAnimatingOverlay);
 
 public:
 	enum 

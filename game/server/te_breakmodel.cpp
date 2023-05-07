@@ -110,7 +110,7 @@ void CTEBreakModel::Test( const Vector& current_origin, const QAngle& current_an
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBreakModel, DT_TEBreakModel)
+IMPLEMENT_SERVERCLASS_ST(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 13 ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 13 ),
@@ -122,7 +122,7 @@ IMPLEMENT_SERVERCLASS_ST(CTEBreakModel, DT_TEBreakModel)
 	SendPropInt( SENDINFO(m_nCount), 8, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO(m_fTime), 10, 0, 0, 102.4 ),
 	SendPropInt( SENDINFO(m_nFlags), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEBreakModel)
 
 // Singleton to fire TEBreakModel objects
 static CTEBreakModel g_TEBreakModel( "breakmodel" );

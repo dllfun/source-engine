@@ -173,10 +173,10 @@ class SendTable;
 
 #else
 
-#define BEGIN_NETWORK_TABLE( className, tableName ) BEGIN_SEND_TABLE( className, tableName )
+#define BEGIN_NETWORK_TABLE( className, tableName ,baseTableName) BEGIN_SEND_TABLE( className, tableName ,baseTableName)
 #define BEGIN_NETWORK_TABLE_NOBASE( className, tableName ) BEGIN_SEND_TABLE_NOBASE( className, tableName )
 
-#define END_NETWORK_TABLE	END_SEND_TABLE
+#define END_NETWORK_TABLE(tableName)	END_SEND_TABLE(tableName)
 
 #define IMPLEMENT_NETWORKCLASS_ALIASED(className, dataTable)			\
 	IMPLEMENT_SERVERCLASS( C##className, dataTable )

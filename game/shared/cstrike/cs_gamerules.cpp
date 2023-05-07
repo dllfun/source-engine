@@ -131,7 +131,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CCSGameRules, DT_CSGameRules )
 		SendPropBool( SENDINFO( m_bLogoMap ) ),
 		SendPropBool( SENDINFO( m_bBlackMarket ) )
 	#endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_CSGameRules)
 
 
 LINK_ENTITY_TO_CLASS( cs_gamerules, CCSGameRulesProxy );
@@ -157,9 +157,9 @@ IMPLEMENT_NETWORKCLASS_ALIASED( CSGameRulesProxy, DT_CSGameRulesProxy )
 		return pRules;
 	}
 
-	BEGIN_SEND_TABLE( CCSGameRulesProxy, DT_CSGameRulesProxy )
+	BEGIN_SEND_TABLE( CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
 		SendPropDataTable( "cs_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_CSGameRules ), SendProxy_CSGameRules )
-	END_SEND_TABLE()
+	END_SEND_TABLE(DT_CSGameRulesProxy)
 #endif
 
 

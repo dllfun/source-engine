@@ -26,6 +26,7 @@ class CEnvTonemapController : public CPointEntity
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EnvTonemapController);
 
 	void	Spawn( void );
 	int		UpdateTransmitState( void );
@@ -86,7 +87,7 @@ BEGIN_DATADESC( CEnvTonemapController )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetBloomScaleRange", InputSetBloomScaleRange ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvTonemapController, DT_EnvTonemapController )
+IMPLEMENT_SERVERCLASS_ST( CEnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
 	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMin), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMax), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_bUseCustomBloomScale), 1, SPROP_UNSIGNED ),
@@ -94,7 +95,7 @@ IMPLEMENT_SERVERCLASS_ST( CEnvTonemapController, DT_EnvTonemapController )
 	SendPropFloat( SENDINFO(m_flCustomAutoExposureMax), 0, SPROP_NOSCALE),
 	SendPropFloat( SENDINFO(m_flCustomBloomScale), 0, SPROP_NOSCALE),
 	SendPropFloat( SENDINFO(m_flCustomBloomScaleMinimum), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EnvTonemapController)
 
 //-----------------------------------------------------------------------------
 // Purpose: 

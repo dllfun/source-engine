@@ -428,7 +428,7 @@ const char *CFuncLadder::GetSurfacePropName()
 
 IMPLEMENT_NETWORKCLASS_ALIASED( FuncLadder, DT_FuncLadder );
 
-BEGIN_NETWORK_TABLE( CFuncLadder, DT_FuncLadder )
+BEGIN_NETWORK_TABLE( CFuncLadder, DT_FuncLadder , DT_BaseEntity)
 #if !defined( CLIENT_DLL )
 	SendPropVector( SENDINFO( m_vecPlayerMountPositionTop ), SPROP_COORD ),
 	SendPropVector( SENDINFO( m_vecPlayerMountPositionBottom ), SPROP_COORD ),
@@ -441,7 +441,7 @@ BEGIN_NETWORK_TABLE( CFuncLadder, DT_FuncLadder )
 	RecvPropVector( RECVINFO( m_vecLadderDir )),
 	RecvPropBool( RECVINFO( m_bFakeLadder ) ),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_FuncLadder)
 
 LINK_ENTITY_TO_CLASS( func_useableladder, CFuncLadder );
 
@@ -494,8 +494,8 @@ int CFuncLadder::UpdateTransmitState()
 
 IMPLEMENT_NETWORKCLASS_ALIASED( InfoLadderDismount, DT_InfoLadderDismount );
 
-BEGIN_NETWORK_TABLE( CInfoLadderDismount, DT_InfoLadderDismount )
-END_NETWORK_TABLE()
+BEGIN_NETWORK_TABLE( CInfoLadderDismount, DT_InfoLadderDismount , DT_BaseEntity)
+END_NETWORK_TABLE(DT_InfoLadderDismount)
 
 LINK_ENTITY_TO_CLASS( info_ladder_dismount, CInfoLadderDismount );
 

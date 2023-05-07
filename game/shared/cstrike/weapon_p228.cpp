@@ -83,8 +83,8 @@ bool CWeaponP228::Deploy( )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponP228, DT_WeaponP228 )
 
-BEGIN_NETWORK_TABLE( CWeaponP228, DT_WeaponP228 )
-END_NETWORK_TABLE()
+BEGIN_NETWORK_TABLE( CWeaponP228, DT_WeaponP228 , DT_WeaponCSBase)
+END_NETWORK_TABLE(DT_WeaponP228)
 
 
 float CWeaponP228::GetInaccuracy() const

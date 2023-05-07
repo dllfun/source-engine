@@ -18,7 +18,7 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_SERVERCLASS_ST_NOBASE(CBaseTempEntity, DT_BaseTempEntity)
-END_SEND_TABLE()
+END_SEND_TABLE(DT_BaseTempEntity)
 
 
 

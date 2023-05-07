@@ -54,15 +54,15 @@ const float ATTACHED_DAMPING_SCALE = 50.0f;
 //-----------------------------------------------------------------------------
 LINK_ENTITY_TO_CLASS( physics_prop_ragdoll, CRagdollProp );
 LINK_ENTITY_TO_CLASS( prop_ragdoll, CRagdollProp );
-EXTERN_SEND_TABLE(DT_Ragdoll)
+EXTERN_SEND_TABLE(DT_Ragdoll);
 
-IMPLEMENT_SERVERCLASS_ST(CRagdollProp, DT_Ragdoll)
+IMPLEMENT_SERVERCLASS_ST(CRagdollProp, DT_Ragdoll, DT_BaseAnimating)
 	SendPropArray	(SendPropQAngles(SENDINFO_ARRAY(m_ragAngles), 13, 0 ), m_ragAngles),
 	SendPropArray	(SendPropVector(SENDINFO_ARRAY(m_ragPos), -1, SPROP_COORD ), m_ragPos),
 	SendPropEHandle(SENDINFO( m_hUnragdoll ) ),
 	SendPropFloat(SENDINFO(m_flBlendWeight), 8, SPROP_ROUNDDOWN, 0.0f, 1.0f ),
 	SendPropInt(SENDINFO(m_nOverlaySequence), 11),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Ragdoll)
 
 #define DEFINE_RAGDOLL_ELEMENT( i ) \
 	DEFINE_FIELD( m_ragdoll.list[i].originParentSpace, FIELD_VECTOR ), \
@@ -1226,6 +1226,7 @@ public:
 	void VPhysicsUpdate( IPhysicsObject *pPhysics );
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_Ragdoll_Attached);
 	DECLARE_DATADESC();
 
 private:
@@ -1239,14 +1240,14 @@ private:
 };
 
 LINK_ENTITY_TO_CLASS( prop_ragdoll_attached, CRagdollPropAttached );
-EXTERN_SEND_TABLE(DT_Ragdoll_Attached)
+EXTERN_SEND_TABLE(DT_Ragdoll_Attached);
 
-IMPLEMENT_SERVERCLASS_ST(CRagdollPropAttached, DT_Ragdoll_Attached)
+IMPLEMENT_SERVERCLASS_ST(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
 	SendPropInt( SENDINFO( m_boneIndexAttached ), MAXSTUDIOBONEBITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_ragdollAttachedObjectIndex ), RAGDOLL_INDEX_BITS, SPROP_UNSIGNED ),
 	SendPropVector(SENDINFO(m_attachmentPointBoneSpace), -1,  SPROP_COORD ),
 	SendPropVector(SENDINFO(m_attachmentPointRagdollSpace), -1,  SPROP_COORD ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Ragdoll_Attached)
 
 BEGIN_DATADESC(CRagdollPropAttached)
 	DEFINE_FIELD( m_boneIndexAttached,	FIELD_INTEGER ),

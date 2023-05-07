@@ -45,8 +45,8 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponGalil, DT_WeaponGalil )
 
-BEGIN_NETWORK_TABLE( CWeaponGalil, DT_WeaponGalil )
-END_NETWORK_TABLE()
+BEGIN_NETWORK_TABLE( CWeaponGalil, DT_WeaponGalil, DT_WeaponCSBaseGun)
+END_NETWORK_TABLE(DT_WeaponGalil)
 
 BEGIN_PREDICTION_DATA( CWeaponGalil )
 END_PREDICTION_DATA()

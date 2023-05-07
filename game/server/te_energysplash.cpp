@@ -86,7 +86,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEEnergySplash, DT_TEEnergySplash)
 	SendPropVector( SENDINFO(m_vecPos), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecDir), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(m_bExplosive), 1, SPROP_UNSIGNED),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEEnergySplash)
 
 // Singleton to fire TEEnergySplash objects
 static CTEEnergySplash g_TEEnergySplash( "Energy Splash" );

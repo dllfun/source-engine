@@ -134,7 +134,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2SurvivalProxy, DT_HalfLife2SurvivalProx
 
 	BEGIN_SEND_TABLE( CHalfLife2SurvivalProxy, DT_HalfLife2SurvivalProxy )
 	SendPropDataTable( "hl2_survival_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_HL2SurvivalGameRules ), SendProxy_HL2SurvivalGameRules )
-	END_SEND_TABLE()
+	END_SEND_TABLE(DT_HalfLife2SurvivalProxy)
 #endif
 
 #ifndef CLIENT_DLL

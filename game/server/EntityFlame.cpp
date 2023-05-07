@@ -36,9 +36,9 @@ BEGIN_DATADESC( CEntityFlame )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST( CEntityFlame, DT_EntityFlame )
+IMPLEMENT_SERVERCLASS_ST( CEntityFlame, DT_EntityFlame, DT_BaseEntity)
 	SendPropEHandle( SENDINFO( m_hEntAttached ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EntityFlame)
 
 LINK_ENTITY_TO_CLASS( entityflame, CEntityFlame );
 LINK_ENTITY_TO_CLASS( env_entity_igniter, CEntityFlame );

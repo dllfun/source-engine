@@ -21,6 +21,7 @@ public:
 	~CWorld();
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_WORLD);
 
 	virtual int RequiredEdictIndex( void ) { return 0; }   // the world always needs to be in slot 0
 	

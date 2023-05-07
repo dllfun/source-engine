@@ -27,6 +27,9 @@ public:
 	DECLARE_CLASS( CWeaponFamas, CWeaponCSBase );
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_WeaponFamas);
+#endif
 	
 	CWeaponFamas();
 
@@ -53,7 +56,7 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFamas, DT_WeaponFamas )
 
-BEGIN_NETWORK_TABLE( CWeaponFamas, DT_WeaponFamas )
+BEGIN_NETWORK_TABLE( CWeaponFamas, DT_WeaponFamas, DT_WeaponCSBaseGun)
 	#ifdef CLIENT_DLL
 		RecvPropBool( RECVINFO( m_bBurstMode ) ),
 		RecvPropInt( RECVINFO( m_iBurstShotsRemaining ) ),
@@ -61,7 +64,7 @@ BEGIN_NETWORK_TABLE( CWeaponFamas, DT_WeaponFamas )
 		SendPropBool( SENDINFO( m_bBurstMode ) ),
 		SendPropInt( SENDINFO( m_iBurstShotsRemaining ) ),
 	#endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_WeaponFamas)
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponFamas )

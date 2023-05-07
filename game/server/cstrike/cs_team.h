@@ -27,6 +27,7 @@ public:
 	virtual ~CCSTeam( void );
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_CSTeam);
 
 	// Initialization
 	virtual void Init( const char *pName, int iNumber );

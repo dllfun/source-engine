@@ -271,7 +271,7 @@ int GetShellForAmmoType( const char *ammoname )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCSBase, DT_WeaponCSBase )
 
-BEGIN_NETWORK_TABLE( CWeaponCSBase, DT_WeaponCSBase )
+BEGIN_NETWORK_TABLE( CWeaponCSBase, DT_WeaponCSBase, DT_BaseCombatWeapon)
 #if !defined( CLIENT_DLL )
 SendPropInt( SENDINFO( m_weaponMode ), 1, SPROP_UNSIGNED ),
 SendPropFloat(SENDINFO(m_fAccuracyPenalty) ),
@@ -283,7 +283,7 @@ SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
 RecvPropInt( RECVINFO( m_weaponMode ) ),
 RecvPropFloat( RECVINFO(m_fAccuracyPenalty)),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_WeaponCSBase)
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponCSBase )

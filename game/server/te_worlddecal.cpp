@@ -88,14 +88,14 @@ void CTEWorldDecal::Test( const Vector& current_origin, const QAngle& current_an
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEWorldDecal, DT_TEWorldDecal)
+IMPLEMENT_SERVERCLASS_ST(CTEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
 #if defined( TF_DLL )
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD_MP_INTEGRAL ),
 #else
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 #endif
 	SendPropInt( SENDINFO(m_nIndex), 9, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEWorldDecal)
 
 
 // Singleton to fire TEWorldDecal objects

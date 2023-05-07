@@ -14,8 +14,8 @@
 #define MOVIEEXPLOSION_ENTITYNAME	"env_movieexplosion"
 
 
-IMPLEMENT_SERVERCLASS_ST(MovieExplosion, DT_MovieExplosion)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST(MovieExplosion, DT_MovieExplosion, DT_BaseParticleEntity)
+END_SEND_TABLE(DT_MovieExplosion)
 
 LINK_ENTITY_TO_CLASS(env_movieexplosion, MovieExplosion);
 

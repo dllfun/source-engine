@@ -92,11 +92,11 @@ void CTEBSPDecal::Test( const Vector& current_origin, const QAngle& current_angl
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEBSPDecal, DT_TEBSPDecal)
+IMPLEMENT_SERVERCLASS_ST(CTEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nIndex), 9, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEBSPDecal)
 
 
 // Singleton to fire TEBSPDecal objects

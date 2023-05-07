@@ -82,10 +82,10 @@ void CTELargeFunnel::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTELargeFunnel, DT_TELargeFunnel)
+IMPLEMENT_SERVERCLASS_ST(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropInt( SENDINFO(m_nReversed), 2, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TELargeFunnel)
 
 
 // Singleton to fire TELargeFunnel objects

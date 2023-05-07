@@ -51,8 +51,8 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponScout, DT_WeaponScout )
 
-BEGIN_NETWORK_TABLE( CWeaponScout, DT_WeaponScout )
-END_NETWORK_TABLE()
+BEGIN_NETWORK_TABLE( CWeaponScout, DT_WeaponScout, DT_WeaponCSBaseGun)
+END_NETWORK_TABLE(DT_WeaponScout)
 
 BEGIN_PREDICTION_DATA( CWeaponScout )
 END_PREDICTION_DATA()

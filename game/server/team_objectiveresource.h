@@ -24,6 +24,7 @@ class CBaseTeamObjectiveResource : public CBaseEntity
 	DECLARE_CLASS( CBaseTeamObjectiveResource, CBaseEntity );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseTeamObjectiveResource);
 	DECLARE_DATADESC();
 
 	CBaseTeamObjectiveResource();

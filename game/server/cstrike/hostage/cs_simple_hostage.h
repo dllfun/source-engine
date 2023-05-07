@@ -30,6 +30,7 @@ class CHostage : public CBaseCombatCharacter, public CImprovLocomotor, public IC
 public:
 	DECLARE_CLASS( CHostage, CBaseCombatCharacter );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_CHostage);
 	DECLARE_DATADESC();
 
 	CHostage( void );

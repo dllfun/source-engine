@@ -44,6 +44,7 @@ class CBaseFlex : public CBaseAnimatingOverlay
 	DECLARE_CLASS( CBaseFlex, CBaseAnimatingOverlay );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseFlex);
 	DECLARE_DATADESC();
 	DECLARE_PREDICTABLE();
 

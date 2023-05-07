@@ -64,10 +64,11 @@ bool IsInCommentaryMode( void )
 //-----------------------------------------------------------------------------
 class CPointCommentaryNode : public CBaseAnimating
 {
-	DECLARE_CLASS( CPointCommentaryNode, CBaseAnimating );
 public:
+	DECLARE_CLASS(CPointCommentaryNode, CBaseAnimating);
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PointCommentaryNode);
 
 	void Spawn( void );
 	void Precache( void );
@@ -178,7 +179,7 @@ BEGIN_DATADESC( CPointCommentaryNode )
 	DEFINE_THINKFUNC( UpdateViewPostThink ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPointCommentaryNode, DT_PointCommentaryNode )
+IMPLEMENT_SERVERCLASS_ST( CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
 	SendPropBool( SENDINFO(m_bActive) ),
 	SendPropStringT( SENDINFO(m_iszCommentaryFile) ),
 	SendPropStringT( SENDINFO(m_iszCommentaryFileNoHDR) ),
@@ -187,7 +188,7 @@ IMPLEMENT_SERVERCLASS_ST( CPointCommentaryNode, DT_PointCommentaryNode )
 	SendPropInt( SENDINFO(m_iNodeNumber), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_iNodeNumberMax), 8, SPROP_UNSIGNED ),
 	SendPropEHandle( SENDINFO(m_hViewPosition) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_PointCommentaryNode)
 
 LINK_ENTITY_TO_CLASS( point_commentary_node, CPointCommentaryNode );
 

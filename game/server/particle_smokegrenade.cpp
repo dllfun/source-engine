@@ -12,12 +12,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_SERVERCLASS_ST(ParticleSmokeGrenade, DT_ParticleSmokeGrenade)
+IMPLEMENT_SERVERCLASS_ST(ParticleSmokeGrenade, DT_ParticleSmokeGrenade, DT_BaseParticleEntity)
 	SendPropTime(SENDINFO(m_flSpawnTime) ),
 	SendPropFloat(SENDINFO(m_FadeStartTime), 0, SPROP_NOSCALE),
 	SendPropFloat(SENDINFO(m_FadeEndTime), 0, SPROP_NOSCALE),
 	SendPropInt(SENDINFO(m_CurrentStage), 1, SPROP_UNSIGNED),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ParticleSmokeGrenade)
 
 LINK_ENTITY_TO_CLASS( env_particlesmokegrenade, ParticleSmokeGrenade );
 

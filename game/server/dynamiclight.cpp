@@ -72,7 +72,7 @@ BEGIN_DATADESC( CDynamicLight )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CDynamicLight, DT_DynamicLight)
+IMPLEMENT_SERVERCLASS_ST(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
 	SendPropInt( SENDINFO(m_Flags), 4, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_LightStyle), 4, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO(m_Radius), 0, SPROP_NOSCALE),
@@ -80,7 +80,7 @@ IMPLEMENT_SERVERCLASS_ST(CDynamicLight, DT_DynamicLight)
 	SendPropFloat( SENDINFO(m_InnerAngle), 8, 0, 0.0, 360.0f ),
 	SendPropFloat( SENDINFO(m_OuterAngle), 8, 0, 0.0, 360.0f ),
 	SendPropFloat( SENDINFO(m_SpotRadius), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_DynamicLight)
 
 //-----------------------------------------------------------------------------
 // Purpose: 

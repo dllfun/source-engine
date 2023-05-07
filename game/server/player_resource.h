@@ -20,6 +20,7 @@ class CPlayerResource : public CBaseEntity
 	DECLARE_CLASS( CPlayerResource, CBaseEntity );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PlayerResource);
 	DECLARE_DATADESC();
 
 	virtual void Spawn( void );

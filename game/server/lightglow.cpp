@@ -24,6 +24,7 @@ class CLightGlow : public CBaseEntity
 public:
 	DECLARE_CLASS( CLightGlow, CBaseEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_LightGlow);
 	DECLARE_DATADESC();
 
 					CLightGlow();
@@ -60,7 +61,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CLightGlow, DT_LightGlow )
 	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),
 	SendPropFloat( SENDINFO(m_flGlowProxySize ), 6,	SPROP_ROUNDUP,	0.0f,	64.0f ),
 	SendPropFloat( SENDINFO_NAME( m_flHDRColorScale, HDRColorScale ), 0,	SPROP_NOSCALE,	0.0f,	100.0f ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_LightGlow)
 
 LINK_ENTITY_TO_CLASS( env_lightglow, CLightGlow );
 

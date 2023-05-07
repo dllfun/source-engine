@@ -46,6 +46,7 @@ DECLARE_CLASS( CPhysBox, CBreakable );
 
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PhysBox);
 
 	void	Spawn ( void );
 	bool	CreateVPhysics();
@@ -179,6 +180,7 @@ class CPhysMagnet : public CBaseAnimating, public IPhysicsConstraintEvent
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PhysMagnet);
 
 	CPhysMagnet();
 	~CPhysMagnet();

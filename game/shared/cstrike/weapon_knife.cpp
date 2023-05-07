@@ -65,16 +65,16 @@ BEGIN_NETWORK_TABLE_NOBASE( CKnife, DT_LocalActiveWeaponKnifeData )
 	#else
 		RecvPropTime( RECVINFO( m_flSmackTime ) ),
 	#endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_LocalActiveWeaponKnifeData)
 
 
-BEGIN_NETWORK_TABLE( CKnife, DT_WeaponKnife )
+BEGIN_NETWORK_TABLE( CKnife, DT_WeaponKnife, DT_WeaponCSBase)
 	#if !defined( CLIENT_DLL )
 		SendPropDataTable("LocalActiveWeaponKnifeData", 0, &REFERENCE_SEND_TABLE(DT_LocalActiveWeaponKnifeData), SendProxy_SendActiveLocalKnifeDataTable ),
 	#else
 		RecvPropDataTable("LocalActiveWeaponKnifeData", 0, 0, &REFERENCE_RECV_TABLE(DT_LocalActiveWeaponKnifeData)),
 	#endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_WeaponKnife)
 
 
 #if defined CLIENT_DLL

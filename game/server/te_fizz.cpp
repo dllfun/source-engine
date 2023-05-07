@@ -86,12 +86,12 @@ void CTEFizz::Precache( void )
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEFizz, DT_TEFizz)
+IMPLEMENT_SERVERCLASS_ST(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
 	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropInt( SENDINFO(m_nDensity), 8, SPROP_UNSIGNED ),
 	SendPropInt(SENDINFO(m_nCurrent), 16 ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEFizz)
 
 
 // Singleton to fire TEFizz objects

@@ -108,7 +108,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules
 	SendPropBool( SENDINFO( m_bMultipleTrains ) ),
 	SendPropArray3( SENDINFO_ARRAY3(m_bPlayerReady), SendPropBool( SENDINFO_ARRAY(m_bPlayerReady) ) ),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
 
 IMPLEMENT_NETWORKCLASS_ALIASED( TeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy )
 
@@ -150,9 +150,9 @@ void* SendProxy_TeamplayRoundBasedRules( const SendProp *pProp, const void *pStr
 	return pRules;
 }
 
-BEGIN_SEND_TABLE( CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy )
+BEGIN_SEND_TABLE( CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy , DT_GameRulesProxy)
 	SendPropDataTable( "teamplayroundbased_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_TeamplayRoundBasedRules ), SendProxy_TeamplayRoundBasedRules )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TeamplayRoundBasedRulesProxy)
 
 BEGIN_DATADESC( CTeamplayRoundBasedRulesProxy )
 	// Inputs.

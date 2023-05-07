@@ -317,6 +317,7 @@ public:
 
 	DECLARE_CLASS( CSceneEntity, CPointEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_SceneEntity);
 
 							CSceneEntity( void );
 							~CSceneEntity( void );
@@ -622,7 +623,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CSceneEntity, DT_SceneEntity )
 		(char*)SENDINFO_UTLVECTOR( m_hActorList ),
 		MAX_ACTORS_IN_SCENE, // max elements
 		SendPropEHandle( NULL, 0 ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_SceneEntity)
 
 BEGIN_DATADESC( CSceneEntity )
 

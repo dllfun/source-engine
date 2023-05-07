@@ -26,6 +26,7 @@ class CFish : public CBaseAnimating
 public:
 	DECLARE_CLASS( CFish, CBaseAnimating );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_CFish);
 	DECLARE_DATADESC();
 
 	CFish( void );

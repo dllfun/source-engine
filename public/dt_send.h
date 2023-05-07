@@ -254,33 +254,33 @@ public:
 	float			m_fLowValue;
 	float			m_fHighValue;
 	
-	SendProp		*m_pArrayProp;					// If this is an array, this is the property that defines each array element.
+	SendProp		*m_pArrayProp = NULL;					// If this is an array, this is the property that defines each array element.
 	ArrayLengthSendProxyFn	m_ArrayLengthProxy;	// This callback returns the array length.
 	
 	int				m_nElements;		// Number of elements in the array (or 1 if it's not an array).
 	int				m_ElementStride;	// Pointer distance between array elements.
 
-	const char *m_pExcludeDTName;			// If this is an exclude prop, then this is the name of the datatable to exclude a prop from.
-	const char *m_pParentArrayPropName;
+	const char *m_pExcludeDTName = NULL;			// If this is an exclude prop, then this is the name of the datatable to exclude a prop from.
+	const char *m_pParentArrayPropName = NULL;
 
-	const char		*m_pVarName;
+	const char		*m_pVarName = NULL;
 	float			m_fHighLowMul;
 	
 private:
 
 	int					m_Flags;				// SPROP_ flags.
 
-	SendVarProxyFn		m_ProxyFn;				// NULL for DPT_DataTable.
-	SendTableProxyFn	m_DataTableProxyFn;		// Valid for DPT_DataTable.
+	SendVarProxyFn		m_ProxyFn = NULL;				// NULL for DPT_DataTable.
+	SendTableProxyFn	m_DataTableProxyFn = NULL;		// Valid for DPT_DataTable.
 	
-	SendTable			*m_pDataTable;
+	SendTable			*m_pDataTable = NULL;
 	
 	// SENDPROP_VECTORELEM makes this negative to start with so we can detect that and
 	// set the SPROP_IS_VECTOR_ELEM flag.
 	int					m_Offset;
 
 	// Extra data bound to this property.
-	const void			*m_pExtraData;
+	const void			*m_pExtraData = NULL;
 };
 
 
@@ -447,6 +447,8 @@ public:
 
 	void		Construct( SendProp *pProps, int nProps, const char *pNetTableName );
 
+	virtual void Init() {};
+
 	const char*	GetName() const;
 	
 	int			GetNumProps() const;
@@ -548,35 +550,61 @@ inline void SendTable::SetHasPropsEncodedAgainstTickcount( bool bState )
 
 // If you don't want to interit a base class's properties, use BEGIN_SEND_TABLE_NOBASE.
 // ------------------------------------------------------------------------------------------------------ //
-template <typename T> int ServerClassInit(T*); 
+
+//#define BEGIN_SEND_TABLE_NOBASE(className, tableName) \
+//	template <typename T> int ServerClassInit(T*); \
+//	namespace tableName { \
+//		struct ignored; \
+//	} \
+//	template <> int ServerClassInit<tableName::ignored>(tableName::ignored *); \
+//	namespace tableName { \
+//		SendTable g_SendTable;\
+//		int g_SendTableInit = ServerClassInit((tableName::ignored *)NULL); \
+//	} \
+//	template <> int ServerClassInit<tableName::ignored>(tableName::ignored *) \
+//	{ \
+//		typedef className currentSendDTClass; \
+//		static const char *g_pSendTableName = #tableName; \
+//		SendTable &sendTable = tableName::g_SendTable; \
+//		static SendProp g_SendProps[] = { \
+//			SendPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
+//
+//
+//
+//#define END_SEND_TABLE() \
+//		};\
+//		sendTable.Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, g_pSendTableName);\
+//		return 1; \
+//	} 
+
+#define DECLARE_SEND_TABLE_ACCESS(tableName) friend class SendTable_##tableName
+
+
 
 #define BEGIN_SEND_TABLE_NOBASE(className, tableName) \
-	namespace tableName { \
-		struct ignored; \
-	} \
-	template <> int ServerClassInit<tableName::ignored>(tableName::ignored *); \
-	namespace tableName { \
-		SendTable g_SendTable;\
-		int g_SendTableInit = ServerClassInit((tableName::ignored *)NULL); \
-	} \
-	template <> int ServerClassInit<tableName::ignored>(tableName::ignored *) \
-	{ \
+	class SendTable_##tableName : public SendTable{\
+	public:\
+	\
+		SendTable_##tableName(){ \
 		typedef className currentSendDTClass; \
-		static const char *g_pSendTableName = #tableName; \
-		SendTable &sendTable = tableName::g_SendTable; \
+		static const char *pTableName = #tableName; \
 		static SendProp g_SendProps[] = { \
-			SendPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
-
-#define END_SEND_TABLE() \
-		};\
-		sendTable.Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, g_pSendTableName);\
-		return 1; \
-	} 
+				SendPropInt("should_never_see_this", 0, sizeof(int)),
 
 
-#define BEGIN_SEND_TABLE(className, tableName) \
+#define END_SEND_TABLE(tableName) \
+			};\
+			Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
+		}\
+	\
+	};\
+	static SendTable_##tableName g_SendTable_##tableName; \
+	SendTable* g_pSendTable_##tableName = &g_SendTable_##tableName; 
+
+#define BEGIN_SEND_TABLE(className, tableName, baseTableName) \
+	extern SendTable* g_pSendTable_##baseTableName;\
 	BEGIN_SEND_TABLE_NOBASE(className, tableName) \
-		SendPropDataTable("baseclass", 0, className::BaseClass::m_pClassSendTable, SendProxy_DataTableToDataTable),
+		SendPropDataTable("baseclass", 0, g_pSendTable_##baseTableName, SendProxy_DataTableToDataTable),
 
 
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the

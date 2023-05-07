@@ -99,7 +99,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEBeamSpline, DT_TEBeamSpline)
 	SendPropArray(
 		SendPropVector( SENDINFO_ARRAY(m_vecPoints), -1, SPROP_COORD),
 		m_vecPoints)
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEBeamSpline)
 
 
 // Singleton to fire TEBeamSpline objects

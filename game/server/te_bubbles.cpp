@@ -96,14 +96,14 @@ void CTEBubbles::Test( const Vector& current_origin, const QAngle& current_angle
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBubbles, DT_TEBubbles)
+IMPLEMENT_SERVERCLASS_ST(CTEBubbles, DT_TEBubbles, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecMins), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecMaxs), -1, SPROP_COORD),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_fHeight ), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER ),
 	SendPropInt( SENDINFO(m_nCount), 8, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO(m_fSpeed ), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEBubbles)
 
 
 // Singleton to fire TEBubbles objects

@@ -26,6 +26,7 @@ class CTEFireBullets : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEFireBullets, CBaseTempEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_TEFireBullets);
 
 					CTEFireBullets( const char *name );
 	virtual			~CTEFireBullets( void );
@@ -67,7 +68,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEFireBullets, DT_TEFireBullets)
 	SendPropInt( SENDINFO( m_iPlayer ), 6, SPROP_UNSIGNED ), 	// max 64 players, see MAX_PLAYERS
 	SendPropFloat( SENDINFO( m_fInaccuracy ), 10, 0, 0, 1 ),	
 	SendPropFloat( SENDINFO( m_fSpread ), 8, 0, 0, 0.1f ),	
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEFireBullets)
 
 
 // Singleton
@@ -143,7 +144,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEPlantBomb, DT_TEPlantBomb)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD ),
 	SendPropInt( SENDINFO( m_iPlayer ), 6, SPROP_UNSIGNED ), 	// max 64 players, see MAX_PLAYERS
 	SendPropInt( SENDINFO( m_option ), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEPlantBomb)
 
 
 // Singleton

@@ -54,9 +54,9 @@ void CTERadioIcon::Precache( void )
 	CBaseEntity::PrecacheModel("sprites/radio.vmt");
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTERadioIcon, DT_TERadioIcon)
+IMPLEMENT_SERVERCLASS_ST(CTERadioIcon, DT_TERadioIcon, DT_BaseTempEntity)
 	SendPropInt( SENDINFO(m_iAttachToClient), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TERadioIcon)
 
 
 // Singleton to fire StickyBolt objects

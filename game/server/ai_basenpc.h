@@ -484,9 +484,8 @@ extern CAI_Manager g_AI_Manager;
 class CAI_BaseNPC : public CBaseCombatCharacter, 
 					public CAI_DefMovementSink
 {
-	DECLARE_CLASS( CAI_BaseNPC, CBaseCombatCharacter );
-
 public:
+	DECLARE_CLASS(CAI_BaseNPC, CBaseCombatCharacter);
 	//-----------------------------------------------------
 	//
 	// Initialization, cleanup, serialization, identity
@@ -499,6 +498,7 @@ public:
 	
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_AI_BaseNPC);
 
 	virtual int			Save( ISave &save ); 
 	virtual int			Restore( IRestore &restore );

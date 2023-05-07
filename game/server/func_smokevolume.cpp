@@ -17,6 +17,7 @@ class CFuncSmokeVolume : public CBaseParticleEntity
 public:
 	DECLARE_CLASS( CFuncSmokeVolume, CBaseParticleEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_FuncSmokeVolume);
 	DECLARE_DATADESC();
 
 	CFuncSmokeVolume();
@@ -62,7 +63,7 @@ END_DATADESC()
 
 
 
-IMPLEMENT_SERVERCLASS_ST( CFuncSmokeVolume, DT_FuncSmokeVolume )
+IMPLEMENT_SERVERCLASS_ST( CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
 	SendPropInt( SENDINFO( m_Color1 ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 	SendPropInt( SENDINFO( m_Color2 ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 	SendPropString( SENDINFO( m_MaterialName ) ),
@@ -73,7 +74,7 @@ IMPLEMENT_SERVERCLASS_ST( CFuncSmokeVolume, DT_FuncSmokeVolume )
 	SendPropFloat( SENDINFO( m_MovementSpeed ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_Density ), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_FuncSmokeVolume)
 
 LINK_ENTITY_TO_CLASS( func_smokevolume, CFuncSmokeVolume );
 

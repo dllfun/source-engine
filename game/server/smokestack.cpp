@@ -15,7 +15,7 @@
 
 
 //Networking
-IMPLEMENT_SERVERCLASS_ST(CSmokeStack, DT_SmokeStack)
+IMPLEMENT_SERVERCLASS_ST(CSmokeStack, DT_SmokeStack, DT_BaseParticleEntity)
 	SendPropFloat(SENDINFO(m_SpreadSpeed), 0, SPROP_NOSCALE),
 	SendPropFloat(SENDINFO(m_Speed), 0, SPROP_NOSCALE),
 	SendPropFloat(SENDINFO(m_StartSize), 0, SPROP_NOSCALE),
@@ -40,7 +40,7 @@ IMPLEMENT_SERVERCLASS_ST(CSmokeStack, DT_SmokeStack)
 	SendPropFloat(SENDINFO(m_flTwist), 0, SPROP_NOSCALE),
 	SendPropIntWithMinusOneFlag( SENDINFO(m_iMaterialModel), 16 )
 
-END_SEND_TABLE()
+END_SEND_TABLE(DT_SmokeStack)
 
 LINK_ENTITY_TO_CLASS( env_smokestack, CSmokeStack );
 

@@ -83,7 +83,7 @@ void CTEMetalSparks::Test( const Vector& current_origin, const QAngle& current_a
 IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEMetalSparks, DT_TEMetalSparks)
 	SendPropVector( SENDINFO(m_vecPos), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecDir), -1, SPROP_COORD),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEMetalSparks)
 
 // Singleton to fire TEMetalSparks objects
 static CTEMetalSparks g_TEMetalSparks( "Metal Sparks" );
@@ -116,10 +116,11 @@ DECLARE_CLASS( CTEArmorRicochet, CTEMetalSparks );
 public:
 	CTEArmorRicochet( const char *name ) : CTEMetalSparks(name) {}
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_TEArmorRicochet);
 };
 
-IMPLEMENT_SERVERCLASS_ST( CTEArmorRicochet, DT_TEArmorRicochet)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEArmorRicochet, DT_TEArmorRicochet, DT_TEMetalSparks)
+END_SEND_TABLE(DT_TEArmorRicochet)
 
 static CTEArmorRicochet g_TEArmorRicochet( "Armor Ricochet" );
 //-----------------------------------------------------------------------------

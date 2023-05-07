@@ -17,6 +17,7 @@ class CCSPlayerResource : public CPlayerResource
 	
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_CSPlayerResource);
 	DECLARE_DATADESC();
 
 	CCSPlayerResource();

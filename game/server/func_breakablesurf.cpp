@@ -188,7 +188,7 @@ BEGIN_DATADESC( CBreakableSurface )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CBreakableSurface, DT_BreakableSurface)
+IMPLEMENT_SERVERCLASS_ST(CBreakableSurface, DT_BreakableSurface, DT_BaseEntity)
 	SendPropInt(SENDINFO(m_nNumWide), 8,  SPROP_UNSIGNED),
 	SendPropInt(SENDINFO(m_nNumHigh), 8, SPROP_UNSIGNED),
 	SendPropFloat(SENDINFO(m_flPanelWidth), 0, SPROP_NOSCALE),
@@ -198,7 +198,7 @@ IMPLEMENT_SERVERCLASS_ST(CBreakableSurface, DT_BreakableSurface)
 	SendPropInt(SENDINFO(m_bIsBroken), 1, SPROP_UNSIGNED),
 	SendPropInt(SENDINFO(m_nSurfaceType), 2, SPROP_UNSIGNED),
 	SendPropArray3(SENDINFO_ARRAY3(m_RawPanelBitVec), SendPropInt( SENDINFO_ARRAY( m_RawPanelBitVec ), 1, SPROP_UNSIGNED ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_BreakableSurface)
 
 
 //-----------------------------------------------------------------------------

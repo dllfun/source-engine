@@ -87,12 +87,12 @@ void CTEProjectedDecal::Test( const Vector& current_origin, const QAngle& curren
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEProjectedDecal, DT_TEProjectedDecal)
+IMPLEMENT_SERVERCLASS_ST(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropQAngles( SENDINFO(m_angRotation), 10 ),
 	SendPropFloat( SENDINFO(m_flDistance), 10, SPROP_ROUNDUP, 0, 1024 ),
 	SendPropInt( SENDINFO(m_nIndex), 9, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEProjectedDecal)
 
 
 // Singleton to fire TEBSPDecal objects

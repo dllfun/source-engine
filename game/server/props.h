@@ -262,6 +262,7 @@ class CDynamicProp : public CBreakableProp, public IPositionWatcher
 
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_DynamicProp);
 	DECLARE_DATADESC();
 
 	CDynamicProp();
@@ -331,6 +332,7 @@ class CPhysicsProp : public CBreakableProp
 {
 	DECLARE_CLASS( CPhysicsProp, CBreakableProp );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PhysicsProp);
 
 public:
 	~CPhysicsProp();

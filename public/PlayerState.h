@@ -53,6 +53,7 @@ public:
 // Put at end in case it has any effect on size of structure
 #if defined( GAME_DLL )
 	DECLARE_SIMPLE_DATADESC();
+	DECLARE_SEND_TABLE_ACCESS(DT_PlayerState);
 #endif
 
 #if defined( CLIENT_DLL )

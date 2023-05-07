@@ -398,7 +398,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CCollisionProperty, DT_CollisionProperty )
 	SendPropVector( SENDINFO(m_vecSpecifiedSurroundingMaxs), 0, SPROP_NOSCALE),
 #endif
 
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_CollisionProperty)
 
 																							
 //-----------------------------------------------------------------------------

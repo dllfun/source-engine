@@ -235,8 +235,8 @@ public:
 	int m_iModel;
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponCycler, DT_WeaponCycler)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST(CWeaponCycler, DT_WeaponCycler, DT_BaseCombatWeapon)
+END_SEND_TABLE(DT_WeaponCycler)
 
 LINK_ENTITY_TO_CLASS( cycler_weapon, CWeaponCycler );
 

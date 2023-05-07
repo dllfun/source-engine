@@ -22,6 +22,7 @@ public:
 	DECLARE_CLASS( CVGuiScreen, CBaseEntity );
 	
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_VGuiScreen);
 	DECLARE_DATADESC();
 
 	CVGuiScreen();

@@ -15,6 +15,7 @@ class CEntityDissolve : public CBaseEntity
 {
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EntityDissolve);
 	DECLARE_CLASS( CEntityDissolve, CBaseEntity );
 
 	CEntityDissolve( void );

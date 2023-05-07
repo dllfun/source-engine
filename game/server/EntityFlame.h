@@ -23,6 +23,7 @@ class CEntityFlame : public CBaseEntity
 {
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EntityFlame);
 	DECLARE_CLASS( CEntityFlame, CBaseEntity );
 
 	CEntityFlame( void );

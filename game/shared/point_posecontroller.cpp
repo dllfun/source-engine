@@ -59,7 +59,7 @@ BEGIN_DATADESC( CPoseController )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CPoseController, DT_PoseController)
+IMPLEMENT_SERVERCLASS_ST(CPoseController, DT_PoseController, DT_BaseEntity)
 	SendPropArray3( SENDINFO_ARRAY3(m_hProps), SendPropEHandle( SENDINFO_ARRAY(m_hProps) ) ),
 	SendPropArray3( SENDINFO_ARRAY3(m_chPoseIndex), SendPropInt( SENDINFO_ARRAY(m_chPoseIndex), 5, SPROP_UNSIGNED ) ),	// bits sent must be enough to represent MAXSTUDIOPOSEPARAM
 	SendPropBool( SENDINFO(m_bPoseValueParity) ),
@@ -71,7 +71,7 @@ IMPLEMENT_SERVERCLASS_ST(CPoseController, DT_PoseController)
 	SendPropFloat( SENDINFO(m_fFModTimeOffset), 11, 0, -1.0f, 1.0f ),
 	SendPropFloat( SENDINFO(m_fFModRate), 11, 0, -MAX_POSE_FMOD_RATE, MAX_POSE_FMOD_RATE ),
 	SendPropFloat( SENDINFO(m_fFModAmplitude), 11, 0, 0.0f, MAX_POSE_FMOD_AMPLITUDE ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_PoseController)
 
 
 void CPoseController::Spawn( void )

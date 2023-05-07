@@ -31,7 +31,7 @@ float GetCurrentGravity( void );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile )
 
-BEGIN_NETWORK_TABLE( CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile )
+BEGIN_NETWORK_TABLE( CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile, DT_BaseGrenade)
 	#ifdef CLIENT_DLL
 		RecvPropVector( RECVINFO( m_vInitialVelocity ) )
 	#else
@@ -42,7 +42,7 @@ BEGIN_NETWORK_TABLE( CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile )
 			3000	// high value
 			)
 	#endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
 
 
 #ifdef CLIENT_DLL

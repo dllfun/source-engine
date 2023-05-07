@@ -95,14 +95,14 @@ void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTESpriteSpray, DT_TESpriteSpray)
+IMPLEMENT_SERVERCLASS_ST(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD),
 	SendPropModelIndex(SENDINFO(m_nModelIndex)),
 	SendPropFloat( SENDINFO(m_fNoise ), 8, SPROP_ROUNDDOWN, 0.0, 2.56 ),
 	SendPropInt( SENDINFO(m_nSpeed ), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nCount), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TESpriteSpray)
 
 
 // Singleton to fire TESpriteSpray objects

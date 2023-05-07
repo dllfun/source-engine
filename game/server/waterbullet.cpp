@@ -28,8 +28,8 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( waterbullet, CWaterBullet );
 
-IMPLEMENT_SERVERCLASS_ST( CWaterBullet, DT_WaterBullet )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CWaterBullet, DT_WaterBullet, DT_BaseAnimating)
+END_SEND_TABLE(DT_WaterBullet)
 
 //-----------------------------------------------------------------------------
 // Purpose: 

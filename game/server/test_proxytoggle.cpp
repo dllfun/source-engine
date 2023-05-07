@@ -25,6 +25,7 @@ class CTest_ProxyToggle_Networkable : public CBaseEntity
 public:
 	DECLARE_CLASS( CTest_ProxyToggle_Networkable, CBaseEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_ProxyToggle_ProxiedData);
 
 			CTest_ProxyToggle_Networkable()
 			{
@@ -68,11 +69,11 @@ LINK_ENTITY_TO_CLASS( test_proxytoggle, CTest_ProxyToggle_Networkable );
 
 BEGIN_SEND_TABLE_NOBASE( CTest_ProxyToggle_Networkable, DT_ProxyToggle_ProxiedData )
 	SendPropInt( SENDINFO( m_WithProxy ) )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ProxyToggle_ProxiedData)
 
-IMPLEMENT_SERVERCLASS_ST( CTest_ProxyToggle_Networkable, DT_ProxyToggle )
+IMPLEMENT_SERVERCLASS_ST( CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
 	SendPropDataTable( "blah", 0, &REFERENCE_SEND_TABLE( DT_ProxyToggle_ProxiedData ), SendProxy_TestProxyToggle )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ProxyToggle)
 
 
 

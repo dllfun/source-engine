@@ -97,12 +97,12 @@ void CTESprite::Test( const Vector& current_origin, const QAngle& current_angles
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTESprite, DT_TESprite)
+IMPLEMENT_SERVERCLASS_ST(CTESprite, DT_TESprite, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
 	SendPropInt( SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TESprite)
 
 
 // Singleton to fire TESprite objects

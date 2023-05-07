@@ -99,14 +99,14 @@ void CTEBubbleTrail::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBubbleTrail, DT_TEBubbleTrail)
+IMPLEMENT_SERVERCLASS_ST(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecMins), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecMaxs), -1, SPROP_COORD),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_flWaterZ ), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER ),
 	SendPropInt( SENDINFO(m_nCount), BUBBLE_TRAIL_COUNT_BITS, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO(m_fSpeed ), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEBubbleTrail)
 
 
 // Singleton to fire TEBubbleTrail objects

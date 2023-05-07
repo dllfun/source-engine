@@ -103,7 +103,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CFish, DT_CFish )
 
 	SendPropFloat( SENDINFO(m_waterLevel) ),										// only sent once
 
-END_SEND_TABLE()
+END_SEND_TABLE(DT_CFish)
 
 
 

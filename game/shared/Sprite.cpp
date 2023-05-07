@@ -129,7 +129,7 @@ static void RecvProxy_SpriteScale( const CRecvProxyData *pData, void *pStruct, v
 
 #endif
 
-BEGIN_NETWORK_TABLE( CSprite, DT_Sprite )
+BEGIN_NETWORK_TABLE( CSprite, DT_Sprite , DT_BaseEntity)
 #if !defined( CLIENT_DLL )
 	SendPropEHandle( SENDINFO(m_hAttachedToEntity )),
 	SendPropInt( SENDINFO(m_nAttachment ), 8 ),
@@ -172,7 +172,7 @@ BEGIN_NETWORK_TABLE( CSprite, DT_Sprite )
 	RecvPropInt(RECVINFO(m_nBrightness)),
 	RecvPropBool( RECVINFO(m_bWorldSpaceScale) ),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_Sprite)
 
 
 CSprite::CSprite() : BaseClass()
@@ -854,8 +854,8 @@ const Vector& CSprite::GetRenderOrigin()
 //-----------------------------------------------------------------------------
 
 #if !defined( CLIENT_DLL )
-IMPLEMENT_SERVERCLASS_ST( CSpriteOriented, DT_SpriteOriented )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CSpriteOriented, DT_SpriteOriented , DT_Sprite)
+END_SEND_TABLE(DT_SpriteOriented)
 #else
 #undef CSpriteOriented
 IMPLEMENT_CLIENTCLASS_DT(C_SpriteOriented, DT_SpriteOriented, CSpriteOriented)

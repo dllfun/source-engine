@@ -62,6 +62,7 @@ class CCollisionProperty : public ICollideable
 
 #ifdef GAME_DLL
 	DECLARE_DATADESC();
+	DECLARE_SEND_TABLE_ACCESS(DT_CollisionProperty);
 #endif
 
 public:

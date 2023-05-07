@@ -33,6 +33,7 @@ public:
 	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_ShadowControl);
 	DECLARE_DATADESC();
 
 private:
@@ -65,7 +66,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CShadowControl, DT_ShadowControl)
 	SendPropInt(SENDINFO(m_shadowColor),	32, SPROP_UNSIGNED),
 	SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE ),
 	SendPropBool(SENDINFO(m_bDisableShadows)),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ShadowControl)
 
 
 CShadowControl::CShadowControl()

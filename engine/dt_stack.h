@@ -288,6 +288,10 @@ public:
 				pNewStructBase = CallPropProxy( pCurChild, pCurChild->m_iDatatableProp, pStructBase );
 			}
 
+			if (pNewStructBase != pStructBase) {
+				int aaa = 0;
+			}
+
 			RecurseAndCallProxies( pCurChild, pNewStructBase );
 		}
 	}

@@ -93,14 +93,14 @@ void CTEBloodStream::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBloodStream, DT_TEBloodStream)
+IMPLEMENT_SERVERCLASS_ST(CTEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
 	SendPropVector( SENDINFO(m_vecDirection), 11, 0, -10.0, 10.0 ),
 	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(g), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(b), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(a), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nAmount), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEBloodStream)
 
 // Singleton to fire TEBloodStream objects
 static CTEBloodStream g_TEBloodStream( "Blood Stream" );

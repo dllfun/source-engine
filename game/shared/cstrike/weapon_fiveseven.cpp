@@ -52,8 +52,8 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFiveSeven, DT_WeaponFiveSeven )
 
-BEGIN_NETWORK_TABLE( CWeaponFiveSeven, DT_WeaponFiveSeven )
-END_NETWORK_TABLE()
+BEGIN_NETWORK_TABLE( CWeaponFiveSeven, DT_WeaponFiveSeven, DT_WeaponCSBase)
+END_NETWORK_TABLE(DT_WeaponFiveSeven)
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponFiveSeven )

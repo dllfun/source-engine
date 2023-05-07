@@ -15,7 +15,7 @@
 #include "cs_gamerules.h"
 
 // Datatable
-IMPLEMENT_SERVERCLASS_ST(CCSPlayerResource, DT_CSPlayerResource)
+IMPLEMENT_SERVERCLASS_ST(CCSPlayerResource, DT_CSPlayerResource, DT_PlayerResource)
 	SendPropInt( SENDINFO( m_iPlayerC4 ), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_iPlayerVIP ), 8, SPROP_UNSIGNED ),
 	SendPropVector( SENDINFO(m_vecC4), -1, SPROP_COORD),
@@ -35,7 +35,7 @@ IMPLEMENT_SERVERCLASS_ST(CCSPlayerResource, DT_CSPlayerResource)
 	SendPropArray3( SENDINFO_ARRAY3(m_iMVPs), SendPropInt( SENDINFO_ARRAY(m_iMVPs), COORD_INTEGER_BITS+1, SPROP_UNSIGNED ) ),
 	SendPropArray3( SENDINFO_ARRAY3(m_bHasDefuser), SendPropInt( SENDINFO_ARRAY(m_bHasDefuser), 1, SPROP_UNSIGNED ) ),
 	SendPropArray3( SENDINFO_ARRAY3(m_szClan), SendPropStringT( SENDINFO_ARRAY(m_szClan) ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_CSPlayerResource)
 //=============================================================================
 // HPE_END
 //=============================================================================

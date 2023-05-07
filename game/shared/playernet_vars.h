@@ -111,6 +111,7 @@ struct audioparams_t
 
 #ifndef CLIENT_DLL
 	DECLARE_SIMPLE_DATADESC();
+	DECLARE_SEND_TABLE_ACCESS(DT_Local);
 #endif
 
 	CNetworkArray( Vector, localSound, NUM_AUDIO_LOCAL_SOUNDS )

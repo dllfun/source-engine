@@ -27,6 +27,7 @@ public:
 	DECLARE_CLASS( CSlideshowDisplay, CBaseEntity );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_SlideshowDisplay);
 
 	virtual ~CSlideshowDisplay();
 
@@ -139,7 +140,7 @@ BEGIN_DATADESC( CSlideshowDisplay )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CSlideshowDisplay, DT_SlideshowDisplay )
+IMPLEMENT_SERVERCLASS_ST( CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
 	SendPropBool( SENDINFO(m_bEnabled) ),
 	SendPropString( SENDINFO( m_szDisplayText ) ),
 	SendPropString( SENDINFO( m_szSlideshowDirectory ) ),
@@ -148,7 +149,7 @@ IMPLEMENT_SERVERCLASS_ST( CSlideshowDisplay, DT_SlideshowDisplay )
 	SendPropFloat( SENDINFO(m_fMaxSlideTime), 11, 0, 0.0f, 20.0f ),
 	SendPropInt( SENDINFO(m_iCycleType), 2, SPROP_UNSIGNED ),
 	SendPropBool( SENDINFO(m_bNoListRepeats) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_SlideshowDisplay)
 
 
 CSlideshowDisplay::~CSlideshowDisplay()

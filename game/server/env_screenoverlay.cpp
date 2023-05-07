@@ -19,6 +19,7 @@ class CEnvScreenOverlay : public CPointEntity
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EnvScreenOverlay);
 
 	CEnvScreenOverlay();
 
@@ -87,13 +88,13 @@ void SendProxy_String_tToString( const SendProp *pProp, const void *pStruct, con
 	pOut->m_pString = (char*)STRING( *pString );
 }
 
-IMPLEMENT_SERVERCLASS_ST( CEnvScreenOverlay, DT_EnvScreenOverlay )
+IMPLEMENT_SERVERCLASS_ST( CEnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
 	SendPropArray( SendPropString( SENDINFO_ARRAY( m_iszOverlayNames ), 0, SendProxy_String_tToString ), m_iszOverlayNames ),
 	SendPropArray( SendPropFloat( SENDINFO_ARRAY( m_flOverlayTimes ), 11, SPROP_ROUNDDOWN, -1.0f, 63.0f ), m_flOverlayTimes ),
 	SendPropFloat( SENDINFO( m_flStartTime ), 32, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO( m_iDesiredOverlay ), 5 ),
 	SendPropBool( SENDINFO( m_bIsActive ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EnvScreenOverlay)
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -199,6 +200,7 @@ class CEnvScreenEffect : public CPointEntity
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EnvScreenEffect);
 
 	// We always want to be sent to the client
 	CEnvScreenEffect( void ) { 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT ); }
@@ -226,10 +228,10 @@ BEGIN_DATADESC( CEnvScreenEffect )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "StopEffect", InputStopEffect ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvScreenEffect, DT_EnvScreenEffect )
+IMPLEMENT_SERVERCLASS_ST( CEnvScreenEffect, DT_EnvScreenEffect, DT_BaseEntity)
 	SendPropFloat( SENDINFO( m_flDuration ), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO( m_nType ), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EnvScreenEffect)
 
 void CEnvScreenEffect::Spawn( void )
 {

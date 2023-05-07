@@ -47,7 +47,7 @@ public:
 
 IMPLEMENT_SERVERCLASS_ST_NOBASE( CRagdollManager, DT_RagdollManager )
 	SendPropInt( SENDINFO( m_iCurrentMaxRagdollCount ), 6 ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_RagdollManager)
 
 LINK_ENTITY_TO_CLASS( game_ragdoll_manager, CRagdollManager );
 

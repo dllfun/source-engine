@@ -27,6 +27,7 @@ public:
 	// Prediction data copying
 	DECLARE_CLASS_NOBASE( CPlayerLocalData );
 	DECLARE_EMBEDDED_NETWORKVAR();
+	DECLARE_SEND_TABLE_ACCESS(DT_Local);
 
 	CPlayerLocalData();
 

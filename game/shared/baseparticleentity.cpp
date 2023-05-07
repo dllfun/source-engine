@@ -19,8 +19,8 @@
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseParticleEntity, DT_BaseParticleEntity )
 
-BEGIN_NETWORK_TABLE( CBaseParticleEntity, DT_BaseParticleEntity )
-END_NETWORK_TABLE()
+BEGIN_NETWORK_TABLE( CBaseParticleEntity, DT_BaseParticleEntity, DT_BaseEntity)
+END_NETWORK_TABLE(DT_BaseParticleEntity)
 
 BEGIN_PREDICTION_DATA(	CBaseParticleEntity )
 END_PREDICTION_DATA()

@@ -54,6 +54,7 @@ public:
 
 #ifndef CLIENT_DLL
 	DECLARE_DATADESC();
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseCSGrenade);
 
 	virtual bool AllowsAutoSwitchFrom( void ) const;
 

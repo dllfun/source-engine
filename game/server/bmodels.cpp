@@ -263,6 +263,7 @@ public:
 	DECLARE_CLASS( CFuncConveyor, CFuncWall );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_FuncConveyor);
 
 	CFuncConveyor();
 
@@ -295,9 +296,9 @@ BEGIN_DATADESC( CFuncConveyor )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CFuncConveyor, DT_FuncConveyor)
+IMPLEMENT_SERVERCLASS_ST(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
 	SendPropFloat( SENDINFO(m_flConveyorSpeed), 0, SPROP_NOSCALE ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_FuncConveyor)
 
 
 CFuncConveyor::CFuncConveyor()
@@ -419,6 +420,7 @@ public:
 
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_FuncRotating);
 
 protected:
 	bool SpinDown( float flTargetSpeed );
@@ -578,7 +580,7 @@ void SendProxy_FuncRotatingSimulationTime( const SendProp *pProp, const void *pS
 	SendProxy_SimulationTime( pProp, pStruct, pVarData, pOut, iElement, objectID );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CFuncRotating, DT_FuncRotating)
+IMPLEMENT_SERVERCLASS_ST(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
 	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
 	SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
 	SendPropExclude( "DT_BaseEntity", "m_flSimulationTime" ),
@@ -589,7 +591,7 @@ IMPLEMENT_SERVERCLASS_ST(CFuncRotating, DT_FuncRotating)
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 2), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle ),
 
 	SendPropInt(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED|SPROP_CHANGES_OFTEN|SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_FuncRotatingSimulationTime),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_FuncRotating)
 
 
 

@@ -23,6 +23,7 @@ public:
 	int  	UpdateTransmitState();
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_InfoOverlayAccessor);
 	DECLARE_DATADESC();
 
 private:
@@ -35,7 +36,7 @@ private:
 IMPLEMENT_SERVERCLASS_ST_NOBASE(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
 	SendPropInt	(	SENDINFO(m_iTextureFrameIndex),		8,	SPROP_UNSIGNED ),
 	SendPropInt	(	SENDINFO(m_iOverlayID),				32,	SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_InfoOverlayAccessor)
 
 LINK_ENTITY_TO_CLASS( info_overlay_accessor, CInfoOverlayAccessor );
 

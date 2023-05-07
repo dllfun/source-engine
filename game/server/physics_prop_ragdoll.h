@@ -40,6 +40,7 @@ public:
 	int ObjectCaps();
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_Ragdoll);
 	// Don't treat as a live target
 	virtual bool IsAlive( void ) { return false; }
 	

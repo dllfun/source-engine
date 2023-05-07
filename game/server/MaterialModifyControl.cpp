@@ -48,6 +48,7 @@ public:
 	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_MaterialModifyControl);
 	DECLARE_DATADESC();
 
 private:
@@ -88,7 +89,7 @@ BEGIN_DATADESC( CMaterialModifyControl )
 	DEFINE_INPUTFUNC( FIELD_STRING, "StartFloatLerp", InputStartFloatLerp ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CMaterialModifyControl, DT_MaterialModifyControl)
+IMPLEMENT_SERVERCLASS_ST(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
 	SendPropString( SENDINFO( m_szMaterialName ) ),
 	SendPropString( SENDINFO( m_szMaterialVar ) ),
 	SendPropString( SENDINFO( m_szMaterialVarValue ) ),
@@ -101,7 +102,7 @@ IMPLEMENT_SERVERCLASS_ST(CMaterialModifyControl, DT_MaterialModifyControl)
 	SendPropFloat( SENDINFO(m_flFloatLerpEndValue), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO(m_flFloatLerpTransitionTime), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO(m_nModifyMode), 2, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_MaterialModifyControl)
 
 //-----------------------------------------------------------------------------
 // Purpose:

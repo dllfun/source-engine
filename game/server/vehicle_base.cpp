@@ -309,7 +309,7 @@ void CPropVehicle::RemovePhysicsChild( CBaseEntity *pChild )
 // Purpose: Player driveable vehicle class
 //-----------------------------------------------------------------------------
 
-IMPLEMENT_SERVERCLASS_ST(CPropVehicleDriveable, DT_PropVehicleDriveable)
+IMPLEMENT_SERVERCLASS_ST(CPropVehicleDriveable, DT_PropVehicleDriveable, DT_BaseAnimating)
 
 	SendPropEHandle(SENDINFO(m_hPlayer)),
 //	SendPropFloat(SENDINFO_DT_NAME(m_controls.throttle, m_throttle), 8,	SPROP_ROUNDUP,	0.0f,	1.0f),
@@ -326,7 +326,7 @@ IMPLEMENT_SERVERCLASS_ST(CPropVehicleDriveable, DT_PropVehicleDriveable)
 	SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
 	SendPropBool(SENDINFO(m_bHasGun)),
 	SendPropVector(SENDINFO(m_vecGunCrosshair), -1, SPROP_COORD),
-END_SEND_TABLE();
+END_SEND_TABLE(DT_PropVehicleDriveable);
 
 BEGIN_DATADESC( CPropVehicleDriveable )
 	// Inputs

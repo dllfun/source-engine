@@ -157,6 +157,7 @@ public:
 #else
 
 	DECLARE_SERVERCLASS_NOBASE(); // This makes datatables able to access our private vars.
+	DECLARE_SEND_TABLE_ACCESS(DT_CSGameRules);
 
 	CCSGameRules();
 	virtual ~CCSGameRules();

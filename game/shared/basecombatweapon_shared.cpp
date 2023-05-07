@@ -2754,7 +2754,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CBaseCombatWeapon, DT_LocalActiveWeaponData )
 	RecvPropInt( RECVINFO( m_nNextThinkTick ) ),
 	RecvPropTime( RECVINFO( m_flTimeWeaponIdle ) ),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_LocalActiveWeaponData)
 
 //-----------------------------------------------------------------------------
 // Purpose: Propagation data for weapons. Only sent when a player's holding it.
@@ -2785,9 +2785,9 @@ BEGIN_NETWORK_TABLE_NOBASE( CBaseCombatWeapon, DT_LocalWeaponData )
 	RecvPropBool( RECVINFO( m_bFlipViewModel ) ),
 
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_LocalWeaponData)
 
-BEGIN_NETWORK_TABLE(CBaseCombatWeapon, DT_BaseCombatWeapon)
+BEGIN_NETWORK_TABLE(CBaseCombatWeapon, DT_BaseCombatWeapon, DT_BaseAnimating)
 #if !defined( CLIENT_DLL )
 	SendPropDataTable("LocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_LocalWeaponData), SendProxy_SendLocalWeaponDataTable ),
 	SendPropDataTable("LocalActiveWeaponData", 0, &REFERENCE_SEND_TABLE(DT_LocalActiveWeaponData), SendProxy_SendActiveLocalWeaponDataTable ),
@@ -2803,4 +2803,4 @@ BEGIN_NETWORK_TABLE(CBaseCombatWeapon, DT_BaseCombatWeapon)
 	RecvPropInt( RECVINFO(m_iState )),
 	RecvPropEHandle( RECVINFO(m_hOwner ) ),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_BaseCombatWeapon)

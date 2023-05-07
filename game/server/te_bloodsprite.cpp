@@ -112,7 +112,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEBloodSprite, DT_TEBloodSprite)
 	SendPropModelIndex( SENDINFO(m_nSprayModel) ),
 	SendPropModelIndex( SENDINFO(m_nDropModel) ),
 	SendPropInt( SENDINFO(m_nSize), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEBloodSprite)
 
 // Singleton
 static CTEBloodSprite g_TEBloodSprite( "Blood Sprite" );

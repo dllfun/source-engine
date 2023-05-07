@@ -20,6 +20,7 @@ class CParticleSystem : public CBaseEntity
 	DECLARE_CLASS( CParticleSystem, CBaseEntity );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_ParticleSystem);
 	DECLARE_DATADESC();
 
 	CParticleSystem();

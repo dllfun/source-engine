@@ -70,11 +70,11 @@ void CTESparks::Test( const Vector& current_origin, const QAngle& current_angles
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTESparks, DT_TESparks)
+IMPLEMENT_SERVERCLASS_ST(CTESparks, DT_TESparks, DT_TEParticleSystem)
 	SendPropInt(	SENDINFO( m_nMagnitude ),	4,	SPROP_UNSIGNED ),
 	SendPropInt(	SENDINFO( m_nTrailLength ),	4,	SPROP_UNSIGNED ),
 	SendPropVector(	SENDINFO( m_vecDir ),		-1,	SPROP_COORD ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TESparks)
 
 
 // Singleton to fire TESparks objects

@@ -121,8 +121,9 @@ private:
 	#ifdef CLIENT_DLL
 		DECLARE_CLIENTCLASS_NOBASE()
 	#else
-		DECLARE_SERVERCLASS_NOBASE()
-	#endif
+	DECLARE_SERVERCLASS_NOBASE()
+	DECLARE_SEND_TABLE_ACCESS(DT_EffectData);
+#endif
 
 	int m_iEffectName;	// Entry in the EffectDispatch network string table. The is automatically handled by DispatchEffect().
 };

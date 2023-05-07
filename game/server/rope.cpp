@@ -51,7 +51,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CRopeKeyframe, DT_RopeKeyframe )
 	SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent) ),
 
 	SendPropInt		(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_RopeKeyframe)
 
 
 BEGIN_DATADESC( CRopeKeyframe )

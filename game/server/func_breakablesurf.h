@@ -45,6 +45,7 @@ class CBreakableSurface : public CBreakable
 	DECLARE_CLASS( CBreakableSurface, CBreakable );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_BreakableSurface);
 
 public:
 	CNetworkVar( int, m_nNumWide );

@@ -17,7 +17,7 @@
 // This is an entity that represents a vgui screen
 //-----------------------------------------------------------------------------
 
-IMPLEMENT_SERVERCLASS_ST(CVGuiScreen, DT_VGuiScreen)
+IMPLEMENT_SERVERCLASS_ST(CVGuiScreen, DT_VGuiScreen, DT_BaseEntity)
 	SendPropFloat(SENDINFO(m_flWidth),	0, SPROP_NOSCALE ),
 	SendPropFloat(SENDINFO(m_flHeight),	0, SPROP_NOSCALE ),
 	SendPropInt(SENDINFO(m_nAttachmentIndex), 5, SPROP_UNSIGNED ),
@@ -25,7 +25,7 @@ IMPLEMENT_SERVERCLASS_ST(CVGuiScreen, DT_VGuiScreen)
 	SendPropInt(SENDINFO(m_fScreenFlags), VGUI_SCREEN_MAX_BITS, SPROP_UNSIGNED ),
 	SendPropInt(SENDINFO(m_nOverlayMaterial), MAX_MATERIAL_STRING_BITS, SPROP_UNSIGNED ),
 	SendPropEHandle(SENDINFO(m_hPlayerOwner)),
-END_SEND_TABLE();
+END_SEND_TABLE(DT_VGuiScreen);
 
 LINK_ENTITY_TO_CLASS( vgui_screen, CVGuiScreen );
 LINK_ENTITY_TO_CLASS( vgui_screen_team, CVGuiScreen );

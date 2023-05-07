@@ -98,6 +98,7 @@ class CPropJeep : public CPropVehicleDriveable
 public:
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PropJeep);
 	DECLARE_DATADESC();
 
 	CPropJeep( void );
@@ -244,9 +245,9 @@ BEGIN_DATADESC( CPropJeep )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPropJeep, DT_PropJeep )
+IMPLEMENT_SERVERCLASS_ST( CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
 	SendPropBool( SENDINFO( m_bHeadlightIsOn ) ),
-END_SEND_TABLE();
+END_SEND_TABLE(DT_PropJeep);
 
 //LINK_ENTITY_TO_CLASS( prop_vehicle_jeep, CPropJeep );
 

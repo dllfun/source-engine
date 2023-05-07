@@ -67,6 +67,7 @@ class CVoteController : public CBaseEntity
 	
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_VoteController);
 	DECLARE_DATADESC();
 
 	virtual ~CVoteController();

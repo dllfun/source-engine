@@ -595,7 +595,7 @@ BEGIN_NETWORK_TABLE_NOBASE(CBaseViewModel, DT_BaseViewModel)
 	RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0]) ), m_flPoseParameter ),
 #endif
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_BaseViewModel)
 
 #ifdef CLIENT_DLL
 

@@ -24,7 +24,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CEnvDetailController, DT_DetailController )
 		SendPropFloat( SENDINFO( m_flFadeStartDist ) ),
 		SendPropFloat( SENDINFO( m_flFadeEndDist ) ),
 	#endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_DetailController)
 
 static CEnvDetailController *s_detailController = NULL;
 CEnvDetailController * GetDetailController()

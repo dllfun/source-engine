@@ -165,6 +165,7 @@ class CPropVehicleDriveable : public CPropVehicle, public IDrivableVehicle, publ
 {
 	DECLARE_CLASS( CPropVehicleDriveable, CPropVehicle );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PropVehicleDriveable);
 	DECLARE_DATADESC();
 public:
 	CPropVehicleDriveable( void );

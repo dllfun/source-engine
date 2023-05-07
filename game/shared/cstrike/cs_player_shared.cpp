@@ -871,10 +871,10 @@ BEGIN_DATADESC( CFootstepControl )
 	DEFINE_KEYFIELD( m_destination, FIELD_STRING, "Destination" ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CFootstepControl, DT_FootstepControl )
+IMPLEMENT_SERVERCLASS_ST( CFootstepControl, DT_FootstepControl, DT_BaseEntity)
 	SendPropStringT( SENDINFO(m_source) ),
 	SendPropStringT( SENDINFO(m_destination) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_FootstepControl)
 
 int CFootstepControl::UpdateTransmitState( void )
 {

@@ -7907,7 +7907,7 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 
 	BEGIN_SEND_TABLE_NOBASE(CPlayerState, DT_PlayerState)
 		SendPropInt		(SENDINFO(deadflag),	1, SPROP_UNSIGNED ),
-	END_SEND_TABLE()
+	END_SEND_TABLE(DT_PlayerState)
 
 // -------------------------------------------------------------------------------- //
 // This data only gets sent to clients that ARE this player entity.
@@ -7957,7 +7957,7 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 		SendPropInt			( SENDINFO( m_nWaterLevel ), 2, SPROP_UNSIGNED ),
 		SendPropFloat		( SENDINFO( m_flLaggedMovementValue ), 0, SPROP_NOSCALE ),
 
-	END_SEND_TABLE()
+	END_SEND_TABLE(DT_LocalPlayerExclusive)
 
 
 // -------------------------------------------------------------------------------- //
@@ -7968,7 +7968,7 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 	EXTERN_SEND_TABLE(DT_AttributeList);
 #endif
 
-	IMPLEMENT_SERVERCLASS_ST( CBasePlayer, DT_BasePlayer )
+	IMPLEMENT_SERVERCLASS_ST( CBasePlayer, DT_BasePlayer, DT_BaseCombatCharacter)
 
 #if defined USES_ECON_ITEMS
 		SendPropDataTable(SENDINFO_DT(m_AttributeList), &REFERENCE_SEND_TABLE(DT_AttributeList)),
@@ -8001,7 +8001,7 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 		// Data that only gets sent to the local player.
 		SendPropDataTable( "localdata", 0, &REFERENCE_SEND_TABLE(DT_LocalPlayerExclusive), SendProxy_SendLocalDataTable ),
 
-	END_SEND_TABLE()
+	END_SEND_TABLE(DT_BasePlayer)
 
 //=============================================================================
 //

@@ -99,7 +99,7 @@ void CTEShatterSurface::Test( const Vector& current_origin, const QAngle& curren
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEShatterSurface, DT_TEShatterSurface)
+IMPLEMENT_SERVERCLASS_ST(CTEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecAngles), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecForce), -1, SPROP_COORD),
@@ -114,7 +114,7 @@ IMPLEMENT_SERVERCLASS_ST(CTEShatterSurface, DT_TEShatterSurface)
 	SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 0 ), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 1 ), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 2 ), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEShatterSurface)
 
 
 // Singleton to fire TEShatterSurface objects

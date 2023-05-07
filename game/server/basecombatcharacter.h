@@ -117,6 +117,8 @@ public:
 	~CBaseCombatCharacter(void);
 
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_BCCLocalPlayerExclusive);
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseCombatCharacter);
 	DECLARE_DATADESC();
 	DECLARE_PREDICTABLE();
 

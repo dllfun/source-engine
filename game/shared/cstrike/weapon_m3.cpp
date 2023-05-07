@@ -28,6 +28,9 @@ public:
 	DECLARE_CLASS( CWeaponM3, CWeaponCSBase );
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_WeaponM3);
+#endif
 	
 	CWeaponM3();
 
@@ -51,13 +54,13 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM3, DT_WeaponM3 )
 
-BEGIN_NETWORK_TABLE( CWeaponM3, DT_WeaponM3 )
+BEGIN_NETWORK_TABLE( CWeaponM3, DT_WeaponM3, DT_WeaponCSBase)
 #ifdef CLIENT_DLL
 	RecvPropInt( RECVINFO( m_reloadState ) )
 #else
 	SendPropInt( SENDINFO( m_reloadState ), 2, SPROP_UNSIGNED )
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_WeaponM3)
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponM3 )

@@ -852,6 +852,9 @@ int SendProp::GetNumArrayLengthBits() const
 SendTable::SendTable()
 {
 	Construct( NULL, 0, NULL );
+	Init();
+	int aaa = 0;
+	const char* Name = m_pNetTableName;
 }
 
 

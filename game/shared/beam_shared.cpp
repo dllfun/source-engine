@@ -141,7 +141,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_BeamPredictableId )
 	RecvPropPredictableId( RECVINFO( m_PredictableID ) ),
 	RecvPropInt( RECVINFO( m_bIsPlayerSimulated ) ),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_BeamPredictableId)
 #endif
 
 BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_Beam )
@@ -229,7 +229,7 @@ BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_Beam )
 #endif
 
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_Beam)
 
 #if !defined( CLIENT_DLL )
 BEGIN_DATADESC( CBeam )

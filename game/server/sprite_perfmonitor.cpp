@@ -21,6 +21,7 @@ class CParticlePerformanceMonitor : public CPointEntity
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_ParticlePerformanceMonitor);
 
 	void	Spawn( void );
 	int		UpdateTransmitState( void );
@@ -49,10 +50,10 @@ BEGIN_DATADESC( CParticlePerformanceMonitor )
 	DEFINE_INPUTFUNC( FIELD_VOID, "StopMeasuring", InputStopMeasuring ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor )
+IMPLEMENT_SERVERCLASS_ST( CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
 	SendPropInt( SENDINFO(m_bDisplayPerf), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_bMeasurePerf), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ParticlePerformanceMonitor)
 
 //-----------------------------------------------------------------------------
 // Purpose: 

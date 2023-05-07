@@ -25,6 +25,9 @@ public:
 	DECLARE_CLASS( CWeaponM4A1, CWeaponCSBaseGun );
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_WeaponM4A1);
+#endif
 	
 	CWeaponM4A1();
 
@@ -70,7 +73,7 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM4A1, DT_WeaponM4A1 )
 
-BEGIN_NETWORK_TABLE( CWeaponM4A1, DT_WeaponM4A1 )
+BEGIN_NETWORK_TABLE( CWeaponM4A1, DT_WeaponM4A1, DT_WeaponCSBaseGun)
 	#ifdef CLIENT_DLL
 		RecvPropBool( RECVINFO( m_bSilencerOn ) ),
 		RecvPropTime( RECVINFO( m_flDoneSwitchingSilencer ) ),
@@ -78,7 +81,7 @@ BEGIN_NETWORK_TABLE( CWeaponM4A1, DT_WeaponM4A1 )
 		SendPropBool( SENDINFO( m_bSilencerOn ) ),
 		SendPropTime( SENDINFO( m_flDoneSwitchingSilencer ) ),
 	#endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_WeaponM4A1)
 
 BEGIN_PREDICTION_DATA( CWeaponM4A1 )
 END_PREDICTION_DATA()

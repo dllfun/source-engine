@@ -17,6 +17,7 @@ class CFuncMonitor : public CFuncBrush
 	DECLARE_DATADESC();
 	DECLARE_CLASS( CFuncMonitor, CFuncBrush );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_FuncMonitor);
 
 public:
 	virtual void Activate();
@@ -44,8 +45,8 @@ END_DATADESC()
 LINK_ENTITY_TO_CLASS( func_monitor, CFuncMonitor );
 
 
-IMPLEMENT_SERVERCLASS_ST( CFuncMonitor, DT_FuncMonitor )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
+END_SEND_TABLE(DT_FuncMonitor)
 
 
 //-----------------------------------------------------------------------------

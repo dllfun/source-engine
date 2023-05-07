@@ -51,10 +51,10 @@ BEGIN_DATADESC( CTesla )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST( CTesla, DT_Tesla )
+IMPLEMENT_SERVERCLASS_ST( CTesla, DT_Tesla, DT_BaseEntity)
 	SendPropStringT( SENDINFO( m_SoundName ) ),
 	SendPropStringT( SENDINFO( m_iszSpriteName ) )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Tesla)
 
 
 CTesla::CTesla()

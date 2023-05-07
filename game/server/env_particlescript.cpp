@@ -24,6 +24,7 @@ class CEnvParticleScript : public CBaseAnimating
 public:
 	DECLARE_CLASS( CEnvParticleScript, CBaseAnimating );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EnvParticleScript);
 	DECLARE_DATADESC();
 
 	CEnvParticleScript();
@@ -61,9 +62,9 @@ LINK_ENTITY_TO_CLASS( env_particlescript, CEnvParticleScript );
 //-----------------------------------------------------------------------------
 // Datatable
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST( CEnvParticleScript, DT_EnvParticleScript )
+IMPLEMENT_SERVERCLASS_ST( CEnvParticleScript, DT_EnvParticleScript ,DT_BaseAnimating)
 	SendPropFloat(SENDINFO(m_flSequenceScale), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EnvParticleScript)
 
 
 //-----------------------------------------------------------------------------

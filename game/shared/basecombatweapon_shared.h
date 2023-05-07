@@ -159,6 +159,10 @@ public:
 	DECLARE_CLASS( CBaseCombatWeapon, BASECOMBATWEAPON_DERIVED_FROM );
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_LocalActiveWeaponData);
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseCombatWeapon);
+#endif // DEBUG
 
 							CBaseCombatWeapon();
 	virtual 				~CBaseCombatWeapon();

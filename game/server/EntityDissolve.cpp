@@ -63,7 +63,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST( CEntityDissolve, DT_EntityDissolve )
+IMPLEMENT_SERVERCLASS_ST( CEntityDissolve, DT_EntityDissolve, DT_BaseEntity)
 	SendPropTime( SENDINFO( m_flStartTime ) ),
 	SendPropFloat( SENDINFO( m_flFadeInStart ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flFadeInLength ), 0, SPROP_NOSCALE ),
@@ -74,7 +74,7 @@ IMPLEMENT_SERVERCLASS_ST( CEntityDissolve, DT_EntityDissolve )
 	SendPropInt( SENDINFO( m_nDissolveType ), ENTITY_DISSOLVE_BITS, SPROP_UNSIGNED ),
 	SendPropVector	(SENDINFO(m_vDissolverOrigin), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO( m_nMagnitude ), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EntityDissolve)
 
 LINK_ENTITY_TO_CLASS( env_entity_dissolver, CEntityDissolve );
 

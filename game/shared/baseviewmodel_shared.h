@@ -38,6 +38,7 @@ public:
 
 #if !defined( CLIENT_DLL )
 	DECLARE_DATADESC();
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseViewModel);
 #endif
 
 							CBaseViewModel( void );

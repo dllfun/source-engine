@@ -17,6 +17,7 @@ class CFunc_LOD : public CBaseEntity
 	DECLARE_CLASS( CFunc_LOD, CBaseEntity );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_Func_LOD);
 
 					CFunc_LOD();
 	virtual 		~CFunc_LOD();
@@ -39,9 +40,9 @@ public:
 };
 
 
-IMPLEMENT_SERVERCLASS_ST(CFunc_LOD, DT_Func_LOD)
+IMPLEMENT_SERVERCLASS_ST(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
 	SendPropFloat(SENDINFO(m_fDisappearDist), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Func_LOD)
 
 
 LINK_ENTITY_TO_CLASS(func_lod, CFunc_LOD);

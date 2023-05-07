@@ -169,6 +169,7 @@ public:
 	void SetRoundState( int iRoundState );
 #else
 	DECLARE_SERVERCLASS_NOBASE(); // This makes datatables able to access our private vars.
+	DECLARE_SEND_TABLE_ACCESS(DT_TeamplayRoundBasedRules);
 #endif
 
 	float GetLastRoundStateChangeTime( void ) const { return m_flLastRoundStateChangeTime; }

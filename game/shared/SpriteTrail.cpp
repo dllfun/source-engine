@@ -85,7 +85,7 @@ LINK_ENTITY_TO_CLASS( env_spritetrail, CSpriteTrail );
 //-----------------------------------------------------------------------------
 IMPLEMENT_NETWORKCLASS_ALIASED( SpriteTrail, DT_SpriteTrail );
 
-BEGIN_NETWORK_TABLE( CSpriteTrail, DT_SpriteTrail )
+BEGIN_NETWORK_TABLE( CSpriteTrail, DT_SpriteTrail , DT_Sprite)
 #if !defined( CLIENT_DLL )
 	SendPropFloat( SENDINFO(m_flLifeTime),		0,	SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO(m_flStartWidth),	0,	SPROP_NOSCALE ),
@@ -105,7 +105,7 @@ BEGIN_NETWORK_TABLE( CSpriteTrail, DT_SpriteTrail )
 	RecvPropVector( RECVINFO(m_vecSkyboxOrigin)),
 	RecvPropFloat( RECVINFO(m_flSkyboxScale)),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_SpriteTrail)
 
 //-----------------------------------------------------------------------------
 // Prediction

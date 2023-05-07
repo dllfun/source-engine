@@ -66,7 +66,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CBaseTeamObjectiveResource, DT_BaseTeamObjective
 	SendPropFloat( SENDINFO( m_flCustomPositionX ) ),
 	SendPropFloat( SENDINFO( m_flCustomPositionY ) ),
 
-END_SEND_TABLE()
+END_SEND_TABLE(DT_BaseTeamObjectiveResource)
 
 BEGIN_DATADESC( CBaseTeamObjectiveResource )
 	DEFINE_FIELD( m_iTimerToShowInHUD, FIELD_INTEGER ),

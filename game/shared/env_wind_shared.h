@@ -139,6 +139,9 @@ class CEnvWindShared
 public:
 	DECLARE_CLASS_NOBASE( CEnvWindShared );
 	DECLARE_EMBEDDED_NETWORKVAR();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_EnvWindShared);
+#endif
 	
 	CEnvWindShared();
 	~CEnvWindShared();

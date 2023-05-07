@@ -190,6 +190,7 @@ class CCSRagdoll : public CBaseAnimatingOverlay
 public:
 	DECLARE_CLASS( CCSRagdoll, CBaseAnimatingOverlay );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_CSRagdoll);
 
 	// Transmit ragdolls to everyone.
 	virtual int UpdateTransmitState()
@@ -237,7 +238,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CCSRagdoll, DT_CSRagdoll )
 	SendPropInt( SENDINFO( m_iDeathFrame ), 5 ),
 	SendPropInt( SENDINFO(m_iTeamNum), TEAMNUM_NUM_BITS, 0),
 	SendPropInt( SENDINFO( m_bClientSideAnimation ), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_CSRagdoll)
 
 
 // -------------------------------------------------------------------------------- //
@@ -263,7 +264,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEPlayerAnimEvent, DT_TEPlayerAnimEvent )
 	SendPropEHandle( SENDINFO( m_hPlayer ) ),
 	SendPropInt( SENDINFO( m_iEvent ), Q_log2( PLAYERANIMEVENT_COUNT ) + 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_nData ), 32 )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEPlayerAnimEvent)
 
 static CTEPlayerAnimEvent g_TEPlayerAnimEvent( "PlayerAnimEvent" );
 
@@ -324,16 +325,16 @@ BEGIN_SEND_TABLE_NOBASE( CCSPlayer, DT_CSLocalPlayerExclusive )
 	// HPE_END
 	//=============================================================================
 
-END_SEND_TABLE()
+END_SEND_TABLE(DT_CSLocalPlayerExclusive)
 
 
 BEGIN_SEND_TABLE_NOBASE( CCSPlayer, DT_CSNonLocalPlayerExclusive )
 	// send a lo-res origin to other players
 	SendPropVector	(SENDINFO(m_vecOrigin), -1,  SPROP_COORD|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_CSNonLocalPlayerExclusive)
 
 
-IMPLEMENT_SERVERCLASS_ST( CCSPlayer, DT_CSPlayer )
+IMPLEMENT_SERVERCLASS_ST( CCSPlayer, DT_CSPlayer, DT_BasePlayer)
 	SendPropExclude( "DT_BaseAnimating", "m_flPoseParameter" ),
 	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),
 	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
@@ -401,7 +402,7 @@ IMPLEMENT_SERVERCLASS_ST( CCSPlayer, DT_CSPlayer )
 	SendPropInt( SENDINFO( m_cycleLatch ), 4, SPROP_UNSIGNED ),
 
 
-END_SEND_TABLE()
+END_SEND_TABLE(DT_CSPlayer)
 
 
 BEGIN_DATADESC( CCSPlayer )

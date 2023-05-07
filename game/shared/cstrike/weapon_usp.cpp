@@ -27,6 +27,9 @@ public:
 	DECLARE_CLASS( CWeaponUSP, CWeaponCSBase );
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_WeaponUSP);
+#endif
 	
 	CWeaponUSP();
 
@@ -74,7 +77,7 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponUSP, DT_WeaponUSP )
 
-BEGIN_NETWORK_TABLE( CWeaponUSP, DT_WeaponUSP )
+BEGIN_NETWORK_TABLE( CWeaponUSP, DT_WeaponUSP , DT_WeaponCSBase)
 #ifdef CLIENT_DLL
 	RecvPropBool( RECVINFO( m_bSilencerOn ) ),
 	RecvPropTime( RECVINFO( m_flDoneSwitchingSilencer ) ),
@@ -82,7 +85,7 @@ BEGIN_NETWORK_TABLE( CWeaponUSP, DT_WeaponUSP )
 	SendPropBool( SENDINFO( m_bSilencerOn ) ),
 	SendPropTime( SENDINFO( m_flDoneSwitchingSilencer ) ),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_WeaponUSP)
 
 #ifdef CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponUSP )

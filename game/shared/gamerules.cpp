@@ -69,7 +69,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( GameRulesProxy, DT_GameRulesProxy )
 
 // Don't send any of the CBaseEntity stuff..
 BEGIN_NETWORK_TABLE_NOBASE( CGameRulesProxy, DT_GameRulesProxy )
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_GameRulesProxy)
 
 
 CGameRulesProxy::CGameRulesProxy()

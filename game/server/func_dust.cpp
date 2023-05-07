@@ -18,6 +18,7 @@ class CFunc_Dust : public CBaseEntity
 public:
 	DECLARE_CLASS( CFunc_Dust, CBaseEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_Func_Dust);
 	DECLARE_DATADESC();
 
 					CFunc_Dust();
@@ -96,7 +97,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CFunc_Dust, DT_Func_Dust )
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_FallSpeed), 0, SPROP_NOSCALE ),
 	SendPropDataTable( SENDINFO_DT( m_Collision ), &REFERENCE_SEND_TABLE(DT_CollisionProperty) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Func_Dust)
 
 
 BEGIN_DATADESC( CFunc_Dust )
@@ -260,11 +261,11 @@ CTEDust::~CTEDust( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS_ST( CTEDust, DT_TEDust )
+IMPLEMENT_SERVERCLASS_ST( CTEDust, DT_TEDust, DT_TEParticleSystem)
 	SendPropFloat( SENDINFO(m_flSize), -1, SPROP_COORD ),
 	SendPropFloat( SENDINFO(m_flSpeed), -1, SPROP_COORD ),
 	SendPropVector( SENDINFO(m_vecDirection), 4, 0, -1.0f, 1.0f ), // cheap normal
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEDust)
 
 static CTEDust g_TEDust( "Dust" );
 

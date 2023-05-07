@@ -30,6 +30,7 @@ class CColorCorrection : public CBaseEntity
 	DECLARE_CLASS( CColorCorrection, CBaseEntity );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_ColorCorrection);
 	DECLARE_DATADESC();
 
 	CColorCorrection();
@@ -114,7 +115,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CColorCorrection, DT_ColorCorrection)
 	SendPropFloat(  SENDINFO(m_flCurWeight) ),
 	SendPropString( SENDINFO(m_netlookupFilename) ),
 	SendPropBool( SENDINFO(m_bEnabled) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ColorCorrection)
 
 
 CColorCorrection::CColorCorrection() : BaseClass()

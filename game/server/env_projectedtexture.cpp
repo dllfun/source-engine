@@ -21,6 +21,7 @@ class CEnvProjectedTexture : public CPointEntity
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EnvProjectedTexture);
 
 	CEnvProjectedTexture();
 	bool KeyValue( const char *szKeyName, const char *szValue );
@@ -95,7 +96,7 @@ BEGIN_DATADESC( CEnvProjectedTexture )
 	DEFINE_THINKFUNC( InitialThink ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvProjectedTexture, DT_EnvProjectedTexture )
+IMPLEMENT_SERVERCLASS_ST( CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
 	SendPropEHandle( SENDINFO( m_hTargetEntity ) ),
 	SendPropBool( SENDINFO( m_bState ) ),
 	SendPropFloat( SENDINFO( m_flLightFOV ) ),
@@ -110,7 +111,7 @@ IMPLEMENT_SERVERCLASS_ST( CEnvProjectedTexture, DT_EnvProjectedTexture )
 	SendPropFloat( SENDINFO( m_flNearZ ), 16, SPROP_ROUNDDOWN, 0.0f,  500.0f ),
 	SendPropFloat( SENDINFO( m_flFarZ ),  18, SPROP_ROUNDDOWN, 0.0f, 1500.0f ),
 	SendPropInt( SENDINFO( m_nShadowQuality ), 1, SPROP_UNSIGNED ),  // Just one bit for now
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EnvProjectedTexture)
 
 //-----------------------------------------------------------------------------
 // Purpose: 

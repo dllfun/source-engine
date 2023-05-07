@@ -83,7 +83,7 @@ BEGIN_SEND_TABLE_NOBASE( CPlayerLocalData, DT_Local )
 	SendPropInt( SENDINFO_STRUCTELEM( m_audio.soundscapeIndex ), 17, 0 ),
 	SendPropInt( SENDINFO_STRUCTELEM( m_audio.localBits ), NUM_AUDIO_LOCAL_SOUNDS, SPROP_UNSIGNED ),
 	SendPropEHandle( SENDINFO_STRUCTELEM( m_audio.ent ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Local)
 
 BEGIN_SIMPLE_DATADESC( fogplayerparams_t )
 	DEFINE_FIELD( m_hCtrl, FIELD_EHANDLE ),

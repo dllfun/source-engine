@@ -89,6 +89,9 @@ class CSprite : public CBaseEntity
 public:
 	DECLARE_PREDICTABLE();
 	DECLARE_NETWORKCLASS();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_Sprite);
+#endif
 
 	CSprite();
 	virtual void SetModel( const char *szModelName );

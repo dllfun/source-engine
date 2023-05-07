@@ -39,6 +39,9 @@ public:
 	DECLARE_CLASS( CFuncLadder, CBaseEntity );
 	DECLARE_NETWORKCLASS();
 	DECLARE_DATADESC();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_FuncLadder);
+#endif
 
 	CFuncLadder();
 	~CFuncLadder();

@@ -26,6 +26,9 @@ class CPredictedViewModel : public CBaseViewModel
 public:
 
 	DECLARE_NETWORKCLASS();
+#ifndef CLIENT_DLL
+	DECLARE_SEND_TABLE_ACCESS(DT_PredictedViewModel);
+#endif
 
 	CPredictedViewModel( void );
 	virtual ~CPredictedViewModel( void );

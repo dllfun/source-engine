@@ -23,6 +23,7 @@ class CEntityParticleTrail : public CBaseParticleEntity
 	DECLARE_DATADESC();
 	DECLARE_CLASS( CEntityParticleTrail, CBaseParticleEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EntityParticleTrail);
 
 public:
 	static CEntityParticleTrail	*Create( CBaseEntity *pTarget, const EntityParticleTrailInfo_t &info, CBaseEntity *pConstraint );

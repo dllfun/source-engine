@@ -35,6 +35,7 @@ class CPoseController : public CBaseEntity
 public:
 	DECLARE_CLASS( CPoseController, CBaseEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PoseController);
 	DECLARE_DATADESC();
 
 	virtual void Spawn( void );

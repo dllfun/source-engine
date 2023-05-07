@@ -21,6 +21,7 @@ class CRopeKeyframe : public CBaseEntity, public IPositionWatcher
 	DECLARE_CLASS( CRopeKeyframe, CBaseEntity );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_RopeKeyframe);
 	DECLARE_DATADESC();
 
 					CRopeKeyframe();

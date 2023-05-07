@@ -26,6 +26,7 @@ class CColorCorrectionVolume : public CBaseTrigger
 	DECLARE_CLASS( CColorCorrectionVolume, CBaseTrigger );
 public:
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_ColorCorrectionVolume);
 	DECLARE_DATADESC();
 
 	CColorCorrectionVolume();
@@ -92,7 +93,7 @@ END_DATADESC()
 IMPLEMENT_SERVERCLASS_ST_NOBASE(CColorCorrectionVolume, DT_ColorCorrectionVolume)
 	SendPropFloat( SENDINFO(m_Weight) ),
 	SendPropString( SENDINFO(m_lookupFilename) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ColorCorrectionVolume)
 
 
 CColorCorrectionVolume::CColorCorrectionVolume() : BaseClass()

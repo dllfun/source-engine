@@ -748,6 +748,7 @@ private:
 		{ \
 			CHECK_USENETWORKVARS ((ThisClass*)(((char*)this) - MyOffsetOf(ThisClass,name)))->stateChangedFn( &m_Value[net_change_index] ); \
 		} \
+	public:\
 		type m_Value[count]; \
 	}; \
 	NetworkVar_##name name;

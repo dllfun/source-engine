@@ -96,7 +96,7 @@ void CTEExplosion::Test( const Vector& current_origin, const QAngle& current_ang
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEExplosion, DT_TEExplosion)
+IMPLEMENT_SERVERCLASS_ST(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_fScale ), 9, 0, 0.0, 51.2 ),
 	SendPropInt( SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED ),
@@ -105,7 +105,7 @@ IMPLEMENT_SERVERCLASS_ST(CTEExplosion, DT_TEExplosion)
 	SendPropInt( SENDINFO(m_chMaterialType), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nRadius), 32, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nMagnitude), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEExplosion)
 
 // Singleton to fire TEExplosion objects
 static CTEExplosion g_TEExplosion( "Explosion" );

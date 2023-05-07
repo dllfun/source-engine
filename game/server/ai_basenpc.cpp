@@ -10781,7 +10781,7 @@ BEGIN_SIMPLE_DATADESC( AIScheduleState_t )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC )
+IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC , DT_BaseCombatCharacter)
 	SendPropInt( SENDINFO( m_lifeState ), 3, SPROP_UNSIGNED ),
 	SendPropBool( SENDINFO( m_bPerformAvoidance ) ),
 	SendPropBool( SENDINFO( m_bIsMoving ) ),
@@ -10793,7 +10793,7 @@ IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC )
 	SendPropInt( SENDINFO( m_iSpeedModSpeed ) ),
 	SendPropBool( SENDINFO( m_bImportanRagdoll ) ),
 	SendPropFloat( SENDINFO( m_flTimePingEffect ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_AI_BaseNPC)
 
 //-------------------------------------
 

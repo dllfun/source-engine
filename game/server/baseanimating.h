@@ -44,6 +44,10 @@ public:
 
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_ServerAnimationData);
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseAnimating);
+	DECLARE_SEND_TABLE_ACCESS(DT_CSRagdoll);
+	DECLARE_SEND_TABLE_ACCESS(DT_BaseViewModel);
 
 	virtual void SetModel( const char *szModelName );
 	virtual void Activate();

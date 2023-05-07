@@ -68,6 +68,7 @@ class CBoneFollower : public CBaseEntity
 	DECLARE_CLASS( CBoneFollower, CBaseEntity );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_BoneFollower);
 public:
 	// CBaseEntity
 	void VPhysicsUpdate( IPhysicsObject *pPhysics );

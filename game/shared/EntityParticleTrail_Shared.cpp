@@ -52,7 +52,7 @@ BEGIN_NETWORK_TABLE_NOBASE( EntityParticleTrailInfo_t, DT_EntityParticleTrailInf
 	SendPropFloat( SENDINFO( m_flEndSize ), 0, SPROP_NOSCALE ),
 #endif
 
-END_NETWORK_TABLE()
+END_NETWORK_TABLE(DT_EntityParticleTrailInfo)
 
 
 

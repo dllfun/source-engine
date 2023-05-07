@@ -1483,6 +1483,7 @@ public:
 	DECLARE_CLASS( CPrecipitation, CBaseEntity );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_Precipitation);
 
 	CPrecipitation();
 	void	Spawn( void );
@@ -1497,9 +1498,9 @@ BEGIN_DATADESC( CPrecipitation )
 END_DATADESC()
 
 // Just send the normal entity crap
-IMPLEMENT_SERVERCLASS_ST( CPrecipitation, DT_Precipitation)
+IMPLEMENT_SERVERCLASS_ST( CPrecipitation, DT_Precipitation, DT_BaseEntity)
 	SendPropInt( SENDINFO( m_nPrecipType ), Q_log2( NUM_PRECIPITATION_TYPES ) + 1, SPROP_UNSIGNED )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Precipitation)
 
 
 CPrecipitation::CPrecipitation()
@@ -1542,6 +1543,7 @@ public:
 
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_EnvWind);
 
 private:
 //#ifdef POSIX
@@ -1599,12 +1601,12 @@ BEGIN_SEND_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
 	SendPropFloat	(SENDINFO(m_flGustDuration), 0, SPROP_NOSCALE),
 	// Sound related
 //	SendPropInt		(SENDINFO(m_iszGustSound),	10, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EnvWindShared)
 
 // This table encodes the CBaseEntity data.
 IMPLEMENT_SERVERCLASS_ST_NOBASE(CEnvWind, DT_EnvWind)
 	SendPropDataTable(SENDINFO_DT(m_EnvWindShared), &REFERENCE_SEND_TABLE(DT_EnvWindShared)),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_EnvWind)
 
 void CEnvWind::Precache ( void )
 {
@@ -1684,12 +1686,12 @@ END_DATADESC()
 
 
 //Data table
-IMPLEMENT_SERVERCLASS_ST( CEmbers, DT_Embers )
+IMPLEMENT_SERVERCLASS_ST( CEmbers, DT_Embers, DT_BaseEntity)
 	SendPropInt(	SENDINFO( m_nDensity ),		32,	SPROP_UNSIGNED ),
 	SendPropInt(	SENDINFO( m_nLifetime ),	32,	SPROP_UNSIGNED ),
 	SendPropInt(	SENDINFO( m_nSpeed ),		32,	SPROP_UNSIGNED ),
 	SendPropInt(	SENDINFO( m_bEmit ),		2,	SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Embers)
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -2274,12 +2276,12 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( env_quadraticbeam, CEnvQuadraticBeam );
 
-IMPLEMENT_SERVERCLASS_ST( CEnvQuadraticBeam, DT_QuadraticBeam )
+IMPLEMENT_SERVERCLASS_ST( CEnvQuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
 	SendPropVector(SENDINFO(m_targetPosition), -1, SPROP_COORD),
 	SendPropVector(SENDINFO(m_controlPosition), -1, SPROP_COORD),
 	SendPropFloat(SENDINFO(m_scrollRate), 8, 0, -4, 4),
 	SendPropFloat(SENDINFO(m_flWidth), -1, SPROP_NOSCALE),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_QuadraticBeam)
 
 void CEnvQuadraticBeam::Spawn()
 {

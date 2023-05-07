@@ -112,7 +112,7 @@ BEGIN_SEND_TABLE_NOBASE( CTestStruct, DT_TestStruct )
 	SendPropInt( SENDINFO_NOCHECK( a ) ),
 	SendPropInt( SENDINFO_NOCHECK( b ) ),
 	SendPropFloat( SENDINFO_NOCHECK( f ) )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TestStruct)
 
 BEGIN_SEND_TABLE_NOBASE(DTTestServerSub, DT_DTTestSub)
 	// - Auto type conversions (receiving an array of floats into an array of ints).
@@ -135,18 +135,18 @@ BEGIN_SEND_TABLE_NOBASE(DTTestServerSub, DT_DTTestSub)
 		SENDINFO_UTLVECTOR( m_UtlVectorFloat ),
 		MAX_FLOATARRAY_ELEMENTS,	// max elements
 		SendPropFloat( NULL, 0, 0, 0, SPROP_NOSCALE ) )
-END_SEND_TABLE()
+END_SEND_TABLE(DT_DTTestSub)
 
 
 
 BEGIN_SEND_TABLE_NOBASE(DTTestSub2Sub, DT_DTTestSub2Sub)
 	SendPropInt( SENDINFO_NOCHECK( m_Int2 ), 32 ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_DTTestSub2Sub)
 
 BEGIN_SEND_TABLE_NOBASE(DTTestSub2, DT_DTTestSub2)
 	SendPropDataTable(SENDINFO_DT(m_Sub), &REFERENCE_SEND_TABLE(DT_DTTestSub2Sub)),
 	SendPropInt( SENDINFO_NOCHECK( m_Int ), 32 ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_DTTestSub2)
 
 
 
@@ -250,7 +250,7 @@ BEGIN_SEND_TABLE_NOBASE(DTTestServer, DT_DTTest)
 #endif
 
 	SendPropVector(SENDINFO_NOCHECK(m_Vector), 	32, SPROP_NOSCALE)
-END_SEND_TABLE()
+END_SEND_TABLE(DT_DTTest)
 
 
 

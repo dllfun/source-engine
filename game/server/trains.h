@@ -59,6 +59,7 @@ class CFuncTrackTrain : public CBaseEntity
 {
 	DECLARE_CLASS( CFuncTrackTrain, CBaseEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_FuncTrackTrain);
 
 public:
 	CFuncTrackTrain();

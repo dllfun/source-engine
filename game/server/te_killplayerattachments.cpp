@@ -66,9 +66,9 @@ void CTEKillPlayerAttachments::Test( const Vector& current_origin, const QAngle&
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEKillPlayerAttachments, DT_TEKillPlayerAttachments)
+IMPLEMENT_SERVERCLASS_ST(CTEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
 	SendPropInt( SENDINFO(m_nPlayer), 5, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEKillPlayerAttachments)
 
 
 // Singleton to fire TEKillPlayerAttachments objects

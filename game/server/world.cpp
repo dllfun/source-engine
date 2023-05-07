@@ -396,7 +396,7 @@ END_DATADESC()
 
 
 // SendTable stuff.
-IMPLEMENT_SERVERCLASS_ST(CWorld, DT_WORLD)
+IMPLEMENT_SERVERCLASS_ST(CWorld, DT_WORLD, DT_BaseEntity)
 	SendPropFloat	(SENDINFO(m_flWaveHeight), 8, SPROP_ROUNDUP,	0.0f,	8.0f),
 	SendPropVector	(SENDINFO(m_WorldMins),	-1,	SPROP_COORD),
 	SendPropVector	(SENDINFO(m_WorldMaxs),	-1,	SPROP_COORD),
@@ -407,7 +407,7 @@ IMPLEMENT_SERVERCLASS_ST(CWorld, DT_WORLD)
 	SendPropFloat	(SENDINFO(m_flMinPropScreenSpaceWidth), 0, SPROP_NOSCALE ),
 	SendPropStringT (SENDINFO(m_iszDetailSpriteMaterial) ),
 	SendPropInt		(SENDINFO(m_bColdWorld), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_WORLD)
 
 //
 // Just to ignore the "wad" field.

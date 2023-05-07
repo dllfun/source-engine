@@ -245,6 +245,9 @@ protected:
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_LocalPlayerExclusive);
+	DECLARE_SEND_TABLE_ACCESS(DT_BasePlayer);
+	DECLARE_SEND_TABLE_ACCESS(DT_CSPlayer);
 	
 	CBasePlayer();
 	~CBasePlayer();
@@ -1217,7 +1220,7 @@ public:
 
 typedef CHandle<CBasePlayer> CBasePlayerHandle;
 
-EXTERN_SEND_TABLE(DT_BasePlayer)
+EXTERN_SEND_TABLE(DT_BasePlayer);
 
 
 

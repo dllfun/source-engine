@@ -26,6 +26,7 @@ public:
 	DECLARE_CLASS( CSteamJet, CBaseParticleEntity );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_SteamJet);
 
 	virtual void	Spawn( void );
 	virtual void	Precache( void );

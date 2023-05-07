@@ -91,11 +91,11 @@ void CTEPlayerDecal::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEPlayerDecal, DT_TEPlayerDecal)
+IMPLEMENT_SERVERCLASS_ST(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nPlayer), Q_log2( MAX_PLAYERS ), SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEPlayerDecal)
 
 
 // Singleton to fire TEPlayerDecal objects

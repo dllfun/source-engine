@@ -67,8 +67,8 @@ private:
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponElite, DT_WeaponElite )
 
-BEGIN_NETWORK_TABLE( CWeaponElite, DT_WeaponElite )
-END_NETWORK_TABLE()
+BEGIN_NETWORK_TABLE( CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
+END_NETWORK_TABLE(DT_WeaponElite)
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponElite )

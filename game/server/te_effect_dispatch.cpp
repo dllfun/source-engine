@@ -51,11 +51,11 @@ CTEEffectDispatch::~CTEEffectDispatch( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS_ST( CTEEffectDispatch, DT_TEEffectDispatch )
+IMPLEMENT_SERVERCLASS_ST( CTEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
 
 	SendPropDataTable( SENDINFO_DT( m_EffectData ), &REFERENCE_SEND_TABLE( DT_EffectData ) )
 
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEEffectDispatch)
 
 
 // Singleton to fire TEEffectDispatch objects

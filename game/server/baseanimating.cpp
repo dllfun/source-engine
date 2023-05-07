@@ -64,6 +64,7 @@ public:
 	DECLARE_CLASS( CInfoLightingRelative, CBaseEntity );
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_InfoLightingRelative);
 
 	virtual void Activate();
 	virtual void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
@@ -81,9 +82,9 @@ BEGIN_DATADESC( CInfoLightingRelative )
 	DEFINE_FIELD( m_hLightingLandmark, FIELD_EHANDLE ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CInfoLightingRelative, DT_InfoLightingRelative)
+IMPLEMENT_SERVERCLASS_ST(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
 	SendPropEHandle( SENDINFO( m_hLightingLandmark ) ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_InfoLightingRelative)
 
 
 //-----------------------------------------------------------------------------
@@ -221,12 +222,12 @@ BEGIN_DATADESC( CBaseAnimating )
 BEGIN_SEND_TABLE_NOBASE( CBaseAnimating, DT_ServerAnimationData )
 	// ANIMATION_CYCLE_BITS is defined in shareddefs.h
 	SendPropFloat	(SENDINFO(m_flCycle),		ANIMATION_CYCLE_BITS, SPROP_CHANGES_OFTEN|SPROP_ROUNDDOWN,	0.0f,   1.0f)
-END_SEND_TABLE()
+END_SEND_TABLE(DT_ServerAnimationData)
 
 void *SendProxy_ClientSideAnimation( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID );
 
 // SendTable stuff.
-IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
+IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
 	SendPropInt		( SENDINFO(m_nForceBone), 8, 0 ),
 	SendPropVector	( SENDINFO(m_vecForce), -1, SPROP_NOSCALE ),
 
@@ -261,7 +262,7 @@ IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
 	SendPropFloat( SENDINFO( m_fadeMaxDist ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flFadeScale ), 0, SPROP_NOSCALE ),
 
-END_SEND_TABLE()
+END_SEND_TABLE(DT_BaseAnimating)
 
 
 CBaseAnimating::CBaseAnimating()

@@ -21,6 +21,7 @@ class CPointCamera : public CBaseEntity
 public:
 	DECLARE_CLASS( CPointCamera, CBaseEntity );
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_PointCamera);
 	DECLARE_DATADESC();
 	CPointCamera();
 	~CPointCamera();

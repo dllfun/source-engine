@@ -102,7 +102,7 @@ void CTEPhysicsProp::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEPhysicsProp, DT_TEPhysicsProp)
+IMPLEMENT_SERVERCLASS_ST(CTEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 13 ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 13 ),
@@ -112,7 +112,7 @@ IMPLEMENT_SERVERCLASS_ST(CTEPhysicsProp, DT_TEPhysicsProp)
 	SendPropInt( SENDINFO(m_nSkin), ANIMATION_SKIN_BITS),
 	SendPropInt( SENDINFO(m_nFlags), 2, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nEffects), EF_MAX_BITS, SPROP_UNSIGNED),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_TEPhysicsProp)
 
 // Singleton to fire TEBreakModel objects
 static CTEPhysicsProp s_TEPhysicsProp( "physicsprop" );

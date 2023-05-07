@@ -50,7 +50,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTeam, DT_Team)
 		0, 
 		"player_array"
 		)
-END_SEND_TABLE()
+END_SEND_TABLE(DT_Team)
 
 LINK_ENTITY_TO_CLASS( team_manager, CTeam );
 

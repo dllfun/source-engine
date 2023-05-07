@@ -98,9 +98,9 @@ class CBaseNetworkable;
 	IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable )
 
 // You can use this instead of BEGIN_SEND_TABLE and it will do a DECLARE_SERVERCLASS automatically.
-#define IMPLEMENT_SERVERCLASS_ST(DLLClassName, sendTable) \
+#define IMPLEMENT_SERVERCLASS_ST(DLLClassName, sendTable, baseTableName) \
 	IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable )\
-	BEGIN_SEND_TABLE(DLLClassName, sendTable)
+	BEGIN_SEND_TABLE(DLLClassName, sendTable, baseTableName)
 
 #define IMPLEMENT_SERVERCLASS_ST_NOBASE(DLLClassName, sendTable) \
 	IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable )\
@@ -123,22 +123,34 @@ class CBaseNetworkable;
 #endif
 
 
+//#define IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable ) \
+//	namespace sendTable \
+//	{ \
+//		struct ignored; \
+//		extern SendTable g_SendTable; \
+//	} \
+//	CHECK_DECLARE_CLASS( DLLClassName, sendTable ) \
+//	static ServerClass g_##DLLClassName##_ClassReg(\
+//		#DLLClassName, \
+//		&sendTable::g_SendTable\
+//	); \
+//	\
+//	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
+//	SendTable *DLLClassName::m_pClassSendTable = &sendTable::g_SendTable;\
+//	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}
+
 #define IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable ) \
-	namespace sendTable \
-	{ \
-		struct ignored; \
-		extern SendTable g_SendTable; \
-	} \
 	CHECK_DECLARE_CLASS( DLLClassName, sendTable ) \
+	class SendTable_##sendTable ;\
+	extern SendTable * g_pSendTable_##sendTable;\
 	static ServerClass g_##DLLClassName##_ClassReg(\
 		#DLLClassName, \
-		&sendTable::g_SendTable\
+		g_pSendTable_##sendTable\
 	); \
 	\
 	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
-	SendTable *DLLClassName::m_pClassSendTable = &sendTable::g_SendTable;\
+	SendTable *DLLClassName::m_pClassSendTable = g_pSendTable_##sendTable;\
 	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}
-
 
 #endif
 

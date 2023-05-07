@@ -134,7 +134,7 @@
 		SendPropFloat( SENDINFO_NOCHECK( m_ControlPoint1.m_vecOffset[1] ), -1, SPROP_COORD ),
 		SendPropFloat( SENDINFO_NOCHECK( m_ControlPoint1.m_vecOffset[2] ), -1, SPROP_COORD ),
 
-	END_SEND_TABLE()
+	END_SEND_TABLE(DT_EffectData)
 
 #endif
 

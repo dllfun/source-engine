@@ -31,6 +31,7 @@ public:
 
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_SEND_TABLE_ACCESS(DT_FuncOccluder);
 
 private:
 	CNetworkVar( bool, m_bActive );
@@ -42,7 +43,7 @@ LINK_ENTITY_TO_CLASS( func_occluder, CFuncOccluder );
 IMPLEMENT_SERVERCLASS_ST_NOBASE(CFuncOccluder, DT_FuncOccluder)
 	SendPropBool( SENDINFO(m_bActive) ),
 	SendPropInt(SENDINFO(m_nOccluderIndex),	10, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+END_SEND_TABLE(DT_FuncOccluder)
 
 
 BEGIN_DATADESC( CFuncOccluder )
