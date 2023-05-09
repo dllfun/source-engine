@@ -91,7 +91,8 @@ void CTEPlayerDecal::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nPlayer), Q_log2( MAX_PLAYERS ), SPROP_UNSIGNED ),

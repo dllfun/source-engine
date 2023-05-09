@@ -17,6 +17,7 @@
 #include "tier0/dbg.h"
 #include "const.h"
 #include "bitvec.h"
+#include "tier1/UtlStringMap.h"
 
 
 // ------------------------------------------------------------------------ //
@@ -200,6 +201,9 @@ public:
 	SendTableProxyFn	GetDataTableProxyFn() const;
 	void				SetDataTableProxyFn( SendTableProxyFn f );
 	
+	const char*			GetDataTableName();
+	void				SetDataTableName(const char* pTableName);
+
 	SendTable*			GetDataTable() const;
 	void				SetDataTable( SendTable *pTable );
 
@@ -273,6 +277,7 @@ private:
 	SendVarProxyFn		m_ProxyFn = NULL;				// NULL for DPT_DataTable.
 	SendTableProxyFn	m_DataTableProxyFn = NULL;		// Valid for DPT_DataTable.
 	
+	const char*			m_pDataTableName = NULL;
 	SendTable			*m_pDataTable = NULL;
 	
 	// SENDPROP_VECTORELEM makes this negative to start with so we can detect that and
@@ -314,6 +319,15 @@ inline SendTableProxyFn SendProp::GetDataTableProxyFn() const
 inline void SendProp::SetDataTableProxyFn( SendTableProxyFn f )
 {
 	m_DataTableProxyFn = f; 
+}
+
+inline const char* SendProp::GetDataTableName() {
+	return m_pDataTableName;
+}
+
+inline void SendProp::SetDataTableName(const char* pTableName)
+{
+	m_pDataTableName = pTableName;
 }
 
 inline SendTable* SendProp::GetDataTable() const
@@ -434,9 +448,11 @@ inline void SendProp::SetExtraData( const void *pData )
 // -------------------------------------------------------------------------------------------------------------- //
 // SendTable.
 // -------------------------------------------------------------------------------------------------------------- //
+class SendTableManager;
 
 class SendTable
 {
+	friend class SendTableManager;
 public:
 
 	typedef SendProp PropType;
@@ -465,6 +481,7 @@ public:
 	bool		HasPropsEncodedAgainstTickCount() const;
 	void		SetHasPropsEncodedAgainstTickcount( bool bState );
 
+	void		InitRefSendTable(SendTableManager* pSendTableNanager);
 public:
 
 	SendProp	*m_pProps;
@@ -480,6 +497,8 @@ protected:
 	bool		m_bInitialized : 1;	
 	bool		m_bHasBeenWritten : 1;		
 	bool		m_bHasPropsEncodedAgainstCurrentTickCount : 1; // m_flSimulationTime and m_flAnimTime, e.g.
+public:
+	SendTable* m_pNext;
 };
 
 
@@ -535,6 +554,72 @@ inline void SendTable::SetHasPropsEncodedAgainstTickcount( bool bState )
 	m_bHasPropsEncodedAgainstCurrentTickCount = bState;
 }
 
+class SendTableManager {
+public:
+
+	int		GetSendTablesCount() {
+		return GetSendTableMap().GetNumStrings();
+	}
+
+	SendTable* FindSendTable(const char* pName) {
+		if(GetSendTableMap().Defined(pName)){
+			return GetSendTableMap()[pName];
+		}
+		return NULL;
+	}
+
+	SendTable* GetSendTableHead() {
+		return s_pSendTableHead;
+	}
+
+	void	RegisteSendTable(SendTable* pSendTable) {
+
+		if (GetSendTableMap().Defined(pSendTable->GetName())) {
+			Error("duplicate SendTable: %s\n", pSendTable->GetName());	// dedicated servers exit
+		}
+		else {
+			GetSendTableMap()[pSendTable->GetName()] = pSendTable;
+		}
+		if (!s_pSendTableHead)
+		{
+			s_pSendTableHead = pSendTable;
+			pSendTable->m_pNext = NULL;
+		}
+		else
+		{
+			SendTable* p1 = s_pSendTableHead;
+			SendTable* p2 = p1->m_pNext;
+
+			// use _stricmp because Q_stricmp isn't hooked up properly yet
+			if (_stricmp(p1->GetName(), pSendTable->GetName()) > 0)
+			{
+				pSendTable->m_pNext = s_pSendTableHead;
+				s_pSendTableHead = pSendTable;
+				p1 = NULL;
+			}
+
+			while (p1)
+			{
+				if (p2 == NULL || _stricmp(p2->GetName(), pSendTable->GetName()) > 0)
+				{
+					pSendTable->m_pNext = p2;
+					p1->m_pNext = pSendTable;
+					break;
+				}
+				p1 = p2;
+				p2 = p2->m_pNext;
+			}
+		}
+	}
+private:
+	SendTable* s_pSendTableHead = NULL;
+	CUtlStringMap< SendTable* >& GetSendTableMap() {
+		static CUtlStringMap< SendTable* >	s_SendTableMap;
+		return s_SendTableMap;
+	}
+};
+
+extern SendTableManager* g_pSendTableManager;
 // ------------------------------------------------------------------------------------------------------ //
 // Use BEGIN_SEND_TABLE if you want to declare a SendTable and have it inherit all the properties from
 // its base class. There are two requirements for this to work:
@@ -595,16 +680,16 @@ inline void SendTable::SetHasPropsEncodedAgainstTickcount( bool bState )
 #define END_SEND_TABLE(tableName) \
 			};\
 			Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
+			g_pSendTableManager->RegisteSendTable(this);\
 		}\
 	\
 	};\
 	static SendTable_##tableName g_SendTable_##tableName; \
-	SendTable* g_pSendTable_##tableName = &g_SendTable_##tableName; 
+	SendTable* g_pSendTable_##tableName = &g_SendTable_##tableName;
 
 #define BEGIN_SEND_TABLE(className, tableName, baseTableName) \
-	extern SendTable* g_pSendTable_##baseTableName;\
 	BEGIN_SEND_TABLE_NOBASE(className, tableName) \
-		SendPropDataTable("baseclass", 0, g_pSendTable_##baseTableName, SendProxy_DataTableToDataTable),
+		SendPropDataTable("baseclass", 0, #baseTableName, SendProxy_DataTableToDataTable),
 
 
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the
@@ -759,7 +844,7 @@ SendProp SendPropString(
 SendProp SendPropDataTable(
 	const char *pVarName,
 	int offset,
-	SendTable *pTable, 
+	const char *pTableName, 
 	SendTableProxyFn varProxy=SendProxy_DataTableToDataTable
 	);
 

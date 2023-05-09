@@ -64,7 +64,8 @@ int g_sModelIndexC4Glow = -1;
 	END_DATADESC()
 	
 
-	IMPLEMENT_SERVERCLASS_ST( CPlantedC4, DT_PlantedC4, DT_BaseAnimating)
+	IMPLEMENT_SERVERCLASS( CPlantedC4, DT_PlantedC4, DT_BaseAnimating)
+	BEGIN_SEND_TABLE(CPlantedC4, DT_PlantedC4, DT_BaseAnimating)
 		SendPropBool( SENDINFO(m_bBombTicking) ),
 		SendPropFloat( SENDINFO(m_flC4Blow), 0, SPROP_NOSCALE ),
 		SendPropFloat( SENDINFO(m_flTimerLength), 0, SPROP_NOSCALE ),

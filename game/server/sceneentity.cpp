@@ -613,7 +613,8 @@ public:
 LINK_ENTITY_TO_CLASS( logic_choreographed_scene, CSceneEntity );
 LINK_ENTITY_TO_CLASS( scripted_scene, CSceneEntity );
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CSceneEntity, DT_SceneEntity )
+IMPLEMENT_SERVERCLASS( CSceneEntity, DT_SceneEntity )
+BEGIN_SEND_TABLE_NOBASE(CSceneEntity, DT_SceneEntity)
 	SendPropInt(SENDINFO(m_nSceneStringIndex),MAX_CHOREO_SCENES_STRING_BITS,SPROP_UNSIGNED),
 	SendPropBool(SENDINFO(m_bIsPlayingBack)),
 	SendPropBool(SENDINFO(m_bPaused)),

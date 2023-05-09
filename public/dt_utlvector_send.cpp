@@ -183,7 +183,8 @@ SendProp SendPropUtlVector(
 
 	char *pLengthProxyTableName = AllocateUniqueDataTableName( true, "_LPT_%s_%d", pVarName, nMaxElements );
 	SendTable *pLengthTable = new SendTable( pLengthProp, 1, pLengthProxyTableName );
-	pProps[0] = SendPropDataTable( "lengthproxy", 0, pLengthTable, SendProxy_LengthTable );
+	g_pSendTableManager->RegisteSendTable(pLengthTable);
+	pProps[0] = SendPropDataTable( "lengthproxy", 0, pLengthProxyTableName, SendProxy_LengthTable );//pLengthTable
 	pProps[0].SetExtraData( pExtraData );
 
 	// TERROR:
@@ -218,6 +219,7 @@ SendProp SendPropUtlVector(
 		nMaxElements+1, 
 		AllocateUniqueDataTableName( true, "_ST_%s_%d", pVarName, nMaxElements )
 		);
+	g_pSendTableManager->RegisteSendTable(pTable);
 
 	ret.SetDataTable( pTable );
 	return ret;

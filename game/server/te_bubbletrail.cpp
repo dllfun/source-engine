@@ -99,7 +99,8 @@ void CTEBubbleTrail::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecMins), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecMaxs), -1, SPROP_COORD),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),

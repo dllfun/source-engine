@@ -50,7 +50,8 @@ BEGIN_DATADESC( CParticlePerformanceMonitor )
 	DEFINE_INPUTFUNC( FIELD_VOID, "StopMeasuring", InputStopMeasuring ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
+BEGIN_SEND_TABLE(CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
 	SendPropInt( SENDINFO(m_bDisplayPerf), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_bMeasurePerf), 1, SPROP_UNSIGNED ),
 END_SEND_TABLE(DT_ParticlePerformanceMonitor)

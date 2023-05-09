@@ -108,7 +108,8 @@ BEGIN_DATADESC( CColorCorrection )
 END_DATADESC()
 
 extern void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CColorCorrection, DT_ColorCorrection)
+IMPLEMENT_SERVERCLASS(CColorCorrection, DT_ColorCorrection)
+BEGIN_SEND_TABLE_NOBASE(CColorCorrection, DT_ColorCorrection)
 	SendPropVector( SENDINFO(m_vecOrigin), -1,  SPROP_NOSCALE, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
 	SendPropFloat(  SENDINFO(m_MinFalloff) ),
 	SendPropFloat(  SENDINFO(m_MaxFalloff) ),

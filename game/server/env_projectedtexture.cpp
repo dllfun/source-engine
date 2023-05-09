@@ -96,7 +96,8 @@ BEGIN_DATADESC( CEnvProjectedTexture )
 	DEFINE_THINKFUNC( InitialThink ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
+BEGIN_SEND_TABLE(CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
 	SendPropEHandle( SENDINFO( m_hTargetEntity ) ),
 	SendPropBool( SENDINFO( m_bState ) ),
 	SendPropFloat( SENDINFO( m_flLightFOV ) ),

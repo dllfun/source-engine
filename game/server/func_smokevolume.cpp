@@ -63,7 +63,8 @@ END_DATADESC()
 
 
 
-IMPLEMENT_SERVERCLASS_ST( CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS( CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
 	SendPropInt( SENDINFO( m_Color1 ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 	SendPropInt( SENDINFO( m_Color2 ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 	SendPropString( SENDINFO( m_MaterialName ) ),

@@ -86,7 +86,8 @@ void CTEBeamRingPoint::Test( const Vector& current_origin, const QAngle& current
 }
 
 
-IMPLEMENT_SERVERCLASS_ST( CTEBeamRingPoint, DT_TEBeamRingPoint, DT_BaseBeam)
+IMPLEMENT_SERVERCLASS( CTEBeamRingPoint, DT_TEBeamRingPoint, DT_BaseBeam)
+BEGIN_SEND_TABLE(CTEBeamRingPoint, DT_TEBeamRingPoint, DT_BaseBeam)
 	SendPropVector( SENDINFO(m_vecCenter), -1, SPROP_COORD ),
 	SendPropFloat( SENDINFO(m_flStartRadius), 16, SPROP_ROUNDUP, 0.0f, 4096.0f ),
 	SendPropFloat( SENDINFO(m_flEndRadius), 16, SPROP_ROUNDUP, 0.0f, 4096.0f ),

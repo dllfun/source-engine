@@ -97,7 +97,8 @@ void CTEDynamicLight::Test( const Vector& current_origin, const QAngle& current_
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(g), 8, SPROP_UNSIGNED ),

@@ -78,7 +78,8 @@ void CTEClientProjectile::Test( const Vector& current_origin, const QAngle& curr
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecVelocity), -1, SPROP_COORD),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),

@@ -61,7 +61,8 @@ BEGIN_DATADESC( CShadowControl )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CShadowControl, DT_ShadowControl)
+IMPLEMENT_SERVERCLASS(CShadowControl, DT_ShadowControl)
+BEGIN_SEND_TABLE_NOBASE(CShadowControl, DT_ShadowControl)
 	SendPropVector(SENDINFO(m_shadowDirection), -1,  SPROP_NOSCALE ),
 	SendPropInt(SENDINFO(m_shadowColor),	32, SPROP_UNSIGNED),
 	SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE ),

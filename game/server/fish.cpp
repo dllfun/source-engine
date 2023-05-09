@@ -88,7 +88,8 @@ void SendProxy_FishAngle( const SendProp *pProp, const void *pStruct, const void
  * The pool origin must arrive befoore m_x and m_y or the fish will
  * respawn at the origin and zip back to their proper places.
  */
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CFish, DT_CFish )
+IMPLEMENT_SERVERCLASS( CFish, DT_CFish )
+BEGIN_SEND_TABLE_NOBASE(CFish, DT_CFish)
 
 	SendPropVector( SENDINFO(m_poolOrigin), -1, SPROP_COORD, 0.0f, HIGH_DEFAULT ),	// only sent once
 

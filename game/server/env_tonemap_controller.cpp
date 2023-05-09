@@ -87,7 +87,8 @@ BEGIN_DATADESC( CEnvTonemapController )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetBloomScaleRange", InputSetBloomScaleRange ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CEnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
+BEGIN_SEND_TABLE(CEnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
 	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMin), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMax), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_bUseCustomBloomScale), 1, SPROP_UNSIGNED ),

@@ -54,7 +54,8 @@
 		CNetworkVar( bool, m_bSendHandle );
 	};
 
-	IMPLEMENT_SERVERCLASS_ST( CHandleTest, DT_HandleTest, DT_BaseEntity)
+	IMPLEMENT_SERVERCLASS( CHandleTest, DT_HandleTest, DT_BaseEntity)
+	BEGIN_SEND_TABLE(CHandleTest, DT_HandleTest, DT_BaseEntity)
 		SendPropEHandle( SENDINFO( m_Handle ) ),
 		SendPropInt( SENDINFO( m_bSendHandle ) )
 	END_SEND_TABLE(DT_HandleTest)

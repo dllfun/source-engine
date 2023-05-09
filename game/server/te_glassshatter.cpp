@@ -99,7 +99,8 @@ void CTEShatterSurface::Test( const Vector& current_origin, const QAngle& curren
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecAngles), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecForce), -1, SPROP_COORD),

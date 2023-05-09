@@ -20,7 +20,8 @@
 #define LAZY_UPDATE_TIME		3
 
 // Datatable
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CBaseTeamObjectiveResource, DT_BaseTeamObjectiveResource)
+IMPLEMENT_SERVERCLASS(CBaseTeamObjectiveResource, DT_BaseTeamObjectiveResource)
+BEGIN_SEND_TABLE_NOBASE(CBaseTeamObjectiveResource, DT_BaseTeamObjectiveResource)
 
 	SendPropInt( SENDINFO(m_iTimerToShowInHUD), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_iStopWatchTimer), MAX_EDICT_BITS, SPROP_UNSIGNED ),

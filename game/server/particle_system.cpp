@@ -16,7 +16,8 @@ extern void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const 
 extern void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
 
 // Stripped down CBaseEntity send table
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CParticleSystem, DT_ParticleSystem)
+IMPLEMENT_SERVERCLASS(CParticleSystem, DT_ParticleSystem)
+BEGIN_SEND_TABLE_NOBASE(CParticleSystem, DT_ParticleSystem)
 	SendPropVector	(SENDINFO(m_vecOrigin), -1,  SPROP_COORD|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
 	SendPropEHandle (SENDINFO(m_hOwnerEntity)),
 	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),

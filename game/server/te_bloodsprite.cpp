@@ -102,7 +102,8 @@ void CTEBloodSprite::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEBloodSprite, DT_TEBloodSprite)
+IMPLEMENT_SERVERCLASS(CTEBloodSprite, DT_TEBloodSprite)
+BEGIN_SEND_TABLE_NOBASE(CTEBloodSprite, DT_TEBloodSprite)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),

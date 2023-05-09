@@ -151,7 +151,7 @@ void* SendProxy_TeamplayRoundBasedRules( const SendProp *pProp, const void *pStr
 }
 
 BEGIN_SEND_TABLE( CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy , DT_GameRulesProxy)
-	SendPropDataTable( "teamplayroundbased_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_TeamplayRoundBasedRules ), SendProxy_TeamplayRoundBasedRules )
+	SendPropDataTable( "teamplayroundbased_gamerules_data", 0, REFERENCE_SEND_TABLE( DT_TeamplayRoundBasedRules ), SendProxy_TeamplayRoundBasedRules )
 END_SEND_TABLE(DT_TeamplayRoundBasedRulesProxy)
 
 BEGIN_DATADESC( CTeamplayRoundBasedRulesProxy )

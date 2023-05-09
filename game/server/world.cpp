@@ -396,7 +396,8 @@ END_DATADESC()
 
 
 // SendTable stuff.
-IMPLEMENT_SERVERCLASS_ST(CWorld, DT_WORLD, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CWorld, DT_WORLD, DT_BaseEntity)
+BEGIN_SEND_TABLE(CWorld, DT_WORLD, DT_BaseEntity)
 	SendPropFloat	(SENDINFO(m_flWaveHeight), 8, SPROP_ROUNDUP,	0.0f,	8.0f),
 	SendPropVector	(SENDINFO(m_WorldMins),	-1,	SPROP_COORD),
 	SendPropVector	(SENDINFO(m_WorldMaxs),	-1,	SPROP_COORD),

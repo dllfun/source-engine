@@ -296,7 +296,8 @@ BEGIN_DATADESC( CFuncConveyor )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
+BEGIN_SEND_TABLE(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
 	SendPropFloat( SENDINFO(m_flConveyorSpeed), 0, SPROP_NOSCALE ),
 END_SEND_TABLE(DT_FuncConveyor)
 
@@ -580,7 +581,8 @@ void SendProxy_FuncRotatingSimulationTime( const SendProp *pProp, const void *pS
 	SendProxy_SimulationTime( pProp, pStruct, pVarData, pOut, iElement, objectID );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
+BEGIN_SEND_TABLE(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
 	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
 	SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
 	SendPropExclude( "DT_BaseEntity", "m_flSimulationTime" ),

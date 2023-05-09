@@ -27,10 +27,10 @@ extern ServerClass *g_pServerClassHead;
 class ServerClass
 {
 public:
-				ServerClass( const char *pNetworkName, SendTable *pTable )
+				ServerClass( const char *pNetworkName, const char* pTableName )
 				{
 					m_pNetworkName = pNetworkName;
-					m_pTable = pTable;
+					m_pTableName = pTableName;
 					m_InstanceBaselineIndex = INVALID_STRING_INDEX;
 					// g_pServerClassHead is sorted alphabetically, so find the correct place to insert
 					if ( !g_pServerClassHead )
@@ -65,11 +65,19 @@ public:
 					}
 				}
 
+				void InitRefSendTable(SendTableManager* pSendTableNanager) {
+					m_pTable = pSendTableNanager->FindSendTable(m_pTableName);
+					if (!m_pTable) {
+						Error("not found SendTable: %s\n", m_pTableName);	// dedicated servers exit
+					}
+				}
+
 	const char*	GetName()		{ return m_pNetworkName; }
 
 
 public:
 	const char					*m_pNetworkName;
+	const char*					m_pTableName;
 	SendTable					*m_pTable;
 	ServerClass					*m_pNext;
 	int							m_ClassID;	// Managed by the engine.
@@ -85,7 +93,6 @@ class CBaseNetworkable;
 #define DECLARE_SERVERCLASS()									\
 	public:														\
 		virtual ServerClass* GetServerClass();					\
-		static SendTable *m_pClassSendTable;					\
 		template <typename T> friend int ServerClassInit(T *);	\
 		virtual int YouForgotToImplementOrDeclareServerClass();	\
 
@@ -141,15 +148,12 @@ class CBaseNetworkable;
 
 #define IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable ) \
 	CHECK_DECLARE_CLASS( DLLClassName, sendTable ) \
-	class SendTable_##sendTable ;\
-	extern SendTable * g_pSendTable_##sendTable;\
 	static ServerClass g_##DLLClassName##_ClassReg(\
 		#DLLClassName, \
-		g_pSendTable_##sendTable\
+		#sendTable\
 	); \
 	\
 	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
-	SendTable *DLLClassName::m_pClassSendTable = g_pSendTable_##sendTable;\
 	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}
 
 #endif

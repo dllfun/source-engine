@@ -10781,7 +10781,8 @@ BEGIN_SIMPLE_DATADESC( AIScheduleState_t )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC , DT_BaseCombatCharacter)
+IMPLEMENT_SERVERCLASS( CAI_BaseNPC, DT_AI_BaseNPC , DT_BaseCombatCharacter)
+BEGIN_SEND_TABLE(CAI_BaseNPC, DT_AI_BaseNPC, DT_BaseCombatCharacter)
 	SendPropInt( SENDINFO( m_lifeState ), 3, SPROP_UNSIGNED ),
 	SendPropBool( SENDINFO( m_bPerformAvoidance ) ),
 	SendPropBool( SENDINFO( m_bIsMoving ) ),

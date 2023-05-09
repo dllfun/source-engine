@@ -65,7 +65,8 @@ void CTEBeamFollow::Test( const Vector& current_origin, const QAngle& current_an
 	m_iEntIndex	= 1;
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
+IMPLEMENT_SERVERCLASS(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
+BEGIN_SEND_TABLE(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
 	SendPropInt( SENDINFO(m_iEntIndex), 24, SPROP_UNSIGNED ),
 END_SEND_TABLE(DT_TEBeamFollow)
 

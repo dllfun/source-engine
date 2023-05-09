@@ -12,7 +12,8 @@
 #include "tier0/memdbgon.h"
 
 //Networking
-IMPLEMENT_SERVERCLASS_ST(CSteamJet, DT_SteamJet, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS(CSteamJet, DT_SteamJet, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(CSteamJet, DT_SteamJet, DT_BaseParticleEntity)
 	SendPropFloat(SENDINFO(m_SpreadSpeed), 0, SPROP_NOSCALE),
 	SendPropFloat(SENDINFO(m_Speed), 0, SPROP_NOSCALE),
 	SendPropFloat(SENDINFO(m_StartSize), 0, SPROP_NOSCALE),

@@ -82,7 +82,8 @@ END_DATADESC()
 
 
 //-----------------------------------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST( CHostage, DT_CHostage, DT_BaseCombatCharacter)
+IMPLEMENT_SERVERCLASS( CHostage, DT_CHostage, DT_BaseCombatCharacter)
+BEGIN_SEND_TABLE(CHostage, DT_CHostage, DT_BaseCombatCharacter)
 	SendPropExclude( "DT_BaseAnimating", "m_flPoseParameter" ),
 	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),	
 	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),

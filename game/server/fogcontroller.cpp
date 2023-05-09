@@ -73,7 +73,8 @@ BEGIN_DATADESC( CFogController )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CFogController, DT_FogController )
+IMPLEMENT_SERVERCLASS( CFogController, DT_FogController )
+BEGIN_SEND_TABLE_NOBASE(CFogController, DT_FogController)
 // fog data
 	SendPropInt( SENDINFO_STRUCTELEM( m_fog.enable ), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO_STRUCTELEM( m_fog.blend ), 1, SPROP_UNSIGNED ),

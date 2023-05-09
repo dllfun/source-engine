@@ -37,7 +37,8 @@ int SendProxyArrayLength_PlayerArray( const void *pStruct, int objectID )
 
 
 // Datatable
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTeam, DT_Team)
+IMPLEMENT_SERVERCLASS(CTeam, DT_Team)
+BEGIN_SEND_TABLE_NOBASE(CTeam, DT_Team)
 	SendPropInt( SENDINFO(m_iTeamNum), 5 ),
 	SendPropInt( SENDINFO(m_iScore), 0 ),
 	SendPropInt( SENDINFO(m_iRoundsWon), 8 ),

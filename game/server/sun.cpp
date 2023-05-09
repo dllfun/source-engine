@@ -51,7 +51,8 @@ public:
 	CNetworkVar( float, m_flHDRColorScale );
 };
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CSun, DT_Sun )
+IMPLEMENT_SERVERCLASS( CSun, DT_Sun )
+BEGIN_SEND_TABLE_NOBASE(CSun, DT_Sun)
 	SendPropInt( SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 	SendPropInt( SENDINFO(m_clrOverlay), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 	SendPropVector( SENDINFO(m_vDirection), 0, SPROP_NORMAL ),

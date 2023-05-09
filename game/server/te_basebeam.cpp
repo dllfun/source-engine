@@ -46,7 +46,8 @@ CTEBaseBeam::~CTEBaseBeam( void )
 
 
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEBaseBeam, DT_BaseBeam )
+IMPLEMENT_SERVERCLASS( CTEBaseBeam, DT_BaseBeam )
+BEGIN_SEND_TABLE_NOBASE(CTEBaseBeam, DT_BaseBeam)
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropModelIndex( SENDINFO(m_nHaloIndex) ),
 	SendPropInt( SENDINFO(m_nStartFrame), 8, SPROP_UNSIGNED ),

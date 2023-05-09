@@ -245,7 +245,8 @@ BEGIN_DATADESC( CPropJeep )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
+IMPLEMENT_SERVERCLASS( CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
+BEGIN_SEND_TABLE(CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
 	SendPropBool( SENDINFO( m_bHeadlightIsOn ) ),
 END_SEND_TABLE(DT_PropJeep);
 

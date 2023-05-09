@@ -93,7 +93,8 @@ void CTEBeamPoints::Test( const Vector& current_origin, const QAngle& current_an
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST( CTEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
+IMPLEMENT_SERVERCLASS( CTEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
+BEGIN_SEND_TABLE(CTEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
 	SendPropVector( SENDINFO(m_vecStartPoint), -1, SPROP_COORD ),
 	SendPropVector( SENDINFO(m_vecEndPoint), -1, SPROP_COORD ),
 END_SEND_TABLE(DT_TEBeamPoints)

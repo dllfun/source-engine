@@ -227,7 +227,8 @@ BEGIN_DATADESC( CBoneFollower )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CBoneFollower, DT_BoneFollower, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CBoneFollower, DT_BoneFollower, DT_BaseEntity)
+BEGIN_SEND_TABLE(CBoneFollower, DT_BoneFollower, DT_BaseEntity)
 	SendPropModelIndex(SENDINFO(m_modelIndex)),
 	SendPropInt(SENDINFO(m_solidIndex), 6, SPROP_UNSIGNED ),
 END_SEND_TABLE(DT_BoneFollower)

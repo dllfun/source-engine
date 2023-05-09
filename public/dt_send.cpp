@@ -727,6 +727,7 @@ SendProp SendPropArray3(
 	}
 
 	SendTable *pTable = new SendTable( pProps, elements, pVarName ); // TODO free that again
+	g_pSendTableManager->RegisteSendTable(pTable);
 
 	ret.SetDataTable( pTable );
 
@@ -736,7 +737,7 @@ SendProp SendPropArray3(
 SendProp SendPropDataTable(
 	const char *pVarName,
 	int offset,
-	SendTable *pTable,
+	const char *pTableName,
 	SendTableProxyFn varProxy
 	)
 {
@@ -745,7 +746,8 @@ SendProp SendPropDataTable(
 	ret.m_Type = DPT_DataTable;
 	ret.m_pVarName = pVarName;
 	ret.SetOffset( offset );
-	ret.SetDataTable( pTable );
+	ret.SetDataTableName(pTableName);
+	ret.SetDataTable( NULL );
 	ret.SetDataTableProxyFn( varProxy );
 	
 	// Handle special proxy types where they always let all clients get the results.
@@ -880,5 +882,22 @@ void SendTable::Construct( SendProp *pProps, int nProps, const char *pNetTableNa
 	m_bHasBeenWritten = false;
 	m_bHasPropsEncodedAgainstCurrentTickCount = false;
 }
+
+void SendTable::InitRefSendTable(SendTableManager* pSendTableNanager) {
+	for (int i = 0; i < m_nProps; i++)
+	{
+		SendProp* pProp = &m_pProps[i];
+		if (pProp->GetType() == DPT_DataTable && !pProp->GetDataTable())
+		{
+			pProp->SetDataTable(pSendTableNanager->FindSendTable(pProp->GetDataTableName()));
+			if (!pProp->GetDataTable()) {
+				Error("not found SendTable: %s\n", pProp->GetDataTableName());	// dedicated servers exit
+			}
+		}
+	}
+}
+
+static SendTableManager s_SendTableManager;
+SendTableManager* g_pSendTableManager = &s_SendTableManager;
 
 #endif

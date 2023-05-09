@@ -33,7 +33,8 @@ private:
 							  
 
 // This table encodes the CBaseEntity data.
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
+IMPLEMENT_SERVERCLASS(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
+BEGIN_SEND_TABLE_NOBASE(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
 	SendPropInt	(	SENDINFO(m_iTextureFrameIndex),		8,	SPROP_UNSIGNED ),
 	SendPropInt	(	SENDINFO(m_iOverlayID),				32,	SPROP_UNSIGNED ),
 END_SEND_TABLE(DT_InfoOverlayAccessor)

@@ -63,7 +63,8 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST( CEntityDissolve, DT_EntityDissolve, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CEntityDissolve, DT_EntityDissolve, DT_BaseEntity)
+BEGIN_SEND_TABLE(CEntityDissolve, DT_EntityDissolve, DT_BaseEntity)
 	SendPropTime( SENDINFO( m_flStartTime ) ),
 	SendPropFloat( SENDINFO( m_flFadeInStart ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flFadeInLength ), 0, SPROP_NOSCALE ),

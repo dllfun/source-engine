@@ -82,7 +82,8 @@ BEGIN_DATADESC( CInfoLightingRelative )
 	DEFINE_FIELD( m_hLightingLandmark, FIELD_EHANDLE ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
+BEGIN_SEND_TABLE(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
 	SendPropEHandle( SENDINFO( m_hLightingLandmark ) ),
 END_SEND_TABLE(DT_InfoLightingRelative)
 
@@ -227,7 +228,8 @@ END_SEND_TABLE(DT_ServerAnimationData)
 void *SendProxy_ClientSideAnimation( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID );
 
 // SendTable stuff.
-IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
+BEGIN_SEND_TABLE(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
 	SendPropInt		( SENDINFO(m_nForceBone), 8, 0 ),
 	SendPropVector	( SENDINFO(m_vecForce), -1, SPROP_NOSCALE ),
 
@@ -255,7 +257,7 @@ IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
 	SendPropEHandle( SENDINFO( m_hLightingOrigin ) ),
 	SendPropEHandle( SENDINFO( m_hLightingOriginRelative ) ),
 
-	SendPropDataTable( "serveranimdata", 0, &REFERENCE_SEND_TABLE( DT_ServerAnimationData ), SendProxy_ClientSideAnimation ),
+	SendPropDataTable( "serveranimdata", 0, REFERENCE_SEND_TABLE( DT_ServerAnimationData ), SendProxy_ClientSideAnimation ),
 
 	// Fading
 	SendPropFloat( SENDINFO( m_fadeMinDist ), 0, SPROP_NOSCALE ),

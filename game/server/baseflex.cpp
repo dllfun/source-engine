@@ -56,7 +56,8 @@ void* SendProxy_FlexWeights( const SendProp *pProp, const void *pStruct, const v
 REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_FlexWeights );
 
 // SendTable stuff.
-IMPLEMENT_SERVERCLASS_ST(CBaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
+IMPLEMENT_SERVERCLASS(CBaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
+BEGIN_SEND_TABLE(CBaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
 // Note we can't totally disabled flexweights transmission since some things like blink and eye tracking are still done by the server
 	SendPropArray3	(SENDINFO_ARRAY3(m_flexWeight), SendPropFloat(SENDINFO_ARRAY(m_flexWeight), 12, SPROP_ROUNDDOWN, 0.0f, 1.0f ) /*, SendProxy_FlexWeights*/ ),
 	SendPropInt		(SENDINFO(m_blinktoggle), 1, SPROP_UNSIGNED ),

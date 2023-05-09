@@ -28,7 +28,8 @@
 LINK_ENTITY_TO_CLASS( move_rope, CRopeKeyframe );
 LINK_ENTITY_TO_CLASS( keyframe_rope, CRopeKeyframe );
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CRopeKeyframe, DT_RopeKeyframe )
+IMPLEMENT_SERVERCLASS( CRopeKeyframe, DT_RopeKeyframe )
+BEGIN_SEND_TABLE_NOBASE(CRopeKeyframe, DT_RopeKeyframe)
 	SendPropEHandle(SENDINFO(m_hStartPoint)),
 	SendPropEHandle(SENDINFO(m_hEndPoint)),
 	SendPropInt( SENDINFO(m_iStartAttachment), 5, 0 ),

@@ -90,7 +90,8 @@ void CBaseFire::Enable( int state )
 LINK_ENTITY_TO_CLASS( _firesmoke, CFireSmoke );
 
 //Send datatable
-IMPLEMENT_SERVERCLASS_ST( CFireSmoke, DT_FireSmoke, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CFireSmoke, DT_FireSmoke, DT_BaseEntity)
+BEGIN_SEND_TABLE(CFireSmoke, DT_FireSmoke, DT_BaseEntity)
 	SendPropFloat(  SENDINFO( m_flStartScale ), 0,	SPROP_NOSCALE),
 	SendPropFloat(	SENDINFO( m_flScale ),		0,	SPROP_NOSCALE),
 	SendPropFloat(	SENDINFO( m_flScaleTime ),	0,	SPROP_NOSCALE),

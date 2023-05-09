@@ -179,7 +179,8 @@ BEGIN_DATADESC( CPointCommentaryNode )
 	DEFINE_THINKFUNC( UpdateViewPostThink ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
+IMPLEMENT_SERVERCLASS( CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
+BEGIN_SEND_TABLE(CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
 	SendPropBool( SENDINFO(m_bActive) ),
 	SendPropStringT( SENDINFO(m_iszCommentaryFile) ),
 	SendPropStringT( SENDINFO(m_iszCommentaryFileNoHDR) ),

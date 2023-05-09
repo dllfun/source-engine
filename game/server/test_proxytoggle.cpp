@@ -71,8 +71,9 @@ BEGIN_SEND_TABLE_NOBASE( CTest_ProxyToggle_Networkable, DT_ProxyToggle_ProxiedDa
 	SendPropInt( SENDINFO( m_WithProxy ) )
 END_SEND_TABLE(DT_ProxyToggle_ProxiedData)
 
-IMPLEMENT_SERVERCLASS_ST( CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
-	SendPropDataTable( "blah", 0, &REFERENCE_SEND_TABLE( DT_ProxyToggle_ProxiedData ), SendProxy_TestProxyToggle )
+IMPLEMENT_SERVERCLASS( CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
+BEGIN_SEND_TABLE(CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
+	SendPropDataTable( "blah", 0, REFERENCE_SEND_TABLE( DT_ProxyToggle_ProxiedData ), SendProxy_TestProxyToggle )
 END_SEND_TABLE(DT_ProxyToggle)
 
 

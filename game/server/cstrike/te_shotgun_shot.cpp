@@ -58,7 +58,8 @@ CTEFireBullets::~CTEFireBullets( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEFireBullets, DT_TEFireBullets)
+IMPLEMENT_SERVERCLASS(CTEFireBullets, DT_TEFireBullets)
+BEGIN_SEND_TABLE_NOBASE(CTEFireBullets, DT_TEFireBullets)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD ),
 	SendPropAngle( SENDINFO_VECTORELEM( m_vecAngles, 0 ), 13, 0 ),
 	SendPropAngle( SENDINFO_VECTORELEM( m_vecAngles, 1 ), 13, 0 ),
@@ -140,7 +141,8 @@ CTEPlantBomb::~CTEPlantBomb( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEPlantBomb, DT_TEPlantBomb)
+IMPLEMENT_SERVERCLASS(CTEPlantBomb, DT_TEPlantBomb)
+BEGIN_SEND_TABLE_NOBASE(CTEPlantBomb, DT_TEPlantBomb)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD ),
 	SendPropInt( SENDINFO( m_iPlayer ), 6, SPROP_UNSIGNED ), 	// max 64 players, see MAX_PLAYERS
 	SendPropInt( SENDINFO( m_option ), 1, SPROP_UNSIGNED ),

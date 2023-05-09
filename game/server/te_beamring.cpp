@@ -83,7 +83,8 @@ void CTEBeamRing::Test( const Vector& current_origin, const QAngle& current_angl
 }
 
 
-IMPLEMENT_SERVERCLASS_ST( CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
+IMPLEMENT_SERVERCLASS( CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
+BEGIN_SEND_TABLE(CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
 	SendPropInt( SENDINFO(m_nStartEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_nEndEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 END_SEND_TABLE(DT_TEBeamRing)

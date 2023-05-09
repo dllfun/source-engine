@@ -89,7 +89,8 @@ BEGIN_DATADESC( CMaterialModifyControl )
 	DEFINE_INPUTFUNC( FIELD_STRING, "StartFloatLerp", InputStartFloatLerp ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
+BEGIN_SEND_TABLE(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
 	SendPropString( SENDINFO( m_szMaterialName ) ),
 	SendPropString( SENDINFO( m_szMaterialVar ) ),
 	SendPropString( SENDINFO( m_szMaterialVarValue ) ),

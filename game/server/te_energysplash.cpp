@@ -82,7 +82,8 @@ void CTEEnergySplash::Test( const Vector& current_origin, const QAngle& current_
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEEnergySplash, DT_TEEnergySplash)
+IMPLEMENT_SERVERCLASS( CTEEnergySplash, DT_TEEnergySplash)
+BEGIN_SEND_TABLE_NOBASE(CTEEnergySplash, DT_TEEnergySplash)
 	SendPropVector( SENDINFO(m_vecPos), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecDir), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(m_bExplosive), 1, SPROP_UNSIGNED),

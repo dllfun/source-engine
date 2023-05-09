@@ -1410,9 +1410,21 @@ void CServerGameDLL::LevelShutdown( void )
 //-----------------------------------------------------------------------------
 ServerClass* CServerGameDLL::GetAllServerClasses()
 {
+	for (ServerClass* pCur = g_pServerClassHead; pCur; pCur = pCur->m_pNext)
+	{
+		pCur->InitRefSendTable(GetSengTableManager());
+	}
 	return g_pServerClassHead;
 }
 
+SendTableManager* CServerGameDLL::GetSengTableManager() 
+{
+	for (SendTable* pCur = g_pSendTableManager->GetSendTableHead(); pCur; pCur = pCur->m_pNext)
+	{
+		pCur->InitRefSendTable(g_pSendTableManager);
+	}
+	return g_pSendTableManager;
+}
 
 const char *CServerGameDLL::GetGameDescription( void )
 {

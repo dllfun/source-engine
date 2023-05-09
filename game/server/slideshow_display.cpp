@@ -140,7 +140,8 @@ BEGIN_DATADESC( CSlideshowDisplay )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
+BEGIN_SEND_TABLE(CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
 	SendPropBool( SENDINFO(m_bEnabled) ),
 	SendPropString( SENDINFO( m_szDisplayText ) ),
 	SendPropString( SENDINFO( m_szSlideshowDirectory ) ),

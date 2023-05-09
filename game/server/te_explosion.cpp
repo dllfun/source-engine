@@ -96,7 +96,8 @@ void CTEExplosion::Test( const Vector& current_origin, const QAngle& current_ang
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
+IMPLEMENT_SERVERCLASS(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
+BEGIN_SEND_TABLE(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_fScale ), 9, 0, 0.0, 51.2 ),
 	SendPropInt( SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED ),

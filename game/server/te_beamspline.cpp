@@ -93,7 +93,8 @@ void CTEBeamSpline::Test( const Vector& current_origin, const QAngle& current_an
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEBeamSpline, DT_TEBeamSpline)
+IMPLEMENT_SERVERCLASS(CTEBeamSpline, DT_TEBeamSpline)
+BEGIN_SEND_TABLE_NOBASE(CTEBeamSpline, DT_TEBeamSpline)
 	SendPropInt( SENDINFO( m_nPoints ), 5, SPROP_UNSIGNED ),
 	
 	SendPropArray(

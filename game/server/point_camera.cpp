@@ -240,7 +240,8 @@ BEGIN_DATADESC( CPointCamera )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPointCamera, DT_PointCamera, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CPointCamera, DT_PointCamera, DT_BaseEntity)
+BEGIN_SEND_TABLE(CPointCamera, DT_PointCamera, DT_BaseEntity)
 	SendPropFloat( SENDINFO( m_FOV ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_Resolution ), 0, SPROP_NOSCALE ),
 	SendPropInt( SENDINFO( m_bFogEnable ), 1, SPROP_UNSIGNED ),	

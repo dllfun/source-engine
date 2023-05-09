@@ -72,7 +72,8 @@ BEGIN_DATADESC( CDynamicLight )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
+BEGIN_SEND_TABLE(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
 	SendPropInt( SENDINFO(m_Flags), 4, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_LightStyle), 4, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO(m_Radius), 0, SPROP_NOSCALE),

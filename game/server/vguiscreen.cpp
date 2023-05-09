@@ -17,7 +17,8 @@
 // This is an entity that represents a vgui screen
 //-----------------------------------------------------------------------------
 
-IMPLEMENT_SERVERCLASS_ST(CVGuiScreen, DT_VGuiScreen, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CVGuiScreen, DT_VGuiScreen, DT_BaseEntity)
+BEGIN_SEND_TABLE(CVGuiScreen, DT_VGuiScreen, DT_BaseEntity)
 	SendPropFloat(SENDINFO(m_flWidth),	0, SPROP_NOSCALE ),
 	SendPropFloat(SENDINFO(m_flHeight),	0, SPROP_NOSCALE ),
 	SendPropInt(SENDINFO(m_nAttachmentIndex), 5, SPROP_UNSIGNED ),

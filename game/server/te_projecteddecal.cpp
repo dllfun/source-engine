@@ -87,7 +87,8 @@ void CTEProjectedDecal::Test( const Vector& current_origin, const QAngle& curren
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropQAngles( SENDINFO(m_angRotation), 10 ),
 	SendPropFloat( SENDINFO(m_flDistance), 10, SPROP_ROUNDUP, 0, 1024 ),

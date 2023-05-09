@@ -20,7 +20,8 @@
 //-----------------------------------------------------------------------------
 //Data table
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST(SmokeTrail, DT_SmokeTrail, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS(SmokeTrail, DT_SmokeTrail, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(SmokeTrail, DT_SmokeTrail, DT_BaseParticleEntity)
 	SendPropFloat(SENDINFO(m_SpawnRate), 8, 0, 1, 1024),
 	SendPropVector(SENDINFO(m_StartColor), 8, 0, 0, 1),
 	SendPropVector(SENDINFO(m_EndColor), 8, 0, 0, 1),
@@ -176,7 +177,8 @@ void SmokeTrail::FollowEntity( CBaseEntity *pEntity, const char *pAttachmentName
 //==================================================
 
 //Data table
-IMPLEMENT_SERVERCLASS_ST(RocketTrail, DT_RocketTrail, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS(RocketTrail, DT_RocketTrail, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(RocketTrail, DT_RocketTrail, DT_BaseParticleEntity)
 	SendPropFloat(SENDINFO(m_SpawnRate), 8, 0, 1, 1024),
 	SendPropVector(SENDINFO(m_StartColor), 8, 0, 0, 1),
 	SendPropVector(SENDINFO(m_EndColor), 8, 0, 0, 1),
@@ -298,7 +300,8 @@ void RocketTrail::FollowEntity( CBaseEntity *pEntity, const char *pAttachmentNam
 // SporeTrail
 //==================================================
 
-IMPLEMENT_SERVERCLASS_ST( SporeTrail, DT_SporeTrail, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS( SporeTrail, DT_SporeTrail, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(SporeTrail, DT_SporeTrail, DT_BaseParticleEntity)
 	SendPropFloat	(SENDINFO(m_flSpawnRate), 8, 0, 1, 1024),
 	SendPropVector	(SENDINFO(m_vecEndColor), 8, 0, 0, 1),
 	SendPropFloat	(SENDINFO(m_flParticleLifetime), 16, SPROP_ROUNDUP, 0.1, 100),
@@ -364,7 +367,8 @@ SporeTrail* SporeTrail::CreateSporeTrail()
 // SporeExplosion
 //==================================================
 
-IMPLEMENT_SERVERCLASS_ST( SporeExplosion, DT_SporeExplosion, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS( SporeExplosion, DT_SporeExplosion, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(SporeExplosion, DT_SporeExplosion, DT_BaseParticleEntity)
 	SendPropFloat	(SENDINFO(m_flSpawnRate), 8, 0, 1, 1024),
 	SendPropFloat	(SENDINFO(m_flParticleLifetime), 16, SPROP_ROUNDUP, 0.1, 100),
 	SendPropFloat	(SENDINFO(m_flStartSize), -1, SPROP_NOSCALE),
@@ -460,7 +464,8 @@ BEGIN_DATADESC( CFireTrail )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CFireTrail, DT_FireTrail, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS( CFireTrail, DT_FireTrail, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(CFireTrail, DT_FireTrail, DT_BaseParticleEntity)
 	SendPropInt( SENDINFO( m_nAttachment ), 32 ),
 	SendPropFloat( SENDINFO( m_flLifetime ), 0, SPROP_NOSCALE ),
 END_SEND_TABLE(DT_FireTrail)
@@ -527,7 +532,8 @@ CFireTrail *CFireTrail::CreateFireTrail( void )
 //-----------------------------------------------------------------------------
 //Data table
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST(DustTrail, DT_DustTrail, DT_BaseParticleEntity)
+IMPLEMENT_SERVERCLASS(DustTrail, DT_DustTrail, DT_BaseParticleEntity)
+BEGIN_SEND_TABLE(DustTrail, DT_DustTrail, DT_BaseParticleEntity)
 	SendPropFloat(SENDINFO(m_SpawnRate), 8, 0, 1, 1024),
 	SendPropVector(SENDINFO(m_Color), 8, 0, 0, 1),
 	SendPropFloat(SENDINFO(m_ParticleLifetime), 16, SPROP_ROUNDUP, 0.1, 100),

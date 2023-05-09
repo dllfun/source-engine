@@ -24,5 +24,6 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( func_reflective_glass, CFuncReflectiveGlass );
 
-IMPLEMENT_SERVERCLASS_ST( CFuncReflectiveGlass, DT_FuncReflectiveGlass, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CFuncReflectiveGlass, DT_FuncReflectiveGlass, DT_BaseEntity)
+BEGIN_SEND_TABLE(CFuncReflectiveGlass, DT_FuncReflectiveGlass, DT_BaseEntity)
 END_SEND_TABLE(DT_FuncReflectiveGlass)

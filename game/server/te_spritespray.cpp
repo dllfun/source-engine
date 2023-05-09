@@ -95,7 +95,8 @@ void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD),
 	SendPropModelIndex(SENDINFO(m_nModelIndex)),

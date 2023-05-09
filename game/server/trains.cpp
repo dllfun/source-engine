@@ -1236,7 +1236,8 @@ LINK_ENTITY_TO_CLASS( func_tracktrain, CFuncTrackTrain );
 //-----------------------------------------------------------------------------
 // Datatable
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST( CFuncTrackTrain, DT_FuncTrackTrain , DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CFuncTrackTrain, DT_FuncTrackTrain , DT_BaseEntity)
+BEGIN_SEND_TABLE(CFuncTrackTrain, DT_FuncTrackTrain, DT_BaseEntity)
 END_SEND_TABLE(DT_FuncTrackTrain)
 
 

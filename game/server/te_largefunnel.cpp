@@ -82,7 +82,8 @@ void CTELargeFunnel::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
+IMPLEMENT_SERVERCLASS(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
+BEGIN_SEND_TABLE(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropInt( SENDINFO(m_nReversed), 2, SPROP_UNSIGNED ),
 END_SEND_TABLE(DT_TELargeFunnel)

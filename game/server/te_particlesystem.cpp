@@ -14,7 +14,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_SERVERCLASS_ST(CTEParticleSystem, DT_TEParticleSystem, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEParticleSystem, DT_TEParticleSystem, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEParticleSystem, DT_TEParticleSystem, DT_BaseTempEntity)
 #if defined( TF_DLL )
 	SendPropFloat( SENDINFO_VECTORELEM( m_vecOrigin, 0 ), -1, SPROP_COORD_MP_INTEGRAL ),
 	SendPropFloat( SENDINFO_VECTORELEM( m_vecOrigin, 1 ), -1, SPROP_COORD_MP_INTEGRAL ),

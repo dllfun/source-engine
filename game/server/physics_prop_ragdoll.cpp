@@ -56,7 +56,8 @@ LINK_ENTITY_TO_CLASS( physics_prop_ragdoll, CRagdollProp );
 LINK_ENTITY_TO_CLASS( prop_ragdoll, CRagdollProp );
 EXTERN_SEND_TABLE(DT_Ragdoll);
 
-IMPLEMENT_SERVERCLASS_ST(CRagdollProp, DT_Ragdoll, DT_BaseAnimating)
+IMPLEMENT_SERVERCLASS(CRagdollProp, DT_Ragdoll, DT_BaseAnimating)
+BEGIN_SEND_TABLE(CRagdollProp, DT_Ragdoll, DT_BaseAnimating)
 	SendPropArray	(SendPropQAngles(SENDINFO_ARRAY(m_ragAngles), 13, 0 ), m_ragAngles),
 	SendPropArray	(SendPropVector(SENDINFO_ARRAY(m_ragPos), -1, SPROP_COORD ), m_ragPos),
 	SendPropEHandle(SENDINFO( m_hUnragdoll ) ),
@@ -1242,7 +1243,8 @@ private:
 LINK_ENTITY_TO_CLASS( prop_ragdoll_attached, CRagdollPropAttached );
 EXTERN_SEND_TABLE(DT_Ragdoll_Attached);
 
-IMPLEMENT_SERVERCLASS_ST(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
+IMPLEMENT_SERVERCLASS(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
+BEGIN_SEND_TABLE(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
 	SendPropInt( SENDINFO( m_boneIndexAttached ), MAXSTUDIOBONEBITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_ragdollAttachedObjectIndex ), RAGDOLL_INDEX_BITS, SPROP_UNSIGNED ),
 	SendPropVector(SENDINFO(m_attachmentPointBoneSpace), -1,  SPROP_COORD ),

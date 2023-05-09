@@ -70,7 +70,7 @@ END_NETWORK_TABLE(DT_LocalActiveWeaponKnifeData)
 
 BEGIN_NETWORK_TABLE( CKnife, DT_WeaponKnife, DT_WeaponCSBase)
 	#if !defined( CLIENT_DLL )
-		SendPropDataTable("LocalActiveWeaponKnifeData", 0, &REFERENCE_SEND_TABLE(DT_LocalActiveWeaponKnifeData), SendProxy_SendActiveLocalKnifeDataTable ),
+		SendPropDataTable("LocalActiveWeaponKnifeData", 0, REFERENCE_SEND_TABLE(DT_LocalActiveWeaponKnifeData), SendProxy_SendActiveLocalKnifeDataTable ),
 	#else
 		RecvPropDataTable("LocalActiveWeaponKnifeData", 0, 0, &REFERENCE_RECV_TABLE(DT_LocalActiveWeaponKnifeData)),
 	#endif

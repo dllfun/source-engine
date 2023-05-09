@@ -79,7 +79,8 @@ void CTEShowLine::Test( const Vector& current_origin, const QAngle& current_angl
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST( CTEShowLine, DT_TEShowLine, DT_TEParticleSystem)
+IMPLEMENT_SERVERCLASS( CTEShowLine, DT_TEShowLine, DT_TEParticleSystem)
+BEGIN_SEND_TABLE(CTEShowLine, DT_TEShowLine, DT_TEParticleSystem)
 	SendPropVector( SENDINFO(m_vecEnd), -1, SPROP_COORD),
 END_SEND_TABLE(DT_TEShowLine)
 

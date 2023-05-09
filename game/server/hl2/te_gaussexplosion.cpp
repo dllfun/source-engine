@@ -40,7 +40,8 @@ CTEGaussExplosion::~CTEGaussExplosion( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS_ST( CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
+IMPLEMENT_SERVERCLASS( CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
+BEGIN_SEND_TABLE(CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
 	SendPropInt( SENDINFO(m_nType), 2, SPROP_UNSIGNED ),
 	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD ),
 END_SEND_TABLE(DT_TEGaussExplosion)

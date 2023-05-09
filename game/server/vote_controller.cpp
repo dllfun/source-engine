@@ -21,7 +21,8 @@
 #define MAX_VOTER_HISTORY 64
 
 // Datatable
-IMPLEMENT_SERVERCLASS_ST( CVoteController, DT_VoteController, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CVoteController, DT_VoteController, DT_BaseEntity)
+BEGIN_SEND_TABLE(CVoteController, DT_VoteController, DT_BaseEntity)
 	SendPropInt( SENDINFO( m_iActiveIssueIndex ) ),
 	SendPropInt( SENDINFO( m_iOnlyTeamToVote ) ),
 	SendPropArray3( SENDINFO_ARRAY3( m_nVoteOptionCount ), SendPropInt( SENDINFO_ARRAY( m_nVoteOptionCount ), 8, SPROP_UNSIGNED ) ),

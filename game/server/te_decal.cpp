@@ -94,7 +94,8 @@ void CTEDecal::Test( const Vector& current_origin, const QAngle& current_angles 
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEDecal, DT_TEDecal, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEDecal, DT_TEDecal, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEDecal, DT_TEDecal, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecStart), -1, SPROP_COORD),
 	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),

@@ -7915,7 +7915,7 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 
 	BEGIN_SEND_TABLE_NOBASE( CBasePlayer, DT_LocalPlayerExclusive )
 
-		SendPropDataTable	( SENDINFO_DT(m_Local), &REFERENCE_SEND_TABLE(DT_Local) ),
+		SendPropDataTable	( SENDINFO_DT(m_Local), REFERENCE_SEND_TABLE(DT_Local) ),
 		
 // If HL2_DLL is defined, then baseflex.cpp already sends these.
 #ifndef HL2_DLL
@@ -7968,13 +7968,14 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 	EXTERN_SEND_TABLE(DT_AttributeList);
 #endif
 
-	IMPLEMENT_SERVERCLASS_ST( CBasePlayer, DT_BasePlayer, DT_BaseCombatCharacter)
+	IMPLEMENT_SERVERCLASS( CBasePlayer, DT_BasePlayer, DT_BaseCombatCharacter)
+	BEGIN_SEND_TABLE(CBasePlayer, DT_BasePlayer, DT_BaseCombatCharacter)
 
 #if defined USES_ECON_ITEMS
-		SendPropDataTable(SENDINFO_DT(m_AttributeList), &REFERENCE_SEND_TABLE(DT_AttributeList)),
+		SendPropDataTable(SENDINFO_DT(m_AttributeList), REFERENCE_SEND_TABLE(DT_AttributeList)),
 #endif
 
-		SendPropDataTable(SENDINFO_DT(pl), &REFERENCE_SEND_TABLE(DT_PlayerState), SendProxy_DataTableToDataTable),
+		SendPropDataTable(SENDINFO_DT(pl), REFERENCE_SEND_TABLE(DT_PlayerState), SendProxy_DataTableToDataTable),
 
 		SendPropEHandle(SENDINFO(m_hVehicle)),
 		SendPropEHandle(SENDINFO(m_hUseEntity)),
@@ -7999,7 +8000,7 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 #endif // USES_ECON_ITEMS
 
 		// Data that only gets sent to the local player.
-		SendPropDataTable( "localdata", 0, &REFERENCE_SEND_TABLE(DT_LocalPlayerExclusive), SendProxy_SendLocalDataTable ),
+		SendPropDataTable( "localdata", 0, REFERENCE_SEND_TABLE(DT_LocalPlayerExclusive), SendProxy_SendLocalDataTable ),
 
 	END_SEND_TABLE(DT_BasePlayer)
 

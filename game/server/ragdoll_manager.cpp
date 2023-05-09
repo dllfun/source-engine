@@ -45,7 +45,8 @@ public:
 };
 
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CRagdollManager, DT_RagdollManager )
+IMPLEMENT_SERVERCLASS( CRagdollManager, DT_RagdollManager )
+BEGIN_SEND_TABLE_NOBASE(CRagdollManager, DT_RagdollManager)
 	SendPropInt( SENDINFO( m_iCurrentMaxRagdollCount ), 6 ),
 END_SEND_TABLE(DT_RagdollManager)
 

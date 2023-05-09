@@ -86,7 +86,8 @@ void CTEFizz::Precache( void )
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
 	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropInt( SENDINFO(m_nDensity), 8, SPROP_UNSIGNED ),

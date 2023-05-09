@@ -98,8 +98,7 @@
 
 // MoeMod: ODR Use it to prevent being dropped by linker
 //#define REFERENCE_SEND_TABLE(tableName)	(tableName::g_SendTableInit + &tableName::g_SendTableInit, tableName::g_SendTable)
-#define REFERENCE_SEND_TABLE(tableName)	\
-*g_pSendTable_##tableName
+#define REFERENCE_SEND_TABLE(tableName)	#tableName
 
 #define REFERENCE_RECV_TABLE(tableName)	(tableName::g_RecvTableInit + &tableName::g_RecvTableInit, tableName::g_RecvTable)
 

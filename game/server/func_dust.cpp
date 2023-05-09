@@ -83,7 +83,8 @@ class CFunc_DustCloud : public CFunc_Dust
 public:
 };
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CFunc_Dust, DT_Func_Dust )
+IMPLEMENT_SERVERCLASS( CFunc_Dust, DT_Func_Dust )
+BEGIN_SEND_TABLE_NOBASE(CFunc_Dust, DT_Func_Dust)
 	SendPropInt( SENDINFO(m_Color),	32, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_SpawnRate),	12, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_SpeedMax),	12, SPROP_UNSIGNED ),
@@ -96,7 +97,7 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CFunc_Dust, DT_Func_Dust )
 
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_FallSpeed), 0, SPROP_NOSCALE ),
-	SendPropDataTable( SENDINFO_DT( m_Collision ), &REFERENCE_SEND_TABLE(DT_CollisionProperty) ),
+	SendPropDataTable( SENDINFO_DT( m_Collision ), REFERENCE_SEND_TABLE(DT_CollisionProperty) ),
 END_SEND_TABLE(DT_Func_Dust)
 
 
@@ -261,7 +262,8 @@ CTEDust::~CTEDust( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS_ST( CTEDust, DT_TEDust, DT_TEParticleSystem)
+IMPLEMENT_SERVERCLASS( CTEDust, DT_TEDust, DT_TEParticleSystem)
+BEGIN_SEND_TABLE(CTEDust, DT_TEDust, DT_TEParticleSystem)
 	SendPropFloat( SENDINFO(m_flSize), -1, SPROP_COORD ),
 	SendPropFloat( SENDINFO(m_flSpeed), -1, SPROP_COORD ),
 	SendPropVector( SENDINFO(m_vecDirection), 4, 0, -1.0f, 1.0f ), // cheap normal

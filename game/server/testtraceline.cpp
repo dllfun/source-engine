@@ -32,7 +32,8 @@ private:
 							  
 
 // This table encodes the CBaseEntity data.
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTestTraceline, DT_TestTraceline)
+IMPLEMENT_SERVERCLASS(CTestTraceline, DT_TestTraceline)
+BEGIN_SEND_TABLE_NOBASE(CTestTraceline, DT_TestTraceline)
 	SendPropInt		(SENDINFO(m_clrRender),	32, SPROP_UNSIGNED ),
 	SendPropVector (SENDINFO(m_vecOrigin), 19, 0,	MIN_COORD_INTEGER, MAX_COORD_INTEGER),
 	SendPropFloat	(SENDINFO_VECTORELEM(m_angRotation, 0), 19, 0,	MIN_COORD_INTEGER, MAX_COORD_INTEGER),

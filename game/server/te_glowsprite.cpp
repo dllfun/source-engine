@@ -92,7 +92,8 @@ void CTEGlowSprite::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEGlowSprite, DT_TEGlowSprite, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEGlowSprite, DT_TEGlowSprite, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEGlowSprite, DT_TEGlowSprite, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),

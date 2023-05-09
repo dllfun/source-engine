@@ -45,7 +45,8 @@ END_DATADESC()
 LINK_ENTITY_TO_CLASS( func_monitor, CFuncMonitor );
 
 
-IMPLEMENT_SERVERCLASS_ST( CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
+BEGIN_SEND_TABLE(CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
 END_SEND_TABLE(DT_FuncMonitor)
 
 

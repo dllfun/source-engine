@@ -56,7 +56,8 @@ BEGIN_DATADESC( CWaterLODControl )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CWaterLODControl, DT_WaterLODControl, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CWaterLODControl, DT_WaterLODControl, DT_BaseEntity)
+BEGIN_SEND_TABLE_NOBASE(CWaterLODControl, DT_WaterLODControl, DT_BaseEntity)
 	SendPropFloat(SENDINFO(m_flCheapWaterStartDistance), 0, SPROP_NOSCALE ),
 	SendPropFloat(SENDINFO(m_flCheapWaterEndDistance), 0, SPROP_NOSCALE ),
 END_SEND_TABLE(DT_WaterLODControl)

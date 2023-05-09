@@ -97,7 +97,8 @@ void CTESprite::Test( const Vector& current_origin, const QAngle& current_angles
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTESprite, DT_TESprite, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTESprite, DT_TESprite, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTESprite, DT_TESprite, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
 	SendPropFloat( SENDINFO(m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),

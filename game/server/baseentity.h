@@ -338,6 +338,19 @@ struct rotatingpushmove_t;
 #define CREATE_PREDICTED_ENTITY( className )	\
 	CBaseEntity::CreatePredictedEntityByName( className, __FILE__, __LINE__ );
 
+class TestStatic {
+public:
+
+	TestStatic() {
+		int aaa = 0;
+	}
+
+};
+class TestStaticInit {
+	static TestStatic		m_testStatic;
+
+
+};
 //
 // Base Entity.  All entity types derive from this
 //
@@ -357,7 +370,6 @@ public:
 
 	static bool				m_bInDebugSelect;
 	static int				m_nDebugPlayer;
-
 protected:
 
 	static bool				m_bDebugPause;		// Whether entity i/o is paused for debugging.

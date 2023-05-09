@@ -110,7 +110,8 @@ void CTEBreakModel::Test( const Vector& current_origin, const QAngle& current_an
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 13 ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 13 ),

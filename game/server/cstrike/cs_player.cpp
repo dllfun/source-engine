@@ -226,7 +226,8 @@ public:
 
 LINK_ENTITY_TO_CLASS( cs_ragdoll, CCSRagdoll );
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CCSRagdoll, DT_CSRagdoll )
+IMPLEMENT_SERVERCLASS( CCSRagdoll, DT_CSRagdoll )
+BEGIN_SEND_TABLE_NOBASE(CCSRagdoll, DT_CSRagdoll)
 	SendPropVector	(SENDINFO(m_vecOrigin), -1,  SPROP_COORD|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
 	SendPropVector( SENDINFO(m_vecRagdollOrigin), -1,  SPROP_COORD ),
 	SendPropEHandle( SENDINFO( m_hPlayer ) ),
@@ -260,7 +261,8 @@ public:
 	CNetworkVar( int, m_nData );
 };
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEPlayerAnimEvent, DT_TEPlayerAnimEvent )
+IMPLEMENT_SERVERCLASS( CTEPlayerAnimEvent, DT_TEPlayerAnimEvent )
+BEGIN_SEND_TABLE_NOBASE(CTEPlayerAnimEvent, DT_TEPlayerAnimEvent)
 	SendPropEHandle( SENDINFO( m_hPlayer ) ),
 	SendPropInt( SENDINFO( m_iEvent ), Q_log2( PLAYERANIMEVENT_COUNT ) + 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_nData ), 32 )
@@ -334,7 +336,8 @@ BEGIN_SEND_TABLE_NOBASE( CCSPlayer, DT_CSNonLocalPlayerExclusive )
 END_SEND_TABLE(DT_CSNonLocalPlayerExclusive)
 
 
-IMPLEMENT_SERVERCLASS_ST( CCSPlayer, DT_CSPlayer, DT_BasePlayer)
+IMPLEMENT_SERVERCLASS( CCSPlayer, DT_CSPlayer, DT_BasePlayer)
+BEGIN_SEND_TABLE(CCSPlayer, DT_CSPlayer, DT_BasePlayer)
 	SendPropExclude( "DT_BaseAnimating", "m_flPoseParameter" ),
 	SendPropExclude( "DT_BaseAnimating", "m_flPlaybackRate" ),
 	SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
@@ -352,8 +355,8 @@ IMPLEMENT_SERVERCLASS_ST( CCSPlayer, DT_CSPlayer, DT_BasePlayer)
 	SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
 
 	// Data that only gets sent to the local player.
-	SendPropDataTable( "cslocaldata", 0, &REFERENCE_SEND_TABLE(DT_CSLocalPlayerExclusive), SendProxy_SendLocalDataTable ),
-	SendPropDataTable( "csnonlocaldata", 0, &REFERENCE_SEND_TABLE(DT_CSNonLocalPlayerExclusive), SendProxy_SendNonLocalDataTable ),
+	SendPropDataTable( "cslocaldata", 0, REFERENCE_SEND_TABLE(DT_CSLocalPlayerExclusive), SendProxy_SendLocalDataTable ),
+	SendPropDataTable( "csnonlocaldata", 0, REFERENCE_SEND_TABLE(DT_CSNonLocalPlayerExclusive), SendProxy_SendNonLocalDataTable ),
 
 	SendPropInt( SENDINFO( m_iThrowGrenadeCounter ), THROWGRENADE_COUNTER_BITS, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_iAddonBits ), NUM_ADDON_BITS, SPROP_UNSIGNED ),

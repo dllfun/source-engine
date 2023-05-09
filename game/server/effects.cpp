@@ -1498,7 +1498,8 @@ BEGIN_DATADESC( CPrecipitation )
 END_DATADESC()
 
 // Just send the normal entity crap
-IMPLEMENT_SERVERCLASS_ST( CPrecipitation, DT_Precipitation, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CPrecipitation, DT_Precipitation, DT_BaseEntity)
+BEGIN_SEND_TABLE(CPrecipitation, DT_Precipitation, DT_BaseEntity)
 	SendPropInt( SENDINFO( m_nPrecipType ), Q_log2( NUM_PRECIPITATION_TYPES ) + 1, SPROP_UNSIGNED )
 END_SEND_TABLE(DT_Precipitation)
 
@@ -1604,8 +1605,9 @@ BEGIN_SEND_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
 END_SEND_TABLE(DT_EnvWindShared)
 
 // This table encodes the CBaseEntity data.
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CEnvWind, DT_EnvWind)
-	SendPropDataTable(SENDINFO_DT(m_EnvWindShared), &REFERENCE_SEND_TABLE(DT_EnvWindShared)),
+IMPLEMENT_SERVERCLASS(CEnvWind, DT_EnvWind)
+BEGIN_SEND_TABLE_NOBASE(CEnvWind, DT_EnvWind)
+	SendPropDataTable(SENDINFO_DT(m_EnvWindShared), REFERENCE_SEND_TABLE(DT_EnvWindShared)),
 END_SEND_TABLE(DT_EnvWind)
 
 void CEnvWind::Precache ( void )
@@ -1686,7 +1688,8 @@ END_DATADESC()
 
 
 //Data table
-IMPLEMENT_SERVERCLASS_ST( CEmbers, DT_Embers, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CEmbers, DT_Embers, DT_BaseEntity)
+BEGIN_SEND_TABLE(CEmbers, DT_Embers, DT_BaseEntity)
 	SendPropInt(	SENDINFO( m_nDensity ),		32,	SPROP_UNSIGNED ),
 	SendPropInt(	SENDINFO( m_nLifetime ),	32,	SPROP_UNSIGNED ),
 	SendPropInt(	SENDINFO( m_nSpeed ),		32,	SPROP_UNSIGNED ),
@@ -2276,7 +2279,8 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( env_quadraticbeam, CEnvQuadraticBeam );
 
-IMPLEMENT_SERVERCLASS_ST( CEnvQuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS( CEnvQuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
+BEGIN_SEND_TABLE(CEnvQuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
 	SendPropVector(SENDINFO(m_targetPosition), -1, SPROP_COORD),
 	SendPropVector(SENDINFO(m_controlPosition), -1, SPROP_COORD),
 	SendPropFloat(SENDINFO(m_scrollRate), 8, 0, -4, 4),

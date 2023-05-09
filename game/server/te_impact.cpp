@@ -75,7 +75,8 @@ void CTEImpact::Test( const Vector& current_origin, const Vector& current_normal
 
 
 //Server class implementation
-IMPLEMENT_SERVERCLASS_ST( CTEImpact, DT_TEImpact, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS( CTEImpact, DT_TEImpact, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEImpact, DT_TEImpact, DT_BaseTempEntity)
 	SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
 	SendPropVector( SENDINFO( m_vecNormal ), -1, SPROP_COORD ),
 	SendPropInt( SENDINFO( m_iType ), 32, SPROP_UNSIGNED ),

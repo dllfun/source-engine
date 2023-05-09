@@ -40,7 +40,8 @@ public:
 	CNetworkVar( unsigned char, m_chMaterialType );
 };
 
-IMPLEMENT_SERVERCLASS_ST(CTEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS(CTEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
+BEGIN_SEND_TABLE(CTEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
 	SendPropVector( SENDINFO(m_vecOrigin),		-1, SPROP_COORD),
 	SendPropVector( SENDINFO(m_vecDirection),	-1, SPROP_COORD),
 	SendPropInt(  SENDINFO(m_nEntity),			11, SPROP_UNSIGNED ),

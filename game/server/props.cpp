@@ -729,7 +729,8 @@ static ConCommand prop_debug("prop_debug", CC_Prop_Debug, "Toggle prop debug mod
 //=============================================================================================================
 // BREAKABLE PROPS
 //=============================================================================================================
-IMPLEMENT_SERVERCLASS_ST(CBreakableProp, DT_BreakableProp, DT_BaseAnimating)
+IMPLEMENT_SERVERCLASS(CBreakableProp, DT_BreakableProp, DT_BaseAnimating)
+BEGIN_SEND_TABLE(CBreakableProp, DT_BreakableProp, DT_BaseAnimating)
 END_SEND_TABLE(DT_BreakableProp)
 
 BEGIN_DATADESC( CBreakableProp )
@@ -1848,7 +1849,8 @@ BEGIN_DATADESC( CDynamicProp )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CDynamicProp, DT_DynamicProp, DT_BreakableProp)
+IMPLEMENT_SERVERCLASS(CDynamicProp, DT_DynamicProp, DT_BreakableProp)
+BEGIN_SEND_TABLE(CDynamicProp, DT_DynamicProp, DT_BreakableProp)
 	SendPropBool( SENDINFO( m_bUseHitboxesForRenderBox ) ),
 END_SEND_TABLE(DT_DynamicProp)
 
@@ -2443,7 +2445,8 @@ BEGIN_DATADESC( CPhysicsProp )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPhysicsProp, DT_PhysicsProp, DT_BreakableProp)
+IMPLEMENT_SERVERCLASS( CPhysicsProp, DT_PhysicsProp, DT_BreakableProp)
+BEGIN_SEND_TABLE(CPhysicsProp, DT_PhysicsProp, DT_BreakableProp)
 	SendPropBool( SENDINFO( m_bAwake ) ),
 END_SEND_TABLE(DT_PhysicsProp)
 
@@ -3577,7 +3580,8 @@ BEGIN_DATADESC(CBasePropDoor)
 	DEFINE_THINKFUNC(DoorAutoCloseThink),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CBasePropDoor, DT_BasePropDoor, DT_DynamicProp)
+IMPLEMENT_SERVERCLASS(CBasePropDoor, DT_BasePropDoor, DT_DynamicProp)
+BEGIN_SEND_TABLE(CBasePropDoor, DT_BasePropDoor, DT_DynamicProp)
 END_SEND_TABLE(DT_BasePropDoor)
 
 CBasePropDoor::CBasePropDoor( void )
@@ -5504,7 +5508,8 @@ LINK_ENTITY_TO_CLASS( func_physbox_multiplayer, CPhysBoxMultiplayer );
 BEGIN_DATADESC( CPhysBoxMultiplayer )
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, DT_PhysBox)
+IMPLEMENT_SERVERCLASS( CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, DT_PhysBox)
+BEGIN_SEND_TABLE(CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, DT_PhysBox)
 	SendPropInt( SENDINFO( m_iPhysicsMode ), 1, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO( m_fMass ), 0, SPROP_NOSCALE ),
 END_SEND_TABLE(DT_PhysBoxMultiplayer)
@@ -5668,7 +5673,8 @@ BEGIN_DATADESC( CPhysicsPropMultiplayer )
 	DEFINE_FIELD( m_collisionMaxs, FIELD_VECTOR ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, DT_PhysicsProp)
+IMPLEMENT_SERVERCLASS( CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, DT_PhysicsProp)
+BEGIN_SEND_TABLE(CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, DT_PhysicsProp)
 	SendPropInt( SENDINFO( m_iPhysicsMode ), 2, SPROP_UNSIGNED ),
 	SendPropFloat( SENDINFO( m_fMass ), 0, SPROP_NOSCALE ),
 	SendPropVector( SENDINFO( m_collisionMins ), 0, SPROP_NOSCALE ),

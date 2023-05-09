@@ -90,7 +90,8 @@ BEGIN_DATADESC( CColorCorrectionVolume )
 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CColorCorrectionVolume, DT_ColorCorrectionVolume)
+IMPLEMENT_SERVERCLASS(CColorCorrectionVolume, DT_ColorCorrectionVolume)
+BEGIN_SEND_TABLE_NOBASE(CColorCorrectionVolume, DT_ColorCorrectionVolume)
 	SendPropFloat( SENDINFO(m_Weight) ),
 	SendPropString( SENDINFO(m_lookupFilename) ),
 END_SEND_TABLE(DT_ColorCorrectionVolume)

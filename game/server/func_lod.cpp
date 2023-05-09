@@ -40,7 +40,8 @@ public:
 };
 
 
-IMPLEMENT_SERVERCLASS_ST(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
+BEGIN_SEND_TABLE(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
 	SendPropFloat(SENDINFO(m_fDisappearDist), 0, SPROP_NOSCALE),
 END_SEND_TABLE(DT_Func_LOD)
 

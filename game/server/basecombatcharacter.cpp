@@ -189,12 +189,13 @@ END_SEND_TABLE(DT_BCCLocalPlayerExclusive);
 //-----------------------------------------------------------------------------
 // This table encodes the CBaseCombatCharacter
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST(CBaseCombatCharacter, DT_BaseCombatCharacter, DT_BaseFlex)
+IMPLEMENT_SERVERCLASS(CBaseCombatCharacter, DT_BaseCombatCharacter, DT_BaseFlex)
+BEGIN_SEND_TABLE(CBaseCombatCharacter, DT_BaseCombatCharacter, DT_BaseFlex)
 #ifdef GLOWS_ENABLE
 	SendPropBool( SENDINFO( m_bGlowEnabled ) ),
 #endif // GLOWS_ENABLE
 	// Data that only gets sent to the local player.
-	SendPropDataTable( "bcc_localdata", 0, &REFERENCE_SEND_TABLE(DT_BCCLocalPlayerExclusive), SendProxy_SendBaseCombatCharacterLocalDataTable ),
+	SendPropDataTable( "bcc_localdata", 0, REFERENCE_SEND_TABLE(DT_BCCLocalPlayerExclusive), SendProxy_SendBaseCombatCharacterLocalDataTable ),
 
 	SendPropEHandle( SENDINFO( m_hActiveWeapon ) ),
 	SendPropArray3( SENDINFO_ARRAY3(m_hMyWeapons), SendPropEHandle( SENDINFO_ARRAY(m_hMyWeapons) ) ),

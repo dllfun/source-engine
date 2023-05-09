@@ -15,7 +15,8 @@
 #include "cs_gamerules.h"
 
 // Datatable
-IMPLEMENT_SERVERCLASS_ST(CCSPlayerResource, DT_CSPlayerResource, DT_PlayerResource)
+IMPLEMENT_SERVERCLASS(CCSPlayerResource, DT_CSPlayerResource, DT_PlayerResource)
+BEGIN_SEND_TABLE(CCSPlayerResource, DT_CSPlayerResource, DT_PlayerResource)
 	SendPropInt( SENDINFO( m_iPlayerC4 ), 8, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_iPlayerVIP ), 8, SPROP_UNSIGNED ),
 	SendPropVector( SENDINFO(m_vecC4), -1, SPROP_COORD),

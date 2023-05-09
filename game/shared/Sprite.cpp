@@ -854,7 +854,8 @@ const Vector& CSprite::GetRenderOrigin()
 //-----------------------------------------------------------------------------
 
 #if !defined( CLIENT_DLL )
-IMPLEMENT_SERVERCLASS_ST( CSpriteOriented, DT_SpriteOriented , DT_Sprite)
+IMPLEMENT_SERVERCLASS( CSpriteOriented, DT_SpriteOriented , DT_Sprite)
+BEGIN_SEND_TABLE(CSpriteOriented, DT_SpriteOriented, DT_Sprite)
 END_SEND_TABLE(DT_SpriteOriented)
 #else
 #undef CSpriteOriented
