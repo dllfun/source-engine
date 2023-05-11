@@ -22,6 +22,11 @@ public:
 	DECLARE_NETWORKCLASS();
 
 	virtual void DrawDebugGeometryOverlays();
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CInfoLadderDismount, DT_InfoLadderDismount, DT_BaseEntity)
+	END_NETWORK_TABLE(DT_InfoLadderDismount)
+#endif
 };
 
 typedef CHandle< CInfoLadderDismount > CInfoLadderDismountHandle;
@@ -106,6 +111,16 @@ private:
 	COutputEvent	m_OnPlayerGotOffLadder;
 
 	virtual int UpdateTransmitState();
+#endif
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CFuncLadder, DT_FuncLadder, DT_BaseEntity)
+		SendPropVector(SENDINFO(m_vecPlayerMountPositionTop), SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecPlayerMountPositionBottom), SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecLadderDir), SPROP_COORD),
+		SendPropBool(SENDINFO(m_bFakeLadder)),
+		//	SendPropStringT( SENDINFO(m_surfacePropName) ),
+	END_NETWORK_TABLE(DT_FuncLadder)
 #endif
 };
 

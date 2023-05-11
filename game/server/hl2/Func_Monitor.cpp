@@ -29,6 +29,10 @@ private:
 	void ReleaseCameraLink();
 
 	EHANDLE m_hInfoCameraLink;
+
+	BEGIN_SEND_TABLE(CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncMonitor)
 };
 
 // automatically hooks in the system's callbacks
@@ -46,8 +50,7 @@ LINK_ENTITY_TO_CLASS( func_monitor, CFuncMonitor );
 
 
 IMPLEMENT_SERVERCLASS( CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
-BEGIN_SEND_TABLE(CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
-END_SEND_TABLE(DT_FuncMonitor)
+
 
 
 //-----------------------------------------------------------------------------

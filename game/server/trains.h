@@ -212,6 +212,10 @@ private:
 	float		m_flUnmodifiedDesiredSpeed;
 
 	bool		m_bDamageChild;
+
+	BEGIN_SEND_TABLE(CFuncTrackTrain, DT_FuncTrackTrain, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncTrackTrain)
 };
 
 

@@ -85,17 +85,8 @@ LINK_ENTITY_TO_CLASS( env_spritetrail, CSpriteTrail );
 //-----------------------------------------------------------------------------
 IMPLEMENT_NETWORKCLASS_ALIASED( SpriteTrail, DT_SpriteTrail );
 
+#if defined( CLIENT_DLL )
 BEGIN_NETWORK_TABLE( CSpriteTrail, DT_SpriteTrail , DT_Sprite)
-#if !defined( CLIENT_DLL )
-	SendPropFloat( SENDINFO(m_flLifeTime),		0,	SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flStartWidth),	0,	SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flEndWidth),		0,	SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flStartWidthVariance),		0,	SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flTextureRes),	0,	SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flMinFadeLength),	0,	SPROP_NOSCALE ),
-	SendPropVector( SENDINFO(m_vecSkyboxOrigin),0,	SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flSkyboxScale),	0,	SPROP_NOSCALE ),
-#else
 	RecvPropFloat( RECVINFO(m_flLifeTime)),
 	RecvPropFloat( RECVINFO(m_flStartWidth)),
 	RecvPropFloat( RECVINFO(m_flEndWidth)),
@@ -104,8 +95,8 @@ BEGIN_NETWORK_TABLE( CSpriteTrail, DT_SpriteTrail , DT_Sprite)
 	RecvPropFloat( RECVINFO(m_flMinFadeLength)),
 	RecvPropVector( RECVINFO(m_vecSkyboxOrigin)),
 	RecvPropFloat( RECVINFO(m_flSkyboxScale)),
-#endif
 END_NETWORK_TABLE(DT_SpriteTrail)
+#endif
 
 //-----------------------------------------------------------------------------
 // Prediction

@@ -50,6 +50,8 @@ enum SurroundingBoundsType_t
 	SURROUNDING_TYPE_BIT_COUNT = 3
 };
 
+void SendProxy_Solid(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_SolidFlags(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 
 //-----------------------------------------------------------------------------
 // Encapsulates collision representation for an entity
@@ -277,6 +279,23 @@ private:
 	//IPhysicsObject	*m_pPhysicsObject;
 	
 	friend class CBaseEntity;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CCollisionProperty, DT_CollisionProperty)
+		SendPropVector(SENDINFO(m_vecMinsPreScaled), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecMaxsPreScaled), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecMins), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecMaxs), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nSolidType), 3, SPROP_UNSIGNED, SendProxy_Solid),
+		SendPropInt(SENDINFO(m_usSolidFlags), FSOLID_MAX_BITS, SPROP_UNSIGNED, SendProxy_SolidFlags),
+		SendPropInt(SENDINFO(m_nSurroundType), SURROUNDING_TYPE_BIT_COUNT, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_triggerBloat), 0, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMinsPreScaled), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMins), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMaxs), 0, SPROP_NOSCALE),
+	END_NETWORK_TABLE(DT_CollisionProperty)
+#endif
 };
 
 

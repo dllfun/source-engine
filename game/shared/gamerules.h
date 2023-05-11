@@ -108,6 +108,11 @@ public:
 private:
 	
 	static CGameRulesProxy *s_pGameRulesProxy;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CGameRulesProxy, DT_GameRulesProxy)
+	END_NETWORK_TABLE(DT_GameRulesProxy)
+#endif
 };
 
 

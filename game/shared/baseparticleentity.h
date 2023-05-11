@@ -89,6 +89,11 @@ private:
 	bool			m_bShouldDeletedOnChangelevel;
 
 	CBaseParticleEntity( const CBaseParticleEntity & ); // not defined, not accessible
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CBaseParticleEntity, DT_BaseParticleEntity, DT_BaseEntity)
+	END_NETWORK_TABLE(DT_BaseParticleEntity)
+#endif
 };
 
 

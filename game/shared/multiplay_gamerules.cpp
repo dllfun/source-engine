@@ -257,6 +257,9 @@ bool CMultiplayRules::Damage_ShouldNotBleed( int iDmgType )
 //*********************************************************
 CMultiplayRules::CMultiplayRules()
 {
+	if (!gpGlobals) {
+		return;
+	}
 #ifndef CLIENT_DLL
 	m_flTimeLastMapChangeOrPlayerWasConnected = 0.0f;
 

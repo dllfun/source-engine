@@ -92,7 +92,7 @@
 
 // Use this to extern send and receive datatables, and reference them.
 //#define EXTERN_SEND_TABLE(tableName)	namespace tableName {extern SendTable g_SendTable; extern int g_SendTableInit;}
-#define EXTERN_SEND_TABLE(tableName)	extern SendTable * g_pSendTable_##tableName 
+#define EXTERN_SEND_TABLE(tableName)	//extern SendTable * g_pSendTable_##tableName 
 
 #define EXTERN_RECV_TABLE(tableName)	namespace tableName {extern RecvTable g_RecvTable; extern int g_RecvTableInit;}
 

@@ -20,14 +20,7 @@ LINK_ENTITY_TO_CLASS( _plasma, CPlasma );
 
 //Send datatable
 IMPLEMENT_SERVERCLASS( CPlasma, DT_Plasma, DT_BaseEntity)
-BEGIN_SEND_TABLE(CPlasma, DT_Plasma, DT_BaseEntity)
-	SendPropFloat(	SENDINFO( m_flScale ),		0,	SPROP_NOSCALE),
-	SendPropFloat(	SENDINFO( m_flScaleTime ),	0,	SPROP_NOSCALE),
-	SendPropInt(	SENDINFO( m_nFlags ),		8,  SPROP_UNSIGNED ),
-	SendPropModelIndex( SENDINFO( m_nPlasmaModelIndex )),
-	SendPropModelIndex( SENDINFO( m_nPlasmaModelIndex2 )),
-	SendPropModelIndex( SENDINFO( m_nGlowModelIndex )),
-END_SEND_TABLE(DT_Plasma)
+
 
 //Data description 
 BEGIN_DATADESC( CPlasma )

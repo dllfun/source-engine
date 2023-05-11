@@ -41,6 +41,13 @@ private:
 	CNetworkColor32( m_shadowColor );
 	CNetworkVar( float, m_flShadowMaxDist );
 	CNetworkVar( bool, m_bDisableShadows );
+
+	BEGIN_SEND_TABLE_NOBASE(CShadowControl, DT_ShadowControl)
+		SendPropVector(SENDINFO(m_shadowDirection), -1, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_shadowColor), 32, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE),
+		SendPropBool(SENDINFO(m_bDisableShadows)),
+	END_SEND_TABLE(DT_ShadowControl)
 };
 
 LINK_ENTITY_TO_CLASS(shadow_control, CShadowControl);
@@ -62,12 +69,7 @@ END_DATADESC()
 
 
 IMPLEMENT_SERVERCLASS(CShadowControl, DT_ShadowControl)
-BEGIN_SEND_TABLE_NOBASE(CShadowControl, DT_ShadowControl)
-	SendPropVector(SENDINFO(m_shadowDirection), -1,  SPROP_NOSCALE ),
-	SendPropInt(SENDINFO(m_shadowColor),	32, SPROP_UNSIGNED),
-	SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE ),
-	SendPropBool(SENDINFO(m_bDisableShadows)),
-END_SEND_TABLE(DT_ShadowControl)
+
 
 
 CShadowControl::CShadowControl()

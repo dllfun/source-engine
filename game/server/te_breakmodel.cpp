@@ -20,7 +20,7 @@ class CTEBreakModel : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEBreakModel, CBaseTempEntity );
-
+					CTEBreakModel() {};
 					CTEBreakModel( const char *name );
 	virtual			~CTEBreakModel( void );
 
@@ -40,6 +40,20 @@ public:
 	CNetworkVar( int, m_nCount );
 	CNetworkVar( float, m_fTime );
 	CNetworkVar( int, m_nFlags );
+
+	BEGIN_SEND_TABLE(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 0), 13),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 1), 13),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 2), 13),
+		SendPropVector(SENDINFO(m_vecSize), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecVelocity), -1, SPROP_COORD),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropInt(SENDINFO(m_nRandomization), 9, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nCount), 8, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_fTime), 10, 0, 0, 102.4),
+		SendPropInt(SENDINFO(m_nFlags), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBreakModel)
 };
 
 //-----------------------------------------------------------------------------
@@ -111,19 +125,7 @@ void CTEBreakModel::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 13 ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 13 ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 2), 13 ),
-	SendPropVector( SENDINFO(m_vecSize), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecVelocity), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_nRandomization), 9, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nCount), 8, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_fTime), 10, 0, 0, 102.4 ),
-	SendPropInt( SENDINFO(m_nFlags), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBreakModel)
+
 
 // Singleton to fire TEBreakModel objects
 static CTEBreakModel g_TEBreakModel( "breakmodel" );

@@ -62,6 +62,13 @@ private:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 	DECLARE_SEND_TABLE_ACCESS(DT_QuadraticBeam);
+
+	BEGIN_SEND_TABLE(CEnvQuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
+		SendPropVector(SENDINFO(m_targetPosition), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_controlPosition), -1, SPROP_COORD),
+		SendPropFloat(SENDINFO(m_scrollRate), 8, 0, -4, 4),
+		SendPropFloat(SENDINFO(m_flWidth), -1, SPROP_NOSCALE),
+	END_SEND_TABLE(DT_QuadraticBeam)
 };
 CEnvQuadraticBeam *CreateQuadraticBeam( const char *pSpriteName, const Vector &start, const Vector &control, const Vector &end, float width, CBaseEntity *pOwner );
 

@@ -63,12 +63,19 @@ private:
 
 	int m_droppedModelIndex;
 	bool m_inPrecache;
+
+#if !defined(CLIENT_DLL)
+	BEGIN_NETWORK_TABLE(CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
+	END_NETWORK_TABLE(DT_WeaponElite)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponElite, DT_WeaponElite )
 
+#if defined(CLIENT_DLL)
 BEGIN_NETWORK_TABLE( CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
 END_NETWORK_TABLE(DT_WeaponElite)
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponElite )
@@ -81,7 +88,7 @@ PRECACHE_WEAPON_REGISTER( weapon_elite );
 
 CWeaponElite::CWeaponElite()
 {
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
 	m_inPrecache = false;
 }
 

@@ -10782,19 +10782,7 @@ END_DATADESC()
 
 
 IMPLEMENT_SERVERCLASS( CAI_BaseNPC, DT_AI_BaseNPC , DT_BaseCombatCharacter)
-BEGIN_SEND_TABLE(CAI_BaseNPC, DT_AI_BaseNPC, DT_BaseCombatCharacter)
-	SendPropInt( SENDINFO( m_lifeState ), 3, SPROP_UNSIGNED ),
-	SendPropBool( SENDINFO( m_bPerformAvoidance ) ),
-	SendPropBool( SENDINFO( m_bIsMoving ) ),
-	SendPropBool( SENDINFO( m_bFadeCorpse ) ),
-	SendPropInt( SENDINFO( m_iDeathPose ), ANIMATION_SEQUENCE_BITS ),
-	SendPropInt( SENDINFO( m_iDeathFrame ), 5 ),
-	SendPropBool( SENDINFO( m_bSpeedModActive ) ),
-	SendPropInt( SENDINFO( m_iSpeedModRadius ) ),
-	SendPropInt( SENDINFO( m_iSpeedModSpeed ) ),
-	SendPropBool( SENDINFO( m_bImportanRagdoll ) ),
-	SendPropFloat( SENDINFO( m_flTimePingEffect ) ),
-END_SEND_TABLE(DT_AI_BaseNPC)
+
 
 //-------------------------------------
 

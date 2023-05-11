@@ -13,19 +13,7 @@
 
 //Networking
 IMPLEMENT_SERVERCLASS(CSteamJet, DT_SteamJet, DT_BaseParticleEntity)
-BEGIN_SEND_TABLE(CSteamJet, DT_SteamJet, DT_BaseParticleEntity)
-	SendPropFloat(SENDINFO(m_SpreadSpeed), 0, SPROP_NOSCALE),
-	SendPropFloat(SENDINFO(m_Speed), 0, SPROP_NOSCALE),
-	SendPropFloat(SENDINFO(m_StartSize), 0, SPROP_NOSCALE),
-	SendPropFloat(SENDINFO(m_EndSize), 0, SPROP_NOSCALE),
-	SendPropFloat(SENDINFO(m_Rate), 0, SPROP_NOSCALE),
-	SendPropFloat(SENDINFO(m_JetLength), 0, SPROP_NOSCALE),
-	SendPropInt(SENDINFO(m_bEmit), 1, SPROP_UNSIGNED),
-	SendPropInt(SENDINFO(m_bFaceLeft), 1, SPROP_UNSIGNED), // For support of legacy env_steamjet, which faced left instead of forward.
-	SendPropInt(SENDINFO(m_nType), 32, SPROP_UNSIGNED),
-	SendPropInt( SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED ),
-	SendPropFloat(SENDINFO(m_flRollSpeed), 0, SPROP_NOSCALE),
-END_SEND_TABLE(DT_SteamJet)
+
 
 LINK_ENTITY_TO_CLASS( env_steam, CSteamJet );
 LINK_ENTITY_TO_CLASS( env_steamjet, CSteamJet ); // For support of legacy env_steamjet, which faced left instead of forward.

@@ -25,7 +25,7 @@ class CTESmoke : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTESmoke, CBaseTempEntity );
-
+					CTESmoke() {};
 					CTESmoke( const char *name );
 	virtual			~CTESmoke( void );
 
@@ -38,6 +38,13 @@ public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( float, m_fScale );
 	CNetworkVar( int, m_nFrameRate );
+
+	BEGIN_SEND_TABLE(CTESmoke, DT_TESmoke, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropFloat(SENDINFO(m_fScale), 8, SPROP_ROUNDDOWN, 0.0, 25.6),
+		SendPropInt(SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TESmoke)
 };
 
 //-----------------------------------------------------------------------------
@@ -89,12 +96,7 @@ void CTESmoke::Test( const Vector& current_origin, const QAngle& current_angles 
 }
 
 IMPLEMENT_SERVERCLASS(CTESmoke, DT_TESmoke, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTESmoke, DT_TESmoke, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
-	SendPropInt( SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TESmoke)
+
 
 
 // Singleton to fire TESmoke objects

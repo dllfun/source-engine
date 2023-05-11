@@ -96,7 +96,7 @@ void RecvProxy_Beam_ScrollSpeed( const CRecvProxyData *pData, void *pStruct, voi
 }
 #else
 #if !defined( NO_ENTITY_PREDICTION )
-static void* SendProxy_SendPredictableId( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
+void* SendProxy_SendBeamPredictableId( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
 {
 	CBaseEntity *pEntity = (CBaseEntity *)pStruct;
 	if ( !pEntity || !pEntity->m_PredictableID->IsActive() )
@@ -123,7 +123,7 @@ static void* SendProxy_SendPredictableId( const SendProp *pProp, const void *pSt
 	pRecipients->SetOnly( owner_player_index );
 	return ( void * )pVarData;
 }
-REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendPredictableId );
+REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendBeamPredictableId );
 #endif
 #endif
 
@@ -133,60 +133,16 @@ LINK_ENTITY_TO_CLASS( beam, CBeam );
 IMPLEMENT_NETWORKCLASS_ALIASED( Beam, DT_Beam )
 
 #if !defined( NO_ENTITY_PREDICTION )
+#if defined( CLIENT_DLL )
 BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_BeamPredictableId )
-#if !defined( CLIENT_DLL )
-	SendPropPredictableId( SENDINFO( m_PredictableID ) ),
-	SendPropInt( SENDINFO( m_bIsPlayerSimulated ), 1, SPROP_UNSIGNED ),
-#else
 	RecvPropPredictableId( RECVINFO( m_PredictableID ) ),
 	RecvPropInt( RECVINFO( m_bIsPlayerSimulated ) ),
-#endif
 END_NETWORK_TABLE(DT_BeamPredictableId)
 #endif
+#endif
 
+#if defined( CLIENT_DLL )
 BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_Beam )
-#if !defined( CLIENT_DLL )
-	SendPropInt		(SENDINFO(m_nBeamType),		Q_log2(NUM_BEAM_TYPES)+1,	SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_nBeamFlags),	NUM_BEAM_FLAGS,	SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_nNumBeamEnts ),			5,	SPROP_UNSIGNED ),
-	SendPropArray3
-	(
-		SENDINFO_ARRAY3(m_hAttachEntity), 
-		SendPropEHandle( SENDINFO_ARRAY(m_hAttachEntity) )
-	),
-	SendPropArray3
-	(
-		SENDINFO_ARRAY3(m_nAttachIndex), 
-		SendPropInt( SENDINFO_ARRAY(m_nAttachIndex), ATTACHMENT_INDEX_BITS, SPROP_UNSIGNED)
-	),
-	SendPropInt		(SENDINFO(m_nHaloIndex),	16, SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_fHaloScale),	0,	SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_fWidth),		10,	SPROP_ROUNDUP,	0.0f, MAX_BEAM_WIDTH ),
-	SendPropFloat	(SENDINFO(m_fEndWidth),		10,	SPROP_ROUNDUP,	0.0f, MAX_BEAM_WIDTH ),
-	SendPropFloat	(SENDINFO(m_fFadeLength),	0,	SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_fAmplitude),	8,	SPROP_ROUNDDOWN,	0.0f, MAX_BEAM_NOISEAMPLITUDE ),
-	SendPropFloat	(SENDINFO(m_fStartFrame),	8,	SPROP_ROUNDDOWN,	0.0f,   256.0f),
-	SendPropFloat	(SENDINFO(m_fSpeed),		8,	SPROP_NOSCALE,	0.0f,	MAX_BEAM_SCROLLSPEED),
-	SendPropInt		(SENDINFO(m_nRenderFX),		8,	SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_nRenderMode),	8,	SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_flFrameRate),	10, SPROP_ROUNDUP, -25.0f, 25.0f ),
-	SendPropFloat	(SENDINFO(m_flHDRColorScale),	0, SPROP_NOSCALE, 0.0f, 100.0f ),
-	SendPropFloat	(SENDINFO(m_flFrame),		20, SPROP_ROUNDDOWN | SPROP_CHANGES_OFTEN,	0.0f,   256.0f),
-	SendPropInt		(SENDINFO(m_clrRender),		32,	SPROP_UNSIGNED | SPROP_CHANGES_OFTEN ),
-	SendPropVector	(SENDINFO(m_vecEndPos),		-1,	SPROP_COORD ),
-#ifdef PORTAL
-	SendPropBool	(SENDINFO(m_bDrawInMainRender) ),
-	SendPropBool	(SENDINFO(m_bDrawInPortalRender) ),
-#endif
-	SendPropModelIndex(SENDINFO(m_nModelIndex) ),
-	SendPropVector (SENDINFO(m_vecOrigin), 19, SPROP_CHANGES_OFTEN,	MIN_COORD_INTEGER, MAX_COORD_INTEGER),
-	SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent) ),
-	SendPropInt		(SENDINFO(m_nMinDXLevel),	8,	SPROP_UNSIGNED ),
-#if !defined( NO_ENTITY_PREDICTION )
-	SendPropDataTable( "beampredictable_id", 0, REFERENCE_SEND_TABLE( DT_BeamPredictableId ), SendProxy_SendPredictableId ),
-#endif
-
-#else
 	RecvPropInt		(RECVINFO(m_nBeamType)),
 	RecvPropInt		(RECVINFO(m_nBeamFlags)),
 	RecvPropInt		(RECVINFO(m_nNumBeamEnts)),
@@ -228,8 +184,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_Beam )
 	RecvPropDataTable( "beampredictable_id", 0, 0, &REFERENCE_RECV_TABLE( DT_BeamPredictableId ) ),
 #endif
 
-#endif
 END_NETWORK_TABLE(DT_Beam)
+#endif
 
 #if !defined( CLIENT_DLL )
 BEGIN_DATADESC( CBeam )

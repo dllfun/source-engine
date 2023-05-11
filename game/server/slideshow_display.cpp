@@ -92,6 +92,17 @@ private:
 
 	typedef CHandle<CVGuiScreen>	ScreenHandle_t;
 	CUtlVector<ScreenHandle_t>	m_hScreens;
+
+	BEGIN_SEND_TABLE(CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
+		SendPropBool(SENDINFO(m_bEnabled)),
+		SendPropString(SENDINFO(m_szDisplayText)),
+		SendPropString(SENDINFO(m_szSlideshowDirectory)),
+		SendPropArray3(SENDINFO_ARRAY3(m_chCurrentSlideLists), SendPropInt(SENDINFO_ARRAY(m_chCurrentSlideLists), 8, SPROP_UNSIGNED)),
+		SendPropFloat(SENDINFO(m_fMinSlideTime), 11, 0, 0.0f, 20.0f),
+		SendPropFloat(SENDINFO(m_fMaxSlideTime), 11, 0, 0.0f, 20.0f),
+		SendPropInt(SENDINFO(m_iCycleType), 2, SPROP_UNSIGNED),
+		SendPropBool(SENDINFO(m_bNoListRepeats)),
+	END_SEND_TABLE(DT_SlideshowDisplay)
 };
 
 
@@ -141,16 +152,7 @@ BEGIN_DATADESC( CSlideshowDisplay )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
-BEGIN_SEND_TABLE(CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
-	SendPropBool( SENDINFO(m_bEnabled) ),
-	SendPropString( SENDINFO( m_szDisplayText ) ),
-	SendPropString( SENDINFO( m_szSlideshowDirectory ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_chCurrentSlideLists), SendPropInt( SENDINFO_ARRAY(m_chCurrentSlideLists), 8, SPROP_UNSIGNED ) ),
-	SendPropFloat( SENDINFO(m_fMinSlideTime), 11, 0, 0.0f, 20.0f ),
-	SendPropFloat( SENDINFO(m_fMaxSlideTime), 11, 0, 0.0f, 20.0f ),
-	SendPropInt( SENDINFO(m_iCycleType), 2, SPROP_UNSIGNED ),
-	SendPropBool( SENDINFO(m_bNoListRepeats) ),
-END_SEND_TABLE(DT_SlideshowDisplay)
+
 
 
 CSlideshowDisplay::~CSlideshowDisplay()

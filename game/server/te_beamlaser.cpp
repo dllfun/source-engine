@@ -22,7 +22,7 @@ class CTEBeamLaser : public CTEBaseBeam
 public:
 	DECLARE_SERVERCLASS();
 	DECLARE_SEND_TABLE_ACCESS(DT_TEBeamLaser);
-
+					CTEBeamLaser() {};
 					CTEBeamLaser( const char *name );
 	virtual			~CTEBeamLaser( void );
 
@@ -31,6 +31,11 @@ public:
 public:
 	CNetworkVar( int, m_nStartEntity );
 	CNetworkVar( int, m_nEndEntity );
+
+	BEGIN_SEND_TABLE(CTEBeamLaser, DT_TEBeamLaser, DT_BaseBeam)
+		SendPropInt(SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBeamLaser)
 };
 
 //-----------------------------------------------------------------------------
@@ -78,10 +83,7 @@ void CTEBeamLaser::Test( const Vector& current_origin, const QAngle& current_ang
 }
 
 IMPLEMENT_SERVERCLASS( CTEBeamLaser, DT_TEBeamLaser, DT_BaseBeam)
-BEGIN_SEND_TABLE(CTEBeamLaser, DT_TEBeamLaser, DT_BaseBeam)
-	SendPropInt( SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBeamLaser)
+
 
 
 // Singleton to fire TEBeamLaser objects

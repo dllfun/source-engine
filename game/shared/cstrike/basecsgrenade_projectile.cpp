@@ -31,18 +31,11 @@ float GetCurrentGravity( void );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile, DT_BaseGrenade)
-	#ifdef CLIENT_DLL
 		RecvPropVector( RECVINFO( m_vInitialVelocity ) )
-	#else
-		SendPropVector( SENDINFO( m_vInitialVelocity ), 
-			20,		// nbits
-			0,		// flags
-			-3000,	// low value
-			3000	// high value
-			)
-	#endif
 END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
+#endif
 
 
 #ifdef CLIENT_DLL
@@ -106,7 +99,9 @@ END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
 
 	CBaseCSGrenadeProjectile::~CBaseCSGrenadeProjectile()
 	{
-		TheBots->RemoveGrenade( this );
+		if (TheBots) {
+			TheBots->RemoveGrenade(this);
+		}
 	}
 
 	void CBaseCSGrenadeProjectile::Spawn( void )

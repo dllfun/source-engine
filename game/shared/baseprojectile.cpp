@@ -11,8 +11,10 @@
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseProjectile, DT_BaseProjectile )
 
+#if defined( CLIENT_DLL )
 BEGIN_NETWORK_TABLE( CBaseProjectile, DT_BaseProjectile, DT_BaseAnimating)
 END_NETWORK_TABLE(DT_BaseProjectile)
+#endif
 
 
 //-----------------------------------------------------------------------------

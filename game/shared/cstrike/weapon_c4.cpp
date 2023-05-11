@@ -65,13 +65,7 @@ int g_sModelIndexC4Glow = -1;
 	
 
 	IMPLEMENT_SERVERCLASS( CPlantedC4, DT_PlantedC4, DT_BaseAnimating)
-	BEGIN_SEND_TABLE(CPlantedC4, DT_PlantedC4, DT_BaseAnimating)
-		SendPropBool( SENDINFO(m_bBombTicking) ),
-		SendPropFloat( SENDINFO(m_flC4Blow), 0, SPROP_NOSCALE ),
-		SendPropFloat( SENDINFO(m_flTimerLength), 0, SPROP_NOSCALE ),
-		SendPropFloat( SENDINFO(m_flDefuseLength), 0, SPROP_NOSCALE ),
-		SendPropFloat( SENDINFO(m_flDefuseCountDown), 0, SPROP_NOSCALE ),
-	END_SEND_TABLE(DT_PlantedC4)
+	
 
 	
 BEGIN_PREDICTION_DATA( CPlantedC4 )
@@ -736,17 +730,13 @@ END_PREDICTION_DATA()
 
 IMPLEMENT_NETWORKCLASS_ALIASED( C4, DT_WeaponC4 )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CC4, DT_WeaponC4, DT_WeaponCSBase)
-	#ifdef CLIENT_DLL
 		RecvPropBool( RECVINFO( m_bStartedArming ) ),
 		RecvPropBool( RECVINFO( m_bBombPlacedAnimation ) ),
 		RecvPropFloat( RECVINFO( m_fArmedTime ) )
-	#else
-		SendPropBool( SENDINFO( m_bStartedArming ) ),
-		SendPropBool( SENDINFO( m_bBombPlacedAnimation ) ),
-		SendPropFloat( SENDINFO( m_fArmedTime ), 0, SPROP_NOSCALE )
-	#endif
 END_NETWORK_TABLE(DT_WeaponC4)
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CC4 )

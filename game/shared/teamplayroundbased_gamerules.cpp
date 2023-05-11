@@ -73,8 +73,8 @@ void RecvProxy_TeamplayRoundState( const CRecvProxyData *pData, void *pStruct, v
 }
 #endif 
 
-BEGIN_NETWORK_TABLE_NOBASE( CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules )
 #ifdef CLIENT_DLL
+BEGIN_NETWORK_TABLE_NOBASE( CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules )
 	RecvPropInt( RECVINFO( m_iRoundState ), 0, RecvProxy_TeamplayRoundState ),
 	RecvPropBool( RECVINFO( m_bInWaitingForPlayers ) ),
 	RecvPropInt( RECVINFO( m_iWinningTeam ) ),
@@ -90,27 +90,13 @@ BEGIN_NETWORK_TABLE_NOBASE( CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules
 	RecvPropBool( RECVINFO( m_bStopWatch ) ),
 	RecvPropBool( RECVINFO( m_bMultipleTrains ) ),
 	RecvPropArray3( RECVINFO_ARRAY(m_bPlayerReady), RecvPropBool( RECVINFO(m_bPlayerReady[0]) ) ),
-
-#else
-	SendPropInt( SENDINFO( m_iRoundState ), 5 ),
-	SendPropBool( SENDINFO( m_bInWaitingForPlayers ) ),
-	SendPropInt( SENDINFO( m_iWinningTeam ), 3, SPROP_UNSIGNED ),
-	SendPropBool( SENDINFO( m_bInOvertime ) ),
-	SendPropBool( SENDINFO( m_bInSetup ) ),
-	SendPropBool( SENDINFO( m_bSwitchedTeamsThisRound ) ),
-	SendPropBool( SENDINFO( m_bAwaitingReadyRestart ) ),
-	SendPropTime( SENDINFO( m_flRestartRoundTime ) ),
-	SendPropTime( SENDINFO( m_flMapResetTime ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_flNextRespawnWave), SendPropTime( SENDINFO_ARRAY(m_flNextRespawnWave) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_TeamRespawnWaveTimes), SendPropFloat( SENDINFO_ARRAY(m_TeamRespawnWaveTimes) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bTeamReady), SendPropBool( SENDINFO_ARRAY(m_bTeamReady) ) ),
-	SendPropBool( SENDINFO( m_bStopWatch ) ),
-	SendPropBool( SENDINFO( m_bMultipleTrains ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bPlayerReady), SendPropBool( SENDINFO_ARRAY(m_bPlayerReady) ) ),
-#endif
 END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( TeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy )
+#ifndef CLIENT_DLL
+IMPLEMENT_SERVERCLASS(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
+#endif
 
 #ifdef CLIENT_DLL
 void RecvProxy_TeamplayRoundBasedRules( const RecvProp *pProp, void **pOut, void *pData, int objectID )
@@ -150,9 +136,7 @@ void* SendProxy_TeamplayRoundBasedRules( const SendProp *pProp, const void *pStr
 	return pRules;
 }
 
-BEGIN_SEND_TABLE( CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy , DT_GameRulesProxy)
-	SendPropDataTable( "teamplayroundbased_gamerules_data", 0, REFERENCE_SEND_TABLE( DT_TeamplayRoundBasedRules ), SendProxy_TeamplayRoundBasedRules )
-END_SEND_TABLE(DT_TeamplayRoundBasedRulesProxy)
+
 
 BEGIN_DATADESC( CTeamplayRoundBasedRulesProxy )
 	// Inputs.
@@ -351,6 +335,9 @@ bool FindInList( const char **pStrings, const char *pToFind )
 //-----------------------------------------------------------------------------
 CTeamplayRoundBasedRules::CTeamplayRoundBasedRules( void )
 {
+	if (!gpGlobals) {
+		return;
+	}
 	for ( int i = 0; i < MAX_TEAMS; i++ )
 	{
 		m_flNextRespawnWave.Set( i, 0 );

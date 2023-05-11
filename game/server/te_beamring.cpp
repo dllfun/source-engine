@@ -27,7 +27,7 @@ class CTEBeamRing : public CTEBaseBeam
 public:
 	DECLARE_CLASS( CTEBeamRing, CTEBaseBeam );
 	DECLARE_SERVERCLASS();
-
+					CTEBeamRing() {};
 					CTEBeamRing( const char *name );
 	virtual			~CTEBeamRing( void );
 
@@ -36,6 +36,11 @@ public:
 public:
 	CNetworkVar( int, m_nStartEntity );
 	CNetworkVar( int, m_nEndEntity );
+
+	BEGIN_SEND_TABLE(CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
+		SendPropInt(SENDINFO(m_nStartEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nEndEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBeamRing)
 };
 
 //-----------------------------------------------------------------------------
@@ -84,10 +89,7 @@ void CTEBeamRing::Test( const Vector& current_origin, const QAngle& current_angl
 
 
 IMPLEMENT_SERVERCLASS( CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
-BEGIN_SEND_TABLE(CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
-	SendPropInt( SENDINFO(m_nStartEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBeamRing)
+
 
 
 // Singleton to fire TEBeamRing objects

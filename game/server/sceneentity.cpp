@@ -608,23 +608,25 @@ private:
 public:
 	void					SetBackground( bool bIsBackground );
 	bool					IsBackground( void );
+
+	BEGIN_SEND_TABLE_NOBASE(CSceneEntity, DT_SceneEntity)
+		SendPropInt(SENDINFO(m_nSceneStringIndex), MAX_CHOREO_SCENES_STRING_BITS, SPROP_UNSIGNED),
+		SendPropBool(SENDINFO(m_bIsPlayingBack)),
+		SendPropBool(SENDINFO(m_bPaused)),
+		SendPropBool(SENDINFO(m_bMultiplayer)),
+		SendPropFloat(SENDINFO(m_flForceClientTime)),
+		SendPropUtlVector(
+			(char*)SENDINFO_UTLVECTOR(m_hActorList),
+			MAX_ACTORS_IN_SCENE, // max elements
+			SendPropEHandle(NULL, 0)),
+	END_SEND_TABLE(DT_SceneEntity)
 };
 
 LINK_ENTITY_TO_CLASS( logic_choreographed_scene, CSceneEntity );
 LINK_ENTITY_TO_CLASS( scripted_scene, CSceneEntity );
 
 IMPLEMENT_SERVERCLASS( CSceneEntity, DT_SceneEntity )
-BEGIN_SEND_TABLE_NOBASE(CSceneEntity, DT_SceneEntity)
-	SendPropInt(SENDINFO(m_nSceneStringIndex),MAX_CHOREO_SCENES_STRING_BITS,SPROP_UNSIGNED),
-	SendPropBool(SENDINFO(m_bIsPlayingBack)),
-	SendPropBool(SENDINFO(m_bPaused)),
-	SendPropBool(SENDINFO(m_bMultiplayer)),
-	SendPropFloat(SENDINFO(m_flForceClientTime)),
-	SendPropUtlVector(
-		(char*)SENDINFO_UTLVECTOR( m_hActorList ),
-		MAX_ACTORS_IN_SCENE, // max elements
-		SendPropEHandle( NULL, 0 ) ),
-END_SEND_TABLE(DT_SceneEntity)
+
 
 BEGIN_DATADESC( CSceneEntity )
 
@@ -770,7 +772,7 @@ CSceneEntity::CSceneEntity( void )
 
 	m_bCompletedEarly	= false;
 
-	if ( !m_pcvSndMixahead )
+	if ( !m_pcvSndMixahead && g_pCVar)
 		m_pcvSndMixahead	= g_pCVar->FindVar( "snd_mixahead" );
 
 	m_BusyActor			= SCENE_BUSYACTOR_DEFAULT;
@@ -793,7 +795,7 @@ CSceneEntity::~CSceneEntity( void )
 void CSceneEntity::SetCurrentTime( float t, bool bForceClientSync )
 {
 	m_flCurrentTime = t;
-	if ( gpGlobals->maxClients == 1 || bForceClientSync )
+	if ((gpGlobals&&gpGlobals->maxClients == 1) || bForceClientSync )
 	{
 		m_flForceClientTime = t;
 	}

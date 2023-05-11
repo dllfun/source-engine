@@ -108,7 +108,7 @@ void CBasePlayerAnimState::ClearAnimationState()
 {
 	ClearAnimationLayers();
 	m_bCurrentFeetYawInitialized = false;
-	m_flLastAnimationStateClearTime = gpGlobals->curtime;
+	m_flLastAnimationStateClearTime = gpGlobals==NULL?0:gpGlobals->curtime;
 }
 
 

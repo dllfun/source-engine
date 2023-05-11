@@ -32,7 +32,7 @@ struct opendata_t
 };
 
 
-abstract_class CBasePropDoor : public CDynamicProp
+class CBasePropDoor : public CDynamicProp
 {
 public:
 
@@ -71,8 +71,8 @@ public:
 	virtual bool DoorCanClose( bool bAutoClose ) { return true; }
 	virtual bool DoorCanOpen( void ) { return true; }
 
-	virtual void GetNPCOpenData(CAI_BaseNPC *pNPC, opendata_t &opendata) = 0;
-	virtual float GetOpenInterval(void) = 0;
+	virtual void GetNPCOpenData(CAI_BaseNPC* pNPC, opendata_t& opendata) {}
+	virtual float GetOpenInterval(void) { return 0.0f; };
 	// }
 
 protected:
@@ -110,19 +110,19 @@ private:
 	virtual void OnDoorClosed() {}
 
 	// Called to tell the door to start opening.
-	virtual void BeginOpening(CBaseEntity *pOpenAwayFrom) = 0;
+	virtual void BeginOpening(CBaseEntity* pOpenAwayFrom) {};
 
 	// Called to tell the door to start closing.
-	virtual void BeginClosing( void ) = 0;
+	virtual void BeginClosing(void) {};
 
 	// Called when blocked to tell the door to stop moving.
-	virtual void DoorStop( void ) = 0;
+	virtual void DoorStop(void) {};
 
 	// Called when blocked to tell the door to continue moving.
-	virtual void DoorResume( void ) = 0;
+	virtual void DoorResume(void) {};
 	
 	// Called to send the door instantly to its spawn positions.
-	virtual void DoorTeleportToSpawnPosition() = 0;
+	virtual void DoorTeleportToSpawnPosition() {};
 	// }
 
 private:
@@ -209,6 +209,10 @@ private:
 	COutputEvent m_OnClose;					// Triggered when the door is told to close.
 	COutputEvent m_OnOpen;					// Triggered when the door is told to open.
 	COutputEvent m_OnLockedUse;				// Triggered when the user tries to open a locked door.
+
+	BEGIN_SEND_TABLE(CBasePropDoor, DT_BasePropDoor, DT_DynamicProp)
+
+	END_SEND_TABLE(DT_BasePropDoor)
 };
 
 

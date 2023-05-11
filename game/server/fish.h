@@ -17,6 +17,7 @@
 
 class CFishPool;
 
+void SendProxy_FishAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 //----------------------------------------------------------------------------------------------
 /**
  * Simple ambient fish
@@ -84,6 +85,23 @@ private:
 	CountdownTimer m_disperseTimer;						///< initial non-flocking time
 
 	CUtlVector< CFish * > m_visible;					///< vector of fish that we can see
+
+	BEGIN_SEND_TABLE_NOBASE(CFish, DT_CFish)
+
+		SendPropVector(SENDINFO(m_poolOrigin), -1, SPROP_COORD, 0.0f, HIGH_DEFAULT),	// only sent once
+
+		SendPropFloat(SENDINFO(m_angle), 7, 0 /*SPROP_CHANGES_OFTEN*/, 0.0f, 360.0f, SendProxy_FishAngle),
+
+		SendPropFloat(SENDINFO(m_x), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f),
+		SendPropFloat(SENDINFO(m_y), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f),
+		SendPropFloat(SENDINFO(m_z), -1, SPROP_COORD),								// only sent once
+
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropInt(SENDINFO(m_lifeState)),
+
+		SendPropFloat(SENDINFO(m_waterLevel)),										// only sent once
+
+	END_SEND_TABLE(DT_CFish)
 };
 
 

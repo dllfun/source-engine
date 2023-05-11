@@ -47,12 +47,19 @@ private:
 	void AUGFire( float flSpread, bool bZoomed );
 	
 	CWeaponAug( const CWeaponAug & );
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponAug, DT_WeaponAug, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponAug)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponAug, DT_WeaponAug )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponAug, DT_WeaponAug, DT_WeaponCSBaseGun)
 END_NETWORK_TABLE(DT_WeaponAug)
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponAug )
 END_PREDICTION_DATA()

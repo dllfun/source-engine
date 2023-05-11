@@ -23,7 +23,7 @@ class CTEWorldDecal : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEWorldDecal, CBaseTempEntity );
-
+					CTEWorldDecal() {};
 					CTEWorldDecal( const char *name );
 	virtual			~CTEWorldDecal( void );
 
@@ -34,6 +34,15 @@ public:
 public:
 	CNetworkVector( m_vecOrigin );
 	CNetworkVar( int, m_nIndex );
+
+	BEGIN_SEND_TABLE(CTEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
+#if defined( TF_DLL )
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD_MP_INTEGRAL),
+#else
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+#endif
+		SendPropInt(SENDINFO(m_nIndex), 9, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEWorldDecal)
 };
 
 //-----------------------------------------------------------------------------
@@ -89,14 +98,7 @@ void CTEWorldDecal::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
-#if defined( TF_DLL )
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD_MP_INTEGRAL ),
-#else
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-#endif
-	SendPropInt( SENDINFO(m_nIndex), 9, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEWorldDecal)
+
 
 
 // Singleton to fire TEWorldDecal objects

@@ -60,19 +60,23 @@ private:
 	CNetworkVar( int, m_iBurstShotsRemaining );	// used to keep track of the shots fired during the Glock18 burst fire mode.
 	float	m_fNextBurstShot;					// time to shoot the next bullet in burst fire mode
 	float	m_flLastFire;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponGlock, DT_WeaponGlock, DT_WeaponCSBase)
+		SendPropBool(SENDINFO(m_bBurstMode)),
+		SendPropInt(SENDINFO(m_iBurstShotsRemaining)),
+	END_NETWORK_TABLE(DT_WeaponGlock)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponGlock, DT_WeaponGlock )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponGlock, DT_WeaponGlock, DT_WeaponCSBase)
-	#ifdef CLIENT_DLL
 		RecvPropBool( RECVINFO( m_bBurstMode ) ),
 		RecvPropInt( RECVINFO( m_iBurstShotsRemaining ) ),
-	#else
-		SendPropBool( SENDINFO( m_bBurstMode ) ),
-		SendPropInt( SENDINFO( m_iBurstShotsRemaining ) ),
-	#endif
 END_NETWORK_TABLE(DT_WeaponGlock)
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponGlock )
@@ -90,7 +94,7 @@ const float kGlockBurstCycleTime = 0.06f;
 CWeaponGlock::CWeaponGlock()
 {
 	m_bBurstMode = false;
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
 	m_iBurstShotsRemaining = 0;
 	m_fNextBurstShot = 0.0f;
 }

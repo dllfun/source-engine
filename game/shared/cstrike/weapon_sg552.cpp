@@ -49,12 +49,18 @@ private:
 
 	void SG552Fire( float flSpread, bool bZoomed );
 
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponSG552, DT_WeaponSG552, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponSG552)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponSG552, DT_WeaponSG552 )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponSG552, DT_WeaponSG552, DT_WeaponCSBaseGun)
 END_NETWORK_TABLE(DT_WeaponSG552)
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponSG552 )
 END_PREDICTION_DATA()

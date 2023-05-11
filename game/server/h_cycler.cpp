@@ -233,11 +233,14 @@ public:
 	bool Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
 	string_t m_iszModel;
 	int m_iModel;
+
+	BEGIN_SEND_TABLE(CWeaponCycler, DT_WeaponCycler, DT_BaseCombatWeapon)
+
+	END_SEND_TABLE(DT_WeaponCycler)
 };
 
 IMPLEMENT_SERVERCLASS(CWeaponCycler, DT_WeaponCycler, DT_BaseCombatWeapon)
-BEGIN_SEND_TABLE(CWeaponCycler, DT_WeaponCycler, DT_BaseCombatWeapon)
-END_SEND_TABLE(DT_WeaponCycler)
+
 
 LINK_ENTITY_TO_CLASS( cycler_weapon, CWeaponCycler );
 

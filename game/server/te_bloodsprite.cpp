@@ -26,7 +26,7 @@ class CTEBloodSprite : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEBloodSprite, CBaseTempEntity );
-
+					CTEBloodSprite() {};
 					CTEBloodSprite( const char *name );
 	virtual			~CTEBloodSprite( void );
 
@@ -44,6 +44,18 @@ public:
 	CNetworkVar( int, b );
 	CNetworkVar( int, a );
 	CNetworkVar( int, m_nSize );
+
+	BEGIN_SEND_TABLE_NOBASE(CTEBloodSprite, DT_TEBloodSprite)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecDirection), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(r), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(g), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(b), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(a), 8, SPROP_UNSIGNED),
+		SendPropModelIndex(SENDINFO(m_nSprayModel)),
+		SendPropModelIndex(SENDINFO(m_nDropModel)),
+		SendPropInt(SENDINFO(m_nSize), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBloodSprite)
 };
 
 //-----------------------------------------------------------------------------
@@ -103,17 +115,7 @@ void CTEBloodSprite::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEBloodSprite, DT_TEBloodSprite)
-BEGIN_SEND_TABLE_NOBASE(CTEBloodSprite, DT_TEBloodSprite)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(g), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(b), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(a), 8, SPROP_UNSIGNED ),
-	SendPropModelIndex( SENDINFO(m_nSprayModel) ),
-	SendPropModelIndex( SENDINFO(m_nDropModel) ),
-	SendPropInt( SENDINFO(m_nSize), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBloodSprite)
+
 
 // Singleton
 static CTEBloodSprite g_TEBloodSprite( "Blood Sprite" );

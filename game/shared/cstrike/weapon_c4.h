@@ -120,6 +120,13 @@
         // HPE_END
         //=============================================================================
         
+		BEGIN_SEND_TABLE(CPlantedC4, DT_PlantedC4, DT_BaseAnimating)
+			SendPropBool(SENDINFO(m_bBombTicking)),
+			SendPropFloat(SENDINFO(m_flC4Blow), 0, SPROP_NOSCALE),
+			SendPropFloat(SENDINFO(m_flTimerLength), 0, SPROP_NOSCALE),
+			SendPropFloat(SENDINFO(m_flDefuseLength), 0, SPROP_NOSCALE),
+			SendPropFloat(SENDINFO(m_flDefuseCountDown), 0, SPROP_NOSCALE),
+		END_SEND_TABLE(DT_PlantedC4)
 	};
 
 	extern CUtlVector< CPlantedC4* > g_PlantedC4s;
@@ -212,6 +219,14 @@ private:
 private:
 	
 	CC4( const CC4 & );
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CC4, DT_WeaponC4, DT_WeaponCSBase)
+		SendPropBool(SENDINFO(m_bStartedArming)),
+		SendPropBool(SENDINFO(m_bBombPlacedAnimation)),
+		SendPropFloat(SENDINFO(m_fArmedTime), 0, SPROP_NOSCALE)
+	END_NETWORK_TABLE(DT_WeaponC4)
+#endif
 };
 
 

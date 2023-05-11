@@ -26,7 +26,7 @@ class CTELargeFunnel : public CTEParticleSystem
 public:
 	DECLARE_CLASS( CTELargeFunnel, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
-
+					CTELargeFunnel() {};
 					CTELargeFunnel( const char *name );
 	virtual			~CTELargeFunnel( void );
 
@@ -35,6 +35,11 @@ public:
 public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( int, m_nReversed );
+
+	BEGIN_SEND_TABLE(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropInt(SENDINFO(m_nReversed), 2, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TELargeFunnel)
 };
 
 //-----------------------------------------------------------------------------
@@ -83,10 +88,7 @@ void CTELargeFunnel::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
-BEGIN_SEND_TABLE(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_nReversed), 2, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TELargeFunnel)
+
 
 
 // Singleton to fire TELargeFunnel objects

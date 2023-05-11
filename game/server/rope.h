@@ -15,6 +15,7 @@
 #include "baseentity.h"
 
 #include "positionwatcher.h"
+#include "rope_shared.h"
 
 class CRopeKeyframe : public CBaseEntity, public IPositionWatcher
 {
@@ -172,6 +173,31 @@ private:
 	CNetworkHandle( CBaseEntity, m_hEndPoint );
 	CNetworkVar( short, m_iStartAttachment );	// StartAttachment/EndAttachment are attachment points.
 	CNetworkVar( short, m_iEndAttachment );
+
+	BEGIN_SEND_TABLE_NOBASE(CRopeKeyframe, DT_RopeKeyframe)
+		SendPropEHandle(SENDINFO(m_hStartPoint)),
+		SendPropEHandle(SENDINFO(m_hEndPoint)),
+		SendPropInt(SENDINFO(m_iStartAttachment), 5, 0),
+		SendPropInt(SENDINFO(m_iEndAttachment), 5, 0),
+
+		SendPropInt(SENDINFO(m_Slack), 12),
+		SendPropInt(SENDINFO(m_RopeLength), 15),
+		SendPropInt(SENDINFO(m_fLockedPoints), 4, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_RopeFlags), ROPE_NUMFLAGS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nSegments), 4, SPROP_UNSIGNED),
+		SendPropBool(SENDINFO(m_bConstrainBetweenEndpoints)),
+		SendPropInt(SENDINFO(m_iRopeMaterialModelIndex), 16, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_Subdiv), 4, SPROP_UNSIGNED),
+
+		SendPropFloat(SENDINFO(m_TextureScale), 10, 0, 0.1f, 10.0f),
+		SendPropFloat(SENDINFO(m_Width), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flScrollSpeed), 0, SPROP_NOSCALE),
+
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
+
+		SendPropInt(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_RopeKeyframe)
 };
 
 

@@ -14,10 +14,7 @@
 
 
 IMPLEMENT_SERVERCLASS(CParticleFire, DT_ParticleFire)
-BEGIN_SEND_TABLE_NOBASE(CParticleFire, DT_ParticleFire)
-	SendPropVector(SENDINFO(m_vOrigin),    0, SPROP_COORD),
-	SendPropVector(SENDINFO(m_vDirection), 0, SPROP_NOSCALE)
-END_SEND_TABLE(DT_ParticleFire)
+
 
 LINK_ENTITY_TO_CLASS( env_particlefire, CParticleFire );
 

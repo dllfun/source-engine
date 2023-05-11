@@ -66,6 +66,22 @@ public:
 private:	
 	int			m_iAlpha;
 
+	BEGIN_SEND_TABLE_NOBASE(CFunc_Dust, DT_Func_Dust)
+		SendPropInt(SENDINFO(m_Color), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_SpawnRate), 12, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_SpeedMax), 12, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flSizeMin), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flSizeMax), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_DistMax), 16, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_LifetimeMin), 4, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_LifetimeMax), 4, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_DustFlags), DUST_NUMFLAGS, SPROP_UNSIGNED),
+
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropFloat(SENDINFO(m_FallSpeed), 0, SPROP_NOSCALE),
+		SendPropDataTable(SENDINFO_DT(m_Collision), REFERENCE_SEND_TABLE(DT_CollisionProperty)),
+	END_SEND_TABLE(DT_Func_Dust)
+
 };
 
 
@@ -84,21 +100,7 @@ public:
 };
 
 IMPLEMENT_SERVERCLASS( CFunc_Dust, DT_Func_Dust )
-BEGIN_SEND_TABLE_NOBASE(CFunc_Dust, DT_Func_Dust)
-	SendPropInt( SENDINFO(m_Color),	32, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_SpawnRate),	12, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_SpeedMax),	12, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_flSizeMin), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flSizeMax), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_DistMax), 16, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_LifetimeMin), 4, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_LifetimeMax), 4, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_DustFlags), DUST_NUMFLAGS, SPROP_UNSIGNED ),
 
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_FallSpeed), 0, SPROP_NOSCALE ),
-	SendPropDataTable( SENDINFO_DT( m_Collision ), REFERENCE_SEND_TABLE(DT_CollisionProperty) ),
-END_SEND_TABLE(DT_Func_Dust)
 
 
 BEGIN_DATADESC( CFunc_Dust )
@@ -240,7 +242,7 @@ class CTEDust : public CTEParticleSystem
 public:
 	DECLARE_CLASS( CTEDust, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
-
+					CTEDust() {};
 					CTEDust( const char *name );
 	virtual			~CTEDust( void );
 
@@ -249,6 +251,12 @@ public:
 	CNetworkVar( float, m_flSize );
 	CNetworkVar( float, m_flSpeed );
 	CNetworkVector( m_vecDirection );
+
+	BEGIN_SEND_TABLE(CTEDust, DT_TEDust, DT_TEParticleSystem)
+		SendPropFloat(SENDINFO(m_flSize), -1, SPROP_COORD),
+		SendPropFloat(SENDINFO(m_flSpeed), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecDirection), 4, 0, -1.0f, 1.0f), // cheap normal
+	END_SEND_TABLE(DT_TEDust)
 };
 
 CTEDust::CTEDust( const char *name ) : BaseClass( name )
@@ -263,11 +271,7 @@ CTEDust::~CTEDust( void )
 }
 
 IMPLEMENT_SERVERCLASS( CTEDust, DT_TEDust, DT_TEParticleSystem)
-BEGIN_SEND_TABLE(CTEDust, DT_TEDust, DT_TEParticleSystem)
-	SendPropFloat( SENDINFO(m_flSize), -1, SPROP_COORD ),
-	SendPropFloat( SENDINFO(m_flSpeed), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO(m_vecDirection), 4, 0, -1.0f, 1.0f ), // cheap normal
-END_SEND_TABLE(DT_TEDust)
+
 
 static CTEDust g_TEDust( "Dust" );
 

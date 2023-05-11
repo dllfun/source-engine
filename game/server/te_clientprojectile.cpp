@@ -17,7 +17,7 @@ class CTEClientProjectile : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEClientProjectile, CBaseTempEntity );
-
+					CTEClientProjectile() {};
 					CTEClientProjectile( const char *name );
 	virtual			~CTEClientProjectile( void );
 
@@ -31,6 +31,14 @@ public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( int, m_nLifeTime );
 	CNetworkHandle( CBaseEntity, m_hOwner );
+
+	BEGIN_SEND_TABLE(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecVelocity), -1, SPROP_COORD),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropInt(SENDINFO(m_nLifeTime), 6, SPROP_UNSIGNED),
+		SendPropEHandle(SENDINFO(m_hOwner)),
+	END_SEND_TABLE(DT_TEClientProjectile)
 };
 
 //-----------------------------------------------------------------------------
@@ -79,13 +87,7 @@ void CTEClientProjectile::Test( const Vector& current_origin, const QAngle& curr
 }
 
 IMPLEMENT_SERVERCLASS(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecVelocity), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_nLifeTime),	6, SPROP_UNSIGNED ),
-	SendPropEHandle(SENDINFO(m_hOwner)),
-END_SEND_TABLE(DT_TEClientProjectile)
+
 
 
 // Singleton to fire TEClientProjectile objects

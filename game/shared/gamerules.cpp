@@ -68,8 +68,10 @@ CGameRulesProxy *CGameRulesProxy::s_pGameRulesProxy = NULL;
 IMPLEMENT_NETWORKCLASS_ALIASED( GameRulesProxy, DT_GameRulesProxy )
 
 // Don't send any of the CBaseEntity stuff..
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE_NOBASE( CGameRulesProxy, DT_GameRulesProxy )
 END_NETWORK_TABLE(DT_GameRulesProxy)
+#endif
 
 
 CGameRulesProxy::CGameRulesProxy()
@@ -147,13 +149,15 @@ extern bool	g_fGameOver;
 //-----------------------------------------------------------------------------
 CGameRules::CGameRules() : CAutoGameSystemPerFrame( "CGameRules" )
 {
-	Assert( !g_pGameRules );
-	g_pGameRules = this;
+	if (gpGlobals) {
+		Assert( !g_pGameRules );
+		g_pGameRules = this;
 
-	GetVoiceGameMgr()->Init( g_pVoiceGameMgrHelper, gpGlobals->maxClients );
-	ClearMultiDamage();
+		GetVoiceGameMgr()->Init( g_pVoiceGameMgrHelper, gpGlobals->maxClients );
+		ClearMultiDamage();
 
-	m_flNextVerboseLogOutput = 0.0f;
+		m_flNextVerboseLogOutput = 0.0f;
+	}
 }
 
 //-----------------------------------------------------------------------------

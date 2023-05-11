@@ -33,6 +33,9 @@ REGISTER_GAMERULES_CLASS( CTeamplayRules );
 
 CTeamplayRules::CTeamplayRules()
 {
+	if (!gpGlobals) {
+		return;
+	}
 	m_DisableDeathMessages = false;
 	m_DisableDeathPenalty = false;
 	m_bSwitchTeams = false;

@@ -17,7 +17,7 @@ CBaseMultiplayerPlayer::CBaseMultiplayerPlayer()
 	m_iCurrentConcept = MP_CONCEPT_NONE;
 	m_flLastForcedChangeTeamTime = -1;
 	m_iBalanceScore = 0;
-	m_flConnectionTime = gpGlobals->curtime;
+	m_flConnectionTime = gpGlobals==NULL?0:gpGlobals->curtime;
 
 	// per life achievement counters
 	m_pAchievementKV = new KeyValues( "achievement_counts" );

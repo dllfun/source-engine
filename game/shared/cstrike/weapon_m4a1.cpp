@@ -69,19 +69,23 @@ private:
 
 	int m_silencedModelIndex;
 	bool m_inPrecache;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponM4A1, DT_WeaponM4A1, DT_WeaponCSBaseGun)
+		SendPropBool(SENDINFO(m_bSilencerOn)),
+		SendPropTime(SENDINFO(m_flDoneSwitchingSilencer)),
+	END_NETWORK_TABLE(DT_WeaponM4A1)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM4A1, DT_WeaponM4A1 )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponM4A1, DT_WeaponM4A1, DT_WeaponCSBaseGun)
-	#ifdef CLIENT_DLL
 		RecvPropBool( RECVINFO( m_bSilencerOn ) ),
 		RecvPropTime( RECVINFO( m_flDoneSwitchingSilencer ) ),
-	#else
-		SendPropBool( SENDINFO( m_bSilencerOn ) ),
-		SendPropTime( SENDINFO( m_flDoneSwitchingSilencer ) ),
-	#endif
 END_NETWORK_TABLE(DT_WeaponM4A1)
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponM4A1 )
 END_PREDICTION_DATA()

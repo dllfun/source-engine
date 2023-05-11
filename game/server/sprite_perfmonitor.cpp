@@ -35,6 +35,11 @@ public:
 private:
 	CNetworkVar( bool, m_bDisplayPerf );
 	CNetworkVar( bool, m_bMeasurePerf );
+
+	BEGIN_SEND_TABLE(CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_bDisplayPerf), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bMeasurePerf), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_ParticlePerformanceMonitor)
 };
 
 LINK_ENTITY_TO_CLASS( env_particle_performance_monitor, CParticlePerformanceMonitor );
@@ -51,10 +56,7 @@ BEGIN_DATADESC( CParticlePerformanceMonitor )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
-BEGIN_SEND_TABLE(CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
-	SendPropInt( SENDINFO(m_bDisplayPerf), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_bMeasurePerf), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_ParticlePerformanceMonitor)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

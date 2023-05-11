@@ -27,7 +27,7 @@ class CTEBeamEntPoint : public CTEBaseBeam
 public:
 	DECLARE_CLASS( CTEBeamEntPoint, CTEBaseBeam );
 	DECLARE_SERVERCLASS();
-
+					CTEBeamEntPoint() {};
 					CTEBeamEntPoint( const char *name );
 	virtual			~CTEBeamEntPoint( void );
 
@@ -39,6 +39,13 @@ public:
 	CNetworkVector( m_vecStartPoint );
 	CNetworkVar( int, m_nEndEntity );
 	CNetworkVector( m_vecEndPoint );
+
+	BEGIN_SEND_TABLE(CTEBeamEntPoint, DT_TEBeamEntPoint, DT_BaseBeam)
+		SendPropInt(SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecStartPoint), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecEndPoint), -1, SPROP_COORD),
+	END_SEND_TABLE(DT_TEBeamEntPoint)
 };
 
 //-----------------------------------------------------------------------------
@@ -99,12 +106,7 @@ void CTEBeamEntPoint::Test( const Vector& current_origin, const QAngle& current_
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamEntPoint, DT_TEBeamEntPoint, DT_BaseBeam)
-BEGIN_SEND_TABLE(CTEBeamEntPoint, DT_TEBeamEntPoint, DT_BaseBeam)
-	SendPropInt( SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED ),
-	SendPropVector( SENDINFO(m_vecStartPoint), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO(m_vecEndPoint), -1, SPROP_COORD ),
-END_SEND_TABLE(DT_TEBeamEntPoint)
+
 
 
 // Singleton to fire TEBeamEntPoint objects

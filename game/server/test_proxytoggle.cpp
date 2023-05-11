@@ -15,7 +15,18 @@ class CTest_ProxyToggle_Networkable;
 static CTest_ProxyToggle_Networkable *g_pTestObj = 0;
 static bool g_bEnableProxy = true;
 
-
+void* SendProxy_TestProxyToggle(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID)
+{
+	if (g_bEnableProxy)
+	{
+		return (void*)pData;
+	}
+	else
+	{
+		pRecipients->ClearAllRecipients();
+		return NULL;
+	}
+}
 // ---------------------------------------------------------------------------------------- //
 // CTest_ProxyToggle_Networkable
 // ---------------------------------------------------------------------------------------- //
@@ -44,20 +55,17 @@ public:
 	}
 
 	CNetworkVar( int, m_WithProxy );
+
+	BEGIN_SEND_TABLE_NOBASE(CTest_ProxyToggle_Networkable, DT_ProxyToggle_ProxiedData)
+		SendPropInt(SENDINFO(m_WithProxy))
+	END_SEND_TABLE(DT_ProxyToggle_ProxiedData)
+
+	BEGIN_SEND_TABLE(CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
+		SendPropDataTable("blah", 0, REFERENCE_SEND_TABLE(DT_ProxyToggle_ProxiedData), SendProxy_TestProxyToggle)
+	END_SEND_TABLE(DT_ProxyToggle)
 };
 
-void* SendProxy_TestProxyToggle( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	if ( g_bEnableProxy )
-	{
-		return (void*)pData;
-	}
-	else
-	{
-		pRecipients->ClearAllRecipients();
-		return NULL;
-	}
-}
+
 REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_TestProxyToggle );
 
 
@@ -67,14 +75,10 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_TestProxyToggle );
 
 LINK_ENTITY_TO_CLASS( test_proxytoggle, CTest_ProxyToggle_Networkable );
 
-BEGIN_SEND_TABLE_NOBASE( CTest_ProxyToggle_Networkable, DT_ProxyToggle_ProxiedData )
-	SendPropInt( SENDINFO( m_WithProxy ) )
-END_SEND_TABLE(DT_ProxyToggle_ProxiedData)
+
 
 IMPLEMENT_SERVERCLASS( CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
-BEGIN_SEND_TABLE(CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
-	SendPropDataTable( "blah", 0, REFERENCE_SEND_TABLE( DT_ProxyToggle_ProxiedData ), SendProxy_TestProxyToggle )
-END_SEND_TABLE(DT_ProxyToggle)
+
 
 
 

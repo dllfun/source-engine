@@ -23,7 +23,7 @@ class CTEDynamicLight : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEDynamicLight, CBaseTempEntity );
-
+					CTEDynamicLight() {};
 					CTEDynamicLight( const char *name );
 	virtual			~CTEDynamicLight( void );
 
@@ -40,6 +40,17 @@ public:
 	CNetworkVar( int, exponent );
 	CNetworkVar( float, m_fTime );
 	CNetworkVar( float, m_fDecay );
+
+	BEGIN_SEND_TABLE(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(r), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(g), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(b), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(exponent), 8, 0),
+		SendPropFloat(SENDINFO(m_fRadius), 8, SPROP_ROUNDUP, 0, 2560.0),
+		SendPropFloat(SENDINFO(m_fTime), 8, SPROP_ROUNDDOWN, 0, 25.6),
+		SendPropFloat(SENDINFO(m_fDecay), 8, SPROP_ROUNDDOWN, 0, 2560.0),
+	END_SEND_TABLE(DT_TEDynamicLight)
 };
 
 //-----------------------------------------------------------------------------
@@ -98,16 +109,7 @@ void CTEDynamicLight::Test( const Vector& current_origin, const QAngle& current_
 }
 
 IMPLEMENT_SERVERCLASS(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(g), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(b), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(exponent), 8, 0 ),
-	SendPropFloat( SENDINFO(m_fRadius), 8, SPROP_ROUNDUP, 0, 2560.0 ),
-	SendPropFloat( SENDINFO(m_fTime), 8, SPROP_ROUNDDOWN, 0, 25.6 ),
-	SendPropFloat( SENDINFO(m_fDecay), 8, SPROP_ROUNDDOWN, 0, 2560.0 ),
-END_SEND_TABLE(DT_TEDynamicLight)
+
 
 
 // Singleton

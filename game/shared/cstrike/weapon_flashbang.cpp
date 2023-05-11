@@ -30,8 +30,10 @@
 
 IMPLEMENT_NETWORKCLASS_ALIASED( Flashbang, DT_Flashbang )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE(CFlashbang, DT_Flashbang, DT_BaseCSGrenade)
 END_NETWORK_TABLE(DT_Flashbang)
+#endif
 
 BEGIN_PREDICTION_DATA( CFlashbang )
 END_PREDICTION_DATA()

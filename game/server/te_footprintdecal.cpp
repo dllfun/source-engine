@@ -26,7 +26,7 @@ class CTEFootprintDecal : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEFootprintDecal, CBaseTempEntity );
-
+					CTEFootprintDecal() {};
 					CTEFootprintDecal( const char *name );
 	virtual			~CTEFootprintDecal( void );
 
@@ -38,16 +38,18 @@ public:
 	CNetworkVar( int, m_nEntity );
 	CNetworkVar( int, m_nIndex );
 	CNetworkVar( unsigned char, m_chMaterialType );
+
+	BEGIN_SEND_TABLE(CTEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecDirection), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(m_nEntity), 11, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nIndex), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_chMaterialType), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEFootprintDecal)
 };
 
 IMPLEMENT_SERVERCLASS(CTEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin),		-1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecDirection),	-1, SPROP_COORD),
-	SendPropInt(  SENDINFO(m_nEntity),			11, SPROP_UNSIGNED ),
-	SendPropInt(  SENDINFO(m_nIndex),			8,	SPROP_UNSIGNED ),
-	SendPropInt(   SENDINFO(m_chMaterialType),	8,	SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEFootprintDecal)
+
 
 
 // Singleton to fire TEFootprintDecal objects

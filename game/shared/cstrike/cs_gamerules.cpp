@@ -109,8 +109,8 @@ LINK_ENTITY_TO_CLASS(info_player_logo,CPointEntity);
 REGISTER_GAMERULES_CLASS( CCSGameRules );
 
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE_NOBASE( CCSGameRules, DT_CSGameRules )
-	#ifdef CLIENT_DLL
 		RecvPropBool( RECVINFO( m_bFreezePeriod ) ),
 		RecvPropInt( RECVINFO( m_iRoundTime ) ),
 		RecvPropFloat( RECVINFO( m_fRoundStartTime ) ),
@@ -120,22 +120,15 @@ BEGIN_NETWORK_TABLE_NOBASE( CCSGameRules, DT_CSGameRules )
 		RecvPropBool( RECVINFO( m_bMapHasRescueZone ) ),
 		RecvPropBool( RECVINFO( m_bLogoMap ) ),
 		RecvPropBool( RECVINFO( m_bBlackMarket ) )
-	#else
-		SendPropBool( SENDINFO( m_bFreezePeriod ) ),
-		SendPropInt( SENDINFO( m_iRoundTime ), 16 ),
-		SendPropFloat( SENDINFO( m_fRoundStartTime ), 32, SPROP_NOSCALE ),
-		SendPropFloat( SENDINFO( m_flGameStartTime ), 32, SPROP_NOSCALE ),
-		SendPropInt( SENDINFO( m_iHostagesRemaining ), 4 ),
-		SendPropBool( SENDINFO( m_bMapHasBombTarget ) ),
-		SendPropBool( SENDINFO( m_bMapHasRescueZone ) ),
-		SendPropBool( SENDINFO( m_bLogoMap ) ),
-		SendPropBool( SENDINFO( m_bBlackMarket ) )
-	#endif
 END_NETWORK_TABLE(DT_CSGameRules)
+#endif
 
 
 LINK_ENTITY_TO_CLASS( cs_gamerules, CCSGameRulesProxy );
 IMPLEMENT_NETWORKCLASS_ALIASED( CSGameRulesProxy, DT_CSGameRulesProxy )
+#if !defined( CLIENT_DLL )
+IMPLEMENT_SERVERCLASS( CCSGameRules, DT_CSGameRules)
+#endif
 
 
 #ifdef CLIENT_DLL
@@ -157,9 +150,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( CSGameRulesProxy, DT_CSGameRulesProxy )
 		return pRules;
 	}
 
-	BEGIN_SEND_TABLE( CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
-		SendPropDataTable( "cs_gamerules_data", 0, REFERENCE_SEND_TABLE( DT_CSGameRules ), SendProxy_CSGameRules )
-	END_SEND_TABLE(DT_CSGameRulesProxy)
+	
 #endif
 
 
@@ -570,6 +561,9 @@ ConVar cl_autohelp(
 
 	CCSGameRules::CCSGameRules()
 	{
+		if (!gpGlobals) {
+			return;
+		}
 		m_iRoundTime = 0;
 		m_iRoundWinStatus = WINNER_NONE;
 		m_iFreezeTime = 0;
@@ -662,7 +656,7 @@ ConVar cl_autohelp(
 
 		m_bAllowWeaponSwitch = true;
 
-		m_flNextHostageAnnouncement = gpGlobals->curtime;	// asap.
+		m_flNextHostageAnnouncement = gpGlobals==NULL?0:gpGlobals->curtime;	// asap.
 
 		ReadMultiplayCvars();
 

@@ -23,7 +23,7 @@ class CTEKillPlayerAttachments : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEKillPlayerAttachments, CBaseTempEntity );
-
+					CTEKillPlayerAttachments() {};
 					CTEKillPlayerAttachments( const char *name );
 	virtual			~CTEKillPlayerAttachments( void );
 
@@ -33,6 +33,10 @@ public:
 
 public:
 	CNetworkVar( int, m_nPlayer );
+
+	BEGIN_SEND_TABLE(CTEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
+		SendPropInt(SENDINFO(m_nPlayer), 5, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEKillPlayerAttachments)
 };
 
 //-----------------------------------------------------------------------------
@@ -67,9 +71,7 @@ void CTEKillPlayerAttachments::Test( const Vector& current_origin, const QAngle&
 
 
 IMPLEMENT_SERVERCLASS(CTEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
-	SendPropInt( SENDINFO(m_nPlayer), 5, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEKillPlayerAttachments)
+
 
 
 // Singleton to fire TEKillPlayerAttachments objects

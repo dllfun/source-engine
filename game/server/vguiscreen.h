@@ -12,6 +12,7 @@
 #pragma once
 #endif
 
+#include "networkstringtable_gamedll.h"
 
 //-----------------------------------------------------------------------------
 // This is an entity that represents a vgui screen
@@ -77,6 +78,16 @@ private:
 	CNetworkVar( EHANDLE, m_hPlayerOwner );
 
 	friend CVGuiScreen *CreateVGuiScreen( const char *pScreenClassname, const char *pScreenType, CBaseEntity *pAttachedTo, CBaseEntity *pOwner, int nAttachmentIndex );
+
+	BEGIN_SEND_TABLE(CVGuiScreen, DT_VGuiScreen, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flWidth), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flHeight), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nAttachmentIndex), 5, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nPanelName), MAX_VGUI_SCREEN_STRING_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_fScreenFlags), VGUI_SCREEN_MAX_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nOverlayMaterial), MAX_MATERIAL_STRING_BITS, SPROP_UNSIGNED),
+		SendPropEHandle(SENDINFO(m_hPlayerOwner)),
+	END_SEND_TABLE(DT_VGuiScreen);
 };
 
 

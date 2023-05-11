@@ -206,6 +206,10 @@ private:
 	bool			m_bHasPoop;
 
 	CNetworkVar( bool, m_bHeadlightIsOn );
+
+	BEGIN_SEND_TABLE(CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
+		SendPropBool(SENDINFO(m_bHeadlightIsOn)),
+	END_SEND_TABLE(DT_PropJeep);
 };
 
 BEGIN_DATADESC( CPropJeep )
@@ -246,9 +250,7 @@ BEGIN_DATADESC( CPropJeep )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
-BEGIN_SEND_TABLE(CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
-	SendPropBool( SENDINFO( m_bHeadlightIsOn ) ),
-END_SEND_TABLE(DT_PropJeep);
+
 
 //LINK_ENTITY_TO_CLASS( prop_vehicle_jeep, CPropJeep );
 

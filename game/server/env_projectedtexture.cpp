@@ -61,6 +61,23 @@ private:
 	CNetworkVar( float, m_flNearZ );
 	CNetworkVar( float, m_flFarZ );
 	CNetworkVar( int, m_nShadowQuality );
+
+	BEGIN_SEND_TABLE(CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
+		SendPropEHandle(SENDINFO(m_hTargetEntity)),
+		SendPropBool(SENDINFO(m_bState)),
+		SendPropFloat(SENDINFO(m_flLightFOV)),
+		SendPropBool(SENDINFO(m_bEnableShadows)),
+		SendPropBool(SENDINFO(m_bLightOnlyTarget)),
+		SendPropBool(SENDINFO(m_bLightWorld)),
+		SendPropBool(SENDINFO(m_bCameraSpace)),
+		SendPropVector(SENDINFO(m_LinearFloatLightColor)),
+		SendPropFloat(SENDINFO(m_flAmbient)),
+		SendPropString(SENDINFO(m_SpotlightTextureName)),
+		SendPropInt(SENDINFO(m_nSpotlightTextureFrame)),
+		SendPropFloat(SENDINFO(m_flNearZ), 16, SPROP_ROUNDDOWN, 0.0f, 500.0f),
+		SendPropFloat(SENDINFO(m_flFarZ), 18, SPROP_ROUNDDOWN, 0.0f, 1500.0f),
+		SendPropInt(SENDINFO(m_nShadowQuality), 1, SPROP_UNSIGNED),  // Just one bit for now
+	END_SEND_TABLE(DT_EnvProjectedTexture)
 };
 
 LINK_ENTITY_TO_CLASS( env_projectedtexture, CEnvProjectedTexture );
@@ -97,22 +114,7 @@ BEGIN_DATADESC( CEnvProjectedTexture )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
-BEGIN_SEND_TABLE(CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
-	SendPropEHandle( SENDINFO( m_hTargetEntity ) ),
-	SendPropBool( SENDINFO( m_bState ) ),
-	SendPropFloat( SENDINFO( m_flLightFOV ) ),
-	SendPropBool( SENDINFO( m_bEnableShadows ) ),
-	SendPropBool( SENDINFO( m_bLightOnlyTarget ) ),
-	SendPropBool( SENDINFO( m_bLightWorld ) ),
-	SendPropBool( SENDINFO( m_bCameraSpace ) ),
-	SendPropVector( SENDINFO( m_LinearFloatLightColor ) ),
-	SendPropFloat( SENDINFO( m_flAmbient ) ),
-	SendPropString( SENDINFO( m_SpotlightTextureName ) ),
-	SendPropInt( SENDINFO( m_nSpotlightTextureFrame ) ),
-	SendPropFloat( SENDINFO( m_flNearZ ), 16, SPROP_ROUNDDOWN, 0.0f,  500.0f ),
-	SendPropFloat( SENDINFO( m_flFarZ ),  18, SPROP_ROUNDDOWN, 0.0f, 1500.0f ),
-	SendPropInt( SENDINFO( m_nShadowQuality ), 1, SPROP_UNSIGNED ),  // Just one bit for now
-END_SEND_TABLE(DT_EnvProjectedTexture)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

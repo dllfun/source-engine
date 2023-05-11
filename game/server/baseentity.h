@@ -351,6 +351,13 @@ class TestStaticInit {
 
 
 };
+
+void* SendProxy_ClientSideAnimation(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_Angles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void* SendProxy_SendPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+void SendProxy_AnimTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
 //
 // Base Entity.  All entity types derive from this
 //
@@ -896,8 +903,10 @@ private:
 	friend class CGlobalEntityList;
 	friend class CThinkSyncTester;
 
+protected:
 	// was pev->nextthink
 	CNetworkVarForDerived( int, m_nNextThinkTick );
+private:
 	// was pev->effects
 	CNetworkVar( int, m_fEffects );
 
@@ -1669,7 +1678,9 @@ protected:
 private:
 	int		m_iEFlags;	// entity flags EFL_*
 	// was pev->flags
+protected:
 	CNetworkVarForDerived( int, m_fFlags );
+private:
 
 	string_t m_iName;	// name used to identify this entity
 
@@ -1712,16 +1723,23 @@ private:
 	unsigned char	m_nWaterTouch;
 	unsigned char	m_nSlimeTouch;
 	unsigned char	m_nWaterType;
+
+protected:
 	CNetworkVarForDerived( unsigned char, m_nWaterLevel );
+private:
 	float			m_flNavIgnoreUntilTime;
 
+protected:
 	CNetworkHandleForDerived( CBaseEntity, m_hGroundEntity );
+private:
 	float			m_flGroundChangeTime; // Time that the ground entity changed
 	
 	string_t		m_ModelName;
 
+protected:
 	// Velocity of the thing we're standing on (world space)
 	CNetworkVarForDerived( Vector, m_vecBaseVelocity );
+private:
 
 	// Global velocity
 	Vector			m_vecAbsVelocity;
@@ -1740,8 +1758,11 @@ private:
 
 	// was pev->gravity;
 	float			m_flGravity;  // rename to m_flGravityScale;
+
+protected:
 	// was pev->friction
 	CNetworkVarForDerived( float, m_flFriction );
+private:
 	CNetworkVar( float, m_flElasticity );
 
 	// was pev->ltime
@@ -1755,7 +1776,9 @@ private:
 	int				m_nPushEnumCount;
 
 	Vector			m_vecAbsOrigin;
+protected:
 	CNetworkVectorForDerived( m_vecVelocity );
+private:
 	
 	//Adrian
 	CNetworkVar( unsigned char, m_iTextureFrameIndex );
@@ -1776,6 +1799,7 @@ private:
 	CNetworkQAngle( m_angRotation );
 	CBaseHandle m_RefEHandle;
 
+protected:
 	// was pev->view_ofs ( FIXME:  Move somewhere up the hierarch, CBaseAnimating, etc. )
 	CNetworkVectorForDerived( m_vecViewOffset );
 
@@ -1870,6 +1894,72 @@ public:
 	{
 		return s_bAbsQueriesValid;
 	}
+
+	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_AnimTimeMustBeFirst)
+		// NOTE:  Animtime must be sent before origin and angles ( from pev ) because it has a 
+		//  proxy on the client that stores off the old values before writing in the new values and
+		//  if it is sent after the new values, then it will only have the new origin and studio model, etc.
+		//  interpolation will be busted
+		SendPropInt(SENDINFO(m_flAnimTime), 8, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_AnimTime),
+	END_SEND_TABLE(DT_AnimTimeMustBeFirst)
+
+#if !defined( NO_ENTITY_PREDICTION )
+	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_PredictableId)
+		SendPropPredictableId(SENDINFO(m_PredictableID)),
+		SendPropInt(SENDINFO(m_bIsPlayerSimulated), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_PredictableId)
+#endif
+
+	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_BaseEntity)
+		SendPropDataTable("AnimTimeMustBeFirst", 0, REFERENCE_SEND_TABLE(DT_AnimTimeMustBeFirst), SendProxy_ClientSideAnimation),
+		SendPropInt(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_SimulationTime),
+
+#if PREDICTION_ERROR_CHECK_LEVEL > 1 
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+#else
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+#endif
+
+		SendPropInt(SENDINFO(m_ubInterpolationFrame), NOINTERP_PARITY_MAX_BITS, SPROP_UNSIGNED),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropDataTable(SENDINFO_DT(m_Collision), REFERENCE_SEND_TABLE(DT_CollisionProperty)),
+		SendPropInt(SENDINFO(m_nRenderFX), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nRenderMode), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_fEffects), EF_MAX_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iTeamNum), TEAMNUM_NUM_BITS, 0),
+		SendPropInt(SENDINFO(m_CollisionGroup), 5, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flElasticity), 0, SPROP_COORD),
+		SendPropFloat(SENDINFO(m_flShadowCastDistance), 12, SPROP_UNSIGNED),
+		SendPropEHandle(SENDINFO(m_hOwnerEntity)),
+		SendPropEHandle(SENDINFO(m_hEffectEntity)),
+		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
+		SendPropInt(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
+
+		SendPropInt(SENDINFO_NAME(m_MoveType, movetype), MOVETYPE_MAX_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO_NAME(m_MoveCollide, movecollide), MOVECOLLIDE_MAX_BITS, SPROP_UNSIGNED),
+#if PREDICTION_ERROR_CHECK_LEVEL > 1 
+		SendPropVector(SENDINFO(m_angRotation), -1, SPROP_NOSCALE | SPROP_CHANGES_OFTEN, 0, HIGH_DEFAULT, SendProxy_Angles),
+#else
+		SendPropQAngles(SENDINFO(m_angRotation), 13, SPROP_CHANGES_OFTEN, SendProxy_Angles),
+#endif
+
+		SendPropInt(SENDINFO(m_iTextureFrameIndex), 8, SPROP_UNSIGNED),
+
+#if !defined( NO_ENTITY_PREDICTION )
+		SendPropDataTable("predictable_id", 0, REFERENCE_SEND_TABLE(DT_PredictableId), SendProxy_SendPredictableId),
+#endif
+
+		// FIXME: Collapse into another flag field?
+		SendPropInt(SENDINFO(m_bSimulatedEveryTick), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bAnimatedEveryTick), 1, SPROP_UNSIGNED),
+		SendPropBool(SENDINFO(m_bAlternateSorting)),
+
+#ifdef TF_DLL
+		SendPropArray3(SENDINFO_ARRAY3(m_nModelIndexOverrides), SendPropInt(SENDINFO_ARRAY(m_nModelIndexOverrides), SP_MODEL_INDEX_BITS, 0)),
+#endif
+
+	END_SEND_TABLE(DT_BaseEntity)
 };
 
 // Send tables exposed in this module.

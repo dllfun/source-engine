@@ -47,6 +47,11 @@ private:
 	CWeaponP228( const CWeaponP228 & );
 
 	float m_flLastFire;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponP228, DT_WeaponP228, DT_WeaponCSBase)
+	END_NETWORK_TABLE(DT_WeaponP228)
+#endif
 };
 
 #if defined CLIENT_DLL
@@ -62,7 +67,7 @@ PRECACHE_WEAPON_REGISTER( weapon_p228 );
 
 CWeaponP228::CWeaponP228()
 {
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
 }
 
 
@@ -83,8 +88,10 @@ bool CWeaponP228::Deploy( )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponP228, DT_WeaponP228 )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponP228, DT_WeaponP228 , DT_WeaponCSBase)
 END_NETWORK_TABLE(DT_WeaponP228)
+#endif
 
 
 float CWeaponP228::GetInaccuracy() const

@@ -19,8 +19,10 @@
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseParticleEntity, DT_BaseParticleEntity )
 
+#if defined( CLIENT_DLL )
 BEGIN_NETWORK_TABLE( CBaseParticleEntity, DT_BaseParticleEntity, DT_BaseEntity)
 END_NETWORK_TABLE(DT_BaseParticleEntity)
+#endif
 
 BEGIN_PREDICTION_DATA(	CBaseParticleEntity )
 END_PREDICTION_DATA()

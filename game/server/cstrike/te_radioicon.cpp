@@ -20,7 +20,7 @@ class CTERadioIcon : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTERadioIcon, CBaseTempEntity );
-
+					CTERadioIcon() {};
 					CTERadioIcon( const char *name );
 	virtual			~CTERadioIcon( void );
 
@@ -31,6 +31,10 @@ public:
 public:
 
 	CNetworkVar( int, m_iAttachToClient );
+
+	BEGIN_SEND_TABLE(CTERadioIcon, DT_TERadioIcon, DT_BaseTempEntity)
+		SendPropInt(SENDINFO(m_iAttachToClient), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TERadioIcon)
 };
 
 //-----------------------------------------------------------------------------
@@ -55,9 +59,7 @@ void CTERadioIcon::Precache( void )
 }
 
 IMPLEMENT_SERVERCLASS(CTERadioIcon, DT_TERadioIcon, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTERadioIcon, DT_TERadioIcon, DT_BaseTempEntity)
-	SendPropInt( SENDINFO(m_iAttachToClient), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TERadioIcon)
+
 
 
 // Singleton to fire StickyBolt objects

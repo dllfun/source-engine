@@ -57,13 +57,7 @@ LINK_ENTITY_TO_CLASS( prop_ragdoll, CRagdollProp );
 EXTERN_SEND_TABLE(DT_Ragdoll);
 
 IMPLEMENT_SERVERCLASS(CRagdollProp, DT_Ragdoll, DT_BaseAnimating)
-BEGIN_SEND_TABLE(CRagdollProp, DT_Ragdoll, DT_BaseAnimating)
-	SendPropArray	(SendPropQAngles(SENDINFO_ARRAY(m_ragAngles), 13, 0 ), m_ragAngles),
-	SendPropArray	(SendPropVector(SENDINFO_ARRAY(m_ragPos), -1, SPROP_COORD ), m_ragPos),
-	SendPropEHandle(SENDINFO( m_hUnragdoll ) ),
-	SendPropFloat(SENDINFO(m_flBlendWeight), 8, SPROP_ROUNDDOWN, 0.0f, 1.0f ),
-	SendPropInt(SENDINFO(m_nOverlaySequence), 11),
-END_SEND_TABLE(DT_Ragdoll)
+
 
 #define DEFINE_RAGDOLL_ELEMENT( i ) \
 	DEFINE_FIELD( m_ragdoll.list[i].originParentSpace, FIELD_VECTOR ), \
@@ -1218,8 +1212,10 @@ public:
 
 	~CRagdollPropAttached()
 	{
-		physenv->DestroyConstraint( m_pAttachConstraint );
-		m_pAttachConstraint = NULL;
+		if (physenv) {
+			physenv->DestroyConstraint(m_pAttachConstraint);
+			m_pAttachConstraint = NULL;
+		}
 	}
 
 	void InitRagdollAttached( IPhysicsObject *pAttached, const Vector &forceVector, int forceBone, matrix3x4_t *pPrevBones, matrix3x4_t *pBoneToWorld, float dt, int collisionGroup, CBaseAnimating *pFollow, int boneIndexRoot, const Vector &boneLocalOrigin, int parentBoneAttach, const Vector &worldAttachOrigin );
@@ -1238,18 +1234,20 @@ private:
 	CNetworkVector( m_attachmentPointRagdollSpace );
 	bool		m_bShouldDetach;
 	IPhysicsConstraint	*m_pAttachConstraint;
+
+	BEGIN_SEND_TABLE(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
+		SendPropInt(SENDINFO(m_boneIndexAttached), MAXSTUDIOBONEBITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_ragdollAttachedObjectIndex), RAGDOLL_INDEX_BITS, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_attachmentPointBoneSpace), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_attachmentPointRagdollSpace), -1, SPROP_COORD),
+	END_SEND_TABLE(DT_Ragdoll_Attached)
 };
 
 LINK_ENTITY_TO_CLASS( prop_ragdoll_attached, CRagdollPropAttached );
 EXTERN_SEND_TABLE(DT_Ragdoll_Attached);
 
 IMPLEMENT_SERVERCLASS(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
-BEGIN_SEND_TABLE(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
-	SendPropInt( SENDINFO( m_boneIndexAttached ), MAXSTUDIOBONEBITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_ragdollAttachedObjectIndex ), RAGDOLL_INDEX_BITS, SPROP_UNSIGNED ),
-	SendPropVector(SENDINFO(m_attachmentPointBoneSpace), -1,  SPROP_COORD ),
-	SendPropVector(SENDINFO(m_attachmentPointRagdollSpace), -1,  SPROP_COORD ),
-END_SEND_TABLE(DT_Ragdoll_Attached)
+
 
 BEGIN_DATADESC(CRagdollPropAttached)
 	DEFINE_FIELD( m_boneIndexAttached,	FIELD_INTEGER ),

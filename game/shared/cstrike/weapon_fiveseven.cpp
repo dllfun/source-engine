@@ -48,12 +48,19 @@ private:
 	CWeaponFiveSeven( const CWeaponFiveSeven & );
 	
 	float m_flLastFire;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponFiveSeven, DT_WeaponFiveSeven, DT_WeaponCSBase)
+	END_NETWORK_TABLE(DT_WeaponFiveSeven)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFiveSeven, DT_WeaponFiveSeven )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponFiveSeven, DT_WeaponFiveSeven, DT_WeaponCSBase)
 END_NETWORK_TABLE(DT_WeaponFiveSeven)
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponFiveSeven )
@@ -68,7 +75,7 @@ PRECACHE_WEAPON_REGISTER( weapon_fiveseven );
 
 CWeaponFiveSeven::CWeaponFiveSeven()
 {
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
 }
 
 

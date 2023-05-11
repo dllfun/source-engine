@@ -23,7 +23,7 @@ class CTEFizz : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEFizz, CBaseTempEntity );
-
+					CTEFizz() {};
 					CTEFizz( const char *name );
 	virtual			~CTEFizz( void );
 
@@ -38,6 +38,13 @@ public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( int, m_nDensity );
 	CNetworkVar( int, m_nCurrent );
+
+	BEGIN_SEND_TABLE(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
+		SendPropInt(SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropInt(SENDINFO(m_nDensity), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nCurrent), 16),
+	END_SEND_TABLE(DT_TEFizz)
 };
 
 //-----------------------------------------------------------------------------
@@ -87,12 +94,7 @@ void CTEFizz::Precache( void )
 
 
 IMPLEMENT_SERVERCLASS(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
-	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_nDensity), 8, SPROP_UNSIGNED ),
-	SendPropInt(SENDINFO(m_nCurrent), 16 ),
-END_SEND_TABLE(DT_TEFizz)
+
 
 
 // Singleton to fire TEFizz objects

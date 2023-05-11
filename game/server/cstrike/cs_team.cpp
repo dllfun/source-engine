@@ -14,8 +14,7 @@
 
 // Datatable
 IMPLEMENT_SERVERCLASS(CCSTeam, DT_CSTeam, DT_Team)
-BEGIN_SEND_TABLE(CCSTeam, DT_CSTeam, DT_Team)
-END_SEND_TABLE(DT_CSTeam)
+
 
 LINK_ENTITY_TO_CLASS( cs_team_manager, CCSTeam );
 

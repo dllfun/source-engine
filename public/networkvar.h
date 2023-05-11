@@ -775,6 +775,7 @@ private:
 			CHECK_USENETWORKVARS ((ThisClass*)(((char*)ptr) - MyOffsetOf(ThisClass,name)))->stateChangedFn( ptr ); \
 		} \
 	}; \
+	public:\
 	base< type, NetworkVar_##name > name;
 
 

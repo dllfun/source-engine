@@ -73,19 +73,23 @@ private:
 
 	int m_silencedModelIndex;
 	bool m_inPrecache;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponUSP, DT_WeaponUSP, DT_WeaponCSBase)
+		SendPropBool(SENDINFO(m_bSilencerOn)),
+		SendPropTime(SENDINFO(m_flDoneSwitchingSilencer)),
+	END_NETWORK_TABLE(DT_WeaponUSP)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponUSP, DT_WeaponUSP )
 
-BEGIN_NETWORK_TABLE( CWeaponUSP, DT_WeaponUSP , DT_WeaponCSBase)
 #ifdef CLIENT_DLL
+BEGIN_NETWORK_TABLE( CWeaponUSP, DT_WeaponUSP , DT_WeaponCSBase)
 	RecvPropBool( RECVINFO( m_bSilencerOn ) ),
 	RecvPropTime( RECVINFO( m_flDoneSwitchingSilencer ) ),
-#else
-	SendPropBool( SENDINFO( m_bSilencerOn ) ),
-	SendPropTime( SENDINFO( m_flDoneSwitchingSilencer ) ),
-#endif
 END_NETWORK_TABLE(DT_WeaponUSP)
+#endif
 
 #ifdef CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponUSP )
@@ -109,7 +113,7 @@ Activity g_SilencedTranslations[][2] =
 
 CWeaponUSP::CWeaponUSP()
 {
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
 	m_bSilencerOn = false;
 	m_flDoneSwitchingSilencer = 0.0f;
 	m_inPrecache = false;

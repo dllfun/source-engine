@@ -23,7 +23,7 @@ class CTEBSPDecal : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEBSPDecal, CBaseTempEntity );
-
+					CTEBSPDecal() {};
 					CTEBSPDecal( const char *name );
 	virtual			~CTEBSPDecal( void );
 
@@ -35,6 +35,12 @@ public:
 	CNetworkVector( m_vecOrigin );
 	CNetworkVar( int, m_nEntity );
 	CNetworkVar( int, m_nIndex );
+
+	BEGIN_SEND_TABLE(CTEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nIndex), 9, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBSPDecal)
 };
 
 //-----------------------------------------------------------------------------
@@ -93,11 +99,7 @@ void CTEBSPDecal::Test( const Vector& current_origin, const QAngle& current_angl
 
 
 IMPLEMENT_SERVERCLASS(CTEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nIndex), 9, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBSPDecal)
+
 
 
 // Singleton to fire TEBSPDecal objects

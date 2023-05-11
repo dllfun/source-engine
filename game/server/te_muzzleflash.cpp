@@ -20,7 +20,7 @@ public:
 	DECLARE_CLASS( CTEMuzzleFlash, CBaseTempEntity );
 
 	DECLARE_SERVERCLASS();
-
+	CTEMuzzleFlash() {};
 	CTEMuzzleFlash( const char *name );
 	virtual			~CTEMuzzleFlash( void );
 
@@ -32,6 +32,13 @@ public:
 	CNetworkQAngle( m_vecAngles );
 	CNetworkVar( float, m_flScale );
 	CNetworkVar( int, m_nType );
+
+	BEGIN_SEND_TABLE(CTEMuzzleFlash, DT_TEMuzzleFlash, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecAngles), -1, SPROP_COORD),
+		SendPropFloat(SENDINFO(m_flScale), -1, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nType), 32, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEMuzzleFlash)
 };
 
 //-----------------------------------------------------------------------------
@@ -66,12 +73,7 @@ void CTEMuzzleFlash::Test( const Vector& current_origin, const QAngle& current_a
 
 
 IMPLEMENT_SERVERCLASS( CTEMuzzleFlash, DT_TEMuzzleFlash , DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEMuzzleFlash, DT_TEMuzzleFlash, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO(m_vecAngles), -1, SPROP_COORD ),
-	SendPropFloat( SENDINFO(m_flScale), -1, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_nType), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEMuzzleFlash)
+
 
 // Singleton to fire TEMuzzleFlash objects
 static CTEMuzzleFlash g_TEMuzzleFlash( "MuzzleFlash" );

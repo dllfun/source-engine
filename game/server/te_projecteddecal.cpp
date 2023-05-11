@@ -23,7 +23,7 @@ class CTEProjectedDecal : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEProjectedDecal, CBaseTempEntity );
-
+					CTEProjectedDecal() {};
 					CTEProjectedDecal( const char *name );
 	virtual			~CTEProjectedDecal( void );
 
@@ -36,6 +36,13 @@ public:
 	CNetworkVar( int, m_nIndex );
 	CNetworkVar( float, m_flDistance );
 	CNetworkQAngle( m_angRotation );
+
+	BEGIN_SEND_TABLE(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropQAngles(SENDINFO(m_angRotation), 10),
+		SendPropFloat(SENDINFO(m_flDistance), 10, SPROP_ROUNDUP, 0, 1024),
+		SendPropInt(SENDINFO(m_nIndex), 9, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEProjectedDecal)
 };
 
 //-----------------------------------------------------------------------------
@@ -88,12 +95,7 @@ void CTEProjectedDecal::Test( const Vector& current_origin, const QAngle& curren
 }
 
 IMPLEMENT_SERVERCLASS(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropQAngles( SENDINFO(m_angRotation), 10 ),
-	SendPropFloat( SENDINFO(m_flDistance), 10, SPROP_ROUNDUP, 0, 1024 ),
-	SendPropInt( SENDINFO(m_nIndex), 9, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEProjectedDecal)
+
 
 
 // Singleton to fire TEBSPDecal objects

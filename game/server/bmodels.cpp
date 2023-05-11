@@ -281,6 +281,10 @@ private:
 
 	Vector m_vecMoveDir;
 	CNetworkVar( float, m_flConveyorSpeed );
+
+	BEGIN_SEND_TABLE(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flConveyorSpeed), 0, SPROP_NOSCALE),
+	END_SEND_TABLE(DT_FuncConveyor)
 };
 
 LINK_ENTITY_TO_CLASS( func_conveyor, CFuncConveyor );
@@ -297,9 +301,7 @@ END_DATADESC()
 
 
 IMPLEMENT_SERVERCLASS(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
-BEGIN_SEND_TABLE(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
-	SendPropFloat( SENDINFO(m_flConveyorSpeed), 0, SPROP_NOSCALE ),
-END_SEND_TABLE(DT_FuncConveyor)
+
 
 
 CFuncConveyor::CFuncConveyor()
@@ -385,6 +387,12 @@ void CFuncIllusionary::Spawn( void )
 	SetModel( STRING( GetModelName() ) );
 }
 
+extern void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+extern void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_FuncRotatingOrigin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_FuncRotatingAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_FuncRotatingSimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
+
 
 //-----------------------------------------------------------------------------
 // Purpose: A rotating brush entity.
@@ -458,6 +466,19 @@ protected:
 public:
 	Vector m_vecClientOrigin;
 	QAngle m_vecClientAngles;
+
+	BEGIN_SEND_TABLE(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
+		SendPropExclude("DT_BaseEntity", "m_angRotation"),
+		SendPropExclude("DT_BaseEntity", "m_vecOrigin"),
+		SendPropExclude("DT_BaseEntity", "m_flSimulationTime"),
+
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_FuncRotatingOrigin),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 0), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 1), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 2), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle),
+
+		SendPropInt(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_FuncRotatingSimulationTime),
+	END_SEND_TABLE(DT_FuncRotating)
 };
 
 LINK_ENTITY_TO_CLASS( func_rotating, CFuncRotating );
@@ -498,25 +519,7 @@ BEGIN_DATADESC( CFuncRotating )
 
 END_DATADESC()
 
-extern void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
-void SendProxy_FuncRotatingOrigin( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-#ifdef TF_DLL
-	CFuncRotating *entity = (CFuncRotating*)pStruct;
-	Assert( entity );
 
-	if ( entity->HasSpawnFlags(SF_BRUSH_ROTATE_CLIENTSIDE) )
-	{
-		const Vector *v = &entity->m_vecClientOrigin;
-		pOut->m_Vector[ 0 ] = v->x;
-		pOut->m_Vector[ 1 ] = v->y;
-		pOut->m_Vector[ 2 ] = v->z;
-		return;
-	}
-#endif
-
-	SendProxy_Origin( pProp, pStruct, pData, pOut, iElement, objectID );
-}
 
 /*
 extern void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
@@ -536,64 +539,70 @@ void SendProxy_FuncRotatingAngles( const SendProp *pProp, const void *pStruct, c
 	SendProxy_Angles( pProp, pStruct, pData, pOut, iElement, objectID );
 }
 */
-void SendProxy_FuncRotatingAngle( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
+void SendProxy_FuncRotatingOrigin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
 {
-	CFuncRotating *entity = (CFuncRotating*)pStruct;
-	Assert( entity );
-
-	vec_t const *qa = (vec_t *)pData;
-	vec_t const *ea = entity->GetLocalAngles().Base();
-	NOTE_UNUSED(ea);
-	// Assert its actually an index into m_angRotation if not this won't work
-
-	Assert( (uintp)qa >= (uintp)ea && (uintp)qa < (uintp)ea + sizeof( QAngle ));
-
 #ifdef TF_DLL
-	if ( entity->HasSpawnFlags(SF_BRUSH_ROTATE_CLIENTSIDE) )
-	{
-		const QAngle *a = &entity->m_vecClientAngles;
+	CFuncRotating* entity = (CFuncRotating*)pStruct;
+	Assert(entity);
 
-		pOut->m_Float = anglemod( (*a)[ qa - ea ] );
+	if (entity->HasSpawnFlags(SF_BRUSH_ROTATE_CLIENTSIDE))
+	{
+		const Vector* v = &entity->m_vecClientOrigin;
+		pOut->m_Vector[0] = v->x;
+		pOut->m_Vector[1] = v->y;
+		pOut->m_Vector[2] = v->z;
 		return;
 	}
 #endif
 
-	pOut->m_Float = anglemod( *qa );
+	SendProxy_Origin(pProp, pStruct, pData, pOut, iElement, objectID);
+}
+void SendProxy_FuncRotatingAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	CFuncRotating* entity = (CFuncRotating*)pStruct;
+	Assert(entity);
 
-	Assert( IsFinite( pOut->m_Float ) );
+	vec_t const* qa = (vec_t*)pData;
+	vec_t const* ea = entity->GetLocalAngles().Base();
+	NOTE_UNUSED(ea);
+	// Assert its actually an index into m_angRotation if not this won't work
+
+	Assert((uintp)qa >= (uintp)ea && (uintp)qa < (uintp)ea + sizeof(QAngle));
+
+#ifdef TF_DLL
+	if (entity->HasSpawnFlags(SF_BRUSH_ROTATE_CLIENTSIDE))
+	{
+		const QAngle* a = &entity->m_vecClientAngles;
+
+		pOut->m_Float = anglemod((*a)[qa - ea]);
+		return;
+	}
+#endif
+
+	pOut->m_Float = anglemod(*qa);
+
+	Assert(IsFinite(pOut->m_Float));
 }
 
-
-extern void SendProxy_SimulationTime( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID );
-void SendProxy_FuncRotatingSimulationTime( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
+void SendProxy_FuncRotatingSimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID)
 {
 #ifdef TF_DLL
-	CFuncRotating *entity = (CFuncRotating*)pStruct;
-	Assert( entity );
+	CFuncRotating* entity = (CFuncRotating*)pStruct;
+	Assert(entity);
 
-	if ( entity->HasSpawnFlags(SF_BRUSH_ROTATE_CLIENTSIDE) )
+	if (entity->HasSpawnFlags(SF_BRUSH_ROTATE_CLIENTSIDE))
 	{
 		pOut->m_Int = 0;
 		return;
 	}
 #endif
 
-	SendProxy_SimulationTime( pProp, pStruct, pVarData, pOut, iElement, objectID );
+	SendProxy_SimulationTime(pProp, pStruct, pVarData, pOut, iElement, objectID);
 }
 
+
 IMPLEMENT_SERVERCLASS(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
-BEGIN_SEND_TABLE(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
-	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
-	SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
-	SendPropExclude( "DT_BaseEntity", "m_flSimulationTime" ),
 
-	SendPropVector(SENDINFO(m_vecOrigin), -1,  SPROP_COORD|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_FuncRotatingOrigin ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 2), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle ),
-
-	SendPropInt(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED|SPROP_CHANGES_OFTEN|SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_FuncRotatingSimulationTime),
-END_SEND_TABLE(DT_FuncRotating)
 
 
 

@@ -44,25 +44,27 @@ public:
 
 	CNetworkVar( float, m_flGlowProxySize );
 	CNetworkVar( float, m_flHDRColorScale );
+
+	BEGIN_SEND_TABLE_NOBASE(CLightGlow, DT_LightGlow)
+		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
+		SendPropInt(SENDINFO(m_nHorizontalSize), 16, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nVerticalSize), 16, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nMinDist), 16, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nMaxDist), LIGHTGLOW_MAXDIST_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nOuterMaxDist), LIGHTGLOW_OUTERMAXDIST_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropQAngles(SENDINFO(m_angRotation), 13, 0, SendProxy_Angles),
+		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
+		SendPropFloat(SENDINFO(m_flGlowProxySize), 6, SPROP_ROUNDUP, 0.0f, 64.0f),
+		SendPropFloat(SENDINFO_NAME(m_flHDRColorScale, HDRColorScale), 0, SPROP_NOSCALE, 0.0f, 100.0f),
+	END_SEND_TABLE(DT_LightGlow)
 };
 
 extern void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
 
 IMPLEMENT_SERVERCLASS( CLightGlow, DT_LightGlow )
-BEGIN_SEND_TABLE_NOBASE(CLightGlow, DT_LightGlow)
-	SendPropInt( SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
-	SendPropInt( SENDINFO(m_nHorizontalSize), 16, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nVerticalSize), 16, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMinDist), 16, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMaxDist), LIGHTGLOW_MAXDIST_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nOuterMaxDist), LIGHTGLOW_OUTERMAXDIST_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED ),
-	SendPropVector(SENDINFO(m_vecOrigin), -1,  SPROP_COORD ),
-	SendPropQAngles	(SENDINFO(m_angRotation), 13, 0, SendProxy_Angles ),
-	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),
-	SendPropFloat( SENDINFO(m_flGlowProxySize ), 6,	SPROP_ROUNDUP,	0.0f,	64.0f ),
-	SendPropFloat( SENDINFO_NAME( m_flHDRColorScale, HDRColorScale ), 0,	SPROP_NOSCALE,	0.0f,	100.0f ),
-END_SEND_TABLE(DT_LightGlow)
+
 
 LINK_ENTITY_TO_CLASS( env_lightglow, CLightGlow );
 

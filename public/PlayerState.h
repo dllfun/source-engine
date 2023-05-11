@@ -59,6 +59,16 @@ public:
 #if defined( CLIENT_DLL )
 	DECLARE_PREDICTABLE();
 #endif
+
+	// -------------------------------------------------------------------------------- //
+// SendTable for CPlayerState.
+// -------------------------------------------------------------------------------- //
+
+#if defined( GAME_DLL )
+	BEGIN_SEND_TABLE_NOBASE(CPlayerState, DT_PlayerState)
+		SendPropInt(SENDINFO(deadflag), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_PlayerState)
+#endif
 };
 
 #endif // PLAYERSTATE_H

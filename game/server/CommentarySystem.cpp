@@ -134,6 +134,17 @@ private:
 	CNetworkVar( string_t, m_iszSpeakers );
 	CNetworkVar( int, m_iNodeNumber );
 	CNetworkVar( int, m_iNodeNumberMax );
+
+	BEGIN_SEND_TABLE(CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
+		SendPropBool(SENDINFO(m_bActive)),
+		SendPropStringT(SENDINFO(m_iszCommentaryFile)),
+		SendPropStringT(SENDINFO(m_iszCommentaryFileNoHDR)),
+		SendPropTime(SENDINFO(m_flStartTime)),
+		SendPropStringT(SENDINFO(m_iszSpeakers)),
+		SendPropInt(SENDINFO(m_iNodeNumber), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iNodeNumberMax), 8, SPROP_UNSIGNED),
+		SendPropEHandle(SENDINFO(m_hViewPosition)),
+	END_SEND_TABLE(DT_PointCommentaryNode)
 };
 
 BEGIN_DATADESC( CPointCommentaryNode )
@@ -180,16 +191,7 @@ BEGIN_DATADESC( CPointCommentaryNode )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
-BEGIN_SEND_TABLE(CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
-	SendPropBool( SENDINFO(m_bActive) ),
-	SendPropStringT( SENDINFO(m_iszCommentaryFile) ),
-	SendPropStringT( SENDINFO(m_iszCommentaryFileNoHDR) ),
-	SendPropTime( SENDINFO(m_flStartTime) ),
-	SendPropStringT( SENDINFO(m_iszSpeakers) ),
-	SendPropInt( SENDINFO(m_iNodeNumber), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_iNodeNumberMax), 8, SPROP_UNSIGNED ),
-	SendPropEHandle( SENDINFO(m_hViewPosition) ),
-END_SEND_TABLE(DT_PointCommentaryNode)
+
 
 LINK_ENTITY_TO_CLASS( point_commentary_node, CPointCommentaryNode );
 

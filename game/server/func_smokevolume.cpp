@@ -38,6 +38,19 @@ private:
 	CNetworkVar( float, m_RotationSpeed );
 	CNetworkVar( float, m_MovementSpeed );
 	CNetworkVar( float, m_Density );
+
+	BEGIN_SEND_TABLE(CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
+		SendPropInt(SENDINFO(m_Color1), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
+		SendPropInt(SENDINFO(m_Color2), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
+		SendPropString(SENDINFO(m_MaterialName)),
+		SendPropFloat(SENDINFO(m_ParticleDrawWidth), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_ParticleSpacingDistance), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_DensityRampSpeed), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_RotationSpeed), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_MovementSpeed), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_Density), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED)
+	END_SEND_TABLE(DT_FuncSmokeVolume)
 };
 
 BEGIN_DATADESC( CFuncSmokeVolume )
@@ -64,18 +77,7 @@ END_DATADESC()
 
 
 IMPLEMENT_SERVERCLASS( CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
-BEGIN_SEND_TABLE(CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
-	SendPropInt( SENDINFO( m_Color1 ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
-	SendPropInt( SENDINFO( m_Color2 ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
-	SendPropString( SENDINFO( m_MaterialName ) ),
-	SendPropFloat( SENDINFO( m_ParticleDrawWidth ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_ParticleSpacingDistance ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_DensityRampSpeed ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_RotationSpeed ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_MovementSpeed ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_Density ), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED )
-END_SEND_TABLE(DT_FuncSmokeVolume)
+
 
 LINK_ENTITY_TO_CLASS( func_smokevolume, CFuncSmokeVolume );
 

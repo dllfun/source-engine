@@ -271,19 +271,12 @@ int GetShellForAmmoType( const char *ammoname )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCSBase, DT_WeaponCSBase )
 
+#if defined( CLIENT_DLL )
 BEGIN_NETWORK_TABLE( CWeaponCSBase, DT_WeaponCSBase, DT_BaseCombatWeapon)
-#if !defined( CLIENT_DLL )
-SendPropInt( SENDINFO( m_weaponMode ), 1, SPROP_UNSIGNED ),
-SendPropFloat(SENDINFO(m_fAccuracyPenalty) ),
-// world weapon models have no aminations
-SendPropExclude( "DT_AnimTimeMustBeFirst", "m_flAnimTime" ),
-SendPropExclude( "DT_BaseAnimating", "m_nSequence" ),
-//	SendPropExclude( "DT_LocalActiveWeaponData", "m_flTimeWeaponIdle" ),
-#else
 RecvPropInt( RECVINFO( m_weaponMode ) ),
 RecvPropFloat( RECVINFO(m_fAccuracyPenalty)),
-#endif
 END_NETWORK_TABLE(DT_WeaponCSBase)
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponCSBase )

@@ -149,6 +149,9 @@ private:
 
 };
 
+#if !defined( CLIENT_DLL )
+void* SendProxy_SendActiveLocalWeaponDataTable(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: Client side rep of CBaseTFCombatWeapon 
 //-----------------------------------------------------------------------------
@@ -637,6 +640,48 @@ protected:
 	int						m_iOldState;
 
 #endif // End Client .dll only
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE_NOBASE(CBaseCombatWeapon, DT_LocalActiveWeaponData)
+		SendPropTime(SENDINFO(m_flNextPrimaryAttack)),
+		SendPropTime(SENDINFO(m_flNextSecondaryAttack)),
+		SendPropInt(SENDINFO(m_nNextThinkTick)),
+		SendPropTime(SENDINFO(m_flTimeWeaponIdle)),
+
+#if defined( TF_DLL )
+		SendPropExclude("DT_AnimTimeMustBeFirst", "m_flAnimTime"),
+#endif
+
+	END_NETWORK_TABLE(DT_LocalActiveWeaponData)
+
+		//-----------------------------------------------------------------------------
+	// Purpose: Propagation data for weapons. Only sent when a player's holding it.
+	//-----------------------------------------------------------------------------
+	BEGIN_NETWORK_TABLE_NOBASE(CBaseCombatWeapon, DT_LocalWeaponData)
+		SendPropIntWithMinusOneFlag(SENDINFO(m_iClip1), 8),
+		SendPropIntWithMinusOneFlag(SENDINFO(m_iClip2), 8),
+		SendPropInt(SENDINFO(m_iPrimaryAmmoType), 8),
+		SendPropInt(SENDINFO(m_iSecondaryAmmoType), 8),
+
+		SendPropInt(SENDINFO(m_nViewModelIndex), VIEWMODEL_INDEX_BITS, SPROP_UNSIGNED),
+
+		SendPropInt(SENDINFO(m_bFlipViewModel)),
+
+#if defined( TF_DLL )
+		SendPropExclude("DT_AnimTimeMustBeFirst", "m_flAnimTime"),
+#endif
+
+	END_NETWORK_TABLE(DT_LocalWeaponData)
+
+	BEGIN_NETWORK_TABLE(CBaseCombatWeapon, DT_BaseCombatWeapon, DT_BaseAnimating)
+		SendPropDataTable("LocalWeaponData", 0, REFERENCE_SEND_TABLE(DT_LocalWeaponData), SendProxy_SendLocalWeaponDataTable),
+		SendPropDataTable("LocalActiveWeaponData", 0, REFERENCE_SEND_TABLE(DT_LocalActiveWeaponData), SendProxy_SendActiveLocalWeaponDataTable),
+		SendPropModelIndex(SENDINFO(m_iViewModelIndex)),
+		SendPropModelIndex(SENDINFO(m_iWorldModelIndex)),
+		SendPropInt(SENDINFO(m_iState), 8, SPROP_UNSIGNED),
+		SendPropEHandle(SENDINFO(m_hOwner)),
+	END_NETWORK_TABLE(DT_BaseCombatWeapon)
+#endif
 };
 
 #endif // COMBATWEAPON_SHARED_H

@@ -228,10 +228,7 @@ BEGIN_DATADESC( CBoneFollower )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CBoneFollower, DT_BoneFollower, DT_BaseEntity)
-BEGIN_SEND_TABLE(CBoneFollower, DT_BoneFollower, DT_BaseEntity)
-	SendPropModelIndex(SENDINFO(m_modelIndex)),
-	SendPropInt(SENDINFO(m_solidIndex), 6, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_BoneFollower)
+
 
 
 bool CBoneFollower::Init( CBaseEntity *pOwner, const char *pModelName, solid_t &solid, const Vector &position, const QAngle &orientation )

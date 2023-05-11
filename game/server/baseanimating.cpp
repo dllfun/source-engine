@@ -55,6 +55,21 @@ class CIKSaveRestoreOps : public CClassPtrSaveRestoreOps
 	}
 };
 
+class TestEnntity {
+public:
+	CServerNetworkProperty m_Network;
+
+	void PostConstructor(const char* pName) {
+
+	}
+
+	inline CServerNetworkProperty* NetworkProp()
+	{
+		return &m_Network;
+	}
+};
+LINK_ENTITY_TO_CLASS(test_entity, TestEnntity);
+
 //-----------------------------------------------------------------------------
 // Relative lighting entity
 //-----------------------------------------------------------------------------
@@ -73,6 +88,10 @@ public:
 private:
 	CNetworkHandle( CBaseEntity, m_hLightingLandmark );
 	string_t		m_strLightingLandmark;
+
+	BEGIN_SEND_TABLE(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
+		SendPropEHandle(SENDINFO(m_hLightingLandmark)),
+	END_SEND_TABLE(DT_InfoLightingRelative)
 };
 
 LINK_ENTITY_TO_CLASS( info_lighting_relative, CInfoLightingRelative );
@@ -83,9 +102,7 @@ BEGIN_DATADESC( CInfoLightingRelative )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
-BEGIN_SEND_TABLE(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
-	SendPropEHandle( SENDINFO( m_hLightingLandmark ) ),
-END_SEND_TABLE(DT_InfoLightingRelative)
+
 
 
 //-----------------------------------------------------------------------------
@@ -219,52 +236,13 @@ BEGIN_DATADESC( CBaseAnimating )
 
 	END_DATADESC()
 
-// Sendtable for fields we don't want to send to clientside animating entities
-BEGIN_SEND_TABLE_NOBASE( CBaseAnimating, DT_ServerAnimationData )
-	// ANIMATION_CYCLE_BITS is defined in shareddefs.h
-	SendPropFloat	(SENDINFO(m_flCycle),		ANIMATION_CYCLE_BITS, SPROP_CHANGES_OFTEN|SPROP_ROUNDDOWN,	0.0f,   1.0f)
-END_SEND_TABLE(DT_ServerAnimationData)
+
 
 void *SendProxy_ClientSideAnimation( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID );
 
 // SendTable stuff.
 IMPLEMENT_SERVERCLASS(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
-BEGIN_SEND_TABLE(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
-	SendPropInt		( SENDINFO(m_nForceBone), 8, 0 ),
-	SendPropVector	( SENDINFO(m_vecForce), -1, SPROP_NOSCALE ),
 
-	SendPropInt		( SENDINFO(m_nSkin), ANIMATION_SKIN_BITS),
-	SendPropInt		( SENDINFO(m_nBody), ANIMATION_BODY_BITS),
-
-	SendPropInt		( SENDINFO(m_nHitboxSet),ANIMATION_HITBOXSET_BITS, SPROP_UNSIGNED ),
-
-	SendPropFloat	( SENDINFO(m_flModelScale) ),
-
-	SendPropArray3  ( SENDINFO_ARRAY3(m_flPoseParameter), SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter), ANIMATION_POSEPARAMETER_BITS, 0, 0.0f, 1.0f ) ),
-	
-	SendPropInt		( SENDINFO(m_nSequence), ANIMATION_SEQUENCE_BITS, SPROP_UNSIGNED ),
-	SendPropFloat	( SENDINFO(m_flPlaybackRate), ANIMATION_PLAYBACKRATE_BITS, SPROP_ROUNDUP, -4.0, 12.0f ), // NOTE: if this isn't a power of 2 than "1.0" can't be encoded correctly
-
-	SendPropArray3 	(SENDINFO_ARRAY3(m_flEncodedController), SendPropFloat(SENDINFO_ARRAY(m_flEncodedController), 11, SPROP_ROUNDDOWN, 0.0f, 1.0f ) ),
-
-	SendPropInt( SENDINFO( m_bClientSideAnimation ), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_bClientSideFrameReset ), 1, SPROP_UNSIGNED ),
-
-	SendPropInt( SENDINFO( m_nNewSequenceParity ), EF_PARITY_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_nResetEventsParity ), EF_PARITY_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_nMuzzleFlashParity ), EF_MUZZLEFLASH_BITS, SPROP_UNSIGNED ),
-
-	SendPropEHandle( SENDINFO( m_hLightingOrigin ) ),
-	SendPropEHandle( SENDINFO( m_hLightingOriginRelative ) ),
-
-	SendPropDataTable( "serveranimdata", 0, REFERENCE_SEND_TABLE( DT_ServerAnimationData ), SendProxy_ClientSideAnimation ),
-
-	// Fading
-	SendPropFloat( SENDINFO( m_fadeMinDist ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_fadeMaxDist ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_flFadeScale ), 0, SPROP_NOSCALE ),
-
-END_SEND_TABLE(DT_BaseAnimating)
 
 
 CBaseAnimating::CBaseAnimating()
@@ -281,8 +259,8 @@ CBaseAnimating::CBaseAnimating()
 
 	m_flModelScale = 1.0f;
 	// initialize anim clock
-	m_flAnimTime = gpGlobals->curtime;
-	m_flPrevAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flPrevAnimTime = gpGlobals==NULL?0:gpGlobals->curtime;
 	m_nNewSequenceParity = 0;
 	m_nResetEventsParity = 0;
 	m_boneCacheHandle = 0;

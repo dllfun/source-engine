@@ -26,8 +26,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-const float MAX_SPRITE_SCALE = 64.0f;
-const float MAX_GLOW_PROXY_SIZE = 64.0f;
+
 
 LINK_ENTITY_TO_CLASS( env_sprite, CSprite );
 LINK_ENTITY_TO_CLASS( env_sprite_oriented, CSpriteOriented );
@@ -129,31 +128,8 @@ static void RecvProxy_SpriteScale( const CRecvProxyData *pData, void *pStruct, v
 
 #endif
 
+#if defined( CLIENT_DLL )
 BEGIN_NETWORK_TABLE( CSprite, DT_Sprite , DT_BaseEntity)
-#if !defined( CLIENT_DLL )
-	SendPropEHandle( SENDINFO(m_hAttachedToEntity )),
-	SendPropInt( SENDINFO(m_nAttachment ), 8 ),
-	SendPropFloat( SENDINFO(m_flScaleTime ), 0,	SPROP_NOSCALE ),
-
-#ifdef HL2_DLL
-	SendPropFloat( SENDINFO(m_flSpriteScale ), 0,	SPROP_NOSCALE),
-#else
-	SendPropFloat( SENDINFO(m_flSpriteScale ), 8,	SPROP_ROUNDUP,	0.0f,	MAX_SPRITE_SCALE),
-#endif
-	SendPropFloat( SENDINFO(m_flGlowProxySize ), 6,	SPROP_ROUNDUP,	0.0f,	MAX_GLOW_PROXY_SIZE),
-
-	SendPropFloat( SENDINFO(m_flHDRColorScale ), 0,	SPROP_NOSCALE,	0.0f,	100.0f),
-
-	SendPropFloat( SENDINFO(m_flSpriteFramerate ), 8,	SPROP_ROUNDUP,	0,	60.0f),
-	SendPropFloat( SENDINFO(m_flFrame),		20, SPROP_ROUNDDOWN,	0.0f,   256.0f),
-#ifdef PORTAL
-	SendPropBool( SENDINFO(m_bDrawInMainRender) ),
-	SendPropBool( SENDINFO(m_bDrawInPortalRender) ),
-#endif //#ifdef PORTAL
-	SendPropFloat( SENDINFO(m_flBrightnessTime ), 0,	SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED ),
-	SendPropBool( SENDINFO(m_bWorldSpaceScale) ),
-#else
 	RecvPropEHandle(RECVINFO(m_hAttachedToEntity)),
 	RecvPropInt(RECVINFO(m_nAttachment)),
 	RecvPropFloat(RECVINFO(m_flScaleTime)),
@@ -171,8 +147,8 @@ BEGIN_NETWORK_TABLE( CSprite, DT_Sprite , DT_BaseEntity)
 	RecvPropFloat(RECVINFO(m_flBrightnessTime)),
 	RecvPropInt(RECVINFO(m_nBrightness)),
 	RecvPropBool( RECVINFO(m_bWorldSpaceScale) ),
-#endif
 END_NETWORK_TABLE(DT_Sprite)
+#endif
 
 
 CSprite::CSprite() : BaseClass()
@@ -855,8 +831,7 @@ const Vector& CSprite::GetRenderOrigin()
 
 #if !defined( CLIENT_DLL )
 IMPLEMENT_SERVERCLASS( CSpriteOriented, DT_SpriteOriented , DT_Sprite)
-BEGIN_SEND_TABLE(CSpriteOriented, DT_SpriteOriented, DT_Sprite)
-END_SEND_TABLE(DT_SpriteOriented)
+
 #else
 #undef CSpriteOriented
 IMPLEMENT_CLIENTCLASS_DT(C_SpriteOriented, DT_SpriteOriented, CSpriteOriented)

@@ -25,7 +25,7 @@ class CTESpriteSpray : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTESpriteSpray, CBaseTempEntity );
-
+					CTESpriteSpray() {};
 					CTESpriteSpray( const char *name );
 	virtual			~CTESpriteSpray( void );
 
@@ -40,6 +40,15 @@ public:
 	CNetworkVar( int, m_nSpeed );
 	CNetworkVar( float, m_fNoise );
 	CNetworkVar( int, m_nCount );
+
+	BEGIN_SEND_TABLE(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecDirection), -1, SPROP_COORD),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropFloat(SENDINFO(m_fNoise), 8, SPROP_ROUNDDOWN, 0.0, 2.56),
+		SendPropInt(SENDINFO(m_nSpeed), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nCount), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TESpriteSpray)
 };
 
 //-----------------------------------------------------------------------------
@@ -96,14 +105,7 @@ void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD),
-	SendPropModelIndex(SENDINFO(m_nModelIndex)),
-	SendPropFloat( SENDINFO(m_fNoise ), 8, SPROP_ROUNDDOWN, 0.0, 2.56 ),
-	SendPropInt( SENDINFO(m_nSpeed ), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nCount), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TESpriteSpray)
+
 
 
 // Singleton to fire TESpriteSpray objects

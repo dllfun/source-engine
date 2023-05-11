@@ -23,7 +23,7 @@ class CTESprite : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTESprite, CBaseTempEntity );
-
+					CTESprite() {};
 					CTESprite( const char *name );
 	virtual			~CTESprite( void );
 
@@ -38,6 +38,13 @@ public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( float, m_fScale );
 	CNetworkVar( int, m_nBrightness );
+
+	BEGIN_SEND_TABLE(CTESprite, DT_TESprite, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropFloat(SENDINFO(m_fScale), 8, SPROP_ROUNDDOWN, 0.0, 25.6),
+		SendPropInt(SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TESprite)
 };
 
 //-----------------------------------------------------------------------------
@@ -98,12 +105,7 @@ void CTESprite::Test( const Vector& current_origin, const QAngle& current_angles
 
 
 IMPLEMENT_SERVERCLASS(CTESprite, DT_TESprite, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTESprite, DT_TESprite, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
-	SendPropInt( SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TESprite)
+
 
 
 // Singleton to fire TESprite objects

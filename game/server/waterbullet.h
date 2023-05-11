@@ -27,6 +27,10 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 	DECLARE_SEND_TABLE_ACCESS(DT_WaterBullet);
+
+	BEGIN_SEND_TABLE(CWaterBullet, DT_WaterBullet, DT_BaseAnimating)
+
+	END_SEND_TABLE(DT_WaterBullet)
 };
 
 #endif // WEAPON_WATERBULLET_H

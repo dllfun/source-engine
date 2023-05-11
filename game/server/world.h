@@ -71,6 +71,19 @@ private:
 	CNetworkVar( bool, m_bStartDark );
 	CNetworkVar( bool, m_bColdWorld );
 	bool m_bDisplayTitle;
+
+	BEGIN_SEND_TABLE(CWorld, DT_WORLD, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flWaveHeight), 8, SPROP_ROUNDUP, 0.0f, 8.0f),
+		SendPropVector(SENDINFO(m_WorldMins), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_WorldMaxs), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(m_bStartDark), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flMaxOccludeeArea), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flMinOccluderArea), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flMaxPropScreenSpaceWidth), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flMinPropScreenSpaceWidth), 0, SPROP_NOSCALE),
+		SendPropStringT(SENDINFO(m_iszDetailSpriteMaterial)),
+		SendPropInt(SENDINFO(m_bColdWorld), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_WORLD)
 };
 
 

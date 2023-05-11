@@ -33,19 +33,13 @@
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenade, DT_BaseCSGrenade )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE(CBaseCSGrenade, DT_BaseCSGrenade, DT_WeaponCSBase)
-
-#ifndef CLIENT_DLL
-	SendPropBool( SENDINFO(m_bRedraw) ),
-	SendPropBool( SENDINFO(m_bPinPulled) ),
-	SendPropFloat( SENDINFO(m_fThrowTime), 0, SPROP_NOSCALE ),
-#else
 	RecvPropBool( RECVINFO(m_bRedraw) ),
 	RecvPropBool( RECVINFO(m_bPinPulled) ),
 	RecvPropFloat( RECVINFO(m_fThrowTime) ),
-#endif
-
 END_NETWORK_TABLE(DT_BaseCSGrenade)
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CBaseCSGrenade )

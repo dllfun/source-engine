@@ -1237,8 +1237,7 @@ LINK_ENTITY_TO_CLASS( func_tracktrain, CFuncTrackTrain );
 // Datatable
 //-----------------------------------------------------------------------------
 IMPLEMENT_SERVERCLASS( CFuncTrackTrain, DT_FuncTrackTrain , DT_BaseEntity)
-BEGIN_SEND_TABLE(CFuncTrackTrain, DT_FuncTrackTrain, DT_BaseEntity)
-END_SEND_TABLE(DT_FuncTrackTrain)
+
 
 
 //-----------------------------------------------------------------------------
@@ -1256,7 +1255,7 @@ CFuncTrackTrain::CFuncTrackTrain()
 	m_eOrientationType = TrainOrientation_AtPathTracks;
 	m_eVelocityType = TrainVelocity_Instantaneous;
 	m_lastBlockPos.Init();
-	m_lastBlockTick = gpGlobals->tickcount;
+	m_lastBlockTick = gpGlobals==NULL?0:gpGlobals->tickcount;
 
 	m_flSpeedForwardModifier = 1.0f;
 	m_flUnmodifiedDesiredSpeed = 0.0f;

@@ -397,18 +397,7 @@ END_DATADESC()
 
 // SendTable stuff.
 IMPLEMENT_SERVERCLASS(CWorld, DT_WORLD, DT_BaseEntity)
-BEGIN_SEND_TABLE(CWorld, DT_WORLD, DT_BaseEntity)
-	SendPropFloat	(SENDINFO(m_flWaveHeight), 8, SPROP_ROUNDUP,	0.0f,	8.0f),
-	SendPropVector	(SENDINFO(m_WorldMins),	-1,	SPROP_COORD),
-	SendPropVector	(SENDINFO(m_WorldMaxs),	-1,	SPROP_COORD),
-	SendPropInt		(SENDINFO(m_bStartDark), 1, SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_flMaxOccludeeArea), 0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flMinOccluderArea), 0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flMaxPropScreenSpaceWidth), 0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flMinPropScreenSpaceWidth), 0, SPROP_NOSCALE ),
-	SendPropStringT (SENDINFO(m_iszDetailSpriteMaterial) ),
-	SendPropInt		(SENDINFO(m_bColdWorld), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_WORLD)
+
 
 //
 // Just to ignore the "wad" field.
@@ -457,10 +446,12 @@ CWorld* GetWorldEntity()
 	return g_WorldEntity;
 }
 
-CWorld::CWorld( )
+CWorld::CWorld()
 {
-	AddEFlags( EFL_NO_AUTO_EDICT_ATTACH | EFL_KEEP_ON_RECREATE_ENTITIES );
-	NetworkProp()->AttachEdict( INDEXENT(RequiredEdictIndex()) );
+	AddEFlags(EFL_NO_AUTO_EDICT_ATTACH | EFL_KEEP_ON_RECREATE_ENTITIES);
+	if (engineServer) {
+		NetworkProp()->AttachEdict(INDEXENT(RequiredEdictIndex()));
+	}
 	ActivityList_Init();
 	EventList_Init();
 	

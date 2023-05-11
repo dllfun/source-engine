@@ -46,6 +46,11 @@ public:
 #endif
 
 	CSmokeGrenade( const CSmokeGrenade & ) {}
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CSmokeGrenade, DT_SmokeGrenade, DT_BaseCSGrenade)
+	END_NETWORK_TABLE(DT_SmokeGrenade)
+#endif
 };
 
 

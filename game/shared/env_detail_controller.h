@@ -30,6 +30,13 @@ public:
 
 	// ALWAYS transmit to all clients.
 	virtual int UpdateTransmitState( void );
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CEnvDetailController, DT_DetailController)
+		SendPropFloat(SENDINFO(m_flFadeStartDist)),
+		SendPropFloat(SENDINFO(m_flFadeEndDist)),
+	END_NETWORK_TABLE(DT_DetailController)
+#endif
 };
 
 CEnvDetailController * GetDetailController();

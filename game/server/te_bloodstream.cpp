@@ -23,7 +23,7 @@ class CTEBloodStream : public CTEParticleSystem
 {
 public:
 	DECLARE_CLASS( CTEBloodStream, CTEParticleSystem );
-
+					CTEBloodStream() {};
 					CTEBloodStream( const char *name );
 	virtual			~CTEBloodStream( void );
 
@@ -38,6 +38,15 @@ public:
 	CNetworkVar( int, b );
 	CNetworkVar( int, a );
 	CNetworkVar( int, m_nAmount );
+
+	BEGIN_SEND_TABLE(CTEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
+		SendPropVector(SENDINFO(m_vecDirection), 11, 0, -10.0, 10.0),
+		SendPropInt(SENDINFO(r), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(g), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(b), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(a), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nAmount), 8, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBloodStream)
 };
 
 //-----------------------------------------------------------------------------
@@ -94,14 +103,7 @@ void CTEBloodStream::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
-BEGIN_SEND_TABLE(CTEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
-	SendPropVector( SENDINFO(m_vecDirection), 11, 0, -10.0, 10.0 ),
-	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(g), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(b), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(a), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nAmount), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBloodStream)
+
 
 // Singleton to fire TEBloodStream objects
 static CTEBloodStream g_TEBloodStream( "Blood Stream" );

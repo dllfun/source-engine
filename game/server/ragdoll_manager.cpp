@@ -42,13 +42,15 @@ public:
 	int m_iMaxRagdollCountDX8;
 
 	bool m_bSaveImportant;
+
+	BEGIN_SEND_TABLE_NOBASE(CRagdollManager, DT_RagdollManager)
+		SendPropInt(SENDINFO(m_iCurrentMaxRagdollCount), 6),
+	END_SEND_TABLE(DT_RagdollManager)
 };
 
 
 IMPLEMENT_SERVERCLASS( CRagdollManager, DT_RagdollManager )
-BEGIN_SEND_TABLE_NOBASE(CRagdollManager, DT_RagdollManager)
-	SendPropInt( SENDINFO( m_iCurrentMaxRagdollCount ), 6 ),
-END_SEND_TABLE(DT_RagdollManager)
+
 
 LINK_ENTITY_TO_CLASS( game_ragdoll_manager, CRagdollManager );
 

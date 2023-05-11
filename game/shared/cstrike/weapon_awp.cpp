@@ -70,12 +70,19 @@ private:
 #endif
 
 	CWeaponAWP( const CWeaponAWP & );
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponAWP, DT_WeaponAWP, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponAWP)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponAWP, DT_WeaponAWP )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponAWP, DT_WeaponAWP, DT_WeaponCSBaseGun)
 END_NETWORK_TABLE(DT_WeaponAWP)
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponAWP )
 END_PREDICTION_DATA()

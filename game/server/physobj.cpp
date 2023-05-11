@@ -365,8 +365,7 @@ void CPhysicsSpring::NotifySystemEvent( CBaseEntity *pNotify, notify_system_even
 
 // SendTable stuff.
 IMPLEMENT_SERVERCLASS(CPhysBox, DT_PhysBox, DT_BaseEntity)
-BEGIN_SEND_TABLE(CPhysBox, DT_PhysBox, DT_BaseEntity)
-END_SEND_TABLE(DT_PhysBox)
+
 
 LINK_ENTITY_TO_CLASS( func_physbox, CPhysBox );
 
@@ -1524,20 +1523,7 @@ int SendProxyArrayLength_MagnetAttachedArray( const void *pStruct, int objectID 
 }
 
 IMPLEMENT_SERVERCLASS( CPhysMagnet, DT_PhysMagnet, DT_BaseAnimating)
-BEGIN_SEND_TABLE(CPhysMagnet, DT_PhysMagnet, DT_BaseAnimating)
 
-	// ROBIN: Disabled because we don't need it anymore
-	/*
-	SendPropArray2( 
-		SendProxyArrayLength_MagnetAttachedArray,
-		SendPropInt("magnetattached_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_MagnetAttachedObjectList), 
-		128, 
-		0, 
-		"magnetattached_array"
-		)
-	*/
-
-END_SEND_TABLE(DT_PhysMagnet)
 
 //-----------------------------------------------------------------------------
 // Purpose: 

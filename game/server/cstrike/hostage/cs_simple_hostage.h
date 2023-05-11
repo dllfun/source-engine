@@ -164,6 +164,27 @@ private:
 
 	void PushawayThink( void );								// pushes physics objects away from the hostage
 	void AvoidPhysicsProps( void );							// guides the hostage away from physics props
+
+	BEGIN_SEND_TABLE(CHostage, DT_CHostage, DT_BaseCombatCharacter)
+		SendPropExclude("DT_BaseAnimating", "m_flPoseParameter"),
+		SendPropExclude("DT_BaseAnimating", "m_flPlaybackRate"),
+		SendPropExclude("DT_BaseAnimating", "m_nSequence"),
+		SendPropExclude("DT_BaseAnimating", "m_nNewSequenceParity"),
+		SendPropExclude("DT_BaseAnimating", "m_nResetEventsParity"),
+		SendPropExclude("DT_BaseAnimatingOverlay", "overlay_vars"),
+
+		// cs_playeranimstate and clientside animation takes care of these on the client
+		SendPropExclude("DT_ServerAnimationData", "m_flCycle"),
+		SendPropExclude("DT_AnimTimeMustBeFirst", "m_flAnimTime"),
+
+		SendPropBool(SENDINFO(m_isRescued)),
+		SendPropInt(SENDINFO(m_iHealth), 10),
+		SendPropInt(SENDINFO(m_iMaxHealth), 10),
+		SendPropInt(SENDINFO(m_lifeState), 3, SPROP_UNSIGNED),
+
+		SendPropEHandle(SENDINFO(m_leader)),
+
+	END_SEND_TABLE(DT_CHostage)
 };
 
 

@@ -67,14 +67,21 @@ public:
 
 private:
 	CDEagle( const CDEagle & );
+
+#if !defined(CLIENT_DLL)
+	BEGIN_NETWORK_TABLE(CDEagle, DT_WeaponDEagle, DT_WeaponCSBase)
+	END_NETWORK_TABLE(DT_WeaponDEagle)
+#endif
 };
 
 
 
 IMPLEMENT_NETWORKCLASS_ALIASED( DEagle, DT_WeaponDEagle )
 
+#if defined(CLIENT_DLL)
 BEGIN_NETWORK_TABLE( CDEagle, DT_WeaponDEagle, DT_WeaponCSBase)
 END_NETWORK_TABLE(DT_WeaponDEagle)
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CDEagle )
@@ -89,7 +96,7 @@ PRECACHE_WEAPON_REGISTER( weapon_deagle );
 
 CDEagle::CDEagle()
 {
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
 }
 
 

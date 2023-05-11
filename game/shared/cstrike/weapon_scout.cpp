@@ -47,12 +47,19 @@ public:
 private:
 	
 	CWeaponScout( const CWeaponScout & );
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponScout, DT_WeaponScout, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponScout)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponScout, DT_WeaponScout )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponScout, DT_WeaponScout, DT_WeaponCSBaseGun)
 END_NETWORK_TABLE(DT_WeaponScout)
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponScout )
 END_PREDICTION_DATA()

@@ -156,22 +156,10 @@ void* SendProxy_ClientSideAnimation( const SendProp *pProp, const void *pStruct,
 REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_ClientSideAnimation );
 
 
-BEGIN_SEND_TABLE_NOBASE( CBaseEntity, DT_AnimTimeMustBeFirst )
-	// NOTE:  Animtime must be sent before origin and angles ( from pev ) because it has a 
-	//  proxy on the client that stores off the old values before writing in the new values and
-	//  if it is sent after the new values, then it will only have the new origin and studio model, etc.
-	//  interpolation will be busted
-	SendPropInt	(SENDINFO(m_flAnimTime), 8, SPROP_UNSIGNED|SPROP_CHANGES_OFTEN|SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_AnimTime),
-END_SEND_TABLE(DT_AnimTimeMustBeFirst)
+
 
 #if !defined( NO_ENTITY_PREDICTION )
-BEGIN_SEND_TABLE_NOBASE( CBaseEntity, DT_PredictableId )
-	SendPropPredictableId( SENDINFO( m_PredictableID ) ),
-	SendPropInt( SENDINFO( m_bIsPlayerSimulated ), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_PredictableId)
-
-
-static void* SendProxy_SendPredictableId( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
+void* SendProxy_SendPredictableId( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
 {
 	CBaseEntity *pEntity = (CBaseEntity *)pStruct;
 	if ( !pEntity || !pEntity->m_PredictableID->IsActive() )
@@ -258,57 +246,7 @@ void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *p
 }
 
 // This table encodes the CBaseEntity data.
-IMPLEMENT_SERVERCLASS( CBaseEntity, DT_BaseEntity )
-BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_BaseEntity)
-	SendPropDataTable( "AnimTimeMustBeFirst", 0, REFERENCE_SEND_TABLE(DT_AnimTimeMustBeFirst), SendProxy_ClientSideAnimation ),
-	SendPropInt			(SENDINFO(m_flSimulationTime),	SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED|SPROP_CHANGES_OFTEN|SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_SimulationTime),
-
-#if PREDICTION_ERROR_CHECK_LEVEL > 1 
-	SendPropVector	(SENDINFO(m_vecOrigin), -1,  SPROP_NOSCALE|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
-#else
-	SendPropVector	(SENDINFO(m_vecOrigin), -1,  SPROP_COORD|SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin ),
-#endif
-
-	SendPropInt		(SENDINFO( m_ubInterpolationFrame ), NOINTERP_PARITY_MAX_BITS, SPROP_UNSIGNED ),
-	SendPropModelIndex(SENDINFO(m_nModelIndex)),
-	SendPropDataTable( SENDINFO_DT( m_Collision ), REFERENCE_SEND_TABLE(DT_CollisionProperty) ),
-	SendPropInt		(SENDINFO(m_nRenderFX),		8, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_nRenderMode),	8, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_fEffects),		EF_MAX_BITS, SPROP_UNSIGNED),
-	SendPropInt		(SENDINFO(m_clrRender),	32, SPROP_UNSIGNED),
-	SendPropInt		(SENDINFO(m_iTeamNum),		TEAMNUM_NUM_BITS, 0),
-	SendPropInt		(SENDINFO(m_CollisionGroup), 5, SPROP_UNSIGNED),
-	SendPropFloat	(SENDINFO(m_flElasticity), 0, SPROP_COORD),
-	SendPropFloat	(SENDINFO(m_flShadowCastDistance), 12, SPROP_UNSIGNED ),
-	SendPropEHandle (SENDINFO(m_hOwnerEntity)),
-	SendPropEHandle (SENDINFO(m_hEffectEntity)),
-	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),
-	SendPropInt		(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
-
-	SendPropInt		(SENDINFO_NAME( m_MoveType, movetype ), MOVETYPE_MAX_BITS, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO_NAME( m_MoveCollide, movecollide ), MOVECOLLIDE_MAX_BITS, SPROP_UNSIGNED ),
-#if PREDICTION_ERROR_CHECK_LEVEL > 1 
-	SendPropVector	(SENDINFO(m_angRotation), -1, SPROP_NOSCALE|SPROP_CHANGES_OFTEN, 0, HIGH_DEFAULT, SendProxy_Angles ),
-#else
-	SendPropQAngles	(SENDINFO(m_angRotation), 13, SPROP_CHANGES_OFTEN, SendProxy_Angles ),
-#endif
-
-	SendPropInt		( SENDINFO( m_iTextureFrameIndex ),		8, SPROP_UNSIGNED ),
-
-#if !defined( NO_ENTITY_PREDICTION )
-	SendPropDataTable( "predictable_id", 0, REFERENCE_SEND_TABLE( DT_PredictableId ), SendProxy_SendPredictableId ),
-#endif
-
-	// FIXME: Collapse into another flag field?
-	SendPropInt		(SENDINFO(m_bSimulatedEveryTick),		1, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_bAnimatedEveryTick),		1, SPROP_UNSIGNED ),
-	SendPropBool( SENDINFO( m_bAlternateSorting )),
-
-#ifdef TF_DLL
-	SendPropArray3( SENDINFO_ARRAY3(m_nModelIndexOverrides), SendPropInt( SENDINFO_ARRAY(m_nModelIndexOverrides), SP_MODEL_INDEX_BITS, 0 ) ),
-#endif
-
-END_SEND_TABLE(DT_BaseEntity)
+IMPLEMENT_SERVERCLASS(CBaseEntity, DT_BaseEntity)
 
 
 // dynamic models
@@ -376,7 +314,7 @@ CBaseEntity::CBaseEntity( bool bServerOnly )
 	m_flShadowCastDistance = m_flDesiredShadowCastDistance = 0;
 	SetRenderColor( 255, 255, 255, 255 );
 	m_iTeamNum = m_iInitialTeamNum = TEAM_UNASSIGNED;
-	m_nLastThinkTick = gpGlobals->tickcount;
+	m_nLastThinkTick = gpGlobals==NULL?0:gpGlobals->tickcount;
 	m_nSimulationTick = -1;
 	SetIdentityMatrix( m_rgflCoordinateFrame );
 	m_pBlocker = NULL;
@@ -4908,7 +4846,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 //-----------------------------------------------------------------------------
 int CBaseEntity::PrecacheModel( const char *name, bool bPreload )
 {
-	if ( !name || !*name )
+	if ( !name || !*name || !engineServer)
 	{
 		Msg( "Attempting to precache model, but model name is NULL\n");
 		return -1;

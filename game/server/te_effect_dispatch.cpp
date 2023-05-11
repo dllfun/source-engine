@@ -25,7 +25,7 @@ class CTEEffectDispatch : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEEffectDispatch, CBaseTempEntity );
-
+					CTEEffectDispatch() {};
 					CTEEffectDispatch( const char *name );
 	virtual			~CTEEffectDispatch( void );
 
@@ -33,6 +33,10 @@ public:
 
 public:
 	CEffectData m_EffectData;
+
+	BEGIN_SEND_TABLE(CTEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
+		SendPropDataTable(SENDINFO_DT(m_EffectData), REFERENCE_SEND_TABLE(DT_EffectData))
+	END_SEND_TABLE(DT_TEEffectDispatch)
 };
 
 //-----------------------------------------------------------------------------
@@ -52,11 +56,7 @@ CTEEffectDispatch::~CTEEffectDispatch( void )
 }
 
 IMPLEMENT_SERVERCLASS( CTEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
 
-	SendPropDataTable( SENDINFO_DT( m_EffectData ), REFERENCE_SEND_TABLE( DT_EffectData ) )
-
-END_SEND_TABLE(DT_TEEffectDispatch)
 
 
 // Singleton to fire TEEffectDispatch objects

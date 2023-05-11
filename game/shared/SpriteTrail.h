@@ -117,6 +117,19 @@ private:
 	string_t m_iszSpriteName;
 	bool	m_bAnimate;
 	bool	m_bDrawForMoveParent;
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CSpriteTrail, DT_SpriteTrail, DT_Sprite)
+		SendPropFloat(SENDINFO(m_flLifeTime), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flStartWidth), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flEndWidth), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flStartWidthVariance), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flTextureRes), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flMinFadeLength), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecSkyboxOrigin), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flSkyboxScale), 0, SPROP_NOSCALE),
+	END_NETWORK_TABLE(DT_SpriteTrail)
+#endif
 };
 
 #endif // SPRITETRAIL_H

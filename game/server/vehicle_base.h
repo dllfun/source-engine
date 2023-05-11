@@ -302,6 +302,25 @@ protected:
 	// Used to turn the keepupright off after a short time
 	float		m_flTurnOffKeepUpright;
 	float		m_flNoImpactDamageTime;
+
+	BEGIN_SEND_TABLE(CPropVehicleDriveable, DT_PropVehicleDriveable, DT_BaseAnimating)
+
+		SendPropEHandle(SENDINFO(m_hPlayer)),
+		//	SendPropFloat(SENDINFO_DT_NAME(m_controls.throttle, m_throttle), 8,	SPROP_ROUNDUP,	0.0f,	1.0f),
+		SendPropInt(SENDINFO(m_nSpeed), 8),
+		SendPropInt(SENDINFO(m_nRPM), 13),
+		SendPropFloat(SENDINFO(m_flThrottle), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nBoostTimeLeft), 8),
+		SendPropInt(SENDINFO(m_nHasBoost), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nScannerDisabledWeapons), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nScannerDisabledVehicle), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bEnterAnimOn), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bExitAnimOn), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bUnableToFire), 1, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
+		SendPropBool(SENDINFO(m_bHasGun)),
+		SendPropVector(SENDINFO(m_vecGunCrosshair), -1, SPROP_COORD),
+	END_SEND_TABLE(DT_PropVehicleDriveable);
 };
 
 

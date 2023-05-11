@@ -52,19 +52,23 @@ private:
 	CNetworkVar( bool, m_bBurstMode );
 	CNetworkVar( int, m_iBurstShotsRemaining );	
 	float	m_fNextBurstShot;			// time to shoot the next bullet in burst fire mode
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponFamas, DT_WeaponFamas, DT_WeaponCSBaseGun)
+		SendPropBool(SENDINFO(m_bBurstMode)),
+		SendPropInt(SENDINFO(m_iBurstShotsRemaining)),
+	END_NETWORK_TABLE(DT_WeaponFamas)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFamas, DT_WeaponFamas )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponFamas, DT_WeaponFamas, DT_WeaponCSBaseGun)
-	#ifdef CLIENT_DLL
 		RecvPropBool( RECVINFO( m_bBurstMode ) ),
 		RecvPropInt( RECVINFO( m_iBurstShotsRemaining ) ),
-	#else
-		SendPropBool( SENDINFO( m_bBurstMode ) ),
-		SendPropInt( SENDINFO( m_iBurstShotsRemaining ) ),
-	#endif
 END_NETWORK_TABLE(DT_WeaponFamas)
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponFamas )

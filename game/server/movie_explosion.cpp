@@ -15,8 +15,7 @@
 
 
 IMPLEMENT_SERVERCLASS(MovieExplosion, DT_MovieExplosion, DT_BaseParticleEntity)
-BEGIN_SEND_TABLE(MovieExplosion, DT_MovieExplosion, DT_BaseParticleEntity)
-END_SEND_TABLE(DT_MovieExplosion)
+
 
 LINK_ENTITY_TO_CLASS(env_movieexplosion, MovieExplosion);
 

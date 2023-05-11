@@ -122,6 +122,12 @@ private:
 	int			m_iDormancyChangedAtFrame;
 
 	friend class CBaseEntity;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CParticleProperty, DT_ParticleProperty)
+		//SendPropVector( SENDINFO(m_vecMins), 0, SPROP_NOSCALE),
+	END_NETWORK_TABLE()
+#endif
 };
 
 #include "particle_property_inlines.h"

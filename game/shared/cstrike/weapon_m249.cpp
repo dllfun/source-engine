@@ -38,12 +38,19 @@ public:
 
 private:
 	CWeaponM249( const CWeaponM249 & );
+
+#if !defined CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponM249, DT_WeaponM249, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponM249)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM249, DT_WeaponM249 )
 
+#if defined CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponM249, DT_WeaponM249, DT_WeaponCSBaseGun)
 END_NETWORK_TABLE(DT_WeaponM249)
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponM249 )
 END_PREDICTION_DATA()

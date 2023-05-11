@@ -227,6 +227,9 @@ enum DefuseDefenseAchivementStep
 // HPE_END
 //=============================================================================
 
+void* SendProxy_SendNonLocalDataTable(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+
+#define THROWGRENADE_COUNTER_BITS 3
 
 //=============================================================================
 // >> CounterStrike player
@@ -1044,6 +1047,104 @@ private:
 //=============================================================================
 // HPE_END
 //=============================================================================
+
+	BEGIN_SEND_TABLE_NOBASE(CCSPlayer, DT_CSLocalPlayerExclusive)
+		SendPropFloat(SENDINFO(m_flStamina), 14, 0, 0, 1400),
+		SendPropInt(SENDINFO(m_iDirection), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iShotsFired), 8, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flVelocityModifier), 8, 0, 0, 1),
+
+		// send a hi-res origin to the local player for use in prediction
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+
+		//=============================================================================
+		// HPE_BEGIN:
+		// [tj]Set up the send table for per-client domination data
+		//=============================================================================
+
+		SendPropArray3(SENDINFO_ARRAY3(m_bPlayerDominated), SendPropBool(SENDINFO_ARRAY(m_bPlayerDominated))),
+		SendPropArray3(SENDINFO_ARRAY3(m_bPlayerDominatingMe), SendPropBool(SENDINFO_ARRAY(m_bPlayerDominatingMe))),
+
+		//=============================================================================
+		// HPE_END
+		//=============================================================================
+
+	END_SEND_TABLE(DT_CSLocalPlayerExclusive)
+
+	BEGIN_SEND_TABLE_NOBASE(CCSPlayer, DT_CSNonLocalPlayerExclusive)
+		// send a lo-res origin to other players
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+		END_SEND_TABLE(DT_CSNonLocalPlayerExclusive)
+
+		BEGIN_SEND_TABLE(CCSPlayer, DT_CSPlayer, DT_BasePlayer)
+		SendPropExclude("DT_BaseAnimating", "m_flPoseParameter"),
+		SendPropExclude("DT_BaseAnimating", "m_flPlaybackRate"),
+		SendPropExclude("DT_BaseAnimating", "m_nSequence"),
+		SendPropExclude("DT_BaseAnimating", "m_nNewSequenceParity"),
+		SendPropExclude("DT_BaseAnimating", "m_nResetEventsParity"),
+		SendPropExclude("DT_BaseAnimating", "m_nMuzzleFlashParity"),
+		SendPropExclude("DT_BaseEntity", "m_angRotation"),
+		SendPropExclude("DT_BaseAnimatingOverlay", "overlay_vars"),
+
+		// cs_playeranimstate and clientside animation takes care of these on the client
+		SendPropExclude("DT_ServerAnimationData", "m_flCycle"),
+		SendPropExclude("DT_AnimTimeMustBeFirst", "m_flAnimTime"),
+
+		// We need to send a hi-res origin to the local player to avoid prediction errors sliding along walls
+		SendPropExclude("DT_BaseEntity", "m_vecOrigin"),
+
+		// Data that only gets sent to the local player.
+		SendPropDataTable("cslocaldata", 0, REFERENCE_SEND_TABLE(DT_CSLocalPlayerExclusive), SendProxy_SendLocalDataTable),
+		SendPropDataTable("csnonlocaldata", 0, REFERENCE_SEND_TABLE(DT_CSNonLocalPlayerExclusive), SendProxy_SendNonLocalDataTable),
+
+		SendPropInt(SENDINFO(m_iThrowGrenadeCounter), THROWGRENADE_COUNTER_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iAddonBits), NUM_ADDON_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iPrimaryAddon), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iSecondaryAddon), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iPlayerState), Q_log2(NUM_PLAYER_STATES) + 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iAccount), 16, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bInBombZone), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bInBuyZone), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iClass), Q_log2(CS_NUM_CLASSES) + 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_ArmorValue), 8),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angEyeAngles, 0), 11, SPROP_CHANGES_OFTEN),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angEyeAngles, 1), 11, SPROP_CHANGES_OFTEN),
+		SendPropBool(SENDINFO(m_bHasDefuser)),
+		SendPropBool(SENDINFO(m_bNightVisionOn)),	//send as int so we can use a RecvProxy on the client
+		SendPropBool(SENDINFO(m_bHasNightVision)),
+
+		//=============================================================================
+		// HPE_BEGIN:
+		// [dwenger] Added for fun-fact support
+		//=============================================================================
+
+		//SendPropBool( SENDINFO( m_bPickedUpDefuser ) ),
+		//SendPropBool( SENDINFO( m_bDefusedWithPickedUpKit) ),
+
+		//=============================================================================
+		// HPE_END
+		//=============================================================================
+
+		SendPropBool(SENDINFO(m_bInHostageRescueZone)),
+		SendPropBool(SENDINFO(m_bIsDefusing)),
+
+		SendPropBool(SENDINFO(m_bResumeZoom)),
+		SendPropInt(SENDINFO(m_iLastZoom), 8, SPROP_UNSIGNED),
+
+#ifdef CS_SHIELD_ENABLED
+		SendPropBool(SENDINFO(m_bHasShield)),
+		SendPropBool(SENDINFO(m_bShieldDrawn)),
+#endif
+		SendPropBool(SENDINFO(m_bHasHelmet)),
+		SendPropFloat(SENDINFO(m_flFlashDuration), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flFlashMaxAlpha), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_iProgressBarDuration), 4, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flProgressBarStartTime), 0, SPROP_NOSCALE),
+		SendPropEHandle(SENDINFO(m_hRagdoll)),
+		SendPropInt(SENDINFO(m_cycleLatch), 4, SPROP_UNSIGNED),
+
+
+	END_SEND_TABLE(DT_CSPlayer)
 };
 
 

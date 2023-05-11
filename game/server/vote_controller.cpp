@@ -22,13 +22,7 @@
 
 // Datatable
 IMPLEMENT_SERVERCLASS( CVoteController, DT_VoteController, DT_BaseEntity)
-BEGIN_SEND_TABLE(CVoteController, DT_VoteController, DT_BaseEntity)
-	SendPropInt( SENDINFO( m_iActiveIssueIndex ) ),
-	SendPropInt( SENDINFO( m_iOnlyTeamToVote ) ),
-	SendPropArray3( SENDINFO_ARRAY3( m_nVoteOptionCount ), SendPropInt( SENDINFO_ARRAY( m_nVoteOptionCount ), 8, SPROP_UNSIGNED ) ),
-	SendPropInt( SENDINFO( m_nPotentialVotes ) ),
-	SendPropBool( SENDINFO( m_bIsYesNoVote ) )
-END_SEND_TABLE(DT_VoteController)
+
 
 BEGIN_DATADESC( CVoteController )
 	DEFINE_THINKFUNC( VoteControllerThink ),

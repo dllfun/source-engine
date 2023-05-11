@@ -104,6 +104,8 @@ struct Relationship_t
 	DECLARE_SIMPLE_DATADESC();
 };
 
+void* SendProxy_SendBaseCombatCharacterLocalDataTable(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+
 //-----------------------------------------------------------------------------
 // Purpose: This should contain all of the combat entry points / functionality 
 // that are common between NPCs and players
@@ -546,6 +548,27 @@ protected:
 	CNavArea *m_lastNavArea;
 	CAI_MoveMonitor m_NavAreaUpdateMonitor;
 	int m_registeredNavTeam;	// ugly, but needed to clean up player team counts in nav mesh
+
+	BEGIN_SEND_TABLE(CBaseCombatCharacter, DT_BaseCombatCharacter, DT_BaseFlex)
+#ifdef GLOWS_ENABLE
+		SendPropBool(SENDINFO(m_bGlowEnabled)),
+#endif // GLOWS_ENABLE
+		// Data that only gets sent to the local player.
+		SendPropDataTable("bcc_localdata", 0, REFERENCE_SEND_TABLE(DT_BCCLocalPlayerExclusive), SendProxy_SendBaseCombatCharacterLocalDataTable),
+
+		SendPropEHandle(SENDINFO(m_hActiveWeapon)),
+		SendPropArray3(SENDINFO_ARRAY3(m_hMyWeapons), SendPropEHandle(SENDINFO_ARRAY(m_hMyWeapons))),
+
+#ifdef INVASION_DLL
+		SendPropInt(SENDINFO(m_iPowerups), MAX_POWERUPS, SPROP_UNSIGNED),
+#endif
+
+	END_SEND_TABLE(DT_BaseCombatCharacter)
+
+	// Only send active weapon index to local player
+	BEGIN_SEND_TABLE_NOBASE(CBaseCombatCharacter, DT_BCCLocalPlayerExclusive)
+		SendPropTime(SENDINFO(m_flNextAttack)),
+	END_SEND_TABLE(DT_BCCLocalPlayerExclusive);
 };
 
 

@@ -14,60 +14,13 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#define CAPHUD_PARITY_BITS		6
-#define CAPHUD_PARITY_MASK		((1<<CAPHUD_PARITY_BITS)-1)
+
 
 #define LAZY_UPDATE_TIME		3
 
 // Datatable
 IMPLEMENT_SERVERCLASS(CBaseTeamObjectiveResource, DT_BaseTeamObjectiveResource)
-BEGIN_SEND_TABLE_NOBASE(CBaseTeamObjectiveResource, DT_BaseTeamObjectiveResource)
 
-	SendPropInt( SENDINFO(m_iTimerToShowInHUD), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_iStopWatchTimer), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-
-	SendPropInt( SENDINFO(m_iNumControlPoints), 4, SPROP_UNSIGNED ),
-	SendPropBool( SENDINFO(m_bPlayingMiniRounds) ),
-	SendPropBool( SENDINFO(m_bControlPointsReset) ),
-	SendPropInt( SENDINFO(m_iUpdateCapHudParity), CAPHUD_PARITY_BITS, SPROP_UNSIGNED ),
-
-	// data variables
-	SendPropArray( SendPropVector( SENDINFO_ARRAY(m_vCPPositions), -1, SPROP_COORD), m_vCPPositions ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bCPIsVisible), SendPropInt( SENDINFO_ARRAY(m_bCPIsVisible), 1, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_flLazyCapPerc), SendPropFloat( SENDINFO_ARRAY(m_flLazyCapPerc) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iTeamIcons), SendPropInt( SENDINFO_ARRAY(m_iTeamIcons), 8, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iTeamOverlays), SendPropInt( SENDINFO_ARRAY(m_iTeamOverlays), 8, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iTeamReqCappers), SendPropInt( SENDINFO_ARRAY(m_iTeamReqCappers), 4, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_flTeamCapTime), SendPropTime( SENDINFO_ARRAY(m_flTeamCapTime) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iPreviousPoints), SendPropInt( SENDINFO_ARRAY(m_iPreviousPoints), 8 ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bTeamCanCap), SendPropBool( SENDINFO_ARRAY(m_bTeamCanCap) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iTeamBaseIcons), SendPropInt( SENDINFO_ARRAY(m_iTeamBaseIcons), 8 ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iBaseControlPoints), SendPropInt( SENDINFO_ARRAY(m_iBaseControlPoints), 8 ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bInMiniRound), SendPropBool( SENDINFO_ARRAY(m_bInMiniRound) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iWarnOnCap), SendPropInt( SENDINFO_ARRAY(m_iWarnOnCap), 4, SPROP_UNSIGNED ) ),
-	SendPropArray( SendPropStringT( SENDINFO_ARRAY( m_iszWarnSound ) ), m_iszWarnSound ),
-	SendPropArray3( SENDINFO_ARRAY3(m_flPathDistance), SendPropFloat( SENDINFO_ARRAY(m_flPathDistance), 8, 0, 0.0f, 1.0f ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iCPGroup), SendPropInt( SENDINFO_ARRAY(m_iCPGroup), 5 ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bCPLocked), SendPropBool( SENDINFO_ARRAY(m_bCPLocked) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_nNumNodeHillData), SendPropInt( SENDINFO_ARRAY(m_nNumNodeHillData), 4, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_flNodeHillData), SendPropFloat( SENDINFO_ARRAY(m_flNodeHillData), 8, 0, 0.0f, 1.0f ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bTrackAlarm), SendPropBool( SENDINFO_ARRAY(m_bTrackAlarm) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_flUnlockTimes), SendPropFloat( SENDINFO_ARRAY(m_flUnlockTimes) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bHillIsDownhill), SendPropBool( SENDINFO_ARRAY(m_bHillIsDownhill) ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_flCPTimerTimes), SendPropFloat( SENDINFO_ARRAY(m_flCPTimerTimes) ) ),
-	
-	// state variables
-	SendPropArray3( SENDINFO_ARRAY3(m_iNumTeamMembers), SendPropInt( SENDINFO_ARRAY(m_iNumTeamMembers), 4, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iCappingTeam), SendPropInt( SENDINFO_ARRAY(m_iCappingTeam), 4, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iTeamInZone), SendPropInt( SENDINFO_ARRAY(m_iTeamInZone), 4, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bBlocked), SendPropInt( SENDINFO_ARRAY(m_bBlocked), 1, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_iOwner), SendPropInt( SENDINFO_ARRAY(m_iOwner), 4, SPROP_UNSIGNED ) ),
-	SendPropArray3( SENDINFO_ARRAY3(m_bCPCapRateScalesWithPlayers), SendPropBool( SENDINFO_ARRAY(m_bCPCapRateScalesWithPlayers) ) ),
-	SendPropString( SENDINFO(m_pszCapLayoutInHUD) ),
-	SendPropFloat( SENDINFO( m_flCustomPositionX ) ),
-	SendPropFloat( SENDINFO( m_flCustomPositionY ) ),
-
-END_SEND_TABLE(DT_BaseTeamObjectiveResource)
 
 BEGIN_DATADESC( CBaseTeamObjectiveResource )
 	DEFINE_FIELD( m_iTimerToShowInHUD, FIELD_INTEGER ),

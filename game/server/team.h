@@ -17,6 +17,9 @@
 class CBasePlayer;
 class CTeamSpawnPoint;
 
+void SendProxy_PlayerList(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+int SendProxyArrayLength_PlayerArray(const void* pStruct, int objectID);
+
 class CTeam : public CBaseEntity
 {
 	DECLARE_CLASS( CTeam, CBaseEntity );
@@ -92,6 +95,21 @@ public:
 	int		m_iLastSpawn;		// Index of the last spawnpoint used
 
 	CNetworkVar( int, m_iTeamNum );			// Which team is this?
+
+	BEGIN_SEND_TABLE_NOBASE(CTeam, DT_Team)
+		SendPropInt(SENDINFO(m_iTeamNum), 5),
+		SendPropInt(SENDINFO(m_iScore), 0),
+		SendPropInt(SENDINFO(m_iRoundsWon), 8),
+		SendPropString(SENDINFO(m_szTeamname)),
+
+		SendPropArray2(
+			SendProxyArrayLength_PlayerArray,
+			SendPropInt("player_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_PlayerList),
+			MAX_PLAYERS,
+			0,
+			"player_array"
+		)
+	END_SEND_TABLE(DT_Team)
 };
 
 extern CUtlVector< CTeam * > g_Teams;

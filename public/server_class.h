@@ -93,12 +93,9 @@ class CBaseNetworkable;
 #define DECLARE_SERVERCLASS()									\
 	public:														\
 		virtual ServerClass* GetServerClass();					\
-		template <typename T> friend int ServerClassInit(T *);	\
-		virtual int YouForgotToImplementOrDeclareServerClass();	\
+		virtual int YouForgotToImplementOrDeclareServerClass();	
 
-#define DECLARE_SERVERCLASS_NOBASE()							\
-	public:														\
-		template <typename T> friend int ServerClassInit(T *);	\
+#define DECLARE_SERVERCLASS_NOBASE()							
 
 // Use this macro to expose your class's data across the network.
 #define IMPLEMENT_SERVERCLASS( DLLClassName, sendTable ) \
@@ -154,7 +151,8 @@ class CBaseNetworkable;
 	); \
 	\
 	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
-	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}
+	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}\
+	static DLLClassName g_##DLLClassName##_EntityReg;
 
 #endif
 

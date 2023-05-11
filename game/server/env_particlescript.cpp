@@ -41,6 +41,10 @@ private:
 	void	PrecacheAnimationEventMaterials();
 
 	CNetworkVar( float, m_flSequenceScale );
+
+	BEGIN_SEND_TABLE(CEnvParticleScript, DT_EnvParticleScript, DT_BaseAnimating)
+		SendPropFloat(SENDINFO(m_flSequenceScale), 0, SPROP_NOSCALE),
+	END_SEND_TABLE(DT_EnvParticleScript)
 };
 
 
@@ -63,9 +67,7 @@ LINK_ENTITY_TO_CLASS( env_particlescript, CEnvParticleScript );
 // Datatable
 //-----------------------------------------------------------------------------
 IMPLEMENT_SERVERCLASS( CEnvParticleScript, DT_EnvParticleScript ,DT_BaseAnimating)
-BEGIN_SEND_TABLE(CEnvParticleScript, DT_EnvParticleScript, DT_BaseAnimating)
-	SendPropFloat(SENDINFO(m_flSequenceScale), 0, SPROP_NOSCALE),
-END_SEND_TABLE(DT_EnvParticleScript)
+
 
 
 //-----------------------------------------------------------------------------

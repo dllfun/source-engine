@@ -37,13 +37,15 @@ public:
 	bool			CreateVPhysics();
 	virtual void	Activate();
 	virtual bool	KeyValue( const char *szKeyName, const char *szValue );
+
+	BEGIN_SEND_TABLE(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_fDisappearDist), 0, SPROP_NOSCALE),
+	END_SEND_TABLE(DT_Func_LOD)
 };
 
 
 IMPLEMENT_SERVERCLASS(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
-BEGIN_SEND_TABLE(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
-	SendPropFloat(SENDINFO(m_fDisappearDist), 0, SPROP_NOSCALE),
-END_SEND_TABLE(DT_Func_LOD)
+
 
 
 LINK_ENTITY_TO_CLASS(func_lod, CFunc_LOD);

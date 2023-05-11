@@ -36,15 +36,17 @@ public:
 private:
 	CNetworkVar( bool, m_bActive );
 	CNetworkVar( int, m_nOccluderIndex );
+
+	BEGIN_SEND_TABLE_NOBASE(CFuncOccluder, DT_FuncOccluder)
+		SendPropBool(SENDINFO(m_bActive)),
+		SendPropInt(SENDINFO(m_nOccluderIndex), 10, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_FuncOccluder)
 };
 
 LINK_ENTITY_TO_CLASS( func_occluder, CFuncOccluder );
 
 IMPLEMENT_SERVERCLASS(CFuncOccluder, DT_FuncOccluder)
-BEGIN_SEND_TABLE_NOBASE(CFuncOccluder, DT_FuncOccluder)
-	SendPropBool( SENDINFO(m_bActive) ),
-	SendPropInt(SENDINFO(m_nOccluderIndex),	10, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_FuncOccluder)
+
 
 
 BEGIN_DATADESC( CFuncOccluder )

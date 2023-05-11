@@ -38,20 +38,7 @@ int SendProxyArrayLength_PlayerArray( const void *pStruct, int objectID )
 
 // Datatable
 IMPLEMENT_SERVERCLASS(CTeam, DT_Team)
-BEGIN_SEND_TABLE_NOBASE(CTeam, DT_Team)
-	SendPropInt( SENDINFO(m_iTeamNum), 5 ),
-	SendPropInt( SENDINFO(m_iScore), 0 ),
-	SendPropInt( SENDINFO(m_iRoundsWon), 8 ),
-	SendPropString( SENDINFO( m_szTeamname ) ),
 
-	SendPropArray2( 
-		SendProxyArrayLength_PlayerArray,
-		SendPropInt("player_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_PlayerList), 
-		MAX_PLAYERS, 
-		0, 
-		"player_array"
-		)
-END_SEND_TABLE(DT_Team)
 
 LINK_ENTITY_TO_CLASS( team_manager, CTeam );
 

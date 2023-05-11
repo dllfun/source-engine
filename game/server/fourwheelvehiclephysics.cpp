@@ -165,7 +165,9 @@ CFourWheelVehiclePhysics::CFourWheelVehiclePhysics( CBaseAnimating *pOuter )
 //-----------------------------------------------------------------------------
 CFourWheelVehiclePhysics::~CFourWheelVehiclePhysics ()
 {
-	physenv->DestroyVehicleController( m_pVehicle );
+	if (physenv) {
+		physenv->DestroyVehicleController(m_pVehicle);
+	}
 }
 
 //-----------------------------------------------------------------------------

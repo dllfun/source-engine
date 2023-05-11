@@ -70,8 +70,7 @@ END_DATADESC()
 
 //-----------------------------------------------------------------------------------------------------
 IMPLEMENT_SERVERCLASS( NextBotCombatCharacter, DT_NextBot, DT_BaseCombatCharacter)
-BEGIN_SEND_TABLE(NextBotCombatCharacter, DT_NextBot, DT_BaseCombatCharacter)
-END_SEND_TABLE(DT_NextBot)
+
 
 
 //-----------------------------------------------------------------------------------------------------

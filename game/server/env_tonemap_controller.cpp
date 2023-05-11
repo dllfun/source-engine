@@ -56,6 +56,16 @@ private:
 	CNetworkVar( float, m_flCustomAutoExposureMax );
 	CNetworkVar( float, m_flCustomBloomScale);
 	CNetworkVar( float, m_flCustomBloomScaleMinimum);
+
+	BEGIN_SEND_TABLE(CEnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_bUseCustomAutoExposureMin), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bUseCustomAutoExposureMax), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bUseCustomBloomScale), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flCustomAutoExposureMin), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flCustomAutoExposureMax), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flCustomBloomScale), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flCustomBloomScaleMinimum), 0, SPROP_NOSCALE),
+	END_SEND_TABLE(DT_EnvTonemapController)
 };
 
 LINK_ENTITY_TO_CLASS( env_tonemap_controller, CEnvTonemapController );
@@ -88,15 +98,7 @@ BEGIN_DATADESC( CEnvTonemapController )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CEnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
-BEGIN_SEND_TABLE(CEnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
-	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMin), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMax), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_bUseCustomBloomScale), 1, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_flCustomAutoExposureMin), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flCustomAutoExposureMax), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flCustomBloomScale), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flCustomBloomScaleMinimum), 0, SPROP_NOSCALE),
-END_SEND_TABLE(DT_EnvTonemapController)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

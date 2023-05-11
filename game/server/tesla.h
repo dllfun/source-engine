@@ -56,6 +56,11 @@ public:
 	bool m_bOn;
 
 	CNetworkVar( string_t, m_iszSpriteName );
+
+	BEGIN_SEND_TABLE(CTesla, DT_Tesla, DT_BaseEntity)
+		SendPropStringT(SENDINFO(m_SoundName)),
+		SendPropStringT(SENDINFO(m_iszSpriteName))
+	END_SEND_TABLE(DT_Tesla)
 };
 
 

@@ -36,11 +36,7 @@ END_DATADESC()
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_SERVERCLASS( CEntityParticleTrail, DT_EntityParticleTrail, DT_BaseParticleEntity)
-BEGIN_SEND_TABLE(CEntityParticleTrail, DT_EntityParticleTrail, DT_BaseParticleEntity)
-	SendPropInt(SENDINFO(m_iMaterialName), MAX_MATERIAL_STRING_BITS, SPROP_UNSIGNED ),
-	SendPropDataTable( SENDINFO_DT( m_Info ), REFERENCE_SEND_TABLE( DT_EntityParticleTrailInfo ) ),
-	SendPropEHandle(SENDINFO(m_hConstraintEntity)),
-END_SEND_TABLE(DT_EntityParticleTrail)
+
 
 
 LINK_ENTITY_TO_CLASS( env_particle_trail, CEntityParticleTrail );

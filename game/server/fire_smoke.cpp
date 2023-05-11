@@ -91,14 +91,7 @@ LINK_ENTITY_TO_CLASS( _firesmoke, CFireSmoke );
 
 //Send datatable
 IMPLEMENT_SERVERCLASS( CFireSmoke, DT_FireSmoke, DT_BaseEntity)
-BEGIN_SEND_TABLE(CFireSmoke, DT_FireSmoke, DT_BaseEntity)
-	SendPropFloat(  SENDINFO( m_flStartScale ), 0,	SPROP_NOSCALE),
-	SendPropFloat(	SENDINFO( m_flScale ),		0,	SPROP_NOSCALE),
-	SendPropFloat(	SENDINFO( m_flScaleTime ),	0,	SPROP_NOSCALE),
-	SendPropInt(	SENDINFO( m_nFlags ),		8,  SPROP_UNSIGNED ),
-	SendPropModelIndex(	SENDINFO( m_nFlameModelIndex ) ),
-	SendPropModelIndex(	SENDINFO( m_nFlameFromAboveModelIndex ) ),
-END_SEND_TABLE(DT_FireSmoke)
+
 
 //Data description 
 BEGIN_DATADESC( CFireSmoke )

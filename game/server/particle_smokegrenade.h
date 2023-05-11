@@ -50,6 +50,13 @@ public:
 	// When to fade in and out.
 	CNetworkVar( float, m_FadeStartTime );
 	CNetworkVar( float, m_FadeEndTime );
+
+	BEGIN_SEND_TABLE(ParticleSmokeGrenade, DT_ParticleSmokeGrenade, DT_BaseParticleEntity)
+		SendPropTime(SENDINFO(m_flSpawnTime)),
+		SendPropFloat(SENDINFO(m_FadeStartTime), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_FadeEndTime), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_CurrentStage), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_ParticleSmokeGrenade)
 };
 
 

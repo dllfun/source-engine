@@ -40,12 +40,19 @@ private:
 	CWeaponTMP( const CWeaponTMP & );
 
 	void DoFireEffects( void );
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponTMP, DT_WeaponTMP, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponTMP)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponTMP, DT_WeaponTMP )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponTMP, DT_WeaponTMP , DT_WeaponCSBaseGun)
 END_NETWORK_TABLE(DT_WeaponTMP)
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponTMP )
 END_PREDICTION_DATA()

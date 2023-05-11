@@ -58,31 +58,16 @@ BEGIN_DATADESC( CBaseAnimatingOverlay )
 END_DATADESC()
 
 
-#define ORDER_BITS			4
-#define WEIGHT_BITS			8
-
-BEGIN_SEND_TABLE_NOBASE(CAnimationLayer, DT_Animationlayer)
-	SendPropInt		(SENDINFO(m_nSequence),		ANIMATION_SEQUENCE_BITS,SPROP_UNSIGNED),
-	SendPropFloat	(SENDINFO(m_flCycle),		ANIMATION_CYCLE_BITS,	SPROP_ROUNDDOWN,	0.0f,   1.0f),
-	SendPropFloat	(SENDINFO(m_flPrevCycle),	ANIMATION_CYCLE_BITS,	SPROP_ROUNDDOWN,	0.0f,   1.0f),
-	SendPropFloat	(SENDINFO(m_flWeight),		WEIGHT_BITS,			0,	0.0f,	1.0f),
-	SendPropInt		(SENDINFO(m_nOrder),		ORDER_BITS,				SPROP_UNSIGNED),
-END_SEND_TABLE(DT_Animationlayer)
 
 
-BEGIN_SEND_TABLE_NOBASE( CBaseAnimatingOverlay, DT_OverlayVars )
-	SendPropUtlVector( 
-		(char*)SENDINFO_UTLVECTOR( m_AnimOverlay ),
-		CBaseAnimatingOverlay::MAX_OVERLAYS, // max elements
-		SendPropDataTable( NULL, 0, REFERENCE_SEND_TABLE( DT_Animationlayer ) )  )
-END_SEND_TABLE(DT_OverlayVars)
+
+
+
+
 
 
 IMPLEMENT_SERVERCLASS( CBaseAnimatingOverlay, DT_BaseAnimatingOverlay, DT_BaseAnimating)
-BEGIN_SEND_TABLE(CBaseAnimatingOverlay, DT_BaseAnimatingOverlay, DT_BaseAnimating)
-	// These are in their own separate data table so CCSPlayer can exclude all of these.
-	SendPropDataTable( "overlay_vars", 0, REFERENCE_SEND_TABLE( DT_OverlayVars ) )
-END_SEND_TABLE(DT_BaseAnimatingOverlay)
+
 
 
 
@@ -113,7 +98,7 @@ void CAnimationLayer::Init( CBaseAnimatingOverlay *pOverlay )
 	m_flKillDelay = 0.0;
 	m_flPlaybackRate = 1.0;
 	m_flLastEventCheck = 0.0;
-	m_flLastAccess = gpGlobals->curtime;
+	m_flLastAccess = gpGlobals==NULL?0:gpGlobals->curtime;
 	m_flLayerAnimtime = 0;
 	m_flLayerFadeOuttime = 0;
 }

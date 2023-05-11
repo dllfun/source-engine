@@ -29,6 +29,10 @@ enum PoseController_FModType_t
 
 #include "baseentity.h"
 
+#define MAX_POSE_INTERPOLATION_TIME 10.0f
+#define MAX_POSE_CYCLE_FREQUENCY 10.0f
+#define MAX_POSE_FMOD_RATE 10.0f
+#define MAX_POSE_FMOD_AMPLITUDE 10.0f
 
 class CPoseController : public CBaseEntity
 {
@@ -97,6 +101,20 @@ private:
 	CNetworkVar( float, m_fFModTimeOffset );
 	CNetworkVar( float, m_fFModRate );
 	CNetworkVar( float, m_fFModAmplitude );
+
+	BEGIN_SEND_TABLE(CPoseController, DT_PoseController, DT_BaseEntity)
+		SendPropArray3(SENDINFO_ARRAY3(m_hProps), SendPropEHandle(SENDINFO_ARRAY(m_hProps))),
+		SendPropArray3(SENDINFO_ARRAY3(m_chPoseIndex), SendPropInt(SENDINFO_ARRAY(m_chPoseIndex), 5, SPROP_UNSIGNED)),	// bits sent must be enough to represent MAXSTUDIOPOSEPARAM
+		SendPropBool(SENDINFO(m_bPoseValueParity)),
+		SendPropFloat(SENDINFO(m_fPoseValue), 11, 0, 0.0f, 1.0f),
+		SendPropFloat(SENDINFO(m_fInterpolationTime), 11, 0, 0.0f, MAX_POSE_INTERPOLATION_TIME),
+		SendPropBool(SENDINFO(m_bInterpolationWrap)),
+		SendPropFloat(SENDINFO(m_fCycleFrequency), 11, 0, -MAX_POSE_CYCLE_FREQUENCY, MAX_POSE_CYCLE_FREQUENCY),
+		SendPropInt(SENDINFO(m_nFModType), 3, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_fFModTimeOffset), 11, 0, -1.0f, 1.0f),
+		SendPropFloat(SENDINFO(m_fFModRate), 11, 0, -MAX_POSE_FMOD_RATE, MAX_POSE_FMOD_RATE),
+		SendPropFloat(SENDINFO(m_fFModAmplitude), 11, 0, 0.0f, MAX_POSE_FMOD_AMPLITUDE),
+	END_SEND_TABLE(DT_PoseController)
 };
 
 

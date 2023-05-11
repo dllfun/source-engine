@@ -24,7 +24,7 @@ class CTEBeamSpline : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEBeamSpline, CBaseTempEntity );
-
+					CTEBeamSpline() {};
 					CTEBeamSpline( const char *name );
 	virtual			~CTEBeamSpline( void );
 
@@ -35,6 +35,14 @@ public:
 public:
 	CNetworkArray( Vector, m_vecPoints, MAX_SPLINE_POINTS );
 	CNetworkVar( int, m_nPoints );
+
+	BEGIN_SEND_TABLE_NOBASE(CTEBeamSpline, DT_TEBeamSpline)
+		SendPropInt(SENDINFO(m_nPoints), 5, SPROP_UNSIGNED),
+
+		SendPropArray(
+			SendPropVector(SENDINFO_ARRAY(m_vecPoints), -1, SPROP_COORD),
+			m_vecPoints)
+	END_SEND_TABLE(DT_TEBeamSpline)
 };
 
 //-----------------------------------------------------------------------------
@@ -94,13 +102,7 @@ void CTEBeamSpline::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamSpline, DT_TEBeamSpline)
-BEGIN_SEND_TABLE_NOBASE(CTEBeamSpline, DT_TEBeamSpline)
-	SendPropInt( SENDINFO( m_nPoints ), 5, SPROP_UNSIGNED ),
-	
-	SendPropArray(
-		SendPropVector( SENDINFO_ARRAY(m_vecPoints), -1, SPROP_COORD),
-		m_vecPoints)
-END_SEND_TABLE(DT_TEBeamSpline)
+
 
 
 // Singleton to fire TEBeamSpline objects

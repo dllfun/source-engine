@@ -12,6 +12,7 @@
 #endif
 
 #include "particle_parse.h"
+#include "qlimits.h"
 
 #ifdef CLIENT_DLL
 
@@ -37,6 +38,8 @@
 #define CUSTOM_COLOR_CP1		9
 #define CUSTOM_COLOR_CP2		10
 
+#define MAX_EFFECT_DISPATCH_STRING_BITS	10
+#define MAX_EFFECT_DISPATCH_STRINGS		( 1 << MAX_EFFECT_DISPATCH_STRING_BITS )
 // This is the class that holds whatever data we're sending down to the client to make the effect.
 class CEffectData
 {
@@ -116,7 +119,7 @@ public:
 	int entindex() const;
 #endif
 
-private:
+//private:
 
 	#ifdef CLIENT_DLL
 		DECLARE_CLIENTCLASS_NOBASE()
@@ -126,11 +129,74 @@ private:
 #endif
 
 	int m_iEffectName;	// Entry in the EffectDispatch network string table. The is automatically handled by DispatchEffect().
+
+#ifndef CLIENT_DLL
+
+	BEGIN_SEND_TABLE_NOBASE(CEffectData, DT_EffectData)
+
+		// Everything uses _NOCHECK here since this is not an entity and we don't need
+		// the functionality of CNetworkVars.
+
+		// Get half-inch precision here.
+#ifdef HL2_DLL
+		SendPropFloat(SENDINFO_NOCHECK(m_vOrigin[0]), COORD_INTEGER_BITS + SUBINCH_PRECISION, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_NOCHECK(m_vOrigin[1]), COORD_INTEGER_BITS + SUBINCH_PRECISION, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_NOCHECK(m_vOrigin[2]), COORD_INTEGER_BITS + SUBINCH_PRECISION, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_NOCHECK(m_vStart[0]), COORD_INTEGER_BITS + SUBINCH_PRECISION, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_NOCHECK(m_vStart[1]), COORD_INTEGER_BITS + SUBINCH_PRECISION, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_NOCHECK(m_vStart[2]), COORD_INTEGER_BITS + SUBINCH_PRECISION, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+#else
+		SendPropFloat(SENDINFO_NOCHECK(m_vOrigin[0]), -1, SPROP_COORD_MP_INTEGRAL),
+		SendPropFloat(SENDINFO_NOCHECK(m_vOrigin[1]), -1, SPROP_COORD_MP_INTEGRAL),
+		SendPropFloat(SENDINFO_NOCHECK(m_vOrigin[2]), -1, SPROP_COORD_MP_INTEGRAL),
+		SendPropFloat(SENDINFO_NOCHECK(m_vStart[0]), -1, SPROP_COORD_MP_INTEGRAL),
+		SendPropFloat(SENDINFO_NOCHECK(m_vStart[1]), -1, SPROP_COORD_MP_INTEGRAL),
+		SendPropFloat(SENDINFO_NOCHECK(m_vStart[2]), -1, SPROP_COORD_MP_INTEGRAL),
+#endif
+		SendPropQAngles(SENDINFO_NOCHECK(m_vAngles), 7),
+
+#if defined( TF_DLL )
+		SendPropVector(SENDINFO_NOCHECK(m_vNormal), 6, 0, -1.0f, 1.0f),
+#else
+		SendPropVector(SENDINFO_NOCHECK(m_vNormal), 0, SPROP_NORMAL),
+#endif
+
+		SendPropInt(SENDINFO_NOCHECK(m_fFlags), MAX_EFFECT_FLAG_BITS, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO_NOCHECK(m_flMagnitude), 12, SPROP_ROUNDDOWN, 0.0f, 1023.0f),
+		SendPropFloat(SENDINFO_NOCHECK(m_flScale), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO_NOCHECK(m_nAttachmentIndex), 5, SPROP_UNSIGNED),
+		SendPropIntWithMinusOneFlag(SENDINFO_NOCHECK(m_nSurfaceProp), 8, SendProxy_ShortAddOne),
+		SendPropInt(SENDINFO_NOCHECK(m_iEffectName), MAX_EFFECT_DISPATCH_STRING_BITS, SPROP_UNSIGNED),
+
+		SendPropInt(SENDINFO_NOCHECK(m_nMaterial), MAX_MODEL_INDEX_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO_NOCHECK(m_nDamageType), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO_NOCHECK(m_nHitBox), 11, SPROP_UNSIGNED),
+
+		SendPropInt(SENDINFO_NAME(m_nEntIndex, entindex), MAX_EDICT_BITS, SPROP_UNSIGNED),
+
+		SendPropInt(SENDINFO_NOCHECK(m_nColor), 8, SPROP_UNSIGNED),
+
+		SendPropFloat(SENDINFO_NOCHECK(m_flRadius), 10, SPROP_ROUNDDOWN, 0.0f, 1023.0f),
+
+		SendPropBool(SENDINFO_NOCHECK(m_bCustomColors)),
+		SendPropVector(SENDINFO_NOCHECK(m_CustomColors.m_vecColor1), 8, 0, 0, 1),
+		SendPropVector(SENDINFO_NOCHECK(m_CustomColors.m_vecColor2), 8, 0, 0, 1),
+
+		SendPropBool(SENDINFO_NOCHECK(m_bControlPoint1)),
+		SendPropInt(SENDINFO_NOCHECK(m_ControlPoint1.m_eParticleAttachment), 5, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO_NOCHECK(m_ControlPoint1.m_vecOffset[0]), -1, SPROP_COORD),
+		SendPropFloat(SENDINFO_NOCHECK(m_ControlPoint1.m_vecOffset[1]), -1, SPROP_COORD),
+		SendPropFloat(SENDINFO_NOCHECK(m_ControlPoint1.m_vecOffset[2]), -1, SPROP_COORD),
+
+	END_SEND_TABLE(DT_EffectData)
+
+#endif // !CLIENT_DLL
+
+	
 };
 
 
-#define MAX_EFFECT_DISPATCH_STRING_BITS	10
-#define MAX_EFFECT_DISPATCH_STRINGS		( 1 << MAX_EFFECT_DISPATCH_STRING_BITS )
+
 
 #ifdef CLIENT_DLL
 bool SuppressingParticleEffects();

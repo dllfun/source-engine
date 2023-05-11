@@ -458,7 +458,7 @@ FORCEINLINE_CVAR float ConVar::GetFloat( void ) const
 //-----------------------------------------------------------------------------
 FORCEINLINE_CVAR int ConVar::GetInt( void ) const 
 {
-	return m_pParent->m_nValue;
+	return m_pParent==NULL?0:m_pParent->m_nValue;
 }
 
 

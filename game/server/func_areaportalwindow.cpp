@@ -21,13 +21,7 @@ LINK_ENTITY_TO_CLASS( func_areaportalwindow, CFuncAreaPortalWindow );
 
 
 IMPLEMENT_SERVERCLASS( CFuncAreaPortalWindow, DT_FuncAreaPortalWindow, DT_BaseEntity)
-BEGIN_SEND_TABLE(CFuncAreaPortalWindow, DT_FuncAreaPortalWindow, DT_BaseEntity)
-	SendPropFloat( SENDINFO(m_flFadeDist), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flFadeStartDist), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flTranslucencyLimit), 0, SPROP_NOSCALE ),
 
-	SendPropModelIndex(SENDINFO(m_iBackgroundModelIndex) ),
-END_SEND_TABLE(DT_FuncAreaPortalWindow)
 
 
 BEGIN_DATADESC( CFuncAreaPortalWindow )

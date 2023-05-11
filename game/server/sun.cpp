@@ -49,20 +49,22 @@ public:
 	CNetworkVar( int, m_nMaterial );
 	CNetworkVar( int, m_nOverlayMaterial );
 	CNetworkVar( float, m_flHDRColorScale );
+
+	BEGIN_SEND_TABLE_NOBASE(CSun, DT_Sun)
+		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
+		SendPropInt(SENDINFO(m_clrOverlay), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
+		SendPropVector(SENDINFO(m_vDirection), 0, SPROP_NORMAL),
+		SendPropInt(SENDINFO(m_bOn), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nSize), 10, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nOverlaySize), 10, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nMaterial), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nOverlayMaterial), 32, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO_NAME(m_flHDRColorScale, HDRColorScale), 0, SPROP_NOSCALE, 0.0f, 100.0f),
+	END_SEND_TABLE(DT_Sun)
 };
 
 IMPLEMENT_SERVERCLASS( CSun, DT_Sun )
-BEGIN_SEND_TABLE_NOBASE(CSun, DT_Sun)
-	SendPropInt( SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
-	SendPropInt( SENDINFO(m_clrOverlay), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
-	SendPropVector( SENDINFO(m_vDirection), 0, SPROP_NORMAL ),
-	SendPropInt( SENDINFO(m_bOn), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nSize), 10, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nOverlaySize), 10, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMaterial), 32, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nOverlayMaterial), 32, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO_NAME( m_flHDRColorScale, HDRColorScale ), 0,	SPROP_NOSCALE,	0.0f,	100.0f ),
-END_SEND_TABLE(DT_Sun)
+
 
 
 LINK_ENTITY_TO_CLASS( env_sun, CSun );

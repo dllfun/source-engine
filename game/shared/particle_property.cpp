@@ -51,13 +51,11 @@ END_PREDICTION_DATA()
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-BEGIN_NETWORK_TABLE_NOBASE( CParticleProperty, DT_ParticleProperty )
 #ifdef CLIENT_DLL
+BEGIN_NETWORK_TABLE_NOBASE( CParticleProperty, DT_ParticleProperty )
 //RecvPropVector( RECVINFO(m_vecMins), 0, RecvProxy_OBBMins ),
-#else
-//SendPropVector( SENDINFO(m_vecMins), 0, SPROP_NOSCALE),
-#endif
 END_NETWORK_TABLE()
+#endif
 
 
 //-----------------------------------------------------------------------------

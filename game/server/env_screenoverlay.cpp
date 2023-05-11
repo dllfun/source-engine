@@ -10,6 +10,11 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+void SendProxy_String_tToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	string_t* pString = (string_t*)pData;
+	pOut->m_pString = (char*)STRING(*pString);
+}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -40,6 +45,14 @@ protected:
 	CNetworkVar( float, m_flStartTime );
 	CNetworkVar( int, m_iDesiredOverlay );
 	CNetworkVar( bool, m_bIsActive );
+
+	BEGIN_SEND_TABLE(CEnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
+		SendPropArray(SendPropString(SENDINFO_ARRAY(m_iszOverlayNames), 0, SendProxy_String_tToString), m_iszOverlayNames),
+		SendPropArray(SendPropFloat(SENDINFO_ARRAY(m_flOverlayTimes), 11, SPROP_ROUNDDOWN, -1.0f, 63.0f), m_flOverlayTimes),
+		SendPropFloat(SENDINFO(m_flStartTime), 32, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_iDesiredOverlay), 5),
+		SendPropBool(SENDINFO(m_bIsActive)),
+	END_SEND_TABLE(DT_EnvScreenOverlay)
 };
 
 LINK_ENTITY_TO_CLASS( env_screenoverlay, CEnvScreenOverlay );
@@ -82,20 +95,10 @@ BEGIN_DATADESC( CEnvScreenOverlay )
 
 END_DATADESC()
 
-void SendProxy_String_tToString( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	string_t *pString = (string_t*)pData;
-	pOut->m_pString = (char*)STRING( *pString );
-}
+
 
 IMPLEMENT_SERVERCLASS( CEnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
-BEGIN_SEND_TABLE(CEnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
-	SendPropArray( SendPropString( SENDINFO_ARRAY( m_iszOverlayNames ), 0, SendProxy_String_tToString ), m_iszOverlayNames ),
-	SendPropArray( SendPropFloat( SENDINFO_ARRAY( m_flOverlayTimes ), 11, SPROP_ROUNDDOWN, -1.0f, 63.0f ), m_flOverlayTimes ),
-	SendPropFloat( SENDINFO( m_flStartTime ), 32, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO( m_iDesiredOverlay ), 5 ),
-	SendPropBool( SENDINFO( m_bIsActive ) ),
-END_SEND_TABLE(DT_EnvScreenOverlay)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -216,6 +219,11 @@ private:
 
 	CNetworkVar( float, m_flDuration );
 	CNetworkVar( int, m_nType );
+
+	BEGIN_SEND_TABLE(CEnvScreenEffect, DT_EnvScreenEffect, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flDuration), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nType), 32, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_EnvScreenEffect)
 };
 
 LINK_ENTITY_TO_CLASS( env_screeneffect, CEnvScreenEffect );
@@ -230,10 +238,7 @@ BEGIN_DATADESC( CEnvScreenEffect )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CEnvScreenEffect, DT_EnvScreenEffect, DT_BaseEntity)
-BEGIN_SEND_TABLE(CEnvScreenEffect, DT_EnvScreenEffect, DT_BaseEntity)
-	SendPropFloat( SENDINFO( m_flDuration ), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO( m_nType ), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_EnvScreenEffect)
+
 
 void CEnvScreenEffect::Spawn( void )
 {

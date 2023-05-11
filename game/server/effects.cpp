@@ -1489,6 +1489,10 @@ public:
 	void	Spawn( void );
 
 	CNetworkVar( PrecipitationType_t, m_nPrecipType );
+
+	BEGIN_SEND_TABLE(CPrecipitation, DT_Precipitation, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_nPrecipType), Q_log2(NUM_PRECIPITATION_TYPES) + 1, SPROP_UNSIGNED)
+	END_SEND_TABLE(DT_Precipitation)
 };
 
 LINK_ENTITY_TO_CLASS( func_precipitation, CPrecipitation );
@@ -1499,9 +1503,7 @@ END_DATADESC()
 
 // Just send the normal entity crap
 IMPLEMENT_SERVERCLASS( CPrecipitation, DT_Precipitation, DT_BaseEntity)
-BEGIN_SEND_TABLE(CPrecipitation, DT_Precipitation, DT_BaseEntity)
-	SendPropInt( SENDINFO( m_nPrecipType ), Q_log2( NUM_PRECIPITATION_TYPES ) + 1, SPROP_UNSIGNED )
-END_SEND_TABLE(DT_Precipitation)
+
 
 
 CPrecipitation::CPrecipitation()
@@ -1552,6 +1554,10 @@ private:
 //#else
 //	CNetworkVarEmbedded( CEnvWindShared, m_EnvWindShared );
 //#endif
+
+	BEGIN_SEND_TABLE_NOBASE(CEnvWind, DT_EnvWind)
+		SendPropDataTable(SENDINFO_DT(m_EnvWindShared), REFERENCE_SEND_TABLE(DT_EnvWindShared)),
+	END_SEND_TABLE(DT_EnvWind)
 };
 
 LINK_ENTITY_TO_CLASS( env_wind, CEnvWind );
@@ -1583,32 +1589,11 @@ BEGIN_DATADESC( CEnvWind )
 END_DATADESC()
 
 
-BEGIN_SEND_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
-	// These are parameters that are used to generate the entire motion
-	SendPropInt		(SENDINFO(m_iMinWind),		10, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iMaxWind),		10, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iMinGust),		10, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iMaxGust),		10, SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_flMinGustDelay), 0, SPROP_NOSCALE),		// NOTE: Have to do this, so it's *exactly* the same on client
-	SendPropFloat	(SENDINFO(m_flMaxGustDelay), 0, SPROP_NOSCALE),
-	SendPropInt		(SENDINFO(m_iGustDirChange), 9, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iWindSeed),		32, SPROP_UNSIGNED ),
 
-	// These are related to initial state
-	SendPropInt		(SENDINFO(m_iInitialWindDir),9, SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_flInitialWindSpeed),0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flStartTime),	 0, SPROP_NOSCALE ),
-
-	SendPropFloat	(SENDINFO(m_flGustDuration), 0, SPROP_NOSCALE),
-	// Sound related
-//	SendPropInt		(SENDINFO(m_iszGustSound),	10, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_EnvWindShared)
 
 // This table encodes the CBaseEntity data.
 IMPLEMENT_SERVERCLASS(CEnvWind, DT_EnvWind)
-BEGIN_SEND_TABLE_NOBASE(CEnvWind, DT_EnvWind)
-	SendPropDataTable(SENDINFO_DT(m_EnvWindShared), REFERENCE_SEND_TABLE(DT_EnvWindShared)),
-END_SEND_TABLE(DT_EnvWind)
+
 
 void CEnvWind::Precache ( void )
 {
@@ -1668,6 +1653,13 @@ public:
 
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+
+	BEGIN_SEND_TABLE(CEmbers, DT_Embers, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_nDensity), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nLifetime), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nSpeed), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bEmit), 2, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_Embers)
 };
 
 LINK_ENTITY_TO_CLASS( env_embers, CEmbers );
@@ -1689,12 +1681,7 @@ END_DATADESC()
 
 //Data table
 IMPLEMENT_SERVERCLASS( CEmbers, DT_Embers, DT_BaseEntity)
-BEGIN_SEND_TABLE(CEmbers, DT_Embers, DT_BaseEntity)
-	SendPropInt(	SENDINFO( m_nDensity ),		32,	SPROP_UNSIGNED ),
-	SendPropInt(	SENDINFO( m_nLifetime ),	32,	SPROP_UNSIGNED ),
-	SendPropInt(	SENDINFO( m_nSpeed ),		32,	SPROP_UNSIGNED ),
-	SendPropInt(	SENDINFO( m_bEmit ),		2,	SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_Embers)
+
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -2280,12 +2267,7 @@ END_DATADESC()
 LINK_ENTITY_TO_CLASS( env_quadraticbeam, CEnvQuadraticBeam );
 
 IMPLEMENT_SERVERCLASS( CEnvQuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
-BEGIN_SEND_TABLE(CEnvQuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
-	SendPropVector(SENDINFO(m_targetPosition), -1, SPROP_COORD),
-	SendPropVector(SENDINFO(m_controlPosition), -1, SPROP_COORD),
-	SendPropFloat(SENDINFO(m_scrollRate), 8, 0, -4, 4),
-	SendPropFloat(SENDINFO(m_flWidth), -1, SPROP_NOSCALE),
-END_SEND_TABLE(DT_QuadraticBeam)
+
 
 void CEnvQuadraticBeam::Spawn()
 {

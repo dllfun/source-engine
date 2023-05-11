@@ -662,7 +662,7 @@ extern SendTableManager* g_pSendTableManager;
 //		return 1; \
 //	} 
 
-#define DECLARE_SEND_TABLE_ACCESS(tableName) friend class SendTable_##tableName
+#define DECLARE_SEND_TABLE_ACCESS(tableName)
 
 
 
@@ -671,21 +671,26 @@ extern SendTableManager* g_pSendTableManager;
 	public:\
 	\
 		SendTable_##tableName(){ \
-		typedef className currentSendDTClass; \
-		static const char *pTableName = #tableName; \
-		static SendProp g_SendProps[] = { \
-				SendPropInt("should_never_see_this", 0, sizeof(int)),
+			typedef className currentSendDTClass; \
+			static bool registed = false;\
+			if( !registed ){\
+				registed = true;\
+				static const char *pTableName = #tableName; \
+				static SendProp g_SendProps[] = { \
+						SendPropInt("should_never_see_this", 0, sizeof(int)),
 
 
 #define END_SEND_TABLE(tableName) \
-			};\
-			Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
-			g_pSendTableManager->RegisteSendTable(this);\
+				};\
+				Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
+				g_pSendTableManager->RegisteSendTable(this);\
+			}\
 		}\
 	\
 	};\
-	static SendTable_##tableName g_SendTable_##tableName; \
-	SendTable* g_pSendTable_##tableName = &g_SendTable_##tableName;
+	friend class SendTable_##tableName;\
+	SendTable_##tableName g_SendTable_##tableName;
+	//SendTable* g_pSendTable_##tableName = &g_SendTable_##tableName;
 
 #define BEGIN_SEND_TABLE(className, tableName, baseTableName) \
 	BEGIN_SEND_TABLE_NOBASE(className, tableName) \

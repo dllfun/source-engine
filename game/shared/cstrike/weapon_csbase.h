@@ -282,6 +282,17 @@ private:
     //=============================================================================
     // HPE_END
     //=============================================================================
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CWeaponCSBase, DT_WeaponCSBase, DT_BaseCombatWeapon)
+		SendPropInt(SENDINFO(m_weaponMode), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_fAccuracyPenalty)),
+		// world weapon models have no aminations
+		SendPropExclude("DT_AnimTimeMustBeFirst", "m_flAnimTime"),
+		SendPropExclude("DT_BaseAnimating", "m_nSequence"),
+		//	SendPropExclude( "DT_LocalActiveWeaponData", "m_flTimeWeaponIdle" ),
+	END_NETWORK_TABLE(DT_WeaponCSBase)
+#endif
 };
 
 extern ConVar weapon_accuracy_model;

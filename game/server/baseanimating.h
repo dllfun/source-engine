@@ -26,6 +26,18 @@ FORWARD_DECLARE_HANDLE( memhandle_t );
 #define	BCF_NO_ANIMATION_SKIP	( 1 << 0 )	// Do not allow PVS animation skipping (mostly for attachments being critical to an entity)
 #define	BCF_IS_IN_SPAWN			( 1 << 1 )	// Is currently inside of spawn, always evaluate animations
 
+#define ANIMATION_SEQUENCE_BITS			12	// 4096 sequences
+#define ANIMATION_SKIN_BITS				10	// 1024 body skin selections FIXME: this seems way high
+#define ANIMATION_BODY_BITS				32	// body combinations
+#define ANIMATION_HITBOXSET_BITS		2	// hit box sets 
+#if defined( TF_DLL )
+#define ANIMATION_POSEPARAMETER_BITS	8	// pose parameter resolution
+#else
+#define ANIMATION_POSEPARAMETER_BITS	11	// pose parameter resolution
+#endif
+#define ANIMATION_PLAYBACKRATE_BITS		8	// default playback rate, only used on leading edge detect sequence changes
+
+
 class CBaseAnimating : public CBaseEntity
 {
 public:
@@ -426,9 +438,52 @@ private:
 	CThreadFastMutex	m_BoneSetupMutex;
 
 // FIXME: necessary so that cyclers can hack m_bSequenceFinished
-friend class CFlexCycler;
-friend class CCycler;
-friend class CBlendingCycler;
+	friend class CFlexCycler;
+	friend class CCycler;
+	friend class CBlendingCycler;
+
+	// Sendtable for fields we don't want to send to clientside animating entities
+	BEGIN_SEND_TABLE_NOBASE(CBaseAnimating, DT_ServerAnimationData)
+		// ANIMATION_CYCLE_BITS is defined in shareddefs.h
+		SendPropFloat(SENDINFO(m_flCycle), ANIMATION_CYCLE_BITS, SPROP_CHANGES_OFTEN | SPROP_ROUNDDOWN, 0.0f, 1.0f)
+	END_SEND_TABLE(DT_ServerAnimationData)
+
+	BEGIN_SEND_TABLE(CBaseAnimating, DT_BaseAnimating, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_nForceBone), 8, 0),
+		SendPropVector(SENDINFO(m_vecForce), -1, SPROP_NOSCALE),
+
+		SendPropInt(SENDINFO(m_nSkin), ANIMATION_SKIN_BITS),
+		SendPropInt(SENDINFO(m_nBody), ANIMATION_BODY_BITS),
+
+		SendPropInt(SENDINFO(m_nHitboxSet), ANIMATION_HITBOXSET_BITS, SPROP_UNSIGNED),
+
+		SendPropFloat(SENDINFO(m_flModelScale)),
+
+		SendPropArray3(SENDINFO_ARRAY3(m_flPoseParameter), SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter), ANIMATION_POSEPARAMETER_BITS, 0, 0.0f, 1.0f)),
+
+		SendPropInt(SENDINFO(m_nSequence), ANIMATION_SEQUENCE_BITS, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flPlaybackRate), ANIMATION_PLAYBACKRATE_BITS, SPROP_ROUNDUP, -4.0, 12.0f), // NOTE: if this isn't a power of 2 than "1.0" can't be encoded correctly
+
+		SendPropArray3(SENDINFO_ARRAY3(m_flEncodedController), SendPropFloat(SENDINFO_ARRAY(m_flEncodedController), 11, SPROP_ROUNDDOWN, 0.0f, 1.0f)),
+
+		SendPropInt(SENDINFO(m_bClientSideAnimation), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bClientSideFrameReset), 1, SPROP_UNSIGNED),
+
+		SendPropInt(SENDINFO(m_nNewSequenceParity), EF_PARITY_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nResetEventsParity), EF_PARITY_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nMuzzleFlashParity), EF_MUZZLEFLASH_BITS, SPROP_UNSIGNED),
+
+		SendPropEHandle(SENDINFO(m_hLightingOrigin)),
+		SendPropEHandle(SENDINFO(m_hLightingOriginRelative)),
+
+		SendPropDataTable("serveranimdata", 0, REFERENCE_SEND_TABLE(DT_ServerAnimationData), SendProxy_ClientSideAnimation),
+
+		// Fading
+		SendPropFloat(SENDINFO(m_fadeMinDist), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_fadeMaxDist), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flFadeScale), 0, SPROP_NOSCALE),
+
+	END_SEND_TABLE(DT_BaseAnimating)
 };
 
 //-----------------------------------------------------------------------------
@@ -521,15 +576,5 @@ EXTERN_SEND_TABLE(DT_BaseAnimating);
 
 
 
-#define ANIMATION_SEQUENCE_BITS			12	// 4096 sequences
-#define ANIMATION_SKIN_BITS				10	// 1024 body skin selections FIXME: this seems way high
-#define ANIMATION_BODY_BITS				32	// body combinations
-#define ANIMATION_HITBOXSET_BITS		2	// hit box sets 
-#if defined( TF_DLL )
-#define ANIMATION_POSEPARAMETER_BITS	8	// pose parameter resolution
-#else
-#define ANIMATION_POSEPARAMETER_BITS	11	// pose parameter resolution
-#endif
-#define ANIMATION_PLAYBACKRATE_BITS		8	// default playback rate, only used on leading edge detect sequence changes
 
 #endif // BASEANIMATING_H

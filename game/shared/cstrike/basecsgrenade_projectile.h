@@ -82,6 +82,17 @@ private:
 	
 	float m_flDetonateTime;
 #endif
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile, DT_BaseGrenade)
+		SendPropVector(SENDINFO(m_vInitialVelocity),
+			20,		// nbits
+			0,		// flags
+			-3000,	// low value
+			3000	// high value
+		)
+	END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
+#endif
 };
 
 

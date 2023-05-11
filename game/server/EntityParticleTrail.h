@@ -13,6 +13,7 @@
 
 #include "baseparticleentity.h"
 #include "entityparticletrail_shared.h"
+#include "networkstringtable_gamedll.h"
 
 
 //-----------------------------------------------------------------------------
@@ -48,6 +49,12 @@ private:
 	CNetworkHandle( CBaseEntity, m_hConstraintEntity );
 
 	int	m_nRefCount;
+
+	BEGIN_SEND_TABLE(CEntityParticleTrail, DT_EntityParticleTrail, DT_BaseParticleEntity)
+		SendPropInt(SENDINFO(m_iMaterialName), MAX_MATERIAL_STRING_BITS, SPROP_UNSIGNED),
+		SendPropDataTable(SENDINFO_DT(m_Info), REFERENCE_SEND_TABLE(DT_EntityParticleTrailInfo)),
+		SendPropEHandle(SENDINFO(m_hConstraintEntity)),
+	END_SEND_TABLE(DT_EntityParticleTrail)
 };
 
 #endif // ENTITYPARTICLETRAIL_H

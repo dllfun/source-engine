@@ -41,6 +41,18 @@ protected:
 	CNetworkArray( int, m_iHealth, MAX_PLAYERS+1 );
 		
 	int	m_nUpdateCounter;
+
+	BEGIN_SEND_TABLE_NOBASE(CPlayerResource, DT_PlayerResource)
+		//	SendPropArray( SendPropString( SENDINFO(m_szName[0]) ), SENDARRAYINFO(m_szName) ),
+		SendPropArray3(SENDINFO_ARRAY3(m_iPing), SendPropInt(SENDINFO_ARRAY(m_iPing), 10, SPROP_UNSIGNED)),
+		//	SendPropArray( SendPropInt( SENDINFO_ARRAY(m_iPacketloss), 7, SPROP_UNSIGNED ), m_iPacketloss ),
+		SendPropArray3(SENDINFO_ARRAY3(m_iScore), SendPropInt(SENDINFO_ARRAY(m_iScore), 12)),
+		SendPropArray3(SENDINFO_ARRAY3(m_iDeaths), SendPropInt(SENDINFO_ARRAY(m_iDeaths), 12)),
+		SendPropArray3(SENDINFO_ARRAY3(m_bConnected), SendPropInt(SENDINFO_ARRAY(m_bConnected), 1, SPROP_UNSIGNED)),
+		SendPropArray3(SENDINFO_ARRAY3(m_iTeam), SendPropInt(SENDINFO_ARRAY(m_iTeam), 4)),
+		SendPropArray3(SENDINFO_ARRAY3(m_bAlive), SendPropInt(SENDINFO_ARRAY(m_bAlive), 1, SPROP_UNSIGNED)),
+		SendPropArray3(SENDINFO_ARRAY3(m_iHealth), SendPropInt(SENDINFO_ARRAY(m_iHealth), -1, SPROP_VARINT | SPROP_UNSIGNED)),
+	END_SEND_TABLE(DT_PlayerResource)
 };
 
 extern CPlayerResource *g_pPlayerResource;

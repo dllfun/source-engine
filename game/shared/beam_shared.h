@@ -43,6 +43,22 @@
 #include "c_pixel_visibility.h"
 #endif
 
+// Beam types, encoded as a byte
+enum
+{
+	BEAM_POINTS = 0,
+	BEAM_ENTPOINT,
+	BEAM_ENTS,
+	BEAM_HOSE,
+	BEAM_SPLINE,
+	BEAM_LASER,
+	NUM_BEAM_TYPES
+};
+
+#if !defined( CLIENT_DLL )
+void* SendProxy_SendBeamPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+#endif
+
 class CBeam : public CBaseEntity
 {
 	DECLARE_CLASS( CBeam, CBaseEntity );
@@ -243,6 +259,57 @@ public:
 	CNetworkVar( bool, m_bDrawInMainRender );
 	CNetworkVar( bool, m_bDrawInPortalRender );
 #endif //#ifdef PORTAL
+
+#if !defined( NO_ENTITY_PREDICTION )
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_BeamPredictableId)
+		SendPropPredictableId(SENDINFO(m_PredictableID)),
+		SendPropInt(SENDINFO(m_bIsPlayerSimulated), 1, SPROP_UNSIGNED),
+	END_NETWORK_TABLE(DT_BeamPredictableId)
+
+	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_Beam)
+		SendPropInt(SENDINFO(m_nBeamType), Q_log2(NUM_BEAM_TYPES) + 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nBeamFlags), NUM_BEAM_FLAGS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nNumBeamEnts), 5, SPROP_UNSIGNED),
+		SendPropArray3
+		(
+			SENDINFO_ARRAY3(m_hAttachEntity),
+			SendPropEHandle(SENDINFO_ARRAY(m_hAttachEntity))
+		),
+		SendPropArray3
+		(
+			SENDINFO_ARRAY3(m_nAttachIndex),
+			SendPropInt(SENDINFO_ARRAY(m_nAttachIndex), ATTACHMENT_INDEX_BITS, SPROP_UNSIGNED)
+		),
+		SendPropInt(SENDINFO(m_nHaloIndex), 16, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_fHaloScale), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_fWidth), 10, SPROP_ROUNDUP, 0.0f, MAX_BEAM_WIDTH),
+		SendPropFloat(SENDINFO(m_fEndWidth), 10, SPROP_ROUNDUP, 0.0f, MAX_BEAM_WIDTH),
+		SendPropFloat(SENDINFO(m_fFadeLength), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_fAmplitude), 8, SPROP_ROUNDDOWN, 0.0f, MAX_BEAM_NOISEAMPLITUDE),
+		SendPropFloat(SENDINFO(m_fStartFrame), 8, SPROP_ROUNDDOWN, 0.0f, 256.0f),
+		SendPropFloat(SENDINFO(m_fSpeed), 8, SPROP_NOSCALE, 0.0f, MAX_BEAM_SCROLLSPEED),
+		SendPropInt(SENDINFO(m_nRenderFX), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nRenderMode), 8, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flFrameRate), 10, SPROP_ROUNDUP, -25.0f, 25.0f),
+		SendPropFloat(SENDINFO(m_flHDRColorScale), 0, SPROP_NOSCALE, 0.0f, 100.0f),
+		SendPropFloat(SENDINFO(m_flFrame), 20, SPROP_ROUNDDOWN | SPROP_CHANGES_OFTEN, 0.0f, 256.0f),
+		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN),
+		SendPropVector(SENDINFO(m_vecEndPos), -1, SPROP_COORD),
+#ifdef PORTAL
+		SendPropBool(SENDINFO(m_bDrawInMainRender)),
+		SendPropBool(SENDINFO(m_bDrawInPortalRender)),
+#endif
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropVector(SENDINFO(m_vecOrigin), 19, SPROP_CHANGES_OFTEN, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
+		SendPropInt(SENDINFO(m_nMinDXLevel), 8, SPROP_UNSIGNED),
+#if !defined( NO_ENTITY_PREDICTION )
+		SendPropDataTable("beampredictable_id", 0, REFERENCE_SEND_TABLE(DT_BeamPredictableId), SendProxy_SendBeamPredictableId),
+#endif
+	END_NETWORK_TABLE(DT_Beam)
+#endif
+#endif
 };
 
 #if !defined( CLIENT_DLL )
@@ -461,17 +528,7 @@ bool IsStaticPointEntity( CBaseEntity *pEnt );
 #define BEAMENT_ATTACHMENT(x)	(((x)>>12)&0xF)
 
 
-// Beam types, encoded as a byte
-enum 
-{
-	BEAM_POINTS = 0,
-	BEAM_ENTPOINT,
-	BEAM_ENTS,
-	BEAM_HOSE,
-	BEAM_SPLINE,
-	BEAM_LASER,
-	NUM_BEAM_TYPES
-};
+
 
 
 #endif // BEAM_H

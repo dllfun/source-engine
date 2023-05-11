@@ -28,7 +28,7 @@ class CTEBubbleTrail : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEBubbleTrail, CBaseTempEntity );
-
+					CTEBubbleTrail() {};
 					CTEBubbleTrail( const char *name );
 	virtual			~CTEBubbleTrail( void );
 
@@ -43,6 +43,15 @@ public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( int, m_nCount );
 	CNetworkVar( float, m_fSpeed );
+
+	BEGIN_SEND_TABLE(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecMins), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecMaxs), -1, SPROP_COORD),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropFloat(SENDINFO(m_flWaterZ), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropInt(SENDINFO(m_nCount), BUBBLE_TRAIL_COUNT_BITS, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_fSpeed), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+	END_SEND_TABLE(DT_TEBubbleTrail)
 };
 
 //-----------------------------------------------------------------------------
@@ -100,14 +109,7 @@ void CTEBubbleTrail::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecMins), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecMaxs), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_flWaterZ ), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER ),
-	SendPropInt( SENDINFO(m_nCount), BUBBLE_TRAIL_COUNT_BITS, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_fSpeed ), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER ),
-END_SEND_TABLE(DT_TEBubbleTrail)
+
 
 
 // Singleton to fire TEBubbleTrail objects

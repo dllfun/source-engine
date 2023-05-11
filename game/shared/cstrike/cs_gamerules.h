@@ -75,12 +75,21 @@ extern ConVar mp_playerid;
 	};
 #endif
 
+#if !defined( CLIENT_DLL )
+void* SendProxy_CSGameRules(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID);
+#endif
 
 class CCSGameRulesProxy : public CGameRulesProxy
 {
 public:
 	DECLARE_CLASS( CCSGameRulesProxy, CGameRulesProxy );
 	DECLARE_NETWORKCLASS();
+
+#if !defined( CLIENT_DLL )
+	BEGIN_SEND_TABLE(CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
+		SendPropDataTable("cs_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_CSGameRules), SendProxy_CSGameRules)
+	END_SEND_TABLE(DT_CSGameRulesProxy)
+#endif
 };
 
 
@@ -88,6 +97,9 @@ class CCSGameRules : public CTeamplayRules
 {
 public:
 	DECLARE_CLASS( CCSGameRules, CTeamplayRules );
+#if !defined( CLIENT_DLL )
+	DECLARE_SERVERCLASS()
+#endif
 
 	// Stuff that is shared between client and server.
 	bool IsFreezePeriod();
@@ -506,6 +518,20 @@ public:
 	// Black market
 	INetworkStringTable *m_StringTableBlackMarket;
 	const weeklyprice_t *m_pPrices;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CCSGameRules, DT_CSGameRules)
+		SendPropBool(SENDINFO(m_bFreezePeriod)),
+		SendPropInt(SENDINFO(m_iRoundTime), 16),
+		SendPropFloat(SENDINFO(m_fRoundStartTime), 32, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flGameStartTime), 32, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_iHostagesRemaining), 4),
+		SendPropBool(SENDINFO(m_bMapHasBombTarget)),
+		SendPropBool(SENDINFO(m_bMapHasRescueZone)),
+		SendPropBool(SENDINFO(m_bLogoMap)),
+		SendPropBool(SENDINFO(m_bBlackMarket))
+	END_NETWORK_TABLE(DT_CSGameRules)
+#endif
 };
 
 //-----------------------------------------------------------------------------

@@ -40,19 +40,13 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-BEGIN_NETWORK_TABLE_NOBASE( EntityParticleTrailInfo_t, DT_EntityParticleTrailInfo )
-
 #ifdef CLIENT_DLL
+BEGIN_NETWORK_TABLE_NOBASE( EntityParticleTrailInfo_t, DT_EntityParticleTrailInfo )
 	RecvPropFloat( RECVINFO( m_flLifetime ) ),
 	RecvPropFloat( RECVINFO( m_flStartSize ) ),
 	RecvPropFloat( RECVINFO( m_flEndSize ) ),
-#else
-	SendPropFloat( SENDINFO( m_flLifetime ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_flStartSize ), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_flEndSize ), 0, SPROP_NOSCALE ),
-#endif
-
 END_NETWORK_TABLE(DT_EntityParticleTrailInfo)
+#endif
 
 
 

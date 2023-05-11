@@ -66,6 +66,26 @@ public:
 	CNetworkVarEmbedded( fogparams_t, m_fog );
 	bool					m_bUseAngles;
 	int						m_iChangedVariables;
+
+	BEGIN_SEND_TABLE_NOBASE(CFogController, DT_FogController)
+		// fog data
+		SendPropInt(SENDINFO_STRUCTELEM(m_fog.enable), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO_STRUCTELEM(m_fog.blend), 1, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO_STRUCTELEM(m_fog.dirPrimary), -1, SPROP_COORD),
+		SendPropInt(SENDINFO_STRUCTELEM(m_fog.colorPrimary), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO_STRUCTELEM(m_fog.colorSecondary), 32, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.start), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.end), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.maxdensity), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.farz), 0, SPROP_NOSCALE),
+
+		SendPropInt(SENDINFO_STRUCTELEM(m_fog.colorPrimaryLerpTo), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO_STRUCTELEM(m_fog.colorSecondaryLerpTo), 32, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.startLerpTo), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.endLerpTo), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.lerptime), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.duration), 0, SPROP_NOSCALE),
+	END_SEND_TABLE(DT_FogController)
 };
 
 //=============================================================================

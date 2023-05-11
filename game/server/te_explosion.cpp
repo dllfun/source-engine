@@ -26,7 +26,7 @@ class CTEExplosion : public CTEParticleSystem
 public:
 	DECLARE_CLASS( CTEExplosion, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
-
+					CTEExplosion() {};
 					CTEExplosion( const char *name );
 	virtual			~CTEExplosion( void );
 
@@ -42,6 +42,17 @@ public:
 	CNetworkVar( unsigned char, m_chMaterialType );
 	CNetworkVar( int, m_nRadius );
 	CNetworkVar( int, m_nMagnitude );
+
+	BEGIN_SEND_TABLE(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropFloat(SENDINFO(m_fScale), 9, 0, 0.0, 51.2),
+		SendPropInt(SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nFlags), 8, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecNormal), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(m_chMaterialType), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nRadius), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nMagnitude), 32, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEExplosion)
 };
 
 //-----------------------------------------------------------------------------
@@ -97,16 +108,7 @@ void CTEExplosion::Test( const Vector& current_origin, const QAngle& current_ang
 }
 
 IMPLEMENT_SERVERCLASS(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
-BEGIN_SEND_TABLE(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_fScale ), 9, 0, 0.0, 51.2 ),
-	SendPropInt( SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nFlags), 8, SPROP_UNSIGNED ),
-	SendPropVector( SENDINFO(m_vecNormal), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_chMaterialType), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nRadius), 32, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMagnitude), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEExplosion)
+
 
 // Singleton to fire TEExplosion objects
 static CTEExplosion g_TEExplosion( "Explosion" );

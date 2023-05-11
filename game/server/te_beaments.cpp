@@ -27,7 +27,7 @@ class CTEBeamEnts : public CTEBaseBeam
 public:
 	DECLARE_CLASS( CTEBeamEnts, CTEBaseBeam );
 	DECLARE_SERVERCLASS();
-
+					CTEBeamEnts() {};
 					CTEBeamEnts( const char *name );
 	virtual			~CTEBeamEnts( void );
 
@@ -37,6 +37,11 @@ public:
 public:
 	CNetworkVar( int, m_nStartEntity );
 	CNetworkVar( int, m_nEndEntity );
+
+	BEGIN_SEND_TABLE(CTEBeamEnts, DT_TEBeamEnts, DT_BaseBeam)
+		SendPropInt(SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBeamEnts)
 };
 
 //-----------------------------------------------------------------------------
@@ -84,10 +89,7 @@ void CTEBeamEnts::Test( const Vector& current_origin, const QAngle& current_angl
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamEnts, DT_TEBeamEnts, DT_BaseBeam)
-BEGIN_SEND_TABLE(CTEBeamEnts, DT_TEBeamEnts, DT_BaseBeam)
-	SendPropInt( SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBeamEnts)
+
 
 
 // Singleton to fire TEBeamEnts objects

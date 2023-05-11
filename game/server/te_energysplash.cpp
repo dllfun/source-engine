@@ -24,6 +24,7 @@ class CTEEnergySplash : public CBaseTempEntity
 DECLARE_CLASS( CTEEnergySplash, CBaseTempEntity );
 
 public:
+					CTEEnergySplash() {};
 					CTEEnergySplash( const char *name );
 	virtual			~CTEEnergySplash( void );
 
@@ -35,6 +36,12 @@ public:
 	CNetworkVector( m_vecPos );
 	CNetworkVector( m_vecDir );
 	CNetworkVar( bool, m_bExplosive );
+
+	BEGIN_SEND_TABLE_NOBASE(CTEEnergySplash, DT_TEEnergySplash)
+		SendPropVector(SENDINFO(m_vecPos), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecDir), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(m_bExplosive), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEEnergySplash)
 };
 
 //-----------------------------------------------------------------------------
@@ -83,11 +90,7 @@ void CTEEnergySplash::Test( const Vector& current_origin, const QAngle& current_
 }
 
 IMPLEMENT_SERVERCLASS( CTEEnergySplash, DT_TEEnergySplash)
-BEGIN_SEND_TABLE_NOBASE(CTEEnergySplash, DT_TEEnergySplash)
-	SendPropVector( SENDINFO(m_vecPos), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecDir), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_bExplosive), 1, SPROP_UNSIGNED),
-END_SEND_TABLE(DT_TEEnergySplash)
+
 
 // Singleton to fire TEEnergySplash objects
 static CTEEnergySplash g_TEEnergySplash( "Energy Splash" );

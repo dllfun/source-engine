@@ -356,21 +356,20 @@ static void RecvProxy_IntDirtySurround( const CRecvProxyData *pData, void *pStru
 
 #else
 
-static void SendProxy_Solid( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+void SendProxy_Solid( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
 {
 	pOut->m_Int = ((CCollisionProperty*)pStruct)->GetSolid();
 }
 
-static void SendProxy_SolidFlags( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+void SendProxy_SolidFlags( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
 {
 	pOut->m_Int = ((CCollisionProperty*)pStruct)->GetSolidFlags();
 }
 
 #endif
 
-BEGIN_NETWORK_TABLE_NOBASE( CCollisionProperty, DT_CollisionProperty )
-
 #ifdef CLIENT_DLL
+BEGIN_NETWORK_TABLE_NOBASE( CCollisionProperty, DT_CollisionProperty )
 	RecvPropVector( RECVINFO(m_vecMinsPreScaled), 0, RecvProxy_OBBMinsPreScaled ),
 	RecvPropVector( RECVINFO(m_vecMaxsPreScaled), 0, RecvProxy_OBBMaxsPreScaled ),
 	RecvPropVector( RECVINFO(m_vecMins), 0 ),
@@ -383,22 +382,8 @@ BEGIN_NETWORK_TABLE_NOBASE( CCollisionProperty, DT_CollisionProperty )
 	RecvPropVector( RECVINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0, RecvProxy_VectorDirtySurround ),
 	RecvPropVector( RECVINFO(m_vecSpecifiedSurroundingMins), 0, RecvProxy_VectorDirtySurround ),
 	RecvPropVector( RECVINFO(m_vecSpecifiedSurroundingMaxs), 0, RecvProxy_VectorDirtySurround ),
-#else
-	SendPropVector( SENDINFO(m_vecMinsPreScaled), 0, SPROP_NOSCALE),
-	SendPropVector( SENDINFO(m_vecMaxsPreScaled), 0, SPROP_NOSCALE),
-	SendPropVector( SENDINFO(m_vecMins), 0, SPROP_NOSCALE),
-	SendPropVector( SENDINFO(m_vecMaxs), 0, SPROP_NOSCALE),
-	SendPropInt( SENDINFO( m_nSolidType ),		3, SPROP_UNSIGNED, SendProxy_Solid ),
-	SendPropInt( SENDINFO( m_usSolidFlags ),	FSOLID_MAX_BITS, SPROP_UNSIGNED, SendProxy_SolidFlags ),
-	SendPropInt( SENDINFO( m_nSurroundType ), SURROUNDING_TYPE_BIT_COUNT, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_triggerBloat), 0, SPROP_UNSIGNED),
-	SendPropVector( SENDINFO(m_vecSpecifiedSurroundingMinsPreScaled), 0, SPROP_NOSCALE),
-	SendPropVector( SENDINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0, SPROP_NOSCALE),
-	SendPropVector( SENDINFO(m_vecSpecifiedSurroundingMins), 0, SPROP_NOSCALE),
-	SendPropVector( SENDINFO(m_vecSpecifiedSurroundingMaxs), 0, SPROP_NOSCALE),
-#endif
-
 END_NETWORK_TABLE(DT_CollisionProperty)
+#endif
 
 																							
 //-----------------------------------------------------------------------------

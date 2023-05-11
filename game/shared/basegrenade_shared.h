@@ -136,6 +136,19 @@ private:
 
 	CBaseGrenade( const CBaseGrenade & ); // not defined, not accessible
 
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CBaseGrenade, DT_BaseGrenade, DT_BaseProjectile)
+		SendPropFloat(SENDINFO(m_flDamage), 10, SPROP_ROUNDDOWN, 0.0, 256.0f),
+		SendPropFloat(SENDINFO(m_DmgRadius), 10, SPROP_ROUNDDOWN, 0.0, 1024.0f),
+		SendPropInt(SENDINFO(m_bIsLive), 1, SPROP_UNSIGNED),
+		//	SendPropTime( SENDINFO( m_flDetonateTime ) ),
+		SendPropEHandle(SENDINFO(m_hThrower)),
+
+		SendPropVector(SENDINFO(m_vecVelocity), 0, SPROP_NOSCALE),
+		// HACK: Use same flag bits as player for now
+		SendPropInt(SENDINFO(m_fFlags), PLAYER_FLAG_BITS, SPROP_UNSIGNED, SendProxy_CropFlagsToPlayerFlagBitsLength),
+	END_NETWORK_TABLE(DT_BaseGrenade)
+#endif
 };
 
 #endif // BASEGRENADE_SHARED_H

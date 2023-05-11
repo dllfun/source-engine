@@ -25,7 +25,7 @@ class CBaseTempEntity
 public:
 	DECLARE_CLASS_NOBASE( CBaseTempEntity );
 	DECLARE_SERVERCLASS();
-
+						CBaseTempEntity() {};
 						CBaseTempEntity( const char *name );
 	virtual				~CBaseTempEntity( void );
 
@@ -60,6 +60,10 @@ private:
 	// ConVars add themselves to this list for the executable. Then ConVarMgr::Init() runs through 
 	// all the console variables and registers them.
 	static CBaseTempEntity	*s_pTempEntities;
+
+	BEGIN_SEND_TABLE_NOBASE(CBaseTempEntity, DT_BaseTempEntity)
+
+	END_SEND_TABLE(DT_BaseTempEntity)
 };
 
 #endif // BASETEMPENTITY_H

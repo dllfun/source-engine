@@ -60,6 +60,14 @@ public:
 	//Input handlers
 	void InputSetFadeStartDistance( inputdata_t &inputdata );
 	void InputSetFadeEndDistance( inputdata_t &inputdata );
+
+	BEGIN_SEND_TABLE(CFuncAreaPortalWindow, DT_FuncAreaPortalWindow, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flFadeDist), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flFadeStartDist), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flTranslucencyLimit), 0, SPROP_NOSCALE),
+
+		SendPropModelIndex(SENDINFO(m_iBackgroundModelIndex)),
+	END_SEND_TABLE(DT_FuncAreaPortalWindow)
 };
 
 

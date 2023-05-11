@@ -1781,7 +1781,9 @@ void PhysAddShadow( CBaseEntity *pEntity )
 
 void PhysRemoveShadow( CBaseEntity *pEntity )
 {
-	g_pShadowEntities->DeleteEntity( pEntity );
+	if (g_pShadowEntities) {
+		g_pShadowEntities->DeleteEntity(pEntity);
+	}
 }
 
 bool PhysHasShadow( CBaseEntity *pEntity )

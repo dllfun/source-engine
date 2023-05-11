@@ -45,12 +45,19 @@ private:
 	CWeaponG3SG1( const CWeaponG3SG1 & );
 
 	float m_flLastFire;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponG3SG1, DT_WeaponG3SG1, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponG3SG1)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponG3SG1, DT_WeaponG3SG1 )
 
+#ifdef CLIENT_DLL
 BEGIN_NETWORK_TABLE( CWeaponG3SG1, DT_WeaponG3SG1, DT_WeaponCSBaseGun)
 END_NETWORK_TABLE(DT_WeaponG3SG1)
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponG3SG1 )
@@ -65,7 +72,7 @@ PRECACHE_WEAPON_REGISTER( weapon_g3sg1 );
 
 CWeaponG3SG1::CWeaponG3SG1()
 {
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
 }
 
 void CWeaponG3SG1::Spawn()

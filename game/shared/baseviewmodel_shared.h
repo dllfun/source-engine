@@ -206,6 +206,30 @@ private:
 	// Control panel
 	typedef CHandle<CVGuiScreen>	ScreenHandle_t;
 	CUtlVector<ScreenHandle_t>	m_hScreens;
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE_NOBASE(CBaseViewModel, DT_BaseViewModel)
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropInt(SENDINFO(m_nBody), 8),
+		SendPropInt(SENDINFO(m_nSkin), 10),
+		SendPropInt(SENDINFO(m_nSequence), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nViewModelIndex), VIEWMODEL_INDEX_BITS, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flPlaybackRate), 8, SPROP_ROUNDUP, -4.0, 12.0f),
+		SendPropInt(SENDINFO(m_fEffects), 10, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nAnimationParity), 3, SPROP_UNSIGNED),
+		SendPropEHandle(SENDINFO(m_hWeapon)),
+		SendPropEHandle(SENDINFO(m_hOwner)),
+
+		SendPropInt(SENDINFO(m_nNewSequenceParity), EF_PARITY_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nResetEventsParity), EF_PARITY_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nMuzzleFlashParity), EF_MUZZLEFLASH_BITS, SPROP_UNSIGNED),
+
+#if !defined( INVASION_DLL ) && !defined( INVASION_CLIENT_DLL )
+		SendPropArray(SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter), 8, 0, 0.0f, 1.0f), m_flPoseParameter),
+#endif
+
+	END_NETWORK_TABLE(DT_BaseViewModel)
+#endif
 };
 
 #endif // BASEVIEWMODEL_SHARED_H

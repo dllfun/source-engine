@@ -7,12 +7,16 @@
 //=============================================================================//
 
 // #include "BaseAnimating.h"
+#include "dt_utlvector_send.h"
 
 #ifndef BASE_ANIMATING_OVERLAY_H
 #define BASE_ANIMATING_OVERLAY_H
 #ifdef _WIN32
 #pragma once
 #endif
+
+#define ORDER_BITS			4
+#define WEIGHT_BITS			8
 
 class CBaseAnimatingOverlay;
 
@@ -94,6 +98,14 @@ public:
 	CBaseAnimatingOverlay *m_pOwnerEntity;
 	
 	DECLARE_SIMPLE_DATADESC();
+
+	BEGIN_SEND_TABLE_NOBASE(CAnimationLayer, DT_Animationlayer)
+		SendPropInt(SENDINFO(m_nSequence), ANIMATION_SEQUENCE_BITS, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flCycle), ANIMATION_CYCLE_BITS, SPROP_ROUNDDOWN, 0.0f, 1.0f),
+		SendPropFloat(SENDINFO(m_flPrevCycle), ANIMATION_CYCLE_BITS, SPROP_ROUNDDOWN, 0.0f, 1.0f),
+		SendPropFloat(SENDINFO(m_flWeight), WEIGHT_BITS, 0, 0.0f, 1.0f),
+		SendPropInt(SENDINFO(m_nOrder), ORDER_BITS, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_Animationlayer)
 };
 
 inline float CAnimationLayer::GetFadeout( float flCurTime )
@@ -202,6 +214,18 @@ private:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DECLARE_PREDICTABLE();
+
+	BEGIN_SEND_TABLE_NOBASE(CBaseAnimatingOverlay, DT_OverlayVars)
+		SendPropUtlVector(
+		(char*)SENDINFO_UTLVECTOR(m_AnimOverlay),
+		CBaseAnimatingOverlay::MAX_OVERLAYS, // max elements
+		SendPropDataTable(NULL, 0, REFERENCE_SEND_TABLE(DT_Animationlayer)))
+	END_SEND_TABLE(DT_OverlayVars)
+
+	BEGIN_SEND_TABLE(CBaseAnimatingOverlay, DT_BaseAnimatingOverlay, DT_BaseAnimating)
+		// These are in their own separate data table so CCSPlayer can exclude all of these.
+		SendPropDataTable("overlay_vars", 0, REFERENCE_SEND_TABLE(DT_OverlayVars))
+	END_SEND_TABLE(DT_BaseAnimatingOverlay)
 };
 
 EXTERN_SEND_TABLE(DT_BaseAnimatingOverlay);

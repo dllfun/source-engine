@@ -37,6 +37,14 @@ struct EntityParticleTrailInfo_t
 	CNetworkVar( float, m_flLifetime );
 	CNetworkVar( float, m_flStartSize );
 	CNetworkVar( float, m_flEndSize );
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(EntityParticleTrailInfo_t, DT_EntityParticleTrailInfo)
+		SendPropFloat(SENDINFO(m_flLifetime), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flStartSize), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flEndSize), 0, SPROP_NOSCALE),
+	END_NETWORK_TABLE(DT_EntityParticleTrailInfo)
+#endif
 };
 
 

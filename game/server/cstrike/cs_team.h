@@ -52,6 +52,10 @@ private:
 	float	m_flNextResourceTime;
 
 	int		m_iLastUpdateSentAt;
+
+	BEGIN_SEND_TABLE(CCSTeam, DT_CSTeam, DT_Team)
+
+	END_SEND_TABLE(DT_CSTeam)
 };
 
 

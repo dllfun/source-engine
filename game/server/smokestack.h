@@ -79,6 +79,34 @@ public:
 	CNetworkVector( m_vWind );		// m_vWind is just calculated from m_WindAngle and m_WindSpeed.
 
 	bool			m_InitialState;
+
+	BEGIN_SEND_TABLE(CSmokeStack, DT_SmokeStack, DT_BaseParticleEntity)
+		SendPropFloat(SENDINFO(m_SpreadSpeed), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_Speed), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_StartSize), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_EndSize), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_Rate), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_JetLength), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_bEmit), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flBaseSpread), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flRollSpeed), 0, SPROP_NOSCALE),
+
+		// Note: the base color is specified in the smokestack entity, but the directional
+		// and ambient light must come from env_particlelight entities.
+		SendPropVector(SENDINFO_NOCHECK(m_DirLight.m_vPos), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO_NOCHECK(m_DirLight.m_vColor), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_NOCHECK(m_DirLight.m_flIntensity), 0, SPROP_NOSCALE),
+
+		SendPropVector(SENDINFO_NOCHECK(m_AmbientLight.m_vPos), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO_NOCHECK(m_AmbientLight.m_vColor), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO_NOCHECK(m_AmbientLight.m_flIntensity), 0, SPROP_NOSCALE),
+
+		SendPropVector(SENDINFO(m_vWind), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flTwist), 0, SPROP_NOSCALE),
+		SendPropIntWithMinusOneFlag(SENDINFO(m_iMaterialModel), 16)
+
+	END_SEND_TABLE(DT_SmokeStack)
+
 };
 
 #endif // SMOKESTACK_H

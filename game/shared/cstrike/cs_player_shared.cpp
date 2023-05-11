@@ -861,6 +861,11 @@ public:
 
 	CNetworkVar( string_t, m_source );
 	CNetworkVar( string_t, m_destination );
+
+	BEGIN_SEND_TABLE(CFootstepControl, DT_FootstepControl, DT_BaseEntity)
+		SendPropStringT(SENDINFO(m_source)),
+		SendPropStringT(SENDINFO(m_destination)),
+	END_SEND_TABLE(DT_FootstepControl)
 };
 
 LINK_ENTITY_TO_CLASS( func_footstep_control, CFootstepControl );
@@ -872,10 +877,7 @@ BEGIN_DATADESC( CFootstepControl )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS( CFootstepControl, DT_FootstepControl, DT_BaseEntity)
-BEGIN_SEND_TABLE(CFootstepControl, DT_FootstepControl, DT_BaseEntity)
-	SendPropStringT( SENDINFO(m_source) ),
-	SendPropStringT( SENDINFO(m_destination) ),
-END_SEND_TABLE(DT_FootstepControl)
+
 
 int CFootstepControl::UpdateTransmitState( void )
 {

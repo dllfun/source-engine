@@ -27,7 +27,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_SEND_TABLE_ACCESS(DT_TEBeamFollow);
-
+					CTEBeamFollow() {};
 					CTEBeamFollow( const char *name );
 	virtual			~CTEBeamFollow( void );
 
@@ -36,6 +36,10 @@ public:
 public:
 
 	CNetworkVar( int, m_iEntIndex );
+
+	BEGIN_SEND_TABLE(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
+		SendPropInt(SENDINFO(m_iEntIndex), 24, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEBeamFollow)
 };
 
 //-----------------------------------------------------------------------------
@@ -66,9 +70,7 @@ void CTEBeamFollow::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
-BEGIN_SEND_TABLE(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
-	SendPropInt( SENDINFO(m_iEntIndex), 24, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEBeamFollow)
+
 
 
 // Singleton to fire TEBeamEntPoint objects

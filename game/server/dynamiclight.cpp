@@ -44,6 +44,16 @@ public:
 	CNetworkVar( float, m_InnerAngle );
 	CNetworkVar( float, m_OuterAngle );
 	CNetworkVar( float, m_SpotRadius );
+
+	BEGIN_SEND_TABLE(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_Flags), 4, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_LightStyle), 4, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_Radius), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_Exponent), NUM_DL_EXPONENT_BITS),
+		SendPropFloat(SENDINFO(m_InnerAngle), 8, 0, 0.0, 360.0f),
+		SendPropFloat(SENDINFO(m_OuterAngle), 8, 0, 0.0, 360.0f),
+		SendPropFloat(SENDINFO(m_SpotRadius), 0, SPROP_NOSCALE),
+	END_SEND_TABLE(DT_DynamicLight)
 };
 
 LINK_ENTITY_TO_CLASS(light_dynamic, CDynamicLight);
@@ -73,15 +83,7 @@ END_DATADESC()
 
 
 IMPLEMENT_SERVERCLASS(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
-BEGIN_SEND_TABLE(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
-	SendPropInt( SENDINFO(m_Flags), 4, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_LightStyle), 4, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_Radius), 0, SPROP_NOSCALE),
-	SendPropInt( SENDINFO(m_Exponent), NUM_DL_EXPONENT_BITS),
-	SendPropFloat( SENDINFO(m_InnerAngle), 8, 0, 0.0, 360.0f ),
-	SendPropFloat( SENDINFO(m_OuterAngle), 8, 0, 0.0, 360.0f ),
-	SendPropFloat( SENDINFO(m_SpotRadius), 0, SPROP_NOSCALE),
-END_SEND_TABLE(DT_DynamicLight)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

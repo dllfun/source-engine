@@ -29,15 +29,17 @@ public:
 private:
 
 	CNetworkVar( int, m_iOverlayID );
+
+	BEGIN_SEND_TABLE_NOBASE(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
+		SendPropInt(SENDINFO(m_iTextureFrameIndex), 8, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iOverlayID), 32, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_InfoOverlayAccessor)
 };
 							  
 
 // This table encodes the CBaseEntity data.
 IMPLEMENT_SERVERCLASS(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
-BEGIN_SEND_TABLE_NOBASE(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
-	SendPropInt	(	SENDINFO(m_iTextureFrameIndex),		8,	SPROP_UNSIGNED ),
-	SendPropInt	(	SENDINFO(m_iOverlayID),				32,	SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_InfoOverlayAccessor)
+
 
 LINK_ENTITY_TO_CLASS( info_overlay_accessor, CInfoOverlayAccessor );
 

@@ -19,7 +19,7 @@ class CTEGaussExplosion : public CTEParticleSystem
 public:
 	DECLARE_CLASS( CTEGaussExplosion, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
-
+					CTEGaussExplosion() {};
 					CTEGaussExplosion( const char *name );
 	virtual			~CTEGaussExplosion( void );
 
@@ -27,6 +27,11 @@ public:
 
 	CNetworkVar( int, m_nType );
 	CNetworkVector( m_vecDirection );
+
+	BEGIN_SEND_TABLE(CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
+		SendPropInt(SENDINFO(m_nType), 2, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecDirection), -1, SPROP_COORD),
+	END_SEND_TABLE(DT_TEGaussExplosion)
 };
 
 
@@ -41,10 +46,7 @@ CTEGaussExplosion::~CTEGaussExplosion( void )
 }
 
 IMPLEMENT_SERVERCLASS( CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
-BEGIN_SEND_TABLE(CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
-	SendPropInt( SENDINFO(m_nType), 2, SPROP_UNSIGNED ),
-	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD ),
-END_SEND_TABLE(DT_TEGaussExplosion)
+
 
 static CTEGaussExplosion g_TEGaussExplosion( "GaussExplosion" );
 

@@ -23,7 +23,7 @@ class CTEPlayerDecal : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEPlayerDecal, CBaseTempEntity );
-
+					CTEPlayerDecal() {};
 					CTEPlayerDecal( const char *name );
 	virtual			~CTEPlayerDecal( void );
 
@@ -35,6 +35,12 @@ public:
 	CNetworkVar( int, m_nPlayer );
 	CNetworkVector( m_vecOrigin );
 	CNetworkVar( int, m_nEntity );
+
+	BEGIN_SEND_TABLE(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nPlayer), Q_log2(MAX_PLAYERS), SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEPlayerDecal)
 };
 
 //-----------------------------------------------------------------------------
@@ -92,11 +98,7 @@ void CTEPlayerDecal::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nPlayer), Q_log2( MAX_PLAYERS ), SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_TEPlayerDecal)
+
 
 
 // Singleton to fire TEPlayerDecal objects

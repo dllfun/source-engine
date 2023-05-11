@@ -19,7 +19,7 @@ class CTEPhysicsProp : public CBaseTempEntity
 {
 public:
 	DECLARE_CLASS( CTEPhysicsProp, CBaseTempEntity );
-
+					CTEPhysicsProp() {};
 					CTEPhysicsProp( const char *name );
 	virtual			~CTEPhysicsProp( void );
 
@@ -37,6 +37,18 @@ public:
 	CNetworkVar( int, m_nSkin );
 	CNetworkVar( int, m_nFlags );
 	CNetworkVar( int, m_nEffects );
+
+	BEGIN_SEND_TABLE(CTEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
+		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 0), 13),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 1), 13),
+		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 2), 13),
+		SendPropVector(SENDINFO(m_vecVelocity), -1, SPROP_COORD),
+		SendPropModelIndex(SENDINFO(m_nModelIndex)),
+		SendPropInt(SENDINFO(m_nSkin), ANIMATION_SKIN_BITS),
+		SendPropInt(SENDINFO(m_nFlags), 2, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nEffects), EF_MAX_BITS, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_TEPhysicsProp)
 };
 
 //-----------------------------------------------------------------------------
@@ -103,17 +115,7 @@ void CTEPhysicsProp::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
-BEGIN_SEND_TABLE(CTEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 0), 13 ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 1), 13 ),
-	SendPropAngle( SENDINFO_VECTORELEM(m_angRotation, 2), 13 ),
-	SendPropVector( SENDINFO(m_vecVelocity), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_nSkin), ANIMATION_SKIN_BITS),
-	SendPropInt( SENDINFO(m_nFlags), 2, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEffects), EF_MAX_BITS, SPROP_UNSIGNED),
-END_SEND_TABLE(DT_TEPhysicsProp)
+
 
 // Singleton to fire TEBreakModel objects
 static CTEPhysicsProp s_TEPhysicsProp( "physicsprop" );

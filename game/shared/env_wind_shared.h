@@ -228,6 +228,29 @@ private:
 
 private:
 	CEnvWindShared( const CEnvWindShared & ); // not defined, not accessible
+
+#if !defined( CLIENT_DLL )
+	BEGIN_SEND_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
+		// These are parameters that are used to generate the entire motion
+		SendPropInt(SENDINFO(m_iMinWind), 10, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iMaxWind), 10, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iMinGust), 10, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iMaxGust), 10, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flMinGustDelay), 0, SPROP_NOSCALE),		// NOTE: Have to do this, so it's *exactly* the same on client
+		SendPropFloat(SENDINFO(m_flMaxGustDelay), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_iGustDirChange), 9, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_iWindSeed), 32, SPROP_UNSIGNED),
+
+		// These are related to initial state
+		SendPropInt(SENDINFO(m_iInitialWindDir), 9, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flInitialWindSpeed), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flStartTime), 0, SPROP_NOSCALE),
+
+		SendPropFloat(SENDINFO(m_flGustDuration), 0, SPROP_NOSCALE),
+		// Sound related
+	//	SendPropInt		(SENDINFO(m_iszGustSound),	10, SPROP_UNSIGNED ),
+	END_SEND_TABLE(DT_EnvWindShared)
+#endif
 };
 
 

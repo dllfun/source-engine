@@ -63,6 +63,11 @@ private:
 	float		m_LastExitTime;
 
 	float		m_FadeDuration;
+
+	BEGIN_SEND_TABLE_NOBASE(CColorCorrectionVolume, DT_ColorCorrectionVolume)
+		SendPropFloat(SENDINFO(m_Weight)),
+		SendPropString(SENDINFO(m_lookupFilename)),
+	END_SEND_TABLE(DT_ColorCorrectionVolume)
 };
 
 LINK_ENTITY_TO_CLASS(color_correction_volume, CColorCorrectionVolume);
@@ -91,10 +96,7 @@ END_DATADESC()
 
 
 IMPLEMENT_SERVERCLASS(CColorCorrectionVolume, DT_ColorCorrectionVolume)
-BEGIN_SEND_TABLE_NOBASE(CColorCorrectionVolume, DT_ColorCorrectionVolume)
-	SendPropFloat( SENDINFO(m_Weight) ),
-	SendPropString( SENDINFO(m_lookupFilename) ),
-END_SEND_TABLE(DT_ColorCorrectionVolume)
+
 
 
 CColorCorrectionVolume::CColorCorrectionVolume() : BaseClass()

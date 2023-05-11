@@ -52,13 +52,15 @@
 
 		CNetworkHandle( CBaseEntity, m_Handle );
 		CNetworkVar( bool, m_bSendHandle );
+
+		BEGIN_SEND_TABLE(CHandleTest, DT_HandleTest, DT_BaseEntity)
+			SendPropEHandle(SENDINFO(m_Handle)),
+			SendPropInt(SENDINFO(m_bSendHandle))
+		END_SEND_TABLE(DT_HandleTest)
 	};
 
 	IMPLEMENT_SERVERCLASS( CHandleTest, DT_HandleTest, DT_BaseEntity)
-	BEGIN_SEND_TABLE(CHandleTest, DT_HandleTest, DT_BaseEntity)
-		SendPropEHandle( SENDINFO( m_Handle ) ),
-		SendPropInt( SENDINFO( m_bSendHandle ) )
-	END_SEND_TABLE(DT_HandleTest)
+	
 	
 	LINK_ENTITY_TO_CLASS( handle_test, CHandleTest );
 

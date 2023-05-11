@@ -19,7 +19,7 @@ class CTESparks : public CTEParticleSystem
 public:
 	DECLARE_CLASS( CTESparks, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
-
+					CTESparks() {};
 					CTESparks( const char *name );
 	virtual			~CTESparks( void );
 
@@ -28,6 +28,12 @@ public:
 	CNetworkVar( int, m_nMagnitude );
 	CNetworkVar( int, m_nTrailLength );
 	CNetworkVector( m_vecDir );
+
+	BEGIN_SEND_TABLE(CTESparks, DT_TESparks, DT_TEParticleSystem)
+		SendPropInt(SENDINFO(m_nMagnitude), 4, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nTrailLength), 4, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecDir), -1, SPROP_COORD),
+	END_SEND_TABLE(DT_TESparks)
 };
 
 //-----------------------------------------------------------------------------
@@ -71,11 +77,7 @@ void CTESparks::Test( const Vector& current_origin, const QAngle& current_angles
 }
 
 IMPLEMENT_SERVERCLASS(CTESparks, DT_TESparks, DT_TEParticleSystem)
-BEGIN_SEND_TABLE(CTESparks, DT_TESparks, DT_TEParticleSystem)
-	SendPropInt(	SENDINFO( m_nMagnitude ),	4,	SPROP_UNSIGNED ),
-	SendPropInt(	SENDINFO( m_nTrailLength ),	4,	SPROP_UNSIGNED ),
-	SendPropVector(	SENDINFO( m_vecDir ),		-1,	SPROP_COORD ),
-END_SEND_TABLE(DT_TESparks)
+
 
 
 // Singleton to fire TESparks objects

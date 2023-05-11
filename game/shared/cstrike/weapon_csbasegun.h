@@ -52,6 +52,11 @@ protected:
 private:
 
 	CWeaponCSBaseGun( const CWeaponCSBaseGun & );
+
+#if !defined(CLIENT_DLL)
+	BEGIN_NETWORK_TABLE(CWeaponCSBaseGun, DT_WeaponCSBaseGun, DT_WeaponCSBase)
+	END_NETWORK_TABLE(DT_WeaponCSBaseGun)
+#endif
 };
 
 

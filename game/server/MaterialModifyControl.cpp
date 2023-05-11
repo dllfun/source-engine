@@ -64,6 +64,21 @@ private:
 	CNetworkVar( float, m_flFloatLerpEndValue );
 	CNetworkVar( float, m_flFloatLerpTransitionTime );
 	CNetworkVar( int, m_nModifyMode );
+
+	BEGIN_SEND_TABLE(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
+		SendPropString(SENDINFO(m_szMaterialName)),
+		SendPropString(SENDINFO(m_szMaterialVar)),
+		SendPropString(SENDINFO(m_szMaterialVarValue)),
+		SendPropInt(SENDINFO(m_iFrameStart), 8),
+		SendPropInt(SENDINFO(m_iFrameEnd), 8),
+		SendPropInt(SENDINFO(m_bWrap), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flFramerate), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_bNewAnimCommandsSemaphore), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flFloatLerpStartValue), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flFloatLerpEndValue), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flFloatLerpTransitionTime), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nModifyMode), 2, SPROP_UNSIGNED),
+	END_SEND_TABLE(DT_MaterialModifyControl)
 };
 
 LINK_ENTITY_TO_CLASS(material_modify_control, CMaterialModifyControl);
@@ -90,20 +105,7 @@ BEGIN_DATADESC( CMaterialModifyControl )
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
-BEGIN_SEND_TABLE(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
-	SendPropString( SENDINFO( m_szMaterialName ) ),
-	SendPropString( SENDINFO( m_szMaterialVar ) ),
-	SendPropString( SENDINFO( m_szMaterialVarValue ) ),
-	SendPropInt( SENDINFO(m_iFrameStart), 8 ),
-	SendPropInt( SENDINFO(m_iFrameEnd), 8 ),
-	SendPropInt( SENDINFO(m_bWrap), 1, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_flFramerate), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_bNewAnimCommandsSemaphore), 1, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_flFloatLerpStartValue), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flFloatLerpEndValue), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flFloatLerpTransitionTime), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_nModifyMode), 2, SPROP_UNSIGNED ),
-END_SEND_TABLE(DT_MaterialModifyControl)
+
 
 //-----------------------------------------------------------------------------
 // Purpose:

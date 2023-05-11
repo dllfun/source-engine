@@ -20,7 +20,9 @@
 
 #endif
 
-
+#if !defined( CLIENT_DLL )
+void* SendProxy_SendActiveLocalKnifeDataTable(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+#endif
 // ----------------------------------------------------------------------------- //
 // CKnife class definition.
 // ----------------------------------------------------------------------------- //
@@ -75,6 +77,18 @@ public:
 
 private:
 	CKnife( const CKnife & ) {}
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE_NOBASE(CKnife, DT_LocalActiveWeaponKnifeData)
+		SendPropTime(SENDINFO(m_flSmackTime)),
+	END_NETWORK_TABLE(DT_LocalActiveWeaponKnifeData)
+#endif
+
+#if !defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CKnife, DT_WeaponKnife, DT_WeaponCSBase)
+		SendPropDataTable("LocalActiveWeaponKnifeData", 0, REFERENCE_SEND_TABLE(DT_LocalActiveWeaponKnifeData), SendProxy_SendActiveLocalKnifeDataTable),
+	END_NETWORK_TABLE(DT_WeaponKnife)
+#endif
 };
 
 

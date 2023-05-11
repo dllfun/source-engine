@@ -132,6 +132,9 @@ public:
 	void (CTeamplayRoundBasedRules::*pfnThink)();	// Do a PreThink() in this state.
 };
 
+#if !defined( CLIENT_DLL )
+void* SendProxy_TeamplayRoundBasedRules(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID);
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -152,6 +155,12 @@ public:
 	void			OnPreDataChanged( DataUpdateType_t updateType );
 	void			OnDataChanged( DataUpdateType_t updateType );
 #endif // CLIENT_DLL
+
+#if !defined( CLIENT_DLL )
+	BEGIN_SEND_TABLE(CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy, DT_GameRulesProxy)
+		SendPropDataTable("teamplayroundbased_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_TeamplayRoundBasedRules), SendProxy_TeamplayRoundBasedRules)
+	END_SEND_TABLE(DT_TeamplayRoundBasedRulesProxy)
+#endif
 };
 
 //-----------------------------------------------------------------------------
@@ -168,7 +177,7 @@ public:
 
 	void SetRoundState( int iRoundState );
 #else
-	DECLARE_SERVERCLASS_NOBASE(); // This makes datatables able to access our private vars.
+	DECLARE_SERVERCLASS(); // This makes datatables able to access our private vars.
 	DECLARE_SEND_TABLE_ACCESS(DT_TeamplayRoundBasedRules);
 #endif
 
@@ -579,6 +588,26 @@ public:
 
 	float	m_flStopWatchTotalTime;
 	int		m_iLastCapPointChanged;
+
+#ifndef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
+		SendPropInt(SENDINFO(m_iRoundState), 5),
+		SendPropBool(SENDINFO(m_bInWaitingForPlayers)),
+		SendPropInt(SENDINFO(m_iWinningTeam), 3, SPROP_UNSIGNED),
+		SendPropBool(SENDINFO(m_bInOvertime)),
+		SendPropBool(SENDINFO(m_bInSetup)),
+		SendPropBool(SENDINFO(m_bSwitchedTeamsThisRound)),
+		SendPropBool(SENDINFO(m_bAwaitingReadyRestart)),
+		SendPropTime(SENDINFO(m_flRestartRoundTime)),
+		SendPropTime(SENDINFO(m_flMapResetTime)),
+		SendPropArray3(SENDINFO_ARRAY3(m_flNextRespawnWave), SendPropTime(SENDINFO_ARRAY(m_flNextRespawnWave))),
+		SendPropArray3(SENDINFO_ARRAY3(m_TeamRespawnWaveTimes), SendPropFloat(SENDINFO_ARRAY(m_TeamRespawnWaveTimes))),
+		SendPropArray3(SENDINFO_ARRAY3(m_bTeamReady), SendPropBool(SENDINFO_ARRAY(m_bTeamReady))),
+		SendPropBool(SENDINFO(m_bStopWatch)),
+		SendPropBool(SENDINFO(m_bMultipleTrains)),
+		SendPropArray3(SENDINFO_ARRAY3(m_bPlayerReady), SendPropBool(SENDINFO_ARRAY(m_bPlayerReady))),
+	END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
+#endif
 };
 
 // Utility function

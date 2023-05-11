@@ -28,19 +28,21 @@ public:
 
 private:
 	void	Spin( void );
+
+	BEGIN_SEND_TABLE_NOBASE(CTestTraceline, DT_TestTraceline)
+		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),
+		SendPropVector(SENDINFO(m_vecOrigin), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_VECTORELEM(m_angRotation, 0), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_VECTORELEM(m_angRotation, 1), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropFloat(SENDINFO_VECTORELEM(m_angRotation, 2), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
+		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
+	END_SEND_TABLE(DT_TestTraceline)
 };
 							  
 
 // This table encodes the CBaseEntity data.
 IMPLEMENT_SERVERCLASS(CTestTraceline, DT_TestTraceline)
-BEGIN_SEND_TABLE_NOBASE(CTestTraceline, DT_TestTraceline)
-	SendPropInt		(SENDINFO(m_clrRender),	32, SPROP_UNSIGNED ),
-	SendPropVector (SENDINFO(m_vecOrigin), 19, 0,	MIN_COORD_INTEGER, MAX_COORD_INTEGER),
-	SendPropFloat	(SENDINFO_VECTORELEM(m_angRotation, 0), 19, 0,	MIN_COORD_INTEGER, MAX_COORD_INTEGER),
-	SendPropFloat	(SENDINFO_VECTORELEM(m_angRotation, 1), 19, 0,	MIN_COORD_INTEGER, MAX_COORD_INTEGER),
-	SendPropFloat	(SENDINFO_VECTORELEM(m_angRotation, 2), 19, 0,	MIN_COORD_INTEGER, MAX_COORD_INTEGER),
-	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),
-END_SEND_TABLE(DT_TestTraceline)
+
 
 LINK_ENTITY_TO_CLASS( test_traceline, CTestTraceline );
 

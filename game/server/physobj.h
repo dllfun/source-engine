@@ -100,6 +100,10 @@ protected:
 	COutputEvent	m_OnPlayerUse;
 
 	CHandle<CBasePlayer>	m_hCarryingPlayer;	// Player who's carrying us
+
+	BEGIN_SEND_TABLE(CPhysBox, DT_PhysBox, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PhysBox)
 };
 
 // ---------------------------------------------------------------------
@@ -234,6 +238,21 @@ protected:
 	float			m_flRadius;
 	float			m_flNextSuckTime;
 	int				m_iMaxObjectsAttached;
+
+	BEGIN_SEND_TABLE(CPhysMagnet, DT_PhysMagnet, DT_BaseAnimating)
+
+		// ROBIN: Disabled because we don't need it anymore
+		/*
+		SendPropArray2(
+			SendProxyArrayLength_MagnetAttachedArray,
+			SendPropInt("magnetattached_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_MagnetAttachedObjectList),
+			128,
+			0,
+			"magnetattached_array"
+			)
+		*/
+
+	END_SEND_TABLE(DT_PhysMagnet)
 };
 
 #endif // PHYSOBJ_H
