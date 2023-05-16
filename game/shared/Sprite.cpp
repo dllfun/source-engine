@@ -121,34 +121,14 @@ IMPLEMENT_NETWORKCLASS_ALIASED( Sprite, DT_Sprite );
 
 #if defined( CLIENT_DLL )
 
-static void RecvProxy_SpriteScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_SpriteScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	((CSprite*)pStruct)->SetSpriteScale( pData->m_Value.m_Float );
 }
 
 #endif
 
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE( CSprite, DT_Sprite , DT_BaseEntity)
-	RecvPropEHandle(RECVINFO(m_hAttachedToEntity)),
-	RecvPropInt(RECVINFO(m_nAttachment)),
-	RecvPropFloat(RECVINFO(m_flScaleTime)),
-	RecvPropFloat(RECVINFO(m_flSpriteScale), 0, RecvProxy_SpriteScale),
-	RecvPropFloat(RECVINFO(m_flSpriteFramerate)),
-	RecvPropFloat(RECVINFO(m_flGlowProxySize)),
 
-	RecvPropFloat( RECVINFO(m_flHDRColorScale )),
-
-	RecvPropFloat(RECVINFO(m_flFrame)),
-#ifdef PORTAL
-	RecvPropBool( RECVINFO(m_bDrawInMainRender) ),
-	RecvPropBool( RECVINFO(m_bDrawInPortalRender) ),
-#endif //#ifdef PORTAL
-	RecvPropFloat(RECVINFO(m_flBrightnessTime)),
-	RecvPropInt(RECVINFO(m_nBrightness)),
-	RecvPropBool( RECVINFO(m_bWorldSpaceScale) ),
-END_NETWORK_TABLE(DT_Sprite)
-#endif
 
 
 CSprite::CSprite() : BaseClass()
@@ -834,9 +814,8 @@ IMPLEMENT_SERVERCLASS( CSpriteOriented, DT_SpriteOriented , DT_Sprite)
 
 #else
 #undef CSpriteOriented
-IMPLEMENT_CLIENTCLASS_DT(C_SpriteOriented, DT_SpriteOriented, CSpriteOriented)
-#define CSpriteOriented C_SpriteOriented
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_SpriteOriented, DT_SpriteOriented, CSpriteOriented)
+
 #endif
 
 #if !defined( CLIENT_DLL )
@@ -852,7 +831,7 @@ void CSpriteOriented::Spawn( void )
 }
 
 #else
-
+#define CSpriteOriented C_SpriteOriented
 bool CSpriteOriented::IsTransparent( void )
 {
 	return true;

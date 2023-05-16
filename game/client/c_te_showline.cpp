@@ -32,6 +32,10 @@ public:
 
 public:
 	Vector			m_vecEnd;
+
+	BEGIN_RECV_TABLE(C_TEShowLine, DT_TEShowLine, DT_TEParticleSystem)
+		RecvPropVector(RECVINFO(m_vecEnd)),
+	END_RECV_TABLE(DT_TEShowLine)
 };
 
 //-----------------------------------------------------------------------------
@@ -95,9 +99,8 @@ void C_TEShowLine::PostDataUpdate( DataUpdateType_t updateType )
 	}
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEShowLine, DT_TEShowLine, CTEShowLine)
-	RecvPropVector( RECVINFO(m_vecEnd)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEShowLine, DT_TEShowLine, CTEShowLine)
+
 
 void TE_ShowLine( IRecipientFilter& filter, float delay,
 	const Vector* start, const Vector* end )

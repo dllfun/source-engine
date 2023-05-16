@@ -35,6 +35,13 @@ public:
 	int				m_nModelIndex;
 	float			m_fScale;
 	int				m_nFrameRate;
+
+	BEGIN_RECV_TABLE(C_TESmoke, DT_TESmoke, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropFloat(RECVINFO(m_fScale)),
+		RecvPropInt(RECVINFO(m_nFrameRate)),
+	END_RECV_TABLE(DT_TESmoke)
 };
 
 //-----------------------------------------------------------------------------
@@ -103,9 +110,5 @@ void TE_Smoke( IRecipientFilter& filter, float delay,
 	RecordSmoke( *pos, scale * 10.0f, framerate );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TESmoke, DT_TESmoke, CTESmoke)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fScale )),
-	RecvPropInt( RECVINFO(m_nFrameRate)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TESmoke, DT_TESmoke, CTESmoke)
+

@@ -35,16 +35,19 @@ public:
 public:
 	Vector			m_vecOrigin;
 	int				m_nIndex;
+
+	BEGIN_RECV_TABLE(C_TEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropInt(RECVINFO(m_nIndex)),
+	END_RECV_TABLE(DT_TEWorldDecal)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking 
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEWorldDecal, DT_TEWorldDecal, CTEWorldDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEWorldDecal, DT_TEWorldDecal, CTEWorldDecal)
+
 
 
 //-----------------------------------------------------------------------------

@@ -36,6 +36,11 @@ public:
 	Vector			m_vecDir;
 
 	const class IVModel *m_pModel;
+
+	BEGIN_RECV_TABLE_NOBASE(C_TEMetalSparks, DT_TEMetalSparks)
+		RecvPropVector(RECVINFO(m_vecPos)),
+		RecvPropVector(RECVINFO(m_vecDir)),
+	END_RECV_TABLE(DT_TEMetalSparks)
 };
 
 //-----------------------------------------------------------------------------
@@ -117,6 +122,9 @@ class C_TEArmorRicochet : public C_TEMetalSparks
 public:
 	DECLARE_CLIENTCLASS();
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
+
+	BEGIN_RECV_TABLE(C_TEArmorRicochet, DT_TEArmorRicochet, DT_TEMetalSparks)
+	END_RECV_TABLE(DT_TEArmorRicochet)
 };
 
 
@@ -172,11 +180,7 @@ void C_TEArmorRicochet::PostDataUpdate( DataUpdateType_t updateType )
 // Expose the TE to the engine.
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEMetalSparks, DT_TEMetalSparks, CTEMetalSparks );
 
-BEGIN_RECV_TABLE_NOBASE(C_TEMetalSparks, DT_TEMetalSparks)
-	RecvPropVector(RECVINFO(m_vecPos)),
-	RecvPropVector(RECVINFO(m_vecDir)),
-END_RECV_TABLE()
+
 
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEArmorRicochet, DT_TEArmorRicochet, CTEArmorRicochet );
-BEGIN_RECV_TABLE(C_TEArmorRicochet, DT_TEArmorRicochet)
-END_RECV_TABLE()
+

@@ -17,8 +17,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_BreakableProp, DT_BreakableProp, CBreakableProp)
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_BreakableProp, DT_BreakableProp, CBreakableProp)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

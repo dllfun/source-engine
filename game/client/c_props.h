@@ -18,15 +18,15 @@
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class C_DynamicProp : public C_BreakableProp
+class CDynamicProp : public C_BreakableProp
 {
-	DECLARE_CLASS( C_DynamicProp, C_BreakableProp );
+	DECLARE_CLASS(CDynamicProp, C_BreakableProp );
 public:
 	DECLARE_NETWORKCLASS();
 
 	// constructor, destructor
-	C_DynamicProp( void );
-	~C_DynamicProp( void );
+	CDynamicProp( void );
+	~CDynamicProp( void );
 
 	void GetRenderBounds( Vector& theMins, Vector& theMaxs );
 	unsigned int ComputeClientSideAnimationFlags();
@@ -34,12 +34,18 @@ public:
 	bool TestCollision( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
 
 private:
-	C_DynamicProp( const C_DynamicProp & );
+	CDynamicProp( const CDynamicProp& );
 
+protected:
 	bool	m_bUseHitboxesForRenderBox;
+private:
 	int		m_iCachedFrameCount;
 	Vector	m_vecCachedRenderMins;
 	Vector	m_vecCachedRenderMaxs;
+
+	BEGIN_RECV_TABLE(CDynamicProp, DT_DynamicProp, DT_BreakableProp)
+		RecvPropBool(RECVINFO(m_bUseHitboxesForRenderBox)),
+	END_RECV_TABLE(DT_DynamicProp)
 };
 
 #endif // C_PROPS_H

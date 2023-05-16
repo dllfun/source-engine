@@ -271,12 +271,7 @@ int GetShellForAmmoType( const char *ammoname )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCSBase, DT_WeaponCSBase )
 
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE( CWeaponCSBase, DT_WeaponCSBase, DT_BaseCombatWeapon)
-RecvPropInt( RECVINFO( m_weaponMode ) ),
-RecvPropFloat( RECVINFO(m_fAccuracyPenalty)),
-END_NETWORK_TABLE(DT_WeaponCSBase)
-#endif
+
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponCSBase )

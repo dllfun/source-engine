@@ -31,6 +31,11 @@ public:
 
 	int				m_nModelIndex;
 	int				m_nReversed;
+
+	BEGIN_RECV_TABLE(C_TELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropInt(RECVINFO(m_nReversed)),
+	END_RECV_TABLE(DT_TELargeFunnel)
 };
 
 //-----------------------------------------------------------------------------
@@ -144,10 +149,8 @@ void C_TELargeFunnel::PostDataUpdate( DataUpdateType_t updateType )
 	CreateFunnel();
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TELargeFunnel, DT_TELargeFunnel, CTELargeFunnel)
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nReversed)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TELargeFunnel, DT_TELargeFunnel, CTELargeFunnel)
+
 
 void TE_LargeFunnel( IRecipientFilter& filter, float delay,
 	const Vector* pos, int modelindex, int reversed )

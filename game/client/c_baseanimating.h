@@ -87,6 +87,7 @@ typedef unsigned int			ClientSideAnimationListHandle_t;
 
 #define		INVALID_CLIENTSIDEANIMATION_LIST_HANDLE	(ClientSideAnimationListHandle_t)~0
 
+void RecvProxy_Sequence(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 class C_BaseAnimating : public C_BaseEntity, private IModelLoadCallback
 {
@@ -633,6 +634,46 @@ private:
 	mutable CStudioHdr				*m_pStudioHdr;
 	mutable MDLHandle_t				m_hStudioHdr;
 	CThreadFastMutex				m_StudioHdrInitLock;
+
+	BEGIN_RECV_TABLE_NOBASE(C_BaseAnimating, DT_ServerAnimationData)
+		RecvPropFloat(RECVINFO(m_flCycle)),
+	END_RECV_TABLE(DT_ServerAnimationData)
+
+	BEGIN_RECV_TABLE(C_BaseAnimating, DT_BaseAnimating, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_nSequence), 0, RecvProxy_Sequence),
+		RecvPropInt(RECVINFO(m_nForceBone)),
+		RecvPropVector(RECVINFO(m_vecForce)),
+		RecvPropInt(RECVINFO(m_nSkin)),
+		RecvPropInt(RECVINFO(m_nBody)),
+		RecvPropInt(RECVINFO(m_nHitboxSet)),
+
+		RecvPropFloat(RECVINFO(m_flModelScale)),
+		RecvPropFloat(RECVINFO_NAME(m_flModelScale, m_flModelWidthScale)), // for demo compatibility only
+
+		//	RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0])), m_flPoseParameter),
+		RecvPropArray3(RECVINFO_ARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO(m_flPoseParameter[0]))),
+
+		RecvPropFloat(RECVINFO(m_flPlaybackRate)),
+
+		RecvPropArray3(RECVINFO_ARRAY(m_flEncodedController), RecvPropFloat(RECVINFO(m_flEncodedController[0]))),
+
+		RecvPropInt(RECVINFO(m_bClientSideAnimation)),
+		RecvPropInt(RECVINFO(m_bClientSideFrameReset)),
+
+		RecvPropInt(RECVINFO(m_nNewSequenceParity)),
+		RecvPropInt(RECVINFO(m_nResetEventsParity)),
+		RecvPropInt(RECVINFO(m_nMuzzleFlashParity)),
+
+		RecvPropEHandle(RECVINFO(m_hLightingOrigin)),
+		RecvPropEHandle(RECVINFO(m_hLightingOriginRelative)),
+
+		RecvPropDataTable("serveranimdata", 0, 0, REFERENCE_RECV_TABLE(DT_ServerAnimationData)),
+
+		RecvPropFloat(RECVINFO(m_fadeMinDist)),
+		RecvPropFloat(RECVINFO(m_fadeMaxDist)),
+		RecvPropFloat(RECVINFO(m_flFadeScale)),
+
+	END_RECV_TABLE(DT_BaseAnimating)
 };
 
 enum 

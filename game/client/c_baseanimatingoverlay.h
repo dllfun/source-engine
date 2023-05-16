@@ -11,10 +11,12 @@
 #pragma once
 
 #include "c_baseanimating.h"
+#include "dt_utlvector_recv.h"
 
 // For shared code.
 #define CBaseAnimatingOverlay C_BaseAnimatingOverlay
 
+void ResizeAnimationLayerCallback(void* pStruct, int offsetToUtlVector, int len);
 
 class C_BaseAnimatingOverlay : public C_BaseAnimating
 {
@@ -54,6 +56,17 @@ public:
 
 private:
 	C_BaseAnimatingOverlay( const C_BaseAnimatingOverlay & ); // not defined, not accessible
+
+	BEGIN_RECV_TABLE_NOBASE(C_BaseAnimatingOverlay, DT_OverlayVars)
+		RecvPropUtlVector(
+			RECVINFO_UTLVECTOR_SIZEFN(m_AnimOverlay, ResizeAnimationLayerCallback),
+			C_BaseAnimatingOverlay::MAX_OVERLAYS,
+			RecvPropDataTable(NULL, 0, 0, REFERENCE_RECV_TABLE(DT_Animationlayer)))
+	END_RECV_TABLE(DT_OverlayVars)
+
+	BEGIN_RECV_TABLE(C_BaseAnimatingOverlay, DT_BaseAnimatingOverlay, DT_BaseAnimating)
+		RecvPropDataTable("overlay_vars", 0, 0, REFERENCE_RECV_TABLE(DT_OverlayVars))
+	END_RECV_TABLE(DT_BaseAnimatingOverlay)
 };
 
 

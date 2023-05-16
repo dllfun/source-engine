@@ -115,12 +115,15 @@
 
 		EHANDLE m_Handle;
 		bool m_bSendHandle;
+
+		BEGIN_RECV_TABLE(C_HandleTest, DT_HandleTest, DT_BaseEntity)
+			RecvPropEHandle(RECVINFO(m_Handle)),
+			RecvPropInt(RECVINFO(m_bSendHandle))
+		END_RECV_TABLE(DT_HandleTest)
 	};
 
-	IMPLEMENT_CLIENTCLASS_DT( C_HandleTest, DT_HandleTest, CHandleTest )
-		RecvPropEHandle( RECVINFO( m_Handle ) ),
-		RecvPropInt( RECVINFO( m_bSendHandle ) )
-	END_RECV_TABLE()
+	IMPLEMENT_CLIENTCLASS( C_HandleTest, DT_HandleTest, CHandleTest )
+	
 
 
 #endif

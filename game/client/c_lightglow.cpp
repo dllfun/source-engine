@@ -74,6 +74,8 @@ protected:
 	bool	m_bModulateByDot;
 };
 
+void RecvProxy_HDRColorScale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -103,29 +105,32 @@ public:
 	C_LightGlowOverlay	m_Glow;
 
 	float				m_flGlowProxySize;
+
+	BEGIN_RECV_TABLE_NOBASE(C_LightGlow, DT_LightGlow, CLightGlow)
+		RecvPropInt(RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32),
+		RecvPropInt(RECVINFO(m_nHorizontalSize)),
+		RecvPropInt(RECVINFO(m_nVerticalSize)),
+		RecvPropInt(RECVINFO(m_nMinDist)),
+		RecvPropInt(RECVINFO(m_nMaxDist)),
+		RecvPropInt(RECVINFO(m_nOuterMaxDist)),
+		RecvPropInt(RECVINFO(m_spawnflags)),
+		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
+		RecvPropQAngles(RECVINFO_NAME(m_angNetworkAngles, m_angRotation)),
+		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropFloat(RECVINFO(m_flGlowProxySize)),
+		RecvPropFloat("HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_HDRColorScale),
+	END_RECV_TABLE(DT_LightGlow)
 };
 
-static void RecvProxy_HDRColorScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_HDRColorScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	C_LightGlow *pLightGlow = ( C_LightGlow * )pStruct;
 
 	pLightGlow->m_Glow.m_flHDRColorScale = pData->m_Value.m_Float;
 }
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_LightGlow, DT_LightGlow, CLightGlow )
-	RecvPropInt( RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32 ),
-	RecvPropInt( RECVINFO( m_nHorizontalSize ) ),
-	RecvPropInt( RECVINFO( m_nVerticalSize ) ),
-	RecvPropInt( RECVINFO( m_nMinDist ) ),
-	RecvPropInt( RECVINFO( m_nMaxDist ) ),
-	RecvPropInt( RECVINFO( m_nOuterMaxDist ) ),
-	RecvPropInt( RECVINFO( m_spawnflags ) ),
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-	RecvPropFloat(RECVINFO(m_flGlowProxySize)),
-	RecvPropFloat("HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_HDRColorScale),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_LightGlow, DT_LightGlow, CLightGlow )
+
 
 //-----------------------------------------------------------------------------
 // Constructor 

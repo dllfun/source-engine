@@ -132,60 +132,7 @@ LINK_ENTITY_TO_CLASS( beam, CBeam );
 // This table encodes the CBeam data.
 IMPLEMENT_NETWORKCLASS_ALIASED( Beam, DT_Beam )
 
-#if !defined( NO_ENTITY_PREDICTION )
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_BeamPredictableId )
-	RecvPropPredictableId( RECVINFO( m_PredictableID ) ),
-	RecvPropInt( RECVINFO( m_bIsPlayerSimulated ) ),
-END_NETWORK_TABLE(DT_BeamPredictableId)
-#endif
-#endif
 
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE_NOBASE( CBeam, DT_Beam )
-	RecvPropInt		(RECVINFO(m_nBeamType)),
-	RecvPropInt		(RECVINFO(m_nBeamFlags)),
-	RecvPropInt		(RECVINFO(m_nNumBeamEnts)),
-	RecvPropArray3
-	(
-		RECVINFO_ARRAY( m_hAttachEntity ),
-		RecvPropEHandle (RECVINFO(m_hAttachEntity[0]))
-	),
-	RecvPropArray3	
-	(
-		RECVINFO_ARRAY( m_nAttachIndex ),
-		RecvPropInt (RECVINFO(m_nAttachIndex[0]))
-	),
-	RecvPropInt		(RECVINFO(m_nHaloIndex)),
-	RecvPropFloat	(RECVINFO(m_fHaloScale)),
-	RecvPropFloat	(RECVINFO(m_fWidth)),
-	RecvPropFloat	(RECVINFO(m_fEndWidth)),
-	RecvPropFloat	(RECVINFO(m_fFadeLength)),
-	RecvPropFloat	(RECVINFO(m_fAmplitude)),
-	RecvPropFloat	(RECVINFO(m_fStartFrame)),
-	RecvPropFloat	(RECVINFO(m_fSpeed), 0, RecvProxy_Beam_ScrollSpeed ),
-	RecvPropFloat(RECVINFO(m_flFrameRate)),
-	RecvPropFloat(RECVINFO(m_flHDRColorScale)),
-	RecvPropInt(RECVINFO(m_clrRender)),
-	RecvPropInt(RECVINFO(m_nRenderFX)),
-	RecvPropInt(RECVINFO(m_nRenderMode)),
-	RecvPropFloat(RECVINFO(m_flFrame)),
-	RecvPropVector(RECVINFO(m_vecEndPos)),
-#ifdef PORTAL
-	RecvPropBool(RECVINFO(m_bDrawInMainRender) ),
-	RecvPropBool(RECVINFO(m_bDrawInPortalRender) ),
-#endif
-	RecvPropInt(RECVINFO(m_nModelIndex)),
-	RecvPropInt(RECVINFO(m_nMinDXLevel)),
-
-	RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-#if !defined( NO_ENTITY_PREDICTION )
-	RecvPropDataTable( "beampredictable_id", 0, 0, &REFERENCE_RECV_TABLE( DT_BeamPredictableId ) ),
-#endif
-
-END_NETWORK_TABLE(DT_Beam)
-#endif
 
 #if !defined( CLIENT_DLL )
 BEGIN_DATADESC( CBeam )

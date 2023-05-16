@@ -75,8 +75,8 @@ IClientMode *g_pClientMode = NULL;
 CHandle<C_BaseAnimatingOverlay> g_ClassImagePlayer;	// player
 CHandle<C_BaseAnimating> g_ClassImageWeapon;	// weapon
 
-STUB_WEAPON_CLASS( cycler_weapon,	WeaponCycler,	C_BaseCombatWeapon );
-STUB_WEAPON_CLASS( weapon_cubemap,	WeaponCubemap,	C_BaseCombatWeapon );
+STUB_WEAPON_CLASS( cycler_weapon,	WeaponCycler,	C_BaseCombatWeapon, DT_BaseCombatWeapon);
+STUB_WEAPON_CLASS( weapon_cubemap,	WeaponCubemap,	C_BaseCombatWeapon, DT_BaseCombatWeapon);
 
 //-----------------------------------------------------------------------------
 // HACK: the detail sway convars are archive, and default to 0.  Existing CS:S players thus have no detail

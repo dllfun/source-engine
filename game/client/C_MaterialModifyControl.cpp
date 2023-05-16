@@ -119,23 +119,26 @@ private:
 	float	m_flAnimationStartTime;
 
 	int		m_nModifyMode;
+
+	BEGIN_RECV_TABLE(C_MaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
+		RecvPropString(RECVINFO(m_szMaterialName)),
+		RecvPropString(RECVINFO(m_szMaterialVar)),
+		RecvPropString(RECVINFO(m_szMaterialVarValue)),
+		RecvPropInt(RECVINFO(m_iFrameStart)),
+		RecvPropInt(RECVINFO(m_iFrameEnd)),
+		RecvPropInt(RECVINFO(m_bWrap)),
+		RecvPropFloat(RECVINFO(m_flFramerate)),
+		RecvPropInt(RECVINFO(m_bNewAnimCommandsSemaphore)),
+		RecvPropFloat(RECVINFO(m_flFloatLerpStartValue)),
+		RecvPropFloat(RECVINFO(m_flFloatLerpEndValue)),
+		RecvPropFloat(RECVINFO(m_flFloatLerpTransitionTime)),
+		RecvPropInt(RECVINFO(m_bFloatLerpWrap)),
+		RecvPropInt(RECVINFO(m_nModifyMode)),
+	END_RECV_TABLE(DT_MaterialModifyControl)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_MaterialModifyControl, DT_MaterialModifyControl, CMaterialModifyControl)
-	RecvPropString( RECVINFO( m_szMaterialName ) ),
-	RecvPropString( RECVINFO( m_szMaterialVar ) ),
-	RecvPropString( RECVINFO( m_szMaterialVarValue ) ),
-	RecvPropInt( RECVINFO(m_iFrameStart) ),
-	RecvPropInt( RECVINFO(m_iFrameEnd) ),
-	RecvPropInt( RECVINFO(m_bWrap) ),
-	RecvPropFloat( RECVINFO(m_flFramerate) ),
-	RecvPropInt( RECVINFO(m_bNewAnimCommandsSemaphore) ),
-	RecvPropFloat( RECVINFO(m_flFloatLerpStartValue) ),
-	RecvPropFloat( RECVINFO(m_flFloatLerpEndValue) ),
-	RecvPropFloat( RECVINFO(m_flFloatLerpTransitionTime) ),
-	RecvPropInt( RECVINFO(m_bFloatLerpWrap) ),
-	RecvPropInt( RECVINFO(m_nModifyMode) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_MaterialModifyControl, DT_MaterialModifyControl, CMaterialModifyControl)
+
 
 //------------------------------------------------------------------------------
 // Purpose:

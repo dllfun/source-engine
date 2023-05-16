@@ -38,17 +38,20 @@ private:
 	float m_flCustomBloomScaleMinimum;
 private:
 	C_EnvTonemapController( const C_EnvTonemapController & );
+
+	BEGIN_RECV_TABLE(C_EnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_bUseCustomAutoExposureMin)),
+		RecvPropInt(RECVINFO(m_bUseCustomAutoExposureMax)),
+		RecvPropInt(RECVINFO(m_bUseCustomBloomScale)),
+		RecvPropFloat(RECVINFO(m_flCustomAutoExposureMin)),
+		RecvPropFloat(RECVINFO(m_flCustomAutoExposureMax)),
+		RecvPropFloat(RECVINFO(m_flCustomBloomScale)),
+		RecvPropFloat(RECVINFO(m_flCustomBloomScaleMinimum)),
+	END_RECV_TABLE(DT_EnvTonemapController)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_EnvTonemapController, DT_EnvTonemapController, CEnvTonemapController )
-	RecvPropInt( RECVINFO(m_bUseCustomAutoExposureMin) ),
-	RecvPropInt( RECVINFO(m_bUseCustomAutoExposureMax) ),
-	RecvPropInt( RECVINFO(m_bUseCustomBloomScale) ),
-	RecvPropFloat( RECVINFO(m_flCustomAutoExposureMin) ),
-	RecvPropFloat( RECVINFO(m_flCustomAutoExposureMax) ),
-	RecvPropFloat( RECVINFO(m_flCustomBloomScale) ),
-	RecvPropFloat( RECVINFO(m_flCustomBloomScaleMinimum) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EnvTonemapController, DT_EnvTonemapController, CEnvTonemapController )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

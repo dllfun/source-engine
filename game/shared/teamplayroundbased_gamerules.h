@@ -135,6 +135,8 @@ public:
 #if !defined( CLIENT_DLL )
 void* SendProxy_TeamplayRoundBasedRules(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID);
 #endif
+void RecvProxy_TeamplayRoundBasedRules(const RecvProp* pProp, void** pOut, void* pData, int objectID);
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -161,8 +163,18 @@ public:
 		SendPropDataTable("teamplayroundbased_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_TeamplayRoundBasedRules), SendProxy_TeamplayRoundBasedRules)
 	END_SEND_TABLE(DT_TeamplayRoundBasedRulesProxy)
 #endif
+
+#if defined( CLIENT_DLL )
+	BEGIN_RECV_TABLE(CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy, DT_GameRulesProxy)
+		RecvPropDataTable("teamplayroundbased_gamerules_data", 0, 0, REFERENCE_RECV_TABLE(DT_TeamplayRoundBasedRules), RecvProxy_TeamplayRoundBasedRules)
+	END_RECV_TABLE( DT_TeamplayRoundBasedRulesProxy )
+#endif
 };
 
+#ifdef CLIENT_DLL
+void RecvProxy_TeamplayRoundState(const CRecvProxyData* pData, void* pStruct, void* pOut)
+#endif
+;
 //-----------------------------------------------------------------------------
 // Purpose: Teamplay game rules that manage a round based structure for you
 //-----------------------------------------------------------------------------
@@ -606,6 +618,26 @@ public:
 		SendPropBool(SENDINFO(m_bStopWatch)),
 		SendPropBool(SENDINFO(m_bMultipleTrains)),
 		SendPropArray3(SENDINFO_ARRAY3(m_bPlayerReady), SendPropBool(SENDINFO_ARRAY(m_bPlayerReady))),
+	END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
+#endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
+		RecvPropInt(RECVINFO(m_iRoundState), 0, RecvProxy_TeamplayRoundState),
+		RecvPropBool(RECVINFO(m_bInWaitingForPlayers)),
+		RecvPropInt(RECVINFO(m_iWinningTeam)),
+		RecvPropInt(RECVINFO(m_bInOvertime)),
+		RecvPropInt(RECVINFO(m_bInSetup)),
+		RecvPropInt(RECVINFO(m_bSwitchedTeamsThisRound)),
+		RecvPropBool(RECVINFO(m_bAwaitingReadyRestart)),
+		RecvPropTime(RECVINFO(m_flRestartRoundTime)),
+		RecvPropTime(RECVINFO(m_flMapResetTime)),
+		RecvPropArray3(RECVINFO_ARRAY(m_flNextRespawnWave), RecvPropTime(RECVINFO(m_flNextRespawnWave[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_TeamRespawnWaveTimes), RecvPropFloat(RECVINFO(m_TeamRespawnWaveTimes[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bTeamReady), RecvPropBool(RECVINFO(m_bTeamReady[0]))),
+		RecvPropBool(RECVINFO(m_bStopWatch)),
+		RecvPropBool(RECVINFO(m_bMultipleTrains)),
+		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerReady), RecvPropBool(RECVINFO(m_bPlayerReady[0]))),
 	END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
 #endif
 };

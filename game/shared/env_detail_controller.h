@@ -37,6 +37,13 @@ public:
 		SendPropFloat(SENDINFO(m_flFadeEndDist)),
 	END_NETWORK_TABLE(DT_DetailController)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CEnvDetailController, DT_DetailController)
+		RecvPropFloat(RECVINFO(m_flFadeStartDist)),
+		RecvPropFloat(RECVINFO(m_flFadeEndDist)),
+	END_NETWORK_TABLE(DT_DetailController)
+#endif
 };
 
 CEnvDetailController * GetDetailController();

@@ -112,6 +112,8 @@ class C_FireFromAboveSprite : public C_Sprite
 
 #define	OVERLAY_MAX_VISIBLE_RANGE	512.0f
 
+void RecvProxy_Scale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_ScaleTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 class C_FireSmoke : public C_BaseEntity
 {
@@ -188,6 +190,15 @@ protected:
 	CNewParticleEffect *m_hEffect;
 private:
 	C_FireSmoke( const C_FireSmoke & );
+
+	BEGIN_RECV_TABLE(C_FireSmoke, DT_FireSmoke, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flStartScale)),
+		RecvPropFloat(RECVINFO(m_flScale), 0, RecvProxy_Scale),
+		RecvPropFloat(RECVINFO(m_flScaleTime), 0, RecvProxy_ScaleTime),
+		RecvPropInt(RECVINFO(m_nFlags)),
+		RecvPropInt(RECVINFO(m_nFlameModelIndex)),
+		RecvPropInt(RECVINFO(m_nFlameFromAboveModelIndex)),
+	END_RECV_TABLE(DT_FireSmoke)
 };
 
 //Fire overlay
@@ -298,6 +309,10 @@ protected:
 
 	void	CreateEffect( void );
 	void	StopEffect( void );
+
+	BEGIN_RECV_TABLE(C_EntityFlame, DT_EntityFlame, DT_BaseEntity)
+		RecvPropEHandle(RECVINFO(m_hEntAttached)),
+	END_RECV_TABLE(DT_EntityFlame)
 };
 
 #endif //C_FIRE_SMOKE_H

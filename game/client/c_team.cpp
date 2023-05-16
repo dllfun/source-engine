@@ -29,20 +29,8 @@ void RecvProxyArrayLength_PlayerArray( void *pStruct, int objectID, int currentA
 }
 
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_Team, DT_Team, CTeam)
-	RecvPropInt( RECVINFO(m_iTeamNum)),
-	RecvPropInt( RECVINFO(m_iScore)),
-	RecvPropInt( RECVINFO(m_iRoundsWon) ),
-	RecvPropString( RECVINFO(m_szTeamname)),
-	
-	RecvPropArray2( 
-		RecvProxyArrayLength_PlayerArray,
-		RecvPropInt( "player_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_PlayerList ), 
-		MAX_PLAYERS, 
-		0, 
-		"player_array"
-		)
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_Team, DT_Team, CTeam)
+
 
 BEGIN_PREDICTION_DATA( C_Team )
 	DEFINE_PRED_ARRAY( m_szTeamname, FIELD_CHARACTER, MAX_TEAM_NAME_LENGTH, FTYPEDESC_PRIVATE ),

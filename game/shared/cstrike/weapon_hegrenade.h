@@ -49,6 +49,11 @@ public:
 	BEGIN_NETWORK_TABLE(CHEGrenade, DT_HEGrenade, DT_BaseCSGrenade)
 	END_NETWORK_TABLE(DT_HEGrenade)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CHEGrenade, DT_HEGrenade, DT_BaseCSGrenade)
+	END_NETWORK_TABLE(DT_HEGrenade)
+#endif
 };
 
 

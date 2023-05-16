@@ -13,6 +13,9 @@
 
 #include "ichoreoeventcallback.h"
 #include "choreoscene.h"
+#include "c_baseentity.h"
+
+void RecvProxy_ForcedClientTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 class C_SceneEntity : public C_BaseEntity, public IChoreoEventCallback
 {
@@ -113,6 +116,18 @@ private:
 	};
 
 	CUtlVector< QueuedEvents_t > m_QueuedEvents;
+
+	BEGIN_RECV_TABLE(C_SceneEntity, DT_SceneEntity, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_nSceneStringIndex)),
+		RecvPropBool(RECVINFO(m_bIsPlayingBack)),
+		RecvPropBool(RECVINFO(m_bPaused)),
+		RecvPropBool(RECVINFO(m_bMultiplayer)),
+		RecvPropFloat(RECVINFO(m_flForceClientTime), 0, RecvProxy_ForcedClientTime),
+		RecvPropUtlVector(
+			RECVINFO_UTLVECTOR(m_hActorList),
+			MAX_ACTORS_IN_SCENE,
+			RecvPropEHandle(NULL, 0, 0)),
+	END_RECV_TABLE(DT_SceneEntity)
 };
 
 //-----------------------------------------------------------------------------

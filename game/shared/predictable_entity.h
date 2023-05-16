@@ -159,7 +159,7 @@ class SendTable;
 	};																		\
 	static C##localName##Foo g_C##localName##Foo;
 
-#define BEGIN_NETWORK_TABLE( className, tableName ) BEGIN_RECV_TABLE( className, tableName )
+#define BEGIN_NETWORK_TABLE( className, tableName,baseTableName ) BEGIN_RECV_TABLE( className, tableName,baseTableName )
 #define BEGIN_NETWORK_TABLE_NOBASE( className, tableName ) BEGIN_RECV_TABLE_NOBASE( className, tableName )
 
 #define END_NETWORK_TABLE	END_RECV_TABLE

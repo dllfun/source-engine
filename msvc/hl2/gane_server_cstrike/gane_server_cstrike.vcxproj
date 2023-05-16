@@ -725,6 +725,14 @@
     <ClCompile Include="..\..\..\public\studio.cpp" />
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\public\dt_common.h" />
+    <ClInclude Include="..\..\..\public\dt_send.h" />
+    <ClInclude Include="..\..\..\public\dt_shared.h" />
+    <ClInclude Include="..\..\..\public\dt_utlvector_common.h" />
+    <ClInclude Include="..\..\..\public\dt_utlvector_send.h" />
+    <ClInclude Include="..\..\..\public\server_class.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

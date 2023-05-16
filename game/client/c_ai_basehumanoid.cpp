@@ -42,7 +42,7 @@ BEGIN_RECV_TABLE_NOBASE(AnimationLayer_t, DT_Animationlayer)
 	RecvPropFloat(RECVINFO_NAME(flCycle,cycle)),
 	RecvPropFloat(RECVINFO_NAME(flPlaybackrate,playbackrate)),
 	RecvPropFloat(RECVINFO_NAME(flWeight,weight))
-END_RECV_TABLE()
+END_RECV_TABLE(DT_Animationlayer)
 
 
 

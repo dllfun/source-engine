@@ -48,6 +48,11 @@ public:
 	BEGIN_NETWORK_TABLE(CFlashbang, DT_Flashbang, DT_BaseCSGrenade)
 	END_NETWORK_TABLE(DT_Flashbang)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CFlashbang, DT_Flashbang, DT_BaseCSGrenade)
+	END_NETWORK_TABLE(DT_Flashbang)
+#endif
 };
 
 

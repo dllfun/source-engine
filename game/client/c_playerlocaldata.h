@@ -75,6 +75,72 @@ public:
 
 	bool					m_bSlowMovement;
 
+	BEGIN_RECV_TABLE_NOBASE(CPlayerLocalData, DT_Local)
+		RecvPropArray3(RECVINFO_ARRAY(m_chAreaBits), RecvPropInt(RECVINFO(m_chAreaBits[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_chAreaPortalBits), RecvPropInt(RECVINFO(m_chAreaPortalBits[0]))),
+		RecvPropInt(RECVINFO(m_iHideHUD)),
+
+		// View
+
+		RecvPropFloat(RECVINFO(m_flFOVRate)),
+
+		RecvPropInt(RECVINFO(m_bDucked)),
+		RecvPropInt(RECVINFO(m_bDucking)),
+		RecvPropInt(RECVINFO(m_bInDuckJump)),
+		RecvPropFloat(RECVINFO(m_flDucktime)),
+		RecvPropFloat(RECVINFO(m_flDuckJumpTime)),
+		RecvPropFloat(RECVINFO(m_flJumpTime)),
+		RecvPropFloat(RECVINFO(m_flFallVelocity)),
+
+#if PREDICTION_ERROR_CHECK_LEVEL > 1 
+		RecvPropFloat(RECVINFO_NAME(m_vecPunchAngle.m_Value[0], m_vecPunchAngle[0])),
+		RecvPropFloat(RECVINFO_NAME(m_vecPunchAngle.m_Value[1], m_vecPunchAngle[1])),
+		RecvPropFloat(RECVINFO_NAME(m_vecPunchAngle.m_Value[2], m_vecPunchAngle[2])),
+		RecvPropFloat(RECVINFO_NAME(m_vecPunchAngleVel.m_Value[0], m_vecPunchAngleVel[0])),
+		RecvPropFloat(RECVINFO_NAME(m_vecPunchAngleVel.m_Value[1], m_vecPunchAngleVel[1])),
+		RecvPropFloat(RECVINFO_NAME(m_vecPunchAngleVel.m_Value[2], m_vecPunchAngleVel[2])),
+#else
+		RecvPropVector(RECVINFO(m_vecPunchAngle)),
+		RecvPropVector(RECVINFO(m_vecPunchAngleVel)),
+#endif
+
+		RecvPropInt(RECVINFO(m_bDrawViewmodel)),
+		RecvPropInt(RECVINFO(m_bWearingSuit)),
+		RecvPropBool(RECVINFO(m_bPoisoned)),
+		RecvPropFloat(RECVINFO(m_flStepSize)),
+		RecvPropInt(RECVINFO(m_bAllowAutoMovement)),
+
+		// 3d skybox data
+		RecvPropInt(RECVINFO(m_skybox3d.scale)),
+		RecvPropVector(RECVINFO(m_skybox3d.origin)),
+		RecvPropInt(RECVINFO(m_skybox3d.area)),
+
+		// 3d skybox fog data
+		RecvPropInt(RECVINFO(m_skybox3d.fog.enable)),
+		RecvPropInt(RECVINFO(m_skybox3d.fog.blend)),
+		RecvPropVector(RECVINFO(m_skybox3d.fog.dirPrimary)),
+		RecvPropInt(RECVINFO(m_skybox3d.fog.colorPrimary)),
+		RecvPropInt(RECVINFO(m_skybox3d.fog.colorSecondary)),
+		RecvPropFloat(RECVINFO(m_skybox3d.fog.start)),
+		RecvPropFloat(RECVINFO(m_skybox3d.fog.end)),
+		RecvPropFloat(RECVINFO(m_skybox3d.fog.maxdensity)),
+
+		// fog data
+		RecvPropEHandle(RECVINFO(m_PlayerFog.m_hCtrl)),
+
+		// audio data
+		RecvPropVector(RECVINFO(m_audio.localSound[0])),
+		RecvPropVector(RECVINFO(m_audio.localSound[1])),
+		RecvPropVector(RECVINFO(m_audio.localSound[2])),
+		RecvPropVector(RECVINFO(m_audio.localSound[3])),
+		RecvPropVector(RECVINFO(m_audio.localSound[4])),
+		RecvPropVector(RECVINFO(m_audio.localSound[5])),
+		RecvPropVector(RECVINFO(m_audio.localSound[6])),
+		RecvPropVector(RECVINFO(m_audio.localSound[7])),
+		RecvPropInt(RECVINFO(m_audio.soundscapeIndex)),
+		RecvPropInt(RECVINFO(m_audio.localBits)),
+		RecvPropEHandle(RECVINFO(m_audio.ent)),
+	END_RECV_TABLE(DT_Local)
 };
 
 #endif // C_PLAYERLOCALDATA_H

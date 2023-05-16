@@ -30,6 +30,10 @@ public:
 	
 public:
 	float			m_mass;	// TEST..
+
+	BEGIN_RECV_TABLE(C_PhysBox, DT_PhysBox, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_mass), 0), // Test..
+	END_RECV_TABLE(DT_PhysBox)
 };
 
 

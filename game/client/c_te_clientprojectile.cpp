@@ -31,6 +31,14 @@ public:
 	int m_nModelIndex;
 	int m_nLifeTime;
 	EHANDLE m_hOwner;
+
+	BEGIN_RECV_TABLE(C_TEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecVelocity)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropInt(RECVINFO(m_nLifeTime)),
+		RecvPropEHandle(RECVINFO(m_hOwner)),
+	END_RECV_TABLE(DT_TEClientProjectile)
 };
 
 //-----------------------------------------------------------------------------
@@ -69,10 +77,5 @@ void C_TEClientProjectile::PostDataUpdate( DataUpdateType_t updateType )
 	tempents->ClientProjectile( m_vecOrigin, m_vecVelocity, vec3_origin, m_nModelIndex, m_nLifeTime, m_hOwner );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEClientProjectile, DT_TEClientProjectile, CTEClientProjectile)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecVelocity)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nLifeTime)),
-	RecvPropEHandle( RECVINFO(m_hOwner)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEClientProjectile, DT_TEClientProjectile, CTEClientProjectile)
+

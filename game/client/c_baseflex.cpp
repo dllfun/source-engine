@@ -36,21 +36,8 @@ ConVar g_CV_FlexSmooth("flex_smooth", "1", 0, "Applies smoothing/decay curve to 
 #undef CBaseFlex
 #endif
 
-IMPLEMENT_CLIENTCLASS_DT(C_BaseFlex, DT_BaseFlex, CBaseFlex)
-	RecvPropArray3( RECVINFO_ARRAY(m_flexWeight), RecvPropFloat(RECVINFO(m_flexWeight[0]))),
-	RecvPropInt(RECVINFO(m_blinktoggle)),
-	RecvPropVector(RECVINFO(m_viewtarget)),
+IMPLEMENT_CLIENTCLASS(C_BaseFlex, DT_BaseFlex, CBaseFlex)
 
-#ifdef HL2_CLIENT_DLL
-	RecvPropFloat( RECVINFO(m_vecViewOffset[0]) ),
-	RecvPropFloat( RECVINFO(m_vecViewOffset[1]) ),
-	RecvPropFloat( RECVINFO(m_vecViewOffset[2]) ),
-
-	RecvPropVector(RECVINFO(m_vecLean)),
-	RecvPropVector(RECVINFO(m_vecShift)),
-#endif
-
-END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_BaseFlex )
 

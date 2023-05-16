@@ -27,6 +27,11 @@ public:
 	BEGIN_NETWORK_TABLE(CInfoLadderDismount, DT_InfoLadderDismount, DT_BaseEntity)
 	END_NETWORK_TABLE(DT_InfoLadderDismount)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CInfoLadderDismount, DT_InfoLadderDismount, DT_BaseEntity)
+	END_NETWORK_TABLE(DT_InfoLadderDismount)
+#endif
 };
 
 typedef CHandle< CInfoLadderDismount > CInfoLadderDismountHandle;
@@ -120,6 +125,15 @@ private:
 		SendPropVector(SENDINFO(m_vecLadderDir), SPROP_COORD),
 		SendPropBool(SENDINFO(m_bFakeLadder)),
 		//	SendPropStringT( SENDINFO(m_surfacePropName) ),
+	END_NETWORK_TABLE(DT_FuncLadder)
+#endif
+
+#if defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CFuncLadder, DT_FuncLadder, DT_BaseEntity)
+		RecvPropVector(RECVINFO(m_vecPlayerMountPositionTop)),
+		RecvPropVector(RECVINFO(m_vecPlayerMountPositionBottom)),
+		RecvPropVector(RECVINFO(m_vecLadderDir)),
+		RecvPropBool(RECVINFO(m_bFakeLadder)),
 	END_NETWORK_TABLE(DT_FuncLadder)
 #endif
 };

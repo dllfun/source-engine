@@ -40,25 +40,28 @@ public:
 	int				m_nCount;
 	float			m_fTime;
 	int				m_nFlags;
+
+	BEGIN_RECV_TABLE(C_TEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropFloat(RECVINFO(m_angRotation[0])),
+		RecvPropFloat(RECVINFO(m_angRotation[1])),
+		RecvPropFloat(RECVINFO(m_angRotation[2])),
+		RecvPropVector(RECVINFO(m_vecSize)),
+		RecvPropVector(RECVINFO(m_vecVelocity)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropInt(RECVINFO(m_nRandomization)),
+		RecvPropInt(RECVINFO(m_nCount)),
+		RecvPropFloat(RECVINFO(m_fTime)),
+		RecvPropInt(RECVINFO(m_nFlags)),
+	END_RECV_TABLE(DT_TEBreakModel)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBreakModel, DT_TEBreakModel, CTEBreakModel)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropFloat( RECVINFO( m_angRotation[0] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[1] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[2] ) ),
-	RecvPropVector( RECVINFO(m_vecSize)),
-	RecvPropVector( RECVINFO(m_vecVelocity)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nRandomization)),
-	RecvPropInt( RECVINFO(m_nCount)),
-	RecvPropFloat( RECVINFO(m_fTime)),
-	RecvPropInt( RECVINFO(m_nFlags)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBreakModel, DT_TEBreakModel, CTEBreakModel)
+
 
 
 //-----------------------------------------------------------------------------

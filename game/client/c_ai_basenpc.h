@@ -55,6 +55,20 @@ private:
 	bool m_bFadeCorpse;
 	bool m_bSpeedModActive;
 	bool m_bImportanRagdoll;
+
+	BEGIN_RECV_TABLE(C_AI_BaseNPC, DT_AI_BaseNPC, DT_BaseCombatCharacter)
+		RecvPropInt(RECVINFO(m_lifeState)),
+		RecvPropBool(RECVINFO(m_bPerformAvoidance)),
+		RecvPropBool(RECVINFO(m_bIsMoving)),
+		RecvPropBool(RECVINFO(m_bFadeCorpse)),
+		RecvPropInt(RECVINFO(m_iDeathPose)),
+		RecvPropInt(RECVINFO(m_iDeathFrame)),
+		RecvPropInt(RECVINFO(m_iSpeedModRadius)),
+		RecvPropInt(RECVINFO(m_iSpeedModSpeed)),
+		RecvPropInt(RECVINFO(m_bSpeedModActive)),
+		RecvPropBool(RECVINFO(m_bImportanRagdoll)),
+		RecvPropFloat(RECVINFO(m_flTimePingEffect)),
+	END_RECV_TABLE(DT_AI_BaseNPC)
 };
 
 

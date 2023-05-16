@@ -25,12 +25,15 @@ public:
 private:
 	int m_nOccluderIndex;
 	bool m_bActive = false;
+
+	BEGIN_RECV_TABLE(C_FuncOccluder, DT_FuncOccluder, DT_BaseEntity)
+		RecvPropBool(RECVINFO(m_bActive)),
+		RecvPropInt(RECVINFO(m_nOccluderIndex)),
+	END_RECV_TABLE(DT_FuncOccluder)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_FuncOccluder, DT_FuncOccluder, CFuncOccluder )
-	RecvPropBool( RECVINFO( m_bActive ) ),
-	RecvPropInt( RECVINFO(m_nOccluderIndex) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_FuncOccluder, DT_FuncOccluder, CFuncOccluder )
+
 
 
 void C_FuncOccluder::OnDataChanged( DataUpdateType_t updateType )

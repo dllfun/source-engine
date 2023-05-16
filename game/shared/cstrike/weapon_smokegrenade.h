@@ -51,6 +51,11 @@ public:
 	BEGIN_NETWORK_TABLE(CSmokeGrenade, DT_SmokeGrenade, DT_BaseCSGrenade)
 	END_NETWORK_TABLE(DT_SmokeGrenade)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CSmokeGrenade, DT_SmokeGrenade, DT_BaseCSGrenade)
+	END_NETWORK_TABLE(DT_SmokeGrenade)
+#endif
 };
 
 

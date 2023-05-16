@@ -184,6 +184,19 @@ void RecvTable::Construct( RecvProp *pProps, int nProps, const char *pNetTableNa
 	m_bInMainList = false;
 }
 
+void RecvTable::InitRefRecvTable(RecvTableManager* pRecvTableNanager) {
+	for (int i = 0; i < m_nProps; i++)
+	{
+		RecvProp* pProp = &m_pProps[i];
+		if (pProp->GetType() == DPT_DataTable && !pProp->GetDataTable())
+		{
+			pProp->SetDataTable(pRecvTableNanager->FindRecvTable(pProp->GetDataTableName()));
+			if (!pProp->GetDataTable()) {
+				Error("not found RecvTable: %s\n", pProp->GetDataTableName());	// dedicated servers exit
+			}
+		}
+	}
+}
 
 // ---------------------------------------------------------------------- //
 // Prop setup functions (for building tables).
@@ -371,7 +384,7 @@ RecvProp RecvPropDataTable(
 	const char *pVarName,
 	int offset,
 	int flags,
-	RecvTable *pTable,
+	const char* pTableName,
 	DataTableRecvVarProxyFn varProxy
 	)
 {
@@ -382,7 +395,8 @@ RecvProp RecvPropDataTable(
 	ret.m_RecvType = DPT_DataTable;
 	ret.m_Flags = flags;
 	ret.SetDataTableProxyFn( varProxy );
-	ret.SetDataTable( pTable );
+	ret.SetDataTable( NULL );
+	ret.SetDataTableName(pTableName);
 
 	return ret;
 }
@@ -418,7 +432,7 @@ RecvProp RecvPropArray3(
 	}
 
 	RecvTable *pTable = new RecvTable( pProps, elements, pVarName ); // TODO free that again
-
+	g_pRecvTableManager->RegisteRecvTable(pTable);
 	ret.SetDataTable( pTable );
 
 	return ret;
@@ -530,5 +544,8 @@ void DataTableRecvProxy_PointerDataTable( const RecvProp *pProp, void **pOut, vo
 {
 	*pOut = *((void**)pData);
 }
+
+static RecvTableManager s_RecvTableManager;
+RecvTableManager* g_pRecvTableManager = &s_RecvTableManager;
 
 #endif

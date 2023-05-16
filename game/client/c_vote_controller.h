@@ -41,6 +41,14 @@ protected:
 	bool			m_bVotesDirty;	// Received a vote, so remember to tell the Hud
 	bool			m_bTypeDirty;	// Vote type changed, so show or hide the Hud
 	bool			m_bIsYesNoVote;
+
+	BEGIN_RECV_TABLE(C_VoteController, DT_VoteController, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_iActiveIssueIndex), 0, C_VoteController::RecvProxy_VoteType),
+		RecvPropInt(RECVINFO(m_iOnlyTeamToVote)),
+		RecvPropArray3(RECVINFO_ARRAY(m_nVoteOptionCount), RecvPropInt(RECVINFO(m_nVoteOptionCount[0]), 0, C_VoteController::RecvProxy_VoteOption)),
+		RecvPropInt(RECVINFO(m_nPotentialVotes)),
+		RecvPropBool(RECVINFO(m_bIsYesNoVote))
+	END_RECV_TABLE(DT_VoteController)
 };
 
 #endif // C_VoteController_H

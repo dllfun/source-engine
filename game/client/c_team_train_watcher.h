@@ -70,6 +70,18 @@ private:
 	EHANDLE m_hOldGlowEnt;
 	CGlowObject *m_pGlowEffect;
 #endif // GLOWS_ENABLE
+
+	BEGIN_RECV_TABLE(C_TeamTrainWatcher, DT_TeamTrainWatcher, DT_BaseEntity)
+
+		RecvPropFloat(RECVINFO(m_flTotalProgress)),
+		RecvPropInt(RECVINFO(m_iTrainSpeedLevel)),
+		RecvPropFloat(RECVINFO(m_flRecedeTime)),
+		RecvPropInt(RECVINFO(m_nNumCappers)),
+#ifdef GLOWS_ENABLE
+		RecvPropEHandle(RECVINFO(m_hGlowEnt)),
+#endif // GLOWS_ENABLE
+
+	END_RECV_TABLE(DT_TeamTrainWatcher)
 };
 
 extern CUtlVector< CHandle<C_TeamTrainWatcher> > g_hTrainWatchers;

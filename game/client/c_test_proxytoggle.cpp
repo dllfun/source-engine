@@ -35,6 +35,14 @@ public:
 			}
 
 	int		m_WithProxy;
+
+	BEGIN_RECV_TABLE_NOBASE(C_Test_ProxyToggle_Networkable, DT_ProxyToggle_ProxiedData)
+		RecvPropInt(RECVINFO(m_WithProxy))
+	END_RECV_TABLE(DT_ProxyToggle_ProxiedData)
+
+	BEGIN_RECV_TABLE(C_Test_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
+		RecvPropDataTable("blah", 0, 0, REFERENCE_RECV_TABLE(DT_ProxyToggle_ProxiedData))
+	END_RECV_TABLE(DT_ProxyToggle)
 };
 
 
@@ -42,13 +50,10 @@ public:
 // Datatables.
 // ---------------------------------------------------------------------------------------- //
 
-BEGIN_RECV_TABLE_NOBASE( C_Test_ProxyToggle_Networkable, DT_ProxyToggle_ProxiedData )
-	RecvPropInt( RECVINFO( m_WithProxy ) )
-END_RECV_TABLE()
 
-IMPLEMENT_CLIENTCLASS_DT( C_Test_ProxyToggle_Networkable, DT_ProxyToggle, CTest_ProxyToggle_Networkable )
-	RecvPropDataTable( "blah", 0, 0, &REFERENCE_RECV_TABLE( DT_ProxyToggle_ProxiedData ) )
-END_RECV_TABLE()
+
+IMPLEMENT_CLIENTCLASS( C_Test_ProxyToggle_Networkable, DT_ProxyToggle, CTest_ProxyToggle_Networkable )
+
 
 
 

@@ -28,15 +28,17 @@ public:
 private:
 
 	int		m_iOverlayID;
+
+	BEGIN_RECV_TABLE_NOBASE(C_InfoOverlayAccessor, DT_InfoOverlayAccessor)
+		RecvPropInt(RECVINFO(m_iTextureFrameIndex)),
+		RecvPropInt(RECVINFO(m_iOverlayID)),
+	END_RECV_TABLE(DT_InfoOverlayAccessor)
 };
 
 // Expose it to the engine.
 IMPLEMENT_CLIENTCLASS(C_InfoOverlayAccessor, DT_InfoOverlayAccessor, CInfoOverlayAccessor);
 
-BEGIN_RECV_TABLE_NOBASE(C_InfoOverlayAccessor, DT_InfoOverlayAccessor)
-	RecvPropInt(RECVINFO(m_iTextureFrameIndex)),
-	RecvPropInt(RECVINFO(m_iOverlayID)),
-END_RECV_TABLE()
+
 
 
 // -------------------------------------------------------------------------------- //

@@ -61,6 +61,11 @@ private:
 	BEGIN_NETWORK_TABLE(CPredictedViewModel, DT_PredictedViewModel, DT_BaseViewModel)
 	END_NETWORK_TABLE(DT_PredictedViewModel)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CPredictedViewModel, DT_PredictedViewModel, DT_BaseViewModel)
+	END_NETWORK_TABLE(DT_PredictedViewModel)
+#endif
 };
 
 #endif // PREDICTED_VIEWMODEL_H

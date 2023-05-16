@@ -35,6 +35,13 @@ public:
 	QAngle		m_vecAngles;
 	float		m_flScale;
 	int			m_nType;
+
+	BEGIN_RECV_TABLE(C_TEMuzzleFlash, DT_TEMuzzleFlash, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecAngles)),
+		RecvPropFloat(RECVINFO(m_flScale)),
+		RecvPropInt(RECVINFO(m_nType)),
+	END_RECV_TABLE(DT_TEMuzzleFlash)
 };
 
 //-----------------------------------------------------------------------------
@@ -104,9 +111,5 @@ void TE_MuzzleFlash( IRecipientFilter& filter, float delay,
 	RecordMuzzleFlash( start, angles, scale, 0 ); 
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEMuzzleFlash, DT_TEMuzzleFlash, CTEMuzzleFlash)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecAngles)),
-	RecvPropFloat( RECVINFO(m_flScale)),
-	RecvPropInt( RECVINFO(m_nType)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEMuzzleFlash, DT_TEMuzzleFlash, CTEMuzzleFlash)
+

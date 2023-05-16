@@ -120,6 +120,30 @@ private:
 	int				m_iMaxFrames;
 	bool			m_bInView;
 	float			m_flRollSpeed;
+
+	BEGIN_RECV_TABLE(C_SmokeStack, DT_SmokeStack, DT_BaseParticleEntity)
+		RecvPropFloat(RECVINFO(m_SpreadSpeed), 0),
+		RecvPropFloat(RECVINFO(m_Speed), 0),
+		RecvPropFloat(RECVINFO(m_StartSize), 0),
+		RecvPropFloat(RECVINFO(m_EndSize), 0),
+		RecvPropFloat(RECVINFO(m_Rate), 0),
+		RecvPropFloat(RECVINFO(m_JetLength), 0),
+		RecvPropInt(RECVINFO(m_bEmit), 0),
+		RecvPropFloat(RECVINFO(m_flBaseSpread)),
+		RecvPropFloat(RECVINFO(m_flTwist)),
+		RecvPropFloat(RECVINFO(m_flRollSpeed)),
+		RecvPropIntWithMinusOneFlag(RECVINFO(m_iMaterialModel)),
+
+		RecvPropVector(RECVINFO(m_AmbientLight.m_vPos)),
+		RecvPropVector(RECVINFO(m_AmbientLight.m_vColor)),
+		RecvPropFloat(RECVINFO(m_AmbientLight.m_flIntensity)),
+
+		RecvPropVector(RECVINFO(m_DirLight.m_vPos)),
+		RecvPropVector(RECVINFO(m_DirLight.m_vColor)),
+		RecvPropFloat(RECVINFO(m_DirLight.m_flIntensity)),
+
+		RecvPropVector(RECVINFO(m_vWind))
+	END_RECV_TABLE(DT_SmokeStack)
 };
 
 
@@ -131,29 +155,8 @@ private:
 EXPOSE_PROTOTYPE_EFFECT(SmokeStack, C_SmokeStack);
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_SmokeStack, DT_SmokeStack, CSmokeStack)
-	RecvPropFloat(RECVINFO(m_SpreadSpeed), 0),
-	RecvPropFloat(RECVINFO(m_Speed), 0),
-	RecvPropFloat(RECVINFO(m_StartSize), 0),
-	RecvPropFloat(RECVINFO(m_EndSize), 0),
-	RecvPropFloat(RECVINFO(m_Rate), 0),
-	RecvPropFloat(RECVINFO(m_JetLength), 0),
-	RecvPropInt(RECVINFO(m_bEmit), 0),
-	RecvPropFloat(RECVINFO(m_flBaseSpread)),
-	RecvPropFloat(RECVINFO(m_flTwist)),
-	RecvPropFloat(RECVINFO(m_flRollSpeed )),
-	RecvPropIntWithMinusOneFlag( RECVINFO( m_iMaterialModel ) ),
+IMPLEMENT_CLIENTCLASS(C_SmokeStack, DT_SmokeStack, CSmokeStack)
 
-	RecvPropVector( RECVINFO(m_AmbientLight.m_vPos) ),
-	RecvPropVector( RECVINFO(m_AmbientLight.m_vColor) ),
-	RecvPropFloat( RECVINFO(m_AmbientLight.m_flIntensity) ),
-
-	RecvPropVector( RECVINFO(m_DirLight.m_vPos) ),
-	RecvPropVector( RECVINFO(m_DirLight.m_vColor) ),
-	RecvPropFloat( RECVINFO(m_DirLight.m_flIntensity) ),
-
-	RecvPropVector(RECVINFO(m_vWind))
-END_RECV_TABLE()
 
 
 
@@ -304,7 +307,7 @@ void C_SmokeStack::ClientThink()
 //-----------------------------------------------------------------------------
 bool C_SmokeStack::GetPropEditInfo( RecvTable **ppTable, void **ppObj )
 {
-	*ppTable = &REFERENCE_RECV_TABLE(DT_SmokeStack);
+	*ppTable = g_pRecvTableManager->FindRecvTable(REFERENCE_RECV_TABLE(DT_SmokeStack));
 	*ppObj = this;
 	return true;
 }

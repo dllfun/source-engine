@@ -208,6 +208,13 @@ private:
 	float				m_ExpandRadius;			// How large is our radius.
 
 	C_SmokeTrail		m_SmokeTrail;
+
+	BEGIN_RECV_TABLE(C_ParticleSmokeGrenade, DT_ParticleSmokeGrenade, DT_BaseParticleEntity)
+		RecvPropTime(RECVINFO(m_flSpawnTime)),
+		RecvPropFloat(RECVINFO(m_FadeStartTime)),
+		RecvPropFloat(RECVINFO(m_FadeEndTime)),
+		RecvPropInt(RECVINFO(m_CurrentStage), 0, &C_ParticleSmokeGrenade::RecvProxy_CurrentStage),
+	END_RECV_TABLE(DT_ParticleSmokeGrenade)
 };
 
 
@@ -216,12 +223,8 @@ EXPOSE_PROTOTYPE_EFFECT(SmokeGrenade, C_ParticleSmokeGrenade);
 
 
 // Datatable..
-IMPLEMENT_CLIENTCLASS_DT(C_ParticleSmokeGrenade, DT_ParticleSmokeGrenade, ParticleSmokeGrenade)
-	RecvPropTime(RECVINFO(m_flSpawnTime)),
-	RecvPropFloat(RECVINFO(m_FadeStartTime)),
-	RecvPropFloat(RECVINFO(m_FadeEndTime)),
-	RecvPropInt(RECVINFO(m_CurrentStage), 0, &C_ParticleSmokeGrenade::RecvProxy_CurrentStage),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_ParticleSmokeGrenade, DT_ParticleSmokeGrenade, ParticleSmokeGrenade)
+
 
 
 // ------------------------------------------------------------------------- //

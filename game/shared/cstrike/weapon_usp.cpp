@@ -80,16 +80,18 @@ private:
 		SendPropTime(SENDINFO(m_flDoneSwitchingSilencer)),
 	END_NETWORK_TABLE(DT_WeaponUSP)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponUSP, DT_WeaponUSP, DT_WeaponCSBase)
+		RecvPropBool(RECVINFO(m_bSilencerOn)),
+		RecvPropTime(RECVINFO(m_flDoneSwitchingSilencer)),
+	END_NETWORK_TABLE(DT_WeaponUSP)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponUSP, DT_WeaponUSP )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE( CWeaponUSP, DT_WeaponUSP , DT_WeaponCSBase)
-	RecvPropBool( RECVINFO( m_bSilencerOn ) ),
-	RecvPropTime( RECVINFO( m_flDoneSwitchingSilencer ) ),
-END_NETWORK_TABLE(DT_WeaponUSP)
-#endif
+
 
 #ifdef CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponUSP )

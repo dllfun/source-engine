@@ -39,29 +39,8 @@ void RecvProxy_RecomputeSprings( const CRecvProxyData *pData, void *pStruct, voi
 }
 
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_RopeKeyframe, DT_RopeKeyframe, CRopeKeyframe )
-	RecvPropInt( RECVINFO(m_iRopeMaterialModelIndex) ),
-	RecvPropEHandle( RECVINFO(m_hStartPoint) ),
-	RecvPropEHandle( RECVINFO(m_hEndPoint) ),
-	RecvPropInt( RECVINFO(m_iStartAttachment) ),
-	RecvPropInt( RECVINFO(m_iEndAttachment) ),
+IMPLEMENT_CLIENTCLASS( C_RopeKeyframe, DT_RopeKeyframe, CRopeKeyframe )
 
-	RecvPropInt( RECVINFO(m_fLockedPoints) ),
-	RecvPropInt( RECVINFO(m_Slack), 0, RecvProxy_RecomputeSprings ),
-	RecvPropInt( RECVINFO(m_RopeLength), 0, RecvProxy_RecomputeSprings ),
-	RecvPropInt( RECVINFO(m_RopeFlags) ),
-	RecvPropFloat( RECVINFO(m_TextureScale) ),
-	RecvPropInt( RECVINFO(m_nSegments) ),
-	RecvPropBool( RECVINFO(m_bConstrainBetweenEndpoints) ),
-	RecvPropInt( RECVINFO(m_Subdiv) ),
-
-	RecvPropFloat( RECVINFO(m_Width) ),
-	RecvPropFloat( RECVINFO(m_flScrollSpeed) ),
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-	
-	RecvPropInt( RECVINFO( m_iParentAttachment ) ),
-END_RECV_TABLE()
 
 #define ROPE_IMPULSE_SCALE	20
 #define ROPE_IMPULSE_DECAY	0.95
@@ -1025,6 +1004,9 @@ void C_RopeKeyframe::CPhysicsDelegate::ApplyConstraints( CSimplePhysics::CNode *
 
 C_RopeKeyframe::C_RopeKeyframe()
 {
+	if (!engineClient) {
+		return;
+	}
 	m_bEndPointAttachmentPositionsDirty = true;
 	m_bEndPointAttachmentAnglesDirty = true;
 	m_PhysicsDelegate.m_pKeyframe = this;

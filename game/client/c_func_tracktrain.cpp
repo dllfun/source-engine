@@ -32,14 +32,18 @@ private:
 	int m_nLongAxis;
 	float m_flRadius;
 	float m_flLineLength;
+
+	BEGIN_RECV_TABLE(C_FuncTrackTrain, DT_FuncTrackTrain, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncTrackTrain)
 };
 
 
 //-----------------------------------------------------------------------------
 // Datatable
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT( C_FuncTrackTrain, DT_FuncTrackTrain, CFuncTrackTrain )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_FuncTrackTrain, DT_FuncTrackTrain, CFuncTrackTrain )
+
 
 
 //-----------------------------------------------------------------------------

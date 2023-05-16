@@ -37,19 +37,22 @@ public:
 	float			m_fScale;
 	float			m_fLife;
 	int				m_nBrightness;
+
+	BEGIN_RECV_TABLE(C_TEGlowSprite, DT_TEGlowSprite, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropFloat(RECVINFO(m_fScale)),
+		RecvPropFloat(RECVINFO(m_fLife)),
+		RecvPropInt(RECVINFO(m_nBrightness)),
+	END_RECV_TABLE(DT_TEGlowSprite)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEGlowSprite, DT_TEGlowSprite, CTEGlowSprite)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fScale )),
-	RecvPropFloat( RECVINFO(m_fLife )),
-	RecvPropInt( RECVINFO(m_nBrightness)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEGlowSprite, DT_TEGlowSprite, CTEGlowSprite)
+
 
 
 //-----------------------------------------------------------------------------

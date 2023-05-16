@@ -30,6 +30,10 @@ public:
 
 public:
 	int				m_nPlayer;
+
+	BEGIN_RECV_TABLE(C_TEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
+		RecvPropInt(RECVINFO(m_nPlayer)),
+	END_RECV_TABLE(DT_TEKillPlayerAttachments)
 };
 
 //-----------------------------------------------------------------------------
@@ -64,6 +68,5 @@ void TE_KillPlayerAttachments( IRecipientFilter& filter, float delay,
 	tempents->KillAttachedTents( player );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEKillPlayerAttachments, DT_TEKillPlayerAttachments, CTEKillPlayerAttachments)
-	RecvPropInt( RECVINFO(m_nPlayer)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEKillPlayerAttachments, DT_TEKillPlayerAttachments, CTEKillPlayerAttachments)
+

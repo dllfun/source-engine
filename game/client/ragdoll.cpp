@@ -413,17 +413,20 @@ private:
 	float m_flBlendWeightCurrent;
 	CNetworkVar( int, m_nOverlaySequence );
 	float m_flLastBoneChangeTime;
+
+	BEGIN_RECV_TABLE(C_ServerRagdoll, DT_Ragdoll, DT_BaseAnimating)
+		RecvPropArray(RecvPropQAngles(RECVINFO(m_ragAngles[0])), m_ragAngles),
+		RecvPropArray(RecvPropVector(RECVINFO(m_ragPos[0])), m_ragPos),
+		RecvPropEHandle(RECVINFO(m_hUnragdoll)),
+		RecvPropFloat(RECVINFO(m_flBlendWeight)),
+		RecvPropInt(RECVINFO(m_nOverlaySequence)),
+	END_RECV_TABLE(DT_Ragdoll)
 };
 
 
 EXTERN_RECV_TABLE(DT_Ragdoll);
-IMPLEMENT_CLIENTCLASS_DT(C_ServerRagdoll, DT_Ragdoll, CRagdollProp)
-	RecvPropArray(RecvPropQAngles(RECVINFO(m_ragAngles[0])), m_ragAngles),
-	RecvPropArray(RecvPropVector(RECVINFO(m_ragPos[0])), m_ragPos),
-	RecvPropEHandle(RECVINFO(m_hUnragdoll)),
-	RecvPropFloat(RECVINFO(m_flBlendWeight)),
-	RecvPropInt(RECVINFO(m_nOverlaySequence)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_ServerRagdoll, DT_Ragdoll, CRagdollProp)
+
 
 
 C_ServerRagdoll::C_ServerRagdoll( void ) :
@@ -778,15 +781,18 @@ public:
 	bool		m_bHasParent;
 private:
 	C_ServerRagdollAttached( const C_ServerRagdollAttached & );
+
+	BEGIN_RECV_TABLE(C_ServerRagdollAttached, DT_Ragdoll_Attached, DT_Ragdoll)
+		RecvPropInt(RECVINFO(m_boneIndexAttached)),
+		RecvPropInt(RECVINFO(m_ragdollAttachedObjectIndex)),
+		RecvPropVector(RECVINFO(m_attachmentPointBoneSpace)),
+		RecvPropVector(RECVINFO(m_attachmentPointRagdollSpace)),
+	END_RECV_TABLE(DT_Ragdoll_Attached)
 };
 
 EXTERN_RECV_TABLE(DT_Ragdoll_Attached);
-IMPLEMENT_CLIENTCLASS_DT(C_ServerRagdollAttached, DT_Ragdoll_Attached, CRagdollPropAttached)
-	RecvPropInt( RECVINFO( m_boneIndexAttached ) ),
-	RecvPropInt( RECVINFO( m_ragdollAttachedObjectIndex ) ),
-	RecvPropVector(RECVINFO(m_attachmentPointBoneSpace) ),
-	RecvPropVector(RECVINFO(m_attachmentPointRagdollSpace) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_ServerRagdollAttached, DT_Ragdoll_Attached, CRagdollPropAttached)
+
 
 void C_ServerRagdollAttached::OnDataChanged( DataUpdateType_t updateType )
 {

@@ -36,20 +36,23 @@ public:
 	int				m_nSpeed;
 	float			m_fNoise;
 	int				m_nCount;
+
+	BEGIN_RECV_TABLE(C_TESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecDirection)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropFloat(RECVINFO(m_fNoise)),
+		RecvPropInt(RECVINFO(m_nCount)),
+		RecvPropInt(RECVINFO(m_nSpeed)),
+	END_RECV_TABLE(DT_TESpriteSpray)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking 
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TESpriteSpray, DT_TESpriteSpray, CTESpriteSpray)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecDirection)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fNoise )),
-	RecvPropInt( RECVINFO(m_nCount)),
-	RecvPropInt( RECVINFO(m_nSpeed)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TESpriteSpray, DT_TESpriteSpray, CTESpriteSpray)
+
 
 
 //-----------------------------------------------------------------------------

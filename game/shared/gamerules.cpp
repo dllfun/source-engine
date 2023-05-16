@@ -67,11 +67,7 @@ CGameRulesProxy *CGameRulesProxy::s_pGameRulesProxy = NULL;
 
 IMPLEMENT_NETWORKCLASS_ALIASED( GameRulesProxy, DT_GameRulesProxy )
 
-// Don't send any of the CBaseEntity stuff..
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE_NOBASE( CGameRulesProxy, DT_GameRulesProxy )
-END_NETWORK_TABLE(DT_GameRulesProxy)
-#endif
+
 
 
 CGameRulesProxy::CGameRulesProxy()
@@ -131,6 +127,9 @@ bool CGameRules::IsLocalPlayer( int nEntIndex )
 
 CGameRules::CGameRules() : CAutoGameSystemPerFrame( "CGameRules" )
 {
+	if (!engineClient) {
+		return;
+	}
 	Assert( !g_pGameRules );
 	g_pGameRules = this;
 }	

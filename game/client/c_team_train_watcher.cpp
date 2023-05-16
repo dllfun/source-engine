@@ -17,17 +17,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_TeamTrainWatcher, DT_TeamTrainWatcher, CTeamTrainWatcher)
+IMPLEMENT_CLIENTCLASS(C_TeamTrainWatcher, DT_TeamTrainWatcher, CTeamTrainWatcher)
 
-	RecvPropFloat( RECVINFO( m_flTotalProgress ) ),
-	RecvPropInt( RECVINFO( m_iTrainSpeedLevel ) ),
-	RecvPropFloat( RECVINFO( m_flRecedeTime ) ),
-	RecvPropInt( RECVINFO( m_nNumCappers ) ),
-#ifdef GLOWS_ENABLE
-	RecvPropEHandle( RECVINFO( m_hGlowEnt ) ),
-#endif // GLOWS_ENABLE
-
-END_RECV_TABLE()
 
 CUtlVector< CHandle<C_TeamTrainWatcher> > g_hTrainWatchers;
 

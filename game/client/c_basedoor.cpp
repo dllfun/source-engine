@@ -14,9 +14,8 @@
 #undef CBaseDoor
 #endif
 
-IMPLEMENT_CLIENTCLASS_DT(C_BaseDoor, DT_BaseDoor, CBaseDoor)
-	RecvPropFloat(RECVINFO(m_flWaveHeight)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_BaseDoor, DT_BaseDoor, CBaseDoor)
+
 
 C_BaseDoor::C_BaseDoor( void )
 {

@@ -181,16 +181,8 @@ void C_CHostage::RecvProxy_Rescued( const CRecvProxyData *pData, void *pStruct, 
 }
 
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT(C_CHostage, DT_CHostage, CHostage)
-	
-	RecvPropInt( RECVINFO( m_isRescued ), 0, C_CHostage::RecvProxy_Rescued ),
-	RecvPropInt( RECVINFO( m_iHealth ) ),
-	RecvPropInt( RECVINFO( m_iMaxHealth ) ),
-	RecvPropInt( RECVINFO( m_lifeState ) ),
-	
-	RecvPropEHandle( RECVINFO( m_leader ) ),
+IMPLEMENT_CLIENTCLASS(C_CHostage, DT_CHostage, CHostage)
 
-END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 

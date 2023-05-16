@@ -10,9 +10,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_PhysBox, DT_PhysBox, CPhysBox)
-	RecvPropFloat(RECVINFO(m_mass), 0), // Test..
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PhysBox, DT_PhysBox, CPhysBox)
+
 
 
 C_PhysBox::C_PhysBox()

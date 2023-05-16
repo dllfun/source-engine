@@ -55,15 +55,17 @@ private:
 		SendPropInt(SENDINFO(m_reloadState), 2, SPROP_UNSIGNED)
 	END_NETWORK_TABLE(DT_WeaponM3)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponM3, DT_WeaponM3, DT_WeaponCSBase)
+		RecvPropInt(RECVINFO(m_reloadState))
+	END_NETWORK_TABLE(DT_WeaponM3)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM3, DT_WeaponM3 )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE( CWeaponM3, DT_WeaponM3, DT_WeaponCSBase)
-	RecvPropInt( RECVINFO( m_reloadState ) )
-END_NETWORK_TABLE(DT_WeaponM3)
-#endif
+
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponM3 )

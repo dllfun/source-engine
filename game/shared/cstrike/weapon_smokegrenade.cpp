@@ -25,10 +25,7 @@
 
 IMPLEMENT_NETWORKCLASS_ALIASED( SmokeGrenade, DT_SmokeGrenade )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE(CSmokeGrenade, DT_SmokeGrenade, DT_BaseCSGrenade)
-END_NETWORK_TABLE(DT_SmokeGrenade)
-#endif
+
 
 BEGIN_PREDICTION_DATA( CSmokeGrenade )
 END_PREDICTION_DATA()

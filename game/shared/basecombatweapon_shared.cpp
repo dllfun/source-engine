@@ -2734,41 +2734,4 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendNonLocalWeaponDataTable 
 #define RecvPropTime RecvPropFloat
 #endif
 
-//-----------------------------------------------------------------------------
-// Purpose: Propagation data for weapons. Only sent when a player's holding it.
-//-----------------------------------------------------------------------------
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE_NOBASE( CBaseCombatWeapon, DT_LocalActiveWeaponData )
-	RecvPropTime( RECVINFO( m_flNextPrimaryAttack ) ),
-	RecvPropTime( RECVINFO( m_flNextSecondaryAttack ) ),
-	RecvPropInt( RECVINFO( m_nNextThinkTick ) ),
-	RecvPropTime( RECVINFO( m_flTimeWeaponIdle ) ),
-END_NETWORK_TABLE(DT_LocalActiveWeaponData)
-#endif
 
-//-----------------------------------------------------------------------------
-// Purpose: Propagation data for weapons. Only sent when a player's holding it.
-//-----------------------------------------------------------------------------
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE_NOBASE( CBaseCombatWeapon, DT_LocalWeaponData )
-	RecvPropIntWithMinusOneFlag( RECVINFO(m_iClip1 )),
-	RecvPropIntWithMinusOneFlag( RECVINFO(m_iClip2 )),
-	RecvPropInt( RECVINFO(m_iPrimaryAmmoType )),
-	RecvPropInt( RECVINFO(m_iSecondaryAmmoType )),
-
-	RecvPropInt( RECVINFO( m_nViewModelIndex ) ),
-
-	RecvPropBool( RECVINFO( m_bFlipViewModel ) ),
-END_NETWORK_TABLE(DT_LocalWeaponData)
-#endif
-
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE(CBaseCombatWeapon, DT_BaseCombatWeapon, DT_BaseAnimating)
-	RecvPropDataTable("LocalWeaponData", 0, 0, &REFERENCE_RECV_TABLE(DT_LocalWeaponData)),
-	RecvPropDataTable("LocalActiveWeaponData", 0, 0, &REFERENCE_RECV_TABLE(DT_LocalActiveWeaponData)),
-	RecvPropInt( RECVINFO(m_iViewModelIndex)),
-	RecvPropInt( RECVINFO(m_iWorldModelIndex)),
-	RecvPropInt( RECVINFO(m_iState )),
-	RecvPropEHandle( RECVINFO(m_hOwner ) ),
-END_NETWORK_TABLE(DT_BaseCombatWeapon)
-#endif

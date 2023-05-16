@@ -58,24 +58,27 @@ private:
 	char	m_SpotlightTextureName[ MAX_PATH ];
 	int		m_nSpotlightTextureFrame;
 	int		m_nShadowQuality;
+
+	BEGIN_RECV_TABLE(C_EnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
+		RecvPropEHandle(RECVINFO(m_hTargetEntity)),
+		RecvPropBool(RECVINFO(m_bState)),
+		RecvPropFloat(RECVINFO(m_flLightFOV)),
+		RecvPropBool(RECVINFO(m_bEnableShadows)),
+		RecvPropBool(RECVINFO(m_bLightOnlyTarget)),
+		RecvPropBool(RECVINFO(m_bLightWorld)),
+		RecvPropBool(RECVINFO(m_bCameraSpace)),
+		RecvPropVector(RECVINFO(m_LinearFloatLightColor)),
+		RecvPropFloat(RECVINFO(m_flAmbient)),
+		RecvPropString(RECVINFO(m_SpotlightTextureName)),
+		RecvPropInt(RECVINFO(m_nSpotlightTextureFrame)),
+		RecvPropFloat(RECVINFO(m_flNearZ)),
+		RecvPropFloat(RECVINFO(m_flFarZ)),
+		RecvPropInt(RECVINFO(m_nShadowQuality)),
+	END_RECV_TABLE(DT_EnvProjectedTexture)
+
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_EnvProjectedTexture, DT_EnvProjectedTexture, CEnvProjectedTexture )
-	RecvPropEHandle( RECVINFO( m_hTargetEntity )	),
-	RecvPropBool(	 RECVINFO( m_bState )			),
-	RecvPropFloat(	 RECVINFO( m_flLightFOV )		),
-	RecvPropBool(	 RECVINFO( m_bEnableShadows )	),
-	RecvPropBool(	 RECVINFO( m_bLightOnlyTarget ) ),
-	RecvPropBool(	 RECVINFO( m_bLightWorld )		),
-	RecvPropBool(	 RECVINFO( m_bCameraSpace )		),
-	RecvPropVector(	 RECVINFO( m_LinearFloatLightColor )		),
-	RecvPropFloat(	 RECVINFO( m_flAmbient )		),
-	RecvPropString(  RECVINFO( m_SpotlightTextureName ) ),
-	RecvPropInt(	 RECVINFO( m_nSpotlightTextureFrame ) ),
-	RecvPropFloat(	 RECVINFO( m_flNearZ )	),
-	RecvPropFloat(	 RECVINFO( m_flFarZ )	),
-	RecvPropInt(	 RECVINFO( m_nShadowQuality )	),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EnvProjectedTexture, DT_EnvProjectedTexture, CEnvProjectedTexture )
 
 C_EnvProjectedTexture::C_EnvProjectedTexture( void )
 {

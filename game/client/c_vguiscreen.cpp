@@ -78,15 +78,8 @@ void ClearKeyValuesCache()
 }
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_VGuiScreen, DT_VGuiScreen, CVGuiScreen)
-	RecvPropFloat( RECVINFO(m_flWidth) ),
-	RecvPropFloat( RECVINFO(m_flHeight) ),
-	RecvPropInt( RECVINFO(m_fScreenFlags) ),
-	RecvPropInt( RECVINFO(m_nPanelName) ),
-	RecvPropInt( RECVINFO(m_nAttachmentIndex) ),
-	RecvPropInt( RECVINFO(m_nOverlayMaterial) ),
-	RecvPropEHandle( RECVINFO(m_hPlayerOwner) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_VGuiScreen, DT_VGuiScreen, CVGuiScreen)
+
 
 
 //-----------------------------------------------------------------------------
@@ -94,6 +87,9 @@ END_RECV_TABLE()
 //-----------------------------------------------------------------------------
 C_VGuiScreen::C_VGuiScreen()
 {
+	if (!engineClient) {
+		return;
+	}
 	m_nOldPanelName = m_nPanelName = -1;
 	m_nOldOverlayMaterial = m_nOverlayMaterial = -1;
 	m_nOldPx = m_nOldPy = -1;

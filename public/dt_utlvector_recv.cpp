@@ -122,7 +122,8 @@ RecvProp RecvPropUtlVector(
 
 	char *pLengthProxyTableName = AllocateUniqueDataTableName( false, "_LPT_%s_%d", pVarName, nMaxElements );
 	RecvTable *pLengthTable = new RecvTable( pLengthProp, 1, pLengthProxyTableName );
-	pProps[0] = RecvPropDataTable( "lengthproxy", 0, 0, pLengthTable, DataTableRecvProxy_LengthProxy );
+	g_pRecvTableManager->RegisteRecvTable(pLengthTable);
+	pProps[0] = RecvPropDataTable( "lengthproxy", 0, 0, pLengthProxyTableName, DataTableRecvProxy_LengthProxy );
 	pProps[0].SetExtraData( pExtraData );
 
 	// The first element is a sub-datatable.
@@ -151,7 +152,7 @@ RecvProp RecvPropUtlVector(
 		nMaxElements+1, 
 		AllocateUniqueDataTableName( false, "_ST_%s_%d", pVarName, nMaxElements )
 		); // TODO free that again
-
+	g_pRecvTableManager->RegisteRecvTable(pTable);
 	ret.SetDataTable( pTable );
 	return ret;
 }

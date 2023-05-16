@@ -904,12 +904,15 @@ public:
 
 	char m_source[MATERIAL_NAME_LENGTH];
 	char m_destination[MATERIAL_NAME_LENGTH];
+
+	BEGIN_RECV_TABLE(C_FootstepControl, DT_FootstepControl, DT_BaseEntity)
+		RecvPropString(RECVINFO(m_source)),
+		RecvPropString(RECVINFO(m_destination)),
+	END_RECV_TABLE(DT_FootstepControl)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_FootstepControl, DT_FootstepControl, CFootstepControl)
-	RecvPropString( RECVINFO(m_source) ),
-	RecvPropString( RECVINFO(m_destination) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_FootstepControl, DT_FootstepControl, CFootstepControl)
+
 
 CUtlVector< C_FootstepControl * > s_footstepControllers;
 

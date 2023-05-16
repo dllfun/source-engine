@@ -35,6 +35,15 @@ public:
 	int				m_nModelIndex;
 	int				m_nCount;
 	float			m_fSpeed;
+
+	BEGIN_RECV_TABLE(C_TEBubbles, DT_TEBubbles, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecMins)),
+		RecvPropVector(RECVINFO(m_vecMaxs)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropFloat(RECVINFO(m_fHeight)),
+		RecvPropInt(RECVINFO(m_nCount)),
+		RecvPropFloat(RECVINFO(m_fSpeed)),
+	END_RECV_TABLE(DT_TEBubbles)
 };
 
 //-----------------------------------------------------------------------------
@@ -74,12 +83,6 @@ void C_TEBubbles::PostDataUpdate( DataUpdateType_t updateType )
 	tempents->Bubbles( m_vecMins, m_vecMaxs, m_fHeight, m_nModelIndex, m_nCount, m_fSpeed );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBubbles, DT_TEBubbles, CTEBubbles)
-	RecvPropVector( RECVINFO(m_vecMins)),
-	RecvPropVector( RECVINFO(m_vecMaxs)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fHeight )),
-	RecvPropInt( RECVINFO(m_nCount)),
-	RecvPropFloat( RECVINFO(m_fSpeed )),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBubbles, DT_TEBubbles, CTEBubbles)
+
 

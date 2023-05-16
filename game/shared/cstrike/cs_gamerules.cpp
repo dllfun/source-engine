@@ -109,27 +109,17 @@ LINK_ENTITY_TO_CLASS(info_player_logo,CPointEntity);
 REGISTER_GAMERULES_CLASS( CCSGameRules );
 
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE_NOBASE( CCSGameRules, DT_CSGameRules )
-		RecvPropBool( RECVINFO( m_bFreezePeriod ) ),
-		RecvPropInt( RECVINFO( m_iRoundTime ) ),
-		RecvPropFloat( RECVINFO( m_fRoundStartTime ) ),
-		RecvPropFloat( RECVINFO( m_flGameStartTime ) ),
-		RecvPropInt( RECVINFO( m_iHostagesRemaining ) ),
-		RecvPropBool( RECVINFO( m_bMapHasBombTarget ) ),
-		RecvPropBool( RECVINFO( m_bMapHasRescueZone ) ),
-		RecvPropBool( RECVINFO( m_bLogoMap ) ),
-		RecvPropBool( RECVINFO( m_bBlackMarket ) )
-END_NETWORK_TABLE(DT_CSGameRules)
-#endif
+
 
 
 LINK_ENTITY_TO_CLASS( cs_gamerules, CCSGameRulesProxy );
-IMPLEMENT_NETWORKCLASS_ALIASED( CSGameRulesProxy, DT_CSGameRulesProxy )
+IMPLEMENT_NETWORKCLASS_ALIASED(CSGameRulesProxy, DT_CSGameRulesProxy)
 #if !defined( CLIENT_DLL )
-IMPLEMENT_SERVERCLASS( CCSGameRules, DT_CSGameRules)
+IMPLEMENT_SERVERCLASS(CCSGameRules, DT_CSGameRules)
 #endif
-
+#if defined( CLIENT_DLL )
+static CCSGameRules g_C_CSGameRules_EntityReg;
+#endif
 
 #ifdef CLIENT_DLL
 	void RecvProxy_CSGameRules( const RecvProp *pProp, void **pOut, void *pData, int objectID )
@@ -139,9 +129,7 @@ IMPLEMENT_SERVERCLASS( CCSGameRules, DT_CSGameRules)
 		*pOut = pRules;
 	}
 
-	BEGIN_RECV_TABLE( CCSGameRulesProxy, DT_CSGameRulesProxy )
-		RecvPropDataTable( "cs_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_CSGameRules ), RecvProxy_CSGameRules )
-	END_RECV_TABLE()
+	
 #else
 	void* SendProxy_CSGameRules( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
 	{
@@ -5623,6 +5611,9 @@ void CCSGameRules::SetBlackMarketPrices( bool bSetDefaults )
 
 CCSGameRules::CCSGameRules()
 {
+	if (!engineClient) {
+		return;
+	}
 	CSGameRules()->m_StringTableBlackMarket = NULL;
 	m_pPrices = NULL;
 	m_bBlackMarket = false;

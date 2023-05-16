@@ -15,6 +15,10 @@
 #include "lerp_functions.h"
 #include "networkvar.h"
 
+#ifdef CLIENT_DLL
+#define CAnimationLayer C_AnimationLayer
+#endif
+
 class C_AnimationLayer
 {
 public:
@@ -51,10 +55,16 @@ public:
 	float   m_flBlendOut;
 
 	bool    m_bClientBlend;
+
+	BEGIN_RECV_TABLE_NOBASE(CAnimationLayer, DT_Animationlayer)
+		RecvPropInt(RECVINFO_NAME(m_nSequence, m_nSequence)),
+		RecvPropFloat(RECVINFO_NAME(m_flCycle, m_flCycle)),
+		RecvPropFloat(RECVINFO_NAME(m_flPrevCycle, m_flPrevCycle)),
+		RecvPropFloat(RECVINFO_NAME(m_flWeight, m_flWeight)),
+		RecvPropInt(RECVINFO_NAME(m_nOrder, m_nOrder))
+	END_RECV_TABLE(DT_Animationlayer)
 };
-#ifdef CLIENT_DLL
-	#define CAnimationLayer C_AnimationLayer
-#endif
+
 
 inline C_AnimationLayer::C_AnimationLayer()
 {

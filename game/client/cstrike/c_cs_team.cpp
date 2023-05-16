@@ -14,8 +14,8 @@
 #include "tier0/memdbgon.h"
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_CSTeam, DT_CSTeam, CCSTeam)
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_CSTeam, DT_CSTeam, CCSTeam)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

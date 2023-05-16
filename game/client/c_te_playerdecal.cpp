@@ -125,6 +125,12 @@ public:
 	int				m_nPlayer;
 	Vector			m_vecOrigin;
 	int				m_nEntity;
+
+	BEGIN_RECV_TABLE(C_TEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropInt(RECVINFO(m_nEntity)),
+		RecvPropInt(RECVINFO(m_nPlayer)),
+	END_RECV_TABLE(DT_TEPlayerDecal)
 };
 
 //-----------------------------------------------------------------------------
@@ -269,8 +275,5 @@ void C_TEPlayerDecal::PostDataUpdate( DataUpdateType_t updateType )
 #endif
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEPlayerDecal, DT_TEPlayerDecal, CTEPlayerDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nEntity)),
-	RecvPropInt( RECVINFO(m_nPlayer)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEPlayerDecal, DT_TEPlayerDecal, CTEPlayerDecal)
+

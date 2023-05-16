@@ -36,16 +36,8 @@ enum SlideshowCycleTypes
 CUtlVector< C_SlideshowDisplay* > g_SlideshowDisplays;
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_SlideshowDisplay, DT_SlideshowDisplay, CSlideshowDisplay)
-	RecvPropBool( RECVINFO(m_bEnabled) ),
-	RecvPropString( RECVINFO( m_szDisplayText ) ),
-	RecvPropString( RECVINFO( m_szSlideshowDirectory ) ),
-	RecvPropArray3( RECVINFO_ARRAY(m_chCurrentSlideLists), RecvPropInt( RECVINFO(m_chCurrentSlideLists[0]) ) ),
-	RecvPropFloat( RECVINFO(m_fMinSlideTime) ),
-	RecvPropFloat( RECVINFO(m_fMaxSlideTime) ),
-	RecvPropInt( RECVINFO(m_iCycleType) ),
-	RecvPropBool( RECVINFO(m_bNoListRepeats) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_SlideshowDisplay, DT_SlideshowDisplay, CSlideshowDisplay)
+
 
 
 C_SlideshowDisplay::C_SlideshowDisplay()

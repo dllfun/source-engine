@@ -46,14 +46,16 @@ private:
 	BEGIN_NETWORK_TABLE(CWeaponMP5Navy, DT_WeaponMP5Navy, DT_WeaponCSBaseGun)
 	END_NETWORK_TABLE(DT_WeaponMP5Navy)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponMP5Navy, DT_WeaponMP5Navy, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponMP5Navy)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponMP5Navy, DT_WeaponMP5Navy )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE( CWeaponMP5Navy, DT_WeaponMP5Navy, DT_WeaponCSBaseGun)
-END_NETWORK_TABLE(DT_WeaponMP5Navy)
-#endif
+
 
 BEGIN_PREDICTION_DATA( CWeaponMP5Navy )
 END_PREDICTION_DATA()

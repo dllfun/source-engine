@@ -115,6 +115,9 @@ private:
 	// TEs add themselves to this list for the executable.
 	static C_BaseTempEntity	*s_pTempEntities;
 	static C_BaseTempEntity *s_pDynamicEntities;
+
+	BEGIN_RECV_TABLE_NOBASE(C_BaseTempEntity, DT_BaseTempEntity)
+	END_RECV_TABLE(DT_BaseTempEntity)
 };
 
 

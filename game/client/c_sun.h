@@ -56,6 +56,7 @@ protected:
 //
 // Sun entity
 //
+void RecvProxy_SunHDRColorScale(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 class C_Sun : public C_BaseEntity
 {
@@ -80,6 +81,19 @@ public:
 
 	int					m_nMaterial;
 	int					m_nOverlayMaterial;
+
+	BEGIN_RECV_TABLE_NOBASE(C_Sun, DT_Sun, CSun)
+		RecvPropInt(RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32),
+		RecvPropInt(RECVINFO(m_clrOverlay), 0, RecvProxy_IntToColor32),
+		RecvPropVector(RECVINFO(m_vDirection)),
+		RecvPropInt(RECVINFO(m_bOn)),
+		RecvPropInt(RECVINFO(m_nSize)),
+		RecvPropInt(RECVINFO(m_nOverlaySize)),
+		RecvPropInt(RECVINFO(m_nMaterial)),
+		RecvPropInt(RECVINFO(m_nOverlayMaterial)),
+		RecvPropFloat("HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_SunHDRColorScale),
+
+	END_RECV_TABLE(DT_Sun)
 };
 
 

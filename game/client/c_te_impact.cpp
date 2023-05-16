@@ -35,6 +35,13 @@ public:
 	Vector			m_vecNormal;
 	int				m_iType;
 	byte			m_ucFlags;
+
+	BEGIN_RECV_TABLE(C_TEImpact, DT_TEImpact, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecNormal)),
+		RecvPropInt(RECVINFO(m_iType)),
+		RecvPropInt(RECVINFO(m_ucFlags)),
+	END_RECV_TABLE(DT_TEImpact)
 };
 
 //-----------------------------------------------------------------------------
@@ -90,9 +97,5 @@ void C_TEImpact::PerformCustomEffects( trace_t &tr, Vector &shotDir )
 }
 
 //Receive data table
-IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEImpact, DT_TEImpact, CTEImpact)
-	RecvPropVector( RECVINFO( m_vecOrigin ) ),
-	RecvPropVector( RECVINFO( m_vecNormal ) ),
-	RecvPropInt( RECVINFO( m_iType ) ),
-	RecvPropInt( RECVINFO( m_ucFlags ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT( C_TEImpact, DT_TEImpact, CTEImpact)
+

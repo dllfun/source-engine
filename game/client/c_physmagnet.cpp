@@ -30,6 +30,21 @@ public:
 
 	// Private list of entities on the magnet
 	CUtlVector< EHANDLE > m_aAttachedObjects;
+
+	BEGIN_RECV_TABLE(C_PhysMagnet, DT_PhysMagnet, DT_BaseAnimating)
+
+		// ROBIN: Disabled because we don't need it anymore
+		/*
+		RecvPropArray2(
+			RecvProxyArrayLength_MagnetAttachedArray,
+			RecvPropInt( "magnetattached_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_MagnetAttachedObjectList ),
+			128,
+			0,
+			"magnetattached_array"
+			)
+		*/
+
+	END_RECV_TABLE(DT_PhysMagnet)
 };
 
 //-----------------------------------------------------------------------------
@@ -50,20 +65,8 @@ void RecvProxyArrayLength_MagnetAttachedArray( void *pStruct, int objectID, int 
 		pMagnet->m_aAttachedObjectsFromServer.SetSize( currentArrayLength );
 }
 
-IMPLEMENT_CLIENTCLASS_DT(C_PhysMagnet, DT_PhysMagnet, CPhysMagnet)
+IMPLEMENT_CLIENTCLASS(C_PhysMagnet, DT_PhysMagnet, CPhysMagnet)
 
-	// ROBIN: Disabled because we don't need it anymore
-	/*
-	RecvPropArray2( 
-		RecvProxyArrayLength_MagnetAttachedArray,
-		RecvPropInt( "magnetattached_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_MagnetAttachedObjectList ), 
-		128, 
-		0, 
-		"magnetattached_array"
-		)
-	*/
-
-END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 

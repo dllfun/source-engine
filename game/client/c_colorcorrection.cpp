@@ -47,17 +47,20 @@ private:
 	bool	m_bEnabled;
 
 	ClientCCHandle_t m_CCHandle;
+
+	BEGIN_RECV_TABLE(C_ColorCorrection, DT_ColorCorrection, DT_BaseEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropFloat(RECVINFO(m_minFalloff)),
+		RecvPropFloat(RECVINFO(m_maxFalloff)),
+		RecvPropFloat(RECVINFO(m_flCurWeight)),
+		RecvPropString(RECVINFO(m_netLookupFilename)),
+		RecvPropBool(RECVINFO(m_bEnabled)),
+
+	END_RECV_TABLE(DT_ColorCorrection)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_ColorCorrection, DT_ColorCorrection, CColorCorrection)
-	RecvPropVector( RECVINFO(m_vecOrigin) ),
-	RecvPropFloat(  RECVINFO(m_minFalloff) ),
-	RecvPropFloat(  RECVINFO(m_maxFalloff) ),
-	RecvPropFloat(  RECVINFO(m_flCurWeight) ),
-	RecvPropString( RECVINFO(m_netLookupFilename) ),
-	RecvPropBool(   RECVINFO(m_bEnabled) ),
+IMPLEMENT_CLIENTCLASS(C_ColorCorrection, DT_ColorCorrection, CColorCorrection)
 
-END_RECV_TABLE()
 
 
 //------------------------------------------------------------------------------

@@ -69,6 +69,12 @@ public:
 		SendPropInt(SENDINFO(deadflag), 1, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_PlayerState)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_RECV_TABLE_NOBASE(CPlayerState, DT_PlayerState)
+		RecvPropInt(RECVINFO(deadflag)),
+	END_RECV_TABLE(DT_PlayerState)
+#endif
 };
 
 #endif // PLAYERSTATE_H

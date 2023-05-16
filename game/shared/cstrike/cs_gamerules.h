@@ -78,6 +78,7 @@ extern ConVar mp_playerid;
 #if !defined( CLIENT_DLL )
 void* SendProxy_CSGameRules(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID);
 #endif
+void RecvProxy_CSGameRules(const RecvProp* pProp, void** pOut, void* pData, int objectID);
 
 class CCSGameRulesProxy : public CGameRulesProxy
 {
@@ -89,6 +90,12 @@ public:
 	BEGIN_SEND_TABLE(CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
 		SendPropDataTable("cs_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_CSGameRules), SendProxy_CSGameRules)
 	END_SEND_TABLE(DT_CSGameRulesProxy)
+#endif
+
+#ifdef CLIENT_DLL
+	BEGIN_RECV_TABLE(CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
+		RecvPropDataTable("cs_gamerules_data", 0, 0, REFERENCE_RECV_TABLE(DT_CSGameRules), RecvProxy_CSGameRules)
+	END_RECV_TABLE(DT_CSGameRulesProxy)
 #endif
 };
 
@@ -530,6 +537,20 @@ public:
 		SendPropBool(SENDINFO(m_bMapHasRescueZone)),
 		SendPropBool(SENDINFO(m_bLogoMap)),
 		SendPropBool(SENDINFO(m_bBlackMarket))
+	END_NETWORK_TABLE(DT_CSGameRules)
+#endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CCSGameRules, DT_CSGameRules)
+		RecvPropBool(RECVINFO(m_bFreezePeriod)),
+		RecvPropInt(RECVINFO(m_iRoundTime)),
+		RecvPropFloat(RECVINFO(m_fRoundStartTime)),
+		RecvPropFloat(RECVINFO(m_flGameStartTime)),
+		RecvPropInt(RECVINFO(m_iHostagesRemaining)),
+		RecvPropBool(RECVINFO(m_bMapHasBombTarget)),
+		RecvPropBool(RECVINFO(m_bMapHasRescueZone)),
+		RecvPropBool(RECVINFO(m_bLogoMap)),
+		RecvPropBool(RECVINFO(m_bBlackMarket))
 	END_NETWORK_TABLE(DT_CSGameRules)
 #endif
 };

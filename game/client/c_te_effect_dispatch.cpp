@@ -49,6 +49,10 @@ public:
 
 public:
 	CEffectData m_EffectData;
+
+	BEGIN_RECV_TABLE(C_TEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
+		RecvPropDataTable(RECVINFO_DT(m_EffectData), 0, REFERENCE_RECV_TABLE(DT_EffectData))
+	END_RECV_TABLE(DT_TEEffectDispatch)
 };
 
 //-----------------------------------------------------------------------------
@@ -157,11 +161,8 @@ void C_TEEffectDispatch::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEEffectDispatch, DT_TEEffectDispatch, CTEEffectDispatch )
-	
-	RecvPropDataTable( RECVINFO_DT( m_EffectData ), 0, &REFERENCE_RECV_TABLE( DT_EffectData ) )
-			
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT( C_TEEffectDispatch, DT_TEEffectDispatch, CTEEffectDispatch )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Clientside version

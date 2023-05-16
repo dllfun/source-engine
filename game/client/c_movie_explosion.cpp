@@ -71,13 +71,17 @@ public:
 private:
 					C_MovieExplosion( const C_MovieExplosion & );
 
+	BEGIN_RECV_TABLE(C_MovieExplosion, DT_MovieExplosion, DT_BaseParticleEntity)
+
+	END_RECV_TABLE(DT_MovieExplosion)
+
 };
 
 // Expose to the particle app.
 EXPOSE_PROTOTYPE_EFFECT(MovieExplosion, C_MovieExplosion);
 
-IMPLEMENT_CLIENTCLASS_DT(C_MovieExplosion, DT_MovieExplosion, MovieExplosion)
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_MovieExplosion, DT_MovieExplosion, MovieExplosion)
+
 
 
 

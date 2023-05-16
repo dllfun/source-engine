@@ -34,6 +34,11 @@ public:
 public:
 	int				m_nStartEntity;
 	int				m_nEndEntity;
+
+	BEGIN_RECV_TABLE(C_TEBeamRing, DT_TEBeamRing, DT_BaseBeam)
+		RecvPropInt(RECVINFO(m_nStartEntity)),
+		RecvPropInt(RECVINFO(m_nEndEntity)),
+	END_RECV_TABLE(DT_TEBeamRing)
 };
 
 //-----------------------------------------------------------------------------
@@ -72,7 +77,5 @@ void C_TEBeamRing::PostDataUpdate( DataUpdateType_t updateType )
 		m_nStartFrame, 0.1 * m_nFrameRate, r, g, b, m_nFlags );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBeamRing, DT_TEBeamRing, CTEBeamRing)
-	RecvPropInt( RECVINFO(m_nStartEntity)),
-	RecvPropInt( RECVINFO(m_nEndEntity)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamRing, DT_TEBeamRing, CTEBeamRing)
+

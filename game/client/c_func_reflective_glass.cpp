@@ -24,10 +24,14 @@ public:
 	virtual bool	ShouldDraw();
 
 	C_FuncReflectiveGlass	*m_pNext;
+
+	BEGIN_RECV_TABLE(C_FuncReflectiveGlass, DT_FuncReflectiveGlass, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncReflectiveGlass)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_FuncReflectiveGlass, DT_FuncReflectiveGlass, CFuncReflectiveGlass )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_FuncReflectiveGlass, DT_FuncReflectiveGlass, CFuncReflectiveGlass )
+
 
 
 //-----------------------------------------------------------------------------

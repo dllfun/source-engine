@@ -37,6 +37,8 @@ public:
 	Vector	m_vecMoveDir;
 };
 
+void RecvProxy_PlasmaScale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_PlasmaScaleTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 class C_Plasma : public C_BaseEntity
 {
@@ -98,6 +100,16 @@ protected:
 
 private:
 	C_Plasma( const C_Plasma & );
+
+	BEGIN_RECV_TABLE(C_Plasma, DT_Plasma, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flStartScale)),
+		RecvPropFloat(RECVINFO(m_flScale), 0, RecvProxy_PlasmaScale),
+		RecvPropFloat(RECVINFO(m_flScaleTime), 0, RecvProxy_PlasmaScaleTime),
+		RecvPropInt(RECVINFO(m_nFlags)),
+		RecvPropInt(RECVINFO(m_nPlasmaModelIndex)),
+		RecvPropInt(RECVINFO(m_nPlasmaModelIndex2)),
+		RecvPropInt(RECVINFO(m_nGlowModelIndex)),
+	END_RECV_TABLE(DT_Plasma)
 };
 
 //-----------------------------------------------------------------------------
@@ -157,15 +169,8 @@ void RecvProxy_PlasmaScaleTime( const CRecvProxyData *pData, void *pStruct, void
 }
 
 //Receive datatable
-IMPLEMENT_CLIENTCLASS_DT( C_Plasma, DT_Plasma, CPlasma )
-	RecvPropFloat( RECVINFO( m_flStartScale )),
-	RecvPropFloat( RECVINFO( m_flScale ), 0, RecvProxy_PlasmaScale ),
-	RecvPropFloat( RECVINFO( m_flScaleTime ), 0, RecvProxy_PlasmaScaleTime ),
-	RecvPropInt( RECVINFO( m_nFlags ) ),
-	RecvPropInt( RECVINFO( m_nPlasmaModelIndex ) ),
-	RecvPropInt( RECVINFO( m_nPlasmaModelIndex2 ) ),
-	RecvPropInt( RECVINFO( m_nGlowModelIndex ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_Plasma, DT_Plasma, CPlasma )
+
 
 //==================================================
 // C_Plasma

@@ -157,6 +157,16 @@ private:
 	CPanelWrapper m_PanelWrapper;
 
 	CHandle<C_BasePlayer> m_hPlayerOwner;
+
+	BEGIN_RECV_TABLE(C_VGuiScreen, DT_VGuiScreen, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flWidth)),
+		RecvPropFloat(RECVINFO(m_flHeight)),
+		RecvPropInt(RECVINFO(m_fScreenFlags)),
+		RecvPropInt(RECVINFO(m_nPanelName)),
+		RecvPropInt(RECVINFO(m_nAttachmentIndex)),
+		RecvPropInt(RECVINFO(m_nOverlayMaterial)),
+		RecvPropEHandle(RECVINFO(m_hPlayerOwner)),
+	END_RECV_TABLE(DT_VGuiScreen)
 };
 
 

@@ -130,6 +130,19 @@ private:
 		SendPropFloat(SENDINFO(m_flSkyboxScale), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE(DT_SpriteTrail)
 #endif
+
+#if defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CSpriteTrail, DT_SpriteTrail, DT_Sprite)
+		RecvPropFloat(RECVINFO(m_flLifeTime)),
+		RecvPropFloat(RECVINFO(m_flStartWidth)),
+		RecvPropFloat(RECVINFO(m_flEndWidth)),
+		RecvPropFloat(RECVINFO(m_flStartWidthVariance)),
+		RecvPropFloat(RECVINFO(m_flTextureRes)),
+		RecvPropFloat(RECVINFO(m_flMinFadeLength)),
+		RecvPropVector(RECVINFO(m_vecSkyboxOrigin)),
+		RecvPropFloat(RECVINFO(m_flSkyboxScale)),
+	END_NETWORK_TABLE(DT_SpriteTrail)
+#endif
 };
 
 #endif // SPRITETRAIL_H

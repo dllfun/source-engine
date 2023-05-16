@@ -37,13 +37,7 @@ C_BaseAnimatingOverlay::C_BaseAnimatingOverlay()
 
 
 
-BEGIN_RECV_TABLE_NOBASE(CAnimationLayer, DT_Animationlayer)
-	RecvPropInt(	RECVINFO_NAME(m_nSequence, m_nSequence)),
-	RecvPropFloat(	RECVINFO_NAME(m_flCycle, m_flCycle)),
-	RecvPropFloat(	RECVINFO_NAME(m_flPrevCycle, m_flPrevCycle)),
-	RecvPropFloat(	RECVINFO_NAME(m_flWeight, m_flWeight)),
-	RecvPropInt(	RECVINFO_NAME(m_nOrder, m_nOrder))
-END_RECV_TABLE()
+
 
 const char *s_m_iv_AnimOverlayNames[C_BaseAnimatingOverlay::MAX_OVERLAYS] =
 {
@@ -111,17 +105,11 @@ void ResizeAnimationLayerCallback( void *pStruct, int offsetToUtlVector, int len
 }
 
 
-BEGIN_RECV_TABLE_NOBASE( C_BaseAnimatingOverlay, DT_OverlayVars )
-	 RecvPropUtlVector( 
-		RECVINFO_UTLVECTOR_SIZEFN( m_AnimOverlay, ResizeAnimationLayerCallback ), 
-		C_BaseAnimatingOverlay::MAX_OVERLAYS,
-		RecvPropDataTable(NULL, 0, 0, &REFERENCE_RECV_TABLE( DT_Animationlayer ) ) )
-END_RECV_TABLE()
 
 
-IMPLEMENT_CLIENTCLASS_DT( C_BaseAnimatingOverlay, DT_BaseAnimatingOverlay, CBaseAnimatingOverlay )
-	RecvPropDataTable( "overlay_vars", 0, 0, &REFERENCE_RECV_TABLE( DT_OverlayVars ) )
-END_RECV_TABLE()
+
+IMPLEMENT_CLIENTCLASS( C_BaseAnimatingOverlay, DT_BaseAnimatingOverlay, CBaseAnimatingOverlay )
+
 
 BEGIN_PREDICTION_DATA( C_BaseAnimatingOverlay )
 

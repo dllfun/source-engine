@@ -745,6 +745,12 @@
     <ClInclude Include="..\..\..\game\client\iviewrender.h" />
     <ClInclude Include="..\..\..\game\client\view.h" />
     <ClInclude Include="..\..\..\game\client\viewrender.h" />
+    <ClInclude Include="..\..\..\public\client_class.h" />
+    <ClInclude Include="..\..\..\public\dt_common.h" />
+    <ClInclude Include="..\..\..\public\dt_recv.h" />
+    <ClInclude Include="..\..\..\public\dt_shared.h" />
+    <ClInclude Include="..\..\..\public\dt_utlvector_common.h" />
+    <ClInclude Include="..\..\..\public\dt_utlvector_recv.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

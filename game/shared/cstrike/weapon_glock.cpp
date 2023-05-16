@@ -67,16 +67,18 @@ private:
 		SendPropInt(SENDINFO(m_iBurstShotsRemaining)),
 	END_NETWORK_TABLE(DT_WeaponGlock)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponGlock, DT_WeaponGlock, DT_WeaponCSBase)
+		RecvPropBool(RECVINFO(m_bBurstMode)),
+		RecvPropInt(RECVINFO(m_iBurstShotsRemaining)),
+	END_NETWORK_TABLE(DT_WeaponGlock)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponGlock, DT_WeaponGlock )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE( CWeaponGlock, DT_WeaponGlock, DT_WeaponCSBase)
-		RecvPropBool( RECVINFO( m_bBurstMode ) ),
-		RecvPropInt( RECVINFO( m_iBurstShotsRemaining ) ),
-END_NETWORK_TABLE(DT_WeaponGlock)
-#endif
+
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponGlock )

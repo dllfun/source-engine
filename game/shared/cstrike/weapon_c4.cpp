@@ -730,13 +730,7 @@ END_PREDICTION_DATA()
 
 IMPLEMENT_NETWORKCLASS_ALIASED( C4, DT_WeaponC4 )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE( CC4, DT_WeaponC4, DT_WeaponCSBase)
-		RecvPropBool( RECVINFO( m_bStartedArming ) ),
-		RecvPropBool( RECVINFO( m_bBombPlacedAnimation ) ),
-		RecvPropFloat( RECVINFO( m_fArmedTime ) )
-END_NETWORK_TABLE(DT_WeaponC4)
-#endif
+
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CC4 )

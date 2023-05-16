@@ -49,16 +49,23 @@ typedef IClientNetworkable*	(*CreateEventFn)();
 class ClientClass
 {
 public:
-	ClientClass( const char *pNetworkName, CreateClientClassFn createFn, CreateEventFn createEventFn, RecvTable *pRecvTable )
+	ClientClass( const char *pNetworkName, CreateClientClassFn createFn, CreateEventFn createEventFn, const char *pRecvTableName, RecvTable* pRecvTable=NULL)
 	{
 		m_pNetworkName	= pNetworkName;
 		m_pCreateFn		= createFn;
 		m_pCreateEventFn= createEventFn;
+		m_pRecvTableName= pRecvTableName;
 		m_pRecvTable	= pRecvTable;
-		
 		// Link it in
 		m_pNext				= g_pClientClassHead;
 		g_pClientClassHead	= this;
+	}
+
+	void InitRefRecvTable(RecvTableManager* pRecvTableNanager) {
+		m_pRecvTable = pRecvTableNanager->FindRecvTable(m_pRecvTableName);
+		if (!m_pRecvTable) {
+			Error("not found RecvTable: %s\n", m_pRecvTableName);	// dedicated servers exit
+		}
 	}
 
 	const char* GetName()
@@ -70,6 +77,7 @@ public:
 	CreateClientClassFn		m_pCreateFn;
 	CreateEventFn			m_pCreateEventFn;	// Only called for event objects.
 	const char				*m_pNetworkName;
+	const char*				m_pRecvTableName;
 	RecvTable				*m_pRecvTable;
 	ClientClass				*m_pNext;
 	int						m_ClassID;	// Managed by the engine.
@@ -78,7 +86,6 @@ public:
 #define DECLARE_CLIENTCLASS() \
 	virtual int YouForgotToImplementOrDeclareClientClass();\
 	virtual ClientClass* GetClientClass();\
-	static RecvTable *m_pClassRecvTable; \
 	DECLARE_CLIENTCLASS_NOBASE()
 
 
@@ -106,7 +113,8 @@ public:
 	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
 													_##clientClassName##_CreateObject, \
 													NULL,\
-													&dataTable::g_RecvTable);
+													#dataTable);\
+	static clientClassName g_##clientClassName##_EntityReg;
 
 // Implement a client class and provide a factory so you can allocate and delete it yourself
 // (or make it a singleton).
@@ -115,7 +123,8 @@ public:
 	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
 													factory, \
 													NULL,\
-													&dataTable::g_RecvTable);
+													#dataTable);\
+	static clientClassName g_##clientClassName##_EntityReg;
 
 // The IMPLEMENT_CLIENTCLASS_DT macros do IMPLEMENT_CLIENT_CLASS and also do BEGIN_RECV_TABLE.
 #define IMPLEMENT_CLIENTCLASS_DT(clientClassName, dataTable, serverClassName)\
@@ -136,10 +145,10 @@ public:
 	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
 													NULL,\
 													_##clientClassName##_CreateObject, \
-													&dataTable::g_RecvTable);
+													#dataTable);\
+	static clientClassName g_##clientClassName##_EntityReg;
 
 #define IMPLEMENT_CLIENTCLASS_EVENT_DT(clientClassName, dataTable, serverClassName)\
-	namespace dataTable {extern RecvTable g_RecvTable;}\
 	IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\
 	BEGIN_RECV_TABLE(clientClassName, dataTable)
 
@@ -153,7 +162,8 @@ public:
 	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
 													NULL,\
 													_##clientClassName##_CreateObject, \
-													&dataTable::g_RecvTable);
+													#dataTable);\
+	static clientClassName g_##clientClassName##_EntityReg;
 
 #define IMPLEMENT_CLIENTCLASS_EVENT_NONSINGLETON(clientClassName, dataTable, serverClassName)\
 	static IClientNetworkable* _##clientClassName##_CreateObject() \
@@ -166,14 +176,13 @@ public:
 	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
 													NULL,\
 													_##clientClassName##_CreateObject, \
-													&dataTable::g_RecvTable);
+													#dataTable);\
+	static clientClassName g_##clientClassName##_EntityReg;
 
 
 // Used internally..
 #define INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
-	namespace dataTable {extern RecvTable g_RecvTable;}\
 	extern ClientClass __g_##clientClassName##ClientClass;\
-	RecvTable*		clientClassName::m_pClassRecvTable = &dataTable::g_RecvTable;\
 	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
 	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##ClientClass;}
 

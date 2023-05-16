@@ -31,19 +31,21 @@ public:
 private:
 	void DrawCube( Vector& center, unsigned char* pColor );
 	IMaterial* m_pWireframe;
+
+	BEGIN_RECV_TABLE_NOBASE(C_TestTraceline, DT_TestTraceline)
+		RecvPropInt(RECVINFO(m_clrRender)),
+		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
+		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[0], m_angRotation[0])),
+		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[1], m_angRotation[1])),
+		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[2], m_angRotation[2])),
+		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+	END_RECV_TABLE(DT_TestTraceline)
 };
 
 // Expose it to the engine.
 IMPLEMENT_CLIENTCLASS(C_TestTraceline, DT_TestTraceline, CTestTraceline);
 
-BEGIN_RECV_TABLE_NOBASE(C_TestTraceline, DT_TestTraceline)
-	RecvPropInt(RECVINFO(m_clrRender)),
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[0], m_angRotation[0] ) ),
-	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[1], m_angRotation[1] ) ),
-	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[2], m_angRotation[2] ) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-END_RECV_TABLE()
+
 
 
 // -------------------------------------------------------------------------------- //
@@ -52,6 +54,9 @@ END_RECV_TABLE()
 
 C_TestTraceline::C_TestTraceline()
 {
+	if (!engineClient) {
+		return;
+	}
 	m_pWireframe = materials->FindMaterial("shadertest/wireframevertexcolor", TEXTURE_GROUP_OTHER);
 }
 

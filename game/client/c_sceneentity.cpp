@@ -41,17 +41,8 @@ void RecvProxy_ForcedClientTime( const CRecvProxyData *pData, void *pStruct, voi
 #undef CSceneEntity
 #endif
 
-IMPLEMENT_CLIENTCLASS_DT(C_SceneEntity, DT_SceneEntity, CSceneEntity)
-	RecvPropInt(RECVINFO(m_nSceneStringIndex)),
-	RecvPropBool(RECVINFO(m_bIsPlayingBack)),
-	RecvPropBool(RECVINFO(m_bPaused)),
-	RecvPropBool(RECVINFO(m_bMultiplayer)),
-	RecvPropFloat(RECVINFO(m_flForceClientTime), 0, RecvProxy_ForcedClientTime ),
-	RecvPropUtlVector( 
-		RECVINFO_UTLVECTOR( m_hActorList ), 
-		MAX_ACTORS_IN_SCENE,
-		RecvPropEHandle(NULL, 0, 0)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_SceneEntity, DT_SceneEntity, CSceneEntity)
+
 
 C_SceneEntity::C_SceneEntity( void )
 {

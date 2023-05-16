@@ -40,22 +40,25 @@ public:
 	int				exponent;
 	float			m_fTime;
 	float			m_fDecay;
+
+	BEGIN_RECV_TABLE(C_TEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropInt(RECVINFO(r)),
+		RecvPropInt(RECVINFO(g)),
+		RecvPropInt(RECVINFO(b)),
+		RecvPropInt(RECVINFO(exponent)),
+		RecvPropFloat(RECVINFO(m_fRadius)),
+		RecvPropFloat(RECVINFO(m_fTime)),
+		RecvPropFloat(RECVINFO(m_fDecay)),
+	END_RECV_TABLE(DT_TEDynamicLight)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking 
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEDynamicLight, DT_TEDynamicLight, CTEDynamicLight)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(r)),
-	RecvPropInt( RECVINFO(g)),
-	RecvPropInt( RECVINFO(b)),
-	RecvPropInt( RECVINFO(exponent)),
-	RecvPropFloat( RECVINFO(m_fRadius)),
-	RecvPropFloat( RECVINFO(m_fTime)),
-	RecvPropFloat( RECVINFO(m_fDecay)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEDynamicLight, DT_TEDynamicLight, CTEDynamicLight)
+
 
 
 //-----------------------------------------------------------------------------

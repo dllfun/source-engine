@@ -53,6 +53,11 @@ protected:
 	BEGIN_NETWORK_TABLE(CBaseProjectile, DT_BaseProjectile, DT_BaseAnimating)
 	END_NETWORK_TABLE(DT_BaseProjectile)
 #endif
+
+#if defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CBaseProjectile, DT_BaseProjectile, DT_BaseAnimating)
+	END_NETWORK_TABLE(DT_BaseProjectile)
+#endif
 };
 
 #endif // BASEPROJECTILE_H

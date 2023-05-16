@@ -31,12 +31,15 @@ public:
 
 private:
 	float m_flConveyorSpeed;
+
+	BEGIN_RECV_TABLE(C_FuncConveyor, DT_FuncConveyor, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flConveyorSpeed)),
+	END_RECV_TABLE(DT_FuncConveyor)
 };
 
 
-IMPLEMENT_CLIENTCLASS_DT( C_FuncConveyor, DT_FuncConveyor, CFuncConveyor )
-	RecvPropFloat( RECVINFO( m_flConveyorSpeed ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_FuncConveyor, DT_FuncConveyor, CFuncConveyor )
+
 
 
 C_FuncConveyor::C_FuncConveyor()

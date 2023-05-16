@@ -66,6 +66,14 @@ public:
 	float	m_flNextRadarFlashTime;	// next time to change flash state
 	bool	m_bRadarFlash;			// is the flash on or off
 	CNewParticleEffect *m_pC4Explosion; // client side explosion particle effect for the bomb
+
+	BEGIN_RECV_TABLE(C_PlantedC4, DT_PlantedC4, DT_BaseAnimating)
+		RecvPropBool(RECVINFO(m_bBombTicking)),
+		RecvPropFloat(RECVINFO(m_flC4Blow)),
+		RecvPropFloat(RECVINFO(m_flTimerLength)),
+		RecvPropFloat(RECVINFO(m_flDefuseLength)),
+		RecvPropFloat(RECVINFO(m_flDefuseCountDown)),
+	END_RECV_TABLE(DT_PlantedC4)
 };
 
 extern CUtlVector< C_PlantedC4* > g_PlantedC4s;

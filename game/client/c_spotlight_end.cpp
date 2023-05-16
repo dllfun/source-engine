@@ -43,6 +43,12 @@ private:
 	dlight_t*	m_pDynamicLight;
 
 	//dlight_t*	m_pModelLight;
+	BEGIN_RECV_TABLE(C_SpotlightEnd, DT_SpotlightEnd, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flLightScale)),
+		RecvPropFloat(RECVINFO(m_Radius)),
+		//	RecvPropVector	(RECVINFO(m_vSpotlightOrg)),
+		//	RecvPropVector	(RECVINFO(m_vSpotlightDir)),
+	END_RECV_TABLE(DT_SpotlightEnd)
 };
 
 //------------------------------------------------------------------------------
@@ -148,9 +154,5 @@ void C_SpotlightEnd::ClientThink(void)
 	SetNextClientThink( CLIENT_THINK_ALWAYS );
 }
 
-IMPLEMENT_CLIENTCLASS_DT(C_SpotlightEnd, DT_SpotlightEnd, CSpotlightEnd)
-	RecvPropFloat	(RECVINFO(m_flLightScale)),
-	RecvPropFloat	(RECVINFO(m_Radius)),
-//	RecvPropVector	(RECVINFO(m_vSpotlightOrg)),
-//	RecvPropVector	(RECVINFO(m_vSpotlightDir)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_SpotlightEnd, DT_SpotlightEnd, CSpotlightEnd)
+

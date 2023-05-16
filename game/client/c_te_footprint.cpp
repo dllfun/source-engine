@@ -40,15 +40,18 @@ public:
 	int				m_nEntity;
 	int				m_nIndex;
 	char			m_chMaterialType;
+
+	BEGIN_RECV_TABLE(C_TEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecDirection)),
+		RecvPropInt(RECVINFO(m_nEntity)),
+		RecvPropInt(RECVINFO(m_nIndex)),
+		RecvPropInt(RECVINFO(m_chMaterialType)),
+	END_RECV_TABLE(DT_TEFootprintDecal)
 };
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEFootprintDecal, DT_TEFootprintDecal, CTEFootprintDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecDirection)),
-	RecvPropInt( RECVINFO(m_nEntity)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-	RecvPropInt( RECVINFO(m_chMaterialType)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEFootprintDecal, DT_TEFootprintDecal, CTEFootprintDecal)
+
 
 
 //-----------------------------------------------------------------------------

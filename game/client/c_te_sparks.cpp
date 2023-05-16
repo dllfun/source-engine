@@ -31,6 +31,12 @@ public:
 	int m_nMagnitude;
 	int m_nTrailLength;
 	Vector m_vecDir;
+
+	BEGIN_RECV_TABLE(C_TESparks, DT_TESparks, DT_TEParticleSystem)
+		RecvPropInt(RECVINFO(m_nMagnitude)),
+		RecvPropInt(RECVINFO(m_nTrailLength)),
+		RecvPropVector(RECVINFO(m_vecDir)),
+	END_RECV_TABLE(DT_TESparks)
 };
 
 //-----------------------------------------------------------------------------
@@ -98,8 +104,5 @@ void TE_Sparks( IRecipientFilter& filter, float delay,
 	RecordSparks( *pos, nMagnitude, nTrailLength, *pDir );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TESparks, DT_TESparks, CTESparks)
-	RecvPropInt( RECVINFO( m_nMagnitude ) ),
-	RecvPropInt( RECVINFO( m_nTrailLength ) ),
-	RecvPropVector( RECVINFO( m_vecDir ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TESparks, DT_TESparks, CTESparks)
+

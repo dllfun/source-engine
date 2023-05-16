@@ -160,21 +160,24 @@ private:
 	Vector m_vLastOrigin;
 	QAngle m_vLastAngles;
 	bool m_bFirstUpdate;
+
+	BEGIN_RECV_TABLE(C_FuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
+		RecvPropInt(RECVINFO(m_Color1), 0, RecvProxy_IntToColor32),
+		RecvPropInt(RECVINFO(m_Color2), 0, RecvProxy_IntToColor32),
+		RecvPropString(RECVINFO(m_MaterialName)),
+		RecvPropFloat(RECVINFO(m_ParticleDrawWidth)),
+		RecvPropFloat(RECVINFO(m_ParticleSpacingDistance)),
+		RecvPropFloat(RECVINFO(m_DensityRampSpeed)),
+		RecvPropFloat(RECVINFO(m_RotationSpeed)),
+		RecvPropFloat(RECVINFO(m_MovementSpeed)),
+		RecvPropFloat(RECVINFO(m_Density)),
+		RecvPropInt(RECVINFO(m_spawnflags)),
+		RecvPropDataTable(RECVINFO_DT(m_Collision), 0, REFERENCE_RECV_TABLE(DT_CollisionProperty)),
+	END_RECV_TABLE(DT_FuncSmokeVolume)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_FuncSmokeVolume, DT_FuncSmokeVolume, CFuncSmokeVolume )
-	RecvPropInt( RECVINFO( m_Color1 ), 0, RecvProxy_IntToColor32 ),
-	RecvPropInt( RECVINFO( m_Color2 ), 0, RecvProxy_IntToColor32 ),
-	RecvPropString( RECVINFO( m_MaterialName ) ),
-	RecvPropFloat( RECVINFO( m_ParticleDrawWidth ) ),
-	RecvPropFloat( RECVINFO( m_ParticleSpacingDistance ) ),
-	RecvPropFloat( RECVINFO( m_DensityRampSpeed ) ),
-	RecvPropFloat( RECVINFO( m_RotationSpeed ) ),
-	RecvPropFloat( RECVINFO( m_MovementSpeed ) ),
-	RecvPropFloat( RECVINFO( m_Density ) ),
-	RecvPropInt( RECVINFO( m_spawnflags ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Collision ), 0, &REFERENCE_RECV_TABLE(DT_CollisionProperty) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_FuncSmokeVolume, DT_FuncSmokeVolume, CFuncSmokeVolume )
+
 
 // Helpers.
 // ------------------------------------------------------------------------- //

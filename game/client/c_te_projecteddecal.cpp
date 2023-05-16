@@ -41,18 +41,21 @@ public:
 	QAngle			m_angRotation;
 	float			m_flDistance;
 	int				m_nIndex;
+
+	BEGIN_RECV_TABLE(C_TEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropQAngles(RECVINFO(m_angRotation)),
+		RecvPropFloat(RECVINFO(m_flDistance)),
+		RecvPropInt(RECVINFO(m_nIndex)),
+	END_RECV_TABLE(DT_TEProjectedDecal)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEProjectedDecal, DT_TEProjectedDecal, CTEProjectedDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropQAngles( RECVINFO( m_angRotation )),
-	RecvPropFloat( RECVINFO(m_flDistance)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEProjectedDecal, DT_TEProjectedDecal, CTEProjectedDecal)
+
 
 
 //-----------------------------------------------------------------------------

@@ -35,6 +35,12 @@ public:
 	Vector			m_vecCenter;
 	float			m_flStartRadius;
 	float			m_flEndRadius;
+
+	BEGIN_RECV_TABLE(C_TEBeamRingPoint, DT_TEBeamRingPoint, DT_BaseBeam)
+		RecvPropVector(RECVINFO(m_vecCenter)),
+		RecvPropFloat(RECVINFO(m_flStartRadius)),
+		RecvPropFloat(RECVINFO(m_flEndRadius)),
+	END_RECV_TABLE(DT_TEBeamRingPoint)
 };
 
 //-----------------------------------------------------------------------------
@@ -74,8 +80,5 @@ void C_TEBeamRingPoint::PostDataUpdate( DataUpdateType_t updateType )
 		m_nStartFrame, 0.1 * m_nFrameRate, r, g, b, m_nFlags );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBeamRingPoint, DT_TEBeamRingPoint, CTEBeamRingPoint)
-	RecvPropVector( RECVINFO(m_vecCenter)),
-	RecvPropFloat( RECVINFO(m_flStartRadius)),
-	RecvPropFloat( RECVINFO(m_flEndRadius)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamRingPoint, DT_TEBeamRingPoint, CTEBeamRingPoint)
+

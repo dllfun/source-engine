@@ -79,6 +79,14 @@ private:
 		SendPropFloat(SENDINFO(m_fThrowTime), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE(DT_BaseCSGrenade)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CBaseCSGrenade, DT_BaseCSGrenade, DT_WeaponCSBase)
+		RecvPropBool(RECVINFO(m_bRedraw)),
+		RecvPropBool(RECVINFO(m_bPinPulled)),
+		RecvPropFloat(RECVINFO(m_fThrowTime)),
+	END_NETWORK_TABLE(DT_BaseCSGrenade)
+#endif
 };
 
 

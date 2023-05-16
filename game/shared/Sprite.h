@@ -83,6 +83,10 @@ protected:
 const float MAX_SPRITE_SCALE = 64.0f;
 const float MAX_GLOW_PROXY_SIZE = 64.0f;
 
+#ifdef CLIENT_DLL
+void RecvProxy_SpriteScale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+#endif
+
 class CSprite : public CBaseEntity
 #if defined( CLIENT_DLL )
 	, public C_SpriteRenderer
@@ -308,6 +312,28 @@ private:
 		SendPropBool(SENDINFO(m_bWorldSpaceScale)),
 	END_NETWORK_TABLE(DT_Sprite)
 #endif
+
+#if defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CSprite, DT_Sprite, DT_BaseEntity)
+		RecvPropEHandle(RECVINFO(m_hAttachedToEntity)),
+		RecvPropInt(RECVINFO(m_nAttachment)),
+		RecvPropFloat(RECVINFO(m_flScaleTime)),
+		RecvPropFloat(RECVINFO(m_flSpriteScale), 0, RecvProxy_SpriteScale),
+		RecvPropFloat(RECVINFO(m_flSpriteFramerate)),
+		RecvPropFloat(RECVINFO(m_flGlowProxySize)),
+
+		RecvPropFloat(RECVINFO(m_flHDRColorScale)),
+
+		RecvPropFloat(RECVINFO(m_flFrame)),
+#ifdef PORTAL
+		RecvPropBool(RECVINFO(m_bDrawInMainRender)),
+		RecvPropBool(RECVINFO(m_bDrawInPortalRender)),
+#endif //#ifdef PORTAL
+		RecvPropFloat(RECVINFO(m_flBrightnessTime)),
+		RecvPropInt(RECVINFO(m_nBrightness)),
+		RecvPropBool(RECVINFO(m_bWorldSpaceScale)),
+	END_NETWORK_TABLE(DT_Sprite)
+#endif
 };
 
 
@@ -327,6 +353,13 @@ public:
 	BEGIN_SEND_TABLE(CSpriteOriented, DT_SpriteOriented, DT_Sprite)
 
 	END_SEND_TABLE(DT_SpriteOriented)
+#endif
+
+#ifdef CLIENT_DLL
+#undef CSpriteOriented
+	BEGIN_RECV_TABLE(C_SpriteOriented, DT_SpriteOriented, DT_Sprite)
+#define CSpriteOriented C_SpriteOriented
+	END_RECV_TABLE(DT_SpriteOriented)
 #endif
 };
 

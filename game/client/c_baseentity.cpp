@@ -390,12 +390,12 @@ void RecvProxy_ToolRecording( const CRecvProxyData *pData, void *pStruct, void *
 // Expose it to the engine.
 IMPLEMENT_CLIENTCLASS(C_BaseEntity, DT_BaseEntity, CBaseEntity);
 
-static void RecvProxy_MoveType( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_MoveType( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	((C_BaseEntity*)pStruct)->SetMoveType( (MoveType_t)(pData->m_Value.m_Int) );
 }
 
-static void RecvProxy_MoveCollide( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_MoveCollide( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	((C_BaseEntity*)pStruct)->SetMoveCollide( (MoveCollide_t)(pData->m_Value.m_Int) );
 }
@@ -416,68 +416,13 @@ void RecvProxy_EffectFlags( const CRecvProxyData *pData, void *pStruct, void *pO
 }
 
 
-BEGIN_RECV_TABLE_NOBASE( C_BaseEntity, DT_AnimTimeMustBeFirst )
-	RecvPropInt( RECVINFO(m_flAnimTime), 0, RecvProxy_AnimTime ),
-END_RECV_TABLE()
 
 
-#ifndef NO_ENTITY_PREDICTION
-BEGIN_RECV_TABLE_NOBASE( C_BaseEntity, DT_PredictableId )
-	RecvPropPredictableId( RECVINFO( m_PredictableID ) ),
-	RecvPropInt( RECVINFO( m_bIsPlayerSimulated ) ),
-END_RECV_TABLE()
-#endif
 
 
-BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
-	RecvPropDataTable( "AnimTimeMustBeFirst", 0, 0, &REFERENCE_RECV_TABLE(DT_AnimTimeMustBeFirst) ),
-	RecvPropInt( RECVINFO(m_flSimulationTime), 0, RecvProxy_SimulationTime ),
-	RecvPropInt( RECVINFO( m_ubInterpolationFrame ) ),
 
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-#if PREDICTION_ERROR_CHECK_LEVEL > 1 
-	RecvPropVector( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
-#else
-	RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
-#endif
 
-#ifdef DEMO_BACKWARDCOMPATABILITY
-	RecvPropInt( RECVINFO(m_nModelIndex), 0, RecvProxy_IntToModelIndex16_BackCompatible ),
-#else
-	RecvPropInt( RECVINFO(m_nModelIndex) ),
-#endif
 
-	RecvPropInt(RECVINFO(m_fEffects), 0, RecvProxy_EffectFlags ),
-	RecvPropInt(RECVINFO(m_nRenderMode)),
-	RecvPropInt(RECVINFO(m_nRenderFX)),
-	RecvPropInt(RECVINFO(m_clrRender)),
-	RecvPropInt(RECVINFO(m_iTeamNum)),
-	RecvPropInt(RECVINFO(m_CollisionGroup)),
-	RecvPropFloat(RECVINFO(m_flElasticity)),
-	RecvPropFloat(RECVINFO(m_flShadowCastDistance)),
-	RecvPropEHandle( RECVINFO(m_hOwnerEntity) ),
-	RecvPropEHandle( RECVINFO(m_hEffectEntity) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-	RecvPropInt( RECVINFO( m_iParentAttachment ) ),
-
-	RecvPropInt( "movetype", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveType ),
-	RecvPropInt( "movecollide", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveCollide ),
-	RecvPropDataTable( RECVINFO_DT( m_Collision ), 0, &REFERENCE_RECV_TABLE(DT_CollisionProperty) ),
-	
-	RecvPropInt( RECVINFO ( m_iTextureFrameIndex ) ),
-#if !defined( NO_ENTITY_PREDICTION )
-	RecvPropDataTable( "predictable_id", 0, 0, &REFERENCE_RECV_TABLE( DT_PredictableId ) ),
-#endif
-
-	RecvPropInt		( RECVINFO( m_bSimulatedEveryTick ), 0, RecvProxy_InterpolationAmountChanged ),
-	RecvPropInt		( RECVINFO( m_bAnimatedEveryTick ), 0, RecvProxy_InterpolationAmountChanged ),
-	RecvPropBool	( RECVINFO( m_bAlternateSorting ) ),
-
-#ifdef TF_CLIENT_DLL
-	RecvPropArray3( RECVINFO_ARRAY(m_nModelIndexOverrides),	RecvPropInt( RECVINFO(m_nModelIndexOverrides[0]) ) ),
-#endif
-
-END_RECV_TABLE()
 
 const float coordTolerance = 2.0f / (float)( 1 << COORD_FRACTIONAL_BITS );
 

@@ -48,17 +48,20 @@ private:
 
 	PMaterialHandle		m_hMaterial;
 	TimedEvent			m_teParticleSpawn;
+
+	BEGIN_RECV_TABLE(C_EntityParticleTrail, DT_EntityParticleTrail, DT_BaseParticleEntity)
+		RecvPropInt(RECVINFO(m_iMaterialName)),
+		RecvPropDataTable(RECVINFO_DT(m_Info), 0, REFERENCE_RECV_TABLE(DT_EntityParticleTrailInfo)),
+		RecvPropEHandle(RECVINFO(m_hConstraintEntity)),
+	END_RECV_TABLE(DT_EntityParticleTrail)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT( C_EntityParticleTrail, DT_EntityParticleTrail, CEntityParticleTrail )
-	RecvPropInt(RECVINFO(m_iMaterialName)),
-	RecvPropDataTable( RECVINFO_DT( m_Info ), 0, &REFERENCE_RECV_TABLE(DT_EntityParticleTrailInfo) ),
-	RecvPropEHandle(RECVINFO(m_hConstraintEntity)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EntityParticleTrail, DT_EntityParticleTrail, CEntityParticleTrail )
+
 
 
 //-----------------------------------------------------------------------------

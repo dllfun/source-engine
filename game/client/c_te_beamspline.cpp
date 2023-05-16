@@ -35,6 +35,13 @@ public:
 public:
 	Vector			m_vecPoints[ MAX_SPLINE_POINTS ];
 	int				m_nPoints;
+
+	BEGIN_RECV_TABLE_NOBASE(C_TEBeamSpline, DT_TEBeamSpline)
+		RecvPropInt(RECVINFO(m_nPoints)),
+		RecvPropArray(
+			RecvPropVector(RECVINFO(m_vecPoints[0])),
+			m_vecPoints)
+	END_RECV_TABLE(DT_TEBeamSpline)
 };
 
 //-----------------------------------------------------------------------------
@@ -77,10 +84,5 @@ void C_TEBeamSpline::PostDataUpdate( DataUpdateType_t updateType )
 // Expose the TE to the engine.
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEBeamSpline, DT_TEBeamSpline, CTEBeamSpline );
 
-BEGIN_RECV_TABLE_NOBASE(C_TEBeamSpline, DT_TEBeamSpline)
-	RecvPropInt( RECVINFO( m_nPoints )),
-	RecvPropArray(
-		RecvPropVector( RECVINFO(m_vecPoints[0])),
-		m_vecPoints)
-END_RECV_TABLE()
+
 

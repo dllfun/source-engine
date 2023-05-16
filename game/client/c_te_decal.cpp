@@ -39,19 +39,22 @@ public:
 	int				m_nEntity;
 	int				m_nHitbox;
 	int				m_nIndex;
+
+	BEGIN_RECV_TABLE(C_TEDecal, DT_TEDecal, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecStart)),
+		RecvPropInt(RECVINFO(m_nEntity)),
+		RecvPropInt(RECVINFO(m_nHitbox)),
+		RecvPropInt(RECVINFO(m_nIndex)),
+	END_RECV_TABLE(DT_TEDecal)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEDecal, DT_TEDecal, CTEDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecStart)),
-	RecvPropInt( RECVINFO(m_nEntity)),
-	RecvPropInt( RECVINFO(m_nHitbox)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEDecal, DT_TEDecal, CTEDecal)
+
 
 
 //-----------------------------------------------------------------------------

@@ -35,6 +35,13 @@ public:
 	bool			m_bExplosive;
 
 	const class IVModel *m_pModel;
+
+
+	BEGIN_RECV_TABLE_NOBASE(C_TEEnergySplash, DT_TEEnergySplash)
+		RecvPropVector(RECVINFO(m_vecPos)),
+		RecvPropVector(RECVINFO(m_vecDir)),
+		RecvPropInt(RECVINFO(m_bExplosive)),
+	END_RECV_TABLE(DT_TEEnergySplash)
 };
 
 //-----------------------------------------------------------------------------
@@ -82,9 +89,5 @@ void TE_EnergySplash( IRecipientFilter& filter, float delay,
 // Expose the TE to the engine.
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEEnergySplash, DT_TEEnergySplash, CTEEnergySplash );
 
-BEGIN_RECV_TABLE_NOBASE(C_TEEnergySplash, DT_TEEnergySplash)
-	RecvPropVector(RECVINFO(m_vecPos)),
-	RecvPropVector(RECVINFO(m_vecDir)),
-	RecvPropInt(RECVINFO(m_bExplosive)),
-END_RECV_TABLE()
+
 

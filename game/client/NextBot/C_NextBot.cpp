@@ -17,8 +17,8 @@
 ConVar NextBotShadowDist( "nb_shadow_dist", "400" );
 
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT( C_NextBotCombatCharacter, DT_NextBot, NextBotCombatCharacter )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_NextBotCombatCharacter, DT_NextBot, NextBotCombatCharacter )
+
 
 
 //-----------------------------------------------------------------------------

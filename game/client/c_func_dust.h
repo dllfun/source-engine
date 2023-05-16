@@ -105,6 +105,22 @@ public:
 
 private:
 	C_Func_Dust( const C_Func_Dust & ); // not defined, not accessible
+
+	BEGIN_RECV_TABLE_NOBASE(C_Func_Dust, DT_Func_Dust, CFunc_Dust)
+
+		RecvPropInt(RECVINFO(m_Color)),
+		RecvPropInt(RECVINFO(m_SpawnRate)),
+		RecvPropFloat(RECVINFO(m_flSizeMin)),
+		RecvPropFloat(RECVINFO(m_flSizeMax)),
+		RecvPropInt(RECVINFO(m_LifetimeMin)),
+		RecvPropInt(RECVINFO(m_LifetimeMax)),
+		RecvPropInt(RECVINFO(m_DustFlags)),
+		RecvPropInt(RECVINFO(m_SpeedMax)),
+		RecvPropInt(RECVINFO(m_DistMax)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropFloat(RECVINFO(m_FallSpeed)),
+		RecvPropDataTable(RECVINFO_DT(m_Collision), 0, REFERENCE_RECV_TABLE(DT_CollisionProperty)),
+	END_RECV_TABLE(DT_Func_Dust)
 };
 
 

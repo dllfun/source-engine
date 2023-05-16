@@ -115,7 +115,11 @@ private:
 	CSmartPtr<CSimpleEmitter> m_pEmitter;
 
 	Vector		m_vecLastOrigin;
+
+	BEGIN_RECV_TABLE(C_WaterBullet, DT_WaterBullet, DT_BaseAnimating)
+
+	END_RECV_TABLE(DT_WaterBullet)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_WaterBullet, DT_WaterBullet, CWaterBullet )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_WaterBullet, DT_WaterBullet, CWaterBullet )
+

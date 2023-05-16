@@ -122,130 +122,18 @@ ConVar demo_fov_override( "demo_fov_override", "0", FCVAR_CLIENTDLL | FCVAR_DONT
 ConVar cl_meathook_neck_pivot_ingame_up( "cl_meathook_neck_pivot_ingame_up", "7.0" );
 ConVar cl_meathook_neck_pivot_ingame_fwd( "cl_meathook_neck_pivot_ingame_fwd", "3.0" );
 
-void RecvProxy_LocalVelocityX( const CRecvProxyData *pData, void *pStruct, void *pOut );
-void RecvProxy_LocalVelocityY( const CRecvProxyData *pData, void *pStruct, void *pOut );
-void RecvProxy_LocalVelocityZ( const CRecvProxyData *pData, void *pStruct, void *pOut );
 
-void RecvProxy_ObserverTarget( const CRecvProxyData *pData, void *pStruct, void *pOut );
-void RecvProxy_ObserverMode  ( const CRecvProxyData *pData, void *pStruct, void *pOut );
 
 // -------------------------------------------------------------------------------- //
 // RecvTable for CPlayerState.
 // -------------------------------------------------------------------------------- //
 
-	BEGIN_RECV_TABLE_NOBASE(CPlayerState, DT_PlayerState)
-		RecvPropInt		(RECVINFO(deadflag)),
-	END_RECV_TABLE()
-
-
-BEGIN_RECV_TABLE_NOBASE( CPlayerLocalData, DT_Local )
-	RecvPropArray3( RECVINFO_ARRAY(m_chAreaBits), RecvPropInt(RECVINFO(m_chAreaBits[0]))),
-	RecvPropArray3( RECVINFO_ARRAY(m_chAreaPortalBits), RecvPropInt(RECVINFO(m_chAreaPortalBits[0]))),
-	RecvPropInt(RECVINFO(m_iHideHUD)),
-
-	// View
 	
-	RecvPropFloat(RECVINFO(m_flFOVRate)),
-	
-	RecvPropInt		(RECVINFO(m_bDucked)),
-	RecvPropInt		(RECVINFO(m_bDucking)),
-	RecvPropInt		(RECVINFO(m_bInDuckJump)),
-	RecvPropFloat	(RECVINFO(m_flDucktime)),
-	RecvPropFloat	(RECVINFO(m_flDuckJumpTime)),
-	RecvPropFloat	(RECVINFO(m_flJumpTime)),
-	RecvPropFloat	(RECVINFO(m_flFallVelocity)),
 
-#if PREDICTION_ERROR_CHECK_LEVEL > 1 
-	RecvPropFloat	(RECVINFO_NAME( m_vecPunchAngle.m_Value[0], m_vecPunchAngle[0])),
-	RecvPropFloat	(RECVINFO_NAME( m_vecPunchAngle.m_Value[1], m_vecPunchAngle[1])),
-	RecvPropFloat	(RECVINFO_NAME( m_vecPunchAngle.m_Value[2], m_vecPunchAngle[2] )),
-	RecvPropFloat	(RECVINFO_NAME( m_vecPunchAngleVel.m_Value[0], m_vecPunchAngleVel[0] )),
-	RecvPropFloat	(RECVINFO_NAME( m_vecPunchAngleVel.m_Value[1], m_vecPunchAngleVel[1] )),
-	RecvPropFloat	(RECVINFO_NAME( m_vecPunchAngleVel.m_Value[2], m_vecPunchAngleVel[2] )),
-#else
-	RecvPropVector	(RECVINFO(m_vecPunchAngle)),
-	RecvPropVector	(RECVINFO(m_vecPunchAngleVel)),
-#endif
 
-	RecvPropInt		(RECVINFO(m_bDrawViewmodel)),
-	RecvPropInt		(RECVINFO(m_bWearingSuit)),
-	RecvPropBool	(RECVINFO(m_bPoisoned)),
-	RecvPropFloat	(RECVINFO(m_flStepSize)),
-	RecvPropInt		(RECVINFO(m_bAllowAutoMovement)),
 
-	// 3d skybox data
-	RecvPropInt(RECVINFO(m_skybox3d.scale)),
-	RecvPropVector(RECVINFO(m_skybox3d.origin)),
-	RecvPropInt(RECVINFO(m_skybox3d.area)),
 
-	// 3d skybox fog data
-	RecvPropInt( RECVINFO( m_skybox3d.fog.enable ) ),
-	RecvPropInt( RECVINFO( m_skybox3d.fog.blend ) ),
-	RecvPropVector( RECVINFO( m_skybox3d.fog.dirPrimary ) ),
-	RecvPropInt( RECVINFO( m_skybox3d.fog.colorPrimary ) ),
-	RecvPropInt( RECVINFO( m_skybox3d.fog.colorSecondary ) ),
-	RecvPropFloat( RECVINFO( m_skybox3d.fog.start ) ),
-	RecvPropFloat( RECVINFO( m_skybox3d.fog.end ) ),
-	RecvPropFloat( RECVINFO( m_skybox3d.fog.maxdensity ) ),
 
-	// fog data
-	RecvPropEHandle( RECVINFO( m_PlayerFog.m_hCtrl ) ),
-
-	// audio data
-	RecvPropVector( RECVINFO( m_audio.localSound[0] ) ),
-	RecvPropVector( RECVINFO( m_audio.localSound[1] ) ),
-	RecvPropVector( RECVINFO( m_audio.localSound[2] ) ),
-	RecvPropVector( RECVINFO( m_audio.localSound[3] ) ),
-	RecvPropVector( RECVINFO( m_audio.localSound[4] ) ),
-	RecvPropVector( RECVINFO( m_audio.localSound[5] ) ),
-	RecvPropVector( RECVINFO( m_audio.localSound[6] ) ),
-	RecvPropVector( RECVINFO( m_audio.localSound[7] ) ),
-	RecvPropInt( RECVINFO( m_audio.soundscapeIndex ) ),
-	RecvPropInt( RECVINFO( m_audio.localBits ) ),
-	RecvPropEHandle( RECVINFO( m_audio.ent ) ),
-END_RECV_TABLE()
-
-// -------------------------------------------------------------------------------- //
-// This data only gets sent to clients that ARE this player entity.
-// -------------------------------------------------------------------------------- //
-
-	BEGIN_RECV_TABLE_NOBASE( C_BasePlayer, DT_LocalPlayerExclusive )
-
-		RecvPropDataTable	( RECVINFO_DT(m_Local),0, &REFERENCE_RECV_TABLE(DT_Local) ),
-
-		RecvPropFloat		( RECVINFO(m_vecViewOffset[0]) ),
-		RecvPropFloat		( RECVINFO(m_vecViewOffset[1]) ),
-		RecvPropFloat		( RECVINFO(m_vecViewOffset[2]) ),
-		RecvPropFloat		( RECVINFO(m_flFriction) ),
-
-		RecvPropArray3		( RECVINFO_ARRAY(m_iAmmo), RecvPropInt( RECVINFO(m_iAmmo[0])) ),
-		
-		RecvPropInt			( RECVINFO(m_fOnTarget) ),
-
-		RecvPropInt			( RECVINFO( m_nTickBase ) ),
-		RecvPropInt			( RECVINFO( m_nNextThinkTick ) ),
-
-		RecvPropEHandle		( RECVINFO( m_hLastWeapon ) ),
-		RecvPropEHandle		( RECVINFO( m_hGroundEntity ) ),
-
- 		RecvPropFloat		( RECVINFO(m_vecVelocity[0]), 0, RecvProxy_LocalVelocityX ),
- 		RecvPropFloat		( RECVINFO(m_vecVelocity[1]), 0, RecvProxy_LocalVelocityY ),
- 		RecvPropFloat		( RECVINFO(m_vecVelocity[2]), 0, RecvProxy_LocalVelocityZ ),
-
-		RecvPropVector		( RECVINFO( m_vecBaseVelocity ) ),
-
-		RecvPropEHandle		( RECVINFO( m_hConstraintEntity)),
-		RecvPropVector		( RECVINFO( m_vecConstraintCenter) ),
-		RecvPropFloat		( RECVINFO( m_flConstraintRadius )),
-		RecvPropFloat		( RECVINFO( m_flConstraintWidth )),
-		RecvPropFloat		( RECVINFO( m_flConstraintSpeedFactor )),
-
-		RecvPropFloat		( RECVINFO( m_flDeathTime )),
-
-		RecvPropInt			( RECVINFO( m_nWaterLevel ) ),
-		RecvPropFloat		( RECVINFO( m_flLaggedMovementValue )),
-
-	END_RECV_TABLE()
 
 	
 // -------------------------------------------------------------------------------- //
@@ -256,48 +144,8 @@ END_RECV_TABLE()
 	EXTERN_RECV_TABLE(DT_AttributeList);
 #endif
 
-	IMPLEMENT_CLIENTCLASS_DT(C_BasePlayer, DT_BasePlayer, CBasePlayer)
-		// We have both the local and nonlocal data in here, but the server proxies
-		// only send one.
-		RecvPropDataTable( "localdata", 0, 0, &REFERENCE_RECV_TABLE(DT_LocalPlayerExclusive) ),
-
-#if defined USES_ECON_ITEMS
-		RecvPropDataTable(RECVINFO_DT(m_AttributeList),0, &REFERENCE_RECV_TABLE(DT_AttributeList) ),
-#endif
-
-		RecvPropDataTable(RECVINFO_DT(pl), 0, &REFERENCE_RECV_TABLE(DT_PlayerState), DataTableRecvProxy_StaticDataTable),
-
-		RecvPropInt		(RECVINFO(m_iFOV)),
-		RecvPropInt		(RECVINFO(m_iFOVStart)),
-		RecvPropFloat	(RECVINFO(m_flFOVTime)),
-		RecvPropInt		(RECVINFO(m_iDefaultFOV)),
-		RecvPropEHandle (RECVINFO(m_hZoomOwner)),
-
-		RecvPropEHandle( RECVINFO(m_hVehicle) ),
-		RecvPropEHandle( RECVINFO(m_hUseEntity) ),
-
-		RecvPropInt		(RECVINFO(m_iHealth)),
-		RecvPropInt		(RECVINFO(m_lifeState)),
-
-		RecvPropInt		(RECVINFO(m_iBonusProgress)),
-		RecvPropInt		(RECVINFO(m_iBonusChallenge)),
-
-		RecvPropFloat	(RECVINFO(m_flMaxspeed)),
-		RecvPropInt		(RECVINFO(m_fFlags)),
-
-
-		RecvPropInt		(RECVINFO(m_iObserverMode), 0, RecvProxy_ObserverMode ),
-		RecvPropEHandle	(RECVINFO(m_hObserverTarget), RecvProxy_ObserverTarget ),
-		RecvPropArray	( RecvPropEHandle( RECVINFO( m_hViewModel[0] ) ), m_hViewModel ),
-		
-
-		RecvPropString( RECVINFO(m_szLastPlaceName) ),
-
-#if defined USES_ECON_ITEMS
-		RecvPropUtlVector( RECVINFO_UTLVECTOR( m_hMyWearables ), MAX_WEARABLES_SENT_FROM_SERVER,	RecvPropEHandle(NULL, 0, 0) ),
-#endif
-
-	END_RECV_TABLE()
+	IMPLEMENT_CLIENTCLASS(C_BasePlayer, DT_BasePlayer, CBasePlayer)
+	
 
 BEGIN_PREDICTION_DATA_NO_BASE( CPlayerState )
 

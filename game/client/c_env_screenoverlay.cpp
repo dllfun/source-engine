@@ -48,15 +48,18 @@ protected:
 	int		m_iCachedDesiredOverlay;
 	int		m_iCurrentOverlay;
 	float	m_flCurrentOverlayTime;
+
+	BEGIN_RECV_TABLE(C_EnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
+		RecvPropArray(RecvPropString(RECVINFO(m_iszOverlayNames[0])), m_iszOverlayNames),
+		RecvPropArray(RecvPropFloat(RECVINFO(m_flOverlayTimes[0])), m_flOverlayTimes),
+		RecvPropFloat(RECVINFO(m_flStartTime)),
+		RecvPropInt(RECVINFO(m_iDesiredOverlay)),
+		RecvPropBool(RECVINFO(m_bIsActive)),
+	END_RECV_TABLE(DT_EnvScreenOverlay)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_EnvScreenOverlay, DT_EnvScreenOverlay, CEnvScreenOverlay )
-	RecvPropArray( RecvPropString( RECVINFO( m_iszOverlayNames[0]) ), m_iszOverlayNames ),
-	RecvPropArray( RecvPropFloat( RECVINFO( m_flOverlayTimes[0] ) ), m_flOverlayTimes ),
-	RecvPropFloat( RECVINFO( m_flStartTime ) ),
-	RecvPropInt( RECVINFO( m_iDesiredOverlay ) ),
-	RecvPropBool( RECVINFO( m_bIsActive ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EnvScreenOverlay, DT_EnvScreenOverlay, CEnvScreenOverlay )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -208,12 +211,15 @@ public:
 private:
 	float	m_flDuration;
 	int		m_nType;
+
+	BEGIN_RECV_TABLE(C_EnvScreenEffect, DT_EnvScreenEffect, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flDuration)),
+		RecvPropInt(RECVINFO(m_nType)),
+	END_RECV_TABLE(DT_EnvScreenEffect)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_EnvScreenEffect, DT_EnvScreenEffect, CEnvScreenEffect )
-	RecvPropFloat( RECVINFO( m_flDuration ) ),
-	RecvPropInt( RECVINFO( m_nType ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EnvScreenEffect, DT_EnvScreenEffect, CEnvScreenEffect )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

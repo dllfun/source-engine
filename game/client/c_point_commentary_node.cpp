@@ -181,18 +181,21 @@ public:
 	CSoundPatch *m_sndCommentary;
 	EHANDLE		m_hViewPosition;
 	bool		m_bRestartAfterRestore;
+
+	BEGIN_RECV_TABLE(C_PointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
+		RecvPropBool(RECVINFO(m_bActive)),
+		RecvPropTime(RECVINFO(m_flStartTime)),
+		RecvPropString(RECVINFO(m_iszCommentaryFile)),
+		RecvPropString(RECVINFO(m_iszCommentaryFileNoHDR)),
+		RecvPropString(RECVINFO(m_iszSpeakers)),
+		RecvPropInt(RECVINFO(m_iNodeNumber)),
+		RecvPropInt(RECVINFO(m_iNodeNumberMax)),
+		RecvPropEHandle(RECVINFO(m_hViewPosition)),
+	END_RECV_TABLE(DT_PointCommentaryNode)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_PointCommentaryNode, DT_PointCommentaryNode, CPointCommentaryNode)
-	RecvPropBool( RECVINFO( m_bActive ) ),
-	RecvPropTime( RECVINFO( m_flStartTime ) ),
-	RecvPropString( RECVINFO(m_iszCommentaryFile) ),
-	RecvPropString( RECVINFO(m_iszCommentaryFileNoHDR) ),
-	RecvPropString( RECVINFO(m_iszSpeakers) ),
-	RecvPropInt( RECVINFO( m_iNodeNumber ) ),
-	RecvPropInt( RECVINFO( m_iNodeNumberMax ) ),
-	RecvPropEHandle( RECVINFO(m_hViewPosition) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PointCommentaryNode, DT_PointCommentaryNode, CPointCommentaryNode)
+
 
 BEGIN_DATADESC( C_PointCommentaryNode )
 	DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),

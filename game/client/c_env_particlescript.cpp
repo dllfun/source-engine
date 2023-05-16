@@ -67,6 +67,10 @@ private:
 	int m_nOldSequence;
 	float m_flSequenceScale;
 	bool m_bSimulate;
+
+	BEGIN_RECV_TABLE(C_EnvParticleScript, DT_EnvParticleScript, DT_BaseAnimating)
+		RecvPropFloat(RECVINFO(m_flSequenceScale)),
+	END_RECV_TABLE(DT_EnvParticleScript)
 };
 
 REGISTER_EFFECT( C_EnvParticleScript );
@@ -74,9 +78,8 @@ REGISTER_EFFECT( C_EnvParticleScript );
 //-----------------------------------------------------------------------------
 // Datatable
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT( C_EnvParticleScript, DT_EnvParticleScript, CEnvParticleScript )
-	RecvPropFloat( RECVINFO(m_flSequenceScale) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EnvParticleScript, DT_EnvParticleScript, CEnvParticleScript )
+
 
 
 //-----------------------------------------------------------------------------

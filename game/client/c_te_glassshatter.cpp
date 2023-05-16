@@ -63,28 +63,31 @@ public:
 	int						m_nSurfaceType;
 	byte					m_uchFrontColor[3];
 	byte					m_uchBackColor[3];
+
+	BEGIN_RECV_TABLE(C_TEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecAngles)),
+		RecvPropVector(RECVINFO(m_vecForce)),
+		RecvPropVector(RECVINFO(m_vecForcePos)),
+		RecvPropFloat(RECVINFO(m_flWidth)),
+		RecvPropFloat(RECVINFO(m_flHeight)),
+		RecvPropFloat(RECVINFO(m_flShardSize)),
+		RecvPropInt(RECVINFO(m_nSurfaceType)),
+		RecvPropInt(RECVINFO(m_uchFrontColor[0])),
+		RecvPropInt(RECVINFO(m_uchFrontColor[1])),
+		RecvPropInt(RECVINFO(m_uchFrontColor[2])),
+		RecvPropInt(RECVINFO(m_uchBackColor[0])),
+		RecvPropInt(RECVINFO(m_uchBackColor[1])),
+		RecvPropInt(RECVINFO(m_uchBackColor[2])),
+	END_RECV_TABLE(DT_TEShatterSurface)
 };
 
 
 //------------------------------------------------------------------------------
 // Networking
 //------------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEShatterSurface, DT_TEShatterSurface, CTEShatterSurface)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecAngles)),
-	RecvPropVector( RECVINFO(m_vecForce)),
-	RecvPropVector( RECVINFO(m_vecForcePos)),
-	RecvPropFloat( RECVINFO(m_flWidth)),
-	RecvPropFloat( RECVINFO(m_flHeight)),
-	RecvPropFloat( RECVINFO(m_flShardSize)),
-	RecvPropInt( RECVINFO(m_nSurfaceType)),	
-	RecvPropInt( RECVINFO(m_uchFrontColor[0])),
-	RecvPropInt( RECVINFO(m_uchFrontColor[1])),
-	RecvPropInt( RECVINFO(m_uchFrontColor[2])),
-	RecvPropInt( RECVINFO(m_uchBackColor[0])),
-	RecvPropInt( RECVINFO(m_uchBackColor[1])),
-	RecvPropInt( RECVINFO(m_uchBackColor[2])),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEShatterSurface, DT_TEShatterSurface, CTEShatterSurface)
+
 
 
 //------------------------------------------------------------------------------

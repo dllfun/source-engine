@@ -45,14 +45,16 @@ private:
 	BEGIN_NETWORK_TABLE(CWeaponGalil, DT_WeaponGalil, DT_WeaponCSBaseGun)
 	END_NETWORK_TABLE(DT_WeaponGalil)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponGalil, DT_WeaponGalil, DT_WeaponCSBaseGun)
+	END_NETWORK_TABLE(DT_WeaponGalil)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponGalil, DT_WeaponGalil )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE( CWeaponGalil, DT_WeaponGalil, DT_WeaponCSBaseGun)
-END_NETWORK_TABLE(DT_WeaponGalil)
-#endif
+
 
 BEGIN_PREDICTION_DATA( CWeaponGalil )
 END_PREDICTION_DATA()

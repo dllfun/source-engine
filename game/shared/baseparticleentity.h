@@ -94,6 +94,11 @@ private:
 	BEGIN_NETWORK_TABLE(CBaseParticleEntity, DT_BaseParticleEntity, DT_BaseEntity)
 	END_NETWORK_TABLE(DT_BaseParticleEntity)
 #endif
+
+#if defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CBaseParticleEntity, DT_BaseParticleEntity, DT_BaseEntity)
+	END_NETWORK_TABLE(DT_BaseParticleEntity)
+#endif
 };
 
 

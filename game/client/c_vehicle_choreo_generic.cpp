@@ -90,24 +90,27 @@ private:
 	ViewSmoothingData_t		m_ViewSmoothingData;
 
 	vehicleview_t m_vehicleView;
+
+	BEGIN_RECV_TABLE(C_PropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric, DT_DynamicProp)
+		RecvPropEHandle(RECVINFO(m_hPlayer)),
+		RecvPropBool(RECVINFO(m_bEnterAnimOn)),
+		RecvPropBool(RECVINFO(m_bExitAnimOn)),
+		RecvPropVector(RECVINFO(m_vecEyeExitEndpoint)),
+		RecvPropBool(RECVINFO(m_vehicleView.bClampEyeAngles)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flPitchCurveZero)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flPitchCurveLinear)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flRollCurveZero)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flRollCurveLinear)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flFOV)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flYawMin)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flYawMax)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flPitchMin)),
+		RecvPropFloat(RECVINFO(m_vehicleView.flPitchMax)),
+	END_RECV_TABLE(DT_PropVehicleChoreoGeneric)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_PropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric, CPropVehicleChoreoGeneric)
-	RecvPropEHandle( RECVINFO(m_hPlayer) ),
-	RecvPropBool( RECVINFO( m_bEnterAnimOn ) ),
-	RecvPropBool( RECVINFO( m_bExitAnimOn ) ),
-	RecvPropVector( RECVINFO( m_vecEyeExitEndpoint ) ),
-	RecvPropBool( RECVINFO( m_vehicleView.bClampEyeAngles ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flPitchCurveZero ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flPitchCurveLinear ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flRollCurveZero ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flRollCurveLinear ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flFOV ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flYawMin ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flYawMax ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flPitchMin ) ),
-	RecvPropFloat( RECVINFO( m_vehicleView.flPitchMax ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric, CPropVehicleChoreoGeneric)
+
 
 
 BEGIN_DATADESC( C_PropVehicleChoreoGeneric )

@@ -38,6 +38,12 @@ public:
 	Vector			m_vecOrigin;
 	int				m_nEntity;
 	int				m_nIndex;
+
+	BEGIN_RECV_TABLE(C_TEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropInt(RECVINFO(m_nEntity)),
+		RecvPropInt(RECVINFO(m_nIndex)),
+	END_RECV_TABLE(DT_TEBSPDecal)
 };
 
 //-----------------------------------------------------------------------------
@@ -101,9 +107,6 @@ void C_TEBSPDecal::PostDataUpdate( DataUpdateType_t updateType )
 	}
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBSPDecal, DT_TEBSPDecal, CTEBSPDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nEntity)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBSPDecal, DT_TEBSPDecal, CTEBSPDecal)
+
 

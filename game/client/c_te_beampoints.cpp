@@ -30,6 +30,11 @@ public:
 public:
 	Vector			m_vecStartPoint;
 	Vector			m_vecEndPoint;
+
+	BEGIN_RECV_TABLE(C_TEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
+		RecvPropVector(RECVINFO(m_vecStartPoint)),
+		RecvPropVector(RECVINFO(m_vecEndPoint)),
+	END_RECV_TABLE(DT_TEBeamPoints)
 };
 
 //-----------------------------------------------------------------------------
@@ -69,8 +74,6 @@ void C_TEBeamPoints::PostDataUpdate( DataUpdateType_t updateType )
 		m_nStartFrame, 0.1 * m_nFrameRate, r, g, b );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBeamPoints, DT_TEBeamPoints, CTEBeamPoints)
-	RecvPropVector( RECVINFO(m_vecStartPoint)),
-	RecvPropVector( RECVINFO(m_vecEndPoint)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamPoints, DT_TEBeamPoints, CTEBeamPoints)
+
 

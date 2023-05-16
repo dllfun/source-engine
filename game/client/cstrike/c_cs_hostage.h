@@ -107,6 +107,17 @@ private:
 	
 private:
 	C_CHostage( const C_CHostage & );				// not defined, not accessible
+
+	BEGIN_RECV_TABLE(C_CHostage, DT_CHostage, DT_BaseCombatCharacter)
+
+		RecvPropInt(RECVINFO(m_isRescued), 0, C_CHostage::RecvProxy_Rescued),
+		RecvPropInt(RECVINFO(m_iHealth)),
+		RecvPropInt(RECVINFO(m_iMaxHealth)),
+		RecvPropInt(RECVINFO(m_lifeState)),
+
+		RecvPropEHandle(RECVINFO(m_leader)),
+
+	END_RECV_TABLE(DT_CHostage)
 };
 
 

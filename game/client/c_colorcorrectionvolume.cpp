@@ -43,12 +43,15 @@ private:
 	char	m_lookupFilename[MAX_PATH];
 
 	ClientCCHandle_t m_CCHandle;
+
+	BEGIN_RECV_TABLE(C_ColorCorrectionVolume, DT_ColorCorrectionVolume, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_Weight)),
+		RecvPropString(RECVINFO(m_lookupFilename)),
+	END_RECV_TABLE(DT_ColorCorrectionVolume)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_ColorCorrectionVolume, DT_ColorCorrectionVolume, CColorCorrectionVolume)
-	RecvPropFloat( RECVINFO(m_Weight) ),
-	RecvPropString( RECVINFO(m_lookupFilename) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_ColorCorrectionVolume, DT_ColorCorrectionVolume, CColorCorrectionVolume)
+
 
 BEGIN_PREDICTION_DATA( C_ColorCorrectionVolume )
 	DEFINE_PRED_FIELD( m_Weight, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),

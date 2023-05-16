@@ -25,11 +25,14 @@ public:
 public:
 
 	int		m_iCurrentMaxRagdollCount;
+
+	BEGIN_RECV_TABLE_NOBASE(C_RagdollManager, DT_RagdollManager, CRagdollManager)
+		RecvPropInt(RECVINFO(m_iCurrentMaxRagdollCount)),
+	END_RECV_TABLE(DT_RagdollManager)
 };
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_RagdollManager, DT_RagdollManager, CRagdollManager )
-	RecvPropInt( RECVINFO( m_iCurrentMaxRagdollCount ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_RagdollManager, DT_RagdollManager, CRagdollManager )
+
 
 //-----------------------------------------------------------------------------
 // Constructor 

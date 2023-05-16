@@ -15,6 +15,7 @@
 
 #include "dt_common.h"
 #include "tier0/dbg.h"
+#include "tier1/UtlStringMap.h"
 
 
 #define ADDRESSPROXY_NONE	-1
@@ -103,6 +104,9 @@ public:
 	const char*				GetName() const;
 	SendPropType			GetType() const;
 
+	const char*				GetDataTableName();
+	void					SetDataTableName(const char* pTableName);
+
 	RecvTable*				GetDataTable() const;
 	void					SetDataTable( RecvTable *pTable );
 
@@ -157,6 +161,7 @@ private:
 	RecvVarProxyFn			m_ProxyFn;
 	DataTableRecvVarProxyFn	m_DataTableProxyFn;	// For RDT_DataTable.
 
+	const char*				m_pDataTableName = NULL;
 	RecvTable				*m_pDataTable;		// For RDT_DataTable.
 	int						m_Offset;
 	
@@ -168,6 +173,7 @@ private:
 	const char				*m_pParentArrayPropName;
 };
 
+class RecvTableManager;
 
 class RecvTable
 {
@@ -194,7 +200,7 @@ public:
 	void		SetInMainList( bool bInList );
 	bool		IsInMainList() const;
 
-
+	void		InitRefRecvTable(RecvTableManager* pRecvTableNanager);
 public:
 
 	// Properties described in a table.
@@ -212,6 +218,8 @@ private:
 
 	bool			m_bInitialized;
 	bool			m_bInMainList;
+public:
+	RecvTable* m_pNext;
 };
 
 
@@ -251,39 +259,137 @@ inline bool RecvTable::IsInMainList() const
 	return m_bInMainList;
 }
 
+class RecvTableManager {
+public:
+
+	int		GetRecvTablesCount() {
+		return GetRecvTableMap().GetNumStrings();
+	}
+
+	RecvTable* FindRecvTable(const char* pName) {
+		if (GetRecvTableMap().Defined(pName)) {
+			return GetRecvTableMap()[pName];
+		}
+		return NULL;
+	}
+
+	RecvTable* GetRecvTableHead() {
+		return s_pRecvTableHead;
+	}
+
+	void	RegisteRecvTable(RecvTable* pRecvTable) {
+
+		if (GetRecvTableMap().Defined(pRecvTable->GetName())) {
+			Error("duplicate RecvTable: %s\n", pRecvTable->GetName());	// dedicated servers exit
+		}
+		else {
+			GetRecvTableMap()[pRecvTable->GetName()] = pRecvTable;
+		}
+		if (!s_pRecvTableHead)
+		{
+			s_pRecvTableHead = pRecvTable;
+			pRecvTable->m_pNext = NULL;
+		}
+		else
+		{
+			RecvTable* p1 = s_pRecvTableHead;
+			RecvTable* p2 = p1->m_pNext;
+
+			// use _stricmp because Q_stricmp isn't hooked up properly yet
+			if (_stricmp(p1->GetName(), pRecvTable->GetName()) > 0)
+			{
+				pRecvTable->m_pNext = s_pRecvTableHead;
+				s_pRecvTableHead = pRecvTable;
+				p1 = NULL;
+			}
+
+			while (p1)
+			{
+				if (p2 == NULL || _stricmp(p2->GetName(), pRecvTable->GetName()) > 0)
+				{
+					pRecvTable->m_pNext = p2;
+					p1->m_pNext = pRecvTable;
+					break;
+				}
+				p1 = p2;
+				p2 = p2->m_pNext;
+			}
+		}
+	}
+private:
+	RecvTable* s_pRecvTableHead = NULL;
+	CUtlStringMap< RecvTable* >& GetRecvTableMap() {
+		static CUtlStringMap< RecvTable* >	s_RecvTableMap;
+		return s_RecvTableMap;
+	}
+};
+
+extern RecvTableManager* g_pRecvTableManager;
+
+int TestRevFunction();
 
 // ------------------------------------------------------------------------------------------------------ //
 // See notes on BEGIN_SEND_TABLE for a description. These macros work similarly.
 // ------------------------------------------------------------------------------------------------------ //
+//#define BEGIN_RECV_TABLE_NOBASE(className, tableName) \
+//	template <typename T> int ClientClassInit(T *); \
+//	namespace tableName { \
+//		struct ignored; \
+//	} \
+//	template <> int ClientClassInit<tableName::ignored>(tableName::ignored *); \
+//	namespace tableName {	\
+//		RecvTable g_RecvTable; \
+//		int ccc= TestRevFunction();\
+//		int g_RecvTableInit = ClientClassInit((tableName::ignored *)NULL); \
+//	} \
+//	template <> int ClientClassInit<tableName::ignored>(tableName::ignored *) \
+//	{ \
+//		typedef className currentRecvDTClass; \
+//		const char *pRecvTableName = #tableName; \
+//		RecvTable &RecvTable = tableName::g_RecvTable; \
+//		static RecvProp RecvProps[] = { \
+//			RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
+//
+//
+//#define BEGIN_RECV_TABLE(className, tableName) \
+//	BEGIN_RECV_TABLE_NOBASE(className, tableName) \
+//		RecvPropDataTable("baseclass", 0, 0, className::BaseClass::m_pClassRecvTable, DataTableRecvProxy_StaticDataTable),
+//
+//
+//#define END_RECV_TABLE() \
+//			}; \
+//		RecvTable.Construct(RecvProps+1, sizeof(RecvProps) / sizeof(RecvProp) - 1, pRecvTableName); \
+//		return 1; \
+//	}
+
 #define BEGIN_RECV_TABLE_NOBASE(className, tableName) \
-	template <typename T> int ClientClassInit(T *); \
-	namespace tableName { \
-		struct ignored; \
-	} \
-	template <> int ClientClassInit<tableName::ignored>(tableName::ignored *); \
-	namespace tableName {	\
-		RecvTable g_RecvTable; \
-		int g_RecvTableInit = ClientClassInit((tableName::ignored *)NULL); \
-	} \
-	template <> int ClientClassInit<tableName::ignored>(tableName::ignored *) \
-	{ \
-		typedef className currentRecvDTClass; \
-		const char *pRecvTableName = #tableName; \
-		RecvTable &RecvTable = tableName::g_RecvTable; \
-		static RecvProp RecvProps[] = { \
-			RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
+	class RecvTable_##tableName : public RecvTable{\
+	public:\
+	\
+		RecvTable_##tableName(){ \
+			typedef className currentRecvDTClass; \
+			static bool registed = false;\
+			if( !registed ){\
+				registed = true;\
+				static const char *pTableName = #tableName; \
+				static RecvProp g_RecvProps[] = { \
+					RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
 
 
-#define BEGIN_RECV_TABLE(className, tableName) \
+#define END_RECV_TABLE(tableName) \
+				};\
+				Construct(g_RecvProps+1, sizeof(g_RecvProps) / sizeof(RecvProp) - 1, pTableName);\
+				g_pRecvTableManager->RegisteRecvTable(this);\
+			}\
+		}\
+	\
+	};\
+	friend class RecvTable_##tableName;\
+	RecvTable_##tableName g_RecvTable_##tableName;
+
+#define BEGIN_RECV_TABLE(className, tableName, baseTableName) \
 	BEGIN_RECV_TABLE_NOBASE(className, tableName) \
-		RecvPropDataTable("baseclass", 0, 0, className::BaseClass::m_pClassRecvTable, DataTableRecvProxy_StaticDataTable),
-
-
-#define END_RECV_TABLE() \
-			}; \
-		RecvTable.Construct(RecvProps+1, sizeof(RecvProps) / sizeof(RecvProp) - 1, pRecvTableName); \
-		return 1; \
-	}
+		RecvPropDataTable("baseclass", 0, 0, #baseTableName, DataTableRecvProxy_StaticDataTable),
 
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the
 // legit offsetof from the C headers, so we'll use the old impl here to avoid exposing temptation to others
@@ -377,7 +483,7 @@ RecvProp RecvPropDataTable(
 	const char *pVarName,
 	int offset,
 	int flags,
-	RecvTable *pTable,
+	const char *pTableName,
 	DataTableRecvVarProxyFn varProxy=DataTableRecvProxy_StaticDataTable
 	);
 
@@ -482,6 +588,15 @@ inline const char* RecvProp::GetName() const
 inline SendPropType RecvProp::GetType() const
 {
 	return m_RecvType; 
+}
+
+inline const char* RecvProp::GetDataTableName() {
+	return m_pDataTableName;
+}
+
+inline void RecvProp::SetDataTableName(const char* pTableName)
+{
+	m_pDataTableName = pTableName;
 }
 
 inline RecvTable* RecvProp::GetDataTable() const 

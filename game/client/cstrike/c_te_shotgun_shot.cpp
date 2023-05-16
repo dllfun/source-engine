@@ -28,6 +28,18 @@ public:
 	int		m_iSeed;
 	float	m_fInaccuracy;
 	float	m_fSpread;
+
+	BEGIN_RECV_TABLE_NOBASE(C_TEFireBullets, DT_TEFireBullets)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropFloat(RECVINFO(m_vecAngles[0])),
+		RecvPropFloat(RECVINFO(m_vecAngles[1])),
+		RecvPropInt(RECVINFO(m_iWeaponID)),
+		RecvPropInt(RECVINFO(m_iMode)),
+		RecvPropInt(RECVINFO(m_iSeed)),
+		RecvPropInt(RECVINFO(m_iPlayer)),
+		RecvPropFloat(RECVINFO(m_fInaccuracy)),
+		RecvPropFloat(RECVINFO(m_fSpread)),
+	END_RECV_TABLE(DT_TEFireBullets)
 };
 
 
@@ -53,17 +65,7 @@ void C_TEFireBullets::PostDataUpdate( DataUpdateType_t updateType )
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEFireBullets, DT_TEFireBullets, CTEFireBullets );
 
 
-BEGIN_RECV_TABLE_NOBASE(C_TEFireBullets, DT_TEFireBullets)
-	RecvPropVector( RECVINFO( m_vecOrigin ) ),
-	RecvPropFloat( RECVINFO( m_vecAngles[0] ) ),
-	RecvPropFloat( RECVINFO( m_vecAngles[1] ) ),
-	RecvPropInt( RECVINFO( m_iWeaponID ) ),
-	RecvPropInt( RECVINFO( m_iMode ) ), 
-	RecvPropInt( RECVINFO( m_iSeed ) ),
-	RecvPropInt( RECVINFO( m_iPlayer ) ),
-	RecvPropFloat( RECVINFO( m_fInaccuracy ) ),
-	RecvPropFloat( RECVINFO( m_fSpread ) ),
-END_RECV_TABLE()
+
 
 
 class C_TEPlantBomb : public C_BaseTempEntity
@@ -78,6 +80,12 @@ public:
 	int		m_iPlayer;
 	Vector	m_vecOrigin;
 	PlantBombOption_t	m_option;
+
+	BEGIN_RECV_TABLE_NOBASE(C_TEPlantBomb, DT_TEPlantBomb)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropInt(RECVINFO(m_iPlayer)),
+		RecvPropInt(RECVINFO(m_option)),
+	END_RECV_TABLE(DT_TEPlantBomb)
 };
 
 
@@ -91,10 +99,6 @@ void C_TEPlantBomb::PostDataUpdate( DataUpdateType_t updateType )
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlantBomb, DT_TEPlantBomb, CTEPlantBomb );
 
 
-BEGIN_RECV_TABLE_NOBASE(C_TEPlantBomb, DT_TEPlantBomb)
-	RecvPropVector( RECVINFO( m_vecOrigin ) ),
-	RecvPropInt( RECVINFO( m_iPlayer ) ),
-	RecvPropInt( RECVINFO( m_option ) ),
-END_RECV_TABLE()
+
 
 

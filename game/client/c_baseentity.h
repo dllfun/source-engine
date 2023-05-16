@@ -168,6 +168,13 @@ struct thinkfunc_t
 #define ENTCLIENTFLAG_DONTUSEIK					0x0002		// Don't use IK on this entity even if its model has IK.
 #define ENTCLIENTFLAG_ALWAYS_INTERPOLATE		0x0004		// Used by view models.
 
+
+void RecvProxy_AnimTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_SimulationTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_EffectFlags(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_MoveType(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_MoveCollide(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
 //-----------------------------------------------------------------------------
 // Purpose: Base client side entity object
 //-----------------------------------------------------------------------------
@@ -1294,9 +1301,12 @@ public:
 	byte							m_ubOldInterpolationFrame;
 
 private:
+protected:
 	// Effects to apply
 	int								m_fEffects;
+protected:
 	unsigned char 					m_nRenderMode;
+private:
 	unsigned char 					m_nOldRenderMode;
 
 public:
@@ -1495,8 +1505,10 @@ private:
 	float GetNextThink( int nContextIndex ) const;
 	int	GetNextThinkTick( int nContextIndex ) const;
 
+protected:
 	// Object velocity
 	Vector							m_vecVelocity;
+private:
 	CInterpolatedVar< Vector >		m_iv_vecVelocity;
 
 	Vector							m_vecAbsVelocity;
@@ -1520,8 +1532,10 @@ private:
 	// Timestamp of message arrival
 	float							m_flLastMessageTime;
 
+protected:
 	// Base velocity
 	Vector							m_vecBaseVelocity;
+private:
 	
 	// Gravity multiplier
 	float							m_flGravity;
@@ -1542,10 +1556,14 @@ private:
 	// Object movetype
 	unsigned char					m_MoveType;
 	unsigned char					m_MoveCollide;
+protected:
 	unsigned char					m_iParentAttachment; // 0 if we're relative to the parent's absorigin and absangles.
+private:
 	unsigned char					m_iOldParentAttachment;
 
+protected:
 	unsigned char					m_nWaterLevel;
+private:
 	unsigned char					m_nWaterType;
 	// For client/server entities, true if the entity goes outside the PVS.
 	// Unused for client only entities.
@@ -1560,13 +1578,17 @@ private:
 	CHandle<C_BaseEntity>			m_pMovePeer;
 	CHandle<C_BaseEntity>			m_pMovePrevPeer;
 
+protected:
 	// The moveparent received from networking data
 	CHandle<C_BaseEntity>			m_hNetworkMoveParent;
+private:
 	CHandle<C_BaseEntity>			m_hOldMoveParent;
 
 	string_t						m_ModelName;
 
+protected:
 	CNetworkVarEmbedded( CCollisionProperty, m_Collision );
+private:
 	CNetworkVarEmbedded( CParticleProperty, m_Particles );
 
 	// Physics state
@@ -1575,12 +1597,15 @@ private:
 	float							m_flShadowCastDistance;
 	EHANDLE							m_ShadowDirUseOtherEntity;
 
+protected:
 	EHANDLE							m_hGroundEntity;
+private:
 	float							m_flGroundChangeTime;
 
-
+protected:
 	// Friction.
-	float							m_flFriction;       
+	float							m_flFriction;
+private:
 
 	Vector							m_vecAbsOrigin;
 
@@ -1598,12 +1623,16 @@ private:
 	// Specifies the entity-to-world transform
 	matrix3x4_t						m_rgflCoordinateFrame;
 
+protected:
 	// Last values to come over the wire. Used for interpolation.
 	Vector							m_vecNetworkOrigin;
+protected:
 	QAngle							m_angNetworkAngles;
 
+protected:
 	// Behavior flags
 	int								m_fFlags;
+private:
 
 	// used to cull collision tests
 	int								m_CollisionGroup;
@@ -1614,7 +1643,9 @@ private:
 	byte							*m_pOriginalData;
 	int								m_nIntermediateDataCount;
 
+protected:
 	bool							m_bIsPlayerSimulated;
+private:
 #endif
 
 	CNetworkVar( bool, m_bSimulatedEveryTick );
@@ -1687,6 +1718,67 @@ protected:
 	RenderMode_t m_PreviousRenderMode;
 	color32 m_PreviousRenderColor;
 #endif
+
+	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_AnimTimeMustBeFirst)
+		RecvPropInt(RECVINFO(m_flAnimTime), 0, RecvProxy_AnimTime),
+	END_RECV_TABLE(DT_AnimTimeMustBeFirst)
+
+#ifndef NO_ENTITY_PREDICTION
+	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_PredictableId)
+		RecvPropPredictableId(RECVINFO(m_PredictableID)),
+		RecvPropInt(RECVINFO(m_bIsPlayerSimulated)),
+	END_RECV_TABLE(DT_PredictableId)
+#endif
+
+	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
+		RecvPropDataTable("AnimTimeMustBeFirst", 0, 0, REFERENCE_RECV_TABLE(DT_AnimTimeMustBeFirst)),
+		RecvPropInt(RECVINFO(m_flSimulationTime), 0, RecvProxy_SimulationTime),
+		RecvPropInt(RECVINFO(m_ubInterpolationFrame)),
+
+		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
+#if PREDICTION_ERROR_CHECK_LEVEL > 1 
+		RecvPropVector(RECVINFO_NAME(m_angNetworkAngles, m_angRotation)),
+#else
+		RecvPropQAngles(RECVINFO_NAME(m_angNetworkAngles, m_angRotation)),
+#endif
+
+#ifdef DEMO_BACKWARDCOMPATABILITY
+		RecvPropInt(RECVINFO(m_nModelIndex), 0, RecvProxy_IntToModelIndex16_BackCompatible),
+#else
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+#endif
+
+		RecvPropInt(RECVINFO(m_fEffects), 0, RecvProxy_EffectFlags),
+		RecvPropInt(RECVINFO(m_nRenderMode)),
+		RecvPropInt(RECVINFO(m_nRenderFX)),
+		RecvPropInt(RECVINFO(m_clrRender)),
+		RecvPropInt(RECVINFO(m_iTeamNum)),
+		RecvPropInt(RECVINFO(m_CollisionGroup)),
+		RecvPropFloat(RECVINFO(m_flElasticity)),
+		RecvPropFloat(RECVINFO(m_flShadowCastDistance)),
+		RecvPropEHandle(RECVINFO(m_hOwnerEntity)),
+		RecvPropEHandle(RECVINFO(m_hEffectEntity)),
+		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropInt(RECVINFO(m_iParentAttachment)),
+
+		RecvPropInt("movetype", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveType),
+		RecvPropInt("movecollide", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveCollide),
+		RecvPropDataTable(RECVINFO_DT(m_Collision), 0, REFERENCE_RECV_TABLE(DT_CollisionProperty)),
+
+		RecvPropInt(RECVINFO(m_iTextureFrameIndex)),
+#if !defined( NO_ENTITY_PREDICTION )
+		RecvPropDataTable("predictable_id", 0, 0, REFERENCE_RECV_TABLE(DT_PredictableId)),
+#endif
+
+		RecvPropInt(RECVINFO(m_bSimulatedEveryTick), 0, RecvProxy_InterpolationAmountChanged),
+		RecvPropInt(RECVINFO(m_bAnimatedEveryTick), 0, RecvProxy_InterpolationAmountChanged),
+		RecvPropBool(RECVINFO(m_bAlternateSorting)),
+
+#ifdef TF_CLIENT_DLL
+		RecvPropArray3(RECVINFO_ARRAY(m_nModelIndexOverrides), RecvPropInt(RECVINFO(m_nModelIndexOverrides[0]))),
+#endif
+
+	END_RECV_TABLE(DT_BaseEntity)
 };
 
 EXTERN_RECV_TABLE(DT_BaseEntity);

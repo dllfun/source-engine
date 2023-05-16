@@ -43,25 +43,27 @@ protected:
 	unsigned char m_iControlPointParents[kMAXCONTROLPOINTS];
 
 	bool		m_bWeatherEffect;
+
+	BEGIN_RECV_TABLE_NOBASE(C_ParticleSystem, DT_ParticleSystem)
+		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
+		RecvPropEHandle(RECVINFO(m_hOwnerEntity)),
+		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropInt(RECVINFO(m_iParentAttachment)),
+		RecvPropQAngles(RECVINFO_NAME(m_angNetworkAngles, m_angRotation)),
+
+		RecvPropInt(RECVINFO(m_iEffectIndex)),
+		RecvPropBool(RECVINFO(m_bActive)),
+		RecvPropFloat(RECVINFO(m_flStartTime)),
+
+		RecvPropArray3(RECVINFO_ARRAY(m_hControlPointEnts), RecvPropEHandle(RECVINFO(m_hControlPointEnts[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iControlPointParents), RecvPropInt(RECVINFO(m_iControlPointParents[0]))),
+		RecvPropBool(RECVINFO(m_bWeatherEffect)),
+	END_RECV_TABLE(DT_ParticleSystem);
 };
 
 IMPLEMENT_CLIENTCLASS(C_ParticleSystem, DT_ParticleSystem, CParticleSystem);
 
-BEGIN_RECV_TABLE_NOBASE( C_ParticleSystem, DT_ParticleSystem )
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropEHandle( RECVINFO(m_hOwnerEntity) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-	RecvPropInt( RECVINFO( m_iParentAttachment ) ),
-	RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
 
-	RecvPropInt( RECVINFO( m_iEffectIndex ) ),
-	RecvPropBool( RECVINFO( m_bActive ) ),
-	RecvPropFloat( RECVINFO( m_flStartTime ) ),
-
-	RecvPropArray3( RECVINFO_ARRAY(m_hControlPointEnts), RecvPropEHandle( RECVINFO( m_hControlPointEnts[0] ) ) ),
-	RecvPropArray3( RECVINFO_ARRAY(m_iControlPointParents), RecvPropInt( RECVINFO(m_iControlPointParents[0]))), 
-	RecvPropBool( RECVINFO( m_bWeatherEffect ) ),
-END_RECV_TABLE();
 
 //-----------------------------------------------------------------------------
 // Purpose: 

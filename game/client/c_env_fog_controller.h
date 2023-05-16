@@ -27,6 +27,29 @@ public:
 public:
 
 	fogparams_t				m_fog;
+
+	//-----------------------------------------------------------------------------
+// Datatable
+//-----------------------------------------------------------------------------
+	BEGIN_NETWORK_TABLE_NOBASE(CFogController, DT_FogController)
+		// fog data
+		RecvPropInt(RECVINFO(m_fog.enable)),
+		RecvPropInt(RECVINFO(m_fog.blend)),
+		RecvPropVector(RECVINFO(m_fog.dirPrimary)),
+		RecvPropInt(RECVINFO(m_fog.colorPrimary)),
+		RecvPropInt(RECVINFO(m_fog.colorSecondary)),
+		RecvPropFloat(RECVINFO(m_fog.start)),
+		RecvPropFloat(RECVINFO(m_fog.end)),
+		RecvPropFloat(RECVINFO(m_fog.farz)),
+		RecvPropFloat(RECVINFO(m_fog.maxdensity)),
+
+		RecvPropInt(RECVINFO(m_fog.colorPrimaryLerpTo)),
+		RecvPropInt(RECVINFO(m_fog.colorSecondaryLerpTo)),
+		RecvPropFloat(RECVINFO(m_fog.startLerpTo)),
+		RecvPropFloat(RECVINFO(m_fog.endLerpTo)),
+		RecvPropFloat(RECVINFO(m_fog.lerptime)),
+		RecvPropFloat(RECVINFO(m_fog.duration)),
+	END_NETWORK_TABLE(DT_FogController)
 };
 
 

@@ -106,6 +106,20 @@ private:
 
 private:
 					C_SteamJet( const C_SteamJet & );
+
+	BEGIN_RECV_TABLE(C_SteamJet, DT_SteamJet, DT_BaseParticleEntity)
+		RecvPropFloat(RECVINFO(m_SpreadSpeed), 0),
+		RecvPropFloat(RECVINFO(m_Speed), 0),
+		RecvPropFloat(RECVINFO(m_StartSize), 0),
+		RecvPropFloat(RECVINFO(m_EndSize), 0),
+		RecvPropFloat(RECVINFO(m_Rate), 0),
+		RecvPropFloat(RECVINFO(m_JetLength), 0),
+		RecvPropInt(RECVINFO(m_bEmit), 0),
+		RecvPropInt(RECVINFO(m_bFaceLeft), 0),
+		RecvPropInt(RECVINFO(m_nType), 0),
+		RecvPropInt( RECVINFO( m_spawnflags ) ),
+		RecvPropFloat(RECVINFO(m_flRollSpeed), 0 ),
+	END_RECV_TABLE(DT_SteamJet)
 };
 
 
@@ -118,19 +132,8 @@ EXPOSE_PROTOTYPE_EFFECT(SteamJet, C_SteamJet);
 
 
 // Datatable..
-IMPLEMENT_CLIENTCLASS_DT(C_SteamJet, DT_SteamJet, CSteamJet)
-	RecvPropFloat(RECVINFO(m_SpreadSpeed), 0),
-	RecvPropFloat(RECVINFO(m_Speed), 0),
-	RecvPropFloat(RECVINFO(m_StartSize), 0),
-	RecvPropFloat(RECVINFO(m_EndSize), 0),
-	RecvPropFloat(RECVINFO(m_Rate), 0),
-	RecvPropFloat(RECVINFO(m_JetLength), 0),
-	RecvPropInt(RECVINFO(m_bEmit), 0),
-	RecvPropInt(RECVINFO(m_bFaceLeft), 0),
-	RecvPropInt(RECVINFO(m_nType), 0),
-	RecvPropInt( RECVINFO( m_spawnflags ) ),
-	RecvPropFloat(RECVINFO(m_flRollSpeed), 0 ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_SteamJet, DT_SteamJet, CSteamJet)
+
 
 // ------------------------------------------------------------------------- //
 // C_SteamJet implementation.
@@ -218,7 +221,7 @@ void C_SteamJet::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs)
 //-----------------------------------------------------------------------------
 bool C_SteamJet::GetPropEditInfo( RecvTable **ppTable, void **ppObj )
 {
-	*ppTable = &REFERENCE_RECV_TABLE(DT_SteamJet);
+	*ppTable = g_pRecvTableManager->FindRecvTable(REFERENCE_RECV_TABLE(DT_SteamJet));
 	*ppObj = this;
 	return true;
 }

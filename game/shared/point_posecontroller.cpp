@@ -319,19 +319,8 @@ void CPoseController::InputGetFMod( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 
 
-IMPLEMENT_CLIENTCLASS_DT( C_PoseController, DT_PoseController, CPoseController )
-	RecvPropArray3( RECVINFO_ARRAY(m_hProps), RecvPropEHandle( RECVINFO(m_hProps[0]) ) ),
-	RecvPropArray3( RECVINFO_ARRAY(m_chPoseIndex), RecvPropInt( RECVINFO(m_chPoseIndex[0]) ) ),
-	RecvPropBool( RECVINFO(m_bPoseValueParity) ),
-	RecvPropFloat( RECVINFO(m_fPoseValue) ),
-	RecvPropFloat( RECVINFO(m_fInterpolationTime) ),
-	RecvPropBool( RECVINFO(m_bInterpolationWrap) ),
-	RecvPropFloat( RECVINFO(m_fCycleFrequency) ),
-	RecvPropInt( RECVINFO(m_nFModType) ),
-	RecvPropFloat( RECVINFO(m_fFModTimeOffset) ),
-	RecvPropFloat( RECVINFO(m_fFModRate) ),
-	RecvPropFloat( RECVINFO(m_fFModAmplitude) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_PoseController, DT_PoseController, CPoseController )
+
 
 
 void C_PoseController::Spawn( void )

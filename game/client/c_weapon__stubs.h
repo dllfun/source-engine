@@ -21,7 +21,7 @@
 	LINK_ENTITY_TO_CLASS( entityName, className );
 
 
-#define STUB_WEAPON_CLASS( entityName, className, baseClassName )	\
+#define STUB_WEAPON_CLASS( entityName, className, baseClassName, baseTableName )	\
 	class C_##className : public baseClassName					\
 	{																\
 		DECLARE_CLASS( C_##className, baseClassName );							\
@@ -31,9 +31,12 @@
 		C_##className() = default;											\
 	private:														\
 		C_##className( const C_##className & );						\
+		\
+		BEGIN_RECV_TABLE(C_##className, DT_##className, baseTableName)	\
+		END_RECV_TABLE(DT_##className)\
 	};																\
 	STUB_WEAPON_CLASS_IMPLEMENT( entityName, C_##className );		\
-	IMPLEMENT_CLIENTCLASS_DT( C_##className, DT_##className, C##className )	\
-	END_RECV_TABLE()
+	IMPLEMENT_CLIENTCLASS( C_##className, DT_##className, C##className )
+	
 
 #endif // C_WEAPON__STUBS_H

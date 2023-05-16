@@ -69,6 +69,10 @@ private:
 
 private:
 	C_NextBotCombatCharacter( const C_NextBotCombatCharacter & );				// not defined, not accessible
+
+	BEGIN_RECV_TABLE(C_NextBotCombatCharacter, DT_NextBot, DT_BaseCombatCharacter)
+
+	END_RECV_TABLE(DT_NextBot)
 };
 
 //--------------------------------------------------------------------------------------------------------

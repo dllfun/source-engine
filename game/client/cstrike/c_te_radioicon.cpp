@@ -34,6 +34,10 @@ public:
 
 public:
 	int m_iAttachToClient;
+
+	BEGIN_RECV_TABLE(C_TERadioIcon, DT_TERadioIcon, DT_BaseTempEntity)
+		RecvPropInt(RECVINFO(m_iAttachToClient)),
+	END_RECV_TABLE(DT_TERadioIcon)
 };
 
 //-----------------------------------------------------------------------------
@@ -69,6 +73,5 @@ void C_TERadioIcon::PostDataUpdate( DataUpdateType_t updateType )
 	Radar_FlashPlayer( m_iAttachToClient );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TERadioIcon, DT_TERadioIcon, CTERadioIcon)
-	RecvPropInt( RECVINFO(m_iAttachToClient)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TERadioIcon, DT_TERadioIcon, CTERadioIcon)
+

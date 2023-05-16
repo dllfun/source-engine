@@ -27,6 +27,10 @@ public:
 
 public:
 	float		m_flWaveHeight;
+
+	BEGIN_RECV_TABLE(C_BaseDoor, DT_BaseDoor, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flWaveHeight)),
+	END_RECV_TABLE(DT_BaseDoor)
 };
 
 #endif // C_BASEDOOR_H

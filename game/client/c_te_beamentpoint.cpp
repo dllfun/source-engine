@@ -32,6 +32,13 @@ public:
 	int				m_nEndEntity;
 	Vector			m_vecStartPoint;
 	Vector			m_vecEndPoint;
+
+	BEGIN_RECV_TABLE(C_TEBeamEntPoint, DT_TEBeamEntPoint, DT_BaseBeam)
+		RecvPropInt(RECVINFO(m_nStartEntity)),
+		RecvPropInt(RECVINFO(m_nEndEntity)),
+		RecvPropVector(RECVINFO(m_vecStartPoint)),
+		RecvPropVector(RECVINFO(m_vecEndPoint)),
+	END_RECV_TABLE(DT_TEBeamEntPoint)
 };
 
 //-----------------------------------------------------------------------------
@@ -73,10 +80,6 @@ void C_TEBeamEntPoint::PostDataUpdate( DataUpdateType_t updateType )
 		m_nStartFrame, 0.1 * m_nFrameRate, r, g, b );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBeamEntPoint, DT_TEBeamEntPoint, CTEBeamEntPoint)
-	RecvPropInt(RECVINFO(m_nStartEntity)),
-	RecvPropInt(RECVINFO(m_nEndEntity)),
-	RecvPropVector(RECVINFO(m_vecStartPoint)),
-	RecvPropVector(RECVINFO(m_vecEndPoint)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamEntPoint, DT_TEBeamEntPoint, CTEBeamEntPoint)
+
 

@@ -132,6 +132,11 @@ public:
 
 private:
 					C_ParticleFire( const C_ParticleFire & );
+
+	BEGIN_RECV_TABLE_NOBASE(C_ParticleFire, DT_ParticleFire, CParticleFire)
+		RecvPropVector(RECVINFO(m_vOrigin)),
+		RecvPropVector(RECVINFO(m_vDirection)),
+	END_RECV_TABLE(DT_ParticleFire)
 };
 
 
@@ -144,10 +149,8 @@ EXPOSE_PROTOTYPE_EFFECT(ParticleFire, C_ParticleFire);
 
 
 // Datatable..
-IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_ParticleFire, DT_ParticleFire, CParticleFire)
-	RecvPropVector(RECVINFO(m_vOrigin)),
-	RecvPropVector(RECVINFO(m_vDirection)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_ParticleFire, DT_ParticleFire, CParticleFire)
+
 
 
 

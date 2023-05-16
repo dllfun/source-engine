@@ -34,6 +34,10 @@ public:
 public:
 
 	int m_iEntIndex;
+
+	BEGIN_RECV_TABLE(C_TEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
+		RecvPropInt(RECVINFO(m_iEntIndex)),
+	END_RECV_TABLE(DT_TEBeamFollow)
 };
 
 //-----------------------------------------------------------------------------
@@ -65,9 +69,7 @@ void C_TEBeamFollow::PostDataUpdate( DataUpdateType_t updateType )
 // Expose the TE to the engine.
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEBeamFollow, DT_TEBeamFollow, CTEBeamFollow );
 
-BEGIN_RECV_TABLE(C_TEBeamFollow, DT_TEBeamFollow)
-	RecvPropInt( RECVINFO(m_iEntIndex)),
-END_RECV_TABLE()
+
 
 
 void TE_BeamFollow( IRecipientFilter& filter, float delay,

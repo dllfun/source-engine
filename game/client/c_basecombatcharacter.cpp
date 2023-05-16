@@ -149,25 +149,10 @@ void C_BaseCombatCharacter::DestroyGlowEffect( void )
 
 IMPLEMENT_CLIENTCLASS(C_BaseCombatCharacter, DT_BaseCombatCharacter, CBaseCombatCharacter);
 
-// Only send active weapon index to local player
-BEGIN_RECV_TABLE_NOBASE( C_BaseCombatCharacter, DT_BCCLocalPlayerExclusive )
-	RecvPropTime( RECVINFO( m_flNextAttack ) ),
-END_RECV_TABLE();
 
 
-BEGIN_RECV_TABLE(C_BaseCombatCharacter, DT_BaseCombatCharacter)
-	RecvPropDataTable( "bcc_localdata", 0, 0, &REFERENCE_RECV_TABLE(DT_BCCLocalPlayerExclusive) ),
-	RecvPropEHandle( RECVINFO( m_hActiveWeapon ) ),
-	RecvPropArray3( RECVINFO_ARRAY(m_hMyWeapons), RecvPropEHandle( RECVINFO( m_hMyWeapons[0] ) ) ),
-#ifdef GLOWS_ENABLE
-	RecvPropBool( RECVINFO( m_bGlowEnabled ) ),
-#endif // GLOWS_ENABLE
 
-#ifdef INVASION_CLIENT_DLL
-	RecvPropInt( RECVINFO( m_iPowerups ) ),
-#endif
 
-END_RECV_TABLE()
 
 
 BEGIN_PREDICTION_DATA( C_BaseCombatCharacter )

@@ -25,54 +25,13 @@
 
 	#include "dt_recv.h"
 
-	static void RecvProxy_EntIndex( const CRecvProxyData *pData, void *pStruct, void *pOut )
+	void RecvProxy_EntIndex( const CRecvProxyData *pData, void *pStruct, void *pOut )
 	{
 		int nEntIndex = pData->m_Value.m_Int;
 		((CEffectData*)pStruct)->m_hEntity = (nEntIndex < 0) ? INVALID_EHANDLE_INDEX : ClientEntityList().EntIndexToHandle( nEntIndex );
 	}
 
-	BEGIN_RECV_TABLE_NOBASE( CEffectData, DT_EffectData )
-
-		RecvPropFloat( RECVINFO( m_vOrigin[0] ) ),
-		RecvPropFloat( RECVINFO( m_vOrigin[1] ) ),
-		RecvPropFloat( RECVINFO( m_vOrigin[2] ) ),
-
-		RecvPropFloat( RECVINFO( m_vStart[0] ) ),
-		RecvPropFloat( RECVINFO( m_vStart[1] ) ),
-		RecvPropFloat( RECVINFO( m_vStart[2] ) ),
-
-		RecvPropQAngles( RECVINFO( m_vAngles ) ),
-
-		RecvPropVector(	RECVINFO( m_vNormal ) ),
-
-		RecvPropInt( RECVINFO( m_fFlags ) ),
-		RecvPropFloat( RECVINFO( m_flMagnitude ) ),
-		RecvPropFloat( RECVINFO( m_flScale ) ),
-		RecvPropInt( RECVINFO( m_nAttachmentIndex ) ),
-		RecvPropIntWithMinusOneFlag( RECVINFO( m_nSurfaceProp ), RecvProxy_ShortSubOne ),
-		RecvPropInt( RECVINFO( m_iEffectName ) ),
-
-		RecvPropInt( RECVINFO( m_nMaterial ) ),
-		RecvPropInt( RECVINFO( m_nDamageType ) ),
-		RecvPropInt( RECVINFO( m_nHitBox ) ),
-
-		RecvPropInt( "entindex", 0, SIZEOF_IGNORE, 0, RecvProxy_EntIndex ),
-
-		RecvPropInt( RECVINFO( m_nColor ) ),
-
-		RecvPropFloat( RECVINFO( m_flRadius ) ),
-
-		RecvPropBool( RECVINFO( m_bCustomColors ) ),
-		RecvPropVector( RECVINFO( m_CustomColors.m_vecColor1 ) ),
-		RecvPropVector( RECVINFO( m_CustomColors.m_vecColor2 ) ),
-
-		RecvPropBool( RECVINFO( m_bControlPoint1 ) ),
-		RecvPropInt( RECVINFO( m_ControlPoint1.m_eParticleAttachment ) ),
-		RecvPropFloat( RECVINFO( m_ControlPoint1.m_vecOffset[0] ) ),
-		RecvPropFloat( RECVINFO( m_ControlPoint1.m_vecOffset[1] ) ),
-		RecvPropFloat( RECVINFO( m_ControlPoint1.m_vecOffset[2] ) ),
-
-	END_RECV_TABLE()
+	
 
 #else
 

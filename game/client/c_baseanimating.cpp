@@ -106,11 +106,14 @@ public:
 
 private:
 	EHANDLE			m_hLightingLandmark;
+
+	BEGIN_RECV_TABLE(C_InfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
+		RecvPropEHandle(RECVINFO(m_hLightingLandmark)),
+	END_RECV_TABLE(DT_InfoLightingRelative)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_InfoLightingRelative, DT_InfoLightingRelative, CInfoLightingRelative)
-	RecvPropEHandle(RECVINFO(m_hLightingLandmark)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_InfoLightingRelative, DT_InfoLightingRelative, CInfoLightingRelative)
+
 
 
 //-----------------------------------------------------------------------------
@@ -146,9 +149,7 @@ const unsigned int FCLIENTANIM_SEQUENCE_CYCLE = 0x00000001;
 
 static CUtlVector< clientanimating_t >	g_ClientSideAnimationList;
 
-BEGIN_RECV_TABLE_NOBASE( C_BaseAnimating, DT_ServerAnimationData )
-	RecvPropFloat(RECVINFO(m_flCycle)),
-END_RECV_TABLE()
+
 
 
 void RecvProxy_Sequence( const CRecvProxyData *pData, void *pStruct, void *pOut )
@@ -167,41 +168,8 @@ void RecvProxy_Sequence( const CRecvProxyData *pData, void *pStruct, void *pOut 
 	pAnimating->UpdateVisibility();
 }
 
-IMPLEMENT_CLIENTCLASS_DT(C_BaseAnimating, DT_BaseAnimating, CBaseAnimating)
-	RecvPropInt(RECVINFO(m_nSequence), 0, RecvProxy_Sequence),
-	RecvPropInt(RECVINFO(m_nForceBone)),
-	RecvPropVector(RECVINFO(m_vecForce)),
-	RecvPropInt(RECVINFO(m_nSkin)),
-	RecvPropInt(RECVINFO(m_nBody)),
-	RecvPropInt(RECVINFO(m_nHitboxSet)),
+IMPLEMENT_CLIENTCLASS(C_BaseAnimating, DT_BaseAnimating, CBaseAnimating)
 
-	RecvPropFloat(RECVINFO(m_flModelScale)),
-	RecvPropFloat(RECVINFO_NAME(m_flModelScale, m_flModelWidthScale)), // for demo compatibility only
-
-//	RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0])), m_flPoseParameter),
-	RecvPropArray3(RECVINFO_ARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO(m_flPoseParameter[0])) ),
-	
-	RecvPropFloat(RECVINFO(m_flPlaybackRate)),
-
-	RecvPropArray3( RECVINFO_ARRAY(m_flEncodedController), RecvPropFloat(RECVINFO(m_flEncodedController[0]))),
-
-	RecvPropInt( RECVINFO( m_bClientSideAnimation )),
-	RecvPropInt( RECVINFO( m_bClientSideFrameReset )),
-
-	RecvPropInt( RECVINFO( m_nNewSequenceParity )),
-	RecvPropInt( RECVINFO( m_nResetEventsParity )),
-	RecvPropInt( RECVINFO( m_nMuzzleFlashParity ) ),
-
-	RecvPropEHandle(RECVINFO(m_hLightingOrigin)),
-	RecvPropEHandle(RECVINFO(m_hLightingOriginRelative)),
-
-	RecvPropDataTable( "serveranimdata", 0, 0, &REFERENCE_RECV_TABLE( DT_ServerAnimationData ) ),
-
-	RecvPropFloat( RECVINFO( m_fadeMinDist ) ), 
-	RecvPropFloat( RECVINFO( m_fadeMaxDist ) ), 
-	RecvPropFloat( RECVINFO( m_flFadeScale ) ), 
-
-END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_BaseAnimating )
 
@@ -667,6 +635,9 @@ C_BaseAnimating::C_BaseAnimating() :
 	m_iv_flPoseParameter( "C_BaseAnimating::m_iv_flPoseParameter" ),
 	m_iv_flEncodedController("C_BaseAnimating::m_iv_flEncodedController")
 {
+	if (!engineClient) {
+		return;
+	}
 	m_vecForce.Init();
 	m_nForceBone = -1;
 	
@@ -745,6 +716,9 @@ C_BaseAnimating::C_BaseAnimating() :
 //-----------------------------------------------------------------------------
 C_BaseAnimating::~C_BaseAnimating()
 {
+	if (!engineClient) {
+		return;
+	}
 	int i = g_PreviousBoneSetups.Find( this );
 	if ( i != -1 )
 		g_PreviousBoneSetups.FastRemove( i );
@@ -5931,12 +5905,15 @@ public:
 private:
 	int m_modelIndex;
 	int m_solidIndex;
+
+	BEGIN_RECV_TABLE(C_BoneFollower, DT_BoneFollower, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_modelIndex)),
+		RecvPropInt(RECVINFO(m_solidIndex)),
+	END_RECV_TABLE(DT_BoneFollower)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_BoneFollower, DT_BoneFollower, CBoneFollower )
-	RecvPropInt( RECVINFO( m_modelIndex ) ),
-	RecvPropInt( RECVINFO( m_solidIndex ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_BoneFollower, DT_BoneFollower, CBoneFollower )
+
 
 void VCollideWireframe_ChangeCallback( IConVar *pConVar, char const *pOldString, float flOldValue )
 {

@@ -39,23 +39,26 @@ public:
 	int				m_nSkin;
 	int				m_nFlags;
 	int				m_nEffects;
+
+	BEGIN_RECV_TABLE(C_TEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropFloat(RECVINFO(m_angRotation[0])),
+		RecvPropFloat(RECVINFO(m_angRotation[1])),
+		RecvPropFloat(RECVINFO(m_angRotation[2])),
+		RecvPropVector(RECVINFO(m_vecVelocity)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropInt(RECVINFO(m_nFlags)),
+		RecvPropInt(RECVINFO(m_nSkin)),
+		RecvPropInt(RECVINFO(m_nEffects)),
+	END_RECV_TABLE(DT_TEPhysicsProp)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEPhysicsProp, DT_TEPhysicsProp, CTEPhysicsProp)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropFloat( RECVINFO( m_angRotation[0] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[1] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[2] ) ),
-	RecvPropVector( RECVINFO(m_vecVelocity)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nFlags)),
-	RecvPropInt( RECVINFO(m_nSkin)),
-	RecvPropInt( RECVINFO(m_nEffects)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEPhysicsProp, DT_TEPhysicsProp, CTEPhysicsProp)
+
 
 
 //-----------------------------------------------------------------------------

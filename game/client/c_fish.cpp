@@ -22,6 +22,9 @@ extern float UTIL_WaterLevel( const Vector &position, float minz, float maxz );
 ConVar FishDebug( "fish_debug", "0", FCVAR_CHEAT, "Show debug info for fish" );
 
 
+void RecvProxy_FishOriginX(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_FishOriginY(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
 //-----------------------------------------------------------------------------
 /**
  * Client-side fish entity
@@ -68,6 +71,23 @@ private:
 	int m_errorHistoryIndex;
 	int m_errorHistoryCount;
 	float m_averageError;
+
+	BEGIN_RECV_TABLE_NOBASE(C_Fish, DT_CFish, CFish)
+
+		RecvPropVector(RECVINFO(m_poolOrigin)),
+
+		RecvPropFloat(RECVINFO_NAME(m_actualPos.x, m_x), 0, RecvProxy_FishOriginX),
+		RecvPropFloat(RECVINFO_NAME(m_actualPos.y, m_y), 0, RecvProxy_FishOriginY),
+		RecvPropFloat(RECVINFO_NAME(m_actualPos.z, m_z)),
+
+		RecvPropFloat(RECVINFO_NAME(m_actualAngles.y, m_angle)),
+
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropInt(RECVINFO(m_lifeState)),
+
+		RecvPropFloat(RECVINFO(m_waterLevel)),		///< get this from the server in case we die when slightly out of the water due to error correction
+
+	END_RECV_TABLE(DT_CFish)
 };
 
 
@@ -89,22 +109,8 @@ void RecvProxy_FishOriginY( const CRecvProxyData *pData, void *pStruct, void *pO
 }
 
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_Fish, DT_CFish, CFish )
+IMPLEMENT_CLIENTCLASS( C_Fish, DT_CFish, CFish )
 
-	RecvPropVector( RECVINFO(m_poolOrigin) ),
-
-	RecvPropFloat( RECVINFO_NAME( m_actualPos.x, m_x ), 0, RecvProxy_FishOriginX ),
-	RecvPropFloat( RECVINFO_NAME( m_actualPos.y, m_y ), 0, RecvProxy_FishOriginY ),
-	RecvPropFloat( RECVINFO_NAME( m_actualPos.z, m_z ) ),
-
-	RecvPropFloat( RECVINFO_NAME( m_actualAngles.y, m_angle ) ),
-
-	RecvPropInt( RECVINFO(m_nModelIndex) ),
-	RecvPropInt( RECVINFO(m_lifeState) ),
-
-	RecvPropFloat( RECVINFO(m_waterLevel) ),		///< get this from the server in case we die when slightly out of the water due to error correction
-
-END_RECV_TABLE()
 
 
 

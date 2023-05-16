@@ -309,31 +309,31 @@ END_PREDICTION_DATA()
 //-----------------------------------------------------------------------------
 #ifdef CLIENT_DLL
 
-static void RecvProxy_Solid( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_Solid( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	((CCollisionProperty*)pStruct)->SetSolid( (SolidType_t)pData->m_Value.m_Int );
 }
 
-static void RecvProxy_SolidFlags( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_SolidFlags( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	((CCollisionProperty*)pStruct)->SetSolidFlags( pData->m_Value.m_Int );
 }
 
-static void RecvProxy_OBBMinsPreScaled( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_OBBMinsPreScaled( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	CCollisionProperty *pProp = ((CCollisionProperty*)pStruct);
 	Vector &vecMins = *((Vector*)pData->m_Value.m_Vector);
 	pProp->SetCollisionBounds( vecMins, pProp->OBBMaxsPreScaled() );
 }
 
-static void RecvProxy_OBBMaxsPreScaled( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_OBBMaxsPreScaled( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	CCollisionProperty *pProp = ((CCollisionProperty*)pStruct);
 	Vector &vecMaxs = *((Vector*)pData->m_Value.m_Vector);
 	pProp->SetCollisionBounds( pProp->OBBMinsPreScaled(), vecMaxs );
 }
 
-static void RecvProxy_VectorDirtySurround( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_VectorDirtySurround( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	Vector &vecold = *((Vector*)pOut);
 	Vector vecnew( pData->m_Value.m_Vector[0], pData->m_Value.m_Vector[1], pData->m_Value.m_Vector[2] );
@@ -345,7 +345,7 @@ static void RecvProxy_VectorDirtySurround( const CRecvProxyData *pData, void *pS
 	}
 }
 
-static void RecvProxy_IntDirtySurround( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_IntDirtySurround( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	if ( *((unsigned char*)pOut) != pData->m_Value.m_Int )
 	{
@@ -368,22 +368,7 @@ void SendProxy_SolidFlags( const SendProp *pProp, const void *pStruct, const voi
 
 #endif
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE_NOBASE( CCollisionProperty, DT_CollisionProperty )
-	RecvPropVector( RECVINFO(m_vecMinsPreScaled), 0, RecvProxy_OBBMinsPreScaled ),
-	RecvPropVector( RECVINFO(m_vecMaxsPreScaled), 0, RecvProxy_OBBMaxsPreScaled ),
-	RecvPropVector( RECVINFO(m_vecMins), 0 ),
-	RecvPropVector( RECVINFO(m_vecMaxs), 0 ),
-	RecvPropInt( RECVINFO( m_nSolidType ),		0, RecvProxy_Solid ),
-	RecvPropInt( RECVINFO( m_usSolidFlags ),	0, RecvProxy_SolidFlags ),
-	RecvPropInt( RECVINFO(m_nSurroundType), 0, RecvProxy_IntDirtySurround ),
-	RecvPropInt( RECVINFO(m_triggerBloat), 0, RecvProxy_IntDirtySurround ), 
-	RecvPropVector( RECVINFO(m_vecSpecifiedSurroundingMinsPreScaled), 0, RecvProxy_VectorDirtySurround ),
-	RecvPropVector( RECVINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0, RecvProxy_VectorDirtySurround ),
-	RecvPropVector( RECVINFO(m_vecSpecifiedSurroundingMins), 0, RecvProxy_VectorDirtySurround ),
-	RecvPropVector( RECVINFO(m_vecSpecifiedSurroundingMaxs), 0, RecvProxy_VectorDirtySurround ),
-END_NETWORK_TABLE(DT_CollisionProperty)
-#endif
+
 
 																							
 //-----------------------------------------------------------------------------

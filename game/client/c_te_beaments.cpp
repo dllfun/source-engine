@@ -30,6 +30,11 @@ public:
 public:
 	int				m_nStartEntity;
 	int				m_nEndEntity;
+
+	BEGIN_RECV_TABLE(C_TEBeamEnts, DT_TEBeamEnts, DT_BaseBeam)
+		RecvPropInt(RECVINFO(m_nStartEntity)),
+		RecvPropInt(RECVINFO(m_nEndEntity)),
+	END_RECV_TABLE(DT_TEBeamEnts)
 };
 
 //-----------------------------------------------------------------------------
@@ -72,8 +77,5 @@ void C_TEBeamEnts::PostDataUpdate( DataUpdateType_t updateType )
 // Expose the TE to the engine.
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEBeamEnts, DT_TEBeamEnts, CTEBeamEnts );
 
-BEGIN_RECV_TABLE(C_TEBeamEnts, DT_TEBeamEnts)
-	RecvPropInt( RECVINFO(m_nStartEntity)),
-	RecvPropInt( RECVINFO(m_nEndEntity)),
-END_RECV_TABLE()
+
 

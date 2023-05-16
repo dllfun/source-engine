@@ -67,11 +67,8 @@ int		gSparkRamp[ SPARK_COLORCOUNT ][3] =
 // C_TEParticleSystem.
 // ------------------------------------------------------------------------ //
 
-IMPLEMENT_CLIENTCLASS_DT(C_TEParticleSystem, DT_TEParticleSystem, CTEParticleSystem)
-	RecvPropFloat( RECVINFO(m_vecOrigin[0]) ),
-	RecvPropFloat( RECVINFO(m_vecOrigin[1]) ),
-	RecvPropFloat( RECVINFO(m_vecOrigin[2]) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_TEParticleSystem, DT_TEParticleSystem, CTEParticleSystem)
+
 
 
 C_TEParticleSystem::C_TEParticleSystem()

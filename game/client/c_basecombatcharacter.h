@@ -115,7 +115,9 @@ protected:
 private:
 	bool				ComputeLOS( const Vector &vecEyePosition, const Vector &vecTarget ) const;
 
+protected:
 	CNetworkArray( int, m_iAmmo, MAX_AMMO_TYPES );
+private:
 
 	CHandle<C_BaseCombatWeapon>		m_hMyWeapons[MAX_WEAPONS];
 	CHandle< C_BaseCombatWeapon > m_hActiveWeapon;
@@ -157,6 +159,24 @@ public:
 	int				m_iPrevPowerups;
 #endif
 
+	// Only send active weapon index to local player
+	BEGIN_RECV_TABLE_NOBASE(C_BaseCombatCharacter, DT_BCCLocalPlayerExclusive)
+		RecvPropTime(RECVINFO(m_flNextAttack)),
+	END_RECV_TABLE(DT_BCCLocalPlayerExclusive);
+
+	BEGIN_RECV_TABLE(C_BaseCombatCharacter, DT_BaseCombatCharacter, DT_BaseFlex)
+		RecvPropDataTable("bcc_localdata", 0, 0, REFERENCE_RECV_TABLE(DT_BCCLocalPlayerExclusive)),
+		RecvPropEHandle(RECVINFO(m_hActiveWeapon)),
+		RecvPropArray3(RECVINFO_ARRAY(m_hMyWeapons), RecvPropEHandle(RECVINFO(m_hMyWeapons[0]))),
+#ifdef GLOWS_ENABLE
+		RecvPropBool(RECVINFO(m_bGlowEnabled)),
+#endif // GLOWS_ENABLE
+
+#ifdef INVASION_CLIENT_DLL
+		RecvPropInt(RECVINFO(m_iPowerups)),
+#endif
+
+	END_RECV_TABLE(DT_BaseCombatCharacter)
 };
 
 inline C_BaseCombatCharacter *ToBaseCombatCharacter( C_BaseEntity *pEntity )

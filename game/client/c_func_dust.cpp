@@ -18,20 +18,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_Func_Dust, DT_Func_Dust, CFunc_Dust )
-	RecvPropInt( RECVINFO(m_Color) ),
-	RecvPropInt( RECVINFO(m_SpawnRate) ),
-	RecvPropFloat( RECVINFO(m_flSizeMin) ),
-	RecvPropFloat( RECVINFO(m_flSizeMax) ),
-	RecvPropInt( RECVINFO(m_LifetimeMin) ),
-	RecvPropInt( RECVINFO(m_LifetimeMax) ),
-	RecvPropInt( RECVINFO(m_DustFlags) ),
-	RecvPropInt( RECVINFO(m_SpeedMax) ),
-	RecvPropInt( RECVINFO(m_DistMax) ),
-	RecvPropInt( RECVINFO( m_nModelIndex ) ),
-	RecvPropFloat( RECVINFO( m_FallSpeed ) ),
-	RecvPropDataTable( RECVINFO_DT( m_Collision ), 0, &REFERENCE_RECV_TABLE(DT_CollisionProperty) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_Func_Dust, DT_Func_Dust, CFunc_Dust )
+
 
 
 
@@ -327,13 +315,16 @@ public:
 
 protected:
 	void		GetDustColor( Vector &color );
+
+	BEGIN_RECV_TABLE(C_TEDust, DT_TEDust, DT_TEParticleSystem)
+		RecvPropFloat(RECVINFO(m_flSize)),
+		RecvPropFloat(RECVINFO(m_flSpeed)),
+		RecvPropVector(RECVINFO(m_vecDirection)),
+	END_RECV_TABLE(DT_TEDust)
 };
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEDust, DT_TEDust, CTEDust )
-	RecvPropFloat(RECVINFO(m_flSize)),
-	RecvPropFloat(RECVINFO(m_flSpeed)),
-	RecvPropVector(RECVINFO(m_vecDirection)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT( C_TEDust, DT_TEDust, CTEDust )
+
 
 //==================================================
 // C_TEDust

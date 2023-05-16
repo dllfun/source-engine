@@ -227,6 +227,14 @@ private:
 		SendPropFloat(SENDINFO(m_fArmedTime), 0, SPROP_NOSCALE)
 	END_NETWORK_TABLE(DT_WeaponC4)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CC4, DT_WeaponC4, DT_WeaponCSBase)
+		RecvPropBool(RECVINFO(m_bStartedArming)),
+		RecvPropBool(RECVINFO(m_bBombPlacedAnimation)),
+		RecvPropFloat(RECVINFO(m_fArmedTime))
+	END_NETWORK_TABLE(DT_WeaponC4)
+#endif
 };
 
 

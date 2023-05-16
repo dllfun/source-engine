@@ -31,7 +31,9 @@ public:
 	int m_iAttachmentPoint;				// Which attachment point on the player model this guy is on.
 };
 
-
+void RecvProxy_HasDefuser(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_NightVision(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_FlashTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 class C_CSPlayer : public C_BasePlayer, public ICSPlayerAnimStateHelpers
 {
@@ -394,6 +396,86 @@ private:
 
 
 	C_CSPlayer( const C_CSPlayer & );
+
+	BEGIN_RECV_TABLE_NOBASE(C_CSPlayer, DT_CSLocalPlayerExclusive)
+		RecvPropFloat(RECVINFO(m_flStamina)),
+		RecvPropInt(RECVINFO(m_iDirection)),
+		RecvPropInt(RECVINFO(m_iShotsFired)),
+		RecvPropFloat(RECVINFO(m_flVelocityModifier)),
+
+		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
+
+		//=============================================================================
+		// HPE_BEGIN:
+		// [tj]Set up the receive table for per-client domination data
+		//=============================================================================
+
+		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerDominated), RecvPropBool(RECVINFO(m_bPlayerDominated[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerDominatingMe), RecvPropBool(RECVINFO(m_bPlayerDominatingMe[0])))
+
+		//=============================================================================
+		// HPE_END
+		//=============================================================================
+
+	END_RECV_TABLE(DT_CSLocalPlayerExclusive)
+
+	BEGIN_RECV_TABLE_NOBASE(C_CSPlayer, DT_CSNonLocalPlayerExclusive)
+		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
+	END_RECV_TABLE(DT_CSNonLocalPlayerExclusive)
+
+	BEGIN_RECV_TABLE(C_CSPlayer, DT_CSPlayer, DT_BasePlayer)
+		RecvPropDataTable("cslocaldata", 0, 0, REFERENCE_RECV_TABLE(DT_CSLocalPlayerExclusive)),
+		RecvPropDataTable("csnonlocaldata", 0, 0, REFERENCE_RECV_TABLE(DT_CSNonLocalPlayerExclusive)),
+		RecvPropInt(RECVINFO(m_iAddonBits)),
+		RecvPropInt(RECVINFO(m_iPrimaryAddon)),
+		RecvPropInt(RECVINFO(m_iSecondaryAddon)),
+		RecvPropInt(RECVINFO(m_iThrowGrenadeCounter)),
+		RecvPropInt(RECVINFO(m_iPlayerState)),
+		RecvPropInt(RECVINFO(m_iAccount)),
+		RecvPropInt(RECVINFO(m_bInBombZone)),
+		RecvPropInt(RECVINFO(m_bInBuyZone)),
+		RecvPropInt(RECVINFO(m_iClass)),
+		RecvPropInt(RECVINFO(m_ArmorValue)),
+		RecvPropFloat(RECVINFO(m_angEyeAngles[0])),
+		RecvPropFloat(RECVINFO(m_angEyeAngles[1])),
+		RecvPropFloat(RECVINFO(m_flStamina)),
+		RecvPropInt(RECVINFO(m_bHasDefuser), 0, RecvProxy_HasDefuser),
+		RecvPropInt(RECVINFO(m_bNightVisionOn), 0, RecvProxy_NightVision),
+		RecvPropBool(RECVINFO(m_bHasNightVision)),
+
+
+		//=============================================================================
+		// HPE_BEGIN:
+		// [dwenger] Added for fun-fact support
+		//=============================================================================
+
+		//RecvPropBool( RECVINFO( m_bPickedUpDefuser ) ),
+		//RecvPropBool( RECVINFO( m_bDefusedWithPickedUpKit ) ),
+
+		//=============================================================================
+		// HPE_END
+		//=============================================================================
+
+		RecvPropBool(RECVINFO(m_bInHostageRescueZone)),
+		RecvPropInt(RECVINFO(m_ArmorValue)),
+		RecvPropBool(RECVINFO(m_bIsDefusing)),
+		RecvPropBool(RECVINFO(m_bResumeZoom)),
+		RecvPropInt(RECVINFO(m_iLastZoom)),
+
+#ifdef CS_SHIELD_ENABLED
+		RecvPropBool(RECVINFO(m_bHasShield)),
+		RecvPropBool(RECVINFO(m_bShieldDrawn)),
+#endif
+		RecvPropInt(RECVINFO(m_bHasHelmet)),
+		RecvPropVector(RECVINFO(m_vecRagdollVelocity)),
+		RecvPropFloat(RECVINFO(m_flFlashDuration), 0, RecvProxy_FlashTime),
+		RecvPropFloat(RECVINFO(m_flFlashMaxAlpha)),
+		RecvPropInt(RECVINFO(m_iProgressBarDuration)),
+		RecvPropFloat(RECVINFO(m_flProgressBarStartTime)),
+		RecvPropEHandle(RECVINFO(m_hRagdoll)),
+		RecvPropInt(RECVINFO(m_cycleLatch), 0, &C_CSPlayer::RecvProxy_CycleLatch),
+
+	END_RECV_TABLE(DT_CSPlayer)
 };
 
 C_CSPlayer* GetLocalOrInEyeCSPlayer( void );

@@ -93,6 +93,12 @@ private:
 		)
 	END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile, DT_BaseGrenade)
+		RecvPropVector(RECVINFO(m_vInitialVelocity))
+	END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
+#endif
 };
 
 

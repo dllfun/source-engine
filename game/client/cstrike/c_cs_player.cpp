@@ -135,15 +135,17 @@ public:
 	CNetworkHandle( CBasePlayer, m_hPlayer );
 	CNetworkVar( int, m_iEvent );
 	CNetworkVar( int, m_nData );
+
+	BEGIN_RECV_TABLE_NOBASE(C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent)
+		RecvPropEHandle(RECVINFO(m_hPlayer)),
+		RecvPropInt(RECVINFO(m_iEvent)),
+		RecvPropInt(RECVINFO(m_nData))
+	END_RECV_TABLE(DT_TEPlayerAnimEvent)
 };
 
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
 
-BEGIN_RECV_TABLE_NOBASE( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent )
-	RecvPropEHandle( RECVINFO( m_hPlayer ) ),
-	RecvPropInt( RECVINFO( m_iEvent ) ),
-	RecvPropInt( RECVINFO( m_nData ) )
-END_RECV_TABLE()
+
 
 BEGIN_PREDICTION_DATA( C_CSPlayer )
 #ifdef CS_SHIELD_ENABLED
@@ -235,26 +237,32 @@ private:
 	float m_flRagdollSinkStart;
 	bool m_bInitialized;
 	bool m_bCreatedWhilePlaybackSkipping;
+
+	BEGIN_RECV_TABLE_NOBASE(C_CSRagdoll, DT_CSRagdoll, CCSRagdoll)
+		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecRagdollOrigin)),
+		RecvPropEHandle(RECVINFO(m_hPlayer)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropInt(RECVINFO(m_nForceBone)),
+		RecvPropVector(RECVINFO(m_vecForce)),
+		RecvPropVector(RECVINFO(m_vecRagdollVelocity)),
+		RecvPropInt(RECVINFO(m_iDeathPose)),
+		RecvPropInt(RECVINFO(m_iDeathFrame)),
+		RecvPropInt(RECVINFO(m_iTeamNum)),
+		RecvPropInt(RECVINFO(m_bClientSideAnimation)),
+	END_RECV_TABLE(DT_CSRagdoll)
 };
 
 
-IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_CSRagdoll, DT_CSRagdoll, CCSRagdoll )
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropVector( RECVINFO(m_vecRagdollOrigin) ),
-	RecvPropEHandle( RECVINFO( m_hPlayer ) ),
-	RecvPropInt( RECVINFO( m_nModelIndex ) ),
-	RecvPropInt( RECVINFO(m_nForceBone) ),
-	RecvPropVector( RECVINFO(m_vecForce) ),
-	RecvPropVector( RECVINFO( m_vecRagdollVelocity ) ),
-	RecvPropInt( RECVINFO(m_iDeathPose) ),
-	RecvPropInt( RECVINFO(m_iDeathFrame) ),
-	RecvPropInt(RECVINFO(m_iTeamNum)),
-	RecvPropInt( RECVINFO(m_bClientSideAnimation)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_CSRagdoll, DT_CSRagdoll, CCSRagdoll )
+
 
 
 C_CSRagdoll::C_CSRagdoll()
 {
+	if (!engineClient) {
+		return;
+	}
 	m_flRagdollSinkStart = -1;
 	m_bInitialized = false;
 	m_bCreatedWhilePlaybackSkipping = engineClient->IsSkippingPlayback();
@@ -705,87 +713,14 @@ void __MsgFunc_ReloadEffect( bf_read &msg )
 }
 USER_MESSAGE_REGISTER( ReloadEffect );
 
-BEGIN_RECV_TABLE_NOBASE( C_CSPlayer, DT_CSLocalPlayerExclusive )
-	RecvPropFloat( RECVINFO(m_flStamina) ),
-	RecvPropInt( RECVINFO( m_iDirection ) ),
-	RecvPropInt( RECVINFO( m_iShotsFired ) ),
-	RecvPropFloat( RECVINFO( m_flVelocityModifier ) ),
-
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-
-    //=============================================================================
-    // HPE_BEGIN:
-    // [tj]Set up the receive table for per-client domination data
-    //=============================================================================
-
-    RecvPropArray3( RECVINFO_ARRAY( m_bPlayerDominated ), RecvPropBool( RECVINFO( m_bPlayerDominated[0] ) ) ),
-    RecvPropArray3( RECVINFO_ARRAY( m_bPlayerDominatingMe ), RecvPropBool( RECVINFO( m_bPlayerDominatingMe[0] ) ) )
-
-    //=============================================================================
-    // HPE_END
-    //=============================================================================
-
-END_RECV_TABLE()
 
 
-BEGIN_RECV_TABLE_NOBASE( C_CSPlayer, DT_CSNonLocalPlayerExclusive )
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-END_RECV_TABLE()
 
 
-IMPLEMENT_CLIENTCLASS_DT( C_CSPlayer, DT_CSPlayer, CCSPlayer )
-	RecvPropDataTable( "cslocaldata", 0, 0, &REFERENCE_RECV_TABLE(DT_CSLocalPlayerExclusive) ),
-	RecvPropDataTable( "csnonlocaldata", 0, 0, &REFERENCE_RECV_TABLE(DT_CSNonLocalPlayerExclusive) ),
-	RecvPropInt( RECVINFO( m_iAddonBits ) ),
-	RecvPropInt( RECVINFO( m_iPrimaryAddon ) ),
-	RecvPropInt( RECVINFO( m_iSecondaryAddon ) ),
-	RecvPropInt( RECVINFO( m_iThrowGrenadeCounter ) ),
-	RecvPropInt( RECVINFO( m_iPlayerState ) ),
-	RecvPropInt( RECVINFO( m_iAccount ) ),
-	RecvPropInt( RECVINFO( m_bInBombZone ) ),
-	RecvPropInt( RECVINFO( m_bInBuyZone ) ),
-	RecvPropInt( RECVINFO( m_iClass ) ),
-	RecvPropInt( RECVINFO( m_ArmorValue ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
-	RecvPropFloat( RECVINFO( m_flStamina ) ),
-	RecvPropInt( RECVINFO( m_bHasDefuser ), 0, RecvProxy_HasDefuser ),
-	RecvPropInt( RECVINFO( m_bNightVisionOn), 0, RecvProxy_NightVision ),
-	RecvPropBool( RECVINFO( m_bHasNightVision ) ),
 
 
-    //=============================================================================
-    // HPE_BEGIN:
-    // [dwenger] Added for fun-fact support
-    //=============================================================================
+IMPLEMENT_CLIENTCLASS( C_CSPlayer, DT_CSPlayer, CCSPlayer )
 
-    //RecvPropBool( RECVINFO( m_bPickedUpDefuser ) ),
-    //RecvPropBool( RECVINFO( m_bDefusedWithPickedUpKit ) ),
-
-    //=============================================================================
-    // HPE_END
-    //=============================================================================
-
-    RecvPropBool( RECVINFO( m_bInHostageRescueZone ) ),
-	RecvPropInt( RECVINFO( m_ArmorValue ) ),
-	RecvPropBool( RECVINFO( m_bIsDefusing ) ),
-	RecvPropBool( RECVINFO( m_bResumeZoom ) ),
-	RecvPropInt( RECVINFO( m_iLastZoom ) ),
-
-#ifdef CS_SHIELD_ENABLED
-	RecvPropBool( RECVINFO( m_bHasShield ) ),
-	RecvPropBool( RECVINFO( m_bShieldDrawn ) ),
-#endif
-	RecvPropInt( RECVINFO( m_bHasHelmet ) ),
-	RecvPropVector( RECVINFO( m_vecRagdollVelocity ) ),
-	RecvPropFloat( RECVINFO( m_flFlashDuration ), 0, RecvProxy_FlashTime ),
-	RecvPropFloat( RECVINFO( m_flFlashMaxAlpha)),
-	RecvPropInt( RECVINFO( m_iProgressBarDuration ) ),
-	RecvPropFloat( RECVINFO( m_flProgressBarStartTime ) ),
-	RecvPropEHandle( RECVINFO( m_hRagdoll ) ),
-	RecvPropInt( RECVINFO( m_cycleLatch ), 0, &C_CSPlayer::RecvProxy_CycleLatch ),
-
-END_RECV_TABLE()
 
 
 

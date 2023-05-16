@@ -199,13 +199,16 @@ private:
 
 private:
 	CClient_Precipitation( const CClient_Precipitation & ); // not defined, not accessible
+
+	BEGIN_RECV_TABLE(CClient_Precipitation, DT_Precipitation, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_nPrecipType))
+	END_RECV_TABLE(DT_Precipitation)
 };
 
 
 // Just receive the normal data table stuff
-IMPLEMENT_CLIENTCLASS_DT(CClient_Precipitation, DT_Precipitation, CPrecipitation)
-	RecvPropInt( RECVINFO( m_nPrecipType ) )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(CClient_Precipitation, DT_Precipitation, CPrecipitation)
+
 
 static ConVar r_SnowEnable( "r_SnowEnable", "1", FCVAR_CHEAT, "Snow Enable" );
 static ConVar r_SnowParticles( "r_SnowParticles", "500", FCVAR_CHEAT, "Snow." );
@@ -1189,28 +1192,16 @@ private:
 	C_EnvWind( const C_EnvWind & );
 
 	CEnvWindShared m_EnvWindShared;
+
+	BEGIN_RECV_TABLE(C_EnvWind, DT_EnvWind, DT_BaseEntity)
+		RecvPropDataTable(RECVINFO_DT(m_EnvWindShared), 0, REFERENCE_RECV_TABLE(DT_EnvWindShared)),
+	END_RECV_TABLE(DT_EnvWind)
 };
 
-// Receive datatables
-BEGIN_RECV_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
-	RecvPropInt		(RECVINFO(m_iMinWind)),
-	RecvPropInt		(RECVINFO(m_iMaxWind)),
-	RecvPropInt		(RECVINFO(m_iMinGust)),
-	RecvPropInt		(RECVINFO(m_iMaxGust)),
-	RecvPropFloat	(RECVINFO(m_flMinGustDelay)),
-	RecvPropFloat	(RECVINFO(m_flMaxGustDelay)),
-	RecvPropInt		(RECVINFO(m_iGustDirChange)),
-	RecvPropInt		(RECVINFO(m_iWindSeed)),
-	RecvPropInt		(RECVINFO(m_iInitialWindDir)),
-	RecvPropFloat	(RECVINFO(m_flInitialWindSpeed)),
-	RecvPropFloat	(RECVINFO(m_flStartTime)),
-	RecvPropFloat	(RECVINFO(m_flGustDuration)),
-//	RecvPropInt		(RECVINFO(m_iszGustSound)),
-END_RECV_TABLE()
 
-IMPLEMENT_CLIENTCLASS_DT( C_EnvWind, DT_EnvWind, CEnvWind )
-	RecvPropDataTable(RECVINFO_DT(m_EnvWindShared), 0, &REFERENCE_RECV_TABLE(DT_EnvWindShared)),
-END_RECV_TABLE()
+
+IMPLEMENT_CLIENTCLASS( C_EnvWind, DT_EnvWind, CEnvWind )
+
 
 
 C_EnvWind::C_EnvWind()
@@ -1342,15 +1333,17 @@ protected:
 	TimedEvent			m_tParticleSpawn;
 	CSmartPtr<CEmberEmitter> m_pEmitter;
 
+	BEGIN_RECV_TABLE(C_Embers, DT_Embers, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_nDensity)),
+		RecvPropInt(RECVINFO(m_nLifetime)),
+		RecvPropInt(RECVINFO(m_nSpeed)),
+		RecvPropInt(RECVINFO(m_bEmit)),
+	END_RECV_TABLE(DT_Embers)
 };
 
 //Receive datatable
-IMPLEMENT_CLIENTCLASS_DT( C_Embers, DT_Embers, CEmbers )
-	RecvPropInt( RECVINFO( m_nDensity ) ),
-	RecvPropInt( RECVINFO( m_nLifetime ) ),
-	RecvPropInt( RECVINFO( m_nSpeed ) ),
-	RecvPropInt( RECVINFO( m_bEmit ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_Embers, DT_Embers, CEmbers )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1494,15 +1487,18 @@ protected:
 	Vector		m_controlPosition;
 	float		m_scrollRate;
 	float		m_flWidth;
+
+	BEGIN_RECV_TABLE(C_QuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
+		RecvPropVector(RECVINFO(m_targetPosition)),
+		RecvPropVector(RECVINFO(m_controlPosition)),
+		RecvPropFloat(RECVINFO(m_scrollRate)),
+		RecvPropFloat(RECVINFO(m_flWidth)),
+	END_RECV_TABLE(DT_QuadraticBeam)
 };
 
 //Receive datatable
-IMPLEMENT_CLIENTCLASS_DT( C_QuadraticBeam, DT_QuadraticBeam, CEnvQuadraticBeam )
-	RecvPropVector( RECVINFO(m_targetPosition) ),
-	RecvPropVector( RECVINFO(m_controlPosition) ),
-	RecvPropFloat( RECVINFO(m_scrollRate) ),
-	RecvPropFloat( RECVINFO(m_flWidth) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_QuadraticBeam, DT_QuadraticBeam, CEnvQuadraticBeam )
+
 
 Vector Color32ToVector( const color32 &color )
 {

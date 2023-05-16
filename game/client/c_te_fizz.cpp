@@ -37,6 +37,13 @@ public:
 	int				m_nModelIndex;
 	int				m_nDensity;
 	int				m_nCurrent;
+
+	BEGIN_RECV_TABLE(C_TEFizz, DT_TEFizz, DT_BaseTempEntity)
+		RecvPropInt(RECVINFO(m_nEntity)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropInt(RECVINFO(m_nDensity)),
+		RecvPropInt(RECVINFO(m_nCurrent)),
+	END_RECV_TABLE(DT_TEFizz)
 };
 
 //-----------------------------------------------------------------------------
@@ -82,11 +89,7 @@ void TE_Fizz( IRecipientFilter& filter, float delay,
 	}
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEFizz, DT_TEFizz, CTEFizz)
-	RecvPropInt( RECVINFO(m_nEntity)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nDensity)),
-	RecvPropInt( RECVINFO(m_nCurrent)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEFizz, DT_TEFizz, CTEFizz)
+
 
 

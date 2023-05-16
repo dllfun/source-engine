@@ -48,14 +48,7 @@ BEGIN_PREDICTION_DATA_NO_BASE( CParticleProperty )
 END_PREDICTION_DATA()
 #endif
 
-//-----------------------------------------------------------------------------
-// Networking
-//-----------------------------------------------------------------------------
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE_NOBASE( CParticleProperty, DT_ParticleProperty )
-//RecvPropVector( RECVINFO(m_vecMins), 0, RecvProxy_OBBMins ),
-END_NETWORK_TABLE()
-#endif
+
 
 
 //-----------------------------------------------------------------------------

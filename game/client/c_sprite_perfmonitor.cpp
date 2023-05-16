@@ -28,12 +28,15 @@ private:
 	bool m_bMeasurePerf;
 private:
 	C_ParticlePerformanceMonitor( const C_ParticlePerformanceMonitor & );
+
+	BEGIN_RECV_TABLE(C_ParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_bMeasurePerf)),
+		RecvPropInt(RECVINFO(m_bDisplayPerf)),
+	END_RECV_TABLE(DT_ParticlePerformanceMonitor)
+
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_ParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, CParticlePerformanceMonitor )
-	RecvPropInt( RECVINFO(m_bMeasurePerf) ),
-	RecvPropInt( RECVINFO(m_bDisplayPerf) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_ParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, CParticlePerformanceMonitor )
 
 //-----------------------------------------------------------------------------
 // Purpose: 

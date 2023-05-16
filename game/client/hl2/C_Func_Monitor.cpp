@@ -18,10 +18,14 @@ public:
 // C_BaseEntity.
 public:
 	virtual bool	ShouldDraw();
+
+	BEGIN_RECV_TABLE(C_FuncMonitor, DT_FuncMonitor, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncMonitor)
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_FuncMonitor, DT_FuncMonitor, CFuncMonitor )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_FuncMonitor, DT_FuncMonitor, CFuncMonitor )
+
 
 bool C_FuncMonitor::ShouldDraw()
 {

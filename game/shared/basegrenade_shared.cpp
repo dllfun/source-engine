@@ -60,20 +60,7 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseGrenade, DT_BaseGrenade )
 
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE( CBaseGrenade, DT_BaseGrenade, DT_BaseProjectile)
-	RecvPropFloat( RECVINFO( m_flDamage ) ),
-	RecvPropFloat( RECVINFO( m_DmgRadius ) ),
-	RecvPropInt( RECVINFO( m_bIsLive ) ),
-//	RecvPropTime( RECVINFO( m_flDetonateTime ) ),
-	RecvPropEHandle( RECVINFO( m_hThrower ) ),
 
-	// Need velocity from grenades to make animation system work correctly when running
-	RecvPropVector( RECVINFO(m_vecVelocity), 0, RecvProxy_LocalVelocity ),
-
-	RecvPropInt( RECVINFO( m_fFlags ) ),
-END_NETWORK_TABLE(DT_BaseGrenade)
-#endif
 
 LINK_ENTITY_TO_CLASS( grenade, CBaseGrenade );
 
@@ -523,6 +510,11 @@ CBaseGrenade::~CBaseGrenade(void)
 //-----------------------------------------------------------------------------
 CBaseGrenade::CBaseGrenade(void)
 {
+#ifdef CLIENT_DLL
+	if (!engineClient) {
+		return;
+	}
+#endif
 	m_hThrower			= NULL;
 	m_hOriginalThrower	= NULL;
 	m_bIsLive			= false;

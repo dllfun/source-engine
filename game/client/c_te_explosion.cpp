@@ -120,22 +120,25 @@ public:
 	CParticleMgr		*m_pParticleMgr;
 	PMaterialHandle		m_MaterialHandle;
 	bool			m_bShouldAffectRagdolls;
+
+	BEGIN_RECV_TABLE(C_TEExplosion, DT_TEExplosion, DT_TEParticleSystem)
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropFloat(RECVINFO(m_fScale)),
+		RecvPropInt(RECVINFO(m_nFrameRate)),
+		RecvPropInt(RECVINFO(m_nFlags)),
+		RecvPropVector(RECVINFO(m_vecNormal)),
+		RecvPropInt(RECVINFO(m_chMaterialType)),
+		RecvPropInt(RECVINFO(m_nRadius)),
+		RecvPropInt(RECVINFO(m_nMagnitude)),
+	END_RECV_TABLE(DT_TEExplosion)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking 
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEExplosion, DT_TEExplosion, CTEExplosion)
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fScale )),
-	RecvPropInt( RECVINFO(m_nFrameRate)),
-	RecvPropInt( RECVINFO(m_nFlags)),
-	RecvPropVector( RECVINFO(m_vecNormal)),
-	RecvPropInt( RECVINFO(m_chMaterialType)),
-	RecvPropInt( RECVINFO(m_nRadius)),
-	RecvPropInt( RECVINFO(m_nMagnitude)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEExplosion, DT_TEExplosion, CTEExplosion)
+
 
 
 //-----------------------------------------------------------------------------

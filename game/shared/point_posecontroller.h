@@ -163,6 +163,20 @@ private:
 	float	m_fCurrentFMod;			// The current fequency modulation amount (stored for noise walk)
 
 	CInterpolatedValue	m_PoseTransitionValue;
+
+	BEGIN_RECV_TABLE(C_PoseController, DT_PoseController, DT_BaseEntity)
+		RecvPropArray3(RECVINFO_ARRAY(m_hProps), RecvPropEHandle(RECVINFO(m_hProps[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_chPoseIndex), RecvPropInt(RECVINFO(m_chPoseIndex[0]))),
+		RecvPropBool(RECVINFO(m_bPoseValueParity)),
+		RecvPropFloat(RECVINFO(m_fPoseValue)),
+		RecvPropFloat(RECVINFO(m_fInterpolationTime)),
+		RecvPropBool(RECVINFO(m_bInterpolationWrap)),
+		RecvPropFloat(RECVINFO(m_fCycleFrequency)),
+		RecvPropInt(RECVINFO(m_nFModType)),
+		RecvPropFloat(RECVINFO(m_fFModTimeOffset)),
+		RecvPropFloat(RECVINFO(m_fFModRate)),
+		RecvPropFloat(RECVINFO(m_fFModAmplitude)),
+	END_RECV_TABLE(DT_PoseController)
 };
 
 

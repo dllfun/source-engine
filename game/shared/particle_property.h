@@ -128,6 +128,15 @@ private:
 		//SendPropVector( SENDINFO(m_vecMins), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE()
 #endif
+
+		//-----------------------------------------------------------------------------
+// Networking
+//-----------------------------------------------------------------------------
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CParticleProperty, DT_ParticleProperty)
+//RecvPropVector( RECVINFO(m_vecMins), 0, RecvProxy_OBBMins ),
+	END_NETWORK_TABLE(DT_ParticleProperty)
+#endif
 };
 
 #include "particle_property_inlines.h"

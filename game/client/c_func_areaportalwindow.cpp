@@ -46,16 +46,19 @@ public:
 	float			m_flTranslucencyLimit;
 
 	int				m_iBackgroundModelIndex;
+
+	BEGIN_RECV_TABLE(C_FuncAreaPortalWindow, DT_FuncAreaPortalWindow, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flFadeStartDist)),
+		RecvPropFloat(RECVINFO(m_flFadeDist)),
+		RecvPropFloat(RECVINFO(m_flTranslucencyLimit)),
+		RecvPropInt(RECVINFO(m_iBackgroundModelIndex))
+	END_RECV_TABLE(DT_FuncAreaPortalWindow)
 };
 
 
 
-IMPLEMENT_CLIENTCLASS_DT( C_FuncAreaPortalWindow, DT_FuncAreaPortalWindow, CFuncAreaPortalWindow )
-	RecvPropFloat( RECVINFO( m_flFadeStartDist ) ),
-	RecvPropFloat( RECVINFO( m_flFadeDist ) ),
-	RecvPropFloat( RECVINFO( m_flTranslucencyLimit ) ),
-	RecvPropInt( RECVINFO( m_iBackgroundModelIndex ) )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_FuncAreaPortalWindow, DT_FuncAreaPortalWindow, CFuncAreaPortalWindow )
+
 
 
 

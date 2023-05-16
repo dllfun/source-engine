@@ -175,6 +175,19 @@ private:
 
 
 	void		UpdateEdgeType(int nWidth, int nHeight, int forceStyle = -1 );
+
+	BEGIN_RECV_TABLE(C_BreakableSurface, DT_BreakableSurface, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_nNumWide)),
+		RecvPropInt(RECVINFO(m_nNumHigh)),
+		RecvPropFloat(RECVINFO(m_flPanelWidth)),
+		RecvPropFloat(RECVINFO(m_flPanelHeight)),
+		RecvPropVector(RECVINFO(m_vNormal)),
+		RecvPropVector(RECVINFO(m_vCorner)),
+		RecvPropInt(RECVINFO(m_bIsBroken)),
+		RecvPropInt(RECVINFO(m_nSurfaceType)),
+		RecvPropArray3(RECVINFO_ARRAY(m_RawPanelBitVec), RecvPropInt(RECVINFO(m_RawPanelBitVec[0]))),
+
+	END_RECV_TABLE(DT_BreakableSurface)
 };
 
 BEGIN_DATADESC( C_BreakableSurface )
@@ -267,18 +280,8 @@ void C_BreakableSurface::OnRestore()
 
 
 //Receive datatable
-IMPLEMENT_CLIENTCLASS_DT( C_BreakableSurface, DT_BreakableSurface, CBreakableSurface )
-	RecvPropInt( RECVINFO( m_nNumWide ) ),
-	RecvPropInt( RECVINFO( m_nNumHigh ) ),
-	RecvPropFloat( RECVINFO( m_flPanelWidth) ),
-	RecvPropFloat( RECVINFO( m_flPanelHeight) ),
-	RecvPropVector( RECVINFO( m_vNormal ) ),
-	RecvPropVector( RECVINFO( m_vCorner ) ),
-	RecvPropInt( RECVINFO( m_bIsBroken )),
-	RecvPropInt( RECVINFO( m_nSurfaceType )),
-	RecvPropArray3( RECVINFO_ARRAY(m_RawPanelBitVec), RecvPropInt( RECVINFO( m_RawPanelBitVec[ 0 ] ))),
+IMPLEMENT_CLIENTCLASS( C_BreakableSurface, DT_BreakableSurface, CBreakableSurface )
 
-END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Gets at the cracked version of the material

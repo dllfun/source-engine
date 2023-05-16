@@ -52,6 +52,11 @@ private:
 	BEGIN_NETWORK_TABLE(CWeaponP228, DT_WeaponP228, DT_WeaponCSBase)
 	END_NETWORK_TABLE(DT_WeaponP228)
 #endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE(CWeaponP228, DT_WeaponP228, DT_WeaponCSBase)
+	END_NETWORK_TABLE(DT_WeaponP228)
+#endif
 };
 
 #if defined CLIENT_DLL
@@ -88,10 +93,7 @@ bool CWeaponP228::Deploy( )
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponP228, DT_WeaponP228 )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE( CWeaponP228, DT_WeaponP228 , DT_WeaponCSBase)
-END_NETWORK_TABLE(DT_WeaponP228)
-#endif
+
 
 
 float CWeaponP228::GetInaccuracy() const

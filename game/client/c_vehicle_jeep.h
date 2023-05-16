@@ -61,6 +61,10 @@ private:
 	float		m_flJeepFOV;
 	CHeadlightEffect *m_pHeadlight;
 	bool		m_bHeadlightIsOn;
+
+	BEGIN_RECV_TABLE(C_PropJeep, DT_PropJeep, DT_PropVehicleDriveable)
+		RecvPropBool(RECVINFO(m_bHeadlightIsOn)),
+	END_RECV_TABLE(DT_PropJeep)
 };
 
 #endif // C_VEHICLE_JEEP_H

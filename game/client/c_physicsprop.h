@@ -11,6 +11,7 @@
 #endif
 
 #include "c_breakableprop.h"
+#include "c_baseentity.h"
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -29,6 +30,10 @@ protected:
 	// Networked vars.
 	bool m_bAwake;
 	bool m_bAwakeLastTime;
+
+	BEGIN_RECV_TABLE(C_PhysicsProp, DT_PhysicsProp, DT_BreakableProp)
+		RecvPropBool(RECVINFO(m_bAwake)),
+	END_RECV_TABLE(DT_PhysicsProp)
 };
 
 #endif // C_PHYSICSPROP_H 

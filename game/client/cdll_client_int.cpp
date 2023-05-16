@@ -1336,6 +1336,14 @@ bool CHLClient::ShouldDrawDropdownConsole()
 //-----------------------------------------------------------------------------
 ClientClass *CHLClient::GetAllClasses( void )
 {
+	for (RecvTable* pCur = g_pRecvTableManager->GetRecvTableHead(); pCur; pCur = pCur->m_pNext)
+	{
+		pCur->InitRefRecvTable(g_pRecvTableManager);
+	}
+	for (ClientClass* pCur = g_pClientClassHead; pCur; pCur = pCur->m_pNext)
+	{
+		pCur->InitRefRecvTable(g_pRecvTableManager);
+	}
 	return g_pClientClassHead;
 }
 
@@ -1466,6 +1474,11 @@ bool CHLClient::WriteUsercmdDeltaToBuffer( bf_write *buf, int from, int to, bool
 	return input->WriteUsercmdDeltaToBuffer( buf, from, to, isnewcommand );
 }
 
+int CalValue() {
+	return 1;
+}
+
+int ggg = CalValue();
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : buf - 
@@ -2657,4 +2670,9 @@ void CHLClient::IN_TouchEvent( uint data, uint data2, uint data3, uint data4 )
 	ev.dy = ifconv.f;
 
 	gTouch.ProcessEvent( &ev );
+}
+
+int TestRevFunction() {
+	int aaa = 0;
+	return aaa;
 }

@@ -19,19 +19,8 @@
 
 #define PING_MAX_TIME	2.0
 
-IMPLEMENT_CLIENTCLASS_DT( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
-	RecvPropInt( RECVINFO( m_lifeState ) ),
-	RecvPropBool( RECVINFO( m_bPerformAvoidance ) ),
-	RecvPropBool( RECVINFO( m_bIsMoving ) ),
-	RecvPropBool( RECVINFO( m_bFadeCorpse ) ),
-	RecvPropInt( RECVINFO ( m_iDeathPose) ),
-	RecvPropInt( RECVINFO( m_iDeathFrame) ),
-	RecvPropInt( RECVINFO( m_iSpeedModRadius ) ),
-	RecvPropInt( RECVINFO( m_iSpeedModSpeed ) ),
-	RecvPropInt( RECVINFO( m_bSpeedModActive ) ),
-	RecvPropBool( RECVINFO( m_bImportanRagdoll ) ),
-	RecvPropFloat( RECVINFO( m_flTimePingEffect ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
+
 
 extern ConVar cl_npc_speedmod_intime;
 

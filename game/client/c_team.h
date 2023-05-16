@@ -18,6 +18,9 @@
 
 class C_BasePlayer;
 
+void RecvProxy_PlayerList(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxyArrayLength_PlayerArray(void* pStruct, int objectID, int currentArrayLength);
+
 class C_Team : public C_BaseEntity
 {
 	DECLARE_CLASS( C_Team, C_BaseEntity );
@@ -70,6 +73,21 @@ public:
 	int		m_iPing;
 	int		m_iPacketloss;
 	int		m_iTeamNum;
+
+	BEGIN_RECV_TABLE_NOBASE(C_Team, DT_Team, CTeam)
+		RecvPropInt(RECVINFO(m_iTeamNum)),
+		RecvPropInt(RECVINFO(m_iScore)),
+		RecvPropInt(RECVINFO(m_iRoundsWon)),
+		RecvPropString(RECVINFO(m_szTeamname)),
+
+		RecvPropArray2(
+			RecvProxyArrayLength_PlayerArray,
+			RecvPropInt("player_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_PlayerList),
+			MAX_PLAYERS,
+			0,
+			"player_array"
+		)
+	END_RECV_TABLE(DT_Team)
 };
 
 

@@ -16,12 +16,7 @@ LINK_ENTITY_TO_CLASS(env_detail_controller,	CEnvDetailController);
 
 IMPLEMENT_NETWORKCLASS_ALIASED( EnvDetailController, DT_DetailController )
 
-#ifdef CLIENT_DLL
-BEGIN_NETWORK_TABLE_NOBASE( CEnvDetailController, DT_DetailController )
-		RecvPropFloat( RECVINFO( m_flFadeStartDist ) ),
-		RecvPropFloat( RECVINFO( m_flFadeEndDist ) ),
-END_NETWORK_TABLE(DT_DetailController)
-#endif
+
 
 static CEnvDetailController *s_detailController = NULL;
 CEnvDetailController * GetDetailController()

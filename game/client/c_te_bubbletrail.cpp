@@ -35,6 +35,15 @@ public:
 	int				m_nModelIndex;
 	int				m_nCount;
 	float			m_fSpeed;
+
+	BEGIN_RECV_TABLE(C_TEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
+		RecvPropVector(RECVINFO(m_vecMins)),
+		RecvPropVector(RECVINFO(m_vecMaxs)),
+		RecvPropInt(RECVINFO(m_nModelIndex)),
+		RecvPropFloat(RECVINFO(m_flWaterZ)),
+		RecvPropInt(RECVINFO(m_nCount)),
+		RecvPropFloat(RECVINFO(m_fSpeed)),
+	END_RECV_TABLE(DT_TEBubbleTrail)
 };
 
 //-----------------------------------------------------------------------------
@@ -74,11 +83,5 @@ void C_TEBubbleTrail::PostDataUpdate( DataUpdateType_t updateType )
 	tempents->BubbleTrail( m_vecMins, m_vecMaxs, m_flWaterZ, m_nModelIndex, m_nCount, m_fSpeed );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBubbleTrail, DT_TEBubbleTrail, CTEBubbleTrail)
-	RecvPropVector( RECVINFO(m_vecMins)),
-	RecvPropVector( RECVINFO(m_vecMaxs)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_flWaterZ )),
-	RecvPropInt( RECVINFO(m_nCount)),
-	RecvPropFloat( RECVINFO(m_fSpeed )),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBubbleTrail, DT_TEBubbleTrail, CTEBubbleTrail)
+

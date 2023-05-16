@@ -53,6 +53,18 @@ private:
 
 public:
 	C_PointCamera	*m_pNext;
+
+	BEGIN_RECV_TABLE(C_PointCamera, DT_PointCamera, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_FOV)),
+		RecvPropFloat(RECVINFO(m_Resolution)),
+		RecvPropInt(RECVINFO(m_bFogEnable)),
+		RecvPropInt(RECVINFO(m_FogColor)),
+		RecvPropFloat(RECVINFO(m_flFogStart)),
+		RecvPropFloat(RECVINFO(m_flFogEnd)),
+		RecvPropFloat(RECVINFO(m_flFogMaxDensity)),
+		RecvPropInt(RECVINFO(m_bActive)),
+		RecvPropInt(RECVINFO(m_bUseScreenAspectRatio)),
+	END_RECV_TABLE(DT_PointCamera)
 };
 
 C_PointCamera *GetPointCameraList();

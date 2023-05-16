@@ -32,20 +32,23 @@ public:
 	Vector			m_vecDirection;
 	int				r, g, b, a;
 	int				m_nAmount;
+
+	BEGIN_RECV_TABLE(C_TEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
+		RecvPropVector(RECVINFO(m_vecDirection)),
+		RecvPropInt(RECVINFO(r)),
+		RecvPropInt(RECVINFO(g)),
+		RecvPropInt(RECVINFO(b)),
+		RecvPropInt(RECVINFO(a)),
+		RecvPropInt(RECVINFO(m_nAmount)),
+	END_RECV_TABLE(DT_TEBloodStream)
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBloodStream, DT_TEBloodStream, CTEBloodStream)
-	RecvPropVector( RECVINFO(m_vecDirection)),
-	RecvPropInt( RECVINFO(r)),
-	RecvPropInt( RECVINFO(g)),
-	RecvPropInt( RECVINFO(b)),
-	RecvPropInt( RECVINFO(a)),
-	RecvPropInt( RECVINFO(m_nAmount)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBloodStream, DT_TEBloodStream, CTEBloodStream)
+
 
 
 //-----------------------------------------------------------------------------

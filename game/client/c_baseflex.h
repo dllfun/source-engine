@@ -293,6 +293,22 @@ public:
 	Vector			m_vecShift;
 	CInterpolatedVar< Vector >	m_iv_vecShift;
 #endif
+
+	BEGIN_RECV_TABLE(C_BaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
+		RecvPropArray3(RECVINFO_ARRAY(m_flexWeight), RecvPropFloat(RECVINFO(m_flexWeight[0]))),
+		RecvPropInt(RECVINFO(m_blinktoggle)),
+		RecvPropVector(RECVINFO(m_viewtarget)),
+
+#ifdef HL2_CLIENT_DLL
+		RecvPropFloat(RECVINFO(m_vecViewOffset[0])),
+		RecvPropFloat(RECVINFO(m_vecViewOffset[1])),
+		RecvPropFloat(RECVINFO(m_vecViewOffset[2])),
+
+		RecvPropVector(RECVINFO(m_vecLean)),
+		RecvPropVector(RECVINFO(m_vecShift)),
+#endif
+
+	END_RECV_TABLE(DT_BaseFlex)
 };
 
 

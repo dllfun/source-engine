@@ -53,6 +53,15 @@ enum SurroundingBoundsType_t
 void SendProxy_Solid(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 void SendProxy_SolidFlags(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 
+#ifdef CLIENT_DLL
+void RecvProxy_OBBMinsPreScaled(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_Solid(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_SolidFlags(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_OBBMaxsPreScaled(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_VectorDirtySurround(const CRecvProxyData* pData, void* pStruct, void* pOut);
+void RecvProxy_IntDirtySurround(const CRecvProxyData* pData, void* pStruct, void* pOut);
+#endif
+
 //-----------------------------------------------------------------------------
 // Encapsulates collision representation for an entity
 //-----------------------------------------------------------------------------
@@ -294,6 +303,23 @@ private:
 		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMins), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMaxs), 0, SPROP_NOSCALE),
+	END_NETWORK_TABLE(DT_CollisionProperty)
+#endif
+
+#ifdef CLIENT_DLL
+	BEGIN_NETWORK_TABLE_NOBASE(CCollisionProperty, DT_CollisionProperty)
+		RecvPropVector(RECVINFO(m_vecMinsPreScaled), 0, RecvProxy_OBBMinsPreScaled),
+		RecvPropVector(RECVINFO(m_vecMaxsPreScaled), 0, RecvProxy_OBBMaxsPreScaled),
+		RecvPropVector(RECVINFO(m_vecMins), 0),
+		RecvPropVector(RECVINFO(m_vecMaxs), 0),
+		RecvPropInt(RECVINFO(m_nSolidType), 0, RecvProxy_Solid),
+		RecvPropInt(RECVINFO(m_usSolidFlags), 0, RecvProxy_SolidFlags),
+		RecvPropInt(RECVINFO(m_nSurroundType), 0, RecvProxy_IntDirtySurround),
+		RecvPropInt(RECVINFO(m_triggerBloat), 0, RecvProxy_IntDirtySurround),
+		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMinsPreScaled), 0, RecvProxy_VectorDirtySurround),
+		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0, RecvProxy_VectorDirtySurround),
+		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMins), 0, RecvProxy_VectorDirtySurround),
+		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMaxs), 0, RecvProxy_VectorDirtySurround),
 	END_NETWORK_TABLE(DT_CollisionProperty)
 #endif
 };

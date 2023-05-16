@@ -128,6 +128,23 @@ protected:
 	CHandle<C_BasePlayer>		m_hPrevPlayer;
 
 	ViewSmoothingData_t			m_ViewSmoothingData;
+
+	BEGIN_RECV_TABLE(C_PropVehicleDriveable, DT_PropVehicleDriveable, DT_BaseAnimating)
+		RecvPropEHandle(RECVINFO(m_hPlayer)),
+		RecvPropInt(RECVINFO(m_nSpeed)),
+		RecvPropInt(RECVINFO(m_nRPM)),
+		RecvPropFloat(RECVINFO(m_flThrottle)),
+		RecvPropInt(RECVINFO(m_nBoostTimeLeft)),
+		RecvPropInt(RECVINFO(m_nHasBoost)),
+		RecvPropInt(RECVINFO(m_nScannerDisabledWeapons)),
+		RecvPropInt(RECVINFO(m_nScannerDisabledVehicle)),
+		RecvPropInt(RECVINFO(m_bEnterAnimOn)),
+		RecvPropInt(RECVINFO(m_bExitAnimOn)),
+		RecvPropInt(RECVINFO(m_bUnableToFire)),
+		RecvPropVector(RECVINFO(m_vecEyeExitEndpoint)),
+		RecvPropBool(RECVINFO(m_bHasGun)),
+		RecvPropVector(RECVINFO(m_vecGunCrosshair)),
+	END_RECV_TABLE(DT_PropVehicleDriveable)
 };
 
 

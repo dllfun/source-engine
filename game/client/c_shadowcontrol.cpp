@@ -32,14 +32,17 @@ private:
 	color32 m_shadowColor;
 	float m_flShadowMaxDist;
 	bool m_bDisableShadows;
+
+	BEGIN_RECV_TABLE(C_ShadowControl, DT_ShadowControl, DT_BaseEntity)
+		RecvPropVector(RECVINFO(m_shadowDirection)),
+		RecvPropInt(RECVINFO(m_shadowColor)),
+		RecvPropFloat(RECVINFO(m_flShadowMaxDist)),
+		RecvPropBool(RECVINFO(m_bDisableShadows)),
+	END_RECV_TABLE(DT_ShadowControl)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_ShadowControl, DT_ShadowControl, CShadowControl)
-	RecvPropVector(RECVINFO(m_shadowDirection)),
-	RecvPropInt(RECVINFO(m_shadowColor)),
-	RecvPropFloat(RECVINFO(m_flShadowMaxDist)),
-	RecvPropBool(RECVINFO(m_bDisableShadows)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_ShadowControl, DT_ShadowControl, CShadowControl)
+
 
 
 //------------------------------------------------------------------------------

@@ -30,6 +30,10 @@ public:
 // These are documented in the server-side entity.
 public:
 	float			m_fDisappearDist;
+
+	BEGIN_RECV_TABLE(C_Func_LOD, DT_Func_LOD, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_fDisappearDist)),
+	END_RECV_TABLE(DT_Func_LOD)
 };
 
 
@@ -41,9 +45,8 @@ ConVar lod_TransitionDist("lod_TransitionDist", "800");
 // ------------------------------------------------------------------------- //
 
 // Datatable..
-IMPLEMENT_CLIENTCLASS_DT(C_Func_LOD, DT_Func_LOD, CFunc_LOD)
-	RecvPropFloat(RECVINFO(m_fDisappearDist)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_Func_LOD, DT_Func_LOD, CFunc_LOD)
+
 
 
 

@@ -26,9 +26,8 @@ ConVar r_JeepViewBlendToTime( "r_JeepViewBlendToTime", "1.5", FCVAR_CHEAT );
 #define JEEP_FRAMETIME_MIN		1e-6
 #define JEEP_HEADLIGHT_DISTANCE 1000
 
-IMPLEMENT_CLIENTCLASS_DT( C_PropJeep, DT_PropJeep, CPropJeep )
-	RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_PropJeep, DT_PropJeep, CPropJeep )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor

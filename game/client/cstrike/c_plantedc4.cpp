@@ -22,13 +22,8 @@
 
 ConVar cl_c4dynamiclight( "cl_c4dynamiclight", "0", 0, "Draw dynamic light when planted c4 flashes" );
 
-IMPLEMENT_CLIENTCLASS_DT(C_PlantedC4, DT_PlantedC4, CPlantedC4)
-	RecvPropBool( RECVINFO(m_bBombTicking) ),
-	RecvPropFloat( RECVINFO(m_flC4Blow) ),
-	RecvPropFloat( RECVINFO(m_flTimerLength) ),
-	RecvPropFloat( RECVINFO(m_flDefuseLength) ),
-	RecvPropFloat( RECVINFO(m_flDefuseCountDown) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PlantedC4, DT_PlantedC4, CPlantedC4)
+
 
 CUtlVector< C_PlantedC4* > g_PlantedC4s;
 

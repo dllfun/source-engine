@@ -293,6 +293,13 @@ private:
 		//	SendPropExclude( "DT_LocalActiveWeaponData", "m_flTimeWeaponIdle" ),
 	END_NETWORK_TABLE(DT_WeaponCSBase)
 #endif
+
+#if defined( CLIENT_DLL )
+	BEGIN_NETWORK_TABLE(CWeaponCSBase, DT_WeaponCSBase, DT_BaseCombatWeapon)
+		RecvPropInt(RECVINFO(m_weaponMode)),
+		RecvPropFloat(RECVINFO(m_fAccuracyPenalty)),
+	END_NETWORK_TABLE(DT_WeaponCSBase)
+#endif
 };
 
 extern ConVar weapon_accuracy_model;

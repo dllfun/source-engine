@@ -519,19 +519,13 @@ void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& o
 	VectorMA( origin, -pitch * 0.02f,		up,		origin);
 }
 
-//-----------------------------------------------------------------------------
-// Stub to keep networking consistent for DEM files
-//-----------------------------------------------------------------------------
-#if defined( CLIENT_DLL )
-  extern void RecvProxy_EffectFlags( const CRecvProxyData *pData, void *pStruct, void *pOut );
-  void RecvProxy_SequenceNum( const CRecvProxyData *pData, void *pStruct, void *pOut );
-#endif
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Resets anim cycle when the server changes the weapon on us
 //-----------------------------------------------------------------------------
 #if defined( CLIENT_DLL )
-static void RecvProxy_Weapon( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_Weapon( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	CBaseViewModel *pViewModel = ((CBaseViewModel*)pStruct);
 	CBaseCombatWeapon *pOldWeapon = pViewModel->GetOwningWeapon();
@@ -555,28 +549,7 @@ LINK_ENTITY_TO_CLASS( viewmodel, CBaseViewModel );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseViewModel, DT_BaseViewModel )
 
-#if defined( CLIENT_DLL )
-BEGIN_NETWORK_TABLE_NOBASE(CBaseViewModel, DT_BaseViewModel)
-	RecvPropInt		(RECVINFO(m_nModelIndex)),
-	RecvPropInt		(RECVINFO(m_nSkin)),
-	RecvPropInt		(RECVINFO(m_nBody)),
-	RecvPropInt		(RECVINFO(m_nSequence), 0, RecvProxy_SequenceNum ),
-	RecvPropInt		(RECVINFO(m_nViewModelIndex)),
-	RecvPropFloat	(RECVINFO(m_flPlaybackRate)),
-	RecvPropInt		(RECVINFO(m_fEffects), 0, RecvProxy_EffectFlags ),
-	RecvPropInt		(RECVINFO(m_nAnimationParity)),
-	RecvPropEHandle (RECVINFO(m_hWeapon), RecvProxy_Weapon ),
-	RecvPropEHandle (RECVINFO(m_hOwner)),
 
-	RecvPropInt( RECVINFO( m_nNewSequenceParity )),
-	RecvPropInt( RECVINFO( m_nResetEventsParity )),
-	RecvPropInt( RECVINFO( m_nMuzzleFlashParity )),
-
-#if !defined( INVASION_DLL ) && !defined( INVASION_CLIENT_DLL )
-	RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0]) ), m_flPoseParameter ),
-#endif
-END_NETWORK_TABLE(DT_BaseViewModel)
-#endif
 
 #ifdef CLIENT_DLL
 

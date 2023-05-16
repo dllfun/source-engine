@@ -68,14 +68,16 @@ private:
 	BEGIN_NETWORK_TABLE(CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
 	END_NETWORK_TABLE(DT_WeaponElite)
 #endif
+
+#if defined(CLIENT_DLL)
+	BEGIN_NETWORK_TABLE(CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
+	END_NETWORK_TABLE(DT_WeaponElite)
+#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponElite, DT_WeaponElite )
 
-#if defined(CLIENT_DLL)
-BEGIN_NETWORK_TABLE( CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
-END_NETWORK_TABLE(DT_WeaponElite)
-#endif
+
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponElite )

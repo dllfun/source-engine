@@ -1386,12 +1386,15 @@ public:
 
 	int			m_nType;
 	Vector		m_vecDirection;
+
+	BEGIN_RECV_TABLE(C_TEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
+		RecvPropInt(RECVINFO(m_nType)),
+		RecvPropVector(RECVINFO(m_vecDirection)),
+	END_RECV_TABLE(DT_TEGaussExplosion)
 };
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEGaussExplosion, DT_TEGaussExplosion, CTEGaussExplosion )
-	RecvPropInt(RECVINFO(m_nType)),
-	RecvPropVector(RECVINFO(m_vecDirection)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT( C_TEGaussExplosion, DT_TEGaussExplosion, CTEGaussExplosion )
+
 
 //==================================================
 // C_TEGaussExplosion

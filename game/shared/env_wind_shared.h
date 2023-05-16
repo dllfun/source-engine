@@ -251,6 +251,25 @@ private:
 	//	SendPropInt		(SENDINFO(m_iszGustSound),	10, SPROP_UNSIGNED ),
 	END_SEND_TABLE(DT_EnvWindShared)
 #endif
+
+#ifdef CLIENT_DLL
+		// Receive datatables
+	BEGIN_RECV_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
+		RecvPropInt(RECVINFO(m_iMinWind)),
+		RecvPropInt(RECVINFO(m_iMaxWind)),
+		RecvPropInt(RECVINFO(m_iMinGust)),
+		RecvPropInt(RECVINFO(m_iMaxGust)),
+		RecvPropFloat(RECVINFO(m_flMinGustDelay)),
+		RecvPropFloat(RECVINFO(m_flMaxGustDelay)),
+		RecvPropInt(RECVINFO(m_iGustDirChange)),
+		RecvPropInt(RECVINFO(m_iWindSeed)),
+		RecvPropInt(RECVINFO(m_iInitialWindDir)),
+		RecvPropFloat(RECVINFO(m_flInitialWindSpeed)),
+		RecvPropFloat(RECVINFO(m_flStartTime)),
+		RecvPropFloat(RECVINFO(m_flGustDuration)),
+		//	RecvPropInt		(RECVINFO(m_iszGustSound)),
+	END_RECV_TABLE(DT_EnvWindShared)
+#endif
 };
 
 

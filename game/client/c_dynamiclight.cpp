@@ -59,17 +59,20 @@ private:
 
 
 	inline bool ShouldBeElight() { return (m_Flags & DLIGHT_NO_WORLD_ILLUMINATION); }
+
+	BEGIN_RECV_TABLE(C_DynamicLight, DT_DynamicLight, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_Flags)),
+		RecvPropInt(RECVINFO(m_LightStyle)),
+		RecvPropFloat(RECVINFO(m_Radius)),
+		RecvPropInt(RECVINFO(m_Exponent)),
+		RecvPropFloat(RECVINFO(m_InnerAngle)),
+		RecvPropFloat(RECVINFO(m_OuterAngle)),
+		RecvPropFloat(RECVINFO(m_SpotRadius)),
+	END_RECV_TABLE(DT_DynamicLight)
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_DynamicLight, DT_DynamicLight, CDynamicLight)
-	RecvPropInt		(RECVINFO(m_Flags)),
-	RecvPropInt		(RECVINFO(m_LightStyle)),
-	RecvPropFloat	(RECVINFO(m_Radius)),
-	RecvPropInt		(RECVINFO(m_Exponent)),
-	RecvPropFloat	(RECVINFO(m_InnerAngle)),
-	RecvPropFloat	(RECVINFO(m_OuterAngle)),
-	RecvPropFloat	(RECVINFO(m_SpotRadius)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_DynamicLight, DT_DynamicLight, CDynamicLight)
+
 
 
 //------------------------------------------------------------------------------
