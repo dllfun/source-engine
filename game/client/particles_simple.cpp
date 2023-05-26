@@ -50,6 +50,9 @@ CParticleEffect::CParticleEffect( const char *pName )
 //-----------------------------------------------------------------------------
 CParticleEffect::~CParticleEffect( void )
 {
+	if (!engineClient) {
+		return;
+	}
 #if defined( _DEBUG )
 	int index = g_ParticleEffects.Find( this );
 	Assert( g_ParticleEffects.IsValidIndex(index) );

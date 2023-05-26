@@ -988,17 +988,17 @@ const VMatrix& CEngineClient::WorldToViewMatrix()
 // Loads a game lump off disk
 int	CEngineClient::GameLumpVersion( int lumpId ) const
 {
-	return Mod_GameLumpVersion( lumpId ); 
+	return g_pHost->Host_GetWorldModel()->Mod_GameLumpVersion( lumpId );
 }
 
 int	CEngineClient::GameLumpSize( int lumpId ) const 
 { 
-	return Mod_GameLumpSize( lumpId ); 
+	return g_pHost->Host_GetWorldModel()->Mod_GameLumpSize( lumpId );
 }
 
-bool CEngineClient::LoadGameLump( int lumpId, void* pBuffer, int size ) 
+bool CEngineClient::LoadGameLump( int lumpId, void* pBuffer, int size )
 { 
-	return Mod_LoadGameLump( lumpId, pBuffer, size ); 
+	return g_pHost->Host_GetWorldModel()->Mod_LoadGameLump( lumpId, pBuffer, size );
 }
 
 // Returns the number of leaves in the level
@@ -1379,7 +1379,7 @@ SkyboxVisibility_t CEngineClient::IsSkyboxVisibleFromPoint( const Vector &vecPoi
 		return SKYBOX_3DSKYBOX_VISIBLE;
 
 	int nLeaf = CM_PointLeafnum( vecPoint );
-	int nFlags = GetCollisionBSPData()->GetLeafs(nLeaf)->flags;
+	int nFlags = g_pHost->Host_GetWorldModel()->GetLeafs(nLeaf)->flags;
 	if ( nFlags & LEAF_FLAGS_SKY )
 		return SKYBOX_3DSKYBOX_VISIBLE;
 	return ( nFlags & LEAF_FLAGS_SKY2D ) ? SKYBOX_2DSKYBOX_VISIBLE : SKYBOX_NOT_VISIBLE;

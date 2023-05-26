@@ -549,13 +549,13 @@ void UpdateDispBBoxes( model_t *pWorld, int nDisplacements )
 
 
 #include "tier0/memdbgoff.h"
-bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
+bool DispInfo_LoadDisplacements(CLumpHeaderInfo& header, model_t *pWorld, bool bRestoring )
 {
 	const MaterialSystem_SortInfo_t *pSortInfos = materialSortInfoArray;
 
-	int nDisplacements = CMapLoadHelper::LumpSize( LUMP_DISPINFO ) / sizeof( ddispinfo_t );	
-	int nLuxels = CMapLoadHelper::LumpSize( LUMP_DISP_LIGHTMAP_ALPHAS );
-	int nSamplePositionBytes = CMapLoadHelper::LumpSize( LUMP_DISP_LIGHTMAP_SAMPLE_POSITIONS );
+	int nDisplacements = header.LumpSize( LUMP_DISPINFO ) / sizeof( ddispinfo_t );	
+	int nLuxels = header.LumpSize( LUMP_DISP_LIGHTMAP_ALPHAS );
+	int nSamplePositionBytes = header.LumpSize( LUMP_DISP_LIGHTMAP_SAMPLE_POSITIONS );
 
 	// Setup the world's list of displacements.
 	if ( bRestoring )
@@ -593,7 +593,7 @@ bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
 		MEM_ALLOC_CREDIT();
 		g_DispLMAlpha.SetSize( nLuxels );
 		}
-		CMapLoadHelper lhDispLMAlphas( LUMP_DISP_LIGHTMAP_ALPHAS );
+		CLumpInfo lhDispLMAlphas(header, LUMP_DISP_LIGHTMAP_ALPHAS );
 		lhDispLMAlphas.LoadLumpData( 0, nLuxels, g_DispLMAlpha.Base() );
 	
 		// Load lightmap sample positions.
@@ -601,7 +601,7 @@ bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
 		MEM_ALLOC_CREDIT();
 		g_DispLightmapSamplePositions.SetSize( nSamplePositionBytes );
 		}
-		CMapLoadHelper lhDispLMPositions( LUMP_DISP_LIGHTMAP_SAMPLE_POSITIONS );
+		CLumpInfo lhDispLMPositions(header, LUMP_DISP_LIGHTMAP_SAMPLE_POSITIONS );
 		lhDispLMPositions.LoadLumpData( 0, nSamplePositionBytes, g_DispLightmapSamplePositions.Base() );
 	}
 
@@ -620,7 +620,7 @@ bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
 		nDisplacements <= MAX_MAP_DISPINFO,
 		("DispInfo_LoadDisplacements: nDisplacements (%d) > MAX_MAP_DISPINFO (%d)", nDisplacements, MAX_MAP_DISPINFO)
 		);
-	CMapLoadHelper lhDispInfo( LUMP_DISPINFO );
+	CLumpInfo lhDispInfo(header, LUMP_DISPINFO );
 	lhDispInfo.LoadLumpData( 0, nDisplacements * sizeof( ddispinfo_t ), tempDisps );
 
 	// Now hook up the displacements to their parents.
@@ -666,8 +666,8 @@ bool DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring )
 		aCoreDisps.AddToTail( pCoreDisp );
 	}
 	
-	CMapLoadHelper lhDispVerts( LUMP_DISP_VERTS );
-	CMapLoadHelper lhDispTris( LUMP_DISP_TRIS );
+	CLumpInfo lhDispVerts(header, LUMP_DISP_VERTS );
+	CLumpInfo lhDispTris(header, LUMP_DISP_TRIS );
 
 	for ( iDisp = 0; iDisp < nDisplacements; ++iDisp )
 	{

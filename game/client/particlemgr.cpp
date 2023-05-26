@@ -160,6 +160,9 @@ CParticleEffectBinding::CParticleEffectBinding()
 
 CParticleEffectBinding::~CParticleEffectBinding()
 {
+	if (!engineClient) {
+		return;
+	}
 	if( m_pParticleMgr )
 		m_pParticleMgr->RemoveEffect( this );
 

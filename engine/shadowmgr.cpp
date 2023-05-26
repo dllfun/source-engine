@@ -1824,7 +1824,7 @@ bool CShadowMgr::EnumerateLeaf(IVModel* world, int leaf, intp context )
 
 	const Shadow_t &shadow = m_Shadows[pBuild->m_Shadow];
 	
-	mleaf_t* pLeaf = ((model_t*)world)->GetLeafs(leaf);
+	mleaf_t* pLeaf = ((model_t*)world)->GetMLeafs(leaf);
 
 	bool bIsFlashlight;
 	if( shadow.m_Flags & SHADOW_FLASHLIGHT )

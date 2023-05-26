@@ -4807,7 +4807,7 @@ void Host::Host_FreeToLowMark( bool server )
 	if ( !server && sv.IsActive() )
 		return;
 
-	CM_FreeMap();
+	CM_FreeMap(g_pHost->Host_GetWorldModel());
 
 	if ( host_hunklevel )
 	{
@@ -4864,7 +4864,7 @@ void Host::Host_Shutdown(void)
 #endif // VOICE_OVER_IP
 
 	// TODO, Trace this
-	CM_FreeMap();
+	CM_FreeMap(g_pHost->Host_GetWorldModel());
 
 	host_initialized = false;
 

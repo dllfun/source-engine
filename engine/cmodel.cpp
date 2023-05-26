@@ -62,15 +62,15 @@ TraceInfo_t *BeginTrace()
 		pTraceInfo = new TraceInfo_t;
 	}
 #endif
-	if ( pTraceInfo->m_BrushCounters[0].Count() != GetCollisionBSPData()->GetBrushesCount() + 1)
+	if ( pTraceInfo->m_BrushCounters[0].Count() != g_pHost->Host_GetWorldModel()->GetBrushesCount() + 1)
 	{
 		memset( pTraceInfo->m_Count, 0, sizeof( pTraceInfo->m_Count ) );
 		pTraceInfo->m_nCheckDepth = -1;
 
 		for ( int i = 0; i < MAX_CHECK_COUNT_DEPTH; i++ )
 		{
-			pTraceInfo->m_BrushCounters[i].SetCount( GetCollisionBSPData()->GetBrushesCount() + 1);
-			pTraceInfo->m_DispCounters[i].SetCount(GetCollisionBSPData()->GetDispCollTreesCount() );
+			pTraceInfo->m_BrushCounters[i].SetCount(g_pHost->Host_GetWorldModel()->GetBrushesCount() + 1);
+			pTraceInfo->m_DispCounters[i].SetCount(g_pHost->Host_GetWorldModel()->GetDispCollTreesCount() );
 
 			memset( pTraceInfo->m_BrushCounters[i].Base(), 0, pTraceInfo->m_BrushCounters[i].Count() * sizeof(TraceCounter_t) );
 			memset( pTraceInfo->m_DispCounters[i].Base(), 0, pTraceInfo->m_DispCounters[i].Count() * sizeof(TraceCounter_t) );
@@ -117,7 +117,7 @@ void EndTrace( TraceInfo_t *&pTraceInfo )
 
 static ConVar map_noareas( "map_noareas", "0", 0, "Disable area to area connection testing." );
 
-void	FloodAreaConnections (CCollisionBSPData *pBSPData);
+void	FloodAreaConnections (model_t* mod);
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -150,7 +150,7 @@ cmodel_t *CM_InlineModel( const char *name )
 
 	// check for valid model
 	int ndxModel = atoi( name + 1 );
-	if( ( ndxModel < 1 ) || ( ndxModel >= GetCollisionBSPData()->GetCModelsCount() ) )
+	if( ( ndxModel < 1 ) || ( ndxModel >= g_pHost->Host_GetWorldModel()->GetCModelsCount() ) )
 		Sys_Error( "CM_InlineModel: bad model number!" );
 
 	return CM_InlineModelNumber( ndxModel );
@@ -161,16 +161,16 @@ cmodel_t *CM_InlineModel( const char *name )
 //-----------------------------------------------------------------------------
 cmodel_t *CM_InlineModelNumber( int index )
 {
-	CCollisionBSPData *pBSPDataData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPDataData = GetCollisionBSPData();
 
-	if( ( index < 0 ) || ( index > pBSPDataData->GetCModelsCount() ) )
+	if( ( index < 0 ) || ( index > g_pHost->Host_GetWorldModel()->GetCModelsCount()))
 		return NULL;
 
-	return pBSPDataData->GetCModels( index );
+	return g_pHost->Host_GetWorldModel()->GetCModels(index);
 }
 
 
-int CM_BrushContents_r( CCollisionBSPData *pBSPData, int nodenum )
+int CM_BrushContents_r( model_t* mod, int nodenum )
 {
 	int contents = 0;
 
@@ -179,19 +179,19 @@ int CM_BrushContents_r( CCollisionBSPData *pBSPData, int nodenum )
 		if (nodenum < 0)
 		{
 			int leafIndex = -1 - nodenum;
-			cleaf_t* leaf = pBSPData->GetLeafs(leafIndex);
+			cleaf_t* leaf = mod->GetLeafs(leafIndex);
 			
 			for ( int i = 0; i < leaf->numleafbrushes; i++ )
 			{
-				unsigned short brushIndex = pBSPData->GetLeafBrushes( leaf->firstleafbrush + i );
-				contents |= pBSPData->GetBrushes(brushIndex)->contents;
+				unsigned short brushIndex = mod->GetLeafBrushes( leaf->firstleafbrush + i );
+				contents |= mod->GetBrushes(brushIndex)->contents;
 			}
 
 			return contents;
 		}
 
-		cnode_t* node = pBSPData->GetNodes(nodenum);
-		contents |= CM_BrushContents_r( pBSPData, node->children[0] );
+		cnode_t* node = mod->GetNodes(nodenum);
+		contents |= CM_BrushContents_r( mod, node->children[0] );
 		nodenum = node->children[1];
 	}
 
@@ -205,7 +205,7 @@ int CM_InlineModelContents( int index )
 	if ( !pModel )
 		return 0;
 
-	return CM_BrushContents_r( GetCollisionBSPData(), pModel->headnode );
+	return CM_BrushContents_r(g_pHost->Host_GetWorldModel(), pModel->headnode );
 }
 			
 
@@ -213,7 +213,7 @@ int CM_InlineModelContents( int index )
 //-----------------------------------------------------------------------------
 int	CM_NumClusters( void )
 {
-	return GetCollisionBSPData()->GetClustersCount();
+	return g_pHost->Host_GetWorldModel()->GetClustersCount();
 }
 
 
@@ -221,24 +221,24 @@ int	CM_NumClusters( void )
 //-----------------------------------------------------------------------------
 char *CM_EntityString( void )
 {
-	return GetCollisionBSPData()->GetEntityString();
+	return g_pHost->Host_GetWorldModel()->GetEntityString();
 }
 
 void CM_DiscardEntityString( void )
 {
-	GetCollisionBSPData()->DiscardEntityString();
+	g_pHost->Host_GetWorldModel()->DiscardEntityString();
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 int	CM_LeafContents( int leafnum )
 {
-	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
+	// CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->GetLeafs(leafnum)->contents;
+	return g_pHost->Host_GetWorldModel()->GetLeafs(leafnum)->contents;
 }
 
 
@@ -246,23 +246,23 @@ int	CM_LeafContents( int leafnum )
 //-----------------------------------------------------------------------------
 int	CM_LeafCluster( int leafnum )
 {
-	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
+	// CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->GetLeafs(leafnum)->cluster;
+	return g_pHost->Host_GetWorldModel()->GetLeafs(leafnum)->cluster;
 }
 
 
 int	CM_LeafFlags( int leafnum )
 {
-	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
+	// CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->GetLeafs(leafnum)->flags;
+	return g_pHost->Host_GetWorldModel()->GetLeafs(leafnum)->flags;
 }
 
 
@@ -270,31 +270,32 @@ int	CM_LeafFlags( int leafnum )
 //-----------------------------------------------------------------------------
 int	CM_LeafArea( int leafnum )
 {
-	 CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
+	 //CCollisionBSPData *pBSPData = GetCollisionBSPData();//const
 
 	Assert( leafnum >= 0 );
 	Assert( leafnum < pBSPData->numleafs );
 
-	return pBSPData->GetLeafs(leafnum)->area;
+	return g_pHost->Host_GetWorldModel()->GetLeafs(leafnum)->area;
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CM_FreeMap(void)
+void CM_FreeMap(model_t* mod)
 {
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
-
-	// free the collision bsp data
-	CollisionBSPData_Destroy( pBSPData );
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	if (mod) {
+		// free the collision bsp data
+		CollisionBSPData_Destroy(mod);
+	}
 }
 
 
 // This turns on all the area portals that are "always on" in the map.
-void CM_InitPortalOpenState( CCollisionBSPData *pBSPData )
+void CM_InitPortalOpenState( model_t* mod )
 {
-	pBSPData->InitPortalOpenState();
+	mod->InitPortalOpenState();
 }
 
 
@@ -305,47 +306,47 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-cmodel_t *CM_LoadMap( const char *name, bool allowReusePrevious, unsigned *checksum )
+cmodel_t *CM_LoadMap( model_t* mod, bool allowReusePrevious, unsigned *checksum )
 {
 	static unsigned	int last_checksum = 0xFFFFFFFF;
 
 	// get the current bsp -- there is currently only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	Assert( physcollision );
 
-	if( !strcmp( pBSPData->GetMapName(), name) && allowReusePrevious)
-	{
-		*checksum = last_checksum;
-		return pBSPData->GetCModels(0);		// still have the right version
-	}
+	//if( !strcmp( pBSPData->GetMapName(), name) && allowReusePrevious)
+	//{
+	//	*checksum = last_checksum;
+	//	return pBSPData->GetCModels(0);		// still have the right version
+	//}
 
 	// only pre-load if the map doesn't already exist
-	CollisionBSPData_PreLoad( pBSPData );
+	CollisionBSPData_PreLoad( mod );
 
-	if ( !name || !name[0] )
-	{
-		*checksum = 0;
-		return pBSPData->GetCModels(0);			// cinematic servers won't have anything at all
-	}
+	//if ( !name || !name[0] )
+	//{
+	//	*checksum = 0;
+	//	return pBSPData->GetCModels(0);			// cinematic servers won't have anything at all
+	//}
 
 	// read in the collision model data
-	CMapLoadHelper::Init( 0, name );
-	CollisionBSPData_Load( name, pBSPData );
-	CMapLoadHelper::Shutdown( );
+	CLumpHeaderInfo header( 0, mod->GetModelName());
+	CollisionBSPData_Load(mod->GetModelName(),header, mod );
+	header.Shutdown( );
 
     // Push the displacement bounding boxes down the tree and set leaf data.
     //CM_DispTreeLeafnum( pBSPData );
 
-	CM_InitPortalOpenState( pBSPData );
-	FloodAreaConnections(pBSPData);
+	CM_InitPortalOpenState( mod );
+	FloodAreaConnections(mod);
 
 #ifdef COUNT_COLLISIONS
 	// initialize counters
 	CollisionCounts_Init( &g_CollisionCounts );
 #endif
 
-	return pBSPData->GetCModels(0);
+	return mod->GetCModels(0);
 }
 
 
@@ -387,7 +388,7 @@ CM_PointLeafnum_r
 
 ==================
 */
-int CM_PointLeafnumMinDistSqr_r( CCollisionBSPData *pBSPData, const Vector& p, int num, float &minDistSqr )
+int CM_PointLeafnumMinDistSqr_r( model_t *pBSPData, const Vector& p, int num, float &minDistSqr )
 {
 	float		d;
 	cnode_t		*node;
@@ -417,7 +418,7 @@ int CM_PointLeafnumMinDistSqr_r( CCollisionBSPData *pBSPData, const Vector& p, i
 	return -1 - num;
 }
 
-int CM_PointLeafnum_r( CCollisionBSPData *pBSPData, const Vector& p, int num)
+int CM_PointLeafnum_r( model_t* mod, const Vector& p, int num)
 {
 	float		d;
 	cnode_t		*node;
@@ -425,7 +426,7 @@ int CM_PointLeafnum_r( CCollisionBSPData *pBSPData, const Vector& p, int num)
 
 	while (num >= 0)
 	{
-		node = pBSPData->GetNodes(num);
+		node = mod->GetNodes(num);
 		plane = node->plane;
 		
 		if (plane->type < 3)
@@ -448,14 +449,14 @@ int CM_PointLeafnum_r( CCollisionBSPData *pBSPData, const Vector& p, int num)
 int CM_PointLeafnum (const Vector& p)
 {
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if (!pBSPData->GetPlanesCount())
+	if (!g_pHost->Host_GetWorldModel()->GetPlanesCount())
 		return 0;		// sound may call this without map loaded
-	return CM_PointLeafnum_r (pBSPData, p, 0);
+	return CM_PointLeafnum_r (g_pHost->Host_GetWorldModel(), p, 0);
 }
 
-void CM_SnapPointToReferenceLeaf_r( CCollisionBSPData *pBSPData, const Vector& p, int num, float tolerance, Vector *pSnapPoint )
+void CM_SnapPointToReferenceLeaf_r( model_t* mod, const Vector& p, int num, float tolerance, Vector *pSnapPoint )
 {
 	float		d, snapDist;
 	cnode_t		*node;
@@ -463,7 +464,7 @@ void CM_SnapPointToReferenceLeaf_r( CCollisionBSPData *pBSPData, const Vector& p
 
 	while (num >= 0)
 	{
-		node = pBSPData->GetNodes(num);
+		node = mod->GetNodes(num);
 		plane = node->plane;
 		
 		if (plane->type < 3)
@@ -499,11 +500,11 @@ void CM_SnapPointToReferenceLeaf_r( CCollisionBSPData *pBSPData, const Vector& p
 void CM_SnapPointToReferenceLeaf(const Vector &referenceLeafPoint, float tolerance, Vector *pSnapPoint)
 {
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if (pBSPData->GetPlanesCount())
+	if (g_pHost->Host_GetWorldModel()->GetPlanesCount())
 	{
-		CM_SnapPointToReferenceLeaf_r(pBSPData, referenceLeafPoint, 0, tolerance, pSnapPoint);
+		CM_SnapPointToReferenceLeaf_r(g_pHost->Host_GetWorldModel(), referenceLeafPoint, 0, tolerance, pSnapPoint);
 	}
 }
 
@@ -520,7 +521,7 @@ struct leafnums_t
 	int		leafTopNode;
 	int		leafMaxCount;
 	int		*pLeafList;
-	CCollisionBSPData *pBSPData;
+	model_t *pBSPData;
 };
 
 int CM_BoxLeafnums( leafnums_t &context, const Vector &center, const Vector &extents, int nodenum )
@@ -588,7 +589,7 @@ int	CM_BoxLeafnums ( const Vector& mins, const Vector& maxs, int *list, int list
 	context.leafTopNode = -1;
 	context.leafMaxCount = listsize;
 	// get the current collision bsp -- there is only one!
-	context.pBSPData = GetCollisionBSPData();
+	context.pBSPData = g_pHost->Host_GetWorldModel();
 	Vector center = (mins+maxs)*0.5f;
 	Vector extents = maxs - center;
 	int leafCount = CM_BoxLeafnums(context, center, extents, context.pBSPData->GetCModels(0)->headnode );
@@ -680,11 +681,11 @@ int	CM_BoxClusters_headnode ( CCollisionBSPData *pBSPData, const Vector& mins, c
 }
 #endif
 
-static int FASTCALL CM_BrushBoxContents( CCollisionBSPData *pBSPData, const Vector &vMins, const Vector &vMaxs, cbrush_t *pBrush )
+static int FASTCALL CM_BrushBoxContents( model_t *mod, const Vector &vMins, const Vector &vMaxs, cbrush_t *pBrush )
 {
 	if ( pBrush->IsBox())
 	{
-		cboxbrush_t *pBox = pBSPData->GetBoxBrushes(pBrush->GetBox());
+		cboxbrush_t *pBox = mod->GetBoxBrushes(pBrush->GetBox());
 		if ( !IsBoxIntersectingBox( vMins, vMaxs, pBox->mins, pBox->maxs ) )
 			return 0;
 	}
@@ -704,7 +705,7 @@ static int FASTCALL CM_BrushBoxContents( CCollisionBSPData *pBSPData, const Vect
 
 		for (i=0 ; i<pBrush->numsides ; i++)
 		{
-			side = pBSPData->GetBrushesSide(pBrush->firstbrushside+i);
+			side = mod->GetBrushesSide(pBrush->firstbrushside+i);
 			plane = side->plane;
 
 			// FIXME: special case for axial
@@ -737,11 +738,11 @@ static int FASTCALL CM_BrushBoxContents( CCollisionBSPData *pBSPData, const Vect
 	return pBrush->contents;
 }
 
-static int FASTCALL CM_BrushPointContents( CCollisionBSPData *pBSPData, const Vector &vPos, cbrush_t *pBrush )
+static int FASTCALL CM_BrushPointContents( model_t *mod, const Vector &vPos, cbrush_t *pBrush )
 {
 	if ( pBrush->IsBox())
 	{
-		cboxbrush_t *pBox = pBSPData->GetBoxBrushes(pBrush->GetBox());
+		cboxbrush_t *pBox = mod->GetBoxBrushes(pBrush->GetBox());
 		if ( !IsPointInBox( vPos, pBox->mins, pBox->maxs ) )
 			return 0;
 	}
@@ -755,7 +756,7 @@ static int FASTCALL CM_BrushPointContents( CCollisionBSPData *pBSPData, const Ve
 
 		for ( int i = 0 ; i < pBrush->numsides; i++ )
 		{
-			side = pBSPData->GetBrushesSide(pBrush->firstbrushside+i);
+			side = mod->GetBrushesSide(pBrush->firstbrushside+i);
 			plane = side->plane;
 
 			float flDist = DotProduct (vPos, plane->normal) - plane->dist;
@@ -781,20 +782,20 @@ int CM_PointContents ( const Vector &p, int headnode)
 	int		l;
 
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	if (!pBSPData->GetNodesCount())	// map not loaded
+	if (!g_pHost->Host_GetWorldModel()->GetCMNodesCount())	// map not loaded
 		return 0;
 
-	l = CM_PointLeafnum_r (pBSPData, p, headnode);
+	l = CM_PointLeafnum_r (g_pHost->Host_GetWorldModel(), p, headnode);
 
-	cleaf_t *pLeaf = pBSPData->GetLeafs(l);
+	cleaf_t *pLeaf = g_pHost->Host_GetWorldModel()->GetLeafs(l);
 	int nContents = pLeaf->contents;
 	for ( int i = 0; i < pLeaf->numleafbrushes; i++ )
 	{
-		int nBrush = pBSPData->GetLeafBrushes(pLeaf->firstleafbrush + i);
-		cbrush_t * RESTRICT pBrush = pBSPData->GetBrushes(nBrush);
-		nContents |= CM_BrushPointContents( pBSPData, p, pBrush );
+		int nBrush = g_pHost->Host_GetWorldModel()->GetLeafBrushes(pLeaf->firstleafbrush + i);
+		cbrush_t * RESTRICT pBrush = g_pHost->Host_GetWorldModel()->GetBrushes(nBrush);
+		nContents |= CM_BrushPointContents(g_pHost->Host_GetWorldModel(), p, pBrush );
 	}
 	
 	return nContents;
@@ -817,7 +818,7 @@ int	CM_TransformedPointContents ( const Vector& p, int headnode, const Vector& o
 	int			l;
 
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	// subtract origin offset
 	VectorSubtract (p, origin, p_l);
@@ -833,9 +834,9 @@ int	CM_TransformedPointContents ( const Vector& p, int headnode, const Vector& o
 		p_l[2] = DotProduct (temp, up);
 	}
 
-	l = CM_PointLeafnum_r (pBSPData, p_l, headnode);
+	l = CM_PointLeafnum_r (g_pHost->Host_GetWorldModel(), p_l, headnode);
 
-	return pBSPData->GetLeafs(l)->contents;
+	return g_pHost->Host_GetWorldModel()->GetLeafs(l)->contents;
 }
 
 /*
@@ -1734,7 +1735,7 @@ static inline void CM_ComputeTraceEndpoints( const Ray_t& ray, trace_t& tr )
 //-----------------------------------------------------------------------------
 // Purpose: Get a list of leaves for a trace.
 //-----------------------------------------------------------------------------
-void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode, 
+void CM_RayLeafnums_r( const Ray_t &ray, model_t *mod, int iNode, 
 					  float p1f, float p2f, const Vector &vecPoint1, const Vector &vecPoint2,
 					  int *pLeafList, int nMaxLeafCount, int &nLeafCount )
 {
@@ -1758,7 +1759,7 @@ void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode,
 	{
 		while( iNode >= 0 )
 		{
-			pNode = pBSPData->GetNodes(iNode);
+			pNode = mod->GetNodes(iNode);
 			pPlane = pNode->plane;
 
 			if ( pPlane->type < 3 )
@@ -1794,7 +1795,7 @@ void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode,
 	{
 		while( iNode >= 0 )
 		{
-			pNode = pBSPData->GetNodes(iNode);
+			pNode = mod->GetNodes(iNode);
 			pPlane = pNode->plane;
 
 			if ( pPlane->type < 3 )
@@ -1871,13 +1872,13 @@ void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode,
 	flFrac1 = clamp( flFrac1, 0.0f, 1.0f );
 	flMid = p1f + ( p2f - p1f ) * flFrac1;
 	VectorLerp( vecPoint1, vecPoint2, flFrac1, vecMid );
-	CM_RayLeafnums_r( ray, pBSPData, pNode->children[nSide], p1f, flMid, vecPoint1, vecMid, pLeafList, nMaxLeafCount, nLeafCount );
+	CM_RayLeafnums_r( ray, mod, pNode->children[nSide], p1f, flMid, vecPoint1, vecMid, pLeafList, nMaxLeafCount, nLeafCount );
 
 	// Go past the node
 	flFrac2 = clamp( flFrac2, 0.0f, 1.0f );
 	flMid = p1f + ( p2f - p1f ) * flFrac2;
 	VectorLerp( vecPoint1, vecPoint2, flFrac2, vecMid );
-	CM_RayLeafnums_r( ray, pBSPData, pNode->children[nSide^1], flMid, p2f, vecMid, vecPoint2, pLeafList, nMaxLeafCount, nLeafCount );
+	CM_RayLeafnums_r( ray, mod, pNode->children[nSide^1], flMid, p2f, vecMid, vecPoint2, pLeafList, nMaxLeafCount, nLeafCount );
 }
 
 //-----------------------------------------------------------------------------
@@ -1885,13 +1886,13 @@ void CM_RayLeafnums_r( const Ray_t &ray, CCollisionBSPData *pBSPData, int iNode,
 //-----------------------------------------------------------------------------
 void CM_RayLeafnums( const Ray_t &ray, int *pLeafList, int nMaxLeafCount, int &nLeafCount  )
 {
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
-	if ( !pBSPData->GetNodesCount() )
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	if ( !g_pHost->Host_GetWorldModel()->GetCMNodesCount())
 		return;
 
 	Vector vecEnd;
 	VectorAdd( ray.m_Start, ray.m_Delta, vecEnd );
-	CM_RayLeafnums_r( ray, pBSPData, 0/*headnode*/, 0.0f, 1.0f, ray.m_Start, vecEnd, pLeafList, nMaxLeafCount, nLeafCount );
+	CM_RayLeafnums_r( ray, g_pHost->Host_GetWorldModel(), 0/*headnode*/, 0.0f, 1.0f, ray.m_Start, vecEnd, pLeafList, nMaxLeafCount, nLeafCount );
 }
 
 
@@ -2030,7 +2031,7 @@ void CM_ClearTrace( trace_t *trace )
 	memset( trace, 0, sizeof(*trace));
 	trace->fraction = 1.f;
 	trace->fractionleftsolid = 0;
-	trace->surface = GetCollisionBSPData()->GetNullSurface();
+	trace->surface = g_pHost->Host_GetWorldModel()->GetNullSurface();
 }
 
 
@@ -2091,10 +2092,10 @@ void CM_BoxTraceAgainstLeafList( const Ray_t &ray, int *pLeafList, int nLeafCoun
 	CM_ClearTrace( &pTraceInfo->m_trace );
 
 	// Get the collision bsp tree.
-	pTraceInfo->m_pBSPData = GetCollisionBSPData();
+	pTraceInfo->m_pBSPData = g_pHost->Host_GetWorldModel();
 
 	// Check if the map is loaded.
-	if ( !pTraceInfo->m_pBSPData->GetNodesCount() )	
+	if ( !pTraceInfo->m_pBSPData->GetCMNodesCount() )
 	{
 		trace = pTraceInfo->m_trace;
 		EndTrace( pTraceInfo );
@@ -2179,10 +2180,10 @@ void CM_BoxTrace( const Ray_t& ray, int headnode, int brushmask, bool computeEnd
 	// fill in a default trace
 	CM_ClearTrace( &pTraceInfo->m_trace );
 
-	pTraceInfo->m_pBSPData = GetCollisionBSPData();
+	pTraceInfo->m_pBSPData = g_pHost->Host_GetWorldModel();
 
 	// check if the map is not loaded
-	if (!pTraceInfo->m_pBSPData->GetNodesCount())	
+	if (!pTraceInfo->m_pBSPData->GetCMNodesCount())
 	{
 		tr = pTraceInfo->m_trace;
 		EndTrace( pTraceInfo );
@@ -2290,9 +2291,9 @@ PVS / PAS
 // Input  : *pBSPData - 
 //			*out - 
 //-----------------------------------------------------------------------------
-void CM_NullVis( CCollisionBSPData *pBSPData, byte *out )
+void CM_NullVis( model_t *mod, byte *out )
 {
-	int numClusterBytes = (pBSPData->GetClustersCount() + 7) >> 3;
+	int numClusterBytes = (mod->GetClustersCount() + 7) >> 3;
 	byte *out_p = out;
 
 	while (numClusterBytes)
@@ -2307,39 +2308,39 @@ void CM_NullVis( CCollisionBSPData *pBSPData, byte *out )
 CM_DecompressVis
 ===================
 */
-void CM_DecompressVis( CCollisionBSPData *pBSPData, int cluster, int visType, byte *out )
+void CM_DecompressVis( model_t *mod, int cluster, int visType, byte *out )
 {
 	int		c;
 	byte	*out_p;
 	int		numClusterBytes;
 
-	if ( !pBSPData )
+	if ( !mod )
 	{
 		Assert( false ); // Shouldn't ever happen.
 	}
 
-	if ( cluster > pBSPData->GetClustersCount() || cluster < 0)
+	if ( cluster > mod->GetClustersCount() || cluster < 0)
 	{
 		// This can happen if this is called while the level is loading. See Map_VisCurrentCluster.
-		CM_NullVis( pBSPData, out );
+		CM_NullVis( mod, out );
 		return;
 	}
 
 	// no vis info, so make all visible
-	if ( !pBSPData->GetVisibilityCount() || !pBSPData->GetVis())
+	if ( !mod->GetVisibilityCount() || !mod->GetVis())
 	{	
-		CM_NullVis( pBSPData, out );
+		CM_NullVis( mod, out );
 		return;		
 	}
 
-	byte *in = ((byte *)pBSPData->GetVis()) + pBSPData->GetVis()->bitofs[cluster][visType];
-	numClusterBytes = (pBSPData->GetClustersCount() + 7) >> 3;
+	byte *in = ((byte *)mod->GetVis()) + mod->GetVis()->bitofs[cluster][visType];
+	numClusterBytes = (mod->GetClustersCount() + 7) >> 3;
 	out_p = out;
 
 	// no vis info, so make all visible
 	if ( !in )
 	{	
-		CM_NullVis( pBSPData, out );
+		CM_NullVis( mod, out );
 		return;		
 	}
 
@@ -2376,7 +2377,7 @@ void CM_DecompressVis( CCollisionBSPData *pBSPData, int cluster, int visType, by
 const byte *CM_Vis( byte *dest, int destlen, int cluster, int visType )
 {
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	if ( !dest || visType > 2 || visType < 0 )
 	{
@@ -2386,17 +2387,17 @@ const byte *CM_Vis( byte *dest, int destlen, int cluster, int visType )
 
 	if ( cluster == -1 )
 	{
-		int len = (pBSPData->GetClustersCount() + 7) >> 3;
+		int len = (g_pHost->Host_GetWorldModel()->GetClustersCount() + 7) >> 3;
 		if ( len > destlen )
 		{
 			Sys_Error( "CM_Vis:  buffer not big enough (%i but need %i)\n",
 				destlen, len );
 		}
-		memset( dest, 0, (pBSPData->GetClustersCount() + 7) >> 3);
+		memset( dest, 0, (g_pHost->Host_GetWorldModel()->GetClustersCount() + 7) >> 3);
 	}
 	else
 	{
-		CM_DecompressVis( pBSPData, cluster, visType, dest );
+		CM_DecompressVis(g_pHost->Host_GetWorldModel(), cluster, visType, dest );
 	}
 
 	return dest;
@@ -2422,12 +2423,12 @@ AREAPORTALS
 ===============================================================================
 */
 
-void FloodArea_r (CCollisionBSPData *pBSPData, carea_t *area, int floodnum)
+void FloodArea_r (model_t* mod, carea_t *area, int floodnum)
 {
 	int		i;
 	dareaportal_t	*p;
 
-	if (area->floodvalid == pBSPData->GetFloodvalid())
+	if (area->floodvalid == mod->GetFloodvalid())
 	{
 		if (area->floodnum == floodnum)
 			return;
@@ -2435,13 +2436,13 @@ void FloodArea_r (CCollisionBSPData *pBSPData, carea_t *area, int floodnum)
 	}
 
 	area->floodnum = floodnum;
-	area->floodvalid = pBSPData->GetFloodvalid();
-	p = pBSPData->GetAreaPortals(area->firstareaportal);
+	area->floodvalid = mod->GetFloodvalid();
+	p = mod->GetCMAreaPortals(area->firstareaportal);
 	for (i=0 ; i<area->numareaportals ; i++, p++)
 	{
-		if (pBSPData->GetPortalOpenState(p->m_PortalKey))
+		if (mod->GetPortalOpenState(p->m_PortalKey))
 		{
-			FloodArea_r (pBSPData, pBSPData->GetArea(p->otherarea), floodnum);
+			FloodArea_r (mod, mod->GetArea(p->otherarea), floodnum);
 		}
 	}
 }
@@ -2453,24 +2454,24 @@ FloodAreaConnections
 
 ====================
 */
-void	FloodAreaConnections ( CCollisionBSPData *pBSPData )
+void	FloodAreaConnections ( model_t* mod )
 {
 	int		i;
 	carea_t	*area;
 	int		floodnum;
 
 	// all current floods are now invalid
-	pBSPData->IncFloodvalid();
+	mod->IncFloodvalid();
 	floodnum = 0;
 
 	// area 0 is not used
-	for (i=1 ; i<pBSPData->GetAreaCount() ; i++)
+	for (i=1 ; i<mod->GetAreaCount() ; i++)
 	{
-		area = pBSPData->GetArea(i);
-		if (area->floodvalid == pBSPData->GetFloodvalid())
+		area = mod->GetArea(i);
+		if (area->floodvalid == mod->GetFloodvalid())
 			continue;		// already flooded into
 		floodnum++;
-		FloodArea_r (pBSPData, area, floodnum);
+		FloodArea_r (mod, area, floodnum);
 	}
 
 }
@@ -2478,16 +2479,16 @@ void	FloodAreaConnections ( CCollisionBSPData *pBSPData )
 void CM_SetAreaPortalState( int portalnum, int isOpen )
 {
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	// Portalnums in the BSP file are 1-based instead of 0-based
-	if (portalnum > pBSPData->GetAreaPortalsCount())
+	if (portalnum > g_pHost->Host_GetWorldModel()->GetCMAreaPortalsCount())
 	{
 		Sys_Error( "portalnum > numareaportals");
 	}
 
-	pBSPData->SetPortalOpenState(portalnum, (isOpen != 0));
-	FloodAreaConnections (pBSPData);
+	g_pHost->Host_GetWorldModel()->SetPortalOpenState(portalnum, (isOpen != 0));
+	FloodAreaConnections (g_pHost->Host_GetWorldModel());
 }
 
 void CM_SetAreaPortalStates( const int *portalnums, const int *isOpen, int nPortals )
@@ -2495,35 +2496,35 @@ void CM_SetAreaPortalStates( const int *portalnums, const int *isOpen, int nPort
 	if ( nPortals == 0 )
 		return;
 
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	// get the current collision bsp -- there is only one!
 	for ( int i=0; i < nPortals; i++ )
 	{
 		// Portalnums in the BSP file are 1-based instead of 0-based
-		if (portalnums[i] > pBSPData->GetAreaPortalsCount())
+		if (portalnums[i] > g_pHost->Host_GetWorldModel()->GetCMAreaPortalsCount())
 			Sys_Error( "portalnum > numareaportals");
 
-		pBSPData->SetPortalOpenState(portalnums[i], (isOpen[i] != 0));
+		g_pHost->Host_GetWorldModel()->SetPortalOpenState(portalnums[i], (isOpen[i] != 0));
 	}
 
-	FloodAreaConnections( pBSPData );
+	FloodAreaConnections(g_pHost->Host_GetWorldModel());
 }
 
 bool	CM_AreasConnected (int area1, int area2)
 {
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	if (map_noareas.GetInt())
 		return true;
 
-	if (area1 >= pBSPData->GetAreaCount() || area2 >= pBSPData->GetAreaCount())
+	if (area1 >= g_pHost->Host_GetWorldModel()->GetAreaCount() || area2 >= g_pHost->Host_GetWorldModel()->GetAreaCount())
 	{
-		Sys_Error( "area(1==%i, 2==%i) >= numareas (%i):  Check if engine->ResetPVS() was called from ClientSetupVisibility", area1, area2,  pBSPData->GetAreaCount() );
+		Sys_Error( "area(1==%i, 2==%i) >= numareas (%i):  Check if engine->ResetPVS() was called from ClientSetupVisibility", area1, area2, g_pHost->Host_GetWorldModel()->GetAreaCount() );
 	}
 
-	return (pBSPData->GetArea(area1)->floodnum == pBSPData->GetArea(area2)->floodnum);
+	return (g_pHost->Host_GetWorldModel()->GetArea(area1)->floodnum == g_pHost->Host_GetWorldModel()->GetArea(area2)->floodnum);
 }
 
 
@@ -2544,9 +2545,9 @@ int CM_WriteAreaBits ( byte *buffer, int buflen, int area )
 	int		bytes;
 
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	bytes = (pBSPData->GetAreaCount() + 7) >> 3;
+	bytes = (g_pHost->Host_GetWorldModel()->GetAreaCount() + 7) >> 3;
 
 	if ( map_noareas.GetInt() )
 	{	
@@ -2562,10 +2563,10 @@ int CM_WriteAreaBits ( byte *buffer, int buflen, int area )
 
 		Q_memset( buffer, 0, 32 );
 
-		floodnum = pBSPData->GetArea(area)->floodnum;
-		for (i=0 ; i<pBSPData->GetAreaCount() ; i++)
+		floodnum = g_pHost->Host_GetWorldModel()->GetArea(area)->floodnum;
+		for (i=0 ; i< g_pHost->Host_GetWorldModel()->GetAreaCount() ; i++)
 		{
-			if (pBSPData->GetArea(i)->floodnum == floodnum || !area)
+			if (g_pHost->Host_GetWorldModel()->GetArea(i)->floodnum == floodnum || !area)
 				buffer[i>>3] |= 1<<(i&7);
 		}
 	}
@@ -2576,25 +2577,25 @@ int CM_WriteAreaBits ( byte *buffer, int buflen, int area )
 
 bool CM_GetAreaPortalPlane( const Vector &vViewOrigin, int portalKey, VPlane *pPlane )
 {
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	// First, find the leaf and area the viewer is in.
 	int iLeaf = CM_PointLeafnum( vViewOrigin );
-	if( iLeaf < 0 || iLeaf >= pBSPData->GetLeafsCount() )
+	if( iLeaf < 0 || iLeaf >= g_pHost->Host_GetWorldModel()->GetLeafsCount())
 		return false;
 
-	int iArea = pBSPData->GetLeafs(iLeaf)->area;
-	if( iArea < 0 || iArea >= pBSPData->GetAreaCount() )
+	int iArea = g_pHost->Host_GetWorldModel()->GetLeafs(iLeaf)->area;
+	if( iArea < 0 || iArea >= g_pHost->Host_GetWorldModel()->GetAreaCount())
 		return false;
 
-	carea_t *pArea = pBSPData->GetArea(iArea);
+	carea_t *pArea = g_pHost->Host_GetWorldModel()->GetArea(iArea);
 	for( int i=0; i < pArea->numareaportals; i++ )
 	{
-		dareaportal_t *pPortal = pBSPData->GetAreaPortals(pArea->firstareaportal + i);
+		dareaportal_t *pPortal = g_pHost->Host_GetWorldModel()->GetCMAreaPortals(pArea->firstareaportal + i);
 
 		if( pPortal->m_PortalKey == portalKey )
 		{
-			cplane_t *pMapPlane = pBSPData->GetPlane(pPortal->planenum);
+			cplane_t *pMapPlane = g_pHost->Host_GetWorldModel()->GetPlane(pPortal->planenum);
 			pPlane->m_Normal = pMapPlane->normal;
 			pPlane->m_Dist = pMapPlane->dist;
 			return true;
@@ -2620,12 +2621,12 @@ bool CM_HeadnodeVisible (int nodenum, const byte *visbits, int vissize )
 	cnode_t	*node;
 
 	// get the current collision bsp -- there is only one!
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	if (nodenum < 0)
 	{
 		leafnum = -1-nodenum;
-		cluster = pBSPData->GetLeafs(leafnum)->cluster;
+		cluster = g_pHost->Host_GetWorldModel()->GetLeafs(leafnum)->cluster;
 		if (cluster == -1)
 			return false;
 		if (visbits[cluster>>3] & (1<<(cluster&7)))
@@ -2633,7 +2634,7 @@ bool CM_HeadnodeVisible (int nodenum, const byte *visbits, int vissize )
 		return false;
 	}
 
-	node = pBSPData->GetNodes(nodenum);
+	node = g_pHost->Host_GetWorldModel()->GetNodes(nodenum);
 	if (CM_HeadnodeVisible(node->children[0], visbits, vissize ))
 		return true;
 	return CM_HeadnodeVisible(node->children[1], visbits, vissize );
@@ -2735,16 +2736,16 @@ void CM_WorldSpaceBounds( ICollideable *pCollideable, Vector *pMins, Vector *pMa
 
 void CM_SetupAreaFloodNums( byte areaFloodNums[MAX_MAP_AREAS], int *pNumAreas )
 {
-	CCollisionBSPData *pBSPData = GetCollisionBSPData();
+	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
-	*pNumAreas = pBSPData->GetAreaCount();
-	if ( pBSPData->GetAreaCount() > MAX_MAP_AREAS)
+	*pNumAreas = g_pHost->Host_GetWorldModel()->GetAreaCount();
+	if (g_pHost->Host_GetWorldModel()->GetAreaCount() > MAX_MAP_AREAS)
 		Error( "pBSPData->numareas > MAX_MAP_AREAS" );
 
-	for ( int i=0; i < pBSPData->GetAreaCount(); i++ )
+	for ( int i=0; i < g_pHost->Host_GetWorldModel()->GetAreaCount(); i++)
 	{
 		Assert( pBSPData->map_areas[i].floodnum < MAX_MAP_AREAS );
-		areaFloodNums[i] = (byte)pBSPData->GetArea(i)->floodnum;
+		areaFloodNums[i] = (byte)g_pHost->Host_GetWorldModel()->GetArea(i)->floodnum;
 	}
 }
 
@@ -2766,9 +2767,9 @@ int CFastPointLeafNum::GetLeaf( const Vector &vPos )
 	{
 		m_vCachedPos = vPos;
 
-		CCollisionBSPData *pBSPData = GetCollisionBSPData();
+		//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 		m_flDistToExitLeafSqr = 1e24;
-		m_iCachedLeaf = CM_PointLeafnumMinDistSqr_r( pBSPData, vPos, 0, m_flDistToExitLeafSqr );
+		m_iCachedLeaf = CM_PointLeafnumMinDistSqr_r(g_pHost->Host_GetWorldModel(), vPos, 0, m_flDistToExitLeafSqr);
 	}
 
 	return m_iCachedLeaf;

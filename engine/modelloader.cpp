@@ -111,31 +111,7 @@ double g_flAccumulatedModelLoadTimeVCollideAsync;
 double g_flAccumulatedModelLoadTimeVirtualModel;
 double g_flAccumulatedModelLoadTimeMaterialNamesOnly;
 
-//-----------------------------------------------------------------------------
-// A dictionary used to store where to find game lump data in the .bsp file
-//-----------------------------------------------------------------------------
 
-// Extended from the on-disk struct to include uncompressed size and stop propagation of bogus signed values
-struct dgamelump_internal_t
-{
-	dgamelump_internal_t( dgamelump_t &other, unsigned int nCompressedSize )
-		: id( other.id )
-		, flags( other.flags )
-		, version( other.version )
-		, offset( Max( other.fileofs, 0 ) )
-		, uncompressedSize( Max( other.filelen, 0 ) )
-		, compressedSize( nCompressedSize )
-		{}
-	GameLumpId_t	id;
-	unsigned short	flags;
-	unsigned short	version;
-	unsigned int	offset;
-	unsigned int	uncompressedSize;
-	unsigned int	compressedSize;
-};
-
-static CUtlVector< dgamelump_internal_t > g_GameLumpDict;
-static char g_GameLumpFilename[128] = { 0 };
 
 //void NotifyHunkBeginMapLoad( const char *pszMapName )
 //{
@@ -346,7 +322,7 @@ private:
 	CUtlVector<model_t>	m_InlineModels;
 
 	model_t				*m_pWorldModel;
-	worldbrushdata_t	m_worldBrushData;
+	//worldbrushdata_t	m_worldBrushData;
 
 public: // HACKHACK
 
@@ -387,13 +363,13 @@ IModelLoader *modelloader = ( IModelLoader * )&g_ModelLoader;
 //-----------------------------------------------------------------------------
 // Globals used by the CMapLoadHelper
 //-----------------------------------------------------------------------------
-static dheader_t		s_MapHeader;
-static FileHandle_t		s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
-static char				s_szLoadName[128];
-static char				s_szMapName[128];
+//dheader_t		CLumpHeaderInfo::m_MapHeader;
+//FileHandle_t	CLumpHeaderInfo::m_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
+//char			CLumpHeaderInfo::m_szLoadName[128];
+//char			CLumpHeaderInfo::s_szMapName[128];
 //static worldbrushdata_t	*s_pMap = NULL;
-static int				s_nMapLoadRecursion = 0;
-static CUtlBuffer		s_MapBuffer;
+//int				CLumpHeaderInfo::m_nMapLoadRecursion = 0;
+CUtlBuffer		CLumpHeaderInfo::s_MapBuffer;
 
 // Lump files are patches for a shipped map
 // List of lump files found when map was loaded. Each entry is the lump file index for that lump id.
@@ -413,72 +389,72 @@ CON_COMMAND( mem_vcollide, "Dumps the memory used by vcollides" )
 //-----------------------------------------------------------------------------
 // Returns the ref count for this bsp
 //-----------------------------------------------------------------------------
-int CMapLoadHelper::GetRefCount()
+int CLumpHeaderInfo::GetRefCount()
 {
-	return s_nMapLoadRecursion;
+	return m_nMapLoadRecursion;
 }
 
 //-----------------------------------------------------------------------------
 // Setup a BSP loading context, maintains a ref count.	
 //-----------------------------------------------------------------------------
-void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
+CLumpHeaderInfo::CLumpHeaderInfo( model_t *pMapModel, const char *loadname )
 {
-	if ( ++s_nMapLoadRecursion > 1 )
+	if ( ++m_nMapLoadRecursion > 1 )
 	{
 		return;
 	}
 
 	//s_pMap = NULL;
-	s_szLoadName[ 0 ] = 0;
-	s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
-	V_memset( &s_MapHeader, 0, sizeof( s_MapHeader ) );
+	m_szLoadName[ 0 ] = 0;
+	m_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
+	V_memset( &m_MapHeader, 0, sizeof(m_MapHeader) );
 	V_memset( &s_MapLumpFiles, 0, sizeof( s_MapLumpFiles ) );
 
 	if ( !pMapModel )
 	{
-		V_strcpy_safe( s_szMapName, loadname );
+		V_strcpy_safe(m_szMapName, loadname );
 	}
 	else
 	{
-		V_strcpy_safe( s_szMapName, pMapModel->GetModelName() );
+		V_strcpy_safe(m_szMapName, pMapModel->GetModelName() );
 	}
 
-	s_MapFileHandle = g_pFileSystem->OpenEx( s_szMapName, "rb", IsX360() ? FSOPEN_NEVERINPACK : 0, IsX360() ? "GAME" : NULL );
-	if ( s_MapFileHandle == FILESYSTEM_INVALID_HANDLE )
+	m_MapFileHandle = g_pFileSystem->OpenEx(m_szMapName, "rb", IsX360() ? FSOPEN_NEVERINPACK : 0, IsX360() ? "GAME" : NULL );
+	if (m_MapFileHandle == FILESYSTEM_INVALID_HANDLE )
 	{
-		g_pHost->Host_Error( "CMapLoadHelper::Init, unable to open %s\n", s_szMapName );
+		g_pHost->Host_Error( "CMapLoadHelper::Init, unable to open %s\n", m_szMapName);
 		return;
 	}
 
-	g_pFileSystem->Read( &s_MapHeader, sizeof( dheader_t ), s_MapFileHandle );
-	if ( s_MapHeader.ident != IDBSPHEADER )
+	g_pFileSystem->Read( &m_MapHeader, sizeof( dheader_t ), m_MapFileHandle);
+	if (m_MapHeader.ident != IDBSPHEADER )
 	{
-		g_pFileSystem->Close( s_MapFileHandle );
-		s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
-		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", s_szMapName );
+		g_pFileSystem->Close(m_MapFileHandle);
+		m_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", m_szMapName);
 		return;
 	}
 
-	if ( s_MapHeader.version < MINBSPVERSION || s_MapHeader.version > BSPVERSION )
+	if (m_MapHeader.version < MINBSPVERSION || m_MapHeader.version > BSPVERSION )
 	{
-		g_pFileSystem->Close( s_MapFileHandle );
-		s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
-		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", s_szMapName,
-			s_MapHeader.version, BSPVERSION );
+		g_pFileSystem->Close(m_MapFileHandle);
+		m_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", m_szMapName,
+			m_MapHeader.version, BSPVERSION );
 		return;
 	}
 
-	V_strcpy_safe( s_szLoadName, loadname );
+	V_strcpy_safe(m_szLoadName, loadname );
 
 	// Store map version, but only do it once so that the communication between the engine and Hammer isn't broken. The map version
 	// is incremented whenever a Hammer to Engine session is established so resetting the global map version each time causes a problem.
 	if ( 0 == g_ServerGlobalVariables.mapversion )
 	{
-		g_ServerGlobalVariables.mapversion = s_MapHeader.mapRevision;
+		g_ServerGlobalVariables.mapversion = m_MapHeader.mapRevision;
 	}
 
 #ifndef SWDS
-	InitDLightGlobals( s_MapHeader.version );
+	InitDLightGlobals(m_MapHeader.version );
 #endif
 
 	//s_pMap = &g_ModelLoader.m_worldBrushData;
@@ -496,7 +472,7 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 			lumpfileheader_t lumpHeader;
 			char lumpfilename[MAX_PATH];
 
-			GenerateLumpFileName( s_szMapName, lumpfilename, MAX_PATH, iIndex );
+			GenerateLumpFileName(m_szMapName, lumpfilename, MAX_PATH, iIndex );
 			if ( !g_pFileSystem->FileExists( lumpfilename ) )
 				break;
 
@@ -536,46 +512,46 @@ void CMapLoadHelper::Init( model_t *pMapModel, const char *loadname )
 //-----------------------------------------------------------------------------
 // Setup a BSP loading context from a supplied buffer
 //-----------------------------------------------------------------------------
-void CMapLoadHelper::InitFromMemory( model_t *pMapModel, const void *pData, int nDataSize )
+CLumpHeaderInfo::CLumpHeaderInfo( model_t *pMapModel, const void *pData, int nDataSize )
 {
 	// valid for 360 only 
 	// 360 has reorganized bsp format and no external lump files
 	Assert( IsX360() && pData && nDataSize );
 
-	if ( ++s_nMapLoadRecursion > 1 )
+	if ( ++m_nMapLoadRecursion > 1 )
 	{
 		return;
 	}
 
 	//s_pMap = NULL;
-	s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
-	V_memset( &s_MapHeader, 0, sizeof( s_MapHeader ) );
+	m_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
+	V_memset( &m_MapHeader, 0, sizeof(m_MapHeader) );
 	V_memset( &s_MapLumpFiles, 0, sizeof( s_MapLumpFiles ) );
 
-	V_strcpy_safe( s_szMapName, pMapModel->GetModelName() );
-	V_FileBase( s_szMapName, s_szLoadName, sizeof( s_szLoadName ) );
+	V_strcpy_safe(m_szMapName, pMapModel->GetModelName() );
+	V_FileBase(m_szMapName, m_szLoadName, sizeof(m_szLoadName) );
 
 	s_MapBuffer.SetExternalBuffer( (void *)pData, nDataSize, nDataSize );
 
-	V_memcpy( &s_MapHeader, pData, sizeof( dheader_t ) );
+	V_memcpy( &m_MapHeader, pData, sizeof( dheader_t ) );
 
-	if ( s_MapHeader.ident != IDBSPHEADER )
+	if (m_MapHeader.ident != IDBSPHEADER )
 	{
-		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", s_szMapName );
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong identifier\n", m_szMapName);
 		return;
 	}
 
-	if ( s_MapHeader.version < MINBSPVERSION || s_MapHeader.version > BSPVERSION )
+	if (m_MapHeader.version < MINBSPVERSION || m_MapHeader.version > BSPVERSION )
 	{
-		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", s_szMapName, s_MapHeader.version, BSPVERSION );
+		g_pHost->Host_Error( "CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", m_szMapName, m_MapHeader.version, BSPVERSION );
 		return;
 	}
 
 	// Store map version
-	g_ServerGlobalVariables.mapversion = s_MapHeader.mapRevision;
+	g_ServerGlobalVariables.mapversion = m_MapHeader.mapRevision;
 
 #ifndef SWDS
-	InitDLightGlobals( s_MapHeader.version );
+	InitDLightGlobals(m_MapHeader.version );
 #endif
 
 	//s_pMap = &g_ModelLoader.m_worldBrushData;
@@ -584,17 +560,17 @@ void CMapLoadHelper::InitFromMemory( model_t *pMapModel, const void *pData, int 
 //-----------------------------------------------------------------------------
 // Shutdown a BSP loading context.
 //-----------------------------------------------------------------------------
-void CMapLoadHelper::Shutdown( void )
+void CLumpHeaderInfo::Shutdown( void )
 {
-	if ( --s_nMapLoadRecursion > 0 )
+	if ( --m_nMapLoadRecursion > 0 )
 	{
 		return;
 	}
 
-	if ( s_MapFileHandle != FILESYSTEM_INVALID_HANDLE )
+	if (m_MapFileHandle != FILESYSTEM_INVALID_HANDLE )
 	{
-		g_pFileSystem->Close( s_MapFileHandle );
-		s_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
+		g_pFileSystem->Close(m_MapFileHandle);
+		m_MapFileHandle = FILESYSTEM_INVALID_HANDLE;
 	}
 
 	if ( IsPC() )
@@ -610,8 +586,8 @@ void CMapLoadHelper::Shutdown( void )
 		V_memset( &s_MapLumpFiles, 0, sizeof( s_MapLumpFiles ) );
 	}
 
-	s_szLoadName[ 0 ] = 0;
-	V_memset( &s_MapHeader, 0, sizeof( s_MapHeader ) );
+	m_szLoadName[ 0 ] = 0;
+	V_memset( &m_MapHeader, 0, sizeof(m_MapHeader) );
 	//s_pMap = NULL;
 
 	// discard from memory
@@ -622,13 +598,21 @@ void CMapLoadHelper::Shutdown( void )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Output : const char
+//-----------------------------------------------------------------------------
+const char* CLumpHeaderInfo::GetMapName(void)
+{
+	return m_szMapName;
+}
 
 //-----------------------------------------------------------------------------
 // Free the lighting lump (increases free memory during loading on 360)
 //-----------------------------------------------------------------------------
-void CMapLoadHelper::FreeLightingLump( void )
+void CLumpHeaderInfo::FreeLightingLump( void )
 {
-	if ( IsX360() && ( s_MapFileHandle == FILESYSTEM_INVALID_HANDLE ) && s_MapBuffer.Base() )
+	if ( IsX360() && (m_MapFileHandle == FILESYSTEM_INVALID_HANDLE ) && s_MapBuffer.Base() )
 	{
 		int lightingLump = LumpSize( LUMP_LIGHTING_HDR ) ? LUMP_LIGHTING_HDR : LUMP_LIGHTING;
 		// Should never have both lighting lumps on 360
@@ -648,7 +632,7 @@ void CMapLoadHelper::FreeLightingLump( void )
 			}
 
 			// Flag the lighting chunk as gone from the BSP (principally, this sets 'filelen' to 0)
-			V_memset( &s_MapHeader.lumps[ lightingLump ], 0, sizeof( lump_t ) );
+			V_memset( &m_MapHeader.lumps[ lightingLump ], 0, sizeof( lump_t ) );
 
 			// Shrink the buffer to free up the space that was used by the lighting lump
 			void * shrunkBuffer = realloc( s_MapBuffer.Base(), lightingOffset );
@@ -662,7 +646,7 @@ void CMapLoadHelper::FreeLightingLump( void )
 //-----------------------------------------------------------------------------
 // Returns the size of a particular lump without loading it...
 //-----------------------------------------------------------------------------
-int CMapLoadHelper::LumpSize( int lumpId )
+int CLumpHeaderInfo::LumpSize( int lumpId )
 {
 	// If we have a lump file for this lump, return its length instead
 	if ( IsPC() && s_MapLumpFiles[lumpId].file != FILESYSTEM_INVALID_HANDLE )
@@ -670,11 +654,11 @@ int CMapLoadHelper::LumpSize( int lumpId )
 		return s_MapLumpFiles[lumpId].header.lumpLength;
 	}
 
-	lump_t *pLump = &s_MapHeader.lumps[ lumpId ];
+	lump_t *pLump = &m_MapHeader.lumps[ lumpId ];
 	Assert( pLump );
 
 	// all knowledge of compression is private, they expect and get the original size
-	int originalSize = s_MapHeader.lumps[lumpId].uncompressedSize;
+	int originalSize = m_MapHeader.lumps[lumpId].uncompressedSize;
 	if ( originalSize != 0 )
 	{
 		return originalSize;
@@ -686,7 +670,7 @@ int CMapLoadHelper::LumpSize( int lumpId )
 //-----------------------------------------------------------------------------
 // Returns the offset of a particular lump without loading it...
 //-----------------------------------------------------------------------------
-int CMapLoadHelper::LumpOffset( int lumpID  )
+int CLumpHeaderInfo::LumpOffset( int lumpID  )
 {
 	// If we have a lump file for this lump, return 
 	// the offset to move past the lump file header.
@@ -695,7 +679,7 @@ int CMapLoadHelper::LumpOffset( int lumpID  )
 		return s_MapLumpFiles[lumpID].header.lumpOffset;
 	}
 
-	lump_t *pLump = &s_MapHeader.lumps[ lumpID ];
+	lump_t *pLump = &m_MapHeader.lumps[ lumpID ];
 	Assert( pLump );
 
 	return pLump->fileofs;
@@ -704,7 +688,7 @@ int CMapLoadHelper::LumpOffset( int lumpID  )
 //-----------------------------------------------------------------------------
 // Loads one element in a lump.
 //-----------------------------------------------------------------------------
-void CMapLoadHelper::LoadLumpElement( int nElemIndex, int nElemSize, void *pData )
+void CLumpInfo::LoadLumpElement( int nElemIndex, int nElemSize, void *pData )
 {
 	if ( !nElemSize || !m_nLumpSize )
 	{
@@ -727,7 +711,7 @@ void CMapLoadHelper::LoadLumpElement( int nElemIndex, int nElemSize, void *pData
 //-----------------------------------------------------------------------------
 // Loads one element in a lump.
 //-----------------------------------------------------------------------------
-void CMapLoadHelper::LoadLumpData( int offset, int size, void *pData )
+void CLumpInfo::LoadLumpData( int offset, int size, void *pData )
 {
 	if ( !size || !m_nLumpSize )
 	{
@@ -750,7 +734,7 @@ void CMapLoadHelper::LoadLumpData( int offset, int size, void *pData )
 // Input  : mapfile - 
 //			lumpToLoad - 
 //-----------------------------------------------------------------------------
-CMapLoadHelper::CMapLoadHelper( int lumpToLoad )
+CLumpInfo::CLumpInfo(CLumpHeaderInfo& headerInfo, int lumpToLoad) : m_LumpHeaderInfo(headerInfo)
 {
 	if ( lumpToLoad < 0 || lumpToLoad >= HEADER_LUMPS )
 	{
@@ -765,14 +749,14 @@ CMapLoadHelper::CMapLoadHelper( int lumpToLoad )
 	m_pUncompressedData = NULL;
 	
 	// Load raw lump from disk
-	lump_t *lump = &s_MapHeader.lumps[ lumpToLoad ];
+	lump_t *lump = &headerInfo.m_MapHeader.lumps[ lumpToLoad ];
 	Assert( lump );
 
 	m_nLumpSize = lump->filelen;
 	m_nLumpOffset = lump->fileofs;
 	m_nLumpVersion = lump->version;	
 
-	FileHandle_t fileToUse = s_MapFileHandle;
+	FileHandle_t fileToUse = headerInfo.m_MapFileHandle;
 
 	// If we have a lump file for this lump, use it instead
 	if ( IsPC() && s_MapLumpFiles[lumpToLoad].file != FILESYSTEM_INVALID_HANDLE )
@@ -783,7 +767,7 @@ CMapLoadHelper::CMapLoadHelper( int lumpToLoad )
 		m_nLumpVersion = s_MapLumpFiles[lumpToLoad].header.lumpVersion;
 
 		// Store off the lump file name
-		GenerateLumpFileName( s_szLoadName, m_szLumpFilename, MAX_PATH, s_MapLumpFiles[lumpToLoad].lumpfileindex );
+		GenerateLumpFileName(headerInfo.m_szLoadName, m_szLumpFilename, MAX_PATH, s_MapLumpFiles[lumpToLoad].lumpfileindex );
 	}
 
 	if ( !m_nLumpSize )
@@ -792,14 +776,14 @@ CMapLoadHelper::CMapLoadHelper( int lumpToLoad )
 		return;
 	}
 
-	if ( s_MapBuffer.Base() )
+	if (headerInfo.s_MapBuffer.Base() )
 	{
 		// bsp is in memory
-		m_pData = (unsigned char*)s_MapBuffer.Base() + m_nLumpOffset;
+		m_pData = (unsigned char*)headerInfo.s_MapBuffer.Base() + m_nLumpOffset;
 	}
 	else
 	{
-		if ( s_MapFileHandle == FILESYSTEM_INVALID_HANDLE )
+		if (headerInfo.m_MapFileHandle == FILESYSTEM_INVALID_HANDLE )
 		{
 			Sys_Error( "Can't load map from invalid handle!!!" );
 		}
@@ -851,7 +835,7 @@ CMapLoadHelper::CMapLoadHelper( int lumpToLoad )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CMapLoadHelper::~CMapLoadHelper( void )
+CLumpInfo::~CLumpInfo( void )
 {
 	if ( m_pUncompressedData )
 	{
@@ -874,20 +858,13 @@ CMapLoadHelper::~CMapLoadHelper( void )
 //	return s_pMap;
 //}
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Output : const char
-//-----------------------------------------------------------------------------
-const char *CMapLoadHelper::GetMapName( void )
-{
-	return s_szMapName;
-}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : const char
 //-----------------------------------------------------------------------------
-char *CMapLoadHelper::GetLoadName( void )
+char * CLumpInfo::GetLoadName( void )
 {
 	// If we have a custom lump file for the lump this helper 
 	// is loading, return it instead.
@@ -896,14 +873,14 @@ char *CMapLoadHelper::GetLoadName( void )
 		return m_szLumpFilename;
 	}
 
-	return s_szLoadName;
+	return m_LumpHeaderInfo.m_szLoadName;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : byte
 //-----------------------------------------------------------------------------
-byte *CMapLoadHelper::LumpBase( void )
+byte * CLumpInfo::LumpBase( void )
 {
 	return m_pData;
 }
@@ -912,17 +889,17 @@ byte *CMapLoadHelper::LumpBase( void )
 // Purpose: 
 // Output : int
 //-----------------------------------------------------------------------------
-int CMapLoadHelper::LumpSize()
+int CLumpInfo::LumpSize()
 {
 	return m_nLumpSize;
 }
 
-int CMapLoadHelper::LumpOffset()
+int CLumpInfo::LumpOffset()
 {
 	return m_nLumpOffset;
 }
 
-int	CMapLoadHelper::LumpVersion() const
+int	CLumpInfo::LumpVersion() const
 {
 	return m_nLumpVersion;
 }
@@ -989,14 +966,14 @@ void EnableHDR( bool bEnable )
 //-----------------------------------------------------------------------------
 // Determine feature flags
 //-----------------------------------------------------------------------------
-void Map_CheckFeatureFlags()
+void Map_CheckFeatureFlags(CLumpHeaderInfo& header)
 {
 	g_bLoadedMapHasBakedPropLighting = false;
 	g_bBakedPropLightingNoSeparateHDR = false;
 
-	if ( CMapLoadHelper::LumpSize( LUMP_MAP_FLAGS ) > 0 )
+	if ( header.LumpSize( LUMP_MAP_FLAGS ) > 0 )
 	{
-		CMapLoadHelper lh( LUMP_MAP_FLAGS );
+		CLumpInfo lh(header, LUMP_MAP_FLAGS );
 		dflagslump_t flags_lump;
 		flags_lump = *( (dflagslump_t *)( lh.LumpBase() ) );
 
@@ -1016,22 +993,22 @@ void Map_CheckFeatureFlags()
 bool Map_CheckForHDR( model_t *pModel, const char *pLoadName )
 {
 	// parse the map header only
-	CMapLoadHelper::Init( pModel, pLoadName );
+	CLumpHeaderInfo header( pModel, pLoadName );
 
 	bool bHasHDR = false;
 	if ( IsX360() )
 	{
 		// If this is true, the 360 MUST use HDR, because the LDR data gets stripped out.
-		bHasHDR = CMapLoadHelper::LumpSize( LUMP_LIGHTING_HDR ) > 0;
+		bHasHDR = header.LumpSize( LUMP_LIGHTING_HDR ) > 0;
 	}
 	else
 	{
 		// might want to also consider the game lumps GAMELUMP_DETAIL_PROP_LIGHTING_HDR
-		bHasHDR = CMapLoadHelper::LumpSize( LUMP_LIGHTING_HDR ) > 0 &&
-			CMapLoadHelper::LumpSize( LUMP_WORLDLIGHTS_HDR ) > 0;
+		bHasHDR = header.LumpSize( LUMP_LIGHTING_HDR ) > 0 &&
+			header.LumpSize( LUMP_WORLDLIGHTS_HDR ) > 0;
 		//			 Mod_GameLumpSize( GAMELUMP_DETAIL_PROP_LIGHTING_HDR ) > 0  // fixme
 	}
-	if ( s_MapHeader.version >= 20 && CMapLoadHelper::LumpSize( LUMP_LEAF_AMBIENT_LIGHTING_HDR ) == 0 )
+	if (header.m_MapHeader.version >= 20 && header.LumpSize( LUMP_LEAF_AMBIENT_LIGHTING_HDR ) == 0 )
 	{
 		// This lump only exists in version 20 and greater, so don't bother checking for it on earlier versions.
 		bHasHDR = false;
@@ -1045,9 +1022,9 @@ bool Map_CheckForHDR( model_t *pModel, const char *pLoadName )
 
 	// this data really should have been in the header, but it isn't
 	// establish the features now, before the real bsp load commences
-	Map_CheckFeatureFlags();
+	Map_CheckFeatureFlags(header);
 
-	CMapLoadHelper::Shutdown();
+	header.Shutdown();
 
 	return bHasHDR;
 }
@@ -1110,7 +1087,7 @@ static int ComputeLightmapSize( dface_t *pFace, mtexinfo_t *pTexInfo )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadLighting(CMapLoadHelper &lh )
+void model_t::Mod_LoadLighting(CLumpHeaderInfo& header, CLumpInfo&lh )
 {
 	if ( !lh.LumpSize() )
 	{
@@ -1127,14 +1104,14 @@ void model_t::Mod_LoadLighting(CMapLoadHelper &lh )
 	if ( IsX360() )
 	{
 		// Free the lighting lump, to increase the amount of memory free during the rest of loading
-		CMapLoadHelper::FreeLightingLump();
+		header.FreeLightingLump();
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadWorldlights(CMapLoadHelper &lh, bool bIsHDR )
+void model_t::Mod_LoadWorldlights(CLumpInfo& lh, bool bIsHDR )
 {
 	brush.pShared->shadowzbuffers = NULL;
 	if (!lh.LumpSize())
@@ -1241,18 +1218,18 @@ void model_t::Mod_LoadWorldlights(CMapLoadHelper &lh, bool bIsHDR )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadVertices()
+void model_t::Mod_LoadVertices(CLumpHeaderInfo& header)
 {
 	dvertex_t	*in;
 	mvertex_t	*out;
 	int			i, count;
 
-	CMapLoadHelper lh( LUMP_VERTEXES );
+	CLumpInfo lh(header, LUMP_VERTEXES );
 
 	in = (dvertex_t *)lh.LumpBase();
 	if ( lh.LumpSize() % sizeof(*in) )
 	{
-		g_pHost->Host_Error( "Mod_LoadVertices: funny lump size in %s", lh.GetMapName() );
+		g_pHost->Host_Error( "Mod_LoadVertices: funny lump size in %s", header.GetMapName() );
 	}
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mvertex_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "vertexes" ) );
@@ -1290,16 +1267,16 @@ static float RadiusFromBounds (Vector& mins, Vector& maxs)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadSubmodels(CUtlVector<mmodel_t> &submodelList )
+void model_t::Mod_LoadSubmodels(CLumpHeaderInfo& header,CUtlVector<mmodel_t> &submodelList )
 {
 	dmodel_t	*in;
 	int			i, j, count;
 
-	CMapLoadHelper lh( LUMP_MODELS );
+	CLumpInfo lh(header, LUMP_MODELS );
 
 	in = (dmodel_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error("Mod_LoadSubmodels: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error("Mod_LoadSubmodels: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 
 	submodelList.SetCount( count );
@@ -1325,17 +1302,17 @@ void model_t::Mod_LoadSubmodels(CUtlVector<mmodel_t> &submodelList )
 // Purpose: 
 // Output : medge_t *Mod_LoadEdges
 //-----------------------------------------------------------------------------
-medge_t *model_t::Mod_LoadEdges ()
+medge_t *model_t::Mod_LoadEdges (CLumpHeaderInfo& header)
 {
 	dedge_t *in;
 	medge_t *out;
 	int 	i, count;
 
-	CMapLoadHelper lh( LUMP_EDGES );
+	CLumpInfo lh(header, LUMP_EDGES );
 
 	in = (dedge_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadEdges: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadEdges: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	medge_t *pedges = new medge_t[count];
 
@@ -1355,9 +1332,9 @@ medge_t *model_t::Mod_LoadEdges ()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadOcclusion()
+void model_t::Mod_LoadOcclusion(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh( LUMP_OCCLUSION );
+	CLumpInfo lh(header, LUMP_OCCLUSION );
 
 	//worldbrushdata_t *b = &g_ModelLoader.m_worldBrushData;
 	brush.pShared->numoccluders = 0;
@@ -1457,30 +1434,30 @@ void model_t::Mod_LoadOcclusion()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadTexdata()
+void model_t::Mod_LoadTexdata(CLumpHeaderInfo& header)
 {
 	// Don't bother loading these again; they're already stored in the collision model
 	// which is guaranteed to be loaded at this point
-	brush.pShared->numtexdata = GetCollisionBSPData()->GetTexturesCount();
-	brush.pShared->texdata = GetCollisionBSPData()->GetSurfaceAtIndex(0);
+	//brush.pShared->numtexdata = g_pHost->Host_GetWorldModel()->GetTexturesCount();
+	//brush.pShared->texdata = g_pHost->Host_GetWorldModel()->GetSurfaceAtIndex(0);
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadTexinfo()
+void model_t::Mod_LoadTexinfo(CLumpHeaderInfo& header)
 {
 	texinfo_t *in;
 	mtexinfo_t *out;
 	int 	i, j, count;
 	// UNDONE: Fix this
 
-	CMapLoadHelper lh( LUMP_TEXINFO );
+	CLumpInfo lh(header, LUMP_TEXINFO );
 
 	in = (texinfo_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadTexinfo: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadTexinfo: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mtexinfo_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "texinfo" ) );
 
@@ -1511,7 +1488,7 @@ void model_t::Mod_LoadTexinfo()
 		{
 			if ( in->texdata >= 0 )
 			{
-				out->material = GL_LoadMaterial( brush.pShared->texdata[ in->texdata ].name, TEXTURE_GROUP_WORLD );
+				out->material = GL_LoadMaterial( brush.pShared->map_surfaces[ in->texdata ].name, TEXTURE_GROUP_WORLD );
 			}
 			else
 			{
@@ -1673,9 +1650,9 @@ static void CalcSurfaceExtents (model_t* pWorld, SurfaceHandle_t surfID )
 //			*pLump - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadVertNormals()
+void model_t::Mod_LoadVertNormals(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh( LUMP_VERTNORMALS );
+	CLumpInfo lh(header, LUMP_VERTNORMALS );
 
     // get a pointer to the vertex normal data.
 	Vector *pVertNormals = ( Vector * )lh.LumpBase();
@@ -1684,7 +1661,7 @@ void model_t::Mod_LoadVertNormals()
     // verify vertnormals data size
     //
     if( lh.LumpSize() % sizeof( *pVertNormals ) )
-		g_pHost->Host_Error( "Mod_LoadVertNormals: funny lump size in %s!\n", lh.GetMapName() );
+		g_pHost->Host_Error( "Mod_LoadVertNormals: funny lump size in %s!\n", header.GetMapName() );
 
 	int count = lh.LumpSize() / sizeof(*pVertNormals);
 	Vector *out = (Vector *)Hunk_AllocName( lh.LumpSize(), va( "%s [%s]", lh.GetLoadName(), "vertnormals" ) );
@@ -1698,9 +1675,9 @@ void model_t::Mod_LoadVertNormals()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadVertNormalIndices()
+void model_t::Mod_LoadVertNormalIndices(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh( LUMP_VERTNORMALINDICES );
+	CLumpInfo lh(header, LUMP_VERTNORMALINDICES );
 
     // get a pointer to the vertex normal data.
 	unsigned short *pIndices = ( unsigned short * )lh.LumpBase();
@@ -1728,17 +1705,17 @@ void model_t::Mod_LoadVertNormalIndices()
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadPrimitives()
+void model_t::Mod_LoadPrimitives(CLumpHeaderInfo& header)
 {
 	dprimitive_t	*in;
 	mprimitive_t	*out;
 	int				i, count;
 
-	CMapLoadHelper lh( LUMP_PRIMITIVES );
+	CLumpInfo lh(header, LUMP_PRIMITIVES );
 
 	in = (dprimitive_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadPrimitives: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadPrimitives: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mprimitive_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "primitives" ) );
 	memset( out, 0, count * sizeof( mprimitive_t ) );
@@ -1761,17 +1738,17 @@ void model_t::Mod_LoadPrimitives()
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadPrimVerts()
+void model_t::Mod_LoadPrimVerts(CLumpHeaderInfo& header)
 {
 	dprimvert_t		*in;
 	mprimvert_t		*out;
 	int				i, count;
 
-	CMapLoadHelper lh( LUMP_PRIMVERTS );
+	CLumpInfo lh(header, LUMP_PRIMVERTS );
 
 	in = (dprimvert_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadPrimVerts: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadPrimVerts: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mprimvert_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "primverts" ) );
 	memset( out, 0, count * sizeof( mprimvert_t ) );
@@ -1790,17 +1767,17 @@ void model_t::Mod_LoadPrimVerts()
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadPrimIndices()
+void model_t::Mod_LoadPrimIndices(CLumpHeaderInfo& header)
 {
 	unsigned short	*in;
 	unsigned short	*out;
 	int				count;
 
-	CMapLoadHelper lh( LUMP_PRIMINDICES );
+	CLumpInfo lh(header, LUMP_PRIMINDICES );
 
 	in = (unsigned short *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadPrimIndices: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadPrimIndices: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va("%s [%s]", lh.GetLoadName(), "primindices" ) );
 	memset( out, 0, count * sizeof( unsigned short ) );
@@ -1814,6 +1791,7 @@ void model_t::Mod_LoadPrimIndices()
 
 // This allocates memory for a lump and copies the lump data in.
 void Mod_LoadLump( 
+	CLumpHeaderInfo& header,
 	model_t *loadmodel, 
 	int iLump,
 	char *loadname, 
@@ -1821,7 +1799,7 @@ void Mod_LoadLump(
 	void **ppData, 
 	int *nElements )
 {
-	CMapLoadHelper lh( iLump );
+	CLumpInfo lh(header, iLump );
 
 	if ( lh.LumpSize() % elementSize )
 	{
@@ -1894,7 +1872,7 @@ T *Hunk_AllocNameAlignedClear( int count, int alignment, const char *pHunkName )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadFaces()
+void model_t::Mod_LoadFaces(CLumpHeaderInfo& header)
 {
 	dface_t		*in;
 	int			count, surfnum;
@@ -1902,15 +1880,15 @@ void model_t::Mod_LoadFaces()
 	int			ti, di;
 
 	int face_lump_to_load = LUMP_FACES;
-	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && CMapLoadHelper::LumpSize( LUMP_FACES_HDR ) > 0 )
+	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && header.LumpSize( LUMP_FACES_HDR ) > 0 )
 	{
 		face_lump_to_load = LUMP_FACES_HDR;
 	}
-	CMapLoadHelper lh( face_lump_to_load );
+	CLumpInfo lh(header, face_lump_to_load );
 	
 	in = (dface_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadFaces: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadFaces: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 
 	// align these allocations
@@ -1960,7 +1938,7 @@ void model_t::Mod_LoadFaces()
 			MSurf_Flags( surfID ) |= SURFDRAW_PLANEBACK;
 		}
 
-		out2->plane = brush.pShared->planes + planenum;
+		out2->plane = brush.pShared->map_planes.Base() + planenum;
 
 		ti = in->texinfo;
 		if (ti < 0 || ti >= brush.pShared->numtexinfo)
@@ -2092,18 +2070,18 @@ static void CheckSmallVolumeDifferences( mnode_t *pNode, const Vector &parentSiz
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadNodes()
+void model_t::Mod_LoadNodes(CLumpHeaderInfo& header)
 {
 	Vector mins( 0, 0, 0 ), maxs( 0, 0, 0 );
 	int			i, j, count, p;
 	dnode_t		*in;
 	mnode_t 	*out;
 
-	CMapLoadHelper lh( LUMP_NODES );
+	CLumpInfo lh(header, LUMP_NODES );
 
 	in = (dnode_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadNodes: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadNodes: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mnode_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "nodes" ) );
 
@@ -2123,7 +2101,7 @@ void model_t::Mod_LoadNodes()
 		VectorSubtract( maxs, out->m_vecCenter, out->m_vecHalfDiagonal );
 
 		p = in->planenum;
-		out->plane = brush.pShared->planes + p;
+		out->plane = brush.pShared->map_planes.Base() + p;
 
 		out->firstsurface = in->firstface;
 		out->numsurfaces = in->numfaces;
@@ -2170,7 +2148,7 @@ void model_t::Mod_LoadNodes()
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadLeafs_Version_0(CMapLoadHelper &lh )
+void model_t::Mod_LoadLeafs_Version_0(CLumpHeaderInfo& header,CLumpInfo& lh )
 {
 	Vector mins( 0, 0, 0 ), maxs( 0, 0, 0 );
 	dleaf_version_0_t 	*in;
@@ -2179,7 +2157,7 @@ void model_t::Mod_LoadLeafs_Version_0(CMapLoadHelper &lh )
 
 	in = (dleaf_version_0_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleaf_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafs" ) );
 
@@ -2236,7 +2214,7 @@ void model_t::Mod_LoadLeafs_Version_0(CMapLoadHelper &lh )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadLeafs_Version_1(CMapLoadHelper &lh, CMapLoadHelper &ambientLightingLump, CMapLoadHelper &ambientLightingTable )
+void model_t::Mod_LoadLeafs_Version_1(CLumpHeaderInfo& header,CLumpInfo& lh, CLumpInfo& ambientLightingLump, CLumpInfo& ambientLightingTable )
 {
 	Vector mins( 0, 0, 0 ), maxs( 0, 0, 0 );
 	dleaf_t 	*in;
@@ -2245,7 +2223,7 @@ void model_t::Mod_LoadLeafs_Version_1(CMapLoadHelper &lh, CMapLoadHelper &ambien
 
 	in = (dleaf_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleaf_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafs" ) );
 
@@ -2331,27 +2309,27 @@ void model_t::Mod_LoadLeafs_Version_1(CMapLoadHelper &lh, CMapLoadHelper &ambien
 	}	
 }
 
-void model_t::Mod_LoadLeafs()
+void model_t::Mod_LoadLeafs(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh( LUMP_LEAFS );
+	CLumpInfo lh(header, LUMP_LEAFS );
 
 	switch( lh.LumpVersion() )
 	{
 	case 0:
-		Mod_LoadLeafs_Version_0( lh );
+		Mod_LoadLeafs_Version_0(header, lh );
 		break;
 	case 1:
-		if( g_pMaterialSystemHardwareConfig->GetHDREnabled() && CMapLoadHelper::LumpSize( LUMP_LEAF_AMBIENT_LIGHTING_HDR ) > 0 )
+		if( g_pMaterialSystemHardwareConfig->GetHDREnabled() && header.LumpSize( LUMP_LEAF_AMBIENT_LIGHTING_HDR ) > 0 )
 		{
-			CMapLoadHelper mlh( LUMP_LEAF_AMBIENT_LIGHTING_HDR );
-			CMapLoadHelper mlhTable( LUMP_LEAF_AMBIENT_INDEX_HDR );
-			Mod_LoadLeafs_Version_1( lh, mlh, mlhTable );
+			CLumpInfo mlh(header, LUMP_LEAF_AMBIENT_LIGHTING_HDR );
+			CLumpInfo mlhTable(header, LUMP_LEAF_AMBIENT_INDEX_HDR );
+			Mod_LoadLeafs_Version_1(header, lh, mlh, mlhTable );
 		}
 		else
 		{
-			CMapLoadHelper mlh( LUMP_LEAF_AMBIENT_LIGHTING );
-			CMapLoadHelper mlhTable( LUMP_LEAF_AMBIENT_INDEX );
-			Mod_LoadLeafs_Version_1( lh, mlh, mlhTable );
+			CLumpInfo mlh(header, LUMP_LEAF_AMBIENT_LIGHTING );
+			CLumpInfo mlhTable(header, LUMP_LEAF_AMBIENT_INDEX );
+			Mod_LoadLeafs_Version_1(header, lh, mlh, mlhTable );
 		}
 		break;
 	default:
@@ -2361,31 +2339,31 @@ void model_t::Mod_LoadLeafs()
 	}
 
 	//worldbrushdata_t *pMap = &g_ModelLoader.m_worldBrushData;
-	cleaf_t *pCLeaf = GetCollisionBSPData()->GetLeafs(0);
+	cleaf_t *pCLeaf = this->GetLeafs(0);
 	for ( int i = 0; i < brush.pShared->numleafs; i++ )
 	{
 		brush.pShared->leafs[i].dispCount = pCLeaf[i].dispCount;
 		brush.pShared->leafs[i].dispListStart = pCLeaf[i].dispListStart;
 	}
 	// HACKHACK: Copy over the shared global list here.  Hunk_Alloc a copy?
-	brush.pShared->m_pDispInfoReferences = GetCollisionBSPData()->GetDispListBase();
-	brush.pShared->m_nDispInfoReferences = GetCollisionBSPData()->GetDispListCount();
+	brush.pShared->m_pDispInfoReferences = this->GetDispListBase();
+	brush.pShared->m_nDispInfoReferences = this->GetDispListCount();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadLeafWaterData()
+void model_t::Mod_LoadLeafWaterData(CLumpHeaderInfo& header)
 {
 	dleafwaterdata_t *in;
 	mleafwaterdata_t *out;
 	int count, i;
 
-	CMapLoadHelper lh( LUMP_LEAFWATERDATA );
+	CLumpInfo lh(header, LUMP_LEAFWATERDATA );
 
 	in = (dleafwaterdata_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadLeafs: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mleafwaterdata_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafwaterdata" ) );
 
@@ -2415,7 +2393,7 @@ void model_t::Mod_LoadLeafWaterData()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadCubemapSamples()
+void model_t::Mod_LoadCubemapSamples(CLumpHeaderInfo& header)
 {
 	char textureName[512];
 	char loadName[ MAX_PATH ];
@@ -2423,13 +2401,13 @@ void model_t::Mod_LoadCubemapSamples()
 	mcubemapsample_t *out;
 	int count, i;
 
-	CMapLoadHelper lh( LUMP_CUBEMAPS );
+	CLumpInfo lh(header, LUMP_CUBEMAPS );
 
 	V_strcpy_safe( loadName, lh.GetLoadName() );
 
 	in = (dcubemapsample_t *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadCubemapSamples: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadCubemapSamples: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	out = (mcubemapsample_t *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "cubemapsample" ) );
 
@@ -2489,7 +2467,7 @@ void model_t::Mod_LoadCubemapSamples()
 	{
 		if ( CommandLine()->CheckParm( "-requirecubemaps" ) )
 		{
-			Sys_Error( "Map \"%s\" does not have cubemaps!", lh.GetMapName() );
+			Sys_Error( "Map \"%s\" does not have cubemaps!", header.GetMapName() );
 		}
 
 		ITexture *pTexture;
@@ -2507,9 +2485,9 @@ void model_t::Mod_LoadCubemapSamples()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadLeafMinDistToWater()
+void model_t::Mod_LoadLeafMinDistToWater(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh( LUMP_LEAFMINDISTTOWATER );
+	CLumpInfo lh(header, LUMP_LEAFMINDISTTOWATER );
 
 	unsigned short *pTmp = ( unsigned short * )lh.LumpBase();
 
@@ -2540,7 +2518,7 @@ void model_t::Mod_LoadLeafMinDistToWater()
 
 		in = (unsigned short *)lh.LumpBase();
 		if (lh.LumpSize() % sizeof(*in))
-			g_pHost->Host_Error ("Mod_LoadLeafMinDistToWater: funny lump size in %s",lh.GetMapName());
+			g_pHost->Host_Error ("Mod_LoadLeafMinDistToWater: funny lump size in %s",header.GetMapName());
 		count = lh.LumpSize() / sizeof(*in);
 		out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "leafmindisttowater" ) );
 
@@ -2552,16 +2530,16 @@ void model_t::Mod_LoadLeafMinDistToWater()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadMarksurfaces()
+void model_t::Mod_LoadMarksurfaces(CLumpHeaderInfo& header)
 {	
 	int		i, j, count;
 	unsigned short	*in;
 
-	CMapLoadHelper lh( LUMP_LEAFFACES );
+	CLumpInfo lh(header, LUMP_LEAFFACES );
 	
 	in = (unsigned short *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadMarksurfaces: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadMarksurfaces: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	SurfaceHandle_t	*tempDiskData = new SurfaceHandle_t[count];
 
@@ -2639,21 +2617,21 @@ void model_t::Mod_LoadMarksurfaces()
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadSurfedges(medge_t *pedges )
+void model_t::Mod_LoadSurfedges(CLumpHeaderInfo& header,medge_t *pedges )
 {	
 	int		i, count;
 	int		*in;
 	unsigned short *out;
 	
-	CMapLoadHelper lh( LUMP_SURFEDGES );
+	CLumpInfo lh(header, LUMP_SURFEDGES );
 
 	in = (int *)lh.LumpBase();
 	if (lh.LumpSize() % sizeof(*in))
-		g_pHost->Host_Error ("Mod_LoadSurfedges: funny lump size in %s",lh.GetMapName());
+		g_pHost->Host_Error ("Mod_LoadSurfedges: funny lump size in %s",header.GetMapName());
 	count = lh.LumpSize() / sizeof(*in);
 	if (count < 1 || count >= MAX_MAP_SURFEDGES)
 		g_pHost->Host_Error ("Mod_LoadSurfedges: bad surfedges count in %s: %i",
-		lh.GetMapName(), count);
+		header.GetMapName(), count);
 	out = (unsigned short *)Hunk_AllocName( count*sizeof(*out), va( "%s [%s]", lh.GetLoadName(), "surfedges" ) );
 
 	brush.pShared->vertindices = out;
@@ -2680,24 +2658,24 @@ void model_t::Mod_LoadSurfedges(medge_t *pedges )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadPlanes()
+void model_t::Mod_LoadPlanes(CLumpHeaderInfo& header)
 {
 	// Don't bother loading them, they're already stored
-	brush.pShared->planes = GetCollisionBSPData()->GetPlane(0);
-	brush.pShared->numplanes = GetCollisionBSPData()->GetPlanesCount();
+	//brush.pShared->planes = g_pHost->Host_GetWorldModel()->GetPlane(0);
+	//brush.pShared->numplanes = g_pHost->Host_GetWorldModel()->GetPlanesCount();
 }
 
 
 //-----------------------------------------------------------------------------
 // Returns game lump version
 //-----------------------------------------------------------------------------
-int Mod_GameLumpVersion( int lumpId )
+int model_t::Mod_GameLumpVersion( int lumpId )
 {
-	for ( int i = g_GameLumpDict.Size(); --i >= 0; )
+	for ( int i = brush.pShared->g_GameLumpDict.Size(); --i >= 0; )
 	{
-		if ( g_GameLumpDict[i].id == lumpId )
+		if (brush.pShared->g_GameLumpDict[i].id == lumpId )
 		{
-			return g_GameLumpDict[i].version;
+			return brush.pShared->g_GameLumpDict[i].version;
 		}
 	}
 
@@ -2708,13 +2686,13 @@ int Mod_GameLumpVersion( int lumpId )
 //-----------------------------------------------------------------------------
 // Returns game lump size
 //-----------------------------------------------------------------------------
-int Mod_GameLumpSize( int lumpId )
+int model_t::Mod_GameLumpSize( int lumpId )
 {
-	for ( int i = g_GameLumpDict.Size(); --i >= 0; )
+	for ( int i = brush.pShared->g_GameLumpDict.Size(); --i >= 0; )
 	{
-		if ( g_GameLumpDict[i].id == lumpId )
+		if (brush.pShared->g_GameLumpDict[i].id == lumpId )
 		{
-			return g_GameLumpDict[i].uncompressedSize;
+			return brush.pShared->g_GameLumpDict[i].uncompressedSize;
 		}
 	}
 
@@ -2725,12 +2703,12 @@ int Mod_GameLumpSize( int lumpId )
 //-----------------------------------------------------------------------------
 // Loads game lumps
 //-----------------------------------------------------------------------------
-bool Mod_LoadGameLump( int lumpId, void *pOutBuffer, int size )
+bool model_t::Mod_LoadGameLump(int lumpId, void *pOutBuffer, int size )
 {
 	int i;
-	for ( i = g_GameLumpDict.Size(); --i >= 0; )
+	for ( i = brush.pShared->g_GameLumpDict.Size(); --i >= 0; )
 	{
-		if ( g_GameLumpDict[i].id == lumpId )
+		if (brush.pShared->g_GameLumpDict[i].id == lumpId )
 		{
 			break;
 		}
@@ -2742,19 +2720,19 @@ bool Mod_LoadGameLump( int lumpId, void *pOutBuffer, int size )
 	}
 
 	byte *pData;
-	bool bIsCompressed = ( g_GameLumpDict[i].flags & GAMELUMPFLAG_COMPRESSED );
+	bool bIsCompressed = (brush.pShared->g_GameLumpDict[i].flags & GAMELUMPFLAG_COMPRESSED );
 	int dataLength;
 	int outSize;
 	if ( bIsCompressed )
 	{
 		// lump data length is always original uncompressed size
 		// compressed lump data length is determined from next dictionary entry offset
-		dataLength = g_GameLumpDict[i].compressedSize;
-		outSize = g_GameLumpDict[i].uncompressedSize;
+		dataLength = brush.pShared->g_GameLumpDict[i].compressedSize;
+		outSize = brush.pShared->g_GameLumpDict[i].uncompressedSize;
 	}
 	else
 	{
-		dataLength = outSize = g_GameLumpDict[i].uncompressedSize;
+		dataLength = outSize = brush.pShared->g_GameLumpDict[i].uncompressedSize;
 	}
 
 	if ( size < 0 || size < outSize )
@@ -2763,19 +2741,19 @@ bool Mod_LoadGameLump( int lumpId, void *pOutBuffer, int size )
 		return false;
 	}
 
-	if ( s_MapBuffer.Base() )
+	if (CLumpHeaderInfo::s_MapBuffer.Base() )
 	{
 		// data is in memory
 		Assert( CMapLoadHelper::GetRefCount() );
 
-		if ( g_GameLumpDict[i].offset + dataLength > (unsigned int)s_MapBuffer.TellMaxPut() )
+		if (brush.pShared->g_GameLumpDict[i].offset + dataLength > (unsigned int)CLumpHeaderInfo::s_MapBuffer.TellMaxPut() )
 		{
 			// out of range
 			Assert( 0 );
 			return false;
 		}
 
-		pData = (unsigned char *)s_MapBuffer.Base() + g_GameLumpDict[i].offset;
+		pData = (unsigned char *)CLumpHeaderInfo::s_MapBuffer.Base() + brush.pShared->g_GameLumpDict[i].offset;
 		if ( !bIsCompressed )
 		{
 			V_memcpy( pOutBuffer, pData, outSize );
@@ -2785,13 +2763,13 @@ bool Mod_LoadGameLump( int lumpId, void *pOutBuffer, int size )
 	else
 	{
 		// Load file into buffer
-		FileHandle_t fileHandle = g_pFileSystem->Open( g_GameLumpFilename, "rb" );
+		FileHandle_t fileHandle = g_pFileSystem->Open(brush.pShared->g_GameLumpFilename, "rb" );
 		if ( fileHandle == FILESYSTEM_INVALID_HANDLE )
 		{
 			return false;
 		}
 
-		g_pFileSystem->Seek( fileHandle, g_GameLumpDict[i].offset, FILESYSTEM_SEEK_HEAD );
+		g_pFileSystem->Seek( fileHandle, brush.pShared->g_GameLumpDict[i].offset, FILESYSTEM_SEEK_HEAD );
 
 		if ( !bIsCompressed )
 		{
@@ -2816,7 +2794,7 @@ bool Mod_LoadGameLump( int lumpId, void *pOutBuffer, int size )
 
 	// We'll fall though to here through here if we're compressed
 	bool bResult = false;
-	if ( !CLZMA::IsCompressed( pData ) || CLZMA::GetActualSize( (unsigned char *)pData ) != g_GameLumpDict[i].uncompressedSize )
+	if ( !CLZMA::IsCompressed( pData ) || CLZMA::GetActualSize( (unsigned char *)pData ) != brush.pShared->g_GameLumpDict[i].uncompressedSize )
 	{
 		Warning( "Failed loading game lump %i: lump claims to be compressed but metadata does not match\n", lumpId );
 	}
@@ -2824,10 +2802,10 @@ bool Mod_LoadGameLump( int lumpId, void *pOutBuffer, int size )
 	{
 		// uncompress directly into caller's buffer
 		int outputLength = CLZMA::Uncompress( pData, (unsigned char *)pOutBuffer );
-		bResult = ( outputLength > 0 && (unsigned int)outputLength == g_GameLumpDict[i].uncompressedSize );
+		bResult = ( outputLength > 0 && (unsigned int)outputLength == brush.pShared->g_GameLumpDict[i].uncompressedSize );
 	}
 
-	if ( !s_MapBuffer.Base() )
+	if ( !CLumpHeaderInfo::s_MapBuffer.Base() )
 	{
 		// done with temporary buffer
 		free( pData );
@@ -2839,15 +2817,15 @@ bool Mod_LoadGameLump( int lumpId, void *pOutBuffer, int size )
 //-----------------------------------------------------------------------------
 // Loads game lump dictionary
 //-----------------------------------------------------------------------------
-void Mod_LoadGameLumpDict( void )
+void model_t::Mod_LoadGameLumpDict(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh( LUMP_GAME_LUMP );
+	CLumpInfo lh(header, LUMP_GAME_LUMP );
 
 	// FIXME: This is brittle. If we ever try to load two game lumps
 	// (say, in multiple BSP files), the dictionary info I store here will get whacked
 
-	g_GameLumpDict.RemoveAll();
-	V_strcpy_safe( g_GameLumpFilename, lh.GetMapName() );
+	brush.pShared->g_GameLumpDict.RemoveAll();
+	V_strcpy_safe(brush.pShared->g_GameLumpFilename, header.GetMapName() );
 
 	unsigned int lhSize = (unsigned int)Max( lh.LumpSize(), 0 );
 	if ( lhSize >= sizeof( dgamelumpheader_t ) )
@@ -2885,7 +2863,7 @@ void Mod_LoadGameLumpDict( void )
 					{
 						compressedSize = (unsigned int)lh.LumpOffset() + lhSize - (unsigned int)pGameLump[i].fileofs;
 					}
-					g_GameLumpDict.AddToTail( { pGameLump[i], compressedSize } );
+					brush.pShared->g_GameLumpDict.AddToTail( { pGameLump[i], compressedSize } );
 				}
 			}
 		}
@@ -3137,7 +3115,7 @@ class CResourcePreloadModel : public CResourcePreload
 			// 360 mounts its bsp entirely into memory
 			// this data is discarded at the conclusion of the entire load process
 			Assert( CMapLoadHelper::GetRefCount() == 0 );
-			CMapLoadHelper::InitFromMemory( (model_t *)pContext, pData, nSize );
+			//CMapLoadHelper::InitFromMemory( (model_t *)pContext, pData, nSize );
 		}
 	}
 
@@ -3159,9 +3137,9 @@ class CResourcePreloadModel : public CResourcePreload
 				// up to the pack lump, which is guranateed last
 				char szLoadName[MAX_PATH];
 				V_FileBase( pMapModel->GetModelName(), szLoadName, sizeof(szLoadName));
-				CMapLoadHelper::Init( pMapModel, szLoadName );
-				int nBytesToRead = CMapLoadHelper::LumpOffset( LUMP_PAKFILE );
-				CMapLoadHelper::Shutdown();
+				CLumpHeaderInfo header( pMapModel, szLoadName );
+				int nBytesToRead = header.LumpOffset( LUMP_PAKFILE );
+				header.Shutdown();
 
 				// create a loader job to perform i/o operation to mount the .bsp
 				LoaderJob_t loaderJobBSP;
@@ -3354,7 +3332,7 @@ class CResourcePreloadModel : public CResourcePreload
 	virtual void OnEndMapLoading( bool bAbort )
 	{
 		// discard the memory mounted bsp
-		CMapLoadHelper::Shutdown();
+		//CMapLoadHelper::Shutdown();
 		Assert( CMapLoadHelper::GetRefCount() == 0 );
 	}
 };
@@ -4381,7 +4359,7 @@ public:
 	bool EnumerateLeaf(IVModel* world, int leaf, intp )
 	{
 		// garymcthack - need to test identity brush models
-		int flags = (((model_t*)world)->GetLeafs(leaf)->leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
+		int flags = (((model_t*)world)->GetMLeafs(leaf)->leafWaterDataID == -1 ) ? SURFDRAW_ABOVEWATER : SURFDRAW_UNDERWATER;
 		MarkModelSurfaces((model_t*)world, flags );
 		m_count++;
 		return true;
@@ -4469,34 +4447,34 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 	// Load the collision model
 	COM_TimestampedLog( "  CM_LoadMap" );
 	unsigned int checksum;
-	CM_LoadMap( mod->strName, false, &checksum );
+	CM_LoadMap( mod, false, &checksum );
 
 	// Load the map
 	mod->type = mod_brush;
 	mod->nLoadFlags |= FMODELLOADER_LOADED;
-	CMapLoadHelper::Init( mod, m_szLoadName );
+	CLumpHeaderInfo header( mod, m_szLoadName );
 
 	COM_TimestampedLog( "  Mod_LoadVertices" );
-	mod->Mod_LoadVertices();
+	mod->Mod_LoadVertices(header);
 	
 	COM_TimestampedLog( "  Mod_LoadEdges" );
-	medge_t *pedges = mod->Mod_LoadEdges();
+	medge_t *pedges = mod->Mod_LoadEdges(header);
 
 	COM_TimestampedLog( "  Mod_LoadSurfedges" );
-	mod->Mod_LoadSurfedges( pedges );
+	mod->Mod_LoadSurfedges(header, pedges );
 
 	COM_TimestampedLog( "  Mod_LoadPlanes" );
-	mod->Mod_LoadPlanes();
+	mod->Mod_LoadPlanes(header);
 
 	COM_TimestampedLog( "  Mod_LoadOcclusion" );
-	mod->Mod_LoadOcclusion();
+	mod->Mod_LoadOcclusion(header);
 
 	// texdata needs to load before texinfo
 	COM_TimestampedLog( "  Mod_LoadTexdata" );
-	mod->Mod_LoadTexdata();
+	mod->Mod_LoadTexdata(header);
 
 	COM_TimestampedLog( "  Mod_LoadTexinfo" );
-	mod->Mod_LoadTexinfo();
+	mod->Mod_LoadTexinfo(header);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4504,25 +4482,25 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	// Until BSP version 19, this must occur after loading texinfo
 	COM_TimestampedLog( "  Mod_LoadLighting" );
-	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && CMapLoadHelper::LumpSize( LUMP_LIGHTING_HDR ) > 0 )
+	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && header.LumpSize( LUMP_LIGHTING_HDR ) > 0 )
 	{
-		CMapLoadHelper mlh( LUMP_LIGHTING_HDR );
-		mod->Mod_LoadLighting( mlh );
+		CLumpInfo mlh(header, LUMP_LIGHTING_HDR );
+		mod->Mod_LoadLighting(header, mlh );
 	}
 	else
 	{
-		CMapLoadHelper mlh( LUMP_LIGHTING );
-		mod->Mod_LoadLighting( mlh );
+		CLumpInfo mlh(header, LUMP_LIGHTING );
+		mod->Mod_LoadLighting(header, mlh );
 	}
 
 	COM_TimestampedLog( "  Mod_LoadPrimitives" );
-	mod->Mod_LoadPrimitives();
+	mod->Mod_LoadPrimitives(header);
 
 	COM_TimestampedLog( "  Mod_LoadPrimVerts" );
-	mod->Mod_LoadPrimVerts();
+	mod->Mod_LoadPrimVerts(header);
 
 	COM_TimestampedLog( "  Mod_LoadPrimIndices" );
-	mod->Mod_LoadPrimIndices();
+	mod->Mod_LoadPrimIndices(header);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4530,13 +4508,13 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	// faces need to be loaded before vertnormals
 	COM_TimestampedLog( "  Mod_LoadFaces" );
-	mod->Mod_LoadFaces();
+	mod->Mod_LoadFaces(header);
 
 	COM_TimestampedLog( "  Mod_LoadVertNormals" );
-	mod->Mod_LoadVertNormals();
+	mod->Mod_LoadVertNormals(header);
 
 	COM_TimestampedLog( "  Mod_LoadVertNormalIndices" );
-	mod->Mod_LoadVertNormalIndices();
+	mod->Mod_LoadVertNormalIndices(header);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4544,35 +4522,35 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	// note leafs must load befor marksurfaces
 	COM_TimestampedLog( "  Mod_LoadLeafs" );
-	mod->Mod_LoadLeafs();
+	mod->Mod_LoadLeafs(header);
 
 	COM_TimestampedLog( "  Mod_LoadMarksurfaces" );
-	mod->Mod_LoadMarksurfaces();
+	mod->Mod_LoadMarksurfaces(header);
 
 	COM_TimestampedLog( "  Mod_LoadNodes" );
-	mod->Mod_LoadNodes();
+	mod->Mod_LoadNodes(header);
 
 	COM_TimestampedLog( "  Mod_LoadLeafWaterData" );
-	mod->Mod_LoadLeafWaterData();
+	mod->Mod_LoadLeafWaterData(header);
 
 	COM_TimestampedLog( "  Mod_LoadCubemapSamples" );
-	mod->Mod_LoadCubemapSamples();
+	mod->Mod_LoadCubemapSamples(header);
 
 #ifndef SWDS
 	// UNDONE: Does the cmodel need worldlights?
 	COM_TimestampedLog( "  OverlayMgr()->LoadOverlays" );
-	OverlayMgr()->LoadOverlays(mod);//&g_ModelLoader.m_worldBrushData
+	OverlayMgr()->LoadOverlays(header,mod);//&g_ModelLoader.m_worldBrushData
 #endif
 
 	COM_TimestampedLog( "  Mod_LoadLeafMinDistToWater" );
-	mod->Mod_LoadLeafMinDistToWater();
+	mod->Mod_LoadLeafMinDistToWater(header);
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
 #endif
 
 	COM_TimestampedLog( "  LUMP_CLIPPORTALVERTS" );
-	Mod_LoadLump( mod, 
+	Mod_LoadLump(header, mod, 
 		LUMP_CLIPPORTALVERTS, 
 		va( "%s [%s]", m_szLoadName, "clipportalverts" ),
 		sizeof(mod->brush.pShared->m_pClipPortalVerts[0]),
@@ -4580,7 +4558,7 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 		&mod->brush.pShared->m_nClipPortalVerts );
 
 	COM_TimestampedLog( "  LUMP_AREAPORTALS" );
-	Mod_LoadLump( mod, 
+	Mod_LoadLump(header, mod, 
 		LUMP_AREAPORTALS, 
 		va( "%s [%s]", m_szLoadName, "areaportals" ),
 		sizeof(mod->brush.pShared->m_pAreaPortals[0]),
@@ -4588,7 +4566,7 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 		&mod->brush.pShared->m_nAreaPortals );
 	
 	COM_TimestampedLog( "  LUMP_AREAS" );
-	Mod_LoadLump( mod, 
+	Mod_LoadLump(header, mod, 
 		LUMP_AREAS, 
 		va( "%s [%s]", m_szLoadName, "areas" ),
 		sizeof(mod->brush.pShared->m_pAreas[0]),
@@ -4596,19 +4574,19 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 		&mod->brush.pShared->m_nAreas );
 
 	COM_TimestampedLog( "  Mod_LoadWorldlights" );
-	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && CMapLoadHelper::LumpSize( LUMP_WORLDLIGHTS_HDR ) > 0 )
+	if ( g_pMaterialSystemHardwareConfig->GetHDREnabled() && header.LumpSize( LUMP_WORLDLIGHTS_HDR ) > 0 )
 	{
-		CMapLoadHelper mlh( LUMP_WORLDLIGHTS_HDR );
+		CLumpInfo mlh(header, LUMP_WORLDLIGHTS_HDR );
 		mod->Mod_LoadWorldlights( mlh, true );
 	}
 	else
 	{
-		CMapLoadHelper mlh( LUMP_WORLDLIGHTS );
+		CLumpInfo mlh(header, LUMP_WORLDLIGHTS );
 		mod->Mod_LoadWorldlights( mlh, false );
 	}
 
 	COM_TimestampedLog( "  Mod_LoadGameLumpDict" );
-	Mod_LoadGameLumpDict();
+	mod->Mod_LoadGameLumpDict(header);
 
 	// load the portal information
 	// JAY: Disabled until we need this information.
@@ -4625,7 +4603,7 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	COM_TimestampedLog( "  Mod_LoadSubmodels" );
 	CUtlVector<mmodel_t> submodelList;
-	mod->Mod_LoadSubmodels( submodelList );
+	mod->Mod_LoadSubmodels(header, submodelList );
 
 #ifndef SWDS
 	EngineVGui()->UpdateProgressBar(PROGRESS_LOADWORLDMODEL);
@@ -4648,7 +4626,7 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 	Map_SetRenderInfoAllocated( false );
 
 	// Close map file, etc.
-	CMapLoadHelper::Shutdown();
+	header.Shutdown();
 
 	double elapsed = Plat_FloatTime() - startTime;
 	COM_TimestampedLog( "Map_LoadModel: Finish - loading took %.4f seconds", elapsed );
@@ -5193,7 +5171,7 @@ void CModelLoader::SetWorldModel( model_t *mod )
 	Assert( mod );
 	m_pWorldModel = mod;
 	// point at the shared world/brush data
-	mod->brush.pShared = &m_worldBrushData;
+	mod->brush.pShared = new worldbrushdata_t();// &m_worldBrushData;
 	mod->brush.renderHandle = 0;
 //	host_state.SetWorldModel( mod ); // garymcthack
 }
@@ -5205,6 +5183,7 @@ void CModelLoader::ClearWorldModel(model_t* mod)
 {
 	Assert(m_pWorldModel==mod);
 	m_pWorldModel = NULL;
+	delete mod->brush.pShared;
 	memset( &mod->brush.pShared, 0, sizeof(mod->brush.pShared) );
 	m_InlineModels.Purge();
 }
@@ -5305,11 +5284,11 @@ void CModelLoader::Map_LoadDisplacements( model_t *pModel, bool bRestoring )
 	}
 	
 	Q_FileBase( pModel->strName, m_szLoadName, sizeof( m_szLoadName ) );
-	CMapLoadHelper::Init( pModel, m_szLoadName );
+	CLumpHeaderInfo header( pModel, m_szLoadName );
 
-    DispInfo_LoadDisplacements( pModel, bRestoring );
+    DispInfo_LoadDisplacements(header, pModel, bRestoring );
 
-	CMapLoadHelper::Shutdown();
+	header.Shutdown();
 }
 
 
@@ -6088,7 +6067,7 @@ void Mod_LeafAmbientColorAtPos(model_t* pWorld, Vector *pOut, const Vector &pos,
 	{
 		int start = pWorld->GetLeafAmbient(leafIndex)->firstAmbientSample;
 		mleafambientlighting_t *pSamples = &pWorld->GetAmbientSamples(start);
-		mleaf_t *pLeaf = pWorld->GetLeafs(leafIndex);
+		mleaf_t *pLeaf = pWorld->GetMLeafs(leafIndex);
 		float totalFactor = 0;
 		for ( int i = 0; i < count; i++ )
 		{

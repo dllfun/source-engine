@@ -19,8 +19,8 @@
 class ICollideable;
 
 
-cmodel_t	*CM_LoadMap( const char *name, bool allowReusePrevious, unsigned *checksum );
-void		CM_FreeMap( void );
+cmodel_t	*CM_LoadMap(model_t* mod, bool allowReusePrevious, unsigned *checksum );
+void		CM_FreeMap(model_t* mod);
 cmodel_t	*CM_InlineModel( const char *name );	// *1, *2, etc
 cmodel_t	*CM_InlineModelNumber( int index );	// 1, 2, etc
 int			CM_InlineModelContents( int index );	// 1, 2, etc
@@ -84,7 +84,7 @@ vcollide_t* CM_VCollideForModel( int modelindex, const model_t* pModel );
 // gets a virtual physcollide for a displacement
 CPhysCollide *CM_PhysCollideForDisp( int index );
 int			CM_SurfacepropsForDisp( int index );
-void		CM_CreateDispPhysCollide( dphysdisp_t *pDispLump, int dispLumpSize );
+void		CM_CreateDispPhysCollide(model_t* mod, dphysdisp_t *pDispLump, int dispLumpSize );
 void		CM_DestroyDispPhysCollide();
 
 void		CM_WorldSpaceCenter( ICollideable *pCollideable, Vector *pCenter );

@@ -14,8 +14,13 @@ class model_t;
 class IMaterial;
 class IFileList;
 class IModelLoadCallback;
+//struct dheader_t;
+typedef void* FileHandle_t;
 
 #include "utlmemory.h"
+#include "utlbuffer.h"
+#include "bspfile.h"
+
 
 
 //-----------------------------------------------------------------------------
@@ -165,39 +170,63 @@ extern IModelLoader *modelloader;
 //  memory when it goes out of scope.
 //-----------------------------------------------------------------------------
 
-class CMapLoadHelper
+class CLumpHeaderInfo
 {
 public:
-						CMapLoadHelper( int lumpToLoad );
-						~CMapLoadHelper( void );
+	CLumpHeaderInfo(model_t* pMapModel, const char* pLoadname);
+	CLumpHeaderInfo(model_t* pMapModel, const void* pData, int nDataSize);
+
+	const char* GetMapName(void);
+	//struct worldbrushdata_t	*GetMap( void );
+
+	// Global setup/shutdown
+	void			Init(model_t* pMapModel, const char* pLoadname);
+	void			InitFromMemory(model_t* pMapModel, const void* pData, int nDataSize);
+	void			Shutdown(void);
+	int				GetRefCount(void);
+
+	// Free the lighting lump (increases free memory during loading on 360)
+	void			FreeLightingLump();
+
+	// Returns the size of a particular lump without loading it
+	int				LumpSize(int lumpId);
+	int				LumpOffset(int lumpId);
+
+	
+
+
+	//-----------------------------------------------------------------------------
+// Globals used by the CMapLoadHelper
+//-----------------------------------------------------------------------------
+public:
+	dheader_t				m_MapHeader;
+	FileHandle_t			m_MapFileHandle;
+	char					m_szLoadName[128];
+	char					m_szMapName[128];
+	//worldbrushdata_t		*s_pMap = NULL;
+	int						m_nMapLoadRecursion;
+	static CUtlBuffer				s_MapBuffer;
+};
+
+class CLumpInfo
+{
+public:
+						CLumpInfo(CLumpHeaderInfo& headerInfo, int lumpToLoad );
+						~CLumpInfo( void );
+
+	char*				GetLoadName(void);
 
 	// Get raw memory pointer
 	byte				*LumpBase( void );
 	int					LumpSize( void );
 	int					LumpOffset( void );
 	int					LumpVersion() const;
-	const char			*GetMapName( void );
-	char				*GetLoadName( void );
-	//struct worldbrushdata_t	*GetMap( void );
-
-	// Global setup/shutdown
-	static void			Init( model_t *pMapModel, const char *pLoadname );
-	static void			InitFromMemory( model_t *pMapModel, const void *pData, int nDataSize );
-	static void			Shutdown( void );
-	static int			GetRefCount( void );
-	
-	// Free the lighting lump (increases free memory during loading on 360)
-	static void			FreeLightingLump();
-
-	// Returns the size of a particular lump without loading it
-	static int			LumpSize( int lumpId );
-	static int			LumpOffset( int lumpId );
 
 	// Loads one element in a lump.
-	void				LoadLumpElement( int nElemIndex, int nElemSize, void *pData );
-	void				LoadLumpData( int offset, int size, void *pData );
-
+	void				LoadLumpElement(int nElemIndex, int nElemSize, void* pData);
+	void				LoadLumpData(int offset, int size, void* pData);
 private:
+	CLumpHeaderInfo&	m_LumpHeaderInfo;
 	int					m_nLumpSize;
 	int					m_nLumpOffset;
 	int					m_nLumpVersion;
@@ -208,6 +237,7 @@ private:
 	// Handling for lump files
 	int					m_nLumpID;
 	char				m_szLumpFilename[MAX_PATH];
+
 };
 
 //-----------------------------------------------------------------------------
@@ -220,9 +250,7 @@ private:
 // game lumps
 //-----------------------------------------------------------------------------
 
-int Mod_GameLumpSize( int lumpId );
-int Mod_GameLumpVersion( int lumpId );
-bool Mod_LoadGameLump( int lumpId, void* pBuffer, int size );
+
 
 // returns the material count...
 int Mod_GetMaterialCount( model_t* mod );

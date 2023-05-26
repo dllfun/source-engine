@@ -750,7 +750,7 @@ CReplayEntityData *FindReplayDataInSnapshot( CFrameSnapshot * pSnapshot, int iEn
 void CReplayServer::EntityPVSCheck( CClientFrame *pFrame )
 {
 	byte PVS[PAD_NUMBER( MAX_MAP_CLUSTERS,8 ) / 8];
-	int nPVSSize = (GetCollisionBSPData()->numclusters + 7) / 8;
+	int nPVSSize = (g_pHost->Host_GetWorldModel()->numclusters + 7) / 8;
 
 	// setup engine PVS
 	SV_ResetPVS( PVS, nPVSSize );

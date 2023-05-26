@@ -1227,6 +1227,8 @@ void CHLClient::Shutdown( void )
 	// NVNT Disconnect haptics system
 	DisconnectHaptics();
 #endif
+
+	engineClient = NULL;
 }
 
 

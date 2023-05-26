@@ -16,6 +16,8 @@
 #include "tier0/fasttimer.h"
 #include "vphysics_interface.h"
 #include "vphysics/virtualmesh.h"
+#include "host.h"
+#include "gl_model_private.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -59,7 +61,7 @@ public:
 	{
 		intp index = (intp)userData;
 		Assert(index >= 0 && index < g_DispCollTreeCount );
-		GetCollisionBSPData()->GetDispCollTrees(index)->GetVirtualMeshList( pList );
+		g_pHost->Host_GetWorldModel()->GetDispCollTrees(index)->GetVirtualMeshList( pList );
 		pList->pHull = NULL;
 		if ( m_pDispHullData )
 		{
@@ -73,16 +75,16 @@ public:
 	virtual void GetWorldspaceBounds( void *userData, Vector *pMins, Vector *pMaxs )
 	{
 		intp index = (intp)userData;
-		*pMins = GetCollisionBSPData()->GetDispBounds(index)->mins;
-		*pMaxs = GetCollisionBSPData()->GetDispBounds(index)->maxs;
+		*pMins = g_pHost->Host_GetWorldModel()->GetDispBounds(index)->mins;
+		*pMaxs = g_pHost->Host_GetWorldModel()->GetDispBounds(index)->maxs;
 	}
 	// Query against the AABB tree to find the list of triangles for this patch in a sphere
 	virtual void GetTrianglesInSphere( void *userData, const Vector &center, float radius, virtualmeshtrianglelist_t *pList )
 	{
 		intp index = (intp)userData;
-		pList->triangleCount = GetCollisionBSPData()->GetDispCollTrees(index)->AABBTree_GetTrisInSphere( center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices) );
+		pList->triangleCount = g_pHost->Host_GetWorldModel()->GetDispCollTrees(index)->AABBTree_GetTrisInSphere( center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices) );
 	}
-	void LevelInit( dphysdisp_t *pLump, int lumpSize )
+	void LevelInit(model_t* mod, dphysdisp_t *pLump, int lumpSize )
 	{
 		if ( !pLump )
 		{
@@ -90,7 +92,7 @@ public:
 			return;
 		}
 		int totalHullData = 0;
-		m_dispHullOffset.SetCount(GetCollisionBSPData()->GetDispCollTreesCount());
+		m_dispHullOffset.SetCount(mod->GetDispCollTreesCount());
 		Assert(pLump->numDisplacements==g_DispCollTreeCount);
 		// count the size of the lump
 		unsigned short *pDataSize = (unsigned short *)(pLump+1);
@@ -132,7 +134,7 @@ static CUtlVector<CPhysCollide *> g_TerrainList;
 // Find or create virtual terrain collision model.  Note that these will be shared by client & server
 CPhysCollide *CM_PhysCollideForDisp( int index )
 {
-	if ( index < 0 || index >= GetCollisionBSPData()->GetDispCollTreesCount())
+	if ( index < 0 || index >= g_pHost->Host_GetWorldModel()->GetDispCollTreesCount())
 		return NULL;
 
 	return g_TerrainList[index];
@@ -140,17 +142,17 @@ CPhysCollide *CM_PhysCollideForDisp( int index )
 
 int CM_SurfacepropsForDisp( int index )
 {
-	return GetCollisionBSPData()->GetDispCollTrees(index)->GetSurfaceProps(0);
+	return g_pHost->Host_GetWorldModel()->GetDispCollTrees(index)->GetSurfaceProps(0);
 }
 
-void CM_CreateDispPhysCollide( dphysdisp_t *pDispLump, int dispLumpSize )
+void CM_CreateDispPhysCollide(model_t* mod, dphysdisp_t *pDispLump, int dispLumpSize )
 {
-	g_VirtualTerrain.LevelInit(pDispLump, dispLumpSize);
-	g_TerrainList.SetCount(GetCollisionBSPData()->GetDispCollTreesCount());
-	for ( intp i = 0; i < GetCollisionBSPData()->GetDispCollTreesCount(); i++ )
+	g_VirtualTerrain.LevelInit(mod,pDispLump, dispLumpSize);
+	g_TerrainList.SetCount(mod->GetDispCollTreesCount());
+	for ( intp i = 0; i < mod->GetDispCollTreesCount(); i++ )
 	{
 		// Don't create a physics collision model for displacements that have been tagged as such.
-		CDispCollTree *pDispTree = GetCollisionBSPData()->GetDispCollTrees(i);
+		CDispCollTree *pDispTree = mod->GetDispCollTrees(i);
 		if ( pDispTree && pDispTree->CheckFlags( CCoreDispInfo::SURF_NOPHYSICS_COLL ) )
 		{
 			g_TerrainList[i] = NULL;

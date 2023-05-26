@@ -38,7 +38,7 @@ class IOverlayMgr
 {
 public:
 	// Memory allocation/de-allocation.
-	virtual bool	LoadOverlays(model_t* pModel) = 0;
+	virtual bool	LoadOverlays(CLumpHeaderInfo& header, model_t* pModel) = 0;
 	virtual void	UnloadOverlays( ) = 0;
 
 	virtual void	CreateFragments(model_t* pWorld) = 0;

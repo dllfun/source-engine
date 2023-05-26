@@ -1526,7 +1526,7 @@ static void ComputeFogVolumeInfo(model_t* pWorld, FogVolumeInfo_t *pFogVolume )
 	if( leafID < 0 || leafID >= pWorld->GetLeafCount() )
 		return;
 
-	mleaf_t* pLeaf = pWorld->GetLeafs(leafID);
+	mleaf_t* pLeaf = pWorld->GetMLeafs(leafID);
 	pFogVolume->m_FogVolumeID = pLeaf->leafWaterDataID;
 	if( pFogVolume->m_FogVolumeID == -1 )
 		return;
@@ -1809,7 +1809,7 @@ bool CVisibleFogVolumeQuery::RecursiveGetVisibleFogVolume(model_t* pWorld, mnode
 			return true;
 
 		m_nVisibleFogVolume = pLeaf->leafWaterDataID;
-		m_nVisibleFogVolumeLeaf = pLeaf - pWorld->GetLeafs(0);
+		m_nVisibleFogVolumeLeaf = pLeaf - pWorld->GetMLeafs(0);
 		return false;  // found it, so stop searching
 	}
 
@@ -1866,7 +1866,7 @@ void R_GetVisibleFogVolume(model_t* pWorld, const Vector& vEyePoint, VisibleFogV
 	}
 
 	int nLeafID = CM_PointLeafnum( vEyePoint );
-	mleaf_t* pLeaf = pWorld->GetLeafs(nLeafID);
+	mleaf_t* pLeaf = pWorld->GetMLeafs(nLeafID);
 
 	int nLeafContents = pLeaf->contents;
 	if ( pLeaf->leafWaterDataID != -1 )

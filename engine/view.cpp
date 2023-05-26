@@ -526,7 +526,7 @@ public:
 	bool EnumerateLeaf(IVModel* world, int leaf, intp context )
 	{
 		BoxIntersectWaterContext_t *pSearchContext = ( BoxIntersectWaterContext_t * )context;
-		mleaf_t *pLeaf = ((model_t*)world)->GetLeafs(leaf);
+		mleaf_t *pLeaf = ((model_t*)world)->GetMLeafs(leaf);
 		if( pLeaf->leafWaterDataID == pSearchContext->m_nLeafWaterDataID )
 		{
 			pSearchContext->m_bFoundWaterLeaf = true;

@@ -1317,7 +1317,7 @@ void UnserializeLump<StaticPropLump_t>(StaticPropLump_t* _output, CUtlBuffer& bu
 void CStaticPropMgr::UnserializeModels( CUtlBuffer& buf )
 {
 	// Version check
-	int nLumpVersion = Mod_GameLumpVersion( GAMELUMP_STATIC_PROPS );
+	int nLumpVersion = g_pHost->Host_GetWorldModel()->Mod_GameLumpVersion( GAMELUMP_STATIC_PROPS );
 	if ( nLumpVersion < 4 )
 	{
 		Warning("Really old map format! Static props can't be loaded...\n");
@@ -1473,7 +1473,7 @@ void CStaticPropMgr::OutputLevelStats( void )
 void CStaticPropMgr::UnserializeStaticProps()
 {
 	// Unserialize static props, insert them into the appropriate leaves
-	int size = Mod_GameLumpSize( GAMELUMP_STATIC_PROPS );
+	int size = g_pHost->Host_GetWorldModel()->Mod_GameLumpSize( GAMELUMP_STATIC_PROPS );
 	if (!size)
 		return;
 
@@ -1481,7 +1481,7 @@ void CStaticPropMgr::UnserializeStaticProps()
 
 	MEM_ALLOC_CREDIT();
 	CUtlBuffer buf( 0, size );
-	if ( Mod_LoadGameLump( GAMELUMP_STATIC_PROPS, buf.PeekPut(), size ))
+	if (g_pHost->Host_GetWorldModel()->Mod_LoadGameLump( GAMELUMP_STATIC_PROPS, buf.PeekPut(), size ))
 	{
 		buf.SeekPut( CUtlBuffer::SEEK_HEAD, size );
 		COM_TimestampedLog( "UnserializeModelDict" );

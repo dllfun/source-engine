@@ -1330,7 +1330,7 @@ static inline const byte* FastRejectLightSource(
 		if ( lightType == emit_skylight )
 		{
  			int  bucketOriginLeaf = CM_PointLeafnum( bucketOrigin );
-			mleaf_t *pLeaf = pWorld->GetLeafs(bucketOriginLeaf);
+			mleaf_t *pLeaf = pWorld->GetMLeafs(bucketOriginLeaf);
 			if ( pLeaf && !( pLeaf->flags & ( LEAF_FLAGS_SKY | LEAF_FLAGS_SKY2D ) ) )
 			{
 				bReject = true;

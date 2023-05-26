@@ -395,7 +395,7 @@ void CGameClient::Connect( const char * szName, int nUserID, INetChannel *pNetCh
 void CGameClient::SetupPackInfo( CFrameSnapshot *pSnapshot )
 {
 	// Compute Vis for each client
-	m_PackInfo.m_nPVSSize = (GetCollisionBSPData()->GetClustersCount() + 7) / 8;
+	m_PackInfo.m_nPVSSize = (g_pHost->Host_GetWorldModel()->GetClustersCount() + 7) / 8;
 	serverGameClients->ClientSetupVisibility( (edict_t *)m_pViewEntity,
 		m_PackInfo.m_pClientEnt, m_PackInfo.m_PVS, m_PackInfo.m_nPVSSize );
 

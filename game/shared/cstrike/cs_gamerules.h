@@ -86,6 +86,10 @@ public:
 	DECLARE_CLASS( CCSGameRulesProxy, CGameRulesProxy );
 	DECLARE_NETWORKCLASS();
 
+	CCSGameRulesProxy() {
+		int aaa = 0;
+	}
+
 #if !defined( CLIENT_DLL )
 	BEGIN_SEND_TABLE(CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
 		SendPropDataTable("cs_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_CSGameRules), SendProxy_CSGameRules)

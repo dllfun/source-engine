@@ -33,6 +33,7 @@
 #include "datacache/imdlcache.h"
 #include "bitmap/cubemap.h"
 #include "bsptreedata.h"
+#include "cmodel_private.h"
 
 
 //-----------------------------------------------------------------------------
@@ -227,12 +228,39 @@ typedef CCubeMap< LightShadowZBufferSample_t, SHADOW_ZBUF_RES> lightzbuffer_t;
 #define MODELFLAG_STUDIOHDR_AMBIENT_BOOST		0x0800	// persisted from studiohdr
 #define MODELFLAG_STUDIOHDR_DO_NOT_CAST_SHADOWS	0x1000	// persisted from studiohdr
 
+//-----------------------------------------------------------------------------
+// A dictionary used to store where to find game lump data in the .bsp file
+//-----------------------------------------------------------------------------
+
+// Extended from the on-disk struct to include uncompressed size and stop propagation of bogus signed values
+struct dgamelump_internal_t
+{
+	dgamelump_internal_t(dgamelump_t& other, unsigned int nCompressedSize)
+		: id(other.id)
+		, flags(other.flags)
+		, version(other.version)
+		, offset(Max(other.fileofs, 0))
+		, uncompressedSize(Max(other.filelen, 0))
+		, compressedSize(nCompressedSize)
+	{}
+	GameLumpId_t	id;
+	unsigned short	flags;
+	unsigned short	version;
+	unsigned int	offset;
+	unsigned int	uncompressedSize;
+	unsigned int	compressedSize;
+};
+
+//struct cnode_t;
+//template <class T>
+//class CRangeValidatedArray;
+
 struct worldbrushdata_t
 {
 	int			numsubmodels;
 
-	int			numplanes;
-	cplane_t	*planes;
+	//int			numplanes;
+	//cplane_t	*planes;
 
 	int			numleafs;		// number of visible leafs, not counting 0
 	mleaf_t		*leafs;
@@ -265,8 +293,8 @@ struct worldbrushdata_t
 	int			numtexinfo;
 	mtexinfo_t	*texinfo;
 
-	int			numtexdata;
-	csurface_t	*texdata;
+	//int			numtexdata;
+	//csurface_t	*texdata;
 
 	int         numDispInfos;
 	HDISPINFOARRAY	hDispInfos;	// Use DispInfo_Index to get IDispInfos..
@@ -337,6 +365,65 @@ struct worldbrushdata_t
 	int			numclusterportals;
 	unsigned short *clusterportals;
 #endif
+
+	CUtlVector< dgamelump_internal_t > g_GameLumpDict;
+	char g_GameLumpFilename[128] = { 0 };
+
+
+	// This is sort of a hack, but it was a little too painful to do this any other way
+	// The goal of this dude is to allow us to override the tree with some
+	// other tree (or a subtree)
+	cnode_t* map_rootnode;
+
+	char						map_name[MAX_QPATH];
+	static csurface_t			nullsurface;
+
+	int									numbrushsides;
+	CRangeValidatedArray<cbrushside_t>	map_brushsides;
+	int									numboxbrushes;
+	CRangeValidatedArray<cboxbrush_t>	map_boxbrushes;
+	int									numplanes;
+	CRangeValidatedArray<cplane_t>		map_planes;
+	int									numcmnodes;
+	CRangeValidatedArray<cnode_t>		map_nodes;
+	int									numcmleafs;				// allow leaf funcs to be called without a map
+	CRangeValidatedArray<cleaf_t>		map_leafs;
+	int									emptyleaf, solidleaf;
+	int									numleafbrushes;
+	CRangeValidatedArray<unsigned short> map_leafbrushes;
+	int									numcmodels;
+	CRangeValidatedArray<cmodel_t>		map_cmodels;
+	int									numbrushes;
+	CRangeValidatedArray<cbrush_t>		map_brushes;
+	int									numdisplist;
+	CRangeValidatedArray<unsigned short> map_dispList;
+
+	// this points to the whole block of memory for vis data, but it is used to
+	// reference the header at the top of the block.
+	int									numvisibility;
+	dvis_t* map_vis;
+
+	int									numentitychars;
+	CDiscardableArray<char>				map_entitystring;
+
+	int									numareas;
+	CRangeValidatedArray<carea_t>		map_areas;
+	int									numareaportals;
+	CRangeValidatedArray<dareaportal_t>	map_areaportals;
+	int									numclusters;
+	char* map_nullname;
+	int									numtextures;
+	char* map_texturenames;
+	CRangeValidatedArray<csurface_t>	map_surfaces;
+	int									floodvalid;
+	int									numportalopen;
+	CRangeValidatedArray<bool>			portalopen;
+
+	int g_DispCollTreeCount = 0;
+	CDispCollTree* g_pDispCollTrees = NULL;
+	alignedbbox_t* g_pDispBounds = NULL;
+
+
 };
 // only models with type "mod_brush" have this data
 struct brushdata_t
@@ -469,6 +556,244 @@ struct msurface2_t
 
 class model_t : public IVModel
 {
+public:
+	void Init();
+	void Destory();
+	bool LoadDatas(const char* pName, CLumpHeaderInfo& header);
+	char* GetMapName();
+	int GetCMNodesCount();
+	cnode_t* GetNodes(int index);
+	int GetLeafsCount();
+	cleaf_t* GetLeafs(int index);
+	int GetPlanesCount();
+	cplane_t* GetPlane(int index);
+	int GetBrushesCount();
+	cbrush_t* GetBrushes(int index);
+	int GetCModelsCount();
+	cmodel_t* GetCModels(int index);
+	unsigned short GetLeafBrushes(int index);
+	cboxbrush_t* GetBoxBrushes(int index);
+	cbrushside_t* GetBrushesSide(int index);
+	int GetClustersCount();
+	int GetVisibilityCount();
+	dvis_t* GetVis();
+	int GetAreaCount();
+	carea_t* GetArea(int index);
+	int GetCMAreaPortalsCount();
+	dareaportal_t* GetCMAreaPortals(int index);
+	int GetFloodvalid();
+	void IncFloodvalid();
+	void InitPortalOpenState();
+	bool GetPortalOpenState(int index);
+	void SetPortalOpenState(int index, bool state);
+	void SetDispListCount(int count);
+	int GetDispListCount();
+	CRangeValidatedArray<unsigned short>* GetDispList();
+	unsigned short GetDispList(int index);
+	unsigned short* GetDispListBase();
+	csurface_t GetNullSurface();
+	csurface_t* GetSurfaceAtIndex(unsigned short surfaceIndex);
+	int GetTexturesCount();
+	int GetEntityCharsCount();
+	char* GetEntityString();
+	void DiscardEntityString();
+	int GetDispCollTreesCount();
+	CDispCollTree* GetDispCollTrees(int index);
+	alignedbbox_t* GetDispBounds(int index);
+private:
+
+
+	//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadTextures(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadTexinfo(CLumpHeaderInfo& header,
+		CUtlVector<unsigned short>& map_texinfo);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadLeafs_Version_0(CLumpHeaderInfo& header, CLumpInfo& lh);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadLeafs_Version_1(CLumpHeaderInfo& header, CLumpInfo& lh);
+
+	void CollisionBSPData_LoadLeafs(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadLeafBrushes(CLumpHeaderInfo& header);
+	//----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadPlanes(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadBrushes(CLumpHeaderInfo& header);
+	inline bool IsBoxBrush(const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes);
+	inline void ExtractBoxBrush(cboxbrush_t* pBox, const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes, CUtlVector<unsigned short>& map_texinfo);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadBrushSides(CLumpHeaderInfo& header, CUtlVector<unsigned short>& map_texinfo);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadSubmodels(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadNodes(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadAreas(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadAreaPortals(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadVisibility(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadEntityString(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadPhysics(CLumpHeaderInfo& header);
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	void CollisionBSPData_LoadDispInfo(CLumpHeaderInfo& header);
+
+
+
+	class CDispLeafBuilder
+	{
+	public:
+		CDispLeafBuilder(model_t* pBSPData)
+		{
+			m_pBSPData = pBSPData;
+			// don't want this to resize much, so make the backing buffer large
+			m_dispList.EnsureCapacity(MAX_MAP_DISPINFO * 2);
+
+			// size both of these to the size of the array since there is exactly one per element
+			m_leafCount.SetCount(m_pBSPData->GetDispCollTreesCount());
+			m_firstIndex.SetCount(m_pBSPData->GetDispCollTreesCount());
+			for (int i = 0; i < m_pBSPData->GetDispCollTreesCount(); i++)
+			{
+				m_leafCount[i] = 0;
+				m_firstIndex[i] = -1;
+			}
+		}
+
+		void BuildLeafListForDisplacement(int index)
+		{
+			// get tree and see if it is real (power != 0)
+			CDispCollTree* pDispTree = m_pBSPData->GetDispCollTrees(index);
+			if (!pDispTree || (pDispTree->GetPower() == 0))
+				return;
+			m_firstIndex[index] = m_dispList.Count();
+			m_leafCount[index] = 0;
+			const int MAX_NODES = 1024;
+			int nodeList[MAX_NODES];
+			int listRead = 0;
+			int listWrite = 1;
+			nodeList[0] = m_pBSPData->GetCModels(0)->headnode;
+			Vector mins, maxs;
+			pDispTree->GetBounds(mins, maxs);
+
+			// UNDONE: The rendering code did this, do we need it?
+	//		mins -= Vector( 0.5, 0.5, 0.5 );
+	//		maxs += Vector( 0.5, 0.5, 0.5 );
+
+			while (listRead != listWrite)
+			{
+				int nodeIndex = nodeList[listRead];
+				listRead = (listRead + 1) % MAX_NODES;
+
+				// if this is a leaf, add it to the array
+				if (nodeIndex < 0)
+				{
+					int leafIndex = -1 - nodeIndex;
+					m_dispList.AddToTail(leafIndex);
+					m_leafCount[index]++;
+				}
+				else
+				{
+					//
+					// choose side(s) to traverse
+					//
+					cnode_t* pNode = m_pBSPData->GetNodes(nodeIndex);
+					cplane_t* pPlane = pNode->plane;
+
+					int sideResult = BOX_ON_PLANE_SIDE(mins, maxs, pPlane);
+
+					// front side
+					if (sideResult & 1)
+					{
+						nodeList[listWrite] = pNode->children[0];
+						listWrite = (listWrite + 1) % MAX_NODES;
+						Assert(listWrite != listRead);
+					}
+					// back side
+					if (sideResult & 2)
+					{
+						nodeList[listWrite] = pNode->children[1];
+						listWrite = (listWrite + 1) % MAX_NODES;
+						Assert(listWrite != listRead);
+					}
+				}
+			}
+		}
+		int GetDispListCount() { return m_dispList.Count(); }
+		void WriteLeafList(unsigned short* pLeafList)
+		{
+			// clear current count if any
+			for (int i = 0; i < m_pBSPData->GetLeafsCount(); i++)
+			{
+				cleaf_t* pLeaf = m_pBSPData->GetLeafs(i);
+				pLeaf->dispCount = 0;
+			}
+			// compute new count per leaf
+			for (int i = 0; i < m_dispList.Count(); i++)
+			{
+				int leafIndex = m_dispList[i];
+				cleaf_t* pLeaf = m_pBSPData->GetLeafs(leafIndex);
+				pLeaf->dispCount++;
+			}
+			// point each leaf at the start of it's output range in the output array
+			unsigned short firstDispIndex = 0;
+			for (int i = 0; i < m_pBSPData->GetLeafsCount(); i++)
+			{
+				cleaf_t* pLeaf = m_pBSPData->GetLeafs(i);
+				pLeaf->dispListStart = firstDispIndex;
+				firstDispIndex += pLeaf->dispCount;
+				pLeaf->dispCount = 0;
+			}
+			// now iterate the references in disp order adding to each leaf's (now compact) list
+			// for each displacement with leaves
+			for (int i = 0; i < m_leafCount.Count(); i++)
+			{
+				// for each leaf in this disp's list
+				int count = m_leafCount[i];
+				for (int j = 0; j < count; j++)
+				{
+					int listIndex = m_firstIndex[i] + j;					// index to per-disp list
+					int leafIndex = m_dispList[listIndex];					// this reference is for one leaf
+					cleaf_t* pLeaf = m_pBSPData->GetLeafs(leafIndex);
+					int outListIndex = pLeaf->dispListStart + pLeaf->dispCount;	// output position for this leaf
+					pLeafList[outListIndex] = i;							// write the reference there
+					Assert(outListIndex < GetDispListCount());
+					pLeaf->dispCount++;										// move this leaf's output pointer
+				}
+			}
+		}
+
+	private:
+		model_t* m_pBSPData;
+		// this is a list of all of the leaf indices for each displacement
+		CUtlVector<unsigned short> m_dispList;
+		// this is the first entry into dispList for each displacement
+		CUtlVector<int> m_firstIndex;
+		// this is the # of leaf entries for each displacement
+		CUtlVector<unsigned short> m_leafCount;
+	};
+	// setup
+	void CM_DispTreeLeafnum();
+
+
 public:
 	virtual int ModelFrameCount() const;
 	virtual bool IsTranslucent() const;
@@ -789,7 +1114,7 @@ public:
 	int GetLeafCount() {
 		return brush.pShared->numleafs;
 	}
-	mleaf_t* GetLeafs(int index) {
+	mleaf_t* GetMLeafs(int index) {
 		return &brush.pShared->leafs[index];
 	}
 	int GetLeafArea(int index) {
@@ -939,7 +1264,7 @@ public:
 		return &brush.pShared->occluderpolys[index];
 	}
 	cplane_t& GetPlanes(int index) {
-		return brush.pShared->planes[index];
+		return brush.pShared->map_planes[index];
 	}
 	int	GetAreasCount() {
 		return brush.pShared->m_nAreas;
@@ -947,31 +1272,36 @@ public:
 	darea_t* GetAreas(int index) {
 		return &brush.pShared->m_pAreas[index];
 	}
+	int Mod_GameLumpSize(int lumpId);
+	int Mod_GameLumpVersion(int lumpId);
+	bool Mod_LoadGameLump(int lumpId, void* pBuffer, int size);
 private:
-	void Mod_LoadLighting(CMapLoadHelper& lh);
-	void Mod_LoadWorldlights(CMapLoadHelper& lh, bool bIsHDR);
-	void Mod_LoadVertices();
-	void Mod_LoadSubmodels(CUtlVector<mmodel_t>& submodelList);
-	medge_t* Mod_LoadEdges();
-	void Mod_LoadOcclusion();
-	void Mod_LoadTexdata();
-	void Mod_LoadTexinfo();
-	void Mod_LoadVertNormals();
-	void Mod_LoadVertNormalIndices();
-	void Mod_LoadPrimitives();
-	void Mod_LoadPrimVerts();
-	void Mod_LoadPrimIndices();
-	void Mod_LoadFaces();
-	void Mod_LoadNodes();
-	void Mod_LoadLeafs_Version_0(CMapLoadHelper& lh);
-	void Mod_LoadLeafs_Version_1(CMapLoadHelper& lh, CMapLoadHelper& ambientLightingLump, CMapLoadHelper& ambientLightingTable);
-	void Mod_LoadLeafs();
-	void Mod_LoadLeafWaterData();
-	void Mod_LoadCubemapSamples();
-	void Mod_LoadLeafMinDistToWater();
-	void Mod_LoadMarksurfaces();
-	void Mod_LoadSurfedges(medge_t* pedges);
-	void Mod_LoadPlanes();
+	void Mod_LoadLighting(CLumpHeaderInfo& header, CLumpInfo& lh);
+	void Mod_LoadWorldlights(CLumpInfo& lh, bool bIsHDR);
+	void Mod_LoadVertices(CLumpHeaderInfo& header);
+	void Mod_LoadSubmodels(CLumpHeaderInfo& header,CUtlVector<mmodel_t>& submodelList);
+	medge_t* Mod_LoadEdges(CLumpHeaderInfo& header);
+	void Mod_LoadOcclusion(CLumpHeaderInfo& header);
+	void Mod_LoadTexdata(CLumpHeaderInfo& header);
+	void Mod_LoadTexinfo(CLumpHeaderInfo& header);
+	void Mod_LoadVertNormals(CLumpHeaderInfo& header);
+	void Mod_LoadVertNormalIndices(CLumpHeaderInfo& header);
+	void Mod_LoadPrimitives(CLumpHeaderInfo& header);
+	void Mod_LoadPrimVerts(CLumpHeaderInfo& header);
+	void Mod_LoadPrimIndices(CLumpHeaderInfo& header);
+	void Mod_LoadFaces(CLumpHeaderInfo& header);
+	void Mod_LoadNodes(CLumpHeaderInfo& header);
+	void Mod_LoadLeafs_Version_0(CLumpHeaderInfo& header, CLumpInfo& lh);
+	void Mod_LoadLeafs_Version_1(CLumpHeaderInfo& header, CLumpInfo& lh, CLumpInfo& ambientLightingLump, CLumpInfo& ambientLightingTable);
+	void Mod_LoadLeafs(CLumpHeaderInfo& header);
+	void Mod_LoadLeafWaterData(CLumpHeaderInfo& header);
+	void Mod_LoadCubemapSamples(CLumpHeaderInfo& header);
+	void Mod_LoadLeafMinDistToWater(CLumpHeaderInfo& header);
+	void Mod_LoadMarksurfaces(CLumpHeaderInfo& header);
+	void Mod_LoadSurfedges(CLumpHeaderInfo& header,medge_t* pedges);
+	void Mod_LoadPlanes(CLumpHeaderInfo& header);
+	void Mod_LoadGameLumpDict(CLumpHeaderInfo& header);
+	
 
 	FileNameHandle_t	fnHandle;
 	CUtlString			strName;

@@ -1676,21 +1676,21 @@ public:
 
 	virtual int GetClusterCount()
 	{
-		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->GetVis() )
-			return pBSPData->GetVis()->numclusters;
+		//CCollisionBSPData *pBSPData = GetCollisionBSPData();
+		if (g_pHost->Host_GetWorldModel() && g_pHost->Host_GetWorldModel()->GetVis())
+			return g_pHost->Host_GetWorldModel()->GetVis()->numclusters;
 		return 0;
 	}
 
 	virtual int GetAllClusterBounds(IVModel* pWorld, bbox_t *pBBoxList, int maxBBox )
 	{
-		CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if ( pBSPData && pBSPData->GetVis() && pWorld)
+		//CCollisionBSPData *pBSPData = GetCollisionBSPData();
+		if (g_pHost->Host_GetWorldModel() && g_pHost->Host_GetWorldModel()->GetVis() && pWorld)
 		{
 			// clamp to max clusters in the map
-			if ( maxBBox > pBSPData->GetVis()->numclusters)
+			if ( maxBBox > g_pHost->Host_GetWorldModel()->GetVis()->numclusters)
 			{
-				maxBBox = pBSPData->GetVis()->numclusters;
+				maxBBox = g_pHost->Host_GetWorldModel()->GetVis()->numclusters;
 			}
 			// reset all of the bboxes
 			for ( int i =  0; i < maxBBox; i++ )
@@ -1700,7 +1700,7 @@ public:
 			// add each leaf's bounds to the bounds for that cluster
 			for ( int i = 0; i < ((model_t*)pWorld)->GetLeafCount(); i++ )
 			{
-				mleaf_t *pLeaf = ((model_t*)pWorld)->GetLeafs(i);
+				mleaf_t *pLeaf = ((model_t*)pWorld)->GetMLeafs(i);
 				// skip solid leaves and leaves with cluster < 0
 				if ( !(pLeaf->contents & CONTENTS_SOLID) && pLeaf->cluster >= 0 && pLeaf->cluster < maxBBox )
 				{
@@ -1712,7 +1712,7 @@ public:
 				}
 			}
 
-			return pBSPData->GetVis()->numclusters;
+			return g_pHost->Host_GetWorldModel()->GetVis()->numclusters;
 		}
 		return 0;
 	}

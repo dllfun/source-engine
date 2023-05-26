@@ -33,6 +33,7 @@ struct Ray_t;
 struct RayDispOutput_t;
 struct decal_t;
 class CMeshBuilder;
+class CLumpHeaderInfo;
 
 
 //-----------------------------------------------------------------------------
@@ -139,7 +140,7 @@ void			DispInfo_RenderList(model_t* pWorld, int nSortGroup, SurfaceHandle_t *pLi
 //
 // bRestoring is set to true when just restoring the data from the mapfile
 // (ie: displacements already are initialized but need new static buffers).
-bool			DispInfo_LoadDisplacements( model_t *pWorld, bool bRestoring );
+bool			DispInfo_LoadDisplacements(CLumpHeaderInfo& header, model_t *pWorld, bool bRestoring );
 
 // Deletes all the static vertex buffers.
 void			DispInfo_ReleaseMaterialSystemObjects( model_t *pWorld );

@@ -12,6 +12,7 @@
 #include "modelloader.h"
 #include "common.h"
 #include "zone.h"
+#include "gl_model_private.h"
 
 // UNDONE: Abstract the texture/material lookup stuff and all of this goes away
 #include "materialsystem/imaterialsystem.h"
@@ -32,8 +33,8 @@ extern int g_iServerGameDLLVersion;
 IPhysicsSurfaceProps *physprop = NULL;
 IPhysicsCollision	 *physcollision = NULL;
 
-CCollisionBSPData g_BSPData;								// the global collision bsp
-#define g_BSPData dont_use_g_BSPData_directly
+//CCollisionBSPData g_BSPData;								// the global collision bsp
+//#define g_BSPData dont_use_g_BSPData_directly
 
 // local forward declarations
 //void CollisionBSPData_LoadTextures( CCollisionBSPData *pBSPData );
@@ -54,209 +55,209 @@ CCollisionBSPData g_BSPData;								// the global collision bsp
 //void CollisionBSPData_LoadPhysics( CCollisionBSPData *pBSPData );
 //void CollisionBSPData_LoadDispInfo( CCollisionBSPData *pBSPData );
 
-csurface_t CCollisionBSPData::nullsurface = { "**empty**", 0, 0 };				// generic null collision model surface
-csurface_t* CCollisionBSPData::GetSurfaceAtIndex(unsigned short surfaceIndex)
+csurface_t worldbrushdata_t::nullsurface = { "**empty**", 0, 0 };				// generic null collision model surface
+csurface_t* model_t::GetSurfaceAtIndex(unsigned short surfaceIndex)
 {
 	if (surfaceIndex == SURFACE_INDEX_INVALID)
 	{
-		return &nullsurface;
+		return &worldbrushdata_t::nullsurface;
 	}
-	return &map_surfaces[surfaceIndex];
+	return &brush.pShared->map_surfaces[surfaceIndex];
 }
-int CCollisionBSPData::GetBrushesCount() {
-	return numbrushes;
+int model_t::GetBrushesCount() {
+	return brush.pShared->numbrushes;
 }
-int CCollisionBSPData::GetCModelsCount() {
-	return numcmodels;
+int model_t::GetCModelsCount() {
+	return brush.pShared->numcmodels;
 }
-cmodel_t* CCollisionBSPData::GetCModels(int index) {
-	return &map_cmodels[index];
+cmodel_t* model_t::GetCModels(int index) {
+	return &brush.pShared->map_cmodels[index];
 }
-cleaf_t* CCollisionBSPData::GetLeafs(int index) {
-	return &map_leafs[index];
+cleaf_t* model_t::GetLeafs(int index) {
+	return &brush.pShared->map_leafs[index];
 }
-unsigned short CCollisionBSPData::GetLeafBrushes(int index) {
-	return map_leafbrushes[index];
+unsigned short model_t::GetLeafBrushes(int index) {
+	return brush.pShared->map_leafbrushes[index];
 }
-cbrush_t* CCollisionBSPData::GetBrushes(int index) {
-	return &map_brushes[index];
+cbrush_t* model_t::GetBrushes(int index) {
+	return &brush.pShared->map_brushes[index];
 }
-cnode_t* CCollisionBSPData::GetNodes(int index) {
-	return &map_rootnode[index];
+cnode_t* model_t::GetNodes(int index) {
+	return &brush.pShared->map_rootnode[index];
 }
-int CCollisionBSPData::GetClustersCount() {
-	return numclusters;
+int model_t::GetClustersCount() {
+	return brush.pShared->numclusters;
 }
-char* CCollisionBSPData::GetEntityString() {
-	return map_entitystring.Get();
+char* model_t::GetEntityString() {
+	return brush.pShared->map_entitystring.Get();
 }
-void CCollisionBSPData::DiscardEntityString() {
-	map_entitystring.Discard();
+void model_t::DiscardEntityString() {
+	brush.pShared->map_entitystring.Discard();
 }
-void CCollisionBSPData::InitPortalOpenState() {
-	for (int i = 0; i < numportalopen; i++)
+void model_t::InitPortalOpenState() {
+	for (int i = 0; i < brush.pShared->numportalopen; i++)
 	{
-		portalopen[i] = false;
+		brush.pShared->portalopen[i] = false;
 	}
 }
-char* CCollisionBSPData::GetMapName() {
-	return map_name;
+char* model_t::GetMapName() {
+	return brush.pShared->map_name;
 }
-int CCollisionBSPData::GetPlanesCount() {
-	return numplanes;
+int model_t::GetPlanesCount() {
+	return brush.pShared->numplanes;
 }
-cboxbrush_t* CCollisionBSPData::GetBoxBrushes(int index) {
-	return &map_boxbrushes[index];
+cboxbrush_t* model_t::GetBoxBrushes(int index) {
+	return &brush.pShared->map_boxbrushes[index];
 }
-cbrushside_t* CCollisionBSPData::GetBrushesSide(int index) {
-	return &map_brushsides[index];
+cbrushside_t* model_t::GetBrushesSide(int index) {
+	return &brush.pShared->map_brushsides[index];
 }
-int CCollisionBSPData::GetNodesCount() {
-	return numnodes;
+int model_t::GetCMNodesCount() {
+	return brush.pShared->numcmnodes;
 }
-csurface_t CCollisionBSPData::GetNullSurface() {
-	return nullsurface;
+csurface_t model_t::GetNullSurface() {
+	return brush.pShared->nullsurface;
 }
-int CCollisionBSPData::GetVisibilityCount() {
-	return numvisibility;
+int model_t::GetVisibilityCount() {
+	return brush.pShared->numvisibility;
 }
-dvis_t* CCollisionBSPData::GetVis() {
-	return map_vis;
+dvis_t* model_t::GetVis() {
+	return brush.pShared->map_vis;
 }
-int CCollisionBSPData::GetFloodvalid() {
-	return floodvalid;
+int model_t::GetFloodvalid() {
+	return brush.pShared->floodvalid;
 }
-dareaportal_t* CCollisionBSPData::GetAreaPortals(int index) {
-	return &map_areaportals[index];
+dareaportal_t* model_t::GetCMAreaPortals(int index) {
+	return &brush.pShared->map_areaportals[index];
 }
-bool CCollisionBSPData::GetPortalOpenState(int index) {
-	return portalopen[index];
+bool model_t::GetPortalOpenState(int index) {
+	return brush.pShared->portalopen[index];
 }
-void CCollisionBSPData::SetPortalOpenState(int index, bool state) {
-	portalopen[index] = state;
+void model_t::SetPortalOpenState(int index, bool state) {
+	brush.pShared->portalopen[index] = state;
 }
-carea_t* CCollisionBSPData::GetArea(int index) {
-	return &map_areas[index];
+carea_t* model_t::GetArea(int index) {
+	return &brush.pShared->map_areas[index];
 }
-void CCollisionBSPData::IncFloodvalid() {
-	floodvalid++;
+void model_t::IncFloodvalid() {
+	brush.pShared->floodvalid++;
 }
-int CCollisionBSPData::GetAreaCount() {
-	return numareas;
+int model_t::GetAreaCount() {
+	return brush.pShared->numareas;
 }
-int CCollisionBSPData::GetAreaPortalsCount() {
-	return numareaportals;
+int model_t::GetCMAreaPortalsCount() {
+	return brush.pShared->numareaportals;
 }
-int CCollisionBSPData::GetLeafsCount() {
-	return numleafs;
+int model_t::GetLeafsCount() {
+	return brush.pShared->numcmleafs;
 }
-cplane_t* CCollisionBSPData::GetPlane(int index) {
-	return &map_planes[index];
+cplane_t* model_t::GetPlane(int index) {
+	return &brush.pShared->map_planes[index];
 }
-void CCollisionBSPData::Init() {
-	numleafs = 1;
-	map_vis = NULL;
-	numareas = 1;
-	numclusters = 1;
-	map_nullname = "**empty**";
-	numtextures = 0;
+void model_t::Init() {
+	brush.pShared->numcmleafs = 1;
+	brush.pShared->map_vis = NULL;
+	brush.pShared->numareas = 1;
+	brush.pShared->numclusters = 1;
+	brush.pShared->map_nullname = "**empty**";
+	brush.pShared->numtextures = 0;
 }
-void CCollisionBSPData::Destory() {
-	if (map_planes.Base())
+void model_t::Destory() {
+	if (brush.pShared->map_planes.Base())
 	{
-		map_planes.Detach();
+		brush.pShared->map_planes.Detach();
 	}
 
-	if (map_texturenames)
+	if (brush.pShared->map_texturenames)
 	{
-		map_texturenames = NULL;
+		brush.pShared->map_texturenames = NULL;
 	}
 
-	if (map_surfaces.Base())
+	if (brush.pShared->map_surfaces.Base())
 	{
-		map_surfaces.Detach();
+		brush.pShared->map_surfaces.Detach();
 	}
 
-	if (map_areaportals.Base())
+	if (brush.pShared->map_areaportals.Base())
 	{
-		map_areaportals.Detach();
+		brush.pShared->map_areaportals.Detach();
 	}
 
-	if (portalopen.Base())
+	if (brush.pShared->portalopen.Base())
 	{
-		portalopen.Detach();
+		brush.pShared->portalopen.Detach();
 	}
 
-	if (map_areas.Base())
+	if (brush.pShared->map_areas.Base())
 	{
-		map_areas.Detach();
+		brush.pShared->map_areas.Detach();
 	}
 
-	map_entitystring.Discard();
+	brush.pShared->map_entitystring.Discard();
 
-	if (map_brushes.Base())
+	if (brush.pShared->map_brushes.Base())
 	{
-		map_brushes.Detach();
+		brush.pShared->map_brushes.Detach();
 	}
 
-	if (map_dispList.Base())
+	if (brush.pShared->map_dispList.Base())
 	{
-		map_dispList.Detach();
+		brush.pShared->map_dispList.Detach();
 	}
 
-	if (map_cmodels.Base())
+	if (brush.pShared->map_cmodels.Base())
 	{
-		map_cmodels.Detach();
+		brush.pShared->map_cmodels.Detach();
 	}
 
-	if (map_leafbrushes.Base())
+	if (brush.pShared->map_leafbrushes.Base())
 	{
-		map_leafbrushes.Detach();
+		brush.pShared->map_leafbrushes.Detach();
 	}
 
-	if (map_leafs.Base())
+	if (brush.pShared->map_leafs.Base())
 	{
-		map_leafs.Detach();
+		brush.pShared->map_leafs.Detach();
 	}
 
-	if (map_nodes.Base())
+	if (brush.pShared->map_nodes.Base())
 	{
-		map_nodes.Detach();
+		brush.pShared->map_nodes.Detach();
 	}
 
-	if (map_brushsides.Base())
+	if (brush.pShared->map_brushsides.Base())
 	{
-		map_brushsides.Detach();
+		brush.pShared->map_brushsides.Detach();
 	}
 
-	if (map_vis)
+	if (brush.pShared->map_vis)
 	{
-		map_vis = NULL;
+		brush.pShared->map_vis = NULL;
 	}
 
-	numplanes = 0;
-	numbrushsides = 0;
-	emptyleaf = solidleaf = 0;
-	numnodes = 0;
-	numleafs = 0;
-	numbrushes = 0;
-	numdisplist = 0;
-	numleafbrushes = 0;
-	numareas = 0;
-	numtextures = 0;
-	floodvalid = 0;
-	numareaportals = 0;
-	numclusters = 0;
-	numcmodels = 0;
-	numvisibility = 0;
-	numentitychars = 0;
-	numportalopen = 0;
-	map_name[0] = 0;
-	map_rootnode = NULL;
+	brush.pShared->numplanes = 0;
+	brush.pShared->numbrushsides = 0;
+	brush.pShared->emptyleaf = brush.pShared->solidleaf = 0;
+	brush.pShared->numcmnodes = 0;
+	brush.pShared->numcmleafs = 0;
+	brush.pShared->numbrushes = 0;
+	brush.pShared->numdisplist = 0;
+	brush.pShared->numleafbrushes = 0;
+	brush.pShared->numareas = 0;
+	brush.pShared->numtextures = 0;
+	brush.pShared->floodvalid = 0;
+	brush.pShared->numareaportals = 0;
+	brush.pShared->numclusters = 0;
+	brush.pShared->numcmodels = 0;
+	brush.pShared->numvisibility = 0;
+	brush.pShared->numentitychars = 0;
+	brush.pShared->numportalopen = 0;
+	brush.pShared->map_name[0] = 0;
+	brush.pShared->map_rootnode = NULL;
 
-	g_pDispCollTrees = NULL;
-	g_pDispBounds = NULL;
-	g_DispCollTreeCount = 0;
+	brush.pShared->g_pDispCollTrees = NULL;
+	brush.pShared->g_pDispBounds = NULL;
+	brush.pShared->g_DispCollTreeCount = 0;
 
 	if (GetDispList()->Base())
 	{
@@ -264,106 +265,109 @@ void CCollisionBSPData::Destory() {
 		SetDispListCount(0);
 	}
 }
-bool CCollisionBSPData::Load(const char* pName) {
+bool model_t::LoadDatas(const char* pName,CLumpHeaderInfo& header) {
 	// This is a table that maps texinfo references to csurface_t
 // It is freed after the map has been loaded
 	CUtlVector<unsigned short> 	map_texinfo;
 
 	// copy map name
-	Q_strncpy(map_name, pName, sizeof(map_name));
+	Q_strncpy(brush.pShared->map_name, pName, sizeof(brush.pShared->map_name));
 
 	//
 	// load bsp file data
 	//
+
 	COM_TimestampedLog("  CollisionBSPData_LoadTextures");
-	CollisionBSPData_LoadTextures();
+	CollisionBSPData_LoadTextures(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadTexinfo");
-	CollisionBSPData_LoadTexinfo(map_texinfo);
+	CollisionBSPData_LoadTexinfo(header,map_texinfo);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadLeafs");
-	CollisionBSPData_LoadLeafs();
+	CollisionBSPData_LoadLeafs(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadLeafBrushes");
-	CollisionBSPData_LoadLeafBrushes();
+	CollisionBSPData_LoadLeafBrushes(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadPlanes");
-	CollisionBSPData_LoadPlanes();
+	CollisionBSPData_LoadPlanes(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadBrushes");
-	CollisionBSPData_LoadBrushes();
+	CollisionBSPData_LoadBrushes(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadBrushSides");
-	CollisionBSPData_LoadBrushSides(map_texinfo);
+	CollisionBSPData_LoadBrushSides(header,map_texinfo);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadSubmodels");
-	CollisionBSPData_LoadSubmodels();
+	CollisionBSPData_LoadSubmodels(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadPlanes");
-	CollisionBSPData_LoadNodes();
+	CollisionBSPData_LoadNodes(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadAreas");
-	CollisionBSPData_LoadAreas();
+	CollisionBSPData_LoadAreas(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadAreaPortals");
-	CollisionBSPData_LoadAreaPortals();
+	CollisionBSPData_LoadAreaPortals(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadVisibility");
-	CollisionBSPData_LoadVisibility();
+	CollisionBSPData_LoadVisibility(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadEntityString");
-	CollisionBSPData_LoadEntityString();
+	CollisionBSPData_LoadEntityString(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadPhysics");
-	CollisionBSPData_LoadPhysics();
+	CollisionBSPData_LoadPhysics(header);
 
 	COM_TimestampedLog("  CollisionBSPData_LoadDispInfo");
-	CollisionBSPData_LoadDispInfo();
+	CollisionBSPData_LoadDispInfo(header);
 
 	CM_DispTreeLeafnum();
+
+	// Close map file, etc.
 	return true;
 }
-CRangeValidatedArray<unsigned short>* CCollisionBSPData::GetDispList() {
-	return &map_dispList;
+CRangeValidatedArray<unsigned short>* model_t::GetDispList() {
+	return &brush.pShared->map_dispList;
 }
-void CCollisionBSPData::SetDispListCount(int count) {
-	numdisplist = count;
+void model_t::SetDispListCount(int count) {
+	brush.pShared->numdisplist = count;
 }
-unsigned short CCollisionBSPData::GetDispList(int index) {
-	return map_dispList[index];
+unsigned short model_t::GetDispList(int index) {
+	return brush.pShared->map_dispList[index];
 }
-int CCollisionBSPData::GetEntityCharsCount() {
-	return numentitychars;
+int model_t::GetEntityCharsCount() {
+	return brush.pShared->numentitychars;
 }
-int CCollisionBSPData::GetTexturesCount() {
-	return numtextures;
+int model_t::GetTexturesCount() {
+	return brush.pShared->numtextures;
 }
-unsigned short* CCollisionBSPData::GetDispListBase() {
-	return map_dispList.Base();
+unsigned short* model_t::GetDispListBase() {
+	return brush.pShared->map_dispList.Base();
 }
-int CCollisionBSPData::GetDispListCount() {
-	return numdisplist;
+int model_t::GetDispListCount() {
+	return brush.pShared->numdisplist;
 }
-int CCollisionBSPData::GetDispCollTreesCount() {
-	return g_DispCollTreeCount;
+int model_t::GetDispCollTreesCount() {
+	return brush.pShared->g_DispCollTreeCount;
 }
-CDispCollTree* CCollisionBSPData::GetDispCollTrees(int index) {
-	return &g_pDispCollTrees[index];
+CDispCollTree* model_t::GetDispCollTrees(int index) {
+	return &brush.pShared->g_pDispCollTrees[index];
 }
-alignedbbox_t* CCollisionBSPData::GetDispBounds(int index) {
-	return &g_pDispBounds[index];
+alignedbbox_t* model_t::GetDispBounds(int index) {
+	return &brush.pShared->g_pDispBounds[index];
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadTextures()
+void model_t::CollisionBSPData_LoadTextures(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_TEXDATA);
+	CLumpInfo lh(header,LUMP_TEXDATA);
 
-	CMapLoadHelper lhStringData(LUMP_TEXDATA_STRING_DATA);
+	CLumpInfo lhStringData(header,LUMP_TEXDATA_STRING_DATA);
 	const char* pStringData = (const char*)lhStringData.LumpBase();
 
-	CMapLoadHelper lhStringTable(LUMP_TEXDATA_STRING_TABLE);
+	CLumpInfo lhStringTable(header,LUMP_TEXDATA_STRING_TABLE);
 	if (lhStringTable.LumpSize() % sizeof(int))
 		Sys_Error("CMod_LoadTextures: funny lump size");
 	int* pStringTable = (int*)lhStringTable.LumpBase();
@@ -388,12 +392,12 @@ void CCollisionBSPData::CollisionBSPData_LoadTextures()
 	}
 
 	int nSize = count * sizeof(csurface_t);
-	map_surfaces.Attach(count, (csurface_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_surfaces.Attach(count, (csurface_t*)Hunk_Alloc(nSize));
 
-	numtextures = count;
+	brush.pShared->numtextures = count;
 
-	map_texturenames = (char*)Hunk_Alloc(lhStringData.LumpSize() * sizeof(char), false);
-	memcpy(map_texturenames, pStringData, lhStringData.LumpSize());
+	brush.pShared->map_texturenames = (char*)Hunk_Alloc(lhStringData.LumpSize() * sizeof(char), false);
+	memcpy(brush.pShared->map_texturenames, pStringData, lhStringData.LumpSize());
 
 	for (i = 0; i < count; i++, in++)
 	{
@@ -403,12 +407,12 @@ void CCollisionBSPData::CollisionBSPData_LoadTextures()
 		const char* pInName = &pStringData[pStringTable[in->nameStringTableID]];
 		int index = pInName - pStringData;
 
-		csurface_t* out = &map_surfaces[i];
-		out->name = &map_texturenames[index];
+		csurface_t* out = &brush.pShared->map_surfaces[i];
+		out->name = &brush.pShared->map_texturenames[index];
 		out->surfaceProps = 0;
 		out->flags = 0;
 
-		material = materials->FindMaterial(map_surfaces[i].name, TEXTURE_GROUP_WORLD, true);
+		material = materials->FindMaterial(brush.pShared->map_surfaces[i].name, TEXTURE_GROUP_WORLD, true);
 		if (!IsErrorMaterial(material))
 		{
 			IMaterialVar* var;
@@ -417,7 +421,7 @@ void CCollisionBSPData::CollisionBSPData_LoadTextures()
 			if (varFound)
 			{
 				const char* pProps = var->GetStringValue();
-				map_surfaces[i].surfaceProps = physprop->GetSurfaceIndex(pProps);
+				brush.pShared->map_surfaces[i].surfaceProps = physprop->GetSurfaceIndex(pProps);
 			}
 		}
 	}
@@ -426,10 +430,10 @@ void CCollisionBSPData::CollisionBSPData_LoadTextures()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadTexinfo(
+void model_t::CollisionBSPData_LoadTexinfo(CLumpHeaderInfo& header,
 	CUtlVector<unsigned short>& map_texinfo)
 {
-	CMapLoadHelper lh(LUMP_TEXINFO);
+	CLumpInfo lh(header,LUMP_TEXINFO);
 
 	texinfo_t* in;
 	unsigned short	out;
@@ -452,11 +456,11 @@ void CCollisionBSPData::CollisionBSPData_LoadTexinfo(
 	{
 		out = in->texdata;
 
-		if (out >= numtextures)
+		if (out >= brush.pShared->numtextures)
 			out = 0;
 
 		// HACKHACK: Copy this over for the whole material!!!
-		map_surfaces[out].flags |= in->flags;
+		brush.pShared->map_surfaces[out].flags |= in->flags;
 		map_texinfo.AddToTail(out);
 	}
 }
@@ -464,7 +468,7 @@ void CCollisionBSPData::CollisionBSPData_LoadTexinfo(
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadLeafs_Version_0(CMapLoadHelper& lh)
+void model_t::CollisionBSPData_LoadLeafs_Version_0(CLumpHeaderInfo& header, CLumpInfo& lh)
 {
 	int			i;
 	dleaf_version_0_t* in;
@@ -491,14 +495,14 @@ void CCollisionBSPData::CollisionBSPData_LoadLeafs_Version_0(CMapLoadHelper& lh)
 
 	// Need an extra one for the emptyleaf below
 	int nSize = (count + 1) * sizeof(cleaf_t);
-	map_leafs.Attach(count + 1, (cleaf_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_leafs.Attach(count + 1, (cleaf_t*)Hunk_Alloc(nSize));
 
-	numleafs = count;
-	numclusters = 0;
+	brush.pShared->numcmleafs = count;
+	brush.pShared->numclusters = 0;
 
 	for (i = 0; i < count; i++, in++)
 	{
-		cleaf_t* out = &map_leafs[i];
+		cleaf_t* out = &brush.pShared->map_leafs[i];
 		out->contents = in->contents;
 		out->cluster = in->cluster;
 		out->area = in->area;
@@ -508,26 +512,26 @@ void CCollisionBSPData::CollisionBSPData_LoadLeafs_Version_0(CMapLoadHelper& lh)
 
 		out->dispCount = 0;
 
-		if (out->cluster >= numclusters)
+		if (out->cluster >= brush.pShared->numclusters)
 		{
-			numclusters = out->cluster + 1;
+			brush.pShared->numclusters = out->cluster + 1;
 		}
 	}
 
-	if (map_leafs[0].contents != CONTENTS_SOLID)
+	if (brush.pShared->map_leafs[0].contents != CONTENTS_SOLID)
 	{
 		Sys_Error("Map leaf 0 is not CONTENTS_SOLID");
 	}
 
-	solidleaf = 0;
-	emptyleaf = numleafs;
-	memset(&map_leafs[emptyleaf], 0, sizeof(map_leafs[emptyleaf]));
-	numleafs++;
+	brush.pShared->solidleaf = 0;
+	brush.pShared->emptyleaf = brush.pShared->numcmleafs;
+	memset(&brush.pShared->map_leafs[brush.pShared->emptyleaf], 0, sizeof(brush.pShared->map_leafs[brush.pShared->emptyleaf]));
+	brush.pShared->numcmleafs++;
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadLeafs_Version_1(CMapLoadHelper& lh)
+void model_t::CollisionBSPData_LoadLeafs_Version_1(CLumpHeaderInfo& header, CLumpInfo& lh)
 {
 	int			i;
 	dleaf_t* in;
@@ -554,14 +558,14 @@ void CCollisionBSPData::CollisionBSPData_LoadLeafs_Version_1(CMapLoadHelper& lh)
 
 	// Need an extra one for the emptyleaf below
 	int nSize = (count + 1) * sizeof(cleaf_t);
-	map_leafs.Attach(count + 1, (cleaf_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_leafs.Attach(count + 1, (cleaf_t*)Hunk_Alloc(nSize));
 
-	numleafs = count;
-	numclusters = 0;
+	brush.pShared->numcmleafs = count;
+	brush.pShared->numclusters = 0;
 
 	for (i = 0; i < count; i++, in++)
 	{
-		cleaf_t* out = &map_leafs[i];
+		cleaf_t* out = &brush.pShared->map_leafs[i];
 		out->contents = in->contents;
 		out->cluster = in->cluster;
 		out->area = in->area;
@@ -571,33 +575,33 @@ void CCollisionBSPData::CollisionBSPData_LoadLeafs_Version_1(CMapLoadHelper& lh)
 
 		out->dispCount = 0;
 
-		if (out->cluster >= numclusters)
+		if (out->cluster >= brush.pShared->numclusters)
 		{
-			numclusters = out->cluster + 1;
+			brush.pShared->numclusters = out->cluster + 1;
 		}
 	}
 
-	if (map_leafs[0].contents != CONTENTS_SOLID)
+	if (brush.pShared->map_leafs[0].contents != CONTENTS_SOLID)
 	{
 		Sys_Error("Map leaf 0 is not CONTENTS_SOLID");
 	}
 
-	solidleaf = 0;
-	emptyleaf = numleafs;
-	memset(&map_leafs[emptyleaf], 0, sizeof(map_leafs[emptyleaf]));
-	numleafs++;
+	brush.pShared->solidleaf = 0;
+	brush.pShared->emptyleaf = brush.pShared->numcmleafs;
+	memset(&brush.pShared->map_leafs[brush.pShared->emptyleaf], 0, sizeof(brush.pShared->map_leafs[brush.pShared->emptyleaf]));
+	brush.pShared->numcmleafs++;
 }
 
-void CCollisionBSPData::CollisionBSPData_LoadLeafs()
+void model_t::CollisionBSPData_LoadLeafs(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_LEAFS);
+	CLumpInfo lh(header,LUMP_LEAFS);
 	switch (lh.LumpVersion())
 	{
 	case 0:
-		CollisionBSPData_LoadLeafs_Version_0(lh);
+		CollisionBSPData_LoadLeafs_Version_0(header,lh);
 		break;
 	case 1:
-		CollisionBSPData_LoadLeafs_Version_1(lh);
+		CollisionBSPData_LoadLeafs_Version_1(header,lh);
 		break;
 	default:
 		Assert(0);
@@ -609,9 +613,9 @@ void CCollisionBSPData::CollisionBSPData_LoadLeafs()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadLeafBrushes()
+void model_t::CollisionBSPData_LoadLeafBrushes(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_LEAFBRUSHES);
+	CLumpInfo lh(header,LUMP_LEAFBRUSHES);
 
 	int			i;
 	unsigned short* in;
@@ -635,21 +639,21 @@ void CCollisionBSPData::CollisionBSPData_LoadLeafBrushes()
 		Sys_Error("Map has too many leafbrushes");
 	}
 
-	map_leafbrushes.Attach(count, (unsigned short*)Hunk_Alloc(count * sizeof(unsigned short), false));
-	numleafbrushes = count;
+	brush.pShared->map_leafbrushes.Attach(count, (unsigned short*)Hunk_Alloc(count * sizeof(unsigned short), false));
+	brush.pShared->numleafbrushes = count;
 
 	for (i = 0; i < count; i++, in++)
 	{
-		map_leafbrushes[i] = *in;
+		brush.pShared->map_leafbrushes[i] = *in;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadPlanes()
+void model_t::CollisionBSPData_LoadPlanes(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_PLANES);
+	CLumpInfo lh(header,LUMP_PLANES);
 
 	int			i, j;
 	dplane_t* in;
@@ -676,13 +680,13 @@ void CCollisionBSPData::CollisionBSPData_LoadPlanes()
 	}
 
 	int nSize = count * sizeof(cplane_t);
-	map_planes.Attach(count, (cplane_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_planes.Attach(count, (cplane_t*)Hunk_Alloc(nSize));
 
-	numplanes = count;
+	brush.pShared->numplanes = count;
 
 	for (i = 0; i < count; i++, in++)
 	{
-		cplane_t* out = &map_planes[i];
+		cplane_t* out = &brush.pShared->map_planes[i];
 		bits = 0;
 		for (j = 0; j < 3; j++)
 		{
@@ -702,9 +706,9 @@ void CCollisionBSPData::CollisionBSPData_LoadPlanes()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadBrushes()
+void model_t::CollisionBSPData_LoadBrushes(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_BRUSHES);
+	CLumpInfo lh(header,LUMP_BRUSHES);
 
 	dbrush_t* in;
 	int			i, count;
@@ -722,20 +726,20 @@ void CCollisionBSPData::CollisionBSPData_LoadBrushes()
 	}
 
 	int nSize = count * sizeof(cbrush_t);
-	map_brushes.Attach(count, (cbrush_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_brushes.Attach(count, (cbrush_t*)Hunk_Alloc(nSize));
 
-	numbrushes = count;
+	brush.pShared->numbrushes = count;
 
 	for (i = 0; i < count; i++, in++)
 	{
-		cbrush_t* out = &map_brushes[i];
+		cbrush_t* out = &brush.pShared->map_brushes[i];
 		out->firstbrushside = in->firstside;
 		out->numsides = in->numsides;
 		out->contents = in->contents;
 	}
 }
 
-inline bool CCollisionBSPData::IsBoxBrush(const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes)
+inline bool model_t::IsBoxBrush(const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes)
 {
 	int countAxial = 0;
 	if (brush.numsides == 6)
@@ -751,7 +755,7 @@ inline bool CCollisionBSPData::IsBoxBrush(const cbrush_t& brush, dbrushside_t* p
 	return (countAxial == brush.numsides) ? true : false;
 }
 
-inline void CCollisionBSPData::ExtractBoxBrush(cboxbrush_t* pBox, const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes, CUtlVector<unsigned short>& map_texinfo)
+inline void model_t::ExtractBoxBrush(cboxbrush_t* pBox, const cbrush_t& brush, dbrushside_t* pSides, cplane_t* pPlanes, CUtlVector<unsigned short>& map_texinfo)
 {
 	// brush.numsides is no longer valid.  Assume numsides == 6
 	for (int i = 0; i < 6; i++)
@@ -784,9 +788,9 @@ inline void CCollisionBSPData::ExtractBoxBrush(cboxbrush_t* pBox, const cbrush_t
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadBrushSides(CUtlVector<unsigned short>& map_texinfo)
+void model_t::CollisionBSPData_LoadBrushSides(CLumpHeaderInfo& header,CUtlVector<unsigned short>& map_texinfo)
 {
-	CMapLoadHelper lh(LUMP_BRUSHSIDES);
+	CLumpInfo lh(header,LUMP_BRUSHSIDES);
 
 	int				i, j;
 	dbrushside_t* in;
@@ -819,38 +823,38 @@ void CCollisionBSPData::CollisionBSPData_LoadBrushSides(CUtlVector<unsigned shor
 
 	int boxBrushCount = 0;
 	int brushSideCount = 0;
-	for (i = 0; i < numbrushes; i++)
+	for (i = 0; i < brush.pShared->numbrushes; i++)
 	{
-		if (IsBoxBrush(map_brushes[i], in, map_planes.Base()))
+		if (IsBoxBrush(brush.pShared->map_brushes[i], in, brush.pShared->map_planes.Base()))
 		{
 			// mark as axial
-			map_brushes[i].numsides = NUMSIDES_BOXBRUSH;
+			brush.pShared->map_brushes[i].numsides = NUMSIDES_BOXBRUSH;
 			boxBrushCount++;
 		}
 		else
 		{
-			brushSideCount += map_brushes[i].numsides;
+			brushSideCount += brush.pShared->map_brushes[i].numsides;
 		}
 	}
 
 	int nSize = brushSideCount * sizeof(cbrushside_t);
-	map_brushsides.Attach(brushSideCount, (cbrushside_t*)Hunk_Alloc(nSize, false));
-	map_boxbrushes.Attach(boxBrushCount, (cboxbrush_t*)Hunk_Alloc(boxBrushCount * sizeof(cboxbrush_t), false));
+	brush.pShared->map_brushsides.Attach(brushSideCount, (cbrushside_t*)Hunk_Alloc(nSize, false));
+	brush.pShared->map_boxbrushes.Attach(boxBrushCount, (cboxbrush_t*)Hunk_Alloc(boxBrushCount * sizeof(cboxbrush_t), false));
 
-	numbrushsides = brushSideCount;
-	numboxbrushes = boxBrushCount;
+	brush.pShared->numbrushsides = brushSideCount;
+	brush.pShared->numboxbrushes = boxBrushCount;
 
 	int outBoxBrush = 0;
 	int outBrushSide = 0;
-	for (i = 0; i < numbrushes; i++)
+	for (i = 0; i < brush.pShared->numbrushes; i++)
 	{
-		cbrush_t* pBrush = &map_brushes[i];
+		cbrush_t* pBrush = &brush.pShared->map_brushes[i];
 
 		if (pBrush->IsBox())
 		{
 			// fill out the box brush - extract from the input sides
-			cboxbrush_t* pBox = &map_boxbrushes[outBoxBrush];
-			ExtractBoxBrush(pBox, *pBrush, in, map_planes.Base(), map_texinfo);
+			cboxbrush_t* pBox = &brush.pShared->map_boxbrushes[outBoxBrush];
+			ExtractBoxBrush(pBox, *pBrush, in, brush.pShared->map_planes.Base(), map_texinfo);
 			pBrush->SetBox(outBoxBrush);
 			outBoxBrush++;
 		}
@@ -861,9 +865,9 @@ void CCollisionBSPData::CollisionBSPData_LoadBrushSides(CUtlVector<unsigned shor
 			pBrush->firstbrushside = outBrushSide;
 			for (j = 0; j < pBrush->numsides; j++)
 			{
-				cbrushside_t* RESTRICT pSide = &map_brushsides[outBrushSide];
+				cbrushside_t* RESTRICT pSide = &brush.pShared->map_brushsides[outBrushSide];
 				dbrushside_t* RESTRICT pInputSide = in + firstInputSide + j;
-				pSide->plane = &map_planes[pInputSide->planenum];
+				pSide->plane = &brush.pShared->map_planes[pInputSide->planenum];
 				int t = pInputSide->texinfo;
 				if (t >= map_texinfo.Size())
 				{
@@ -883,9 +887,9 @@ void CCollisionBSPData::CollisionBSPData_LoadBrushSides(CUtlVector<unsigned shor
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadSubmodels()
+void model_t::CollisionBSPData_LoadSubmodels(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_MODELS);
+	CLumpInfo lh(header,LUMP_MODELS);
 
 	dmodel_t* in;
 	int			i, j, count;
@@ -901,12 +905,12 @@ void CCollisionBSPData::CollisionBSPData_LoadSubmodels()
 		Sys_Error("Map has too many models");
 
 	int nSize = count * sizeof(cmodel_t);
-	map_cmodels.Attach(count, (cmodel_t*)Hunk_Alloc(nSize));
-	numcmodels = count;
+	brush.pShared->map_cmodels.Attach(count, (cmodel_t*)Hunk_Alloc(nSize));
+	brush.pShared->numcmodels = count;
 
 	for (i = 0; i < count; i++, in++)
 	{
-		cmodel_t* out = &map_cmodels[i];
+		cmodel_t* out = &brush.pShared->map_cmodels[i];
 
 		for (j = 0; j < 3; j++)
 		{	// spread the mins / maxs by a pixel
@@ -921,9 +925,9 @@ void CCollisionBSPData::CollisionBSPData_LoadSubmodels()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadNodes()
+void model_t::CollisionBSPData_LoadNodes(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_NODES);
+	CLumpInfo lh(header,LUMP_NODES);
 
 	dnode_t* in;
 	int			i, j, count;
@@ -940,15 +944,15 @@ void CCollisionBSPData::CollisionBSPData_LoadNodes()
 
 	// 6 extra for box hull
 	int nSize = (count + 6) * sizeof(cnode_t);
-	map_nodes.Attach(count + 6, (cnode_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_nodes.Attach(count + 6, (cnode_t*)Hunk_Alloc(nSize));
 
-	numnodes = count;
-	map_rootnode = map_nodes.Base();
+	brush.pShared->numcmnodes = count;
+	brush.pShared->map_rootnode = brush.pShared->map_nodes.Base();
 
 	for (i = 0; i < count; i++, in++)
 	{
-		cnode_t* out = &map_nodes[i];
-		out->plane = &map_planes[in->planenum];
+		cnode_t* out = &brush.pShared->map_nodes[i];
+		out->plane = &brush.pShared->map_planes[in->planenum];
 		for (j = 0; j < 2; j++)
 		{
 			out->children[j] = in->children[j];
@@ -959,9 +963,9 @@ void CCollisionBSPData::CollisionBSPData_LoadNodes()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadAreas()
+void model_t::CollisionBSPData_LoadAreas(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_AREAS);
+	CLumpInfo lh(header,LUMP_AREAS);
 
 	int			i;
 	darea_t* in;
@@ -980,13 +984,13 @@ void CCollisionBSPData::CollisionBSPData_LoadAreas()
 	}
 
 	int nSize = count * sizeof(carea_t);
-	map_areas.Attach(count, (carea_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_areas.Attach(count, (carea_t*)Hunk_Alloc(nSize));
 
-	numareas = count;
+	brush.pShared->numareas = count;
 
 	for (i = 0; i < count; i++, in++)
 	{
-		carea_t* out = &map_areas[i];
+		carea_t* out = &brush.pShared->map_areas[i];
 		out->numareaportals = in->numareaportals;
 		out->firstareaportal = in->firstareaportal;
 		out->floodvalid = 0;
@@ -997,9 +1001,9 @@ void CCollisionBSPData::CollisionBSPData_LoadAreas()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadAreaPortals()
+void model_t::CollisionBSPData_LoadAreaPortals(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_AREAPORTALS);
+	CLumpInfo lh(header,LUMP_AREAPORTALS);
 
 	dareaportal_t* in;
 	int				count;
@@ -1019,65 +1023,65 @@ void CCollisionBSPData::CollisionBSPData_LoadAreaPortals()
 	// Need to add one more in owing to 1-based instead of 0-based data!
 	++count;
 
-	numportalopen = count;
-	portalopen.Attach(count, (bool*)Hunk_Alloc(numportalopen * sizeof(bool), false));
-	for (int i = 0; i < numportalopen; i++)
+	brush.pShared->numportalopen = count;
+	brush.pShared->portalopen.Attach(count, (bool*)Hunk_Alloc(brush.pShared->numportalopen * sizeof(bool), false));
+	for (int i = 0; i < brush.pShared->numportalopen; i++)
 	{
-		portalopen[i] = false;
+		brush.pShared->portalopen[i] = false;
 	}
 
-	numareaportals = count;
+	brush.pShared->numareaportals = count;
 	int nSize = count * sizeof(dareaportal_t);
-	map_areaportals.Attach(count, (dareaportal_t*)Hunk_Alloc(nSize));
+	brush.pShared->map_areaportals.Attach(count, (dareaportal_t*)Hunk_Alloc(nSize));
 
 	Assert(nSize >= lh.LumpSize());
-	memcpy(map_areaportals.Base(), in, lh.LumpSize());
+	memcpy(brush.pShared->map_areaportals.Base(), in, lh.LumpSize());
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadVisibility()
+void model_t::CollisionBSPData_LoadVisibility(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_VISIBILITY);
+	CLumpInfo lh(header,LUMP_VISIBILITY);
 
-	numvisibility = lh.LumpSize();
+	brush.pShared->numvisibility = lh.LumpSize();
 	if (lh.LumpSize() > MAX_MAP_VISIBILITY)
 		Sys_Error("Map has too large visibility lump");
 
 	int visDataSize = lh.LumpSize();
 	if (visDataSize == 0)
 	{
-		map_vis = NULL;
+		brush.pShared->map_vis = NULL;
 	}
 	else
 	{
-		map_vis = (dvis_t*)Hunk_Alloc(visDataSize, false);
-		memcpy(map_vis, lh.LumpBase(), visDataSize);
+		brush.pShared->map_vis = (dvis_t*)Hunk_Alloc(visDataSize, false);
+		memcpy(brush.pShared->map_vis, lh.LumpBase(), visDataSize);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadEntityString()
+void model_t::CollisionBSPData_LoadEntityString(CLumpHeaderInfo& header)
 {
-	CMapLoadHelper lh(LUMP_ENTITIES);
+	CLumpInfo lh(header,LUMP_ENTITIES);
 
-	numentitychars = lh.LumpSize();
+	brush.pShared->numentitychars = lh.LumpSize();
 	MEM_ALLOC_CREDIT();
 	char szMapName[MAX_PATH] = { 0 };
-	V_strncpy(szMapName, lh.GetMapName(), sizeof(szMapName));
-	map_entitystring.Init(szMapName, lh.LumpOffset(), lh.LumpSize(), lh.LumpBase());
+	V_strncpy(szMapName, header.GetMapName(), sizeof(szMapName));
+	brush.pShared->map_entitystring.Init(szMapName, lh.LumpOffset(), lh.LumpSize(), lh.LumpBase());
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadPhysics()
+void model_t::CollisionBSPData_LoadPhysics(CLumpHeaderInfo& header)
 {
 #ifdef _WIN32
-	CMapLoadHelper lh(LUMP_PHYSCOLLIDE);
+	CLumpInfo lh(header,LUMP_PHYSCOLLIDE);
 #else
 	int nLoadLump = LUMP_PHYSCOLLIDE;
 	// backwards compat support for older game dlls
@@ -1119,7 +1123,7 @@ void CCollisionBSPData::CollisionBSPData_LoadPhysics()
 
 		if (physModel.dataSize > 0)
 		{
-			cmodel_t* pModel = &map_cmodels[physModel.modelIndex];
+			cmodel_t* pModel = &brush.pShared->map_cmodels[physModel.modelIndex];
 			physcollision->VCollideLoad(&pModel->vcollisionData, physModel.solidCount, (const char*)ptr, physModel.dataSize + physModel.keydataSize);
 			ptr += physModel.dataSize;
 			ptr += physModel.keydataSize;
@@ -1135,17 +1139,17 @@ void CCollisionBSPData::CollisionBSPData_LoadPhysics()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
+void model_t::CollisionBSPData_LoadDispInfo(CLumpHeaderInfo& header)
 {
 	// How many displacements in the map?
-	int coreDispCount = CMapLoadHelper::LumpSize(LUMP_DISPINFO) / sizeof(ddispinfo_t);
+	int coreDispCount = header.LumpSize(LUMP_DISPINFO) / sizeof(ddispinfo_t);
 	if (coreDispCount == 0)
 		return;
 
 	//
 	// get the vertex data
 	//
-	CMapLoadHelper lhv(LUMP_VERTEXES);
+	CLumpInfo lhv(header,LUMP_VERTEXES);
 	dvertex_t* pVerts = (dvertex_t*)lhv.LumpBase();
 	if (lhv.LumpSize() % sizeof(dvertex_t))
 		Sys_Error("CMod_LoadDispInfo: bad vertex lump size!");
@@ -1153,7 +1157,7 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 	//
 	// get the edge data
 	//
-	CMapLoadHelper lhe(LUMP_EDGES);
+	CLumpInfo lhe(header,LUMP_EDGES);
 	dedge_t* pEdges = (dedge_t*)lhe.LumpBase();
 	if (lhe.LumpSize() % sizeof(dedge_t))
 		Sys_Error("CMod_LoadDispInfo: bad edge lump size!");
@@ -1161,7 +1165,7 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 	//
 	// get surf edges data
 	//
-	CMapLoadHelper lhs(LUMP_SURFEDGES);
+	CLumpInfo lhs(header,LUMP_SURFEDGES);
 	int* pSurfEdges = (int*)lhs.LumpBase();
 	if (lhs.LumpSize() % sizeof(int))
 		Sys_Error("CMod_LoadDispInfo: bad surf edge lump size!");
@@ -1171,11 +1175,11 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 	//
 	int face_lump_to_load = LUMP_FACES;
 	if (g_pMaterialSystemHardwareConfig->GetHDREnabled() && /*g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE &&*/
-		CMapLoadHelper::LumpSize(LUMP_FACES_HDR) > 0)
+		header.LumpSize(LUMP_FACES_HDR) > 0)
 	{
 		face_lump_to_load = LUMP_FACES_HDR;
 	}
-	CMapLoadHelper lhf(face_lump_to_load);
+	CLumpInfo lhf(header,face_lump_to_load);
 	dface_t* pFaces = (dface_t*)lhf.LumpBase();
 	if (lhf.LumpSize() % sizeof(dface_t))
 		Sys_Error("CMod_LoadDispInfo: bad face lump size!");
@@ -1188,15 +1192,15 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 	//
 	// get texinfo data
 	//
-	CMapLoadHelper lhti(LUMP_TEXINFO);
+	CLumpInfo lhti(header,LUMP_TEXINFO);
 	texinfo_t* pTexinfoList = (texinfo_t*)lhti.LumpBase();
 	if (lhti.LumpSize() % sizeof(texinfo_t))
 		Sys_Error("CMod_LoadDispInfo: bad texinfo lump size!");
 
 	// allocate displacement collision trees
-	g_DispCollTreeCount = coreDispCount;
-	g_pDispCollTrees = DispCollTrees_Alloc(g_DispCollTreeCount);
-	g_pDispBounds = (alignedbbox_t*)Hunk_Alloc(g_DispCollTreeCount * sizeof(alignedbbox_t), false);
+	brush.pShared->g_DispCollTreeCount = coreDispCount;
+	brush.pShared->g_pDispCollTrees = DispCollTrees_Alloc(brush.pShared->g_DispCollTreeCount);
+	brush.pShared->g_pDispBounds = (alignedbbox_t*)Hunk_Alloc(brush.pShared->g_DispCollTreeCount * sizeof(alignedbbox_t), false);
 
 	// Build the inverse mapping from disp index to face
 	int nMemSize = coreDispCount * sizeof(unsigned short);
@@ -1227,9 +1231,9 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 	int nCacheSize = 0;
 	int nPowerCount[3] = { 0, 0, 0 };
 
-	CMapLoadHelper lhDispInfo(LUMP_DISPINFO);
-	CMapLoadHelper lhDispVerts(LUMP_DISP_VERTS);
-	CMapLoadHelper lhDispTris(LUMP_DISP_TRIS);
+	CLumpInfo lhDispInfo(header,LUMP_DISPINFO);
+	CLumpInfo lhDispVerts(header,LUMP_DISP_VERTS);
+	CLumpInfo lhDispTris(header,LUMP_DISP_TRIS);
 
 	for (i = 0; i < coreDispCount; ++i)
 	{
@@ -1294,7 +1298,7 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 		//
 		// generate the collision displacement surfaces
 		//
-		CDispCollTree* pDispTree = &g_pDispCollTrees[i];
+		CDispCollTree* pDispTree = &brush.pShared->g_pDispCollTrees[i];
 		pDispTree->SetPower(0);
 
 		//
@@ -1308,7 +1312,7 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 
 		// new collision
 		pDispTree->Create(&coreDisp);
-		g_pDispBounds[i].Init(pDispTree->m_mins, pDispTree->m_maxs, pDispTree->m_iCounter, pDispTree->GetContents());
+		brush.pShared->g_pDispBounds[i].Init(pDispTree->m_mins, pDispTree->m_maxs, pDispTree->m_iCounter, pDispTree->GetContents());
 		nSize += pDispTree->GetMemorySize();
 		nCacheSize += pDispTree->GetCacheMemorySize();
 		nPowerCount[pDispTree->GetPower() - 2]++;
@@ -1317,7 +1321,7 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 		texinfo_t* pTex = &pTexinfoList[pFaces->texinfo];
 		if (pTex->texdata >= 0)
 		{
-			IMaterial* pMaterial = materials->FindMaterial(map_surfaces[pTex->texdata].name, TEXTURE_GROUP_WORLD, true);
+			IMaterial* pMaterial = materials->FindMaterial(brush.pShared->map_surfaces[pTex->texdata].name, TEXTURE_GROUP_WORLD, true);
 			if (!IsErrorMaterial(pMaterial))
 			{
 				IMaterialVar* pVar;
@@ -1340,19 +1344,19 @@ void CCollisionBSPData::CollisionBSPData_LoadDispInfo()
 		}
 	}
 
-	CMapLoadHelper lhDispPhys(LUMP_PHYSDISP);
+	CLumpInfo lhDispPhys(header,LUMP_PHYSDISP);
 	dphysdisp_t* pDispPhys = (dphysdisp_t*)lhDispPhys.LumpBase();
 	// create the vphysics collision models for each displacement
-	CM_CreateDispPhysCollide(pDispPhys, lhDispPhys.LumpSize());
+	CM_CreateDispPhysCollide(this, pDispPhys, lhDispPhys.LumpSize());
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CCollisionBSPData::CM_DispTreeLeafnum()
+void model_t::CM_DispTreeLeafnum()
 {
 	// check to see if there are any displacement trees to push down the bsp tree??
-	if (GetCollisionBSPData()->GetDispCollTreesCount() == 0)
+	if (GetDispCollTreesCount() == 0)
 		return;
 
 	for (int i = 0; i < GetLeafsCount(); i++)
@@ -1364,7 +1368,7 @@ void CCollisionBSPData::CM_DispTreeLeafnum()
 	//
 	CDispLeafBuilder leafBuilder(this);
 
-	for (int i = 0; i < GetCollisionBSPData()->GetDispCollTreesCount(); i++)
+	for (int i = 0; i < GetDispCollTreesCount(); i++)
 	{
 		leafBuilder.BuildLeafListForDisplacement(i);
 	}
@@ -1375,9 +1379,9 @@ void CCollisionBSPData::CM_DispTreeLeafnum()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CollisionBSPData_Init( CCollisionBSPData *pBSPData )
+bool CollisionBSPData_Init( model_t* mod )
 {
-	pBSPData->Init();
+	mod->Init();
 
 	return true;
 }
@@ -1391,20 +1395,20 @@ bool CollisionBSPData_Init( CCollisionBSPData *pBSPData )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CollisionBSPData_Destroy( CCollisionBSPData *pBSPData )
+void CollisionBSPData_Destroy( model_t* mod )
 {
-	for ( int i = 0; i < pBSPData->GetCModelsCount(); i++ )
+	for ( int i = 0; i < mod->GetCModelsCount(); i++)
 	{
-		physcollision->VCollideUnload( &pBSPData->GetCModels(i)->vcollisionData );
+		physcollision->VCollideUnload( &mod->GetCModels(i)->vcollisionData);
 	}
 
 	// free displacement data
 	//DispCollTrees_FreeLeafList( pBSPData );
 	CM_DestroyDispPhysCollide();
-	DispCollTrees_Free(GetCollisionBSPData()->GetDispCollTrees(0));
+	DispCollTrees_Free(mod->GetDispCollTrees(0));
 	
 
-	pBSPData->Destory();
+	mod->Destory();
 }
 
 //-----------------------------------------------------------------------------
@@ -1413,10 +1417,10 @@ void CollisionBSPData_Destroy( CCollisionBSPData *pBSPData )
 
 CDispCollTree* CollisionBSPData_GetCollisionTree( int i )
 {
-	if ((i < 0) || (i >= GetCollisionBSPData()->GetDispCollTreesCount()))
+	if ((i < 0) || (i >= g_pHost->Host_GetWorldModel()->GetDispCollTreesCount()))
 		return 0;
 
-	return GetCollisionBSPData()->GetDispCollTrees(i);
+	return g_pHost->Host_GetWorldModel()->GetDispCollTrees(i);
 }
 
 //-----------------------------------------------------------------------------
@@ -1448,20 +1452,20 @@ void CollisionBSPData_LinkPhysics( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CollisionBSPData_PreLoad( CCollisionBSPData *pBSPData )
+void CollisionBSPData_PreLoad( model_t* mod )
 {
 	// initialize the collision bsp data
-	CollisionBSPData_Init( pBSPData ); 
+	CollisionBSPData_Init( mod ); 
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CollisionBSPData_Load( const char *pName, CCollisionBSPData *pBSPData )
+bool CollisionBSPData_Load( const char *pName, CLumpHeaderInfo& header, model_t* mod )
 {
 	
 
-	return pBSPData->Load(pName);
+	return mod->LoadDatas(pName,header);
 }
 
 

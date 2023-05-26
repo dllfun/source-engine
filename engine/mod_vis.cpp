@@ -120,20 +120,20 @@ static void VisMark_Cached(model_t* pWorld, const VisCacheEntry &cache)
 		__dcbt( offsetLeaf, (void *)(worldbrush.leafs + pSrc[6]) );
 		__dcbt( offsetLeaf, (void *)(worldbrush.leafs + pSrc[7]) );
 #endif
-		pWorld->GetLeafs(pSrc[0])->visframe = visframe;
-		pWorld->GetLeafs(pSrc[1])->visframe = visframe;
-		pWorld->GetLeafs(pSrc[2])->visframe = visframe;
-		pWorld->GetLeafs(pSrc[3])->visframe = visframe;
-		pWorld->GetLeafs(pSrc[4])->visframe = visframe;
-		pWorld->GetLeafs(pSrc[5])->visframe = visframe;
-		pWorld->GetLeafs(pSrc[6])->visframe = visframe;
-		pWorld->GetLeafs(pSrc[7])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[0])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[1])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[2])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[3])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[4])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[5])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[6])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[7])->visframe = visframe;
 		pSrc += 8;
 		count -= 8;
 	}
 	while ( count )
 	{
-		pWorld->GetLeafs(pSrc[0])->visframe = visframe;
+		pWorld->GetMLeafs(pSrc[0])->visframe = visframe;
 		count--;
 		pSrc++;
 	}
@@ -190,7 +190,7 @@ static void VisCache_Build(model_t* pWorld, VisCacheEntry &cache )
 
 	int visframe = r_visframecount;
 
-	for ( i = 0, leaf = pWorld->GetLeafs(0) ; i < pWorld->GetLeafCount() ; i++, leaf++)
+	for ( i = 0, leaf = pWorld->GetMLeafs(0) ; i < pWorld->GetLeafCount() ; i++, leaf++)
 	{
 		MEM_ALLOC_CREDIT();
 		cluster = leaf->cluster;
@@ -217,7 +217,7 @@ bool Map_AreAnyLeavesVisible( model_t* pWorld, int *leafList, int nLeaves )
 {
 	for ( int i=0; i < nLeaves; i++ )
 	{
-		const mleaf_t *leaf = pWorld->GetLeafs(leafList[i]);
+		const mleaf_t *leaf = pWorld->GetMLeafs(leafList[i]);
 		int cluster = leaf->cluster;
 		if ( cluster == -1 )
 			continue;
@@ -285,7 +285,7 @@ void Map_VisMark( bool forcenovis, model_t *worldmodel )
 		// mark everything
 		for (i=0 ; i<worldmodel->GetLeafCount() ; i++)
 		{
-			worldmodel->GetLeafs(i)->visframe = r_visframecount;
+			worldmodel->GetMLeafs(i)->visframe = r_visframecount;
 		}
 		for (i=0 ; i<worldmodel->GetNodesCount() ; i++)
 		{

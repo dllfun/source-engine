@@ -16,7 +16,7 @@ struct leafvis_t
 	leafvis_t()
 	{
 		leafIndex = 0;
-		CCollisionBSPData *pBSP = GetCollisionBSPData();
+		model_t *pBSP = g_pHost->Host_GetWorldModel();
 		if ( pBSP )
 		{
 			numbrushes = pBSP->GetBrushesCount();
@@ -26,7 +26,7 @@ struct leafvis_t
 
 	bool IsValid()
 	{
-		CCollisionBSPData *pBSP = GetCollisionBSPData();
+		model_t *pBSP = g_pHost->Host_GetWorldModel();
 		if ( !pBSP || numbrushes != pBSP->GetBrushesCount() || numentitychars != pBSP->GetEntityCharsCount())
 			return false;
 
@@ -76,7 +76,7 @@ static void PlaneList( int leafIndex, model_t *model, CUtlVector<cplane_t> &plan
 	if (!model )//|| !model->brush.pShared || !model->brush.pShared->nodes
 		Sys_Error ("PlaneList: bad model");
 
-	mleaf_t *pLeaf = model->GetLeafs(leafIndex);
+	mleaf_t *pLeaf = model->GetMLeafs(leafIndex);
 	mnode_t *pNode = pLeaf->parent;
 	mnode_t *pChild = (mnode_t *)pLeaf;
 	while (pNode)
@@ -238,7 +238,7 @@ void LeafVisBuild(model_t* pWorld, const Vector &p )
 		{
 		case 2:
 			{
-				const mleaf_t *pLeaf = pWorld->GetLeafs(0);
+				const mleaf_t *pLeaf = pWorld->GetMLeafs(0);
 				int leafCount = pWorld->GetLeafCount();
 				int visCluster = pLeaf[leafIndex].cluster;
 				// do entire viscluster
@@ -255,7 +255,7 @@ void LeafVisBuild(model_t* pWorld, const Vector &p )
 			{
 				// do entire pvs
 				byte pvs[ MAX_MAP_LEAFS/8 ];
-				const mleaf_t *pLeaf = pWorld->GetLeafs(0);
+				const mleaf_t *pLeaf = pWorld->GetMLeafs(0);
 				int leafCount = pWorld->GetLeafCount();
 				int visCluster = pLeaf[leafIndex].cluster;
 				CM_Vis( pvs, sizeof( pvs ), visCluster, DVIS_PVS );
@@ -354,15 +354,15 @@ void DrawLeafvis_Solid( leafvis_t *pVis )
 
 leafvis_t *g_FrustumVis = NULL, *g_ClipVis[3] = {NULL,NULL,NULL};
 
-int FindMinBrush( CCollisionBSPData *pBSPData, int nodenum, int brushIndex )
+int FindMinBrush( model_t *mod, int nodenum, int brushIndex )
 {
 	while (1)
 	{
 		if (nodenum < 0)
 		{
 			int leafIndex = -1 - nodenum;
-			cleaf_t* leaf = pBSPData->GetLeafs(leafIndex);
-			int firstbrush = pBSPData->GetLeafBrushes( leaf->firstleafbrush );
+			cleaf_t* leaf = mod->GetLeafs(leafIndex);
+			int firstbrush = mod->GetLeafBrushes( leaf->firstleafbrush );
 			if ( firstbrush < brushIndex )
 			{
 				brushIndex = firstbrush;
@@ -370,8 +370,8 @@ int FindMinBrush( CCollisionBSPData *pBSPData, int nodenum, int brushIndex )
 			return brushIndex;
 		}
 
-		cnode_t* node = pBSPData->GetNodes(nodenum);
-		brushIndex = FindMinBrush( pBSPData, node->children[0], brushIndex );
+		cnode_t* node = mod->GetNodes(nodenum);
+		brushIndex = FindMinBrush(mod, node->children[0], brushIndex );
 		nodenum = node->children[1];
 	}
 
@@ -394,7 +394,7 @@ void RecomputeClipbrushes( bool bEnabled )
 		int contents[3] = {CONTENTS_PLAYERCLIP|CONTENTS_MONSTERCLIP, CONTENTS_MONSTERCLIP, CONTENTS_PLAYERCLIP};
 		g_ClipVis[v] = new leafvis_t;
 		g_ClipVis[v]->color.Init( v != 1 ? 1.0f : 0.5, 0.0f, v != 0 ? 1.0f : 0.0f );
-		CCollisionBSPData *pBSP = GetCollisionBSPData();
+		model_t *pBSP = g_pHost->Host_GetWorldModel();
 		int lastBrush = pBSP->GetBrushesCount(); 
 		if ( pBSP->GetCModelsCount() > 1)
 		{
@@ -444,7 +444,7 @@ static ConVar r_drawclipbrushes( "r_drawclipbrushes", "0", FCVAR_CHEAT, "Draw cl
 
 static Vector LeafAmbientSamplePos(model_t* pWorld, int leafIndex, const mleafambientlighting_t &sample )
 {
-	mleaf_t *pLeaf = pWorld->GetLeafs(leafIndex);
+	mleaf_t *pLeaf = pWorld->GetMLeafs(leafIndex);
 	Vector out = pLeaf->m_vecCenter - pLeaf->m_vecHalfDiagonal;
 	out.x += float(sample.x) * pLeaf->m_vecHalfDiagonal.x * (2.0f / 255.0f);
 	out.y += float(sample.y) * pLeaf->m_vecHalfDiagonal.y * (2.0f / 255.0f);

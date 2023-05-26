@@ -239,77 +239,77 @@ static inline void SV_WriteDeltaHeader(
 // Also uses the IFrameChangeList in pTo to come up with a smaller set of properties to delta against.
 // It deltas against any properties that have changed since iFromFrame.
 // If iFromFrame is -1, then it deltas all properties.
-static int SV_CalcDeltaAndWriteProps( 
-	CEntityWriteInfo &u, 
-	
-	const void *pFromData,
-	int nFromBits, 
-
-	PackedEntity *pTo
-	)
-{
-	// Calculate the delta props.
-	int deltaProps[MAX_DATATABLE_PROPS];
-	void *pToData = pTo->GetData();
-	int nToBits = pTo->GetNumBits();
-	SendTable *pToTable = pTo->m_pServerClass->m_pTable;
-
-	// TODO if our baseline is compressed, uncompress first
-	Assert( !pTo->IsCompressed() );
-
-	int nDeltaProps = SendTable_CalcDelta(
-		pToTable, 
-		
-		pFromData,
-		nFromBits,
-		
-		pToData,
-		nToBits,
-		
-		deltaProps,
-		ARRAYSIZE( deltaProps ),
-		
-		pTo->m_nEntityIndex	);
-
-	
-
-	// Cull out props given what the proxies say.
-	int culledProps[MAX_DATATABLE_PROPS];
-	
-	int nCulledProps = 0;
-	if ( nDeltaProps )
-	{
-		nCulledProps = SendTable_CullPropsFromProxies(
-			pToTable,
-			deltaProps, 
-			nDeltaProps,
-			u.m_nClientEntity-1,			
-			NULL,
-			-1,
-
-			pTo->GetRecipients(),
-			pTo->GetNumRecipients(),
-
-			culledProps,
-			ARRAYSIZE( culledProps ) );
-	}
-
-	
-	// Write the properties.
-	SendTable_WritePropList( 
-		pToTable,
-		
-		pToData,				// object data
-		pTo->GetNumBits(),
-
-		u.m_pBuf,				// output buffer
-
-		pTo->m_nEntityIndex,
-		culledProps,
-		nCulledProps );
-
-	return nCulledProps;
-}
+//static int SV_CalcDeltaAndWriteProps( 
+//	CEntityWriteInfo &u, 
+//	
+//	const void *pFromData,
+//	int nFromBits, 
+//
+//	PackedEntity *pTo
+//	)
+//{
+//	// Calculate the delta props.
+//	int deltaProps[MAX_DATATABLE_PROPS];
+//	void *pToData = pTo->GetData();
+//	int nToBits = pTo->GetNumBits();
+//	SendTable *pToTable = pTo->m_pServerClass->m_pTable;
+//
+//	// TODO if our baseline is compressed, uncompress first
+//	Assert( !pTo->IsCompressed() );
+//
+//	int nDeltaProps = SendTable_CalcDelta(
+//		pToTable, 
+//		
+//		pFromData,
+//		nFromBits,
+//		
+//		pToData,
+//		nToBits,
+//		
+//		deltaProps,
+//		ARRAYSIZE( deltaProps ),
+//		
+//		pTo->m_nEntityIndex	);
+//
+//	
+//
+//	// Cull out props given what the proxies say.
+//	int culledProps[MAX_DATATABLE_PROPS];
+//	
+//	int nCulledProps = 0;
+//	if ( nDeltaProps )
+//	{
+//		nCulledProps = SendTable_CullPropsFromProxies(
+//			pToTable,
+//			deltaProps, 
+//			nDeltaProps,
+//			u.m_nClientEntity-1,			
+//			NULL,
+//			-1,
+//
+//			pTo->GetRecipients(),
+//			pTo->GetNumRecipients(),
+//
+//			culledProps,
+//			ARRAYSIZE( culledProps ) );
+//	}
+//
+//	
+//	// Write the properties.
+//	SendTable_WritePropList( 
+//		pToTable,
+//		
+//		pToData,				// object data
+//		pTo->GetNumBits(),
+//
+//		u.m_pBuf,				// output buffer
+//
+//		pTo->m_nEntityIndex,
+//		culledProps,
+//		nCulledProps );
+//
+//	return nCulledProps;
+//}
 
 
 // NOTE: to optimize this, it could store the bit offsets of each property in the packed entity.

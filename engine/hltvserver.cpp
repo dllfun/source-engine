@@ -1216,7 +1216,7 @@ CHLTVEntityData *FindHLTVDataInSnapshot( CFrameSnapshot * pSnapshot, int iEntInd
 void CHLTVServer::EntityPVSCheck( CClientFrame *pFrame )
 {
 	byte PVS[PAD_NUMBER( MAX_MAP_CLUSTERS,8 ) / 8];
-	int nPVSSize = (GetCollisionBSPData()->GetClustersCount() + 7) / 8;
+	int nPVSSize = (g_pHost->Host_GetWorldModel()->GetClustersCount() + 7) / 8;
 
 	// setup engine PVS
 	SV_ResetPVS( PVS, nPVSSize );

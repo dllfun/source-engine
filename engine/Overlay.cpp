@@ -130,7 +130,7 @@ public:
 	~COverlayMgr();
 
 	// Implementation of IOverlayMgr interface
-	virtual bool	LoadOverlays(model_t* pWorld);
+	virtual bool	LoadOverlays(CLumpHeaderInfo& header, model_t* pWorld);
 	virtual void	UnloadOverlays( );
 
 	virtual void	CreateFragments( model_t* pWorld );
@@ -1113,11 +1113,11 @@ void COverlayMgr::ReSortMaterials( model_t* pWorld )
 //-----------------------------------------------------------------------------
 // Loads overlays from the lump
 //-----------------------------------------------------------------------------
-bool COverlayMgr::LoadOverlays(model_t* pModel)
+bool COverlayMgr::LoadOverlays(CLumpHeaderInfo& header, model_t* pModel)
 {
-	CMapLoadHelper lh( LUMP_OVERLAYS );
-	CMapLoadHelper lh2( LUMP_WATEROVERLAYS );
-	CMapLoadHelper lhOverlayFades( LUMP_OVERLAY_FADES );
+	CLumpInfo lh(header, LUMP_OVERLAYS );
+	CLumpInfo lh2(header, LUMP_WATEROVERLAYS );
+	CLumpInfo lhOverlayFades(header, LUMP_OVERLAY_FADES );
 
 	doverlay_t *pOverlayIn;
 	dwateroverlay_t	*pWaterOverlayIn;
