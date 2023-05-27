@@ -1929,7 +1929,7 @@ bool CStaticPropMgr::IsPropInPVS( IHandleEntity *pHandleEntity, const byte *pVis
 	for( i = prop.FirstLeaf(); i < end; i++ )
 	{
 		Assert( i >= 0 && i < m_StaticPropLeaves.Count() );
-		int clusterID = CM_LeafCluster( m_StaticPropLeaves[i].m_Leaf );
+		int clusterID = CM_LeafCluster(g_pHost->Host_GetWorldModel(), m_StaticPropLeaves[i].m_Leaf );
 		if( pVis[ clusterID >> 3 ] & ( 1 << ( clusterID & 7 ) ) )
 		{
 			return true;

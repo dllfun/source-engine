@@ -560,7 +560,7 @@ void PhysParseSurfaceData( IPhysicsSurfaceProps *pProps, IFileSystem *pFileSyste
 	manifest->deleteThis();
 }
 
-void PhysCreateVirtualTerrain( CBaseEntity *pWorld, const objectparams_t &defaultParams )
+void PhysCreateVirtualTerrain(IVModel* worldModel, CBaseEntity *pWorld, const objectparams_t &defaultParams )
 {
 	if ( !physenv )
 		return;
@@ -568,7 +568,7 @@ void PhysCreateVirtualTerrain( CBaseEntity *pWorld, const objectparams_t &defaul
 	char nameBuf[1024];
 	for ( int i = 0; i < MAX_MAP_DISPINFO; i++ )
 	{
-		CPhysCollide *pCollide = modelinfo->GetCollideForVirtualTerrain( i );
+		CPhysCollide *pCollide = modelinfo->GetCollideForVirtualTerrain(worldModel, i );
 		if ( pCollide )
 		{
 			solid_t solid;
@@ -585,7 +585,7 @@ void PhysCreateVirtualTerrain( CBaseEntity *pWorld, const objectparams_t &defaul
 	}
 }
 
-IPhysicsObject *PhysCreateWorld_Shared( CBaseEntity *pWorld, vcollide_t *pWorldCollide, const objectparams_t &defaultParams )
+IPhysicsObject *PhysCreateWorld_Shared(IVModel* worldModel, CBaseEntity *pWorld, vcollide_t *pWorldCollide, const objectparams_t &defaultParams )
 {
 	solid_t solid;
 	fluid_t fluid;
@@ -694,7 +694,7 @@ IPhysicsObject *PhysCreateWorld_Shared( CBaseEntity *pWorld, vcollide_t *pWorldC
 
 	if ( bCreateVirtualTerrain && physcollision->SupportsVirtualMesh() )
 	{
-		PhysCreateVirtualTerrain( pWorld, defaultParams );
+		PhysCreateVirtualTerrain(worldModel, pWorld, defaultParams );
 	}
 	return pWorldPhysics;
 }

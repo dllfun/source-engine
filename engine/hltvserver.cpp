@@ -1276,7 +1276,7 @@ void CHLTVServer::EntityPVSCheck( CClientFrame *pFrame )
 		{
 			// it's a node SLOW
 			nNodeCluster &= ~(1<<31);
-			if ( CM_HeadnodeVisible( nNodeCluster, PVS, nPVSSize ) )
+			if ( CM_HeadnodeVisible(g_pHost->Host_GetWorldModel(), nNodeCluster, PVS, nPVSSize ) )
 			{
 				pFrame->last_entity = entindex;
 				continue;

@@ -175,7 +175,7 @@ public:
 	//byte *LoadAnimBlock( model_t *model, const studiohdr_t *pStudioHdr, int iBlock, cache_user_t *cache ) const;
 
 	int GetAutoplayList( const studiohdr_t *pStudioHdr, unsigned short **pAutoplayList ) const;
-	CPhysCollide *GetCollideForVirtualTerrain( int index );
+	CPhysCollide *GetCollideForVirtualTerrain(IVModel* world, int index );
 	//virtual int GetSurfacepropsForVirtualTerrain( int index ) { return CM_SurfacepropsForDisp(index); }
 
 	virtual MDLHandle_t	GetCacheHandle(int modelIndex) const { return (GetModel(modelIndex)->GetModelType() == mod_studio) ? GetModel(modelIndex)->GetStudio() : MDLHANDLE_INVALID; }
@@ -789,7 +789,7 @@ int CModelInfo::GetModelContents( int modelIndex )
 		switch( pModel->GetModelType() )
 		{
 		case mod_brush:
-			return CM_InlineModelContents( modelIndex-1 );
+			return CM_InlineModelContents((model_t*)pModel, modelIndex-1 );//need check
 		
 		// BUGBUG: Studio contents?
 		case mod_studio:
@@ -827,12 +827,12 @@ vcollide_t* CModelInfo::GetVCollide(int modelIndex)
 				return col;
 			}
 
-			return CM_GetVCollide(modelIndex - 1);
+			return CM_GetVCollide((model_t*)pModel, modelIndex - 1);//need check
 		}
 		else
 		{
 			// we may have the cmodels loaded and not know the model/mod->type yet
-			return CM_GetVCollide(modelIndex - 1);
+			return CM_GetVCollide((model_t*)pModel, modelIndex - 1);//need check
 		}
 	}
 	return NULL;
@@ -859,7 +859,7 @@ vcollide_t *CModelInfo::GetVCollide( const model_t *pModel )
 	int modelIndex = GetModelIndex( GetModelName( pModel ) );
 	if (modelIndex >= 0 )
 	{
-		return CM_GetVCollide(modelIndex - 1);
+		return CM_GetVCollide((model_t*)pModel, modelIndex - 1);//need check
 	}
 
 	return NULL;
@@ -965,9 +965,9 @@ studiohdr_t *CModelInfo::GetStudiomodel( const model_t *model )
 	return model->GetStudiomodel();
 }
 
-CPhysCollide *CModelInfo::GetCollideForVirtualTerrain( int index )
+CPhysCollide *CModelInfo::GetCollideForVirtualTerrain(IVModel* world, int index )
 {
-	return CM_PhysCollideForDisp( index );
+	return CM_PhysCollideForDisp((model_t*)world, index );
 }
 
 int CModelInfo::GetBrushModelPlaneCount(int modelIndex) const

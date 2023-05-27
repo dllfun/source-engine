@@ -223,11 +223,11 @@ void LeafVisBuild(model_t* pWorld, const Vector &p )
 	{
 		static int last_leaf = -1;
 
-		int leafIndex = CM_PointLeafnum( p );
+		int leafIndex = CM_PointLeafnum(pWorld, p );
 		if ( g_LeafVis && last_leaf == leafIndex )
 			return;
 
-		DevMsg( 1, "Leaf %d, Area %d, Cluster %d\n", leafIndex, CM_LeafArea( leafIndex ), CM_LeafCluster( leafIndex ) );
+		DevMsg( 1, "Leaf %d, Area %d, Cluster %d\n", leafIndex, CM_LeafArea(pWorld, leafIndex ), CM_LeafCluster(pWorld, leafIndex ) );
 		last_leaf = leafIndex;
 
 		delete g_LeafVis;
@@ -258,7 +258,7 @@ void LeafVisBuild(model_t* pWorld, const Vector &p )
 				const mleaf_t *pLeaf = pWorld->GetMLeafs(0);
 				int leafCount = pWorld->GetLeafCount();
 				int visCluster = pLeaf[leafIndex].cluster;
-				CM_Vis( pvs, sizeof( pvs ), visCluster, DVIS_PVS );
+				CM_Vis(pWorld, pvs, sizeof( pvs ), visCluster, DVIS_PVS );
 
 				for ( int i = 0; i < leafCount; i++ )
 				{

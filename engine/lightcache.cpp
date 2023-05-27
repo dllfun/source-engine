@@ -1210,8 +1210,8 @@ bool ComputeVertexLightingFromSphericalSamples(model_t* pWorld, const Vector& ve
 	bool bHasSkylight = false;
 
 	// Figure out the PVS info for this location
- 	int leaf = CM_PointLeafnum( vecVertex );
-	const byte* pVis = CM_ClusterPVS( CM_LeafCluster( leaf ) );
+ 	int leaf = CM_PointLeafnum(pWorld, vecVertex );
+	const byte* pVis = CM_ClusterPVS(pWorld, CM_LeafCluster(pWorld, leaf ) );
 
 	// Now add in the direct lighting
 	Vector vecDirection;
@@ -1324,12 +1324,12 @@ static inline const byte* FastRejectLightSource(
 		if (!pVis)
 		{
 			// Figure out the PVS info for this location
-			int bucketOriginLeaf = CM_PointLeafnum( bucketOrigin );
- 			pVis = CM_ClusterPVS( CM_LeafCluster( bucketOriginLeaf ) );
+			int bucketOriginLeaf = CM_PointLeafnum(pWorld, bucketOrigin );
+ 			pVis = CM_ClusterPVS(pWorld, CM_LeafCluster(pWorld, bucketOriginLeaf ) );
 		}
 		if ( lightType == emit_skylight )
 		{
- 			int  bucketOriginLeaf = CM_PointLeafnum( bucketOrigin );
+ 			int  bucketOriginLeaf = CM_PointLeafnum(pWorld, bucketOrigin );
 			mleaf_t *pLeaf = pWorld->GetMLeafs(bucketOriginLeaf);
 			if ( pLeaf && !( pLeaf->flags & ( LEAF_FLAGS_SKY | LEAF_FLAGS_SKY2D ) ) )
 			{
@@ -1476,7 +1476,7 @@ static void WorldLightFromDynamicLight( dlight_t const& dynamicLight,
 	worldLight.style = dynamicLight.style;
 
 	// Compute cluster associated with the dynamic light
-	worldLight.cluster = CM_LeafCluster( CM_PointLeafnum(worldLight.origin) );
+	worldLight.cluster = CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), worldLight.origin) );//need check
 
 	// Assume a quadratic attenuation factor; atten so we hit minlight
 	// at radius away...
@@ -1534,7 +1534,7 @@ static const byte *ComputeLightStyles(model_t* pWorld, lightcache_t* pCache, Lig
 		if (!pVis)
 		{
 			// Figure out the PVS info for this location
- 			pVis = CM_ClusterPVS( CM_LeafCluster( leaf ) );
+ 			pVis = CM_ClusterPVS(pWorld, CM_LeafCluster(pWorld, leaf ) );
 		}
 
 		// Now add that world light into our list of worldlights
@@ -1595,7 +1595,7 @@ static const byte* AddDLights(model_t* pWorld, LightingStateInfo_t& info, Lighti
 
 		// Fast reject. If we can reject it here, then we don't have to call WorldLightFromDynamicLight..
 		bool bReject;
-		int lightCluster = CM_LeafCluster( g_DLightLeafAccessors[i].GetLeaf( dl->origin ) );
+		int lightCluster = CM_LeafCluster(pWorld, g_DLightLeafAccessors[i].GetLeaf( dl->origin ) );
 		pVis = FastRejectLightSource(pWorld, bIgnoreVis, pVis, origin, emit_point, lightCluster, bReject );
 		if ( bReject )
 			continue;
@@ -1636,7 +1636,7 @@ static const byte* AddELights(model_t* pWorld, LightingStateInfo_t& info, Lighti
 
 		// Fast reject. If we can reject it here, then we don't have to call WorldLightFromDynamicLight..
 		bool bReject;
-		int lightCluster = CM_LeafCluster( g_ELightLeafAccessors[i].GetLeaf( dl->origin ) );
+		int lightCluster = CM_LeafCluster(pWorld, g_ELightLeafAccessors[i].GetLeaf( dl->origin ) );
 		pVis = FastRejectLightSource(pWorld, bIgnoreVis, pVis, origin, emit_point, lightCluster, bReject );
 		if ( bReject )
 			continue;
@@ -2049,7 +2049,7 @@ bool IdentifyLightingErrors( int leaf, LightingState_t& lightingState )
 {
 	if (r_drawlightcache.GetInt() == 3)
 	{
-		if (CM_LeafContents(leaf) == CONTENTS_SOLID)
+		if (CM_LeafContents(g_pHost->Host_GetWorldModel(), leaf) == CONTENTS_SOLID)
 		{
 			// Try another choice...
 			lightingState.r_boxcolor[0].Init( 1, 0, 0 );
@@ -2076,7 +2076,7 @@ static const byte* ComputeStaticLightingForCacheEntry(model_t* pWorld, CBaseLigh
 	
 	VPROF( "ComputeStaticLightingForCacheEntry" );
 	// Figure out the PVS info for this location
- 	const byte* pVis = CM_ClusterPVS( CM_LeafCluster( leaf ) );
+ 	const byte* pVis = CM_ClusterPVS(pWorld, CM_LeafCluster(pWorld, leaf ) );
 
 	bool bAddedLeafAmbientCube;
 
@@ -2115,7 +2115,7 @@ static void BuildStaticLightingCacheLightStyleInfo(model_t* pWorld, PropLightcac
 		if (!pVis)
 		{
 			// Figure out the PVS info for this static prop
- 			pVis = CM_ClusterPVS( CM_LeafCluster( pcache->leaf ) );
+ 			pVis = CM_ClusterPVS(pWorld, CM_LeafCluster(pWorld, pcache->leaf ) );
 		}
 		// FIXME: Could do better here if we had access to the list of leaves that this
 		// static prop is in.  For now, we use the lighting origin.
@@ -2193,7 +2193,7 @@ LightCacheHandle_t CreateStaticLightingCache(model_t* pWorld, const Vector& orig
 	pcache->maxs = maxs;
 
 	// initialize this to point to our current origin
-	pcache->leaf = CM_PointLeafnum(origin);
+	pcache->leaf = CM_PointLeafnum(pWorld, origin);
 
 	// Add the prop to the list of props
 	pcache->m_pNextPropLightcache = s_pAllStaticProps;
@@ -2497,11 +2497,11 @@ void AdjustLightCacheOrigin( lightcache_t *pCache, const Vector &origin, int ori
 	center *= 0.5f;
 
 	bool bTraceToCenter = true;
-	int centerLeaf = CM_PointLeafnum(center);
+	int centerLeaf = CM_PointLeafnum(g_pHost->Host_GetWorldModel(), center);
 	if (centerLeaf != originLeaf)
 	{
 		// preferred center resides in a different leaf
-		if (CM_LeafContents(centerLeaf) & MASK_OPAQUE)
+		if (CM_LeafContents(g_pHost->Host_GetWorldModel(), centerLeaf) & MASK_OPAQUE)
 		{
 			// preferred center is invalid
 			bTraceToCenter = false;
@@ -2509,7 +2509,7 @@ void AdjustLightCacheOrigin( lightcache_t *pCache, const Vector &origin, int ori
 		else
 		{	
 			// ensure the desired center resides in the leaf that the provided origin is in
-			CM_SnapPointToReferenceLeaf(origin, LIGHTCACHE_SNAP_EPSILON, &center);
+			CM_SnapPointToReferenceLeaf(g_pHost->Host_GetWorldModel(), origin, LIGHTCACHE_SNAP_EPSILON, &center);
 		}
 	}
 
@@ -2534,7 +2534,7 @@ void AdjustLightCacheOrigin( lightcache_t *pCache, const Vector &origin, int ori
 		center.x = (cacheMins.x + cacheMaxs.x) * 0.5f;
 		center.y = (cacheMins.y + cacheMaxs.y) * 0.5f;		
 		center.z = origin.z;
-		CM_SnapPointToReferenceLeaf(origin, LIGHTCACHE_SNAP_EPSILON, &center);
+		CM_SnapPointToReferenceLeaf(g_pHost->Host_GetWorldModel(), origin, LIGHTCACHE_SNAP_EPSILON, &center);
 
 		ray.Init( origin, center );
 		g_pEngineTraceClient->TraceRay( ray, MASK_OPAQUE, pTraceFilter, &tr );
@@ -2619,7 +2619,7 @@ ITexture *LightcacheGetDynamic(model_t* pWorld, const Vector& origin, LightingSt
 	LightingStateInfo_t info;
 
 	// generate the hashing vars
-	int originLeaf = CM_PointLeafnum(origin);
+	int originLeaf = CM_PointLeafnum(pWorld, origin);
 
 	/*
 	if (IdentifyLightingErrors(leaf, lightingState))
@@ -2927,7 +2927,7 @@ public:
 
 		if( !s_pDLightVis )
 		{
-			s_pDLightVis = CM_ClusterPVS( CM_LeafCluster( CM_PointLeafnum( cl_dlights[m_nLightID].origin ) ) );
+			s_pDLightVis = CM_ClusterPVS(g_pHost->Host_GetWorldModel(), CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), cl_dlights[m_nLightID].origin ) ) );
 		}
 
 		if( !StaticPropMgr()->IsPropInPVS( pHandleEntity, s_pDLightVis ) )

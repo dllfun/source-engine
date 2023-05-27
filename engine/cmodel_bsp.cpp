@@ -255,9 +255,9 @@ void model_t::Destory() {
 	brush.pShared->map_name[0] = 0;
 	brush.pShared->map_rootnode = NULL;
 
-	brush.pShared->g_pDispCollTrees = NULL;
-	brush.pShared->g_pDispBounds = NULL;
-	brush.pShared->g_DispCollTreeCount = 0;
+	brush.pShared->m_pDispCollTrees = NULL;
+	brush.pShared->m_pDispBounds = NULL;
+	brush.pShared->m_DispCollTreeCount = 0;
 
 	if (GetDispList()->Base())
 	{
@@ -265,7 +265,7 @@ void model_t::Destory() {
 		SetDispListCount(0);
 	}
 }
-bool model_t::LoadDatas(const char* pName,CLumpHeaderInfo& header) {
+bool model_t::Load(const char* pName,CLumpHeaderInfo& header) {
 	// This is a table that maps texinfo references to csurface_t
 // It is freed after the map has been loaded
 	CUtlVector<unsigned short> 	map_texinfo;
@@ -349,13 +349,13 @@ int model_t::GetDispListCount() {
 	return brush.pShared->numdisplist;
 }
 int model_t::GetDispCollTreesCount() {
-	return brush.pShared->g_DispCollTreeCount;
+	return brush.pShared->m_DispCollTreeCount;
 }
 CDispCollTree* model_t::GetDispCollTrees(int index) {
-	return &brush.pShared->g_pDispCollTrees[index];
+	return &brush.pShared->m_pDispCollTrees[index];
 }
 alignedbbox_t* model_t::GetDispBounds(int index) {
-	return &brush.pShared->g_pDispBounds[index];
+	return &brush.pShared->m_pDispBounds[index];
 }
 
 //-----------------------------------------------------------------------------
@@ -1198,9 +1198,9 @@ void model_t::CollisionBSPData_LoadDispInfo(CLumpHeaderInfo& header)
 		Sys_Error("CMod_LoadDispInfo: bad texinfo lump size!");
 
 	// allocate displacement collision trees
-	brush.pShared->g_DispCollTreeCount = coreDispCount;
-	brush.pShared->g_pDispCollTrees = DispCollTrees_Alloc(brush.pShared->g_DispCollTreeCount);
-	brush.pShared->g_pDispBounds = (alignedbbox_t*)Hunk_Alloc(brush.pShared->g_DispCollTreeCount * sizeof(alignedbbox_t), false);
+	brush.pShared->m_DispCollTreeCount = coreDispCount;
+	brush.pShared->m_pDispCollTrees = DispCollTrees_Alloc(brush.pShared->m_DispCollTreeCount);
+	brush.pShared->m_pDispBounds = (alignedbbox_t*)Hunk_Alloc(brush.pShared->m_DispCollTreeCount * sizeof(alignedbbox_t), false);
 
 	// Build the inverse mapping from disp index to face
 	int nMemSize = coreDispCount * sizeof(unsigned short);
@@ -1298,7 +1298,7 @@ void model_t::CollisionBSPData_LoadDispInfo(CLumpHeaderInfo& header)
 		//
 		// generate the collision displacement surfaces
 		//
-		CDispCollTree* pDispTree = &brush.pShared->g_pDispCollTrees[i];
+		CDispCollTree* pDispTree = &brush.pShared->m_pDispCollTrees[i];
 		pDispTree->SetPower(0);
 
 		//
@@ -1312,7 +1312,7 @@ void model_t::CollisionBSPData_LoadDispInfo(CLumpHeaderInfo& header)
 
 		// new collision
 		pDispTree->Create(&coreDisp);
-		brush.pShared->g_pDispBounds[i].Init(pDispTree->m_mins, pDispTree->m_maxs, pDispTree->m_iCounter, pDispTree->GetContents());
+		brush.pShared->m_pDispBounds[i].Init(pDispTree->m_mins, pDispTree->m_maxs, pDispTree->m_iCounter, pDispTree->GetContents());
 		nSize += pDispTree->GetMemorySize();
 		nCacheSize += pDispTree->GetCacheMemorySize();
 		nPowerCount[pDispTree->GetPower() - 2]++;
@@ -1404,7 +1404,7 @@ void model_t::CollisionBSPData_Destroy()
 
 	// free displacement data
 	//DispCollTrees_FreeLeafList( pBSPData );
-	CM_DestroyDispPhysCollide();
+	CM_DestroyDispPhysCollide(this);
 	DispCollTrees_Free(this->GetDispCollTrees(0));
 	
 
@@ -1465,7 +1465,7 @@ bool model_t::CollisionBSPData_Load( const char *pName, CLumpHeaderInfo& header 
 {
 	
 
-	return this->LoadDatas(pName,header);
+	return this->Load(pName,header);
 }
 
 

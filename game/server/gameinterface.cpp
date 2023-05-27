@@ -2501,7 +2501,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 		if ( nFlags & FL_EDICT_DONTSEND )
 			continue;
 		
-		if (iEdict > engineServer->GetPlayerCount()) {//pInfo->m_pClientEnt != pEdict && iEdict != 0 && 
+		if (iEdict > engineServer->GetPlayerCount() && 0) {//pInfo->m_pClientEnt != pEdict && iEdict != 0 && 
 			
 			continue;
 

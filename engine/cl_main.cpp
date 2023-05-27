@@ -1094,7 +1094,7 @@ void CL_FullyConnected( model_t* pWorld )
 	if ( !IsX360() || cl.m_nMaxClients == 1 )
 	{
 		// Need this to persist for multiplayer respawns, 360 can't reload
-		CM_DiscardEntityString();
+		CM_DiscardEntityString(g_pHost->Host_GetWorldModel());//need check
 	}
 
 	g_pMDLCache->EndMapLoad();

@@ -147,7 +147,7 @@ void PhysEnableEntityCollisions( CBaseEntity *pEntity0, CBaseEntity *pEntity1 );
 bool PhysEntityCollisionsAreDisabled( CBaseEntity *pEntity0, CBaseEntity *pEntity1 );
 
 // create the world physics objects
-IPhysicsObject *PhysCreateWorld_Shared( CBaseEntity *pWorld, vcollide_t *pWorldCollide, const objectparams_t &defaultParams );
+IPhysicsObject *PhysCreateWorld_Shared(IVModel* worldModel, CBaseEntity *pWorld, vcollide_t *pWorldCollide, const objectparams_t &defaultParams );
 
 // parse the parameters for a single solid from the model's collision data
 bool PhysModelParseSolid( solid_t &solid, CBaseEntity *pEntity, int modelIndex );

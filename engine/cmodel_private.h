@@ -59,7 +59,7 @@ struct TraceInfo_t
 	bool m_isswept;
 
 	// BSP Data
-	model_t *m_pBSPData;
+	model_t *m_mod;
 
 	// Displacement Data
 	Vector m_DispStabDir;		// the direction to stab in

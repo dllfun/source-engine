@@ -174,7 +174,7 @@ public:
 
 	// Gets a virtual terrain collision model (creates if necessary)
 	// NOTE: This may return NULL if the terrain model cannot be virtualized
-	virtual CPhysCollide			*GetCollideForVirtualTerrain( int index ) = 0;
+	virtual CPhysCollide			*GetCollideForVirtualTerrain(IVModel* world, int index ) = 0;
 
 
 	// Obsolete methods. These are left in to maintain binary compatibility with clients using the IVModelInfo old version.

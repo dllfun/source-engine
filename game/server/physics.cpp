@@ -420,7 +420,7 @@ bool PhysIsFinalTick()
 IPhysicsObject *PhysCreateWorld( CBaseEntity *pWorld )
 {
 	staticpropmgr->CreateVPhysicsRepresentations( physenv, &g_SolidSetup, pWorld );
-	return PhysCreateWorld_Shared( pWorld, modelinfo->GetVCollide(1), g_PhysDefaultObjectParams );
+	return PhysCreateWorld_Shared(engineServer->GetWorldModel(), pWorld, modelinfo->GetVCollide(1), g_PhysDefaultObjectParams );
 }
 
 

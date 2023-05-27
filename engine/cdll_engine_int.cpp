@@ -603,7 +603,7 @@ int	CEngineClient::GetIntersectingSurfaces(
 	GetIntersectingSurfaces_Struct theStruct;
 	theStruct.m_pModel = ( model_t * )model;
 	theStruct.m_pCenter = &vCenter;
-	theStruct.m_pCenterPVS = CM_Vis( pvs, sizeof(pvs), CM_LeafCluster( CM_PointLeafnum( vCenter ) ), DVIS_PVS );
+	theStruct.m_pCenterPVS = CM_Vis((model_t*)model, pvs, sizeof(pvs), CM_LeafCluster((model_t*)model, CM_PointLeafnum((model_t*)model, vCenter ) ), DVIS_PVS );//need check
 	theStruct.m_Radius = radius;
 	theStruct.m_bOnlyVisible = bOnlyVisible;
 	theStruct.m_pInfos = pInfos;
@@ -628,7 +628,7 @@ Vector	CEngineClient::GetLightForPoint(IVModel* pWorld, const Vector &pos, bool 
 Vector CEngineClient::GetLightForPointFast(IVModel* pWorld, const Vector &pos, bool bClamp)
 {
 	Vector vRet;
-	int leafIndex = CM_PointLeafnum(pos);
+	int leafIndex = CM_PointLeafnum((model_t*)pWorld, pos);
 	vRet.Init();
 	Vector cube[6];
 	Mod_LeafAmbientColorAtPos((model_t*)pWorld, cube, pos, leafIndex );
@@ -932,7 +932,7 @@ IMaterial *CEngineClient::TraceLineMaterialAndLighting(IVModel* pWorld, const Ve
 
 int	CEngineClient::IsBoxVisible( const Vector& mins, const Vector& maxs ) 
 {
-	return CM_BoxVisible( mins, maxs, Map_VisCurrent(), CM_ClusterPVSSize() );
+	return CM_BoxVisible(g_pHost->Host_GetWorldModel(), mins, maxs, Map_VisCurrent(), CM_ClusterPVSSize() );
 }
 
 int	CEngineClient::IsBoxInViewCluster( const Vector& mins, const Vector& maxs )
@@ -943,8 +943,8 @@ int	CEngineClient::IsBoxInViewCluster( const Vector& mins, const Vector& maxs )
 		return false;
 
 	byte pvs[MAX_MAP_LEAFS/8];
-	const byte *ppvs = CM_Vis( pvs, sizeof(pvs), curCluster, DVIS_PVS );
-	return CM_BoxVisible(mins, maxs, ppvs, sizeof(pvs) );
+	const byte *ppvs = CM_Vis(g_pHost->Host_GetWorldModel(), pvs, sizeof(pvs), curCluster, DVIS_PVS );
+	return CM_BoxVisible(g_pHost->Host_GetWorldModel(), mins, maxs, ppvs, sizeof(pvs) );
 }
 
 float CEngineClient::Time()
@@ -1378,7 +1378,7 @@ SkyboxVisibility_t CEngineClient::IsSkyboxVisibleFromPoint( const Vector &vecPoi
 	if ( g_pMaterialSystemConfig->nFullbright == 1 )
 		return SKYBOX_3DSKYBOX_VISIBLE;
 
-	int nLeaf = CM_PointLeafnum( vecPoint );
+	int nLeaf = CM_PointLeafnum(g_pHost->Host_GetWorldModel(), vecPoint );
 	int nFlags = g_pHost->Host_GetWorldModel()->GetLeafs(nLeaf)->flags;
 	if ( nFlags & LEAF_FLAGS_SKY )
 		return SKYBOX_3DSKYBOX_VISIBLE;
@@ -1387,7 +1387,7 @@ SkyboxVisibility_t CEngineClient::IsSkyboxVisibleFromPoint( const Vector &vecPoi
 
 const char* CEngineClient::GetMapEntitiesString()
 {
-	return CM_EntityString();
+	return CM_EntityString(g_pHost->Host_GetWorldModel());
 }
 
 bool CEngineClient::IsInEditMode( void )

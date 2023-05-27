@@ -23,7 +23,7 @@
 #include "tier0/memdbgon.h"
 
 
-class CVirtualTerrain;
+//class CVirtualTerrain;
 
 //csurface_t dispSurf = { "terrain", 0, 0 };
 
@@ -48,134 +48,117 @@ static void SetDispTraceSurfaceProps( trace_t *pTrace, CDispCollTree *pDisp )
 	}
 }
 
-// Virtual collision models for terrain
-class CVirtualTerrain : public IVirtualMeshEvent
+// Fill out the meshlist for this terrain patch
+void CVirtualTerrain::GetVirtualMesh(void* userData, virtualmeshlist_t* pList)
 {
-public:
-	CVirtualTerrain()
+	intp index = (intp)userData;
+	Assert(index >= 0 && index < m_DispCollTreeCount);
+	mod->GetDispCollTrees(index)->GetVirtualMeshList(pList);
+	pList->pHull = NULL;
+	if (m_pDispHullData)
 	{
-		m_pDispHullData =  NULL;
-	}
-	// Fill out the meshlist for this terrain patch
-	virtual void GetVirtualMesh( void *userData, virtualmeshlist_t *pList )
-	{
-		intp index = (intp)userData;
-		Assert(index >= 0 && index < g_DispCollTreeCount );
-		g_pHost->Host_GetWorldModel()->GetDispCollTrees(index)->GetVirtualMeshList( pList );
-		pList->pHull = NULL;
-		if ( m_pDispHullData )
+		if (m_dispHullOffset[index] >= 0)
 		{
-			if ( m_dispHullOffset[index] >= 0 )
-			{
-				pList->pHull = m_pDispHullData + m_dispHullOffset[index];
-			}
+			pList->pHull = m_pDispHullData + m_dispHullOffset[index];
 		}
 	}
-	// returns the bounds for the terrain patch
-	virtual void GetWorldspaceBounds( void *userData, Vector *pMins, Vector *pMaxs )
+}
+// returns the bounds for the terrain patch
+void CVirtualTerrain::GetWorldspaceBounds(void* userData, Vector* pMins, Vector* pMaxs)
+{
+	intp index = (intp)userData;
+	*pMins = mod->GetDispBounds(index)->mins;
+	*pMaxs = mod->GetDispBounds(index)->maxs;
+}
+// Query against the AABB tree to find the list of triangles for this patch in a sphere
+void CVirtualTerrain::GetTrianglesInSphere(void* userData, const Vector& center, float radius, virtualmeshtrianglelist_t* pList)
+{
+	intp index = (intp)userData;
+	pList->triangleCount = mod->GetDispCollTrees(index)->AABBTree_GetTrisInSphere(center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices));
+}
+void CVirtualTerrain::LevelInit(model_t* mod, dphysdisp_t* pLump, int lumpSize)
+{
+	if (!pLump)
 	{
-		intp index = (intp)userData;
-		*pMins = g_pHost->Host_GetWorldModel()->GetDispBounds(index)->mins;
-		*pMaxs = g_pHost->Host_GetWorldModel()->GetDispBounds(index)->maxs;
-	}
-	// Query against the AABB tree to find the list of triangles for this patch in a sphere
-	virtual void GetTrianglesInSphere( void *userData, const Vector &center, float radius, virtualmeshtrianglelist_t *pList )
-	{
-		intp index = (intp)userData;
-		pList->triangleCount = g_pHost->Host_GetWorldModel()->GetDispCollTrees(index)->AABBTree_GetTrisInSphere( center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices) );
-	}
-	void LevelInit(model_t* mod, dphysdisp_t *pLump, int lumpSize )
-	{
-		if ( !pLump )
-		{
-			m_pDispHullData = NULL;
-			return;
-		}
-		int totalHullData = 0;
-		m_dispHullOffset.SetCount(mod->GetDispCollTreesCount());
-		Assert(pLump->numDisplacements==g_DispCollTreeCount);
-		// count the size of the lump
-		unsigned short *pDataSize = (unsigned short *)(pLump+1);
-		for ( int i = 0; i < pLump->numDisplacements; i++ )
-		{
-			if ( pDataSize[i] == (unsigned short)-1 )
-			{
-				m_dispHullOffset[i] = -1;
-				continue;
-			}
-			m_dispHullOffset[i] = totalHullData;
-			totalHullData += pDataSize[i];
-		}
-		m_pDispHullData = new byte[totalHullData];
-		byte *pData = (byte *)(pDataSize + pLump->numDisplacements);
-		memcpy( m_pDispHullData, pData, totalHullData );
-#if _DEBUG
-		int offset = pData - ((byte *)pLump);
-		Assert( offset + totalHullData == lumpSize );
-#endif
-	}
-	void LevelShutdown()
-	{
-		m_dispHullOffset.Purge();
-		delete[] m_pDispHullData;
 		m_pDispHullData = NULL;
+		return;
 	}
-
-private:
-	byte			*m_pDispHullData;
-	CUtlVector<int> m_dispHullOffset;
-};
-
-// Singleton to implement the callbacks
-static CVirtualTerrain g_VirtualTerrain;
-// List of terrain collision models for the currently loaded level, indexed by terrain patch index
-static CUtlVector<CPhysCollide *> g_TerrainList;
-
-// Find or create virtual terrain collision model.  Note that these will be shared by client & server
-CPhysCollide *CM_PhysCollideForDisp( int index )
+	this->mod = mod;
+	int totalHullData = 0;
+	m_dispHullOffset.SetCount(mod->GetDispCollTreesCount());
+	Assert(pLump->numDisplacements == m_DispCollTreeCount);
+	// count the size of the lump
+	unsigned short* pDataSize = (unsigned short*)(pLump + 1);
+	for (int i = 0; i < pLump->numDisplacements; i++)
+	{
+		if (pDataSize[i] == (unsigned short)-1)
+		{
+			m_dispHullOffset[i] = -1;
+			continue;
+		}
+		m_dispHullOffset[i] = totalHullData;
+		totalHullData += pDataSize[i];
+	}
+	m_pDispHullData = new byte[totalHullData];
+	byte* pData = (byte*)(pDataSize + pLump->numDisplacements);
+	memcpy(m_pDispHullData, pData, totalHullData);
+#if _DEBUG
+	int offset = pData - ((byte*)pLump);
+	Assert(offset + totalHullData == lumpSize);
+#endif
+}
+void CVirtualTerrain::LevelShutdown()
 {
-	if ( index < 0 || index >= g_pHost->Host_GetWorldModel()->GetDispCollTreesCount())
-		return NULL;
-
-	return g_TerrainList[index];
+	m_dispHullOffset.Purge();
+	delete[] m_pDispHullData;
+	m_pDispHullData = NULL;
 }
 
-int CM_SurfacepropsForDisp( int index )
+// Find or create virtual terrain collision model.  Note that these will be shared by client & server
+CPhysCollide *CM_PhysCollideForDisp(model_t* mod, int index )
 {
-	return g_pHost->Host_GetWorldModel()->GetDispCollTrees(index)->GetSurfaceProps(0);
+	if ( index < 0 || index >= mod->GetDispCollTreesCount())
+		return NULL;
+
+	return mod->GetTerrainList()[index];
+}
+
+int CM_SurfacepropsForDisp(model_t* mod, int index )
+{
+	return mod->GetDispCollTrees(index)->GetSurfaceProps(0);
 }
 
 void CM_CreateDispPhysCollide(model_t* mod, dphysdisp_t *pDispLump, int dispLumpSize )
 {
-	g_VirtualTerrain.LevelInit(mod,pDispLump, dispLumpSize);
-	g_TerrainList.SetCount(mod->GetDispCollTreesCount());
+	mod->GetVirtualTerrain().LevelInit(mod, pDispLump, dispLumpSize);
+	mod->GetTerrainList().SetCount(mod->GetDispCollTreesCount());
 	for ( intp i = 0; i < mod->GetDispCollTreesCount(); i++ )
 	{
 		// Don't create a physics collision model for displacements that have been tagged as such.
 		CDispCollTree *pDispTree = mod->GetDispCollTrees(i);
 		if ( pDispTree && pDispTree->CheckFlags( CCoreDispInfo::SURF_NOPHYSICS_COLL ) )
 		{
-			g_TerrainList[i] = NULL;
+			mod->GetTerrainList()[i] = NULL;
 			continue;
 		}
 		virtualmeshparams_t params;
-		params.pMeshEventHandler = &g_VirtualTerrain;
+		params.pMeshEventHandler = &mod->GetVirtualTerrain();
 		params.userData = (void *)i;
 		params.buildOuterHull = dispLumpSize > 0 ? false : true;
 
-		g_TerrainList[i] = physcollision->CreateVirtualMesh( params );
+		mod->GetTerrainList()[i] = physcollision->CreateVirtualMesh( params );
 	}
 }
 
 // End of level, free the collision models
-void CM_DestroyDispPhysCollide()
+void CM_DestroyDispPhysCollide(model_t* mod)
 {
-	g_VirtualTerrain.LevelShutdown();
-	for ( int i = g_TerrainList.Count()-1; i>=0; --i )
+	mod->GetVirtualTerrain().LevelShutdown();
+	for ( int i = mod->GetTerrainList().Count() - 1; i >= 0; --i)
 	{
-		physcollision->DestroyCollide( g_TerrainList[i] );
+		physcollision->DestroyCollide( mod->GetTerrainList()[i] );
 	}
-	g_TerrainList.Purge();
+	mod->GetTerrainList().Purge();
 }
 
 //-----------------------------------------------------------------------------
@@ -199,8 +182,8 @@ void CM_TestInDispTree( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, const Vector &t
 		int count = pTraceInfo->GetCount();
 		for( int i = 0; i < pLeaf->dispCount; i++ )
 		{
-			int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
-			alignedbbox_t * RESTRICT pDispBounds = pTraceInfo->m_pBSPData->GetDispBounds(dispIndex);
+			int dispIndex = pTraceInfo->m_mod->GetDispList(pLeaf->dispListStart + i);
+			alignedbbox_t * RESTRICT pDispBounds = pTraceInfo->m_mod->GetDispBounds(dispIndex);
 
 			// Respect trace contents
 			if( !(pDispBounds->GetContents() & collisionMask) )
@@ -211,7 +194,7 @@ void CM_TestInDispTree( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, const Vector &t
 
 			if ( IsBoxIntersectingBox( absMins, absMaxs, pDispBounds->mins, pDispBounds->maxs ) )
 			{
-				CDispCollTree *pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
+				CDispCollTree *pDispTree = pTraceInfo->m_mod->GetDispCollTrees(dispIndex);
 				if( pDispTree->AABBTree_IntersectAABB( absMins, absMaxs ) )
 				{
 					pTrace->startsolid = true;
@@ -246,8 +229,8 @@ void CM_PreStab( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, Vector &vStabDir, int 
 
 	// if the point wasn't in the bounded area of any of the displacements -- stab in any
 	// direction and set contents to "solid"
-	int dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart);
-	CDispCollTree *pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
+	int dispIndex = pTraceInfo->m_mod->GetDispList(pLeaf->dispListStart);
+	CDispCollTree *pDispTree = pTraceInfo->m_mod->GetDispCollTrees(dispIndex);
 	pDispTree->GetStabDirection( vStabDir );
 	contents = CONTENTS_SOLID;
 
@@ -257,8 +240,8 @@ void CM_PreStab( TraceInfo_t *pTraceInfo, cleaf_t *pLeaf, Vector &vStabDir, int 
 	//
 	for( int i = 0; i < pLeaf->dispCount; i++ )
 	{
-		dispIndex = pTraceInfo->m_pBSPData->GetDispList(pLeaf->dispListStart + i);
-		pDispTree = pTraceInfo->m_pBSPData->GetDispCollTrees(dispIndex);
+		dispIndex = pTraceInfo->m_mod->GetDispList(pLeaf->dispListStart + i);
+		pDispTree = pTraceInfo->m_mod->GetDispCollTrees(dispIndex);
 
 		// Respect trace contents
 		if( !(pDispTree->GetContents() & collisionMask) )
@@ -300,7 +283,7 @@ void CM_Stab( TraceInfo_t *pTraceInfo, const Vector &start, const Vector &vStabD
 	//
 	pTraceInfo->m_trace.fraction = 1.0f;
 	pTraceInfo->m_trace.fractionleftsolid = 0.0f;
-	pTraceInfo->m_trace.surface = pTraceInfo->m_pBSPData->GetNullSurface();
+	pTraceInfo->m_trace.surface = pTraceInfo->m_mod->GetNullSurface();
 
 	pTraceInfo->m_trace.startsolid = false;
 	pTraceInfo->m_trace.allsolid = false;

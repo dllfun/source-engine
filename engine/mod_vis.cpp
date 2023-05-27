@@ -298,17 +298,17 @@ void Map_VisMark( bool forcenovis, model_t *worldmodel )
 	// There should always be at least one origin and that's the default render origin in most cases
 	assert( vis.nClusters >= 1 );
 
-	CM_Vis( vis.rgCurrentVis, sizeof( vis.rgCurrentVis ), vis.rgVisClusters[ 0 ].viewcluster, DVIS_PVS );
+	CM_Vis(worldmodel, vis.rgCurrentVis, sizeof( vis.rgCurrentVis ), vis.rgVisClusters[ 0 ].viewcluster, DVIS_PVS );
 
 	// Get cluster count
-	c = ( CM_NumClusters() + 31 ) / 32 ;
+	c = ( CM_NumClusters(worldmodel) + 31 ) / 32 ;//need check
 
 	// Merge in any extra clusters
 	for ( i = 1; i < vis.nClusters; i++ )
 	{
 		byte	mapVis[ MAX_MAP_CLUSTERS/8 ];
 		
-		CM_Vis( mapVis, sizeof( mapVis ), vis.rgVisClusters[ i ].viewcluster, DVIS_PVS );
+		CM_Vis(worldmodel, mapVis, sizeof( mapVis ), vis.rgVisClusters[ i ].viewcluster, DVIS_PVS );
 				
 		// Copy one dword at a time ( could use memcpy )
 		for ( int j = 0 ; j < c ; j++ )
@@ -374,8 +374,8 @@ void Map_VisSetup( model_t *worldmodel, int visorigincount, const Vector origins
 	returnFlags = 0;
 	for ( int i = 0; i < vis.nClusters; i++ )
 	{
-		int leafIndex = CM_PointLeafnum( origins[ i ] );
-		int flags = CM_LeafFlags( leafIndex );
+		int leafIndex = CM_PointLeafnum(worldmodel, origins[ i ] );
+		int flags = CM_LeafFlags(worldmodel, leafIndex );
 		if ( flags & ( LEAF_FLAGS_SKY | LEAF_FLAGS_SKY2D ) )
 		{
 			vis.bSkyVisible = true;
@@ -385,7 +385,7 @@ void Map_VisSetup( model_t *worldmodel, int visorigincount, const Vector origins
 			vis.bForceFullSky = true;
 			returnFlags |= IVRenderView::VIEW_SETUP_VIS_EX_RETURN_FLAGS_USES_RADIAL_VIS;
 		}
-		vis.rgVisClusters[ i ].viewcluster = CM_LeafCluster( leafIndex );
+		vis.rgVisClusters[ i ].viewcluster = CM_LeafCluster(worldmodel, leafIndex );
 		VectorCopy( origins[ i ], vis.rgVisClusters[ i ].origin );
 	}
 

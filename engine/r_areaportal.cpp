@@ -632,7 +632,7 @@ void R_SetupAreaBits(model_t* pWorld, int iForceViewLeaf /* = -1 */, const VisOv
 	// If view point override wasn't specified, use the current view origin
 	if ( iForceViewLeaf == -1  ) 
 	{
-		leaf = CM_PointLeafnum( g_EngineRenderer->ViewOrigin() );
+		leaf = CM_PointLeafnum(pWorld, g_EngineRenderer->ViewOrigin() );
 	}
 
 	if( r_portalscloseall.GetBool() )

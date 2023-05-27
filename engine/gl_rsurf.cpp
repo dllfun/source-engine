@@ -1522,7 +1522,7 @@ static void ComputeDebugSettings( void )
 static void ComputeFogVolumeInfo(model_t* pWorld, FogVolumeInfo_t *pFogVolume )
 {
 	pFogVolume->m_InFogVolume = false;
-	int leafID = CM_PointLeafnum( CurrentViewOrigin() );
+	int leafID = CM_PointLeafnum(pWorld, CurrentViewOrigin() );
 	if( leafID < 0 || leafID >= pWorld->GetLeafCount() )
 		return;
 
@@ -1727,7 +1727,7 @@ static inline bool R_CullNodeTopView( mnode_t *pNode )
 //-----------------------------------------------------------------------------
 static void SpewLeaf()
 {
-	int leaf = CM_PointLeafnum( g_EngineRenderer->ViewOrigin() );
+	int leaf = CM_PointLeafnum(g_pHost->Host_GetWorldModel(), g_EngineRenderer->ViewOrigin() );//need check
 	ConMsg(	"view leaf %d\n", leaf );
 }
 
@@ -1865,7 +1865,7 @@ void R_GetVisibleFogVolume(model_t* pWorld, const Vector& vEyePoint, VisibleFogV
 		return;
 	}
 
-	int nLeafID = CM_PointLeafnum( vEyePoint );
+	int nLeafID = CM_PointLeafnum(pWorld, vEyePoint );
 	mleaf_t* pLeaf = pWorld->GetMLeafs(nLeafID);
 
 	int nLeafContents = pLeaf->contents;
@@ -3927,7 +3927,7 @@ bool model_t::EnumerateLeavesAtPoint(const Vector& pt,
 	//if (!world)
 	//if (!world)
 	//	return false;
-	int leaf = CM_PointLeafnum( pt );
+	int leaf = CM_PointLeafnum(this, pt );
 	return pEnum->EnumerateLeaf(this, leaf, context );
 }
 

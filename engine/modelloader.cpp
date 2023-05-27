@@ -1434,13 +1434,13 @@ void model_t::Mod_LoadOcclusion(CLumpHeaderInfo& header)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadTexdata(CLumpHeaderInfo& header)
-{
+//void model_t::Mod_LoadTexdata(CLumpHeaderInfo& header)
+//{
 	// Don't bother loading these again; they're already stored in the collision model
 	// which is guaranteed to be loaded at this point
 	//brush.pShared->numtexdata = g_pHost->Host_GetWorldModel()->GetTexturesCount();
 	//brush.pShared->texdata = g_pHost->Host_GetWorldModel()->GetSurfaceAtIndex(0);
-}
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -2658,12 +2658,12 @@ void model_t::Mod_LoadSurfedges(CLumpHeaderInfo& header,medge_t *pedges )
 //			*l - 
 //			*loadname - 
 //-----------------------------------------------------------------------------
-void model_t::Mod_LoadPlanes(CLumpHeaderInfo& header)
-{
+//void model_t::Mod_LoadPlanes(CLumpHeaderInfo& header)
+//{
 	// Don't bother loading them, they're already stored
 	//brush.pShared->planes = g_pHost->Host_GetWorldModel()->GetPlane(0);
 	//brush.pShared->numplanes = g_pHost->Host_GetWorldModel()->GetPlanesCount();
-}
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -4464,14 +4464,14 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 	mod->Mod_LoadSurfedges(header, pedges );
 
 	COM_TimestampedLog( "  Mod_LoadPlanes" );
-	mod->Mod_LoadPlanes(header);
+	//mod->Mod_LoadPlanes(header);
 
 	COM_TimestampedLog( "  Mod_LoadOcclusion" );
 	mod->Mod_LoadOcclusion(header);
 
 	// texdata needs to load before texinfo
 	COM_TimestampedLog( "  Mod_LoadTexdata" );
-	mod->Mod_LoadTexdata(header);
+	//mod->Mod_LoadTexdata(header);
 
 	COM_TimestampedLog( "  Mod_LoadTexinfo" );
 	mod->Mod_LoadTexinfo(header);

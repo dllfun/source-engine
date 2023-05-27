@@ -1817,7 +1817,7 @@ bool CShadowMgr::EnumerateLeaf(IVModel* world, int leaf, intp context )
 	// Skip this leaf if it's not visible from the shadow caster
 	if ( pBuild->m_pVis )
 	{
-		int cluster = CM_LeafCluster( leaf );
+		int cluster = CM_LeafCluster((model_t*)world, leaf );
 		if ( !BIT_SET( pBuild->m_pVis, cluster ) )
 			return true;
 	}

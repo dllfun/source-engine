@@ -461,12 +461,12 @@ public:
 	//-----------------------------------------------------------------------------
 	virtual int GetClusterForOrigin( const Vector& org )
 	{
-		return CM_LeafCluster( CM_PointLeafnum( org ) );
+		return CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), org ) );
 	}
 	
 	virtual int GetPVSForCluster( int clusterIndex, int outputpvslength, unsigned char *outputpvs )
 	{
-		int length = (CM_NumClusters()+7)>>3;
+		int length = (CM_NumClusters(g_pHost->Host_GetWorldModel())+7)>>3;
 		
 		if ( outputpvs )
 		{
@@ -476,7 +476,7 @@ public:
 				return length;
 			}
 			
-			CM_Vis( outputpvs, outputpvslength, clusterIndex, DVIS_PVS );
+			CM_Vis(g_pHost->Host_GetWorldModel(), outputpvs, outputpvslength, clusterIndex, DVIS_PVS );
 		}
 		
 		return length;
@@ -491,7 +491,7 @@ public:
 	//-----------------------------------------------------------------------------
 	virtual bool CheckOriginInPVS( const Vector& org, const unsigned char *checkpvs, int checkpvssize )
 	{
-		int clusterIndex = CM_LeafCluster( CM_PointLeafnum( org ) );
+		int clusterIndex = CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), org ) );
 		
 		if ( clusterIndex < 0 )
 			return false;
@@ -521,7 +521,7 @@ public:
 	//-----------------------------------------------------------------------------
 	virtual bool CheckBoxInPVS( const Vector& mins, const Vector& maxs, const unsigned char *checkpvs, int checkpvssize )
 	{
-		if ( !CM_BoxVisible( mins, maxs, checkpvs, checkpvssize ) )
+		if ( !CM_BoxVisible(g_pHost->Host_GetWorldModel(), mins, maxs, checkpvs, checkpvssize ) )
 		{
 			return false;
 		}
@@ -954,7 +954,7 @@ public:
 	
 	virtual int			CheckHeadnodeVisible( int nodenum, const byte *visbits, int vissize )
 	{
-		return CM_HeadnodeVisible(nodenum, visbits, vissize );
+		return CM_HeadnodeVisible(g_pHost->Host_GetWorldModel(), nodenum, visbits, vissize );
 	}
 	
 	/*
@@ -1422,12 +1422,12 @@ public:
 	
 	virtual void		SetAreaPortalState( int portalNumber, int isOpen )
 	{
-		CM_SetAreaPortalState(portalNumber, isOpen);
+		CM_SetAreaPortalState(g_pHost->Host_GetWorldModel(), portalNumber, isOpen);
 	}
 
 	virtual void		SetAreaPortalStates( const int *portalNumbers, const int *isOpen, int nPortals )
 	{
-		CM_SetAreaPortalStates( portalNumbers, isOpen, nPortals );
+		CM_SetAreaPortalStates(g_pHost->Host_GetWorldModel(), portalNumbers, isOpen, nPortals );
 	}
 
 	virtual IVModel* GetWorldModel() {
@@ -1685,12 +1685,12 @@ public:
 	virtual int GetAllClusterBounds(IVModel* pWorld, bbox_t *pBBoxList, int maxBBox )
 	{
 		//CCollisionBSPData *pBSPData = GetCollisionBSPData();
-		if (g_pHost->Host_GetWorldModel() && g_pHost->Host_GetWorldModel()->GetVis() && pWorld)
+		if (pWorld && ((model_t*)pWorld)->GetVis() && pWorld)
 		{
 			// clamp to max clusters in the map
-			if ( maxBBox > g_pHost->Host_GetWorldModel()->GetVis()->numclusters)
+			if ( maxBBox > ((model_t*)pWorld)->GetVis()->numclusters)
 			{
-				maxBBox = g_pHost->Host_GetWorldModel()->GetVis()->numclusters;
+				maxBBox = ((model_t*)pWorld)->GetVis()->numclusters;
 			}
 			// reset all of the bboxes
 			for ( int i =  0; i < maxBBox; i++ )
@@ -1712,7 +1712,7 @@ public:
 				}
 			}
 
-			return g_pHost->Host_GetWorldModel()->GetVis()->numclusters;
+			return ((model_t*)pWorld)->GetVis()->numclusters;
 		}
 		return 0;
 	}
@@ -1858,7 +1858,7 @@ void CVEngineServer::PlaybackTempEntity( IRecipientFilter& filter, float delay, 
 
 int	CVEngineServer::CheckAreasConnected( int area1, int area2 )
 {
-	return CM_AreasConnected(area1, area2);
+	return CM_AreasConnected(g_pHost->Host_GetWorldModel(), area1, area2);
 }
 
 
@@ -1870,17 +1870,17 @@ int	CVEngineServer::CheckAreasConnected( int area1, int area2 )
 //-----------------------------------------------------------------------------
 int CVEngineServer::GetArea( const Vector& origin )
 {
-	return CM_LeafArea( CM_PointLeafnum( origin ) );
+	return CM_LeafArea(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), origin ) );
 }
 
 void CVEngineServer::GetAreaBits( int area, unsigned char *bits, int buflen )
 {
-	CM_WriteAreaBits( bits, buflen, area );
+	CM_WriteAreaBits(g_pHost->Host_GetWorldModel(), bits, buflen, area );
 }
 
 bool CVEngineServer::GetAreaPortalPlane( Vector const &vViewOrigin, int portalKey, VPlane *pPlane )
 {
-	return CM_GetAreaPortalPlane( vViewOrigin, portalKey, pPlane );
+	return CM_GetAreaPortalPlane(g_pHost->Host_GetWorldModel(), vViewOrigin, portalKey, pPlane );
 }
 
 client_textmessage_t *CVEngineServer::TextMessageGet( const char *pName )
@@ -1927,7 +1927,7 @@ void CVEngineServer::ClearSaveDirAfterClientLoad()
 
 const char* CVEngineServer::GetMapEntitiesString()
 {
-	return CM_EntityString();
+	return CM_EntityString(g_pHost->Host_GetWorldModel());
 }
 
 //-----------------------------------------------------------------------------
@@ -1964,13 +1964,13 @@ void CVEngineServer::BuildEntityClusterList( edict_t *pEdict, PVSInfo_t *pPVSInf
 	//get all leafs, including solids
 	Vector vecWorldMins, vecWorldMaxs;
 	pCollideable->WorldSpaceSurroundingBounds( &vecWorldMins, &vecWorldMaxs );
-	leafCount = CM_BoxLeafnums( vecWorldMins, vecWorldMaxs, leafs, MAX_TOTAL_ENT_LEAFS, &topnode );
+	leafCount = CM_BoxLeafnums(g_pHost->Host_GetWorldModel(), vecWorldMins, vecWorldMaxs, leafs, MAX_TOTAL_ENT_LEAFS, &topnode );
 
 	// set areas
 	for ( i = 0; i < leafCount; i++ )
 	{
-		clusters[i] = CM_LeafCluster( leafs[i] );
-		area = CM_LeafArea( leafs[i] );
+		clusters[i] = CM_LeafCluster(g_pHost->Host_GetWorldModel(), leafs[i] );
+		area = CM_LeafArea(g_pHost->Host_GetWorldModel(), leafs[i] );
 		if ( area == 0 )
 			continue;
 

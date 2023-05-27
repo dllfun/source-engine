@@ -34,6 +34,7 @@
 #include "bitmap/cubemap.h"
 #include "bsptreedata.h"
 #include "cmodel_private.h"
+#include "vphysics\virtualmesh.h"
 
 
 //-----------------------------------------------------------------------------
@@ -251,6 +252,29 @@ struct dgamelump_internal_t
 	unsigned int	compressedSize;
 };
 
+// Virtual collision models for terrain
+class CVirtualTerrain : public IVirtualMeshEvent
+{
+public:
+	CVirtualTerrain()
+	{
+		m_pDispHullData = NULL;
+	}
+	// Fill out the meshlist for this terrain patch
+	virtual void GetVirtualMesh(void* userData, virtualmeshlist_t* pList);
+	// returns the bounds for the terrain patch
+	virtual void GetWorldspaceBounds(void* userData, Vector* pMins, Vector* pMaxs);
+	// Query against the AABB tree to find the list of triangles for this patch in a sphere
+	virtual void GetTrianglesInSphere(void* userData, const Vector& center, float radius, virtualmeshtrianglelist_t* pList);
+	void LevelInit(model_t* mod, dphysdisp_t* pLump, int lumpSize);
+	void LevelShutdown();
+
+private:
+	model_t* mod;
+	byte* m_pDispHullData;
+	CUtlVector<int> m_dispHullOffset;
+};
+
 //struct cnode_t;
 //template <class T>
 //class CRangeValidatedArray;
@@ -419,11 +443,14 @@ struct worldbrushdata_t
 	int									numportalopen;
 	CRangeValidatedArray<bool>			portalopen;
 
-	int g_DispCollTreeCount = 0;
-	CDispCollTree* g_pDispCollTrees = NULL;
-	alignedbbox_t* g_pDispBounds = NULL;
+	int m_DispCollTreeCount = 0;
+	CDispCollTree* m_pDispCollTrees = NULL;
+	alignedbbox_t* m_pDispBounds = NULL;
 
-
+	// Singleton to implement the callbacks
+	CVirtualTerrain m_VirtualTerrain;
+	// List of terrain collision models for the currently loaded level, indexed by terrain patch index
+	CUtlVector<CPhysCollide*> m_TerrainList;
 };
 // only models with type "mod_brush" have this data
 struct brushdata_t
@@ -559,7 +586,7 @@ class model_t : public IVModel
 public:
 	void Init();
 	void Destory();
-	bool LoadDatas(const char* pName, CLumpHeaderInfo& header);
+	bool Load(const char* pName, CLumpHeaderInfo& header);
 	char* GetMapName();
 	int GetCMNodesCount();
 	cnode_t* GetNodes(int index);
@@ -606,6 +633,12 @@ public:
 	void CollisionBSPData_PreLoad();
 	bool CollisionBSPData_Load(const char* pName, CLumpHeaderInfo& header);
 	//void CollisionBSPData_PostLoad();
+	CUtlVector<CPhysCollide*>& GetTerrainList() {
+		return brush.pShared->m_TerrainList;
+	}
+	CVirtualTerrain& GetVirtualTerrain() {
+		return brush.pShared->m_VirtualTerrain;
+	}
 private:
 
 
@@ -668,16 +701,16 @@ private:
 	class CDispLeafBuilder
 	{
 	public:
-		CDispLeafBuilder(model_t* pBSPData)
+		CDispLeafBuilder(model_t* mod)
 		{
-			m_pBSPData = pBSPData;
+			this->m_mod = mod;
 			// don't want this to resize much, so make the backing buffer large
 			m_dispList.EnsureCapacity(MAX_MAP_DISPINFO * 2);
 
 			// size both of these to the size of the array since there is exactly one per element
-			m_leafCount.SetCount(m_pBSPData->GetDispCollTreesCount());
-			m_firstIndex.SetCount(m_pBSPData->GetDispCollTreesCount());
-			for (int i = 0; i < m_pBSPData->GetDispCollTreesCount(); i++)
+			m_leafCount.SetCount(m_mod->GetDispCollTreesCount());
+			m_firstIndex.SetCount(m_mod->GetDispCollTreesCount());
+			for (int i = 0; i < m_mod->GetDispCollTreesCount(); i++)
 			{
 				m_leafCount[i] = 0;
 				m_firstIndex[i] = -1;
@@ -687,7 +720,7 @@ private:
 		void BuildLeafListForDisplacement(int index)
 		{
 			// get tree and see if it is real (power != 0)
-			CDispCollTree* pDispTree = m_pBSPData->GetDispCollTrees(index);
+			CDispCollTree* pDispTree = m_mod->GetDispCollTrees(index);
 			if (!pDispTree || (pDispTree->GetPower() == 0))
 				return;
 			m_firstIndex[index] = m_dispList.Count();
@@ -696,7 +729,7 @@ private:
 			int nodeList[MAX_NODES];
 			int listRead = 0;
 			int listWrite = 1;
-			nodeList[0] = m_pBSPData->GetCModels(0)->headnode;
+			nodeList[0] = m_mod->GetCModels(0)->headnode;
 			Vector mins, maxs;
 			pDispTree->GetBounds(mins, maxs);
 
@@ -721,7 +754,7 @@ private:
 					//
 					// choose side(s) to traverse
 					//
-					cnode_t* pNode = m_pBSPData->GetNodes(nodeIndex);
+					cnode_t* pNode = m_mod->GetNodes(nodeIndex);
 					cplane_t* pPlane = pNode->plane;
 
 					int sideResult = BOX_ON_PLANE_SIDE(mins, maxs, pPlane);
@@ -747,23 +780,23 @@ private:
 		void WriteLeafList(unsigned short* pLeafList)
 		{
 			// clear current count if any
-			for (int i = 0; i < m_pBSPData->GetLeafsCount(); i++)
+			for (int i = 0; i < m_mod->GetLeafsCount(); i++)
 			{
-				cleaf_t* pLeaf = m_pBSPData->GetLeafs(i);
+				cleaf_t* pLeaf = m_mod->GetLeafs(i);
 				pLeaf->dispCount = 0;
 			}
 			// compute new count per leaf
 			for (int i = 0; i < m_dispList.Count(); i++)
 			{
 				int leafIndex = m_dispList[i];
-				cleaf_t* pLeaf = m_pBSPData->GetLeafs(leafIndex);
+				cleaf_t* pLeaf = m_mod->GetLeafs(leafIndex);
 				pLeaf->dispCount++;
 			}
 			// point each leaf at the start of it's output range in the output array
 			unsigned short firstDispIndex = 0;
-			for (int i = 0; i < m_pBSPData->GetLeafsCount(); i++)
+			for (int i = 0; i < m_mod->GetLeafsCount(); i++)
 			{
-				cleaf_t* pLeaf = m_pBSPData->GetLeafs(i);
+				cleaf_t* pLeaf = m_mod->GetLeafs(i);
 				pLeaf->dispListStart = firstDispIndex;
 				firstDispIndex += pLeaf->dispCount;
 				pLeaf->dispCount = 0;
@@ -778,7 +811,7 @@ private:
 				{
 					int listIndex = m_firstIndex[i] + j;					// index to per-disp list
 					int leafIndex = m_dispList[listIndex];					// this reference is for one leaf
-					cleaf_t* pLeaf = m_pBSPData->GetLeafs(leafIndex);
+					cleaf_t* pLeaf = m_mod->GetLeafs(leafIndex);
 					int outListIndex = pLeaf->dispListStart + pLeaf->dispCount;	// output position for this leaf
 					pLeafList[outListIndex] = i;							// write the reference there
 					Assert(outListIndex < GetDispListCount());
@@ -788,7 +821,7 @@ private:
 		}
 
 	private:
-		model_t* m_pBSPData;
+		model_t* m_mod;
 		// this is a list of all of the leaf indices for each displacement
 		CUtlVector<unsigned short> m_dispList;
 		// this is the first entry into dispList for each displacement
@@ -1288,7 +1321,7 @@ private:
 	void Mod_LoadSubmodels(CLumpHeaderInfo& header,CUtlVector<mmodel_t>& submodelList);
 	medge_t* Mod_LoadEdges(CLumpHeaderInfo& header);
 	void Mod_LoadOcclusion(CLumpHeaderInfo& header);
-	void Mod_LoadTexdata(CLumpHeaderInfo& header);
+	//void Mod_LoadTexdata(CLumpHeaderInfo& header);
 	void Mod_LoadTexinfo(CLumpHeaderInfo& header);
 	void Mod_LoadVertNormals(CLumpHeaderInfo& header);
 	void Mod_LoadVertNormalIndices(CLumpHeaderInfo& header);
@@ -1305,7 +1338,7 @@ private:
 	void Mod_LoadLeafMinDistToWater(CLumpHeaderInfo& header);
 	void Mod_LoadMarksurfaces(CLumpHeaderInfo& header);
 	void Mod_LoadSurfedges(CLumpHeaderInfo& header,medge_t* pedges);
-	void Mod_LoadPlanes(CLumpHeaderInfo& header);
+	//void Mod_LoadPlanes(CLumpHeaderInfo& header);
 	void Mod_LoadGameLumpDict(CLumpHeaderInfo& header);
 	
 

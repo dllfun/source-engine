@@ -320,7 +320,7 @@ public:
 		{
 			Assert( pCollide->GetCollisionModelIndex() < MAX_MODELS && pCollide->GetCollisionModelIndex() >= 0 );
 			int nHeadNode = GetModelHeadNode( pCollide );
-			int contents = CM_TransformedPointContents( vPos, nHeadNode, 
+			int contents = CM_TransformedPointContents(g_pHost->Host_GetWorldModel(), vPos, nHeadNode, 
 				pCollide->GetCollisionOrigin(), pCollide->GetCollisionAngles() );
 
 			if (contents != CONTENTS_EMPTY)
@@ -360,7 +360,7 @@ private:
 		if(!pModel)
 			return -1;
 
-		if(cmodel_t *pCModel = CM_InlineModelNumber(modelindex-1))
+		if(cmodel_t *pCModel = CM_InlineModelNumber(pModel, modelindex-1))//need check
 			return pCModel->headnode;
 		else
 			return -1;
@@ -386,7 +386,7 @@ int	CEngineTrace::GetPointContents( const Vector &vecAbsPosition, IHandleEntity*
 	
 	m_traceStatCounters[TRACE_STAT_COUNTER_POINTCONTENTS]++;
 	// First check the collision model
-	int nContents = CM_PointContents( vecAbsPosition, 0 );
+	int nContents = CM_PointContents(g_pHost->Host_GetWorldModel(), vecAbsPosition, 0 );
 	if ( nContents & MASK_CURRENT )
 	{
 		nContents = CONTENTS_WATER;
@@ -587,7 +587,7 @@ void CEngineTrace::GetBrushesInAABB( const Vector &vMins, const Vector &vMaxs, C
 	}	
 
 	int *pLeafList = (int *)stackalloc(g_pHost->Host_GetWorldModel()->GetLeafsCount() * 2 * sizeof(int)); // *2 just in case
-	int iNumLeafs = CM_BoxLeafnums( vMins, vMaxs, pLeafList, g_pHost->Host_GetWorldModel()->GetLeafsCount() * 2, NULL);
+	int iNumLeafs = CM_BoxLeafnums(g_pHost->Host_GetWorldModel(), vMins, vMaxs, pLeafList, g_pHost->Host_GetWorldModel()->GetLeafsCount() * 2, NULL);
 
 	CUtlVector<int> counters;
 	counters.SetSize(g_pHost->Host_GetWorldModel()->GetBrushesCount());
@@ -610,7 +610,7 @@ CPhysCollide* CEngineTrace::GetCollidableFromDisplacementsInAABB( const Vector& 
 	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 
 	int *pLeafList = (int *)stackalloc(g_pHost->Host_GetWorldModel()->GetLeafsCount() * sizeof(int));
-	int iLeafCount = CM_BoxLeafnums( vMins, vMaxs, pLeafList, g_pHost->Host_GetWorldModel()->GetLeafsCount(), NULL);
+	int iLeafCount = CM_BoxLeafnums(g_pHost->Host_GetWorldModel(), vMins, vMaxs, pLeafList, g_pHost->Host_GetWorldModel()->GetLeafsCount(), NULL);
 
 	// Get all the triangles for displacement surfaces in this box, add them to a polysoup
 	CPhysPolysoup *pDispCollideSoup = physcollision->PolysoupCreate();
@@ -772,7 +772,7 @@ bool CEngineTrace::GetBrushInfo( int iBrush, CUtlVector<Vector4D> *pPlanesOut, i
 //Tests a point to see if it's outside any playable area
 bool CEngineTrace::PointOutsideWorld( const Vector &ptTest )
 {
-	int iLeaf = CM_PointLeafnum( ptTest );
+	int iLeaf = CM_PointLeafnum(g_pHost->Host_GetWorldModel(), ptTest );
 	Assert( iLeaf >= 0 );
 
 	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
@@ -790,7 +790,7 @@ bool CEngineTrace::PointOutsideWorld( const Vector &ptTest )
 //-----------------------------------------------------------------------------
 int CEngineTrace::GetLeafContainingPoint( const Vector &vPos )
 {
-	return CM_PointLeafnum( vPos );
+	return CM_PointLeafnum(g_pHost->Host_GetWorldModel(), vPos );
 }
 
 
@@ -912,10 +912,10 @@ bool CEngineTrace::ClipRayToVPhysics( const Ray_t &ray, unsigned int fMask, ICol
 bool CEngineTrace::ClipRayToBSP( const Ray_t &ray, unsigned int fMask, ICollideable *pEntity, trace_t *pTrace )
 {
 	int nModelIndex = pEntity->GetCollisionModelIndex();
-	cmodel_t *pCModel = CM_InlineModelNumber( nModelIndex - 1 );
+	cmodel_t *pCModel = CM_InlineModelNumber(g_pHost->Host_GetWorldModel(), nModelIndex - 1 );
 	int nHeadNode = pCModel->headnode;
 
-	CM_TransformedBoxTrace( ray, nHeadNode, fMask, pEntity->GetCollisionOrigin(), pEntity->GetCollisionAngles(), *pTrace );
+	CM_TransformedBoxTrace(g_pHost->Host_GetWorldModel(), ray, nHeadNode, fMask, pEntity->GetCollisionOrigin(), pEntity->GetCollisionAngles(), *pTrace );
 	return true;
 }
 
@@ -1389,7 +1389,7 @@ void CEngineTrace::SetupLeafAndEntityListRay( const Ray_t &ray, CTraceListData &
 
 	// Get the leaves that intersect the ray.
 	traceData.LeafCountReset();
-	CM_RayLeafnums( ray, traceData.m_aLeafList.Base(), traceData.LeafCountMax(), traceData.m_nLeafCount ); 
+	CM_RayLeafnums(g_pHost->Host_GetWorldModel(), ray, traceData.m_aLeafList.Base(), traceData.LeafCountMax(), traceData.m_nLeafCount ); 
 
 	// Find all the entities in the voxels that intersect this ray.
 	traceData.EntityCountReset();
@@ -1404,7 +1404,7 @@ void CEngineTrace::SetupLeafAndEntityListBox( const Vector &vecBoxMin, const Vec
 	// Get the leaves that intersect this box.
 	int iTopNode = -1;
 	traceData.LeafCountReset();
-	traceData.m_nLeafCount = CM_BoxLeafnums( vecBoxMin, vecBoxMax, traceData.m_aLeafList.Base(), traceData.LeafCountMax(), &iTopNode );
+	traceData.m_nLeafCount = CM_BoxLeafnums(g_pHost->Host_GetWorldModel(), vecBoxMin, vecBoxMax, traceData.m_aLeafList.Base(), traceData.LeafCountMax(), &iTopNode );
 	
 	// Find all entities in the voxels that intersect this box.
 	traceData.EntityCountReset();
@@ -1440,7 +1440,7 @@ void CEngineTrace::TraceRayAgainstLeafAndEntityList( const Ray_t &ray, CTraceLis
 		Assert( !pCollide || pCollide->GetCollisionOrigin() == vec3_origin );
 		Assert( !pCollide || pCollide->GetCollisionAngles() == vec3_angle );
 
-		CM_BoxTraceAgainstLeafList( ray, traceData.m_aLeafList.Base(), traceData.LeafCount(), fMask, true, *pTrace );
+		CM_BoxTraceAgainstLeafList(g_pHost->Host_GetWorldModel(), ray, traceData.m_aLeafList.Base(), traceData.LeafCount(), fMask, true, *pTrace );
 		SetTraceEntity( pCollide, pTrace );
 
 		// Blocked by the world or early out because we only are tracing against the world.
@@ -1701,7 +1701,7 @@ void CEngineTrace::TraceRay( const Ray_t &ray, unsigned int fMask, ITraceFilter 
 		Assert(!pCollide || pCollide->GetCollisionOrigin() == vec3_origin );
 		Assert(!pCollide || pCollide->GetCollisionAngles() == vec3_angle );
 
-		CM_BoxTrace( ray, 0, fMask, true, *pTrace );
+		CM_BoxTrace(g_pHost->Host_GetWorldModel(), ray, 0, fMask, true, *pTrace );
 		SetTraceEntity( pCollide, pTrace );
 
 		// inside world, no need to check being inside anything else

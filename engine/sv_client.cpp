@@ -455,7 +455,7 @@ void CGameClient::SetupPackInfo( CFrameSnapshot *pSnapshot )
 		Assert( m_PackInfo.m_AreasNetworked < MAX_WORLD_AREAS );
 	}
 	
-	CM_SetupAreaFloodNums( m_PackInfo.m_AreaFloodNums, &m_PackInfo.m_nMapAreas );
+	CM_SetupAreaFloodNums(g_pHost->Host_GetWorldModel(), m_PackInfo.m_AreaFloodNums, &m_PackInfo.m_nMapAreas );
 }
 
 void CGameClient::SetupPrevPackInfo()

@@ -1193,10 +1193,10 @@ void SV_StartSound ( IRecipientFilter& filter, edict_t *pSoundEmittingEntity, in
 void SV_DetermineMulticastRecipients( bool usepas, const Vector& origin, CBitVec< ABSOLUTE_PLAYER_LIMIT >& playerbits )
 {
 	// determine cluster for origin
-	int cluster = CM_LeafCluster( CM_PointLeafnum( origin ) );
+	int cluster = CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), origin ) );
 	byte pvs[MAX_MAP_LEAFS/8];
 	int visType = usepas ? DVIS_PAS : DVIS_PVS;
-	const byte *pMask = CM_Vis( pvs, sizeof(pvs), cluster, visType );
+	const byte *pMask = CM_Vis(g_pHost->Host_GetWorldModel(), pvs, sizeof(pvs), cluster, visType );
 
 	playerbits.ClearAll();
 
@@ -1226,7 +1226,7 @@ void SV_DetermineMulticastRecipients( bool usepas, const Vector& origin, CBitVec
 		Vector vecEarPosition;
 		serverGameClients->ClientEarPosition( pClient->edict, &vecEarPosition );
 
-		int iBitNumber = CM_LeafCluster( CM_PointLeafnum( vecEarPosition ) );
+		int iBitNumber = CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), vecEarPosition ) );
 		if ( !(pMask[iBitNumber>>3] & (1<<(iBitNumber&7)) ) )
 			continue;
 
@@ -1452,7 +1452,7 @@ static void SV_AddToFatPVS( const Vector& org )
 	int		i;
 	byte	pvs[MAX_MAP_LEAFS/8];
 
-	CM_Vis( pvs, sizeof(pvs), CM_LeafCluster( CM_PointLeafnum( org ) ), DVIS_PVS );
+	CM_Vis(g_pHost->Host_GetWorldModel(), pvs, sizeof(pvs), CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), org ) ), DVIS_PVS );
 	for (i=0 ; i<s_FatBytes ; i++)
 	{
 		s_pFatPVS[i] |= pvs[i];
@@ -1465,7 +1465,7 @@ static void SV_AddToFatPVS( const Vector& org )
 void SV_ResetPVS( byte* pvs, int pvssize )
 {
 	s_pFatPVS = pvs;
-	s_FatBytes = Bits2Bytes(CM_NumClusters());
+	s_FatBytes = Bits2Bytes(CM_NumClusters(g_pHost->Host_GetWorldModel()));
 
 	if ( s_FatBytes > pvssize )
 	{
@@ -1485,7 +1485,7 @@ given point.
 void SV_AddOriginToPVS( const Vector& origin )
 {
 	SV_AddToFatPVS( origin );
-	int area = CM_LeafArea( CM_PointLeafnum( origin ) );
+	int area = CM_LeafArea(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), origin ) );
 	int i;
 	for( i = 0; i < g_AreasNetworked.Count(); i++ )
 	{

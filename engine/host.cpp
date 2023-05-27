@@ -146,7 +146,7 @@ extern ConVar cl_logofile;
 // Forward declarations
 //-----------------------------------------------------------------------------
 void CL_SetPagedPoolInfo();
-extern char	*CM_EntityString( void );
+extern char	*CM_EntityString(model_t* mod);
 extern ConVar host_map;
 extern ConVar sv_cheats;
 
@@ -4562,7 +4562,7 @@ bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const 
 		g_ServerGlobalVariables.curtime = sv.GetTime();
 
 		audiosourcecache->LevelInit( szMapName );
-		g_pServerPluginHandler->LevelInit( szMapName, CM_EntityString(), oldlevel, startspot, true, false );
+		g_pServerPluginHandler->LevelInit( szMapName, CM_EntityString(g_pHost->Host_GetWorldModel()), oldlevel, startspot, true, false );
 
 		sv.SetPaused( true ); // pause until client connects
 		sv.m_bLoadgame = true;
@@ -4574,7 +4574,7 @@ bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const 
 #if !defined(SWDS)
 		audiosourcecache->LevelInit( szMapName );
 #endif
-		g_pServerPluginHandler->LevelInit( szMapName, CM_EntityString(), NULL, NULL, false, false );
+		g_pServerPluginHandler->LevelInit( szMapName, CM_EntityString(g_pHost->Host_GetWorldModel()), NULL, NULL, false, false );
 	}
 
 	SV_ActivateServer();
@@ -4694,7 +4694,7 @@ bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, co
 	audiosourcecache->LevelInit( szMapName );
 #endif
 
-	g_pServerPluginHandler->LevelInit( szMapName, CM_EntityString(), pszOldMap, pszLandmark, loadGame && !bOldSave, bBackgroundLevel );
+	g_pServerPluginHandler->LevelInit( szMapName, CM_EntityString(g_pHost->Host_GetWorldModel()), pszOldMap, pszLandmark, loadGame && !bOldSave, bBackgroundLevel );
 
 	if ( loadGame && !bOldSave )
 	{
