@@ -600,6 +600,12 @@ public:
 	int GetDispCollTreesCount();
 	CDispCollTree* GetDispCollTrees(int index);
 	alignedbbox_t* GetDispBounds(int index);
+	bool CollisionBSPData_Init();
+	void CollisionBSPData_Destroy();
+
+	void CollisionBSPData_PreLoad();
+	bool CollisionBSPData_Load(const char* pName, CLumpHeaderInfo& header);
+	//void CollisionBSPData_PostLoad();
 private:
 
 

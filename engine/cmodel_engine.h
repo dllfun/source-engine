@@ -19,7 +19,7 @@
 class ICollideable;
 
 
-cmodel_t	*CM_LoadMap(model_t* mod, bool allowReusePrevious, unsigned *checksum );
+cmodel_t	*CM_LoadMap(model_t* mod, bool allowReusePrevious, unsigned *checksum, CLumpHeaderInfo header);
 void		CM_FreeMap(model_t* mod);
 cmodel_t	*CM_InlineModel( const char *name );	// *1, *2, etc
 cmodel_t	*CM_InlineModelNumber( int index );	// 1, 2, etc

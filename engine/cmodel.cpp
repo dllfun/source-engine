@@ -287,7 +287,7 @@ void CM_FreeMap(model_t* mod)
 	//CCollisionBSPData *pBSPData = GetCollisionBSPData();
 	if (mod) {
 		// free the collision bsp data
-		CollisionBSPData_Destroy(mod);
+		mod->CollisionBSPData_Destroy();
 	}
 }
 
@@ -306,7 +306,7 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-cmodel_t *CM_LoadMap( model_t* mod, bool allowReusePrevious, unsigned *checksum )
+cmodel_t *CM_LoadMap( model_t* mod, bool allowReusePrevious, unsigned *checksum, CLumpHeaderInfo header)
 {
 	static unsigned	int last_checksum = 0xFFFFFFFF;
 
@@ -322,7 +322,7 @@ cmodel_t *CM_LoadMap( model_t* mod, bool allowReusePrevious, unsigned *checksum 
 	//}
 
 	// only pre-load if the map doesn't already exist
-	CollisionBSPData_PreLoad( mod );
+	mod->CollisionBSPData_PreLoad();
 
 	//if ( !name || !name[0] )
 	//{
@@ -331,9 +331,9 @@ cmodel_t *CM_LoadMap( model_t* mod, bool allowReusePrevious, unsigned *checksum 
 	//}
 
 	// read in the collision model data
-	CLumpHeaderInfo header( 0, mod->GetModelName());
-	CollisionBSPData_Load(mod->GetModelName(),header, mod );
-	header.Shutdown( );
+	//CLumpHeaderInfo header( 0, mod->GetModelName());
+	mod->CollisionBSPData_Load(mod->GetModelName(),header );
+	//header.Shutdown( );
 
     // Push the displacement bounding boxes down the tree and set leaf data.
     //CM_DispTreeLeafnum( pBSPData );

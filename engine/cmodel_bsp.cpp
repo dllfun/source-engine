@@ -1379,9 +1379,9 @@ void model_t::CM_DispTreeLeafnum()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CollisionBSPData_Init( model_t* mod )
+bool model_t::CollisionBSPData_Init()
 {
-	mod->Init();
+	this->Init();
 
 	return true;
 }
@@ -1395,20 +1395,20 @@ bool CollisionBSPData_Init( model_t* mod )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CollisionBSPData_Destroy( model_t* mod )
+void model_t::CollisionBSPData_Destroy()
 {
-	for ( int i = 0; i < mod->GetCModelsCount(); i++)
+	for ( int i = 0; i < this->GetCModelsCount(); i++)
 	{
-		physcollision->VCollideUnload( &mod->GetCModels(i)->vcollisionData);
+		physcollision->VCollideUnload( &this->GetCModels(i)->vcollisionData);
 	}
 
 	// free displacement data
 	//DispCollTrees_FreeLeafList( pBSPData );
 	CM_DestroyDispPhysCollide();
-	DispCollTrees_Free(mod->GetDispCollTrees(0));
+	DispCollTrees_Free(this->GetDispCollTrees(0));
 	
 
-	mod->Destory();
+	this->Destory();
 }
 
 //-----------------------------------------------------------------------------
@@ -1452,20 +1452,20 @@ void CollisionBSPData_LinkPhysics( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CollisionBSPData_PreLoad( model_t* mod )
+void model_t::CollisionBSPData_PreLoad()
 {
 	// initialize the collision bsp data
-	CollisionBSPData_Init( mod ); 
+	CollisionBSPData_Init(); 
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CollisionBSPData_Load( const char *pName, CLumpHeaderInfo& header, model_t* mod )
+bool model_t::CollisionBSPData_Load( const char *pName, CLumpHeaderInfo& header )
 {
 	
 
-	return mod->LoadDatas(pName,header);
+	return this->LoadDatas(pName,header);
 }
 
 

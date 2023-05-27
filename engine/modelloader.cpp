@@ -4444,15 +4444,15 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 		Warning( "Map '%s' lacks exepected HDR data! 360 does not support accurate LDR visuals.", m_szLoadName );
 	}
 
-	// Load the collision model
-	COM_TimestampedLog( "  CM_LoadMap" );
-	unsigned int checksum;
-	CM_LoadMap( mod, false, &checksum );
-
 	// Load the map
 	mod->type = mod_brush;
 	mod->nLoadFlags |= FMODELLOADER_LOADED;
-	CLumpHeaderInfo header( mod, m_szLoadName );
+	CLumpHeaderInfo header(mod, m_szLoadName);
+
+	// Load the collision model
+	COM_TimestampedLog( "  CM_LoadMap" );
+	unsigned int checksum;
+	CM_LoadMap( mod, false, &checksum, header);
 
 	COM_TimestampedLog( "  Mod_LoadVertices" );
 	mod->Mod_LoadVertices(header);
@@ -4752,6 +4752,7 @@ void CModelLoader::Map_UnloadModel( model_t *mod )
 
 	MaterialSystem_DestroySortinfo();
 
+	CM_FreeMap(mod);
 	// Don't store any reference to it here
 	ClearWorldModel(mod);
 	Map_SetRenderInfoAllocated( false );

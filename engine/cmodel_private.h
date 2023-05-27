@@ -362,13 +362,7 @@ extern IPhysicsCollision* physcollision;
 
 //extern bool bStartSolidDisp;
 
-bool CollisionBSPData_Init( model_t* mod );
-void CollisionBSPData_Destroy( model_t* mod );
 void CollisionBSPData_LinkPhysics( void );
-
-void CollisionBSPData_PreLoad( model_t* mod );
-bool CollisionBSPData_Load( const char *pName, CLumpHeaderInfo& header, model_t* mod );
-void CollisionBSPData_PostLoad( model_t* mod );
 
 //-----------------------------------------------------------------------------
 // Returns the collision tree associated with the ith displacement
