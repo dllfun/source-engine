@@ -189,14 +189,14 @@ END_DATADESC()
 //=========================================================
 void CNodeEnt::Spawn( void )
 {
-	Spawn( NULL );
+	Spawn(NULL, NULL );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *pMapData - 
 //-----------------------------------------------------------------------------
-int CNodeEnt::Spawn( const char *pMapData )
+int CNodeEnt::Spawn(const char* pMapName, const char *pMapData )
 {
 	m_NodeData.strEntityName = GetEntityName();
 	m_NodeData.vecPosition = GetAbsOrigin();
@@ -212,7 +212,7 @@ int CNodeEnt::Spawn( const char *pMapData )
 	{
 		if (m_NodeData.nHintType)
 		{
-			CAI_HintManager::CreateHint( &m_NodeData, pMapData );
+			CAI_HintManager::CreateHint( &m_NodeData, pMapName, pMapData );
 		}
 		else
 		{
@@ -232,7 +232,7 @@ int CNodeEnt::Spawn( const char *pMapData )
 		if ( m_NodeData.nHintType || m_NodeData.strGroup != NULL_STRING || m_NodeData.strEntityName != NULL_STRING )
 		{
 			m_NodeData.nNodeID = m_nNodeCount;
-			pHint = CAI_HintManager::CreateHint( &m_NodeData, pMapData );
+			pHint = CAI_HintManager::CreateHint( &m_NodeData, pMapName, pMapData );
 			pHint->AddSpawnFlags( GetSpawnFlags() );
 		}
 	}

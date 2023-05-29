@@ -51,11 +51,17 @@ C_FuncReflectiveGlass* GetReflectiveGlassList()
 //-----------------------------------------------------------------------------
 C_FuncReflectiveGlass::C_FuncReflectiveGlass()
 {
+	if (!engineClient) {
+		return;
+	}
 	g_ReflectiveGlassList.Insert( this );
 }
 
 C_FuncReflectiveGlass::~C_FuncReflectiveGlass()
 {
+	if (!engineClient) {
+		return;
+	}
 	g_ReflectiveGlassList.Remove( this );
 }
 
@@ -95,12 +101,15 @@ bool IsReflectiveGlassInView( const CViewSetup& view, cplane_t &plane )
 
 		int modelIndex = pReflectiveGlass->GetModelIndex();
 		const IVModel *pModel = pReflectiveGlass->GetModel();
+		if (!pModel) {
+			pModel = engineClient->GetModel(modelIndex);
+		}
 		const matrix3x4_t& mat = pReflectiveGlass->EntityToWorldTransform();
 
-		int nCount = modelinfo->GetBrushModelPlaneCount(modelIndex);//pModel
+		int nCount = pModel->R_GetBrushModelPlaneCount();//pModel
 		for ( int i = 0; i < nCount; ++i )
 		{
-			modelinfo->GetBrushModelPlane(modelIndex, i, localPlane, &vecOrigin );//pModel
+			localPlane = pModel->R_GetBrushModelPlane( i, &vecOrigin );//pModel
 
 			MatrixTransformPlane( mat, localPlane, plane );			// Transform to world space
 			VectorTransform( vecOrigin, mat, vecWorld );

@@ -218,8 +218,8 @@ void C_TEExplosion::RecordExplosion( )
 
 	if ( clienttools->IsInRecordingMode() )
 	{
-		const IVModel* pModel = (m_nModelIndex != 0) ? modelinfo->GetModel( m_nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName(m_nModelIndex) : "";//pModel
+		const IVModel* pModel = (m_nModelIndex != 0) ? engineClient->GetModel( m_nModelIndex ) : NULL;
+		const char *pModelName = pModel ? pModel->GetModelName() : "";//pModel
 
 		KeyValues *msg = new KeyValues( "TempEntity" );
 
@@ -324,7 +324,7 @@ void TE_Explosion( IRecipientFilter& filter, float delay, KeyValues *pKeyValues 
 	vecNormal.y = pKeyValues->GetFloat( "directiony" );
 	vecNormal.z = pKeyValues->GetFloat( "directionz" );
 	const char *pModelName = pKeyValues->GetString( "model" );
-	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
+	int nModelIndex = pModelName[0] ? engineClient->GetModelIndex( pModelName ) : 0;
 	float flScale = pKeyValues->GetFloat( "scale" );
 	int nFrameRate = pKeyValues->GetInt( "framerate" );
 	int nFlags = pKeyValues->GetInt( "flags" );

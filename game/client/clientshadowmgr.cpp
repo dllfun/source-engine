@@ -1802,7 +1802,7 @@ ClientShadowHandle_t CClientShadowMgr::CreateProjectedTexture( ClientEntityHandl
 	if( !( flags & SHADOW_FLAGS_FLASHLIGHT ) )
 	{
 		IClientRenderable *pRenderable = ClientEntityList().GetClientRenderableFromHandle( entity );
-		int modelType = pRenderable->GetModel()->GetModelType(  );//modelinfo
+		int modelType = pRenderable->GetModel()?pRenderable->GetModel()->GetModelType():mod_bad;//modelinfo
 		if (modelType == mod_brush)
 		{
 			flags |= SHADOW_FLAGS_BRUSH_MODEL;
@@ -2473,7 +2473,7 @@ void CClientShadowMgr::BuildRenderToTextureShadow( IClientRenderable* pRenderabl
 
 //	Debugging aid
 //	const IVModel *pModel = pRenderable->GetModel();
-//	const char *pDebugName = modelinfo->GetModelName( pModel );
+//	const char *pDebugName = pModel?pModel->GetModelName():"";
 
 	// Project the shadow casting direction into the space of the object
 	Vector localShadowDir;
@@ -2665,7 +2665,7 @@ void CClientShadowMgr::BuildFlashlight( ClientShadowHandle_t handle )
 	C_BaseEntity *pChild = shadow.m_hTargetEntity->FirstMoveChild();
 	while( pChild )
 	{
-		int modelType = modelinfo->GetModelType( pChild->GetModelIndex() );//pChild->GetModel()
+		int modelType = pChild->GetModel()?pChild->GetModel()->GetModelType():mod_bad;//pChild->GetModel()
 		if (modelType == mod_brush)
 		{
 			AddShadowToReceiver( handle, pChild, SHADOW_RECEIVER_BRUSH_MODEL );
@@ -2678,7 +2678,7 @@ void CClientShadowMgr::BuildFlashlight( ClientShadowHandle_t handle )
 		pChild = pChild->NextMovePeer();
 	}
 
-	int modelType = modelinfo->GetModelType( shadow.m_hTargetEntity->GetModelIndex() );//shadow.m_hTargetEntity->GetModel()
+	int modelType = shadow.m_hTargetEntity->GetModel()?shadow.m_hTargetEntity->GetModel()->GetModelType():mod_bad;//shadow.m_hTargetEntity->GetModel()
 	if (modelType == mod_brush)
 	{
 		AddShadowToReceiver( handle, shadow.m_hTargetEntity, SHADOW_RECEIVER_BRUSH_MODEL );
@@ -3134,7 +3134,8 @@ void CClientShadowMgr::UpdateShadow( ClientShadowHandle_t handle, bool force )
 		const IVModel *pModel = pRenderable->GetModel();
 		MaterialFogMode_t fogMode = pRenderContext->GetFogMode();
 		pRenderContext->FogMode( MATERIAL_FOG_NONE );
-		switch(pModel->GetModelType(  ) )//modelinfo
+		int modelType = pModel ? pModel->GetModelType() : mod_bad;
+		switch(modelType)//modelinfo
 		{
 		case mod_brush:
 			UpdateBrushShadow( pRenderable, handle );
@@ -3599,7 +3600,7 @@ bool CClientShadowMgr::BuildSetupShadowHierarchy( IClientRenderable *pRenderable
 		}
 		else
 		{
-			int nModelType = pRenderable->GetModel()->GetModelType(  );//modelinfo
+			int nModelType = pRenderable->GetModel()?pRenderable->GetModel()->GetModelType():mod_bad;//modelinfo
 			bDrawModelShadow = nModelType == mod_studio;
 		}
 
@@ -3659,7 +3660,7 @@ bool CClientShadowMgr::DrawShadowHierarchy( IClientRenderable *pRenderable, cons
 		}
 		else
 		{
-			int nModelType = pRenderable->GetModel()->GetModelType(  );//modelinfo
+			int nModelType = pRenderable->GetModel()?pRenderable->GetModel()->GetModelType():mod_bad;//modelinfo
 			bDrawModelShadow = nModelType == mod_studio;
 			bDrawBrushShadow = nModelType == mod_brush;
 		}

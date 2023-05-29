@@ -910,7 +910,7 @@ void CModelPanel::CalculateFrameDistance( void )
 		return;
 
 	// Compute a bounding radius for the model
-	const IVModel *mod = modelinfo->GetModel( m_hModel->GetModelIndex() );
+	const IVModel *mod = engineClient->GetModel( m_hModel->GetModelIndex() );
 	if ( !mod )
 		return;
 
@@ -929,7 +929,7 @@ void CModelPanel::ZoomToFrameDistance( void )
 	if ( !m_flFrameDistance || !m_hModel )
 		return;
 
-	const IVModel *model = modelinfo->GetModel( m_hModel->GetModelIndex() );
+	const IVModel *model = engineClient->GetModel( m_hModel->GetModelIndex() );
 	if ( !model)
 		return;
 

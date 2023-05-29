@@ -94,8 +94,8 @@ static inline void RecordPhysicsProp( const Vector& start, const QAngle &angles,
 
 	if ( clienttools->IsInRecordingMode() )
 	{
-		const IVModel* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName(nModelIndex) : "";//pModel
+		const IVModel* pModel = (nModelIndex != 0) ? engineClient->GetModel( nModelIndex ) : NULL;
+		const char *pModelName = pModel ? pModel->GetModelName() : "";//pModel
 
 		KeyValues *msg = new KeyValues( "TempEntity" );
 
@@ -159,7 +159,7 @@ void TE_PhysicsProp( IRecipientFilter& filter, float delay, KeyValues *pKeyValue
 	vecVel.y = pKeyValues->GetFloat( "vely" );
 	vecVel.z = pKeyValues->GetFloat( "velz" );
 	const char *pModelName = pKeyValues->GetString( "model" );
-	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
+	int nModelIndex = pModelName[0] ? engineClient->GetModelIndex( pModelName ) : 0;
 	bool bBreakModel = pKeyValues->GetInt( "breakmodel" ) != 0;
 	int nEffects = pKeyValues->GetInt( "effects" );
 

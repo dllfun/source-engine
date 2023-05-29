@@ -130,7 +130,7 @@ void C_PlantedC4::ClientThink( void )
 
 	if( gpGlobals->curtime > m_flNextGlow )
 	{
-		int modelindex = modelinfo->GetModelIndex( "sprites/ledglow.vmt" );
+		int modelindex = engineClient->GetModelIndex( "sprites/ledglow.vmt" );
 
 		float scale = 0.8f;
 		Vector vPos = GetAbsOrigin();

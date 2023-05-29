@@ -64,7 +64,7 @@ bool CFuncWall::CreateVPhysics( void )
 	IPhysicsObject *pPhys = VPhysicsInitStatic();
 	if ( pPhys )
 	{
-		int contents = modelinfo->GetModelContents( GetModelIndex() );
+		int contents = GetModel()->GetModelContents();
 		if ( ! (contents & (MASK_SOLID|MASK_PLAYERSOLID|MASK_NPCSOLID)) )
 		{
 			// leave the physics shadow there in case it has crap constrained to it

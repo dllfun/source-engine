@@ -688,7 +688,7 @@ KeyValues *CBaseAnimating::GetSequenceKeyValues( int iSequence )
 	if (szText)
 	{
 		KeyValues *seqKeyValues = new KeyValues("");
-		if ( seqKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), szText ) )//GetModel()
+		if ( seqKeyValues->LoadFromBuffer(GetModel()->GetModelName(), szText ) )//GetModel()
 		{
 			return seqKeyValues;
 		}
@@ -2480,11 +2480,11 @@ void CBaseAnimating::SetModel( const char *szModelName )
 	
 	if ( szModelName[0] )
 	{
-		int modelIndex = modelinfo->GetModelIndex( szModelName );
-		const IVModel *model = modelinfo->GetModel( modelIndex );
-		if ( model && ( modelinfo->GetModelType(modelIndex) != mod_studio ) )//model
+		int modelIndex = engineServer->GetModelIndex( szModelName );
+		const IVModel *model = engineServer->GetModel( modelIndex );
+		if ( model && (model->GetModelType() != mod_studio ) )//model
 		{
-			Msg( "Setting CBaseAnimating to non-studio model %s  (type:%i)\n",	szModelName, modelinfo->GetModelType(modelIndex) );//model
+			Msg( "Setting CBaseAnimating to non-studio model %s  (type:%i)\n",	szModelName, model->GetModelType() );//model
 		}
 	}
 
@@ -2512,7 +2512,7 @@ void CBaseAnimating::LockStudioHdr()
 	const IVModel *mdl = GetModel();
 	if (mdl)
 	{
-		MDLHandle_t hStudioHdr = modelinfo->GetCacheHandle(GetModelIndex());//mdl
+		MDLHandle_t hStudioHdr = mdl->GetCacheHandle();
 		if ( hStudioHdr != MDLHANDLE_INVALID )
 		{
 			const studiohdr_t *pStudioHdr = mdlcache->LockStudioHdr( hStudioHdr );
@@ -2549,7 +2549,7 @@ void CBaseAnimating::UnlockStudioHdr()
 		const IVModel *mdl = GetModel();
 		if (mdl)
 		{
-			mdlcache->UnlockStudioHdr( modelinfo->GetCacheHandle(GetModelIndex()) );//mdl
+			mdlcache->UnlockStudioHdr(mdl->GetCacheHandle() );//
 			if ( m_pStudioHdr->GetVirtualModel() )
 			{
 				MDLHandle_t hVirtualModel = VoidPtrToMDLHandle( m_pStudioHdr->GetRenderHdr()->VirtualModel() );

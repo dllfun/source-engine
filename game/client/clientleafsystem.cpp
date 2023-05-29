@@ -609,7 +609,7 @@ void CClientLeafSystem::NewRenderable( IClientRenderable* pRenderable, RenderGro
 	RenderableInfo_t &info = m_Renderables[handle];
 
 	// We need to know if it's a brush model for shadows
-	int modelType = pRenderable->GetModel()?pRenderable->GetModel()->GetModelType(  ):0;//modelinfo
+	int modelType = pRenderable->GetModel()?pRenderable->GetModel()->GetModelType():0;//modelinfo
 	if (modelType == mod_brush)
 	{
 		flags |= RENDER_FLAGS_BRUSH_MODEL;

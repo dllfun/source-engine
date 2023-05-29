@@ -1749,7 +1749,7 @@ static bool TestEntityTriggerIntersection_Accurate( CBaseEntity *pTrigger, CBase
 		case SOLID_BSP:
 		case SOLID_VPHYSICS:
 			{
-				CPhysCollide *pTriggerCollide = modelinfo->GetVCollide( pTrigger->GetModelIndex() )->solids[0];
+				CPhysCollide *pTriggerCollide = pTrigger->GetModel()->GetVCollide()->solids[0];
 				Assert( pTriggerCollide );
 
 				CUtlVector<collidelist_t> collideList;
@@ -1771,7 +1771,7 @@ static bool TestEntityTriggerIntersection_Accurate( CBaseEntity *pTrigger, CBase
 				}
 				else
 				{
-					vcollide_t *pVCollide = modelinfo->GetVCollide( pEntity->GetModelIndex() );
+					vcollide_t *pVCollide = pEntity->GetModel()->GetVCollide();
 					if ( pVCollide && pVCollide->solidCount )
 					{
 						collidelist_t element;

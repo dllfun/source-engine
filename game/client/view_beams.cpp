@@ -233,7 +233,7 @@ bool ComputeBeamEntPosition( C_BaseEntity *pEnt, int nAttachment, bool bInterpre
 		C_BaseAnimating *pAnimating = pEnt->GetBaseAnimating();
 		if ( pAnimating )
 		{
-			studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModelIndex() );//pAnimating->GetModel()
+			studiohdr_t *pStudioHdr = pAnimating->GetModel()->GetStudiomodel();//pAnimating->GetModel()
 			if (pStudioHdr)
 			{
 				mstudiohitboxset_t *set = pStudioHdr->pHitboxSet( pAnimating->GetHitboxSet() );
@@ -695,7 +695,7 @@ void CViewRenderBeams::KillDeadBeams( C_BaseEntity *pDeadEntity )
 //-----------------------------------------------------------------------------
 void CViewRenderBeams::SetupBeam( Beam_t *pBeam, const BeamInfo_t &beamInfo )
 {
-	const IVModel *pSprite = modelinfo->GetModel( beamInfo.m_nModelIndex );
+	const IVModel *pSprite = engineClient->GetModel( beamInfo.m_nModelIndex );
 	if ( !pSprite )
 		return;
 
@@ -705,7 +705,7 @@ void CViewRenderBeams::SetupBeam( Beam_t *pBeam, const BeamInfo_t &beamInfo )
 	pBeam->haloScale		= beamInfo.m_flHaloScale;
 	pBeam->frame			= 0;
 	pBeam->frameRate		= 0;
-	pBeam->frameCount		= modelinfo->GetModelFrameCount(beamInfo.m_nModelIndex);//pSprite
+	pBeam->frameCount		= pSprite->ModelFrameCount();//pSprite
 	pBeam->freq				= gpGlobals->curtime * beamInfo.m_flSpeed;
 	pBeam->die				= gpGlobals->curtime + beamInfo.m_flLife;
 	pBeam->width			= beamInfo.m_flWidth;
@@ -1015,12 +1015,12 @@ Beam_t *CViewRenderBeams::CreateBeamEntPoint( BeamInfo_t &beamInfo )
 	// Model index.
 	if ( ( beamInfo.m_pszModelName ) && ( beamInfo.m_nModelIndex == -1 ) )
 	{
-		beamInfo.m_nModelIndex = modelinfo->GetModelIndex( beamInfo.m_pszModelName );
+		beamInfo.m_nModelIndex = engineClient->GetModelIndex( beamInfo.m_pszModelName );
 	}
 
 	if ( ( beamInfo.m_pszHaloName ) && ( beamInfo.m_nHaloIndex == -1 ) )
 	{
-		beamInfo.m_nHaloIndex = modelinfo->GetModelIndex( beamInfo.m_pszHaloName );
+		beamInfo.m_nHaloIndex = engineClient->GetModelIndex( beamInfo.m_pszHaloName );
 	}
 
 	Beam_t *pBeam = CreateGenericBeam( beamInfo );
@@ -1111,12 +1111,12 @@ Beam_t *CViewRenderBeams::CreateBeamPoints( BeamInfo_t &beamInfo )
 	// Model index.
 	if ( ( beamInfo.m_pszModelName ) && ( beamInfo.m_nModelIndex == -1 ) )
 	{
-		beamInfo.m_nModelIndex = modelinfo->GetModelIndex( beamInfo.m_pszModelName );
+		beamInfo.m_nModelIndex = engineClient->GetModelIndex( beamInfo.m_pszModelName );
 	}
 
 	if ( ( beamInfo.m_pszHaloName ) && ( beamInfo.m_nHaloIndex == -1 ) )
 	{
-		beamInfo.m_nHaloIndex = modelinfo->GetModelIndex( beamInfo.m_pszHaloName );
+		beamInfo.m_nHaloIndex = engineClient->GetModelIndex( beamInfo.m_pszHaloName );
 	}
 
 	// Create the new beam.
@@ -1950,13 +1950,13 @@ void CViewRenderBeams::DrawBeam( Beam_t *pbeam )
 		return;
 	}
 	
-	sprite = modelinfo->GetModel( pbeam->modelIndex );
+	sprite = engineClient->GetModel( pbeam->modelIndex );
 	if ( !sprite )
 	{
 		return;
 	}
 	
-	halosprite = modelinfo->GetModel( pbeam->haloIndex );
+	halosprite = engineClient->GetModel( pbeam->haloIndex );
 
 	int frame = ( ( int )( pbeam->frame + gpGlobals->curtime * pbeam->frameRate) % pbeam->frameCount );
 	int rendermode = ( pbeam->flags & FBEAM_SOLID ) ? kRenderNormal : kRenderTransAdd;

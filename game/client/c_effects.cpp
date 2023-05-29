@@ -1413,7 +1413,7 @@ void C_Embers::SpawnEmber( void )
 {
 	Vector	offset, mins, maxs;
 	
-	modelinfo->GetModelBounds(GetModelIndex(), mins, maxs );//GetModel()
+	GetModel()->GetModelBounds( mins, maxs );//GetModel()
 
 	//Setup our spawn position
 	offset[0] = random->RandomFloat( mins[0], maxs[0] );

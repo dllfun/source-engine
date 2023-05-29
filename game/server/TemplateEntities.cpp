@@ -31,10 +31,10 @@ ConVar template_debug( "template_debug", "0" );
 // This is appended to key's values that will need to be unique in template instances
 const char *ENTITYIO_FIXUP_STRING = "&0000";
 
-int MapEntity_GetNumKeysInEntity( const char *pEntData );
 
 struct TemplateEntityData_t
 {
+	const char* pMapName;
 	const char	*pszName;
 	char		*pszMapData;
 	string_t	iszMapData;
@@ -71,7 +71,7 @@ int	g_iCurrentTemplateInstance;
 // Purpose: Saves the given entity's keyvalue data for later use by a spawner.
 //			Returns the index into the templates.
 //-----------------------------------------------------------------------------
-int Templates_Add(CBaseEntity *pEntity, const char *pszMapData, int nLen)
+int Templates_Add(const char* pMapName, CBaseEntity *pEntity, const char *pszMapData, int nLen)
 {
 	const char *pszName = STRING(pEntity->GetEntityName());
 	if ((!pszName) || (!strlen(pszName)))
@@ -81,11 +81,12 @@ int Templates_Add(CBaseEntity *pEntity, const char *pszMapData, int nLen)
 	}
 
 	TemplateEntityData_t *pEntData = (TemplateEntityData_t *)malloc(sizeof(TemplateEntityData_t));
+	pEntData->pMapName = pMapName;
 	pEntData->pszName = strdup( pszName );
 
 	// We may modify the values of the keys in this mapdata chunk later on to fix Entity I/O
 	// connections. For this reason, we need to ensure we have enough memory to do that.
-	int iKeys = MapEntity_GetNumKeysInEntity( pszMapData );
+	int iKeys = CEntityMapData::MapEntity_GetNumKeysInEntity( pszMapData );
 	int iExtraSpace = (strlen(ENTITYIO_FIXUP_STRING)+1) * iKeys;
 
 	// Extra 1 because the mapdata passed in isn't null terminated
@@ -132,6 +133,9 @@ string_t Templates_FindByIndex( int iIndex )
 	return g_Templates[iIndex]->iszMapData;
 }
 
+const char* Templates_GetMapName(int iIndex) {
+	return g_Templates[iIndex]->pMapName;
+}
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -181,7 +185,7 @@ void Templates_ReconnectIOForGroup( CPointTemplate *pGroup )
 	{
 		grouptemplate_t newGroupTemplate;
 		newGroupTemplate.iIndex = pGroup->GetTemplateIndexForTemplate(i);
-		newGroupTemplate.pMapDataParser = new CEntityMapData( g_Templates[ newGroupTemplate.iIndex ]->pszMapData, g_Templates[ newGroupTemplate.iIndex ]->iMapDataLength );
+		newGroupTemplate.pMapDataParser = new CEntityMapData(g_Templates[newGroupTemplate.iIndex]->pMapName, g_Templates[ newGroupTemplate.iIndex ]->pszMapData, g_Templates[ newGroupTemplate.iIndex ]->iMapDataLength );
 		Assert( newGroupTemplate.pMapDataParser );
 		newGroupTemplate.pMapDataParser->ExtractValue( "targetname", newGroupTemplate.pszName );
 		newGroupTemplate.bChangeTargetname = false;

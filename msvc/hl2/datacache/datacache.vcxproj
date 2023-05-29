@@ -150,6 +150,7 @@
     <ClCompile Include="..\..\..\common\studiobyteswap.cpp" />
     <ClCompile Include="..\..\..\datacache\datacache.cpp" />
     <ClCompile Include="..\..\..\datacache\mdlcache.cpp" />
+    <ClCompile Include="..\..\..\game\shared\studio_shared.cpp" />
     <ClCompile Include="..\..\..\public\studio.cpp" />
     <ClCompile Include="..\..\..\public\studio_virtualmodel.cpp" />
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />

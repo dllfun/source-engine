@@ -89,7 +89,7 @@ int C_FuncAreaPortalWindow::DrawModel( int flags )
 		return 0;
 
 	// Make sure we're a brush model.
-	int modelType = modelinfo->GetModelType( GetModelIndex() );//GetModel()
+	int modelType = GetModel()?GetModel()->GetModelType():mod_bad;//GetModel()
 	if( modelType != mod_brush )
 		return 0;
 
@@ -114,8 +114,8 @@ int C_FuncAreaPortalWindow::DrawModel( int flags )
 	if (m_iBackgroundModelIndex >= 0)
 	{
 		render->SetBlend( 1 );
-		IVModel *pBackground = ( IVModel * )modelinfo->GetModel( m_iBackgroundModelIndex );
-		if( pBackground && modelinfo->GetModelType(m_iBackgroundModelIndex) == mod_brush )//pBackground
+		IVModel *pBackground = ( IVModel * )engineClient->GetModel( m_iBackgroundModelIndex );
+		if( pBackground && pBackground->GetModelType() == mod_brush )//pBackground
 		{
 			render->DrawBrushModelEx( 
 				this, 

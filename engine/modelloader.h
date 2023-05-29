@@ -252,11 +252,9 @@ private:
 
 
 
-// returns the material count...
-int Mod_GetMaterialCount( model_t* mod );
 
-// returns the first n materials.
-int Mod_GetModelMaterials( model_t* mod, int count, IMaterial** ppMaterial );
+
+
 
 bool Mod_MarkWaterSurfaces( model_t *pModel );
 

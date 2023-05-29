@@ -599,33 +599,33 @@ void DrawDebugInformation(model_t* pWorld,const CUtlVector<SurfaceHandle_t>& sur
 //-----------------------------------------------------------------------------
 // Returns planes in brush models
 //-----------------------------------------------------------------------------
-int R_GetBrushModelPlaneCount( const model_t *model )
+int model_t::R_GetBrushModelPlaneCount() const
 {
-	return model->GetModelsurfacesCount();//need check
+	return this->GetModelsurfacesCount();//need check
 }
 
-const cplane_t &R_GetBrushModelPlane( const model_t *model, int nIndex, Vector *pOrigin )
+const cplane_t& model_t::R_GetBrushModelPlane(int nIndex, Vector *pOrigin ) const
 {
-	SurfaceHandle_t surfID = model->SurfaceHandleFromIndex( model->GetFirstmodelsurface());//, model->brush.pShared
+	SurfaceHandle_t surfID = this->SurfaceHandleFromIndex(this->GetFirstmodelsurface());//, model->brush.pShared
 	surfID += nIndex;
 	Assert( !(MSurf_Flags( surfID ) & SURFDRAW_NODRAW) );
 
 	if ( pOrigin )
 	{
-		int vertCount = model->MSurf_VertCount( surfID );
+		int vertCount = this->MSurf_VertCount( surfID );
 		if ( vertCount > 0 )
 		{
-			int nFirstVertex = *((model_t*)model)->GetVertindices(((model_t*)model)->MSurf_FirstVertIndex( surfID ));
-			*pOrigin = ((model_t*)model)->GetVertexes(nFirstVertex)->position;
+			int nFirstVertex = *((model_t*)this)->GetVertindices(((model_t*)this)->MSurf_FirstVertIndex( surfID ));
+			*pOrigin = ((model_t*)this)->GetVertexes(nFirstVertex)->position;
 		}
 		else
 		{
-			const cplane_t &plane = ((model_t*)model)->MSurf_Plane( surfID );
+			const cplane_t &plane = ((model_t*)this)->MSurf_Plane( surfID );
 			VectorMultiply( plane.normal, plane.dist, *pOrigin );
 		}
 	}
 
-	return ((model_t*)model)->MSurf_Plane( surfID );
+	return ((model_t*)this)->MSurf_Plane( surfID );
 }
 
 //-----------------------------------------------------------------------------

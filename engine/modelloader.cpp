@@ -319,7 +319,7 @@ private:
 
 	CUtlMemoryPool			m_ModelPool;
 
-	CUtlVector<model_t>	m_InlineModels;
+	//CUtlVector<model_t>	m_InlineModels;
 
 	model_t				*m_pWorldModel;
 	//worldbrushdata_t	m_worldBrushData;
@@ -2968,7 +2968,7 @@ void CMDLCacheNotify::ComputeModelFlags( model_t* pModel, MDLHandle_t handle )
 	}
 
 	IMaterial *pMaterials[ 128 ];
-	int materialCount = Mod_GetModelMaterials( pModel, ARRAYSIZE( pMaterials ), pMaterials );
+	int materialCount = pModel->Mod_GetModelMaterials( ARRAYSIZE( pMaterials ), pMaterials );
 
 	for ( int i = 0; i < materialCount; ++i )
 	{
@@ -3345,7 +3345,7 @@ static CResourcePreloadModel s_ResourcePreloadModel;
 void CModelLoader::Init( void )
 {
 	m_Models.RemoveAll();
-	m_InlineModels.Purge();
+	//m_InlineModels.Purge();
 
 	m_pWorldModel = NULL;
 	m_bMapRenderInfoLoaded = false;
@@ -3432,7 +3432,7 @@ model_t *CModelLoader::FindModel( const char *pName )
 		{
 			Sys_Error( "bad inline model number %i", modelNum );
 		}
-		return &m_InlineModels[modelNum];
+		return &m_pWorldModel->brush.pShared->m_InlineModels[modelNum];
 	}
 
 	model_t *pModel = NULL;
@@ -4090,22 +4090,22 @@ void model_t::Mod_RecomputeTranslucency( int nSkin, int nBody, void /*IClientRen
 //-----------------------------------------------------------------------------
 // returns the material count...
 //-----------------------------------------------------------------------------
-int Mod_GetMaterialCount( model_t* mod )
+int model_t::Mod_GetMaterialCount( )
 {
-	switch( mod->GetModelType() )
+	switch( this->GetModelType() )
 	{
 	case mod_brush:
 		{
 			CUtlVector<IMaterial*> uniqueMaterials( 0, 32 );
 
-			for (int i = 0; i < mod->GetModelsurfacesCount(); ++i)
+			for (int i = 0; i < this->GetModelsurfacesCount(); ++i)
 			{
-				SurfaceHandle_t surfID = mod->SurfaceHandleFromIndex( mod->GetFirstmodelsurface() + i);
+				SurfaceHandle_t surfID = this->SurfaceHandleFromIndex( this->GetFirstmodelsurface() + i);
 
-				if (mod->MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
+				if (this->MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
 					continue;
 
-				IMaterial* pMaterial = mod->MSurf_TexInfo( surfID )->material;
+				IMaterial* pMaterial = this->MSurf_TexInfo( surfID )->material;
 
 				// Try to find the material in the unique list of materials
 				// if it's not there, then add it
@@ -4137,23 +4137,23 @@ int Mod_GetMaterialCount( model_t* mod )
 //-----------------------------------------------------------------------------
 // returns the first n materials.
 //-----------------------------------------------------------------------------
-int Mod_GetModelMaterials( model_t* pModel, int count, IMaterial** ppMaterials )
+int model_t::Mod_GetModelMaterials( int count, IMaterial** ppMaterials )
 {
 	studiohdr_t *pStudioHdr;
 	int found = 0; 
 	int	i;
 
-	switch( pModel->GetModelType() )
+	switch( this->GetModelType() )
 	{
 	case mod_brush:
 		{
-			for ( i = 0; i < pModel->GetModelsurfacesCount(); ++i)
+			for ( i = 0; i < this->GetModelsurfacesCount(); ++i)
 			{
-				SurfaceHandle_t surfID = pModel->SurfaceHandleFromIndex( pModel->GetFirstmodelsurface() + i);
-				if (pModel->MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
+				SurfaceHandle_t surfID = this->SurfaceHandleFromIndex(this->GetFirstmodelsurface() + i);
+				if (this->MSurf_Flags( surfID ) & SURFDRAW_NODRAW )
 					continue;
 
-				IMaterial* pMaterial = pModel->MSurf_TexInfo( surfID )->material;
+				IMaterial* pMaterial = this->MSurf_TexInfo( surfID )->material;
 
 				// Try to find the material in the unique list of materials
 				// if it's not there, then add it
@@ -4174,16 +4174,16 @@ int Mod_GetModelMaterials( model_t* pModel, int count, IMaterial** ppMaterials )
 		break;
 
 	case mod_studio:
-		if ( pModel->GetMaterials() )
+		if (this->GetMaterials() )
 		{
-			int nMaterials = ((intptr_t*)(pModel->GetMaterials()))[-1];
+			int nMaterials = ((intptr_t*)(this->GetMaterials()))[-1];
 			found = MIN( count, nMaterials );
-			memcpy( ppMaterials, pModel->GetMaterials(), found * sizeof(IMaterial*));
+			memcpy( ppMaterials, this->GetMaterials(), found * sizeof(IMaterial*));
 		}
 		else
 		{
 			// Get the studiohdr into the cache
-			pStudioHdr = g_pMDLCache->GetStudioHdr( pModel->GetStudio() );
+			pStudioHdr = g_pMDLCache->GetStudioHdr(this->GetStudio() );
 			// Get the list of materials
 			found = g_pStudioRender->GetMaterialList( pStudioHdr, count, ppMaterials );
 		}
@@ -4205,7 +4205,7 @@ void Mod_SetMaterialVarFlag( model_t *pModel, unsigned int uiFlag, bool on )
 	IMaterial *pMaterials[ 128 ];
 	if ( pModel )
 	{
-		int materialCount = Mod_GetModelMaterials( pModel, ARRAYSIZE( pMaterials ), pMaterials );
+		int materialCount = pModel->Mod_GetModelMaterials( ARRAYSIZE( pMaterials ), pMaterials );
 
 		for ( int i = 0; i < materialCount; ++i )
 		{
@@ -4610,7 +4610,7 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 #endif
 
 	COM_TimestampedLog( "  SetupSubModels" );
-	mod->SetupSubModels(m_InlineModels, submodelList );
+	mod->SetupSubModels( submodelList );//m_InlineModels,
 
 	COM_TimestampedLog( "  RecomputeSurfaceFlags" );
 	RecomputeSurfaceFlags( mod );
@@ -4650,7 +4650,7 @@ void CModelLoader::RecomputeSurfaceFlags(model_t* pWorld)
 {
 	for (int i=0 ; i< pWorld->GetSubmodelsCount() ; i++)
 	{
-		model_t *pSubModel = &m_InlineModels[i];
+		model_t *pSubModel = &pWorld->brush.pShared->m_InlineModels[i];
 
 		// Compute whether this submodel uses material proxies or not
 		Mod_ComputeBrushModelFlags(pWorld, pSubModel );
@@ -4668,11 +4668,11 @@ void CModelLoader::RecomputeSurfaceFlags(model_t* pWorld)
 //-----------------------------------------------------------------------------
 // Setup sub models
 //-----------------------------------------------------------------------------
-void model_t::SetupSubModels(CUtlVector<model_t>&	m_InlineModels,CUtlVector<mmodel_t> &list )
+void model_t::SetupSubModels(CUtlVector<mmodel_t> &list )//CUtlVector<model_t>&	m_InlineModels,
 {
 	int	i;
 
-	m_InlineModels.SetCount(this->brush.pShared->numsubmodels );
+	this->brush.pShared->m_InlineModels.SetCount(this->brush.pShared->numsubmodels );
 
 	for (i=0 ; i< this->brush.pShared->numsubmodels ; i++)
 	{
@@ -4680,12 +4680,13 @@ void model_t::SetupSubModels(CUtlVector<model_t>&	m_InlineModels,CUtlVector<mmod
 		mmodel_t	*bm;
 
 		bm = &list[i];
-		starmod = &m_InlineModels[i];
+		starmod = &this->brush.pShared->m_InlineModels[i];
 
 		*starmod = *this;
 		
 		starmod->brush.firstmodelsurface = bm->firstface;
 		starmod->brush.nummodelsurfaces = bm->numfaces;
+		starmod->brush.inlineModelIndex = i;
 		starmod->brush.firstnode = bm->headnode;
 		if ( starmod->brush.firstnode >= this->brush.pShared->numnodes )
 		{
@@ -4751,7 +4752,7 @@ void CModelLoader::Map_UnloadModel( model_t *mod )
 	}
 
 	MaterialSystem_DestroySortinfo();
-
+	mod->brush.pShared->m_InlineModels.Purge();
 	CM_FreeMap(mod);
 	// Don't store any reference to it here
 	ClearWorldModel(mod);
@@ -4960,9 +4961,9 @@ void CModelLoader::DumpVCollideStats()
 			}
 		}
 	}
-	for ( i = m_InlineModels.Count(); --i >= 0; )
+	for ( i = m_pWorldModel->brush.pShared->m_InlineModels.Count(); --i >= 0; )
 	{
-		vcollide_t *pCollide = CM_VCollideForModel( i+1, &m_InlineModels[i] );
+		vcollide_t *pCollide = CM_VCollideForModel( i+1, &m_pWorldModel->brush.pShared->m_InlineModels[i] );
 		if ( pCollide )
 		{
 			int size = 0;
@@ -4974,7 +4975,7 @@ void CModelLoader::DumpVCollideStats()
 			if ( size )
 			{
 				modelsize_t elem;
-				elem.pName = m_InlineModels[i].strName;
+				elem.pName = m_pWorldModel->brush.pShared->m_InlineModels[i].strName;
 				elem.size = size;
 				list.Insert( elem );
 			}
@@ -5076,7 +5077,7 @@ void CModelLoader::Studio_LoadModel( model_t *pModel, bool bTouchAllData )
 	}
 
 	IMaterial *pMaterials[128];
-	int nMaterials = Mod_GetModelMaterials( pModel, ARRAYSIZE( pMaterials ), pMaterials );
+	int nMaterials = pModel->Mod_GetModelMaterials( ARRAYSIZE( pMaterials ), pMaterials );
 
 	if ( pModel->nLoadFlags & FMODELLOADER_DYNAMIC )
 	{
@@ -5127,7 +5128,7 @@ void CModelLoader::Studio_UnloadModel( model_t *pModel )
 	if ( pModel->nLoadFlags & FMODELLOADER_TOUCHED_MATERIALS )
 	{
 		IMaterial *pMaterials[128];
-		int nMaterials = Mod_GetModelMaterials( pModel, ARRAYSIZE( pMaterials ), &pMaterials[0] );
+		int nMaterials = pModel->Mod_GetModelMaterials( ARRAYSIZE( pMaterials ), &pMaterials[0] );
 		for ( int j=0; j<nMaterials; j++ )
 		{
 			pMaterials[j]->DecrementReferenceCount();
@@ -5186,7 +5187,7 @@ void CModelLoader::ClearWorldModel(model_t* mod)
 	m_pWorldModel = NULL;
 	delete mod->brush.pShared;
 	memset( &mod->brush.pShared, 0, sizeof(mod->brush.pShared) );
-	m_InlineModels.Purge();
+	//mod->brush.pShared->m_InlineModels.Purge();
 }
 
 //-----------------------------------------------------------------------------
@@ -5787,7 +5788,7 @@ bool CModelLoader::IsDynamicModelLoading( model_t *pModel, bool bClientOnly )
 
 void CModelLoader::AddRefDynamicModel( model_t *pModel, bool bClientSideRef  )
 {
-	extern IVModelInfo* modelinfo;
+	//extern IVModelInfo* modelinfo;
 
 	UtlHashHandle_t hDyn = m_DynamicModels.Insert( pModel );
 	CDynamicModelInfo& dyn = m_DynamicModels[ hDyn ];
@@ -6245,21 +6246,21 @@ void CModelLoader::DebugPrintDynamicModels()
 	//}
 #endif
 
-	extern IVModelInfo *modelinfo;
-	extern IVModelInfoClient *modelinfoclient;
-	Msg( "\ndynamic models:\n" );
-	for ( UtlHashHandle_t h = m_DynamicModels.FirstHandle(); h != m_DynamicModels.InvalidHandle(); h = m_DynamicModels.NextHandle(h) )
-	{
-		CDynamicModelInfo &dyn = m_DynamicModels[h];
-		int idx = modelinfoclient->GetModelIndex( m_DynamicModels.Key(h)->strName );
-#ifndef SWDS
-		if ( idx == -1 ) idx = modelinfoclient->GetModelIndex( m_DynamicModels.Key(h)->strName );
-#endif
-		Msg( "%d (%d%c): %s [ref: %d (%dc)] %s%s%s%s\n", idx, ((-2 - idx) >> 1), (idx & 1) ? 'c' : 's',
-			m_DynamicModels.Key(h)->strName.String(), dyn.m_iRefCount, dyn.m_iClientRefCount,
-			(dyn.m_nLoadFlags & CDynamicModelInfo::QUEUED) ? " QUEUED" : "",
-			(dyn.m_nLoadFlags & CDynamicModelInfo::LOADING) ? " LOADING" : "",
-			(dyn.m_nLoadFlags & CDynamicModelInfo::CLIENTREADY) ? " CLIENTREADY" : "",
-			(dyn.m_nLoadFlags & CDynamicModelInfo::ALLREADY) ? " ALLREADY" : "" );
-	}
+//	extern IVModelInfo *modelinfo;
+//	extern IVModelInfoClient *modelinfoclient;
+//	Msg( "\ndynamic models:\n" );
+//	for ( UtlHashHandle_t h = m_DynamicModels.FirstHandle(); h != m_DynamicModels.InvalidHandle(); h = m_DynamicModels.NextHandle(h) )
+//	{
+//		CDynamicModelInfo &dyn = m_DynamicModels[h];
+//		int idx = modelinfoclient->GetModelIndex( m_DynamicModels.Key(h)->strName );
+//#ifndef SWDS
+//		if ( idx == -1 ) idx = modelinfoclient->GetModelIndex( m_DynamicModels.Key(h)->strName );
+//#endif
+//		Msg( "%d (%d%c): %s [ref: %d (%dc)] %s%s%s%s\n", idx, ((-2 - idx) >> 1), (idx & 1) ? 'c' : 's',
+//			m_DynamicModels.Key(h)->strName.String(), dyn.m_iRefCount, dyn.m_iClientRefCount,
+//			(dyn.m_nLoadFlags & CDynamicModelInfo::QUEUED) ? " QUEUED" : "",
+//			(dyn.m_nLoadFlags & CDynamicModelInfo::LOADING) ? " LOADING" : "",
+//			(dyn.m_nLoadFlags & CDynamicModelInfo::CLIENTREADY) ? " CLIENTREADY" : "",
+//			(dyn.m_nLoadFlags & CDynamicModelInfo::ALLREADY) ? " ALLREADY" : "" );
+//	}
 }

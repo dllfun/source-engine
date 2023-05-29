@@ -482,7 +482,7 @@ void CSprite::GetToolRecordingState( KeyValues *msg )
 	float renderscale = GetRenderScale();
 	if ( m_bWorldSpaceScale )
 	{
-		CEngineSprite *psprite = ( CEngineSprite * )modelinfo->GetModelExtraData( GetModelIndex() );//GetModel()
+		CEngineSprite *psprite = ( CEngineSprite * )GetModel()->GetModelExtraData(  );//GetModel()
 		float flMinSize = MIN( psprite->GetWidth(), psprite->GetHeight() );
 		renderscale /= flMinSize;
 	}

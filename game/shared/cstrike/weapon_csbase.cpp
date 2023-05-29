@@ -23,7 +23,7 @@
 	#include "c_te_effect_dispatch.h"
 	#include "c_te_legacytempents.h"
 
-	extern IVModelInfoClient* modelinfo;
+	//extern IVModelInfoClient* modelinfo;
 
 #else
 
@@ -32,7 +32,7 @@
 	#include "KeyValues.h"
 	#include "cs_ammodef.h"
 
-	extern IVModelInfo* modelinfo;
+	//extern IVModelInfo* modelinfo;
 
 #endif
 
@@ -828,7 +828,12 @@ void CWeaponCSBase::UpdateShieldState( void )
 
 void CWeaponCSBase::SetWeaponModelIndex( const char *pName )
 {
- 	 m_iWorldModelIndex = modelinfo->GetModelIndex( pName );
+#ifdef CLIENT_DLL
+	m_iWorldModelIndex = engineClient->GetModelIndex(pName);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	m_iWorldModelIndex = engineServer->GetModelIndex(pName);
+#endif
 }
 
 bool CWeaponCSBase::CanBeSelected( void )

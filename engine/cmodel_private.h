@@ -368,7 +368,7 @@ void CollisionBSPData_LinkPhysics( void );
 // Returns the collision tree associated with the ith displacement
 //-----------------------------------------------------------------------------
 
-CDispCollTree* CollisionBSPData_GetCollisionTree( int i );
+CDispCollTree* CollisionBSPData_GetCollisionTree(model_t* mod, int i );
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

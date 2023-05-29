@@ -12925,10 +12925,10 @@ void CAI_BaseNPC::ParseScriptedNPCInteractions( void )
 	KeyValues *modelKeyValues = new KeyValues("");
 	CUtlBuffer buf( 1024, 0, CUtlBuffer::TEXT_BUFFER );
 
-	if (! modelinfo->GetModelKeyValue( GetModelIndex(), buf ))//GetModel()
+	if (!GetModel()->GetModelKeyValue( buf ))//GetModel()
 		return;
 	
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), buf ) )//GetModel()
+	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), buf ) )//GetModel()
 	{
 		// Do we have a dynamic interactions section?
 		KeyValues *pkvInteractions = modelKeyValues->FindKey("dynamic_interactions");

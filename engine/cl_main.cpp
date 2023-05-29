@@ -3092,16 +3092,16 @@ void Callback_UserInfoChanged( void *object, INetworkStringTable *stringTable, i
 	}
 }
 
-void Callback_DynamicModelsChanged( void *object, INetworkStringTable *stringTable, int stringNumber, const char *newString, const void *newData )
-{
-#ifndef SWDS
-	extern IVModelInfoClient *modelinfoclient;
-	if ( modelinfoclient )
-	{
-		modelinfoclient->OnDynamicModelsStringTableChange( stringNumber, newString, newData );
-	}
-#endif
-}
+//void Callback_DynamicModelsChanged( void *object, INetworkStringTable *stringTable, int stringNumber, const char *newString, const void *newData )
+//{
+//#ifndef SWDS
+//	extern IVModelInfoClient *modelinfoclient;
+//	if ( modelinfoclient )
+//	{
+//		modelinfoclient->OnDynamicModelsStringTableChange( stringNumber, newString, newData );
+//	}
+//#endif
+//}
 
 void CL_HookClientStringTables()
 {

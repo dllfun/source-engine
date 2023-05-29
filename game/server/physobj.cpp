@@ -515,7 +515,7 @@ bool CPhysBox::CreateVPhysics()
 		tmpSolid.params.mass *= m_massScale;
 	}
 
-	vcollide_t *pVCollide = modelinfo->GetVCollide( GetModelIndex() );
+	vcollide_t *pVCollide = GetModel()->GetVCollide();
 	PhysGetMassCenterOverride( this, pVCollide, tmpSolid );
 	PhysSolidOverride( tmpSolid, m_iszOverrideScript );
 	if ( tmpSolid.params.rotdamping < 1.0f && ShouldDampRotation(pVCollide->solids[0]) )
@@ -1320,8 +1320,8 @@ static CBaseEntity *CreateSimplePhysicsObject( CBaseEntity *pEntity, bool create
 {
 	CBaseEntity *pPhysEntity = NULL;
 	int modelindex = pEntity->GetModelIndex();
-	const IVModel *model = modelinfo->GetModel( modelindex );
-	if ( model && modelinfo->GetModelType(modelindex) == mod_brush )//model
+	const IVModel *model = engineServer->GetModel( modelindex );
+	if ( model && model->GetModelType() == mod_brush )//model
 	{
 		pPhysEntity = CreateEntityByName( "simple_physics_brush" );
 	}

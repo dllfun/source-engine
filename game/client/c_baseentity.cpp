@@ -1049,7 +1049,7 @@ bool C_BaseEntity::InitializeAsClientEntity( const char *pszModelName, RenderGro
 
 	if ( pszModelName != NULL )
 	{
-		nModelIndex = modelinfo->GetModelIndex( pszModelName );
+		nModelIndex = engineClient->GetModelIndex( pszModelName );
 		
 		if ( nModelIndex == -1 )
 		{
@@ -1426,7 +1426,7 @@ ShadowType_t C_BaseEntity::ShadowCastType()
 	if (IsEffectActive(EF_NODRAW | EF_NOSHADOW))
 		return SHADOWS_NONE;
 
-	int modelType = modelinfo->GetModelType( m_nModelIndex );//model
+	int modelType = GetModel()?GetModel()->GetModelType():mod_bad;//model
 	return (modelType == mod_studio) ? SHADOWS_RENDER_TO_TEXTURE : SHADOWS_NONE;
 }
 
@@ -1505,7 +1505,7 @@ bool C_BaseEntity::ShouldReceiveProjectedTextures( int flags )
 	if ( IsEffectActive( EF_NORECEIVESHADOW ) )
 		 return false;
 
-	if (modelinfo->GetModelType( m_nModelIndex ) == mod_studio)//model
+	if (GetModel()&&GetModel()->GetModelType() == mod_studio)//model
 		return false;
 
 	return true;
@@ -1601,10 +1601,10 @@ IPVSNotify* C_BaseEntity::GetPVSNotifyInterface()
 //-----------------------------------------------------------------------------
 void C_BaseEntity::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 {
-	int nModelType = modelinfo->GetModelType( m_nModelIndex );//model
+	int nModelType = GetModel()?GetModel()->GetModelType():mod_bad;//model
 	if (nModelType == mod_studio || nModelType == mod_brush)
 	{
-		modelinfo->GetModelRenderBounds( GetModelIndex(), theMins, theMaxs );//GetModel()
+		GetModel()->GetModelRenderBounds( theMins, theMaxs );//GetModel()
 	}
 	else
 	{
@@ -1697,7 +1697,7 @@ void C_BaseEntity::SetNetworkAngles( const QAngle& ang )
 void C_BaseEntity::SetModelIndex( int index )
 {
 	m_nModelIndex = index;
-	const IVModel *pModel = modelinfo->GetModel( m_nModelIndex );
+	const IVModel *pModel = engineClient->GetModel( m_nModelIndex );
 	SetModelPointer( pModel );
 }
 
@@ -1744,13 +1744,13 @@ void C_BaseEntity::SetMoveCollide( MoveCollide_t val )
 //-----------------------------------------------------------------------------
 bool C_BaseEntity::IsTransparent( void )
 {
-	bool modelIsTransparent = modelinfo->IsTranslucent(m_nModelIndex);//model
+	bool modelIsTransparent = GetModel()&&GetModel()->IsTranslucent();//model
 	return modelIsTransparent || (m_nRenderMode != kRenderNormal);
 }
 
 bool C_BaseEntity::IsTwoPass( void )
 {
-	return modelinfo->IsTranslucentTwoPass( GetModelIndex() );//GetModel()
+	return GetModel()&&GetModel()->IsTranslucentTwoPass();//GetModel()
 }
 
 bool C_BaseEntity::UsesPowerOfTwoFrameBufferTexture()
@@ -1802,7 +1802,7 @@ bool C_BaseEntity::GetSoundSpatialization( SpatializationInfo_t& info )
 	
 	if ( info.pflRadius )
 	{
-		*info.pflRadius = modelinfo->GetModelRadius( m_nModelIndex );//pModel
+		*info.pflRadius = GetModel()->GetRadius();//pModel
 	}
 	
 	if ( info.pOrigin )
@@ -1810,11 +1810,11 @@ bool C_BaseEntity::GetSoundSpatialization( SpatializationInfo_t& info )
 		*info.pOrigin = GetAbsOrigin();
 
 		// move origin to middle of brush
-		if ( modelinfo->GetModelType( m_nModelIndex ) == mod_brush )//pModel
+		if (pModel->GetModelType() == mod_brush)//pModel
 		{
 			Vector mins, maxs, center;
 
-			modelinfo->GetModelBounds( m_nModelIndex, mins, maxs );//pModel
+			pModel->GetModelBounds( mins, maxs );//pModel
 			VectorAdd( mins, maxs, center );
 			VectorScale( center, 0.5f, center );
 
@@ -1882,7 +1882,7 @@ int C_BaseEntity::DrawBrushModel( bool bDrawingTranslucency, int nFlags, bool bT
 {
 	VPROF_BUDGET( "C_BaseEntity::DrawBrushModel", VPROF_BUDGETGROUP_BRUSHMODEL_RENDERING );
 	// Identity brushes are drawn in g_pView->DrawWorld as an optimization
-	Assert ( modelinfo->GetModelType( model ) == mod_brush );
+	Assert ( GetModel()->GetModelType() == mod_brush);
 
 	ERenderDepthMode DepthMode = DEPTH_MODE_NORMAL;
 	if ( ( nFlags & STUDIO_SSAODEPTHTEXTURE ) != 0 )
@@ -1926,7 +1926,7 @@ int C_BaseEntity::DrawModel(IVModel* pWorld, int flags )
 		return drawn;
 	}
 
-	int modelType = modelinfo->GetModelType( m_nModelIndex );//model
+	int modelType = GetModel()?GetModel()->GetModelType():mod_bad;//model
 	switch ( modelType )
 	{
 	case mod_brush:
@@ -1935,7 +1935,7 @@ int C_BaseEntity::DrawModel(IVModel* pWorld, int flags )
 	case mod_studio:
 		// All studio models must be derived from C_BaseAnimating.  Issue warning.
 		Warning( "ERROR:  Can't draw studio model %s because %s is not derived from C_BaseAnimating\n",
-			modelinfo->GetModelName( m_nModelIndex ), GetClientClass()->m_pNetworkName ? GetClientClass()->m_pNetworkName : "unknown" );//model
+			GetModel()->GetModelName(), GetClientClass()->m_pNetworkName ? GetClientClass()->m_pNetworkName : "unknown");//model
 		break;
 	case mod_sprite:
 		//drawn = DrawSprite();
@@ -2653,7 +2653,7 @@ bool C_BaseEntity::SetModel( const char *pModelName )
 {
 	if ( pModelName )
 	{
-		int nModelIndex = modelinfo->GetModelIndex( pModelName );
+		int nModelIndex = engineClient->GetModelIndex( pModelName );
 		SetModelByIndex( nModelIndex );
 		return ( nModelIndex != -1 );
 	}
@@ -2882,9 +2882,9 @@ bool C_BaseEntity::Teleported( void )
 //-----------------------------------------------------------------------------
 bool C_BaseEntity::IsSubModel( void )
 {
-	if ( model &&
-		modelinfo->GetModelType( m_nModelIndex ) == mod_brush &&//model
-		modelinfo->GetModelName( m_nModelIndex )[0] == '*' )//model
+	if ( GetModel() &&
+		GetModel()->GetModelType() == mod_brush &&//model
+		GetModel()->GetModelName()[0] == '*' )//model
 	{
 		return true;
 	}
@@ -3491,7 +3491,7 @@ CollideType_t C_BaseEntity::GetCollideType( void )
 		return ENTITY_SHOULD_NOT_COLLIDE;
 
 	// If the model is a bsp or studio (i.e. it can collide with the player
-	if ( ( modelinfo->GetModelType( m_nModelIndex ) != mod_brush ) && ( modelinfo->GetModelType( m_nModelIndex ) != mod_studio ) )//model model
+	if (GetModel() && (GetModel()->GetModelType() != mod_brush ) && (GetModel()->GetModelType() != mod_studio ) )//model model
 		return ENTITY_SHOULD_NOT_COLLIDE;
 
 	// Don't get stuck on point sized entities ( world doesn't count )
@@ -3510,7 +3510,7 @@ CollideType_t C_BaseEntity::GetCollideType( void )
 //-----------------------------------------------------------------------------
 bool C_BaseEntity::IsBrushModel() const
 {
-	int modelType = modelinfo->GetModelType( m_nModelIndex );//model
+	int modelType = GetModel()?GetModel()->GetModelType():mod_bad;//model
 	return (modelType == mod_brush);
 }
 
@@ -3633,7 +3633,7 @@ void C_BaseEntity::AddDecal( const Vector& rayStart, const Vector& rayEnd,
 	// Bloat a little bit so we get the intersection
 	ray.m_Delta *= 1.1f;
 
-	int modelType = modelinfo->GetModelType( m_nModelIndex );//model
+	int modelType = GetModel()?GetModel()->GetModelType():mod_bad;//model
 	switch ( modelType )
 	{
 	case mod_studio:
@@ -3662,7 +3662,7 @@ void C_BaseEntity::AddColoredDecal( const Vector& rayStart, const Vector& rayEnd
 	// Bloat a little bit so we get the intersection
 	ray.m_Delta *= 1.1f;
 
-	int modelType = modelinfo->GetModelType( m_nModelIndex );//model
+	int modelType = GetModel()?GetModel()->GetModelType():mod_bad;//model
 	if ( doTrace )
 	{
 		enginetrace->ClipRayToEntity( ray, MASK_SHOT, this, &tr );
@@ -3707,7 +3707,7 @@ void C_BaseEntity::AddColoredDecal( const Vector& rayStart, const Vector& rayEnd
 void C_BaseEntity::RemoveAllDecals( void )
 {
 	// For now, we only handle removing decals from studiomodels
-	if ( modelinfo->GetModelType( m_nModelIndex ) == mod_studio )//model
+	if (GetModel()&&GetModel()->GetModelType() == mod_studio )//model
 	{
 		CreateModelInstance();
 		modelrender->RemoveAllDecals( m_ModelInstance );
@@ -4635,7 +4635,7 @@ void C_BaseEntity::SetSize( const Vector &vecMin, const Vector &vecMax )
 //-----------------------------------------------------------------------------
 int C_BaseEntity::PrecacheModel( const char *name )
 {
-	return modelinfo->GetModelIndex( name );
+	return engineClient->GetModelIndex( name );
 }
 
 //-----------------------------------------------------------------------------
@@ -5568,9 +5568,9 @@ RenderGroup_t C_BaseEntity::GetRenderGroup()
 
 	// When an entity has a material proxy, we have to recompute
 	// translucency here because the proxy may have changed it.
-	if (modelinfo->ModelHasMaterialProxy( GetModelIndex() ))//GetModel()
+	if (GetModel()&&GetModel()->ModelHasMaterialProxy(  ))//GetModel()
 	{
-		modelinfo->RecomputeTranslucency( GetModelIndex(), GetSkin(), GetBody(), GetClientRenderable() );//const_cast<IVModel*>(GetModel())
+		((IVModel*)GetModel())->Mod_RecomputeTranslucency( GetSkin(), GetBody(), GetClientRenderable() );//const_cast<IVModel*>(GetModel())
 	}
 
 	// NOTE: Bypassing the GetFXBlend protection logic because we want this to
@@ -5587,7 +5587,7 @@ RenderGroup_t C_BaseEntity::GetRenderGroup()
 		return RENDER_GROUP_OPAQUE_ENTITY;
 
 		// Figure out its RenderGroup.
-	int modelType = modelinfo->GetModelType( m_nModelIndex );//model
+	int modelType = GetModel()?GetModel()->GetModelType(): mod_bad;//model
 	RenderGroup_t renderGroup = (modelType == mod_brush) ? RENDER_GROUP_OPAQUE_BRUSH : RENDER_GROUP_OPAQUE_ENTITY;
 	if ( ( nFXBlend != 255 ) || IsTransparent() )
 	{
@@ -5602,7 +5602,7 @@ RenderGroup_t C_BaseEntity::GetRenderGroup()
 	}
 
 	if ( ( renderGroup == RENDER_GROUP_TRANSLUCENT_ENTITY ) &&
-		 ( modelinfo->IsTranslucentTwoPass( m_nModelIndex ) ) )//model
+		 (GetModel()&&GetModel()->IsTranslucentTwoPass() ) )//model
 	{
 		renderGroup = RENDER_GROUP_TWOPASS;
 	}
@@ -5746,7 +5746,7 @@ void C_BaseEntity::OnPostRestoreData()
 	// If our model index has changed, then make sure it's reflected in our model pointer.
 	// (Mostly superseded by new modelindex delta check in RestoreData, but I'm leaving it
 	// because it might be band-aiding any other missed calls to SetModelByIndex --henryg)
-	if ( GetModel() != modelinfo->GetModel( GetModelIndex() ) )
+	if ( GetModel() != engineClient->GetModel( GetModelIndex() ) )
 	{
 		MDLCACHE_CRITICAL_SECTION();
 		SetModelByIndex( GetModelIndex() );
@@ -6113,7 +6113,7 @@ void C_BaseEntity::GetToolRecordingState( KeyValues *msg )
 
 	static BaseEntityRecordingState_t state;
 	state.m_flTime = gpGlobals->curtime;
-	state.m_pModelName = modelinfo->GetModelName( GetModelIndex() );//GetModel()
+	state.m_pModelName = GetModel()?GetModel()->GetModelName():"";//GetModel()
 	state.m_nOwner = pOwner ? pOwner->entindex() : -1;
 	state.m_nEffects = m_fEffects;
 	state.m_bVisible = ShouldDraw() && !IsDormant();
@@ -6237,7 +6237,7 @@ bool C_BaseEntity::ValidateEntityAttachedToPlayer( bool &bShouldRetry )
 	}
 
 	// always allow the briefcase model
-	const char *pszModel = modelinfo->GetModelName( GetModel() );
+	const char *pszModel = GetModel()?GetModel()->GetModelName():"";
 	if ( pszModel && pszModel[0] )
 	{
 		if ( FStrEq( pszModel, "models/flag/briefcase.mdl" ) )

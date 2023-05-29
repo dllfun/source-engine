@@ -21,13 +21,14 @@
 class CEntityMapData
 {
 private:
+	const char* m_pMapName;
 	char	*m_pEntData;
 	int		m_nEntDataSize;
 	char	*m_pCurrentKey;
 
 public:
-	explicit CEntityMapData( char *entBlock, int nEntBlockSize = -1 ) : 
-		m_pEntData(entBlock), m_nEntDataSize(nEntBlockSize), m_pCurrentKey(entBlock) {}
+	explicit CEntityMapData(const char* pMapName, char *entBlock, int nEntBlockSize = -1 ) :
+		m_pMapName(pMapName), m_pEntData(entBlock), m_nEntDataSize(nEntBlockSize), m_pCurrentKey(entBlock) {}
 
 	// find the keyName in the entdata and puts it's value into Value.  returns false if key is not found
 	bool ExtractValue( const char *keyName, char *Value );
@@ -40,11 +41,14 @@ public:
 	bool GetNextKey( char *keyName, char *Value );
 
 	const char *CurrentBufferPosition( void );
+
+	static bool MapEntity_ExtractValue(const char* pEntData, const char* keyName, char Value[MAPKEY_MAXLENGTH]);
+	static int MapEntity_GetNumKeysInEntity(const char* pEntData);
+	static const char* MapEntity_SkipToNextEntity(const char* pMapData, char* pWorkBuffer);
+	static const char* MapEntity_ParseToken(const char* data, char* newToken);
+
 };
 
-const char *MapEntity_ParseToken( const char *data, char *newToken );
-const char *MapEntity_SkipToNextEntity( const char *pMapData, char *pWorkBuffer );
-bool MapEntity_ExtractValue( const char *pEntData, const char *keyName, char Value[MAPKEY_MAXLENGTH] );
 
 
 #endif // MAPENTITIES_SHARED_H

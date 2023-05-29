@@ -333,13 +333,25 @@ public:
 				else
 #endif
 				{
-					modelIndex = modelinfo->GetModelIndex( STRING( header.modelName ) );
+#ifdef CLIENT_DLL
+					modelIndex = engineClient->GetModelIndex(STRING(header.modelName));
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+					modelIndex = engineServer->GetModelIndex(STRING(header.modelName));
+#endif
 					pGlobalEntity = NULL;
 				}
 
 				if ( modelIndex != -1 )
 				{
-					vcollide_t *pCollide = modelinfo->GetVCollide( modelIndex );
+					const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+					pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+					pModel = engineServer->GetModel(modelIndex);
+#endif
+					vcollide_t *pCollide = pModel->GetVCollide();
 					if ( pCollide )
 					{
 						if ( pCollide->solidCount > 0 && pCollide->solids && header.iCollide < pCollide->solidCount )
@@ -594,7 +606,14 @@ public:
 		int i = m_PhysObjectModels.Find( pObject );
 		if ( i == m_PhysObjectModels.InvalidIndex() )
 			return NULL_STRING;
-		return AllocPooledString( modelinfo->GetModelName(m_PhysObjectModels[i]) );//modelinfo->GetModel( m_PhysObjectModels[i] )
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(m_PhysObjectModels[i]);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(m_PhysObjectModels[i]);
+#endif
+		return AllocPooledString(pModel->GetModelName() );
 	}
 	
 	//---------------------------------

@@ -92,8 +92,8 @@ public:
 
 protected:
 	
-	static void ParseAllEntities(const char *pMapData);
-	static const char *ParseEntity( const char *pEntData );
+	static void ParseAllEntities(const char* pMapName, const char *pMapData);
+	static const char *ParseEntity(const char* pMapName, const char *pEntData );
 	static void InitializePropRespawnZones(void);
 		
 public:

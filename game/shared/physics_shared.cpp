@@ -114,10 +114,16 @@ IPhysicsObject *PhysModelCreateBox( CBaseEntity *pEntity, const Vector &mins, co
 
 	if ( modelIndex )
 	{
-		const IVModel *model = modelinfo->GetModel( modelIndex );
-		if ( model )
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelIndex);
+#endif
+		if (pModel)
 		{
-			CStudioHdr studioHdr( modelinfo->GetStudiomodel(modelIndex), mdlcache );//model
+			CStudioHdr studioHdr(pModel->GetStudiomodel(), mdlcache );//model
 			if ( studioHdr.IsValid() )
 			{
 				pSurfaceProps = Studio_GetDefaultSurfaceProps( &studioHdr );
@@ -154,10 +160,16 @@ IPhysicsObject *PhysModelCreateOBB( CBaseEntity *pEntity, const Vector &mins, co
 
 	if ( modelIndex )
 	{
-		const IVModel *model = modelinfo->GetModel( modelIndex );
-		if ( model )
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelIndex);
+#endif
+		if (pModel)
 		{
-			CStudioHdr studioHdr( modelinfo->GetStudiomodel(modelIndex), mdlcache );//model
+			CStudioHdr studioHdr(pModel->GetStudiomodel(), mdlcache );//model
 			if (studioHdr.IsValid()) 
 			{
 				pSurfaceProps = Studio_GetDefaultSurfaceProps( &studioHdr );
@@ -184,7 +196,14 @@ IPhysicsObject *PhysModelCreateOBB( CBaseEntity *pEntity, const Vector &mins, co
 //-----------------------------------------------------------------------------
 bool PhysModelParseSolidByIndex( solid_t &solid, CBaseEntity *pEntity, int modelIndex, int solidIndex )
 {
-	vcollide_t *pCollide = modelinfo->GetVCollide( modelIndex );
+	const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+	pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	pModel = engineServer->GetModel(modelIndex);
+#endif
+	vcollide_t *pCollide = pModel->GetVCollide();
 	if ( !pCollide )
 		return false;
 
@@ -306,7 +325,14 @@ IPhysicsObject *PhysModelCreate( CBaseEntity *pEntity, int modelIndex, const Vec
 	if ( !physenv )
 		return NULL;
 
-	vcollide_t *pCollide = modelinfo->GetVCollide( modelIndex );
+	const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+	pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	pModel = engineServer->GetModel(modelIndex);
+#endif
+	vcollide_t *pCollide = pModel?pModel->GetVCollide():NULL;
 	if ( !pCollide || !pCollide->solidCount )
 		return NULL;
 	
@@ -328,9 +354,16 @@ IPhysicsObject *PhysModelCreate( CBaseEntity *pEntity, int modelIndex, const Vec
 
 	if ( pObject )
 	{
-		if ( modelinfo->GetModelType(modelIndex) == mod_brush )//modelinfo->GetModel(modelIndex)
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelIndex);
+#endif
+		if (pModel && pModel->GetModelType() == mod_brush )//
 		{
-			unsigned int contents = modelinfo->GetModelContents( modelIndex );
+			unsigned int contents = pModel->GetModelContents();
 			Assert(contents!=0);
 			// HACKHACK: contents is used to filter collisions
 			// HACKHACK: So keep solid on for water brushes since they should pass collision rules (as triggers)
@@ -364,7 +397,14 @@ IPhysicsObject *PhysModelCreateUnmoveable( CBaseEntity *pEntity, int modelIndex,
 	if ( !physenv )
 		return NULL;
 
-	vcollide_t *pCollide = modelinfo->GetVCollide( modelIndex );
+	const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+	pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	pModel = engineServer->GetModel(modelIndex);
+#endif
+	vcollide_t *pCollide = pModel->GetVCollide();
 	if ( !pCollide || !pCollide->solidCount )
 		return NULL;
 
@@ -388,9 +428,16 @@ IPhysicsObject *PhysModelCreateUnmoveable( CBaseEntity *pEntity, int modelIndex,
 	//PhysCheckAdd( pObject, STRING(pEntity->m_iClassname) );
 	if ( pObject )
 	{
-		if ( modelinfo->GetModelType(modelIndex) == mod_brush )//modelinfo->GetModel(modelIndex)
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelIndex);
+#endif
+		if (pModel && pModel->GetModelType() == mod_brush )//
 		{
-			unsigned int contents = modelinfo->GetModelContents( modelIndex );
+			unsigned int contents = pModel->GetModelContents();
 			Assert(contents!=0);
 			if ( contents != pObject->GetContents() && contents != 0 )
 			{
@@ -568,7 +615,7 @@ void PhysCreateVirtualTerrain(IVModel* worldModel, CBaseEntity *pWorld, const ob
 	char nameBuf[1024];
 	for ( int i = 0; i < MAX_MAP_DISPINFO; i++ )
 	{
-		CPhysCollide *pCollide = modelinfo->GetCollideForVirtualTerrain(worldModel, i );
+		CPhysCollide *pCollide = worldModel->GetCollideForVirtualTerrain( i );
 		if ( pCollide )
 		{
 			solid_t solid;

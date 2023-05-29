@@ -23,7 +23,7 @@ cmodel_t	*CM_LoadMap(model_t* mod, bool allowReusePrevious, unsigned *checksum, 
 void		CM_FreeMap(model_t* mod);
 cmodel_t	*CM_InlineModel(model_t* mod, const char *name );	// *1, *2, etc
 cmodel_t	*CM_InlineModelNumber(model_t* mod, int index );	// 1, 2, etc
-int			CM_InlineModelContents(model_t* mod, int index );	// 1, 2, etc
+int			CM_InlineModelContents(model_t* mod );	// 1, 2, etc
 
 int			CM_NumClusters(model_t* mod);
 char		*CM_EntityString(model_t* mod);
@@ -78,7 +78,7 @@ bool		CM_HeadnodeVisible(model_t* mod, int headnode, const byte *visbits, int vi
 int			CM_BoxVisible(model_t* mod, const Vector& mins, const Vector& maxs, const byte *visbits, int vissize );
 
 typedef struct cmodel_collision_s cmodel_collision_t;
-vcollide_t *CM_GetVCollide(model_t* mod, int modelIndex );
+vcollide_t *CM_GetVCollide(model_t* mod);
 vcollide_t* CM_VCollideForModel( int modelindex, const model_t* pModel );
 
 // gets a virtual physcollide for a displacement

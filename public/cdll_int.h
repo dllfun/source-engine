@@ -243,6 +243,11 @@ public:
 	virtual int					GetLocalPlayer( void ) = 0;
 
 	virtual IVModel*		GetWorldModel(void) = 0;
+	// Returns index of model by name for precached or known dynamic models.
+	// Does not adjust reference count for dynamic models.
+	virtual int					GetModelIndex(const char* name) const = 0;
+	// Returns IVModel* pointer for a model given a precached or dynamic model index.
+	virtual const IVModel*		GetModel(int modelindex) const = 0;
 
 	// Client DLL is hooking a model, loads the model into memory and returns  pointer to the IVModel
 	virtual const IVModel		*LoadModel( const char *pName, bool bProp = false ) = 0;

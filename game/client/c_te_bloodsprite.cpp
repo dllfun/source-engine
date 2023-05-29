@@ -101,10 +101,10 @@ static inline void RecordBloodSprite( const Vector &start, const Vector &directi
 	{
 		Color clr( r, g, b, a );
 
-		const IVModel* pSprayModel = (nSprayModelIndex != 0) ? modelinfo->GetModel( nSprayModelIndex ) : NULL;
-		const IVModel* pDropModel = (nDropModelIndex != 0) ? modelinfo->GetModel( nDropModelIndex ) : NULL;
-		const char *pSprayModelName = pSprayModel ? modelinfo->GetModelName(nSprayModelIndex) : "";//pSprayModel
-		const char *pDropModelName = pDropModel ? modelinfo->GetModelName(nDropModelIndex) : "";//pDropModel
+		const IVModel* pSprayModel = (nSprayModelIndex != 0) ? engineClient->GetModel( nSprayModelIndex ) : NULL;
+		const IVModel* pDropModel = (nDropModelIndex != 0) ? engineClient->GetModel( nDropModelIndex ) : NULL;
+		const char *pSprayModelName = pSprayModel ? pSprayModel->GetModelName() : "";//pSprayModel
+		const char *pDropModelName = pDropModel ? pDropModel->GetModelName() : "";//pDropModel
 
 		KeyValues *msg = new KeyValues( "TempEntity" );
 

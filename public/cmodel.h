@@ -156,14 +156,24 @@ public:
 	virtual int GetModelSpriteHeight() const = 0;
 	virtual const char* GetModelKeyValueText() const = 0;
 	virtual bool IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const = 0;
+	virtual int GetModelContents() const = 0;
+	virtual vcollide_t* GetVCollide() const = 0;
+	virtual int R_GetBrushModelPlaneCount() const = 0;
+	virtual const cplane_t& R_GetBrushModelPlane(int nIndex, Vector* pOrigin) const = 0;
+	virtual bool GetModelKeyValue(CUtlBuffer& buf) const = 0;
+	virtual CPhysCollide* GetCollideForVirtualTerrain(int index) const = 0;
 
 	// Returns the number of leaves
-	int LeafCount() const;
+	virtual int LeafCount() const = 0;
 	// Enumerates the leaves along a ray, box, etc.
 	virtual bool EnumerateLeavesAtPoint(const Vector& pt, ISpatialLeafEnumerator* pEnum, intp context) = 0;
 	virtual bool EnumerateLeavesInBox(const Vector& mins, const Vector& maxs, ISpatialLeafEnumerator* pEnum, intp context) = 0;
 	virtual bool EnumerateLeavesInSphere(const Vector& center, float radius, ISpatialLeafEnumerator* pEnum, intp context) = 0;
 	virtual bool EnumerateLeavesAlongRay(Ray_t const& ray, ISpatialLeafEnumerator* pEnum, intp context) = 0;
+
+	virtual int Mod_GetMaterialCount() = 0;
+	virtual int Mod_GetModelMaterials(int count, IMaterial** ppMaterial) = 0;
+	virtual float				GetRadius() const = 0;
 };
 
 #endif // CMODEL_H

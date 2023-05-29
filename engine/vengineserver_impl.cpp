@@ -1434,6 +1434,28 @@ public:
 		return g_pHost->Host_GetWorldModel();
 	}
 
+	int GetModelIndex(const char* name) const
+	{
+		if (!name)
+			return -1;
+
+		// Order of preference: precached, networked, client-only.
+		int nIndex = sv.LookupModelIndex(name);
+		if (nIndex != -1)
+			return nIndex;
+
+		return -1;
+	}
+
+	//virtual const model_t* GetModel(int modelindex) const;
+	virtual const model_t* GetModel(int modelindex) const
+	{
+		//if (IsDynamicModelIndex(modelindex))
+		//	return NULL;// LookupDynamicModel(modelindex);
+
+		return sv.GetModel(modelindex);
+	}
+
 	virtual void		DrawMapToScratchPad(IVModel* pWorld, IScratchPad3D *pPad, unsigned long iFlags )
 	{
 		if ( !pWorld )

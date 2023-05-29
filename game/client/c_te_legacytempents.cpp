@@ -801,7 +801,7 @@ void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int
 	if ( !pent->GetModel() || !modelIndex ) 
 		return;
 
-	model = modelinfo->GetModel( modelIndex );
+	model = engineClient->GetModel( modelIndex );
 	if ( !model )
 		return;
 
@@ -818,7 +818,7 @@ void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int
 	SinCos( pent->GetLocalAngles()[1]*M_PI/180, &yspeed, &xspeed );
 	xspeed *= speed;
 	yspeed *= speed;
-	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
+	frameCount = model->ModelFrameCount();//model
 
 	for (i=0 ; i<count ; i++)
 	{
@@ -865,11 +865,11 @@ void CTempEnts::Bubbles( const Vector &mins, const Vector &maxs, float height, i
 	if ( !modelIndex ) 
 		return;
 
-	model = modelinfo->GetModel( modelIndex );
+	model = engineClient->GetModel( modelIndex );
 	if ( !model )
 		return;
 
-	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
+	frameCount = model->ModelFrameCount();//model
 
 	for (i=0 ; i<count ; i++)
 	{
@@ -919,11 +919,11 @@ void CTempEnts::BubbleTrail( const Vector &start, const Vector &end, float flWat
 	if ( !modelIndex ) 
 		return;
 
-	model = modelinfo->GetModel( modelIndex );
+	model = engineClient->GetModel( modelIndex );
 	if ( !model )
 		return;
 
-	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
+	frameCount = model->ModelFrameCount();//model
 
 	for (i=0 ; i<count ; i++)
 	{
@@ -1007,14 +1007,14 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 	if (!modelIndex) 
 		return;
 
-	pModel = modelinfo->GetModel( modelIndex );
+	pModel = engineClient->GetModel( modelIndex );
 	if ( !pModel )
 		return;
 
 	// See g_BreakableHelper above for notes...
 	bool isSlave = ( flags & BREAK_SLAVE ) ? true : false;
 
-	frameCount = modelinfo->GetModelFrameCount(modelIndex);//pModel
+	frameCount = pModel->ModelFrameCount();//pModel
 
 	if (count == 0)
 	{
@@ -1047,11 +1047,11 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 		// keep track of break_type, so we know how to play sound on collision
 		pTemp->hitSound = flags;
 		
-		if ( modelinfo->GetModelType(modelIndex) == mod_sprite )//pModel
+		if (pModel->GetModelType() == mod_sprite )//pModel
 		{
 			pTemp->m_flFrame = random->RandomInt(0,frameCount-1);
 		}
-		else if ( modelinfo->GetModelType(modelIndex) == mod_studio )//pModel
+		else if (pModel->GetModelType() == mod_studio )//pModel
 		{
 			pTemp->m_nBody = random->RandomInt(0,frameCount-1);
 		}
@@ -1105,7 +1105,7 @@ void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const 
 	if ( !pEntity )
 		return;
 
-	const IVModel *model = modelinfo->GetModel( modelindex );
+	const IVModel *model = engineClient->GetModel( modelindex );
 
 	if ( !model )
 	{
@@ -1113,7 +1113,7 @@ void CTempEnts::PhysicsProp( int modelindex, int skin, const Vector& pos, const 
 		return;
 	}
 
-	pEntity->SetModelName(MAKE_STRING(modelinfo->GetModelName(modelindex)) );//model
+	pEntity->SetModelName(MAKE_STRING(model->GetModelName()) );//model
 	pEntity->m_nSkin = skin;
 	pEntity->SetAbsOrigin( pos );
 	pEntity->SetAbsAngles( angles );
@@ -1162,7 +1162,7 @@ C_LocalTempEntity *CTempEnts::ClientProjectile( const Vector& vecOrigin, const V
 	if ( !modelIndex ) 
 		return NULL;
 
-	model = modelinfo->GetModel( modelIndex );
+	model = engineClient->GetModel( modelIndex );
 	if ( !model )
 	{
 		Warning("ClientProjectile: No model %d!\n", modelIndex);
@@ -1219,14 +1219,14 @@ C_LocalTempEntity *CTempEnts::TempSprite( const Vector &pos, const Vector &dir, 
 	if ( !modelIndex ) 
 		return NULL;
 
-	model = modelinfo->GetModel( modelIndex );
+	model = engineClient->GetModel( modelIndex );
 	if ( !model )
 	{
 		Warning("No model %d!\n", modelIndex);
 		return NULL;
 	}
 
-	frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
+	frameCount = model->ModelFrameCount();//model
 
 	pTemp = TempEntAlloc( pos, model );
 	if (!pTemp)
@@ -1282,7 +1282,7 @@ void CTempEnts::Sprite_Spray( const Vector &pos, const Vector &dir, int modelInd
 		znoise = 1;
 	}
 
-	pModel = modelinfo->GetModel( modelIndex );
+	pModel = engineClient->GetModel( modelIndex );
 	
 	if ( !pModel )
 	{
@@ -1290,7 +1290,7 @@ void CTempEnts::Sprite_Spray( const Vector &pos, const Vector &dir, int modelInd
 		return;
 	}
 
-	frameCount = modelinfo->GetModelFrameCount(modelIndex) - 1;//pModel
+	frameCount = pModel->ModelFrameCount() - 1;//pModel
 
 	for ( i = 0; i < count; i++ )
 	{
@@ -1329,7 +1329,7 @@ void CTempEnts::Sprite_Trail( const Vector &vecStart, const Vector &vecEnd, int 
 	const IVModel		*pModel;
 	int					flFrameCount;
 
-	pModel = modelinfo->GetModel( modelIndex );
+	pModel = engineClient->GetModel( modelIndex );
 	
 	if ( !pModel )
 	{
@@ -1337,7 +1337,7 @@ void CTempEnts::Sprite_Trail( const Vector &vecStart, const Vector &vecEnd, int 
 		return;
 	}
 
-	flFrameCount = modelinfo->GetModelFrameCount(modelIndex);//pModel
+	flFrameCount = pModel->ModelFrameCount();//pModel
 
 	Vector vecDelta;
 	VectorSubtract( vecEnd, vecStart, vecDelta );
@@ -1414,7 +1414,7 @@ void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, f
 		return;
 	}
 
-	pModel = modelinfo->GetModel( modelIndex );
+	pModel = engineClient->GetModel( modelIndex );
 	
 	if ( !pModel )
 	{
@@ -1447,7 +1447,7 @@ void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, f
 	// is the model a sprite?
 	if (pTemp->GetModel()->GetModelType() == mod_sprite )// modelinfo pTemp->GetModelIndex() 
 	{
-		frameCount = modelinfo->GetModelFrameCount(modelIndex);//pModel
+		frameCount = pModel->ModelFrameCount();//pModel
 		pTemp->m_flFrameMax = frameCount - 1;
 		pTemp->flags |= FTENT_SPRANIMATE | FTENT_SPRANIMATELOOP;
 		pTemp->m_flFrameRate = 10;
@@ -1536,10 +1536,10 @@ void CTempEnts::BloodSprite( const Vector &org, int r, int g, int b, int a, int 
 	const IVModel			*model;
 
 	//Validate the model first
-	if ( modelIndex && (model = modelinfo->GetModel( modelIndex ) ) != NULL )
+	if ( modelIndex && (model = engineClient->GetModel( modelIndex ) ) != NULL )
 	{
 		C_LocalTempEntity		*pTemp;
-		int						frameCount = modelinfo->GetModelFrameCount(modelIndex);//model
+		int						frameCount = model->ModelFrameCount();//model
 		color32					impactcolor = { (uint8)r, (uint8)g, (uint8)b, (uint8)a };
 
 		//Large, single blood sprite is a high-priority tent
@@ -1583,14 +1583,14 @@ C_LocalTempEntity *CTempEnts::DefaultSprite( const Vector &pos, int spriteIndex,
 	if ( gpGlobals->frametime == 0.0 )
 		return NULL;
 
-	pSprite = modelinfo->GetModel( spriteIndex );
-	if ( !spriteIndex || !pSprite || modelinfo->GetModelType(spriteIndex) != mod_sprite )//pSprite
+	pSprite = engineClient->GetModel( spriteIndex );
+	if ( !spriteIndex || !pSprite || pSprite->GetModelType() != mod_sprite )//pSprite
 	{
 		DevWarning( 1,"No Sprite %d!\n", spriteIndex);
 		return NULL;
 	}
 
-	frameCount = modelinfo->GetModelFrameCount(spriteIndex);//pSprite
+	frameCount = pSprite->ModelFrameCount();//pSprite
 
 	pTemp = TempEntAlloc( pos, pSprite );
 	if (!pTemp)

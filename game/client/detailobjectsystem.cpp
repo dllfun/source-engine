@@ -940,7 +940,7 @@ bool CDetailModel::IsDetailModelTranslucent()
 	if (m_Type >= DETAIL_PROP_TYPE_SPRITE)
 		return true;
 
-	return GetModel()->IsTranslucent();//modelinfo
+	return GetModel()&&GetModel()->IsTranslucent();//modelinfo
 }
 
 

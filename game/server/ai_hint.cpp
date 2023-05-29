@@ -584,7 +584,7 @@ CAI_Hint *CAI_HintManager::FindHint( CAI_BaseNPC *pNPC, const CHintCriteria &hin
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-CAI_Hint* CAI_HintManager::CreateHint( HintNodeData *pNodeData, const char *pMapData )
+CAI_Hint* CAI_HintManager::CreateHint( HintNodeData *pNodeData,const char* pMapName, const char *pMapData )
 {
 	// Reset last found hint if new node is added
 	CAI_HintManager::ResetFoundHints();
@@ -595,7 +595,7 @@ CAI_Hint* CAI_HintManager::CreateHint( HintNodeData *pNodeData, const char *pMap
 		// First, parse the mapdata chunk we were passed
 		if ( pMapData )
 		{
-			CEntityMapData entData( (char*)pMapData );
+			CEntityMapData entData(pMapName, (char*)pMapData );
 			pHint->ParseMapData( &entData );
 
 			// Restore the desired classname (parsing the mapdata stomps it)
@@ -1676,7 +1676,7 @@ void CC_ai_drop_hint( const CCommand &args )
 	nodeData.fIgnoreFacing = HIF_DEFAULT;
 	nodeData.minState = NPC_STATE_IDLE;
 	nodeData.maxState = NPC_STATE_COMBAT;
-	CAI_Hint *pHint = CAI_HintManager::CreateHint( &nodeData, NULL );
+	CAI_Hint *pHint = CAI_HintManager::CreateHint( &nodeData, NULL, NULL );
 	if ( pHint )
 	{
 		((CBaseEntity *)pHint)->Activate();

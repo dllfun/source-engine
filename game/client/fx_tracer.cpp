@@ -61,7 +61,7 @@ Vector GetTracerOrigin( const CEffectData &data )
 		if ( !pRenderable->GetAttachment( iAttachment, vecStart, vecAngles ) )
 		{
 			DevMsg( "GetTracerOrigin: Couldn't find attachment %d on model %s\n", iAttachment, 
-				pRenderable->GetModel()->GetModelName(  ) );//modelinfo
+				pRenderable->GetModel()->GetModelName() );//modelinfo
 		}
 	}
 

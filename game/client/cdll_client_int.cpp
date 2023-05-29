@@ -184,7 +184,7 @@ IVRenderView *render = NULL;
 IVDebugOverlay *debugoverlay = NULL;
 IMaterialSystemStub *materials_stub = NULL;
 IDataCache *datacache = NULL;
-IVModelInfoClient *modelinfo = NULL;
+//IVModelInfoClient *modelinfo = NULL;
 IEngineVGui *enginevgui = NULL;
 INetworkStringTableContainer *networkstringtable = NULL;
 ISpatialPartition* partition = NULL;
@@ -530,7 +530,7 @@ void TrackBoneSetupEnt( C_BaseAnimating *pEnt )
 	unsigned short i = g_BoneSetupEnts.Find( ent );
 	if ( i == g_BoneSetupEnts.InvalidIndex() )
 	{
-		Q_strncpy( ent.m_ModelName, modelinfo->GetModelName( pEnt->GetModel() ), sizeof( ent.m_ModelName ) );
+		Q_strncpy( ent.m_ModelName, pEnt->GetModel()->GetModelName(), sizeof( ent.m_ModelName ) );
 		ent.m_Count = 1;
 		g_BoneSetupEnts.Insert( ent );
 	}
@@ -895,8 +895,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 	if ( !mdlcache )
 		return false;
-	if ( (modelinfo = (IVModelInfoClient *)appSystemFactory(VMODELINFO_CLIENT_INTERFACE_VERSION, NULL )) == NULL )
-		return false;
+	//if ( (modelinfo = (IVModelInfoClient *)appSystemFactory(VMODELINFO_CLIENT_INTERFACE_VERSION, NULL )) == NULL )
+	//	return false;
 	if ( (enginevgui = (IEngineVGui *)appSystemFactory(VENGINE_VGUI_VERSION, NULL )) == NULL )
 		return false;
 	if ( (networkstringtable = (INetworkStringTableContainer *)appSystemFactory(INTERFACENAME_NETWORKSTRINGTABLECLIENT,NULL)) == NULL )

@@ -290,7 +290,9 @@ int CGameServer::LookupModelIndex( char const *name )
 {
 	if ( !m_pModelPrecacheTable )
 		return -1;
-
+	if (name[0] == '*') {
+		int aaa = 0;
+	}
 	int idx = m_pModelPrecacheTable->FindStringIndex( name );
 	return ( idx == INVALID_STRING_INDEX ) ? -1 : idx;
 }

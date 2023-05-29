@@ -1292,7 +1292,7 @@ void UTIL_SetSize( CBaseEntity *pEnt, const Vector &vecMin, const Vector &vecMax
 void UTIL_SetModel( CBaseEntity *pEntity, const char *pModelName )
 {
 	// check to see if model was properly precached
-	int i = modelinfo->GetModelIndex( pModelName );
+	int i = engineServer->GetModelIndex( pModelName );
 	if ( i == -1 )	
 	{
 		Error("%i/%s - %s:  UTIL_SetModel:  not precached: %s\n", pEntity->entindex(),

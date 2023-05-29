@@ -238,7 +238,7 @@ bool CBoneFollower::Init( CBaseEntity *pOwner, const char *pModelName, solid_t &
 
 	AddEffects( EF_NODRAW ); // invisible
 
-	m_modelIndex = modelinfo->GetModelIndex( pModelName );
+	m_modelIndex = engineServer->GetModelIndex( pModelName );
 	m_solidIndex = solid.index;
 	SetAbsOrigin( position );
 	SetAbsAngles( orientation );
@@ -350,7 +350,7 @@ void CBoneFollower::VPhysicsFriction( IPhysicsObject *pObject, float energy, int
 
 bool CBoneFollower::TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace )
 {
-	vcollide_t *pCollide = modelinfo->GetVCollide( GetModelIndex() );
+	vcollide_t *pCollide = GetModel()->GetVCollide();
 	Assert( pCollide && pCollide->solidCount > m_solidIndex );
 
 	UTIL_ClearTrace( trace );

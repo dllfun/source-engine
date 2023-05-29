@@ -246,7 +246,7 @@ bool StandardFilterRules( IHandleEntity *pHandleEntity, int fContentsMask )
 	SolidType_t solid = pCollide->GetSolid();
 	const IVModel *pModel = pCollide->GetModel();
 
-	if ( ( modelinfo->GetModelType(pCollide->GetModelIndex()) != mod_brush ) || (solid != SOLID_BSP && solid != SOLID_VPHYSICS) )//pModel
+	if ( ( pCollide->GetModel()->GetModelType() != mod_brush ) || (solid != SOLID_BSP && solid != SOLID_VPHYSICS) )//pModel
 	{
 		if ( (fContentsMask & CONTENTS_MONSTER) == 0 )
 			return false;

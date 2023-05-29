@@ -65,7 +65,7 @@ public:
 	static int			m_nNodeCount;
 
 	void	Spawn( void );
-	int		Spawn( const char *pMapData );
+	int		Spawn(const char* pMapName, const char *pMapData );
 
 	DECLARE_DATADESC();
 

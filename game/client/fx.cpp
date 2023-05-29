@@ -1262,7 +1262,7 @@ void FX_BuildTeslaHitbox( const CEffectData &data )
 	if (!pAnimating)
 		return;
 
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModelIndex() );//pAnimating->GetModel()
+	studiohdr_t *pStudioHdr = pAnimating->GetModel()->GetStudiomodel();//pAnimating->GetModel()
 	if (!pStudioHdr)
 		return;
 

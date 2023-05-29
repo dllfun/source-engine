@@ -628,7 +628,14 @@ private:
 
 void BreakModelList( CUtlVector<breakmodel_t> &list, int modelindex, float defBurstScale, int defCollisionGroup )
 {
-	vcollide_t *pCollide = modelinfo->GetVCollide( modelindex );
+	const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+	pModel = engineClient->GetModel(modelindex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	pModel = engineServer->GetModel(modelindex);
+#endif
+	vcollide_t *pCollide = pModel->GetVCollide();
 	if ( !pCollide )
 		return;
 
@@ -932,9 +939,18 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 	}
 #endif
 	
-	vcollide_t *pCollide = modelinfo->GetVCollide( modelindex );
-	if ( !pCollide )
-		return;
+	{
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelindex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelindex);
+#endif
+		vcollide_t* pCollide = pModel->GetVCollide();
+		if (!pCollide)
+			return;
+	}
 
 	int nSkin = 0;
 	CBaseEntity *pOwnerEntity = pEntity;
@@ -954,10 +970,18 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 	static matrix3x4_t localToWorld;
 
 	CStudioHdr studioHdr;
-	const IVModel *model = modelinfo->GetModel( modelindex );
-	if ( model )
 	{
-		studioHdr.Init( modelinfo->GetStudiomodel(modelindex) );//model
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelindex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelindex);
+#endif
+		if (pModel)
+		{
+			studioHdr.Init(pModel->GetStudiomodel());//model
+		}
 	}
 
 	Vector parentOrigin = vec3_origin;
@@ -980,7 +1004,13 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 	{
 		for ( int i = 0; i < list.Count(); i++ )
 		{
-			int modelIndex = modelinfo->GetModelIndex( list[i].modelName );
+			int modelIndex = -1;
+#ifdef CLIENT_DLL
+			modelIndex = engineClient->GetModelIndex(list[i].modelName);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+			modelIndex = engineServer->GetModelIndex(list[i].modelName);
+#endif
 			if ( modelIndex <= 0 )
 				continue;
 
@@ -1013,10 +1043,16 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 			AngleMatrix( params.angles, params.origin, matrix );
 
 			CStudioHdr studioHdr;
-			const IVModel *model = modelinfo->GetModel( modelIndex );
-			if ( model )
+			const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+			pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+			pModel = engineServer->GetModel(modelIndex);
+#endif
+			if (pModel)
 			{
-				studioHdr.Init( modelinfo->GetStudiomodel(modelIndex) );//model
+				studioHdr.Init(pModel->GetStudiomodel() );//model
 			}
 
 			// Increment the number of breakable props this frame.
@@ -1226,10 +1262,17 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const Vec
 // Purpose: 
 // Input  : modelindex - 
 //-----------------------------------------------------------------------------
-void PrecacheGibsForModel( int iModel )
+void PrecacheGibsForModel( int modelindex )
 {
 	VPROF_BUDGET( "PrecacheGibsForModel", VPROF_BUDGETGROUP_PLAYER );
-	vcollide_t *pCollide = modelinfo->GetVCollide( iModel );
+	const IVModel* pModel = NULL; 
+#ifdef CLIENT_DLL
+	pModel = engineClient->GetModel(modelindex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	pModel = engineServer->GetModel(modelindex);
+#endif
+	vcollide_t *pCollide = pModel->GetVCollide();
 	if ( !pCollide )
 		return;
 
@@ -1318,10 +1361,18 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 		return NULL;
 	}
 #endif
-	
-	vcollide_t *pCollide = modelinfo->GetVCollide( modelindex );
-	if ( !pCollide )
-		return NULL;
+	{
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelindex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelindex);
+#endif
+		vcollide_t* pCollide = pModel->GetVCollide();
+		if (!pCollide)
+			return NULL;
+	}
 
 	int nSkin = params.nDefaultSkin;
 	CBaseEntity *pOwnerEntity = pEntity;
@@ -1341,10 +1392,18 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 	matrix3x4_t localToWorld;
 
 	CStudioHdr studioHdr;
-	const IVModel *model = modelinfo->GetModel( modelindex );
-	if ( model )
 	{
-		studioHdr.Init( modelinfo->GetStudiomodel(modelindex) );//model
+		const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+		pModel = engineClient->GetModel(modelindex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+		pModel = engineServer->GetModel(modelindex);
+#endif
+		if (pModel)
+		{
+			studioHdr.Init(pModel->GetStudiomodel());//model
+		}
 	}
 
 	Vector parentOrigin = vec3_origin;
@@ -1368,7 +1427,13 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 	{
 		for ( int i = 0; i < list.Count(); i++ )
 		{
-			int modelIndex = modelinfo->GetModelIndex( list[i].modelName );
+			int modelIndex = -1;
+#ifdef CLIENT_DLL
+			modelIndex = engineClient->GetModelIndex(list[i].modelName);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+			modelIndex = engineServer->GetModelIndex(list[i].modelName);
+#endif
 			if ( modelIndex <= 0 )
 				continue;
 
@@ -1401,10 +1466,16 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 			AngleMatrix( params.angles, params.origin, matrix );
 
 			CStudioHdr studioHdr;
-			const IVModel *model = modelinfo->GetModel( modelIndex );
-			if ( model )
+			const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+			pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+			pModel = engineServer->GetModel(modelIndex);
+#endif
+			if (pModel)
 			{
-				studioHdr.Init( modelinfo->GetStudiomodel(modelIndex) );//model
+				studioHdr.Init(pModel->GetStudiomodel() );//model
 			}
 
 			// Increment the number of breakable props this frame.

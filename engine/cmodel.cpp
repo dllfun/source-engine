@@ -121,9 +121,9 @@ void	FloodAreaConnections (model_t* mod);
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-vcollide_t *CM_GetVCollide(model_t* mod, int modelIndex )
+vcollide_t *CM_GetVCollide(model_t* mod)
 {
-	cmodel_t *pModel = CM_InlineModelNumber(mod, modelIndex );
+	cmodel_t *pModel = CM_InlineModelNumber(mod, mod->Mod_GetInlineModelIndex() );
 	if( !pModel )
 		return NULL;
 
@@ -199,13 +199,13 @@ int CM_BrushContents_r( model_t* mod, int nodenum )
 }
 
 
-int CM_InlineModelContents(model_t* mod, int index )
+int CM_InlineModelContents(model_t* mod)//, int index 
 {
-	cmodel_t *pModel = CM_InlineModelNumber(mod, index );
-	if ( !pModel )
-		return 0;
+	//cmodel_t *pModel = CM_InlineModelNumber(mod, index );
+	//if ( !pModel )
+	//	return 0;
 
-	return CM_BrushContents_r(mod, pModel->headnode );
+	return CM_BrushContents_r(mod, mod->GetFirstNodeNum()); //mod->headnode
 }
 			
 
@@ -332,7 +332,7 @@ cmodel_t *CM_LoadMap( model_t* mod, bool allowReusePrevious, unsigned *checksum,
 
 	// read in the collision model data
 	//CLumpHeaderInfo header( 0, mod->GetModelName());
-	mod->CollisionBSPData_Load(mod->GetModelName(),header );
+	mod->CollisionBSPData_Load(header );
 	//header.Shutdown( );
 
     // Push the displacement bounding boxes down the tree and set leaf data.
@@ -367,7 +367,7 @@ vcollide_t* CM_VCollideForModel( int modelindex, const model_t* pModel )
 		switch( pModel->GetModelType() )
 		{
 		case mod_brush:
-			return CM_GetVCollide((model_t*)pModel, modelindex-1 );//need check
+			return CM_GetVCollide((model_t*)pModel);//need check , modelindex-1 
 		case mod_studio:
 			Assert( modelloader->IsLoaded( pModel ) );
 			return g_pMDLCache->GetVCollide( pModel->GetStudio() );

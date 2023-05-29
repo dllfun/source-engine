@@ -80,7 +80,7 @@ IPhysicsObject *CRagdoll::GetElement( int elementNum )
 void CRagdoll::BuildRagdollBounds( C_BaseEntity *ent )
 {
 	Vector mins, maxs, size;
-	modelinfo->GetModelBounds( ent->GetModelIndex(), mins, maxs );//ent->GetModel()
+	ent->GetModel()->GetModelBounds(  mins, maxs );//ent->GetModel()
 	size = (maxs - mins) * 0.5;
 	m_radius = size.Length();
 
@@ -102,7 +102,7 @@ void CRagdoll::Init(
 	ragdollparams_t params;
 	params.pGameData = static_cast<void *>( ent );
 	params.modelIndex = ent->GetModelIndex();
-	params.pCollide = modelinfo->GetVCollide( params.modelIndex );
+	params.pCollide = engineClient->GetModel(params.modelIndex)->GetVCollide();
 	params.pStudioHdr = pstudiohdr;
 	params.forceVector = forceVector;
 	params.forceBoneIndex = forceBone;
@@ -465,7 +465,7 @@ int C_ServerRagdoll::InternalDrawModel( int flags )
 	int ret = BaseClass::InternalDrawModel( flags );
 	if ( vcollide_wireframe.GetBool() )
 	{
-		vcollide_t *pCollide = modelinfo->GetVCollide( GetModelIndex() );
+		vcollide_t *pCollide = GetModel()->GetVCollide();
 		IMaterial *pWireframe = materials->FindMaterial("shadertest/wireframevertexcolor", TEXTURE_GROUP_OTHER);
 
 		matrix3x4_t matrix;
@@ -487,10 +487,10 @@ CStudioHdr *C_ServerRagdoll::OnNewModel( void )
 
 	if ( !m_elementCount )
 	{
-		vcollide_t *pCollide = modelinfo->GetVCollide( GetModelIndex() );
+		vcollide_t *pCollide = GetModel()->GetVCollide();
 		if ( !pCollide )
 		{
-			const char *pszName = modelinfo->GetModelName(GetModelIndex());//modelinfo->GetModel( GetModelIndex() )
+			const char *pszName = GetModel()?GetModel()->GetModelName():"";//
 			Msg( "*** ERROR: C_ServerRagdoll::InitModel: %s missing vcollide data ***\n", (pszName) ? pszName : "<null>" );
 			m_elementCount = 0;
 		}

@@ -137,14 +137,14 @@ void W_Precache(void)
 {
 	PrecacheFileWeaponInfoDatabase( filesystem, g_pGameRules->GetEncryptionKey() );
 
-	g_sModelIndexFireball = modelinfo->GetModelIndex ("sprites/zerogxplode.vmt");// fireball
-	g_sModelIndexWExplosion = modelinfo->GetModelIndex ("sprites/WXplo1.vmt");// underwater fireball
-	g_sModelIndexSmoke = modelinfo->GetModelIndex ("sprites/steam1.vmt");// smoke
-	g_sModelIndexBubbles = modelinfo->GetModelIndex ("sprites/bubble.vmt");//bubbles
-	g_sModelIndexBloodSpray = modelinfo->GetModelIndex ("sprites/bloodspray.vmt"); // initial blood
-	g_sModelIndexBloodDrop = modelinfo->GetModelIndex ("sprites/blood.vmt"); // splattered blood 
-	g_sModelIndexLaser = modelinfo->GetModelIndex( (char *)g_pModelNameLaser );
-	g_sModelIndexLaserDot = modelinfo->GetModelIndex("sprites/laserdot.vmt");
+	g_sModelIndexFireball = engineClient->GetModelIndex ("sprites/zerogxplode.vmt");// fireball
+	g_sModelIndexWExplosion = engineClient->GetModelIndex ("sprites/WXplo1.vmt");// underwater fireball
+	g_sModelIndexSmoke = engineClient->GetModelIndex ("sprites/steam1.vmt");// smoke
+	g_sModelIndexBubbles = engineClient->GetModelIndex ("sprites/bubble.vmt");//bubbles
+	g_sModelIndexBloodSpray = engineClient->GetModelIndex ("sprites/bloodspray.vmt"); // initial blood
+	g_sModelIndexBloodDrop = engineClient->GetModelIndex ("sprites/blood.vmt"); // splattered blood 
+	g_sModelIndexLaser = engineClient->GetModelIndex( (char *)g_pModelNameLaser );
+	g_sModelIndexLaserDot = engineClient->GetModelIndex("sprites/laserdot.vmt");
 }
 
 void C_World::Precache( void )

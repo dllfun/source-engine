@@ -171,7 +171,7 @@ IStaticPropMgrServer *staticpropmgr = NULL;
 IUniformRandomStream *random = NULL;
 IEngineSound *enginesound = NULL;
 ISpatialPartition *partition = NULL;
-IVModelInfo *modelinfo = NULL;
+//IVModelInfo *modelinfo = NULL;
 IEngineTrace *enginetrace = NULL;
 IGameEventManager2 *gameeventmanager = NULL;
 IDataCache *datacache = NULL;
@@ -597,8 +597,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 	if ( (::partition = (ISpatialPartition *)appSystemFactory(INTERFACEVERSION_SPATIALPARTITION, NULL)) == NULL )
 		return false;
-	if ( (modelinfo = (IVModelInfo *)appSystemFactory(VMODELINFO_SERVER_INTERFACE_VERSION, NULL)) == NULL )
-		return false;
+	//if ( (modelinfo = (IVModelInfo *)appSystemFactory(VMODELINFO_SERVER_INTERFACE_VERSION, NULL)) == NULL )
+	//	return false;
 	if ( (enginetrace = (IEngineTrace *)appSystemFactory(INTERFACEVERSION_ENGINETRACE_SERVER,NULL)) == NULL )
 		return false;
 	if ( (filesystem = (IFileSystem *)fileSystemFactory(FILESYSTEM_INTERFACE_VERSION,NULL)) == NULL )
@@ -991,7 +991,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 		{
 			if ( pOldLevel )
 			{
-				MapEntity_ParseAllEntities( pMapEntities );
+				MapEntity_ParseAllEntities(pMapName, pMapEntities );
 			}
 			else
 			{
@@ -1036,7 +1036,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 		// Clear out entity references, and parse the entities into it.
 		g_MapEntityRefs.Purge();
 		CMapLoadEntityFilter filter;
-		MapEntity_ParseAllEntities( pMapEntities, &filter );
+		MapEntity_ParseAllEntities(pMapName, pMapEntities, &filter );
 
 		g_pServerBenchmark->StartBenchmark();
 

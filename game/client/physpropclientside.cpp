@@ -181,7 +181,7 @@ void C_PhysPropClientside::RecreateAll()
 	DestroyAll();
 	if ( cl_phys_props_enable.GetInt() )
 	{
-		ParseAllEntities(engineClient->GetMapEntitiesString() );
+		ParseAllEntities(engineClient->GetWorldModel()->GetModelName(), engineClient->GetMapEntitiesString() );
 		InitializePropRespawnZones();
 	}
 }
@@ -212,7 +212,7 @@ void C_PhysPropClientside::SetRespawnZone( C_FuncPhysicsRespawnZone *pZone )
 int C_PhysPropClientside::ParsePropData( void )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( !modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
+	if ( !modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//GetModel() GetModel()
 	{
 		modelKeyValues->deleteThis();
 		return PARSE_FAILED_NO_DATA;
@@ -238,11 +238,11 @@ bool C_PhysPropClientside::Initialize()
 		return false;
 	}
 
-	const IVModel *model = GetModel();
-	if (model)
+	const IVModel *pModel = GetModel();
+	if (pModel)
 	{
 		Vector mins, maxs;
-		modelinfo->GetModelBounds(GetModelIndex(), mins, maxs );//mod
+		GetModel()->GetModelBounds( mins, maxs );//mod
 		SetCollisionBounds( mins, maxs );
 	}
 
@@ -601,9 +601,9 @@ void C_PhysPropClientside::ImpactTrace( trace_t *pTrace, int iDamageType, const 
 	OnTakeDamage( iDamage );
 }
 
-const char *C_PhysPropClientside::ParseEntity( const char *pEntData )
+const char *C_PhysPropClientside::ParseEntity(const char* pMapName, const char *pEntData )
 {
-	CEntityMapData entData( (char*)pEntData );
+	CEntityMapData entData(pMapName, (char*)pEntData );
 	char className[MAPKEY_MAXLENGTH];
 	
 	MDLCACHE_CRITICAL_SECTION();
@@ -666,7 +666,7 @@ const char *C_PhysPropClientside::ParseEntity( const char *pEntData )
 // Purpose: Only called on BSP load. Parses and spawns all the entities in the BSP.
 // Input  : pMapData - Pointer to the entity data block to parse.
 //-----------------------------------------------------------------------------
-void C_PhysPropClientside::ParseAllEntities(const char *pMapData)
+void C_PhysPropClientside::ParseAllEntities(const char* pMapName, const char *pMapData)
 {
 	int nEntities = 0;
 
@@ -675,13 +675,13 @@ void C_PhysPropClientside::ParseAllEntities(const char *pMapData)
 	//
 	//  Loop through all entities in the map data, creating each.
 	//
-	for ( ; true; pMapData = MapEntity_SkipToNextEntity(pMapData, szTokenBuffer) )
+	for ( ; true; pMapData = CEntityMapData::MapEntity_SkipToNextEntity(pMapData, szTokenBuffer) )
 	{
 		//
 		// Parse the opening brace.
 		//
 		char token[MAPKEY_MAXLENGTH];
-		pMapData = MapEntity_ParseToken( pMapData, token );
+		pMapData = CEntityMapData::MapEntity_ParseToken( pMapData, token );
 
 		//
 		// Check to see if we've finished or not.
@@ -699,7 +699,7 @@ void C_PhysPropClientside::ParseAllEntities(const char *pMapData)
 		// Parse the entity and add it to the spawn list.
 		//
 
-		pMapData = ParseEntity( pMapData );
+		pMapData = ParseEntity(pMapName, pMapData );
 
 		nEntities++;
 	}
@@ -854,11 +854,11 @@ bool C_FuncPhysicsRespawnZone::Initialize( void )
 	AddSolidFlags( FSOLID_TRIGGER );	
 	SetMoveType( MOVETYPE_NONE );
 
-	const IVModel *model = GetModel();
-	if (model)
+	const IVModel *pModel = GetModel();
+	if (pModel)
 	{
 		Vector mins, maxs;
-		modelinfo->GetModelBounds(GetModelIndex(), mins, maxs );//model
+		GetModel()->GetModelBounds( mins, maxs );//model
 		SetCollisionBounds( mins, maxs );
 	}
 

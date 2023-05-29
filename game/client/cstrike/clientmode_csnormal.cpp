@@ -764,7 +764,7 @@ bool ShouldRecreateClassImageEntity( C_BaseAnimating *pEnt, const char *pNewMode
 	if ( !pModel )
 		return true;
 
-	const char *pName = modelinfo->GetModelName(pEnt->GetModelIndex());//pModel
+	const char *pName = pEnt->GetModel()->GetModelName();//pModel
 	if ( !pName )
 		return true;
 

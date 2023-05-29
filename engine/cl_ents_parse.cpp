@@ -550,7 +550,9 @@ static void CL_CallPostDataUpdates( CEntityReadInfo &u )
 		IClientNetworkable *pEnt = entitylist->GetClientNetworkable( pCall->m_iEnt );
 		ErrorIfNot( pEnt, 
 			("CL_CallPostDataUpdates: missing ent %d", pCall->m_iEnt) );
-
+		if (pCall->m_iEnt == 95) {
+			int aaa = 0;
+		}
 		pEnt->PostDataUpdate( pCall->m_UpdateType );
 	}
 }

@@ -100,9 +100,9 @@ void model_t::InitPortalOpenState() {
 		brush.pShared->portalopen[i] = false;
 	}
 }
-char* model_t::GetMapName() {
-	return brush.pShared->map_name;
-}
+//char* model_t::GetMapName() {
+//	return brush.pShared->map_name;
+//}
 int model_t::GetPlanesCount() {
 	return brush.pShared->numplanes;
 }
@@ -252,7 +252,7 @@ void model_t::Destory() {
 	brush.pShared->numvisibility = 0;
 	brush.pShared->numentitychars = 0;
 	brush.pShared->numportalopen = 0;
-	brush.pShared->map_name[0] = 0;
+	//brush.pShared->map_name[0] = 0;
 	brush.pShared->map_rootnode = NULL;
 
 	brush.pShared->m_pDispCollTrees = NULL;
@@ -265,13 +265,13 @@ void model_t::Destory() {
 		SetDispListCount(0);
 	}
 }
-bool model_t::Load(const char* pName,CLumpHeaderInfo& header) {
+bool model_t::Load(CLumpHeaderInfo& header) {
 	// This is a table that maps texinfo references to csurface_t
 // It is freed after the map has been loaded
 	CUtlVector<unsigned short> 	map_texinfo;
 
 	// copy map name
-	Q_strncpy(brush.pShared->map_name, pName, sizeof(brush.pShared->map_name));
+	//Q_strncpy(brush.pShared->map_name, pName, sizeof(brush.pShared->map_name));
 
 	//
 	// load bsp file data
@@ -1415,12 +1415,12 @@ void model_t::CollisionBSPData_Destroy()
 // Returns the collision tree associated with the ith displacement
 //-----------------------------------------------------------------------------
 
-CDispCollTree* CollisionBSPData_GetCollisionTree( int i )
+CDispCollTree* CollisionBSPData_GetCollisionTree(model_t* mod, int i )
 {
-	if ((i < 0) || (i >= g_pHost->Host_GetWorldModel()->GetDispCollTreesCount()))
+	if ((i < 0) || (i >= mod->GetDispCollTreesCount()))
 		return 0;
 
-	return g_pHost->Host_GetWorldModel()->GetDispCollTrees(i);
+	return mod->GetDispCollTrees(i);
 }
 
 //-----------------------------------------------------------------------------
@@ -1461,11 +1461,9 @@ void model_t::CollisionBSPData_PreLoad()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool model_t::CollisionBSPData_Load( const char *pName, CLumpHeaderInfo& header )
+bool model_t::CollisionBSPData_Load(CLumpHeaderInfo& header )
 {
-	
-
-	return this->Load(pName,header);
+	return this->Load(header);
 }
 
 

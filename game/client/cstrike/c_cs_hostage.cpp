@@ -92,7 +92,7 @@ void C_LowViolenceHostageDeathModel::Interp_Copy( VarMapping_t *pDest, CBaseEnti
 bool C_LowViolenceHostageDeathModel::SetupLowViolenceModel( C_CHostage *pHostage )
 {
 	const IVModel *model = pHostage->GetModel();
-	const char *pModelName = modelinfo->GetModelName(pHostage->GetModelIndex());//model
+	const char *pModelName = pHostage->GetModel()?pHostage->GetModel()->GetModelName():"";//model
 	if ( InitializeAsClientEntity( pModelName, RENDER_GROUP_OPAQUE_ENTITY ) == false )
 	{
 		Release();

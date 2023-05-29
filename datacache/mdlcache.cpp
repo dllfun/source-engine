@@ -3959,33 +3959,33 @@ void CMDLCache::MarkFrame()
 //-----------------------------------------------------------------------------
 // Purpose: bind studiohdr_t support functions to the mdlcacher
 //-----------------------------------------------------------------------------
-const studiohdr_t *studiohdr_t::FindModel( void **cache, char const *pModelName ) const
-{
-	MDLHandle_t handle = g_MDLCache.FindMDL( pModelName );
-	*cache = MDLHandleToVirtual(handle);
-	return g_MDLCache.GetStudioHdr( handle );
-}
+//const studiohdr_t *studiohdr_t::FindModel( void **cache, char const *pModelName ) const
+//{
+//	MDLHandle_t handle = g_MDLCache.FindMDL( pModelName );
+//	*cache = MDLHandleToVirtual(handle);
+//	return g_MDLCache.GetStudioHdr( handle );
+//}
+//
+//virtualmodel_t *studiohdr_t::GetVirtualModel( void ) const
+//{
+//	if (numincludemodels == 0)
+//		return NULL;
+//    return g_MDLCache.GetVirtualModelFast( this, VoidPtrToMDLHandle( VirtualModel() ) );
+//}
+//
+//const studiohdr_t* virtualgroup_t::GetStudioHdr(void) const
+//{
+//	return g_MDLCache.GetStudioHdr(VoidPtrToMDLHandle(cache));
+//}
+//
+//byte *studiohdr_t::GetAnimBlock( int i ) const
+//{
+//	return g_MDLCache.GetAnimBlock( VoidPtrToMDLHandle( VirtualModel() ), i );
+//}
+//
+//int studiohdr_t::GetAutoplayList( unsigned short **pOut ) const
+//{
+//	return g_MDLCache.GetAutoplayList( VoidPtrToMDLHandle( VirtualModel() ), pOut );
+//}
 
-virtualmodel_t *studiohdr_t::GetVirtualModel( void ) const
-{
-	if (numincludemodels == 0)
-		return NULL;
-
-    return g_MDLCache.GetVirtualModelFast( this, VoidPtrToMDLHandle( VirtualModel() ) );
-}
-
-byte *studiohdr_t::GetAnimBlock( int i ) const
-{
-	return g_MDLCache.GetAnimBlock( VoidPtrToMDLHandle( VirtualModel() ), i );
-}
-
-int studiohdr_t::GetAutoplayList( unsigned short **pOut ) const
-{
-	return g_MDLCache.GetAutoplayList( VoidPtrToMDLHandle( VirtualModel() ), pOut );
-}
-
-const studiohdr_t *virtualgroup_t::GetStudioHdr( void ) const
-{
-	return g_MDLCache.GetStudioHdr( VoidPtrToMDLHandle( cache ) );
-}
 

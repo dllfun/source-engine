@@ -561,7 +561,7 @@ bool CClientState::InstallEngineStringTableCallback( char const *tableName )
 
 	if ( !Q_strcasecmp( tableName, "DynamicModels" ) )
 	{
-		table->SetStringChangedCallback( NULL, Callback_DynamicModelsChanged );
+		//table->SetStringChangedCallback( NULL, Callback_DynamicModelsChanged );
 		//m_pDynamicModelsTable = table;
 		return true;
 	}
@@ -816,6 +816,9 @@ int CClientState::LookupModelIndex( char const *name )
 	if ( !m_pModelPrecacheTable )
 	{
 		return -1;
+	}
+	if (name[0] == '*') {
+		int aaa = 0;
 	}
 	int idx = m_pModelPrecacheTable->FindStringIndex( name );
 	return ( idx == INVALID_STRING_INDEX ) ? -1 : idx;
@@ -1979,7 +1982,7 @@ void CClientState::ConsistencyCheck(bool bChanged )
 
 				// Check each texture
 				IMaterial *pMaterials[ 128 ];
-				int materialCount = Mod_GetModelMaterials( pModel, ARRAYSIZE( pMaterials ), pMaterials );
+				int materialCount = pModel->Mod_GetModelMaterials( ARRAYSIZE( pMaterials ), pMaterials );
 
 				for ( int j = 0; j<materialCount; ++j )
 				{

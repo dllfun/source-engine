@@ -327,7 +327,7 @@ void CBaseProp::CalculateBlockLOS( void )
 int CBaseProp::ParsePropData( void )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( !modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
+	if ( !modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//GetModel() GetModel()
 	{
 		modelKeyValues->deleteThis();
 		return PARSE_FAILED_NO_DATA;
@@ -1938,13 +1938,13 @@ void CDynamicProp::Spawn( )
 	//m_debugOverlays |= OVERLAY_ABSBOX_BIT;
 
 #ifdef TF_DLL
-	const char *pszModelName = modelinfo->GetModelName( GetModel() );
+	const char *pszModelName = GetModel()->GetModelName();
 	if ( pszModelName && pszModelName[0] )
 	{
 		if ( FStrEq( pszModelName, "models/bots/boss_bot/carrier_parts.mdl" ) )
 		{
-			SetModelIndexOverride( VISION_MODE_NONE, modelinfo->GetModelIndex( pszModelName ) );
-			SetModelIndexOverride( VISION_MODE_ROME, modelinfo->GetModelIndex( "models/bots/tw2/boss_bot/twcarrier_addon.mdl" ) );
+			SetModelIndexOverride( VISION_MODE_NONE, engineServer->GetModelIndex( pszModelName ) );
+			SetModelIndexOverride( VISION_MODE_ROME, engineServer->GetModelIndex( "models/bots/tw2/boss_bot/twcarrier_addon.mdl" ) );
 		}
 	}
 #endif
@@ -2034,7 +2034,7 @@ void CDynamicProp::CreateBoneFollowers()
 		return;
 
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
+	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName( ), GetModel()->GetModelKeyValueText() ) )//GetModel() GetModel()
 	{
 		// Do we have a bone follower section?
 		KeyValues *pkvBoneFollowers = modelKeyValues->FindKey("bone_followers");
@@ -2059,7 +2059,7 @@ void CDynamicProp::CreateBoneFollowers()
 	// go ahead and create default bone followers for it
 	if ( m_BoneFollowerManager.GetNumBoneFollowers() == 0 )
 	{
-		vcollide_t *pCollide = modelinfo->GetVCollide( GetModelIndex() );
+		vcollide_t *pCollide = GetModel()->GetVCollide();
 		if ( pCollide && pCollide->solidCount > 1 )
 		{
 			CreateBoneFollowersFromRagdoll(this, &m_BoneFollowerManager, pCollide);
@@ -2562,7 +2562,7 @@ bool CPhysicsProp::CreateVPhysics()
 			tmpSolid.params.inertia = 0.5;
 	}
 
-	PhysGetMassCenterOverride( this, modelinfo->GetVCollide( GetModelIndex() ), tmpSolid );
+	PhysGetMassCenterOverride( this, GetModel()->GetVCollide(), tmpSolid );
 	if ( HasSpawnFlags(SF_PHYSPROP_NO_COLLISIONS) )
 	{
 		tmpSolid.params.enableCollisions = false;
@@ -2816,7 +2816,7 @@ void CPhysicsProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 bool CPhysicsProp::GetPropDataAngles( const char *pKeyName, QAngle &vecAngles )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
+	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//GetModel() GetModel()
 	{
 		KeyValues *pkvPropData = modelKeyValues->FindKey( "physgun_interactions" );
 		if ( pkvPropData )
@@ -2841,7 +2841,7 @@ bool CPhysicsProp::GetPropDataAngles( const char *pKeyName, QAngle &vecAngles )
 float CPhysicsProp::GetCarryDistanceOffset( void )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
+	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//GetModel() GetModel()
 	{
 		KeyValues *pkvPropData = modelKeyValues->FindKey( "physgun_interactions" );
 		if ( pkvPropData )
@@ -3474,7 +3474,7 @@ bool PropBreakableCapEdictsOnCreateAll(int modelindex, IPhysicsObject *pPhysics,
 		{
 			for ( int i = 0; i < list.Count(); i++ )
 			{
-				int modelIndex = modelinfo->GetModelIndex( list[i].modelName );
+				int modelIndex = engineServer->GetModelIndex( list[i].modelName );
 				if ( modelIndex <= 0 )
 					continue;
 				numToCreate++;
@@ -3747,7 +3747,7 @@ void CBasePropDoor::CalcDoorSounds()
 	// Otherwise, use the sounds specified by the model keyvalues. These are looked up
 	// based on skin and hardware.
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
+	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//GetModel() GetModel()
 	{
 		KeyValues *pkvDoorSounds = modelKeyValues->FindKey("door_options");
 		if ( pkvDoorSounds )
@@ -3801,7 +3801,7 @@ void CBasePropDoor::CalcDoorSounds()
 	modelKeyValues = NULL;
 	if ( !bFoundSkin && VPhysicsGetObject() )
 	{
-		Warning( "%s has Door model (%s) with no door_options! Verify that SKIN is valid, and has a corresponding options block in the model QC file\n", GetDebugName(), modelinfo->GetModelName( GetModelIndex() ) );//GetModel()
+		Warning( "%s has Door model (%s) with no door_options! Verify that SKIN is valid, and has a corresponding options block in the model QC file\n", GetDebugName(), GetModel()->GetModelName() );//GetModel()
 		VPhysicsGetObject()->SetMaterialIndex( physprops->GetSurfaceIndex("wood") );
 	}
 
@@ -5978,7 +5978,7 @@ bool UTIL_CreateScaledPhysObject( CBaseAnimating *pInstance, float flScale )
 	bool bWasMotionDisabled = ( pObject->IsMotionEnabled() == false );
 	bool bWasStatic			= ( pObject->IsStatic() );
 
-	vcollide_t *pCollide = modelinfo->GetVCollide( pInstance->GetModelIndex() );
+	vcollide_t *pCollide = pInstance->GetModel()->GetVCollide();
 	if ( pCollide == NULL || pCollide->solidCount == 0 )
 		return NULL;
 
@@ -6077,11 +6077,11 @@ bool UTIL_CreateScaledPhysObject( CBaseAnimating *pInstance, float flScale )
 	pInstance->VPhysicsSetObject( pNewObject );
 
 	// Increase our model bounds
-	const IVModel *pModel = modelinfo->GetModel( pInstance->GetModelIndex() );
+	const IVModel *pModel = engineServer->GetModel( pInstance->GetModelIndex() );
 	if ( pModel )
 	{
 		Vector mins, maxs;
-		modelinfo->GetModelBounds(pInstance->GetModelIndex(), mins, maxs );//pModel
+		pModel->GetModelBounds( mins, maxs );//pModel
 		pInstance->SetCollisionBounds( mins*flScale, maxs*flScale );
 	}
 

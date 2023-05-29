@@ -317,7 +317,7 @@ void UTIL_Bubbles( const Vector& mins, const Vector& maxs, int count )
 
 	CPASFilter filter( mid );
 
-	int bubbles = modelinfo->GetModelIndex( "sprites/bubble.vmt" );
+	int bubbles = engineClient->GetModelIndex( "sprites/bubble.vmt" );
 
 	te->Bubbles( filter, 0.0,
 		&mins, &maxs, flHeight, bubbles, count, 8.0 );
@@ -1123,7 +1123,7 @@ unsigned char UTIL_ComputeEntityFade( C_BaseEntity *pEntity, float flMinDist, fl
 		float flRadius = vecMins.DistTo( vecMaxs ) * 0.5f;
 
 		Vector vecAbsCenter;
-		if ( modelinfo->GetModelType( pEntity->GetModelIndex() ) == mod_brush )//pEntity->GetModel()
+		if (pEntity->GetModel()&&pEntity->GetModel()->GetModelType() == mod_brush)//pEntity->GetModel()
 		{
 			Vector vecRenderMins, vecRenderMaxs;
 			pEntity->GetRenderBoundsWorldspace( vecRenderMins, vecRenderMaxs );

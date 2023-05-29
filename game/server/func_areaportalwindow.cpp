@@ -68,7 +68,7 @@ void CFuncAreaPortalWindow::Activate()
 	CBaseEntity *pBackground = gEntList.FindEntityByName( NULL, STRING( m_iBackgroundBModelName ) );
 	if( pBackground )
 	{
-		m_iBackgroundModelIndex  = modelinfo->GetModelIndex( STRING( pBackground->GetModelName() ) );
+		m_iBackgroundModelIndex  = engineServer->GetModelIndex( STRING( pBackground->GetModelName() ) );
 		pBackground->AddEffects( EF_NODRAW ); // we will draw for it.
 	}
 

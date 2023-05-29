@@ -1464,7 +1464,7 @@ public:
 			CNodeEnt::m_nNodeCount = 0;
 
 			CRespawnEntitiesFilter filter;
-			MapEntity_ParseAllEntities(engineServer->GetMapEntitiesString(), &filter, true );
+			MapEntity_ParseAllEntities(engineServer->GetWorldModel()->GetModelName(), engineServer->GetMapEntitiesString(), &filter, true );
 
 			// Allocate a CBasePlayer for pev, and call spawn
 			if ( nPlayerIndex >= 0 )

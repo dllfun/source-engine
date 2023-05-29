@@ -87,8 +87,8 @@ static inline void RecordSpriteSpray( const Vector& start, const Vector &directi
 
 	if ( clienttools->IsInRecordingMode() )
 	{
-		const IVModel* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName(nModelIndex) : "";//pModel
+		const IVModel* pModel = (nModelIndex != 0) ? engineClient->GetModel( nModelIndex ) : NULL;
+		const char *pModelName = pModel ? pModel->GetModelName() : "";//pModel
 
 		KeyValues *msg = new KeyValues( "TempEntity" );
 
@@ -139,7 +139,7 @@ void TE_SpriteSpray( IRecipientFilter& filter, float delay, KeyValues *pKeyValue
 	vecDirection.y = pKeyValues->GetFloat( "directiony" );
 	vecDirection.z = pKeyValues->GetFloat( "directionz" );
 	const char *pModelName = pKeyValues->GetString( "model" );
-	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
+	int nModelIndex = pModelName[0] ? engineClient->GetModelIndex( pModelName ) : 0;
 	int nSpeed = pKeyValues->GetInt( "speed" );
 	float flNoise = pKeyValues->GetFloat( "noise" );
 	int nCount = pKeyValues->GetInt( "count" );

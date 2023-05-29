@@ -210,7 +210,7 @@ class CAI_HintManager
 	friend class CAI_Hint;
 public:
 	// Hint node creation
-	static CAI_Hint		*CreateHint( HintNodeData *pNodeData, const char *pMapData = NULL );
+	static CAI_Hint		*CreateHint( HintNodeData *pNodeData,const char* pMapName, const char *pMapData );
 	static void			DrawHintOverlays(float flDrawDuration);
 
 	static void			AddHint( CAI_Hint *pTestHint );

@@ -420,7 +420,7 @@ bool PhysIsFinalTick()
 IPhysicsObject *PhysCreateWorld( CBaseEntity *pWorld )
 {
 	staticpropmgr->CreateVPhysicsRepresentations( physenv, &g_SolidSetup, pWorld );
-	return PhysCreateWorld_Shared(engineServer->GetWorldModel(), pWorld, modelinfo->GetVCollide(1), g_PhysDefaultObjectParams );
+	return PhysCreateWorld_Shared(engineServer->GetWorldModel(), pWorld, engineServer->GetWorldModel()->GetVCollide(), g_PhysDefaultObjectParams );
 }
 
 
@@ -1310,19 +1310,19 @@ CON_COMMAND_F(surfaceprop, "Reports the surface properties at the cursor", FCVAR
 	if ( tr.DidHit() )
 	{
 		int modelIndex = tr.m_pEnt->GetModelIndex();
-		const IVModel *pModel = modelinfo->GetModel( tr.m_pEnt->GetModelIndex() );
+		const IVModel *pModel = engineServer->GetModel( tr.m_pEnt->GetModelIndex() );
 		const char *pModelName = STRING(tr.m_pEnt->GetModelName());
 		if ( tr.DidHitWorld() && tr.hitbox > 0 )
 		{
 			ICollideable *pCollide = staticpropmgr->GetStaticPropByIndex( tr.hitbox-1 );
 			pModel = pCollide->GetCollisionModel();
-			pModelName = modelinfo->GetModelName(modelIndex);//pModel
+			pModelName = pModel->GetModelName();//pModel
 		}
 		CFmtStr modelStuff;
 		if ( pModel )
 		{
-			modelStuff.sprintf("%s.%s ", modelinfo->IsTranslucent(modelIndex) ? "Translucent" : "Opaque", //pModel
-				modelinfo->IsTranslucentTwoPass(modelIndex) ? "  Two-pass." : "" );//pModel
+			modelStuff.sprintf("%s.%s ", pModel->IsTranslucent() ? "Translucent" : "Opaque", //pModel
+				pModel->IsTranslucentTwoPass() ? "  Two-pass." : "" );//pModel
 		}
 		
 		// Calculate distance to surface that was hit

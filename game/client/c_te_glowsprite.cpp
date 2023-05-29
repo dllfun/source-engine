@@ -85,8 +85,8 @@ static inline void RecordGlowSprite( const Vector &start, int nModelIndex,
 
 	if ( clienttools->IsInRecordingMode() )
 	{
-		const IVModel* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName(nModelIndex) : "";//pModel
+		const IVModel* pModel = (nModelIndex != 0) ? engineClient->GetModel( nModelIndex ) : NULL;
+		const char *pModelName = pModel ? pModel->GetModelName() : "";//pModel
 
 		KeyValues *msg = new KeyValues( "TempEntity" );
 
@@ -142,7 +142,7 @@ void TE_GlowSprite( IRecipientFilter& filter, float delay, KeyValues *pKeyValues
 	vecOrigin.y = pKeyValues->GetFloat( "originy" );
 	vecOrigin.z = pKeyValues->GetFloat( "originz" );
 	const char *pModelName = pKeyValues->GetString( "model" );
-	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
+	int nModelIndex = pModelName[0] ? engineClient->GetModelIndex( pModelName ) : 0;
 	float flDuration = pKeyValues->GetFloat( "duration" );
 	float flSize = pKeyValues->GetFloat( "size" );
 	int nBrightness = pKeyValues->GetFloat( "brightness" );

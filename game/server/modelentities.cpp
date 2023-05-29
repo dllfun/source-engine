@@ -35,6 +35,9 @@ BEGIN_DATADESC( CFuncBrush )
 
 END_DATADESC()
 
+CFuncBrush::CFuncBrush() {
+	int aaa = 0;
+}
 
 void CFuncBrush::Spawn( void )
 {
@@ -76,7 +79,7 @@ bool CFuncBrush::CreateVPhysics( void )
 	IPhysicsObject *pPhys = VPhysicsInitShadow(false, false);
 	if ( pPhys )
 	{
-		int contents = modelinfo->GetModelContents( GetModelIndex() );
+		int contents = GetModel()->GetModelContents();
 		if ( ! (contents & (MASK_SOLID|MASK_PLAYERSOLID|MASK_NPCSOLID)) )
 		{
 			// leave the physics shadow there in case it has crap constrained to it

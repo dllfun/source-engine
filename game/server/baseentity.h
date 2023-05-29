@@ -1345,7 +1345,7 @@ public:
 	
 	void					SetModelName( string_t name );
 
-	IVModel					*GetModel( void );
+	const IVModel					*GetModel( void ) const;
 
 	// These methods return a *world-aligned* box relative to the absorigin of the entity.
 	// This is used for collision purposes and is *not* guaranteed
@@ -2613,6 +2613,9 @@ inline CBaseEntity *CBaseEntity::GetBaseEntity()
 //-----------------------------------------------------------------------------
 inline void CBaseEntity::SetModelName( string_t name )
 {
+	if (STRING(name)[0] == '*') {
+		int aaa = 0;
+	}
 	m_ModelName = name;
 	DispatchUpdateTransmitState();
 }

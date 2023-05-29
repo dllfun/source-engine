@@ -17,7 +17,7 @@ static const char *s_BraceChars = "{}()\'";
 static bool s_BraceCharacters[256];
 static bool s_BuildReverseMap = true;
 
-bool MapEntity_ExtractValue( const char *pEntData, const char *keyName, char Value[MAPKEY_MAXLENGTH] )
+bool CEntityMapData::MapEntity_ExtractValue( const char *pEntData, const char *keyName, char Value[MAPKEY_MAXLENGTH] )
 {
 	char token[MAPKEY_MAXLENGTH];
 	const char *inputData = pEntData;
@@ -42,7 +42,7 @@ bool MapEntity_ExtractValue( const char *pEntData, const char *keyName, char Val
 	return false;
 }
 
-int MapEntity_GetNumKeysInEntity( const char *pEntData )
+int CEntityMapData::MapEntity_GetNumKeysInEntity( const char *pEntData )
 {
 	char token[MAPKEY_MAXLENGTH];
 	const char *inputData = pEntData;
@@ -65,7 +65,7 @@ int MapEntity_GetNumKeysInEntity( const char *pEntData )
 
 // skips to the beginning of the next entity in the data block
 // returns NULL if no more entities
-const char *MapEntity_SkipToNextEntity( const char *pMapData, char *pWorkBuffer )
+const char * CEntityMapData::MapEntity_SkipToNextEntity( const char *pMapData, char *pWorkBuffer )
 {
 	if ( !pMapData )
 		return NULL;
@@ -105,7 +105,7 @@ const char *MapEntity_SkipToNextEntity( const char *pMapData, char *pWorkBuffer 
 //			distince for each set of braceChars, since the usage is cached.
 // Output : const char * - returns a pointer to the position in the data following the newToken
 //-----------------------------------------------------------------------------
-const char *MapEntity_ParseToken( const char *data, char *newToken )
+const char * CEntityMapData::MapEntity_ParseToken( const char *data, char *newToken )
 {
 	int             c;
 	int             len;

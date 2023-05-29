@@ -326,8 +326,8 @@ void C_Plasma::Start( void )
 		
 		int	nModelIndex = ( i % 2 ) ? m_nPlasmaModelIndex : m_nPlasmaModelIndex2;
 
-		IVModel *pModel	= (IVModel *) modelinfo->GetModel( nModelIndex );
-		maxFrames	= modelinfo->GetModelFrameCount(nModelIndex);//pModel
+		IVModel *pModel	= (IVModel *)engineClient->GetModel( nModelIndex );
+		maxFrames	= pModel->ModelFrameCount();//pModel
 
 		// Setup all the information for the client entity
 		m_entFlames[i].SetModelByIndex( nModelIndex );
@@ -382,7 +382,7 @@ void C_Plasma::UpdateAnimation( void )
 	{
 		m_entFlames[i].m_flFrame += m_entFlames[i].m_flSpriteFramerate * frametime;
 
-		numFrames = modelinfo->GetModelFrameCount( m_entFlames[i].GetModelIndex() );//m_entFlames[i].GetModel()
+		numFrames = m_entFlames[i].GetModel()->ModelFrameCount();//m_entFlames[i].GetModel()
 
 		if ( m_entFlames[i].m_flFrame >= numFrames )
 		{

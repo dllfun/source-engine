@@ -515,7 +515,7 @@ void CWorld::Spawn( void )
 	// NOTE:  SHOULD NEVER BE ANYTHING OTHER THAN 1!!!
 	SetModelIndex( 1 );
 	// world model
-	SetModelName( AllocPooledString( modelinfo->GetModelName( GetModelIndex() ) ) );//GetModel()
+	SetModelName( AllocPooledString(GetModel()->GetModelName() ) );//GetModel()
 	AddFlag( FL_WORLDBRUSH );
 
 	g_EventQueue.Init();

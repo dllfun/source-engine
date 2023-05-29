@@ -1400,9 +1400,9 @@ bool CBaseEntity::IsBSPModel() const
 	if ( GetSolid() == SOLID_BSP )
 		return true;
 	
-	const IVModel *model = modelinfo->GetModel( GetModelIndex() );
+	const IVModel *model = GetModel();
 
-	if ( GetSolid() == SOLID_VPHYSICS && modelinfo->GetModelType(GetModelIndex()) == mod_brush )//model
+	if ( GetSolid() == SOLID_VPHYSICS && GetModel()->GetModelType() == mod_brush)//model
 		return true;
 
 	return false;

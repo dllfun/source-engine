@@ -4641,7 +4641,7 @@ ConVar cl_autohelp(
 
 		// DO NOT CALL SPAWN ON info_node ENTITIES!
 
-		MapEntity_ParseAllEntities(engineServer->GetMapEntitiesString(), &filter, true );
+		MapEntity_ParseAllEntities(engineServer->GetWorldModel()->GetModelName(), engineServer->GetMapEntitiesString(), &filter, true );
 	}
 
 

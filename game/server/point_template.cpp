@@ -191,10 +191,10 @@ void CPointTemplate::FinishBuildingTemplates( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CPointTemplate::AddTemplate( CBaseEntity *pEntity, const char *pszMapData, int nLen )
+void CPointTemplate::AddTemplate(const char* pMapName, CBaseEntity *pEntity, const char *pszMapData, int nLen )
 {
 	// Add it to the template list
-	int iIndex = Templates_Add( pEntity, pszMapData, nLen );
+	int iIndex = Templates_Add(pMapName, pEntity, pszMapData, nLen );
 	if ( iIndex == -1 )
 	{
 		Warning( "point_template %s failed to add template.\n", STRING(GetEntityName()) );
@@ -281,9 +281,11 @@ void CPointTemplate::PerformPrecache()
 	for ( i = 0; i < iTemplates; i++ )
 	{
 		//CBaseEntity *pEntity = NULL;
+		const char* pMapName;
 		char *pMapData;
 		int iTemplateIndex = m_hTemplates[i].iTemplateIndex;
 
+		pMapName = Templates_GetMapName(iTemplateIndex);
 		// Some templates have Entity I/O connecting the entities within the template.
 		// Unique versions of these templates need to be created whenever they're instanced.
 		int nStringSize;
@@ -304,7 +306,7 @@ void CPointTemplate::PerformPrecache()
 		nStringSize = Templates_GetStringSize( iTemplateIndex );
 
 		// Create the entity from the mapdata
-		MapEntity_PrecacheEntity( pMapData, nStringSize );
+		MapEntity_PrecacheEntity(pMapName, pMapData, nStringSize );
 	}
 }
 
@@ -334,9 +336,11 @@ bool CPointTemplate::CreateInstance( const Vector &vecOrigin, const QAngle &vecA
 	for ( i = 0; i < iTemplates; i++ )
 	{
 		CBaseEntity *pEntity = NULL;
+		const char* pMapName;
 		char *pMapData;
 		int iTemplateIndex = m_hTemplates[i].iTemplateIndex;
 
+		pMapName = Templates_GetMapName(iTemplateIndex);
 		// Some templates have Entity I/O connecting the entities within the template.
 		// Unique versions of these templates need to be created whenever they're instanced.
 		if ( AllowNameFixup() && Templates_IndexRequiresEntityIOFixup( iTemplateIndex ) )
@@ -353,7 +357,7 @@ bool CPointTemplate::CreateInstance( const Vector &vecOrigin, const QAngle &vecA
 		}
 
 		// Create the entity from the mapdata
-		MapEntity_ParseEntity( pEntity, pMapData, NULL );
+		MapEntity_ParseEntity(pMapName, pEntity, pMapData, NULL );
 		if ( pEntity == NULL )
 		{
 			Msg("Failed to initialize templated entity with mapdata: %s\n", pMapData );

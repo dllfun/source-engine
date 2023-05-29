@@ -221,7 +221,7 @@ void CParticleSystemQuery::GetRandomPointsOnControllingObjectHitBox(
 			if ( pAnimating->HitboxToWorldTransforms( hitboxbones ) )
 			{
 		
-				studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModelIndex() );//pAnimating->GetModel()
+				studiohdr_t *pStudioHdr = pAnimating->GetModel()->GetStudiomodel();//pAnimating->GetModel()
 				
 				if ( pStudioHdr )
 				{
@@ -413,7 +413,7 @@ int CParticleSystemQuery::GetControllingObjectHitBoxInfo(
 			if ( pAnimating->HitboxToWorldTransforms( hitboxbones ) )
 			{
 		
-				studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModelIndex() );//pAnimating->GetModel()
+				studiohdr_t *pStudioHdr = pAnimating->GetModel()->GetStudiomodel() ;//pAnimating->GetModel()
 				
 				if ( pStudioHdr )
 				{
@@ -500,7 +500,7 @@ bool CParticleSystemQuery::IsPointInControllingObjectHitBox(
 			if ( pAnimating->HitboxToWorldTransforms( hitboxbones ) )
 			{
 
-				studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModelIndex() );//pAnimating->GetModel()
+				studiohdr_t *pStudioHdr =  pAnimating->GetModel()->GetStudiomodel() ;//pAnimating->GetModel()
 
 				if ( pStudioHdr )
 				{

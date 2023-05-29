@@ -393,13 +393,14 @@ struct worldbrushdata_t
 	CUtlVector< dgamelump_internal_t > g_GameLumpDict;
 	char g_GameLumpFilename[128] = { 0 };
 
+	CUtlVector<model_t>	m_InlineModels;
 
 	// This is sort of a hack, but it was a little too painful to do this any other way
 	// The goal of this dude is to allow us to override the tree with some
 	// other tree (or a subtree)
 	cnode_t* map_rootnode;
 
-	char						map_name[MAX_QPATH];
+	//char						map_name[MAX_QPATH];
 	static csurface_t			nullsurface;
 
 	int									numbrushsides;
@@ -457,7 +458,7 @@ struct brushdata_t
 {
 	worldbrushdata_t	*pShared;
 	int			firstmodelsurface, nummodelsurfaces;
-
+	int				inlineModelIndex;
 	unsigned short	renderHandle;
 	unsigned short	firstnode;
 };
@@ -586,8 +587,8 @@ class model_t : public IVModel
 public:
 	void Init();
 	void Destory();
-	bool Load(const char* pName, CLumpHeaderInfo& header);
-	char* GetMapName();
+	bool Load(CLumpHeaderInfo& header);
+	//char* GetMapName();
 	int GetCMNodesCount();
 	cnode_t* GetNodes(int index);
 	int GetLeafsCount();
@@ -631,7 +632,7 @@ public:
 	void CollisionBSPData_Destroy();
 
 	void CollisionBSPData_PreLoad();
-	bool CollisionBSPData_Load(const char* pName, CLumpHeaderInfo& header);
+	bool CollisionBSPData_Load(CLumpHeaderInfo& header);
 	//void CollisionBSPData_PostLoad();
 	CUtlVector<CPhysCollide*>& GetTerrainList() {
 		return brush.pShared->m_TerrainList;
@@ -855,9 +856,12 @@ public:
 	virtual int GetModelSpriteHeight() const;
 	virtual const char* GetModelKeyValueText() const;
 	virtual bool IsUsingFBTexture(int nSkin, int nBody, void /*IClientRenderable*/* pClientRenderable) const;
-
-	
-	void		SetupSubModels(CUtlVector<model_t>&	m_InlineModels,	CUtlVector<mmodel_t>& list);
+	virtual int GetModelContents() const;
+	virtual vcollide_t* GetVCollide() const;
+	virtual int R_GetBrushModelPlaneCount() const;
+	virtual const cplane_t& R_GetBrushModelPlane(int nIndex, Vector* pOrigin) const;
+	virtual bool GetModelKeyValue(CUtlBuffer& buf) const;
+	virtual CPhysCollide* GetCollideForVirtualTerrain(int index) const;
 
 	// Returns the number of leaves
 	int LeafCount() const;
@@ -1165,6 +1169,9 @@ public:
 	mnode_t* GetNode(int index) {
 		return &brush.pShared->nodes[index];
 	}
+	int GetFirstNodeNum() {
+		return brush.firstnode;
+	}
 	mnode_t* GetFirstNode() {
 		return &brush.pShared->nodes[brush.firstnode];
 	}
@@ -1314,6 +1321,13 @@ public:
 	int Mod_GameLumpSize(int lumpId);
 	int Mod_GameLumpVersion(int lumpId);
 	bool Mod_LoadGameLump(int lumpId, void* pBuffer, int size);
+	// returns the material count...
+	int Mod_GetMaterialCount();
+	// returns the first n materials.
+	int Mod_GetModelMaterials(int count, IMaterial** ppMaterial);
+	int Mod_GetInlineModelIndex() {
+		return brush.inlineModelIndex;
+	}
 private:
 	void Mod_LoadLighting(CLumpHeaderInfo& header, CLumpInfo& lh);
 	void Mod_LoadWorldlights(CLumpInfo& lh, bool bIsHDR);
@@ -1340,7 +1354,8 @@ private:
 	void Mod_LoadSurfedges(CLumpHeaderInfo& header,medge_t* pedges);
 	//void Mod_LoadPlanes(CLumpHeaderInfo& header);
 	void Mod_LoadGameLumpDict(CLumpHeaderInfo& header);
-	
+	void SetupSubModels(CUtlVector<mmodel_t>& list);//CUtlVector<model_t>&	m_InlineModels,	
+
 
 	FileNameHandle_t	fnHandle;
 	CUtlString			strName;

@@ -245,9 +245,17 @@ void CSprite::ComputeWorldSpaceSurroundingBox( Vector *pVecWorldMins, Vector *pV
 //-----------------------------------------------------------------------------
 void CSprite::SetModel( const char *szModelName )
 {
-	int index = modelinfo->GetModelIndex( szModelName );
-	const IVModel *model = modelinfo->GetModel( index );
-	if ( model && modelinfo->GetModelType(index) != mod_sprite )//model
+	int modelIndex = -1;
+	const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+	modelIndex = engineClient->GetModelIndex(szModelName);
+	pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	modelIndex = engineServer->GetModelIndex(szModelName);
+	pModel = engineServer->GetModel(modelIndex);
+#endif
+	if (pModel && pModel->GetModelType() != mod_sprite )//model
 	{
 		Msg( "Setting CSprite to non-sprite model %s\n", szModelName?szModelName:"NULL" );
 	}

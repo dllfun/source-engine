@@ -89,7 +89,7 @@ typedef unsigned int			ClientSideAnimationListHandle_t;
 
 void RecvProxy_Sequence(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
-class C_BaseAnimating : public C_BaseEntity, private IModelLoadCallback
+class C_BaseAnimating : public C_BaseEntity , private IModelLoadCallback
 {
 public:
 	DECLARE_CLASS( C_BaseAnimating, C_BaseEntity );

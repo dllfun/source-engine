@@ -4778,14 +4778,16 @@ void Host::Host_FreeStateAndWorld( bool server )
 	// Unload and reset dynamic models
 	if ( server )
 	{
-		extern IVModelInfo* modelinfo;
-		modelinfo->OnLevelChange();
+		//extern IVModelInfo* modelinfo;
+		//modelinfo->OnLevelChange();
+		modelloader->ForceUnloadNonClientDynamicModels();
 	}
 #ifndef SWDS
 	else
 	{
-		extern IVModelInfoClient* modelinfoclient;
-		modelinfoclient->OnLevelChange();
+		//extern IVModelInfoClient* modelinfoclient;
+		//modelinfoclient->OnLevelChange();
+		modelloader->ForceUnloadNonClientDynamicModels();
 	}
 #endif
 

@@ -1080,12 +1080,12 @@ void CBreakable::Die( void )
 			// if the map specifies a model by name
 			if( strstr( modelName, ".mdl" ) != NULL )
 			{
-				iModelIndex = modelinfo->GetModelIndex( modelName );
+				iModelIndex = engineServer->GetModelIndex( modelName );
 			}
 			else	// do the hl2 / normal way
 	#endif
 
-			iModelIndex = modelinfo->GetModelIndex( g_PropDataSystem.GetRandomChunkModel(  STRING( m_iszModelName ) ) );
+			iModelIndex = engineServer->GetModelIndex( g_PropDataSystem.GetRandomChunkModel(  STRING( m_iszModelName ) ) );
 
 			// All objects except the first one in this run are marked as slaves...
 			int slaveFlag = 0;

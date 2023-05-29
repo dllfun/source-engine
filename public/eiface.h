@@ -120,6 +120,11 @@ public:
 	virtual bool		IsGenericPrecached( char const *s ) const = 0;
 
 	virtual IVModel* GetWorldModel() = 0;
+	// Returns index of model by name for precached or known dynamic models.
+	// Does not adjust reference count for dynamic models.
+	virtual int				GetModelIndex(const char* name) const = 0;
+	// Returns IVModel* pointer for a model given a precached or dynamic model index.
+	virtual const IVModel*	GetModel(int modelindex) const = 0;
 	// Note that sounds are precached using the IEngineSound interface
 
 	// Special purpose PVS checking

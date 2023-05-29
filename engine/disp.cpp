@@ -1068,7 +1068,7 @@ bool CDispInfo::TestRay(model_t* pWorld, Ray_t const& ray, float start, float en
 {
 	// Get the index associated with this disp info....
 	int idx = DispInfo_ComputeIndex(pWorld->GetDispInfos(), this);
-	CDispCollTree* pTree = CollisionBSPData_GetCollisionTree( idx );
+	CDispCollTree* pTree = CollisionBSPData_GetCollisionTree(pWorld, idx );
 	if (!pTree)
 		return false;
 

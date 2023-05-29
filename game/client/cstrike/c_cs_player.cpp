@@ -351,7 +351,7 @@ void C_CSRagdoll::ValidateModelIndex( void )
 			int index = cl_min_ct.GetInt() - 1;
 			if ( index >= 0 && index < CTPlayerModels.Count() )
 			{
-				m_nModelIndex = modelinfo->GetModelIndex(CTPlayerModels[index]);
+				m_nModelIndex = engineClient->GetModelIndex(CTPlayerModels[index]);
 			}
 		}
 		else if ( GetTeamNumber() == TEAM_TERRORIST )
@@ -359,7 +359,7 @@ void C_CSRagdoll::ValidateModelIndex( void )
 			int index = cl_min_t.GetInt() - 1;
 			if ( index >= 0 && index < TerroristPlayerModels.Count() )
 			{
-				m_nModelIndex = modelinfo->GetModelIndex(TerroristPlayerModels[index]);
+				m_nModelIndex = engineClient->GetModelIndex(TerroristPlayerModels[index]);
 			}
 		}
 	}
@@ -1200,7 +1200,7 @@ void C_CSPlayer::UpdateMinModels( void )
 			int index = cl_min_ct.GetInt() - 1;
 			if ( index >= 0 && index < CTPlayerModels.Count() )
 			{
-				modelIndex = modelinfo->GetModelIndex( CTPlayerModels[index] );
+				modelIndex = engineClient->GetModelIndex( CTPlayerModels[index] );
 			}
 		}
 		else if ( GetTeamNumber() == TEAM_TERRORIST )
@@ -1208,7 +1208,7 @@ void C_CSPlayer::UpdateMinModels( void )
 			int index = cl_min_t.GetInt() - 1;
 			if ( index >= 0 && index < TerroristPlayerModels.Count() )
 			{
-				modelIndex = modelinfo->GetModelIndex( TerroristPlayerModels[index] );
+				modelIndex = engineClient->GetModelIndex( TerroristPlayerModels[index] );
 			}
 		}
 	}
@@ -2005,10 +2005,10 @@ void C_CSPlayer::PlayReloadEffect()
 
 	// The weapon needs two models, world and view, but can only cache one. Synthesize the other.
 	const CCSWeaponInfo &info = pWeapon->GetCSWpnData();
-	const IVModel *pModel = modelinfo->GetModel( modelinfo->GetModelIndex( info.szViewModel ) );
+	const IVModel *pModel = engineClient->GetModel(engineClient->GetModelIndex( info.szViewModel ) );
 	if ( !pModel )
 		return;
-	CStudioHdr studioHdr( modelinfo->GetStudiomodel(modelinfo->GetModelIndex(info.szViewModel)), mdlcache );//pModel
+	CStudioHdr studioHdr(pModel->GetStudiomodel(), mdlcache );//pModel
 	if ( !studioHdr.IsValid() )
 		return;
 

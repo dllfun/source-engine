@@ -39,7 +39,7 @@ public:
 	// Template Entity accessors
 	int				GetNumTemplateEntities( void );
 	CBaseEntity		*GetTemplateEntity( int iTemplateNumber );
-	void			AddTemplate( CBaseEntity *pEntity, const char *pszMapData, int nLen );
+	void			AddTemplate(const char* pMapName, CBaseEntity *pEntity, const char *pszMapData, int nLen );
 	bool			ShouldRemoveTemplateEntities( void );
 	bool			AllowNameFixup();
 

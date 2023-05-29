@@ -92,8 +92,7 @@ void R_DrawBrushModel(
 void R_DrawBrushModelShadow( IClientRenderable* pRender );
 void R_BrushBatchInit( model_t* pWorld );
 
-int R_GetBrushModelPlaneCount( const model_t *model );
-const cplane_t &R_GetBrushModelPlane( const model_t *model, int nIndex, Vector *pOrigin );
+
 
 bool TangentSpaceSurfaceSetup(model_t* pWorld, SurfaceHandle_t surfID, Vector &tVect );
 void TangentSpaceComputeBasis( Vector& tangentS, Vector& tangentT, const Vector& normal, const Vector& tVect, bool negateTangent );

@@ -2002,8 +2002,8 @@ void CBaseEntity::UpdateOnRemove( void )
 int CBaseEntity::ObjectCaps( void ) 
 {
 #if 1
-	IVModel *pModel = GetModel();
-	bool bIsBrush = ( pModel && modelinfo->GetModelType(GetModelIndex()) == mod_brush );//pModel
+	const IVModel *pModel = GetModel();
+	bool bIsBrush = ( pModel && pModel->GetModelType() == mod_brush );//pModel
 
 	// We inherit our parent's use capabilities so that we can forward use commands
 	// to our parent.
@@ -2039,7 +2039,7 @@ int CBaseEntity::ObjectCaps( void )
 	}	
 
 	IVModel *pModel = GetModel();
-	if ( pModel && modelinfo->GetModelType( pModel ) == mod_brush )
+	if ( pModel && pModel->GetModelType() == mod_brush )
 		return parentCaps;
 
 	return FCAP_ACROSS_TRANSITION | parentCaps;
@@ -3155,7 +3155,7 @@ int CBaseEntity::Restore( IRestore &restore )
 		PrecacheModel( STRING( GetModelName() ) );
 
 		//Adrian: We should only need to do this after we precache. No point in setting the model again.
-		SetModelIndex( modelinfo->GetModelIndex( STRING(GetModelName() ) ) );
+		SetModelIndex(engineServer->GetModelIndex( STRING(GetModelName() ) ) );
 	}
 
 	// Restablish ground entity
@@ -4228,9 +4228,9 @@ void CBaseEntity::GetVectors(Vector* pForward, Vector* pRight, Vector* pUp) cons
 //-----------------------------------------------------------------------------
 void CBaseEntity::SetModel( const char *szModelName )
 {
-	int modelIndex = modelinfo->GetModelIndex( szModelName );
-	const IVModel *model = modelinfo->GetModel( modelIndex );
-	if ( model && modelinfo->GetModelType(modelIndex) != mod_brush )//model
+	int modelIndex = engineServer->GetModelIndex( szModelName );
+	const IVModel *model = engineServer->GetModel( modelIndex );
+	if ( model && model->GetModelType() != mod_brush )//model
 	{
 		Msg( "Setting CBaseEntity to non-brush model %s\n", szModelName );
 	}
@@ -4498,10 +4498,10 @@ CStudioHdr *ModelSoundsCache_LoadModel( const char *filename )
 	int idx = engineServer->PrecacheModel( filename, true );
 	if ( idx != -1 )
 	{
-		IVModel *mdl = (IVModel*)modelinfo->GetModel( idx );
+		IVModel *mdl = (IVModel*)engineServer->GetModel( idx );
 		if ( mdl )
 		{
-			CStudioHdr *studioHdr = new CStudioHdr( modelinfo->GetStudiomodel(idx), mdlcache ); //mdl
+			CStudioHdr *studioHdr = new CStudioHdr(mdl->GetStudiomodel(), mdlcache ); //
 			if ( studioHdr->IsValid() )
 			{
 				return studioHdr;
@@ -4676,8 +4676,8 @@ void CBaseEntity::PrecacheSoundHelper( const char *pName )
 void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 {
 
-	IVModel *pModel = (IVModel*)modelinfo->GetModel( nModelIndex );
-	if ( !pModel || modelinfo->GetModelType(nModelIndex) != mod_studio )//pModel
+	IVModel *pModel = (IVModel*)engineServer->GetModel( nModelIndex );
+	if ( !pModel || pModel->GetModelType() != mod_studio )//pModel
 	{
 		return;
 	}
@@ -4685,7 +4685,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 	// sounds
 	if ( IsPC() )
 	{
-		const char *name = modelinfo->GetModelName(nModelIndex);//pModel
+		const char *name = pModel->GetModelName();//pModel
 		if ( !g_ModelSoundsCache.EntryExists( name ) )
 		{
 			char extension[ 8 ];
@@ -4722,7 +4722,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 		// Check keyvalues for auto-emitting particles
 		KeyValues *pModelKeyValues = new KeyValues("");
 		KeyValues::AutoDelete autodelete_pModelKeyValues( pModelKeyValues );
-		if ( pModelKeyValues->LoadFromBuffer( modelinfo->GetModelName(nModelIndex), modelinfo->GetModelKeyValueText(nModelIndex) ) )//pModel pModel
+		if ( pModelKeyValues->LoadFromBuffer(pModel->GetModelName(), pModel->GetModelKeyValueText() ) )//pModel pModel
 		{
 			KeyValues *pParticleEffects = pModelKeyValues->FindKey("Particles");
 			if ( pParticleEffects )
@@ -4740,7 +4740,7 @@ void CBaseEntity::PrecacheModelComponents( int nModelIndex )
 	// model anim event owned components
 	{
 		// Check animevents for particle events
-		CStudioHdr studioHdr( modelinfo->GetStudiomodel(nModelIndex), mdlcache ); //pModel
+		CStudioHdr studioHdr(pModel->GetStudiomodel(), mdlcache ); //pModel
 		if ( studioHdr.IsValid() )
 		{
 			// force animation event resolution!!!
@@ -5653,9 +5653,9 @@ void CBaseEntity::SetCheckUntouch( bool check )
 	}
 }
 
-IVModel *CBaseEntity::GetModel( void )
+const IVModel *CBaseEntity::GetModel( void ) const
 {
-	return (IVModel*)modelinfo->GetModel( GetModelIndex() );
+	return (IVModel*)engineServer->GetModel( GetModelIndex() );
 }
 
 
@@ -7235,7 +7235,7 @@ void CBaseEntity::SetCollisionBoundsFromModel()
 	if ( const IVModel *pModel = GetModel() )
 	{
 		Vector mns, mxs;
-		modelinfo->GetModelBounds(GetModelIndex(), mns, mxs );//pModel
+		pModel->GetModelBounds( mns, mxs );//pModel
 		UTIL_SetSize( this, mns, mxs );
 	}
 }

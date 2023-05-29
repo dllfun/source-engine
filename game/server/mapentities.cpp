@@ -307,7 +307,7 @@ void SpawnAllEntities( int nEntities, HierarchicalSpawn_t *pSpawnList, bool bAct
 // Purpose: Only called on BSP load. Parses and spawns all the entities in the BSP.
 // Input  : pMapData - Pointer to the entity data block to parse.
 //-----------------------------------------------------------------------------
-void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter, bool bActivateEntities)
+void MapEntity_ParseAllEntities(const char* pMapName, const char *pMapData, IMapEntityFilter *pFilter, bool bActivateEntities)
 {
 	VPROF("MapEntity_ParseAllEntities");
 
@@ -326,13 +326,13 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 	}
 
 	//  Loop through all entities in the map data, creating each.
-	for ( ; true; pMapData = MapEntity_SkipToNextEntity(pMapData, szTokenBuffer) )
+	for ( ; true; pMapData = CEntityMapData::MapEntity_SkipToNextEntity(pMapData, szTokenBuffer) )
 	{
 		//
 		// Parse the opening brace.
 		//
 		char token[MAPKEY_MAXLENGTH];
-		pMapData = MapEntity_ParseToken( pMapData, token );
+		pMapData = CEntityMapData::MapEntity_ParseToken( pMapData, token );
 
 		//
 		// Check to see if we've finished or not.
@@ -351,7 +351,7 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 		//
 		CBaseEntity *pEntity;
 		const char *pCurMapData = pMapData;
-		pMapData = MapEntity_ParseEntity(pEntity, pMapData, pFilter);
+		pMapData = MapEntity_ParseEntity(pMapName, pEntity, pMapData, pFilter);
 		if (pEntity == NULL)
 			continue;
 
@@ -360,7 +360,7 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 			// It's a template entity. Squirrel away its keyvalue text so that we can
 			// recreate the entity later via a spawner. pMapData points at the '}'
 			// so we must add one to include it in the string.
-			Templates_Add(pEntity, pCurMapData, (pMapData - pCurMapData) + 2);
+			Templates_Add(pMapName, pEntity, pCurMapData, (pMapData - pCurMapData) + 2);
 
 			// Remove the template entity so that it does not show up in FindEntityXXX searches.
 			UTIL_Remove(pEntity);
@@ -392,7 +392,7 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 			// NOTE: Nodes spawn other entities (ai_hint) if they need to have a persistent presence.
 			//		 To ensure keys are copied over into the new entity, we pass the mapdata into the
 			//		 node spawn function.
-			if ( pNode->Spawn( pCurMapData ) < 0 )
+			if ( pNode->Spawn(pMapName, pCurMapData ) < 0 )
 			{
 				gEntList.CleanupDeleteList();
 			}
@@ -462,7 +462,7 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 				if ( pSpawnList[iEntNum].m_pEntity == pEntity )
 				{
 					// Give the point_template the mapdata
-					pPointTemplate->AddTemplate( pEntity, pSpawnMapData[iEntNum].m_pMapData, pSpawnMapData[iEntNum].m_iMapDataLength );
+					pPointTemplate->AddTemplate(pMapName, pEntity, pSpawnMapData[iEntNum].m_pMapData, pSpawnMapData[iEntNum].m_iMapDataLength );
 
 					if ( pPointTemplate->ShouldRemoveTemplateEntities() )
 					{
@@ -515,9 +515,9 @@ void SpawnHierarchicalList( int nEntities, HierarchicalSpawn_t *pSpawnList, bool
 // Purpose: 
 // Input  : *pEntData - 
 //-----------------------------------------------------------------------------
-void MapEntity_PrecacheEntity( const char *pEntData, int &nStringSize )
+void MapEntity_PrecacheEntity(const char* pMapName, const char *pEntData, int &nStringSize )
 {
-	CEntityMapData entData( (char*)pEntData, nStringSize );
+	CEntityMapData entData(pMapName, (char*)pEntData, nStringSize );
 	char className[MAPKEY_MAXLENGTH];
 	
 	if (!entData.ExtractValue("classname", className))
@@ -545,9 +545,9 @@ void MapEntity_PrecacheEntity( const char *pEntData, int &nStringSize )
 //			pEntData - Data block to parse to extract entity keys.
 // Output : Returns the current position in the entity data block.
 //-----------------------------------------------------------------------------
-const char *MapEntity_ParseEntity(CBaseEntity *&pEntity, const char *pEntData, IMapEntityFilter *pFilter)
+const char *MapEntity_ParseEntity(const char* pMapName, CBaseEntity *&pEntity, const char *pEntData, IMapEntityFilter *pFilter)
 {
-	CEntityMapData entData( (char*)pEntData );
+	CEntityMapData entData(pMapName, (char*)pEntData );
 	char className[MAPKEY_MAXLENGTH];
 	
 	if (!entData.ExtractValue("classname", className))

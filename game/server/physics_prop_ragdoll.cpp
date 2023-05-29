@@ -231,7 +231,7 @@ void CRagdollProp::OnRestore()
 		return;
 
 	// JAY: Reset collision relationships
-	RagdollSetupCollisions( m_ragdoll, modelinfo->GetVCollide( GetModelIndex() ), GetModelIndex() );
+	RagdollSetupCollisions( m_ragdoll, GetModel()->GetVCollide(), GetModelIndex() );
 	VPhysicsUpdate( VPhysicsGetObject() );
 }
 
@@ -533,7 +533,7 @@ void CRagdollProp::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 bool CRagdollProp::HasPhysgunInteraction( const char *pszKeyName, const char *pszValue )
 {
 	KeyValues *modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModelIndex() ), modelinfo->GetModelKeyValueText( GetModelIndex() ) ) )//GetModel() GetModel()
+	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//GetModel() GetModel()
 	{
 		KeyValues *pkvPropData = modelKeyValues->FindKey("physgun_interactions");
 		if ( pkvPropData )
@@ -687,7 +687,7 @@ void CRagdollProp::InitRagdoll( const Vector &forceVector, int forceBone, const 
 	ragdollparams_t params;
 	params.pGameData = static_cast<void *>( static_cast<CBaseEntity *>(this) );
 	params.modelIndex = GetModelIndex();
-	params.pCollide = modelinfo->GetVCollide( params.modelIndex );
+	params.pCollide = engineServer->GetModel(params.modelIndex)->GetVCollide();
 	params.pStudioHdr = GetModelPtr();
 	params.forceVector = forceVector;
 	params.forceBoneIndex = forceBone;
@@ -1548,7 +1548,7 @@ void CRagdollPropAttached::InitRagdollAttached(
 	SetParent( pFollow );
 	SetOwnerEntity( pFollow );
 
-	RagdollActivate( m_ragdoll, modelinfo->GetVCollide( GetModelIndex() ), GetModelIndex() );
+	RagdollActivate( m_ragdoll, GetModel()->GetVCollide(), GetModelIndex() );
 
 	// add a bunch of dampening to the ragdoll
 	for ( int i = 0; i < m_ragdoll.listCount; i++ )
@@ -1572,7 +1572,7 @@ void CRagdollPropAttached::InitRagdollAttached(
 CRagdollProp *CreateServerRagdollAttached( CBaseAnimating *pAnimating, const Vector &vecForce, int forceBone, int collisionGroup, IPhysicsObject *pAttached, CBaseAnimating *pParentEntity, int boneAttach, const Vector &originAttached, int parentBoneAttach, const Vector &boneOrigin )
 {
 	// Return immediately if the model doesn't have a vcollide
-	if ( modelinfo->GetVCollide( pAnimating->GetModelIndex() ) == NULL )
+	if (pAnimating->GetModel()->GetVCollide( ) == NULL )
 		return NULL;
 
 	CRagdollPropAttached *pRagdoll = (CRagdollPropAttached *)CBaseEntity::CreateNoSpawn( "prop_ragdoll_attached", pAnimating->GetAbsOrigin(), vec3_angle, NULL );

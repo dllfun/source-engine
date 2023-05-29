@@ -317,7 +317,7 @@ void C_ClientRagdoll::OnRestore( void )
 	pRagdollT->list[0].parentIndex = -1;
 	pRagdollT->list[0].originParentSpace.Init();
 
-	RagdollActivate( *pRagdollT, modelinfo->GetVCollide( GetModelIndex() ), GetModelIndex(), true );
+	RagdollActivate( *pRagdollT, GetModel()->GetVCollide(), GetModelIndex(), true );
 	RagdollSetupAnimatedFriction( physenv, pRagdollT, GetModelIndex() );
 
 	m_pRagdoll->BuildRagdollBounds( this );
@@ -746,7 +746,7 @@ C_BaseAnimating::~C_BaseAnimating()
 
 bool C_BaseAnimating::UsesPowerOfTwoFrameBufferTexture( void )
 {
-	return GetModel()->IsUsingFBTexture( GetSkin(), GetBody(), GetClientRenderable() );// modelinfo  GetModelIndex(),
+	return GetModel()&&GetModel()->IsUsingFBTexture( GetSkin(), GetBody(), GetClientRenderable() );// modelinfo  GetModelIndex(),
 }
 
 //-----------------------------------------------------------------------------
@@ -886,7 +886,7 @@ void C_BaseAnimating::LockStudioHdr()
 	if ( !mdl )
 		return;
 
-	m_hStudioHdr = mdl->GetCacheHandle();// modelinfo GetModelIndex()
+	m_hStudioHdr = mdl->GetCacheHandle();
 	if ( m_hStudioHdr == MDLHANDLE_INVALID )
 		return;
 
@@ -987,11 +987,11 @@ CStudioHdr *C_BaseAnimating::OnNewModel()
 
 	// Reference (and thus start loading) dynamic model
 	int nNewIndex = m_nModelIndex;
-	if ( modelinfo->GetModel( nNewIndex ) != GetModel() )
+	if ( engineClient->GetModel( nNewIndex ) != GetModel() )
 	{
 		// XXX what's authoritative? the model pointer or the model index? what a mess.
-		nNewIndex = modelinfo->GetModelIndex(GetModel()->GetModelName());// modelinfo GetModelIndex() 
-		Assert( nNewIndex < 0 || modelinfo->GetModel( nNewIndex ) == GetModel() );
+		nNewIndex = engineClient->GetModelIndex(GetModel()->GetModelName());// modelinfo GetModelIndex() 
+		Assert( nNewIndex < 0 || engineClient->GetModel( nNewIndex ) == GetModel() );
 		if ( nNewIndex < 0 )
 			nNewIndex = m_nModelIndex;
 	}
@@ -3173,7 +3173,7 @@ void C_BaseAnimating::DoInternalDrawModel( ClientModelRenderInfo_t *pInfo, DrawM
 		}
 		else if ( IsSolid() && CollisionProp()->GetSolid() == SOLID_VPHYSICS )
 		{
-			vcollide_t *pCollide = modelinfo->GetVCollide( GetModelIndex() );
+			vcollide_t *pCollide = GetModel()->GetVCollide();
 			if ( pCollide && pCollide->solidCount == 1 )
 			{
 				static color32 debugColor = {0,255,255,0};
@@ -4539,8 +4539,8 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 
 	TermRopes();
 
-	const IVModel *model = GetModel();
-	const char *pModelName = model->GetModelName();// modelinfo GetModelIndex()
+	const IVModel *pModel = GetModel();
+	const char *pModelName = pModel?pModel->GetModelName():"";// modelinfo GetModelIndex()
 
 	if ( pRagdoll->InitializeAsClientEntity( pModelName, RENDER_GROUP_OPAQUE_ENTITY ) == false )
 	{
@@ -4703,7 +4703,7 @@ void C_BaseAnimating::OnDataChanged( DataUpdateType_t updateType )
 
 	// UNDONE: The base class does this as well.  So this is kind of ugly
 	// but getting a model by index is pretty cheap...
-	const IVModel *pModel = modelinfo->GetModel( GetModelIndex() );
+	const IVModel *pModel = engineClient->GetModel( GetModelIndex() );
 	
 	if ( pModel != GetModel() )
 	{
@@ -5936,7 +5936,8 @@ bool C_BoneFollower::ShouldDraw( void )
 //-----------------------------------------------------------------------------
 int C_BoneFollower::DrawModel(IVModel* pWorld, int flags )
 {
-	vcollide_t *pCollide = modelinfo->GetVCollide( m_modelIndex );
+	const IVModel* pModel = engineClient->GetModel(m_modelIndex);
+	vcollide_t *pCollide = pModel->GetVCollide();
 	if ( pCollide )
 	{
 		static color32 debugColor = {0,255,255,0};
@@ -5949,7 +5950,8 @@ int C_BoneFollower::DrawModel(IVModel* pWorld, int flags )
 
 bool C_BoneFollower::TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace )
 {
-	vcollide_t *pCollide = modelinfo->GetVCollide( m_modelIndex );
+	const IVModel* pModel = engineClient->GetModel(m_modelIndex);
+	vcollide_t *pCollide = pModel->GetVCollide();
 	Assert( pCollide && pCollide->solidCount > m_solidIndex );
 
 	physcollision->TraceBox( ray, pCollide->solids[m_solidIndex], GetAbsOrigin(), GetAbsAngles(), &trace );

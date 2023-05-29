@@ -252,9 +252,17 @@ CBeam::CBeam( void )
 //-----------------------------------------------------------------------------
 void CBeam::SetModel( const char *szModelName )
 {
-	int modelIndex = modelinfo->GetModelIndex( szModelName );
-	const IVModel *model = modelinfo->GetModel( modelIndex );
-	if ( model && modelinfo->GetModelType(modelIndex) != mod_sprite )//model
+	int modelIndex = -1;
+	const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+	modelIndex = engineClient->GetModelIndex(szModelName);
+	pModel = engineClient->GetModel(modelIndex);
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	modelIndex = engineServer->GetModelIndex(szModelName);
+	pModel = engineServer->GetModel(modelIndex);
+#endif
+	if (pModel && pModel->GetModelType() != mod_sprite )//model
 	{
 		Msg( "Setting CBeam to non-sprite model %s\n", szModelName );
 	}
@@ -909,7 +917,14 @@ void CBeam::OnDataChanged( DataUpdateType_t updateType )
 	MarkMessageReceived();
 
 	// Make sure that the correct model is referenced for this entity
-	SetModelPointer( modelinfo->GetModel( GetModelIndex() ) );
+	const IVModel* pModel = NULL;
+#ifdef CLIENT_DLL
+	pModel = engineClient->GetModel(GetModelIndex());
+#endif // CLIENT_DLL
+#ifdef GAME_DLL
+	pModel = engineServer->GetModel(GetModelIndex());
+#endif
+	SetModelPointer( pModel );
 
 	// Convert weapon world models to viewmodels if they're weapons being carried by the local player
 	for (int i=0;i<MAX_BEAM_ENTS;i++)

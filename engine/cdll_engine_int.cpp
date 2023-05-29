@@ -359,6 +359,8 @@ public:
 	int GetLocalPlayer( void );
 	float GetLastTimeStamp( void );
 	IVModel* GetWorldModel( void );
+	virtual int GetModelIndex(const char* name) const;
+	virtual const model_t* GetModel(int modelindex) const;
 	const IVModel *LoadModel( const char *pName, bool bProp );
 	void UnloadModel( const IVModel *model, bool bProp );
 	CSentence *GetSentence( CAudioSource *pAudioSource );
@@ -784,6 +786,51 @@ bool CEngineClient::MapHasHDRLighting( void)
 
 IVModel* CEngineClient::GetWorldModel(void) {
 	return g_pHost->Host_GetWorldModel();
+}
+
+int CEngineClient::GetModelIndex(const char* name) const
+{
+	if (!name)
+		return -1;
+
+	// Order of preference: precached, networked, client-only.
+	int nIndex = cl.LookupModelIndex(name);
+	if (nIndex != -1)
+		return nIndex;
+
+	//	INetworkStringTable* pTable = GetDynamicModelStringTable();
+	//	if ( pTable )
+	//	{
+	//		int netdyn = pTable->FindStringIndex( name );
+	//		if ( netdyn != INVALID_STRING_INDEX )
+	//		{
+	//			Assert( !m_NetworkedDynamicModels.IsValidIndex( netdyn ) || V_strcmp( m_NetworkedDynamicModels[netdyn]->strName, name ) == 0 );
+	//			return NETDYNAMIC_TO_MODEL( netdyn );
+	//		}
+	//
+	//#if defined( DEMO_BACKWARDCOMPATABILITY ) && !defined( SWDS )
+	//		// dynamic model tables in old system did not have a full path with "models/" prefix
+	//		if ( V_strnicmp( name, "models/", 7 ) == 0 && demoplayer && demoplayer->IsPlayingBack() && demoplayer->GetProtocolVersion() < PROTOCOL_VERSION_20 )
+	//		{
+	//			netdyn = pTable->FindStringIndex( name + 7 );
+	//			if ( netdyn != INVALID_STRING_INDEX )
+	//			{
+	//				Assert( !m_NetworkedDynamicModels.IsValidIndex( netdyn ) || V_strcmp( m_NetworkedDynamicModels[netdyn]->strName, name ) == 0 );
+	//				return NETDYNAMIC_TO_MODEL( netdyn );
+	//			}
+	//		}
+	//#endif
+	//	}
+
+	return -1;// GetModelClientSideIndex(name);
+}
+
+const model_t* CEngineClient::GetModel(int modelindex) const
+{
+	//if (IsDynamicModelIndex(modelindex))
+	//	return NULL;// LookupDynamicModel(modelindex);
+
+	return cl.GetModel(modelindex);
 }
 
 const IVModel *CEngineClient::LoadModel( const char *pName, bool bProp )

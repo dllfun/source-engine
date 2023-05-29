@@ -1257,10 +1257,10 @@ void C_RopeKeyframe::OnDataChanged( DataUpdateType_t updateType )
 
 	// Figure out the material name.
 	char str[512];
-	const IVModel *pModel = modelinfo->GetModel( m_iRopeMaterialModelIndex );
+	const IVModel *pModel = engineClient->GetModel( m_iRopeMaterialModelIndex );
 	if ( pModel )
 	{
-		Q_strncpy( str, modelinfo->GetModelName(m_iRopeMaterialModelIndex), sizeof( str ) );//pModel
+		Q_strncpy( str, pModel->GetModelName(), sizeof( str ) );//pModel
 
 		// Get rid of the extension because the material system doesn't want it.
 		char *pExt = Q_stristr( str, ".vmt" );
