@@ -399,7 +399,7 @@ void CSpriteTrail::UpdateTrail( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int CSpriteTrail::DrawModel( int flags )
+int CSpriteTrail::DrawModel(IVModel* pWorld, int flags )
 {
 	VPROF_BUDGET( "CSpriteTrail::DrawModel", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	

@@ -1100,7 +1100,7 @@ void CVideoMode_Common::DrawNullBackground( void *hHDC, int w, int h )
         if (pWorld != NULL )
         {
             rc.left += 10;
-            DrawText( hdc, modelloader->GetName(pWorld), -1, &rc, DT_NOPREFIX | DT_VCENTER | DT_SINGLELINE  );
+            DrawText( hdc, pWorld->GetModelName(), -1, &rc, DT_NOPREFIX | DT_VCENTER | DT_SINGLELINE  );
         }
 
         SetTextColor( hdc, oldFgColor );

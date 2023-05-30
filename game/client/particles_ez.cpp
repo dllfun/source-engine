@@ -139,22 +139,22 @@ void DrawParticleSingletons( bool bInSkybox )
 {
 	if ( g_pSimpleSingleton[bInSkybox].IsValid() )
 	{
-		g_pSimpleSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
+		g_pSimpleSingleton[bInSkybox]->GetBinding().DrawModel(engineClient->GetWorldModel(), 1 );
 	}
 
 	if ( g_pEmberSingleton[bInSkybox].IsValid() )
 	{
-		g_pEmberSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
+		g_pEmberSingleton[bInSkybox]->GetBinding().DrawModel(engineClient->GetWorldModel(), 1 );
 	}
 
 	if ( g_pFireSmokeSingleton[bInSkybox].IsValid() )
 	{
-		g_pFireSmokeSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
+		g_pFireSmokeSingleton[bInSkybox]->GetBinding().DrawModel(engineClient->GetWorldModel(), 1 );
 	}
 	
 	if ( g_pFireSingleton[bInSkybox].IsValid() )
 	{
-		g_pFireSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
+		g_pFireSingleton[bInSkybox]->GetBinding().DrawModel(engineClient->GetWorldModel(), 1 );
 	}
 }
 

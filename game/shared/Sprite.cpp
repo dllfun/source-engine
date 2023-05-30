@@ -728,7 +728,7 @@ void CSprite::SetModelPointer(const IVModel* pModel)
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int CSprite::DrawModel( int flags )
+int CSprite::DrawModel(IVModel* pWorld, int flags )
 {
 	VPROF_BUDGET( "CSprite::DrawModel", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	//See if we should draw

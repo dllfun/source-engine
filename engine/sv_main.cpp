@@ -2658,8 +2658,8 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	for ( i = 1 ; i < pWorld->GetSubmodelsCount() ; i++ )
 	{
 		// Add in world brush models
-		char localmodel[5]; // inline model names "*1", "*2" etc
-		Q_snprintf( localmodel, sizeof( localmodel ), "*%i", i );
+		char localmodel[MAX_PATH]; // inline model names "*1", "*2" etc
+		Q_snprintf( localmodel, sizeof( localmodel ), "*%s*%i", pWorld->GetModelName(), i );
 
 		PrecacheModel( localmodel, RES_FATALIFMISSING | RES_PRELOAD, modelloader->GetModelForName( localmodel, IModelLoader::FMODELLOADER_SERVER ) );
 	}

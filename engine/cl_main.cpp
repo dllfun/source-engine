@@ -600,7 +600,7 @@ void CL_ClearState ( model_t* pWorld )
 		if (pWorld)
 		{
 			char mapname[256];
-			CL_SetupMapName( modelloader->GetName(pWorld), mapname, sizeof( mapname ) );
+			CL_SetupMapName(pWorld->GetModelName(), mapname, sizeof( mapname ) );
 			phonehome->Message( IPhoneHome::PHONE_MSG_MAPEND, mapname );
 		}
 		audiosourcecache->LevelShutdown();
@@ -1424,7 +1424,7 @@ void CL_TakeSnapshotAndSwap()
 		{
 			if ( world && world->GetModel() )
 			{
-				Q_FileBase( modelloader->GetName( ( model_t *)world->GetModel() ), base, sizeof( base ) );
+				Q_FileBase(world->GetModel()->GetModelName(), base, sizeof( base ) );
 
 				if ( IsX360() )
 				{
@@ -2620,7 +2620,7 @@ void CL_SetSteamCrashComment(model_t* pWorld)
 
 	if (pWorld)
 	{
-		CL_SetupMapName( modelloader->GetName(pWorld), map, sizeof( map ) );
+		CL_SetupMapName(pWorld->GetModelName(), map, sizeof( map ) );
 	}
 
 	DisplaySystemVersion( osversion, sizeof( osversion ) );

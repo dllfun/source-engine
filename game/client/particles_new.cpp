@@ -501,7 +501,7 @@ void CNewParticleEffect::DebugDrawBbox ( bool bCulled )
 //-----------------------------------------------------------------------------
 // Rendering
 //-----------------------------------------------------------------------------
-int CNewParticleEffect::DrawModel( int flags )
+int CNewParticleEffect::DrawModel(IVModel* pWorld, int flags )
 {
 	VPROF_BUDGET( "CNewParticleEffect::DrawModel", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	if ( r_DrawParticles.GetBool() == false )

@@ -1354,7 +1354,6 @@ private:
 	void Mod_LoadSurfedges(CLumpHeaderInfo& header,medge_t* pedges);
 	//void Mod_LoadPlanes(CLumpHeaderInfo& header);
 	void Mod_LoadGameLumpDict(CLumpHeaderInfo& header);
-	void SetupSubModels(CUtlVector<mmodel_t>& list);//CUtlVector<model_t>&	m_InlineModels,	
 
 
 	FileNameHandle_t	fnHandle;

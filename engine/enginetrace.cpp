@@ -1068,7 +1068,7 @@ void CEngineTrace::ClipRayToCollideable( const Ray_t &ray, unsigned int fMask, I
 	if ( pModel && pModel->GetModelType() == mod_studio )
 	{
 		bIsStudioModel = true;
-		pStudioHdr = (studiohdr_t *)modelloader->GetExtraData( (model_t*)pModel );
+		pStudioHdr = (studiohdr_t *)pModel->GetModelExtraData();
 		// Cull if the collision mask isn't set + we're not testing hitboxes.
 		if ( (( fMask & CONTENTS_HITBOX ) == 0) )
 		{

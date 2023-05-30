@@ -192,7 +192,7 @@ int C_LocalTempEntity::DrawStudioModel( int flags )
 // Purpose: 
 // Input  : flags - 
 //-----------------------------------------------------------------------------
-int	C_LocalTempEntity::DrawModel( int flags )
+int	C_LocalTempEntity::DrawModel(IVModel* pWorld, int flags )
 {
 	int drawn = 0;
 

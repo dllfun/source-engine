@@ -51,7 +51,7 @@ public:
 	virtual void UpdateClientSideAnimation();
 	void DoAnimationEvent( PlayerAnimEvent_t event, int nData );
 
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 	virtual void AddEntity( void );
 
 	QAngle GetAnimEyeAngles( void ) { return m_angEyeAngles; }

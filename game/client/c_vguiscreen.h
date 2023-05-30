@@ -71,7 +71,7 @@ public:
 
 	virtual void PreDataUpdate( DataUpdateType_t updateType );
 	virtual void OnDataChanged( DataUpdateType_t type );
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 	virtual bool ShouldDraw( void );
 	virtual void ClientThink( );
 	virtual void GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pOrigin, QAngle *pAngles );

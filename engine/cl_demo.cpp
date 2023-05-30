@@ -366,7 +366,7 @@ void CDemoRecorder::WriteBSPDecals(model_t* pWorld)
 
 		if ( pModel )
 		{
-			decal.m_nModelIndex = cl.LookupModelIndex( modelloader->GetName( pModel ) );
+			decal.m_nModelIndex = cl.LookupModelIndex(pModel->GetModelName() );
 		}
 
 		decal.WriteToBuffer( msg );
@@ -590,7 +590,7 @@ void CDemoRecorder::StartupDemoFile( model_t* pWorld )
 	dh->networkprotocol = PROTOCOL_VERSION;
 	Q_strncpy(dh->demofilestamp, DEMO_HEADER_ID, sizeof(dh->demofilestamp) );
 
-	Q_FileBase( modelloader->GetName(pWorld), dh->mapname, sizeof( dh->mapname ) );
+	Q_FileBase(pWorld->GetModelName(), dh->mapname, sizeof( dh->mapname ) );
 
 	char szGameDir[MAX_OSPATH];
 	Q_strncpy(szGameDir, com_gamedir, sizeof( szGameDir ) );

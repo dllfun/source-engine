@@ -80,7 +80,7 @@ int model_t::ModelFrameCount() const//model_t *model
 	}
 	else if ( type == mod_studio )//model->
 	{
-		count = R_StudioBodyVariations( ( studiohdr_t * )modelloader->GetExtraData( this ) );//model
+		count = R_StudioBodyVariations( ( studiohdr_t * )this->GetModelExtraData() );//model
 	}
 
 	if ( count < 1 )
@@ -413,7 +413,7 @@ const char* model_t::GetModelName() const
 	//	return "?";
 	//}
 
-	return modelloader->GetName(this);
+	return this->strName;;
 }
 
 const char* CModelInfo::GetModelName(int modelIndex) const
@@ -460,7 +460,7 @@ void model_t::GetModelRenderBounds(Vector& mins, Vector& maxs) const//const mode
 	{
 	case mod_studio:
 	{
-		studiohdr_t* pStudioHdr = (studiohdr_t*)modelloader->GetExtraData((model_t*)this);
+		studiohdr_t* pStudioHdr = (studiohdr_t*)this->GetModelExtraData();
 		Assert(pStudioHdr);
 
 		// NOTE: We're not looking at the sequence box here, although we could
@@ -595,7 +595,35 @@ int CModelInfo::GetModelType( const model_t *model ) const
 
 void* model_t::GetModelExtraData() const//const model_t* model
 {
-	return modelloader->GetExtraData((model_t*)this);
+	switch (this->type)
+	{
+	case mod_sprite:
+	{
+		// sprites don't use the real cache yet
+		if (this->type == mod_sprite)
+		{
+			// The sprite got unloaded.
+			if (!(IModelLoader::FMODELLOADER_LOADED & this->nLoadFlags))
+			{
+				return NULL;
+			}
+
+			return this->sprite.sprite;
+		}
+	}
+	break;
+
+	case mod_studio:
+		return g_pMDLCache->GetStudioHdr(this->studio);
+
+	default:
+	case mod_brush:
+		// Should never happen
+		Assert(0);
+		break;
+	};
+
+	return NULL;
 }
 
 void* CModelInfo::GetModelExtraData(int modelIndex)
@@ -623,7 +651,7 @@ const studiohdr_t *CModelInfo::FindModel( const studiohdr_t *pStudioHdr, void **
 		*cache = (void *)model;
 	}
 
-	return (const studiohdr_t *)modelloader->GetExtraData( (model_t *)model );
+	return (const studiohdr_t *)model->GetModelExtraData();
 }
 
 

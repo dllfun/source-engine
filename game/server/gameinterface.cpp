@@ -973,6 +973,17 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	//Tony; parse custom manifest if exists!
 	ParseParticleEffectsMap( pMapName, false );
 
+	char szMapFile[MAX_PATH] = { 0 };
+	if (IsPC() || !IsX360())
+	{
+		// pc names are as is
+		Q_snprintf(szMapFile, sizeof(szMapFile), "maps/%s.bsp", pMapName);
+	}
+	else if (IsX360())
+	{
+		Q_snprintf(szMapFile, sizeof(szMapFile), "maps/%s.360.bsp", pMapName);
+	}
+
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()
 	if ( loadGame )
@@ -991,7 +1002,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 		{
 			if ( pOldLevel )
 			{
-				MapEntity_ParseAllEntities(pMapName, pMapEntities );
+				MapEntity_ParseAllEntities(szMapFile, pMapEntities );
 			}
 			else
 			{
@@ -1036,7 +1047,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 		// Clear out entity references, and parse the entities into it.
 		g_MapEntityRefs.Purge();
 		CMapLoadEntityFilter filter;
-		MapEntity_ParseAllEntities(pMapName, pMapEntities, &filter );
+		MapEntity_ParseAllEntities(szMapFile, pMapEntities, &filter );
 
 		g_pServerBenchmark->StartBenchmark();
 

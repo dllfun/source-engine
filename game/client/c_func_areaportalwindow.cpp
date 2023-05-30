@@ -29,7 +29,7 @@ public:
 
 	virtual void	ComputeFxBlend();
 	virtual bool	IsTransparent();
-	virtual int		DrawModel( int flags );
+	virtual int		DrawModel(IVModel* pWorld, int flags );
 	virtual bool	ShouldReceiveProjectedTextures( int flags );
 
 private:
@@ -80,7 +80,7 @@ bool C_FuncAreaPortalWindow::IsTransparent()
 }
 
 
-int C_FuncAreaPortalWindow::DrawModel( int flags )
+int C_FuncAreaPortalWindow::DrawModel(IVModel* pWorld, int flags )
 {
 	if ( !m_bReadyToDraw )
 		return 0;

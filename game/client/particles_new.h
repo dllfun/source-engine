@@ -75,7 +75,7 @@ public:
 												 const char *pDebugName = NULL );
 	static CSmartPtr<CNewParticleEffect> Create( CBaseEntity *pOwner, CParticleSystemDefinition *pDef,
 												 const char *pDebugName = NULL );
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 
 	void DebugDrawBbox ( bool bCulled );
 

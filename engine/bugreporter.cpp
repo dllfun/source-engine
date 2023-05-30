@@ -360,7 +360,7 @@ static int GetNumberForMap()
 		return 1;
 
 	char mapname[256];
-	CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
+	CL_SetupMapName(g_pHost->Host_GetWorldModel()->GetModelName(), mapname, sizeof( mapname ) );
 
 	KeyValues *resfilekeys = new KeyValues( "mapnumber" );
 	if ( resfilekeys->LoadFromFile( g_pFileSystem, "scripts/bugreport_mapnumber.txt", "GAME" ) )
@@ -1776,7 +1776,7 @@ void CBugUIPanel::OnSubmit()
 	if (g_pHost->Host_GetWorldModel())
 	{
 		char mapname[256];
-		CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
+		CL_SetupMapName(g_pHost->Host_GetWorldModel()->GetModelName(), mapname, sizeof( mapname ) );
 
 		Q_snprintf( title, sizeof( title ), "%s: %s", mapname, temp );
 	}
@@ -1858,7 +1858,7 @@ void CBugUIPanel::OnSubmit()
 		extern CGlobalVars g_ServerGlobalVariables;
 		char misc2[ 256 ];
 
-		time_t mapfiletime = g_pFileSystem->GetFileTime( modelloader->GetName(g_pHost->Host_GetWorldModel()), "GAME" );
+		time_t mapfiletime = g_pFileSystem->GetFileTime(g_pHost->Host_GetWorldModel()->GetModelName(), "GAME" );
 		if ( !isPublic && mapfiletime != 0L )
 		{
 			char filetimebuf[ 64 ];
@@ -3037,7 +3037,7 @@ int CBugUIPanel::GetArea()
 
 	if (g_pHost->Host_GetWorldModel())
 	{		
-		CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
+		CL_SetupMapName(g_pHost->Host_GetWorldModel()->GetModelName(), mapname, sizeof( mapname ) );
 		iNewTitleLength = (80 - (strlen( mapname )+2)); 		
 	}
 	m_pTitle->SetMaximumCharCount( iNewTitleLength );

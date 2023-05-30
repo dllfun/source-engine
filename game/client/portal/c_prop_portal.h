@@ -68,7 +68,7 @@ public:
 
 	virtual void			OnPreDataChanged( DataUpdateType_t updateType );
 	virtual void			OnDataChanged( DataUpdateType_t updateType );
-	virtual int				DrawModel( int flags );
+	virtual int				DrawModel(IVModel* pWorld, int flags );
 	void					UpdateOriginPlane( void );
 	void					UpdateGhostRenderables( void );
 

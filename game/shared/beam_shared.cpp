@@ -874,7 +874,7 @@ bool CBeam::OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity *predicte
 //extern bool g_bRenderingScreenshot;
 extern ConVar r_drawviewmodel;
 
-int CBeam::DrawModel( int flags )
+int CBeam::DrawModel(IVModel* pWorld, int flags )
 {
 	if ( !m_bReadyToDraw )
 		return 0;

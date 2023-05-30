@@ -559,7 +559,7 @@ void C_VGuiScreen::DrawScreenOverlay()
 //-----------------------------------------------------------------------------
 // Draws the panel using a 3D transform...
 //-----------------------------------------------------------------------------
-int	C_VGuiScreen::DrawModel( int flags )
+int	C_VGuiScreen::DrawModel(IVModel* pWorld, int flags )
 {
 	vgui::Panel *pPanel = m_PanelWrapper.GetPanel();
 	if (!pPanel || !IsActive())

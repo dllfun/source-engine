@@ -43,7 +43,7 @@ public:
 // IClientRenderable.
 public:
 
-	virtual int			DrawModel( int flags );
+	virtual int			DrawModel(IVModel* pWorld, int flags );
 
 
 
@@ -294,7 +294,7 @@ void C_Hairball::ClientThink()
 }
 
 
-int C_Hairball::DrawModel( int flags )
+int C_Hairball::DrawModel(IVModel* pWorld, int flags )
 {
 	if ( !m_pMaterial )
 		return 0;

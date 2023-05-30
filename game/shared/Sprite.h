@@ -235,7 +235,7 @@ public:
 	virtual float	GetRenderScale( void );
 	virtual int		GetRenderBrightness( void );
 
-	virtual int		DrawModel( int flags );
+	virtual int		DrawModel(IVModel* pWorld, int flags );
 	virtual const	Vector& GetRenderOrigin();
 	virtual void	GetRenderBounds( Vector &vecMins, Vector &vecMaxs );
 	virtual float	GlowBlend( CEngineSprite *psprite, const Vector& entorigin, int rendermode, int renderfx, int alpha, float *scale );

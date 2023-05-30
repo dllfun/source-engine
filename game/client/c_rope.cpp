@@ -1409,7 +1409,7 @@ void C_RopeKeyframe::ClientThink()
 }
 
 
-int C_RopeKeyframe::DrawModel( int flags )
+int C_RopeKeyframe::DrawModel(IVModel* pWorld, int flags )
 {
 	VPROF_BUDGET( "C_RopeKeyframe::DrawModel", VPROF_BUDGETGROUP_ROPES );
 	if( !InitRopePhysics() )

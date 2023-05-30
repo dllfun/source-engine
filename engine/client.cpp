@@ -307,7 +307,7 @@ bool CClientState::SetSignonState ( int state, int count )
 
 				// Tell client .dll about the transition
 				char mapname[256];
-				CL_SetupMapName( modelloader->GetName(g_pHost->Host_GetWorldModel()), mapname, sizeof( mapname ) );
+				CL_SetupMapName(g_pHost->Host_GetWorldModel()->GetModelName(), mapname, sizeof( mapname ) );
 
 				COM_TimestampedLog( "LevelInitPreEntity: start %d", state );
 				g_ClientDLL->LevelInitPreEntity(mapname);

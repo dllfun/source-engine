@@ -90,7 +90,7 @@ public:
 
 	virtual bool IsTransparent( void ) { return true; };
 	virtual bool UsesPowerOfTwoFrameBufferTexture() { return true; };
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 
 	void ComputeLinkMatrix( void );
 

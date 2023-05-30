@@ -523,7 +523,7 @@ bool CStaticProp::Init( int index, StaticPropLump_t &lump, model_t *pModel )
 	default:
 		{
 			char szModel[MAX_PATH];
-			Q_strncpy( szModel, m_pModel ? modelloader->GetName( m_pModel ) : "unknown model", sizeof( szModel ) );
+			Q_strncpy( szModel, m_pModel ? m_pModel->GetModelName() : "unknown model", sizeof( szModel ) );
 			Warning( "CStaticProp::Init:  Map error, static_prop with bogus SOLID_ flag (%d)! (%s)\n", m_nSolidType, szModel );
 			m_nSolidType = SOLID_NONE;
 		}
@@ -933,7 +933,7 @@ void CStaticProp::DisplayStaticPropInfo( int nInfoType )
 	switch( nInfoType )
 	{
 	case 1:
-		Q_snprintf( buf, sizeof( buf ), "%s", modelloader->GetName( m_pModel ) );
+		Q_snprintf( buf, sizeof( buf ), "%s", m_pModel->GetModelName() );
 		break;
 
 	case 2:
@@ -1120,7 +1120,7 @@ void CStaticProp::InsertPropIntoKDTree()
 		else
 		{
 			char szModel[MAX_PATH];
-			Q_strncpy( szModel, m_pModel ? modelloader->GetName( m_pModel ) : "unknown model", sizeof( szModel ) );
+			Q_strncpy( szModel, m_pModel ? m_pModel->GetModelName() : "unknown model", sizeof( szModel ) );
 			Warning( "SOLID_VPHYSICS static prop with no vphysics model! (%s)\n", szModel );
 			m_nSolidType = SOLID_NONE;
 			return;
@@ -1191,7 +1191,7 @@ void CStaticProp::CreateVPhysics( IPhysicsEnvironment *pPhysEnv, IVPhysicsKeyHan
 		if ( m_nSolidType != SOLID_BBOX  )
 		{
 			char szModel[MAX_PATH];
-			Q_strncpy( szModel, m_pModel ? modelloader->GetName( m_pModel ) : "unknown model", sizeof( szModel ) );
+			Q_strncpy( szModel, m_pModel ? m_pModel->GetModelName() : "unknown model", sizeof( szModel ) );
 			Warning( "Map Error:  Static prop with bogus solid type %d! (%s)\n", m_nSolidType, szModel );
 			m_nSolidType = SOLID_NONE;
 			return;
@@ -1448,7 +1448,7 @@ void CStaticPropMgr::OutputLevelStats( void )
 			continue;
 		}
 		Assert( pModel->type == mod_studio );
-		studiohdr_t *pStudioHdr = ( studiohdr_t * )modelloader->GetExtraData( pModel );
+		studiohdr_t *pStudioHdr = ( studiohdr_t * )pModel->GetModelExtraData();
 		int bodyPart;
 		for( bodyPart = 0; bodyPart < pStudioHdr->numbodyparts; bodyPart++ )
 		{
@@ -1574,7 +1574,7 @@ void CStaticPropMgr::LevelInitClient(model_t* pWorld)
 			Vector origin = prop.GetCollisionOrigin();
 			Vector mins = prop.OBBMins();
 			Vector maxs = prop.OBBMaxs();
-			DevMsg( 1, "Static prop in 0 leaves! %s, @ %.1f, %.1f, %.1f\n", modelloader->GetName( prop.GetModel() ), origin.x, origin.y, origin.z );
+			DevMsg( 1, "Static prop in 0 leaves! %s, @ %.1f, %.1f, %.1f\n", prop.GetModel()->GetModelName(), origin.x, origin.y, origin.z );
 		}
 	}
 

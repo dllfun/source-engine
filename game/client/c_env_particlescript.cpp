@@ -41,7 +41,7 @@ public:
 	// NOTE: Ths enclosed particle effect binding will do all the drawing
 	// But we have to return true, unlike other particle systems, for the animation events to work
 	virtual bool ShouldDraw() { return true; }
-	virtual int	DrawModel( int flags ) { return 0; }
+	virtual int	DrawModel(IVModel* pWorld, int flags ) { return 0; }
 	virtual int	GetFxBlend( void ) { return 0; }
 
 	virtual void FireEvent( const Vector& origin, const QAngle& angles, int event, const char *options );

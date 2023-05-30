@@ -1469,7 +1469,7 @@ public:
 
 	//virtual void	OnDataChanged( DataUpdateType_t updateType );
 	virtual bool	ShouldDraw( void ) { return true; }
-	virtual int		DrawModel( int );
+	virtual int		DrawModel(IVModel* pWorld, int );
 
 	virtual void	GetRenderBounds( Vector& mins, Vector& maxs )
 	{
@@ -1505,7 +1505,7 @@ Vector Color32ToVector( const color32 &color )
 	return Vector( color.r * (1.0/255.0f), color.g * (1.0/255.0f), color.b * (1.0/255.0f) );
 }
 
-int	C_QuadraticBeam::DrawModel( int )
+int	C_QuadraticBeam::DrawModel(IVModel* pWorld, int )
 {
 	Draw_SetSpriteTexture( GetModel(), 0, GetRenderMode() );
 	Vector color = Color32ToVector( GetRenderColor() );

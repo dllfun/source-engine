@@ -76,10 +76,10 @@ public:
 	virtual model_t		*GetModelForIndex( int i ) = 0;
 
 	// Look up name for model
-	virtual const char *GetName( const model_t *model ) = 0;
+	//virtual const char *GetName( const model_t *model ) = 0;
 
 	// Check for extra data, reload studio model if needed
-	virtual void		*GetExtraData(const model_t *model ) = 0;
+	//virtual void		*GetExtraData(const model_t *model ) = 0;
 
 	// Get disk size for model
 	virtual int			GetModelFileSize( const char *name ) = 0;

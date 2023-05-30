@@ -72,7 +72,7 @@ public:
 	virtual bool					Frame( float frametime, int framenumber );
 
 	// C_BaseAnimating , etc. override
-	virtual int						DrawModel( int flags );
+	virtual int						DrawModel(IVModel* pWorld, int flags );
 
 	// Sets the velocity
 	void SetVelocity( const Vector &vecVelocity );

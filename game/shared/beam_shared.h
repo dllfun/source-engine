@@ -189,7 +189,7 @@ public:
 #if defined( CLIENT_DLL )
 // IClientEntity overrides.
 public:
-	virtual int			DrawModel( int flags );
+	virtual int			DrawModel(IVModel* pWorld, int flags );
 	virtual bool		IsTransparent( void );
 	virtual bool		ShouldDraw();
 	virtual bool		IgnoresZBuffer( void ) const { return true; }

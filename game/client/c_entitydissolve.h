@@ -23,7 +23,7 @@ public:
 
 	// Inherited from C_BaseEntity
 	virtual void	GetRenderBounds( Vector& theMins, Vector& theMaxs );
-	virtual int		DrawModel( int flags );
+	virtual int		DrawModel(IVModel* pWorld, int flags );
 	virtual bool	ShouldDraw() { return true; }
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 	virtual void	UpdateOnRemove( void );

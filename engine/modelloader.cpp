@@ -47,6 +47,7 @@
 #include "lumpfiles.h"
 #include "tier2/fileutils.h"
 #include "UtlSortVector.h"
+#include "tier1/UtlStringMap.h"
 #include "utlhashtable.h"
 #include "tier1/lzmaDecoder.h"
 #include "eiface.h"
@@ -162,10 +163,10 @@ public:
 	model_t			*GetModelForIndex( int i );
 
 	// Look up name for model
-	const char		*GetName( model_t const *model );
+	//const char		*GetName( model_t const *model );
 
 	// Check cache for data, reload model if needed
-	void			*GetExtraData( const model_t *model );
+	//void			*GetExtraData( const model_t *model );
 
 	int				GetModelFileSize( char const *name );
 
@@ -275,12 +276,13 @@ private:
 	void		Map_LoadModel( model_t *mod );
 	void		Map_UnloadModel( model_t *mod );
 	void		Map_UnloadCubemapSamples( model_t *mod );
+	void		SetupSubModels(model_t* pModel,CUtlVector<mmodel_t>& list);//CUtlVector<model_t>&	m_InlineModels,	
 
 	// World loading helper
-	void		SetWorldModel( model_t *mod );
-	void		ClearWorldModel(model_t* mod);
-	bool		IsWorldModelSet( void );
-	int			GetNumWorldSubmodels( void );
+	//void		SetWorldModel( model_t *mod );
+	//void		ClearWorldModel(model_t* mod);
+	//bool		IsWorldModelSet( void );
+	//int			GetNumWorldSubmodels( void );
 
 	// Sprites
 	void		Sprite_LoadModel( model_t *mod );
@@ -320,8 +322,9 @@ private:
 	CUtlMemoryPool			m_ModelPool;
 
 	//CUtlVector<model_t>	m_InlineModels;
+	CUtlStringMap<model_t*>	m_InlineModelMap;
 
-	model_t				*m_pWorldModel;
+	//model_t				*m_pWorldModel;
 	//worldbrushdata_t	m_worldBrushData;
 
 public: // HACKHACK
@@ -3346,8 +3349,9 @@ void CModelLoader::Init( void )
 {
 	m_Models.RemoveAll();
 	//m_InlineModels.Purge();
+	m_InlineModelMap.Clear();
 
-	m_pWorldModel = NULL;
+	//m_pWorldModel = NULL;
 	m_bMapRenderInfoLoaded = false;
 	m_bMapHasHDRLighting = false;
 	g_bLoadedMapHasBakedPropLighting = false;
@@ -3365,13 +3369,14 @@ void CModelLoader::Init( void )
 //-----------------------------------------------------------------------------
 void CModelLoader::Shutdown( void )
 {
-	m_pWorldModel = NULL;
+	//m_pWorldModel = NULL;
 
 	ForceUnloadNonClientDynamicModels();
 
 	UnloadAllModels( false );
 
 	m_ModelPool.Clear();
+	m_InlineModelMap.Clear();
 }
 
 int CModelLoader::GetCount( void )
@@ -3397,14 +3402,10 @@ model_t *CModelLoader::GetModelForIndex( int i )
 // Input  : *model - 
 // Output : const char
 //-----------------------------------------------------------------------------
-const char *CModelLoader::GetName( const model_t *pModel )
-{
-	if ( pModel )
-	{
-		return pModel->strName;
-	}
-	return NULL;
-}
+//const char *CModelLoader::GetName( const model_t *pModel )
+//{
+//	
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Finds the model, builds entry if not present, always returns a model
@@ -3422,7 +3423,13 @@ model_t *CModelLoader::FindModel( const char *pName )
 	// inline models are grabbed only from worldmodel
 	if ( pName[0] == '*' )
 	{
-		int modelNum = atoi( pName + 1 );
+		if (m_InlineModelMap.Defined(pName)) {
+			return m_InlineModelMap[pName];
+		}
+		else {
+			Sys_Error("bad inline model name %s", pName);
+		}
+		/*int modelNum = atoi( pName + 1 );
 		if ( !IsWorldModelSet() )
 		{
 			Sys_Error( "bad inline model number %i, worldmodel not yet setup", modelNum );
@@ -3432,7 +3439,7 @@ model_t *CModelLoader::FindModel( const char *pName )
 		{
 			Sys_Error( "bad inline model number %i", modelNum );
 		}
-		return &m_pWorldModel->brush.pShared->m_InlineModels[modelNum];
+		return &m_pWorldModel->brush.pShared->m_InlineModels[modelNum];*/
 	}
 
 	model_t *pModel = NULL;
@@ -4430,7 +4437,9 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 
 	double startTime = Plat_FloatTime();
 
-	SetWorldModel( mod );
+	//SetWorldModel( mod );
+	mod->brush.pShared = new worldbrushdata_t();// &m_worldBrushData;
+	mod->brush.renderHandle = 0;
 
 	// point at the shared world/brush data
 	//mod->brush.pShared = &m_worldBrushData;
@@ -4610,7 +4619,7 @@ void CModelLoader::Map_LoadModel( model_t *mod )
 #endif
 
 	COM_TimestampedLog( "  SetupSubModels" );
-	mod->SetupSubModels( submodelList );//m_InlineModels,
+	this->SetupSubModels(mod, submodelList );//m_InlineModels,
 
 	COM_TimestampedLog( "  RecomputeSurfaceFlags" );
 	RecomputeSurfaceFlags( mod );
@@ -4668,27 +4677,27 @@ void CModelLoader::RecomputeSurfaceFlags(model_t* pWorld)
 //-----------------------------------------------------------------------------
 // Setup sub models
 //-----------------------------------------------------------------------------
-void model_t::SetupSubModels(CUtlVector<mmodel_t> &list )//CUtlVector<model_t>&	m_InlineModels,
+void CModelLoader::SetupSubModels(model_t* pModel, CUtlVector<mmodel_t> &list )//CUtlVector<model_t>&	m_InlineModels,
 {
 	int	i;
 
-	this->brush.pShared->m_InlineModels.SetCount(this->brush.pShared->numsubmodels );
+	pModel->brush.pShared->m_InlineModels.SetCount(pModel->brush.pShared->numsubmodels );
 
-	for (i=0 ; i< this->brush.pShared->numsubmodels ; i++)
+	for (i=0 ; i< pModel->brush.pShared->numsubmodels ; i++)
 	{
 		model_t		*starmod;
 		mmodel_t	*bm;
 
 		bm = &list[i];
-		starmod = &this->brush.pShared->m_InlineModels[i];
+		starmod = &pModel->brush.pShared->m_InlineModels[i];
 
-		*starmod = *this;
+		*starmod = *pModel;
 		
 		starmod->brush.firstmodelsurface = bm->firstface;
 		starmod->brush.nummodelsurfaces = bm->numfaces;
 		starmod->brush.inlineModelIndex = i;
 		starmod->brush.firstnode = bm->headnode;
-		if ( starmod->brush.firstnode >= this->brush.pShared->numnodes )
+		if ( starmod->brush.firstnode >= pModel->brush.pShared->numnodes )
 		{
 			Sys_Error( "Inline model %i has bad firstnode", i );
 		}
@@ -4699,13 +4708,21 @@ void model_t::SetupSubModels(CUtlVector<mmodel_t> &list )//CUtlVector<model_t>&	
 	
 		if (i == 0)
 		{
-			*this = *starmod;
+			*pModel = *starmod;
 		}
 		else
 		{
-			starmod->strName.Format( "*%d", i );
+			starmod->strName.Format( "*%s*%i", pModel->GetModelName(), i );
 			starmod->fnHandle = g_pFileSystem->FindOrAddFileName( starmod->strName );
+			if (m_InlineModelMap.Defined(starmod->strName)) {
+				Error("duplicate inline model: %s\n", starmod->strName);	// dedicated servers exit
+			}
+			else {
+				m_InlineModelMap[starmod->strName] = starmod;
+			}
+
 		}
+
 	}
 }
 
@@ -4755,7 +4772,9 @@ void CModelLoader::Map_UnloadModel( model_t *mod )
 	mod->brush.pShared->m_InlineModels.Purge();
 	CM_FreeMap(mod);
 	// Don't store any reference to it here
-	ClearWorldModel(mod);
+	//ClearWorldModel(mod);
+	delete mod->brush.pShared;
+	memset(&mod->brush.pShared, 0, sizeof(mod->brush.pShared));
 	Map_SetRenderInfoAllocated( false );
 }
 
@@ -4961,9 +4980,10 @@ void CModelLoader::DumpVCollideStats()
 			}
 		}
 	}
-	for ( i = m_pWorldModel->brush.pShared->m_InlineModels.Count(); --i >= 0; )
+	model_t* pWorld = g_pHost->Host_GetWorldModel();
+	for ( i = pWorld->brush.pShared->m_InlineModels.Count(); --i >= 0; )
 	{
-		vcollide_t *pCollide = CM_VCollideForModel( i+1, &m_pWorldModel->brush.pShared->m_InlineModels[i] );
+		vcollide_t *pCollide = CM_VCollideForModel( i+1, &pWorld->brush.pShared->m_InlineModels[i] );
 		if ( pCollide )
 		{
 			int size = 0;
@@ -4975,7 +4995,7 @@ void CModelLoader::DumpVCollideStats()
 			if ( size )
 			{
 				modelsize_t elem;
-				elem.pName = m_pWorldModel->brush.pShared->m_InlineModels[i].strName;
+				elem.pName = pWorld->brush.pShared->m_InlineModels[i].strName;
 				elem.size = size;
 				list.Insert( elem );
 			}
@@ -5168,90 +5188,57 @@ void CModelLoader::Studio_UnloadModel( model_t *pModel )
 // Purpose: 
 // Input  : *mod - 
 //-----------------------------------------------------------------------------
-void CModelLoader::SetWorldModel( model_t *mod )
-{
-	Assert( mod );
-	m_pWorldModel = mod;
-	// point at the shared world/brush data
-	mod->brush.pShared = new worldbrushdata_t();// &m_worldBrushData;
-	mod->brush.renderHandle = 0;
-//	host_state.SetWorldModel( mod ); // garymcthack
-}
+//void CModelLoader::SetWorldModel( model_t *mod )
+//{
+//	Assert( mod );
+//	m_pWorldModel = mod;
+//	// point at the shared world/brush data
+//	mod->brush.pShared = new worldbrushdata_t();// &m_worldBrushData;
+//	mod->brush.renderHandle = 0;
+////	host_state.SetWorldModel( mod ); // garymcthack
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CModelLoader::ClearWorldModel(model_t* mod)
-{
-	Assert(m_pWorldModel==mod);
-	m_pWorldModel = NULL;
-	delete mod->brush.pShared;
-	memset( &mod->brush.pShared, 0, sizeof(mod->brush.pShared) );
-	//mod->brush.pShared->m_InlineModels.Purge();
-}
+//void CModelLoader::ClearWorldModel(model_t* mod)
+//{
+//	Assert(m_pWorldModel==mod);
+//	m_pWorldModel = NULL;
+//	delete mod->brush.pShared;
+//	memset( &mod->brush.pShared, 0, sizeof(mod->brush.pShared) );
+//	//mod->brush.pShared->m_InlineModels.Purge();
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CModelLoader::IsWorldModelSet( void )
-{
-	return m_pWorldModel ? true : false;
-}
+//bool CModelLoader::IsWorldModelSet( void )
+//{
+//	return m_pWorldModel ? true : false;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Output : int
 //-----------------------------------------------------------------------------
-int CModelLoader::GetNumWorldSubmodels()
-{
-	if ( !IsWorldModelSet() )
-		return 0;
-
-	return m_pWorldModel->brush.pShared->numsubmodels;
-}
+//int CModelLoader::GetNumWorldSubmodels()
+//{
+//	if ( !IsWorldModelSet() )
+//		return 0;
+//
+//	return m_pWorldModel->brush.pShared->numsubmodels;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Check cache or union data for info, reload studio model if needed 
 // Input  : *model - 
 //-----------------------------------------------------------------------------
-void *CModelLoader::GetExtraData(const model_t *model )
-{
-	if ( !model )
-	{
-		return NULL;
-	}
-
-	switch ( model->type )
-	{
-	case mod_sprite:
-		{
-			// sprites don't use the real cache yet
-			if ( model->type == mod_sprite )
-			{
-				// The sprite got unloaded.
-				if ( !( FMODELLOADER_LOADED & model->nLoadFlags ) )
-				{
-					return NULL;
-				}
-
-				return model->sprite.sprite;
-			}
-		}
-		break;
-
-	case mod_studio:
-		return g_pMDLCache->GetStudioHdr( model->studio );
-
-	default:
-	case mod_brush:
-		// Should never happen
-		Assert( 0 );
-		break;
-	};
-
-	return NULL;
-}
+//void *CModelLoader::GetExtraData(const model_t *model )
+//{
+//	
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -6190,7 +6177,7 @@ CON_COMMAND_F( model_list, "Dump model list to file", FCVAR_CHEAT | FCVAR_DONTRE
 						dataSizeLod0 = ComputeSize( hwData, &numVertsLod0, &nTriCountLod0, true );
 					}
 
-					studiohdr_t *pStudioHdr = (studiohdr_t *)modelloader->GetExtraData( model );
+					studiohdr_t *pStudioHdr = (studiohdr_t *)model->GetModelExtraData();
 					dataSize += pStudioHdr->length; // Size of MDL file
 					numBones = pStudioHdr->numbones;
 					numParts = pStudioHdr->numbodyparts;

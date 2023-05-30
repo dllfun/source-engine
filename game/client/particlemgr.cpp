@@ -295,7 +295,7 @@ void CParticleEffectBinding::BBoxCalcEnd( bool bboxSet, Vector &bbMin, Vector &b
 }
 
 
-int CParticleEffectBinding::DrawModel( int flags )
+int CParticleEffectBinding::DrawModel(IVModel* pWorld, int flags )
 {
 	VPROF_BUDGET( "CParticleEffectBinding::DrawModel", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 #ifndef PARTICLEPROTOTYPE_APP
@@ -1505,7 +1505,7 @@ void CParticleMgr::DrawBeforeViewModelEffects()
 		if ( pEffect->GetFlag( CParticleEffectBinding::FLAGS_DRAW_BEFORE_VIEW_MODEL ) )
 		{
 			Assert( !pEffect->WasDrawn() );
-			pEffect->DrawModel( 1 );
+			pEffect->DrawModel(engineClient->GetWorldModel(), 1 );
 		}
 	}
 

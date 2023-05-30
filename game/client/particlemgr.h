@@ -520,7 +520,7 @@ public:
 	virtual void					GetRenderBounds( Vector& mins, Vector& maxs );
 	virtual bool					ShouldDraw( void );
 	virtual bool					IsTransparent( void );
-	virtual int						DrawModel( int flags );
+	virtual int						DrawModel(IVModel* pWorld, int flags );
 
 
 private:

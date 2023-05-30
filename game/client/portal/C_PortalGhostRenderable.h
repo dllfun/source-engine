@@ -74,7 +74,7 @@ public:
 	// Rendering clip plane, should be 4 floats, return value of NULL indicates a disabled render clip plane
 	virtual float *GetRenderClipPlane( void ) { return m_pSharedRenderClipPlane; };
 
-	virtual int	DrawModel( int flags );
+	virtual int	DrawModel(IVModel* pWorld, int flags );
 
 	// Get the model instance of the ghosted model so that decals will properly draw across portals
 	virtual ModelInstanceHandle_t GetModelInstance();

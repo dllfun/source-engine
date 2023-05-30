@@ -369,7 +369,7 @@ CON_COMMAND( envmap, "" )
 
 	if( world && world->GetModel() )
 	{
-		Q_FileBase( modelloader->GetName( ( model_t *)world->GetModel() ), base, sizeof( base ) );
+		Q_FileBase(world->GetModel()->GetModelName(), base, sizeof( base ) );
 	}
 	else
 	{

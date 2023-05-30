@@ -4363,7 +4363,7 @@ void AddTransitionResources( CSaveRestoreData *pSaveData, const char *pLevelName
 		int count = modelloader->GetCount();
 		for ( int i = 0; i < count; i++ )
 		{
-			pModelName = modelloader->GetName( modelloader->GetModelForIndex( i ) );
+			pModelName = modelloader->GetModelForIndex(i)->GetModelName();
 			if ( V_stristr( pModelName, "models/humans" ) )
 			{
 				g_pQueuedLoader->AddMapResource( pModelName );

@@ -267,6 +267,13 @@ bool CEntityMapData::GetNextKey( char *keyName, char *value )
 		return false;
 	}
 
+	if (FStrEq(keyName, "model") && token[0] == '*')//rename inline model name
+	{
+		Q_snprintf(value, MAPKEY_MAXLENGTH, "*%s%s", m_pMapName, token);
+		return true;
+	}
+	
+
 	// value successfully found
 	Q_strncpy( value, token, MAPKEY_MAXLENGTH );
 	return true;

@@ -577,7 +577,7 @@ void C_EntityDissolve::ClientThink( void )
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_EntityDissolve::DrawModel( int flags )
+int C_EntityDissolve::DrawModel(IVModel* pWorld, int flags )
 {
 	// See if we should draw
 	if ( gpGlobals->frametime == 0 || m_bReadyToDraw == false )

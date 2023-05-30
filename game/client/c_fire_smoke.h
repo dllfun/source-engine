@@ -22,7 +22,7 @@ class C_FireSprite : public C_Sprite
 	DECLARE_CLASS( C_FireSprite, C_Sprite );
 
 private:
-	virtual int DrawModel( int flags )
+	virtual int DrawModel(IVModel* pWorld, int flags )
 	{
 		if ( m_bFadeFromAbove )
 		{
@@ -46,7 +46,7 @@ private:
 			SetColor( iAlpha, iAlpha, iAlpha );
 		}
 
-		return BaseClass::DrawModel( flags );
+		return BaseClass::DrawModel(pWorld, flags );
 	}
 
 public:
@@ -58,7 +58,7 @@ class C_FireFromAboveSprite : public C_Sprite
 {
 	DECLARE_CLASS( C_FireFromAboveSprite, C_Sprite );
 
-	virtual int DrawModel( int flags )
+	virtual int DrawModel(IVModel* pWorld, int flags )
 	{
 		// The sprites become more visible the more you look down or up at them
 		Vector vToPos = GetLocalOrigin() - g_pView->CurrentViewOrigin();
@@ -79,7 +79,7 @@ class C_FireFromAboveSprite : public C_Sprite
 
 		SetColor( iAlpha, iAlpha, iAlpha );
 
-		return BaseClass::DrawModel( flags );
+		return BaseClass::DrawModel(pWorld, flags );
 	}
 };
 

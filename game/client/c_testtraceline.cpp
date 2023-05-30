@@ -25,7 +25,7 @@ public:
 
 // IClientEntity overrides.
 public:
-	virtual int			DrawModel( int flags );
+	virtual int			DrawModel(IVModel* pWorld, int flags );
 	virtual bool		ShouldDraw() { return true; }
 
 private:
@@ -143,7 +143,7 @@ void C_TestTraceline::DrawCube( Vector& center, unsigned char* pColor )
 	}
 }
 
-int C_TestTraceline::DrawModel( int flags )
+int C_TestTraceline::DrawModel(IVModel* pWorld, int flags )
 {
 	trace_t tr;
 	Vector forward, right, up, endpos, hitpos;

@@ -60,7 +60,7 @@ public:
 
 #if defined( CLIENT_DLL ) 
 	// Client only code
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 	virtual const Vector &GetRenderOrigin( void );
 	virtual const QAngle &GetRenderAngles( void );
 

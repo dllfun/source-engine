@@ -48,6 +48,8 @@ bool ParseKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, c
 			switch( pField->fieldType )
 			{
 			case FIELD_MODELNAME:
+				(*(string_t*)((char*)pObject + fieldOffset)) = AllocPooledString(szValue);
+				return true;
 			case FIELD_SOUNDNAME:
 			case FIELD_STRING:
 				(*(string_t *)((char *)pObject + fieldOffset)) = AllocPooledString( szValue );

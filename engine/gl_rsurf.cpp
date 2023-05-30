@@ -2658,8 +2658,8 @@ void CBrushBatchRender::ClearRenderHandles( model_t* pWorld )
 {
 	for ( int iBrush = 1 ; iBrush < pWorld->GetSubmodelsCount() ; ++iBrush )
 	{
-		char szBrushModel[5]; // inline model names "*1", "*2" etc
-		Q_snprintf( szBrushModel, sizeof( szBrushModel ), "*%i", iBrush );
+		char szBrushModel[MAX_PATH]; // inline model names "*1", "*2" etc
+		Q_snprintf( szBrushModel, sizeof( szBrushModel ), "*%s*%i", pWorld->GetModelName(), iBrush );
 		model_t *pModel = modelloader->GetModelForName( szBrushModel, IModelLoader::FMODELLOADER_SERVER );
 		if ( pModel )
 		{
