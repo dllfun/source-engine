@@ -1204,42 +1204,42 @@ public:
 	//-----------------------------------------------------------------------------
 // Accessors to return the main view (where the player's looking)
 //-----------------------------------------------------------------------------
-	virtual const Vector& MainViewOrigin()
+	virtual const Vector& MainViewOrigin() const
 	{
 		return g_vecRenderOrigin;
 	}
 
-	virtual const QAngle& MainViewAngles()
+	virtual const QAngle& MainViewAngles() const
 	{
 		return g_vecRenderAngles;
 	}
 
-	virtual const Vector& MainViewForward()
+	virtual const Vector& MainViewForward() const
 	{
 		return g_vecVForward;
 	}
 
-	virtual const Vector& MainViewRight()
+	virtual const Vector& MainViewRight() const
 	{
 		return g_vecVRight;
 	}
 
-	virtual const Vector& MainViewUp()
+	virtual const Vector& MainViewUp() const
 	{
 		return g_vecVUp;
 	}
 
-	virtual const VMatrix& MainWorldToViewMatrix()
+	virtual const VMatrix& MainWorldToViewMatrix() const
 	{
 		return g_matCamInverse;
 	}
 
-	virtual const Vector& PrevMainViewOrigin()
+	virtual const Vector& PrevMainViewOrigin() const
 	{
 		return g_vecPrevRenderOrigin;
 	}
 
-	virtual const QAngle& PrevMainViewAngles()
+	virtual const QAngle& PrevMainViewAngles() const
 	{
 		return g_vecPrevRenderAngles;
 	}
@@ -1247,37 +1247,37 @@ public:
 	//-----------------------------------------------------------------------------
 	// Accessors to return the current view being rendered
 	//-----------------------------------------------------------------------------
-	virtual const Vector& CurrentViewOrigin()
+	virtual const Vector& CurrentViewOrigin() const
 	{
 		Assert(s_bCanAccessCurrentView);
 		return g_vecCurrentRenderOrigin;
 	}
 
-	virtual const QAngle& CurrentViewAngles()
+	virtual const QAngle& CurrentViewAngles() const
 	{
 		Assert(s_bCanAccessCurrentView);
 		return g_vecCurrentRenderAngles;
 	}
 
-	virtual const Vector& CurrentViewForward()
+	virtual const Vector& CurrentViewForward() const
 	{
 		Assert(s_bCanAccessCurrentView);
 		return g_vecCurrentVForward;
 	}
 
-	virtual const Vector& CurrentViewRight()
+	virtual const Vector& CurrentViewRight() const
 	{
 		Assert(s_bCanAccessCurrentView);
 		return g_vecCurrentVRight;
 	}
 
-	virtual const Vector& CurrentViewUp()
+	virtual const Vector& CurrentViewUp() const
 	{
 		Assert(s_bCanAccessCurrentView);
 		return g_vecCurrentVUp;
 	}
 
-	virtual const VMatrix& CurrentWorldToViewMatrix()
+	virtual const VMatrix& CurrentWorldToViewMatrix() const
 	{
 		Assert(s_bCanAccessCurrentView);
 		return g_matCurrentCamInverse;

@@ -259,21 +259,21 @@ public:
 // what's currently being rendered, which, owing to monitors or water,
 // could be just about anywhere.
 //-----------------------------------------------------------------------------
-	virtual const Vector& MainViewOrigin() = 0;
-	virtual const QAngle& MainViewAngles() = 0;
-	virtual const Vector& PrevMainViewOrigin() = 0;
-	virtual const QAngle& PrevMainViewAngles() = 0;
-	virtual const VMatrix& MainWorldToViewMatrix() = 0;
-	virtual const Vector& MainViewForward() = 0;
-	virtual const Vector& MainViewRight() = 0;
-	virtual const Vector& MainViewUp() = 0;
+	virtual const Vector& MainViewOrigin() const = 0;
+	virtual const QAngle& MainViewAngles() const = 0;
+	virtual const Vector& PrevMainViewOrigin() const = 0;
+	virtual const QAngle& PrevMainViewAngles() const = 0;
+	virtual const VMatrix& MainWorldToViewMatrix() const = 0;
+	virtual const Vector& MainViewForward() const = 0;
+	virtual const Vector& MainViewRight() const = 0;
+	virtual const Vector& MainViewUp() const = 0;
 
-	virtual const Vector& CurrentViewOrigin() = 0;
-	virtual const QAngle& CurrentViewAngles() = 0;
-	virtual const VMatrix& CurrentWorldToViewMatrix() = 0;
-	virtual const Vector& CurrentViewForward() = 0;
-	virtual const Vector& CurrentViewRight() = 0;
-	virtual const Vector& CurrentViewUp() = 0;
+	virtual const Vector& CurrentViewOrigin() const = 0;
+	virtual const QAngle& CurrentViewAngles() const = 0;
+	virtual const VMatrix& CurrentWorldToViewMatrix() const = 0;
+	virtual const Vector& CurrentViewForward() const = 0;
+	virtual const Vector& CurrentViewRight() const = 0;
+	virtual const Vector& CurrentViewUp() const = 0;
 
 	virtual void AllowCurrentViewAccess(bool allow) = 0;
 	virtual bool IsCurrentViewAccessAllowed() = 0;

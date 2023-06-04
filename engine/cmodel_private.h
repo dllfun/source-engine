@@ -13,7 +13,7 @@
 #include "bitvec.h"
 #include "bspfile.h"
 #include "utlbuffer.h"
-#include "modelloader.h"
+//#include "modelloader.h"
 
 #include "filesystem.h"
 #include "filesystem_engine.h"
@@ -23,6 +23,9 @@
 class CDispCollTree;
 //class CCollisionBSPData;
 struct cbrush_t;
+class model_t;
+class CLumpHeaderInfo;
+class CLumpInfo;
 
 #define MAX_CHECK_COUNT_DEPTH 2
 

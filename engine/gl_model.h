@@ -36,6 +36,6 @@ extern int			DecalListCreate(model_t* pWorld, decallist_t *pList );
 
 extern int		r_visframecount;
 
-#include "modelloader.h"
+//#include "modelloader.h"
 
 #endif // GL_MODEL_H

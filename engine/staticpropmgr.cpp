@@ -46,6 +46,7 @@
 #include "generichash.h"
 #include "tier2/renderutils.h"
 #include "ipooledvballocator.h"
+#include "modelloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1042,7 +1043,7 @@ int	CStaticProp::DrawModelSlow(model_t* pWorld, int flags )
 		{
 			// This works because VCollideForModel only uses modelindex for mod_brush
 			// and props are always mod_Studio.
-			vcollide_t * pCollide = CM_VCollideForModel( -1, m_pModel ); 
+			vcollide_t * pCollide = CM_VCollideForModel( m_pModel ); //-1, 
 			if ( pCollide && pCollide->solidCount == 1 )
 			{
 				static color32 debugColor = {0,255,255,0};
@@ -1112,7 +1113,7 @@ void CStaticProp::InsertPropIntoKDTree()
 	// If it's using vphysics, get a good AABB
 	if ( m_nSolidType == SOLID_VPHYSICS )
 	{
-		vcollide_t *pCollide = CM_VCollideForModel( -1, m_pModel );
+		vcollide_t *pCollide = CM_VCollideForModel( m_pModel );// -1,
 		if ( pCollide && pCollide->solidCount )
 		{
 			physcollision->CollideGetAABB( &mins, &maxs, pCollide->solids[0], m_Origin, m_Angles );
@@ -1163,7 +1164,7 @@ void CStaticProp::CreateVPhysics( IPhysicsEnvironment *pPhysEnv, IVPhysicsKeyHan
 	{
 		// This works because VCollideForModel only uses modelindex for mod_brush
 		// and props are always mod_Studio.
-		pVCollide = CM_VCollideForModel( -1, m_pModel );
+		pVCollide = CM_VCollideForModel( m_pModel );// -1,
 	}
 
 	if (pVCollide)
@@ -1277,7 +1278,7 @@ void CStaticPropMgr::UnserializeModelDict( CUtlBuffer& buf )
 		StaticPropDict_t &dict = m_StaticPropDict[i];
 
 		dict.m_pModel = (model_t *)modelloader->GetModelForName(
-			lump.m_Name, IModelLoader::FMODELLOADER_STATICPROP );
+			lump.m_Name, CModelLoader::FMODELLOADER_STATICPROP );
 		dict.m_hMDL = dict.m_pModel->GetCacheHandle();//modelinfoclient
 		g_pMDLCache->LockStudioHdr( dict.m_hMDL );
 	}

@@ -66,6 +66,7 @@
 #include "sys.h"
 
 #include "ixboxsystem.h"
+#include "modelloader.h"
 extern IXboxSystem *g_pXboxSystem;
 
 #include <sys/stat.h>

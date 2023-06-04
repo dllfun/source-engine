@@ -47,6 +47,7 @@
 #include "matchmaking.h"
 #include "server.h"
 #include "eiface.h"
+#include "modelloader.h"
 
 #include "tier0/platform.h"
 #include "tier0/systeminformation.h"
@@ -791,7 +792,7 @@ model_t *CClientState::GetModel( int index )
 		ConDMsg( "client model cache miss on %s\n", name );
 	}
 
-	m = modelloader->GetModelForName( name, IModelLoader::FMODELLOADER_CLIENT );
+	m = modelloader->GetModelForName( name, CModelLoader::FMODELLOADER_CLIENT );
 	if ( !m )
 	{
 		const CPrecacheUserData *data = CL_GetPrecacheUserData( m_pModelPrecacheTable, index );
@@ -866,7 +867,7 @@ void CClientState::SetModel( int tableIndex )
 
 	if ( bLoadNow )
 	{
-		p->SetModel( modelloader->GetModelForName( name, IModelLoader::FMODELLOADER_CLIENT ) );
+		p->SetModel( modelloader->GetModelForName( name, CModelLoader::FMODELLOADER_CLIENT ) );
 	}
 	else
 	{
@@ -1951,7 +1952,7 @@ void CClientState::ConsistencyCheck(bool bChanged )
 		else if ( userData && userData[0] == CONSISTENCY_BOUNDS && length == sizeof( ModelBoundsUserData ) )
 		{
 			ModelBoundsUserData *boundsData = (ModelBoundsUserData *)userData;
-			model_t *pModel = modelloader->GetModelForName( filename, IModelLoader::FMODELLOADER_CLIENT );
+			model_t *pModel = modelloader->GetModelForName( filename, CModelLoader::FMODELLOADER_CLIENT );
 			if ( !pModel )
 			{
 				errorMsg = "Cannot find required model";

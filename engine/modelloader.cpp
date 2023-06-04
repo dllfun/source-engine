@@ -147,221 +147,16 @@ bool Model_LessFunc( FileNameHandle_t const &a, FileNameHandle_t const &b )
 //-----------------------------------------------------------------------------
 // Purpose: Implements IModelLoader
 //-----------------------------------------------------------------------------
-class CModelLoader : public IModelLoader
-{
-// Implement IModelLoader interface
-public:
-	CModelLoader() : m_ModelPool( sizeof( model_t ), MAX_KNOWN_MODELS, CUtlMemoryPool::GROW_FAST, "CModelLoader::m_ModelPool" ),
-					m_Models( 0, 0, Model_LessFunc )
-	{
-	}
-
-	void			Init( void );
-	void			Shutdown( void );
-
-	int				GetCount( void );
-	model_t			*GetModelForIndex( int i );
-
-	// Look up name for model
-	//const char		*GetName( model_t const *model );
-
-	// Check cache for data, reload model if needed
-	//void			*GetExtraData( const model_t *model );
-
-	int				GetModelFileSize( char const *name );
-
-	// Finds the model, and loads it if it isn't already present.  Updates reference flags
-	model_t			*GetModelForName( const char *name, REFERENCETYPE referencetype );
-	// Mark as referenced by name
-	model_t			*ReferenceModel( const char *name, REFERENCETYPE referencetype );
-
-	// Unmasks the referencetype field for the model
-	void			UnreferenceModel( model_t *model, REFERENCETYPE referencetype );
-	// Unmasks the specified reference type across all models
-	void			UnreferenceAllModels( REFERENCETYPE referencetype );
-	// Set all models to last loaded on server count -1
-	void			ResetModelServerCounts();
-
-	// For any models with referencetype blank, frees all memory associated with the model
-	//  and frees up the models slot
-	void			UnloadUnreferencedModels( void );
-	void			PurgeUnusedModels( void );
-
-	bool			Map_GetRenderInfoAllocated( void );
-	void			Map_SetRenderInfoAllocated( bool allocated );
-
-	virtual void	Map_LoadDisplacements( model_t *pModel, bool bRestoring );
-
-	// Validate version/header of a .bsp file
-	bool			Map_IsValid( char const *mapname, bool bQuiet = false );
-
-
-	virtual void	Studio_ReloadModels( ReloadType_t reloadType );
-
-	void			Print( void );
-
-	// Is a model loaded?
-	virtual bool	IsLoaded( const model_t *mod );
-
-	virtual bool	LastLoadedMapHasHDRLighting(void);
-	
-	void			DumpVCollideStats();
-
-	// Returns the map model, otherwise NULL, no load or create
-	model_t			*FindModelNoCreate( const char *pModelName );
-
-	// Finds the model, builds a model entry if not present
-	model_t			*FindModel( const char *name );
-
-	modtype_t		GetTypeFromName( const char *pModelName );
-
-	// start with -1, list terminates with -1
-	int				FindNext( int iIndex, model_t **ppModel );
-
-	virtual void	UnloadModel( model_t *pModel );
-
-	virtual void	ReloadFilesInList( IFileList *pFilesToReload );
-
-	virtual const char	*GetActiveMapName( void );
-
-	// Called by app system once per frame to poll and update dynamic models
-	virtual void	UpdateDynamicModels() { InternalUpdateDynamicModels(false); }
-
-	// Called by server and client engine code to flush unreferenced dynamic models
-	virtual void	FlushDynamicModels() { InternalUpdateDynamicModels(true); }
-
-	// Called by server and client to force-unload dynamic models regardless of refcount!
-	virtual void	ForceUnloadNonClientDynamicModels();
-
-	// Called by client code to load dynamic models, instead of GetModelForName.
-	virtual model_t *GetDynamicModel( const char *name, bool bClientOnly );
-	
-	// Called by client code to query dynamic model state
-	virtual bool	IsDynamicModelLoading( model_t *pModel, bool bClientOnly );
-
-	// Called by client code to refcount dynamic models
-	virtual void	AddRefDynamicModel( model_t *pModel, bool bClientSideRef );
-	virtual void	ReleaseDynamicModel( model_t *pModel, bool bClientSideRef );
-
-	// Called by client code or GetDynamicModel
-	virtual bool	RegisterModelLoadCallback( model_t *pModel, bool bClientOnly, IModelLoadCallback *pCallback, bool bCallImmediatelyIfLoaded );
-
-	// Called by client code or IModelLoadCallback destructor
-	virtual void	UnregisterModelLoadCallback( model_t *pModel, bool bClientOnly, IModelLoadCallback *pCallback );
-
-	virtual void	Client_OnServerModelStateChanged( model_t *pModel, bool bServerLoaded );
-
-	void			DebugPrintDynamicModels();
-
-	// Recomputes surface flags
-	virtual void	RecomputeSurfaceFlags(model_t* pWorld);
-// Internal types
-private:
-	// TODO, flag these and allow for UnloadUnreferencedModels to check for allocation type
-	//  so we don't have to flush all of the studio models when we free the hunk
-	enum
-	{
-		FALLOC_USESHUNKALLOC = (1<<31),
-		FALLOC_USESCACHEALLOC = (1<<30),
-	};
-
-// Internal methods
-private:
-	// Set reference flags and load model if it's not present already
-	model_t		*LoadModel( model_t	*model, REFERENCETYPE *referencetype );
-	// Unload models ( won't unload referenced models if checkreferences is true )
-	void		UnloadAllModels( bool checkreference );
-
-	// World/map
-	void		Map_LoadModel( model_t *mod );
-	void		Map_UnloadModel( model_t *mod );
-	void		Map_UnloadCubemapSamples( model_t *mod );
-	void		SetupSubModels(model_t* pModel,CUtlVector<mmodel_t>& list);//CUtlVector<model_t>&	m_InlineModels,	
-
-	// World loading helper
-	//void		SetWorldModel( model_t *mod );
-	//void		ClearWorldModel(model_t* mod);
-	//bool		IsWorldModelSet( void );
-	//int			GetNumWorldSubmodels( void );
-
-	// Sprites
-	void		Sprite_LoadModel( model_t *mod );
-	void		Sprite_UnloadModel( model_t *mod );
-
-	// Studio models
-	void		Studio_LoadModel( model_t *mod, bool bTouchAllData );
-	void		Studio_UnloadModel( model_t *mod );
-
-	// Byteswap
-	int			UpdateOrCreate( const char *pSourceName, char *pTargetName, int maxLen, bool bForce );
-
-	// Dynamic load queue
-	class CDynamicModelInfo;
-	void		QueueDynamicModelLoad( CDynamicModelInfo *dyn, model_t *mod );
-	bool		CancelDynamicModelLoad( CDynamicModelInfo *dyn, model_t *mod );
-	void		UpdateDynamicModelLoadQueue();
-
-	void		FinishDynamicModelLoadIfReady( CDynamicModelInfo *dyn, model_t *mod );
-
-	void		InternalUpdateDynamicModels( bool bIgnoreUpdateTime );
-
-	// Internal data
-private:
-	enum 
-	{
-		MAX_KNOWN_MODELS = 1024,
-	};
-
-	struct ModelEntry_t
-	{
-		model_t *modelpointer;
-	};
-
-	CUtlMap< FileNameHandle_t, ModelEntry_t >	m_Models;
-
-	CUtlMemoryPool			m_ModelPool;
-
-	//CUtlVector<model_t>	m_InlineModels;
-	CUtlStringMap<model_t*>	m_InlineModelMap;
-
-	//model_t				*m_pWorldModel;
-	//worldbrushdata_t	m_worldBrushData;
-
-public: // HACKHACK
-
-private:
-	// local name of current loading model
-	char				m_szLoadName[64];
-
-	bool				m_bMapRenderInfoLoaded;
-	bool				m_bMapHasHDRLighting;
-
-	char				m_szActiveMapName[64];
-
-	// Dynamic model support:
-	class CDynamicModelInfo
-	{
-	public:
-		enum { QUEUED = 0x01, LOADING = 0x02, CLIENTREADY = 0x04, SERVERLOADING = 0x08, ALLREADY = 0x10, INVALIDFLAG = 0x20 }; // flags
-		CDynamicModelInfo() : m_iRefCount(0), m_iClientRefCount(0), m_nLoadFlags(INVALIDFLAG), m_uLastTouchedMS_Div256(0) { }
-		int16 m_iRefCount;
-		int16 m_iClientRefCount; // also doublecounted in m_iRefCount
-		uint32 m_nLoadFlags : 8;
-		uint32 m_uLastTouchedMS_Div256 : 24;
-		CUtlVector< uintptr_t > m_Callbacks; // low bit = client only
-	};
-
-	CUtlHashtable< model_t * , CDynamicModelInfo > m_DynamicModels;
-	CUtlHashtable< uintptr_t , int > m_RegisteredDynamicCallbacks;
-
-	// Dynamic model load queue
-	CUtlVector< model_t* > m_DynamicModelLoadQueue;
-	bool m_bDynamicLoadQueueHeadActive;
-};
+//class CModelLoader : public IModelLoader
+//{
+//// Implement IModelLoader interface
+//public:
+//	
+//};
 
 // Expose interface
-static CModelLoader g_ModelLoader;
-IModelLoader *modelloader = ( IModelLoader * )&g_ModelLoader;
+CModelLoader g_ModelLoader;
+CModelLoader *modelloader = &g_ModelLoader;
 
 //-----------------------------------------------------------------------------
 // Globals used by the CMapLoadHelper
@@ -2899,9 +2694,9 @@ void Mod_TouchAllData( model_t *pModel, int nServerCount )
 			if ( pChildModel )
 			{
 				// child inherits parent reference
-				pChildModel->GetLoadFlags() |= (pModel->GetLoadFlags() & IModelLoader::FMODELLOADER_REFERENCEMASK);
-				pChildModel->GetLoadFlags() |= IModelLoader::FMODELLOADER_LOADED;
-				pChildModel->GetLoadFlags() &= ~IModelLoader::FMODELLOADER_LOADED_BY_PRELOAD;
+				pChildModel->GetLoadFlags() |= (pModel->GetLoadFlags() & CModelLoader::FMODELLOADER_REFERENCEMASK);
+				pChildModel->GetLoadFlags() |= CModelLoader::FMODELLOADER_LOADED;
+				pChildModel->GetLoadFlags() &= ~CModelLoader::FMODELLOADER_LOADED_BY_PRELOAD;
 				pChildModel->GetServerCount() = nServerCount;
 			}
 		}
@@ -3179,9 +2974,9 @@ class CResourcePreloadModel : public CResourcePreload
 			model_t *pModel = g_ModelLoader.FindModel( szFilename );
 
 			// mark as touched
-			pModel->GetLoadFlags() |= IModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD;
+			pModel->GetLoadFlags() |= CModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD;
 
-			if ( pModel->GetLoadFlags() & (IModelLoader::FMODELLOADER_LOADED | IModelLoader::FMODELLOADER_LOADED_BY_PRELOAD))
+			if ( pModel->GetLoadFlags() & (CModelLoader::FMODELLOADER_LOADED | CModelLoader::FMODELLOADER_LOADED_BY_PRELOAD))
 			{
 				// already loaded or preloaded
 				return true;
@@ -3194,7 +2989,7 @@ class CResourcePreloadModel : public CResourcePreload
 			pModel->SetModelType( mod_studio);
 
 			// mark the model so that the normal studio load path can perform a final fixup
-			pModel->GetLoadFlags() |= IModelLoader::FMODELLOADER_LOADED_BY_PRELOAD;
+			pModel->GetLoadFlags() |= CModelLoader::FMODELLOADER_LOADED_BY_PRELOAD;
 
 			// setup the new entry for preload to operate
 			pModel->SetStudio(g_pMDLCache->FindMDL( pModel->GetModelName() ));
@@ -3242,9 +3037,9 @@ class CResourcePreloadModel : public CResourcePreload
 			if ( pModel->GetModelType() == mod_studio)
 			{
 				// models that were touched during the preload stay, otherwise purged
-				if ( pModel->GetLoadFlags() & IModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD)
+				if ( pModel->GetLoadFlags() & CModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD)
 				{
-					pModel->GetLoadFlags() &= ~IModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD;
+					pModel->GetLoadFlags() &= ~CModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD;
 				}
 				else
 				{
@@ -3301,7 +3096,7 @@ class CResourcePreloadModel : public CResourcePreload
 			}
 			if ( pModel->GetModelType() == mod_studio)
 			{
-				pModel->GetLoadFlags() &= ~IModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD;
+				pModel->GetLoadFlags() &= ~CModelLoader::FMODELLOADER_TOUCHED_BY_PRELOAD;
 				if ( bSpew )
 				{
 					Msg( "CResourcePreloadModel: Purging: %s\n", pModel->GetModelName());
@@ -3451,10 +3246,7 @@ model_t *CModelLoader::FindModel( const char *pName )
 	int i = m_Models.Find( fnHandle );
 	if ( i == m_Models.InvalidIndex() )
 	{
-		void* p = m_ModelPool.Alloc();
-		memset(p, 0, sizeof(model_t));
-		pModel =  new(p) model_t();
-		Assert( pModel );
+		pModel = AllocModel();
 
 		pModel->fnHandle = fnHandle;
 
@@ -4659,7 +4451,7 @@ void CModelLoader::RecomputeSurfaceFlags(model_t* pWorld)
 {
 	for (int i=0 ; i< pWorld->GetSubmodelsCount() ; i++)
 	{
-		model_t *pSubModel = &pWorld->brush.pShared->m_InlineModels[i];
+		model_t *pSubModel = pWorld->brush.pShared->m_InlineModels[i];
 
 		// Compute whether this submodel uses material proxies or not
 		Mod_ComputeBrushModelFlags(pWorld, pSubModel );
@@ -4685,11 +4477,21 @@ void CModelLoader::SetupSubModels(model_t* pModel, CUtlVector<mmodel_t> &list )/
 
 	for (i=0 ; i< pModel->brush.pShared->numsubmodels ; i++)
 	{
-		model_t		*starmod;
-		mmodel_t	*bm;
+		model_t		*starmod = NULL;
+		mmodel_t	*bm = NULL;
 
 		bm = &list[i];
-		starmod = &pModel->brush.pShared->m_InlineModels[i];
+		char localmodel[MAX_PATH]; // inline model names "*1", "*2" etc
+		Q_snprintf(localmodel, sizeof(localmodel), "*%s*%i", pModel->GetModelName(), i);
+		if (m_InlineModelMap.Defined(localmodel)) {
+			starmod = m_InlineModelMap[localmodel];
+			//Error("duplicate inline model: %s\n", starmod->strName);	// dedicated servers exit
+		}
+		else {
+			starmod = AllocModel();
+			m_InlineModelMap[localmodel] = starmod;
+		}
+		pModel->brush.pShared->m_InlineModels[i] = starmod;
 
 		*starmod = *pModel;
 		
@@ -4714,13 +4516,6 @@ void CModelLoader::SetupSubModels(model_t* pModel, CUtlVector<mmodel_t> &list )/
 		{
 			starmod->strName.Format( "*%s*%i", pModel->GetModelName(), i );
 			starmod->fnHandle = g_pFileSystem->FindOrAddFileName( starmod->strName );
-			if (m_InlineModelMap.Defined(starmod->strName)) {
-				Error("duplicate inline model: %s\n", starmod->strName);	// dedicated servers exit
-			}
-			else {
-				m_InlineModelMap[starmod->strName] = starmod;
-			}
-
 		}
 
 	}
@@ -4767,14 +4562,19 @@ void CModelLoader::Map_UnloadModel( model_t *mod )
 			GL_UnloadMaterial( pTexinfo->material );
 		}
 	}
-
+	
 	MaterialSystem_DestroySortinfo();
-	mod->brush.pShared->m_InlineModels.Purge();
 	CM_FreeMap(mod);
 	// Don't store any reference to it here
 	//ClearWorldModel(mod);
+	for (int i = 0; i < mod->GetSubmodelsCount(); i++) {
+		model_t* pSubModel = mod->brush.pShared->m_InlineModels[i];
+		memset(&pSubModel->brush.pShared, 0, sizeof(pSubModel->brush.pShared));
+	}
+	mod->brush.pShared->m_InlineModels.Purge();
 	delete mod->brush.pShared;
 	memset(&mod->brush.pShared, 0, sizeof(mod->brush.pShared));
+	
 	Map_SetRenderInfoAllocated( false );
 }
 
@@ -4983,7 +4783,7 @@ void CModelLoader::DumpVCollideStats()
 	model_t* pWorld = g_pHost->Host_GetWorldModel();
 	for ( i = pWorld->brush.pShared->m_InlineModels.Count(); --i >= 0; )
 	{
-		vcollide_t *pCollide = CM_VCollideForModel( i+1, &pWorld->brush.pShared->m_InlineModels[i] );
+		vcollide_t *pCollide = CM_VCollideForModel( pWorld->brush.pShared->m_InlineModels[i] );//i+1, 
 		if ( pCollide )
 		{
 			int size = 0;
@@ -4995,7 +4795,7 @@ void CModelLoader::DumpVCollideStats()
 			if ( size )
 			{
 				modelsize_t elem;
-				elem.pName = pWorld->brush.pShared->m_InlineModels[i].strName;
+				elem.pName = pWorld->brush.pShared->m_InlineModels[i]->strName;
 				elem.size = size;
 				list.Insert( elem );
 			}

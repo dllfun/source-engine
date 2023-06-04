@@ -4798,7 +4798,7 @@ void SetRootLOD_f( IConVar *pConVar, const char *pOldString, float flOldValue )
 	if ( !g_LostVideoMemory && Q_strcmp( var.GetString(), pOldString ) )
 	{
 		// reload only the necessary models to desired lod
-		modelloader->Studio_ReloadModels( IModelLoader::RELOAD_LOD_CHANGED );
+		modelloader->Studio_ReloadModels(CModelLoader::RELOAD_LOD_CHANGED );
 	}
 }
 
@@ -4811,7 +4811,7 @@ void FlushLOD_f()
 	if ( !g_LostVideoMemory )
 	{
 		// force a full discard and rebuild of all loaded models
-		modelloader->Studio_ReloadModels( IModelLoader::RELOAD_EVERYTHING );
+		modelloader->Studio_ReloadModels(CModelLoader::RELOAD_EVERYTHING );
 	}
 }
 

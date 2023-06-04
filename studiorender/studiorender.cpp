@@ -705,6 +705,7 @@ void CStudioRender::DrawModelArray( const DrawModelInfo_t &drawInfo, const Studi
 					{
 						matrix3x4_t *pBones = &( ((model_array_instance_t *)pData)->modelToWorld );
 						pRenderContext->LoadMatrix( pBones[0] );
+						//pRenderContext->LoadIdentity();
 						for (int j = 0; j < pGroup->m_NumStrips; ++j)
 						{
 							OptimizedModel::StripHeader_t* pStrip = &pGroup->m_pStripData[j];
@@ -737,6 +738,7 @@ void CStudioRender::DrawModelArray( const DrawModelInfo_t &drawInfo, const Studi
 					{
 						matrix3x4_t *pBones = &( ((model_array_instance_t *)pData)->modelToWorld );
 						pRenderContext->LoadMatrix( pBones[0] );
+						//pRenderContext->LoadIdentity();
 						for (int j = 0; j < pGroup->m_NumStrips; ++j)
 						{
 							OptimizedModel::StripHeader_t* pStrip = &pGroup->m_pStripData[j];

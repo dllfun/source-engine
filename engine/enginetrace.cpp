@@ -879,10 +879,10 @@ bool CEngineTrace::ClipRayToVPhysics( const Ray_t &ray, unsigned int fMask, ICol
 		// do ray traces with normal code, but use vphysics to do box traces
 		if ( !ray.m_IsRay || pModel->GetModelType() != mod_brush )
 		{
-			int nModelIndex = pEntity->GetCollisionModelIndex();
+			//int nModelIndex = pEntity->GetCollisionModelIndex();
 
 			// BUGBUG: This only works when the vcollide in question is the first solid in the model
-			vcollide_t *pCollide = CM_VCollideForModel( nModelIndex, (model_t*)pModel );
+			vcollide_t *pCollide = CM_VCollideForModel( (model_t*)pModel );//nModelIndex, 
 
 			if ( pCollide && pCollide->solidCount )
 			{

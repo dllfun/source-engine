@@ -79,7 +79,7 @@ int			CM_BoxVisible(model_t* mod, const Vector& mins, const Vector& maxs, const 
 
 typedef struct cmodel_collision_s cmodel_collision_t;
 vcollide_t *CM_GetVCollide(model_t* mod);
-vcollide_t* CM_VCollideForModel( int modelindex, const model_t* pModel );
+vcollide_t* CM_VCollideForModel(const model_t* pModel );
 
 // gets a virtual physcollide for a displacement
 CPhysCollide *CM_PhysCollideForDisp(model_t* mod, int index );

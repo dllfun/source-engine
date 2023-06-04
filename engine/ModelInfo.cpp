@@ -603,7 +603,7 @@ void* model_t::GetModelExtraData() const//const model_t* model
 		if (this->type == mod_sprite)
 		{
 			// The sprite got unloaded.
-			if (!(IModelLoader::FMODELLOADER_LOADED & this->nLoadFlags))
+			if (!(CModelLoader::FMODELLOADER_LOADED & this->nLoadFlags))
 			{
 				return NULL;
 			}
@@ -647,7 +647,7 @@ const studiohdr_t *CModelInfo::FindModel( const studiohdr_t *pStudioHdr, void **
 	if (!model)
 	{
 		// FIXME: what do I pass in here?
-		model = modelloader->GetModelForName( modelname, IModelLoader::FMODELLOADER_SERVER );
+		model = modelloader->GetModelForName( modelname, CModelLoader::FMODELLOADER_SERVER );
 		*cache = (void *)model;
 	}
 
@@ -1250,7 +1250,7 @@ void CModelInfoClient::OnDynamicModelsStringTableChange( int nStringIndex, const
 //		return pModel;
 //
 //	// load the model
-//	return modelloader->GetModelForName( name, IModelLoader::FMODELLOADER_CLIENTDLL );
+//	return modelloader->GetModelForName( name, CModelLoader::FMODELLOADER_CLIENTDLL );
 //}
 
 

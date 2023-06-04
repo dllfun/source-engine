@@ -332,9 +332,9 @@ private:
 	float		m_zFar;
 	
 	// matrices
-	VMatrix		m_matrixView;
-	VMatrix		m_matrixProjection;
-	VMatrix		m_matrixWorldToScreen;
+	//VMatrix		m_matrixView;
+	//VMatrix		m_matrixProjection;
+	//VMatrix		m_matrixWorldToScreen;
 
 	CUtlStack< ViewStack_t > m_ViewStack;
 	int m_iLightmapUpdateDepth;
@@ -443,7 +443,7 @@ const VMatrix &CRender::ViewMatrix( )
 	{
 		return m_ViewStack.Top().m_matrixView;
 	}
-	return m_matrixView; 
+	return m_ViewStack.Top().m_matrixView;// m_matrixView;
 }
 
 const VMatrix &CRender::WorldToScreenMatrix( void ) 
@@ -453,7 +453,7 @@ const VMatrix &CRender::WorldToScreenMatrix( void )
 	{
 		return m_ViewStack.Top().m_matrixWorldToScreen; 
 	}
-	return m_matrixWorldToScreen;
+	return m_ViewStack.Top().m_matrixWorldToScreen;
 }
 
 void CRender::ViewSetupVis(IVModel* pWorld, bool novis, int numorigins, const Vector origin[] )
@@ -493,7 +493,7 @@ void CRender::OnViewActive(model_t* pWorld, Frustum frustumPlanes )
 			ExtractFrustumPlanes( frustumPlanes );
 		}
 
-		OcclusionSystem()->SetView( view.origin, view.fov, m_matrixView, m_matrixProjection, frustumPlanes[ FRUSTUM_NEARZ ] );
+		OcclusionSystem()->SetView( view.origin, view.fov, m_ViewStack.Top().m_matrixView, m_ViewStack.Top().m_matrixProjection, frustumPlanes[ FRUSTUM_NEARZ ] );
 	}
 
 	if ( !m_ViewStack.Top().m_bNoDraw )
@@ -683,14 +683,19 @@ void CRender::Push3DView(IVModel* pWorld, const CViewSetup &view, int nFlags, IT
 
 		pRenderContext->MatrixMode( MATERIAL_PROJECTION );
 		pRenderContext->PushMatrix();
-		pRenderContext->LoadMatrix( m_matrixProjection );
+		pRenderContext->LoadMatrix(m_ViewStack.Top().m_matrixProjection);
+		//pRenderContext->Scale(1, -1, 1);
+		//pRenderContext->Ortho(0, 0, topView.width, topView.height, -99999, 99999);
 
 		pRenderContext->MatrixMode( MATERIAL_VIEW );
 		pRenderContext->PushMatrix();
-		pRenderContext->LoadMatrix( m_matrixView );
+		pRenderContext->LoadMatrix(m_ViewStack.Top().m_matrixView);
+		//pRenderContext->LoadIdentity();
 
 		pRenderContext->MatrixMode( MATERIAL_MODEL );
 		pRenderContext->PushMatrix();
+		pRenderContext->LoadIdentity();
+		//pRenderContext->Scale(2,2,2);
 
 		OnViewActive((model_t*)pWorld, frustumPlanes );
 	}
@@ -702,9 +707,9 @@ void CRender::Push2DView( const CViewSetup &view, int nFlags, ITexture* pRenderT
 	m_ViewStack[i].m_View = view;
 	m_ViewStack[i].m_bIs2DView = true;
 	m_ViewStack[i].m_bNoDraw = ( ( nFlags & VIEW_NO_DRAW ) != 0 );
-	m_ViewStack[i].m_matrixView = m_matrixView;
-	m_ViewStack[i].m_matrixProjection = m_matrixProjection;
-	m_ViewStack[i].m_matrixWorldToScreen = m_matrixWorldToScreen;
+	//m_ViewStack[i].m_matrixView = m_matrixView;
+	//m_ViewStack[i].m_matrixProjection = m_matrixProjection;
+	//m_ViewStack[i].m_matrixWorldToScreen = m_matrixWorldToScreen;
 
 	CViewSetup &topView = m_ViewStack[i].m_View;
 	g_bCanAccessCurrentView = false;
@@ -1099,9 +1104,9 @@ void CRender::OverrideViewFrustum( Frustum custom )
 
 void CRender::ExtractMatrices( void )
 {
-	m_matrixView = m_ViewStack.Top().m_matrixView;
-	m_matrixProjection = m_ViewStack.Top().m_matrixProjection;
-	m_matrixWorldToScreen = m_ViewStack.Top().m_matrixWorldToScreen;
+	//m_matrixView = m_ViewStack.Top().m_matrixView;
+	//m_matrixProjection = m_ViewStack.Top().m_matrixProjection;
+	//m_matrixWorldToScreen = m_ViewStack.Top().m_matrixWorldToScreen;
 }
 
 void ComputeViewMatrix( VMatrix *pViewMatrix, const Vector &origin, const QAngle &angles )

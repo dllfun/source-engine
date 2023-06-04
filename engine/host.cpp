@@ -134,6 +134,7 @@
 #endif
 
 #include "ixboxsystem.h"
+#include "modelloader.h"
 extern IXboxSystem *g_pXboxSystem;
 
 extern ConVar cl_cloud_settings;
@@ -4768,8 +4769,8 @@ void Host::Host_FreeStateAndWorld( bool server )
 	// The world model relies on the low hunk, so we need to force it to unload
 	if (pWorld)
 	{
-		modelloader->UnreferenceModel(pWorld, IModelLoader::FMODELLOADER_SERVER );
-		modelloader->UnreferenceModel(pWorld, IModelLoader::FMODELLOADER_CLIENT );
+		modelloader->UnreferenceModel(pWorld, CModelLoader::FMODELLOADER_SERVER );
+		modelloader->UnreferenceModel(pWorld, CModelLoader::FMODELLOADER_CLIENT );
 		//host_state.SetWorldModel( NULL );
 		g_pHost->Host_SetWorldModel(NULL);
 		bNeedsPurge = server && true;

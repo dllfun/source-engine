@@ -53,7 +53,7 @@ void CVirtualTerrain::GetVirtualMesh(void* userData, virtualmeshlist_t* pList)
 {
 	intp index = (intp)userData;
 	Assert(index >= 0 && index < m_DispCollTreeCount);
-	mod->GetDispCollTrees(index)->GetVirtualMeshList(pList);
+	m_mod->GetDispCollTrees(index)->GetVirtualMeshList(pList);
 	pList->pHull = NULL;
 	if (m_pDispHullData)
 	{
@@ -67,23 +67,26 @@ void CVirtualTerrain::GetVirtualMesh(void* userData, virtualmeshlist_t* pList)
 void CVirtualTerrain::GetWorldspaceBounds(void* userData, Vector* pMins, Vector* pMaxs)
 {
 	intp index = (intp)userData;
-	*pMins = mod->GetDispBounds(index)->mins;
-	*pMaxs = mod->GetDispBounds(index)->maxs;
+	*pMins = m_mod->GetDispBounds(index)->mins;
+	*pMaxs = m_mod->GetDispBounds(index)->maxs;
 }
 // Query against the AABB tree to find the list of triangles for this patch in a sphere
 void CVirtualTerrain::GetTrianglesInSphere(void* userData, const Vector& center, float radius, virtualmeshtrianglelist_t* pList)
 {
 	intp index = (intp)userData;
-	pList->triangleCount = mod->GetDispCollTrees(index)->AABBTree_GetTrisInSphere(center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices));
+	pList->triangleCount = m_mod->GetDispCollTrees(index)->AABBTree_GetTrisInSphere(center, radius, pList->triangleIndices, ARRAYSIZE(pList->triangleIndices));
 }
 void CVirtualTerrain::LevelInit(model_t* mod, dphysdisp_t* pLump, int lumpSize)
 {
+	if (!mod) {
+		int aaa = 0;
+	}
+	this->m_mod = mod;
 	if (!pLump)
 	{
 		m_pDispHullData = NULL;
 		return;
 	}
-	this->mod = mod;
 	int totalHullData = 0;
 	m_dispHullOffset.SetCount(mod->GetDispCollTreesCount());
 	Assert(pLump->numDisplacements == m_DispCollTreeCount);

@@ -270,7 +270,7 @@ public:
 	void LevelShutdown();
 
 private:
-	model_t* mod;
+	model_t* m_mod;
 	byte* m_pDispHullData;
 	CUtlVector<int> m_dispHullOffset;
 };
@@ -393,7 +393,7 @@ struct worldbrushdata_t
 	CUtlVector< dgamelump_internal_t > g_GameLumpDict;
 	char g_GameLumpFilename[128] = { 0 };
 
-	CUtlVector<model_t>	m_InlineModels;
+	CUtlVector<model_t*>	m_InlineModels;
 
 	// This is sort of a hack, but it was a little too painful to do this any other way
 	// The goal of this dude is to allow us to override the tree with some

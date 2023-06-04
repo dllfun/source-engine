@@ -33,6 +33,7 @@
 #include "networkstringtable.h"
 #include "gl_rmain.h"
 #include "vprof_telemetry.h"
+#include "modelloader.h"
 
 #ifndef SWDS
 #include "vgui_baseui_interface.h"

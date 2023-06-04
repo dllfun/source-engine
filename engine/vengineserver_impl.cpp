@@ -49,6 +49,7 @@
 #include "replayserver.h"
 #include "replay/iserverengine.h"
 #include "vcrmode.h"
+#include "modelloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

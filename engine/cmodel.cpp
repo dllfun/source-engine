@@ -28,6 +28,7 @@
 #include "collisionutils.h"
 #include "tier0/tslist.h"
 #include "tier0/vprof.h"
+#include "modelloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -360,7 +361,7 @@ cmodel_t *CM_LoadMap( model_t* mod, bool allowReusePrevious, unsigned *checksum,
 //-----------------------------------------------------------------------------
 // returns a vcollide that can be used to collide against this model
 //-----------------------------------------------------------------------------
-vcollide_t* CM_VCollideForModel( int modelindex, const model_t* pModel )
+vcollide_t* CM_VCollideForModel(const model_t* pModel )
 {
 	if ( pModel )
 	{

@@ -50,6 +50,7 @@
 #ifndef SWDS
 #include "Overlay.h"
 #endif
+#include "modelloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -2660,7 +2661,7 @@ void CBrushBatchRender::ClearRenderHandles( model_t* pWorld )
 	{
 		char szBrushModel[MAX_PATH]; // inline model names "*1", "*2" etc
 		Q_snprintf( szBrushModel, sizeof( szBrushModel ), "*%s*%i", pWorld->GetModelName(), iBrush );
-		model_t *pModel = modelloader->GetModelForName( szBrushModel, IModelLoader::FMODELLOADER_SERVER );
+		model_t *pModel = modelloader->GetModelForName( szBrushModel, CModelLoader::FMODELLOADER_SERVER );
 		if ( pModel )
 		{
 			pModel->SetRenderHandle(0);

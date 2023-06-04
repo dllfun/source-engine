@@ -90,6 +90,7 @@
 #include "sourcevr/isourcevirtualreality.h"
 #include "cl_check_process.h"
 #include "enginethreads.h"
+#include "modelloader.h"
 
 #if defined( REPLAY_ENABLED )
 #include "replay_internal.h"
@@ -835,7 +836,7 @@ const model_t* CEngineClient::GetModel(int modelindex) const
 
 const IVModel *CEngineClient::LoadModel( const char *pName, bool bProp )
 {
-	return modelloader->GetModelForName( pName, bProp ? IModelLoader::FMODELLOADER_DETAILPROP : IModelLoader::FMODELLOADER_CLIENTDLL );
+	return modelloader->GetModelForName( pName, bProp ? CModelLoader::FMODELLOADER_DETAILPROP : CModelLoader::FMODELLOADER_CLIENTDLL );
 }
 
 CSentence *CEngineClient::GetSentence( CAudioSource *pAudioSource )

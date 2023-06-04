@@ -16,6 +16,7 @@
 #ifndef SWDS
 #include "vgui_baseui_interface.h"
 #endif
+#include "modelloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -229,7 +230,7 @@ int CGameServer::PrecacheModel( char const *name, int flags, model_t *model /*=N
 	{
 		if ( bLoadNow )
 		{
-			slot->SetModel( modelloader->GetModelForName( name, IModelLoader::FMODELLOADER_SERVER ) );
+			slot->SetModel( modelloader->GetModelForName( name, CModelLoader::FMODELLOADER_SERVER ) );
 #ifndef SWDS
 			EngineVGui()->UpdateProgressBar(PROGRESS_PRECACHE); 
 #endif
@@ -237,7 +238,7 @@ int CGameServer::PrecacheModel( char const *name, int flags, model_t *model /*=N
 		}
 		else
 		{
-			modelloader->ReferenceModel( name, IModelLoader::FMODELLOADER_SERVER );
+			modelloader->ReferenceModel( name, CModelLoader::FMODELLOADER_SERVER );
 			slot->SetModel( NULL );
 		}
 	}
@@ -275,7 +276,7 @@ model_t *CGameServer::GetModel( int index )
 		ConDMsg( "server model cache miss on %s\n", modelname );
 	}
 
-	m = modelloader->GetModelForName( modelname, IModelLoader::FMODELLOADER_SERVER );
+	m = modelloader->GetModelForName( modelname, CModelLoader::FMODELLOADER_SERVER );
 	slot->SetModel( m );
 
 	return m;

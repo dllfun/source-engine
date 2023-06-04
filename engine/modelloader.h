@@ -10,7 +10,7 @@
 #pragma once
 #endif
 
-class model_t;
+//class model_t;
 class IMaterial;
 class IFileList;
 class IModelLoadCallback;
@@ -20,13 +20,19 @@ typedef void* FileHandle_t;
 #include "utlmemory.h"
 #include "utlbuffer.h"
 #include "bspfile.h"
+#include "model_types.h"
+#include "tier1/UtlStringMap.h"
+#include "utlhashtable.h"
+#include "utldict.h"
+#include "mempool.h"
+#include "gl_model_private.h"
 
-
+bool Model_LessFunc(FileNameHandle_t const& a, FileNameHandle_t const& b);
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-abstract_class IModelLoader
+class CModelLoader
 {
 public:
 	enum REFERENCETYPE
@@ -68,100 +74,225 @@ public:
 		RELOAD_REFRESH_MODELS,
 	};
 
-	// Start up modelloader subsystem
-	virtual void		Init( void ) = 0;
-	virtual void		Shutdown( void ) = 0;
+	CModelLoader() : m_ModelPool(sizeof(model_t), MAX_KNOWN_MODELS, CUtlMemoryPool::GROW_FAST, "CModelLoader::m_ModelPool"),
+		m_Models(0, 0, Model_LessFunc)
+	{
+	}
 
-	virtual int			GetCount( void ) = 0;
-	virtual model_t		*GetModelForIndex( int i ) = 0;
+	void			Init(void);
+	void			Shutdown(void);
+
+	int				GetCount(void);
+	model_t* GetModelForIndex(int i);
 
 	// Look up name for model
-	//virtual const char *GetName( const model_t *model ) = 0;
+	//const char		*GetName( model_t const *model );
 
-	// Check for extra data, reload studio model if needed
-	//virtual void		*GetExtraData(const model_t *model ) = 0;
+	// Check cache for data, reload model if needed
+	//void			*GetExtraData( const model_t *model );
 
-	// Get disk size for model
-	virtual int			GetModelFileSize( const char *name ) = 0;
+	int				GetModelFileSize(char const* name);
 
 	// Finds the model, and loads it if it isn't already present.  Updates reference flags
-	virtual model_t		*GetModelForName( const char *name, REFERENCETYPE referencetype ) = 0;
-	virtual model_t		*ReferenceModel( const char *name, REFERENCETYPE referencetype ) = 0;
+	model_t* GetModelForName(const char* name, REFERENCETYPE referencetype);
+	// Mark as referenced by name
+	model_t* ReferenceModel(const char* name, REFERENCETYPE referencetype);
+
 	// Unmasks the referencetype field for the model
-	virtual void		UnreferenceModel( model_t *model, REFERENCETYPE referencetype ) = 0;
+	void			UnreferenceModel(model_t* model, REFERENCETYPE referencetype);
 	// Unmasks the specified reference type across all models
-	virtual void		UnreferenceAllModels( REFERENCETYPE referencetype ) = 0;
+	void			UnreferenceAllModels(REFERENCETYPE referencetype);
 	// Set all models to last loaded on server count -1
-	virtual void		ResetModelServerCounts() = 0;
+	void			ResetModelServerCounts();
 
 	// For any models with referencetype blank, frees all memory associated with the model
 	//  and frees up the models slot
-	virtual void		UnloadUnreferencedModels( void ) = 0;
-	virtual void		PurgeUnusedModels( void ) = 0;
-	virtual void		UnloadModel( model_t *pModel ) = 0;
+	void			UnloadUnreferencedModels(void);
+	void			PurgeUnusedModels(void);
 
-	// On the client only, there is some information that is computed at the time we are just
-	//  about to render the map the first time.  If we don't change/unload the map, then we
-	//  shouldn't have to recompute it each time we reconnect to the same map
-	virtual bool		Map_GetRenderInfoAllocated( void ) = 0;
-	virtual void		Map_SetRenderInfoAllocated( bool allocated ) = 0;
+	bool			Map_GetRenderInfoAllocated(void);
+	void			Map_SetRenderInfoAllocated(bool allocated);
 
-	// Load all the displacements for rendering. Set bRestoring to true if we're recovering from an alt+tab.
-	virtual void		Map_LoadDisplacements( model_t *model, bool bRestoring ) = 0;
-
-	// Print which models are in the cache/known
-	virtual void		Print( void ) = 0;
+	virtual void	Map_LoadDisplacements(model_t* pModel, bool bRestoring);
 
 	// Validate version/header of a .bsp file
-	virtual bool		Map_IsValid( char const *mapname, bool bQuiet = false ) = 0;
+	bool			Map_IsValid(char const* mapname, bool bQuiet = false);
 
-	
 
-	// Reloads all models
-	virtual void		Studio_ReloadModels( ReloadType_t reloadType ) = 0;
+	virtual void	Studio_ReloadModels(ReloadType_t reloadType);
+
+	void			Print(void);
 
 	// Is a model loaded?
-	virtual bool		IsLoaded( const model_t *mod ) = 0;
+	virtual bool	IsLoaded(const model_t* mod);
 
-	virtual bool		LastLoadedMapHasHDRLighting( void ) = 0;
+	virtual bool	LastLoadedMapHasHDRLighting(void);
 
-	// See CL_HandlePureServerWhitelist for what this is for.
-	virtual void ReloadFilesInList( IFileList *pFilesToReload ) = 0;
+	void			DumpVCollideStats();
 
-	virtual const char *GetActiveMapName( void ) = 0;
+	// Returns the map model, otherwise NULL, no load or create
+	model_t* FindModelNoCreate(const char* pModelName);
+
+	// Finds the model, builds a model entry if not present
+	model_t* FindModel(const char* name);
+
+	modtype_t		GetTypeFromName(const char* pModelName);
+
+	// start with -1, list terminates with -1
+	int				FindNext(int iIndex, model_t** ppModel);
+
+	virtual void	UnloadModel(model_t* pModel);
+
+	virtual void	ReloadFilesInList(IFileList* pFilesToReload);
+
+	virtual const char* GetActiveMapName(void);
 
 	// Called by app system once per frame to poll and update dynamic models
-	virtual void		UpdateDynamicModels() = 0;
+	virtual void	UpdateDynamicModels() { InternalUpdateDynamicModels(false); }
 
 	// Called by server and client engine code to flush unreferenced dynamic models
-	virtual void		FlushDynamicModels() = 0;
+	virtual void	FlushDynamicModels() { InternalUpdateDynamicModels(true); }
 
-	// Called by server and client engine code to flush unreferenced dynamic models
-	virtual void		ForceUnloadNonClientDynamicModels() = 0;
+	// Called by server and client to force-unload dynamic models regardless of refcount!
+	virtual void	ForceUnloadNonClientDynamicModels();
 
 	// Called by client code to load dynamic models, instead of GetModelForName.
-	virtual model_t		*GetDynamicModel( const char *name, bool bClientOnly ) = 0;
+	virtual model_t* GetDynamicModel(const char* name, bool bClientOnly);
 
 	// Called by client code to query dynamic model state
-	virtual bool		IsDynamicModelLoading( model_t *pModel, bool bClientOnly ) = 0;
+	virtual bool	IsDynamicModelLoading(model_t* pModel, bool bClientOnly);
 
 	// Called by client code to refcount dynamic models
-	virtual void		AddRefDynamicModel( model_t *pModel, bool bClientSideRef ) = 0;
-	virtual void		ReleaseDynamicModel( model_t *pModel, bool bClientSideRef ) = 0;
+	virtual void	AddRefDynamicModel(model_t* pModel, bool bClientSideRef);
+	virtual void	ReleaseDynamicModel(model_t* pModel, bool bClientSideRef);
 
-	// Called by client code
-	virtual bool		RegisterModelLoadCallback( model_t *pModel, bool bClientOnly, IModelLoadCallback *pCallback, bool bCallImmediatelyIfLoaded = true ) = 0;
+	// Called by client code or GetDynamicModel
+	virtual bool	RegisterModelLoadCallback(model_t* pModel, bool bClientOnly, IModelLoadCallback* pCallback, bool bCallImmediatelyIfLoaded);
 
 	// Called by client code or IModelLoadCallback destructor
-	virtual void		UnregisterModelLoadCallback( model_t *pModel, bool bClientOnly, IModelLoadCallback *pCallback ) = 0;
+	virtual void	UnregisterModelLoadCallback(model_t* pModel, bool bClientOnly, IModelLoadCallback* pCallback);
 
-	virtual void		Client_OnServerModelStateChanged( model_t *pModel, bool bServerLoaded ) = 0;
+	virtual void	Client_OnServerModelStateChanged(model_t* pModel, bool bServerLoaded);
+
+	void			DebugPrintDynamicModels();
 
 	// Recomputes surface flags
-	virtual void	RecomputeSurfaceFlags(model_t* pWorld) = 0;
+	virtual void	RecomputeSurfaceFlags(model_t* pWorld);
+	// Internal types
+private:
+	// TODO, flag these and allow for UnloadUnreferencedModels to check for allocation type
+	//  so we don't have to flush all of the studio models when we free the hunk
+	enum
+	{
+		FALLOC_USESHUNKALLOC = (1 << 31),
+		FALLOC_USESCACHEALLOC = (1 << 30),
+	};
+
+	// Internal methods
+private:
+
+	model_t* AllocModel() {
+		void* p = m_ModelPool.Alloc();
+		memset(p, 0, sizeof(model_t));
+		model_t* pModel = NULL;
+		pModel = new(p) model_t();
+		Assert(pModel);
+		return pModel;
+	}
+
+	// Set reference flags and load model if it's not present already
+	model_t* LoadModel(model_t* model, REFERENCETYPE* referencetype);
+	// Unload models ( won't unload referenced models if checkreferences is true )
+	void		UnloadAllModels(bool checkreference);
+
+	// World/map
+	void		Map_LoadModel(model_t* mod);
+	void		Map_UnloadModel(model_t* mod);
+	void		Map_UnloadCubemapSamples(model_t* mod);
+	void		SetupSubModels(model_t* pModel, CUtlVector<mmodel_t>& list);//CUtlVector<model_t>&	m_InlineModels,	
+
+	// World loading helper
+	//void		SetWorldModel( model_t *mod );
+	//void		ClearWorldModel(model_t* mod);
+	//bool		IsWorldModelSet( void );
+	//int			GetNumWorldSubmodels( void );
+
+	// Sprites
+	void		Sprite_LoadModel(model_t* mod);
+	void		Sprite_UnloadModel(model_t* mod);
+
+	// Studio models
+	void		Studio_LoadModel(model_t* mod, bool bTouchAllData);
+	void		Studio_UnloadModel(model_t* mod);
+
+	// Byteswap
+	int			UpdateOrCreate(const char* pSourceName, char* pTargetName, int maxLen, bool bForce);
+
+	// Dynamic load queue
+	class CDynamicModelInfo;
+	void		QueueDynamicModelLoad(CDynamicModelInfo* dyn, model_t* mod);
+	bool		CancelDynamicModelLoad(CDynamicModelInfo* dyn, model_t* mod);
+	void		UpdateDynamicModelLoadQueue();
+
+	void		FinishDynamicModelLoadIfReady(CDynamicModelInfo* dyn, model_t* mod);
+
+	void		InternalUpdateDynamicModels(bool bIgnoreUpdateTime);
+
+	// Internal data
+private:
+	enum
+	{
+		MAX_KNOWN_MODELS = 1024,
+	};
+
+	struct ModelEntry_t
+	{
+		model_t* modelpointer;
+	};
+
+	CUtlMap< FileNameHandle_t, ModelEntry_t >	m_Models;
+
+	CUtlMemoryPool			m_ModelPool;
+
+	//CUtlVector<model_t>	m_InlineModels;
+	CUtlStringMap<model_t*>	m_InlineModelMap;
+
+	//model_t				*m_pWorldModel;
+	//worldbrushdata_t	m_worldBrushData;
+
+public: // HACKHACK
+
+private:
+	// local name of current loading model
+	char				m_szLoadName[64];
+
+	bool				m_bMapRenderInfoLoaded;
+	bool				m_bMapHasHDRLighting;
+
+	char				m_szActiveMapName[64];
+
+	// Dynamic model support:
+	class CDynamicModelInfo
+	{
+	public:
+		enum { QUEUED = 0x01, LOADING = 0x02, CLIENTREADY = 0x04, SERVERLOADING = 0x08, ALLREADY = 0x10, INVALIDFLAG = 0x20 }; // flags
+		CDynamicModelInfo() : m_iRefCount(0), m_iClientRefCount(0), m_nLoadFlags(INVALIDFLAG), m_uLastTouchedMS_Div256(0) { }
+		int16 m_iRefCount;
+		int16 m_iClientRefCount; // also doublecounted in m_iRefCount
+		uint32 m_nLoadFlags : 8;
+		uint32 m_uLastTouchedMS_Div256 : 24;
+		CUtlVector< uintptr_t > m_Callbacks; // low bit = client only
+	};
+
+	CUtlHashtable< model_t*, CDynamicModelInfo > m_DynamicModels;
+	CUtlHashtable< uintptr_t, int > m_RegisteredDynamicCallbacks;
+
+	// Dynamic model load queue
+	CUtlVector< model_t* > m_DynamicModelLoadQueue;
+	bool m_bDynamicLoadQueueHeadActive;
 };
 
-extern IModelLoader *modelloader;
+extern CModelLoader* modelloader;
 
 
 

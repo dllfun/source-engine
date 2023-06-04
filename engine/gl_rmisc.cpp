@@ -35,6 +35,7 @@
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "../utils/common/bsplib.h"
 #include "ibsppack.h"
+#include "modelloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

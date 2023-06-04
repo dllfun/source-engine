@@ -73,6 +73,7 @@
 #include "host_state.h"
 #include "voice.h"
 #include "cbenchmark.h"
+#include "modelloader.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -2592,7 +2593,7 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 
 	COM_TimestampedLog( "modelloader->GetModelForName(%s) -- Start", szMapFile );
 
-	model_t* pWorld = modelloader->GetModelForName(szMapFile, IModelLoader::FMODELLOADER_SERVER);
+	model_t* pWorld = modelloader->GetModelForName(szMapFile, CModelLoader::FMODELLOADER_SERVER);
 	g_pHost->Host_SetWorldModel(pWorld);
 	if ( !pWorld)
 	{
@@ -2661,7 +2662,7 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 		char localmodel[MAX_PATH]; // inline model names "*1", "*2" etc
 		Q_snprintf( localmodel, sizeof( localmodel ), "*%s*%i", pWorld->GetModelName(), i );
 
-		PrecacheModel( localmodel, RES_FATALIFMISSING | RES_PRELOAD, modelloader->GetModelForName( localmodel, IModelLoader::FMODELLOADER_SERVER ) );
+		PrecacheModel( localmodel, RES_FATALIFMISSING | RES_PRELOAD, modelloader->GetModelForName( localmodel, CModelLoader::FMODELLOADER_SERVER ) );
 	}
 
 #ifndef SWDS

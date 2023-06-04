@@ -931,6 +931,9 @@ void CViewRender::SetUpViews()
 		if (pPlayer)
 		{
 			pPlayer->CalcView(view.origin, view.angles, view.zNear, view.zFar, view.fov);
+			view.origin.x += 0;
+			view.origin.y += 0;
+			view.origin.z += 0;
 
 			// If we are looking through another entities eyes, then override the angles/origin for view
 			int viewentity = render->GetViewEntity();
@@ -2219,6 +2222,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		if ( ( bDrew3dSkybox = pSkyView->Setup( view, &nClearFlags, &nSkyboxVisible ) ) != false )
 		{
 			AddViewToScene( pSkyView );
+			//nClearFlags |= VIEW_CLEAR_COLOR;
 		}
 		SafeRelease( pSkyView );
 
