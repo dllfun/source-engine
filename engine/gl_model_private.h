@@ -1118,10 +1118,10 @@ public:
 	{
 		return surfID->vertBufferIndex;
 	}
-	Vector GetMins() {
+	Vector& GetMins() {
 		return mins;
 	}
-	Vector GetMaxs() {
+	Vector& GetMaxs() {
 		return maxs;
 	}
 	int GetPrimitivesCount() {
