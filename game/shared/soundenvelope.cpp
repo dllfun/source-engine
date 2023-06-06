@@ -194,7 +194,7 @@ public:
 	{
 		Assert( player );
 
-		int index = player->entindex();
+		int index = player->NetworkProp()->entindex();
 
 		if ( index < 0 )
 			return false;
@@ -458,7 +458,7 @@ float CSoundPatch::GetVolume( void )
 inline int CSoundPatch::EntIndex() const
 {
 	Assert( !m_hEnt.IsValid() || m_hEnt.Get() );
-	return m_hEnt.Get() ? m_hEnt->entindex() : -1;
+	return m_hEnt.Get() ? m_hEnt->NetworkProp()->entindex() : -1;
 }
 
 //-----------------------------------------------------------------------------

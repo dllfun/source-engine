@@ -26,7 +26,7 @@ bool CGameTrace::DidHitNonWorldEntity() const
 int CGameTrace::GetEntityIndex() const
 {
 	if ( m_pEnt )
-		return m_pEnt->entindex();
+		return m_pEnt->NetworkProp()->entindex();
 	else
 		return -1;
 }

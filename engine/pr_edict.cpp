@@ -45,7 +45,54 @@ static ConVar		sv_lowedict_action( "sv_lowedict_action", "0", FCVAR_NONE, "0 - n
 
 // Bitmask of free edicts.
 static CBitVec< MAX_EDICTS > g_FreeEdicts;
+static edict_t* g_pEdicts;			// Can array index now, edict_t is fixed
+static int			num_edicts;
+static int			max_edicts;
+static int			free_edicts; // how many edicts in num_edicts are free, in use is num_edicts - free_edicts
+static IChangeInfoAccessor* edictchangeinfo; // HACK to allow backward compat since we can't change edict_t layout
 
+void SV_AllocateEdicts()
+{
+	// Allocate server memory
+	max_edicts = MAX_EDICTS;
+	g_pEdicts = (edict_t*)Hunk_AllocName(max_edicts * sizeof(edict_t), "edicts");
+
+	COMPILE_TIME_ASSERT(MAX_EDICT_BITS + 1 <= 8 * sizeof(g_pEdicts[0].m_EdictIndex));
+
+	// Invoke the constructor so the vtable is set correctly..
+	for (int i = 0; i < max_edicts; ++i)
+	{
+		new(&g_pEdicts[i]) edict_t;
+		g_pEdicts[i].m_EdictIndex = i;
+		g_pEdicts[i].freetime = 0;
+	}
+	ED_ClearFreeEdictList();
+
+	edictchangeinfo = (IChangeInfoAccessor*)Hunk_AllocName(max_edicts * sizeof(IChangeInfoAccessor), "edictchangeinfo");
+}
+
+int SV_MAX_Edicts() {
+	return max_edicts;
+}
+
+int SV_NUM_Edicts() {
+	return num_edicts;
+}
+
+int SV_FREE_Edicts() {
+	return free_edicts;
+}
+
+IChangeInfoAccessor* SV_Edictchangeinfo(int n) {
+	return &edictchangeinfo[n];
+}
+
+void SV_DeallocateEdicts() {
+	num_edicts = 0;
+	max_edicts = 0;
+	free_edicts = 0;
+	g_pEdicts = NULL;
+}
 /*
 =================
 ED_ClearEdict
@@ -85,9 +132,9 @@ static void SpewEdicts()
 
 	// Tally up each class
 	int nEdictNum = 1;
-	for( int i=0; i<sv.num_edicts; ++i )
+	for( int i=0; i<num_edicts; ++i )
 	{
-		edict_t *e = &sv.edicts[i];
+		edict_t *e = &g_pEdicts[i];
 		++nEdictNum;
 		unsigned short nIndex = mapEnts.Find( e->GetClassName() );
 		if ( nIndex == mapEnts.InvalidIndex() )
@@ -154,17 +201,17 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 {
 	if ( iForceEdictIndex >= 0 )
 	{
-		if ( iForceEdictIndex >= sv.num_edicts )
+		if ( iForceEdictIndex >= num_edicts )
 		{
 			Warning( "ED_Alloc( %d ) - invalid edict index specified.", iForceEdictIndex );
 			return NULL;
 		}
 		
-		edict_t *e = &sv.edicts[ iForceEdictIndex ];
+		edict_t *e = &g_pEdicts[ iForceEdictIndex ];
 		if ( e->IsFree() )
 		{
 			Assert( iForceEdictIndex == e->m_EdictIndex );
-			--sv.free_edicts;
+			--free_edicts;
 			Assert( g_FreeEdicts.IsBitSet( iForceEdictIndex ) );
 			g_FreeEdicts.Clear( iForceEdictIndex );
 			ED_ClearEdict( e );
@@ -184,7 +231,7 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 		if ( iBit < 0 )
 			break;
 
-		edict_t *pEdict = &sv.edicts[ iBit ];
+		edict_t *pEdict = &g_pEdicts[ iBit ];
 
 		// If this assert goes off, someone most likely called pedict->ClearFree() and not ED_ClearFreeFlag()?
 		Assert( pEdict->IsFree() );
@@ -199,7 +246,7 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 				framesnapshotmanager->AddExplicitDelete( iBit );
 			}
 
-			--sv.free_edicts;
+			--free_edicts;
 			g_FreeEdicts.Clear( pEdict->m_EdictIndex );
 			ED_ClearEdict( pEdict );
 			return pEdict;
@@ -207,27 +254,27 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 	}
 
 	// Allocate a new edict.
-	if ( sv.num_edicts >= sv.max_edicts )
+	if ( num_edicts >= max_edicts )
 	{
 		AssertMsg( 0, "Can't allocate edict" );
 
 		SpewEdicts(); // Log the entities we have before we die
 
-		if ( sv.max_edicts == 0 )
+		if ( max_edicts == 0 )
 			Sys_Error( "ED_Alloc: No edicts yet" );
 		Sys_Error ("ED_Alloc: no free edicts");
 	}
 
 	// Do this before clearing since clear now needs to call back into the edict to deduce the index so can get the changeinfo data in the parallel structure
-	edict_t *pEdict = sv.edicts + sv.num_edicts++; 
+	edict_t *pEdict = g_pEdicts + num_edicts++;
 
 	// We should not be in the free list...
 	Assert( !g_FreeEdicts.IsBitSet( pEdict->m_EdictIndex ) );
 	ED_ClearEdict( pEdict );
 
-	if ( sv_lowedict_action.GetInt() > 0 && sv.num_edicts >= sv.max_edicts - sv_lowedict_threshold.GetInt() )
+	if ( sv_lowedict_action.GetInt() > 0 && num_edicts >= max_edicts - sv_lowedict_threshold.GetInt() )
 	{
-		int nEdictsRemaining = sv.max_edicts - sv.num_edicts;
+		int nEdictsRemaining = max_edicts - num_edicts;
 		g_Log.Printf( "Warning: free edicts below threshold. %i free edict%s remaining.\n", nEdictsRemaining, nEdictsRemaining == 1 ? "" : "s" );
 
 		switch ( sv_lowedict_action.GetInt() )
@@ -271,8 +318,8 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 
 void ED_AllowImmediateReuse()
 {
-	edict_t *pEdict = sv.edicts + sv.GetMaxClients() + 1;
-	for ( int i=sv.GetMaxClients()+1; i < sv.num_edicts; i++ )
+	edict_t *pEdict = g_pEdicts + sv.GetMaxClients() + 1;
+	for ( int i=sv.GetMaxClients()+1; i < num_edicts; i++ )
 	{
 		if ( pEdict->IsFree() )
 		{
@@ -303,7 +350,7 @@ void ED_Free (edict_t *ed)
 	}
 
 	// don't free player edicts
-	if ( (ed - sv.edicts) >= 1 && (ed - sv.edicts) <= sv.GetMaxClients() )
+	if ( (ed - g_pEdicts) >= 1 && (ed - g_pEdicts) <= sv.GetMaxClients() )
 		return;
 
 	// release the DLL entity that's attached to this edict, if any
@@ -312,7 +359,7 @@ void ED_Free (edict_t *ed)
 	ed->SetFree();
 	ed->freetime = sv.GetTime();
 
-	++sv.free_edicts;
+	++free_edicts;
 	Assert( !g_FreeEdicts.IsBitSet( ed->m_EdictIndex ) );
 	g_FreeEdicts.Set( ed->m_EdictIndex );
 
@@ -334,28 +381,31 @@ void InitializeEntityDLLFields( edict_t *pEdict )
 
 int NUM_FOR_EDICT(const edict_t *e)
 {
-	if ( &sv.edicts[e->m_EdictIndex] == e ) // NOTE: old server.dll may stomp m_EdictIndex
+	if ( &g_pEdicts[e->m_EdictIndex] == e ) // NOTE: old server.dll may stomp m_EdictIndex
 		return e->m_EdictIndex;
-	int index = e - sv.edicts;
-	if ( (unsigned int) index >= (unsigned int) sv.num_edicts )
+	int index = e - g_pEdicts;
+	if ( (unsigned int) index >= (unsigned int) num_edicts )
 		Sys_Error ("NUM_FOR_EDICT: bad pointer");
 	return index;
 }
 
 edict_t *EDICT_NUM(int n)
 {
-	if ((unsigned int) n >= (unsigned int) sv.max_edicts)
+	if ((unsigned int) n >= (unsigned int) max_edicts)
 		Sys_Error ("EDICT_NUM: bad number %i", n);
-	return &sv.edicts[n];
+	if (n == 0) {
+		return g_pEdicts;
+	}
+	return &g_pEdicts[n];
 }
 
 
 static inline int NUM_FOR_EDICTINFO(const edict_t *e)
 {
-	if ( &sv.edicts[e->m_EdictIndex] == e ) // NOTE: old server.dll may stomp m_EdictIndex
+	if ( &g_pEdicts[e->m_EdictIndex] == e ) // NOTE: old server.dll may stomp m_EdictIndex
 		return e->m_EdictIndex;
-	int index = e - sv.edicts;
-	if ( (unsigned int) index >= (unsigned int) sv.max_edicts )
+	int index = e - g_pEdicts;
+	if ( (unsigned int) index >= (unsigned int) max_edicts )
 		Sys_Error ("NUM_FOR_EDICTINFO: bad pointer");
 	return index;
 }
@@ -363,10 +413,10 @@ static inline int NUM_FOR_EDICTINFO(const edict_t *e)
 
 IChangeInfoAccessor *CBaseEdict::GetChangeAccessor()
 {
-	return &sv.edictchangeinfo[ NUM_FOR_EDICTINFO( (const edict_t*)this ) ];
+	return &edictchangeinfo[ NUM_FOR_EDICTINFO( (const edict_t*)this ) ];
 }
 
 const IChangeInfoAccessor *CBaseEdict::GetChangeAccessor() const
 {
-	return &sv.edictchangeinfo[ NUM_FOR_EDICTINFO( (const edict_t*)this ) ];
+	return &edictchangeinfo[ NUM_FOR_EDICTINFO( (const edict_t*)this ) ];
 }

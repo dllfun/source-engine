@@ -123,7 +123,7 @@ bool CKnife::Deploy()
 {
 	CPASAttenuationFilter filter( this );
 	filter.UsePredictionRules();
-	EmitSound( filter, entindex(), "Weapon_Knife.Deploy" );
+	EmitSound( filter, NetworkProp()->entindex(), "Weapon_Knife.Deploy" );
 
 	return BaseClass::Deploy();
 }
@@ -253,11 +253,11 @@ void CKnife::Smack( void )
 
 		if( m_trHit.m_pEnt->IsPlayer()  )
 		{
-			EmitSound( filter, entindex(), m_bStab?"Weapon_Knife.Stab":"Weapon_Knife.Hit" );
+			EmitSound( filter, NetworkProp()->entindex(), m_bStab?"Weapon_Knife.Stab":"Weapon_Knife.Hit" );
 		}
 		else
 		{
-			EmitSound( filter, entindex(), "Weapon_Knife.HitWall" );
+			EmitSound( filter, NetworkProp()->entindex(), "Weapon_Knife.HitWall" );
 		}
 	}
 
@@ -270,7 +270,7 @@ void CKnife::Smack( void )
 #ifdef CLIENT_DLL
 	data.m_hEntity = m_trHit.m_pEnt->GetRefEHandle();
 #else
-	data.m_nEntIndex = m_trHit.m_pEnt->entindex();
+	data.m_nEntIndex = m_trHit.m_pEnt->NetworkProp()->entindex();
 #endif
 
 	CPASFilter filter( data.m_vOrigin );
@@ -391,7 +391,7 @@ bool CKnife::SwingOrStab( bool bStab )
 		// play wiff or swish sound
 		CPASAttenuationFilter filter( this );
 		filter.UsePredictionRules();
-		EmitSound( filter, entindex(), "Weapon_Knife.Slash" );
+		EmitSound( filter, NetworkProp()->entindex(), "Weapon_Knife.Slash" );
 	}
 
 #ifndef CLIENT_DLL

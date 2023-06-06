@@ -161,7 +161,7 @@ void *SendProxy_SendBaseCombatCharacterLocalDataTable( const SendProp *pProp, co
 	{
 		if ( pBCC->IsPlayer() )
 		{
-			pRecipients->SetOnly( pBCC->entindex() - 1 );
+			pRecipients->SetOnly( pBCC->NetworkProp()->entindex() - 1 );
 		}
 		else
 		{
@@ -172,7 +172,7 @@ void *SendProxy_SendBaseCombatCharacterLocalDataTable( const SendProp *pProp, co
 				CBaseCombatCharacter *pDriver = pVehicle->GetPassenger();
 				if ( pDriver != NULL )
 				{
-					pRecipients->SetOnly( pDriver->entindex() - 1 );
+					pRecipients->SetOnly( pDriver->NetworkProp()->entindex() - 1 );
 				}
 			}
 		}
@@ -2538,12 +2538,12 @@ Vector CBaseCombatCharacter::BodyDirection3D( void )
 void CBaseCombatCharacter::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Skip this work if we're already marked for transmission.
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );
 
-	bool bLocalPlayer = ( pInfo->m_pClientEnt == edict() );
+	bool bLocalPlayer = ( pInfo->m_pClientEnt == NetworkProp()->edict());
 
 	if ( bLocalPlayer )
 	{

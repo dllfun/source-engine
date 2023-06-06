@@ -490,7 +490,7 @@ inline CBaseEntity* CBeam::GetStartEntityPtr( void ) const
 inline int CBeam::GetStartEntity( void ) const 
 { 
 	CBaseEntity *pEntity = m_hAttachEntity[0].Get();
-	return pEntity ? pEntity->entindex() : 0; 
+	return pEntity ? pEntity->NetworkProp()->entindex() : 0;
 }
 
 inline CBaseEntity* CBeam::GetEndEntityPtr( void ) const 
@@ -501,7 +501,7 @@ inline CBaseEntity* CBeam::GetEndEntityPtr( void ) const
 inline int CBeam::GetEndEntity( void ) const	
 { 
 	CBaseEntity *pEntity = m_hAttachEntity[m_nNumBeamEnts-1].Get();
-	return pEntity ? pEntity->entindex() : 0; 
+	return pEntity ? pEntity->NetworkProp()->entindex() : 0;
 }
 
 inline int CBeam::GetStartAttachment() const

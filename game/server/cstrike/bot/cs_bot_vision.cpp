@@ -457,7 +457,7 @@ void CCSBot::ComputePartPositions( CCSPlayer *player )
 	VPROF_BUDGET( "CCSBot::ComputePartPositions", VPROF_BUDGETGROUP_NPCS );
 
 	// which PartInfo corresponds to the given player
-	PartInfo *info = &m_partInfo[ player->entindex() % MAX_PLAYERS ];
+	PartInfo *info = &m_partInfo[ player->NetworkProp()->entindex() % MAX_PLAYERS ];
 
 	// always compute feet, since it doesn't rely on bones
 	info->m_feetPos = player->GetAbsOrigin();
@@ -526,7 +526,7 @@ const Vector &CCSBot::GetPartPosition( CCSPlayer *player, VisiblePartType part )
 	VPROF_BUDGET( "CCSBot::GetPartPosition", VPROF_BUDGETGROUP_NPCS );
 
 	// which PartInfo corresponds to the given player
-	PartInfo *info = &m_partInfo[ player->entindex() % MAX_PLAYERS ];
+	PartInfo *info = &m_partInfo[ player->NetworkProp()->entindex() % MAX_PLAYERS ];
 
 	if (gpGlobals->framecount > info->m_validFrame)
 	{
@@ -1251,7 +1251,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 			CCSPlayer *player = static_cast<CCSPlayer *>( entity );
 
 			// ignore self
-			if (player->entindex() == entindex())
+			if (player->NetworkProp()->entindex() == NetworkProp()->entindex())
 				continue;
 
 			// is it alive?
@@ -1265,7 +1265,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 				if (IsVisible( entity->WorldSpaceCenter(), false, this ))
 				{
 					// update watch timestamp
-					int idx = player->entindex();
+					int idx = player->NetworkProp()->entindex();
 					m_watchInfo[idx].timestamp = gpGlobals->curtime;
 					m_watchInfo[idx].isEnemy = false;
 
@@ -1304,7 +1304,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 			}
 
 			// update watch timestamp
-			int idx = player->entindex();
+			int idx = player->NetworkProp()->entindex();
 			m_watchInfo[idx].timestamp = gpGlobals->curtime;
 			m_watchInfo[idx].isEnemy = true;
 

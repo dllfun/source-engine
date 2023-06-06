@@ -143,7 +143,7 @@ void CTesla::DoSpark()
 		CBaseEntity *pEnt = GetSourceEntity();
 		
 		WRITE_VEC3COORD( pEnt->GetAbsOrigin() );
-		WRITE_SHORT( pEnt->entindex() );
+		WRITE_SHORT( pEnt->NetworkProp()->entindex());
 		WRITE_FLOAT( m_flRadius );
 		WRITE_BYTE( m_Color.r );
 		WRITE_BYTE( m_Color.g );

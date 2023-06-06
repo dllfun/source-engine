@@ -330,7 +330,7 @@ bool ILocomotion::IsGap( const Vector &pos, const Vector &forward ) const
 //----------------------------------------------------------------------------------------------------------
 bool ILocomotion::IsEntityTraversable( CBaseEntity *obstacle, TraverseWhenType when ) const
 {
-	if ( obstacle->IsWorld() )
+	if ( obstacle->NetworkProp()->entindex()==0 )
 		return false;
 
 	// assume bot will open a door in its path

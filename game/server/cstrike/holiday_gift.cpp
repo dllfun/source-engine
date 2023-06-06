@@ -117,7 +117,7 @@ bool CHolidayGift::MyTouch( CBasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 void CHolidayGift::ItemTouch( CBaseEntity *pOther )
 {
-	if ( pOther->IsWorld() )
+	if ( pOther->NetworkProp()->entindex()==0 )
 	{
 		Vector absVel = GetAbsVelocity();
 		SetAbsVelocity( Vector( 0,0,absVel.z ) );

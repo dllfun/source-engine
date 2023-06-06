@@ -68,7 +68,7 @@ void ScratchPad_DrawEntityToScratchPad(
 	if ( flags & SPDRAWWORLD_DRAW_EDICT_INDICES )
 	{
 		char tempStr[512];
-		Q_snprintf( tempStr, sizeof( tempStr ), "edict: %d", pEnt->entindex() );
+		Q_snprintf( tempStr, sizeof( tempStr ), "edict: %d", pEnt->NetworkProp()->entindex());
 		Q_strncat( str, tempStr, sizeof( str ), COPY_ALL_CHARACTERS );
 	}
 

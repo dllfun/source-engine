@@ -983,7 +983,7 @@ inline bool CBot< PlayerType >::IsLocalPlayerWatchingMe( void ) const
 
 	if ( cv_bot_debug_target.GetInt() > 0 )
 	{
-		return this->entindex() == cv_bot_debug_target.GetInt();
+		return this->NetworkProp()->entindex() == cv_bot_debug_target.GetInt();
 	}
 
 	if ( player->IsObserver() || !player->IsAlive() )

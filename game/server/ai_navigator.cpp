@@ -1314,7 +1314,7 @@ void CAI_Navigator::OnNavFailed( AI_TaskFailureCode_t code, bool bMovement )
 				// if failing, turn off collisions with the object
 				CBaseEntity *pBlocker = GetBlockingEntity();
 				// FIXME: change this to only be for MOVETYPE_VPHYSICS?
-				if (pBlocker && !pBlocker->IsWorld() && !pBlocker->IsPlayer() && !FClassnameIs( pBlocker, "func_tracktrain" ))
+				if (pBlocker && !(pBlocker->NetworkProp()->entindex()==0) && !pBlocker->IsPlayer() && !FClassnameIs( pBlocker, "func_tracktrain" ))
 				{
 					//pBlocker->DrawBBoxOverlay( 2.0f );
 					if (NPCPhysics_CreateSolver( GetOuter(), pBlocker, true, 10.0f ) != NULL)

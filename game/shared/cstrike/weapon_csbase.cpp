@@ -424,11 +424,11 @@ bool CWeaponCSBase::PlayEmptySound()
 
 	if ( IsPistol() )
 	{
-		EmitSound( filter, entindex(), "Default.ClipEmpty_Pistol" );
+		EmitSound( filter, NetworkProp()->entindex(), "Default.ClipEmpty_Pistol" );
 	}
 	else
 	{
-		EmitSound( filter, entindex(), "Default.ClipEmpty_Rifle" );
+		EmitSound( filter, NetworkProp()->entindex(), "Default.ClipEmpty_Rifle" );
 	}
 
 	return 0;
@@ -1560,7 +1560,7 @@ void CWeaponCSBase::DefaultTouch(CBaseEntity *pOther)
 		filter.RemoveRecipient( pPlayer );
 
 		UserMessageBegin( filter, "ReloadEffect" );
-			WRITE_SHORT( pPlayer->entindex() );
+			WRITE_SHORT( pPlayer->NetworkProp()->entindex());
 		MessageEnd();
 
 		// Make the player play his reload animation.
@@ -1800,7 +1800,7 @@ void CWeaponCSBase::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 		}
 		if ( filter.GetRecipientCount() )
 		{
-			CBaseEntity::EmitSound( filter, pNewOwner->entindex(), "Player.PickupWeapon" );
+			CBaseEntity::EmitSound( filter, pNewOwner->NetworkProp()->entindex(), "Player.PickupWeapon" );
 		}
 
 		// Robin: We don't want to delete weapons the player has picked up, so

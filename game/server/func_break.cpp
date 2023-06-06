@@ -562,7 +562,7 @@ void CBreakable::DamageSound( void )
 			ep.m_SoundLevel = params.soundlevel;
 			ep.m_nPitch = pitch;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 	}
 }
@@ -994,7 +994,7 @@ void CBreakable::Die( void )
 			if ( event )
 			{
 				event->SetInt( "userid", ToBasePlayer( m_hBreaker )->GetUserID() );
-				event->SetInt( "entindex", entindex() );
+				event->SetInt( "entindex", NetworkProp()->entindex());
 				event->SetInt( "material", cFlag );
 				gameeventmanager->FireEvent( event );
 			}
@@ -1012,7 +1012,7 @@ void CBreakable::Die( void )
 			ep.m_SoundLevel = params.soundlevel;
 			ep.m_nPitch = pitch;
 
-			EmitSound( filter, entindex(), ep );	
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 	}
 		

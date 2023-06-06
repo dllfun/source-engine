@@ -225,7 +225,7 @@ END_PREDICTION_DATA()
 	void CPlantedC4::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 	{
 		// Are we already marked for transmission?
-		if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+		if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 			return;
 
 		BaseClass::SetTransmit( pInfo, bAlways );
@@ -324,7 +324,7 @@ END_PREDICTION_DATA()
 		IGameEvent * event = gameeventmanager->CreateEvent( "bomb_beep" );
 		if( event )
 		{
-			event->SetInt( "entindex", entindex() );
+			event->SetInt( "entindex", NetworkProp()->entindex());
 			gameeventmanager->FireEvent( event );
 		}
 #endif
@@ -463,7 +463,7 @@ END_PREDICTION_DATA()
 				Vector soundPosition = m_pBombDefuser->GetAbsOrigin() + Vector( 0, 0, 5 );
 				CPASAttenuationFilter filter( soundPosition );
 
-				EmitSound( filter, entindex(), "c4.disarmfinish" );
+				EmitSound( filter, NetworkProp()->entindex(), "c4.disarmfinish" );
 								
 				// The bomb has just been disarmed.. Check to see if the round should end now
 				m_bBombTicking = false;
@@ -580,7 +580,7 @@ END_PREDICTION_DATA()
 		while ((pTarget = gEntList.FindEntityByClassname( pTarget, "func_bomb_target" )) != NULL)
 		{
 			//Adrian - But only to the one we want!
-			if ( pTarget->entindex() != m_iBombSiteIndex )
+			if ( pTarget->NetworkProp()->entindex() != m_iBombSiteIndex )
 				 continue;
 			
 			pTarget->AcceptInput( "BombExplode", this, this, emptyVariant, 0 );
@@ -610,7 +610,7 @@ END_PREDICTION_DATA()
 
 		// Sound! for everyone
 		CBroadcastRecipientFilter filter;
-		EmitSound( filter, entindex(), "c4.explode" );
+		EmitSound( filter, NetworkProp()->entindex(), "c4.explode" );
 
 
 		// Decal!
@@ -699,7 +699,7 @@ END_PREDICTION_DATA()
 			Vector soundPosition = player->GetAbsOrigin() + Vector( 0, 0, 5 );
 			CPASAttenuationFilter filter( soundPosition );
 
-			EmitSound( filter, entindex(), "c4.disarmstart" );
+			EmitSound( filter, NetworkProp()->entindex(), "c4.disarmstart" );
 
 			m_flDefuseLength = player->HasDefuser() ? 5 : 10;
 
@@ -878,7 +878,7 @@ void CC4::ItemPostFrame()
 		// The gamerules will give another C4 to some lucky player.
 		CCSPlayer *pPlayer = GetPlayerOwner();
 		if ( pPlayer && pPlayer->GetActiveWeapon() == this )
-			engineServer->ClientCommand( pPlayer->edict(), "lastinv reset\n" );
+			engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "lastinv reset\n" );
 		return true;
 	}
 
@@ -942,7 +942,7 @@ void CC4::PrimaryAttack()
 
 			SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 
-			FX_PlantBomb( pPlayer->entindex(), pPlayer->Weapon_ShootPosition(), PLANTBOMB_PLANT );
+			FX_PlantBomb( pPlayer->NetworkProp()->entindex(), pPlayer->Weapon_ShootPosition(), PLANTBOMB_PLANT );
 		}
 		else
 		{
@@ -1087,7 +1087,7 @@ void CC4::PrimaryAttack()
 
 			if ( event )
 			{
-				event->SetInt( "entindex", entindex() );
+				event->SetInt( "entindex", NetworkProp()->entindex());
 				gameeventmanager->FireEvent( event );
 			}
 
@@ -1099,7 +1099,7 @@ void CC4::PrimaryAttack()
 			// Play the plant sound.
 			Vector plantPosition = pPlayer->GetAbsOrigin() + Vector( 0, 0, 5 );
 			CPASAttenuationFilter filter( plantPosition );
-			EmitSound( filter, entindex(), "c4.plant" );
+			EmitSound( filter, NetworkProp()->entindex(), "c4.plant" );
 
 			// No more c4!
 			pPlayer->Weapon_Drop( this, NULL, NULL );
@@ -1228,7 +1228,7 @@ void CC4::PlayArmingBeeps( void )
 				}
 			}
 
-			EmitSound(filter, entindex(), "c4.click");
+			EmitSound(filter, NetworkProp()->entindex(), "c4.click");
 			
 			break;
 		}
@@ -1334,5 +1334,5 @@ void CC4::AbortBombPlant()
 
 #endif 
 
-	FX_PlantBomb( pPlayer->entindex(), pPlayer->Weapon_ShootPosition(), PLANTBOMB_ABORT );
+	FX_PlantBomb( pPlayer->NetworkProp()->entindex(), pPlayer->Weapon_ShootPosition(), PLANTBOMB_ABORT );
 }

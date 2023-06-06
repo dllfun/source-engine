@@ -272,7 +272,7 @@ public:
 
 	CPlayerState			*PlayerData( void ) { return &pl; }
 	
-	int						RequiredEdictIndex( void ) { return ENTINDEX(edict()); } 
+	int						RequiredEdictIndex( void ) { return ENTINDEX(NetworkProp()->edict()); }
 
 	void					LockPlayerInPlace( void );
 	void					UnlockPlayer( void );
@@ -370,13 +370,13 @@ public:
 	virtual bool			IsFakeClient( void ) const;
 
 	// Get the client index (entindex-1).
-	int						GetClientIndex()	{ return ENTINDEX( edict() ) - 1; }
+	int						GetClientIndex()	{ return ENTINDEX(NetworkProp()->edict()) - 1; }
 
 	// returns the player name
 	const char *			GetPlayerName() { return m_szNetname; }
 	void					SetPlayerName( const char *name );
 
-	int						GetUserID() { return engineServer->GetPlayerUserId( edict() ); }
+	int						GetUserID() { return engineServer->GetPlayerUserId(NetworkProp()->edict()); }
 	const char *			GetNetworkIDString(); 
 	virtual const Vector	GetPlayerMins( void ) const; // uses local player
 	virtual const Vector	GetPlayerMaxs( void ) const; // uses local player
@@ -1477,7 +1477,7 @@ bool ForEachPlayer( Functor &func )
 		if (player == NULL)
 			continue;
 
-		if (FNullEnt( player->edict() ))
+		if (FNullEnt( player->NetworkProp()->edict()))
 			continue;
 
 		if (!player->IsPlayer())
@@ -1528,7 +1528,7 @@ inline bool ForEachPlayer( IPlayerFunctor &func )
 		if (player == NULL)
 			continue;
 
-		if (FNullEnt( player->edict() ))
+		if (FNullEnt( player->NetworkProp()->edict()))
 			continue;
 
 		if (!player->IsPlayer())
@@ -1571,7 +1571,7 @@ int CollectPlayers( CUtlVector< T * > *playerVector, int team = TEAM_ANY, bool i
 		if ( player == NULL )
 			continue;
 
-		if ( FNullEnt( player->edict() ) )
+		if ( FNullEnt( player->NetworkProp()->edict()) )
 			continue;
 
 		if ( !player->IsPlayer() )
@@ -1607,7 +1607,7 @@ int CollectHumanPlayers( CUtlVector< T * > *playerVector, int team = TEAM_ANY, b
 		if ( player == NULL )
 			continue;
 
-		if ( FNullEnt( player->edict() ) )
+		if ( FNullEnt( player->NetworkProp()->edict()) )
 			continue;
 
 		if ( !player->IsPlayer() )

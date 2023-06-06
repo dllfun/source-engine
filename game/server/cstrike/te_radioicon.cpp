@@ -73,7 +73,7 @@ static CTERadioIcon g_TERadioIcon( "RadioIcon" );
 //-----------------------------------------------------------------------------
 void TE_RadioIcon( IRecipientFilter& filter, float delay, CBaseEntity *pPlayer )
 {
-	g_TERadioIcon.m_iAttachToClient = pPlayer->entindex();
+	g_TERadioIcon.m_iAttachToClient = pPlayer->NetworkProp()->entindex();
 	
 	// Send it over the wire
 	g_TERadioIcon.Create( filter, delay );

@@ -135,7 +135,7 @@ CWindowPane* CWindowPane::CreateWindowPane( const Vector &vecOrigin, const QAngl
 		return NULL;
 	}
 
-	if ( pGlass->edict() )
+	if ( pGlass->NetworkProp()->edict())
 	{
 		pGlass->SetLocalOrigin( vecOrigin );
 		pGlass->SetLocalAngles( vecAngles );
@@ -1275,7 +1275,7 @@ void CBreakableSurface::VPhysicsCollision( int index, gamevcollisionevent_t *pEv
 					data.m_nSurfaceProp = tr.surface.surfaceProps;
 					data.m_nDamageType = DMG_CLUB;
 					data.m_nHitBox = tr.hitbox;
-					data.m_nEntIndex = entindex();
+					data.m_nEntIndex = NetworkProp()->entindex();
 
 					// Send it on its way
 					DispatchEffect( "Impact", data );

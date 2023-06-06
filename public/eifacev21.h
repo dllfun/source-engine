@@ -451,6 +451,8 @@ public:
 	// Give the list of datatable to the engine for networking
 	virtual SendTableManager*		GetSengTableManager(void) = 0;
 
+	virtual IEntityFactoryDictionary* EntityFactoryDictionary() = 0;
+
 	// Returns string describing current .dll.  e.g., TeamFortress 2, Half-Life 2.  
 	//  Hey, it's more descriptive than just the name of the game directory
 	virtual const char     *GetGameDescription( void ) = 0;      
@@ -572,7 +574,7 @@ public:
 	virtual void			ClientSetupVisibility( edict_t *pViewEntity, edict_t *pClient, unsigned char *pvs, int pvssize ) = 0;
 	
 	// A block of CUserCmds has arrived from the user, decode them and buffer for execution during player simulation
-	virtual float			ProcessUsercmds( edict_t *player, bf_read *buf, int numcmds, int totalcmds,
+	virtual float			ProcessUsercmds( int playerIndex, bf_read *buf, int numcmds, int totalcmds,
 								int dropped_packets, bool ignore, bool paused ) = 0;
 	
 	// Let the game .dll do stuff after messages have been sent to all of the clients once the server frame is complete

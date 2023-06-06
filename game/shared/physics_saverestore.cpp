@@ -681,7 +681,7 @@ private:
 	static bool SaveQueueFunc( const QueuedItem_t &left, const QueuedItem_t &right )
 	{
 		if ( left.header.type == right.header.type )
-			return ( left.header.hEntity->entindex() > right.header.hEntity->entindex() );
+			return ( left.header.hEntity->NetworkProp()->entindex() > right.header.hEntity->NetworkProp()->entindex());
 
 		return ( left.header.type > right.header.type );
 	}

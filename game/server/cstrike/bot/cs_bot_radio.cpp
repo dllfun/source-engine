@@ -334,7 +334,7 @@ void CCSBot::SpeakAudio( const char *voiceFilename, float duration, int pitch )
 
 	UserMessageBegin ( filter, "RawAudio" );
 		WRITE_BYTE( pitch );
-		WRITE_BYTE( entindex() );
+		WRITE_BYTE(NetworkProp()->entindex());
 		WRITE_FLOAT( duration );
 		WRITE_STRING( voiceFilename );
 	MessageEnd();

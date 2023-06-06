@@ -453,7 +453,7 @@ void CBreakableProp::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 //-----------------------------------------------------------------------------
 void CBreakableProp::HandleFirstCollisionInteractions( int index, gamevcollisionevent_t *pEvent )
 {
-	if ( pEvent->pEntities[ !index ]->IsWorld() )
+	if ( pEvent->pEntities[ !index ]->NetworkProp()->entindex()==0 )
 	{
 		if ( HasInteraction( PROPINTER_PHYSGUN_WORLD_STICK ) )
 		{
@@ -506,7 +506,7 @@ void CBreakableProp::HandleFirstCollisionInteractions( int index, gamevcollision
 				 iClassify != CLASS_CITIZEN_PASSIVE && iClassify != CLASS_CITIZEN_REBEL ) 
 #endif
 			{
-				switch( entindex() % 3 )
+				switch(NetworkProp()->entindex() % 3 )
 				{
 				case 0:
 					UTIL_DecalTrace( &tr, "PaintSplatBlue" );
@@ -583,7 +583,7 @@ void CPhysicsProp::HandleAnyCollisionInteractions( int index, gamevcollisioneven
 			return;
 		}
 		CBaseEntity *pHitEntity = pEvent->pEntities[!index];
-		if ( pHitEntity->IsWorld() )
+		if ( pHitEntity->NetworkProp()->entindex()==0 )
 		{
 			Vector normal;
 			float sign = index ? -1.0f : 1.0f;
@@ -1638,7 +1638,7 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 		{
 			event->SetInt( "userid", 0 );
 		}
-		event->SetInt( "entindex", entindex() );
+		event->SetInt( "entindex", NetworkProp()->entindex());
 		gameeventmanager->FireEvent( event );
 	}
 

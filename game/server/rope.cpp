@@ -108,7 +108,7 @@ void CRopeKeyframe::SetAttachmentPoint( CBaseHandle &hOutEnt, short &iOutAttachm
 {
 	// Unforce our previously attached entity from transmitting.
 	CBaseEntity *pCurEnt = gEntList.GetBaseEntity( hOutEnt );
-	if ( pCurEnt && pCurEnt->edict() )
+	if ( pCurEnt && pCurEnt->NetworkProp()->edict())
 	{
 		pCurEnt->DecrementTransmitStateOwnedCounter();
 		pCurEnt->DispatchUpdateTransmitState();
@@ -323,7 +323,7 @@ void CRopeKeyframe::Activate()
 
 	// Find the next entity in our chain.
 	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, STRING( m_iNextLinkName ) );
-	if( pEnt && pEnt->edict() )
+	if( pEnt && pEnt->NetworkProp()->edict())
 	{
 		SetEndPoint( pEnt );
 
@@ -407,7 +407,7 @@ void CRopeKeyframe::DieAtNextRest( void )
 
 void CRopeKeyframe::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
-	if ( !pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( !pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 	{	
 		BaseClass::SetTransmit( pInfo, bAlways );
 	
@@ -567,7 +567,7 @@ void CRopeKeyframe::NotifyPositionChanged( CBaseEntity *pEntity )
 	UpdateBBox( false );
 
 	CBaseEntity *ents[2] = { m_hStartPoint.Get(), m_hEndPoint.Get() };
-	if ( (m_RopeFlags & ROPE_RESIZE) && ents[0] && ents[0]->edict() && ents[1] && ents[1]->edict() )
+	if ( (m_RopeFlags & ROPE_RESIZE) && ents[0] && ents[0]->NetworkProp()->edict() && ents[1] && ents[1]->NetworkProp()->edict())
 	{
 		int len = (int)( ents[0]->GetAbsOrigin() - ents[1]->GetAbsOrigin() ).Length() + m_Slack;
 		if ( len != m_RopeLength )

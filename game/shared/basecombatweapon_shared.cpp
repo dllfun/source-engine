@@ -741,7 +741,7 @@ void CBaseCombatWeapon::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 		}
 		if ( filter.GetRecipientCount() )
 		{
-			CBaseEntity::EmitSound( filter, pNewOwner->entindex(), "Player.PickupWeapon" );
+			CBaseEntity::EmitSound( filter, pNewOwner->NetworkProp()->entindex(), "Player.PickupWeapon" );
 		}
 
 		// Robin: We don't want to delete weapons the player has picked up, so 
@@ -782,11 +782,11 @@ void CBaseCombatWeapon::MakeTracer( const Vector &vecTracerSrc, const trace_t &t
 	const char *pszTracerName = GetTracerType();
 
 	Vector vNewSrc = vecTracerSrc;
-	int iEntIndex = pOwner->entindex();
+	int iEntIndex = pOwner->NetworkProp()->entindex();
 
 	if ( g_pGameRules->IsMultiplayer() )
 	{
-		iEntIndex = entindex();
+		iEntIndex = NetworkProp()->entindex();
 	}
 
 	int iAttachment = GetTracerAttachment();
@@ -1879,7 +1879,7 @@ void CBaseCombatWeapon::WeaponSound( WeaponSound_t sound_type, float soundtime /
 			{
 				filter.UsePredictionRules();
 			}
-			EmitSound( filter, GetOwner()->entindex(), shootsound, NULL, soundtime );
+			EmitSound( filter, GetOwner()->NetworkProp()->entindex(), shootsound, NULL, soundtime );
 		}
 	}
 	else
@@ -1892,7 +1892,7 @@ void CBaseCombatWeapon::WeaponSound( WeaponSound_t sound_type, float soundtime /
 			{
 				filter.UsePredictionRules();
 			}
-			EmitSound( filter, GetOwner()->entindex(), shootsound, NULL, soundtime ); 
+			EmitSound( filter, GetOwner()->NetworkProp()->entindex(), shootsound, NULL, soundtime );
 
 #if !defined( CLIENT_DLL )
 			if( sound_type == EMPTY )
@@ -1909,7 +1909,7 @@ void CBaseCombatWeapon::WeaponSound( WeaponSound_t sound_type, float soundtime /
 			{
 				filter.UsePredictionRules();
 			}
-			EmitSound( filter, entindex(), shootsound, NULL, soundtime ); 
+			EmitSound( filter, NetworkProp()->entindex(), shootsound, NULL, soundtime );
 		}
 	}
 }
@@ -1936,7 +1936,7 @@ void CBaseCombatWeapon::StopWeaponSound( WeaponSound_t sound_type )
 	{
 		if ( GetOwner() )
 		{
-			StopSound( GetOwner()->entindex(), shootsound );
+			StopSound( GetOwner()->NetworkProp()->entindex(), shootsound );
 		}
 	}
 	else
@@ -1944,12 +1944,12 @@ void CBaseCombatWeapon::StopWeaponSound( WeaponSound_t sound_type )
 		// Play weapon sound from the owner
 		if ( GetOwner() )
 		{
-			StopSound( GetOwner()->entindex(), shootsound );
+			StopSound( GetOwner()->NetworkProp()->entindex(), shootsound );
 		}
 		// If no owner play from the weapon (this is used for thrown items)
 		else
 		{
-			StopSound( entindex(), shootsound );
+			StopSound(NetworkProp()->entindex(), shootsound );
 		}
 	}
 }
@@ -2472,10 +2472,10 @@ void CDmgAccumulator::AccumulateMultiDamage( const CTakeDamageInfo &info, CBaseE
 	Assert( m_bActive );
 
 #if defined( GAME_DLL )
-	int iIndex = m_TargetsDmgInfo.Find( pEntity->entindex() );
+	int iIndex = m_TargetsDmgInfo.Find( pEntity->NetworkProp()->entindex());
 	if ( iIndex == m_TargetsDmgInfo.InvalidIndex() )
 	{
-		m_TargetsDmgInfo.Insert( pEntity->entindex(), info );
+		m_TargetsDmgInfo.Insert( pEntity->NetworkProp()->entindex(), info );
 	}
 	else
 	{

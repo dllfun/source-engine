@@ -102,7 +102,7 @@ void CBasePlatTrain::PlayMovingSound()
 	{
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 		CPASAttenuationFilter filter( this );
-		m_pMovementSound = controller.SoundCreate( filter, entindex(), CHAN_STATIC, STRING(m_NoiseMoving), ATTN_NORM );
+		m_pMovementSound = controller.SoundCreate( filter, NetworkProp()->entindex(), CHAN_STATIC, STRING(m_NoiseMoving), ATTN_NORM );
 		
 		controller.Play( m_pMovementSound, m_volume, PITCH_NORM );
 	}
@@ -335,7 +335,7 @@ void CFuncPlat::Precache( )
 	if ( IsTogglePlat() == false )
 	{
 		// Create the "start moving" trigger
-		PlatSpawnInsideTrigger( edict() );
+		PlatSpawnInsideTrigger(NetworkProp()->edict());
 	}
 }
 
@@ -531,7 +531,7 @@ void CFuncPlat::HitBottom( void )
 		ep.m_flVolume = m_volume;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 
 	ASSERT(m_toggle_state == TS_GOING_DOWN);
@@ -570,7 +570,7 @@ void CFuncPlat::HitTop( void )
 		ep.m_flVolume = m_volume;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 	
 	ASSERT(m_toggle_state == TS_GOING_UP);
@@ -597,7 +597,7 @@ void CFuncPlat::Blocked( CBaseEntity *pOther )
 
 	if (m_sNoise != NULL_STRING)
 	{
-		StopSound(entindex(), CHAN_STATIC, (char*)STRING(m_sNoise));
+		StopSound(NetworkProp()->entindex(), CHAN_STATIC, (char*)STRING(m_sNoise));
 	}
 	
 	// Send the platform back where it came from
@@ -832,7 +832,7 @@ void CFuncTrain::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 			ep.m_flVolume = m_volume;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 	}
 }
@@ -861,7 +861,7 @@ void CFuncTrain::Wait( void )
 			ep.m_flVolume = m_volume;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		SetMoveDoneTime( -1 );
@@ -886,7 +886,7 @@ void CFuncTrain::Wait( void )
 			ep.m_flVolume = m_volume;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		SetMoveDone( &CFuncTrain::Next );
@@ -924,7 +924,7 @@ void CFuncTrain::Next( void )
 			ep.m_flVolume = m_volume;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		return;
@@ -1157,7 +1157,7 @@ void CFuncTrain::Stop( void )
 			ep.m_flVolume = m_volume;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		//Do not teleport to our final move destination
@@ -1756,7 +1756,7 @@ void CFuncTrackTrain::SoundStop( void )
 	{
 		if ( m_iszSoundMove != NULL_STRING )
 		{
-			StopSound( entindex(), CHAN_STATIC, STRING( m_iszSoundMove ) );
+			StopSound(NetworkProp()->entindex(), CHAN_STATIC, STRING( m_iszSoundMove ) );
 		}
 
 		if ( m_iszSoundStop != NULL_STRING )
@@ -1769,7 +1769,7 @@ void CFuncTrackTrain::SoundStop( void )
 			ep.m_flVolume = m_flVolume;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 	}
 
@@ -1827,7 +1827,7 @@ void CFuncTrackTrain::SoundUpdate( void )
 			ep.m_SoundLevel = SNDLVL_NORM;
 			ep.m_pOrigin = &vecWorldSpaceCenter;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		if ( m_iszSoundMove != NULL_STRING )
@@ -1840,7 +1840,7 @@ void CFuncTrackTrain::SoundUpdate( void )
 			ep.m_nPitch = (int)flpitch;
 			ep.m_pOrigin = &vecWorldSpaceCenter;
 
-			EmitSound( filterReliable, entindex(), ep );
+			EmitSound( filterReliable, NetworkProp()->entindex(), ep );
 		}
 
 		// We've just started moving. Delay the next move ping sound.
@@ -1865,11 +1865,11 @@ void CFuncTrackTrain::SoundUpdate( void )
 			// In multiplayer, don't make this reliable
 			if ( g_pGameRules->IsMultiplayer() )
 			{
-				EmitSound( filter, entindex(), ep );
+				EmitSound( filter, NetworkProp()->entindex(), ep );
 			}
 			else
 			{
-				EmitSound( filterReliable, entindex(), ep );
+				EmitSound( filterReliable, NetworkProp()->entindex(), ep );
 			}
 		}
 

@@ -1624,7 +1624,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 					IGameEvent * event = gameeventmanager->CreateEvent( "achievement_earned" );
 					if ( event )
 					{
-						event->SetInt( "player", pPlayer->entindex() );
+						event->SetInt( "player", pPlayer->NetworkProp()->entindex());
 						event->SetInt( "achievement", nAchievementID );
 						gameeventmanager->FireEvent( event );
 					}
@@ -1708,7 +1708,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 
 					// Send a subtitle to anyone in the PAS
 					UserMessageBegin( filter, "VoiceSubtitle" );
-						WRITE_BYTE( pPlayer->entindex() );
+						WRITE_BYTE( pPlayer->NetworkProp()->entindex());
 						WRITE_BYTE( iMenu );
 						WRITE_BYTE( iItem );
 					MessageEnd();
@@ -1798,7 +1798,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	void CMultiplayRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	{
 		// NVNT see if this user is still or has began using a haptic device
-		const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+		const char *pszHH = engineServer->GetClientConVarValue( pPlayer->NetworkProp()->entindex(), "hap_HasDevice" );
 		if( pszHH )
 		{
 			int iHH = atoi( pszHH );

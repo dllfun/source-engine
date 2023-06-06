@@ -1512,7 +1512,7 @@ void SendProxy_MagnetAttachedObjectList( const void *pStruct, const void *pData,
 	// If this assertion fails, then SendProxyArrayLength_MagnetAttachedArray must have failed.
 	Assert( iElement < pMagnet->GetNumAttachedObjects() );
 
-	pOut->m_Int = pMagnet->GetAttachedObject(iElement)->entindex();
+	pOut->m_Int = pMagnet->GetAttachedObject(iElement)->NetworkProp()->entindex();
 }
 
 
@@ -1643,7 +1643,7 @@ void CPhysMagnet::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 			else
 			{
 				Warning( "CPhysMagnet %s:%d blocking magnet\n",
-					pOther->GetClassname(), pOther->entindex() );
+					pOther->GetClassname(), pOther->NetworkProp()->entindex());
 			}
 			return;
 		}

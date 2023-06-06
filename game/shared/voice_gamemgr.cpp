@@ -150,7 +150,7 @@ void CVoiceGameMgr::ClientConnected(struct edict_t *pEdict)
 
 bool CVoiceGameMgr::ClientCommand( CBasePlayer *pPlayer, const CCommand &args )
 {
-	int playerClientIndex = pPlayer->entindex() - 1;
+	int playerClientIndex = pPlayer->NetworkProp()->entindex() - 1;
 	if(playerClientIndex < 0 || playerClientIndex >= m_nMaxPlayers)
 	{
 		VoiceServerDebug( "CVoiceGameMgr::ClientCommand: cmd %s from invalid client (%d)\n", args[0], playerClientIndex );

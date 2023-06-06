@@ -144,7 +144,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 			ep.m_flVolume = fvol;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			CBaseEntity::EmitSound( filter, pEdict->entindex(), ep );
+			CBaseEntity::EmitSound( filter, pEdict->NetworkProp()->entindex(), ep );
 			pls->flwaitSound = gpGlobals->curtime + flsoundwait;
 		}
 
@@ -154,7 +154,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 			// play next 'door locked' sentence in group
 			int iprev = pls->iLockedSentence;
 			
-			pls->iLockedSentence = SENTENCEG_PlaySequentialSz(	pEdict->edict(), 
+			pls->iLockedSentence = SENTENCEG_PlaySequentialSz(	pEdict->NetworkProp()->edict(),
 																STRING(pls->sLockedSentence), 
 																0.85f, 
 																SNDLVL_NORM, 
@@ -192,7 +192,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 			ep.m_flVolume = fvol;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			CBaseEntity::EmitSound( filter, pEdict->entindex(), ep );
+			CBaseEntity::EmitSound( filter, pEdict->NetworkProp()->entindex(), ep );
 			pls->flwaitSound = gpGlobals->curtime + flsoundwait;
 		}
 
@@ -201,7 +201,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 		{
 			int iprev = pls->iUnlockedSentence;
 			
-			pls->iUnlockedSentence = SENTENCEG_PlaySequentialSz(pEdict->edict(), STRING(pls->sUnlockedSentence), 
+			pls->iUnlockedSentence = SENTENCEG_PlaySequentialSz(pEdict->NetworkProp()->edict(), STRING(pls->sUnlockedSentence),
 					  0.85, SNDLVL_NORM, 0, 100, pls->iUnlockedSentence, FALSE);
 			pls->iLockedSentence = 0;
 
@@ -365,7 +365,7 @@ void CBaseDoor::MovingSoundThink( void )
 	ep.m_flVolume = 1;
 	ep.m_SoundLevel = SNDLVL_NORM;
 
-	EmitSound( filter, entindex(), ep );
+	EmitSound( filter, NetworkProp()->entindex(), ep );
 
 	//Only loop sounds in HL1 to maintain HL2 behavior
 	if( ShouldLoopMoveSound() )
@@ -385,7 +385,7 @@ void CBaseDoor::StartMovingSound( void )
 	IGameEvent * event = gameeventmanager->CreateEvent( "door_moving" );
 	if( event )
 	{
-		event->SetInt( "entindex", entindex() );
+		event->SetInt( "entindex", NetworkProp()->entindex());
 		event->SetInt( "userid", (player)?player->GetUserID():0 );
 		gameeventmanager->FireEvent( event );
 	}
@@ -405,7 +405,7 @@ void CBaseDoor::StopMovingSound(void)
 	{
 		pSoundName = (char*)STRING(m_NoiseMovingClosed);
 	}
-	StopSound( entindex(), CHAN_STATIC, pSoundName );
+	StopSound(NetworkProp()->entindex(), CHAN_STATIC, pSoundName );
 }
  
 
@@ -965,7 +965,7 @@ void CBaseDoor::DoorGoUp( void )
 
 		if ( m_hActivator != NULL )
 		{
-			pevActivator = m_hActivator->edict();
+			pevActivator = m_hActivator->NetworkProp()->edict();
 			
 			if ( !HasSpawnFlags( SF_DOOR_ONEWAY ) && m_vecMoveAng.y ) 		// Y axis rotation, move away from the player
 			{
@@ -1021,7 +1021,7 @@ void CBaseDoor::DoorHitTop( void )
 		ep.m_flVolume = 1;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 
 	ASSERT(m_toggle_state == TS_GOING_UP);
@@ -1107,7 +1107,7 @@ void CBaseDoor::DoorHitBottom( void )
 		ep.m_flVolume = 1;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 
 	ASSERT(m_toggle_state == TS_GOING_DOWN);

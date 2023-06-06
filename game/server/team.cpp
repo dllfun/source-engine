@@ -25,7 +25,7 @@ void SendProxy_PlayerList( const SendProp *pProp, const void *pStruct, const voi
 	Assert( iElement < pTeam->m_aPlayers.Size() );
 
 	CBasePlayer *pPlayer = pTeam->m_aPlayers[iElement];
-	pOut->m_Int = pPlayer->entindex();
+	pOut->m_Int = pPlayer->NetworkProp()->entindex();
 }
 
 

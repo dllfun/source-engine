@@ -54,7 +54,7 @@ void Pickup_OnPhysGunPickup( CBaseEntity *pPickedUpObject, CBasePlayer *pPlayer,
 		IGameEvent *event = gameeventmanager->CreateEvent( "physgun_pickup" );
 		if ( event )
 		{
-			event->SetInt( "entindex", pPickedUpObject->entindex() );
+			event->SetInt( "entindex", pPickedUpObject->NetworkProp()->entindex());
 			gameeventmanager->FireEvent( event );
 		}
 	}

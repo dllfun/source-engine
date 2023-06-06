@@ -43,7 +43,7 @@ public:
 	void NotifyEdictFlagsChange( int iEdict )
 	{
 		// If they newly added the dontsend flag, then we need to run it through EntityDormant.
-		if ( sv.edicts[iEdict].m_fStateFlags & FL_EDICT_DONTSEND )
+		if (EDICT_NUM(iEdict)->m_fStateFlags & FL_EDICT_DONTSEND )
 			AddToPendingDormantEntityList( iEdict );
 	}
 

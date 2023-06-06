@@ -4687,7 +4687,7 @@ void CNavArea::MarkAsBlocked( int teamID, CBaseEntity *blocker, bool bGenerateEv
 		{
 			if ( blocker )
 			{
-				ConColorMsg( Color( 0, 255, 128, 255 ), "%s %d blocked area %d\n", blocker->GetDebugName(), blocker->entindex(), GetID() );
+				ConColorMsg( Color( 0, 255, 128, 255 ), "%s %d blocked area %d\n", blocker->GetDebugName(), blocker->NetworkProp()->entindex(), GetID() );
 			}
 			else
 			{
@@ -4702,7 +4702,7 @@ void CNavArea::MarkAsBlocked( int teamID, CBaseEntity *blocker, bool bGenerateEv
 		{
 			if ( blocker )
 			{
-				ConColorMsg( Color( 0, 255, 128, 255 ), "DUPE: %s %d blocked area %d\n", blocker->GetDebugName(), blocker->entindex(), GetID() );
+				ConColorMsg( Color( 0, 255, 128, 255 ), "DUPE: %s %d blocked area %d\n", blocker->GetDebugName(), blocker->NetworkProp()->entindex(), GetID() );
 			}
 			else
 			{

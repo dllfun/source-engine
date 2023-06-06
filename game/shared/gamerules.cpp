@@ -823,7 +823,7 @@ const char *CGameRules::GetChatPrefix( bool bTeamOnly, CBasePlayer *pPlayer )
 void CGameRules::CheckHaptics(CBasePlayer* pPlayer)
 {
 	// NVNT see if the client of pPlayer is using a haptic device.
-	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->NetworkProp()->entindex(), "hap_HasDevice" );
 	if( pszHH )
 	{
 		int iHH = atoi( pszHH );
@@ -833,7 +833,7 @@ void CGameRules::CheckHaptics(CBasePlayer* pPlayer)
 
 void CGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 {
-	const char *pszName = engineServer->GetClientConVarValue( pPlayer->entindex(), "name" );
+	const char *pszName = engineServer->GetClientConVarValue( pPlayer->NetworkProp()->entindex(), "name" );
 
 	const char *pszOldName = pPlayer->GetPlayerName();
 
@@ -858,7 +858,7 @@ void CGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 		pPlayer->SetPlayerName( pszName );
 	}
 
-	const char *pszFov = engineServer->GetClientConVarValue( pPlayer->entindex(), "fov_desired" );
+	const char *pszFov = engineServer->GetClientConVarValue( pPlayer->NetworkProp()->entindex(), "fov_desired" );
 	if ( pszFov )
 	{
 		int iFov = atoi(pszFov);
@@ -867,7 +867,7 @@ void CGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	}
 
 	// NVNT see if this user is still or has began using a haptic device
-	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->NetworkProp()->entindex(), "hap_HasDevice" );
 	if( pszHH )
 	{
 		int iHH = atoi( pszHH );

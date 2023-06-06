@@ -1437,6 +1437,10 @@ SendTableManager* CServerGameDLL::GetSengTableManager()
 	return g_pSendTableManager;
 }
 
+IEntityFactoryDictionary* CServerGameDLL::EntityFactoryDictionary() {
+	return ::EntityFactoryDictionary();
+}
+
 const char *CServerGameDLL::GetGameDescription( void )
 {
 	return ::GetGameDescription();
@@ -2442,7 +2446,7 @@ void CServerGameEnts::FreeContainingEntity( edict_t *e )
 edict_t* CServerGameEnts::BaseEntityToEdict( CBaseEntity *pEnt )
 {
 	if ( pEnt )
-		return pEnt->edict();
+		return pEnt->NetworkProp()->edict();
 	else
 		return NULL;
 }
@@ -2877,7 +2881,7 @@ void CServerGameClients::ClientSettingsChanged( edict_t *pEdict )
 	if ( bAllowNetworkingClientSettingsChange )
 	{
 
-#define QUICKGETCVARVALUE(v) (engineServer->GetClientConVarValue( player->entindex(), v ))
+#define QUICKGETCVARVALUE(v) (engineServer->GetClientConVarValue( player->NetworkProp()->entindex(), v ))
 
 	// get network setting for prediction & lag compensation
 	
@@ -3252,7 +3256,7 @@ void CServerGameClients::GetBugReportInfo( char *buf, int buflen )
 		if ( ent )
 		{
 			Q_snprintf( buf, buflen, "Picker %i/%s - ent %s model %s\n",
-				ent->entindex(),
+				ent->NetworkProp()->entindex(),
 				ent->GetClassname(),
 				STRING( ent->GetEntityName() ),
 				STRING( ent->GetModelName() ) );
@@ -3302,7 +3306,7 @@ void EntityMessageBegin( CBaseEntity * entity, bool reliable /*= false*/ )
 
 	Assert ( entity );
 
-	g_pMsgBuffer = engineServer->EntityMessageBegin( entity->entindex(), entity->GetServerClass(), reliable );
+	g_pMsgBuffer = engineServer->EntityMessageBegin( entity->NetworkProp()->entindex(), entity->GetServerClass(), reliable );
 }
 
 void UserMessageBegin( IRecipientFilter& filter, const char *messagename )

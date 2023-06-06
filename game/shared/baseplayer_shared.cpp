@@ -745,7 +745,7 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 	ep.m_nPitch = params.pitch;
 	ep.m_pOrigin = &vecOrigin;
 
-	EmitSound( filter, entindex(), ep );
+	EmitSound( filter, NetworkProp()->entindex(), ep );
 
 	// Kyle says: ugggh. This function may as well be called "PerformPileOfDesperateGameSpecificFootstepHacks".
 	OnEmitFootstepSound( params, vecOrigin, fvol );

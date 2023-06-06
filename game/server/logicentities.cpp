@@ -519,7 +519,7 @@ void CLogicLineToEntity::Activate(void)
 		//
 		// If we were given a bad measure target, just measure sound where we are.
 		//
-		if ((m_EndEntity == NULL) || (m_EndEntity->edict() == NULL))
+		if ((m_EndEntity == NULL) || (m_EndEntity->NetworkProp()->edict() == NULL))
 		{
 			Warning( "logic_lineto - Target not found or target with no origin!\n");
 			m_EndEntity = this;
@@ -537,7 +537,7 @@ void CLogicLineToEntity::Activate(void)
 		//
 		// If we were given a bad measure target, just measure sound where we are.
 		//
-		if ((m_StartEntity == NULL) || (m_StartEntity->edict() == NULL))
+		if ((m_StartEntity == NULL) || (m_StartEntity->NetworkProp()->edict() == NULL))
 		{
 			Warning( "logic_lineto - Source not found or source with no origin!\n");
 			m_StartEntity = this;
@@ -566,7 +566,7 @@ void CLogicLineToEntity::Think(void)
 {
 	CBaseEntity* pDest = m_EndEntity.Get();
 	CBaseEntity* pSrc = m_StartEntity.Get();
-	if (!pDest || !pSrc || !pDest->edict() || !pSrc->edict())
+	if (!pDest || !pSrc || !pDest->NetworkProp()->edict() || !pSrc->NetworkProp()->edict())
 	{
 		// Can sleep for a long time, no more lines.
 		m_Line.Set( vec3_origin, this, this );
@@ -1203,7 +1203,7 @@ void CMultiSource::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	// if we didn't find it, report error and leave
 	if (i > m_iTotal)
 	{
-		Warning("MultiSrc: Used by non member %s.\n", pCaller->edict() ? pCaller->GetClassname() : "<logical entity>");
+		Warning("MultiSrc: Used by non member %s.\n", pCaller->NetworkProp()->edict() ? pCaller->GetClassname() : "<logical entity>");
 		return;	
 	}
 
@@ -2369,7 +2369,7 @@ class CLogicActiveAutosave : public CLogicAutosave
 				if ( pPlayer->GetHealth() >= m_TriggerHitPoints )
 				{
 					inputdata_t inputdata;
-					DevMsg( 2, "logic_active_autosave (%s, %d) triggered\n", STRING( GetEntityName() ), entindex() );
+					DevMsg( 2, "logic_active_autosave (%s, %d) triggered\n", STRING( GetEntityName() ), NetworkProp()->entindex());
 					if ( !m_flDangerousTime )
 					{
 						InputSave( inputdata );

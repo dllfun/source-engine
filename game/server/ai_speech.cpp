@@ -394,7 +394,7 @@ bool CAI_Expresser::SpeakDispatchResponse( AIConcept_t concept, AI_Response *res
 
 	if ( IsSpeaking() && concept[0] != 0 )
 	{
-		DevMsg( "SpeakDispatchResponse:  Entity ( %i/%s ) already speaking, forcing '%s'\n", GetOuter()->entindex(), STRING( GetOuter()->GetEntityName() ), concept );
+		DevMsg( "SpeakDispatchResponse:  Entity ( %i/%s ) already speaking, forcing '%s'\n", GetOuter()->NetworkProp()->entindex(), STRING( GetOuter()->GetEntityName() ), concept );
 
 		// Tracker 15911:  Can break the game if we stop an imported map placed lcs here, so only
 		//  cancel actor out of instanced scripted scenes.  ywb
@@ -403,7 +403,7 @@ bool CAI_Expresser::SpeakDispatchResponse( AIConcept_t concept, AI_Response *res
 
 		if ( IsRunningScriptedScene( GetOuter() ) )
 		{
-			DevMsg( "SpeakDispatchResponse:  Entity ( %i/%s ) refusing to speak due to scene entity, tossing '%s'\n", GetOuter()->entindex(), STRING( GetOuter()->GetEntityName() ), concept );
+			DevMsg( "SpeakDispatchResponse:  Entity ( %i/%s ) refusing to speak due to scene entity, tossing '%s'\n", GetOuter()->NetworkProp()->entindex(), STRING( GetOuter()->GetEntityName() ), concept );
 			delete result;
 			return false;
 		}
@@ -427,7 +427,7 @@ bool CAI_Expresser::SpeakDispatchResponse( AIConcept_t concept, AI_Response *res
 				float speakTime = GetResponseDuration( result );
 				GetOuter()->EmitSound( response );
 
-				DevMsg( "SpeakDispatchResponse:  Entity ( %i/%s ) playing sound '%s'\n", GetOuter()->entindex(), STRING( GetOuter()->GetEntityName() ), response );
+				DevMsg( "SpeakDispatchResponse:  Entity ( %i/%s ) playing sound '%s'\n", GetOuter()->NetworkProp()->entindex(), STRING( GetOuter()->GetEntityName() ), response );
 				NoteSpeaking( speakTime, delay );
 				spoke = true;
 			}
@@ -629,7 +629,7 @@ int CAI_Expresser::SpeakRawSentence( const char *pszSentence, float delay, float
 		}
 
 		CPASAttenuationFilter filter( GetOuter(), soundlevel );
-		CBaseEntity::EmitSentenceByIndex( filter, GetOuter()->entindex(), CHAN_VOICE, sentenceIndex, volume, soundlevel, 0, GetVoicePitch());
+		CBaseEntity::EmitSentenceByIndex( filter, GetOuter()->NetworkProp()->entindex(), CHAN_VOICE, sentenceIndex, volume, soundlevel, 0, GetVoicePitch());
 	}
 	else
 	{

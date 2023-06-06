@@ -527,12 +527,12 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 		{
 			if ( pSearchingEntity )
 			{
-				return CBaseEntity::Instance( UTIL_FindClientInPVS( pSearchingEntity->edict() ) );
+				return CBaseEntity::Instance( UTIL_FindClientInPVS( pSearchingEntity->NetworkProp()->edict()) );
 			}
 			else if ( pActivator )
 			{
 				// FIXME: error condition?
-				return CBaseEntity::Instance( UTIL_FindClientInPVS( pActivator->edict() ) );
+				return CBaseEntity::Instance( UTIL_FindClientInPVS( pActivator->NetworkProp()->edict()) );
 			}
 			else
 			{
@@ -635,7 +635,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByModel( CBaseEntity *pStartEntity, co
 			continue;
 		}
 
-		if ( !ent->edict() || !ent->GetModelName() )
+		if ( !ent->NetworkProp()->edict() || !ent->GetModelName() )
 			continue;
 
 		if ( FStrEq( STRING(ent->GetModelName()), szModelName ) )
@@ -695,7 +695,7 @@ CBaseEntity *CGlobalEntityList::FindEntityInSphere( CBaseEntity *pStartEntity, c
 			continue;
 		}
 
-		if ( !ent->edict() )
+		if ( !ent->NetworkProp()->edict())
 			continue;
 
 		Vector vecRelativeCenter;
@@ -737,7 +737,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByNameNearest( const char *szName, con
 	CBaseEntity *pSearch = NULL;
 	while ((pSearch = gEntList.FindEntityByName( pSearch, szName, pSearchingEntity, pActivator, pCaller )) != NULL)
 	{
-		if ( !pSearch->edict() )
+		if ( !pSearch->NetworkProp()->edict())
 			continue;
 
 		float flDist2 = (pSearch->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -779,7 +779,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByNameWithin( CBaseEntity *pStartEntit
 
 	while ((pEntity = gEntList.FindEntityByName( pEntity, szName, pSearchingEntity, pActivator, pCaller )) != NULL)
 	{
-		if ( !pEntity->edict() )
+		if ( !pEntity->NetworkProp()->edict())
 			continue;
 
 		float flDist2 = (pEntity->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -818,7 +818,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByClassnameNearest( const char *szName
 	CBaseEntity *pSearch = NULL;
 	while ((pSearch = gEntList.FindEntityByClassname( pSearch, szName )) != NULL)
 	{
-		if ( !pSearch->edict() )
+		if ( !pSearch->NetworkProp()->edict())
 			continue;
 
 		float flDist2 = (pSearch->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -857,7 +857,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByClassnameWithin( CBaseEntity *pStart
 
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szName )) != NULL)
 	{
-		if ( !pEntity->edict() )
+		if ( !pEntity->NetworkProp()->edict())
 			continue;
 
 		float flDist2 = (pEntity->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -889,7 +889,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByClassnameWithin( CBaseEntity *pStart
 
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szName )) != NULL)
 	{
-		if ( !pEntity->edict() && !pEntity->IsEFlagSet( EFL_SERVER_ONLY ) )
+		if ( !pEntity->NetworkProp()->edict() && !pEntity->IsEFlagSet( EFL_SERVER_ONLY ) )
 			continue;
 
 		// check if the aabb intersects the search aabb.
@@ -1057,7 +1057,7 @@ CBaseEntity *CGlobalEntityList::FindEntityNearestFacing( const Vector &origin, c
 		}
 
 		// Ignore logical entities
-		if (!ent->edict())
+		if (!ent->NetworkProp()->edict())
 			continue;
 
 		// Make vector to entity
@@ -1090,7 +1090,7 @@ void CGlobalEntityList::OnAddEntity( IHandleEntity *pEnt, CBaseHandle handle )
 
 	// If it's a CBaseEntity, notify the listeners.
 	CBaseEntity *pBaseEnt = static_cast<IServerUnknown*>(pEnt)->GetBaseEntity();
-	if ( pBaseEnt->edict() )
+	if ( pBaseEnt->NetworkProp()->edict())
 		m_iNumEdicts++;
 	
 	// NOTE: Must be a CBaseEntity on server
@@ -1122,7 +1122,7 @@ void CGlobalEntityList::OnRemoveEntity( IHandleEntity *pEnt, CBaseHandle handle 
 #endif
 
 	CBaseEntity *pBaseEnt = static_cast<IServerUnknown*>(pEnt)->GetBaseEntity();
-	if ( pBaseEnt->edict() )
+	if ( pBaseEnt->NetworkProp()->edict())
 		m_iNumEdicts--;
 
 	m_iNumEnts--;
@@ -1444,7 +1444,7 @@ public:
 				CBaseEntity *pNextEnt = gEntList.NextEnt( pEnt );
 				if ( pEnt->IsPlayer() )
 				{
-					nPlayerIndex = pEnt->entindex();
+					nPlayerIndex = pEnt->NetworkProp()->entindex();
 				}
 				if ( !pEnt->IsEFlagSet( EFL_KEEP_ON_RECREATE_ENTITIES ) )
 				{
@@ -1534,7 +1534,7 @@ public:
 			if ( !pEntity )
 				continue;
 
-			if ( pEntity->edict() )
+			if ( pEntity->NetworkProp()->edict())
 				edicts++;
 
 			const char *pClassname = pEntity->GetClassname();

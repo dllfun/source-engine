@@ -274,7 +274,7 @@ int CAI_FollowBehavior::DrawDebugTextOverlays( int text_offset )
 		followEnt = GetFollowTarget();
 		if ( followEnt != NULL )
 		{
-			Q_snprintf( tempstr, sizeof(tempstr), "Follow: (%d) %s (%s)", followEnt->entindex(), followEnt->GetDebugName(), followEnt->GetClassname() );
+			Q_snprintf( tempstr, sizeof(tempstr), "Follow: (%d) %s (%s)", followEnt->NetworkProp()->entindex(), followEnt->GetDebugName(), followEnt->GetClassname() );
 		}
 		else 
 		{

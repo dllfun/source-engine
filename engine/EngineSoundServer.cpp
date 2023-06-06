@@ -242,7 +242,7 @@ void CEngineSoundServer::EmitSoundInternal( IRecipientFilter& filter, int iEntIn
 		return;
 	}
 
-	edict_t *pEdict = (iEntIndex >= 0) ? &sv.edicts[iEntIndex] : NULL; 
+	edict_t *pEdict = EDICT_NUM(iEntIndex);
 	SV_StartSound( filter, pEdict, iChannel, pSample, flVolume, iSoundLevel, 
 		iFlags, iPitch, iSpecialDSP, pOrigin, soundtime, speakerentity, pUtlVecOrigins );
 }

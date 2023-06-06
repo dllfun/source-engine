@@ -110,7 +110,7 @@ inline bool IsEntityValid( CBaseEntity *entity )
 	if (entity == NULL)
 		return false;
 
-	if (FNullEnt( entity->edict() ))
+	if (FNullEnt( entity->NetworkProp()->edict()))
 		return false;
 
 	return true;

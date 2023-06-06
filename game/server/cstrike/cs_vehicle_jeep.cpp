@@ -879,7 +879,7 @@ void CPropJeep::Think(void)
 		ResetSequence( LookupSequence( "idle" ) );
 
 		CPASAttenuationFilter sndFilter( this, "PropJeep.AmmoClose" );
-		EmitSound( sndFilter, entindex(), "PropJeep.AmmoClose" );
+		EmitSound( sndFilter, NetworkProp()->entindex(), "PropJeep.AmmoClose" );
 	}
 }
 
@@ -957,7 +957,7 @@ void CPropJeep::FireCannon( void )
 	}
 
 	CPASAttenuationFilter sndFilter( this, "PropJeep.FireCannon" );
-	EmitSound( sndFilter, entindex(), "PropJeep.FireCannon" );
+	EmitSound( sndFilter, NetworkProp()->entindex(), "PropJeep.FireCannon" );
 	
 	// make cylinders of gun spin a bit
 	m_nSpinPos += JEEP_GUN_SPIN_RATE;
@@ -1091,7 +1091,7 @@ void CPropJeep::ChargeCannon( void )
 
 		//Start charging sound
 		CPASAttenuationFilter filter( this );
-		m_sndCannonCharge = (CSoundEnvelopeController::GetController()).SoundCreate( filter, entindex(), CHAN_STATIC, "Jeep.GaussCharge", ATTN_NORM );
+		m_sndCannonCharge = (CSoundEnvelopeController::GetController()).SoundCreate( filter, NetworkProp()->entindex(), CHAN_STATIC, "Jeep.GaussCharge", ATTN_NORM );
 
 		assert(m_sndCannonCharge!=NULL);
 		if ( m_sndCannonCharge != NULL )
@@ -1167,7 +1167,7 @@ void CPropJeep::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 			ResetSequence( LookupSequence( "ammo_open" ) );
 			
 			CPASAttenuationFilter sndFilter( this, "PropJeep.AmmoOpen" );
-			EmitSound( sndFilter, entindex(), "PropJeep.AmmoOpen" );
+			EmitSound( sndFilter, NetworkProp()->entindex(), "PropJeep.AmmoOpen" );
 		}
 
 		m_flAmmoCrateCloseTime = gpGlobals->curtime + JEEP_AMMO_CRATE_CLOSE_DELAY;

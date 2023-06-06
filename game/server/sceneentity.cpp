@@ -1624,7 +1624,7 @@ bool CSceneEntity::GetSoundNameForPlayer( CChoreoEvent *event, CBasePlayer *play
 	bool usingEnglish = true;
 	if ( !IsXbox() )
 	{
-		char const *cvarvalue = engineServer->GetClientConVarValue( player->entindex(), "english" );
+		char const *cvarvalue = engineServer->GetClientConVarValue( player->NetworkProp()->entindex(), "english" );
 		if ( cvarvalue && *cvarvalue && Q_atoi( cvarvalue ) != 1 )
 		{
 			usingEnglish = false;
@@ -1783,7 +1783,7 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 				es.m_nFlags |= SND_CHANGE_PITCH;
 			}
 
-			EmitSound( filter2, actor->entindex(), es );
+			EmitSound( filter2, actor->NetworkProp()->entindex(), es );
 			actor->AddSceneEvent( scene, event );
 		}
 	
@@ -2757,7 +2757,7 @@ void CSceneEntity::PitchShiftPlayback( float fPitch )
 			params.m_pSoundName = szBuff;
 			params.m_nPitch = 100.0f * fPitch;
 			params.m_nFlags = SND_CHANGE_PITCH;
-			pTestActor->EmitSound( filter, pTestActor->entindex(), params );
+			pTestActor->EmitSound( filter, pTestActor->NetworkProp()->entindex(), params );
 		}
 	}
 }
@@ -4364,7 +4364,7 @@ int CSceneEntity::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 
 			CBasePlayer *player = static_cast< CBasePlayer * >( CBaseEntity::Instance( iRecipient ) );
 
-			if ( player && player->edict() == pInfo->m_pClientEnt )
+			if ( player && player->NetworkProp()->edict() == pInfo->m_pClientEnt )
 			{
 				bFound = true;
 				break;
@@ -4977,7 +4977,7 @@ void CSceneManager::OnClientActive( CBasePlayer *player )
 		es.m_SoundLevel = sound->soundlevel;
 		es.m_flSoundTime = gpGlobals->curtime - sound->time_in_past;
 
-		EmitSound( filter, sound->actor->entindex(), es );
+		EmitSound( filter, sound->actor->NetworkProp()->entindex(), es );
 	}
 
 	m_QueuedSceneSounds.RemoveAll();

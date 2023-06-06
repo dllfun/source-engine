@@ -43,7 +43,7 @@ void CCSBot::OnPlayerDeath( IGameEvent *event )
 	// keep track of the last player we killed
 	if (killer == this)
 	{
-		m_lastVictimID = victim ? victim->entindex() : 0;
+		m_lastVictimID = victim ? victim->NetworkProp()->entindex() : 0;
 	}
 
 	// react to teammate death

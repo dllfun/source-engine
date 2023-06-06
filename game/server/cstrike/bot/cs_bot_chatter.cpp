@@ -2226,7 +2226,7 @@ void BotChatterInterface::SpottedBomber( CBasePlayer *bomber )
 
 	say->AppendPhrase( TheBotPhrases->GetPhrase( "SpottedBomber" ) );
 
-	say->SetSubject( bomber->entindex() );
+	say->SetSubject( bomber->NetworkProp()->entindex());
 
 	//say->AttachMeme( new BotHelpMeme( place ) );
 	say->AttachMeme( new BotBombStatusMeme( CSGameState::MOVING, bomberOrigin ) ); 

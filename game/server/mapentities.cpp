@@ -30,20 +30,21 @@ struct HierarchicalSpawnMapData_t
 };
 
 static CStringRegistry *g_pClassnameSpawnPriority = NULL;
-extern edict_t *g_pForceAttachEdict;
+//extern edict_t *g_pForceAttachEdict;
 
 // creates an entity by string name, but does not spawn it
 CBaseEntity *CreateEntityByName( const char *className, int iForceEdictIndex )
 {
+	edict_t* edict = NULL;
 	if ( iForceEdictIndex != -1 )
 	{
-		g_pForceAttachEdict = engineServer->CreateEdict( iForceEdictIndex );
-		if ( !g_pForceAttachEdict )
+		edict = engineServer->CreateEdict( iForceEdictIndex );
+		if ( !edict)
 			Error( "CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex );
 	}
 
-	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className );
-	g_pForceAttachEdict = NULL;
+	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className, edict);
+	//g_pForceAttachEdict = NULL;
 
 	if ( !pNetwork )
 		return NULL;
@@ -53,16 +54,16 @@ CBaseEntity *CreateEntityByName( const char *className, int iForceEdictIndex )
 	return pEntity;
 }
 
-CBaseNetworkable *CreateNetworkableByName( const char *className )
-{
-	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className );
-	if ( !pNetwork )
-		return NULL;
-
-	CBaseNetworkable *pNetworkable = pNetwork->GetBaseNetworkable();
-	Assert( pNetworkable );
-	return pNetworkable;
-}
+//CBaseNetworkable *CreateNetworkableByName( const char *className )
+//{
+//	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className );
+//	if ( !pNetwork )
+//		return NULL;
+//
+//	CBaseNetworkable *pNetworkable = pNetwork->GetBaseNetworkable();
+//	Assert( pNetworkable );
+//	return pNetworkable;
+//}
 
 void FreeContainingEntity( edict_t *ed )
 {
@@ -220,7 +221,7 @@ void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t *pSpawnList )
 			{
 				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, STRING( pEntity->m_iParent ) );
 
-				if ((pParent != NULL) && (pParent->edict() != NULL))
+				if ((pParent != NULL) && (pParent->NetworkProp()->edict() != NULL))
 				{
 					pEntity->SetParent( pParent ); 
 				}

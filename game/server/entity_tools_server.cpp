@@ -495,7 +495,7 @@ public:
 		if ( !ent )
 			return -1;
 
-		return ent->entindex();
+		return ent->NetworkProp()->entindex();
 	}
 
 	virtual void ReloadSceneFromDisk( int entindex )

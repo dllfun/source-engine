@@ -2666,7 +2666,7 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 		pCur = gEntList.FirstEnt();
 		while ( pCur )
 		{
-			Msg( "  %s (%d)\n", pCur->GetClassname(), pCur->entindex() );
+			Msg( "  %s (%d)\n", pCur->GetClassname(), pCur->NetworkProp()->entindex());
 			pCur = gEntList.NextEnt( pCur );
 		}
 	}
@@ -2910,7 +2910,7 @@ void CTeamplayRoundBasedRules::BalanceTeams( bool bRequireSwitcheesToBeDead )
 					// Is this player's score worse?
 					if ( nPlayerTeamBalanceScore < m_nAutoBalanceQueuePlayerScore )
 					{
-						m_nAutoBalanceQueuePlayerIndex = pPlayer->entindex();
+						m_nAutoBalanceQueuePlayerIndex = pPlayer->NetworkProp()->entindex();
 						m_nAutoBalanceQueuePlayerScore = nPlayerTeamBalanceScore;
 					}
 				}
@@ -2918,7 +2918,7 @@ void CTeamplayRoundBasedRules::BalanceTeams( bool bRequireSwitcheesToBeDead )
 				else if ( nPlayerTeamBalanceScore < -10000 ) 
 				{
 					// Put them in the queue
-					m_nAutoBalanceQueuePlayerIndex = pPlayer->entindex();
+					m_nAutoBalanceQueuePlayerIndex = pPlayer->NetworkProp()->entindex();
 					m_nAutoBalanceQueuePlayerScore = nPlayerTeamBalanceScore;
 					m_flAutoBalanceQueueTimeEnd = gpGlobals->curtime + 3.0f;
 
@@ -2926,7 +2926,7 @@ void CTeamplayRoundBasedRules::BalanceTeams( bool bRequireSwitcheesToBeDead )
 				}
 
 				// If this is the player in the queue...
-				if ( m_nAutoBalanceQueuePlayerIndex == pPlayer->entindex() )
+				if ( m_nAutoBalanceQueuePlayerIndex == pPlayer->NetworkProp()->entindex())
 				{
 					// Pass until their timer is up
 					if ( m_flAutoBalanceQueueTimeEnd > gpGlobals->curtime )
@@ -2943,7 +2943,7 @@ void CTeamplayRoundBasedRules::BalanceTeams( bool bRequireSwitcheesToBeDead )
 			IGameEvent *event = gameeventmanager->CreateEvent( "teamplay_teambalanced_player" );
 			if ( event )
 			{
-				event->SetInt( "player", pPlayer->entindex() );
+				event->SetInt( "player", pPlayer->NetworkProp()->entindex());
 				event->SetInt( "team", iLightestTeam );
 				gameeventmanager->FireEvent( event );
 			}
@@ -2980,7 +2980,7 @@ void CTeamplayRoundBasedRules::ResetScores( void )
 			if (pPlayer == NULL)
 				continue;
 
-			if (FNullEnt( pPlayer->edict() ))
+			if (FNullEnt( pPlayer->NetworkProp()->edict()))
 				continue;
 
 			pPlayer->ResetScores();

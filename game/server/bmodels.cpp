@@ -876,7 +876,7 @@ void CFuncRotating::RampPitchVol( void )
 	ep.m_nFlags = SND_CHANGE_PITCH | SND_CHANGE_VOL;
 	ep.m_nPitch = pitch;
 
-	EmitSound( filter, entindex(), ep );
+	EmitSound( filter, NetworkProp()->entindex(), ep );
 }
 
 //-----------------------------------------------------------------------------
@@ -960,13 +960,13 @@ void CFuncRotating::UpdateSpeed( float flNewSpeed )
 		ep.m_SoundLevel = ATTN_TO_SNDLVL( m_flAttenuation );
 		ep.m_nPitch = FANPITCHMIN;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 		RampPitchVol();
 	}
 	else if ( ( flOldSpeed != 0 ) && ( m_flSpeed == 0 ) )
 	{
 		// Stopping - stop the sound.
-		StopSound( entindex(), CHAN_STATIC, STRING(m_NoiseRunning) );
+		StopSound(NetworkProp()->entindex(), CHAN_STATIC, STRING(m_NoiseRunning) );
 		
 	}
 	else

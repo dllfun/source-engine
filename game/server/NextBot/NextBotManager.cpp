@@ -780,7 +780,7 @@ bool NextBotManager::IsDebugFilterMatch( const INextBot *bot ) const
 	for( int i=0; i<m_debugFilterList.Count(); ++i )
 	{
 		// compare entity index
-		if ( m_debugFilterList[i].index == const_cast< INextBot * >( bot )->GetEntity()->entindex() )
+		if ( m_debugFilterList[i].index == const_cast< INextBot * >( bot )->GetEntity()->NetworkProp()->entindex())
 		{
 			return true;
 		}

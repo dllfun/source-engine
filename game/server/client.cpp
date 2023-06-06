@@ -213,10 +213,10 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		client = ToBaseMultiplayerPlayer( UTIL_PlayerByIndex( i ) );
-		if ( !client || !client->edict() )
+		if ( !client || !client->NetworkProp()->edict())
 			continue;
 		
-		if ( client->edict() == pEdict )
+		if ( client->NetworkProp()->edict() == pEdict )
 			continue;
 
 		if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
@@ -228,7 +228,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 		if ( pPlayer && !client->CanHearAndReadChatFrom( pPlayer ) )
 			continue;
 
-		if ( pPlayer && GetVoiceGameMgr() && GetVoiceGameMgr()->IsPlayerIgnoringPlayer( pPlayer->entindex(), i ) )
+		if ( pPlayer && GetVoiceGameMgr() && GetVoiceGameMgr()->IsPlayerIgnoringPlayer( pPlayer->NetworkProp()->entindex(), i ) )
 			continue;
 
 		CSingleUserRecipientFilter user( client );
@@ -527,7 +527,7 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 		CBasePlayer *player = dynamic_cast< CBasePlayer * >( inputdata.pActivator );
 		if ( player )
 		{
-			pClient = player->edict();
+			pClient = player->NetworkProp()->edict();
 		}
 
 		if ( IsInCommentaryMode() && !pClient )
@@ -701,7 +701,7 @@ void killvector_helper( const CCommand &args, bool bExplode )
 					vecForce.y = atof( args[3] );
 					vecForce.z = atof( args[4] );
 
-					ClientKill( pPlayer->edict(), vecForce, bExplode );
+					ClientKill( pPlayer->NetworkProp()->edict(), vecForce, bExplode );
 				}
 			}
 		}
@@ -754,7 +754,7 @@ CON_COMMAND( say, "Display player message" )
 	{
 		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->curtime) 
 		{
-			Host_Say( pPlayer->edict(), args, 0 );
+			Host_Say( pPlayer->NetworkProp()->edict(), args, 0 );
 			pPlayer->NotePlayerTalked();
 		}
 	}
@@ -778,7 +778,7 @@ CON_COMMAND( say_team, "Display player message to team" )
 	{
 		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->curtime) 
 		{
-			Host_Say( pPlayer->edict(), args, 1 );
+			Host_Say( pPlayer->NetworkProp()->edict(), args, 1 );
 			pPlayer->NotePlayerTalked();
 		}
 	}
@@ -936,7 +936,7 @@ void CC_Player_TestDispatchEffect( const CCommand &args )
 		data.m_vAngles = vecAngles;
 		AngleVectors( vecAngles, &data.m_vNormal );
 	}
-	data.m_nEntIndex = pPlayer->entindex();
+	data.m_nEntIndex = pPlayer->NetworkProp()->entindex();
 	data.m_fFlags = flags;
 	data.m_flMagnitude = magnitude;
 	data.m_flScale = scale;
@@ -960,7 +960,7 @@ void CC_Player_PhysSwap( void )
 		if ( pWeapon )
 		{
 			// Tell the client to stop selecting weapons
-			engineServer->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
+			engineServer->ClientCommand( UTIL_GetCommandClient()->NetworkProp()->edict(), "cancelselect" );
 
 			const char *strWeaponName = pWeapon->GetName();
 
@@ -993,7 +993,7 @@ void CC_Player_BugBaitSwap( void )
 		if ( pWeapon )
 		{
 			// Tell the client to stop selecting weapons
-			engineServer->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
+			engineServer->ClientCommand( UTIL_GetCommandClient()->NetworkProp()->edict(), "cancelselect" );
 
 			const char *strWeaponName = pWeapon->GetName();
 
@@ -1378,8 +1378,8 @@ static int DescribeGroundList( CBaseEntity *ent )
 
 	int c = 1;
 
-	Msg( "%i : %s (ground %i %s)\n", ent->entindex(), ent->GetClassname(), 
-		ent->GetGroundEntity() ? ent->GetGroundEntity()->entindex() : -1,
+	Msg( "%i : %s (ground %i %s)\n", ent->NetworkProp()->entindex(), ent->GetClassname(),
+		ent->GetGroundEntity() ? ent->GetGroundEntity()->NetworkProp()->entindex() : -1,
 		ent->GetGroundEntity() ? ent->GetGroundEntity()->GetClassname() : "NULL" );
 	groundlink_t *root = ( groundlink_t * )ent->GetDataObject( GROUNDLINK );
 	if ( root )
@@ -1390,7 +1390,7 @@ static int DescribeGroundList( CBaseEntity *ent )
 			CBaseEntity *other = link->entity;
 			if ( other )
 			{
-				Msg( "  %02i:  %i %s\n", c++, other->entindex(), other->GetClassname() );
+				Msg( "  %02i:  %i %s\n", c++, other->NetworkProp()->entindex(), other->GetClassname() );
 
 				if ( other->GetGroundEntity() != ent )
 				{

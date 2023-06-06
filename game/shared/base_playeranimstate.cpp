@@ -176,7 +176,7 @@ void CBasePlayerAnimState::Update( float eyeYaw, float eyePitch )
 		}
 	}
 #else
-	if ( sv_showanimstate.GetInt() == m_pOuter->entindex() )
+	if ( sv_showanimstate.GetInt() == m_pOuter->NetworkProp()->entindex())
 	{
 		DebugShowAnimState( 20 );
 	}

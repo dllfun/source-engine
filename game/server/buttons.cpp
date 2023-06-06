@@ -248,7 +248,7 @@ void CBaseButton::Press( CBaseEntity *pActivator, BUTTON_CODE eCode )
 			ep.m_flVolume = 1;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		m_OnPressed.FireOutput(pActivator, this);
@@ -339,7 +339,7 @@ int CBaseButton::OnTakeDamage( const CTakeDamageInfo &info )
 			ep.m_flVolume = 1;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		m_OnPressed.FireOutput(m_hActivator, this);
@@ -547,7 +547,7 @@ void CBaseButton::ButtonUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 				ep.m_flVolume = 1;
 				ep.m_SoundLevel = SNDLVL_NORM;
 
-				EmitSound( filter, entindex(), ep );
+				EmitSound( filter, NetworkProp()->entindex(), ep );
 			}
 
 			m_OnPressed.FireOutput(m_hActivator, this);
@@ -630,7 +630,7 @@ void CBaseButton::ButtonTouch( CBaseEntity *pOther )
 			ep.m_flVolume = 1;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, NetworkProp()->entindex(), ep );
 		}
 
 		m_OnPressed.FireOutput(m_hActivator, this);
@@ -661,7 +661,7 @@ void CBaseButton::ButtonActivate( void )
 		ep.m_flVolume = 1;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 	
 	if (!UTIL_IsMasterTriggered(m_sMaster, m_hActivator) || m_bLocked)
@@ -1107,7 +1107,7 @@ void CMomentaryRotButton::PlaySound( void )
 	ep.m_flVolume = 1;
 	ep.m_SoundLevel = SNDLVL_NORM;
 
-	EmitSound( filter, entindex(), ep );
+	EmitSound( filter, NetworkProp()->entindex(), ep );
 }
 
 

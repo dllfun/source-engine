@@ -1973,7 +1973,7 @@ int CRestore::ReadEdictPtr( edict_t **ppEdict, int count, int nBytesAvailable )
 	for ( int i = 0; i < nRead; i++ ) // nRead is never greater than count
 	{
 		pEntity = EntityFromIndex( entityArray[i] );
-		ppEdict[i] = (pEntity) ? pEntity->edict() : NULL;
+		ppEdict[i] = (pEntity) ? pEntity->NetworkProp()->edict() : NULL;
 	}
 	
 	if ( nRead < count)
@@ -2512,7 +2512,7 @@ void CEntitySaveRestoreBlockHandler::Save( ISave *pSave )
 #if !defined( CLIENT_DLL )
 			pEntInfo->globalname = pEnt->m_iGlobalname; // remember global name
 			pEntInfo->landmarkModelSpace = ModelSpaceLandmark( pEnt->GetModelIndex() );
-			int nEntIndex = pEnt->edict() ? ENTINDEX(pEnt->edict()) : -1;
+			int nEntIndex = pEnt->NetworkProp()->edict() ? ENTINDEX(pEnt->NetworkProp()->edict()) : -1;
 			bool bIsPlayer = ( ( nEntIndex >= 1 ) && ( nEntIndex <= gpGlobals->maxClients ) ) ? true : false;
 			if ( bIsPlayer )
 			{
@@ -2638,7 +2638,7 @@ void CEntitySaveRestoreBlockHandler::Restore( IRestore *pRestore, bool createPla
 				pent = CreateEntityByName( STRING(pEntInfo->classname) );
 			}
 			pEntInfo->hEnt = pent;
-			pEntInfo->restoreentityindex = pent ? pent->entindex() : - 1;
+			pEntInfo->restoreentityindex = pent ? pent->NetworkProp()->entindex() : - 1;
 			if ( pent && pEntInfo->restoreentityindex == 0 )
 			{
 				if ( !FClassnameIs( pent, "worldspawn" ) )
@@ -2785,7 +2785,7 @@ void SaveEntityOnTable( CBaseEntity *pEntity, CSaveRestoreData *pSaveData, int &
 #endif
 	pEntInfo->modelname = pEntity->GetModelName();
 	pEntInfo->restoreentityindex = -1;
-	pEntInfo->saveentityindex = pEntity ? pEntity->entindex() : -1;
+	pEntInfo->saveentityindex = pEntity ? pEntity->NetworkProp()->entindex() : -1;
 	pEntInfo->hEnt = pEntity;
 	pEntInfo->flags = 0;
 	pEntInfo->location = 0;
@@ -3435,7 +3435,7 @@ int CreateEntityTransitionList( CSaveRestoreData *pSaveData, int levelMask )
 				if ( g_EntitySaveRestoreBlockHandler.RestoreGlobalEntity( pent, pSaveData, pEntInfo ) > 0 )
 				{
 					movedCount++;
-					pEntInfo->restoreentityindex = pEntInfo->hEnt.Get()->entindex();
+					pEntInfo->restoreentityindex = pEntInfo->hEnt.Get()->NetworkProp()->entindex();
 					AddRestoredEntity( pEntInfo->hEnt.Get() );
 				}
 				else
@@ -3446,7 +3446,7 @@ int CreateEntityTransitionList( CSaveRestoreData *pSaveData, int levelMask )
 			}
 			else 
 			{
-				DevMsg( 2, "Transferring %s (%d)\n", STRING(pEntInfo->classname), pent->edict() ? ENTINDEX(pent->edict()) : -1 );
+				DevMsg( 2, "Transferring %s (%d)\n", STRING(pEntInfo->classname), pent->NetworkProp()->edict() ? ENTINDEX(pent->NetworkProp()->edict()) : -1 );
 				CRestore restoreHelper( pSaveData );
 				if ( g_EntitySaveRestoreBlockHandler.RestoreEntity( pent, &restoreHelper, pEntInfo ) < 0 )
 				{
@@ -3487,7 +3487,7 @@ int CreateEntityTransitionList( CSaveRestoreData *pSaveData, int levelMask )
 		{
 			movedCount++;
 			pEntInfo->flags = FENTTABLE_REMOVED;
-			pEntInfo->restoreentityindex = pent->entindex();
+			pEntInfo->restoreentityindex = pent->NetworkProp()->entindex();
 			AddRestoredEntity( pent );
 		}
 	}

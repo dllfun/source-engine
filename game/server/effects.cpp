@@ -1609,7 +1609,7 @@ void CEnvWind::Spawn( void )
 	SetSolid( SOLID_NONE );
 	AddEffects( EF_NODRAW );
 
-	m_EnvWindShared.Init( entindex(), 0, gpGlobals->frametime, GetLocalAngles().y, 0 );
+	m_EnvWindShared.Init(NetworkProp()->entindex(), 0, gpGlobals->frametime, GetLocalAngles().y, 0 );
 
 	SetThink( &CEnvWind::WindThink );
 	SetNextThink( gpGlobals->curtime );

@@ -23,7 +23,7 @@ void UTIL_RemoveHierarchy( CBaseEntity *pDead )
 	if ( !pDead )
 		return;
 
-	if ( pDead->edict() )
+	if ( pDead->NetworkProp()->edict())
 	{
 		CBaseEntity *pChild = pDead->FirstMoveChild();
 		while ( pChild )
@@ -285,7 +285,7 @@ void CTankTrainAI::SoundEngineStart( void )
 		ep.m_flVolume = 1.0f;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, pTrain->entindex(), ep );
+		EmitSound( filter, pTrain->NetworkProp()->entindex(), ep );
 	}
 
 	// play the looping sounds using the envelope controller
@@ -381,12 +381,12 @@ void CTankTrainAI::Activate( void )
 		if ( m_movementSoundName != NULL_STRING )
 		{
 			CPASAttenuationFilter filter( this, ATTN_NORM * 0.5 );
-			m_soundTreads = controller.SoundCreate( filter, pTrain->entindex(), CHAN_STATIC, STRING(m_movementSoundName), ATTN_NORM*0.5 );
+			m_soundTreads = controller.SoundCreate( filter, pTrain->NetworkProp()->entindex(), CHAN_STATIC, STRING(m_movementSoundName), ATTN_NORM*0.5 );
 		}
 		if ( m_engineSoundName != NULL_STRING )
 		{
 			CPASAttenuationFilter filter( this );
-			m_soundEngine = controller.SoundCreate( filter, pTrain->entindex(), CHAN_STATIC, STRING(m_engineSoundName), ATTN_NORM );
+			m_soundEngine = controller.SoundCreate( filter, pTrain->NetworkProp()->entindex(), CHAN_STATIC, STRING(m_engineSoundName), ATTN_NORM );
 		}
 	}
 }

@@ -566,7 +566,7 @@ void CCSPlayer::PlayerRunCommand( CUserCmd *ucmd, IMoveHelper *moveHelper )
 	// If they use a negative bot_mimic value, then don't process their usercmds, but have
 	// bots process them instead (so they can stay still and have the bot move around).
 	CUserCmd tempCmd;
-	if ( -bot_mimic.GetInt() == entindex() )
+	if ( -bot_mimic.GetInt() == NetworkProp()->entindex())
 	{
 		tempCmd = *ucmd;
 		ucmd = &tempCmd;
@@ -641,7 +641,7 @@ void CCSPlayer::RunPlayerMove( const QAngle& viewangles, float forwardmove, floa
 	PlayerRunCommand( &cmd, MoveHelperServer() );
 
 	// save off the last good usercmd
-	if ( -bot_mimic.GetInt() == entindex() )
+	if ( -bot_mimic.GetInt() == NetworkProp()->entindex())
 	{
 		CUserCmd lastCmd = *GetLastUserCommand();
 		lastCmd.command_number = cmd.command_number;
@@ -2255,7 +2255,7 @@ void CCSPlayer::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, 
 		CEffectData	data;
 		data.m_vOrigin = ptr->endpos;
 		data.m_vNormal = vecDir * -1;
-		data.m_nEntIndex = ptr->m_pEnt ?  ptr->m_pEnt->entindex() : 0;
+		data.m_nEntIndex = ptr->m_pEnt ?  ptr->m_pEnt->NetworkProp()->entindex() : 0;
 		data.m_flMagnitude = flDamage;
 
 		// reduce blood effect if target has armor
@@ -3278,7 +3278,7 @@ BuyResult_e CCSPlayer::AttemptToBuyDefuser( void )
 			GiveDefuser();
 
 			CPASAttenuationFilter filter( this, "Player.PickupWeapon" );
-			EmitSound( filter, entindex(), "Player.PickupWeapon" );
+			EmitSound( filter, NetworkProp()->entindex(), "Player.PickupWeapon" );
 
 			AddAccount( -DEFUSEKIT_PRICE, true, true, "item_defuser" );
 			return BUY_BOUGHT;
@@ -3935,11 +3935,11 @@ void CCSPlayer::Radio( const char *pszRadioSound, const char *pszRadioText )
 		const char *pszLocationText = CSGameRules()->GetChatLocation( true, this );
 		if ( pszLocationText && *pszLocationText )
 		{
-			UTIL_CSRadioMessage( filter, entindex(), HUD_PRINTTALK, "#Game_radio_location", GetPlayerName(), pszLocationText, pszRadioText );
+			UTIL_CSRadioMessage( filter, NetworkProp()->entindex(), HUD_PRINTTALK, "#Game_radio_location", GetPlayerName(), pszLocationText, pszRadioText );
 		}
 		else
 		{
-			UTIL_CSRadioMessage( filter, entindex(), HUD_PRINTTALK, "#Game_radio", GetPlayerName(), pszRadioText );
+			UTIL_CSRadioMessage( filter, NetworkProp()->entindex(), HUD_PRINTTALK, "#Game_radio", GetPlayerName(), pszRadioText );
 		}
 	}
 
@@ -4514,12 +4514,12 @@ bool CCSPlayer::ClientCommand( const CCommand &args )
 				if( m_bNightVisionOn )
 				{
 					CPASAttenuationFilter filter( this );
-					EmitSound( filter, entindex(), "Player.NightVisionOff" );
+					EmitSound( filter, NetworkProp()->entindex(), "Player.NightVisionOff" );
 				}
 				else
 				{
 					CPASAttenuationFilter filter( this );
-					EmitSound( filter, entindex(), "Player.NightVisionOn" );
+					EmitSound( filter, NetworkProp()->entindex(), "Player.NightVisionOn" );
 				}
 
 				m_bNightVisionOn = !m_bNightVisionOn;
@@ -5114,7 +5114,7 @@ void CCSPlayer::State_Enter( CSPlayerState newState )
 	m_iPlayerState = newState;
 	m_pCurStateInfo = State_LookupInfo( newState );
 
-	if ( cs_ShowStateTransitions.GetInt() == -1 || cs_ShowStateTransitions.GetInt() == entindex() )
+	if ( cs_ShowStateTransitions.GetInt() == -1 || cs_ShowStateTransitions.GetInt() == NetworkProp()->entindex())
 	{
 		if ( m_pCurStateInfo )
 			Msg( "ShowStateTransitions: entering '%s'\n", m_pCurStateInfo->m_pStateName );
@@ -5204,7 +5204,7 @@ void CCSPlayer::State_Enter_WELCOME()
 	{
 		if ( CommandLine()->FindParm( "-makereslists" ) ) // don't show the MOTD when making reslists
 		{
-			engineServer->ClientCommand( edict(), "jointeam 3\n" );
+			engineServer->ClientCommand(NetworkProp()->edict(), "jointeam 3\n" );
 		}
 		else
 		{
@@ -5371,7 +5371,7 @@ void CCSPlayer::State_PreThink_DEATH_WAIT_FOR_KEY()
 	{
 		if ( GetObserverTarget() )
 		{
-			StartReplayMode( 8, 8, GetObserverTarget()->entindex() );
+			StartReplayMode( 8, 8, GetObserverTarget()->NetworkProp()->entindex());
 		}
 
 		State_Transition( STATE_OBSERVER_MODE );
@@ -5390,7 +5390,7 @@ void CCSPlayer::State_Enter_OBSERVER_MODE()
 	int observerMode = m_iObserverLastMode;
 	if ( IsNetClient() )
 	{
-		const char *pIdealMode = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( edict() ), "cl_spec_mode" );
+		const char *pIdealMode = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->edict()), "cl_spec_mode" );
 		if ( pIdealMode )
 		{
 			int nIdealMode = atoi( pIdealMode );
@@ -5431,7 +5431,7 @@ void CCSPlayer::State_Enter_PICKINGCLASS()
 {
 	if ( CommandLine()->FindParm( "-makereslists" ) ) // don't show the menu when making reslists
 	{
-		engineServer->ClientCommand( edict(), "joinclass 0\n" );
+		engineServer->ClientCommand(NetworkProp()->edict(), "joinclass 0\n" );
 		return;
 	}
 
@@ -5755,7 +5755,7 @@ void CCSPlayer::EmitPrivateSound( const char *soundName )
 		return;
 
 	CSingleUserRecipientFilter filter( this );
-	EmitSound( filter, entindex(), soundName );
+	EmitSound( filter, NetworkProp()->entindex(), soundName );
 }
 
 
@@ -5782,7 +5782,7 @@ void CCSPlayer::AutoBuy()
 		return;
 	}
 
-	const char *autobuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( edict() ), "cl_autobuy" );
+	const char *autobuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->edict()), "cl_autobuy" );
 	if ( !autobuyString || !*autobuyString )
 	{
 		EmitPrivateSound( "BuyPreset.AlreadyBought" );
@@ -6182,7 +6182,7 @@ void CCSPlayer::Rebuy( void )
 		return;
 	}
 
-	const char *rebuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( edict() ), "cl_rebuy" );
+	const char *rebuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->edict()), "cl_rebuy" );
 	if ( !rebuyString || !*rebuyString )
 	{
 		EmitPrivateSound( "BuyPreset.AlreadyBought" );
@@ -7182,7 +7182,7 @@ int CCSPlayer::GetNextObserverSearchStartPoint( bool bReverse )
 	{
 		CCSPlayer *targetPlayer = ToCSPlayer(m_hObserverTarget);
 		if( targetPlayer && targetPlayer->GetObserverTarget() )
-			return targetPlayer->GetObserverTarget()->entindex();
+			return targetPlayer->GetObserverTarget()->NetworkProp()->entindex();
 	}
 
 	return BaseClass::GetNextObserverSearchStartPoint( bReverse );
@@ -7292,7 +7292,7 @@ void CCSPlayer::ChangeName( const char *pszNewName )
 	SetPlayerName( trimmedName );
 
 	// tell engine to use new name
-	engineServer->ClientCommand( edict(), "name \"%s\"", trimmedName );
+	engineServer->ClientCommand(NetworkProp()->edict(), "name \"%s\"", trimmedName );
 
 	// remember time of name change
 	for ( int i=NAME_CHANGE_HISTORY_SIZE-1; i>0; i-- )
@@ -7316,12 +7316,12 @@ bool CCSPlayer::StartReplayMode( float fDelay, float fDuration, int iEntity )
 
 		if ( m_hObserverTarget.Get() )
 		{
-			WRITE_BYTE( m_hObserverTarget.Get()->entindex() );	// first target
-			WRITE_BYTE( entindex() );	//second target
+			WRITE_BYTE( m_hObserverTarget.Get()->NetworkProp()->entindex());	// first target
+			WRITE_BYTE(NetworkProp()->entindex());	//second target
 		}
 		else
 		{
-			WRITE_BYTE( entindex() );	// first target
+			WRITE_BYTE(NetworkProp()->entindex());	// first target
 			WRITE_BYTE( 0 );	//second target
 		}
 	MessageEnd();
@@ -8000,7 +8000,7 @@ void CCSPlayer::AttemptToExitFreezeCam( void )
 //-----------------------------------------------------------------------------
 void CCSPlayer::SetPlayerDominated( CCSPlayer *pPlayer, bool bDominated )
 {
-	int iPlayerIndex = pPlayer->entindex();
+	int iPlayerIndex = pPlayer->NetworkProp()->entindex();
 	m_bPlayerDominated.Set( iPlayerIndex, bDominated );
 	pPlayer->SetPlayerDominatingMe( this, bDominated );
 }
@@ -8010,7 +8010,7 @@ void CCSPlayer::SetPlayerDominated( CCSPlayer *pPlayer, bool bDominated )
 //-----------------------------------------------------------------------------
 void CCSPlayer::SetPlayerDominatingMe( CCSPlayer *pPlayer, bool bDominated )
 {
-	int iPlayerIndex = pPlayer->entindex();
+	int iPlayerIndex = pPlayer->NetworkProp()->entindex();
 	m_bPlayerDominatingMe.Set( iPlayerIndex, bDominated );
 }
 

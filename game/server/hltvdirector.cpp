@@ -552,7 +552,7 @@ void CHLTVDirector::CreateShotFromEvent( CHLTVGameEvent *event )
 		if ( attacker == victim || attacker == NULL )
 		{
 			// player killed self or by WORLD
-			StartChaseCameraShot( victim->entindex(), 0, 96, 20, 0, false );
+			StartChaseCameraShot( victim->NetworkProp()->entindex(), 0, 96, 20, 0, false );
 		}
 		else // attacker != NULL
 		{
@@ -569,7 +569,7 @@ void CHLTVDirector::CreateShotFromEvent( CHLTVGameEvent *event )
 			// view from behind over head
 			// lower view point, dramatic
 			// view over shoulder, randomly left or right
-			StartChaseCameraShot( victim->entindex(), attacker->entindex(), 96, -20, (RandomFloat()>0.5)?30:-30, bInEye );
+			StartChaseCameraShot( victim->NetworkProp()->entindex(), attacker->NetworkProp()->entindex(), 96, -20, (RandomFloat()>0.5)?30:-30, bInEye );
 		}
 				
 		// shot 2 seconds after death/hurt
@@ -1036,7 +1036,7 @@ void CHLTVDirector::AnalyzeCameras()
 			// remember closest player
 			if ( dist <  flClosestPlayerDist )
 			{
-				iClosestPlayer = pPlayer->entindex();
+				iClosestPlayer = pPlayer->NetworkProp()->entindex();
 				flClosestPlayerDist = dist;
 			}
 
@@ -1155,7 +1155,7 @@ void CHLTVDirector::AnalyzePlayers()
 			// remember closest player
 			if ( facing > flBestFacingPlayer )
 			{
-				iBestFacingPlayer = pOtherPlayer->entindex();
+				iBestFacingPlayer = pOtherPlayer->NetworkProp()->entindex();
 				flBestFacingPlayer = facing;
 			}
 
@@ -1174,7 +1174,7 @@ void CHLTVDirector::AnalyzePlayers()
 		IGameEvent *event = gameeventmanager->CreateEvent("hltv_rank_entity");
 		if ( event )
 		{
-			event->SetInt("index",  pPlayer->entindex() );
+			event->SetInt("index",  pPlayer->NetworkProp()->entindex());
 			event->SetFloat("rank", flRank );
 			event->SetInt("target",  iBestFacingPlayer ); // ent index
 			gameeventmanager->FireEvent( event );

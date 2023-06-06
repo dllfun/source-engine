@@ -133,7 +133,7 @@ PlayerLocomotion::LadderState PlayerLocomotion::ApproachAscendingLadder( void )
 
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		NDebugOverlay::EntityText( GetBot()->GetEntity()->entindex(), 0, "Approach ascending ladder", 0.1f, 255, 255, 255, 255 );
+		NDebugOverlay::EntityText( GetBot()->GetEntity()->NetworkProp()->entindex(), 0, "Approach ascending ladder", 0.1f, 255, 255, 255, 255 );
 	}
 
 	return APPROACHING_ASCENDING_LADDER;
@@ -211,7 +211,7 @@ PlayerLocomotion::LadderState PlayerLocomotion::ApproachDescendingLadder( void )
 
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		NDebugOverlay::EntityText( GetBot()->GetEntity()->entindex(), 0, "Approach descending ladder", 0.1f, 255, 255, 255, 255 );
+		NDebugOverlay::EntityText( GetBot()->GetEntity()->NetworkProp()->entindex(), 0, "Approach descending ladder", 0.1f, 255, 255, 255, 255 );
 	}
 
 	return APPROACHING_DESCENDING_LADDER;
@@ -250,7 +250,7 @@ PlayerLocomotion::LadderState PlayerLocomotion::AscendLadder( void )
 
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		NDebugOverlay::EntityText( GetBot()->GetEntity()->entindex(), 0, "Ascend", 0.1f, 255, 255, 255, 255 );
+		NDebugOverlay::EntityText( GetBot()->GetEntity()->NetworkProp()->entindex(), 0, "Ascend", 0.1f, 255, 255, 255, 255 );
 	}
 
 	return ASCENDING_LADDER;
@@ -289,7 +289,7 @@ PlayerLocomotion::LadderState PlayerLocomotion::DescendLadder( void )
 
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		NDebugOverlay::EntityText( GetBot()->GetEntity()->entindex(), 0, "Descend", 0.1f, 255, 255, 255, 255 );
+		NDebugOverlay::EntityText( GetBot()->GetEntity()->NetworkProp()->entindex(), 0, "Descend", 0.1f, 255, 255, 255, 255 );
 	}
 
 	return DESCENDING_LADDER;
@@ -318,7 +318,7 @@ PlayerLocomotion::LadderState PlayerLocomotion::DismountLadderTop( void )
 
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		NDebugOverlay::EntityText( GetBot()->GetEntity()->entindex(), 0, "Dismount top", 0.1f, 255, 255, 255, 255 );
+		NDebugOverlay::EntityText( GetBot()->GetEntity()->NetworkProp()->entindex(), 0, "Dismount top", 0.1f, 255, 255, 255, 255 );
 		NDebugOverlay::HorzArrow( GetFeet(), m_ladderDismountGoal->GetCenter(), 5.0f, 255, 255, 0, 255, true, 0.1f );
 	}
 
@@ -606,7 +606,7 @@ bool PlayerLocomotion::IsClimbPossible( INextBot *me, const CBaseEntity *obstacl
 			// we are not planning on climbing
 
 			// always allow climbing over movable obstacles
-			if ( obstacle && !const_cast< CBaseEntity * >( obstacle )->IsWorld() )
+			if ( obstacle && !(const_cast< CBaseEntity * >( obstacle )->NetworkProp()->entindex()==0) )
 			{
 				IPhysicsObject *physics = obstacle->VPhysicsGetObject();
 				if ( physics && physics->IsMoveable() )

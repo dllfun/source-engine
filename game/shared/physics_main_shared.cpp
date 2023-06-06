@@ -470,8 +470,8 @@ void SpewLinks()
 				{
 					++nCount;
 					Msg("[%d] (%d) Link %d (%s) -> %d (%s)\n", nCount, pClass->IsDormant(),
-						pClass->entindex(), pClass->GetClassname(),
-						link->entityTouched->entindex(), link->entityTouched->GetClassname() );
+						pClass->NetworkProp()->entindex(), pClass->GetClassname(),
+						link->entityTouched->NetworkProp()->entindex(), link->entityTouched->GetClassname() );
 				}
 			}
 		}
@@ -729,7 +729,7 @@ void CBaseEntity::PhysicsRemoveToucher( CBaseEntity *otherEntity, touchlink_t *l
 	link->prevLink->nextLink = link->nextLink;
 
 	if ( DebugTouchlinks() )
-		Msg( "remove 0x%p: %s-%s (%d-%d) [%d in play, %d max]\n", link, link->entityTouched->GetDebugName(), otherEntity->GetDebugName(), link->entityTouched->entindex(), otherEntity->entindex(), linksallocated, g_EdictTouchLinks.PeakCount() );
+		Msg( "remove 0x%p: %s-%s (%d-%d) [%d in play, %d max]\n", link, link->entityTouched->GetDebugName(), otherEntity->GetDebugName(), link->entityTouched->NetworkProp()->entindex(), otherEntity->NetworkProp()->entindex(), linksallocated, g_EdictTouchLinks.PeakCount() );
 	FreeTouchLink( link );
 }
 
@@ -759,7 +759,7 @@ void CBaseEntity::PhysicsRemoveTouchedList( CBaseEntity *ent )
 
 			// kill it
 			if ( DebugTouchlinks() )
-				Msg( "remove 0x%p: %s-%s (%d-%d) [%d in play, %d max]\n", link, ent->GetDebugName(), link->entityTouched->GetDebugName(), ent->entindex(), link->entityTouched->entindex(), linksallocated, g_EdictTouchLinks.PeakCount() );
+				Msg( "remove 0x%p: %s-%s (%d-%d) [%d in play, %d max]\n", link, ent->GetDebugName(), link->entityTouched->GetDebugName(), ent->NetworkProp()->entindex(), link->entityTouched->NetworkProp()->entindex(), linksallocated, g_EdictTouchLinks.PeakCount() );
 			FreeTouchLink( link );
 			link = nextLink;
 		}
@@ -1033,7 +1033,7 @@ touchlink_t *CBaseEntity::PhysicsMarkEntityAsTouched( CBaseEntity *other )
 	// build new link
 	link = AllocTouchLink();
 	if ( DebugTouchlinks() )
-		Msg( "add 0x%p: %s-%s (%d-%d) [%d in play, %d max]\n", link, GetDebugName(), other->GetDebugName(), entindex(), other->entindex(), linksallocated, g_EdictTouchLinks.PeakCount() );
+		Msg( "add 0x%p: %s-%s (%d-%d) [%d in play, %d max]\n", link, GetDebugName(), other->GetDebugName(), NetworkProp()->entindex(), other->NetworkProp()->entindex(), linksallocated, g_EdictTouchLinks.PeakCount() );
 	if ( !link )
 		return NULL;
 
@@ -1702,7 +1702,7 @@ void CBaseEntity::PhysicsToss( void )
 	}
 	
 #if !defined( CLIENT_DLL )
-	if (IsEdictFree())
+	if (NetworkProp()->edict()->IsFree())
 		return;
 #endif
 

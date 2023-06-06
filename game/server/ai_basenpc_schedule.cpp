@@ -3452,7 +3452,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 	case TASK_WAIT_PVS:
 		{
 			if ( ShouldAlwaysThink() || 
-				 UTIL_FindClientInPVS(edict()) || 
+				 UTIL_FindClientInPVS(NetworkProp()->edict()) ||
 				 ( GetState() == NPC_STATE_COMBAT && GetEnemy() && gpGlobals->curtime - GetEnemies()->LastTimeSeen( GetEnemy() ) < 15 ) )
 			{
 				TaskComplete();

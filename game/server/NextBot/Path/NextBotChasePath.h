@@ -141,7 +141,7 @@ inline void ChasePath::RefreshPath( INextBot *bot, CBaseEntity *subject, const I
 	{
 		if ( bot->IsDebugging( NEXTBOT_PATH ) )
 		{
-			DevMsg( "%3.2f: bot(#%d) ChasePath::RefreshPath failed. Bot is on a ladder.\n", gpGlobals->curtime, bot->GetEntity()->entindex() );
+			DevMsg( "%3.2f: bot(#%d) ChasePath::RefreshPath failed. Bot is on a ladder.\n", gpGlobals->curtime, bot->GetEntity()->NetworkProp()->entindex());
 		}
 
 		// don't allow repath until a moment AFTER we have left the ladder
@@ -154,7 +154,7 @@ inline void ChasePath::RefreshPath( INextBot *bot, CBaseEntity *subject, const I
 	{
 		if ( bot->IsDebugging( NEXTBOT_PATH ) )
 		{
-			DevMsg( "%3.2f: bot(#%d) CasePath::RefreshPath failed. No subject.\n", gpGlobals->curtime, bot->GetEntity()->entindex() );
+			DevMsg( "%3.2f: bot(#%d) CasePath::RefreshPath failed. No subject.\n", gpGlobals->curtime, bot->GetEntity()->NetworkProp()->entindex());
 		}
 		return;
 	}
@@ -173,7 +173,7 @@ inline void ChasePath::RefreshPath( INextBot *bot, CBaseEntity *subject, const I
 	{
 		if ( bot->IsDebugging( NEXTBOT_PATH ) )
 		{
-			DevMsg( "%3.2f: bot(#%d) Chase path subject changed (from %p to %p).\n", gpGlobals->curtime, bot->GetEntity()->entindex(), m_lastPathSubject.Get(), subject );
+			DevMsg( "%3.2f: bot(#%d) Chase path subject changed (from %p to %p).\n", gpGlobals->curtime, bot->GetEntity()->NetworkProp()->entindex(), m_lastPathSubject.Get(), subject );
 		}
 
 		Invalidate();
@@ -225,7 +225,7 @@ inline void ChasePath::RefreshPath( INextBot *bot, CBaseEntity *subject, const I
 				//const float size = 20.0f;			
 				//NDebugOverlay::VertArrow( bot->GetPosition() + Vector( 0, 0, size ), bot->GetPosition(), size, 255, RandomInt( 0, 200 ), 255, 255, true, 30.0f );
 
-				DevMsg( "%3.2f: bot(#%d) REPATH\n", gpGlobals->curtime, bot->GetEntity()->entindex() );
+				DevMsg( "%3.2f: bot(#%d) REPATH\n", gpGlobals->curtime, bot->GetEntity()->NetworkProp()->entindex());
 			}
 
 			m_lastPathSubject = subject;
@@ -260,7 +260,7 @@ inline void ChasePath::RefreshPath( INextBot *bot, CBaseEntity *subject, const I
 				//NDebugOverlay::VertArrow( bot->GetPosition() + Vector( 0, 0, size ), bot->GetPosition(), size, 255, c, c, 255, true, dT );
 				NDebugOverlay::HorzArrow( bot->GetPosition(), pathTarget, 5.0f, 255, c, c, 255, true, dT );
 
-				DevMsg( "%3.2f: bot(#%d) REPATH FAILED\n", gpGlobals->curtime, bot->GetEntity()->entindex() );
+				DevMsg( "%3.2f: bot(#%d) REPATH FAILED\n", gpGlobals->curtime, bot->GetEntity()->NetworkProp()->entindex());
 			}
 
 			Invalidate();

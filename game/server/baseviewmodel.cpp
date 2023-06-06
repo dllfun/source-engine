@@ -70,7 +70,7 @@ int CBaseViewModel::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 	// check if receipient owns this weapon viewmodel
 	CBasePlayer *pOwner = ToBasePlayer( m_hOwner );
 
-	if ( pOwner && pOwner->edict() == pInfo->m_pClientEnt )
+	if ( pOwner && pOwner->NetworkProp()->edict() == pInfo->m_pClientEnt )
 	{
 		return FL_EDICT_ALWAYS;
 	}
@@ -101,7 +101,7 @@ int CBaseViewModel::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 void CBaseViewModel::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );

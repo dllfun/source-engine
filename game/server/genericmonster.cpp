@@ -99,7 +99,7 @@ void CGenericNPC::TempGunEffect( void )
 	Vector end = vecMuzzle + vecDir * 4096;
 	UTIL_Tracer( start, end, 0, TRACER_DONT_USE_ATTACHMENT, 5500, fSound );
 	CPASAttenuationFilter filter2( this, "GenericNPC.GunSound" );
-	EmitSound( filter2, entindex(), "GenericNPC.GunSound" );
+	EmitSound( filter2, NetworkProp()->entindex(), "GenericNPC.GunSound" );
 }
 
 

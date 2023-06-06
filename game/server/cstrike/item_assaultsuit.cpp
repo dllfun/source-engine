@@ -39,7 +39,7 @@ class CItemAssaultSuit : public CItem
 		if ( pPlayer->IsDead() == false )
 		{
 			CPASAttenuationFilter filter( pBasePlayer );
-			EmitSound( filter, entindex(), "BaseCombatCharacter.ItemPickup2" );
+			EmitSound( filter, NetworkProp()->entindex(), "BaseCombatCharacter.ItemPickup2" );
 
 			CSingleUserRecipientFilter user( pPlayer );
 			UserMessageBegin( user, "ItemPickup" );

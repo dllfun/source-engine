@@ -36,6 +36,7 @@
 #include "datacache/imdlcache.h"
 #include "util.h"
 #include "cdll_int.h"
+#include "server_class.h"
 
 #ifdef PORTAL
 #include "PortalSimulation.h"
@@ -64,47 +65,15 @@ void DBG_AssertFunction( bool fExpr, const char *szExpr, const char *szFile, int
 #endif	// DEBUG
 
 
-//-----------------------------------------------------------------------------
-// Entity creation factory
-//-----------------------------------------------------------------------------
-class CEntityFactoryDictionary : public IEntityFactoryDictionary
-{
-public:
-	CEntityFactoryDictionary();
-
-	virtual void InstallFactory( IEntityFactory *pFactory, const char *pClassName );
-	virtual IServerNetworkable *Create( const char *pClassName );
-	virtual void Destroy( const char *pClassName, IServerNetworkable *pNetworkable );
-	virtual const char *GetCannonicalName( const char *pClassName );
-	void ReportEntitySizes();
-
-private:
-	IEntityFactory *FindFactory( const char *pClassName );
-public:
-	CUtlDict< IEntityFactory *, unsigned short > m_Factories;
-};
-
-//-----------------------------------------------------------------------------
-// Singleton accessor
-//-----------------------------------------------------------------------------
-IEntityFactoryDictionary *EntityFactoryDictionary()
-{
-	static CEntityFactoryDictionary s_EntityFactory;
-	return &s_EntityFactory;
-}
-
 void DumpEntityFactories_f()
 {
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;
 
-	CEntityFactoryDictionary *dict = ( CEntityFactoryDictionary * )EntityFactoryDictionary();
+	IEntityFactoryDictionary* dict = EntityFactoryDictionary();
 	if ( dict )
 	{
-		for ( int i = dict->m_Factories.First(); i != dict->m_Factories.InvalidIndex(); i = dict->m_Factories.Next( i ) )
-		{
-			Warning( "%s\n", dict->m_Factories.GetElementName( i ) );
-		}
+		dict->ReportEntityNames();
 	}
 }
 
@@ -119,89 +88,7 @@ CON_COMMAND( dump_entity_sizes, "Print sizeof(entclass)" )
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;
 
-	((CEntityFactoryDictionary*)EntityFactoryDictionary())->ReportEntitySizes();
-}
-
-
-//-----------------------------------------------------------------------------
-// Constructor
-//-----------------------------------------------------------------------------
-CEntityFactoryDictionary::CEntityFactoryDictionary() : m_Factories( true, 0, 128 )
-{
-}
-
-
-//-----------------------------------------------------------------------------
-// Finds a new factory
-//-----------------------------------------------------------------------------
-IEntityFactory *CEntityFactoryDictionary::FindFactory( const char *pClassName )
-{
-	unsigned short nIndex = m_Factories.Find( pClassName );
-	if ( nIndex == m_Factories.InvalidIndex() )
-		return NULL;
-	return m_Factories[nIndex];
-}
-
-
-//-----------------------------------------------------------------------------
-// Install a new factory
-//-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::InstallFactory( IEntityFactory *pFactory, const char *pClassName )
-{
-	Assert( FindFactory( pClassName ) == NULL );
-	m_Factories.Insert( pClassName, pFactory );
-}
-
-
-//-----------------------------------------------------------------------------
-// Instantiate something using a factory
-//-----------------------------------------------------------------------------
-IServerNetworkable *CEntityFactoryDictionary::Create( const char *pClassName )
-{
-	IEntityFactory *pFactory = FindFactory( pClassName );
-	if ( !pFactory )
-	{
-		Warning("Attempted to create unknown entity type %s!\n", pClassName );
-		return NULL;
-	}
-#if defined(TRACK_ENTITY_MEMORY) && defined(USE_MEM_DEBUG)
-	MEM_ALLOC_CREDIT_( m_Factories.GetElementName( m_Factories.Find( pClassName ) ) );
-#endif
-	return pFactory->Create( pClassName );
-}
-
-//-----------------------------------------------------------------------------
-// 
-//-----------------------------------------------------------------------------
-const char *CEntityFactoryDictionary::GetCannonicalName( const char *pClassName )
-{
-	return m_Factories.GetElementName( m_Factories.Find( pClassName ) );
-}
-
-//-----------------------------------------------------------------------------
-// Destroy a networkable
-//-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::Destroy( const char *pClassName, IServerNetworkable *pNetworkable )
-{
-	IEntityFactory *pFactory = FindFactory( pClassName );
-	if ( !pFactory )
-	{
-		Warning("Attempted to destroy unknown entity type %s!\n", pClassName );
-		return;
-	}
-
-	pFactory->Destroy( pNetworkable );
-}
-
-//-----------------------------------------------------------------------------
-// 
-//-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::ReportEntitySizes()
-{
-	for ( int i = m_Factories.First(); i != m_Factories.InvalidIndex(); i = m_Factories.Next( i ) )
-	{
-		Msg( " %s: %d", m_Factories.GetElementName( i ), m_Factories[i]->GetEntitySize() );
-	}
+	EntityFactoryDictionary()->ReportEntitySizes();
 }
 
 
@@ -609,7 +496,7 @@ CBasePlayer* UTIL_PlayerByUserId( int userID )
 		if ( !pPlayer->IsConnected() )
 			continue;
 
-		if (engineServer->GetPlayerUserId(pPlayer->edict()) == userID )
+		if (engineServer->GetPlayerUserId(pPlayer->NetworkProp()->edict()) == userID )
 		{
 			return pPlayer;
 		}
@@ -717,7 +604,7 @@ int ENTINDEX( CBaseEntity *pEnt )
 {
 	// This works just like ENTINDEX for edicts.
 	if ( pEnt )
-		return pEnt->entindex();
+		return pEnt->NetworkProp()->entindex();
 	else
 		return 0;
 }
@@ -1137,7 +1024,7 @@ void UTIL_SayTextFilter( IRecipientFilter& filter, const char *pText, CBasePlaye
 	UserMessageBegin( filter, "SayText" );
 		if ( pPlayer ) 
 		{
-			WRITE_BYTE( pPlayer->entindex() );
+			WRITE_BYTE( pPlayer->NetworkProp()->entindex());
 		}
 		else
 		{
@@ -1153,7 +1040,7 @@ void UTIL_SayText2Filter( IRecipientFilter& filter, CBasePlayer *pEntity, bool b
 	UserMessageBegin( filter, "SayText2" );
 		if ( pEntity )
 		{
-			WRITE_BYTE( pEntity->entindex() );
+			WRITE_BYTE( pEntity->NetworkProp()->entindex());
 		}
 		else
 		{
@@ -1295,7 +1182,7 @@ void UTIL_SetModel( CBaseEntity *pEntity, const char *pModelName )
 	int i = engineServer->GetModelIndex( pModelName );
 	if ( i == -1 )	
 	{
-		Error("%i/%s - %s:  UTIL_SetModel:  not precached: %s\n", pEntity->entindex(),
+		Error("%i/%s - %s:  UTIL_SetModel:  not precached: %s\n", pEntity->NetworkProp()->entindex(),
 			STRING( pEntity->GetEntityName() ),
 			pEntity->GetClassname(), pModelName);
 	}
@@ -1445,7 +1332,7 @@ void UTIL_PlayerDecalTrace( trace_t *pTrace, int playernum )
 	CBroadcastRecipientFilter filter;
 
 	te->PlayerDecal( filter, 0.0,
-		&pTrace->endpos, playernum, pTrace->m_pEnt->entindex() );
+		&pTrace->endpos, playernum, pTrace->m_pEnt->NetworkProp()->entindex());
 }
 
 bool UTIL_TeamsMatch( const char *pTeamName1, const char *pTeamName2 )
@@ -1702,7 +1589,7 @@ void UTIL_Beam( Vector &Start, Vector &End, int nModelIndex, int nHaloIndex, uns
 
 bool UTIL_IsValidEntity( CBaseEntity *pEnt )
 {
-	edict_t *pEdict = pEnt->edict();
+	edict_t *pEdict = pEnt->NetworkProp()->edict();
 	if ( !pEdict || pEdict->IsFree() )
 		return false;
 	return true;
@@ -2010,7 +1897,7 @@ void EntityMatrix::InitFromEntity( CBaseEntity *pEntity, int iAttachment )
 
 void EntityMatrix::InitFromEntityLocal( CBaseEntity *entity )
 {
-	if ( !entity || !entity->edict() )
+	if ( !entity || !entity->NetworkProp()->edict())
 	{
 		Identity();
 		return;
@@ -2377,7 +2264,7 @@ CBaseEntity *UTIL_EntitiesInPVS( CBaseEntity *pPVSEntity, CBaseEntity *pStarting
 	for ( CBaseEntity *pEntity = gEntList.NextEnt(pStartingEntity); pEntity; pEntity = gEntList.NextEnt(pEntity) )
 	{
 		// Only return attached ents.
-		if ( !pEntity->edict() )
+		if ( !pEntity->NetworkProp()->edict())
 			continue;
 
 		CBaseEntity *pParent = pEntity->GetRootMoveParent();

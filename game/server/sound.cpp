@@ -456,14 +456,14 @@ void CAmbientGeneric::Activate( void )
 			m_hSoundSource = gEntList.FindEntityByName( NULL, STRING( m_sSourceEntName ) );
 			if ( m_hSoundSource != NULL )
 			{
-				m_nSoundSourceEntIndex = m_hSoundSource->entindex();
+				m_nSoundSourceEntIndex = m_hSoundSource->NetworkProp()->entindex();
 			}
 		}
 
 		if (m_hSoundSource == NULL)
 		{
 			m_hSoundSource = this;
-			m_nSoundSourceEntIndex = entindex();
+			m_nSoundSourceEntIndex = NetworkProp()->entindex();
 		}
 		else
 		{
@@ -756,7 +756,7 @@ void CAmbientGeneric::RampThink( void )
 		CBaseEntity* pSoundSource = m_hSoundSource;
 		if (pSoundSource)
 		{
-			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), 
+			UTIL_EmitAmbientSound(pSoundSource->NetworkProp()->entindex(), pSoundSource->GetAbsOrigin(),
 				STRING( m_iszSound ), (vol * 0.01), m_iSoundLevel, flags, pitch);
 		}
 	}
@@ -883,12 +883,12 @@ void CAmbientGeneric::SendSound( SoundFlags_t flags)
 	{
 		if ( flags == SND_STOP )
 		{
-			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile, 
+			UTIL_EmitAmbientSound(pSoundSource->NetworkProp()->entindex(), pSoundSource->GetAbsOrigin(), szSoundFile,
 						0, SNDLVL_NONE, flags, 0);
 		}
 		else
 		{
-			UTIL_EmitAmbientSound(pSoundSource->GetSoundSourceIndex(), pSoundSource->GetAbsOrigin(), szSoundFile, 
+			UTIL_EmitAmbientSound(pSoundSource->NetworkProp()->entindex(), pSoundSource->GetAbsOrigin(), szSoundFile,
 				(m_dpv.vol * 0.01), m_iSoundLevel, flags, m_dpv.pitch);
 		}
 	}	

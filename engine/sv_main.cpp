@@ -387,10 +387,8 @@ void CGameServer::Clear( void )
 
 	Q_memset( m_szStartspot, 0, sizeof( m_szStartspot ) );
 	
-	num_edicts = 0;
-	max_edicts = 0;
-	free_edicts = 0;
-	edicts = NULL;
+	
+	SV_DeallocateEdicts();
 	
 	// Clear the instance baseline indices in the ServerClasses.
 	if ( serverGameDLL )
@@ -2077,10 +2075,10 @@ void SV_CreateBaseline (void)
 		int		count = 0;
 		int		bytes = 0;
 		
-		for ( int entnum = 0; entnum < sv.num_edicts ; entnum++)
+		for ( int entnum = 0; entnum < SV_NUM_Edicts(); entnum++)
 		{
 			// get the current server version
-			edict_t *edict = sv.edicts + entnum;
+			edict_t *edict = EDICT_NUM(entnum);
 
 			if ( edict->IsFree() || !edict->GetUnknown() )
 				continue;
@@ -2179,7 +2177,7 @@ bool SV_ActivateServer()
 
 	bool bPrevState = networkStringTableContainerServer->Lock( false );
 	// Activate the DLL server code
-	g_pServerPluginHandler->ServerActivate( sv.edicts, sv.num_edicts, sv.GetMaxClients() );
+	g_pServerPluginHandler->ServerActivate(EDICT_NUM(0), SV_NUM_Edicts(), sv.GetMaxClients());
 
 	// all setup is completed, any further precache statements are errors
 	sv.SetState(ss_active);
@@ -2313,23 +2311,7 @@ bool SV_ActivateServer()
 
 #include "tier0/memdbgoff.h"
 
-static void SV_AllocateEdicts()
-{
-	sv.edicts = (edict_t *)Hunk_AllocName( sv.max_edicts*sizeof(edict_t), "edicts" );
 
-	COMPILE_TIME_ASSERT( MAX_EDICT_BITS+1 <= 8*sizeof(sv.edicts[0].m_EdictIndex) );
-
-	// Invoke the constructor so the vtable is set correctly..
-	for (int i = 0; i < sv.max_edicts; ++i)
-	{
-		new( &sv.edicts[i] ) edict_t;
-		sv.edicts[i].m_EdictIndex = i;
-		sv.edicts[i].freetime = 0;
-	}
-	ED_ClearFreeEdictList();
-
-	sv.edictchangeinfo = (IChangeInfoAccessor *)Hunk_AllocName( sv.max_edicts * sizeof( IChangeInfoAccessor ), "edictchangeinfo" );
-}
 
 #include "tier0/memdbgon.h"
 
@@ -2526,24 +2508,25 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	g_pFileSystem->SetupPreloadData();
 	g_pMDLCache->InitPreloadData( false );
 
-	// Allocate server memory
-	max_edicts = MAX_EDICTS;
+	
+	COM_TimestampedLog("SV_AllocateEdicts");
 
+	SV_AllocateEdicts();
 
-	g_ServerGlobalVariables.maxEntities = max_edicts;
+	g_ServerGlobalVariables.maxEntities = SV_MAX_Edicts();
 	g_ServerGlobalVariables.maxClients = GetMaxClients();
 #ifndef SWDS
 	g_ClientGlobalVariables.network_protocol = PROTOCOL_VERSION;
 #endif
 
 	// Assume no entities beyond world and client slots
-	num_edicts = GetMaxClients()+1;
+	//num_edicts = GetMaxClients()+1;
+	for (int i = 0; i < GetMaxClients() + 1; i++) {
+		ED_Alloc();
+	}
+	
 
-	COM_TimestampedLog( "SV_AllocateEdicts" );
-
-	SV_AllocateEdicts();
-
-	serverGameEnts->SetDebugEdictBase( edicts );
+	serverGameEnts->SetDebugEdictBase(EDICT_NUM(0));
 
 	allowsignonwrites = true;
 
@@ -2562,7 +2545,7 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 		CGameClient * pClient = Client(i);
 
 		// edict for a player is slot + 1, world = 0
-		pClient->edict = edicts + i + 1;
+		pClient->edict = EDICT_NUM(i + 1);
 	
 		// Setup up the edict
 		InitializeEntityDLLFields( pClient->edict );
@@ -2680,10 +2663,10 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 
 	COM_TimestampedLog( "InitializeEntityDLLFields" );
 
-	InitializeEntityDLLFields( edicts );
+	InitializeEntityDLLFields(EDICT_NUM(0));
 
 	// Clear the free bit on the world edict (entindex: 0).
-	ED_ClearFreeFlag( &edicts[0] );
+	ED_ClearFreeFlag(EDICT_NUM(0) );
 
 	if (coop.GetFloat())
 	{

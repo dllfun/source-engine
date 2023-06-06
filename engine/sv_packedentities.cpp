@@ -52,7 +52,7 @@ static inline bool SV_EnsurePrivateData(edict_t *pEdict)
 	}
 	else
 	{
-		g_pHost->Host_Error("SV_EnsurePrivateData: pEdict->pvPrivateData==NULL (ent %d).\n", pEdict - sv.edicts);
+		g_pHost->Host_Error("SV_EnsurePrivateData: pEdict->pvPrivateData==NULL (ent %d).\n", NUM_FOR_EDICT(pEdict));
 		return false;
 	}
 }
@@ -61,7 +61,7 @@ static inline bool SV_EnsurePrivateData(edict_t *pEdict)
 // If it doesn't have one yet, it makes a new one.
 void SV_EnsureInstanceBaseline( ServerClass *pServerClass, int iEdict, const void *pData, int nBytes )
 {
-	edict_t *pEnt = &sv.edicts[iEdict];
+	edict_t *pEnt = EDICT_NUM(iEdict);
 	ErrorIfNot( pEnt->GetNetworkable(),
 		("SV_EnsureInstanceBaseline: edict %d missing ent", iEdict)
 	);
@@ -362,7 +362,7 @@ void PackEntities_NetworkBackDoor(
 	for ( int iValidEdict=0; iValidEdict < snapshot->m_nValidEntities; iValidEdict++ )
 	{
 		int index = snapshot->m_pValidEntities[iValidEdict];
-		edict_t* edict = &sv.edicts[ index ];
+		edict_t* edict = EDICT_NUM( index );
 		
 		// this is a bit of a hack to ensure that we get a "preview" of the
 		//  packet timstamp that the server will send so that things that
@@ -418,7 +418,7 @@ void PackEntities_Normal(
 		
 		Assert( index < snapshot->m_nNumEntities );
 
-		edict_t* edict = &sv.edicts[ index ];
+		edict_t* edict = EDICT_NUM( index );
 
 		// if HLTV is running save PVS info for each entity
 		SV_FillHLTVData( snapshot, edict, iValidEdict );
@@ -679,9 +679,9 @@ void SV_WriteClassInfos(ServerClass *pClasses, bf_write &pBuf)
 // This is implemented for the datatable code so its warnings can include an object's classname.
 const char* GetObjectClassName( int objectID )
 {
-	if ( objectID >= 0 && objectID < sv.num_edicts )
+	if ( objectID >= 0 && objectID < SV_NUM_Edicts())
 	{
-		return sv.edicts[objectID].GetClassName();
+		return EDICT_NUM(objectID)->GetClassName();
 	}
 	else
 	{

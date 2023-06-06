@@ -376,7 +376,7 @@ float CalculatePhysicsImpactDamage( int index, gamevcollisionevent_t *pEvent, co
 	}
 
 	// Add extra oomph for floating objects
-	if ( pEvent->pEntities[index]->IsFloating() && !pEvent->pEntities[otherIndex]->IsWorld() )
+	if ( pEvent->pEntities[index]->IsFloating() && !(pEvent->pEntities[otherIndex]->NetworkProp()->entindex()==0) )
 	{
 		if ( energyScale < 3.0f )
 		{

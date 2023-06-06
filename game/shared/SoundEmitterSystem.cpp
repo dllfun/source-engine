@@ -1164,7 +1164,7 @@ void CBaseEntity::EmitSound( const char *soundname, float soundtime /*= 0.0f*/, 
 	params.m_pflSoundDuration = duration;
 	params.m_bWarnOnDirectWaveReference = true;
 
-	EmitSound( filter, entindex(), params );
+	EmitSound( filter, NetworkProp()->entindex(), params );
 }
 
 //-----------------------------------------------------------------------------
@@ -1184,7 +1184,7 @@ void CBaseEntity::EmitSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle, 
 	params.m_pflSoundDuration = duration;
 	params.m_bWarnOnDirectWaveReference = true;
 
-	EmitSound( filter, entindex(), params, handle );
+	EmitSound( filter, NetworkProp()->entindex(), params, handle );
 }
 
 //-----------------------------------------------------------------------------
@@ -1299,7 +1299,7 @@ void CBaseEntity::StopSound( const char *soundname )
 	}
 #endif
 
-	StopSound( entindex(), soundname );
+	StopSound(NetworkProp()->entindex(), soundname );
 }
 
 //-----------------------------------------------------------------------------
@@ -1317,7 +1317,7 @@ void CBaseEntity::StopSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle )
 	}
 #endif
 
-	g_SoundEmitterSystem.StopSoundByHandle( entindex(), soundname, handle );
+	g_SoundEmitterSystem.StopSoundByHandle(NetworkProp()->entindex(), soundname, handle );
 }
 
 //-----------------------------------------------------------------------------

@@ -1508,7 +1508,7 @@ void CPointGamestatsCounter::InputIncrement( inputdata_t &inputdata )
 	if ( NULL_STRING == m_strStatisticName )
 	{
 		DevMsg( 1, "CPointGamestatsCounter::InputIncrement:  No stat name specified for point_gamestats_counter @%f, %f, %f [ent index %d]\n",
-			GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z, entindex() );
+			GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z, NetworkProp()->entindex());
 		return;
 	}
 

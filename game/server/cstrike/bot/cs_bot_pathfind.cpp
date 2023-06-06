@@ -1224,7 +1224,7 @@ bool CCSBot::IsFriendInTheWay( const Vector &goalPos )
 		if (!player->InSameTeam( this ))
 			continue;
 
-		if (player->entindex() == entindex())
+		if (player->NetworkProp()->entindex() == NetworkProp()->entindex())
 			continue;
 
 		// compute vector from us to our friend
@@ -1784,7 +1784,7 @@ CCSBot::PathResult CCSBot::UpdatePathMovement( bool allowSpeedChange )
 			{
 				CBasePlayer *localPlayer = UTIL_GetListenServerHost();
 				CSingleUserRecipientFilter filter( localPlayer );
-				EmitSound( filter, localPlayer->entindex(), "Bot.FellOff" );
+				EmitSound( filter, localPlayer->NetworkProp()->entindex(), "Bot.FellOff" );
 			}
 		}
 
@@ -1809,10 +1809,10 @@ CCSBot::PathResult CCSBot::UpdatePathMovement( bool allowSpeedChange )
 		{
 			if (m_lastNavArea)
 			{
-				m_lastNavArea->DecrementPlayerCount( GetTeamNumber(), entindex() );
+				m_lastNavArea->DecrementPlayerCount( GetTeamNumber(), NetworkProp()->entindex());
 			}
 
-			area->IncrementPlayerCount( GetTeamNumber(), entindex() );
+			area->IncrementPlayerCount( GetTeamNumber(), NetworkProp()->entindex());
 
 			m_lastNavArea = area;
 			if ( area->GetPlace() != UNDEFINED_PLACE )

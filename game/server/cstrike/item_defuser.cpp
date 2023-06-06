@@ -95,7 +95,7 @@ void CItemDefuser::DefuserTouch( CBaseEntity *pOther )
 			if ( pPlayer->IsDead() == false )
 			{
 				CPASAttenuationFilter filter( pPlayer );
-				EmitSound( filter, entindex(), "BaseCombatCharacter.ItemPickup2" );
+				EmitSound( filter, NetworkProp()->entindex(), "BaseCombatCharacter.ItemPickup2" );
 			}
 
 			UTIL_Remove( this );

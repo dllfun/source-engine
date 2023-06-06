@@ -427,7 +427,7 @@ void CFlextalkActor::ProcessSceneEvents( void )
 			{
 				Msg( "%d : %s\n", sentenceIndex, pszSentence );
 				CPASAttenuationFilter filter( this );
-				CBaseEntity::EmitSentenceByIndex( filter, entindex(), CHAN_VOICE, sentenceIndex, 1, SNDLVL_TALKING, 0, PITCH_NORM );
+				CBaseEntity::EmitSentenceByIndex( filter, NetworkProp()->entindex(), CHAN_VOICE, sentenceIndex, 1, SNDLVL_TALKING, 0, PITCH_NORM );
 			}
 			else
 			{

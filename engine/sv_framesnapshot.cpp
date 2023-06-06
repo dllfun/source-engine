@@ -112,25 +112,25 @@ CFrameSnapshot* CFrameSnapshotManager::TakeTickSnapshot( int tickcount )
 {
 	unsigned short nValidEntities[MAX_EDICTS];
 
-	CFrameSnapshot *snap = CreateEmptySnapshot( tickcount, sv.num_edicts );
+	CFrameSnapshot *snap = CreateEmptySnapshot( tickcount, SV_NUM_Edicts());
 	
 	int maxclients = sv.GetClientCount();
 
 	CFrameSnapshotEntry *entry = snap->m_pEntities - 1;
-	edict_t *edict= sv.edicts - 1;
+	int edict=  - 1;
 	
 	// Build the snapshot.
-	for ( int i = 0; i < sv.num_edicts; i++ )
+	for ( int i = 0; i < SV_NUM_Edicts(); i++ )
 	{
 		edict++;
 		entry++;
 
-		IServerUnknown *pUnk = edict->GetUnknown();
+		IServerUnknown *pUnk = EDICT_NUM(edict)->GetUnknown();
 
 		if ( !pUnk )
 			continue;
 																		  
-		if ( edict->IsFree() )
+		if (EDICT_NUM(edict)->IsFree() )
 			continue;
 		
 		// We don't want entities from inactive clients in the fullpack,
@@ -146,8 +146,8 @@ CFrameSnapshot* CFrameSnapshotManager::TakeTickSnapshot( int tickcount )
 		Assert( edict->GetNetworkable() );
 		Assert( edict->GetNetworkable()->GetServerClass() );
 
-		entry->m_nSerialNumber	= edict->m_NetworkSerialNumber;
-		entry->m_pClass			= edict->GetNetworkable()->GetServerClass();
+		entry->m_nSerialNumber	= EDICT_NUM(edict)->m_NetworkSerialNumber;
+		entry->m_pClass			= EDICT_NUM(edict)->GetNetworkable()->GetServerClass();
 		nValidEntities[snap->m_nValidEntities++] = i;
 	}
 

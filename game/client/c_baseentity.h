@@ -397,6 +397,7 @@ public:
 	const CCollisionProperty*CollisionProp() const;
 	CParticleProperty		*ParticleProp();
 	const CParticleProperty *ParticleProp() const;
+	C_BaseEntity* NetworkProp() { return this; }
 
 	// Simply here for game shared 
 	bool					IsFloating();

@@ -120,7 +120,7 @@ void INextBot::Update( void )
 	if ( IsDebugging( NEXTBOT_DEBUG_ALL ) )
 	{
 		CFmtStr msg;
-		DisplayDebugText( msg.sprintf( "#%d", GetEntity()->entindex() ) );
+		DisplayDebugText( msg.sprintf( "#%d", GetEntity()->NetworkProp()->entindex()) );
 	}
 
 	UpdateImmobileStatus();
@@ -207,7 +207,7 @@ bool INextBot::IsSelf( const CBaseEntity *them ) const
 	if ( them == NULL )
 		return false;
 
-	return const_cast< INextBot * >( this )->GetEntity()->entindex() == them->entindex();
+	return const_cast< INextBot * >( this )->GetEntity()->NetworkProp()->entindex() == them->NetworkProp()->entindex();
 }
 
 
@@ -332,7 +332,7 @@ const char *INextBot::GetDebugIdentifier( void ) const
 	const int nameSize = 256;
 	static char name[ nameSize ];
 	
-	Q_snprintf( name, nameSize, "%s(#%d)", const_cast< INextBot * >( this )->GetEntity()->GetClassname(), const_cast< INextBot * >( this )->GetEntity()->entindex() );
+	Q_snprintf( name, nameSize, "%s(#%d)", const_cast< INextBot * >( this )->GetEntity()->GetClassname(), const_cast< INextBot * >( this )->GetEntity()->NetworkProp()->entindex());
 
 	return name;
 }

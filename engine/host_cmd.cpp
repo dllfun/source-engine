@@ -604,7 +604,7 @@ CON_COMMAND( status, "Display map and connection status." )
 	print( "players : %i humans, %i bots (%i max)\n", nHumans, nBots, sv.GetMaxClients() );
 	// ============================================================
 
-	print( "edicts  : %d used of %d max\n", sv.num_edicts - sv.free_edicts, sv.max_edicts );
+	print( "edicts  : %d used of %d max\n", SV_NUM_Edicts() - SV_FREE_Edicts(), SV_MAX_Edicts());
 
 	if ( ( g_iServerGameDLLVersion >= 10 ) && serverGameDLL )
 	{
@@ -2252,12 +2252,12 @@ CON_COMMAND( sv_dump_edicts, "Display a list of edicts allocated on the server."
 	classNameCountMap.SetLessFunc( UtlStringLessFunc );
 
 	Msg( "\nCurrent server edicts:\n");
-	for ( int i = 0; i < sv.num_edicts; ++i )
+	for ( int i = 0; i < SV_NUM_Edicts(); ++i )
 	{
-		CUtlMap<CUtlString, int>::IndexType_t index = classNameCountMap.Find( sv.edicts[ i ].GetClassName() );
+		CUtlMap<CUtlString, int>::IndexType_t index = classNameCountMap.Find(EDICT_NUM( i )->GetClassName() );
 		if ( index == classNameCountMap.InvalidIndex() )
 		{
-			index = classNameCountMap.Insert( sv.edicts[ i ].GetClassName(), 0 );
+			index = classNameCountMap.Insert(EDICT_NUM( i )->GetClassName(), 0 );
 		}
 
 		classNameCountMap[ index ]++;
@@ -2268,8 +2268,8 @@ CON_COMMAND( sv_dump_edicts, "Display a list of edicts allocated on the server."
 	{
 		Msg("%5d %s\n", classNameCountMap[ i ], classNameCountMap.Key(i).String() );
 	}
-	Msg( "NumEdicts: %d\n", sv.num_edicts );
-	Msg( "FreeEdicts: %d\n\n", sv.free_edicts );
+	Msg( "NumEdicts: %d\n", SV_NUM_Edicts());
+	Msg( "FreeEdicts: %d\n\n", SV_FREE_Edicts());
 }
 
 // make valve_ds only?

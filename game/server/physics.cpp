@@ -511,7 +511,7 @@ int CCollisionEvent::ShouldCollide_2( IPhysicsObject *pObj0, IPhysicsObject *pOb
 	if ( pEntity0->ForceVPhysicsCollide( pEntity1 ) || pEntity1->ForceVPhysicsCollide( pEntity0 ) )
 		return 1;
 
-	if ( pEntity0->edict() && pEntity1->edict() )
+	if ( pEntity0->NetworkProp()->edict() && pEntity1->NetworkProp()->edict())
 	{
 		// don't collide with your owner
 		if ( pEntity0->GetOwnerEntity() == pEntity1 || pEntity1->GetOwnerEntity() == pEntity0 )
@@ -1388,8 +1388,8 @@ public:
 
 	bool IsWorldEntity( CBaseEntity *pEnt )
 	{
-		if ( pEnt->edict() )
-			return pEnt->IsWorld();
+		if ( pEnt->NetworkProp()->edict())
+			return pEnt->NetworkProp()->entindex()==0;
 		return false;
 	}
 
@@ -2579,7 +2579,7 @@ bool PhysGetTriggerEvent( triggerevent_t *pEvent, CBaseEntity *pTriggerEntity )
 
 void PhysicsImpactSound( CBaseEntity *pEntity, IPhysicsObject *pPhysObject, int channel, int surfaceProps, int surfacePropsHit, float volume, float impactSpeed )
 {
-	physicssound::AddImpactSound( g_PhysicsHook.m_impactSounds, pEntity, pEntity->entindex(), channel, pPhysObject, surfaceProps, surfacePropsHit, volume, impactSpeed );
+	physicssound::AddImpactSound( g_PhysicsHook.m_impactSounds, pEntity, pEntity->NetworkProp()->entindex(), channel, pPhysObject, surfaceProps, surfacePropsHit, volume, impactSpeed );
 }
 
 void PhysCollisionSound( CBaseEntity *pEntity, IPhysicsObject *pPhysObject, int channel, int surfaceProps, int surfacePropsHit, float deltaTime, float speed )
@@ -2715,7 +2715,7 @@ void PhysFrictionSound( CBaseEntity *pEntity, IPhysicsObject *pObject, const cha
 			pFriction->pObject = pEntity;
 			CPASAttenuationFilter filter( pEntity, params.soundlevel );
 			pFriction->patch = CSoundEnvelopeController::GetController().SoundCreate( 
-				filter, pEntity->entindex(), CHAN_BODY, pSoundName, params.soundlevel );
+				filter, pEntity->NetworkProp()->entindex(), CHAN_BODY, pSoundName, params.soundlevel );
 			CSoundEnvelopeController::GetController().Play( pFriction->patch, params.volume * flVolume, params.pitch );
 		}
 		else

@@ -1344,7 +1344,7 @@ void BulletWizz( Vector vecSrc, Vector vecEndPos, edict_t *pShooter, bool isTrac
 			continue;
 
 		// Don't hear one's own bullets
-		if( pPlayer->edict() == pShooter )
+		if( pPlayer->NetworkProp()->edict() == pShooter )
 			continue;
 
 		vecPlayerPath = pPlayer->EarPosition() - vecSrc;
@@ -3141,7 +3141,7 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 
 	//---------------------------------
 
-	bool bInVisibilityPVS = ( bClientPVSExpanded && UTIL_FindClientInVisibilityPVS( edict() ) != NULL );
+	bool bInVisibilityPVS = ( bClientPVSExpanded && UTIL_FindClientInVisibilityPVS(NetworkProp()->edict()) != NULL );
 
 	//---------------------------------
 
@@ -3589,7 +3589,7 @@ void CAI_BaseNPC::RebalanceThinks()
 				else if ( pPlayer )
 				{
 					Vector vToCandidate = pCandidate->EyePosition() - vPlayerEyePosition;
-					rebalanceCandidates[iInfo].bInPVS = ( UTIL_FindClientInPVS( pCandidate->edict() ) != NULL );
+					rebalanceCandidates[iInfo].bInPVS = ( UTIL_FindClientInPVS( pCandidate->NetworkProp()->edict()) != NULL );
 					rebalanceCandidates[iInfo].distPlayer = VectorNormalize( vToCandidate );
 					rebalanceCandidates[iInfo].dotPlayer = vPlayerForward.Dot( vToCandidate );
 				}
@@ -3882,7 +3882,7 @@ void CAI_BaseNPC::PlayerPenetratingVPhysics( void )
 
 bool CAI_BaseNPC::CheckPVSCondition()
 {
-	bool bInPVS = ( UTIL_FindClientInPVS( edict() ) != NULL ) || (UTIL_ClientPVSIsExpanded() && UTIL_FindClientInVisibilityPVS( edict() ));
+	bool bInPVS = ( UTIL_FindClientInPVS(NetworkProp()->edict()) != NULL ) || (UTIL_ClientPVSIsExpanded() && UTIL_FindClientInVisibilityPVS(NetworkProp()->edict()));
 
 	if ( bInPVS )
 		SetCondition( COND_IN_PVS );
@@ -4655,7 +4655,7 @@ void CAI_BaseNPC::GatherConditions( void )
 
 		if ( m_pfnThink != (BASEPTR)&CAI_BaseNPC::CallNPCThink )
 		{
-			if ( UTIL_FindClientInPVS( edict() ) != NULL )
+			if ( UTIL_FindClientInPVS(NetworkProp()->edict()) != NULL )
 				SetCondition( COND_IN_PVS );
 			else
 				ClearCondition( COND_IN_PVS );
@@ -8162,7 +8162,7 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 			break;
 		// fall through...
 	case SCRIPT_EVENT_SENTENCE:			// Play a named sentence group
-		SENTENCEG_PlayRndSz( edict(), pEvent->options, 1.0, SNDLVL_TALKING, 0, 100 );
+		SENTENCEG_PlayRndSz(NetworkProp()->edict(), pEvent->options, 1.0, SNDLVL_TALKING, 0, 100 );
 		break;
 
 	case SCRIPT_EVENT_FIREEVENT:
@@ -9870,11 +9870,11 @@ int CAI_BaseNPC::PlaySentence( const char *pszSentence, float delay, float volum
 		{
 			sentenceIndex = SENTENCEG_Lookup( pszSentence );
 			CPASAttenuationFilter filter( this, soundlevel );
-			CBaseEntity::EmitSentenceByIndex( filter, entindex(), CHAN_VOICE, sentenceIndex, volume, soundlevel, 0, PITCH_NORM );
+			CBaseEntity::EmitSentenceByIndex( filter, NetworkProp()->entindex(), CHAN_VOICE, sentenceIndex, volume, soundlevel, 0, PITCH_NORM );
 		}
 		else
 		{
-			sentenceIndex = SENTENCEG_PlayRndSz( edict(), pszSentence, volume, soundlevel, 0, PITCH_NORM );
+			sentenceIndex = SENTENCEG_PlayRndSz(NetworkProp()->edict(), pszSentence, volume, soundlevel, 0, PITCH_NORM );
 		}
 	}
 
@@ -10823,9 +10823,9 @@ END_DATADESC()
 
 //-------------------------------------
 
-void CAI_BaseNPC::PostConstructor( const char *szClassname )
+void CAI_BaseNPC::PostConstructor( const char *szClassname, edict_t* edict)
 {
-	BaseClass::PostConstructor( szClassname );
+	BaseClass::PostConstructor( szClassname, edict );
 	CreateComponents();
 }
 
@@ -12464,7 +12464,7 @@ static void AIMsgGuts( CAI_BaseNPC *pAI, unsigned flags, const char *pszMsg )
 	DevMsg( pszFmt2, 
 		 pszMsg, 
 		 pAI->GetClassname(),
-		 pAI->entindex(),
+		 pAI->NetworkProp()->entindex(),
 		 ( pAI->GetEntityName() == NULL_STRING ) ? "<unnamed>" : STRING(pAI->GetEntityName()),
 		 gpGlobals->tickcount );
 }
@@ -13210,11 +13210,11 @@ void CAI_BaseNPC::StartScriptedNPCInteraction( CAI_BaseNPC *pOtherNPC, ScriptedN
 	char szSSName[256];
 	if ( pOtherNPC )
 	{
-		Q_snprintf( szSSName, sizeof(szSSName), "dss_%s%d%s%d", GetDebugName(), entindex(), pOtherNPC->GetDebugName(), pOtherNPC->entindex() );
+		Q_snprintf( szSSName, sizeof(szSSName), "dss_%s%d%s%d", GetDebugName(), NetworkProp()->entindex(), pOtherNPC->GetDebugName(), pOtherNPC->NetworkProp()->entindex());
 	}
 	else
 	{
-		Q_snprintf( szSSName, sizeof(szSSName), "dss_%s%d", GetDebugName(), entindex() );
+		Q_snprintf( szSSName, sizeof(szSSName), "dss_%s%d", GetDebugName(), NetworkProp()->entindex());
 	}
   	string_t iszSSName = AllocPooledString(szSSName);
 

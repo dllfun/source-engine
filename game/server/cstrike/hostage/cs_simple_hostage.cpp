@@ -250,7 +250,7 @@ int CHostage::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		if ( event )
 		{
 			event->SetInt( "userid", player->GetUserID() );
-			event->SetInt( "hostage", entindex() );
+			event->SetInt( "hostage", NetworkProp()->entindex());
 			event->SetInt( "priority", 5 );
 
 			gameeventmanager->FireEvent( event );
@@ -364,7 +364,7 @@ void CHostage::Event_Killed( const CTakeDamageInfo &info )
 	if ( event )
 	{
 		event->SetInt( "userid", (attacker)?attacker->GetUserID():0 );
-		event->SetInt( "hostage", entindex() );
+		event->SetInt( "hostage", NetworkProp()->entindex());
 		event->SetInt( "priority", 6 );
 		gameeventmanager->FireEvent( event );
 	}
@@ -406,7 +406,7 @@ void CHostage::HostageRescueZoneTouch( inputdata_t &inputdata )
 		if ( event )
 		{
 			event->SetInt( "userid", player ? player->GetUserID() : (-1) );
-			event->SetInt( "hostage", entindex() );
+			event->SetInt( "hostage", NetworkProp()->entindex());
 			event->SetInt( "site", 0 ); // TODO add site index
 			event->SetInt( "priority", 9 );
 			gameeventmanager->FireEvent( event );
@@ -606,7 +606,7 @@ void CHostage::UpdateFollowing( float deltaT )
 		if ( event )
 		{
 			event->SetInt( "userid", m_lastLeaderID );
-			event->SetInt( "hostage", entindex() );
+			event->SetInt( "hostage", NetworkProp()->entindex());
 			event->SetInt( "priority", 6 );
 			gameeventmanager->FireEvent( event );
 		}
@@ -1071,7 +1071,7 @@ void CHostage::HostageUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 		if ( event )
 		{
 			event->SetInt( "userid", user->GetUserID() );
-			event->SetInt( "hostage", entindex() );
+			event->SetInt( "hostage", NetworkProp()->entindex());
 			event->SetInt( "priority", 6 );
 			gameeventmanager->FireEvent( event );
 		}

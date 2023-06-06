@@ -465,7 +465,7 @@ void NWCEdit::RememberEntityPosition( CBaseEntity *pEntity )
 		// have to save these too because some entities change the classname on spawn (e.g. prop_physics_override, physics_prop)
 		g_EntityClassnames = new string_t[NUM_ENT_ENTRIES];
 	}
-	int index = pEntity->entindex();
+	int index = pEntity->NetworkProp()->entindex();
 	g_EntityPositions[index] = pEntity->GetAbsOrigin();
 	g_EntityOrientations[index] = pEntity->GetAbsAngles();
 	g_EntityClassnames[index] = pEntity->m_iClassname;
@@ -494,7 +494,7 @@ void NWCEdit::UpdateEntityPosition( CBaseEntity *pEntity )
 	if ( !engineServer->IsInEditMode() )
 		return;
 
-	int entIndex = pEntity->entindex();
+	int entIndex = pEntity->NetworkProp()->entindex();
 	Vector pos = g_EntityPositions[entIndex];
 	EditorSendResult_t result = Editor_BadCommand;
 	const char *pClassname = STRING(g_EntityClassnames[entIndex]);

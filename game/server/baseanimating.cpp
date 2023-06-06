@@ -59,7 +59,7 @@ class TestEnntity {
 public:
 	CServerNetworkProperty m_Network;
 
-	void PostConstructor(const char* pName) {
+	void PostConstructor(const char* pName, edict_t* edict) {
 
 	}
 
@@ -137,7 +137,7 @@ void CInfoLightingRelative::Activate()
 void CInfoLightingRelative::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );
@@ -315,7 +315,7 @@ void CBaseAnimating::Activate()
 void CBaseAnimating::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );
@@ -3440,7 +3440,7 @@ bool CBaseAnimating::Dissolve( const char *pMaterialName, float flStartTime, boo
 		IGameEvent *event = gameeventmanager->CreateEvent( "ragdoll_dissolved" );
 		if ( event )
 		{
-			event->SetInt( "entindex", entindex() );
+			event->SetInt( "entindex", NetworkProp()->entindex());
 			gameeventmanager->FireEvent( event );
 		}
 	}

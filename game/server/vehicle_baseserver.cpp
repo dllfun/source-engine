@@ -1793,7 +1793,7 @@ void CBaseServerVehicle::PlayLoopingSound( const char *pSoundName )
 	CSoundPatch *pNewSound = NULL;
 	if ( pSoundName && pSoundName[0] )
 	{
-		pNewSound = controller.SoundCreate( filter, m_pVehicle->entindex(), CHAN_STATIC, pSoundName, ATTN_NORM );
+		pNewSound = controller.SoundCreate( filter, m_pVehicle->NetworkProp()->entindex(), CHAN_STATIC, pSoundName, ATTN_NORM );
 	}
 
 	if ( m_pStateSound && pNewSound && controller.SoundGetName( pNewSound ) == controller.SoundGetName( m_pStateSound ) )
@@ -2303,7 +2303,7 @@ void CBaseServerVehicle::PlaySound( vehiclesound iSound )
 		ep.m_flVolume = m_flVehicleVolume;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		CBaseEntity::EmitSound( filter, m_pVehicle->entindex(), ep );
+		CBaseEntity::EmitSound( filter, m_pVehicle->NetworkProp()->entindex(), ep );
 		if ( g_debug_vehiclesound.GetInt() )
 		{
 			Msg("Playing vehicle sound: %s\n", ep.m_pSoundName );
@@ -2318,7 +2318,7 @@ void CBaseServerVehicle::StopSound( vehiclesound iSound )
 {
 	if ( m_vehicleSounds.iszSound[iSound] != NULL_STRING )
 	{
-		CBaseEntity::StopSound( m_pVehicle->entindex(), CHAN_VOICE, STRING(m_vehicleSounds.iszSound[iSound]) );
+		CBaseEntity::StopSound( m_pVehicle->NetworkProp()->entindex(), CHAN_VOICE, STRING(m_vehicleSounds.iszSound[iSound]) );
 	}
 }
 

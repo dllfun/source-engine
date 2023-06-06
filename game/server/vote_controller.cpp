@@ -120,11 +120,11 @@ CON_COMMAND( callvote, "Start a vote on an issue." )
 	// If we don't have any arguments, invoke VoteSetup UI
 	if( args.ArgC() < 2 )
 	{
-		g_voteController->SetupVote( pVoteCaller->entindex() );
+		g_voteController->SetupVote( pVoteCaller->NetworkProp()->entindex());
 		return;
 	}
 
-	g_voteController->CreateVote( pVoteCaller->entindex(), arg2, arg3 );
+	g_voteController->CreateVote( pVoteCaller->NetworkProp()->entindex(), arg2, arg3 );
 }
 
 //-----------------------------------------------------------------------------

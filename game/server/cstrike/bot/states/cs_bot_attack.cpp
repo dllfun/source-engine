@@ -525,9 +525,9 @@ void AttackState::OnUpdate( CCSBot *me )
 	if (me->IsAwareOfEnemyDeath())
 	{
 		// let team know if we killed the last enemy
-		if (me->GetLastVictimID() == enemy->entindex() && me->GetNearbyEnemyCount() <= 1)
+		if (me->GetLastVictimID() == enemy->NetworkProp()->entindex() && me->GetNearbyEnemyCount() <= 1)
 		{
-			me->GetChatter()->KilledMyEnemy( enemy->entindex() );
+			me->GetChatter()->KilledMyEnemy( enemy->NetworkProp()->entindex());
 
 			// if there are other enemies left, wait a moment - they usually come in groups
 			if (me->GetEnemiesRemaining())

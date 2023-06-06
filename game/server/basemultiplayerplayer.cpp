@@ -46,9 +46,9 @@ CAI_Expresser *CBaseMultiplayerPlayer::CreateExpresser( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CBaseMultiplayerPlayer::PostConstructor( const char *szClassname )
+void CBaseMultiplayerPlayer::PostConstructor( const char *szClassname, edict_t* edict)
 {
-	BaseClass::PostConstructor( szClassname );
+	BaseClass::PostConstructor( szClassname, edict );
 	CreateExpresser();
 }
 
@@ -319,7 +319,7 @@ void CBaseMultiplayerPlayer::EscortScoringThink( void )
 			IGameEvent *event = gameeventmanager->CreateEvent( "player_escort_score" );
 			if ( event )
 			{
-				event->SetInt( "player", entindex() );
+				event->SetInt( "player", NetworkProp()->entindex());
 				event->SetInt( "points", iPoints );
 				gameeventmanager->FireEvent( event, true /* only to server */ );
 			}

@@ -1126,7 +1126,7 @@ LocalFlexController_t CBaseFlex::FlexControllerLocalToGlobal( const flexsettingh
 	{
 		// This should never happen!!!
 		Assert( 0 );
-		Warning( "Unable to find mapping for flexcontroller %i, settings %p on %i/%s\n", key, pSettinghdr, entindex(), GetClassname() );
+		Warning( "Unable to find mapping for flexcontroller %i, settings %p on %i/%s\n", key, pSettinghdr, NetworkProp()->entindex(), GetClassname() );
 		EnsureTranslations( pSettinghdr );
 		idx = m_LocalToGlobal.Find( entry );
 		if ( idx == m_LocalToGlobal.InvalidIndex() )
@@ -2621,7 +2621,7 @@ void CFlexCycler::Think( void )
 			{
 				Msg( "%d : %s\n", sentenceIndex, pszSentence );
 				CPASAttenuationFilter filter( this );
-				CBaseEntity::EmitSentenceByIndex( filter, entindex(), CHAN_VOICE, sentenceIndex, 1, SNDLVL_TALKING, 0, PITCH_NORM );
+				CBaseEntity::EmitSentenceByIndex( filter, NetworkProp()->entindex(), CHAN_VOICE, sentenceIndex, 1, SNDLVL_TALKING, 0, PITCH_NORM );
 			}
 			else
 			{
@@ -2636,7 +2636,7 @@ void CFlexCycler::Think( void )
 			if (sentenceIndex >= 0)
 			{
 				CPASAttenuationFilter filter( this );
-				CBaseEntity::EmitSentenceByIndex( filter, entindex(), CHAN_VOICE, sentenceIndex, 1, SNDLVL_TALKING, 0, PITCH_NORM );
+				CBaseEntity::EmitSentenceByIndex( filter, NetworkProp()->entindex(), CHAN_VOICE, sentenceIndex, 1, SNDLVL_TALKING, 0, PITCH_NORM );
 			}
 			flex_talk.SetValue( "0" );
 		}

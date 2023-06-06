@@ -102,13 +102,13 @@ public:
 
 	void SetTimerInHUD( CBaseEntity *pTimer )
 	{
-		m_iTimerToShowInHUD = pTimer ? pTimer->entindex() : 0;
+		m_iTimerToShowInHUD = pTimer ? pTimer->NetworkProp()->entindex() : 0;
 	}
 
 
 	void SetStopWatchTimer( CBaseEntity *pTimer )
 	{
-		m_iStopWatchTimer = pTimer ? pTimer->entindex() : 0;
+		m_iStopWatchTimer = pTimer ? pTimer->NetworkProp()->entindex() : 0;
 	}
 
 	int GetTimerInHUD( void ) { return m_iTimerToShowInHUD; }

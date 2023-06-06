@@ -74,8 +74,8 @@ void InvalidateSharedEdictChangeInfos()
 	{
 		// Reset all edicts to 0.
 		g_SharedEdictChangeInfo.m_iSerialNumber = 1;
-		for ( int i=0; i < sv.num_edicts; i++ )
-			sv.edicts[i].SetChangeInfoSerialNumber( 0 );
+		for ( int i=0; i < SV_NUM_Edicts(); i++ )
+			EDICT_NUM(i)->SetChangeInfoSerialNumber( 0 );
 	}
 	else
 	{
@@ -665,11 +665,11 @@ public:
 			return 0;
 		}
 		
-		int index = (int) ( pEdict - sv.edicts );
-		if ( index < 0 || index > sv.max_edicts )
+		int index = (int) (NUM_FOR_EDICT(pEdict));
+		if ( index < 0 || index > SV_MAX_Edicts())
 		{
 			Sys_Error( "Bad entity in IndexOfEdict() index %i pEdict %p sv.edicts %p\n",
-				index, pEdict, sv.edicts );
+				index, pEdict, EDICT_NUM(0));
 		}
 		
 		return index;
@@ -680,7 +680,7 @@ public:
 	// is a valid DLL entity (ie. has an attached class)
 	virtual edict_t* PEntityOfEntIndex(int iEntIndex)
 	{
-		if ( iEntIndex >= 0 && iEntIndex < sv.max_edicts )
+		if ( iEntIndex >= 0 && iEntIndex < SV_MAX_Edicts())
 		{
 			edict_t *pEdict = EDICT_NUM( iEntIndex );
 			if ( !pEdict->IsFree() )
@@ -694,7 +694,7 @@ public:
 	
 	virtual int	GetEntityCount( void )
 	{
-		return sv.num_edicts - sv.free_edicts;
+		return SV_NUM_Edicts() - SV_FREE_Edicts();
 	}
 	
 	
@@ -1524,7 +1524,7 @@ public:
 
 	virtual IChangeInfoAccessor *GetChangeAccessor( const edict_t *pEdict )
 	{
-		return &sv.edictchangeinfo[ NUM_FOR_EDICT( pEdict ) ];
+		return SV_Edictchangeinfo( NUM_FOR_EDICT( pEdict ) );
 	}
 
 	virtual QueryCvarCookie_t StartQueryCvarValue( edict_t *pPlayerEntity, const char *pCvarName )

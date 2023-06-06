@@ -81,7 +81,7 @@ AIMoveResult_t AIComputeBlockerMoveResult( CBaseEntity *pBlocker )
 {
 	if (pBlocker->MyNPCPointer())
 		return AIMR_BLOCKED_NPC;
-	else if (pBlocker->entindex() == 0)
+	else if (pBlocker->NetworkProp()->entindex() == 0)
 		return AIMR_BLOCKED_WORLD;
 	return AIMR_BLOCKED_ENTITY;
 }
@@ -412,7 +412,7 @@ bool CAI_MoveProbe::CheckStep( const CheckStepArgs_t &args, CheckStepResult_t *p
 
 	// Don't step up onto an odd slope
 	if ( trace.endpos.z - args.vecStart.z > args.stepHeight * 0.5 &&
-		 ( ( pFloor->IsWorld() && trace.hitbox > 0 ) ||
+		 ( ( pFloor->NetworkProp()->entindex()==0 && trace.hitbox > 0 ) ||
 		   dynamic_cast<CPhysicsProp *>( pFloor ) ) )
 	{
 		if ( fabsf( trace.plane.normal.Dot( Vector(1, 0, 0) ) ) > .4 )
@@ -1077,7 +1077,7 @@ bool CAI_MoveProbe::MoveLimit( Navigation_t navType, const Vector &vecStart,
 		break;
 	}
 
-	if (IsMoveBlocked(pTrace->fStatus) && pTrace->pObstruction && !pTrace->pObstruction->IsWorld())
+	if (IsMoveBlocked(pTrace->fStatus) && pTrace->pObstruction && !(pTrace->pObstruction->NetworkProp()->entindex()==0))
 	{
 		m_hLastBlockingEnt = pTrace->pObstruction;
 	}

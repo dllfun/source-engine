@@ -1293,11 +1293,11 @@ void CCollisionProperty::UpdateServerPartitionMask( )
 	partition->Remove( handle );
 
 	// Don't bother with deleted things
-	if ( !m_pOuter->edict() )
+	if ( !m_pOuter->NetworkProp()->edict())
 		return;
 
 	// don't add the world
-	if ( m_pOuter->entindex() == 0 )
+	if ( m_pOuter->NetworkProp()->entindex() == 0 )
 		return;		
 
 	// Make sure it's in the list of all entities
@@ -1333,7 +1333,7 @@ void CCollisionProperty::UpdateServerPartitionMask( )
 void CCollisionProperty::MarkPartitionHandleDirty()
 {
 	// don't bother with the world
-	if ( m_pOuter->entindex() == 0 )
+	if ( m_pOuter->NetworkProp()->entindex() == 0 )
 		return;
 	
 	if ( !m_pOuter->IsEFlagSet( EFL_DIRTY_SPATIAL_PARTITION ) )
@@ -1362,7 +1362,7 @@ void CCollisionProperty::UpdatePartition( )
 		Assert( m_pOuter->entindex() != 0 );
 
 		// Don't bother with deleted things
-		if ( !m_pOuter->edict() )
+		if ( !m_pOuter->NetworkProp()->edict())
 			return;
 
 		if ( GetPartitionHandle() == PARTITION_INVALID_HANDLE )

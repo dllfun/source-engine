@@ -187,7 +187,7 @@ void CFuncMoveLinear::MoveTo(Vector vPosition, float flSpeed)
 		{
 			if (m_currentSound == m_soundStart)
 			{
-				StopSound(entindex(), CHAN_BODY, (char*)STRING(m_soundStop));
+				StopSound(NetworkProp()->entindex(), CHAN_BODY, (char*)STRING(m_soundStop));
 			}
 			else
 			{
@@ -200,7 +200,7 @@ void CFuncMoveLinear::MoveTo(Vector vPosition, float flSpeed)
 				ep.m_flVolume = 1;
 				ep.m_SoundLevel = SNDLVL_NORM;
 
-				EmitSound( filter, entindex(), ep );	
+				EmitSound( filter, NetworkProp()->entindex(), ep );
 			}
 		}
 
@@ -224,7 +224,7 @@ void CFuncMoveLinear::StopMoveSound( void )
 {
 	if ( m_soundStart != NULL_STRING && ( m_currentSound == m_soundStart ) )
 	{
-		StopSound(entindex(), CHAN_BODY, (char*)STRING(m_soundStart) );
+		StopSound(NetworkProp()->entindex(), CHAN_BODY, (char*)STRING(m_soundStart) );
 	}
 
 	if ( m_soundStop != NULL_STRING && ( m_currentSound != m_soundStop ) )
@@ -238,7 +238,7 @@ void CFuncMoveLinear::StopMoveSound( void )
 		ep.m_flVolume = 1;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 
 	SetThink(NULL);

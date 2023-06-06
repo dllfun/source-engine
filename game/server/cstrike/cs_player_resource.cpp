@@ -180,7 +180,7 @@ void CCSPlayerResource::UpdatePlayerData( void )
 			m_iHostageX.Set( i, (int) pHostage->GetAbsOrigin().x );	
 			m_iHostageY.Set( i, (int) pHostage->GetAbsOrigin().y );	
 			m_iHostageZ.Set( i, (int) pHostage->GetAbsOrigin().z );	
-			m_iHostageEntityIDs.Set( i, pHostage->entindex() );
+			m_iHostageEntityIDs.Set( i, pHostage->NetworkProp()->entindex());
 			m_isHostageFollowingSomeone.Set( i, pHostage->IsFollowingSomeone() );
 //			engine->Con_NPrintf( i, "ID:%d Pos:(%.0f,%.0f,%.0f)", pHostage->entindex(), pHostage->GetAbsOrigin().x, pHostage->GetAbsOrigin().y, pHostage->GetAbsOrigin().z );
 		}

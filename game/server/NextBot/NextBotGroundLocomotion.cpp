@@ -674,7 +674,7 @@ Vector NextBotGroundLocomotion::ResolveCollision( const Vector &from, const Vect
 		{
 			// stuck inside solid; don't move
 
-			if ( trace.m_pEnt && !trace.m_pEnt->IsWorld() )
+			if ( trace.m_pEnt && !(trace.m_pEnt->NetworkProp()->entindex()==0) )
 			{
 				// only ignore physics props that are not doors
 				if ( dynamic_cast< CPhysicsProp * >( trace.m_pEnt ) != NULL && dynamic_cast< CBasePropDoor * >( trace.m_pEnt ) == NULL )
@@ -1011,7 +1011,7 @@ void NextBotGroundLocomotion::UpdateGroundConstraint( void )
 		}
 		
 		// inform other components of collision if we didn't land on the 'world'
-		if ( ground.m_pEnt && !ground.m_pEnt->IsWorld() )
+		if ( ground.m_pEnt && !(ground.m_pEnt->NetworkProp()->entindex()==0) )
 		{
 			GetBot()->OnContact( ground.m_pEnt, &ground );
 		}

@@ -42,7 +42,7 @@ public:
 		if ( pPlayer->IsDead() == false )
 		{
 			CPASAttenuationFilter filter( pPlayer );
-			EmitSound( filter, entindex(), "BaseCombatCharacter.ItemPickup2" );
+			EmitSound( filter, NetworkProp()->entindex(), "BaseCombatCharacter.ItemPickup2" );
 
 			CSingleUserRecipientFilter user( pPlayer );
 			UserMessageBegin( user, "ItemPickup" );

@@ -223,7 +223,7 @@ void CLocalNetworkBackdoor::EntityDormant( int iEnt, int iSerialNum )
 
 void CLocalNetworkBackdoor::AddToPendingDormantEntityList( unsigned short iEdict )
 {
-	edict_t *e = &sv.edicts[iEdict];
+	edict_t *e = EDICT_NUM(iEdict);
 	if ( !( e->m_fStateFlags & FL_EDICT_PENDING_DORMANT_CHECK ) )
 	{
 		e->m_fStateFlags |= FL_EDICT_PENDING_DORMANT_CHECK;
@@ -236,7 +236,7 @@ void CLocalNetworkBackdoor::ProcessDormantEntities()
 	FOR_EACH_LL( m_PendingDormantEntities, i )
 	{
 		int iEdict = m_PendingDormantEntities[i];
-		edict_t *e = &sv.edicts[iEdict];
+		edict_t *e = EDICT_NUM(iEdict);
 
 		// Make sure the entity still exists and stil has the dontsend flag set.
 		if ( e->IsFree() || !(e->m_fStateFlags & FL_EDICT_DONTSEND) )
@@ -351,7 +351,7 @@ void CLocalNetworkBackdoor::EntState(
 		Assert( pCached->m_pDataPointer == pNet->GetDataTableBasePtr() );
 
 		LocalTransfer_TransferEntity( 
-			&sv.edicts[iEnt], 
+			EDICT_NUM(iEnt),
 			pSendTable, 
 			pSourceEnt, 
 			pClientClass->m_pRecvTable, 

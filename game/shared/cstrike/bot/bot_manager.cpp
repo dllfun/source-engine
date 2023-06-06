@@ -128,7 +128,7 @@ void CBotManager::StartFrame( void )
 			{
 				bot->Upkeep();
 
-				if (((gpGlobals->tickcount + bot->entindex()) % g_BotUpdateSkipCount) == 0)
+				if (((gpGlobals->tickcount + bot->NetworkProp()->entindex()) % g_BotUpdateSkipCount) == 0)
 				{
 					bot->ResetCommand();
 					bot->Update();

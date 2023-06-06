@@ -395,9 +395,9 @@ void CEnvBeam::Strike( void )
 		}
 
 		te->BeamEntPoint( filter, 0.0,
-			pointStart ? 0 : pStart->entindex(),
+			pointStart ? 0 : pStart->NetworkProp()->entindex(),
 			pointStart ? &pStart->GetAbsOrigin() : NULL,
-			pointEnd ? 0 : pEnd->entindex(),
+			pointEnd ? 0 : pEnd->NetworkProp()->entindex(),
 			pointEnd ? &pEnd->GetAbsOrigin() : NULL,
 			m_spriteTexture,
 			0,	// No halo
@@ -416,8 +416,8 @@ void CEnvBeam::Strike( void )
 		if ( m_spawnflags & SF_BEAM_RING)
 		{
 			te->BeamRing( filter, 0.0,
-				pStart->entindex(), 
-				pEnd->entindex(), 
+				pStart->NetworkProp()->entindex(),
+				pEnd->NetworkProp()->entindex(),
 				m_spriteTexture, 
 				0,	// No halo
 				m_frameStart,
@@ -435,8 +435,8 @@ void CEnvBeam::Strike( void )
 		else
 		{
 			te->BeamEnts( filter, 0.0,
-				pStart->entindex(), 
-				pEnd->entindex(), 
+				pStart->NetworkProp()->entindex(),
+				pEnd->NetworkProp()->entindex(),
 				m_spriteTexture,
 				0,	// No halo
 				m_frameStart,

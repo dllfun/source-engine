@@ -1587,7 +1587,7 @@ inline float CCSBot::GetTravelDistanceToPlayer( CCSPlayer *player ) const
 	if (!player->IsAlive())
 		return -1.0f;
 
-	return m_playerTravelDistance[ player->entindex() % MAX_PLAYERS ];
+	return m_playerTravelDistance[ player->NetworkProp()->entindex() % MAX_PLAYERS ];
 }
 
 inline bool CCSBot::HasPath( void ) const

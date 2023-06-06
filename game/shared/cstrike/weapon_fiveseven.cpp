@@ -155,7 +155,7 @@ void CWeaponFiveSeven::PrimaryAttack()
 
 	
 	FX_FireBullets(
-		pPlayer->entindex(),
+		pPlayer->NetworkProp()->entindex(),
 		pPlayer->Weapon_ShootPosition(),
 		pPlayer->EyeAngles() + 2.0f * pPlayer->GetPunchAngle(),
 		GetWeaponID(),

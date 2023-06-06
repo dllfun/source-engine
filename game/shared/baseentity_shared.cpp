@@ -679,7 +679,7 @@ void CBaseEntity::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCu
 #ifdef CLIENT_DLL
 	data.m_hEntity = ClientEntityList().EntIndexToHandle( pEntity->entindex() );
 #else
-	data.m_nEntIndex = pEntity->entindex();
+	data.m_nEntIndex = pEntity->NetworkProp()->entindex();
 #endif
 
 	// Send it on its way
@@ -1284,7 +1284,7 @@ bool CBaseEntity::VPhysicsInitSetup()
 {
 #ifndef CLIENT_DLL
 	// don't support logical ents
-	if ( !edict() || IsMarkedForDeletion() )
+	if ( !NetworkProp()->edict() || IsMarkedForDeletion() )
 		return false;
 #endif
 
@@ -2234,11 +2234,11 @@ void CBaseEntity::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int
 	switch ( iTracerType )
 	{
 	case TRACER_LINE:
-		UTIL_Tracer( vNewSrc, tr.endpos, entindex(), iAttachment, 0.0f, false, pszTracerName );
+		UTIL_Tracer( vNewSrc, tr.endpos, NetworkProp()->entindex(), iAttachment, 0.0f, false, pszTracerName );
 		break;
 
 	case TRACER_LINE_AND_WHIZ:
-		UTIL_Tracer( vNewSrc, tr.endpos, entindex(), iAttachment, 0.0f, true, pszTracerName );
+		UTIL_Tracer( vNewSrc, tr.endpos, NetworkProp()->entindex(), iAttachment, 0.0f, true, pszTracerName );
 		break;
 	}
 }

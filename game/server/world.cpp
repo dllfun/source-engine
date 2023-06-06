@@ -121,7 +121,7 @@ void CDecal::TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 
 	UTIL_TraceLine( GetAbsOrigin() - Vector(5,5,5), GetAbsOrigin() + Vector(5,5,5), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace );
 
-	entityIndex = trace.m_pEnt ? trace.m_pEnt->entindex() : 0;
+	entityIndex = trace.m_pEnt ? trace.m_pEnt->NetworkProp()->entindex() : 0;
 
 	CBroadcastRecipientFilter filter;
 
@@ -188,7 +188,7 @@ void CDecal::StaticDecal( void )
 
 	bool canDraw = true;
 
-	entityIndex = trace.m_pEnt ? (short)trace.m_pEnt->entindex() : 0;
+	entityIndex = trace.m_pEnt ? (short)trace.m_pEnt->NetworkProp()->entindex() : 0;
 	if ( entityIndex )
 	{
 		CBaseEntity *ent = trace.m_pEnt;
@@ -201,7 +201,7 @@ void CDecal::StaticDecal( void )
 			if ( !canDraw )
 			{
 				Warning( "Suppressed StaticDecal which would have hit entity %i (class:%s, name:%s) with modelindex = 0\n",
-					ent->entindex(),
+					ent->NetworkProp()->entindex(),
 					ent->GetClassname(),
 					STRING( ent->GetEntityName() ) );
 			}

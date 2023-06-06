@@ -192,7 +192,7 @@ public:
 	{
 		if ( m_BenchmarkState != BENCHMARKSTATE_NOT_RUNNING )
 		{
-			if( !engineServer->IsDedicatedServer() && pPlayer->entindex() == 1 )
+			if( !engineServer->IsDedicatedServer() && pPlayer->NetworkProp()->entindex() == 1 )
 				return true;
 		}
 		

@@ -134,7 +134,7 @@ void CEnvMicrophone::Activate(void)
 		//
 		// If we were given a bad measure target, just measure sound where we are.
 		//
-		if ((m_hMeasureTarget == NULL) || (m_hMeasureTarget->edict() == NULL))
+		if ((m_hMeasureTarget == NULL) || (m_hMeasureTarget->NetworkProp()->edict() == NULL))
 		{
 			// We've decided to disable this warning since this seems to be the 90% case.
 			//Warning( "EnvMicrophone - Measure target not found or measure target with no origin. Using Self.!\n");
@@ -216,7 +216,7 @@ void CEnvMicrophone::InputDisable( inputdata_t &inputdata )
 	m_bDisabled = true;
 	if ( m_hSpeaker )
 	{
-		CBaseEntity::StopSound( m_hSpeaker->entindex(), CHAN_STATIC, m_szLastSound );
+		CBaseEntity::StopSound( m_hSpeaker->NetworkProp()->entindex(), CHAN_STATIC, m_szLastSound );
 		m_szLastSound[0] = 0;
 
 		// Remove ourselves from the list of active mics
@@ -490,7 +490,7 @@ MicrophoneResult_t CEnvMicrophone::SoundPlayed( int entindex, const char *soundn
 	ep.m_flSoundTime = soundtime;
 	ep.m_nSpeakerEntity = entindex;
 
-	CBaseEntity::EmitSound( filter, m_hSpeaker->entindex(), ep );
+	CBaseEntity::EmitSound( filter, m_hSpeaker->NetworkProp()->entindex(), ep );
 
 	Q_strncpy( m_szLastSound, soundname, sizeof(m_szLastSound) );
 	m_OnRoutedSound.FireOutput( this, this, 0 );

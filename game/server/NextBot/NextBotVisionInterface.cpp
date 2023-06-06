@@ -196,7 +196,7 @@ const CKnownEntity *IVision::GetKnown( const CBaseEntity *entity ) const
 	{
 		const CKnownEntity &known = m_knownEntityVector[i];
 
-		if ( known.GetEntity() && known.GetEntity()->entindex() == entity->entindex() && !known.IsObsolete() )
+		if ( known.GetEntity() && known.GetEntity()->NetworkProp()->entindex() == entity->NetworkProp()->entindex() && !known.IsObsolete() )
 		{
 			return &known;
 		}
@@ -214,7 +214,7 @@ const CKnownEntity *IVision::GetKnown( const CBaseEntity *entity ) const
  */
 void IVision::AddKnownEntity( CBaseEntity *entity )
 {
-	if ( entity == NULL || entity->IsWorld() )
+	if ( entity == NULL || entity->NetworkProp()->entindex()==0 )
 	{
 		// the world is not an entity we can deal with
 		return;
@@ -242,7 +242,7 @@ void IVision::ForgetEntity( CBaseEntity *forgetMe )
 	{
 		const CKnownEntity &known = m_knownEntityVector[ it ];
 
-		if ( known.GetEntity() && known.GetEntity()->entindex() == forgetMe->entindex() )
+		if ( known.GetEntity() && known.GetEntity()->NetworkProp()->entindex() == forgetMe->NetworkProp()->entindex())
 		{
 			m_knownEntityVector.FastRemove( it );
 			return;
@@ -350,7 +350,7 @@ public:
 	{
 		for( int i=0; i < m_recognized.Count(); ++i )
 		{
-			if ( entity->entindex() == m_recognized[ i ]->entindex() )
+			if ( entity->NetworkProp()->entindex() == m_recognized[ i ]->NetworkProp()->entindex())
 			{
 				return true;
 			}
@@ -414,7 +414,7 @@ void IVision::UpdateKnownEntities( void )
 										gpGlobals->curtime,
 										GetBot()->GetDebugIdentifier(),
 										known.GetEntity()->GetClassname(),
-										known.GetEntity()->entindex() );
+										known.GetEntity()->NetworkProp()->entindex());
 
 						NDebugOverlay::Line( GetBot()->GetBodyInterface()->GetEyePosition(), known.GetLastKnownPosition(), 255, 255, 0, false, 0.2f );
 					}
@@ -439,7 +439,7 @@ void IVision::UpdateKnownEntities( void )
 										gpGlobals->curtime,
 										GetBot()->GetDebugIdentifier(),
 										known.GetEntity()->GetClassname(),
-										known.GetEntity()->entindex() );
+										known.GetEntity()->NetworkProp()->entindex());
 					}
 
 					GetBot()->OnLostSight( known.GetEntity() );

@@ -105,7 +105,7 @@ void CRecipientFilter::AddRecipient( CBasePlayer *player )
 	if ( !player )
 		return;
 
-	int index = player->entindex();
+	int index = player->NetworkProp()->entindex();
 
 	// If we're predicting and this is not the first time we've predicted this sound
 	//  then don't send it to the local player again.
@@ -135,7 +135,7 @@ void CRecipientFilter::RemoveRecipient( CBasePlayer *player )
 	Assert( player );
 	if ( player )
 	{
-		int index = player->entindex();
+		int index = player->NetworkProp()->entindex();
 
 		// Remove it if it's in the list
 		m_Recipients.FindAndRemove( index );

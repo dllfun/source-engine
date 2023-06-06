@@ -59,7 +59,7 @@ void CCSHLTVDirector::CreateShotFromEvent( CHLTVGameEvent *event )
 
 		// shot player as primary, hostage as secondary target
 		shot = gameeventmanager->CreateEvent( "hltv_chase", true );
-		shot->SetInt( "target1", player->entindex() );
+		shot->SetInt( "target1", player->NetworkProp()->entindex());
 		shot->SetInt( "target2", event->m_Event->GetInt("hostage") );
 		shot->SetFloat( "distance", 96.0f );
 		shot->SetInt( "theta", 40 );
@@ -67,7 +67,7 @@ void CCSHLTVDirector::CreateShotFromEvent( CHLTVGameEvent *event )
 
 		// shot 2 seconds after event
 		m_nNextShotTick = MIN( m_nNextShotTick, (event->m_Tick+TIME_TO_TICKS(2.0)) );
-		m_iPVSEntity = player->entindex();
+		m_iPVSEntity = player->NetworkProp()->entindex();
 	}
 
 	else if ( !Q_strcmp( "bomb_pickup", name ) ||
@@ -81,7 +81,7 @@ void CCSHLTVDirector::CreateShotFromEvent( CHLTVGameEvent *event )
 			return;
 
 		shot = gameeventmanager->CreateEvent( "hltv_chase", true );
-		shot->SetInt( "target1", player->entindex() );
+		shot->SetInt( "target1", player->NetworkProp()->entindex());
 		shot->SetInt( "target2", 0 );
 		shot->SetFloat( "distance", 64.0f );
 		shot->SetInt( "theta", 200 );
@@ -89,7 +89,7 @@ void CCSHLTVDirector::CreateShotFromEvent( CHLTVGameEvent *event )
 
 		// shot 2 seconds after pickup
 		m_nNextShotTick = MIN( m_nNextShotTick, (event->m_Tick+TIME_TO_TICKS(2.0)) );
-		m_iPVSEntity = player->entindex();
+		m_iPVSEntity = player->NetworkProp()->entindex();
 	}
 	else
 	{

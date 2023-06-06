@@ -552,7 +552,7 @@ void CCSGameStats::Event_BreakProp( CCSPlayer* pPlayer, CBreakableProp *pProp )
 	if (!pPlayer)
 		return;
 
-	DevMsg("Player %s broke a %s (%i)\n", pPlayer->GetPlayerName(),STRING( pProp->GetModelName() ), pProp->entindex());
+	DevMsg("Player %s broke a %s (%i)\n", pPlayer->GetPlayerName(),STRING( pProp->GetModelName() ), pProp->NetworkProp()->entindex());
 
 	int iIndex = m_PropStatTable.Find(STRING( pProp->GetModelName() ));
 	if (m_PropStatTable.IsValidIndex(iIndex))
@@ -728,7 +728,7 @@ void CCSGameStats::ComputeRollingStatAverages()
             CCSPlayer *pPlayer = ToCSPlayer( UTIL_PlayerByIndex( iPlayerIndex ) );
             if ( pPlayer && pPlayer->IsConnected())
             {
-                StatsCollection_t &roundStats = m_aPlayerStats[pPlayer->entindex()].statsCurrentRound;
+                StatsCollection_t &roundStats = m_aPlayerStats[pPlayer->NetworkProp()->entindex()].statsCurrentRound;
 
                 int teamNumber = pPlayer->GetTeamNumber();
                 if (teamNumber == TEAM_CT)
@@ -784,7 +784,7 @@ void CCSGameStats::ComputeDirectStatAverages()
 		CCSPlayer *pPlayer = ToCSPlayer( UTIL_PlayerByIndex( iPlayerIndex ) );
 		if ( pPlayer && pPlayer->IsConnected())
 		{
-			StatsCollection_t &matchStats = m_aPlayerStats[pPlayer->entindex()].statsCurrentMatch;
+			StatsCollection_t &matchStats = m_aPlayerStats[pPlayer->NetworkProp()->entindex()].statsCurrentMatch;
 
 			int teamNumber = pPlayer->GetTeamNumber();
 			if (teamNumber == TEAM_CT)
@@ -1014,7 +1014,7 @@ void CCSGameStats::Event_PlayerKilledOther( CBasePlayer *pAttacker, CBaseEntity 
 
 	// we don't have a simple way (yet) to check if the victim actually just achieved The Unstoppable Force, so we
 	// award this achievement simply if they've met the requirements and would have received it.
-	PlayerStats_t &victimStats = m_aPlayerStats[pVictim->entindex()];
+	PlayerStats_t &victimStats = m_aPlayerStats[pVictim->NetworkProp()->entindex()];
 	if (victimStats.statsCurrentRound[CSSTAT_KILLS] >= AchievementConsts::UnstoppableForce_Kills)
 	{
 		pPlayerAttacker->AwardAchievement(CSImmovableObject);
@@ -1089,7 +1089,7 @@ void CCSGameStats::CalculateOverkill(CCSPlayer* pAttacker, CCSPlayer* pVictim)
     //Count domination overkills - Do this before determining domination
     if (pAttacker->GetTeam() != pVictim->GetTeam())
     {
-        if (pAttacker->IsPlayerDominated(pVictim->entindex()))
+        if (pAttacker->IsPlayerDominated(pVictim->NetworkProp()->entindex()))
         {
             IncrementStat( pAttacker, CSSTAT_DOMINATION_OVERKILLS, 1 );
         }
@@ -1280,7 +1280,7 @@ void CCSGameStats::FireGameEvent( IGameEvent *event )
 //-----------------------------------------------------------------------------
 const PlayerStats_t& CCSGameStats::FindPlayerStats( CBasePlayer *pPlayer ) const
 {
-	return m_aPlayerStats[pPlayer->entindex()];
+	return m_aPlayerStats[pPlayer->NetworkProp()->entindex()];
 }
 
 //-----------------------------------------------------------------------------
@@ -1344,7 +1344,7 @@ void CCSGameStats::IncrementTeamStat( int iTeamIndex, int iStatIndex, int iAmoun
 //-----------------------------------------------------------------------------
 void CCSGameStats::ResetPlayerStats( CBasePlayer* pPlayer )
 {
-	PlayerStats_t &stats = m_aPlayerStats[pPlayer->entindex()];
+	PlayerStats_t &stats = m_aPlayerStats[pPlayer->NetworkProp()->entindex()];
 	// reset the stats on this player
 	stats.Reset();
 	// reset the matrix of who killed whom with respect to this player
@@ -1356,7 +1356,7 @@ void CCSGameStats::ResetPlayerStats( CBasePlayer* pPlayer )
 //-----------------------------------------------------------------------------
 void CCSGameStats::ResetKillHistory( CBasePlayer* pPlayer )
 {
-	int iPlayerIndex = pPlayer->entindex();
+	int iPlayerIndex = pPlayer->NetworkProp()->entindex();
 
 	PlayerStats_t& statsPlayer = m_aPlayerStats[iPlayerIndex];
 
@@ -1394,7 +1394,7 @@ void CCSGameStats::IncrementStat( CCSPlayer* pPlayer, CSStatType_t statId, int i
 {
     if ( pPlayer )
     {
-	    PlayerStats_t &stats = m_aPlayerStats[pPlayer->entindex()];
+	    PlayerStats_t &stats = m_aPlayerStats[pPlayer->NetworkProp()->entindex()];
 	    stats.statsDelta[statId] += iDelta;
 	    stats.statsCurrentRound[statId] += iDelta;
 	    stats.statsCurrentMatch[statId] += iDelta;
@@ -1433,7 +1433,7 @@ void CCSGameStats::SetStat( CCSPlayer *pPlayer, CSStatType_t statId, int iValue 
 	if (pPlayer)
 	{
 		int oldRoundValue, oldMatchValue;
-		PlayerStats_t &stats = m_aPlayerStats[pPlayer->entindex()];
+		PlayerStats_t &stats = m_aPlayerStats[pPlayer->NetworkProp()->entindex()];
 
 		oldRoundValue = stats.statsCurrentRound[statId];
 		oldMatchValue = stats.statsCurrentMatch[statId];
@@ -1466,7 +1466,7 @@ void CCSGameStats::SendStatsToPlayer( CCSPlayer * pPlayer, int iMinStatPriority 
 	ASSERT(CSSTAT_MAX < 255); // if we add more than 255 stats, we'll need to update this protocol
 	if ( pPlayer && pPlayer->IsConnected())
 	{				
-		StatsCollection_t &deltaStats = m_aPlayerStats[pPlayer->entindex()].statsDelta;
+		StatsCollection_t &deltaStats = m_aPlayerStats[pPlayer->NetworkProp()->entindex()].statsDelta;
 
 		// check to see if we have any stats to actually send
 		byte iStatsToSend = 0;
@@ -1569,8 +1569,8 @@ void CCSGameStats::PreClientUpdate()
 //-----------------------------------------------------------------------------
 void CCSGameStats::TrackKillStats( CCSPlayer *pAttacker, CCSPlayer *pVictim )
 {
-    int iPlayerIndexAttacker = pAttacker->entindex();
-    int iPlayerIndexVictim = pVictim->entindex();
+    int iPlayerIndexAttacker = pAttacker->NetworkProp()->entindex();
+    int iPlayerIndexVictim = pVictim->NetworkProp()->entindex();
 
     PlayerStats_t &statsAttacker = m_aPlayerStats[iPlayerIndexAttacker];
     PlayerStats_t &statsVictim = m_aPlayerStats[iPlayerIndexVictim];
@@ -1608,12 +1608,12 @@ void CCSGameStats::CalcDominationAndRevenge( CCSPlayer *pAttacker, CCSPlayer *pV
 	{
 		return;
 	}
-	int iPlayerIndexVictim = pVictim->entindex();
+	int iPlayerIndexVictim = pVictim->NetworkProp()->entindex();
 	PlayerStats_t &statsVictim = m_aPlayerStats[iPlayerIndexVictim];	
 	// calculate # of unanswered kills between killer & victim
 	// This is plus 1 as this function gets called before the stat is updated.  That is done so that the domination
 	// and revenge will be calculated prior to the death message being sent to the clients
-	int attackerEntityIndex = pAttacker->entindex();
+	int attackerEntityIndex = pAttacker->NetworkProp()->entindex();
 	int iKillsUnanswered = statsVictim.statsKills.iNumKilledByUnanswered[attackerEntityIndex] + 1;	
 
 	if ( CS_KILLS_FOR_DOMINATION == iKillsUnanswered )
@@ -1621,7 +1621,7 @@ void CCSGameStats::CalcDominationAndRevenge( CCSPlayer *pAttacker, CCSPlayer *pV
 		// this is the Nth unanswered kill between killer and victim, killer is now dominating victim
 		*piDeathFlags |= ( CS_DEATH_DOMINATION );
 	}
-	else if ( pVictim->IsPlayerDominated( pAttacker->entindex() ) )
+	else if ( pVictim->IsPlayerDominated( pAttacker->NetworkProp()->entindex()) )
 	{
 		// the killer killed someone who was dominating him, gains revenge
 		*piDeathFlags |= ( CS_DEATH_REVENGE );
@@ -1644,7 +1644,7 @@ void CCSGameStats::CalcDominationAndRevenge( CCSPlayer *pAttacker, CCSPlayer *pV
         for ( int i = 1 ; i <= gpGlobals->maxClients ; i++ )
         {
             CCSPlayer *pPlayer= ToCSPlayer( UTIL_PlayerByIndex( i ) );
-            if (pPlayer && pAttacker->IsPlayerDominated(pPlayer->entindex()))
+            if (pPlayer && pAttacker->IsPlayerDominated(pPlayer->NetworkProp()->entindex()))
             {
                 numConcurrentDominations++;
             }
@@ -1658,7 +1658,7 @@ void CCSGameStats::CalcDominationAndRevenge( CCSPlayer *pAttacker, CCSPlayer *pV
         // record stats
         Event_PlayerDominatedOther( pAttacker, pVictim );
     }
-    else if ( pVictim->IsPlayerDominated( pAttacker->entindex() ) )
+    else if ( pVictim->IsPlayerDominated( pAttacker->NetworkProp()->entindex()) )
     {
         // the killer killed someone who was dominating him, gains revenge        
         // set victim to no longer be dominating the killer

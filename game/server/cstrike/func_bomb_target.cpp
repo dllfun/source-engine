@@ -50,7 +50,7 @@ void CBombTarget::BombTargetTouch( CBaseEntity* pOther )
 		if ( p->HasC4() && CSGameRules()->m_bBombPlanted == false )
 		{
 			p->m_bInBombZone = true;
-			p->m_iBombSiteIndex = entindex();
+			p->m_iBombSiteIndex = NetworkProp()->entindex();
 			if ( !(p->m_iDisplayHistoryBits & DHF_IN_TARGET_ZONE) )
 			{
 				p->HintMessage( "#Hint_you_are_in_targetzone", false );

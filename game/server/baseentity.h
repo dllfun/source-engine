@@ -308,11 +308,11 @@ a list of all CBaseEntitys is kept in gEntList
 // creates an entity by string name, but does not spawn it
 // If iForceEdictIndex is not -1, then it will use the edict by that index. If the index is 
 // invalid or there is already an edict using that index, it will error out.
-CBaseEntity *CreateEntityByName( const char *className, int iForceEdictIndex = -1 );
-CBaseNetworkable *CreateNetworkableByName( const char *className );
+//CBaseEntity *CreateEntityByName( const char *className, int iForceEdictIndex = -1 );
+//CBaseNetworkable *CreateNetworkableByName( const char *className );
 
 // creates an entity and calls all the necessary spawn functions
-extern void SpawnEntityByName( const char *className, CEntityMapData *mapData = NULL );
+//extern void SpawnEntityByName( const char *className, CEntityMapData *mapData = NULL );
 
 // calls the spawn functions for an entity
 extern int DispatchSpawn( CBaseEntity *pEntity );
@@ -574,10 +574,10 @@ public:
 	virtual const char	*GetTracerType( void );
 
 	// returns a pointer to the entities edict, if it has one.  should be removed!
-	inline edict_t			*edict( void )			{ return NetworkProp()->edict(); }
-	inline const edict_t	*edict( void ) const	{ return NetworkProp()->edict(); }
-	inline int				entindex( ) const		{ return m_Network.entindex(); };
-	inline int				GetSoundSourceIndex() const		{ return entindex(); }
+	//inline edict_t			*edict( void )			{ return NetworkProp()->edict(); }
+	//inline const edict_t	*edict( void ) const	{ return NetworkProp()->edict(); }
+	//inline int				entindex( ) const		{ return m_Network.entindex(); };
+	//inline int				GetSoundSourceIndex() const		{ return entindex(); }
 
 	// These methods encapsulate MOVETYPE_FOLLOW, which became obsolete
 	void FollowEntity( CBaseEntity *pBaseEntity, bool bBoneMerge = true );
@@ -597,7 +597,7 @@ protected:
 	virtual CStudioHdr *OnNewModel();
 
 public:
-	virtual void PostConstructor( const char *szClassname );
+	virtual void PostConstructor( const char *szClassname, edict_t* edict);
 	virtual void PostClientActive( void );
 	virtual void ParseMapData( CEntityMapData *mapData );
 	virtual bool KeyValue( const char *szKeyName, const char *szValue );
@@ -972,7 +972,7 @@ public:
 	virtual INextBot		*MyNextBotPointer( void ) { return NULL; }
 	virtual float			GetDelay( void ) { return 0; }
 	virtual bool			IsMoving( void );
-	bool					IsWorld() { return entindex() == 0; }
+	//bool					IsWorld() { return entindex() == 0; }
 	virtual char const		*DamageDecal( int bitsDamageType, int gameMaterial );
 	virtual void			DecalTrace( trace_t *pTrace, char const *decalName );
 	virtual void			ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName = NULL );
@@ -1531,7 +1531,7 @@ public:
 	void					PhysicsStepRecheckGround();
 	// Computes the water level + type
 	void					UpdateWaterState();
-	bool					IsEdictFree() const { return edict()->IsFree(); }
+	//bool					IsEdictFree() const { return edict()->IsFree(); }
 
 	// Callbacks for the physgun/cannon picking up an entity
 	virtual	CBasePlayer		*HasPhysicsAttacker( float dt ) { return NULL; }

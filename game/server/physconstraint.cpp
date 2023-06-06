@@ -304,7 +304,7 @@ void CPhysConstraint::OnBreak( void )
 		ep.m_SoundLevel = ATTN_TO_SNDLVL( ATTN_STATIC );
 		ep.m_pOrigin = &origin;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 	m_OnBreak.FireOutput( this, this );
 	// queue this up to be deleted at the end of physics 

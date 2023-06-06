@@ -756,7 +756,7 @@ void CAI_ScriptedSequence::StartScript( void )
 		// FIXME: not sure why this is happening, or what to do about truely dormant NPCs
 		if ( pTarget->IsEFlagSet( EFL_NO_THINK_FUNCTION ) && pTarget->GetNextThink() != TICK_NEVER_THINK )
 		{
-			DevWarning( "scripted_sequence %d:%s - restarting dormant entity %d:%s : %.1f:%.1f\n", entindex(), GetDebugName(), pTarget->entindex(), pTarget->GetDebugName(), gpGlobals->curtime, pTarget->GetNextThink() );
+			DevWarning( "scripted_sequence %d:%s - restarting dormant entity %d:%s : %.1f:%.1f\n", NetworkProp()->entindex(), GetDebugName(), pTarget->NetworkProp()->entindex(), pTarget->GetDebugName(), gpGlobals->curtime, pTarget->GetNextThink() );
 			pTarget->SetNextThink( gpGlobals->curtime );
 		}
 	}
@@ -775,12 +775,12 @@ void CAI_ScriptedSequence::ScriptThink( void )
 	else if (FindEntity())
 	{
 		StartScript( );
-		DevMsg( 2,  "scripted_sequence %d:\"%s\" using NPC %d:\"%s\"(%s)\n", entindex(), GetDebugName(), GetTarget()->entindex(), STRING( GetTarget()->GetEntityName() ), STRING( m_iszEntity ) );
+		DevMsg( 2,  "scripted_sequence %d:\"%s\" using NPC %d:\"%s\"(%s)\n", NetworkProp()->entindex(), GetDebugName(), GetTarget()->NetworkProp()->entindex(), STRING( GetTarget()->GetEntityName() ), STRING( m_iszEntity ) );
 	}
 	else
 	{
 		CancelScript( );
-		DevMsg( 2,  "scripted_sequence %d:\"%s\" can't find NPC \"%s\"\n", entindex(), GetDebugName(), STRING( m_iszEntity ) );
+		DevMsg( 2,  "scripted_sequence %d:\"%s\" can't find NPC \"%s\"\n", NetworkProp()->entindex(), GetDebugName(), STRING( m_iszEntity ) );
 		// FIXME: just trying again is bad.  This should fire an output instead.
 		// FIXME: Think about puting output triggers in both StartScript() and CancelScript().
 		SetNextThink( gpGlobals->curtime + 1.0f );

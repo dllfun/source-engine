@@ -262,7 +262,7 @@ void CPhysicsCannister::CannisterActivate( CBaseEntity *pActivator, const Vector
 		ep.m_flVolume = 1.0f;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, NetworkProp()->entindex(), ep );
 	}
 }
 
@@ -344,7 +344,7 @@ void CPhysicsCannister::Deactivate(void)
 	}
 	if ( m_gasSound != NULL_STRING )
 	{
-		StopSound( entindex(), CHAN_ITEM, STRING(m_gasSound) );
+		StopSound(NetworkProp()->entindex(), CHAN_ITEM, STRING(m_gasSound) );
 	}
 }
 

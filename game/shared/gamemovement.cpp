@@ -694,7 +694,7 @@ bool CGameMovement::CheckInterval( IntervalType_t type )
 
 	if ( g_bMovementOptimizations )
 	{
-		return (player->CurrentCommandNumber() + player->entindex()) % tickInterval == 0;
+		return (player->CurrentCommandNumber() + player->NetworkProp()->entindex()) % tickInterval == 0;
 	}
 	else
 	{
@@ -3447,11 +3447,11 @@ int CGameMovement::CheckStuck( void )
 	fTime = engineClient->Time();
 #endif
 	// Too soon?
-	if ( m_flStuckCheckTime[ player->entindex() ][ idx ] >=  fTime - CHECKSTUCK_MINTIME )
+	if ( m_flStuckCheckTime[ player->NetworkProp()->entindex()][ idx ] >=  fTime - CHECKSTUCK_MINTIME )
 	{
 		return 1;
 	}
-	m_flStuckCheckTime[ player->entindex() ][ idx ] = fTime;
+	m_flStuckCheckTime[ player->NetworkProp()->entindex()][ idx ] = fTime;
 
 	MoveHelper( )->AddToTouched( traceresult, mv->m_vecVelocity );
 	GetRandomStuckOffsets( player, offset );
@@ -3496,7 +3496,7 @@ int CGameMovement::GetPointContentsCached( const Vector &point, int slot )
 		Assert( player );
 		Assert( slot >= 0 && slot < MAX_PC_CACHE_SLOTS );
 
-		int idx = player->entindex() - 1;
+		int idx = player->NetworkProp()->entindex() - 1;
 
 		if ( m_CachedGetPointContents[ idx ][ slot ] == -9999 || point.DistToSqr( m_CachedGetPointContentsPoint[ idx ][ slot ] ) > 1 )
 		{

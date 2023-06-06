@@ -232,7 +232,7 @@ void CWeaponGlock::PrimaryAttack()
 	//pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	FX_FireBullets( 
-		pPlayer->entindex(),
+		pPlayer->NetworkProp()->entindex(),
 		pPlayer->Weapon_ShootPosition(), 
 		pPlayer->EyeAngles() + 2.0f * pPlayer->GetPunchAngle(), 
 		GetWeaponID(),
@@ -299,7 +299,7 @@ void CWeaponGlock::FireRemaining( float fSpread )
 		fInaccuracy = 0.05;
 	
 	FX_FireBullets( 
-		pPlayer->entindex(),
+		pPlayer->NetworkProp()->entindex(),
 		pPlayer->Weapon_ShootPosition(), 
 		pPlayer->EyeAngles() + 2.0f * pPlayer->GetPunchAngle(), 
 		GetWeaponID(),

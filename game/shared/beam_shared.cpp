@@ -114,7 +114,7 @@ void* SendProxy_SendBeamPredictableId( const SendProp *pProp, const void *pStruc
 		return NULL;
 
 	int id_player_index = pEntity->m_PredictableID->GetPlayer();
-	int owner_player_index = pOwner->entindex() - 1;
+	int owner_player_index = pOwner->NetworkProp()->entindex() - 1;
 	// Only send to owner player
 	// FIXME:  Is this ever not the case due to the SetOnly call?
 	if ( id_player_index != owner_player_index )
@@ -782,7 +782,7 @@ int CBeam::UpdateTransmitState( void )
 void CBeam::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );

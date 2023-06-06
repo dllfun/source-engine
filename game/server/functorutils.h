@@ -314,7 +314,7 @@ inline bool ForEachActor( Functor &func )
 		if ( player == NULL )
 			continue;
 
-		if ( FNullEnt( player->edict() ) )
+		if ( FNullEnt( player->NetworkProp()->edict()) )
 			continue;
 
 		if ( !player->IsPlayer() )
@@ -384,7 +384,7 @@ inline bool ForEachActor( IActorFunctor &func )
 		if ( player == NULL )
 			continue;
 
-		if ( FNullEnt( player->edict() ) )
+		if ( FNullEnt( player->NetworkProp()->edict()) )
 			continue;
 
 		if ( !player->IsPlayer() )

@@ -217,7 +217,7 @@ int CSlideshowDisplay::UpdateTransmitState()
 void CSlideshowDisplay::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );

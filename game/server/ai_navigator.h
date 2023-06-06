@@ -382,7 +382,7 @@ public:
 
 	// --------------------------------
 
-	void				SetAllowBigStep( CBaseEntity *pEntToStepOff )	{ if ( !pEntToStepOff || !pEntToStepOff->IsWorld() ) m_hBigStepGroundEnt = pEntToStepOff; }
+	void				SetAllowBigStep( CBaseEntity *pEntToStepOff )	{ if ( !pEntToStepOff || !(pEntToStepOff->NetworkProp()->entindex()==0) ) m_hBigStepGroundEnt = pEntToStepOff; }
 
 	// --------------------------------
 	bool				SetGoalFromStoppingPath();

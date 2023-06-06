@@ -1163,7 +1163,7 @@ void CCSBot::UpdateTravelDistanceToAllPlayers( void )
 			if (player == NULL)
 				continue;
 
-			if (FNullEnt( player->edict() ))
+			if (FNullEnt( player->NetworkProp()->edict()))
 				continue;
 
 			if (!player->IsPlayer())
@@ -1176,7 +1176,7 @@ void CCSBot::UpdateTravelDistanceToAllPlayers( void )
 			if (player->InSameTeam( this ))
 				continue;
 
-			int which = player->entindex() % MAX_PLAYERS;
+			int which = player->NetworkProp()->entindex() % MAX_PLAYERS;
 
 			// if player is very far away, update every third time (on phase 0)
 			const float veryFarAway = 4000.0f;

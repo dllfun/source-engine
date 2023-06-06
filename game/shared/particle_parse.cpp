@@ -292,7 +292,7 @@ void DispatchParticleEffect( const char *pszParticleName, ParticleAttachment_t i
 #ifdef CLIENT_DLL
 		data.m_hEntity = pEntity;
 #else
-		data.m_nEntIndex = pEntity->entindex();
+		data.m_nEntIndex = pEntity->NetworkProp()->entindex();
 #endif
 		data.m_fFlags |= PARTICLE_DISPATCH_FROM_ENTITY;
 		data.m_vOrigin = pEntity->GetAbsOrigin();
@@ -345,7 +345,7 @@ void DispatchParticleEffect( const char *pszParticleName, ParticleAttachment_t i
 #ifdef CLIENT_DLL
 		data.m_hEntity = pEntity;
 #else
-		data.m_nEntIndex = pEntity->entindex();
+		data.m_nEntIndex = pEntity->NetworkProp()->entindex();
 #endif
 		data.m_fFlags |= PARTICLE_DISPATCH_FROM_ENTITY;
 		data.m_vOrigin = pEntity->GetAbsOrigin();
@@ -397,7 +397,7 @@ void DispatchParticleEffect( int iEffectIndex, Vector vecOrigin, Vector vecStart
 #ifdef CLIENT_DLL
 		data.m_hEntity = pEntity;
 #else
-		data.m_nEntIndex = pEntity->entindex();
+		data.m_nEntIndex = pEntity->NetworkProp()->entindex();
 #endif
 		data.m_fFlags |= PARTICLE_DISPATCH_FROM_ENTITY;
 		data.m_nDamageType = PATTACH_CUSTOMORIGIN;
@@ -433,7 +433,7 @@ void DispatchParticleEffect( const char *pszParticleName, Vector vecOrigin, QAng
 #ifdef CLIENT_DLL
 		data.m_hEntity = pEntity;
 #else
-		data.m_nEntIndex = pEntity->entindex();
+		data.m_nEntIndex = pEntity->NetworkProp()->entindex();
 #endif
 		data.m_fFlags |= PARTICLE_DISPATCH_FROM_ENTITY;
 		data.m_nDamageType = PATTACH_CUSTOMORIGIN;
@@ -488,7 +488,7 @@ void StopParticleEffects( CBaseEntity *pEntity )
 #ifdef CLIENT_DLL
 		data.m_hEntity = pEntity;
 #else
-		data.m_nEntIndex = pEntity->entindex();
+		data.m_nEntIndex = pEntity->NetworkProp()->entindex();
 #endif
 	}
 

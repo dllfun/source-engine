@@ -136,7 +136,7 @@ void CGib::SpawnHeadGib( CBaseEntity *pVictim )
 
 		pGib->SetLocalOrigin( pVictim->EyePosition() );
 		
-		edict_t *pentPlayer = UTIL_FindClientInPVS( pGib->edict() );
+		edict_t *pentPlayer = UTIL_FindClientInPVS( pGib->NetworkProp()->edict());
 		
 		if ( random->RandomInt ( 0, 100 ) <= 5 && pentPlayer )
 		{
@@ -542,7 +542,7 @@ void CGib::BounceGibTouch ( CBaseEntity *pOther )
 		
 			volume = 0.8f * MIN(1.0, ((float)zvel) / 450.0f);
 
-			CBreakable::MaterialSoundRandom( entindex(), (Materials)m_material, volume );
+			CBreakable::MaterialSoundRandom(NetworkProp()->entindex(), (Materials)m_material, volume );
 		}
 	}
 }

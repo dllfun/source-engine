@@ -47,11 +47,11 @@ void CAI_SentenceBase::SentenceMsg( const char *pStatus, const char *pSentence )
 		return;
 
 	case 1:
-		DevMsg( "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->entindex(), gpGlobals->curtime, pStatus, pSentence );
+		DevMsg( "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->NetworkProp()->entindex(), gpGlobals->curtime, pStatus, pSentence );
 		break;
 
 	case 2:
-		DevMsg( GetOuter(), "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->entindex(), gpGlobals->curtime, pStatus, pSentence );
+		DevMsg( GetOuter(), "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->NetworkProp()->entindex(), gpGlobals->curtime, pStatus, pSentence );
 		break;
 	}
 }
@@ -83,7 +83,7 @@ void CAI_SentenceBase::UpdateSentenceQueue()
 
 	if ( GetOuter()->FOkToMakeSound( m_nQueueSoundPriority ) )
 	{
-		SENTENCEG_PlaySentenceIndex( GetOuter()->edict(), m_nQueuedSentenceIndex, GetVolume(), GetSoundLevel(), 0, GetVoicePitch() );
+		SENTENCEG_PlaySentenceIndex( GetOuter()->NetworkProp()->edict(), m_nQueuedSentenceIndex, GetVolume(), GetSoundLevel(), 0, GetVoicePitch() );
 
 		const char *pSentenceName = engineServer->SentenceNameFromIndex( m_nQueuedSentenceIndex );
 		SentenceMsg( "Speaking [from QUEUE]", pSentenceName );
@@ -131,7 +131,7 @@ bool CAI_SentenceBase::MatchesCriteria( SentenceCriteria_t nCriteria )
 //-----------------------------------------------------------------------------
 int CAI_SentenceBase::PlaySentence( const char *pSentence )
 {
-	int nSentenceIndex = SENTENCEG_PlayRndSz( GetOuter()->edict(), pSentence, GetVolume(), GetSoundLevel(), 0, GetVoicePitch());
+	int nSentenceIndex = SENTENCEG_PlayRndSz( GetOuter()->NetworkProp()->edict(), pSentence, GetVolume(), GetSoundLevel(), 0, GetVoicePitch());
 	if ( nSentenceIndex < 0 )
 	{
 		SentenceMsg( "BOGUS", pSentence );

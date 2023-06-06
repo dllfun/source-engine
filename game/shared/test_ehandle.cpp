@@ -40,7 +40,7 @@
 
 		virtual void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 		{
-			if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+			if ( pInfo->m_pTransmitEdict->Get(NetworkProp()->entindex()) )
 				return;
 
 			BaseClass::SetTransmit( pInfo, bAlways );

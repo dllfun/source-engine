@@ -142,7 +142,7 @@ void CWeaponM3::PrimaryAttack()
 	// Dispatch the FX right away with full accuracy.
 	float flCurAttack = CalculateNextAttackTime( flCycleTime );
 	FX_FireBullets( 
-		pPlayer->entindex(),
+		pPlayer->NetworkProp()->entindex(),
 		pPlayer->Weapon_ShootPosition(), 
 		pPlayer->EyeAngles() + 2.0f * pPlayer->GetPunchAngle(), 
 		GetWeaponID(),

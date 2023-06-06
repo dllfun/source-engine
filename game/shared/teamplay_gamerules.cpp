@@ -130,7 +130,7 @@ bool CTeamplayRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 const char *CTeamplayRules::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 {
 	// copy out the team name from the model
-	int clientIndex = pPlayer->entindex();
+	int clientIndex = pPlayer->NetworkProp()->entindex();
 	const char *team = (!pPlayer->IsNetClient())?"default": engineServer->GetClientConVarValue( clientIndex, "cl_team" );
 
 	/* TODO
@@ -272,7 +272,7 @@ void CTeamplayRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	// recound stuff
 	RecountTeams(); */
 
-	const char *pszName = engineServer->GetClientConVarValue( pPlayer->entindex(), "name" );
+	const char *pszName = engineServer->GetClientConVarValue( pPlayer->NetworkProp()->entindex(), "name" );
 
 	const char *pszOldName = pPlayer->GetPlayerName();
 
@@ -293,7 +293,7 @@ void CTeamplayRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	}
 
 	// NVNT see if this user is still or has began using a haptic device
-	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->entindex(), "hap_HasDevice" );
+	const char *pszHH = engineServer->GetClientConVarValue( pPlayer->NetworkProp()->entindex(), "hap_HasDevice" );
 	if(pszHH)
 	{
 		int iHH = atoi(pszHH);
@@ -433,7 +433,7 @@ int CTeamplayRules::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled
 //=========================================================
 const char *CTeamplayRules::GetTeamID( CBaseEntity *pEntity )
 {
-	if ( pEntity == NULL || pEntity->edict() == NULL )
+	if ( pEntity == NULL || pEntity->NetworkProp()->edict() == NULL )
 		return "";
 
 	// return their team name

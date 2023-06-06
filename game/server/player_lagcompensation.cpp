@@ -355,7 +355,7 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	// correct is the amout of time we have to correct game time
 	float correct = 0.0f;
 
-	INetChannelInfo *nci = engineServer->GetPlayerNetInfo( player->entindex() );
+	INetChannelInfo *nci = engineServer->GetPlayerNetInfo( player->NetworkProp()->entindex());
 
 	if ( nci )
 	{
@@ -386,7 +386,7 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	}
 	
 	// Iterate all active players
-	const CBitVec<MAX_EDICTS> *pEntityTransmitBits = engineServer->GetEntityTransmitBitsForClient( player->entindex() - 1 );
+	const CBitVec<MAX_EDICTS> *pEntityTransmitBits = engineServer->GetEntityTransmitBitsForClient( player->NetworkProp()->entindex() - 1 );
 	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
@@ -419,7 +419,7 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	QAngle ang;
 
 	VPROF_BUDGET( "BacktrackPlayer", "CLagCompensationManager" );
-	int pl_index = pPlayer->entindex() - 1;
+	int pl_index = pPlayer->NetworkProp()->entindex() - 1;
 
 	// get track history of this player
 	CUtlFixedLinkedList< LagRecord > *track = &m_PlayerTrack[ pl_index ];
@@ -529,11 +529,11 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 			{
 				// If we haven't backtracked this player, do it now
 				// this deliberately ignores WantsLagCompensationOnEntity.
-				if ( !m_RestorePlayer.Get( pHitPlayer->entindex() - 1 ) )
+				if ( !m_RestorePlayer.Get( pHitPlayer->NetworkProp()->entindex() - 1 ) )
 				{
 					// prevent recursion - save a copy of m_RestorePlayer,
 					// pretend that this player is off-limits
-					int pl_index = pPlayer->entindex() - 1;
+					int pl_index = pPlayer->NetworkProp()->entindex() - 1;
 
 					// Temp turn this flag on
 					m_RestorePlayer.Set( pl_index );

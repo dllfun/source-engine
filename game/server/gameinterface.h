@@ -79,6 +79,7 @@ public:
 
 	virtual ServerClass*	GetAllServerClasses( void ) OVERRIDE;
 	virtual SendTableManager*GetSengTableManager(void) OVERRIDE;
+	virtual IEntityFactoryDictionary* EntityFactoryDictionary() OVERRIDE;
 	virtual const char     *GetGameDescription( void ) OVERRIDE;
 	virtual void			CreateNetworkStringTables( void ) OVERRIDE;
 	
@@ -205,9 +206,9 @@ public:
 
 		if ( pRet )
 		{
-			ref.m_iEdict = pRet->entindex();
-			if ( pRet->edict() )
-				ref.m_iSerialNumber = pRet->edict()->m_NetworkSerialNumber;
+			ref.m_iEdict = pRet->NetworkProp()->entindex();
+			if ( pRet->NetworkProp()->edict())
+				ref.m_iSerialNumber = pRet->NetworkProp()->edict()->m_NetworkSerialNumber;
 		}
 
 		g_MapEntityRefs.AddToTail( ref );
