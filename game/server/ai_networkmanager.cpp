@@ -2235,7 +2235,7 @@ void CAI_NetworkBuilder::Build( CAI_Network *pNetwork )
 	if ( !nNodes )
 		return;
 
-	CAI_NetworkBuildHelper *pHelper = (CAI_NetworkBuildHelper *)CreateEntityByName( "ai_network_build_helper" );
+	CAI_NetworkBuildHelper *pHelper = (CAI_NetworkBuildHelper *)engineServer->CreateEntityByName( "ai_network_build_helper" );
 
 	VPROF( "AINet" );
 

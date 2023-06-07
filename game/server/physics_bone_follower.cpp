@@ -381,7 +381,7 @@ void CBoneFollower::SetTraceData( int physicsBone, int hitGroup )
 
 CBoneFollower *CBoneFollower::Create( CBaseEntity *pOwner, const char *pModelName, solid_t &solid, const Vector &position, const QAngle &orientation )
 {
-	CBoneFollower *pFollower = (CBoneFollower *)CreateEntityByName( "phys_bone_follower" );
+	CBoneFollower *pFollower = (CBoneFollower *)engineServer->CreateEntityByName( "phys_bone_follower" );
 	if ( pFollower )
 	{
 		pFollower->Init( pOwner, pModelName, solid, position, orientation );

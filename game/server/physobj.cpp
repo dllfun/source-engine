@@ -1323,11 +1323,11 @@ static CBaseEntity *CreateSimplePhysicsObject( CBaseEntity *pEntity, bool create
 	const IVModel *model = engineServer->GetModel( modelindex );
 	if ( model && model->GetModelType() == mod_brush )//model
 	{
-		pPhysEntity = CreateEntityByName( "simple_physics_brush" );
+		pPhysEntity = engineServer->CreateEntityByName( "simple_physics_brush" );
 	}
 	else
 	{
-		pPhysEntity = CreateEntityByName( "simple_physics_prop" );
+		pPhysEntity = engineServer->CreateEntityByName( "simple_physics_prop" );
 	}
 
 	pPhysEntity->KeyValue( "model", STRING(pEntity->GetModelName()) );

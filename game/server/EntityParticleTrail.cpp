@@ -65,7 +65,7 @@ CEntityParticleTrail *CEntityParticleTrail::Create( CBaseEntity *pTarget, const 
 		}
 	}
 
-	pTrail = (CEntityParticleTrail *)CreateEntityByName( "env_particle_trail" );
+	pTrail = (CEntityParticleTrail *)engineServer->CreateEntityByName( "env_particle_trail" );
 	if ( pTrail == NULL )
 		return NULL;
 

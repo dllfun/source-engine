@@ -622,7 +622,7 @@ int CSaveRestore::IsValidSave( void )
 	{
 		Assert( serverGameClients );
 		CGameClient *pGameClient = sv.Client( 0 );
-		CPlayerState *pl = serverGameClients->GetPlayerState( pGameClient->edict );
+		CPlayerState *pl = serverGameClients->GetPlayerState( pGameClient->m_pEdict);
 		if ( !pl )
 		{
 			ConMsg ("Can't savegame without a player!\n");

@@ -543,7 +543,7 @@ public:
 		{
 			CGameClient *pClient = sv.Client(i);
 			
-			if ( pClient->edict == e )
+			if ( pClient->m_pEdict == e )
 			{
 				return pClient->m_UserID;
 			}
@@ -562,7 +562,7 @@ public:
 		{
 			CGameClient *pGameClient = sv.Client(i);
 			
-			if ( pGameClient->edict == e )
+			if ( pGameClient->m_pEdict == e )
 			{
 				return pGameClient->GetNetworkIDString();
 			}
@@ -582,7 +582,7 @@ public:
 		{
 			CGameClient *pClient = sv.Client( i );
 
-			if ( pClient->edict == pEdict )
+			if ( pClient->m_pEdict == pEdict )
 			{
 				return pClient->IsPlayerNameLocked();
 			}
@@ -600,7 +600,7 @@ public:
 		{
 			CGameClient *pClient = sv.Client( i );
 
-			if ( pClient->edict == pEdict )
+			if ( pClient->m_pEdict == pEdict )
 			{
 				return ( !pClient->IsPlayerNameLocked() && !pClient->IsNameChangeOnCooldown() );
 			}
@@ -729,6 +729,46 @@ public:
 		ED_Free(ed);
 	}
 	
+	// creates an entity by string name, but does not spawn it
+	CBaseEntity* CreateEntityByName(const char* className, int iForceEdictIndex)
+	{
+		edict_t* edict = NULL;
+		if (iForceEdictIndex == -1) {
+			iForceEdictIndex = serverGameDLL->EntityFactoryDictionary()->RequiredEdictIndex(className);
+			if (iForceEdictIndex != -1) {
+				int aaa = 0;
+			}
+		}
+		if (iForceEdictIndex != -1)
+		{
+			if (iForceEdictIndex >= 0 && iForceEdictIndex <= sv.GetMaxClients()) {
+				edict = EDICT_NUM(iForceEdictIndex);
+				if (!edict || edict->GetUnknown())
+					Error("CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex);
+			}
+			else {
+				edict = this->CreateEdict(iForceEdictIndex);
+				if (!edict)
+					Error("CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex);
+			}
+		}
+		else {
+			edict = this->CreateEdict(-1);
+			if (!edict)
+				Error("CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex);
+		}
+
+		IServerNetworkable* pNetwork = serverGameDLL->EntityFactoryDictionary()->Create(className, edict);
+		//g_pForceAttachEdict = NULL;
+
+		if (!pNetwork)
+			return NULL;
+
+		CBaseEntity* pEntity = pNetwork->GetBaseEntity();
+		Assert(pEntity);
+		return pEntity;
+	}
+
 	//
 	// Request engine to allocate "cb" bytes on the entity's private data pointer.
 	//
@@ -1376,7 +1416,7 @@ public:
 			return NULL;
 		}
 
-		return fcl->edict;
+		return fcl->m_pEdict;
 	}
 
 	// For use with FAKE CLIENTS

@@ -83,10 +83,12 @@ public:
 	CHL2_Player();
 	~CHL2_Player( void );
 	
-	static CHL2_Player *CreatePlayer( const char *className, edict_t *ed )
+	static CHL2_Player *CreatePlayer( const char *className, edict_t *edict )
 	{
-		CHL2_Player::s_PlayerEdict = ed;
-		return (CHL2_Player*)CreateEntityByName( className );
+		//CHL2_Player::s_PlayerEdict = ed;
+		if (!edict || edict->GetUnknown())
+			Error("CreatePlayer( %s ) - CreateEdict failed.", className);
+		return (CHL2_Player*)engineServer->CreateEntityByName( className, edict->m_EdictIndex );
 	}
 
 	DECLARE_SERVERCLASS();

@@ -151,4 +151,23 @@ class CSound;
 #include "ndebugoverlay.h"
 #include "recipientfilter.h"
 
+// creates an entity by name, and ensure it's correctness
+// does not spawn the entity
+// use the CREATE_ENTITY() macro which wraps this, instead of using it directly
+template< class T >
+T* _CreateEntity(T* newClass, const char* className)
+{
+	T* newEnt = dynamic_cast<T*>(engineServer->CreateEntityByName(className, -1));
+	if (!newEnt)
+	{
+		Warning("classname %s used to create wrong class type\n", className);
+		Assert(0);
+	}
+
+	return newEnt;
+}
+
+#define CREATE_ENTITY( newClass, className ) _CreateEntity( (newClass*)NULL, className )
+
+
 #endif // CBASE_H

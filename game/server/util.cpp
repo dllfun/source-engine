@@ -1657,7 +1657,7 @@ void UTIL_PrecacheOther( const char *szClassname, const char *modelName )
 		return;
 #endif
 
-	CBaseEntity	*pEntity = CreateEntityByName( szClassname );
+	CBaseEntity	*pEntity = engineServer->CreateEntityByName( szClassname );
 	if ( !pEntity )
 	{
 		Warning( "NULL Ent in UTIL_PrecacheOther\n" );
@@ -2629,7 +2629,7 @@ bool UTIL_LoadAndSpawnEntitiesFromScript( CUtlVector <CBaseEntity*> &entities, c
 			}
 
 			// Spawn the entity
-			CBaseEntity *pNode = CreateEntityByName( pNodeName );
+			CBaseEntity *pNode = engineServer->CreateEntityByName( pNodeName );
 
 			if ( pNode )
 			{

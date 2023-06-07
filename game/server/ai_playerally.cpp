@@ -300,7 +300,7 @@ CAI_AllySpeechManager *GetAllySpeechManager()
 {
 	if ( !CAI_AllySpeechManager::gm_pSpeechManager )
 	{
-		CreateEntityByName( "ai_ally_speech_manager" );
+		engineServer->CreateEntityByName( "ai_ally_speech_manager" );
 		Assert( CAI_AllySpeechManager::gm_pSpeechManager );
 		if ( CAI_AllySpeechManager::gm_pSpeechManager )
 			DispatchSpawn( CAI_AllySpeechManager::gm_pSpeechManager );

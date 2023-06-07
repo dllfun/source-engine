@@ -523,7 +523,7 @@ void CHLTVServer::StartMaster(CGameClient *client)
 	// let game.dll know that we are the HLTV client
 	Assert( serverGameClients );
 
-	CPlayerState *player = serverGameClients->GetPlayerState( m_MasterClient->edict );
+	CPlayerState *player = serverGameClients->GetPlayerState( m_MasterClient->m_pEdict);
 	player->hltv = true;
 
 	m_Server = (CGameServer*)m_MasterClient->GetServer();

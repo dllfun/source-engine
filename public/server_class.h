@@ -28,26 +28,13 @@ T* _CreateEntityTemplate(T* newEnt, const char* className, edict_t* edict)
 	return newEnt;
 }
 
-CBaseEntity* CreateEntityByName(const char* className, int iForceEdictIndex = -1);
-
-// creates an entity by name, and ensure it's correctness
-// does not spawn the entity
-// use the CREATE_ENTITY() macro which wraps this, instead of using it directly
-template< class T >
-T* _CreateEntity(T* newClass, const char* className)
-{
-	T* newEnt = dynamic_cast<T*>(CreateEntityByName(className, -1));
-	if (!newEnt)
-	{
-		Warning("classname %s used to create wrong class type\n", className);
-		Assert(0);
-	}
-
-	return newEnt;
-}
-
-#define CREATE_ENTITY( newClass, className ) _CreateEntity( (newClass*)NULL, className )
 #define CREATE_UNSAVED_ENTITY( newClass, className ) _CreateEntityTemplate( (newClass*)NULL, className ,NULL)
+
+
+inline CBaseEntity* GetContainingEntity(edict_t* pent);
+
+void FreeContainingEntity(edict_t* ed);
+
 
 class IEntityFactory;
 // This is the glue that hooks .MAP entity class names to our CPP classes
@@ -55,6 +42,7 @@ abstract_class IEntityFactoryDictionary
 {
 public:
 	virtual void InstallFactory(IEntityFactory * pFactory, const char* pClassName) = 0;
+	virtual int RequiredEdictIndex(const char* pClassName) = 0;
 	virtual IServerNetworkable* Create(const char* pClassName, edict_t* edict) = 0;
 	virtual void Destroy(const char* pClassName, IServerNetworkable* pNetworkable) = 0;
 	virtual IEntityFactory* FindFactory(const char* pClassName) = 0;
@@ -73,7 +61,8 @@ inline bool CanCreateEntityClass(const char* pszClassname)
 abstract_class IEntityFactory
 {
 public:
-	virtual IServerNetworkable * Create(const char* pClassName, edict_t* edict) = 0;
+	virtual int RequiredEdictIndex() = 0;
+	virtual IServerNetworkable * Create(edict_t* edict) = 0;//const char* pClassName, 
 	virtual void Destroy(IServerNetworkable* pNetworkable) = 0;
 	virtual size_t GetEntitySize() = 0;
 };
@@ -82,14 +71,16 @@ template <class T>
 class CEntityFactory : public IEntityFactory
 {
 public:
-	CEntityFactory(const char* pClassName)
+	CEntityFactory(const char* pClassName, int RequiredEdictIndex = -1)
 	{
+		m_pClassName = pClassName;
+		m_RequiredEdictIndex = RequiredEdictIndex;
 		EntityFactoryDictionary()->InstallFactory(this, pClassName);
 	}
 
-	IServerNetworkable* Create(const char* pClassName, edict_t* edict)
+	IServerNetworkable* Create(edict_t* edict)
 	{
-		T* pEnt = _CreateEntityTemplate((T*)NULL, pClassName, edict);
+		T* pEnt = _CreateEntityTemplate((T*)NULL, m_pClassName, edict);
 		return pEnt->NetworkProp();
 	}
 
@@ -105,10 +96,21 @@ public:
 	{
 		return sizeof(T);
 	}
+
+	virtual int RequiredEdictIndex() {
+		return m_RequiredEdictIndex;
+	};
+
+private:
+	const char* m_pClassName = NULL;
+	int m_RequiredEdictIndex = -1;
 };
 
 #define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) \
 	static CEntityFactory<DLLClassName> mapClassName( #mapClassName );
+
+#define LINK_WORLD_TO_CLASS(mapClassName,DLLClassName) \
+	static CEntityFactory<DLLClassName> mapClassName( #mapClassName, 0 );
 
 
 class ServerClass;

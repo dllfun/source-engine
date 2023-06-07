@@ -74,7 +74,7 @@ void CGib::SpawnStickyGibs( CBaseEntity *pVictim, Vector vecOrigin, int cGibs )
 
 	for ( i = 0 ; i < cGibs ; i++ )
 	{
-		CGib *pGib = (CGib *)CreateEntityByName( "gib" );
+		CGib *pGib = (CGib *)engineServer->CreateEntityByName( "gib" );
 
 		pGib->Spawn( "models/stickygib.mdl" );
 		pGib->m_nBody = random->RandomInt(0,2);
@@ -634,7 +634,7 @@ CBaseEntity *CreateRagGib( const char *szModel, const Vector &vecOrigin, const Q
 {
 	CRagGib *pGib;
 
-	pGib = (CRagGib*)CreateEntityByName( "raggib" );
+	pGib = (CRagGib*)engineServer->CreateEntityByName( "raggib" );
 
 	pGib->SetLocalAngles( vecAngles );
 

@@ -166,6 +166,10 @@ class CBaseEdict
 {
 public:
 
+	CBaseEdict(int index):m_EdictIndex(index)
+	{
+
+	}
 	// Returns an IServerEntity if FL_FULLEDICT is set or NULL if this 
 	// is a lightweight networking entity.
 	IServerEntity*			GetIServerEntity();
@@ -201,9 +205,9 @@ public:
 	// NOTE: this is in the edict instead of being accessed by a virtual because the engine needs fast access to it.
 	// NOTE: YOU CAN'T CHANGE THE LAYOUT OR SIZE OF CBASEEDICT AND REMAIN COMPATIBLE WITH HL2_VC6!!!!!
 #ifdef _XBOX
-	unsigned short m_fStateFlags;	
+	unsigned short m_fStateFlags = 0;	
 #else
-	int	m_fStateFlags;	
+	int	m_fStateFlags = 0;	
 #endif	
 
 	// NOTE: this is in the edict instead of being accessed by a virtual because the engine needs fast access to it.
@@ -216,18 +220,18 @@ public:
 	// the overall layout or size of this struct. existing mods compiled with
 	// a full 32-bit serial number field should still work. henryg 8/17/2011
 #if VALVE_LITTLE_ENDIAN
-	short m_NetworkSerialNumber;
-	short m_EdictIndex;
+	short m_NetworkSerialNumber = 0;
+	const short m_EdictIndex;
 #else
 	short m_EdictIndex;
-	short m_NetworkSerialNumber;
+	const short m_NetworkSerialNumber = 0;
 #endif
 
-	// NOTE: this is in the edict instead of being accessed by a virtual because the engine needs fast access to it.
-	IServerNetworkable	*m_pNetworkable;
-
+	
 protected:
-	IServerUnknown		*m_pUnk;		
+	// NOTE: this is in the edict instead of being accessed by a virtual because the engine needs fast access to it.
+	IServerNetworkable* m_pNetworkable = NULL;
+	IServerUnknown		*m_pUnk = NULL;		
 
 
 public:
@@ -384,6 +388,13 @@ inline void CBaseEdict::SetEdict( IServerUnknown *pUnk, bool bFullEdict )
 	{
 		m_fStateFlags = 0;
 	}
+	// Cache our IServerNetworkable pointer for the engine for fast access.
+	if (pUnk) {
+		m_pNetworkable = pUnk->GetNetworkable();
+	}
+	else {
+		m_pNetworkable = NULL;
+	}
 }
 
 inline int CBaseEdict::AreaNum() const
@@ -429,10 +440,13 @@ inline unsigned short CBaseEdict::GetChangeInfoSerialNumber() const
 struct edict_t : public CBaseEdict
 {
 public:
+	edict_t(int index) :CBaseEdict(index)
+	{
+	}
 	ICollideable *GetCollideable();
 
 	// The server timestampe at which the edict was freed (so we can try to use other edicts before reallocating this one)
-	float		freetime;	
+	float		freetime = 0.0;	
 };
 
 inline ICollideable *edict_t::GetCollideable()

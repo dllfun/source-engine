@@ -205,9 +205,11 @@ public:
 	// Allocate space for string and return index/offset of string in global string list
 	// If iForceEdictIndex is not -1, then it will return the edict with that index. If that edict index
 	// is already used, it'll return null.
-	virtual edict_t		*CreateEdict( int iForceEdictIndex = -1 ) = 0;
+	//virtual edict_t		*CreateEdict( int iForceEdictIndex = -1 ) = 0;
 	// Remove the specified edict and place back into the free edict list
 	virtual void		RemoveEdict( edict_t *e ) = 0;
+
+	virtual CBaseEntity* CreateEntityByName(const char* className, int iForceEdictIndex = -1) = 0;
 	
 	// Memory allocation for entity class data
 	virtual void		*PvAllocEntPrivateData( long cb ) = 0;

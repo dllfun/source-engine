@@ -321,7 +321,7 @@ void BuildRecipientList( CUtlVector< edict_t * >& list, const IRecipientFilter& 
 		if ( !cl->IsSpawned() )
 			continue;
 
-		list.AddToTail( cl->edict );
+		list.AddToTail( cl->m_pEdict );
 	}
 }
 

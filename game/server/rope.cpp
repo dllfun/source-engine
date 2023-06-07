@@ -182,7 +182,7 @@ CRopeKeyframe* CRopeKeyframe::Create(
 	int numSegments
 	)
 {
-	CRopeKeyframe *pRet = (CRopeKeyframe*)CreateEntityByName( "keyframe_rope" );
+	CRopeKeyframe *pRet = (CRopeKeyframe*)engineServer->CreateEntityByName( "keyframe_rope" );
 	if( !pRet )
 		return NULL;
 
@@ -211,7 +211,7 @@ CRopeKeyframe* CRopeKeyframe::CreateWithSecondPointDetached(
 	bool bInitialHang
 	)
 {
-	CRopeKeyframe *pRet = (CRopeKeyframe*)CreateEntityByName( "keyframe_rope" );
+	CRopeKeyframe *pRet = (CRopeKeyframe*)engineServer->CreateEntityByName( "keyframe_rope" );
 	if( !pRet )
 		return NULL;
 

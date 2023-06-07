@@ -463,7 +463,7 @@ END_DATADESC()
 
 int giPrecacheGrunt = 0;
 
-edict_t *CBasePlayer::s_PlayerEdict = NULL;
+//edict_t *CBasePlayer::s_PlayerEdict = NULL;
 
 
 inline bool ShouldRunCommandsInContext( const CCommandContext *ctx )
@@ -498,7 +498,7 @@ void CBasePlayer::CreateViewModel( int index /*=0*/ )
 	if ( GetViewModel( index ) )
 		return;
 
-	CBaseViewModel *vm = ( CBaseViewModel * )CreateEntityByName( "viewmodel" );
+	CBaseViewModel *vm = ( CBaseViewModel * )engineServer->CreateEntityByName( "viewmodel" );
 	if ( vm )
 	{
 		vm->SetAbsOrigin( GetAbsOrigin() );
@@ -533,11 +533,13 @@ void CBasePlayer::DestroyViewModels( void )
 //			*ed - 
 // Output : CBasePlayer
 //-----------------------------------------------------------------------------
-CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
+CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *edict )
 {
 	CBasePlayer *player;
-	CBasePlayer::s_PlayerEdict = ed;
-	player = ( CBasePlayer * )CreateEntityByName( className );
+	//CBasePlayer::s_PlayerEdict = ed;
+	if (!edict || edict->GetUnknown())
+		Error("CreatePlayer( %s ) - CreateEdict failed.", className);
+	player = ( CBasePlayer * )engineServer->CreateEntityByName( className, edict->m_EdictIndex );
 	return player;
 }
 
@@ -548,7 +550,7 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *ed )
 //-----------------------------------------------------------------------------
 CBasePlayer::CBasePlayer( )
 {
-	AddEFlags( EFL_NO_AUTO_EDICT_ATTACH );
+	//AddEFlags( EFL_NO_AUTO_EDICT_ATTACH );
 
 #ifdef _DEBUG
 	m_vecAutoAim.Init();
@@ -561,13 +563,13 @@ CBasePlayer::CBasePlayer( )
 	m_vecSmoothedVelocity.Init();
 #endif
 
-	if ( s_PlayerEdict )
-	{
-		// take the assigned edict_t and attach it
-		Assert( s_PlayerEdict != NULL );
-		NetworkProp()->AttachEdict( s_PlayerEdict );
-		s_PlayerEdict = NULL;
-	}
+	//if ( s_PlayerEdict )
+	//{
+	//	// take the assigned edict_t and attach it
+	//	Assert( s_PlayerEdict != NULL );
+	//	NetworkProp()->AttachEdict( s_PlayerEdict );
+	//	s_PlayerEdict = NULL;
+	//}
 
 	m_flFlashTime = -1;
 	pl.fixangle = FIXANGLE_ABSOLUTE;
@@ -5663,7 +5665,7 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 
 	EHANDLE pent;
 
-	pent = CreateEntityByName(pszName);
+	pent = engineServer->CreateEntityByName(pszName);
 	if ( pent == NULL )
 	{
 		Msg( "NULL Ent in GiveNamedItem!\n" );
@@ -5980,7 +5982,7 @@ static void CreateJalopy( CBasePlayer *pPlayer )
 	// Cheat to create a jeep in front of the player
 	Vector vecForward;
 	AngleVectors( pPlayer->EyeAngles(), &vecForward );
-	CBaseEntity *pJeep = (CBaseEntity *)CreateEntityByName( "prop_vehicle_jeep" );
+	CBaseEntity *pJeep = (CBaseEntity *)engineServer->CreateEntityByName( "prop_vehicle_jeep" );
 	if ( pJeep )
 	{
 		Vector vecOrigin = pPlayer->GetAbsOrigin() + vecForward * 256 + Vector(0,0,64);
@@ -6017,7 +6019,7 @@ static void CreateJeep( CBasePlayer *pPlayer )
 	// Cheat to create a jeep in front of the player
 	Vector vecForward;
 	AngleVectors( pPlayer->EyeAngles(), &vecForward );
-	CBaseEntity *pJeep = (CBaseEntity *)CreateEntityByName( "prop_vehicle_jeep" );
+	CBaseEntity *pJeep = (CBaseEntity *)engineServer->CreateEntityByName( "prop_vehicle_jeep" );
 	if ( pJeep )
 	{
 		Vector vecOrigin = pPlayer->GetAbsOrigin() + vecForward * 256 + Vector(0,0,64);
@@ -6054,7 +6056,7 @@ static void CreateAirboat( CBasePlayer *pPlayer )
 	// Cheat to create a jeep in front of the player
 	Vector vecForward;
 	AngleVectors( pPlayer->EyeAngles(), &vecForward );
-	CBaseEntity *pJeep = ( CBaseEntity* )CreateEntityByName( "prop_vehicle_airboat" );
+	CBaseEntity *pJeep = ( CBaseEntity* )engineServer->CreateEntityByName( "prop_vehicle_airboat" );
 	if ( pJeep )
 	{
 		Vector vecOrigin = pPlayer->GetAbsOrigin() + vecForward * 256 + Vector( 0,0,64 );
@@ -6306,7 +6308,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 	{
 		if ( sv_cheats && sv_cheats->GetBool() )
 		{
-			ParticleSmokeGrenade *pSmoke = dynamic_cast<ParticleSmokeGrenade*>( CreateEntityByName(PARTICLESMOKEGRENADE_ENTITYNAME) );
+			ParticleSmokeGrenade *pSmoke = dynamic_cast<ParticleSmokeGrenade*>(engineServer->CreateEntityByName(PARTICLESMOKEGRENADE_ENTITYNAME) );
 			if ( pSmoke )
 			{
 				Vector vForward;
@@ -7669,7 +7671,7 @@ END_DATADESC()
 
 CBaseEntity *CreatePlayerLoadSave( Vector vOrigin, float flDuration, float flHoldTime, float flLoadTime )
 {
-	CRevertSaved *pRevertSaved = (CRevertSaved *) CreateEntityByName( "player_loadsaved" );
+	CRevertSaved *pRevertSaved = (CRevertSaved *)engineServer->CreateEntityByName( "player_loadsaved" );
 
 	if ( pRevertSaved == NULL )
 		return NULL;
@@ -9255,7 +9257,7 @@ void CBasePlayer::AdjustDrownDmg( int nAmount )
 //-----------------------------------------------------------------------------
 bool CBasePlayer::GetSteamID( CSteamID *pID )
 {
-	const CSteamID *pClientID = engineServer->GetClientSteamID( edict() );
+	const CSteamID *pClientID = engineServer->GetClientSteamID(NetworkProp()->edict());
 	if ( pClientID )
 	{
 		*pID = *pClientID;

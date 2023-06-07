@@ -119,7 +119,7 @@ class CCSBotManager : public CBotManager
 public:
 	CCSBotManager();
 
-	virtual CBasePlayer *AllocateBotEntity( void );			///< factory method to allocate the appropriate entity for the bot
+	virtual CBasePlayer *AllocateBotEntity(edict_t* edict);			///< factory method to allocate the appropriate entity for the bot
 
 	virtual void ClientDisconnect( CBaseEntity *entity );
 	virtual bool ClientCommand( CBasePlayer *player, const CCommand &args );
@@ -377,9 +377,9 @@ private:
 	void EnableEventListeners( bool enable );
 };
 
-inline CBasePlayer *CCSBotManager::AllocateBotEntity( void )
+inline CBasePlayer *CCSBotManager::AllocateBotEntity(edict_t* edict)
 {
-	return static_cast<CBasePlayer *>( CreateEntityByName( "cs_bot" ) );
+	return static_cast<CBasePlayer *>(engineServer->CreateEntityByName( "cs_bot" , edict->m_EdictIndex) );
 }
 
 inline bool CCSBotManager::IsTimeToPlantBomb( void ) const

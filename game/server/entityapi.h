@@ -24,7 +24,6 @@ extern void ResetGlobalState( void );
 extern CSaveRestoreData *SaveInit( int size  );
 extern int CreateEntityTransitionList( CSaveRestoreData *pSaveData, int levelMask );
 extern void ClearEntities( void );
-extern void FreeContainingEntity( edict_t *ed );
 
 class ISaveRestoreBlockHandler;
 ISaveRestoreBlockHandler *GetEntitySaveRestoreBlockHandler();

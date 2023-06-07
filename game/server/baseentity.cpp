@@ -425,11 +425,11 @@ void CBaseEntity::PostConstructor( const char *szClassname, edict_t* edict)
 	else
 	{
 		// Certain entities set up their edicts in the constructor
-		if ( !IsEFlagSet( EFL_NO_AUTO_EDICT_ATTACH ) )
-		{
+		//if ( !IsEFlagSet( EFL_NO_AUTO_EDICT_ATTACH ) )
+		//{
 			NetworkProp()->AttachEdict(edict);
 			//g_pForceAttachEdict = NULL;
-		}
+		//}
 		
 		// Some ents like the player override the AttachEdict function and do it at a different time.
 		// While precaching, they don't ever have an edict, so we don't need to add them to
@@ -438,9 +438,6 @@ void CBaseEntity::PostConstructor( const char *szClassname, edict_t* edict)
 		{
 			gEntList.AddNetworkableEntity( this, NetworkProp()->entindex());
 			
-			// Cache our IServerNetworkable pointer for the engine for fast access.
-			if (NetworkProp()->edict())
-				NetworkProp()->edict()->m_pNetworkable = NetworkProp();
 		}
 	}
 
@@ -3062,7 +3059,7 @@ CBaseEntity *CBaseEntity::Create( const char *szName, const Vector &vecOrigin, c
 // will keep a pointer to it after this call.
 CBaseEntity * CBaseEntity::CreateNoSpawn( const char *szName, const Vector &vecOrigin, const QAngle &vecAngles, CBaseEntity *pOwner )
 {
-	CBaseEntity *pEntity = CreateEntityByName( szName );
+	CBaseEntity *pEntity = engineServer->CreateEntityByName( szName );
 	if ( !pEntity )
 	{
 		Assert( !"CreateNoSpawn: only works for CBaseEntities" );
@@ -5520,7 +5517,7 @@ void CC_Ent_Info( const CCommand& args )
 	else
 	{
 		// iterate through all the ents printing out their details
-		CBaseEntity *ent = CreateEntityByName( args[1] );
+		CBaseEntity *ent = engineServer->CreateEntityByName( args[1] );
 
 		if ( ent )
 		{
@@ -6149,7 +6146,7 @@ CBaseEntity *CBaseEntity::CreatePredictedEntityByName( const char *classname, co
 	CPredictableId testId;
 	testId.Init( player_index, command_number, classname, module, line );
 
-	ent = CreateEntityByName( classname );
+	ent = engineServer->CreateEntityByName( classname );
 	// No factory???
 	if ( !ent )
 		return NULL;
@@ -7276,7 +7273,7 @@ void CC_Ent_Create( const CCommand& args )
 	CBaseEntity::SetAllowPrecache( true );
 
 	// Try to create entity
-	CBaseEntity *entity = dynamic_cast< CBaseEntity * >( CreateEntityByName(args[1]) );
+	CBaseEntity *entity = dynamic_cast< CBaseEntity * >(engineServer->CreateEntityByName(args[1]) );
 	if (entity)
 	{
 		entity->Precache();

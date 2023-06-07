@@ -317,7 +317,6 @@ a list of all CBaseEntitys is kept in gEntList
 // calls the spawn functions for an entity
 extern int DispatchSpawn( CBaseEntity *pEntity );
 
-inline CBaseEntity *GetContainingEntity( edict_t *pent );
 
 //-----------------------------------------------------------------------------
 // Purpose: think contexts
@@ -1986,16 +1985,7 @@ EXTERN_SEND_TABLE(DT_BaseEntity);
 
 #endif
 
-// handling entity/edict transforms
-inline CBaseEntity *GetContainingEntity( edict_t *pent )
-{
-	if ( pent && pent->GetUnknown() )
-	{
-		return pent->GetUnknown()->GetBaseEntity();
-	}
 
-	return NULL;
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: Pauses or resumes entity i/o events. When paused, no outputs will

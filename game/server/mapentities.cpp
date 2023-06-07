@@ -32,53 +32,7 @@ struct HierarchicalSpawnMapData_t
 static CStringRegistry *g_pClassnameSpawnPriority = NULL;
 //extern edict_t *g_pForceAttachEdict;
 
-// creates an entity by string name, but does not spawn it
-CBaseEntity *CreateEntityByName( const char *className, int iForceEdictIndex )
-{
-	edict_t* edict = NULL;
-	if ( iForceEdictIndex != -1 )
-	{
-		edict = engineServer->CreateEdict( iForceEdictIndex );
-		if ( !edict)
-			Error( "CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex );
-	}
 
-	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className, edict);
-	//g_pForceAttachEdict = NULL;
-
-	if ( !pNetwork )
-		return NULL;
-
-	CBaseEntity *pEntity = pNetwork->GetBaseEntity();
-	Assert( pEntity );
-	return pEntity;
-}
-
-//CBaseNetworkable *CreateNetworkableByName( const char *className )
-//{
-//	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className );
-//	if ( !pNetwork )
-//		return NULL;
-//
-//	CBaseNetworkable *pNetworkable = pNetwork->GetBaseNetworkable();
-//	Assert( pNetworkable );
-//	return pNetworkable;
-//}
-
-void FreeContainingEntity( edict_t *ed )
-{
-	if ( ed )
-	{
-		CBaseEntity *ent = GetContainingEntity( ed );
-		if ( ent )
-		{
-			ed->SetEdict( NULL, false );
-			CBaseEntity::PhysicsRemoveTouchedList( ent );
-			CBaseEntity::PhysicsRemoveGroundList( ent );
-			UTIL_RemoveImmediate( ent );
-		}
-	}
-}
 
 // parent name may have a , in it to include an attachment point
 string_t ExtractParentName(string_t parentName)
@@ -527,7 +481,7 @@ void MapEntity_PrecacheEntity(const char* pMapName, const char *pEntData, int &n
 	}
 
 	// Construct via the LINK_ENTITY_TO_CLASS factory.
-	CBaseEntity *pEntity = CreateEntityByName(className);
+	CBaseEntity *pEntity = engineServer->CreateEntityByName(className);
 
 	//
 	// Set up keyvalues, which can set the model name, which is why we don't just do UTIL_PrecacheOther here...
@@ -565,7 +519,7 @@ const char *MapEntity_ParseEntity(const char* pMapName, CBaseEntity *&pEntity, c
 		if ( pFilter )
 			pEntity = pFilter->CreateNextEntity( className );
 		else
-			pEntity = CreateEntityByName(className);
+			pEntity = engineServer->CreateEntityByName(className);
 
 		//
 		// Set up keyvalues.

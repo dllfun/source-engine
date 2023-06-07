@@ -2601,7 +2601,7 @@ void CEntitySaveRestoreBlockHandler::Restore( IRestore *pRestore, bool createPla
 			if ( pEntInfo->edictindex == 0 )	// worldspawn
 			{
 				Assert( i == 0 );
-				pent = CreateEntityByName( STRING(pEntInfo->classname) );
+				pent = engineServer->CreateEntityByName( STRING(pEntInfo->classname) );
 				pRestore->SetReadPos( pEntInfo->location );
 				if ( RestoreEntity( pent, pRestore, pEntInfo ) < 0 )
 				{
@@ -2635,7 +2635,7 @@ void CEntitySaveRestoreBlockHandler::Restore( IRestore *pRestore, bool createPla
 			}
 			else
 			{
-				pent = CreateEntityByName( STRING(pEntInfo->classname) );
+				pent = engineServer->CreateEntityByName( STRING(pEntInfo->classname) );
 			}
 			pEntInfo->hEnt = pent;
 			pEntInfo->restoreentityindex = pent ? pent->NetworkProp()->entindex() : - 1;
@@ -3391,7 +3391,7 @@ void CreateEntitiesInTransitionList( CSaveRestoreData *pSaveData, int levelMask 
 		}
 		else if ( active )
 		{
-			pent = CreateEntityByName( STRING(pEntInfo->classname) );
+			pent = engineServer->CreateEntityByName( STRING(pEntInfo->classname) );
 		}
 
 		pEntInfo->hEnt = pent;

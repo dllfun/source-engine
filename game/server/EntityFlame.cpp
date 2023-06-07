@@ -115,7 +115,7 @@ void CEntityFlame::InputIgnite( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 CEntityFlame *CEntityFlame::Create( CBaseEntity *pTarget, bool useHitboxes )
 {
-	CEntityFlame *pFlame = (CEntityFlame *) CreateEntityByName( "entityflame" );
+	CEntityFlame *pFlame = (CEntityFlame *)engineServer->CreateEntityByName( "entityflame" );
 
 	if ( pFlame == NULL )
 		return NULL;

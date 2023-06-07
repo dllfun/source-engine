@@ -1208,7 +1208,7 @@ void SV_DetermineMulticastRecipients( bool usepas, const Vector& origin, CBitVec
 			continue;
 
 		// HACK:  Should above also check pClient->spawned instead of this
-		if ( !pClient->edict || pClient->edict->IsFree() || pClient->edict->GetUnknown() == NULL )
+		if ( !pClient->m_pEdict || pClient->m_pEdict->IsFree() || pClient->m_pEdict->GetUnknown() == NULL )
 			continue;
 		
 		// Always add the  or Replay client
@@ -1223,7 +1223,7 @@ void SV_DetermineMulticastRecipients( bool usepas, const Vector& origin, CBitVec
 		}
 
 		Vector vecEarPosition;
-		serverGameClients->ClientEarPosition( pClient->edict, &vecEarPosition );
+		serverGameClients->ClientEarPosition( pClient->m_pEdict, &vecEarPosition );
 
 		int iBitNumber = CM_LeafCluster(g_pHost->Host_GetWorldModel(), CM_PointLeafnum(g_pHost->Host_GetWorldModel(), vecEarPosition ) );
 		if ( !(pMask[iBitNumber>>3] & (1<<(iBitNumber&7)) ) )
@@ -1314,14 +1314,14 @@ void CGameServer::RemoveClientFromGame( CBaseClient *client )
 
 	// we must have an active server and a spawned client 
 	// If we are a local server and we're disconnecting just return
-	if ( !pClient->edict || !pClient->IsSpawned() || !IsActive() || (pClient->GetNetChannel() && pClient->GetNetChannel()->IsLoopback() ) )
+	if ( !pClient->m_pEdict || !pClient->IsSpawned() || !IsActive() || (pClient->GetNetChannel() && pClient->GetNetChannel()->IsLoopback() ) )
 		return;
 
 	Assert( g_pServerPluginHandler );
 
-	g_pServerPluginHandler->ClientDisconnect( pClient->edict );
+	g_pServerPluginHandler->ClientDisconnect( pClient->m_pEdict);
 	// release the DLL entity that's attached to this edict, if any
-	serverGameEnts->FreeContainingEntity( pClient->edict );
+	serverGameEnts->FreeContainingEntity( pClient->m_pEdict);
 
 }
 
@@ -2545,10 +2545,10 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 		CGameClient * pClient = Client(i);
 
 		// edict for a player is slot + 1, world = 0
-		pClient->edict = EDICT_NUM(i + 1);
+		pClient->m_pEdict = EDICT_NUM(i + 1);
 	
 		// Setup up the edict
-		InitializeEntityDLLFields( pClient->edict );
+		InitializeEntityDLLFields( pClient->m_pEdict);
 	}
 
 	COM_TimestampedLog( "Set up players(done)" );
@@ -2734,7 +2734,7 @@ void CGameServer::UpdateMasterServerPlayers()
 		if ( !client->IsConnected() )
 			continue;
 
-		CPlayerState *pl = serverGameClients->GetPlayerState( client->edict );
+		CPlayerState *pl = serverGameClients->GetPlayerState( client->m_pEdict);
 		if ( !pl )
 			continue;
 

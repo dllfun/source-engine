@@ -655,7 +655,7 @@ ConVar cl_autohelp(
 		// Create the team managers
 		for ( int i = 0; i < ARRAYSIZE( sTeamNames ); i++ )
 		{
-			CTeam *pTeam = static_cast<CTeam*>(CreateEntityByName( "cs_team_manager" ));
+			CTeam *pTeam = static_cast<CTeam*>(engineServer->CreateEntityByName( "cs_team_manager" ));
 			pTeam->Init( sTeamNames[i], i );
 
 			g_Teams.AddToTail( pTeam );
@@ -4622,13 +4622,13 @@ ConVar cl_autohelp(
 					{
 						// Doh! The entity was delete and its slot was reused.
 						// Just use any old edict slot. This case sucks because we lose the baseline.
-						return CreateEntityByName( pClassname );
+						return engineServer->CreateEntityByName( pClassname );
 					}
 					else
 					{
 						// Cool, the slot where this entity was is free again (most likely, the entity was 
 						// freed above). Now create an entity with this specific index.
-						return CreateEntityByName( pClassname, ref.m_iEdict );
+						return engineServer->CreateEntityByName( pClassname, ref.m_iEdict );
 					}
 				}
 			}

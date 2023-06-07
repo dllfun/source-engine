@@ -171,6 +171,7 @@ typedef CBasePlayer* (*ClientPutInServerOverrideFn)( edict_t *pEdict, const char
 
 void ClientPutInServerOverride( ClientPutInServerOverrideFn fn );
 
+
 // -------------------------------------------------------------------------------------------- //
 // Entity list management stuff.
 // -------------------------------------------------------------------------------------------- //
@@ -198,7 +199,7 @@ public:
 
 	virtual CBaseEntity* CreateNextEntity( const char *pClassname )
 	{
-		CBaseEntity *pRet = CreateEntityByName( pClassname );
+		CBaseEntity *pRet = engineServer->CreateEntityByName( pClassname );
 
 		CMapEntityRef ref;
 		ref.m_iEdict = -1;

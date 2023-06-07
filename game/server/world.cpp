@@ -368,7 +368,7 @@ bool CProjectedDecal::KeyValue( const char *szKeyName, const char *szValue )
 //
 // This spawns first when each level begins.
 //=======================
-LINK_ENTITY_TO_CLASS( worldspawn, CWorld );
+LINK_WORLD_TO_CLASS( worldspawn, CWorld );
 
 BEGIN_DATADESC( CWorld )
 
@@ -448,10 +448,11 @@ CWorld* GetWorldEntity()
 
 CWorld::CWorld()
 {
-	AddEFlags(EFL_NO_AUTO_EDICT_ATTACH | EFL_KEEP_ON_RECREATE_ENTITIES);
-	if (engineServer) {
-		NetworkProp()->AttachEdict(INDEXENT(RequiredEdictIndex()));
+	if (!engineServer) {
+		return;
 	}
+	AddEFlags(EFL_KEEP_ON_RECREATE_ENTITIES);//EFL_NO_AUTO_EDICT_ATTACH | 
+	//NetworkProp()->AttachEdict(INDEXENT(RequiredEdictIndex()));
 	ActivityList_Init();
 	EventList_Init();
 	

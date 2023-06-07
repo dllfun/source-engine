@@ -243,7 +243,7 @@ public:
 protected:
 	// HACK FOR BOTS
 	friend class CBotManager;
-	static edict_t *s_PlayerEdict; // must be set before calling constructor
+	//static edict_t *s_PlayerEdict; // must be set before calling constructor
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
@@ -263,7 +263,7 @@ public:
 
 	virtual void			UpdateOnRemove( void );
 
-	static CBasePlayer		*CreatePlayer( const char *className, edict_t *ed );
+	static CBasePlayer		*CreatePlayer( const char *className, edict_t *edict );
 
 	virtual void			CreateViewModel( int viewmodelindex = 0 );
 	CBaseViewModel			*GetViewModel( int viewmodelindex = 0, bool bObserverOK = true );

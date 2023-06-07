@@ -62,8 +62,8 @@ void SV_AllocateEdicts()
 	// Invoke the constructor so the vtable is set correctly..
 	for (int i = 0; i < max_edicts; ++i)
 	{
-		new(&g_pEdicts[i]) edict_t;
-		g_pEdicts[i].m_EdictIndex = i;
+		new(&g_pEdicts[i]) edict_t(i);
+		//g_pEdicts[i].m_EdictIndex = i;
 		g_pEdicts[i].freetime = 0;
 	}
 	ED_ClearFreeEdictList();

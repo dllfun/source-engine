@@ -473,10 +473,12 @@ CCSPlayer::~CCSPlayer()
 }
 
 
-CCSPlayer *CCSPlayer::CreatePlayer( const char *className, edict_t *ed )
+CCSPlayer *CCSPlayer::CreatePlayer( const char *className, edict_t *edict)
 {
-	CCSPlayer::s_PlayerEdict = ed;
-	return (CCSPlayer*)CreateEntityByName( className );
+	//CCSPlayer::s_PlayerEdict = ed;
+	if (!edict || edict->GetUnknown())
+		Error("CreatePlayer( %s ) - CreateEdict failed.", className);
+	return (CCSPlayer*)engineServer->CreateEntityByName( className, edict->m_EdictIndex );
 }
 
 
@@ -924,7 +926,7 @@ void CCSPlayer::CreateRagdollEntity()
 	if ( !pRagdoll )
 	{
 		// create a new one
-		pRagdoll = dynamic_cast< CCSRagdoll* >( CreateEntityByName( "cs_ragdoll" ) );
+		pRagdoll = dynamic_cast< CCSRagdoll* >(engineServer->CreateEntityByName( "cs_ragdoll" ) );
 	}
 
 	if ( pRagdoll )
@@ -6603,7 +6605,7 @@ CBaseEntity	*CCSPlayer::GiveNamedItem( const char *pszName, int iSubType )
 		return NULL;
 #endif
 
-	pent = CreateEntityByName(pszName);
+	pent = engineServer->CreateEntityByName(pszName);
 	if ( pent == NULL )
 	{
 		Msg( "NULL Ent in GiveNamedItem!\n" );
@@ -7155,7 +7157,7 @@ void CCSPlayer::CreateViewModel( int index /*=0*/ )
 	if ( GetViewModel( index ) )
 		return;
 
-	CPredictedViewModel *vm = ( CPredictedViewModel * )CreateEntityByName( "predicted_viewmodel" );
+	CPredictedViewModel *vm = ( CPredictedViewModel * )engineServer->CreateEntityByName( "predicted_viewmodel" );
 	if ( vm )
 	{
 		vm->SetAbsOrigin( GetAbsOrigin() );

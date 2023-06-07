@@ -3424,7 +3424,7 @@ void CBaseCombatCharacter::UpdateLastKnownArea( void )
 	if ( nb_last_area_update_tolerance.GetFloat() > 0.0f )
 	{
 		// skip this test if we're not standing on the world (ie: elevators that move us)
-		if ( GetGroundEntity() == NULL || GetGroundEntity()->IsWorld() )
+		if ( GetGroundEntity() == NULL || GetGroundEntity()->NetworkProp()->entindex()==0 )
 		{
 			if ( m_lastNavArea && m_NavAreaUpdateMonitor.IsMarkSet() && !m_NavAreaUpdateMonitor.TargetMoved( this ) )
 				return;
@@ -3447,12 +3447,12 @@ void CBaseCombatCharacter::UpdateLastKnownArea( void )
 		// player entered a new nav area
 		if ( m_lastNavArea )
 		{
-			m_lastNavArea->DecrementPlayerCount( m_registeredNavTeam, entindex() );
+			m_lastNavArea->DecrementPlayerCount( m_registeredNavTeam, NetworkProp()->entindex() );
 			m_lastNavArea->OnExit( this, area );
 		}
 
 		m_registeredNavTeam = GetTeamNumber();
-		area->IncrementPlayerCount( m_registeredNavTeam, entindex() );
+		area->IncrementPlayerCount( m_registeredNavTeam, NetworkProp()->entindex() );
 		area->OnEnter( this, m_lastNavArea );
 
 		OnNavAreaChanged( area, m_lastNavArea );
@@ -3484,7 +3484,7 @@ void CBaseCombatCharacter::ClearLastKnownArea( void )
 
 	if ( m_lastNavArea )
 	{
-		m_lastNavArea->DecrementPlayerCount( m_registeredNavTeam, entindex() );
+		m_lastNavArea->DecrementPlayerCount( m_registeredNavTeam, NetworkProp()->entindex() );
 		m_lastNavArea->OnExit( this, NULL );
 		m_lastNavArea = NULL;
 		m_registeredNavTeam = TEAM_INVALID;

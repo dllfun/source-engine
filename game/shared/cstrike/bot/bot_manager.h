@@ -76,8 +76,8 @@ public:
 	CBotManager();
 	virtual ~CBotManager();
 
-	CBasePlayer *AllocateAndBindBotEntity( edict_t *ed );			///< allocate the appropriate entity for the bot and bind it to the given edict
-	virtual CBasePlayer *AllocateBotEntity( void ) = 0;				///< factory method to allocate the appropriate entity for the bot 
+	CBasePlayer *AllocateAndBindBotEntity( edict_t * edict);			///< allocate the appropriate entity for the bot and bind it to the given edict
+	virtual CBasePlayer *AllocateBotEntity(edict_t* edict) = 0;				///< factory method to allocate the appropriate entity for the bot 
 
 	virtual void ClientDisconnect( CBaseEntity *entity ) = 0;
 	virtual bool ClientCommand( CBasePlayer *player, const CCommand &args ) = 0;
@@ -161,10 +161,10 @@ private:
 };
 
 
-inline CBasePlayer *CBotManager::AllocateAndBindBotEntity( edict_t *ed )
+inline CBasePlayer *CBotManager::AllocateAndBindBotEntity( edict_t *edict )
 {
-	CBasePlayer::s_PlayerEdict = ed;
-	return AllocateBotEntity();
+	//CBasePlayer::s_PlayerEdict = ed;
+	return AllocateBotEntity(edict);
 }
 
 inline int CBotManager::GetDebugMessageCount( void ) const
