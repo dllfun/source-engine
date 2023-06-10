@@ -321,7 +321,7 @@ void CSpectatorMenu::Update( void )
 		return;
 
 	int iPlayerIndex;
-	for ( iPlayerIndex = 1 ; iPlayerIndex <= gpGlobals->maxClients; iPlayerIndex++ )
+	for ( iPlayerIndex = 1 ; iPlayerIndex <= gpGlobals->GetMaxClients(); iPlayerIndex++ )
 	{
 
 		// does this slot in the array have a name?
@@ -641,7 +641,7 @@ void CSpectatorGUI::Update()
 
 	// update player name filed, text & color
 
-	if ( playernum > 0 && playernum <= gpGlobals->maxClients && gr )
+	if ( playernum > 0 && playernum <= gpGlobals->GetMaxClients() && gr)
 	{
 		Color c = gr->GetTeamColor( gr->GetTeam(playernum) ); // Player's team color
 

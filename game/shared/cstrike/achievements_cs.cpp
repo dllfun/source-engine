@@ -202,7 +202,7 @@ bool CCSBaseAchievementFullRound::PlayerWasInEntireRound( float flRoundTime )
 	if ( flTeamplayStartTime > 0 ) 
 	{	
 		// has the player been present and on a game team since the start of this round (minus a grace period)?
-		if ( flTeamplayStartTime < ( gpGlobals->curtime - flRoundTime ) + CS_FULL_ROUND_GRACE_PERIOD )
+		if ( flTeamplayStartTime < ( gpGlobals->GetCurTime() - flRoundTime ) + CS_FULL_ROUND_GRACE_PERIOD )
 			return true;
 	}
 	return false;
@@ -618,7 +618,7 @@ class CAchievementCS_FriendsSameUniform : public CCSBaseAchievement
             {    
                 int localPlayerClass = pLocalPlayer->PlayerClass();
                 int localPlayerTeam = pLocalPlayer->GetTeamNumber();
-                for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+                for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
                 {
                     if ( i != localPlayerIndex)
                     {

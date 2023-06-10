@@ -175,11 +175,11 @@ void CCSAchievementAnnouncePanel::OnThink( void )
     if (m_currentDisplayedAchievement != CSInvalidAchievement)
     {        
 		//If the match restarts, we need to move the start time for the achievement back.
-		if (m_displayStartTime > gpGlobals->curtime)
+		if (m_displayStartTime > gpGlobals->GetCurTime())
 		{	 
-			m_displayStartTime = gpGlobals->curtime;
+			m_displayStartTime = gpGlobals->GetCurTime();
 		}
-        float timeSinceDisplayStart = gpGlobals->curtime - m_displayStartTime;
+        float timeSinceDisplayStart = gpGlobals->GetCurTime() - m_displayStartTime;
         float glowAlpha;
         float achievementPanelAlpha; 
 
@@ -212,7 +212,7 @@ void CCSAchievementAnnouncePanel::OnThink( void )
         if (m_achievementQueue.Count() > 0)
         {
             m_currentDisplayedAchievement = m_achievementQueue.RemoveAtHead();
-            m_displayStartTime = gpGlobals->curtime;      
+            m_displayStartTime = gpGlobals->GetCurTime();      
 
             //=============================================================================
             // HPE_BEGIN:

@@ -266,11 +266,11 @@ void CReplayRenderOverlay::OnTick()
 				const uint32 kNumFramesToWait = 10;
 				if ( m_unNumFrames < kNumFramesToWait )
 				{
-					m_flStartTime = gpGlobals->realtime;
+					m_flStartTime = gpGlobals->GetRealTime();
 				}
 				else if ( m_unNumFrames > kNumFramesToWait )
 				{
-					flTimePassed = gpGlobals->realtime - m_flStartTime;
+					flTimePassed = gpGlobals->GetRealTime() - m_flStartTime;
 					float flEstimatedTimeLeft = flProgress > 0.0f ? ( flTimePassed / flProgress ) - flTimePassed : 0.0f;
 					// exponential moving average FIR filter
 					// S(t) =  smoothing_factor * Y(t) + (1 - smoothing_factor)* Y(t-1)

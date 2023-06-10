@@ -86,7 +86,7 @@ void CRecipientFilter::AddAllPlayers( void )
 	m_Recipients.RemoveAll();
 
 	int i;
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 		if ( !pPlayer )
@@ -186,7 +186,7 @@ void CRecipientFilter::RemoveRecipientsNotOnTeam( CTeam *team )
 	Assert( team );
 
 	int i;
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex( i );
 		if ( !player )
@@ -233,7 +233,7 @@ void CRecipientFilter::RemovePlayersFromBitMask( CBitVec< ABSOLUTE_PLAYER_LIMIT 
 
 void CRecipientFilter::AddRecipientsByPVS( const Vector& origin )
 {
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		AddAllPlayers();
 	}
@@ -247,7 +247,7 @@ void CRecipientFilter::AddRecipientsByPVS( const Vector& origin )
 
 void CRecipientFilter::RemoveRecipientsByPVS( const Vector& origin )
 {
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		m_Recipients.RemoveAll();
 	}
@@ -263,7 +263,7 @@ void CRecipientFilter::RemoveRecipientsByPVS( const Vector& origin )
 
 void CRecipientFilter::AddRecipientsByPAS( const Vector& origin )
 {
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		AddAllPlayers();
 	}
@@ -329,7 +329,7 @@ CTeamRecipientFilter::CTeamRecipientFilter( int team, bool isReliable )
 
 	RemoveAllRecipients();
 
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -367,7 +367,7 @@ CTeamRecipientFilter::CTeamRecipientFilter( int team, bool isReliable )
 void CPASAttenuationFilter::Filter( const Vector& origin, float attenuation /*= ATTN_NORM*/ )
 {
 	// Don't crop for attenuation in single player
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 		return;
 
 	// CPASFilter adds them by pure PVS in constructor

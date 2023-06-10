@@ -54,7 +54,7 @@ void CPlayerResource::Spawn( void )
 	}
 
 	SetThink( &CPlayerResource::ResourceThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	m_nUpdateCounter = 0;
 }
 
@@ -76,7 +76,7 @@ void CPlayerResource::ResourceThink( void )
 
 	UpdatePlayerData();
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +84,7 @@ void CPlayerResource::ResourceThink( void )
 //-----------------------------------------------------------------------------
 void CPlayerResource::UpdatePlayerData( void )
 {
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = (CBasePlayer*)UTIL_PlayerByIndex( i );
 		

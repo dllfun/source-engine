@@ -180,7 +180,7 @@ void CBasePlayer::ItemPreFrame()
 		pWeapon->ItemHolsterFrame();
 	}
 
-    if ( gpGlobals->curtime < m_flNextAttack )
+    if ( gpGlobals->GetCurTime() < m_flNextAttack )
 		return;
 
 	if (!pActive)
@@ -266,7 +266,7 @@ void CBasePlayer::ItemPostFrame()
 		return;
 	}
 
-    if ( gpGlobals->curtime < m_flNextAttack )
+    if ( gpGlobals->GetCurTime() < m_flNextAttack )
 	{
 		if ( GetActiveWeapon() )
 		{
@@ -411,7 +411,7 @@ const Vector CBasePlayer::GetPlayerMaxs( void ) const
 void CBasePlayer::CacheVehicleView( void )
 {
 	// If we've calculated the view this frame, then there's no need to recalculate it
-	if ( m_nVehicleViewSavedFrame == gpGlobals->framecount )
+	if ( m_nVehicleViewSavedFrame == gpGlobals->GetFrameCount() )
 		return;
 
 #ifdef CLIENT_DLL
@@ -426,7 +426,7 @@ void CBasePlayer::CacheVehicleView( void )
 
 		// Get our view for this frame
 		pVehicle->GetVehicleViewPosition( nRole, &m_vecVehicleViewOrigin, &m_vecVehicleViewAngles, &m_flVehicleViewFOV );
-		m_nVehicleViewSavedFrame = gpGlobals->framecount;
+		m_nVehicleViewSavedFrame = gpGlobals->GetFrameCount();
 
 #ifdef CLIENT_DLL
 		if( UseVR() )
@@ -518,7 +518,7 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 
 	if ( m_flStepSoundTime > 0 )
 	{
-		m_flStepSoundTime -= 1000.0f * gpGlobals->frametime;
+		m_flStepSoundTime -= 1000.0f * gpGlobals->GetFrameTime();
 		if ( m_flStepSoundTime < 0 )
 		{
 			m_flStepSoundTime = 0;
@@ -668,7 +668,7 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 //-----------------------------------------------------------------------------
 void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force )
 {
-	if ( gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat() )
+	if ( gpGlobals->GetMaxClients() > 1 && !sv_footsteps.GetFloat() )
 		return;
 
 #if defined( CLIENT_DLL )
@@ -719,7 +719,7 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 
 #ifndef CLIENT_DLL
 	// in MP, server removes all players in the vecOrigin's PVS, these players generate the footsteps client side
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1 )
 	{
 		filter.RemoveRecipientsByPVS( vecOrigin );
 	}
@@ -1458,7 +1458,7 @@ void CBasePlayer::SmoothViewOnStairs( Vector& eyeOrigin )
 	{
 		int dir = ( flCurrentPlayerZ > m_flOldPlayerZ ) ? 1 : -1;
 
-		float steptime = gpGlobals->frametime;
+		float steptime = gpGlobals->GetFrameTime();
 		if (steptime < 0)
 		{
 			steptime = 0;
@@ -1835,7 +1835,7 @@ void CBasePlayer::SharedSpawn()
 	m_Local.m_bAllowAutoMovement = true;
 
 	m_nRenderFX = kRenderFxNone;
-	m_flNextAttack	= gpGlobals->curtime;
+	m_flNextAttack	= gpGlobals->GetCurTime();
 	m_flMaxspeed		= 0.0f;
 
 	MDLCACHE_CRITICAL_SECTION();
@@ -1970,7 +1970,7 @@ bool CBasePlayer::SetFOV( CBaseEntity *pRequester, int FOV, float zoomRate, int 
 		m_iFOVStart = GetFOV();
 	}
 
-	m_flFOVTime = gpGlobals->curtime;
+	m_flFOVTime = gpGlobals->GetCurTime();
 	m_iFOV = FOV;
 
 	m_Local.m_flFOVRate	= zoomRate;

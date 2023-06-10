@@ -194,7 +194,7 @@ void CBaseGameStats::StatsLog( char const *fmt, ... )
 
 	if ( m_bLogging )
 	{
-		DevMsg( "[GS %s - %7.2f] %s", timeString, gpGlobals->realtime, buf );
+		DevMsg( "[GS %s - %7.2f] %s", timeString, gpGlobals->GetRealTime(), buf );
 	}
 
 	if ( m_bLoggingToFile )
@@ -206,7 +206,7 @@ void CBaseGameStats::StatsLog( char const *fmt, ... )
 
 		if ( FILESYSTEM_INVALID_HANDLE != g_LogFileHandle )
 		{
-			filesystem->FPrintf( g_LogFileHandle, "[GS %s - %7.2f] %s", timeString, gpGlobals->realtime, buf );
+			filesystem->FPrintf( g_LogFileHandle, "[GS %s - %7.2f] %s", timeString, gpGlobals->GetRealTime(), buf );
 			filesystem->Flush( g_LogFileHandle );
 		}
 	}
@@ -273,7 +273,7 @@ void CBaseGameStats::Event_LevelInit( void )
 	++map->m_nCount;
 
 	// HACK HACK:  Punching this hole through only works in single player!!!
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		ConVarRef closecaption( "closecaption" );
 		if( closecaption.IsValid() )
@@ -354,13 +354,13 @@ void CBaseGameStats::Event_Credits()
 	float elapsed = 0.0f;
 	if( CBGSDriver.m_bInLevel )
 	{
-		elapsed = gpGlobals->realtime - CBGSDriver.m_flLevelStartTime;
+		elapsed = gpGlobals->GetRealTime() - CBGSDriver.m_flLevelStartTime;
 	}
 
 	if( elapsed < 0.0f )
 	{
 		Assert( 0 );
-		Warning( "EVENT_CREDITS with negative elapsed time (rt %f starttime %f)\n", gpGlobals->realtime, CBGSDriver.m_flLevelStartTime );
+		Warning( "EVENT_CREDITS with negative elapsed time (rt %f starttime %f)\n", gpGlobals->GetRealTime(), CBGSDriver.m_flLevelStartTime );
 		elapsed = 0.0f;
 	}
 
@@ -873,7 +873,7 @@ void CBaseGameStats_Driver::LevelInitPreEntity()
 	PossibleMapChange();
 
 	m_flPauseStartTime = 0.0f;
-	m_flLevelStartTime = gpGlobals->realtime;
+	m_flLevelStartTime = gpGlobals->GetRealTime();
 
 	gamestats->Event_LevelInit();
 
@@ -906,12 +906,12 @@ void CBaseGameStats_Driver::LevelShutdownPreClearSteamAPIContext()
 
 void CBaseGameStats_Driver::LevelShutdown()
 {
-	float flElapsed = gpGlobals->realtime - m_flLevelStartTime;
+	float flElapsed = gpGlobals->GetRealTime() - m_flLevelStartTime;
 
 	if ( flElapsed < 0.0f )
 	{
 		Assert( 0 );
-		Warning( "EVENT_LEVELSHUTDOWN:  with negative elapsed time (rt %f starttime %f)\n", gpGlobals->realtime, m_flLevelStartTime );
+		Warning( "EVENT_LEVELSHUTDOWN:  with negative elapsed time (rt %f starttime %f)\n", gpGlobals->GetRealTime(), m_flLevelStartTime );
 		flElapsed = 0.0f;
 	}
 
@@ -1142,7 +1142,7 @@ bool CBaseGameStats_Driver::AddBaseDataForSend( KeyValues *pKV, StatSendType_t s
 				pKV->SetInt( "Cheats", iCheats );
 			}
 
-			int mapTime = gpGlobals->realtime - m_flLevelStartTime;
+			int mapTime = gpGlobals->GetRealTime() - m_flLevelStartTime;
 			pKV->SetInt( "MapTime", mapTime );
 
 			return true;
@@ -1230,7 +1230,7 @@ void CBaseGameStats_Driver::OnRestore()
 
 void CBaseGameStats_Driver::FrameUpdatePostEntityThink()
 {
-	bool bGamePaused = ( gpGlobals->frametime == 0.0f );
+	bool bGamePaused = ( gpGlobals->GetFrameTime() == 0.0f );
 
 	if ( !m_bInLevel )
 	{
@@ -1240,15 +1240,15 @@ void CBaseGameStats_Driver::FrameUpdatePostEntityThink()
 	{
 		if ( bGamePaused )
 		{
-			m_flPauseStartTime = gpGlobals->realtime;
+			m_flPauseStartTime = gpGlobals->GetRealTime();
 		}
 		else if ( m_flPauseStartTime != 0.0f )
 		{
-			float flPausedTime = gpGlobals->realtime - m_flPauseStartTime;
+			float flPausedTime = gpGlobals->GetRealTime() - m_flPauseStartTime;
 			if ( flPausedTime < 0.0f )
 			{
 				Assert( 0 );
-				Warning( "Game paused time showing up negative (rt %f pausestart %f)\n", gpGlobals->realtime, m_flPauseStartTime );
+				Warning( "Game paused time showing up negative (rt %f pausestart %f)\n", gpGlobals->GetRealTime(), m_flPauseStartTime );
 				flPausedTime = 0.0f;
 			}
 

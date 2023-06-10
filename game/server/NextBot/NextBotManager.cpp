@@ -317,9 +317,9 @@ void NextBotManager::Update( void )
 	if ( m_botList.Count() )
 	{
 		static int iCurFrame = -1;
-		if ( iCurFrame != gpGlobals->framecount )
+		if ( iCurFrame != gpGlobals->GetFrameCount() )
 		{
-			iCurFrame = gpGlobals->framecount;
+			iCurFrame = gpGlobals->GetFrameCount();
 			m_SumFrameTime = 0;
 		}
 		else
@@ -359,7 +359,7 @@ void NextBotManager::Update( void )
 
 
 			int nTargetToRun = ceilf( (float)( m_botList.Count() - nDead ) / (float)m_iUpdateTickrate );
-			int curtickcount = gpGlobals->tickcount;
+			int curtickcount = gpGlobals->GetTickCount();
 
 			for( i = m_botList.Head(); nTargetToRun && i != m_botList.InvalidIndex(); i = m_botList.Next( i ) )
 			{
@@ -398,14 +398,14 @@ void NextBotManager::Update( void )
 			{
 				for( ; i != m_botList.InvalidIndex(); i = m_botList.Next( i ) )
 				{
-					if ( gpGlobals->tickcount - m_botList[i]->GetTickLastUpdate() >= m_iUpdateTickrate )
+					if ( gpGlobals->GetTickCount() - m_botList[i]->GetTickLastUpdate() >= m_iUpdateTickrate )
 					{
 						nIntentionalSliders++;
 					}
 				}
 			}
 
-			Msg( "Frame %8d/tick %8d: %3d run of %3d, %3d sliders, %3d blocked slides, scheduled %3d for next tick, %3d intentional sliders, %d nonresponsive, %d dead\n", gpGlobals->framecount - 1, gpGlobals->tickcount - 1, g_nRun, m_botList.Count() - nDead, g_nSlid, g_nBlockedSlides, nScheduled, nIntentionalSliders, nNonResponsive, nDead );
+			Msg( "Frame %8d/tick %8d: %3d run of %3d, %3d sliders, %3d blocked slides, scheduled %3d for next tick, %3d intentional sliders, %d nonresponsive, %d dead\n", gpGlobals->GetFrameCount() - 1, gpGlobals->GetTickCount() - 1, g_nRun, m_botList.Count() - nDead, g_nSlid, g_nBlockedSlides, nScheduled, nIntentionalSliders, nNonResponsive, nDead );
 			g_nRun = g_nSlid = g_nBlockedSlides = 0;
 		}
 
@@ -434,12 +434,12 @@ bool NextBotManager::ShouldUpdate( INextBot *bot )
 			}
 			else if ( nb_update_debug.GetBool() )
 			{
-				Msg( "Frame %8d/tick %8d: frame out of budget (%.2fms > %.2fms)\n", gpGlobals->framecount, gpGlobals->tickcount, sumFrameTime, frameLimit );
+				Msg( "Frame %8d/tick %8d: frame out of budget (%.2fms > %.2fms)\n", gpGlobals->GetFrameCount(), gpGlobals->GetTickCount(), sumFrameTime, frameLimit );
 			}
 		}
 	}
 
-	int nTicksSlid = ( gpGlobals->tickcount - bot->GetTickLastUpdate() ) - m_iUpdateTickrate;
+	int nTicksSlid = ( gpGlobals->GetTickCount() - bot->GetTickLastUpdate() ) - m_iUpdateTickrate;
 
 	if ( nTicksSlid >= nb_update_maxslide.GetInt() )
 	{
@@ -471,7 +471,7 @@ void NextBotManager::NotifyBeginUpdate( INextBot *bot )
 
 	m_botList.Unlink( bot->GetBotId() );
 	m_botList.LinkToTail( bot->GetBotId() );
-	bot->SetTickLastUpdate( gpGlobals->tickcount );
+	bot->SetTickLastUpdate( gpGlobals->GetTickCount() );
 
 	m_CurUpdateStartTime = Plat_FloatTime();
 }
@@ -647,7 +647,7 @@ void NextBotManager::OnSpokeConcept( CBaseCombatCharacter *who, AIConcept_t conc
 		// const char *who = response->GetCriteria()->GetValue( response->GetCriteria()->FindCriterionIndex( "Who" ) );
 
 		// TODO: Need concept.GetStringConcept()
-		DevMsg( "%3.2f: OnSpokeConcept( %s, %s )\n", gpGlobals->curtime, who->GetDebugName(), "concept.GetStringConcept()" );
+		DevMsg( "%3.2f: OnSpokeConcept( %s, %s )\n", gpGlobals->GetCurTime(), who->GetDebugName(), "concept.GetStringConcept()" );
 	}
 }
 
@@ -685,7 +685,7 @@ void NextBotManager::OnWeaponFired( CBaseCombatCharacter *whoFired, CBaseCombatW
 
 	if ( IsDebugging( NEXTBOT_EVENTS ) )
 	{
-		DevMsg( "%3.2f: OnWeaponFired( %s, %s )\n", gpGlobals->curtime, whoFired->GetDebugName(), weapon->GetName() );
+		DevMsg( "%3.2f: OnWeaponFired( %s, %s )\n", gpGlobals->GetCurTime(), whoFired->GetDebugName(), weapon->GetName() );
 	}
 }
 

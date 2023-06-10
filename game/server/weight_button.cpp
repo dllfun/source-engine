@@ -53,7 +53,7 @@ void CWeightButton::Spawn()
  	SetModel( STRING( GetModelName() ) );
 	CreateVPhysics();
 	SetThink( &CWeightButton::TriggerThink );
-	SetNextThink( gpGlobals->curtime + TICK_INTERVAL );
+	SetNextThink( gpGlobals->GetCurTime() + TICK_INTERVAL );
 	m_bHasBeenPressed = false;
 }
 
@@ -98,5 +98,5 @@ void CWeightButton::TriggerThink( void )
 	}
 
 	// think every tick
-	SetNextThink( gpGlobals->curtime + TICK_INTERVAL );
+	SetNextThink( gpGlobals->GetCurTime() + TICK_INTERVAL );
 }

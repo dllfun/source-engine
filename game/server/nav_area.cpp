@@ -683,7 +683,7 @@ void CNavArea::OnRoundRestart( void )
 //--------------------------------------------------------------------------------------------------------------
 void CNavArea::IncrementPlayerCount( int teamID, int entIndex )
 {
-	ConColorMsg( Color( 128, 255, 128, 255 ), "%f: Adding ent %d (team %d) to area %d\n", gpGlobals->curtime, entIndex, teamID, GetID() );
+	ConColorMsg( Color( 128, 255, 128, 255 ), "%f: Adding ent %d (team %d) to area %d\n", gpGlobals->GetCurTime(), entIndex, teamID, GetID() );
 	teamID = teamID % MAX_NAV_TEAMS;
 	Assert( !m_playerEntIndices[teamID].HasElement( entIndex ) );
 	if ( !m_playerEntIndices[teamID].HasElement( entIndex ) )
@@ -703,7 +703,7 @@ void CNavArea::IncrementPlayerCount( int teamID, int entIndex )
 //--------------------------------------------------------------------------------------------------------------
 void CNavArea::DecrementPlayerCount( int teamID, int entIndex )
 {
-	ConColorMsg( Color( 128, 128, 255, 255 ), "%f: Removing ent %d (team %d) from area %d\n", gpGlobals->curtime, entIndex, teamID, GetID() );
+	ConColorMsg( Color( 128, 128, 255, 255 ), "%f: Removing ent %d (team %d) from area %d\n", gpGlobals->GetCurTime(), entIndex, teamID, GetID() );
 	teamID = teamID % MAX_NAV_TEAMS;
 	Assert( m_playerEntIndices[teamID].HasElement( entIndex ) );
 	m_playerEntIndices[teamID].FindAndFastRemove( entIndex );
@@ -4140,7 +4140,7 @@ void CNavArea::DecayDanger( void )
 {
 	for( int i=0; i<MAX_NAV_TEAMS; ++i )
 	{
-		float deltaT = gpGlobals->curtime - m_dangerTimestamp[i];
+		float deltaT = gpGlobals->GetCurTime() - m_dangerTimestamp[i];
 		float decayAmount = GetDangerDecayRate() * deltaT;
 
 		m_danger[i] -= decayAmount;
@@ -4148,7 +4148,7 @@ void CNavArea::DecayDanger( void )
 			m_danger[i] = 0.0f;
 
 		// update timestamp
-		m_dangerTimestamp[i] = gpGlobals->curtime;
+		m_dangerTimestamp[i] = gpGlobals->GetCurTime();
 	}
 }
 
@@ -4164,7 +4164,7 @@ void CNavArea::IncreaseDanger( int teamID, float amount )
 	int teamIdx = teamID % MAX_NAV_TEAMS;
 
 	m_danger[ teamIdx ] += amount;
-	m_dangerTimestamp[ teamIdx ] = gpGlobals->curtime;
+	m_dangerTimestamp[ teamIdx ] = gpGlobals->GetCurTime();
 }
 
 //--------------------------------------------------------------------------------------------------------------

@@ -109,7 +109,7 @@ static void RecordEffect( const char *pEffectName, const CEffectData &data )
 
  		msg->SetInt( "te", TE_DISPATCH_EFFECT );
  		msg->SetString( "name", pName );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", data.m_vOrigin.x );
 		msg->SetFloat( "originy", data.m_vOrigin.y );
 		msg->SetFloat( "originz", data.m_vOrigin.z );

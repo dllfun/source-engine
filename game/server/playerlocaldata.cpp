@@ -180,7 +180,7 @@ void UpdateAllClientData( void )
 	int i;
 	CBasePlayer *pl;
 
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		pl = ( CBasePlayer * )UTIL_PlayerByIndex( i );
 		if ( !pl )

@@ -709,7 +709,7 @@ void C_BaseExplosionEffect::CreateDynamicLight( void )
 	dl->color.r = 255;
 	dl->color.g = 220;
 	dl->color.b = 128;
-	dl->die		= gpGlobals->curtime + 0.1f;
+	dl->die		= gpGlobals->GetCurTime() + 0.1f;
 }
 
 //-----------------------------------------------------------------------------

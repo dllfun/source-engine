@@ -108,13 +108,13 @@ void CBasePlayerAnimState::ClearAnimationState()
 {
 	ClearAnimationLayers();
 	m_bCurrentFeetYawInitialized = false;
-	m_flLastAnimationStateClearTime = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastAnimationStateClearTime = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 }
 
 
 float CBasePlayerAnimState::TimeSinceLastAnimationStateClear() const
 {
-	return gpGlobals->curtime - m_flLastAnimationStateClearTime;
+	return gpGlobals->GetCurTime() - m_flLastAnimationStateClearTime;
 }
 
 
@@ -226,7 +226,7 @@ void CBasePlayerAnimState::RestartMainSequence()
 {
 	CBaseAnimatingOverlay *pPlayer = GetOuter();
 
-	pPlayer->m_flAnimTime = gpGlobals->curtime;
+	pPlayer->m_flAnimTime = gpGlobals->GetCurTime();
 	pPlayer->SetCycle( 0 );
 }
 
@@ -321,7 +321,7 @@ void CBasePlayerAnimState::UpdateAimSequenceLayers(
 		iAimSequence,
 		flCycle,
 		GetOuter()->GetPlaybackRate(),
-		gpGlobals->curtime
+		gpGlobals->GetCurTime()
 		);
 
 	CAnimationLayer *pDest0 = m_pOuter->GetAnimOverlay( iFirstLayer );
@@ -700,7 +700,7 @@ void CBasePlayerAnimState::ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr )
 			}
 			
 			pLayer->m_flPlaybackRate = 1;
-			pLayer->m_flCycle += m_pOuter->GetSequenceCycleRate( pStudioHdr, pLayer->m_nSequence ) * gpGlobals->frametime;
+			pLayer->m_flCycle += m_pOuter->GetSequenceCycleRate( pStudioHdr, pLayer->m_nSequence ) * gpGlobals->GetFrameTime();
 			pLayer->m_flCycle = fmod( pLayer->m_flCycle, 1 );
 			pLayer->m_nOrder = MAIN_IDLE_SEQUENCE_LAYER;
 #endif
@@ -830,7 +830,7 @@ void CBasePlayerAnimState::ComputePoseParam_BodyYaw()
 		}
 
 	}
-	else if ( (gpGlobals->curtime - m_flLastTurnTime) > mp_facefronttime.GetFloat() )
+	else if ( (gpGlobals->GetCurTime() - m_flLastTurnTime) > mp_facefronttime.GetFloat() )
 	{
 		// player didn't move & turn for quite some time
 		m_flGoalFeetYaw = m_flEyeYaw;
@@ -854,9 +854,9 @@ void CBasePlayerAnimState::ComputePoseParam_BodyYaw()
 	if ( m_flCurrentFeetYaw != m_flGoalFeetYaw )
 	{
 		ConvergeAngles( m_flGoalFeetYaw, mp_feetyawrate.GetFloat(), m_AnimConfig.m_flMaxBodyYawDegrees,
-			 gpGlobals->frametime, m_flCurrentFeetYaw );
+			 gpGlobals->GetFrameTime(), m_flCurrentFeetYaw );
 
-		m_flLastTurnTime = gpGlobals->curtime;
+		m_flLastTurnTime = gpGlobals->GetCurTime();
 	}
 
 	float flCurrentTorsoYaw = AngleNormalize( m_flEyeYaw - m_flCurrentFeetYaw );
@@ -1035,7 +1035,7 @@ void CBasePlayerAnimState::DebugShowAnimState( int iStartLine )
 	}
 
 	AnimStatePrintf( iLine++, "vel: %.2f, time: %.2f, max: %.2f, animspeed: %.2f", 
-		vOuterVel.Length2D(), gpGlobals->curtime, GetInterpolatedGroundSpeed(), m_pOuter->GetSequenceGroundSpeed(m_pOuter->GetSequence()) );
+		vOuterVel.Length2D(), gpGlobals->GetCurTime(), GetInterpolatedGroundSpeed(), m_pOuter->GetSequenceGroundSpeed(m_pOuter->GetSequence()) );
 	
 	if ( m_AnimConfig.m_LegAnimType == LEGANIM_8WAY )
 	{
@@ -1068,7 +1068,7 @@ void CBasePlayerAnimState::DebugShowAnimState( int iStartLine )
 // -----------------------------------------------------------------------------
 void CBasePlayerAnimState::DebugShowAnimStateFull( int iStartLine )
 {
-	AnimStateLog( "----------------- frame %d -----------------\n", gpGlobals->framecount );
+	AnimStateLog( "----------------- frame %d -----------------\n", gpGlobals->GetFrameCount() );
 
 	DebugShowAnimState( iStartLine );
 

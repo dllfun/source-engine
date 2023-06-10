@@ -1163,11 +1163,11 @@ void CStuckMonitor::Update( CImprovLocomotor *improv )
 		// cannot be Length2D, or will break ladder movement (they are only Z)
 		float moveDist = vel.Length();
 
-		float deltaT = gpGlobals->curtime - m_lastTime;
+		float deltaT = gpGlobals->GetCurTime() - m_lastTime;
 		if (deltaT <= 0.0f)
 			return;
 
-		m_lastTime = gpGlobals->curtime;
+		m_lastTime = gpGlobals->GetCurTime();
 
 		// compute current velocity
 		m_avgVel[ m_avgVelIndex++ ] = moveDist/deltaT;

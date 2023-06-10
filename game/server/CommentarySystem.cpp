@@ -230,7 +230,7 @@ CBasePlayer *GetCommentaryPlayer( void )
 {
 	CBasePlayer *pPlayer;
 
-	if ( gpGlobals->maxClients <= 1 )
+	if ( gpGlobals->GetMaxClients() <= 1 )
 	{
 		pPlayer = UTIL_GetLocalPlayer();
 	}
@@ -484,12 +484,12 @@ public:
 
 		if ( m_iTeleportStage != TELEPORT_NONE )
 		{
-			if ( m_flNextTeleportTime <= gpGlobals->curtime )
+			if ( m_flNextTeleportTime <= gpGlobals->GetCurTime() )
 			{
 				if ( m_iTeleportStage == TELEPORT_FADEOUT )
 				{
 					m_iTeleportStage = TELEPORT_TELEPORT;
-					m_flNextTeleportTime = gpGlobals->curtime + 0.35;
+					m_flNextTeleportTime = gpGlobals->GetCurTime() + 0.35;
 
 					color32_s clr = { 0,0,0,255 };
 					UTIL_ScreenFade( pPlayer, clr, 0.3, 0, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT );
@@ -502,12 +502,12 @@ public:
 					}
 
 					m_iTeleportStage = TELEPORT_FADEIN;
-					m_flNextTeleportTime = gpGlobals->curtime + 0.6;
+					m_flNextTeleportTime = gpGlobals->GetCurTime() + 0.6;
 				}
 				else if ( m_iTeleportStage == TELEPORT_FADEIN )
 				{
 					m_iTeleportStage = TELEPORT_NONE;
-					m_flNextTeleportTime = gpGlobals->curtime + 0.25;
+					m_flNextTeleportTime = gpGlobals->GetCurTime() + 0.25;
 
 					color32_s clr = { 0,0,0,255 };
 					UTIL_ScreenFade( pPlayer, clr, 0.3, 0, FFADE_IN | FFADE_PURGE );
@@ -762,7 +762,7 @@ public:
 
 	void JumpToNextNode( CBasePlayer *pPlayer )
 	{
-		if ( m_flNextTeleportTime > gpGlobals->curtime || m_iTeleportStage != TELEPORT_NONE )
+		if ( m_flNextTeleportTime > gpGlobals->GetCurTime() || m_iTeleportStage != TELEPORT_NONE )
 			return;
 
 		CBaseEntity *pEnt = m_hLastCommentaryNode;
@@ -773,7 +773,7 @@ public:
 			{
 				m_iTeleportStage = TELEPORT_FADEOUT;
 				m_hLastCommentaryNode = pNode;
-				m_flNextTeleportTime = gpGlobals->curtime;
+				m_flNextTeleportTime = gpGlobals->GetCurTime();
 
 				// Stop any active nodes
 				if ( m_hActiveCommentaryNode )
@@ -902,7 +902,7 @@ void CPointCommentaryNode::Spawn( void )
 	// Setup for animation
 	ResetSequence( LookupSequence("idle") );
 	SetThink( &CPointCommentaryNode::SpinThink );
-	SetNextThink( gpGlobals->curtime + 0.1f ); 
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f ); 
 
 	m_iNodeNumber = 0;
 	m_iNodeNumberMax = 0;
@@ -974,7 +974,7 @@ void CPointCommentaryNode::SetUnderCrosshair( bool bUnderCrosshair )
 	
 		if ( !m_bActive )
 		{
-			m_flAnimTime = gpGlobals->curtime;
+			m_flAnimTime = gpGlobals->GetCurTime();
 		}
 	}
 	else
@@ -1018,7 +1018,7 @@ void CPointCommentaryNode::SpinThink( void )
 		DispatchAnimEvents(this);
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //------------------------------------------------------------------------------
@@ -1114,8 +1114,8 @@ void CPointCommentaryNode::StartCommentary( void )
 
 	m_bActive = true;
 
-	m_flAnimTime = gpGlobals->curtime;
-	m_flPrevAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
+	m_flPrevAnimTime = gpGlobals->GetCurTime();
 
 	// Switch to the greyed out skin 
 	m_nSkin = 1;
@@ -1131,16 +1131,16 @@ void CPointCommentaryNode::StartCommentary( void )
 	}
 
 	// Start the commentary
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 
 	// If we have a view target, start blending towards it
 	if ( m_hViewTarget || m_hViewPosition.Get() )
 	{
 		m_vecOriginalAngles = pPlayer->EyeAngles();
- 		SetContextThink( &CPointCommentaryNode::UpdateViewThink, gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+ 		SetContextThink( &CPointCommentaryNode::UpdateViewThink, gpGlobals->GetCurTime(), s_pCommentaryUpdateViewThink );
 	}
 
-	//SetContextThink( &CPointCommentaryNode::FinishCommentary, gpGlobals->curtime + flDuration, s_pFinishCommentaryThink );
+	//SetContextThink( &CPointCommentaryNode::FinishCommentary, gpGlobals->GetCurTime() + flDuration, s_pFinishCommentaryThink );
 }
 
 //-----------------------------------------------------------------------------
@@ -1206,7 +1206,7 @@ void CPointCommentaryNode::UpdateViewThink( void )
 		// Accelerate towards the target goal angles
   		float dx = AngleDiff( angGoal.x, angCurrent.x );
   		float dy = AngleDiff( angGoal.y, angCurrent.y );
-		float mod = 1.0 - ExponentialDecay( 0.5, 0.3, gpGlobals->frametime );
+		float mod = 1.0 - ExponentialDecay( 0.5, 0.3, gpGlobals->GetFrameTime() );
    		float dxmod = dx * mod;
 		float dymod = dy * mod;
 
@@ -1227,7 +1227,7 @@ void CPointCommentaryNode::UpdateViewThink( void )
 			pPlayer->SnapEyeAngles( angCurrent );
 		}
 
-		SetNextThink( gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+		SetNextThink( gpGlobals->GetCurTime(), s_pCommentaryUpdateViewThink );
 	}
 
  	if ( m_hViewPosition.Get() )
@@ -1247,7 +1247,7 @@ void CPointCommentaryNode::UpdateViewThink( void )
 		}
 
 		// Blend to the target position over time. 
- 		float flCurTime = (gpGlobals->curtime - m_flStartTime);
+ 		float flCurTime = (gpGlobals->GetCurTime() - m_flStartTime);
  		float flBlendPerc = clamp( flCurTime * 0.5f, 0.f, 1.f );
 
 		// Figure out the current view position
@@ -1255,7 +1255,7 @@ void CPointCommentaryNode::UpdateViewThink( void )
 		VectorLerp( pPlayer->EyePosition(), m_hViewPosition.Get()->GetAbsOrigin(), flBlendPerc, vecCurEye );
 		m_hViewPositionMover->SetAbsOrigin( vecCurEye ); 
 
-		SetNextThink( gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+		SetNextThink( gpGlobals->GetCurTime(), s_pCommentaryUpdateViewThink );
 	}
 }
 
@@ -1271,7 +1271,7 @@ void CPointCommentaryNode::UpdateViewPostThink( void )
  	if ( m_hViewPosition.Get() && m_hViewPositionMover )
 	{
  		// Blend back to the player's position over time.
-   		float flCurTime = (gpGlobals->curtime - m_flFinishedTime);
+   		float flCurTime = (gpGlobals->GetCurTime() - m_flFinishedTime);
 		float flTimeToBlend = MIN( 2.0, m_flFinishedTime - m_flStartTime ); 
  		float flBlendPerc = 1.0f - clamp( flCurTime / flTimeToBlend, 0.f, 1.f );
 
@@ -1299,7 +1299,7 @@ void CPointCommentaryNode::UpdateViewPostThink( void )
 				m_hViewPositionMover->SetAbsAngles( angCurrent );
 			}
 
-			SetNextThink( gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+			SetNextThink( gpGlobals->GetCurTime(), s_pCommentaryUpdateViewThink );
 			return;
 		}
 
@@ -1330,7 +1330,7 @@ void CPointCommentaryNode::FinishCommentary( bool bBlendOut )
 	}
 
 	// Stop the commentary
-	m_flFinishedTime = gpGlobals->curtime;
+	m_flFinishedTime = gpGlobals->GetCurTime();
 
 	if ( bBlendOut && m_hViewPositionMover )
 	{
@@ -1342,7 +1342,7 @@ void CPointCommentaryNode::FinishCommentary( bool bBlendOut )
 		m_bPreventChangesWhileMoving = true;
 
 		// We've moved away from the player's position. Move back to it before ending
-		SetContextThink( &CPointCommentaryNode::UpdateViewPostThink, gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+		SetContextThink( &CPointCommentaryNode::UpdateViewPostThink, gpGlobals->GetCurTime(), s_pCommentaryUpdateViewThink );
 		return;
 	}
 
@@ -1619,7 +1619,7 @@ END_DATADESC()
 void CCommentaryAuto::Spawn(void)
 {
 	BaseClass::Spawn();
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 }
 
 //-----------------------------------------------------------------------------

@@ -66,7 +66,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProject
 		// (better yet, we could draw ourselves in his hand).
 		if ( GetThrower() != C_BasePlayer::GetLocalPlayer() )
 		{
-			if ( gpGlobals->curtime - m_flSpawnTime < 0.5 )
+			if ( gpGlobals->GetCurTime() - m_flSpawnTime < 0.5 )
 			{
 				C_CSPlayer *pPlayer = dynamic_cast<C_CSPlayer*>( GetThrower() );
 				if ( pPlayer && pPlayer->m_PlayerAnimState->IsThrowingGrenade() )
@@ -81,7 +81,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProject
 
 	void CBaseCSGrenadeProjectile::Spawn()
 	{
-		m_flSpawnTime = gpGlobals->curtime;
+		m_flSpawnTime = gpGlobals->GetCurTime();
 		BaseClass::Spawn();
 	}
 
@@ -120,7 +120,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProject
 			return;
 		}
 
-		if( gpGlobals->curtime > m_flDetonateTime )
+		if( gpGlobals->GetCurTime() > m_flDetonateTime )
 		{
 			Detonate();
 			return;
@@ -128,7 +128,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProject
 
 		CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * 0.5, GetAbsVelocity().Length( ), 0.2 );
 
-		SetNextThink( gpGlobals->curtime + 0.2 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.2 );
 
 		if (GetWaterLevel() != 0)
 		{
@@ -139,7 +139,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProject
 	//Sets the time at which the grenade will explode
 	void CBaseCSGrenadeProjectile::SetDetonateTimerLength( float timer )
 	{
-		m_flDetonateTime = gpGlobals->curtime + timer;
+		m_flDetonateTime = gpGlobals->GetCurTime() + timer;
 	}
 
 	void CBaseCSGrenadeProjectile::ResolveFlyCollisionCustom( trace_t &trace, Vector &vecVelocity )
@@ -237,8 +237,8 @@ IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProject
 				VectorNormalize( vecBaseDir );
 				float flScale = vecDelta.Dot( vecBaseDir );
 
-				VectorScale( vecAbsVelocity, ( 1.0f - trace.fraction ) * gpGlobals->frametime, vecVelocity ); 
-				VectorMA( vecVelocity, ( 1.0f - trace.fraction ) * gpGlobals->frametime, GetBaseVelocity() * flScale, vecVelocity );
+				VectorScale( vecAbsVelocity, ( 1.0f - trace.fraction ) * gpGlobals->GetFrameTime(), vecVelocity ); 
+				VectorMA( vecVelocity, ( 1.0f - trace.fraction ) * gpGlobals->GetFrameTime(), GetBaseVelocity() * flScale, vecVelocity );
 				PhysicsPushEntity( vecVelocity, &trace );
 			}
 		}

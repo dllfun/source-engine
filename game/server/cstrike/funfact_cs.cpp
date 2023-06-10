@@ -172,7 +172,7 @@ public:
 		int iBestPlayer = 0;
 		bool bResult = false;
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer* pPlayer = ToCSPlayer(UTIL_PlayerByIndex( i ) );
 			if ( pPlayer )
@@ -302,7 +302,7 @@ public:
 	  {
 		  int iBestValue = 0;
 		  int iBestPlayer = 0;
-		  for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		  for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		  {
 			  CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 			  if ( pPlayer )
@@ -366,7 +366,7 @@ public:
 	  virtual bool Evaluate( FunFactVector& results ) const
 	  {
 		  int iSum = 0;
-		  for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		  for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		  {
 			  CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 			  if ( pPlayer )
@@ -418,7 +418,7 @@ float GetTeamAccuracy( int teamNumber )
 
 	//Add up hits and shots
 	CBasePlayer *pPlayer = NULL;
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		pPlayer = UTIL_PlayerByIndex( i );
 		if (pPlayer)
@@ -546,7 +546,7 @@ bool FFEVAL_WON_AS_LAST_MEMBER( int &iPlayer, int &data1, int &data2, int &data3
 	CCSGameRules::TeamPlayerCounts playerCounts[TEAM_MAXCOUNT];
 	CSGameRules()->GetPlayerCounts(playerCounts);
 
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		pCSPlayer = ToCSPlayer(UTIL_PlayerByIndex( i ) );
 		if( pCSPlayer && pCSPlayer->GetTeamNumber() == winningTeam && pCSPlayer->IsAlive())
@@ -636,7 +636,7 @@ bool FFEVAL_SAME_UNIFORM( int iTeam, int &iData1, int &iData2, int &iData3 )
     int numberInUniform = 0;
 	int iUniform = -1;
 
-    for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+    for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
     {
         CCSPlayer *pCSPlayer = ToCSPlayer(UTIL_PlayerByIndex( i ) );
 		if ( pCSPlayer && pCSPlayer->GetTeamNumber() == iTeam && pCSPlayer->State_Get() != STATE_PICKINGCLASS)
@@ -660,7 +660,7 @@ bool FFEVAL_BEST_TERRORIST_ACCURACY( int &iPlayer, int &data1, int &data2, int &
 {
     float fAccuracy = 0.0f, fBestAccuracy = 0.0f;
     CBasePlayer *pPlayer = NULL;
-    for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+    for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
     {
         pPlayer = UTIL_PlayerByIndex( i );
 
@@ -698,7 +698,7 @@ bool FFEVAL_BEST_COUNTERTERRORIST_ACCURACY( int &iPlayer, int &data1, int &data2
 {
 	float fAccuracy = 0.0f, fBestAccuracy = 0.0f;
     CBasePlayer *pPlayer = NULL;
-    for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+    for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
     {
         pPlayer = UTIL_PlayerByIndex( i );
 

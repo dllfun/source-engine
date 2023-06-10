@@ -1227,7 +1227,7 @@ bool PathFollower::Climbing( INextBot *bot, const Path::Segment *goal, const Vec
 		if ( bot->IsDebugging( NEXTBOT_PATH ) )
 		{
 			NDebugOverlay::Cross3D( mover->GetFeet(), 5.0f, 0, 255, 255, true, 5.0f );
-			DevMsg( "%3.2f: %s ON STAIRS\n", gpGlobals->curtime, bot->GetDebugIdentifier() );
+			DevMsg( "%3.2f: %s ON STAIRS\n", gpGlobals->GetCurTime(), bot->GetDebugIdentifier() );
 		}
 		return false;
 	}
@@ -1407,7 +1407,7 @@ bool PathFollower::Climbing( INextBot *bot, const Path::Segment *goal, const Vec
 		{			
 			if ( bot->IsDebugging( NEXTBOT_PATH ) )
 			{
-				DevMsg( "%3.2f: %s at potential ledge climb\n", gpGlobals->curtime, bot->GetDebugIdentifier() );
+				DevMsg( "%3.2f: %s at potential ledge climb\n", gpGlobals->GetCurTime(), bot->GetDebugIdentifier() );
 			}
 
 			// the low hull sweep hit an obstacle - note how 'far in' this is
@@ -1636,7 +1636,7 @@ bool PathFollower::Climbing( INextBot *bot, const Path::Segment *goal, const Vec
 
 						if ( bot->IsDebugging( NEXTBOT_PATH ) )
 						{
-							DevMsg( "%3.2f: Climbing - found wall.\n", gpGlobals->curtime );
+							DevMsg( "%3.2f: Climbing - found wall.\n", gpGlobals->GetCurTime() );
 							if ( NextBotDebugClimbing.GetBool() )
 							{
 								NDebugOverlay::HorzArrow( result.endpos, result.endpos + 20.0f * result.plane.normal, 5.0f, 255, 100, 0, 255, true, 9999.9f );
@@ -1649,7 +1649,7 @@ bool PathFollower::Climbing( INextBot *bot, const Path::Segment *goal, const Vec
 						// we haven't hit anything yet, and we're already above our heads - no obstacle
 						if ( bot->IsDebugging( NEXTBOT_PATH ) )
 						{
-							DevMsg( "%3.2f: Climbing - skipping overhead climb we can walk/crawl under.\n", gpGlobals->curtime );
+							DevMsg( "%3.2f: Climbing - skipping overhead climb we can walk/crawl under.\n", gpGlobals->GetCurTime() );
 						}
 						break;
 					}
@@ -1675,7 +1675,7 @@ bool PathFollower::Climbing( INextBot *bot, const Path::Segment *goal, const Vec
 			{
 				if ( bot->IsDebugging( NEXTBOT_PATH ) )
 				{
-					DevMsg( "%3.2f: STARTING LEDGE CLIMB UP\n", gpGlobals->curtime );
+					DevMsg( "%3.2f: STARTING LEDGE CLIMB UP\n", gpGlobals->GetCurTime() );
 
 					if ( NextBotDebugClimbing.GetBool() ) 
 					{
@@ -1714,7 +1714,7 @@ bool PathFollower::Climbing( INextBot *bot, const Path::Segment *goal, const Vec
 			}
 			else if ( bot->IsDebugging( NEXTBOT_PATH ) )
 			{
-				DevMsg( "%3.2f: CANT FIND LEDGE TO CLIMB\n", gpGlobals->curtime );
+				DevMsg( "%3.2f: CANT FIND LEDGE TO CLIMB\n", gpGlobals->GetCurTime() );
 			}
 		}
 	}
@@ -1815,7 +1815,7 @@ bool PathFollower::JumpOverGaps( INextBot *bot, const Path::Segment *goal, const
 				if ( bot->IsDebugging( NEXTBOT_PATH ) )
 				{
 					NDebugOverlay::Cross3D( m_goal->pos, 5.0f, 0, 255, 255, true, 5.0f );
-					DevMsg( "%3.2f: GAP JUMP\n", gpGlobals->curtime );
+					DevMsg( "%3.2f: GAP JUMP\n", gpGlobals->GetCurTime() );
 				}
 				return true;
 			}

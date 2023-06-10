@@ -150,10 +150,10 @@ void CHostage::Spawn( void )
 
 
 	// set up think callback
-	SetNextThink( gpGlobals->curtime + HOSTAGE_THINK_INTERVAL );
+	SetNextThink( gpGlobals->GetCurTime() + HOSTAGE_THINK_INTERVAL );
 	SetThink( &CHostage::HostageThink );
 
-	SetContextThink( &CHostage::PushawayThink, gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL, HOSTAGE_PUSHAWAY_THINK_CONTEXT );
+	SetContextThink( &CHostage::PushawayThink, gpGlobals->GetCurTime() + PUSHAWAY_THINK_INTERVAL, HOSTAGE_PUSHAWAY_THINK_CONTEXT );
 
 	SetUse( &CHostage::HostageUse );
 
@@ -386,7 +386,7 @@ void CHostage::HostageRescueZoneTouch( inputdata_t &inputdata )
 		SetSolidFlags( 0 );
 
 		// start fading out
-		m_disappearTime = gpGlobals->curtime + 3.0f;
+		m_disappearTime = gpGlobals->GetCurTime() + 3.0f;
 
 		SetUse( NULL );
 		m_takedamage = DAMAGE_NO;
@@ -485,7 +485,7 @@ void CHostage::HostageRescueZoneTouch( inputdata_t &inputdata )
 					player->AwardAchievement(CSRescueAllHostagesInARound);
 
 					//[tj] fast version                
-					if (gpGlobals->curtime - CSGameRules()->GetRoundStartTime() < AchievementConsts::FastHostageRescue_Time)
+					if (gpGlobals->GetCurTime() - CSGameRules()->GetRoundStartTime() < AchievementConsts::FastHostageRescue_Time)
 					{
 						if ( player )
 						{
@@ -790,7 +790,7 @@ void CHostage::AvoidPhysicsProps( void )
 void CHostage::PushawayThink( void )
 {
 	PerformObstaclePushaway( this );
-	SetNextThink( gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL, HOSTAGE_PUSHAWAY_THINK_CONTEXT );
+	SetNextThink( gpGlobals->GetCurTime() + PUSHAWAY_THINK_INTERVAL, HOSTAGE_PUSHAWAY_THINK_CONTEXT );
 }
 
 //-----------------------------------------------------------------------------------------------------
@@ -821,7 +821,7 @@ void CHostage::HostageThink( void )
 	}
 
 	const float deltaT = HOSTAGE_THINK_INTERVAL;
-	SetNextThink( gpGlobals->curtime + deltaT );
+	SetNextThink( gpGlobals->GetCurTime() + deltaT );
 
 	// keep track of which Navigation Area we are in (or were in, if we're "off the mesh" right now)
 	CNavArea *area = TheNavMesh->GetNavArea( GetAbsOrigin() );
@@ -863,7 +863,7 @@ void CHostage::HostageThink( void )
 	m_PlayerAnimState->Update( GetAbsAngles()[YAW], GetAbsAngles()[PITCH] );
 
 
-	if ( m_disappearTime && m_disappearTime < gpGlobals->curtime )
+	if ( m_disappearTime && m_disappearTime < gpGlobals->GetCurTime() )
 	{
 		// finished fading - remove us completely
 		AddEffects( EF_NODRAW );

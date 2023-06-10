@@ -239,7 +239,7 @@ void CSoundEnt::Spawn( void )
 	SetSolid( SOLID_NONE );
 	Initialize();
 
-	SetNextThink( gpGlobals->curtime + 1 );
+	SetNextThink( gpGlobals->GetCurTime() + 1 );
 }
 
 void CSoundEnt::OnRestore()
@@ -266,24 +266,24 @@ void CSoundEnt::Think ( void )
 	int iSound;
 	int iPreviousSound;
 
-	SetNextThink( gpGlobals->curtime + 0.1 );// how often to check the sound list.
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );// how often to check the sound list.
 
 	iPreviousSound = SOUNDLIST_EMPTY;
 	iSound = m_iActiveSound; 
 
 	while ( iSound != SOUNDLIST_EMPTY )
 	{
-		if ( (m_SoundPool[ iSound ].m_flExpireTime <= gpGlobals->curtime && (!m_SoundPool[ iSound ].m_bNoExpirationTime)) || !m_SoundPool[iSound].ValidateOwner() )
+		if ( (m_SoundPool[ iSound ].m_flExpireTime <= gpGlobals->GetCurTime() && (!m_SoundPool[ iSound ].m_bNoExpirationTime)) || !m_SoundPool[iSound].ValidateOwner() )
 		{
 			int iNext = m_SoundPool[ iSound ].m_iNext;
 
 			if( displaysoundlist.GetInt() == 1 )
 			{
-				Msg("  Removed Sound: %d (Time:%f)\n", m_SoundPool[ iSound ].SoundType(), gpGlobals->curtime );
+				Msg("  Removed Sound: %d (Time:%f)\n", m_SoundPool[ iSound ].SoundType(), gpGlobals->GetCurTime() );
 			}
 			if( displaysoundlist.GetInt() == 2 && m_SoundPool[ iSound ].IsSoundType( SOUND_DANGER ) )
 			{
-				Msg("  Removed Danger Sound: %d (time:%f)\n", m_SoundPool[ iSound ].SoundType(), gpGlobals->curtime );
+				Msg("  Removed Danger Sound: %d (time:%f)\n", m_SoundPool[ iSound ].SoundType(), gpGlobals->GetCurTime() );
 			}
 
 			// move this sound back into the free list
@@ -459,7 +459,7 @@ void CSoundEnt::InsertSound ( int iType, const Vector &vecOrigin, int iVolume, f
 	pSound->m_iType = iType;
 	pSound->m_iVolume = iVolume;
 	pSound->m_flOcclusionScale = 0.5;
-	pSound->m_flExpireTime = gpGlobals->curtime + flDuration;
+	pSound->m_flExpireTime = gpGlobals->GetCurTime() + flDuration;
 	pSound->m_bNoExpirationTime = false;
 	pSound->m_hOwner.Set( pOwner );
 	pSound->m_hTarget.Set( pSoundTarget );
@@ -479,11 +479,11 @@ void CSoundEnt::InsertSound ( int iType, const Vector &vecOrigin, int iVolume, f
 
 	if( displaysoundlist.GetInt() == 1 )
 	{
-		Msg("  Added Sound! Type:%d  Duration:%f (Time:%f)\n", pSound->SoundType(), flDuration, gpGlobals->curtime );
+		Msg("  Added Sound! Type:%d  Duration:%f (Time:%f)\n", pSound->SoundType(), flDuration, gpGlobals->GetCurTime() );
 	}
 	if( displaysoundlist.GetInt() == 2 && (iType & SOUND_DANGER) )
 	{
-		Msg("  Added Danger Sound! Duration:%f (Time:%f)\n", flDuration, gpGlobals->curtime );
+		Msg("  Added Danger Sound! Duration:%f (Time:%f)\n", flDuration, gpGlobals->GetCurTime() );
 	}
 }
 
@@ -524,10 +524,10 @@ void CSoundEnt::Initialize ( void )
 	// In SP, we should only use the first 64 slots so save/load works right.
 	// In MP, have one for each player and 32 extras.
 	int nTotalSoundsInPool = MAX_WORLD_SOUNDS_SP;
-	if ( gpGlobals->maxClients > 1 )
-		nTotalSoundsInPool = MIN( MAX_WORLD_SOUNDS_MP, gpGlobals->maxClients + 32 );
+	if ( gpGlobals->GetMaxClients() > 1 )
+		nTotalSoundsInPool = MIN( MAX_WORLD_SOUNDS_MP, gpGlobals->GetMaxClients() + 32 );
 
-	if ( gpGlobals->maxClients+16 > nTotalSoundsInPool )
+	if ( gpGlobals->GetMaxClients()+16 > nTotalSoundsInPool )
 	{
 		Warning( "CSoundEnt pool is low on sounds due to high number of clients.\n" );
 	}
@@ -543,7 +543,7 @@ void CSoundEnt::Initialize ( void )
 
 	
 	// now reserve enough sounds for each client
-	for ( i = 0 ; i < gpGlobals->maxClients ; i++ )
+	for ( i = 0 ; i < gpGlobals->GetMaxClients() ; i++ )
 	{
 		iSound = IAllocSound();
 
@@ -659,7 +659,7 @@ int CSoundEnt::ClientSoundIndex ( edict_t *pClient )
 	int iReturn = ENTINDEX( pClient ) - 1;
 
 #ifdef _DEBUG
-	if ( iReturn < 0 || iReturn >= gpGlobals->maxClients )
+	if ( iReturn < 0 || iReturn >= gpGlobals->GetMaxClients() )
 	{
 		Msg( "** ClientSoundIndex returning a bogus value! **\n" );
 	}

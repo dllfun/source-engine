@@ -25,7 +25,7 @@ public:
 	// Accessors & Availability
 	bool IsEligible( CBaseEntity *pLooker );
 	bool IsEnabled() { return !m_bDisabled; }
-	bool IsAvailable() { return (gpGlobals->curtime > m_flTimeNextAvailable); }
+	bool IsAvailable() { return (gpGlobals->GetCurTime() > m_flTimeNextAvailable); }
 	void Reserve( float flDuration );
 
 	// Searching

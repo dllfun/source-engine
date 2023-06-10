@@ -358,7 +358,7 @@ void CCSGameMovement::PlayerMove()
 	{
 		if ( m_pCSPlayer->m_flVelocityModifier < 1.0 )
 		{
-			m_pCSPlayer->m_flVelocityModifier += gpGlobals->frametime / 3.0f;
+			m_pCSPlayer->m_flVelocityModifier += gpGlobals->GetFrameTime() / 3.0f;
 		}
 
 		if ( m_pCSPlayer->m_flVelocityModifier > 1.0 )
@@ -451,7 +451,7 @@ void CCSGameMovement::WalkMove( void )
 		// to account for the fact that Goldsrc was applying more stopping power
 		// since it applied the slowdown across more frames.
 		float flReferenceFrametime = 1.0f / 70.0f;
-		float flFrametimeRatio = gpGlobals->frametime / flReferenceFrametime;
+		float flFrametimeRatio = gpGlobals->GetFrameTime() / flReferenceFrametime;
 
 		flRatio = pow( flRatio, flFrametimeRatio );
 
@@ -599,7 +599,7 @@ void CCSGameMovement::CheckForLadders( bool wasOnGround )
 
 void CCSGameMovement::ReduceTimers( void )
 {
-	float frame_msec = 1000.0f * gpGlobals->frametime;
+	float frame_msec = 1000.0f * gpGlobals->GetFrameTime();
 
 	if ( m_pCSPlayer->m_flStamina > 0 )
 	{
@@ -655,7 +655,7 @@ bool CCSGameMovement::CheckJumpButton( void )
 	// See if we are waterjumping.  If so, decrement count and return.
 	if (m_pCSPlayer->m_flWaterJumpTime)
 	{
-		m_pCSPlayer->m_flWaterJumpTime -= gpGlobals->frametime;
+		m_pCSPlayer->m_flWaterJumpTime -= gpGlobals->GetFrameTime();
 		if (m_pCSPlayer->m_flWaterJumpTime < 0)
 			m_pCSPlayer->m_flWaterJumpTime = 0;
 		
@@ -784,7 +784,7 @@ void CCSGameMovement::DecayPunchAngle( void )
 	vPunchAngle.z = m_pCSPlayer->m_Local.m_vecPunchAngle->z;
 	
 	len = VectorNormalize ( vPunchAngle );
-	len -= (10.0 + len * 0.5) * gpGlobals->frametime;
+	len -= (10.0 + len * 0.5) * gpGlobals->GetFrameTime();
 	len = MAX( len, 0.0 );
 	VectorScale ( vPunchAngle, len, vPunchAngle );
 
@@ -940,13 +940,13 @@ void CCSGameMovement::Duck( void )
 		if ( !( mv->m_nButtons & IN_DUCK ) && ( mv->m_nOldButtons & IN_DUCK ) )
 		{
 			// Player has released crouch and moving to standing
-			m_fTimeLastUnducked = gpGlobals->curtime;
+			m_fTimeLastUnducked = gpGlobals->GetCurTime();
 		}
 		else if ( ( mv->m_nButtons & IN_DUCK ) && !( mv->m_nOldButtons & IN_DUCK ) )
 		{
 			// Crouch from standing
 			if ( ( player->GetFlags() & FL_DUCKING )
-				&& ( m_fTimeLastUnducked > (gpGlobals->curtime - sv_timebetweenducks.GetFloat() ) ) )
+				&& ( m_fTimeLastUnducked > (gpGlobals->GetCurTime() - sv_timebetweenducks.GetFloat() ) ) )
 			{
 				// if the server thinks the player is still crouched
 				// AND the time the player started to stand (from being ducked) was less than 300ms ago

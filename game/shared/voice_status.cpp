@@ -181,7 +181,7 @@ void CVoiceStatus::VidInit()
 void CVoiceStatus::Frame(double frametime)
 {
 	// check server banned players once per second
-	if (gpGlobals->curtime - m_LastUpdateServerState > 1)
+	if (gpGlobals->GetCurTime() - m_LastUpdateServerState > 1)
 	{
 		UpdateServerState(false);
 	}
@@ -421,7 +421,7 @@ void CVoiceStatus::UpdateServerState(bool bForce)
 		}
 	}
 	
-	m_LastUpdateServerState = gpGlobals->curtime;
+	m_LastUpdateServerState = gpGlobals->GetCurTime();
 }
 
 void CVoiceStatus::HandleVoiceMaskMsg(bf_read &msg)

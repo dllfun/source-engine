@@ -590,7 +590,7 @@ public:
 	virtual void			PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper);
 	void					RunNullCommand();
 	CUserCmd *				GetCurrentCommand( void )	{ return m_pCurrentCommand; }
-	float					GetTimeSinceLastUserCommand( void ) { return ( !IsConnected() || IsFakeClient() || IsBot() ) ? 0.f : gpGlobals->curtime - m_flLastUserCommandTime; }
+	float					GetTimeSinceLastUserCommand( void ) { return ( !IsConnected() || IsFakeClient() || IsBot() ) ? 0.f : gpGlobals->GetCurTime() - m_flLastUserCommandTime; }
 
 	// Team Handling
 	virtual void			ChangeTeam( int iTeamNum ) { ChangeTeam(iTeamNum,false, false); }
@@ -757,7 +757,7 @@ public:
 	void	DeactivateMovementConstraint( );
 
 	// talk control
-	void	NotePlayerTalked() { m_fLastPlayerTalkTime = gpGlobals->curtime; }
+	void	NotePlayerTalked() { m_fLastPlayerTalkTime = gpGlobals->GetCurTime(); }
 	float	LastTimePlayerTalked() { return m_fLastPlayerTalkTime; }
 
 	void	DisableButtons( int nButtons );
@@ -1470,7 +1470,7 @@ inline const CBasePlayer *ToBasePlayer( const CBaseEntity *pEntity )
 template < typename Functor >
 bool ForEachPlayer( Functor &func )
 {
-	for( int i=1; i<=gpGlobals->maxClients; ++i )
+	for( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -1521,7 +1521,7 @@ inline bool ForEachPlayer( IPlayerFunctor &func )
 	
 	bool isComplete = true;
 	
-	for( int i=1; i<=gpGlobals->maxClients; ++i )
+	for( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -1564,7 +1564,7 @@ int CollectPlayers( CUtlVector< T * > *playerVector, int team = TEAM_ANY, bool i
 		playerVector->RemoveAll();
 	}
 
-	for( int i=1; i<=gpGlobals->maxClients; ++i )
+	for( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex( i );
 
@@ -1600,7 +1600,7 @@ int CollectHumanPlayers( CUtlVector< T * > *playerVector, int team = TEAM_ANY, b
 		playerVector->RemoveAll();
 	}
 
-	for( int i=1; i<=gpGlobals->maxClients; ++i )
+	for( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex( i );
 

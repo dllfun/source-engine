@@ -91,7 +91,7 @@ void CAI_TrackPather::InitPathingData( float flTrackArrivalTolerance, float flTa
 	m_pTargetNearestPath = NULL;
 	m_bLeading = false;
 
-	m_flEnemyPathUpdateTime	= gpGlobals->curtime;
+	m_flEnemyPathUpdateTime	= gpGlobals->GetCurTime();
 	m_bForcedMove = false;
 	m_bPatrolling = false;
 	m_bPatrolBreakable = false;
@@ -1197,7 +1197,7 @@ void CAI_TrackPather::UpdateTargetPosition( void )
 		return;
 
 	// Not time to update again
-	if ( m_flEnemyPathUpdateTime > gpGlobals->curtime )
+	if ( m_flEnemyPathUpdateTime > gpGlobals->GetCurTime() )
 		return;
 
 	// See if the target has moved enough to make us recheck
@@ -1235,7 +1235,7 @@ void CAI_TrackPather::UpdateTargetPosition( void )
 	m_vecLastGoalCheckPosition = targetPos;
 	
 	// Only do this on set intervals
-	m_flEnemyPathUpdateTime	= gpGlobals->curtime + 1.0f;
+	m_flEnemyPathUpdateTime	= gpGlobals->GetCurTime() + 1.0f;
 }
 
 

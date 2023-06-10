@@ -141,9 +141,9 @@ bool CServerNetworkProperty::IsMarkedForDeletion() const
 //-----------------------------------------------------------------------------
 void CServerNetworkProperty::RecomputePVSInformation()
 {
-	if ( m_pPev && ( ( m_pPev->m_fStateFlags & FL_EDICT_DIRTY_PVS_INFORMATION ) != 0 ) )
+	if ( m_pPev && ( ( m_pPev->GetStateFlags() & FL_EDICT_DIRTY_PVS_INFORMATION) != 0))
 	{
-		m_pPev->m_fStateFlags &= ~FL_EDICT_DIRTY_PVS_INFORMATION;
+		m_pPev->GetStateFlags() &= ~FL_EDICT_DIRTY_PVS_INFORMATION;
 		engineServer->BuildEntityClusterList( edict(), &m_PVSInfo );
 	}
 }

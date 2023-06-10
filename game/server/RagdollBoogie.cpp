@@ -77,11 +77,11 @@ void CRagdollBoogie::Spawn()
 	BaseClass::Spawn();
 
 	SetThink( &CRagdollBoogie::BoogieThink );
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 
 	if ( HasSpawnFlags( SF_RAGDOLL_BOOGIE_ELECTRICAL ) )
 	{
-		SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
+		SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->GetCurTime() + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
 	}
 }
 
@@ -123,7 +123,7 @@ void CRagdollBoogie::ZapThink()
 	EmitSound( "RagdollBoogie.Zap" );
 #endif
 
-	SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
+	SetContextThink( &CRagdollBoogie::ZapThink, gpGlobals->GetCurTime() + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
 }
 
 
@@ -158,7 +158,7 @@ void CRagdollBoogie::DecrementSuppressionCount( CBaseEntity *pTarget )
 		{
 			pBoogie->m_nSuppressionCount = 0;
 
-			float dt = gpGlobals->curtime - pBoogie->m_flStartTime;
+			float dt = gpGlobals->GetCurTime() - pBoogie->m_flStartTime;
 			if ( dt >= pBoogie->m_flBoogieLength )
 			{
 				PhysCallbackRemove( pBoogie->NetworkProp() );
@@ -227,7 +227,7 @@ void CRagdollBoogie::BoogieThink( void )
 	float flMagnitude = m_flMagnitude;
 	if ( m_flBoogieLength != 0 )
 	{
-		float dt = gpGlobals->curtime - m_flStartTime;
+		float dt = gpGlobals->GetCurTime() - m_flStartTime;
 		if ( dt >= m_flBoogieLength )
 		{
 			// Don't remove while suppressed... this helps if we try to start another boogie
@@ -241,7 +241,7 @@ void CRagdollBoogie::BoogieThink( void )
 
 		if ( dt < 0 )
 		{
-			SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1, 0.2f ) );
+			SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.1, 0.2f ) );
 			return;
 		}
 
@@ -264,5 +264,5 @@ void CRagdollBoogie::BoogieThink( void )
 	}
 #endif // !_XBOX
 
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1, 0.2f ) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.1, 0.2f ) );
 }

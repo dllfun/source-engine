@@ -293,8 +293,8 @@ void CFogController::InputStartFogTransition(inputdata_t &data)
 {
 	SetThink( &CFogController::SetLerpValues );
 
-	m_fog.lerptime = gpGlobals->curtime + m_fog.duration + 0.1;
-    SetNextThink( gpGlobals->curtime + m_fog.duration );
+	m_fog.lerptime = gpGlobals->GetCurTime() + m_fog.duration + 0.1;
+    SetNextThink( gpGlobals->GetCurTime() + m_fog.duration );
 }
 
 void CFogController::SetLerpValues( void )
@@ -320,7 +320,7 @@ void CFogController::SetLerpValues( void )
 	}
 
 	m_iChangedVariables = 0;
-	m_fog.lerptime = gpGlobals->curtime;
+	m_fog.lerptime = gpGlobals->GetCurTime();
 }
 
 
@@ -362,7 +362,7 @@ void CFogSystem::LevelInitPostEntity( void )
 	// CBasePlayer::Activate is called before this is called so that's too soon to set up the fog controller.
 	// We don't have a hook similar to Activate that happens after LevelInitPostEntity
 	// is called, or we could just do this in the player itself.
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 		if ( pPlayer && ( pPlayer->m_Local.m_PlayerFog.m_hCtrl.Get() == NULL ) )

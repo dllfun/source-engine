@@ -150,10 +150,10 @@ bool C_PhysPropClientside::KeyValue( const char *szKeyName, const char *szValue 
 void C_PhysPropClientside::StartTouch( C_BaseEntity *pOther )
 {
 	// Limit the amount of times we can bounce
-	if ( m_flTouchDelta < gpGlobals->curtime )
+	if ( m_flTouchDelta < gpGlobals->GetCurTime() )
 	{
 		HitSurface( pOther );
-		m_flTouchDelta = gpGlobals->curtime + 0.1f;
+		m_flTouchDelta = gpGlobals->GetCurTime() + 0.1f;
 	}
 
 	BaseClass::StartTouch( pOther );
@@ -410,7 +410,7 @@ void C_PhysPropClientside::ClientThink( void )
 		return;
 	}
 
-	if ( m_fDeathTime <= gpGlobals->curtime )
+	if ( m_fDeathTime <= gpGlobals->GetCurTime() )
 	{
 		Release(); // Die
 		return;
@@ -418,7 +418,7 @@ void C_PhysPropClientside::ClientThink( void )
 
 	// fade out 
 
-	float alpha = (m_fDeathTime - gpGlobals->curtime)/FADEOUT_TIME;
+	float alpha = (m_fDeathTime - gpGlobals->GetCurTime())/FADEOUT_TIME;
 
 	SetRenderMode( kRenderTransTexture );
 
@@ -429,9 +429,9 @@ void C_PhysPropClientside::ClientThink( void )
 
 void C_PhysPropClientside::StartFadeOut( float fDelay )
 {
-	m_fDeathTime = gpGlobals->curtime + fDelay + FADEOUT_TIME;
+	m_fDeathTime = gpGlobals->GetCurTime() + fDelay + FADEOUT_TIME;
 
-	SetNextClientThink( gpGlobals->curtime + fDelay );
+	SetNextClientThink( gpGlobals->GetCurTime() + fDelay );
 }
 
 
@@ -872,7 +872,7 @@ bool C_FuncPhysicsRespawnZone::Initialize( void )
 
 	UpdateVisibility();
 
-	SetNextClientThink( gpGlobals->curtime + (cl_phys_props_respawnrate.GetFloat() * RandomFloat(1.0,1.1)) );
+	SetNextClientThink( gpGlobals->GetCurTime() + (cl_phys_props_respawnrate.GetFloat() * RandomFloat(1.0,1.1)) );
 
 	return true;
 }
@@ -1028,5 +1028,5 @@ void C_FuncPhysicsRespawnZone::ClientThink( void )
 {
 	RespawnProps();
 
-	SetNextClientThink( gpGlobals->curtime + (cl_phys_props_respawnrate.GetFloat() * RandomFloat(1.0,1.1)) );
+	SetNextClientThink( gpGlobals->GetCurTime() + (cl_phys_props_respawnrate.GetFloat() * RandomFloat(1.0,1.1)) );
 }

@@ -359,7 +359,7 @@ void CSpriteTrail::UpdateBoundingBox( void )
 void CSpriteTrail::UpdateTrail( void )
 {
 	// Can't update too quickly
-	if ( m_flUpdateTime > gpGlobals->curtime )
+	if ( m_flUpdateTime > gpGlobals->GetCurTime() )
 		return;
 
 	Vector	screenPos;
@@ -377,7 +377,7 @@ void CSpriteTrail::UpdateTrail( void )
 		// Save off its screen position, not its world position
 		TrailPoint_t *pNewPoint = GetTrailPoint( m_nStepCount );
 		pNewPoint->m_vecScreenPos = screenPos;
-		pNewPoint->m_flDieTime	= gpGlobals->curtime + m_flLifeTime;
+		pNewPoint->m_flDieTime	= gpGlobals->GetCurTime() + m_flLifeTime;
 		pNewPoint->m_flWidthVariance = random->RandomFloat( -m_flStartWidthVariance, m_flStartWidthVariance );
 		if (pLast)
 		{
@@ -392,7 +392,7 @@ void CSpriteTrail::UpdateTrail( void )
 	}
 
 	// Don't update again for a bit
-	m_flUpdateTime = gpGlobals->curtime + ( m_flLifeTime / (float) MAX_SPRITE_TRAIL_POINTS );
+	m_flUpdateTime = gpGlobals->GetCurTime() + ( m_flLifeTime / (float) MAX_SPRITE_TRAIL_POINTS );
 }
 
 
@@ -423,7 +423,7 @@ int CSpriteTrail::DrawModel(IVModel* pWorld, int flags )
 	// Setup the first point, always emanating from the attachment point
 	TrailPoint_t *pLast = GetTrailPoint( m_nStepCount-1 );
 	TrailPoint_t currentPoint;
-	currentPoint.m_flDieTime = gpGlobals->curtime + m_flLifeTime;
+	currentPoint.m_flDieTime = gpGlobals->GetCurTime() + m_flLifeTime;
 	ComputeScreenPosition( &currentPoint.m_vecScreenPos );
 	currentPoint.m_flTexCoord = pLast->m_flTexCoord + currentPoint.m_vecScreenPos.DistTo(pLast->m_vecScreenPos) * m_flTextureRes;
 	currentPoint.m_flWidthVariance = 0.0f;
@@ -441,7 +441,7 @@ int CSpriteTrail::DrawModel(IVModel* pWorld, int flags )
 		// This makes it so that we're always drawing to the current location
 		TrailPoint_t *pPoint = (i != m_nStepCount) ? GetTrailPoint(i) : &currentPoint;
 
-		float flLifePerc = (pPoint->m_flDieTime - gpGlobals->curtime) / m_flLifeTime;
+		float flLifePerc = (pPoint->m_flDieTime - gpGlobals->GetCurTime()) / m_flLifeTime;
 		flLifePerc = clamp( flLifePerc, 0.0f, 1.0f );
 
 		BeamSeg_t curSeg;
@@ -494,7 +494,7 @@ int CSpriteTrail::DrawModel(IVModel* pWorld, int flags )
 		segDraw.NextSeg( &curSeg );
 
 		// See if we're done with this bad boy
-		if ( pPoint->m_flDieTime <= gpGlobals->curtime )
+		if ( pPoint->m_flDieTime <= gpGlobals->GetCurTime() )
 		{
 			// Push this back onto the top for use
 			++m_nFirstStep;

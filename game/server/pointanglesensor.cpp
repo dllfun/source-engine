@@ -152,7 +152,7 @@ void CPointAngleSensor::Activate(void)
 	// of the target entity without testing them against the look at entity.
 	if (!m_bDisabled && m_hTargetEntity)
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -232,10 +232,10 @@ void CPointAngleSensor::Think(void)
 				{
 					if (!m_flFacingTime)
 					{
-						m_flFacingTime = gpGlobals->curtime;
+						m_flFacingTime = gpGlobals->GetCurTime();
 					}
 
-					if (gpGlobals->curtime >= m_flFacingTime + m_flDuration)
+					if (gpGlobals->GetCurTime() >= m_flFacingTime + m_flDuration)
 					{
 						m_OnFacingLookat.FireOutput(this, this);
 						m_bFired = true;
@@ -259,7 +259,7 @@ void CPointAngleSensor::Think(void)
 			m_FacingPercentage.Set( flPerc, this, this );
 		}
 
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -297,7 +297,7 @@ void CPointAngleSensor::InputSetTargetEntity(inputdata_t &inputdata)
 		m_hTargetEntity = gEntList.FindEntityByName( NULL, STRING( m_target ), NULL, inputdata.pActivator, inputdata.pCaller );
 		if (!m_bDisabled && m_hTargetEntity)
 		{
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 }
@@ -345,7 +345,7 @@ void CPointAngleSensor::Enable()
 	m_bDisabled = false;
 	if (m_hTargetEntity)
 	{
-		SetNextThink(gpGlobals->curtime);
+		SetNextThink(gpGlobals->GetCurTime());
 	}
 }
 
@@ -458,7 +458,7 @@ void CPointProximitySensor::Activate( void )
 
 	if ( m_bDisabled == false && m_hTargetEntity != NULL )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -479,7 +479,7 @@ void CPointProximitySensor::InputSetTargetEntity(inputdata_t &inputdata)
 		m_hTargetEntity = gEntList.FindEntityByName( NULL, STRING( m_target ), NULL, inputdata.pActivator, inputdata.pCaller );
 		if (!m_bDisabled && m_hTargetEntity)
 		{
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 }
@@ -523,7 +523,7 @@ void CPointProximitySensor::Enable( void )
 	m_bDisabled = false;
 	if ( m_hTargetEntity )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -557,6 +557,6 @@ void CPointProximitySensor::Think( void )
 		}
 
 		m_Distance.Set( flDist, this, this );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }

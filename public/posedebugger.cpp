@@ -188,7 +188,7 @@ void ModelPoseDebugInfo::AddInfoText( InfoText *x, ModelPoseDebugInfo *pOld )
 			if ( x )
 			{
 				x->m_uiFlags |= F_SEEN_LAST_FRAME;
-				x->m_flTimeAlive += gpGlobals->frametime;
+				x->m_flTimeAlive += gpGlobals->GetFrameTime();
 			}
 		}
 
@@ -202,8 +202,8 @@ void ModelPoseDebugInfo::AddInfoText( InfoText *x, ModelPoseDebugInfo *pOld )
 
 			txtFinished.m_uiFlags &= ~F_SEEN_THIS_FRAME;
 
-			txtFinished.m_flTimeToLive -= gpGlobals->frametime;
-			txtFinished.m_flTimeAlive += gpGlobals->frametime;
+			txtFinished.m_flTimeToLive -= gpGlobals->GetFrameTime();
+			txtFinished.m_flTimeAlive += gpGlobals->GetFrameTime();
 
 			if ( txtFinished.m_flTimeToLive >= 0.0f )
 				m_arrTxt.AddToTail( txtFinished );

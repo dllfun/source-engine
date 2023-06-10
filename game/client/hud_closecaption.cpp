@@ -1022,14 +1022,14 @@ void CHudCloseCaption::Paint( void )
 	if ( totalheight != m_nGoalHeight )
 	{
 		m_nGoalHeight = totalheight;
-		m_flGoalHeightStartTime = gpGlobals->curtime;
-		m_flGoalHeightFinishTime = gpGlobals->curtime + m_flGrowTime;
+		m_flGoalHeightStartTime = gpGlobals->GetCurTime();
+		m_flGoalHeightFinishTime = gpGlobals->GetCurTime() + m_flGrowTime;
 	}
 	if ( desiredAlpha != m_flGoalAlpha )
 	{
 		m_flGoalAlpha = desiredAlpha;
-		m_flGoalHeightStartTime = gpGlobals->curtime;
-		m_flGoalHeightFinishTime = gpGlobals->curtime + m_flGrowTime;
+		m_flGoalHeightStartTime = gpGlobals->GetCurTime();
+		m_flGoalHeightFinishTime = gpGlobals->GetCurTime() + m_flGrowTime;
 	}
 
 	// If shrunk to zero and faded out, nothing left to do
@@ -1055,7 +1055,7 @@ void CHudCloseCaption::Paint( void )
 		growingDown = togo < 0.0f ? true : false;
 
 		float dt = m_flGoalHeightFinishTime - m_flGoalHeightStartTime;
-		float frac = ( gpGlobals->curtime - m_flGoalHeightStartTime ) / dt;
+		float frac = ( gpGlobals->GetCurTime() - m_flGoalHeightStartTime ) / dt;
 		frac = clamp( frac, 0.0f, 1.0f );
 		int newHeight = m_nCurrentHeight + (int)( frac * togo );
 		m_nCurrentHeight = newHeight;
@@ -1161,11 +1161,11 @@ void CHudCloseCaption::Paint( void )
 					CCloseCaptionWorkUnit *wu = item->GetWorkUnit(iFadeLine);
 					if ( wu->GetFadeStart() == 0 )
 					{
-						wu->SetFadeStart( gpGlobals->curtime );
+						wu->SetFadeStart( gpGlobals->GetCurTime() );
 					}
 
 					// Fade out quickly
-					float flFadeTime = (gpGlobals->curtime - wu->GetFadeStart()) /  CAPTION_PAN_FADE_TIME;
+					float flFadeTime = (gpGlobals->GetCurTime() - wu->GetFadeStart()) /  CAPTION_PAN_FADE_TIME;
 					flFadeLineAlpha = clamp( 1.0f - flFadeTime, 0.f, 1.f );
 				}
 				else if ( flTimePostMove < (CAPTION_PAN_FADE_TIME+CAPTION_PAN_SLIDE_TIME) )
@@ -1206,7 +1206,7 @@ void CHudCloseCaption::OnTick( void )
 	ProcessAsyncWork();
 
 
-	float dt = gpGlobals->frametime;
+	float dt = gpGlobals->GetFrameTime();
 
 	int c = m_Items.Count();
 	int i;
@@ -2409,21 +2409,21 @@ void CHudCloseCaption::ProcessSentenceCaptionStream( const char *tokenstream )
 		int idx = m_CloseCaptionRepeats.Find( entry );
 		if ( m_CloseCaptionRepeats.InvalidIndex() == idx )
 		{
-			entry.m_flLastEmitTime = gpGlobals->curtime;
-			entry.m_nLastEmitTick = gpGlobals->tickcount;
+			entry.m_flLastEmitTime = gpGlobals->GetCurTime();
+			entry.m_nLastEmitTick = gpGlobals->GetTickCount();
 			entry.m_flInterval = interval;
 			m_CloseCaptionRepeats.Insert( entry );
 		}
 		else
 		{
 			CaptionRepeat &entry = m_CloseCaptionRepeats[ idx ];
-			if ( gpGlobals->curtime < ( entry.m_flLastEmitTime + entry.m_flInterval ) )
+			if ( gpGlobals->GetCurTime() < ( entry.m_flLastEmitTime + entry.m_flInterval ) )
 			{
 				return;
 			}
 
-			entry.m_flLastEmitTime = gpGlobals->curtime;
-			entry.m_nLastEmitTick = gpGlobals->tickcount;
+			entry.m_flLastEmitTime = gpGlobals->GetCurTime();
+			entry.m_nLastEmitTick = gpGlobals->GetTickCount();
 		}
 	}
 
@@ -2455,8 +2455,8 @@ void CHudCloseCaption::_ProcessCaption( const wchar_t *caption, const char *toke
 	int idx = m_CloseCaptionRepeats.Find( entry );
 	if ( m_CloseCaptionRepeats.InvalidIndex() == idx )
 	{
-		entry.m_flLastEmitTime = gpGlobals->curtime;
-		entry.m_nLastEmitTick = gpGlobals->tickcount;
+		entry.m_flLastEmitTime = gpGlobals->GetCurTime();
+		entry.m_nLastEmitTick = gpGlobals->GetTickCount();
 		entry.m_flInterval = interval;
 		m_CloseCaptionRepeats.Insert( entry );
 	}
@@ -2467,21 +2467,21 @@ void CHudCloseCaption::_ProcessCaption( const wchar_t *caption, const char *toke
 		// Interval of 0.0 means just don't double emit on same tick #
 		if ( entry.m_flInterval <= 0.0f )
 		{
-			if ( gpGlobals->tickcount <= entry.m_nLastEmitTick )
+			if ( gpGlobals->GetTickCount() <= entry.m_nLastEmitTick )
 			{
 				return;
 			}
 		}
 		else if ( hasnorepeat )
 		{
-			if ( gpGlobals->curtime < ( entry.m_flLastEmitTime + entry.m_flInterval ) )
+			if ( gpGlobals->GetCurTime() < ( entry.m_flLastEmitTime + entry.m_flInterval ) )
 			{
 				return;
 			}
 		}
 
-		entry.m_flLastEmitTime = gpGlobals->curtime;
-		entry.m_nLastEmitTick = gpGlobals->tickcount;
+		entry.m_flLastEmitTime = gpGlobals->GetCurTime();
+		entry.m_nLastEmitTick = gpGlobals->GetTickCount();
 	}
 
 	Process( caption, duration, tokenname, fromplayer, direct );

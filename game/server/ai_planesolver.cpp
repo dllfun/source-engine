@@ -119,7 +119,7 @@ bool CAI_PlaneSolver::DetectUnsolvable( const AILocalMoveGoal_t &goal )
 	float curDistance = ( goal.target.AsVector2D() - GetLocalOrigin().AsVector2D() ).Length();
 	if ( m_PrevTarget != goal.target )
 	{
-		m_TimeLastProgress = gpGlobals->curtime;
+		m_TimeLastProgress = gpGlobals->GetCurTime();
 		m_ClosestHaveBeenToCurrent = curDistance;
 		m_fCannotSolveCurrent = false;
 	}
@@ -132,12 +132,12 @@ bool CAI_PlaneSolver::DetectUnsolvable( const AILocalMoveGoal_t &goal )
 
 		if ( m_ClosestHaveBeenToCurrent - curDistance > 0 )
 		{
-			m_TimeLastProgress = gpGlobals->curtime;
+			m_TimeLastProgress = gpGlobals->GetCurTime();
 			m_ClosestHaveBeenToCurrent = curDistance;
 		}
 		else
 		{
-			if ( gpGlobals->curtime - m_TimeLastProgress > 0.75 )
+			if ( gpGlobals->GetCurTime() - m_TimeLastProgress > 0.75 )
 			{
 				m_fCannotSolveCurrent = true;
 				return true;

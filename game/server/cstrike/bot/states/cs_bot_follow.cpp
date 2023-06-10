@@ -210,7 +210,7 @@ void FollowState::OnUpdate( CCSBot *me )
 	Vector leaderOrigin = GetCentroid( m_leader );
 	if (me->IsVisible( leaderOrigin ))
 	{
-		m_lastSawLeaderTime = gpGlobals->curtime;
+		m_lastSawLeaderTime = gpGlobals->GetCurTime();
 		isLeaderVisible = true;
 	}
 	else
@@ -240,7 +240,7 @@ void FollowState::OnUpdate( CCSBot *me )
 
 	// if we haven't seen the leader for a long time, run
 	const float longTime = 20.0f;
-	if (gpGlobals->curtime - m_lastSawLeaderTime > longTime)
+	if (gpGlobals->GetCurTime() - m_lastSawLeaderTime > longTime)
 		m_isSneaking = false;
 
 	if (m_isSneaking)
@@ -322,11 +322,11 @@ void FollowState::OnUpdate( CCSBot *me )
 			{
 				target = collector.m_targetArea[ RandomInt( 0, collector.m_targetAreaCount-1 ) ];				
 				targetPos = target->GetCenter();
-				me->PrintIfWatched( "%4.1f: Bored. Repathing to a new nearby area\n", gpGlobals->curtime );
+				me->PrintIfWatched( "%4.1f: Bored. Repathing to a new nearby area\n", gpGlobals->GetCurTime() );
 			}
 			else
 			{
-				me->PrintIfWatched( "%4.1f: Repathing to stay with leader.\n", gpGlobals->curtime );
+				me->PrintIfWatched( "%4.1f: Repathing to stay with leader.\n", gpGlobals->GetCurTime() );
 
 				// find closest area to where we are
 				CNavArea *area;

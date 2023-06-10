@@ -259,8 +259,8 @@ CBaseAnimating::CBaseAnimating()
 
 	m_flModelScale = 1.0f;
 	// initialize anim clock
-	m_flAnimTime = gpGlobals==NULL?0:gpGlobals->curtime;
-	m_flPrevAnimTime = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flAnimTime = gpGlobals==NULL?0:gpGlobals->GetCurTime();
+	m_flPrevAnimTime = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 	m_nNewSequenceParity = 0;
 	m_nResetEventsParity = 0;
 	m_boneCacheHandle = 0;
@@ -379,10 +379,10 @@ void CBaseAnimating::UseClientSideAnimation()
 float CBaseAnimating::GetAnimTimeInterval( void ) const
 {
 	float flInterval;
-	if (m_flAnimTime < gpGlobals->curtime)
+	if (m_flAnimTime < gpGlobals->GetCurTime())
 	{
 		// estimate what it'll be this frame
-		flInterval = clamp( gpGlobals->curtime - m_flAnimTime, 0.f, MAX_ANIMTIME_INTERVAL );
+		flInterval = clamp( gpGlobals->GetCurTime() - m_flAnimTime, 0.f, MAX_ANIMTIME_INTERVAL );
 	}
 	else
 	{
@@ -421,7 +421,7 @@ void CBaseAnimating::StudioFrameAdvanceInternal( CStudioHdr *pStudioHdr, float f
 	/*
 	if (!IsPlayer())
 		Msg("%s %6.3f : %6.3f %6.3f (%.3f) %.3f\n", 
-			GetClassname(), gpGlobals->curtime, 
+			GetClassname(), gpGlobals->GetCurTime(), 
 			m_flAnimTime.Get(), m_flPrevAnimTime, flInterval, GetCycle() );
 	*/
  
@@ -436,7 +436,7 @@ void CBaseAnimating::StudioFrameAdvanceInternal( CStudioHdr *pStudioHdr, float f
 void CBaseAnimating::InvalidateBoneCacheIfOlderThan( float deltaTime )
 {
 	CBoneCache *pcache = Studio_GetBoneCache( m_boneCacheHandle );
-	if ( !pcache || !pcache->IsValid( gpGlobals->curtime, deltaTime ) )
+	if ( !pcache || !pcache->IsValid( gpGlobals->GetCurTime(), deltaTime ) )
 	{
 		InvalidateBoneCache();
 	}
@@ -452,7 +452,7 @@ void CBaseAnimating::StudioFrameAdvanceManual( float flInterval )
 		return;
 
 	UpdateModelScale();
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	m_flPrevAnimTime = m_flAnimTime - flInterval;
 	float flCycleRate = GetSequenceCycleRate( pStudioHdr, GetSequence() ) * m_flPlaybackRate;
 	StudioFrameAdvanceInternal( GetModelPtr(), flInterval * flCycleRate );
@@ -479,7 +479,7 @@ void CBaseAnimating::StudioFrameAdvance()
 	}
 
 	// Time since last animation
-	float flInterval = gpGlobals->curtime - m_flAnimTime;
+	float flInterval = gpGlobals->GetCurTime() - m_flAnimTime;
 	flInterval = clamp( flInterval, 0.f, MAX_ANIMTIME_INTERVAL );
 
 	//Msg( "%i %s interval %f\n", entindex(), GetClassname(), flInterval );
@@ -492,7 +492,7 @@ void CBaseAnimating::StudioFrameAdvance()
 	// Latch prev
 	m_flPrevAnimTime = m_flAnimTime;
 	// Set current
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 
 	// Drive cycle
 	float flCycleRate = GetSequenceCycleRate( pStudioHdr, GetSequence() ) * m_flPlaybackRate;
@@ -501,7 +501,7 @@ void CBaseAnimating::StudioFrameAdvance()
 
 	if (ai_sequence_debug.GetBool() == true && m_debugOverlays & OVERLAY_NPC_SELECTED_BIT)
 	{
-		Msg("%5.2f : %s : %s : %5.3f\n", gpGlobals->curtime, GetClassname(), GetSequenceName( GetSequence() ), GetCycle() );
+		Msg("%5.2f : %s : %s : %5.3f\n", gpGlobals->GetCurTime(), GetClassname(), GetSequenceName( GetSequence() ), GetCycle() );
 	}
 }
 
@@ -818,7 +818,7 @@ bool CBaseAnimating::BecomeRagdollOnClient( const Vector &force )
 		//UTIL_SetSize( this, vec3_origin, vec3_origin );
 		SetThink( NULL );
 	
-		SetNextThink( gpGlobals->curtime + 2.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 2.0f );
 		//If we're here, then we can vanish safely
 		SetThink( &CBaseEntity::SUB_Remove );
 
@@ -827,7 +827,7 @@ bool CBaseAnimating::BecomeRagdollOnClient( const Vector &force )
 		if ( pFireChild )
 		{
 			pFireChild->SetThink( &CBaseEntity::SUB_Remove );
-			pFireChild->SetNextThink( gpGlobals->curtime + 0.1f );
+			pFireChild->SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		}
 
 		return true;
@@ -1156,7 +1156,7 @@ void CBaseAnimating::HandleAnimEvent( animevent_t *pEvent )
 					hDustTrail->m_MaxSpeed = 10;    // u/sec
 					hDustTrail->m_Opacity = 0.5f;  
 					hDustTrail->SetLifetime(flDuration);  // Lifetime of the spawner, in seconds
-					hDustTrail->m_StopEmitTime = gpGlobals->curtime + flDuration;
+					hDustTrail->m_StopEmitTime = gpGlobals->GetCurTime() + flDuration;
 					hDustTrail->SetParent( this, LookupAttachment( szAttachment ) );
 					hDustTrail->SetLocalOrigin( vec3_origin );
 				}
@@ -1473,7 +1473,7 @@ public:
 
 void CBaseAnimating::SetIKGroundContactInfo( float minHeight, float maxHeight )
 {
-	m_flIKGroundContactTime = gpGlobals->curtime;
+	m_flIKGroundContactTime = gpGlobals->GetCurTime();
 	m_flIKGroundMinHeight = minHeight;
 	m_flIKGroundMaxHeight = maxHeight;
 }
@@ -1516,7 +1516,7 @@ void CBaseAnimating::UpdateStepOrigin()
 	}
 	*/
 
-	if (m_flIKGroundContactTime > 0.2 && m_flIKGroundContactTime > gpGlobals->curtime - 0.2)
+	if (m_flIKGroundContactTime > 0.2 && m_flIKGroundContactTime > gpGlobals->GetCurTime() - 0.2)
 	{
 		if ((GetFlags() & (FL_FLY | FL_SWIM)) == 0 && GetMoveParent() == NULL && GetGroundEntity() != NULL && !GetGroundEntity()->IsMoving())
 		{
@@ -1784,7 +1784,7 @@ void CBaseAnimating::SetupBones( matrix3x4_t *pBoneToWorld, int boneMask )
 	{
 		IBoneSetup boneSetup( pStudioHdr, boneMask, GetPoseParameterArray() );
 		boneSetup.InitPose( pos, q );
-		// Msg( "%.03f : %s:%s not in pvs\n", gpGlobals->curtime, GetClassname(), STRING( GetEntityName() ) );
+		// Msg( "%.03f : %s:%s not in pvs\n", gpGlobals->GetCurTime(), GetClassname(), STRING( GetEntityName() ) );
 	}
 	else 
 	{
@@ -1793,16 +1793,16 @@ void CBaseAnimating::SetupBones( matrix3x4_t *pBoneToWorld, int boneMask )
 			// FIXME: pass this into Studio_BuildMatrices to skip transforms
 			CBoneBitList boneComputed;
 			m_iIKCounter++;
-			m_pIk->Init( pStudioHdr, GetAbsAngles(), adjOrigin, gpGlobals->curtime, m_iIKCounter, boneMask );
+			m_pIk->Init( pStudioHdr, GetAbsAngles(), adjOrigin, gpGlobals->GetCurTime(), m_iIKCounter, boneMask );
 			GetSkeleton( pStudioHdr, pos, q, boneMask );
 
 			m_pIk->UpdateTargets( pos, q, pBoneToWorld, boneComputed );
-			CalculateIKLocks( gpGlobals->curtime );
+			CalculateIKLocks( gpGlobals->GetCurTime() );
 			m_pIk->SolveDependencies( pos, q, pBoneToWorld, boneComputed );
 		}
 		else
 		{
-			// Msg( "%.03f : %s:%s\n", gpGlobals->curtime, GetClassname(), STRING( GetEntityName() ) );
+			// Msg( "%.03f : %s:%s\n", gpGlobals->GetCurTime(), GetClassname(), STRING( GetEntityName() ) );
 			GetSkeleton( pStudioHdr, pos, q, boneMask );
 		}
 	}
@@ -2577,7 +2577,7 @@ CBoneCache *CBaseAnimating::GetBoneCache( void )
 #endif
 	if ( pcache )
 	{
-		if ( pcache->IsValid( gpGlobals->curtime ) && (pcache->m_boneMask & boneMask) == boneMask && pcache->m_timeValid <= gpGlobals->curtime)
+		if ( pcache->IsValid( gpGlobals->GetCurTime() ) && (pcache->m_boneMask & boneMask) == boneMask && pcache->m_timeValid <= gpGlobals->GetCurTime())
 		{
 			// Msg("%s:%s:%s (%x:%x:%8.4f) cache\n", GetClassname(), GetDebugName(), STRING(GetModelName()), boneMask, pcache->m_boneMask, pcache->m_timeValid );
 			// in memory and still valid, use it!
@@ -2598,14 +2598,14 @@ CBoneCache *CBaseAnimating::GetBoneCache( void )
 	if ( pcache )
 	{
 		// still in memory but out of date, refresh the bones.
-		pcache->UpdateBones( bonetoworld, pStudioHdr->numbones(), gpGlobals->curtime );
+		pcache->UpdateBones( bonetoworld, pStudioHdr->numbones(), gpGlobals->GetCurTime() );
 	}
 	else
 	{
 		bonecacheparams_t params;
 		params.pStudioHdr = pStudioHdr;
 		params.pBoneToWorld = bonetoworld;
-		params.curtime = gpGlobals->curtime;
+		params.curtime = gpGlobals->GetCurTime();
 		params.boneMask = boneMask;
 
 		m_boneCacheHandle = Studio_CreateBoneCache( params );
@@ -2793,17 +2793,17 @@ void CBaseAnimating::GetSkeleton( CStudioHdr *pStudioHdr, Vector pos[], Quaterni
 	IBoneSetup boneSetup( pStudioHdr, boneMask, GetPoseParameterArray() );
 	boneSetup.InitPose( pos, q );
 
-	boneSetup.AccumulatePose( pos, q, GetSequence(), GetCycle(), 1.0, gpGlobals->curtime, m_pIk );
+	boneSetup.AccumulatePose( pos, q, GetSequence(), GetCycle(), 1.0, gpGlobals->GetCurTime(), m_pIk );
 
 	if ( m_pIk )
 	{
 		CIKContext auto_ik;
-		auto_ik.Init( pStudioHdr, GetAbsAngles(), GetAbsOrigin(), gpGlobals->curtime, 0, boneMask );
-		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->curtime, &auto_ik );
+		auto_ik.Init( pStudioHdr, GetAbsAngles(), GetAbsOrigin(), gpGlobals->GetCurTime(), 0, boneMask );
+		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->GetCurTime(), &auto_ik );
 	}
 	else
 	{
-		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->curtime, NULL );
+		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->GetCurTime(), NULL );
 	}
 	boneSetup.CalcBoneAdj( pos, q, GetEncodedControllerArray() );
 }
@@ -3283,7 +3283,7 @@ void CBaseAnimating::SetModelScale( float scale, float change_duration /*= 0.0f*
 		ModelScale *mvs = ( ModelScale * )CreateDataObject( MODELSCALE );
 		mvs->m_flModelScaleStart = m_flModelScale;
 		mvs->m_flModelScaleGoal = scale;
-		mvs->m_flModelScaleStartTime = gpGlobals->curtime;
+		mvs->m_flModelScaleStartTime = gpGlobals->GetCurTime();
 		mvs->m_flModelScaleFinishTime = mvs->m_flModelScaleStartTime + change_duration;
 	}
 	else
@@ -3309,10 +3309,10 @@ void CBaseAnimating::UpdateModelScale()
 	float dt = mvs->m_flModelScaleFinishTime - mvs->m_flModelScaleStartTime;
 	Assert( dt > 0.0f );
 
-	float frac = ( gpGlobals->curtime - mvs->m_flModelScaleStartTime ) / dt;
+	float frac = ( gpGlobals->GetCurTime() - mvs->m_flModelScaleStartTime ) / dt;
 	frac = clamp( frac, 0.0f, 1.0f );
 
-	if ( gpGlobals->curtime >= mvs->m_flModelScaleFinishTime )
+	if ( gpGlobals->GetCurTime() >= mvs->m_flModelScaleFinishTime )
 	{
 		m_flModelScale = mvs->m_flModelScaleGoal;
 		DestroyDataObject( MODELSCALE );

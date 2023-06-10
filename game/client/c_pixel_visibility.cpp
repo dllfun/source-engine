@@ -217,12 +217,12 @@ void CPixelVisSet::Init( const pixelvis_queryparams_t &params )
 
 void CPixelVisSet::MarkActive()
 {
-	frameIssued = gpGlobals->framecount;
+	frameIssued = gpGlobals->GetFrameCount();
 }
 
 bool CPixelVisSet::IsActive()
 {
-	return (gpGlobals->framecount - frameIssued) > 1 ? false : true;
+	return (gpGlobals->GetFrameCount() - frameIssued) > 1 ? false : true;
 }
 
 class CPixelVisibilityQuery
@@ -321,7 +321,7 @@ bool CPixelVisibilityQuery::IsForView( int viewID )
 
 bool CPixelVisibilityQuery::IsActive()
 {
-	return (gpGlobals->framecount - m_frameIssued) > 1 ? false : true;
+	return (gpGlobals->GetFrameCount() - m_frameIssued) > 1 ? false : true;
 }
 
 float CPixelVisibilityQuery::GetFractionVisible( float fadeTimeInv )
@@ -345,7 +345,7 @@ float CPixelVisibilityQuery::GetFractionVisible( float fadeTimeInv )
 
 			if ( r_pixelvisibility_spew.GetBool() && g_pView->CurrentViewID() == 0 )
 			{
-				DevMsg( 1, "Pixels visible: %d (qh:%d) Pixels possible: %d (qh:%d) (frame:%d)\n", pixels, (int)(intp)m_queryHandle, pixelsPossible, (int)(intp)m_queryHandleCount, gpGlobals->framecount );
+				DevMsg( 1, "Pixels visible: %d (qh:%d) Pixels possible: %d (qh:%d) (frame:%d)\n", pixels, (int)(intp)m_queryHandle, pixelsPossible, (int)(intp)m_queryHandleCount, gpGlobals->GetFrameCount() );
 			}
 
 			if ( pixels < 0 || pixelsPossible < 0 )
@@ -359,7 +359,7 @@ float CPixelVisibilityQuery::GetFractionVisible( float fadeTimeInv )
 			{
 				float target = (float)pixels / (float)pixelsPossible;
 				target = (target >= 0.95f) ? 1.0f : (target < 0.0f) ? 0.0f : target;
-				float rate = gpGlobals->frametime * fadeTimeInv;
+				float rate = gpGlobals->GetFrameTime() * fadeTimeInv;
 				m_brightnessTarget = Approach( target, m_brightnessTarget, rate ); // fade in / out
 			}
 			else
@@ -376,7 +376,7 @@ float CPixelVisibilityQuery::GetFractionVisible( float fadeTimeInv )
 
 			if ( r_pixelvisibility_spew.GetBool() && g_pView->CurrentViewID() == 0 )
 			{
-				DevMsg( 1, "Pixels visible: %d (qh:%d) (frame:%d)\n", pixels, (int)(intp)m_queryHandle, gpGlobals->framecount );
+				DevMsg( 1, "Pixels visible: %d (qh:%d) (frame:%d)\n", pixels, (int)(intp)m_queryHandle, gpGlobals->GetFrameCount() );
 			}
 
 			if ( pixels < 0 )
@@ -385,9 +385,9 @@ float CPixelVisibilityQuery::GetFractionVisible( float fadeTimeInv )
 				return m_brightnessTarget * m_clipFraction;
 			}
 			m_hasValidQueryResults = true;
-			if ( m_frameIssued == gpGlobals->framecount-1 )
+			if ( m_frameIssued == gpGlobals->GetFrameCount()-1 )
 			{
-				float rate = gpGlobals->frametime * fadeTimeInv;
+				float rate = gpGlobals->GetFrameTime() * fadeTimeInv;
 				float target = 0.0f;
 				if ( pixels > 0 )
 				{
@@ -415,7 +415,7 @@ void CPixelVisibilityQuery::IssueQuery( IMatRenderContext *pRenderContext, float
 
 		if ( r_pixelvisibility_spew.GetBool() && g_pView->CurrentViewID() == 0 )
 		{
-			DevMsg( 1, "Draw Proxy: qh:%d org:<%d,%d,%d> (frame:%d)\n", (int)(intp)m_queryHandle, (int)m_origin[0], (int)m_origin[1], (int)m_origin[2], gpGlobals->framecount );
+			DevMsg( 1, "Draw Proxy: qh:%d org:<%d,%d,%d> (frame:%d)\n", (int)(intp)m_queryHandle, (int)m_origin[0], (int)m_origin[1], (int)m_origin[2], gpGlobals->GetFrameCount() );
 		}
 
 		m_clipFraction = PixelVisibility_DrawProxy( pRenderContext, m_queryHandle, m_origin, proxySize, proxyAspect, pMaterial, sizeIsScreenSpace );
@@ -430,10 +430,10 @@ void CPixelVisibilityQuery::IssueQuery( IMatRenderContext *pRenderContext, float
 		}
 	}
 #ifndef PORTAL // FIXME: In portal we query visibility multiple times per frame because of portal renders!
-	Assert ( ( m_frameIssued != gpGlobals->framecount ) || UseVR() );
+	Assert ( ( m_frameIssued != gpGlobals->GetFrameCount() ) || UseVR() );
 #endif
 
-	m_frameIssued = gpGlobals->framecount;
+	m_frameIssued = gpGlobals->GetFrameCount();
 	m_wasQueriedThisFrame = false;
 	m_failed = false;
 }

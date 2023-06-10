@@ -119,7 +119,7 @@ void PlayerBody::Upkeep( void )
 	if ( bot_mimic.IsValid() && bot_mimic.GetBool() )
 		return;
 
-	const float deltaT = gpGlobals->frametime;
+	const float deltaT = gpGlobals->GetFrameTime();
 	if ( deltaT < 0.00001f )
 	{
 		return;
@@ -274,7 +274,7 @@ void PlayerBody::Upkeep( void )
 			if ( GetBot()->IsDebugging( NEXTBOT_LOOK_AT ) )
 			{
 				ConColorMsg( Color( 255, 100, 0, 255 ), "%3.2f: %s Look At SIGHTED IN\n",
-								gpGlobals->curtime,
+								gpGlobals->GetCurTime(),
 								m_player->GetPlayerName() );
 			}
 		}
@@ -385,7 +385,7 @@ void PlayerBody::AimHeadTowards( const Vector &lookAtPos, LookAtPriorityType pri
 			if ( GetBot()->IsDebugging( NEXTBOT_LOOK_AT ) )
 			{
 				ConColorMsg( Color( 255, 0, 0, 255 ), "%3.2f: %s Look At '%s' rejected - previous aim not %s\n",
-								gpGlobals->curtime,
+								gpGlobals->GetCurTime(),
 								m_player->GetPlayerName(),
 								reason,
 								IsHeadSteady() ? "settled long enough" : "head-steady" );
@@ -406,7 +406,7 @@ void PlayerBody::AimHeadTowards( const Vector &lookAtPos, LookAtPriorityType pri
 		if ( GetBot()->IsDebugging( NEXTBOT_LOOK_AT ) )
 		{
 			ConColorMsg( Color( 255, 0, 0, 255 ), "%3.2f: %s Look At '%s' rejected - higher priority aim in progress\n",
-							gpGlobals->curtime,
+							gpGlobals->GetCurTime(),
 							m_player->GetPlayerName(),
 							reason );
 		}
@@ -457,7 +457,7 @@ void PlayerBody::AimHeadTowards( const Vector &lookAtPos, LookAtPriorityType pri
 		}
 		
 		ConColorMsg( Color( 255, 100, 0, 255 ), "%3.2f: %s Look At ( %g, %g, %g ) for %3.2f s, Pri = %s, Reason = %s\n",
-						gpGlobals->curtime,
+						gpGlobals->GetCurTime(),
 						m_player->GetPlayerName(),
 						lookAtPos.x, lookAtPos.y, lookAtPos.z,
 						duration,
@@ -497,7 +497,7 @@ void PlayerBody::AimHeadTowards( CBaseEntity *subject, LookAtPriorityType priori
 			if ( GetBot()->IsDebugging( NEXTBOT_LOOK_AT ) )
 			{
 				ConColorMsg( Color( 255, 0, 0, 255 ), "%3.2f: %s Look At '%s' rejected - previous aim not %s\n",
-								gpGlobals->curtime,
+								gpGlobals->GetCurTime(),
 								m_player->GetPlayerName(),
 								reason,
 								IsHeadSteady() ? "head-steady" : "settled long enough" );
@@ -518,7 +518,7 @@ void PlayerBody::AimHeadTowards( CBaseEntity *subject, LookAtPriorityType priori
 		if ( GetBot()->IsDebugging( NEXTBOT_LOOK_AT ) )
 		{
 			ConColorMsg( Color( 255, 0, 0, 255 ), "%3.2f: %s Look At '%s' rejected - higher priority aim in progress\n",
-							gpGlobals->curtime,
+							gpGlobals->GetCurTime(),
 							m_player->GetPlayerName(),
 							reason );
 		}
@@ -589,7 +589,7 @@ void PlayerBody::AimHeadTowards( CBaseEntity *subject, LookAtPriorityType priori
 		}
 		
 		ConColorMsg( Color( 255, 100, 0, 255 ), "%3.2f: %s Look At subject %s for %3.2f s, Pri = %s, Reason = %s\n",
-						gpGlobals->curtime,
+						gpGlobals->GetCurTime(),
 						m_player->GetPlayerName(),
 						subject->GetClassname(),
 						duration,

@@ -259,7 +259,7 @@ void CViewAngleAnimation::RunAnimation( QAngle angles )
 		return;
 	}
 
-	m_flAnimStartTime = gpGlobals->curtime;
+	m_flAnimStartTime = gpGlobals->GetCurTime();
 	m_bFinished = false;
 	m_vecBaseAngles = angles;
 
@@ -276,7 +276,7 @@ void CViewAngleAnimation::ClientThink()
 	if ( IsFinished() )
 		return;
 
-	float flCurrentTime = gpGlobals->curtime - m_flAnimStartTime;
+	float flCurrentTime = gpGlobals->GetCurTime() - m_flAnimStartTime;
 
 	if ( flCurrentTime < 0 )
 		flCurrentTime = 0.001;

@@ -73,7 +73,7 @@ void CAI_MoveAndShootOverlay::StartShootWhileMove()
 		return;
 	}
 	
-	GetOuter()->GetShotRegulator()->FireNoEarlierThan( gpGlobals->curtime + m_initialDelay );
+	GetOuter()->GetShotRegulator()->FireNoEarlierThan( gpGlobals->GetCurTime() + m_initialDelay );
 	m_bNoShootWhileMove = false;
 }
 
@@ -156,7 +156,7 @@ void CAI_MoveAndShootOverlay::UpdateMoveShootActivity( bool bMoveAimAtEnemy )
 	if ( curActivity != newActivity )
 	{
 		// Transitioning, wait a bit
-		GetOuter()->GetShotRegulator()->FireNoEarlierThan( gpGlobals->curtime + 0.3f );
+		GetOuter()->GetShotRegulator()->FireNoEarlierThan( gpGlobals->GetCurTime() + 0.3f );
 		GetOuter()->GetNavigator()->SetMovementActivity( newActivity );
 	}
 }
@@ -168,7 +168,7 @@ void CAI_MoveAndShootOverlay::RunShootWhileMove()
 	if ( m_bNoShootWhileMove )
 		return;
 
-	if ( gpGlobals->curtime < m_flSuspendUntilTime )
+	if ( gpGlobals->GetCurTime() < m_flSuspendUntilTime )
 		return;
 
 	m_flSuspendUntilTime = MOVESHOOT_DO_NOT_SUSPEND;
@@ -290,7 +290,7 @@ void CAI_MoveAndShootOverlay::EndShootWhileMove()
 void CAI_MoveAndShootOverlay::SuspendMoveAndShoot( float flDuration )
 {
 	EndShootWhileMove();
-	m_flSuspendUntilTime = gpGlobals->curtime + flDuration;
+	m_flSuspendUntilTime = gpGlobals->GetCurTime() + flDuration;
 }
 
 //-------------------------------------

@@ -256,7 +256,7 @@ void CTimerEntity::ResetTimer( void )
 		m_flRefireTime = random->RandomFloat( m_flLowerRandomBound, m_flUpperRandomBound );
 	}
 
-	SetNextThink( gpGlobals->curtime + m_flRefireTime );
+	SetNextThink( gpGlobals->GetCurTime() + m_flRefireTime );
 }
 
 
@@ -424,9 +424,9 @@ void CTimerEntity::InputSubtractFromTimer( inputdata_t &inputdata )
 
 	// Subtract time from the timer but don't let the timer go negative
 	float flNextThink = GetNextThink();
-	if ( ( flNextThink - gpGlobals->curtime ) <= inputdata.value.Float() )
+	if ( ( flNextThink - gpGlobals->GetCurTime() ) <= inputdata.value.Float() )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 	else
 	{
@@ -455,7 +455,7 @@ int CTimerEntity::DrawDebugTextOverlays( void )
 		if ( !m_iDisabled )
 		{
 			float flNextThink = GetNextThink();
-			Q_snprintf( tempstr, sizeof( tempstr ), "      firing in: %.2f sec", flNextThink - gpGlobals->curtime );
+			Q_snprintf( tempstr, sizeof( tempstr ), "      firing in: %.2f sec", flNextThink - gpGlobals->GetCurTime() );
 			EntityText( text_offset, tempstr, 0);
 			text_offset++;
 		}
@@ -555,7 +555,7 @@ void CLogicLineToEntity::Activate(void)
 //-----------------------------------------------------------------------------
 void CLogicLineToEntity::Spawn(void)
 {
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 }
 
 
@@ -570,7 +570,7 @@ void CLogicLineToEntity::Think(void)
 	{
 		// Can sleep for a long time, no more lines.
 		m_Line.Set( vec3_origin, this, this );
-		SetNextThink( gpGlobals->curtime + 10 );
+		SetNextThink( gpGlobals->GetCurTime() + 10 );
 		return;
 	}
 
@@ -578,7 +578,7 @@ void CLogicLineToEntity::Think(void)
 	VectorSubtract( pDest->GetAbsOrigin(), pSrc->GetAbsOrigin(), delta ); 
 	m_Line.Set(delta, this, this);
 
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 }
 
 
@@ -1178,7 +1178,7 @@ bool CMultiSource::KeyValue( const char *szKeyName, const char *szValue )
 //-----------------------------------------------------------------------------
 void CMultiSource::Spawn()
 { 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	m_spawnflags |= SF_MULTI_INIT;	// Until it's initialized
 	SetThink(&CMultiSource::Register);
 }
@@ -2307,11 +2307,11 @@ void CLogicAutosave::InputSaveDangerous( inputdata_t &inputdata )
 {
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
 
-	if ( g_ServerGameDLL.m_fAutoSaveDangerousTime != 0.0f && g_ServerGameDLL.m_fAutoSaveDangerousTime >= gpGlobals->curtime )
+	if ( g_ServerGameDLL.m_fAutoSaveDangerousTime != 0.0f && g_ServerGameDLL.m_fAutoSaveDangerousTime >= gpGlobals->GetCurTime() )
 	{
 		// A previous dangerous auto save was waiting to become safe
 
-		if ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime )
+		if ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->GetCurTime() )
 		{
 			// The player isn't dead, so make the dangerous auto save safe
 			engineServer->ServerCommand( "autosavedangerousissafe\n" );
@@ -2326,7 +2326,7 @@ void CLogicAutosave::InputSaveDangerous( inputdata_t &inputdata )
 	if ( pPlayer->GetHealth() >= m_minHitPoints )
 	{
 		engineServer->ServerCommand( "autosavedangerous\n" );
-		g_ServerGameDLL.m_fAutoSaveDangerousTime = gpGlobals->curtime + inputdata.value.Float();
+		g_ServerGameDLL.m_fAutoSaveDangerousTime = gpGlobals->GetCurTime() + inputdata.value.Float();
 
 		// Player must have this much health when we go to commit, or we don't commit.
 		g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = m_minHitPointsToCommit;
@@ -2344,7 +2344,7 @@ class CLogicActiveAutosave : public CLogicAutosave
 	{
 		m_flStartTime = -1;
 		SetThink( &CLogicActiveAutosave::SaveThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 
 	void InputDisable( inputdata_t &inputdata )
@@ -2361,7 +2361,7 @@ class CLogicActiveAutosave : public CLogicAutosave
 			{
 				if ( pPlayer->GetHealth() <= m_minHitPoints )
 				{
-					m_flStartTime = gpGlobals->curtime;
+					m_flStartTime = gpGlobals->GetCurTime();
 				}
 			}
 			else
@@ -2381,7 +2381,7 @@ class CLogicActiveAutosave : public CLogicAutosave
 					}
 					m_flStartTime = -1;
 				}
-				else if ( m_flTimeToTrigger > 0 && gpGlobals->curtime - m_flStartTime > m_flTimeToTrigger )
+				else if ( m_flTimeToTrigger > 0 && gpGlobals->GetCurTime() - m_flStartTime > m_flTimeToTrigger )
 				{
 					m_flStartTime = -1;
 				}
@@ -2389,7 +2389,7 @@ class CLogicActiveAutosave : public CLogicAutosave
 		}
 
 		float thinkInterval = ( m_flStartTime < 0 ) ? 1.0 : 0.5;
-		SetNextThink( gpGlobals->curtime + thinkInterval );
+		SetNextThink( gpGlobals->GetCurTime() + thinkInterval );
 	}
 
 	DECLARE_DATADESC();

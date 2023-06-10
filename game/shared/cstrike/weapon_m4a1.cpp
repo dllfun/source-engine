@@ -176,7 +176,7 @@ Activity CWeaponM4A1::GetDeployActivity( void )
 
 bool CWeaponM4A1::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
-	if ( gpGlobals->curtime < m_flDoneSwitchingSilencer )
+	if ( gpGlobals->GetCurTime() < m_flDoneSwitchingSilencer )
 	{
 		// still switching the silencer.  Cancel the switch.
 		m_bSilencerOn = !m_bSilencerOn;
@@ -189,7 +189,7 @@ bool CWeaponM4A1::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 void CWeaponM4A1::Drop( const Vector &vecVelocity )
 {
-	if ( gpGlobals->curtime < m_flDoneSwitchingSilencer )
+	if ( gpGlobals->GetCurTime() < m_flDoneSwitchingSilencer )
 	{
 		// still switching the silencer.  Cancel the switch.
 		m_bSilencerOn = !m_bSilencerOn;
@@ -214,11 +214,11 @@ void CWeaponM4A1::SecondaryAttack()
 		m_weaponMode = Secondary_Mode;
 		SendWeaponAnim( ACT_VM_ATTACH_SILENCER );
 	}
-	m_flDoneSwitchingSilencer = gpGlobals->curtime + 2;
+	m_flDoneSwitchingSilencer = gpGlobals->GetCurTime() + 2;
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 2;
-	m_flNextPrimaryAttack = gpGlobals->curtime + 2;
-	SetWeaponIdleTime( gpGlobals->curtime + 2 );
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 2;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 2;
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 2 );
 
 	SetWeaponModelIndex( GetWorldModel() );
 }
@@ -330,13 +330,13 @@ bool CWeaponM4A1::Reload()
 
 void CWeaponM4A1::WeaponIdle()
 {
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 	// only idle if the slid isn't back
 	if ( m_iClip1 != 0 )
 	{
-		SetWeaponIdleTime( gpGlobals->curtime + GetCSWpnData().m_flIdleInterval );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + GetCSWpnData().m_flIdleInterval );
 		if ( m_bSilencerOn )
 			SendWeaponAnim( ACT_VM_IDLE_SILENCED );
 		else

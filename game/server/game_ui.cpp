@@ -221,7 +221,7 @@ void CGameUI::InputActivate( inputdata_t &inputdata )
 	m_playerOn.FireOutput( pPlayer, this, 0 );
 
 	// Turn the hud off
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	// Disable player's motion
 	if ( FBitSet( m_spawnflags, SF_GAMEUI_FREEZE_PLAYER ) )
@@ -290,7 +290,7 @@ void CGameUI::Think( void )
 	}
 
 	pPlayer->AddFlag( FL_ONTRAIN );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	// Deactivate if they jump or press +use.
 	// FIXME: prevent the use from going through in player.cpp

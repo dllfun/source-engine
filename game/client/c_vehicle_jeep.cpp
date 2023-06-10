@@ -107,7 +107,7 @@ void C_PropJeep::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd )
 		}
 		else
 		{
-			m_flViewAngleDeltaTime += gpGlobals->frametime;
+			m_flViewAngleDeltaTime += gpGlobals->GetFrameTime();
 		}
 
 		if ( m_flViewAngleDeltaTime > r_JeepViewBlendToTime.GetFloat() )
@@ -134,7 +134,7 @@ void C_PropJeep::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicle
 {
 #ifdef HL2_CLIENT_DLL
 	// Get the frametime. (Check to see if enough time has passed to warrent dampening).
-	float flFrameTime = gpGlobals->frametime;
+	float flFrameTime = gpGlobals->GetFrameTime();
 
 	if ( flFrameTime < JEEP_FRAMETIME_MIN )
 	{

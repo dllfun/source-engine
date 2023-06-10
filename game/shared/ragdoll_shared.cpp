@@ -702,7 +702,7 @@ void RagdollSolveSeparation( ragdoll_t &ragdoll, CBaseEntity *pEntity )
 			element.pObject->SetPositionMatrix( xform, true );
 			element.pObject->SetVelocity( &velocity, &vec3_origin );
 		}
-		DevMsg(2, "TICK:%5d:Ragdoll separation count: %d\n", gpGlobals->tickcount, fixCount );
+		DevMsg(2, "TICK:%5d:Ragdoll separation count: %d\n", gpGlobals->GetTickCount(), fixCount );
 	}
 	else
 	{
@@ -1166,7 +1166,7 @@ C_EntityFlame *FireEffect( C_BaseAnimating *pTarget, C_BaseEntity *pServerFire, 
 		CPASAttenuationFilter filter( pTarget );
 		pTarget->EmitSound( filter, pTarget->GetSoundSourceIndex(), "General.BurningFlesh" );
 
-		pFire->SetNextClientThink( gpGlobals->curtime + 7.0f );
+		pFire->SetNextClientThink( gpGlobals->GetCurTime() + 7.0f );
 	}
 
 	return pFire;

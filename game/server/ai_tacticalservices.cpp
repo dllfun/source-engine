@@ -727,7 +727,7 @@ bool CAI_TacticalServices::FindLateralLos( const Vector &vecThreat, Vector *pRes
 	int		i;
 
 	if(  !bLookingForEnemy || GetOuter()->HasCondition(COND_SEE_ENEMY) || GetOuter()->HasCondition(COND_HAVE_ENEMY_LOS) || 
-		 GetOuter()->GetTimeScheduleStarted() == gpGlobals->curtime ) // Conditions get nuked before tasks run, assume should try
+		 GetOuter()->GetTimeScheduleStarted() == gpGlobals->GetCurTime() ) // Conditions get nuked before tasks run, assume should try
 	{
 		// My current position might already be valid.
 		if ( TestLateralLos(vecThreat, GetLocalOrigin()) )

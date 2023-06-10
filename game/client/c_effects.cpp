@@ -286,7 +286,7 @@ void CClient_Precipitation::OnDataChanged( DataUpdateType_t updateType )
 
 void CClient_Precipitation::ClientThink()
 {
-	Simulate( gpGlobals->frametime );
+	Simulate( gpGlobals->GetFrameTime() );
 }
 
 
@@ -504,7 +504,7 @@ inline void CClient_Precipitation::RenderParticle( CPrecipitationParticle* pPart
 
 		if ( pParticle->m_Mass > 1.0f )
 		{
-			SinCos( gpGlobals->curtime * M_PI * (1+pParticle->m_Mass * 0.1f) + 
+			SinCos( gpGlobals->GetCurTime() * M_PI * (1+pParticle->m_Mass * 0.1f) + 
 					pParticle->m_Mass * 5.0f, &s , &c );
 
 			// only spiral particles with a mass > 1, so some fall straight down
@@ -720,7 +720,7 @@ inline float CClient_Precipitation::GetSpeed() const
 
 inline float CClient_Precipitation::GetRemainingLifetime( CPrecipitationParticle* pParticle ) const
 {
-	float timeSinceSpawn = gpGlobals->curtime - pParticle->m_SpawnTime;
+	float timeSinceSpawn = gpGlobals->GetCurTime() - pParticle->m_SpawnTime;
 	return m_Lifetime - timeSinceSpawn;
 }
 
@@ -733,7 +733,7 @@ inline CPrecipitationParticle* CClient_Precipitation::CreateParticle()
 	int i = m_Particles.AddToTail();
 	CPrecipitationParticle* pParticle = &m_Particles[i];
 
-	pParticle->m_SpawnTime = gpGlobals->curtime;
+	pParticle->m_SpawnTime = gpGlobals->GetCurTime();
 	pParticle->m_Ramp = m_InitialRamp;
 
 	return pParticle;
@@ -827,7 +827,7 @@ float AshDebrisEffect::UpdateRoll( SimpleParticle *pParticle, float timeDelta )
 	if ( pParticle->m_iFlags & ASH_PARTICLE_NOISE )
 	{
 		Vector vTempEntVel = pParticle->m_vecVelocity;
-		float fastFreq = gpGlobals->curtime * 1.5;
+		float fastFreq = gpGlobals->GetCurTime() * 1.5;
 
 		float s, c;
 		SinCos( fastFreq, &s, &c );
@@ -863,7 +863,7 @@ void CClient_Precipitation::CreateAshParticle( void )
 		pPlayer->GetVectors( &vForward, NULL, NULL );
 		vForward.z = 0.0f;
 
-		float curTime = gpGlobals->frametime;
+		float curTime = gpGlobals->GetFrameTime();
 
 		Vector vPushOrigin;
 
@@ -1228,7 +1228,7 @@ void C_EnvWind::OnDataChanged( DataUpdateType_t updateType )
 void C_EnvWind::ClientThink( )
 {
 	// Update the wind speed
-	float flNextThink = m_EnvWindShared.WindThink( gpGlobals->curtime );
+	float flNextThink = m_EnvWindShared.WindThink( gpGlobals->GetCurTime() );
 	SetNextClientThink(flNextThink);
 }
 
@@ -1398,7 +1398,7 @@ void C_Embers::AddEntity( void )
 	if ( m_bEmit == false )
 		return;
 
-	float tempDelta = gpGlobals->frametime;
+	float tempDelta = gpGlobals->GetFrameTime();
 
 	while( m_tParticleSpawn.NextEvent( tempDelta ) )
 	{
@@ -1509,7 +1509,7 @@ int	C_QuadraticBeam::DrawModel(IVModel* pWorld, int )
 {
 	Draw_SetSpriteTexture( GetModel(), 0, GetRenderMode() );
 	Vector color = Color32ToVector( GetRenderColor() );
-	DrawBeamQuadratic( GetRenderOrigin(), m_controlPosition, m_targetPosition, m_flWidth, color, gpGlobals->curtime*m_scrollRate );
+	DrawBeamQuadratic( GetRenderOrigin(), m_controlPosition, m_targetPosition, m_flWidth, color, gpGlobals->GetCurTime()*m_scrollRate );
 	return 1;
 }
 
@@ -1537,7 +1537,7 @@ public:
 		pParticle->m_vecVelocity *= flSpeed;
 
 		Vector vecWindVelocity;
-		GetWindspeedAtTime( gpGlobals->curtime, vecWindVelocity );
+		GetWindspeedAtTime( gpGlobals->GetCurTime(), vecWindVelocity );
 		pParticle->m_vecVelocity += ( vecWindVelocity * r_SnowWindScale.GetFloat() );
 	}
 
@@ -1896,7 +1896,7 @@ void CSnowFallManager::CreateSnowFall( void )
 		return;
 
 	// Get the current frame time.
-	float flCurrentTime = gpGlobals->frametime;
+	float flCurrentTime = gpGlobals->GetFrameTime();
 
 	// Get the players data to determine where the snow emitter should reside.
 	VectorCopy( pPlayer->EyePosition(), m_vecSnowFallEmitOrigin );

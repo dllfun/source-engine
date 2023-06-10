@@ -169,7 +169,7 @@ public:
 
 protected:
 	virtual bool	IsReadinessCapable();
-	bool			IsReadinessLocked() { return gpGlobals->curtime < m_flReadinessLockedUntil; }
+	bool			IsReadinessLocked() { return gpGlobals->GetCurTime() < m_flReadinessLockedUntil; }
 	void			AddReadiness( float flAdd, bool bOverrideLock = false );
 	void			SubtractReadiness( float flAdd, bool bOverrideLock = false );
 	void			SetReadinessValue( float flSet );

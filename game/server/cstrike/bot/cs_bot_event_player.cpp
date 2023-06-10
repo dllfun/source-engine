@@ -50,7 +50,7 @@ void CCSBot::OnPlayerDeath( IGameEvent *event )
 	if (victim && victim->GetTeamNumber() == GetTeamNumber())
 	{
 		// note time of death
-		m_friendDeathTimestamp = gpGlobals->curtime;
+		m_friendDeathTimestamp = gpGlobals->GetCurTime();
 
 		// chastise friendly fire from humans
 		if (killer && !killer->IsBot() && killer->GetTeamNumber() == GetTeamNumber() && killer != this)
@@ -187,7 +187,7 @@ void CCSBot::OnPlayerRadio( IGameEvent *event )
 		if (radioEvent != RADIO_INVALID && radioEvent != RADIO_AFFIRMATIVE && radioEvent != RADIO_NEGATIVE && radioEvent != RADIO_REPORTING_IN)
 		{
 			m_lastRadioCommand = radioEvent;
-			m_lastRadioRecievedTimestamp = gpGlobals->curtime;
+			m_lastRadioRecievedTimestamp = gpGlobals->GetCurTime();
 			m_radioSubject = player;
 			m_radioPosition = GetCentroid( player );
 		}

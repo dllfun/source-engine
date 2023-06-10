@@ -62,7 +62,7 @@ bool CHudBaseAccount::ShouldDraw()
 void CHudBaseAccount::Reset( void )
 {
 	// Round is restarting
-	if ( m_flLastAnimationEnd > gpGlobals->curtime && m_pszLastAnimationName )
+	if ( m_flLastAnimationEnd > gpGlobals->GetCurTime() && m_pszLastAnimationName )
 	{
 		// if we had an animation in progress, queue it to be kicked it off again
 		m_pszQueuedAnimationName = m_pszLastAnimationName;
@@ -92,7 +92,7 @@ void CHudBaseAccount::Paint()
 			m_pszLastAnimationName = "AccountMoneyAdded";
 		}
 		GetAnimationController()->StartAnimationSequence( m_pszLastAnimationName );
-		m_flLastAnimationEnd = gpGlobals->curtime + GetAnimationController()->GetAnimationSequenceLength( m_pszLastAnimationName );
+		m_flLastAnimationEnd = gpGlobals->GetCurTime() + GetAnimationController()->GetAnimationSequenceLength( m_pszLastAnimationName );
 
 		m_iPreviousAccount = account;
 	}

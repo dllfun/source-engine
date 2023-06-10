@@ -790,10 +790,10 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CFuncTrain::Blocked( CBaseEntity *pOther )
 {
-	if ( gpGlobals->curtime < m_flNextBlockTime )
+	if ( gpGlobals->GetCurTime() < m_flNextBlockTime )
 		return;
 
-	m_flNextBlockTime = gpGlobals->curtime + 0.5;
+	m_flNextBlockTime = gpGlobals->GetCurTime() + 0.5;
 	
 	//Inflict damage
 	pOther->TakeDamage( CTakeDamageInfo( this, this, m_flBlockDamage, DMG_CRUSH ) );
@@ -1255,7 +1255,7 @@ CFuncTrackTrain::CFuncTrackTrain()
 	m_eOrientationType = TrainOrientation_AtPathTracks;
 	m_eVelocityType = TrainVelocity_Instantaneous;
 	m_lastBlockPos.Init();
-	m_lastBlockTick = gpGlobals==NULL?0:gpGlobals->tickcount;
+	m_lastBlockTick = gpGlobals==NULL?0:gpGlobals->GetTickCount();
 
 	m_flSpeedForwardModifier = 1.0f;
 	m_flUnmodifiedDesiredSpeed = 0.0f;
@@ -1576,7 +1576,7 @@ void CFuncTrackTrain::SetSpeed( float flSpeed, bool bAccel /*= false */  )
 	if ( m_bAccelToSpeed )
 	{
 		m_flDesiredSpeed = fabs( flSpeed ) * m_dir;
-		m_flSpeedChangeTime = gpGlobals->curtime;
+		m_flSpeedChangeTime = gpGlobals->GetCurTime();
 
 		if ( m_flSpeed == 0 && abs(m_flDesiredSpeed) > 0 )
 		{
@@ -1704,7 +1704,7 @@ void CFuncTrackTrain::Blocked( CBaseEntity *pOther )
 			// The heuristic here is to keep instantaneous blocks from invoking the somewhat
 			// heavy-handed solver (which will disable collisions until we're clear) in cases
 			// where physics can solve it easily enough.
-			int ticksBlocked = gpGlobals->tickcount - m_lastBlockTick;
+			int ticksBlocked = gpGlobals->GetTickCount() - m_lastBlockTick;
 			float dist = 0.0f;
 			// wait at least 10 ticks and make sure the train isn't actually moving before really blocking
 			const int MIN_BLOCKED_TICKS = 10;
@@ -1724,7 +1724,7 @@ void CFuncTrackTrain::Blocked( CBaseEntity *pOther )
 			if ( dist > 1.0f || m_lastBlockTick < 0  )
 			{
 				m_lastBlockPos = GetAbsOrigin();
-				m_lastBlockTick = gpGlobals->tickcount;
+				m_lastBlockTick = gpGlobals->GetTickCount();
 			}
 		}
 		// unblockable shouldn't damage the player in this case
@@ -1792,10 +1792,10 @@ void CFuncTrackTrain::SoundUpdate( void )
 	// In multiplayer, only update the sound once a second
 	if ( g_pGameRules->IsMultiplayer() && m_bSoundPlaying )
 	{
-		if ( m_flNextMPSoundTime > gpGlobals->curtime )
+		if ( m_flNextMPSoundTime > gpGlobals->GetCurTime() )
 			return;
 
-		m_flNextMPSoundTime = gpGlobals->curtime + 1.0;
+		m_flNextMPSoundTime = gpGlobals->GetCurTime() + 1.0;
 	}
 
 	float flSpeedRatio = 0;
@@ -1844,7 +1844,7 @@ void CFuncTrackTrain::SoundUpdate( void )
 		}
 
 		// We've just started moving. Delay the next move ping sound.
-		m_flNextMoveSoundTime = gpGlobals->curtime + RemapVal( flSpeedRatio, 0, 1, m_flMoveSoundMaxTime, m_flMoveSoundMinTime );
+		m_flNextMoveSoundTime = gpGlobals->GetCurTime() + RemapVal( flSpeedRatio, 0, 1, m_flMoveSoundMaxTime, m_flMoveSoundMinTime );
 
 		m_bSoundPlaying = true;
 	} 
@@ -1873,10 +1873,10 @@ void CFuncTrackTrain::SoundUpdate( void )
 			}
 		}
 
-		if ( ( m_iszSoundMovePing != NULL_STRING ) && ( gpGlobals->curtime > m_flNextMoveSoundTime ) )
+		if ( ( m_iszSoundMovePing != NULL_STRING ) && ( gpGlobals->GetCurTime() > m_flNextMoveSoundTime ) )
 		{
 			EmitSound(STRING(m_iszSoundMovePing));
-			m_flNextMoveSoundTime = gpGlobals->curtime + RemapVal( flSpeedRatio, 0, 1, m_flMoveSoundMaxTime, m_flMoveSoundMinTime );
+			m_flNextMoveSoundTime = gpGlobals->GetCurTime() + RemapVal( flSpeedRatio, 0, 1, m_flMoveSoundMaxTime, m_flMoveSoundMinTime );
 		}
 	}
 }
@@ -1954,7 +1954,7 @@ void CFuncTrackTrain::UpdateTrainVelocity( CPathTrack *pPrev, CPathTrack *pNext,
 				if ( flPrevSpeed != flNextSpeed )
 				{
 					float flSpeedChangeTime = ( abs(flNextSpeed) > abs(flPrevSpeed) ) ? m_flAccelSpeed : m_flDecelSpeed;
-					m_flSpeed = UTIL_Approach( m_flDesiredSpeed, m_flSpeed, flSpeedChangeTime * gpGlobals->frametime );
+					m_flSpeed = UTIL_Approach( m_flDesiredSpeed, m_flSpeed, flSpeedChangeTime * gpGlobals->GetFrameTime() );
 				}
 			}
 			else if ( pPrev && pNext )
@@ -2341,8 +2341,8 @@ void CFuncTrackTrain::Next( void )
 
 	if ( pNext )
 	{
-		UpdateTrainVelocity( pNext, pNextNext, nextPos, gpGlobals->frametime );
-		UpdateTrainOrientation( pNext, pNextNext, nextPos, gpGlobals->frametime );
+		UpdateTrainVelocity( pNext, pNextNext, nextPos, gpGlobals->GetFrameTime() );
+		UpdateTrainOrientation( pNext, pNextNext, nextPos, gpGlobals->GetFrameTime() );
 
 		if ( pNext != m_ppath )
 		{
@@ -2369,7 +2369,7 @@ void CFuncTrackTrain::Next( void )
 
 		SetThink( &CFuncTrackTrain::Next );
 		SetMoveDoneTime( 0.5 );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 		SetMoveDone( NULL );
 	}
 	else
@@ -2560,7 +2560,7 @@ void CFuncTrackTrain::Find( void )
 
 	if ( m_flSpeed != 0 )
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		SetThink( &CFuncTrackTrain::Next );
 		SoundUpdate();
 	}
@@ -2701,7 +2701,7 @@ void CFuncTrackTrain::Spawn( void )
 // start trains on the next frame, to make sure their targets have had
 // a chance to spawn/activate
 	SetThink( &CFuncTrackTrain::Find );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	Precache();
 
 	CreateVPhysics();
@@ -2837,7 +2837,7 @@ void CFuncTrainControls::Spawn( void )
 	Assert( GetParent() && "func_traincontrols needs parent to properly align to train" );
 	
 	SetThink( &CFuncTrainControls::Find );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -2941,7 +2941,7 @@ void CFuncTrackChange::Spawn( void )
 
 	EnableUse();
 	SetThink( &CFuncTrackChange::Find );
-	SetNextThink( gpGlobals->curtime + 2 );
+	SetNextThink( gpGlobals->GetCurTime() + 2 );
 	Precache();
 }
 

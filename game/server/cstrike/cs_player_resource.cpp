@@ -111,7 +111,7 @@ void CCSPlayerResource::UpdatePlayerData( void )
 	m_iPlayerC4 = 0;
 	m_iPlayerVIP = 0;
 
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CCSPlayer *pPlayer = (CCSPlayer*)UTIL_PlayerByIndex( i );
 		

@@ -96,7 +96,7 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	dl->color.g	= g;
 	dl->color.b	= b;
 	dl->color.exponent	= exponent;
-	dl->die		= gpGlobals->curtime + time;
+	dl->die		= gpGlobals->GetCurTime() + time;
 	dl->decay	= decay;
 
 	if ( ToolsEnabled() && clienttools->IsInRecordingMode() )
@@ -107,7 +107,7 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 
  		msg->SetInt( "te", TE_DYNAMIC_LIGHT );
  		msg->SetString( "name", "TE_DynamicLight" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "duration", time );
 		msg->SetFloat( "originx", org->x );
 		msg->SetFloat( "originy", org->y );

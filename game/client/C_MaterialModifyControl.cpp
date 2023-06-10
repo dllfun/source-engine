@@ -412,7 +412,7 @@ void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pCont
 		m_flCustomFramerate = sCommands.flFrameRate;
 		m_bReachedEnd = false;
 
-		m_flStartTime = gpGlobals->curtime;
+		m_flStartTime = gpGlobals->GetCurTime();
 
 		pControl->ClearAnimationCommands();
 	}
@@ -464,8 +464,8 @@ void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pCont
 	{
 		startTime = GetAnimationStartTime(pControl);
 	}
-	float deltaTime = gpGlobals->curtime - startTime;
-	float prevTime = deltaTime - gpGlobals->frametime;
+	float deltaTime = gpGlobals->GetCurTime() - startTime;
+	float prevTime = deltaTime - gpGlobals->GetFrameTime();
 
 	// Clamp..
 	if (deltaTime < 0.0f)
@@ -550,7 +550,7 @@ void CMaterialModifyProxy::OnBindFloatLerp( C_MaterialModifyControl *pControl )
 
 	if ( pControl->HasNewAnimationCommands() )
 	{
-		pControl->SetAnimationStartTime( gpGlobals->curtime );
+		pControl->SetAnimationStartTime( gpGlobals->GetCurTime() );
 		pControl->ClearAnimationCommands();
 	}
 
@@ -570,7 +570,7 @@ void CMaterialModifyProxy::OnBindFloatLerp( C_MaterialModifyControl *pControl )
 		float currentValue;
 		if( m_flTransitionTime > 0.0f )
 		{
-			currentValue = m_flStartValue + ( m_flEndValue - m_flStartValue ) * clamp( ( ( gpGlobals->curtime - m_flStartTime ) / m_flTransitionTime ), 0.0f, 1.0f );
+			currentValue = m_flStartValue + ( m_flEndValue - m_flStartValue ) * clamp( ( ( gpGlobals->GetCurTime() - m_flStartTime ) / m_flTransitionTime ), 0.0f, 1.0f );
 		}
 		else
 		{
@@ -661,7 +661,7 @@ void CMaterialModifyAnimatedProxy::OnBind( void *pEntity )
 				m_flCustomFramerate = sCommands.flFrameRate;
 				m_bReachedEnd = false;
 
-				m_flStartTime = gpGlobals->curtime;
+				m_flStartTime = gpGlobals->GetCurTime();
 
 				pControl->ClearAnimationCommands();
 			}
@@ -715,8 +715,8 @@ void CMaterialModifyAnimatedProxy::OnBind( void *pEntity )
 	{
 		startTime = GetAnimationStartTime(pEntity);
 	}
-	float deltaTime = gpGlobals->curtime - startTime;
-	float prevTime = deltaTime - gpGlobals->frametime;
+	float deltaTime = gpGlobals->GetCurTime() - startTime;
+	float prevTime = deltaTime - gpGlobals->GetFrameTime();
 
 	// Clamp..
 	if (deltaTime < 0.0f)

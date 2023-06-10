@@ -472,12 +472,12 @@ void CAchievementMgr::Update( float frametime )
 	int iCount = m_vecThinkListeners.Count();
 	for ( int i = iCount-1; i >= 0; i-- )
 	{
-		if ( m_vecThinkListeners[i].m_flThinkTime < gpGlobals->curtime )
+		if ( m_vecThinkListeners[i].m_flThinkTime < gpGlobals->GetCurTime() )
 		{
 			m_vecThinkListeners[i].pAchievement->Think();
 
 			// The think function may have pushed out the think time. If not, remove ourselves from the list.
-			if ( m_vecThinkListeners[i].pAchievement->IsAchieved() || m_vecThinkListeners[i].m_flThinkTime < gpGlobals->curtime )
+			if ( m_vecThinkListeners[i].pAchievement->IsAchieved() || m_vecThinkListeners[i].m_flThinkTime < gpGlobals->GetCurTime() )
 			{
 				m_vecThinkListeners.Remove(i);
 			}
@@ -568,7 +568,7 @@ void CAchievementMgr::LevelInitPreEntity()
 		}
 	}
 
-	m_flLevelInitTime = gpGlobals->curtime;
+	m_flLevelInitTime = gpGlobals->GetCurTime();
 }
 
 
@@ -1087,10 +1087,10 @@ bool CAchievementMgr::CheckAchievementsEnabled()
 		// prevent message spam
 		const float fNotificationCooldown = 60.0f;
 		static float fNextNotification = 0.0f;
-		if (gpGlobals->curtime >= fNextNotification)
+		if (gpGlobals->GetCurTime() >= fNextNotification)
 		{
 			Msg( "Achievements and stats disabled: sv_nostats is set.\n" );
-			fNextNotification = gpGlobals->curtime + fNotificationCooldown;
+			fNextNotification = gpGlobals->GetCurTime() + fNotificationCooldown;
 		}
 
 		return false;
@@ -1474,7 +1474,7 @@ void CAchievementMgr::FireGameEvent( IGameEvent *event )
 	else if ( 0 == Q_strcmp( name, "localplayer_changeclass" ) )
 	{
 		// keep track of when the player last changed class
-		m_flLastClassChangeTime =  gpGlobals->curtime;
+		m_flLastClassChangeTime =  gpGlobals->GetCurTime();
 	}
 	else if ( 0 == Q_strcmp( name, "localplayer_changeteam" ) )
 	{
@@ -1488,7 +1488,7 @@ void CAchievementMgr::FireGameEvent( IGameEvent *event )
 				if ( 0 == m_flTeamplayStartTime )
 				{
 					// player transitioned from no/spectator team to a game team, mark the time
-					m_flTeamplayStartTime = gpGlobals->curtime;
+					m_flTeamplayStartTime = gpGlobals->GetCurTime();
 				}				
 			}
 			else
@@ -1838,7 +1838,7 @@ void CAchievementMgr::SetAchievementThink( CBaseAchievement *pAchievement, float
 				return;
 			}
 
-			m_vecThinkListeners[i].m_flThinkTime = gpGlobals->curtime + flThinkTime;
+			m_vecThinkListeners[i].m_flThinkTime = gpGlobals->GetCurTime() + flThinkTime;
 			return;
 		}
 	}
@@ -1849,7 +1849,7 @@ void CAchievementMgr::SetAchievementThink( CBaseAchievement *pAchievement, float
 	// Otherwise, add it to the list
 	int iIdx = m_vecThinkListeners.AddToTail();
 	m_vecThinkListeners[iIdx].pAchievement = pAchievement;
-	m_vecThinkListeners[iIdx].m_flThinkTime = gpGlobals->curtime + flThinkTime;
+	m_vecThinkListeners[iIdx].m_flThinkTime = gpGlobals->GetCurTime() + flThinkTime;
 }
 
 void CAchievementMgr::UpdateStateFromSteam_Internal()

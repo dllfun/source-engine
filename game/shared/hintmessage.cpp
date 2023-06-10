@@ -125,12 +125,12 @@ void CHintMessageQueue::Update()
 
 	// test this - send the message as soon as it is ready, 
 	// just stomp the old message
-	//if ( gpGlobals->curtime > m_tmMessageEnd )
+	//if ( gpGlobals->GetCurTime() > m_tmMessageEnd )
 	{
 		if ( m_messages.Count() )
 		{
 			CHintMessage *msg = m_messages[0];
-			m_tmMessageEnd = gpGlobals->curtime + msg->GetDuration();
+			m_tmMessageEnd = gpGlobals->GetCurTime() + msg->GetDuration();
 			msg->Send( m_pPlayer );
 			delete msg;
 			m_messages.Remove( 0 );

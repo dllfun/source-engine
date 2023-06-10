@@ -88,7 +88,7 @@ CHudBaseAchievementTracker::CHudBaseAchievementTracker( const char *pElementName
 //-----------------------------------------------------------------------------
 void CHudBaseAchievementTracker::Reset()
 {
-	m_flNextThink = gpGlobals->curtime + 0.05f;
+	m_flNextThink = gpGlobals->GetCurTime() + 0.05f;
 }
 
 void CHudBaseAchievementTracker::LevelInit()
@@ -136,10 +136,10 @@ bool CHudBaseAchievementTracker::ShouldDraw()
 //-----------------------------------------------------------------------------
 void CHudBaseAchievementTracker::OnThink()
 {
-	if ( m_flNextThink < gpGlobals->curtime )
+	if ( m_flNextThink < gpGlobals->GetCurTime() )
 	{
 		UpdateAchievementItems();
-		m_flNextThink = gpGlobals->curtime + 0.5f;
+		m_flNextThink = gpGlobals->GetCurTime() + 0.5f;
 	}
 }
 
@@ -423,7 +423,7 @@ void CAchievementTrackerItem::UpdateAchievementDisplay()
 		GetParent()->InvalidateLayout( true );
 	}
 
-	if ( m_iAccumulatedIncrement > 0 && gpGlobals->curtime > m_flShowIncrementsTime )
+	if ( m_iAccumulatedIncrement > 0 && gpGlobals->GetCurTime() > m_flShowIncrementsTime )
 	{
 		ShowAccumulatedIncrements();
 	}
@@ -442,13 +442,13 @@ void CAchievementTrackerItem::UpdateAchievementDisplay()
 		AchievementIncremented( pAchievement->GetCount() );
 	}
 
-	if ( gpGlobals->curtime < m_flGlowTime )
+	if ( gpGlobals->GetCurTime() < m_flGlowTime )
 	{
-		m_flGlow = MIN( 1.0f, m_flGlow + gpGlobals->frametime * 5.0f );
+		m_flGlow = MIN( 1.0f, m_flGlow + gpGlobals->GetFrameTime() * 5.0f );
 	}
 	else
 	{
-		m_flGlow = MAX( 0.0f, m_flGlow - gpGlobals->frametime * 5.0f );
+		m_flGlow = MAX( 0.0f, m_flGlow - gpGlobals->GetFrameTime() * 5.0f );
 	}
 	m_pAchievementNameGlow->SetAlpha( m_flGlow * 255.0f );
 }
@@ -469,15 +469,15 @@ void CAchievementTrackerItem::AchievementIncremented( int iNewCount )
 		// for achievements with very high counts, accumulate increments so we don't have too many +1s on screen
 		//  also don't play sounds as these achievements tend to increment constantly
 
-		if ( m_flShowIncrementsTime < gpGlobals->curtime )
+		if ( m_flShowIncrementsTime < gpGlobals->GetCurTime() )
 		{
-			m_flShowIncrementsTime = gpGlobals->curtime + 2.0f;
+			m_flShowIncrementsTime = gpGlobals->GetCurTime() + 2.0f;
 		}
 		m_iAccumulatedIncrement += iIncrement;
 	}
 	else
 	{
-		m_flGlowTime = gpGlobals->curtime + hud_achievement_glowtime.GetFloat();
+		m_flGlowTime = gpGlobals->GetCurTime() + hud_achievement_glowtime.GetFloat();
 
 		// create a floating +X to scroll up alongside this achievement
 		if ( m_pProgressBarBackground->IsVisible() )
@@ -508,7 +508,7 @@ void CAchievementTrackerItem::ShowAccumulatedIncrements()
 	new CFloatingAchievementNumber( m_iAccumulatedIncrement, px + x, py + y + ( t * 0.5f ), FN_DIR_RIGHT, GetParent() );
 
 	m_iAccumulatedIncrement = 0;
-	m_flGlowTime = gpGlobals->curtime + hud_achievement_glowtime.GetFloat();
+	m_flGlowTime = gpGlobals->GetCurTime() + hud_achievement_glowtime.GetFloat();
 }
 
 //-----------------------------------------------------------------------------
@@ -521,7 +521,7 @@ CFloatingAchievementNumber::CFloatingAchievementNumber( int iProgress, int x, in
 	m_iStartX = x;
 	m_iStartY = y;
 	m_iProgress = iProgress;
-	m_fStartTime = gpGlobals->curtime;
+	m_fStartTime = gpGlobals->GetCurTime();
 	m_iDirection = iDir;
 
 	char szLabel[64];
@@ -572,7 +572,7 @@ void CFloatingAchievementNumber::ApplySchemeSettings( vgui::IScheme *scheme )
 //-----------------------------------------------------------------------------
 void CFloatingAchievementNumber::OnThink()
 {
-	if ( gpGlobals->curtime > m_fStartTime + 1.0f )
+	if ( gpGlobals->GetCurTime() > m_fStartTime + 1.0f )
 	{
 		if ( m_pNumberLabel->GetAlpha() >=  255 )
 		{

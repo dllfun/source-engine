@@ -164,7 +164,7 @@ inline void CParticleSphereRenderer::RenderParticle(
 #ifdef _DEBUG
 	if ( pDraw->GetMeshBuilder() )
 	{
-		Assert( m_iLastTickStartRenderCalled == gpGlobals->tickcount );
+		Assert( m_iLastTickStartRenderCalled == gpGlobals->GetTickCount() );
 	}
 #endif
 
@@ -202,7 +202,7 @@ inline void CParticleSphereRenderer::RenderParticle_AddColor(
 #ifdef _DEBUG
 	if ( pDraw->GetMeshBuilder() )
 	{
-		Assert( m_iLastTickStartRenderCalled == gpGlobals->tickcount );
+		Assert( m_iLastTickStartRenderCalled == gpGlobals->GetTickCount() );
 	}
 #endif
 

@@ -73,7 +73,7 @@ void CHudScenarioIcon::Paint()
 
 			c[3] = 80;
 
-			if( pC4->m_flNextGlow - gpGlobals->curtime < 0.1 )
+			if( pC4->m_flNextGlow - gpGlobals->GetCurTime() < 0.1 )
 			{
 				c[3] = 255;
 			}

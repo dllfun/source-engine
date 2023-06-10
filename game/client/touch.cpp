@@ -777,14 +777,14 @@ void CTouchControls::Paint()
 	pMesh->Draw();
 
 
-	if( m_flHideTouch < gpGlobals->curtime )
+	if( m_flHideTouch < gpGlobals->GetCurTime() )
 	{
 		if( m_bCutScene && m_AlphaDiff < 255-MIN_ALPHA_IN_CUTSCENE )
 			m_AlphaDiff++;
 		else if( !m_bCutScene && m_AlphaDiff > 0 )
 			m_AlphaDiff--;
 
-		m_flHideTouch = gpGlobals->curtime + 0.002f;
+		m_flHideTouch = gpGlobals->GetCurTime() + 0.002f;
 	}
 }
 

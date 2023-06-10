@@ -73,7 +73,7 @@ void CScriptedTarget::TurnOn( void )
 	m_vLastPosition = GetAbsOrigin();
 	SetThink( &CScriptedTarget::ScriptThink );
 	m_iDisabled		= false;
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -124,14 +124,14 @@ CScriptedTarget* CScriptedTarget::NextScriptedTarget(void)
 	// ----------------------------------------------------------------------
 	if (m_flPauseDoneTime == 0)
 	{
-		m_flPauseDoneTime = gpGlobals->curtime + m_flPauseDuration;
+		m_flPauseDoneTime = gpGlobals->GetCurTime() + m_flPauseDuration;
 		m_AtTarget.FireOutput( GetTarget(), this );
 	}
 
 	// -------------------------------------------------------------
 	// If I'm done pausing move on to next burn target
 	// -------------------------------------------------------------
-	if (gpGlobals->curtime >= m_flPauseDoneTime)
+	if (gpGlobals->GetCurTime() >= m_flPauseDoneTime)
 	{
 		m_flPauseDoneTime = 0;
 
@@ -258,7 +258,7 @@ void CScriptedTarget::ScriptThink( void )
 		m_flPauseDoneTime		= 0;
 		SetTarget( FindEntity() );
 	}
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 

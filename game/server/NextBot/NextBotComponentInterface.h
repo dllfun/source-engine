@@ -67,13 +67,13 @@ inline bool INextBotComponent::ComputeUpdateInterval()
 { 
 	if ( m_lastUpdateTime ) 
 	{ 
-		float interval = gpGlobals->curtime - m_lastUpdateTime;
+		float interval = gpGlobals->GetCurTime() - m_lastUpdateTime;
 
 		const float minInterval = 0.0001f;
 		if ( interval > minInterval )
 		{
 			m_curInterval = interval;
-			m_lastUpdateTime = gpGlobals->curtime;
+			m_lastUpdateTime = gpGlobals->GetCurTime();
 			return true;
 		}
 
@@ -85,7 +85,7 @@ inline bool INextBotComponent::ComputeUpdateInterval()
 	// where the bot was just created and we need to propagate
 	// an event to it immediately.
 	m_curInterval = 0.033f;
-	m_lastUpdateTime = gpGlobals->curtime - m_curInterval;
+	m_lastUpdateTime = gpGlobals->GetCurTime() - m_curInterval;
 
 	return true;
 }

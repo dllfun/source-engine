@@ -15,7 +15,7 @@
 #endif
 
 
-struct edict_t;
+class edict_t;
 class ICollideable;
 
 void SV_ClearWorld (model_t* pWorld);

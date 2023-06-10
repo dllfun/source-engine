@@ -259,7 +259,7 @@ void CGlowOverlay::UpdateGlowObstruction( const Vector &vToGlow, bool bCacheFull
 		}
 		else
 		{
-			m_flGlowObstructionScale -= gpGlobals->frametime / cl_sun_decay_rate.GetFloat();
+			m_flGlowObstructionScale -= gpGlobals->GetFrameTime() / cl_sun_decay_rate.GetFloat();
 			m_flGlowObstructionScale = MAX( m_flGlowObstructionScale, 0.0f );
 		}
 	}
@@ -271,7 +271,7 @@ void CGlowOverlay::UpdateGlowObstruction( const Vector &vToGlow, bool bCacheFull
 		}
 		else
 		{
-			m_flGlowObstructionScale += gpGlobals->frametime / cl_sun_decay_rate.GetFloat();
+			m_flGlowObstructionScale += gpGlobals->GetFrameTime() / cl_sun_decay_rate.GetFloat();
 			m_flGlowObstructionScale = MIN( m_flGlowObstructionScale, 1.0f );
 		}
 	}

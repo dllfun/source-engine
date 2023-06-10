@@ -146,7 +146,7 @@ CFrameSnapshot* CFrameSnapshotManager::TakeTickSnapshot( int tickcount )
 		Assert( edict->GetNetworkable() );
 		Assert( edict->GetNetworkable()->GetServerClass() );
 
-		entry->m_nSerialNumber	= EDICT_NUM(edict)->m_NetworkSerialNumber;
+		entry->m_nSerialNumber	= EDICT_NUM(edict)->GetNetworkSerialNumber();
 		entry->m_pClass			= EDICT_NUM(edict)->GetNetworkable()->GetServerClass();
 		nValidEntities[snap->m_nValidEntities++] = i;
 	}
@@ -270,7 +270,7 @@ bool CFrameSnapshotManager::UsePreviouslySentPacket( CFrameSnapshot* pSnapshot,
 		// serial number change....
 		if ( m_pSerialNumber[entity] == entSerialNumber )
 		{
-			// Check if we need to re-pack entity due to encoding against gpGlobals->tickcount
+			// Check if we need to re-pack entity due to encoding against gpGlobals->GetTickCount()
 			if ( framesnapshotmanager->ShouldForceRepack( pSnapshot, entity, handle ) )
 			{
 				return false;

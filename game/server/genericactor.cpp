@@ -384,9 +384,9 @@ void CFlextalkActor::ProcessSceneEvents( void )
 				pszExpression++;
 			}
 		} 
-		else if (m_flextime < gpGlobals->curtime)
+		else if (m_flextime < gpGlobals->GetCurTime())
 		{
-			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
+			m_flextime = gpGlobals->GetCurTime() + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
 			m_flexnum = (LocalFlexController_t)random->RandomInt( 0, GetNumFlexControllers() - 1 );
 
 			if (m_flextarget[m_flexnum] == 1)
@@ -438,11 +438,11 @@ void CFlextalkActor::ProcessSceneEvents( void )
 		}
 		else if (flex_talk.GetInt() == -2)
 		{
-			m_flNextEyeLookTime = gpGlobals->curtime + 1000.0;
+			m_flNextEyeLookTime = gpGlobals->GetCurTime() + 1000.0;
 		}
 		else if (flex_talk.GetInt() == -3)
 		{
-			m_flNextEyeLookTime = gpGlobals->curtime;
+			m_flNextEyeLookTime = gpGlobals->GetCurTime();
 			flex_talk.SetValue( "0" );
 		}
 		else if (flex_talk.GetInt() == -4)

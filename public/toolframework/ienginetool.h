@@ -139,16 +139,16 @@ public:
 	//virtual int			HostTick() = 0; // host_tickcount
 	//virtual int			HostFrameCount() = 0; // total famecount
 
-	virtual float		ServerTime() = 0; // gpGlobals->curtime on server
-	virtual float		ServerFrameTime() = 0; // gpGlobals->frametime on server
-	virtual int			ServerTick() = 0; // gpGlobals->tickcount on server
-	virtual float		ServerTickInterval() = 0; // tick interval on server
+	//virtual float		ServerTime() = 0; // gpGlobals->GetCurTime() on server
+	//virtual float		ServerFrameTime() = 0; // gpGlobals->GetFrameTime() on server
+	//virtual int			ServerTick() = 0; // gpGlobals->GetTickCount() on server
+	//virtual float		ServerTickInterval() = 0; // tick interval on server
 
-	virtual float		ClientTime() = 0; // gpGlobals->curtime on client
-	virtual float		ClientFrameTime() = 0; // gpGlobals->frametime on client
-	virtual int			ClientTick() = 0; // gpGlobals->tickcount on client
+	//virtual float		ClientTime() = 0; // gpGlobals->GetCurTime() on client
+	//virtual float		ClientFrameTime() = 0; // gpGlobals->GetFrameTime() on client
+	//virtual int			ClientTick() = 0; // gpGlobals->GetTickCount() on client
 
-	virtual void		SetClientFrameTime( float frametime ) = 0; // gpGlobals->frametime on client
+	//virtual void		SetClientFrameTime( float frametime ) = 0; // gpGlobals->GetFrameTime() on client
 
 	// Currently the engine doesn't like to do networking when it's paused, but if a tool changes entity state, it can be useful to force 
 	//  a network update to get that state over to the client

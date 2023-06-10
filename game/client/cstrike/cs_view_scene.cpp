@@ -173,7 +173,7 @@ void CCSViewRender::PerformFlashbangEffect( const CViewSetup &view )
 	if ( pPlayer == NULL )
 		 return;
 
-	if ( pPlayer->m_flFlashBangTime < gpGlobals->curtime )
+	if ( pPlayer->m_flFlashBangTime < gpGlobals->GetCurTime() )
 		return;
 	
 	IMaterial *pMaterial = materials->FindMaterial( "effects/flashbang", TEXTURE_GROUP_CLIENT_EFFECTS, true );
@@ -224,7 +224,7 @@ void CCSViewRender::PerformFlashbangEffect( const CViewSetup &view )
 	}
 	else if ( m_pFlashTexture )
 	{
-		float flAlpha = pPlayer->m_flFlashMaxAlpha * (pPlayer->m_flFlashBangTime - gpGlobals->curtime) / pPlayer->m_flFlashDuration;
+		float flAlpha = pPlayer->m_flFlashMaxAlpha * (pPlayer->m_flFlashBangTime - gpGlobals->GetCurTime()) / pPlayer->m_flFlashDuration;
 
 		flAlpha = clamp( flAlpha, 0, pPlayer->m_flFlashMaxAlpha );
 		
@@ -259,7 +259,7 @@ void CCSViewRender::PerformFlashbangEffect( const CViewSetup &view )
 	}
 	else
 	{
-		float flFlashTimeLeft = pPlayer->m_flFlashBangTime - gpGlobals->curtime;
+		float flFlashTimeLeft = pPlayer->m_flFlashBangTime - gpGlobals->GetCurTime();
 		float flAlphaPercentage = 1.0;
 		const float certainBlindnessTimeThresh = 3.0; // yes this is a magic number, necessary to match CS/CZ flashbang effectiveness cause the rendering system is completely different.
 

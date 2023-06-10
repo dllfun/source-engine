@@ -175,7 +175,7 @@ void CVoteController::Spawn( void )
 	BaseClass::Spawn();
 
 	SetThink( &CVoteController::VoteControllerThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	SetDefLessFunc( m_VoteCallers );
 
@@ -534,7 +534,7 @@ void CVoteController::VoteControllerThink( void )
 {
 	if ( !m_potentialIssues.IsValidIndex( m_iActiveIssueIndex ) )
 	{
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 		return;
 	}
@@ -630,14 +630,14 @@ void CVoteController::VoteControllerThink( void )
 		// Remove older entries
 		for ( int iIdx = m_VoteCallers.FirstInorder(); iIdx != m_VoteCallers.InvalidIndex(); iIdx = m_VoteCallers.NextInorder( iIdx ) )
 		{
-			if ( m_VoteCallers[ iIdx ] - gpGlobals->curtime <= 0 )
+			if ( m_VoteCallers[ iIdx ] - gpGlobals->GetCurTime() <= 0 )
 			{
 				m_VoteCallers.Remove( iIdx );
 			}
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 }
 
 //-----------------------------------------------------------------------------
@@ -783,11 +783,11 @@ void CVoteController::TrackVoteCaller( CBasePlayer *pPlayer )
 	if ( iIdx != m_VoteCallers.InvalidIndex() )
 	{
 		// Already being tracked - update timer
-		m_VoteCallers[ iIdx ] = gpGlobals->curtime + sv_vote_creation_timer.GetInt();
+		m_VoteCallers[ iIdx ] = gpGlobals->GetCurTime() + sv_vote_creation_timer.GetInt();
 		return;
 	}
 
-	m_VoteCallers.Insert( steamID.ConvertToUint64(), gpGlobals->curtime + sv_vote_creation_timer.GetInt() );
+	m_VoteCallers.Insert( steamID.ConvertToUint64(), gpGlobals->GetCurTime() + sv_vote_creation_timer.GetInt() );
 #endif
 };
 
@@ -808,7 +808,7 @@ bool CVoteController::CanEntityCallVote( CBasePlayer *pPlayer, int &nCooldown )
 	if ( iIdx != m_VoteCallers.InvalidIndex() )
 	{
 		// Timer elapsed?
-		nCooldown = (int)( m_VoteCallers[ iIdx ] - gpGlobals->curtime );
+		nCooldown = (int)( m_VoteCallers[ iIdx ] - gpGlobals->GetCurTime() );
 		if ( nCooldown > 0 )
 			return false;
 
@@ -910,7 +910,7 @@ void CBaseIssue::OnVoteFailed( int iEntityHoldingVote )
 				}
 #endif // TF_DLL
 
-				pFailedVote->flLockoutTime = gpGlobals->curtime + nTime;
+				pFailedVote->flLockoutTime = gpGlobals->GetCurTime() + nTime;
 
 				return;
 			}
@@ -920,7 +920,7 @@ void CBaseIssue::OnVoteFailed( int iEntityHoldingVote )
 		FailedVote *pNewFailedVote = new FailedVote;
 		int iIndex = m_FailedVotes.AddToTail( pNewFailedVote );
 		Q_strcpy( m_FailedVotes[iIndex]->szFailedVoteParameter, GetDetailsString() );
-		m_FailedVotes[iIndex]->flLockoutTime = gpGlobals->curtime + sv_vote_failure_timer.GetFloat();
+		m_FailedVotes[iIndex]->flLockoutTime = gpGlobals->GetCurTime() + sv_vote_failure_timer.GetFloat();
 	}
 }
 
@@ -964,7 +964,7 @@ bool CBaseIssue::CanCallVote( int iEntIndex, const char *pszDetails, vote_create
 	for( int iIndex = 0; iIndex < m_FailedVotes.Count(); iIndex++ )
 	{
 		FailedVote *pCurrentFailure = m_FailedVotes[iIndex];
-		int nTimeRemaining = pCurrentFailure->flLockoutTime - gpGlobals->curtime;
+		int nTimeRemaining = pCurrentFailure->flLockoutTime - gpGlobals->GetCurTime();
 		bool bFailed = false;
 
 		// If this issue requires a parameter, see if we're voting for the same one again (i.e. changelevel ctf_2fort)

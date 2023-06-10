@@ -29,7 +29,7 @@ void CInfoIntermission::Spawn( void )
 	SetSolid( SOLID_NONE );
 	AddEffects( EF_NODRAW );
 	SetLocalAngles( vec3_angle );
-	SetNextThink( gpGlobals->curtime + 2 );// let targets spawn !
+	SetNextThink( gpGlobals->GetCurTime() + 2 );// let targets spawn !
 }
 
 void CInfoIntermission::Think ( void )

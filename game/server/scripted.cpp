@@ -211,7 +211,7 @@ void CAI_ScriptedSequence::Spawn( void )
 	if ( !GetEntityName() || ( m_spawnflags & SF_SCRIPT_START_ON_SPAWN ) )
 	{
 		StartThink();
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 
 		//
 		// If we have a name, wait for a BeginSequence input to play the
@@ -327,7 +327,7 @@ void CAI_ScriptedSequence::InputMoveToPosition( inputdata_t &inputdata )
 		// No, grab the NPC but make them wait until BeginSequence is fired. They'll play
 		// their pre-action idle animation until BeginSequence is fired.
 		StartThink();
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 		m_bWaitForBeginSequence = true;
 	}
 }
@@ -655,7 +655,7 @@ void CAI_ScriptedSequence::StartScript( void )
 		}
 
 		// UNDONE: Do this to sync up multi-entity scripts?
-		//pTarget->SetNextThink( gpGlobals->curtime );
+		//pTarget->SetNextThink( gpGlobals->GetCurTime() );
 
 		pTarget->SetGoalEnt( this );
 		pTarget->ForceDecisionThink();
@@ -756,8 +756,8 @@ void CAI_ScriptedSequence::StartScript( void )
 		// FIXME: not sure why this is happening, or what to do about truely dormant NPCs
 		if ( pTarget->IsEFlagSet( EFL_NO_THINK_FUNCTION ) && pTarget->GetNextThink() != TICK_NEVER_THINK )
 		{
-			DevWarning( "scripted_sequence %d:%s - restarting dormant entity %d:%s : %.1f:%.1f\n", NetworkProp()->entindex(), GetDebugName(), pTarget->NetworkProp()->entindex(), pTarget->GetDebugName(), gpGlobals->curtime, pTarget->GetNextThink() );
-			pTarget->SetNextThink( gpGlobals->curtime );
+			DevWarning( "scripted_sequence %d:%s - restarting dormant entity %d:%s : %.1f:%.1f\n", NetworkProp()->entindex(), GetDebugName(), pTarget->NetworkProp()->entindex(), pTarget->GetDebugName(), gpGlobals->GetCurTime(), pTarget->GetNextThink() );
+			pTarget->SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 }
@@ -770,7 +770,7 @@ void CAI_ScriptedSequence::ScriptThink( void )
 {
 	if ( g_pAINetworkManager && !g_pAINetworkManager->IsInitialized() )
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 	else if (FindEntity())
 	{
@@ -783,7 +783,7 @@ void CAI_ScriptedSequence::ScriptThink( void )
 		DevMsg( 2,  "scripted_sequence %d:\"%s\" can't find NPC \"%s\"\n", NetworkProp()->entindex(), GetDebugName(), STRING( m_iszEntity ) );
 		// FIXME: just trying again is bad.  This should fire an output instead.
 		// FIXME: Think about puting output triggers in both StartScript() and CancelScript().
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	}
 }
 
@@ -853,7 +853,7 @@ bool CAI_ScriptedSequence::StartSequence( CAI_BaseNPC *pTarget, string_t iszSeq,
 
 void CAI_ScriptedSequence::SynchronizeSequence( CAI_BaseNPC *pNPC )
 {
-	//Msg("%s (for %s) called SynchronizeSequence() at %0.2f\n", GetTarget()->GetDebugName(), GetDebugName(), gpGlobals->curtime);
+	//Msg("%s (for %s) called SynchronizeSequence() at %0.2f\n", GetTarget()->GetDebugName(), GetDebugName(), gpGlobals->GetCurTime());
 
 	Assert( m_iDelay == 0 );
 	Assert( m_bWaitForBeginSequence == false );
@@ -861,9 +861,9 @@ void CAI_ScriptedSequence::SynchronizeSequence( CAI_BaseNPC *pNPC )
 
 	// Reset cycle position
 	float flCycleRate = pNPC->GetSequenceCycleRate( pNPC->GetSequence() );
-	float flInterval = gpGlobals->curtime - m_startTime;
+	float flInterval = gpGlobals->GetCurTime() - m_startTime;
 
-	// Msg("%.2f \"%s\"  %s : %f (%f): interval %f\n", gpGlobals->curtime, STRING( GetEntityName() ),  pNPC->GetClassname(), pNPC->m_flAnimTime.Get(), m_startTime, flInterval );
+	// Msg("%.2f \"%s\"  %s : %f (%f): interval %f\n", gpGlobals->GetCurTime(), STRING( GetEntityName() ),  pNPC->GetClassname(), pNPC->m_flAnimTime.Get(), m_startTime, flInterval );
 	//Assert( flInterval >= 0.0 && flInterval <= 0.15 );
 	flInterval = clamp( flInterval, 0.f, 0.15f );
 
@@ -923,7 +923,7 @@ void CAI_ScriptedSequence::SequenceDone( CAI_BaseNPC *pNPC )
 {
 	//DevMsg( 2, "Sequence %s finished\n", STRING( pNPC->m_hCine->m_iszPlay ) );
 
-	//Msg("%s SequenceDone() at %0.2f\n", pNPC->GetDebugName(), gpGlobals->curtime );
+	//Msg("%s SequenceDone() at %0.2f\n", pNPC->GetDebugName(), gpGlobals->GetCurTime() );
 
 	// If we're part of a synchronised post-idle sequence, we need to do things differently
 	if ( m_bSynchPostIdles && GetEntityName() != NULL_STRING )
@@ -975,7 +975,7 @@ void CAI_ScriptedSequence::SynchNewSequence( CAI_BaseNPC::SCRIPTSTATE newState, 
 	// Do we need to synchronize all our matching scripted scenes?
  	if ( bSynchOtherScenes )
 	{
-		//Msg("%s (for %s) forcing synch of %s at %0.2f\n", GetTarget()->GetDebugName(), GetDebugName(), iszSequence, gpGlobals->curtime);
+		//Msg("%s (for %s) forcing synch of %s at %0.2f\n", GetTarget()->GetDebugName(), GetDebugName(), iszSequence, gpGlobals->GetCurTime());
 
  		CBaseEntity *pentCine = gEntList.FindEntityByName( NULL, STRING( GetEntityName() ), NULL );
 		while ( pentCine )
@@ -996,9 +996,9 @@ void CAI_ScriptedSequence::SynchNewSequence( CAI_BaseNPC::SCRIPTSTATE newState, 
 	if ( !pNPC )
 		return;
 
- 	//Msg("%s (for %s) starting %s seq at %0.2f\n", pNPC->GetDebugName(), GetDebugName(), iszSequence, gpGlobals->curtime);
+ 	//Msg("%s (for %s) starting %s seq at %0.2f\n", pNPC->GetDebugName(), GetDebugName(), iszSequence, gpGlobals->GetCurTime());
 
-	m_startTime = gpGlobals->curtime;
+	m_startTime = gpGlobals->GetCurTime();
 	pNPC->m_scriptState = newState; 
  	StartSequence( pNPC, iszSequence, false );
 
@@ -1038,7 +1038,7 @@ void CAI_ScriptedSequence::PostIdleDone( CAI_BaseNPC *pNPC )
 		if ( !( m_spawnflags & SF_SCRIPT_REPEATABLE ) )
 		{
 			SetThink( &CAI_ScriptedSequence::SUB_Remove );
-			SetNextThink( gpGlobals->curtime + 0.1f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 			m_bThinking = false;
 			m_bInitiatedSelfDelete = true;
 		}
@@ -1072,7 +1072,7 @@ void CAI_ScriptedSequence::PostIdleDone( CAI_BaseNPC *pNPC )
 		}
 	}
 
-	//Msg("%s finished post idle at %0.2f\n", pNPC->GetDebugName(), gpGlobals->curtime );
+	//Msg("%s finished post idle at %0.2f\n", pNPC->GetDebugName(), gpGlobals->GetCurTime() );
 	m_OnPostIdleEndSequence.FireOutput(NULL, this);
 }
 
@@ -1370,7 +1370,7 @@ void CAI_ScriptedSequence::CancelScript( void )
 //-----------------------------------------------------------------------------
 void CAI_ScriptedSequence::DelayStart( bool bDelay )
 {
-	//Msg("SSEQ: %.2f \"%s\" (%d) DelayStart( %d ). Current m_iDelay is: %d\n", gpGlobals->curtime, GetDebugName(), entindex(), bDelay, m_iDelay );
+	//Msg("SSEQ: %.2f \"%s\" (%d) DelayStart( %d ). Current m_iDelay is: %d\n", gpGlobals->GetCurTime(), GetDebugName(), entindex(), bDelay, m_iDelay );
 	
 	if ( ai_task_pre_script.GetBool() )
 	{
@@ -1384,7 +1384,7 @@ void CAI_ScriptedSequence::DelayStart( bool bDelay )
 	if ( GetEntityName() == NULL_STRING )
 	{
 		m_iDelay = bDelay;
-		m_startTime = gpGlobals->curtime;
+		m_startTime = gpGlobals->GetCurTime();
 		return;
 	}
 
@@ -1413,7 +1413,7 @@ void CAI_ScriptedSequence::DelayStart( bool bDelay )
 				// once everything is balanced, everyone will start.
 				if (pTarget->m_iDelay == 0)
 				{
-					pTarget->m_startTime = gpGlobals->curtime;
+					pTarget->m_startTime = gpGlobals->GetCurTime();
 
 					//Msg("SSEQ: STARTING SEQUENCE for \"%s\" (%d) (m_iDelay reached 0).\n", pTarget->GetDebugName(), pTarget->entindex() );
 				}
@@ -1682,7 +1682,7 @@ void CAI_ScriptedSchedule::ScriptThink( void )
 		// FIXME: just trying again is bad.  This should fire an output instead.
 		// FIXME: Think about puting output triggers on success true and sucess false
 		// FIXME: also needs to check the result of StartSchedule(), which can fail and not complain
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	}
 	else
 	{
@@ -1860,7 +1860,7 @@ void CAI_ScriptedSchedule::InputStartSchedule( inputdata_t &inputdata )
 		// DVS TODO: Is the NPC already playing the script?
 		m_hActivator = inputdata.pActivator;
 		SetThink( &CAI_ScriptedSchedule::ScriptThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 	else
 	{
@@ -2021,7 +2021,7 @@ void CAI_ScriptedSentence::InputBeginSentence( inputdata_t &inputdata )
 
 	//Msg( "Firing sentence: %s\n", STRING( m_iszSentence ));
 	SetThink( &CAI_ScriptedSentence::FindThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -2037,7 +2037,7 @@ void CAI_ScriptedSentence::Spawn( void )
 	if ( !GetEntityName() )
 	{
 		SetThink( &CAI_ScriptedSentence::FindThink );
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	}
 
 	switch( m_TempAttenuation )
@@ -2091,14 +2091,14 @@ void CAI_ScriptedSentence::FindThink( void )
 		// calculate delay dynamically because this could play a sentence group
 		// rather than a single sentence.
 		// add 0.1 because the sound engine mixes ahead -- the sentence will actually start ~0.1 secs from now
-		SetNextThink( gpGlobals->curtime + delay + m_flRepeat );
+		SetNextThink( gpGlobals->GetCurTime() + delay + m_flRepeat );
 		m_active = false;
 		//Msg( "%s: found NPC %s\n", STRING(m_iszSentence), STRING(m_iszEntity) );
 	}
 	else
 	{
 		//Msg( "%s: can't find NPC %s\n", STRING(m_iszSentence), STRING(m_iszEntity) );
-		SetNextThink( gpGlobals->curtime + m_flRepeat + 0.5 );
+		SetNextThink( gpGlobals->GetCurTime() + m_flRepeat + 0.5 );
 	}
 }
 
@@ -2110,7 +2110,7 @@ void CAI_ScriptedSentence::DelayThink( void )
 {
 	m_active = true;
 	if ( !GetEntityName() )
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	SetThink( &CAI_ScriptedSentence::FindThink );
 }
 

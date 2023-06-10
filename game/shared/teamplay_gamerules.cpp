@@ -81,7 +81,7 @@ void CTeamplayRules::Think ( void )
 
 	float flTimeLimit = mp_timelimit.GetFloat() * 60;
 	
-	if ( flTimeLimit != 0 && gpGlobals->curtime >= flTimeLimit )
+	if ( flTimeLimit != 0 && gpGlobals->GetCurTime() >= flTimeLimit )
 	{
 		ChangeLevel();
 		return;
@@ -484,7 +484,7 @@ const char *CTeamplayRules::TeamWithFewestPlayers( void )
 	memset( teamCount, 0, MAX_TEAMS * sizeof(int) );
 	
 	// loop through all clients, count number of players on each team
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBaseEntity *plr = UTIL_PlayerByIndex( i );
 
@@ -545,7 +545,7 @@ void CTeamplayRules::RecountTeams( void )
 	memset( team_scores, 0, sizeof(team_scores) );
 
 	// loop through all clients
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *plr = UTIL_PlayerByIndex( i );
 

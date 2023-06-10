@@ -100,7 +100,7 @@ void CPropVehicle::Spawn( )
 	m_VehiclePhysics.Spawn();
 	if (!m_VehiclePhysics.Initialize( STRING(m_vehicleScript), m_nVehicleType ))
 		return;
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	m_vecSmoothedVelocity.Init();
 }
@@ -176,7 +176,7 @@ int CPropVehicle::DrawDebugTextOverlays()
 //-----------------------------------------------------------------------------
 CBasePlayer *CPropVehicle::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime)
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -189,7 +189,7 @@ CBasePlayer *CPropVehicle::HasPhysicsAttacker( float dt )
 void CPropVehicle::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -205,7 +205,7 @@ void CPropVehicle::InputThrottle( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CPropVehicle::InputSteering( inputdata_t &inputdata )
 {
-	m_VehiclePhysics.SetSteering( inputdata.value.Float(), 2*gpGlobals->frametime );
+	m_VehiclePhysics.SetSteering( inputdata.value.Float(), 2*gpGlobals->GetFrameTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -238,7 +238,7 @@ void CPropVehicle::Think()
 	// was added to allow prop_vehicle to always think without affecting the derived classes.
 	if( HasSpawnFlags(SF_PROP_VEHICLE_ALWAYSTHINK) )
 	{
-		SetNextThink(gpGlobals->curtime);
+		SetNextThink(gpGlobals->GetCurTime());
 	}
 }
 
@@ -436,7 +436,7 @@ void CPropVehicleDriveable::Spawn( void )
 	{
 		Warning( "Vehicle (%s) unable to properly initialize due to script error in (%s)!\n", STRING( GetEntityName() ), STRING( m_vehicleScript ) );
 		SetThink( &CBaseEntity::SUB_Remove );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		return;
 	}
 
@@ -481,7 +481,7 @@ void CPropVehicleDriveable::OnRestore( void )
 		m_vecEyeExitEndpoint = GetAbsOrigin();
 	}
 
-	m_flNoImpactDamageTime = gpGlobals->curtime + 5.0f;
+	m_flNoImpactDamageTime = gpGlobals->GetCurTime() + 5.0f;
 
 	IServerVehicle *pServerVehicle = GetServerVehicle();
 	if ( pServerVehicle != NULL )
@@ -583,7 +583,7 @@ void CPropVehicleDriveable::EnterVehicle( CBaseCombatCharacter *pPassenger )
 		}
 
 		// Start Thinking
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 
 		Vector vecViewOffset = m_pServerVehicle->GetSavedViewOffset();
 
@@ -721,7 +721,7 @@ void CPropVehicleDriveable::Think()
 
 	if ( ShouldThink() )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 
 	// If we have an NPC Driver, tell him to drive
@@ -733,10 +733,10 @@ void CPropVehicleDriveable::Think()
 	// Keep thinking while we're waiting to turn off the keep upright
 	if ( m_flTurnOffKeepUpright )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 
 		// Time up?
-		if ( m_hKeepUpright != NULL && m_flTurnOffKeepUpright < gpGlobals->curtime )
+		if ( m_hKeepUpright != NULL && m_flTurnOffKeepUpright < gpGlobals->GetCurTime() )
 		{
 			variant_t emptyVariant;
 			m_hKeepUpright->AcceptInput( "TurnOff", this, this, emptyVariant, USE_TOGGLE );
@@ -928,7 +928,7 @@ void CPropVehicleDriveable::VPhysicsCollision( int index, gamevcollisionevent_t 
 	// Over our skill's minimum crash level?
 	int damageType = 0;
 	float flDamage = CalculatePhysicsImpactDamage( index, pEvent, gDefaultPlayerVehicleImpactDamageTable, 1.0, true, damageType );
-	if ( flDamage > 0 && m_flNoImpactDamageTime < gpGlobals->curtime )
+	if ( flDamage > 0 && m_flNoImpactDamageTime < gpGlobals->GetCurTime() )
 	{
 		Vector damagePos;
 		pEvent->pInternalData->GetContactPoint( damagePos );
@@ -972,8 +972,8 @@ void CPropVehicleDriveable::TraceAttack( const CTakeDamageInfo &info, const Vect
 			m_hKeepUpright->AcceptInput( "TurnOn", this, this, emptyVariant, USE_TOGGLE );
 
 			// Turn off the keepupright after a short time
-			m_flTurnOffKeepUpright = gpGlobals->curtime + GetUprightTime();
-			SetNextThink( gpGlobals->curtime );
+			m_flTurnOffKeepUpright = gpGlobals->GetCurTime() + GetUprightTime();
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 
 #ifdef HL2_EPISODIC
@@ -1236,7 +1236,7 @@ void CFourWheelServerVehicle::NPC_SetDriver( CNPC_VehicleDriver *pDriver )
 		GetFourWheelVehicle()->SetOwnerEntity( pDriver );
 
 		// Start Thinking
-		GetFourWheelVehicle()->SetNextThink( gpGlobals->curtime );
+		GetFourWheelVehicle()->SetNextThink( gpGlobals->GetCurTime() );
 	}
 	else
 	{
@@ -1295,7 +1295,7 @@ void CFourWheelServerVehicle::NPC_DriveVehicle( void )
 	fakeCmd.sidemove -= 200.0f * ( m_nNPCButtons & IN_MOVELEFT );
 	fakeCmd.sidemove += 200.0f * ( m_nNPCButtons & IN_MOVERIGHT );
 
-	GetFourWheelVehicle()->DriveVehicle( gpGlobals->frametime, &fakeCmd, afButtonPressed, afButtonReleased );
+	GetFourWheelVehicle()->DriveVehicle( gpGlobals->GetFrameTime(), &fakeCmd, afButtonPressed, afButtonReleased );
 	m_nPrevNPCButtons = m_nNPCButtons;
 
 	// NPC's cheat by using analog steering.

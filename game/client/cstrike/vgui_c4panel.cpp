@@ -177,19 +177,19 @@ void CC4Panel::OnTick()
 		float flPercentDecoding = ( flProgress - flTransitionTimes[iDigitPos] ) / flTimeInThisChar;
 		
 		//Determine when to next change the digit that we're decoding
-		if( m_flNextDigitRandomizeTime < gpGlobals->curtime )
+		if( m_flNextDigitRandomizeTime < gpGlobals->GetCurTime() )
 		{
 			//Get a new random int to draw
 			m_iLastRandomInt = RandomInt( 0, 9 );
 
 			if( flPercentDecoding > 0.7 )
-				m_flNextDigitRandomizeTime = gpGlobals->curtime + 0.05;
+				m_flNextDigitRandomizeTime = gpGlobals->GetCurTime() + 0.05;
 			else if( flPercentDecoding > 0.5 )
-				m_flNextDigitRandomizeTime = gpGlobals->curtime + 0.1;
+				m_flNextDigitRandomizeTime = gpGlobals->GetCurTime() + 0.1;
 			else if( flPercentDecoding > 0.3 )
-				m_flNextDigitRandomizeTime = gpGlobals->curtime + 0.15;
+				m_flNextDigitRandomizeTime = gpGlobals->GetCurTime() + 0.15;
 			else
-				m_flNextDigitRandomizeTime = gpGlobals->curtime + 0.3;
+				m_flNextDigitRandomizeTime = gpGlobals->GetCurTime() + 0.3;
 		}
 
 		//Settle on the real value if we're close

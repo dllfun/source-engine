@@ -106,7 +106,7 @@ void CTesla::SetupForNextArc()
 	if (m_bOn)
 	{
 		float flTimeToNext = RandomFloat( m_flArcInterval[0], m_flArcInterval[1] );
-		SetNextThink( gpGlobals->curtime + flTimeToNext );
+		SetNextThink( gpGlobals->GetCurTime() + flTimeToNext );
 	}
 	else
 	{

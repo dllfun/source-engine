@@ -58,7 +58,7 @@ LINK_ENTITY_TO_CLASS( point_devshot_camera, CPointDevShotCamera );
 //-----------------------------------------------------------------------------
 static CBasePlayer * UTIL_GetLocalPlayerOrListenServerHost( void )
 {
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1 )
 	{
 		if (engineServer->IsDedicatedServer() )
 		{
@@ -87,7 +87,7 @@ void CPointDevShotCamera::Spawn( void )
 
 	// Take a screenshot when it's my turn
 	SetThink( &CPointDevShotCamera::DevShotThink_Setup );
-	SetNextThink( gpGlobals->curtime + DEVSHOT_INITIAL_WAIT + (g_iDevShotCameraCount * DEVSHOT_INTERVAL) );
+	SetNextThink( gpGlobals->GetCurTime() + DEVSHOT_INITIAL_WAIT + (g_iDevShotCameraCount * DEVSHOT_INTERVAL) );
 
 	g_iDevShotCameraCount++;
 }
@@ -133,7 +133,7 @@ void CPointDevShotCamera::DevShotThink_Setup( void )
 
 	// Now take the shot next frame
 	SetThink( &CPointDevShotCamera::DevShotThink_TakeShot );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -150,7 +150,7 @@ void CPointDevShotCamera::DevShotThink_TakeShot( void )
 
 	// Now take the shot next frame
 	SetThink( &CPointDevShotCamera::DevShotThink_PostShot );
-	SetNextThink( gpGlobals->curtime + (DEVSHOT_INTERVAL - 1) );
+	SetNextThink( gpGlobals->GetCurTime() + (DEVSHOT_INTERVAL - 1) );
 }
 
 //-----------------------------------------------------------------------------
@@ -205,7 +205,7 @@ public:
 	virtual void FrameUpdatePostEntityThink( void )
 	{
 		// Wait until we're all spawned in
-		if ( gpGlobals->curtime < 5 )
+		if ( gpGlobals->GetCurTime() < 5 )
 			return;
 
 		if ( m_bIssuedNextMapCommand )

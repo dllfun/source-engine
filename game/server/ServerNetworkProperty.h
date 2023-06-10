@@ -159,7 +159,7 @@ inline void CServerNetworkProperty::MarkPVSInformationDirty()
 {
 	if ( m_pPev )
 	{
-		m_pPev->m_fStateFlags |= FL_EDICT_DIRTY_PVS_INFORMATION;
+		m_pPev->SetDirtyPvsInformation();
 	}
 }
 

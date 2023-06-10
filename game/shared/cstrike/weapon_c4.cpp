@@ -284,11 +284,11 @@ END_PREDICTION_DATA()
 		// Detonate in "time" seconds
 		SetThink( &CPlantedC4::C4Think );
 
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		
 		m_flTimerLength = mp_c4timer.GetInt();
 
-		m_flC4Blow = gpGlobals->curtime + m_flTimerLength;
+		m_flC4Blow = gpGlobals->GetCurTime() + m_flTimerLength;
 		m_flNextDefuse = 0;
 
 		m_bStartDefuse = false;
@@ -316,7 +316,7 @@ END_PREDICTION_DATA()
 		}
 				
 
-		SetNextThink( gpGlobals->curtime + 0.12 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.12 );
 
 #ifndef CLIENT_DLL
 		// let the bots hear the bomb beeping
@@ -330,7 +330,7 @@ END_PREDICTION_DATA()
 #endif
 		
 		// IF the timer has expired ! blow this bomb up!
-		if (m_flC4Blow <= gpGlobals->curtime)
+		if (m_flC4Blow <= gpGlobals->GetCurTime())
 		{
 			// give the defuser credit for defusing the bomb
 			CCSPlayer* pBombOwner = ToCSPlayer(GetOwnerEntity());
@@ -371,12 +371,12 @@ END_PREDICTION_DATA()
 		if ((m_bStartDefuse == true) && (m_pBombDefuser != NULL))
 		{
 			//if the defusing process has not ended yet
-			if ( m_flDefuseCountDown > gpGlobals->curtime)
+			if ( m_flDefuseCountDown > gpGlobals->GetCurTime())
 			{
 				int iOnGround = FBitSet( m_pBombDefuser->GetFlags(), FL_ONGROUND );
 
 				//if the bomb defuser has stopped defusing the bomb
-				if( m_flNextDefuse < gpGlobals->curtime || !iOnGround )
+				if( m_flNextDefuse < gpGlobals->GetCurTime() || !iOnGround )
 				{
 					if ( !iOnGround && m_pBombDefuser->IsAlive() )
 						ClientPrint( m_pBombDefuser, HUD_PRINTCENTER, "#C4_Defuse_Must_Be_On_Ground");
@@ -433,7 +433,7 @@ END_PREDICTION_DATA()
                     //=============================================================================
                     m_pBombDefuser->AwardAchievement(CSWinBombDefuse);
 
-                    float   timeToDetonation = (m_flC4Blow - gpGlobals->curtime);
+                    float   timeToDetonation = (m_flC4Blow - gpGlobals->GetCurTime());
 
 					if ((timeToDetonation > 0.0f) && (timeToDetonation <= AchievementConsts::BombDefuseCloseCall_MaxTimeRemaining))
                     {
@@ -662,15 +662,15 @@ END_PREDICTION_DATA()
 		{
 			if ( player != m_pBombDefuser )
 			{
-				if ( player->m_iNextTimeCheck < gpGlobals->curtime )
+				if ( player->m_iNextTimeCheck < gpGlobals->GetCurTime() )
 				{
 					ClientPrint( player, HUD_PRINTCENTER, "#Bomb_Already_Being_Defused" );
-					player->m_iNextTimeCheck = gpGlobals->curtime + 1;
+					player->m_iNextTimeCheck = gpGlobals->GetCurTime() + 1;
 				}
 				return;
 			}
 
-			m_flNextDefuse = gpGlobals->curtime + 0.5;
+			m_flNextDefuse = gpGlobals->GetCurTime() + 0.5;
 		}
 		else
 		{
@@ -704,12 +704,12 @@ END_PREDICTION_DATA()
 			m_flDefuseLength = player->HasDefuser() ? 5 : 10;
 
 
-			m_flNextDefuse = gpGlobals->curtime + 0.5;
+			m_flNextDefuse = gpGlobals->GetCurTime() + 0.5;
 			m_pBombDefuser = player;
 			m_bStartDefuse = TRUE;
 			player->m_bIsDefusing = true;
 			
-			m_flDefuseCountDown = gpGlobals->curtime + m_flDefuseLength;
+			m_flDefuseCountDown = gpGlobals->GetCurTime() + m_flDefuseLength;
 
 			//start the progress bar
 			player->SetProgressBarTime( m_flDefuseLength );
@@ -913,7 +913,7 @@ void CC4::PrimaryAttack()
 		if( pPlayer->m_bInBombZone && onGround )
 		{
 			m_bStartedArming = true;
-			m_fArmedTime = gpGlobals->curtime + WEAPON_C4_ARM_TIME;
+			m_fArmedTime = gpGlobals->GetCurTime() + WEAPON_C4_ARM_TIME;
 			m_bBombPlacedAnimation = false;
 
 
@@ -928,7 +928,7 @@ void CC4::PrimaryAttack()
 			// player "arming bomb" animation
 			pPlayer->SetAnimation( PLAYER_ATTACK1 );
 	
-			pPlayer->SetNextAttack( gpGlobals->curtime );
+			pPlayer->SetNextAttack( gpGlobals->GetCurTime() );
 
 			IGameEvent * event = gameeventmanager->CreateEvent( "bomb_beginplant" );
 			if( event )
@@ -955,7 +955,7 @@ void CC4::PrimaryAttack()
 				ClientPrint( pPlayer, HUD_PRINTCENTER, "#C4_Plant_Must_Be_On_Ground");
 			}
 
-			m_flNextPrimaryAttack = gpGlobals->curtime + 1.0;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 1.0;
 			return;
 		}
 	}
@@ -991,12 +991,12 @@ void CC4::PrimaryAttack()
 			PlayArmingBeeps();
 #endif
 
-			if( gpGlobals->curtime >= m_fArmedTime ) //the c4 is ready to be armed
+			if( gpGlobals->GetCurTime() >= m_fArmedTime ) //the c4 is ready to be armed
 			{
 				//check to make sure the player is still in the bomb target area
 				bArmingTimeSatisfied = true;
 			}
-			else if( ( gpGlobals->curtime >= (m_fArmedTime - 0.75) ) && ( !m_bBombPlacedAnimation ) )
+			else if( ( gpGlobals->GetCurTime() >= (m_fArmedTime - 0.75) ) && ( !m_bBombPlacedAnimation ) )
 			{
 				//call the c4 Placement animation 
 				m_bBombPlacedAnimation = true;
@@ -1057,7 +1057,7 @@ void CC4::PrimaryAttack()
             //=============================================================================
 
             // Determine how elapsed time from start of round until the bomb was planted
-            float   plantingTime = gpGlobals->curtime - CSGameRules()->GetRoundStartTime();
+            float   plantingTime = gpGlobals->GetCurTime() - CSGameRules()->GetRoundStartTime();
 
             // Award achievement to bomb planter if time <= 25 seconds
             if ((plantingTime > 0.0f) && (plantingTime <= AchievementConsts::FastBombPlant_Time))
@@ -1128,13 +1128,13 @@ void CC4::PrimaryAttack()
 			}
 #endif
 
-			m_flNextPrimaryAttack = gpGlobals->curtime + 1.0;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 1.0;
 			return;
 		}
 	}
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.3;
-	SetWeaponIdleTime( gpGlobals->curtime + SharedRandomFloat("C4IdleTime", 10, 15 ) );
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.3;
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + SharedRandomFloat("C4IdleTime", 10, 15 ) );
 }
 
 void CC4::WeaponIdle()
@@ -1150,7 +1150,7 @@ void CC4::WeaponIdle()
 		if ( pPlayer )
 		{
 			SendWeaponAnim( ACT_VM_IDLE );
-			pPlayer->SetNextAttack( gpGlobals->curtime );
+			pPlayer->SetNextAttack( gpGlobals->GetCurTime() );
 		}
 
 		if(m_bBombPlacedAnimation == true) //this means the placement animation is canceled
@@ -1191,7 +1191,7 @@ void CC4::PlayArmingBeeps( void )
 {
 	float flStartTime = m_fArmedTime - WEAPON_C4_ARM_TIME;
 
-	float flProgress = ( gpGlobals->curtime - flStartTime ) / ( WEAPON_C4_ARM_TIME - 0.75 );
+	float flProgress = ( gpGlobals->GetCurTime() - flStartTime ) / ( WEAPON_C4_ARM_TIME - 0.75 );
 
 	int currentFrame = (int)( (float)iNumArmingAnimFrames * flProgress );
 
@@ -1215,7 +1215,7 @@ void CC4::PlayArmingBeeps( void )
 			// remove anyone that is first person spec'ing the planter
 			int i;
 			CBasePlayer *pPlayer;
-			for( i=1;i<=gpGlobals->maxClients;i++ )
+			for( i=1;i<=gpGlobals->GetMaxClients();i++ )
 			{
 				pPlayer = UTIL_PlayerByIndex( i );
 
@@ -1269,7 +1269,7 @@ void CC4::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 		ClientPrint( pPlayer, HUD_PRINTCENTER, "#Got_bomb" );
 	}
 
-    pPlayer->SetBombPickupTime(gpGlobals->curtime);
+    pPlayer->SetBombPickupTime(gpGlobals->GetCurTime());
 #endif
 }
 
@@ -1319,7 +1319,7 @@ void CC4::AbortBombPlant()
 		return;
 
 #if !defined( CLIENT_DLL )
-	m_flNextPrimaryAttack = gpGlobals->curtime + 1.0;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 1.0;
 
 	pPlayer->SetProgressBarTime( 0 );
 

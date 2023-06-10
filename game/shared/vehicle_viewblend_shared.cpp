@@ -124,17 +124,17 @@ float ApplyViewLocking( float flAngleRaw, float flAngleClamped, ViewLockData_t &
 	{
 		//Msg( "LOCKED\n" );
 		lockData.bLocked = true;
-		lockData.flUnlockTime = gpGlobals->curtime + lockData.flLockInterval;
+		lockData.flUnlockTime = gpGlobals->GetCurTime() + lockData.flLockInterval;
 		flAngleOut = flAngleRaw;
 	}
 	else
 	{
-		if ( ( lockData.bLocked ) && ( gpGlobals->curtime > lockData.flUnlockTime ) )
+		if ( ( lockData.bLocked ) && ( gpGlobals->GetCurTime() > lockData.flUnlockTime ) )
 		{
 			lockData.bLocked = false;
 			if ( lockData.flUnlockBlendInterval > 0 )
 			{
-				lockData.flUnlockTime = gpGlobals->curtime;
+				lockData.flUnlockTime = gpGlobals->GetCurTime();
 			}
 			else
 			{
@@ -147,7 +147,7 @@ float ApplyViewLocking( float flAngleRaw, float flAngleClamped, ViewLockData_t &
 			if ( lockData.flUnlockTime != 0 )
 			{
 				// Blend out from the locked raw view (no remapping) to a remapped view.
-				float flBlend = RemapValClamped( gpGlobals->curtime - lockData.flUnlockTime, 0, lockData.flUnlockBlendInterval, 0, 1 );
+				float flBlend = RemapValClamped( gpGlobals->GetCurTime() - lockData.flUnlockTime, 0, lockData.flUnlockBlendInterval, 0, 1 );
 				//Msg( "BLEND %f\n", flBlend );
 
 				flAngleOut = Lerp( flBlend, flAngleRaw, flAngleClamped );
@@ -236,7 +236,7 @@ void SharedVehicleViewSmoothing(CBasePlayer *pPlayer,
 	if ( bRunningAnim && !pData->bWasRunningAnim )
 	{
 		pData->bRunningEnterExit = true;
-		pData->flEnterExitStartTime = gpGlobals->curtime;
+		pData->flEnterExitStartTime = gpGlobals->GetCurTime();
 		pData->flEnterExitDuration = pData->pVehicle->SequenceDuration( pData->pVehicle->GetSequence() );
 
 #ifdef CLIENT_DLL
@@ -263,10 +263,10 @@ void SharedVehicleViewSmoothing(CBasePlayer *pPlayer,
 		*pAbsAngles = vehicleEyeAngles;
 
 		// Forward integrate to determine the elapsed time in this entry/exit anim.
-		frac = ( gpGlobals->curtime - pData->flEnterExitStartTime ) / pData->flEnterExitDuration;
+		frac = ( gpGlobals->GetCurTime() - pData->flEnterExitStartTime ) / pData->flEnterExitDuration;
 		frac = clamp( frac, 0.0f, 1.0f );
 
-		flFracFOV = ( gpGlobals->curtime - pData->flEnterExitStartTime ) / ( pData->flEnterExitDuration * 0.85f );
+		flFracFOV = ( gpGlobals->GetCurTime() - pData->flEnterExitStartTime ) / ( pData->flEnterExitDuration * 0.85f );
 		flFracFOV = clamp( flFracFOV, 0.0f, 1.0f );
 
 		//Msg("Frac: %f\n", frac );
@@ -368,7 +368,7 @@ void SharedVehicleViewSmoothing(CBasePlayer *pPlayer,
 		// Use this as the basis for the next error calculation.
 		pData->vecAnglesSaved = *pAbsAngles;
 
-		//if ( gpGlobals->frametime )
+		//if ( gpGlobals->GetFrameTime() )
 		//{
 		//	Msg("Angle : %.2f %.2f %.2f\n", target.x, target.y, target.z );
 		//}

@@ -78,7 +78,7 @@ void CCSBot::RespondToRadioCommands( void )
 	if (IsRogue())
 		respondTime += 2.0f;
 
-	if (gpGlobals->curtime - m_lastRadioRecievedTimestamp < respondTime)
+	if (gpGlobals->GetCurTime() - m_lastRadioRecievedTimestamp < respondTime)
 		return;
 
 	// rogues won't follow commands, unless already following the player
@@ -292,12 +292,12 @@ void CCSBot::SendRadioMessage( RadioType event )
 	if (event <= RADIO_START_1 || event >= RADIO_END)
 		return;
 
-	PrintIfWatched( "%3.1f: SendRadioMessage( %s )\n", gpGlobals->curtime, RadioEventName[ event ] );
+	PrintIfWatched( "%3.1f: SendRadioMessage( %s )\n", gpGlobals->GetCurTime(), RadioEventName[ event ] );
 
 	// note the time the message was sent
 	TheCSBots()->SetRadioMessageTimestamp( event, GetTeamNumber() );
 
-	m_lastRadioSentTimestamp = gpGlobals->curtime;
+	m_lastRadioSentTimestamp = gpGlobals->GetCurTime();
 
 	char slot[2];
 	slot[1] = '\000';
@@ -341,6 +341,6 @@ void CCSBot::SpeakAudio( const char *voiceFilename, float duration, int pitch )
 
 	GetChatter()->ResetRadioSilenceDuration();
 
-	m_voiceEndTimestamp = gpGlobals->curtime + duration;
+	m_voiceEndTimestamp = gpGlobals->GetCurTime() + duration;
 }
 

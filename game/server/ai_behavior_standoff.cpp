@@ -70,7 +70,7 @@ public:
 		if ( m_fActive )
 		{
 			SetThink(&CAI_BattleLine::MovementThink);
-			SetNextThink( gpGlobals->curtime + AIBL_THINK_INTERVAL );
+			SetNextThink( gpGlobals->GetCurTime() + AIBL_THINK_INTERVAL );
 			m_SelfMoveMonitor.SetMark( this, 60 );
 		}
 	}
@@ -83,7 +83,7 @@ public:
 			NotifyChangeTacticalConstraints(); 
 
 			SetThink(&CAI_BattleLine::MovementThink);
-			SetNextThink( gpGlobals->curtime + AIBL_THINK_INTERVAL );
+			SetNextThink( gpGlobals->GetCurTime() + AIBL_THINK_INTERVAL );
 			m_SelfMoveMonitor.SetMark( this, 60 );
 		}
 	}
@@ -129,7 +129,7 @@ public:
 			NotifyChangeTacticalConstraints();
 			m_SelfMoveMonitor.SetMark( this, 60 );
 		}
-		SetNextThink( gpGlobals->curtime + AIBL_THINK_INTERVAL );
+		SetNextThink( gpGlobals->GetCurTime() + AIBL_THINK_INTERVAL );
 	}
 
 private:
@@ -401,9 +401,9 @@ void CAI_StandoffBehavior::GatherConditions()
 		if ( pEnemyInfo &&
 			 m_params.flAbandonTimeLimit > 0 && 
 			 ( ( pEnemyInfo->timeAtFirstHand != AI_INVALID_TIME && 
-			     gpGlobals->curtime  - pEnemyInfo->timeLastSeen > m_params.flAbandonTimeLimit ) ||
+			     gpGlobals->GetCurTime()  - pEnemyInfo->timeLastSeen > m_params.flAbandonTimeLimit ) ||
 			   ( pEnemyInfo->timeAtFirstHand == AI_INVALID_TIME && 
-			     gpGlobals->curtime  - pEnemyInfo->timeFirstSeen > m_params.flAbandonTimeLimit * 2 ) ) )
+			     gpGlobals->GetCurTime()  - pEnemyInfo->timeFirstSeen > m_params.flAbandonTimeLimit * 2 ) ) )
 		{
 			SetCondition( COND_ABANDON_TIME_EXPIRED );
 
@@ -955,7 +955,7 @@ void CAI_StandoffBehavior::StartTask( const Task_t *pTask )
 					AI_NavGoal_t goal(GOALTYPE_COVER, coverPos, ACT_RUN, AIN_HULL_TOLERANCE, AIN_DEF_FLAGS);
 					GetNavigator()->SetGoal( goal );
 
-					GetOuter()->m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+					GetOuter()->m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 					TaskComplete();
 				}
 				else

@@ -35,11 +35,11 @@ public:
 		m_hCurrentTalker = NULL;
 	}
 	
-	void Acquire( float time, CBaseEntity *pTalker )		{ m_ReleaseTime = gpGlobals->curtime + time; m_hCurrentTalker = pTalker; }
+	void Acquire( float time, CBaseEntity *pTalker )		{ m_ReleaseTime = gpGlobals->GetCurTime() + time; m_hCurrentTalker = pTalker; }
 	void Release()					{ m_ReleaseTime = 0; m_hCurrentTalker = NULL; }
 	
 	// Current owner of the semaphore is always allowed to talk
-	bool IsAvailable( CBaseEntity *pTalker ) const		{ return ((gpGlobals->curtime > m_ReleaseTime) || (m_hCurrentTalker == pTalker)); }
+	bool IsAvailable( CBaseEntity *pTalker ) const		{ return ((gpGlobals->GetCurTime() > m_ReleaseTime) || (m_hCurrentTalker == pTalker)); }
 	float GetReleaseTime() const 	{ return m_ReleaseTime; }
 
 	CBaseEntity *GetOwner()	{ return m_hCurrentTalker; }

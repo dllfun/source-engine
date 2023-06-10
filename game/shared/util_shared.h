@@ -516,7 +516,7 @@ public:
 
 private:
 	float m_timestamp;
-	float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->curtime
+	float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->GetCurTime()
 };
 
 
@@ -579,7 +579,7 @@ public:
 private:
 	float m_duration;
 	float m_timestamp;
-	float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->curtime
+	float Now( void ) const;		// work-around since client header doesn't like inlined gpGlobals->GetCurTime()
 };
 
 const char* ReadAndAllocStringValue( KeyValues *pSub, const char *pName, const char *pFilename = NULL );

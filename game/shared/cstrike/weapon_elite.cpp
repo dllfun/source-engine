@@ -90,7 +90,7 @@ PRECACHE_WEAPON_REGISTER( weapon_elite );
 
 CWeaponElite::CWeaponElite()
 {
-	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 	m_inPrecache = false;
 }
 
@@ -184,21 +184,21 @@ void CWeaponElite::PrimaryAttack()
 		return;
 
 	// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-	m_flAccuracy -= (0.275)*(0.325 - (gpGlobals->curtime - m_flLastFire));
+	m_flAccuracy -= (0.275)*(0.325 - (gpGlobals->GetCurTime() - m_flLastFire));
 
 	if (m_flAccuracy > 0.88)
 		m_flAccuracy = 0.88;
 	else if (m_flAccuracy < 0.55)
 		m_flAccuracy = 0.55;
 
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals->GetCurTime();
 
 	if (m_iClip1 <= 0)
 	{
 		if ( m_bFireOnEmpty )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.1f;
 			m_bFireOnEmpty = false;
 		}
 
@@ -226,7 +226,7 @@ void CWeaponElite::PrimaryAttack()
 		GetInaccuracy(),
 		GetSpread());
 		
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetCSWpnData().m_flCycleTime;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->GetCurTime() + GetCSWpnData().m_flCycleTime;
 	
 	if (!m_iClip1 && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) <= 0)
 	{
@@ -234,7 +234,7 @@ void CWeaponElite::PrimaryAttack()
 		pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 	}
 
-	SetWeaponIdleTime( gpGlobals->curtime + 2.5 );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 2.5 );
 
 	if ( FiringLeft() )
 	{
@@ -273,7 +273,7 @@ bool CWeaponElite::Reload()
 
 void CWeaponElite::WeaponIdle()
 {
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 /*

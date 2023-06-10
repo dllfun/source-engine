@@ -231,17 +231,17 @@ bool CAI_Pathfinder::IsLinkStillStale(int moveType, CAI_Link *nodeLink)
 	if ( !(nodeLink->m_LinkInfo & bits_LINK_STALE_SUGGESTED ) )
 		return false;
 
-	if ( gpGlobals->curtime < nodeLink->m_timeStaleExpires )
+	if ( gpGlobals->GetCurTime() < nodeLink->m_timeStaleExpires )
 		return true;
 
 	// NPC should only check one stale link per think
-	if (gpGlobals->curtime == m_flLastStaleLinkCheckTime)
+	if (gpGlobals->GetCurTime() == m_flLastStaleLinkCheckTime)
 	{
 		return true;
 	}
 	else
 	{
-		m_flLastStaleLinkCheckTime = gpGlobals->curtime;
+		m_flLastStaleLinkCheckTime = gpGlobals->GetCurTime();
 	}
 	
 	// Test movement, if suceeds, clear the stale bit
@@ -252,7 +252,7 @@ bool CAI_Pathfinder::IsLinkStillStale(int moveType, CAI_Link *nodeLink)
 		return false;
 	}
 
-	nodeLink->m_timeStaleExpires = gpGlobals->curtime + 1.0;
+	nodeLink->m_timeStaleExpires = gpGlobals->GetCurTime() + 1.0;
 
 	return true;
 }

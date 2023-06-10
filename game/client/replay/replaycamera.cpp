@@ -697,10 +697,10 @@ void C_ReplayCamera::CalcView(Vector &origin, QAngle &angles, float &fov )
 	// Calculate elapsed time since last call to CalcView()
 	if ( m_flOldTime == 0.0f )
 	{
-		m_flOldTime = gpGlobals->realtime;
+		m_flOldTime = gpGlobals->GetRealTime();
 	}
-	const float flDelta = gpGlobals->realtime - m_flOldTime;
-	m_flOldTime = gpGlobals->realtime;
+	const float flDelta = gpGlobals->GetRealTime() - m_flOldTime;
+	m_flOldTime = gpGlobals->GetRealTime();
 
 	if ( m_bEntityPacketReceived )
 	{
@@ -789,7 +789,7 @@ void C_ReplayCamera::SpecNextPlayer( bool bInverse )
 {
 	int start = 1;
 
-	if ( m_iTarget1 > 0 && m_iTarget1 <= gpGlobals->maxClients )
+	if ( m_iTarget1 > 0 && m_iTarget1 <= gpGlobals->GetMaxClients() )
 		start = m_iTarget1;
 
 	int index = start;
@@ -804,8 +804,8 @@ void C_ReplayCamera::SpecNextPlayer( bool bInverse )
 
 		// check bounds
 		if ( index < 1 )
-			index = gpGlobals->maxClients;
-		else if ( index > gpGlobals->maxClients )
+			index = gpGlobals->GetMaxClients();
+		else if ( index > gpGlobals->GetMaxClients() )
 			index = 1;
 
 		if ( index == start )
@@ -831,7 +831,7 @@ void C_ReplayCamera::SpecNextPlayer( bool bInverse )
 
 void C_ReplayCamera::SpecNamedPlayer( const char *szPlayerName )
 {
-	for ( int index = 1; index <= gpGlobals->maxClients; ++index )
+	for ( int index = 1; index <= gpGlobals->GetMaxClients(); ++index )
 	{
 		C_BasePlayer *pPlayer =	UTIL_PlayerByIndex( index );
 
@@ -902,14 +902,14 @@ void C_ReplayCamera::SetCameraAngle( QAngle& targetAngle )
 {
 	m_aCamAngle	= targetAngle;
  	NormalizeAngles( m_aCamAngle );
-	m_flLastAngleUpdateTime = gpGlobals->realtime;
+	m_flLastAngleUpdateTime = gpGlobals->GetRealTime();
 }
 
 void C_ReplayCamera::SmoothCameraAngle( QAngle& targetAngle )
 {
 	if ( m_flLastAngleUpdateTime > 0 )
 	{
-		float deltaTime = gpGlobals->realtime - m_flLastAngleUpdateTime;
+		float deltaTime = gpGlobals->GetRealTime() - m_flLastAngleUpdateTime;
 
 		deltaTime = clamp( deltaTime*m_flInertia, 0.01f, 1.f);
 
@@ -920,7 +920,7 @@ void C_ReplayCamera::SmoothCameraAngle( QAngle& targetAngle )
 		m_aCamAngle = targetAngle;
 	}
 
-	m_flLastAngleUpdateTime = gpGlobals->realtime;
+	m_flLastAngleUpdateTime = gpGlobals->GetRealTime();
 }
 
 bool C_ReplayCamera::IsPVSLocked()

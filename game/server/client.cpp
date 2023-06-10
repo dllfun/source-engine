@@ -210,7 +210,7 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 	// so check it, or it will infinite loop
 
 	client = NULL;
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		client = ToBaseMultiplayerPlayer( UTIL_PlayerByIndex( i ) );
 		if ( !client || !client->NetworkProp()->edict())
@@ -517,9 +517,9 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 		return;
 
 	edict_t *pClient = NULL;
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
-		pClient = engineServer->PEntityOfEntIndex( 1 );
+		pClient = INDEXENT( 1 );
 	}
 	else
 	{
@@ -533,7 +533,7 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 		if ( IsInCommentaryMode() && !pClient )
 		{
 			// Commentary is stuffing a command in. We'll pretend it came from the first player.
-			pClient = engineServer->PEntityOfEntIndex( 1 );
+			pClient = INDEXENT( 1 );
 		}
 	}
 
@@ -643,7 +643,7 @@ void kill_helper( const CCommand &args, bool bExplode )
 	if ( args.ArgC() > 1 && sv_cheats->GetBool() )
 	{
 		// Find the matching netname
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = ToBasePlayer( UTIL_PlayerByIndex(i) );
 			if ( pPlayer )
@@ -688,7 +688,7 @@ void killvector_helper( const CCommand &args, bool bExplode )
 	if ( pPlayer && args.ArgC() == 5 )
 	{
 		// Find the matching netname.
-		for ( int iClient = 1; iClient <= gpGlobals->maxClients; iClient++ )
+		for ( int iClient = 1; iClient <= gpGlobals->GetMaxClients(); iClient++ )
 		{
 			CBasePlayer *pPlayer = ToBasePlayer( UTIL_PlayerByIndex( iClient ) );
 			if ( pPlayer )
@@ -752,7 +752,7 @@ CON_COMMAND( say, "Display player message" )
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( pPlayer )
 	{
-		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->curtime) 
+		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->GetCurTime()) 
 		{
 			Host_Say( pPlayer->NetworkProp()->edict(), args, 0 );
 			pPlayer->NotePlayerTalked();
@@ -776,7 +776,7 @@ CON_COMMAND( say_team, "Display player message to team" )
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if (pPlayer)
 	{
-		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->curtime) 
+		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->GetCurTime()) 
 		{
 			Host_Say( pPlayer->NetworkProp()->edict(), args, 1 );
 			pPlayer->NotePlayerTalked();
@@ -791,7 +791,7 @@ CON_COMMAND( give, "Give item to player.\n\tArguments: <item_name>" )
 {
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( pPlayer 
-		&& (gpGlobals->maxClients == 1 || sv_cheats->GetBool()) 
+		&& (gpGlobals->GetMaxClients() == 1 || sv_cheats->GetBool()) 
 		&& args.ArgC() >= 2 )
 	{
 		char item_to_give[ 256 ];
@@ -807,7 +807,7 @@ CON_COMMAND( give, "Give item to player.\n\tArguments: <item_name>" )
 				if ( pPlayer->IsAutoKickDisabled() == false )
 					return;
 			}
-			else if ( gpGlobals->maxClients > 1 )
+			else if ( gpGlobals->GetMaxClients() > 1 )
 			{
 				// On listen servers with more than 1 player, only allow the host to create point_servercommand.
 				CBasePlayer *pHostPlayer = UTIL_GetListenServerHost();

@@ -43,26 +43,359 @@ static ConVar		sv_useexplicitdelete( "sv_useexplicitdelete", "1", FCVAR_DEVELOPM
 static ConVar		sv_lowedict_threshold( "sv_lowedict_threshold", "8", FCVAR_NONE, "When only this many edicts are free, take the action specified by sv_lowedict_action.", true, 0, true, MAX_EDICTS );
 static ConVar		sv_lowedict_action( "sv_lowedict_action", "0", FCVAR_NONE, "0 - no action, 1 - warn to log file, 2 - attempt to restart the game, if applicable, 3 - restart the map, 4 - go to the next map in the map cycle, 5 - spew all edicts.", true, 0, true, 5 );
 
+class CBaseEdict;
 // Bitmask of free edicts.
 static CBitVec< MAX_EDICTS > g_FreeEdicts;
-static edict_t* g_pEdicts;			// Can array index now, edict_t is fixed
+static CBaseEdict* g_pEdicts;			// Can array index now, edict_t is fixed
 static int			num_edicts;
 static int			max_edicts;
 static int			free_edicts; // how many edicts in num_edicts are free, in use is num_edicts - free_edicts
 static IChangeInfoAccessor* edictchangeinfo; // HACK to allow backward compat since we can't change edict_t layout
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+// NOTE: YOU CAN'T CHANGE THE LAYOUT OR SIZE OF CBASEEDICT AND REMAIN COMPATIBLE WITH HL2_VC6!!!!!
+class CBaseEdict : public edict_t
+{
+public:
+
+	CBaseEdict(int index) :m_EdictIndex(index)
+	{
+
+	}
+	// Returns an IServerEntity if FL_FULLEDICT is set or NULL if this 
+	// is a lightweight networking entity.
+	IServerEntity* GetIServerEntity();
+	const IServerEntity* GetIServerEntity() const;
+
+	IServerNetworkable* GetNetworkable();
+	IServerUnknown* GetUnknown();
+
+	// Set when initting an entity. If it's only a networkable, this is false.
+	void				SetEdict(IServerUnknown* pUnk, bool bFullEdict);
+
+	int					AreaNum() const;
+	int					GetIndex();
+	short				GetNetworkSerialNumber();
+	void				SetNetworkSerialNumber(short NetworkSerialNumber);
+	const char* GetClassName() const;
+	int& GetStateFlags();
+
+	bool				IsFree() const;
+	void				SetFree();
+	void				ClearFree();
+
+	bool				HasStateChanged() const;
+	void				ClearStateChanged();
+	void				StateChanged();
+	void				StateChanged(unsigned short offset);
+
+	bool				IsDontSend();
+	bool				IsPendingDormantCheck();
+	void				SetPendingDormantCheck();
+	void				ClearPendingDormantCheck();
+	void				ClearTransmitState();
+
+	void				SetDirtyPvsInformation();
+
+	void SetChangeInfo(unsigned short info);
+	void SetChangeInfoSerialNumber(unsigned short sn);
+	unsigned short	 GetChangeInfo() const;
+	unsigned short	 GetChangeInfoSerialNumber() const;
+	IChangeInfoAccessor* GetChangeAccessor(); // The engine implements this and the game .dll implements as
+	const IChangeInfoAccessor* GetChangeAccessor() const; // The engine implements this and the game .dll implements as
+	// as callback through to the engine!!!
+	ICollideable* GetCollideable();
+public:
+
+	// NOTE: this is in the edict instead of being accessed by a virtual because the engine needs fast access to it.
+	// NOTE: YOU CAN'T CHANGE THE LAYOUT OR SIZE OF CBASEEDICT AND REMAIN COMPATIBLE WITH HL2_VC6!!!!!
+#ifdef _XBOX
+	unsigned short m_fStateFlags = 0;
+#else
+	int	m_fStateFlags = 0;
+#endif	
+
+	// NOTE: this is in the edict instead of being accessed by a virtual because the engine needs fast access to it.
+	// int m_NetworkSerialNumber;
+
+	// NOTE: m_EdictIndex is an optimization since computing the edict index
+	// from a CBaseEdict* pointer otherwise requires divide-by-20. values for
+	// m_NetworkSerialNumber all fit within a 16-bit integer range, so we're
+	// repurposing the other 16 bits to cache off the index without changing
+	// the overall layout or size of this struct. existing mods compiled with
+	// a full 32-bit serial number field should still work. henryg 8/17/2011
+#if VALVE_LITTLE_ENDIAN
+	short m_NetworkSerialNumber = 0;
+	const short m_EdictIndex;
+#else
+	short m_EdictIndex;
+	const short m_NetworkSerialNumber = 0;
+#endif
+
+	// The server timestampe at which the edict was freed (so we can try to use other edicts before reallocating this one)
+	float		freetime = 0.0;
+protected:
+	// NOTE: this is in the edict instead of being accessed by a virtual because the engine needs fast access to it.
+	IServerNetworkable* m_pNetworkable = NULL;
+public:
+	IServerUnknown* m_pUnk = NULL;
+
+
+public:
+
+
+
+	// NOTE: YOU CAN'T CHANGE THE LAYOUT OR SIZE OF CBASEEDICT AND REMAIN COMPATIBLE WITH HL2_VC6!!!!!
+	// This breaks HL2_VC6!!!!!
+	// References a CEdictChangeInfo with a list of modified network props.
+	//unsigned short m_iChangeInfo;
+	//unsigned short m_iChangeInfoSerialNumber;
+
+	friend void InitializeEntityDLLFields(edict_t* pEdict);
+};
+
+
+//-----------------------------------------------------------------------------
+// CBaseEdict inlines.
+//-----------------------------------------------------------------------------
+inline IServerEntity* CBaseEdict::GetIServerEntity()
+{
+	if (m_fStateFlags & FL_EDICT_FULL)
+		return (IServerEntity*)m_pUnk;
+	else
+		return 0;
+}
+
+inline bool CBaseEdict::IsFree() const
+{
+	return (m_fStateFlags & FL_EDICT_FREE) != 0;
+}
+
+
+
+inline bool	CBaseEdict::HasStateChanged() const
+{
+	return (m_fStateFlags & FL_EDICT_CHANGED) != 0;
+}
+
+inline void	CBaseEdict::ClearStateChanged()
+{
+	m_fStateFlags &= ~(FL_EDICT_CHANGED | FL_FULL_EDICT_CHANGED);
+	SetChangeInfoSerialNumber(0);
+}
+
+inline void	CBaseEdict::StateChanged()
+{
+	// Note: this should only happen for properties in data tables that used some
+	// kind of pointer dereference. If the data is directly offsetable 
+	m_fStateFlags |= (FL_EDICT_CHANGED | FL_FULL_EDICT_CHANGED);
+	SetChangeInfoSerialNumber(0);
+}
+
+inline void	CBaseEdict::StateChanged(unsigned short offset)
+{
+	if (m_fStateFlags & FL_FULL_EDICT_CHANGED)
+		return;
+
+	m_fStateFlags |= FL_EDICT_CHANGED;
+
+	IChangeInfoAccessor* accessor = GetChangeAccessor();
+
+	if (accessor->GetChangeInfoSerialNumber() == g_pSharedChangeInfo->m_iSerialNumber)
+	{
+		// Ok, I still own this one.
+		CEdictChangeInfo* p = &g_pSharedChangeInfo->m_ChangeInfos[accessor->GetChangeInfo()];
+
+		// Now add this offset to our list of changed variables.		
+		for (unsigned short i = 0; i < p->m_nChangeOffsets; i++)
+			if (p->m_ChangeOffsets[i] == offset)
+				return;
+
+		if (p->m_nChangeOffsets == MAX_CHANGE_OFFSETS)
+		{
+			// Invalidate our change info.
+			accessor->SetChangeInfoSerialNumber(0);
+			m_fStateFlags |= FL_FULL_EDICT_CHANGED; // So we don't get in here again.
+		}
+		else
+		{
+			p->m_ChangeOffsets[p->m_nChangeOffsets++] = offset;
+		}
+	}
+	else
+	{
+		if (g_pSharedChangeInfo->m_nChangeInfos == MAX_EDICT_CHANGE_INFOS)
+		{
+			// Shucks.. have to mark the edict as fully changed because we don't have room to remember this change.
+			accessor->SetChangeInfoSerialNumber(0);
+			m_fStateFlags |= FL_FULL_EDICT_CHANGED;
+		}
+		else
+		{
+			// Get a new CEdictChangeInfo and fill it out.
+			accessor->SetChangeInfo(g_pSharedChangeInfo->m_nChangeInfos);
+			g_pSharedChangeInfo->m_nChangeInfos++;
+
+			accessor->SetChangeInfoSerialNumber(g_pSharedChangeInfo->m_iSerialNumber);
+
+			CEdictChangeInfo* p = &g_pSharedChangeInfo->m_ChangeInfos[accessor->GetChangeInfo()];
+			p->m_ChangeOffsets[0] = offset;
+			p->m_nChangeOffsets = 1;
+		}
+	}
+}
+
+
+
+inline void CBaseEdict::SetFree()
+{
+	m_fStateFlags |= FL_EDICT_FREE;
+}
+
+// WARNING: Make sure you don't really want to call ED_ClearFreeFlag which will also
+//  remove this edict from the g_FreeEdicts bitset.
+inline void CBaseEdict::ClearFree()
+{
+	m_fStateFlags &= ~FL_EDICT_FREE;
+}
+
+inline bool	CBaseEdict::IsDontSend() {
+	return (m_fStateFlags & FL_EDICT_DONTSEND) != 0;
+}
+
+inline bool	CBaseEdict::IsPendingDormantCheck() {
+	return (m_fStateFlags & FL_EDICT_PENDING_DORMANT_CHECK) != 0;
+}
+
+inline void	CBaseEdict::SetPendingDormantCheck() {
+	m_fStateFlags |= FL_EDICT_PENDING_DORMANT_CHECK;
+}
+
+inline void	CBaseEdict::ClearPendingDormantCheck() {
+	m_fStateFlags &= ~FL_EDICT_PENDING_DORMANT_CHECK;
+}
+
+inline void	CBaseEdict::ClearTransmitState()
+{
+	m_fStateFlags &= ~(FL_EDICT_ALWAYS | FL_EDICT_PVSCHECK | FL_EDICT_DONTSEND);
+}
+
+inline void	CBaseEdict::SetDirtyPvsInformation() {
+	m_fStateFlags |= FL_EDICT_DIRTY_PVS_INFORMATION;
+}
+
+inline const IServerEntity* CBaseEdict::GetIServerEntity() const
+{
+	if (m_fStateFlags & FL_EDICT_FULL)
+		return (IServerEntity*)m_pUnk;
+	else
+		return 0;
+}
+
+inline IServerUnknown* CBaseEdict::GetUnknown()
+{
+	return m_pUnk;
+}
+
+inline IServerNetworkable* CBaseEdict::GetNetworkable()
+{
+	return m_pNetworkable;
+}
+
+inline void CBaseEdict::SetEdict(IServerUnknown* pUnk, bool bFullEdict)
+{
+	m_pUnk = pUnk;
+	if ((pUnk != NULL) && bFullEdict)
+	{
+		m_fStateFlags = FL_EDICT_FULL;
+	}
+	else
+	{
+		m_fStateFlags = 0;
+	}
+	// Cache our IServerNetworkable pointer for the engine for fast access.
+	if (pUnk) {
+		m_pNetworkable = pUnk->GetNetworkable();
+	}
+	else {
+		m_pNetworkable = NULL;
+	}
+}
+
+inline int CBaseEdict::AreaNum() const
+{
+	if (!m_pUnk)
+		return 0;
+
+	return m_pNetworkable->AreaNum();
+}
+
+inline int CBaseEdict::GetIndex() {
+	return m_EdictIndex;
+}
+
+inline short CBaseEdict::GetNetworkSerialNumber() {
+	return m_NetworkSerialNumber;
+}
+
+inline void	CBaseEdict::SetNetworkSerialNumber(short NetworkSerialNumber) {
+	m_NetworkSerialNumber = NetworkSerialNumber;
+}
+
+inline const char* CBaseEdict::GetClassName() const
+{
+	if (!m_pUnk)
+		return "";
+	return m_pNetworkable->GetClassName();
+}
+
+inline int& CBaseEdict::GetStateFlags() {
+	return m_fStateFlags;
+}
+
+inline void CBaseEdict::SetChangeInfo(unsigned short info)
+{
+	GetChangeAccessor()->SetChangeInfo(info);
+}
+
+inline void CBaseEdict::SetChangeInfoSerialNumber(unsigned short sn)
+{
+	GetChangeAccessor()->SetChangeInfoSerialNumber(sn);
+}
+
+inline unsigned short CBaseEdict::GetChangeInfo() const
+{
+	return GetChangeAccessor()->GetChangeInfo();
+}
+
+inline unsigned short CBaseEdict::GetChangeInfoSerialNumber() const
+{
+	return GetChangeAccessor()->GetChangeInfoSerialNumber();
+}
+
+inline ICollideable* CBaseEdict::GetCollideable()
+{
+	IServerEntity* pEnt = GetIServerEntity();
+	if (pEnt)
+		return pEnt->GetCollideable();
+	else
+		return NULL;
+}
+
 void SV_AllocateEdicts()
 {
 	// Allocate server memory
 	max_edicts = MAX_EDICTS;
-	g_pEdicts = (edict_t*)Hunk_AllocName(max_edicts * sizeof(edict_t), "edicts");
+	g_pEdicts = (CBaseEdict*)Hunk_AllocName(max_edicts * sizeof(CBaseEdict), "edicts");
 
 	COMPILE_TIME_ASSERT(MAX_EDICT_BITS + 1 <= 8 * sizeof(g_pEdicts[0].m_EdictIndex));
 
 	// Invoke the constructor so the vtable is set correctly..
 	for (int i = 0; i < max_edicts; ++i)
 	{
-		new(&g_pEdicts[i]) edict_t(i);
+		new(&g_pEdicts[i]) CBaseEdict(i);
 		//g_pEdicts[i].m_EdictIndex = i;
 		g_pEdicts[i].freetime = 0;
 	}
@@ -100,7 +433,7 @@ ED_ClearEdict
 Sets everything to NULL, done when new entity is allocated for game.dll
 =================
 */
-static void ED_ClearEdict( edict_t *e )
+static void ED_ClearEdict(CBaseEdict*e )
 {
 	e->ClearFree();
 	e->ClearStateChanged();
@@ -113,10 +446,11 @@ static void ED_ClearEdict( edict_t *e )
 	Assert( (int) e->m_EdictIndex == (e - sv.edicts) );
 }
 
-void ED_ClearFreeFlag( edict_t *e )
+void ED_ClearFreeFlag(edict_t* edict )
 {
-	e->ClearFree();
-	g_FreeEdicts.Clear( e->m_EdictIndex );
+	CBaseEdict* ed = (CBaseEdict*)edict;
+	ed->ClearFree();
+	g_FreeEdicts.Clear( ed->m_EdictIndex );
 }
 
 void ED_ClearFreeEdictList()
@@ -207,7 +541,7 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 			return NULL;
 		}
 		
-		edict_t *e = &g_pEdicts[ iForceEdictIndex ];
+		CBaseEdict *e = &g_pEdicts[ iForceEdictIndex ];
 		if ( e->IsFree() )
 		{
 			Assert( iForceEdictIndex == e->m_EdictIndex );
@@ -231,7 +565,7 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 		if ( iBit < 0 )
 			break;
 
-		edict_t *pEdict = &g_pEdicts[ iBit ];
+		CBaseEdict *pEdict = &g_pEdicts[ iBit ];
 
 		// If this assert goes off, someone most likely called pedict->ClearFree() and not ED_ClearFreeFlag()?
 		Assert( pEdict->IsFree() );
@@ -266,7 +600,7 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 	}
 
 	// Do this before clearing since clear now needs to call back into the edict to deduce the index so can get the changeinfo data in the parallel structure
-	edict_t *pEdict = g_pEdicts + num_edicts++;
+	CBaseEdict *pEdict = g_pEdicts + num_edicts++;
 
 	// We should not be in the free list...
 	Assert( !g_FreeEdicts.IsBitSet( pEdict->m_EdictIndex ) );
@@ -318,7 +652,7 @@ edict_t *ED_Alloc( int iForceEdictIndex )
 
 void ED_AllowImmediateReuse()
 {
-	edict_t *pEdict = g_pEdicts + sv.GetMaxClients() + 1;
+	CBaseEdict *pEdict = g_pEdicts + sv.GetMaxClients() + 1;
 	for ( int i=sv.GetMaxClients()+1; i < num_edicts; i++ )
 	{
 		if ( pEdict->IsFree() )
@@ -339,8 +673,9 @@ Marks the edict as free
 FIXME: walk all entities and NULL out references to this entity
 =================
 */
-void ED_Free (edict_t *ed)
+void ED_Free (edict_t* edict)
 {
+	CBaseEdict* ed = (CBaseEdict*)edict;
 	if (ed->IsFree())
 	{
 #ifdef _DEBUG
@@ -372,18 +707,20 @@ void ED_Free (edict_t *ed)
 // InitializeEntityDLLFields clears out fields to NULL or UNKNOWN.
 // Release is for terminating a DLL entity.  Initialize is for initializing one.
 //
-void InitializeEntityDLLFields( edict_t *pEdict )
+void InitializeEntityDLLFields(edict_t* edict )
 {
+	CBaseEdict* ed = (CBaseEdict*)edict;
 	// clear all the game variables
-	size_t sz = offsetof( edict_t, m_pUnk ) + sizeof( void* );
-	memset( ((byte*)pEdict) + sz, 0, sizeof(edict_t) - sz );
+	size_t sz = offsetof(CBaseEdict, m_pUnk ) + sizeof( void* );
+	memset( ((byte*)ed) + sz, 0, sizeof(CBaseEdict) - sz );
 }
 
-int NUM_FOR_EDICT(const edict_t *e)
+int NUM_FOR_EDICT(const edict_t* edict)
 {
-	if ( &g_pEdicts[e->m_EdictIndex] == e ) // NOTE: old server.dll may stomp m_EdictIndex
-		return e->m_EdictIndex;
-	int index = e - g_pEdicts;
+	CBaseEdict* ed = (CBaseEdict*)edict;
+	if ( &g_pEdicts[ed->m_EdictIndex] == ed ) // NOTE: old server.dll may stomp m_EdictIndex
+		return ed->m_EdictIndex;
+	int index = ed - g_pEdicts;
 	if ( (unsigned int) index >= (unsigned int) num_edicts )
 		Sys_Error ("NUM_FOR_EDICT: bad pointer");
 	return index;
@@ -400,11 +737,12 @@ edict_t *EDICT_NUM(int n)
 }
 
 
-static inline int NUM_FOR_EDICTINFO(const edict_t *e)
+static inline int NUM_FOR_EDICTINFO(const edict_t* edict)
 {
-	if ( &g_pEdicts[e->m_EdictIndex] == e ) // NOTE: old server.dll may stomp m_EdictIndex
-		return e->m_EdictIndex;
-	int index = e - g_pEdicts;
+	CBaseEdict* ed = (CBaseEdict*)edict;
+	if ( &g_pEdicts[ed->m_EdictIndex] == ed ) // NOTE: old server.dll may stomp m_EdictIndex
+		return ed->m_EdictIndex;
+	int index = ed - g_pEdicts;
 	if ( (unsigned int) index >= (unsigned int) max_edicts )
 		Sys_Error ("NUM_FOR_EDICTINFO: bad pointer");
 	return index;
@@ -413,10 +751,10 @@ static inline int NUM_FOR_EDICTINFO(const edict_t *e)
 
 IChangeInfoAccessor *CBaseEdict::GetChangeAccessor()
 {
-	return &edictchangeinfo[ NUM_FOR_EDICTINFO( (const edict_t*)this ) ];
+	return &edictchangeinfo[ NUM_FOR_EDICTINFO( (const CBaseEdict*)this ) ];
 }
 
 const IChangeInfoAccessor *CBaseEdict::GetChangeAccessor() const
 {
-	return &edictchangeinfo[ NUM_FOR_EDICTINFO( (const edict_t*)this ) ];
+	return &edictchangeinfo[ NUM_FOR_EDICTINFO( (const CBaseEdict*)this ) ];
 }

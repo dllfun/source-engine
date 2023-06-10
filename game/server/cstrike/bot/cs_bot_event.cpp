@@ -51,7 +51,7 @@ void CCSBot::OnAudibleEvent( IGameEvent *event, CBasePlayer *player, float range
 											(FStrEq( "weapon_fire", event->GetName() )) ? "Weapon fire " : "",
 											(player) ? player->GetPlayerName() : "NULL",
 											(priority == PRIORITY_HIGH) ? "HIGH" : ((priority == PRIORITY_MEDIUM) ? "MEDIUM" : "LOW"),
-											gpGlobals->curtime );
+											gpGlobals->GetCurTime() );
 		}
 
 		// should we pay attention to it
@@ -60,7 +60,7 @@ void CCSBot::OnAudibleEvent( IGameEvent *event, CBasePlayer *player, float range
 		{
 			// only overwrite recent sound if we are louder (closer), or more important - if old noise was long ago, its faded
 			const float shortTermMemoryTime = 3.0f;
-			if (gpGlobals->curtime - m_noiseTimestamp < shortTermMemoryTime)
+			if (gpGlobals->GetCurTime() - m_noiseTimestamp < shortTermMemoryTime)
 			{
 				// prior noise is more important - ignore new one
 				if (priority < m_noisePriority)
@@ -105,7 +105,7 @@ void CCSBot::OnAudibleEvent( IGameEvent *event, CBasePlayer *player, float range
 		m_noiseArea->GetClosestPointOnArea( m_noisePosition, &m_noisePosition );
 
 		// note when we heard the noise
-		m_noiseTimestamp = gpGlobals->curtime;
+		m_noiseTimestamp = gpGlobals->GetCurTime();
 
 		// if we hear a nearby enemy, become alert
 		const float nearbyNoiseRange = 1000.0f;

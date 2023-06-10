@@ -38,7 +38,7 @@ extern IServerBenchmark *g_pServerBenchmark;
 // so the benchmark is deterministic.
 //
 // If they use an absolute tick number for anything, then they should also call g_pServerBenchmark->GetTickOffset() 
-// to get a tick count since the start of the benchmark instead of looking at gpGlobals->tickcount.
+// to get a tick count since the start of the benchmark instead of looking at gpGlobals->GetTickCount().
 //
 class CServerBenchmarkHook
 {

@@ -56,7 +56,7 @@ void CPlayerMove::StartCommand( CBasePlayer *player, CUserCmd *cmd )
 	for (i = 0; i < cmd->entitygroundcontact.Count(); i++)
 	{
 		int entindex =  cmd->entitygroundcontact[i].entindex;
-		CBaseEntity *pEntity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex( entindex) );
+		CBaseEntity *pEntity = CBaseEntity::Instance(INDEXENT( entindex) );
 		if (pEntity)
 		{
 			CBaseAnimating *pAnimating = pEntity->GetBaseAnimating();
@@ -281,7 +281,7 @@ void CPlayerMove::RunThink (CBasePlayer *player, double frametime )
 	if ( thinktick <= 0 || thinktick > player->m_nTickBase )
 		return;
 		
-	//gpGlobals->curtime = thinktime;
+	//gpGlobals->GetCurTime() = thinktime;
 	player->SetNextThink( TICK_NEVER_THINK );
 
 	// Think
@@ -327,7 +327,7 @@ void CPlayerMove::RunCommand ( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 			if ( !s_dblLastWarningTime || ( dblTimeNow - s_dblLastWarningTime >= dblWarningFrequencyThrottle ) )
 			{
 				s_dblLastWarningTime = dblTimeNow;
-				Warning( "sv_maxusrcmdprocessticks_warning at server tick %u: Ignored client %s usrcmd (%.6f < %.6f)!\n", gpGlobals->tickcount, player->GetPlayerName(), flTimeAllowedForProcessing, playerFrameTime );
+				Warning( "sv_maxusrcmdprocessticks_warning at server tick %u: Ignored client %s usrcmd (%.6f < %.6f)!\n", gpGlobals->GetTickCount(), player->GetPlayerName(), flTimeAllowedForProcessing, playerFrameTime );
 			}
 		}
 		return; // Don't process this command
@@ -336,8 +336,8 @@ void CPlayerMove::RunCommand ( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 	StartCommand( player, ucmd );
 
 	// Set globals appropriately
-	gpGlobals->curtime		=  playerCurTime;
-	gpGlobals->frametime	=  playerFrameTime;
+	gpGlobals->SetCurTime(playerCurTime);
+	gpGlobals->SetFrameTime(playerFrameTime);
 
 	// Prevent hacked clients from sending us invalid view angles to try to get leaf server code to crash
 	if ( !ucmd->viewangles.IsValid() || !IsEntityQAngleReasonable(ucmd->viewangles) )
@@ -357,7 +357,7 @@ void CPlayerMove::RunCommand ( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 			 sv_cheats->GetBool() && 
 			 sv_noclipduringpause.GetBool() )
 		{
-			gpGlobals->frametime = TICK_INTERVAL;
+			gpGlobals->SetFrameTime(TICK_INTERVAL);
 		}
 	}
 
@@ -454,7 +454,7 @@ void CPlayerMove::RunCommand ( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 	FinishCommand( player );
 
 	// Let time pass
-	if ( gpGlobals->frametime > 0 )
+	if ( gpGlobals->GetFrameTime() > 0 )
 	{
 		player->m_nTickBase++;
 	}

@@ -152,7 +152,7 @@ void CColorCorrectionVolume::Spawn( void )
 	SetModel( STRING( GetModelName() ) );
 
 	SetThink( &CColorCorrectionVolume::ThinkFunc );
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 
 	if( m_bStartDisabled )
 	{
@@ -174,13 +174,13 @@ bool CColorCorrectionVolume::PassesTriggerFilters( CBaseEntity *pEntity )
 
 void CColorCorrectionVolume::StartTouch( CBaseEntity *pEntity )
 {
-	m_LastEnterTime = gpGlobals->curtime;
+	m_LastEnterTime = gpGlobals->GetCurTime();
 	m_LastEnterWeight = m_Weight;
 }
 
 void CColorCorrectionVolume::EndTouch( CBaseEntity *pEntity )
 {
-	m_LastExitTime = gpGlobals->curtime;
+	m_LastExitTime = gpGlobals->GetCurTime();
 	m_LastExitWeight = m_Weight;
 }
 
@@ -198,7 +198,7 @@ void CColorCorrectionVolume::ThinkFunc( )
 		
 			if( m_Weight < 1.0f )
 			{
-				float dt = gpGlobals->curtime - m_LastEnterTime;
+				float dt = gpGlobals->GetCurTime() - m_LastEnterTime;
 				float weight = m_LastEnterWeight + dt / ((1.0f-m_LastEnterWeight)*m_FadeDuration);
 				if( weight>1.0f )
 					weight = 1.0f;
@@ -212,7 +212,7 @@ void CColorCorrectionVolume::ThinkFunc( )
 		
 			if( m_Weight > 0.0f )
 			{
-				float dt = gpGlobals->curtime - m_LastExitTime;
+				float dt = gpGlobals->GetCurTime() - m_LastExitTime;
 				float weight = (1.0f-m_LastExitWeight) + dt / (m_LastExitWeight*m_FadeDuration);
 				if( weight>1.0f )
 					weight = 1.0f;
@@ -222,7 +222,7 @@ void CColorCorrectionVolume::ThinkFunc( )
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 }
 
 

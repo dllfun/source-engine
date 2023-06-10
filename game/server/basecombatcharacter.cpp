@@ -280,7 +280,7 @@ void CBaseCombatCharacter::CorpseFade( void )
 	SetAbsVelocity( vec3_origin );
 	SetMoveType( MOVETYPE_NONE );
 	SetLocalAngularVelocity( vec3_angle );
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	IncrementInterpolationFrame();
 	SUB_StartFadeOut();
 }
@@ -341,7 +341,7 @@ bool CBaseCombatCharacter::FVisible( CBaseEntity *pEntity, int traceMask, CBaseE
 
 	if ( iCache != g_VisibilityCache.InvalidIndex() )
 	{
-		if ( gpGlobals->curtime - g_VisibilityCache[iCache].time < VIS_CACHE_ENTRY_LIFE )
+		if ( gpGlobals->GetCurTime() - g_VisibilityCache[iCache].time < VIS_CACHE_ENTRY_LIFE )
 		{
 			bool bCachedResult = !g_VisibilityCache[iCache].pBlocker.IsValid();
 			if ( bCachedResult )
@@ -394,7 +394,7 @@ bool CBaseCombatCharacter::FVisible( CBaseEntity *pEntity, int traceMask, CBaseE
 		g_VisibilityCache[iCache].pBlocker = NULL;
 	}
 
-	g_VisibilityCache[iCache].time = gpGlobals->curtime;
+	g_VisibilityCache[iCache].time = gpGlobals->GetCurTime();
 
 	return bResult;
 }
@@ -1462,7 +1462,7 @@ bool CBaseCombatCharacter::BecomeRagdollBoogie( CBaseEntity *pKiller, const Vect
 
 	pRagdoll->SetCollisionBounds( CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs() );
 
-	CRagdollBoogie::Create( pRagdoll, 200, gpGlobals->curtime, duration, flags );
+	CRagdollBoogie::Create( pRagdoll, 200, gpGlobals->GetCurTime(), duration, flags );
 
 	CTakeDamageInfo ragdollInfo( pKiller, pKiller, 10000.0, DMG_GENERIC | DMG_REMOVENORAGDOLL );
 	ragdollInfo.SetDamagePosition(WorldSpaceCenter());
@@ -1624,12 +1624,12 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 				nDissolveType = ENTITY_DISSOLVE_ELECTRICAL;
 			}
 
-			bRagdollCreated = Dissolve( NULL, gpGlobals->curtime, false, nDissolveType );
+			bRagdollCreated = Dissolve( NULL, gpGlobals->GetCurTime(), false, nDissolveType );
 
 			// Also dissolve any weapons we dropped
 			if ( pDroppedWeapon )
 			{
-				pDroppedWeapon->Dissolve( NULL, gpGlobals->curtime, false, nDissolveType );
+				pDroppedWeapon->Dissolve( NULL, gpGlobals->GetCurTime(), false, nDissolveType );
 			}
 		}
 #ifdef HL2_DLL
@@ -1637,7 +1637,7 @@ void CBaseCombatCharacter::Event_Killed( const CTakeDamageInfo &info )
 		{
 			if ( pDroppedWeapon )
 			{
-				pDroppedWeapon->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
+				pDroppedWeapon->Dissolve( NULL, gpGlobals->GetCurTime(), false, ENTITY_DISSOLVE_NORMAL );
 			}
 		}
 #endif
@@ -3043,7 +3043,7 @@ void CBaseCombatCharacter::ApplyStressDamage( IPhysicsObject *pPhysics, bool bRe
 
 		//Msg("Stress! %.2f / %.2f\n", stressOut.exertedStress, stressOut.receivedStress );
 		CTakeDamageInfo dmgInfo( GetWorldEntity(), GetWorldEntity(), vec3_origin, vec3_origin, damage, DMG_CRUSH );
-		dmgInfo.SetDamageForce( Vector( 0, 0, -stressOut.receivedStress * GetCurrentGravity() * gpGlobals->frametime ) );
+		dmgInfo.SetDamageForce( Vector( 0, 0, -stressOut.receivedStress * GetCurrentGravity() * gpGlobals->GetFrameTime() ) );
 		dmgInfo.SetDamagePosition( GetAbsOrigin() );
 		TakeDamage( dmgInfo );
 	}

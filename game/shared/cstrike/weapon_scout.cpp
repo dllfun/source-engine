@@ -103,8 +103,8 @@ void CWeaponScout::SecondaryAttack()
 		m_weaponMode = Primary_Mode;
 	}
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.3f;   
-	m_zoomFullyActiveTime = gpGlobals->curtime + 0.15; // The worst zoom time from above.  
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.3f;   
+	m_zoomFullyActiveTime = gpGlobals->GetCurTime() + 0.15; // The worst zoom time from above.  
 
 #ifndef CLIENT_DLL
 	// If this isn't guarded, the sound will be emitted twice, once by the server and once by the client.
@@ -152,7 +152,7 @@ float CWeaponScout::GetInaccuracy() const
 			fSpread = 0.007f;
 	
 		// If we are not zoomed in, or we have very recently zoomed and are still transitioning, the bullet diverts more.
-		if (pPlayer->GetFOV() == pPlayer->GetDefaultFOV() || (gpGlobals->curtime < m_zoomFullyActiveTime))
+		if (pPlayer->GetFOV() == pPlayer->GetDefaultFOV() || (gpGlobals->GetCurTime() < m_zoomFullyActiveTime))
 		{
 			fSpread += 0.025;
 		}

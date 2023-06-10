@@ -23,7 +23,7 @@
 
 inline CBasePlayer *AI_GetSinglePlayer()
 {
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1 )
 	{
 		return NULL;
 	}
@@ -33,7 +33,7 @@ inline CBasePlayer *AI_GetSinglePlayer()
 
 inline bool AI_IsSinglePlayer()
 {
-	return ( gpGlobals->maxClients == 1 );
+	return ( gpGlobals->GetMaxClients() == 1 );
 }
 
 

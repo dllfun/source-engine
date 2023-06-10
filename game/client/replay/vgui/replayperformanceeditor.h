@@ -155,7 +155,7 @@ private:
 
 	ReplayHandle_t		m_hReplay;
 
-	float				m_flLastTime;	// Can't use gpGlobals->frametime when playback is paused
+	float				m_flLastTime;	// Can't use gpGlobals->GetFrameTime() when playback is paused
 	float				m_flOldFps;
 
 	CExLabel			*m_pCurTimeLabel;

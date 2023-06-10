@@ -84,7 +84,7 @@ void CPhysicsCannister::Spawn( void )
 	if ( m_iHealth <= 0 )
 		m_iHealth = 25;
 
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	m_flPlaybackRate = 0.0;
 	SetCycle( 0 );
 	m_bFired = false;
@@ -182,7 +182,7 @@ int CPhysicsCannister::OnTakeDamage( const CTakeDamageInfo &info )
 		return 1;
 	}
 
-	if ( (gpGlobals->curtime - m_activateTime) <= 0.1 )
+	if ( (gpGlobals->GetCurTime() - m_activateTime) <= 0.1 )
 		return 0;
 
 	if ( info.GetDamageType() & (DMG_BULLET|DMG_BUCKSHOT|DMG_BURN|DMG_BLAST) )
@@ -230,8 +230,8 @@ void CPhysicsCannister::CannisterActivate( CBaseEntity *pActivator, const Vector
 	pPhys->Wake();
 
 	m_active = true;
-	m_activateTime = gpGlobals->curtime;
-	SetNextThink( gpGlobals->curtime + m_thrustTime );
+	m_activateTime = gpGlobals->GetCurTime();
+	SetNextThink( gpGlobals->GetCurTime() + m_thrustTime );
 	SetThink( &CPhysicsCannister::BeginShutdownThink );
 
 	QAngle angles;
@@ -438,7 +438,7 @@ void CPhysicsCannister::SetPhysicsAttacker( CBasePlayer *pEntity, float flTime )
 //-----------------------------------------------------------------------------
 void CPhysicsCannister::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
-	SetPhysicsAttacker( pPhysGunUser, gpGlobals->curtime );
+	SetPhysicsAttacker( pPhysGunUser, gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -446,7 +446,7 @@ void CPhysicsCannister::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPicku
 //-----------------------------------------------------------------------------
 void CPhysicsCannister::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
-	SetPhysicsAttacker( pPhysGunUser, gpGlobals->curtime );
+	SetPhysicsAttacker( pPhysGunUser, gpGlobals->GetCurTime() );
 	if ( Reason == LAUNCHED_BY_CANNON )
 	{
 		CannisterActivate( pPhysGunUser, vec3_origin );
@@ -458,7 +458,7 @@ void CPhysicsCannister::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t 
 //-----------------------------------------------------------------------------
 CBasePlayer *CPhysicsCannister::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime)
 	{
 		return m_hPhysicsAttacker;
 	}

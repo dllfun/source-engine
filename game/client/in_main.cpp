@@ -1113,7 +1113,7 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 	cmd->Reset();
 
 	cmd->command_number = sequence_number;
-	cmd->tick_count = gpGlobals->tickcount;
+	cmd->tick_count = gpGlobals->GetTickCount();
 
 	QAngle viewangles;
 	engineClient->GetViewAngles( viewangles );

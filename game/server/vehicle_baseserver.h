@@ -28,7 +28,7 @@ struct vbs_sound_update_t
 
 	void Defaults()
 	{
-		flFrameTime = gpGlobals->frametime;
+		flFrameTime = gpGlobals->GetFrameTime();
 		flCurrentSpeedFraction = 0;
 		flWorldSpaceSpeed = 0;
 		bThrottleDown = false;

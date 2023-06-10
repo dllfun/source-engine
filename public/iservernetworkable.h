@@ -28,7 +28,7 @@
 
 class ServerClass;
 class SendTable;
-struct edict_t;
+class edict_t;
 class CBaseEntity;
 class CSerialEntity;
 class CBaseNetworkable;

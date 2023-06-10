@@ -33,7 +33,7 @@ int GetBotFollowCount( CCSPlayer *leader )
 {
 	int count = 0;
 
-	for( int i=1; i <= gpGlobals->maxClients; ++i )
+	for( int i=1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex( i );
 
@@ -125,7 +125,7 @@ int CCSBot::OnTakeDamage( const CTakeDamageInfo &info )
 
 		// keep track of our last attacker
 		m_attacker = reinterpret_cast<CCSPlayer *>( attacker );
-		m_attackedTimestamp = gpGlobals->curtime;
+		m_attackedTimestamp = gpGlobals->GetCurTime();
 
 		// no longer safe
 		AdjustSafeTime();
@@ -285,7 +285,7 @@ void CCSBot::Touch( CBaseEntity *other )
 		}
 
 		m_avoid = other;
-		m_avoidTimestamp = gpGlobals->curtime;
+		m_avoidTimestamp = gpGlobals->GetCurTime();
 	}
 
 	// Check for breakables we're actually touching
@@ -345,7 +345,7 @@ void CCSBot::SetBotEnemy( CCSPlayer *enemy )
 	if (m_enemy != enemy)
 	{
 		m_enemy = enemy; 
-		m_currentEnemyAcquireTimestamp = gpGlobals->curtime;
+		m_currentEnemyAcquireTimestamp = gpGlobals->GetCurTime();
 
 		PrintIfWatched( "SetBotEnemy: %s\n", (enemy) ? enemy->GetPlayerName() : "(NULL)" );
 	}
@@ -535,14 +535,14 @@ float CCSBot::GetHidingSpotCheckTimestamp( HidingSpot *spot ) const
 void CCSBot::SetHidingSpotCheckTimestamp( HidingSpot *spot )
 {
 	int leastRecent = 0;
-	float leastRecentTime = gpGlobals->curtime + 1.0f;
+	float leastRecentTime = gpGlobals->GetCurTime() + 1.0f;
 
 	for( int i=0; i<m_checkedHidingSpotCount; ++i )
 	{
 		// if spot is in the set, just update its timestamp
 		if (m_checkedHidingSpot[i].spot->GetID() == spot->GetID())
 		{
-			m_checkedHidingSpot[i].timestamp = gpGlobals->curtime;
+			m_checkedHidingSpot[i].timestamp = gpGlobals->GetCurTime();
 			return;
 		}
 
@@ -558,14 +558,14 @@ void CCSBot::SetHidingSpotCheckTimestamp( HidingSpot *spot )
 	if (m_checkedHidingSpotCount < MAX_CHECKED_SPOTS)
 	{
 		m_checkedHidingSpot[ m_checkedHidingSpotCount ].spot = spot;
-		m_checkedHidingSpot[ m_checkedHidingSpotCount ].timestamp = gpGlobals->curtime;
+		m_checkedHidingSpot[ m_checkedHidingSpotCount ].timestamp = gpGlobals->GetCurTime();
 		++m_checkedHidingSpotCount;
 	}
 	else
 	{
 		// replace the least recent spot
 		m_checkedHidingSpot[ leastRecent ].spot = spot;
-		m_checkedHidingSpot[ leastRecent ].timestamp = gpGlobals->curtime;
+		m_checkedHidingSpot[ leastRecent ].timestamp = gpGlobals->GetCurTime();
 	}
 }
 
@@ -577,10 +577,10 @@ void CCSBot::SetHidingSpotCheckTimestamp( HidingSpot *spot )
 void CCSBot::UpdateHostageEscortCount( void )
 {
 	const float updateInterval = 1.0f;
-	if (m_hostageEscortCount == 0 || gpGlobals->curtime - m_hostageEscortCountTimestamp < updateInterval)
+	if (m_hostageEscortCount == 0 || gpGlobals->GetCurTime() - m_hostageEscortCountTimestamp < updateInterval)
 		return;
 
-	m_hostageEscortCountTimestamp = gpGlobals->curtime;
+	m_hostageEscortCountTimestamp = gpGlobals->GetCurTime();
 
 	// recount the hostages in case we lost some
 	m_hostageEscortCount = 0;
@@ -631,7 +631,7 @@ CCSPlayer *CCSBot::GetImportantEnemy( bool checkVisibility ) const
 	CCSPlayer *nearEnemy = NULL;
 	float nearDist = 999999999.9f;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex( i );
 
@@ -1102,7 +1102,7 @@ void CCSBot::BuildUserCmd( CUserCmd& cmd, const QAngle& viewangles, float forwar
 			buttons &= ~IN_SPEED;
 		}
 
-		cmd.command_number = gpGlobals->tickcount;
+		cmd.command_number = gpGlobals->GetTickCount();
 		cmd.forwardmove = forwardmove;
 		cmd.sidemove = sidemove;
 		cmd.upmove = upmove;

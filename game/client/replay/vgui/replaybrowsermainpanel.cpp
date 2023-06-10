@@ -134,7 +134,7 @@ void CReplayBrowserPanel::ShowPanel(bool bShow, ReplayHandle_t hReplayDetails/*=
 		InvalidateLayout( false, true );
 		Activate();
 
-		m_flTimeOpened = gpGlobals->realtime;
+		m_flTimeOpened = gpGlobals->GetRealTime();
 	}
 	else
 	{

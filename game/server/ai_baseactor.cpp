@@ -254,7 +254,7 @@ bool CAI_BaseActor::StartSceneEvent( CSceneEventInfo *info, CChoreoScene *scene,
 				Blink();
 				// don't blink for duration, or next random blink time
 				float flDuration = (event->GetEndTime() - scene->GetTime());
-				m_flBlinktime = gpGlobals->curtime + MAX( flDuration, random->RandomFloat( 1.5, 4.5 ) ); 
+				m_flBlinktime = gpGlobals->GetCurTime() + MAX( flDuration, random->RandomFloat( 1.5, 4.5 ) ); 
 			}
 			else if (stricmp( event->GetParameters(), "AI_HOLSTER") == 0)
 			{
@@ -301,7 +301,7 @@ bool CAI_BaseActor::StartSceneEvent( CSceneEventInfo *info, CChoreoScene *scene,
 					info->m_hTarget = pTarget;
 					float remaining = event->GetEndTime() - scene->GetTime();
 					NPCPhysics_CreateSolver( this, pTarget, true, remaining );
-					info->m_flNext = gpGlobals->curtime + remaining;
+					info->m_flNext = gpGlobals->GetCurTime() + remaining;
 					return true;
 				}
 				else
@@ -490,7 +490,7 @@ bool CAI_BaseActor::ProcessSceneEvent( CSceneEventInfo *info, CChoreoScene *scen
 					{
 						// keep eyes not blinking for duration
 						float flDuration = (event->GetEndTime() - scene->GetTime());
-						m_flBlinktime = MAX( m_flBlinktime, gpGlobals->curtime + flDuration );
+						m_flBlinktime = MAX( m_flBlinktime, gpGlobals->GetCurTime() + flDuration );
 					}
 					return true;
 				case SCENE_AI_HOLSTER:
@@ -515,14 +515,14 @@ bool CAI_BaseActor::ProcessSceneEvent( CSceneEventInfo *info, CChoreoScene *scen
 					return true;
 				case SCENE_AI_RANDOMLOOK:
 					{
-						if (info->m_flNext < gpGlobals->curtime)
+						if (info->m_flNext < gpGlobals->GetCurTime())
 						{
-							info->m_flNext = gpGlobals->curtime + PickLookTarget( m_syntheticLookQueue ) - 0.4;
+							info->m_flNext = gpGlobals->GetCurTime() + PickLookTarget( m_syntheticLookQueue ) - 0.4;
 							if (m_syntheticLookQueue.Count() > 0)
 							{
 								float flDuration = (event->GetEndTime() - scene->GetTime());
 								int i = m_syntheticLookQueue.Count() - 1;
-								m_syntheticLookQueue[i].m_flEndTime = MIN( m_syntheticLookQueue[i].m_flEndTime, gpGlobals->curtime + flDuration );
+								m_syntheticLookQueue[i].m_flEndTime = MIN( m_syntheticLookQueue[i].m_flEndTime, gpGlobals->GetCurTime() + flDuration );
 								m_syntheticLookQueue[i].m_flInterest = 0.1;
 							}
 						}
@@ -533,11 +533,11 @@ bool CAI_BaseActor::ProcessSceneEvent( CSceneEventInfo *info, CChoreoScene *scen
 				case SCENE_AI_RANDOMHEADFLEX:
 					return true;
 				case SCENE_AI_IGNORECOLLISION:
-					if (info->m_hTarget && info->m_flNext < gpGlobals->curtime)
+					if (info->m_hTarget && info->m_flNext < gpGlobals->GetCurTime())
 					{
 						float remaining = event->GetEndTime() - scene->GetTime();
 						NPCPhysics_CreateSolver( this, info->m_hTarget, true, remaining );
-						info->m_flNext = gpGlobals->curtime + remaining;
+						info->m_flNext = gpGlobals->GetCurTime() + remaining;
 					}
 
 					// FIXME: needs to handle scene pause
@@ -561,7 +561,7 @@ bool CAI_BaseActor::ProcessSceneEvent( CSceneEventInfo *info, CChoreoScene *scen
 
 bool CAI_BaseActor::RandomFaceFlex( CSceneEventInfo *info, CChoreoScene *scene, CChoreoEvent *event )
 {
-	if (info->m_flNext < gpGlobals->curtime)
+	if (info->m_flNext < gpGlobals->GetCurTime())
 	{
 		const flexsettinghdr_t *pSettinghdr = ( const flexsettinghdr_t * )FindSceneFile( event->GetParameters2() );
 		if (pSettinghdr == NULL)
@@ -570,7 +570,7 @@ bool CAI_BaseActor::RandomFaceFlex( CSceneEventInfo *info, CChoreoScene *scene, 
 		}
 		if ( pSettinghdr )
 		{
-			info->m_flNext = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / pSettinghdr->numflexsettings);
+			info->m_flNext = gpGlobals->GetCurTime() + random->RandomFloat( 0.3, 0.5 ) * (30.0 / pSettinghdr->numflexsettings);
 
 			flexsetting_t const *pSetting = NULL;
 			pSetting = pSettinghdr->pSetting( random->RandomInt( 0, pSettinghdr->numflexsettings - 1 ) );
@@ -1134,7 +1134,7 @@ void CAI_BaseActor::ClearLookTarget( CBaseEntity *pTarget )
 		m_randomLookQueue.Remove(iIndex);
 
 		// Figure out the new random look time
-		m_flNextRandomLookTime = gpGlobals->curtime + 1.0;
+		m_flNextRandomLookTime = gpGlobals->GetCurTime() + 1.0;
 		for (int i = 0; i < m_randomLookQueue.Count(); i++)
 		{
 			if ( m_randomLookQueue[i].m_flEndTime > m_flNextRandomLookTime )
@@ -1481,17 +1481,17 @@ void CAI_BaseActor::MaintainLookTargets( float flInterval )
 	{
 		for (i = 0; i < m_randomLookQueue.Count(); i++)
 		{
-			if (gpGlobals->curtime < m_randomLookQueue[i].m_flEndTime - m_randomLookQueue[i].m_flRamp - 0.2)
+			if (gpGlobals->GetCurTime() < m_randomLookQueue[i].m_flEndTime - m_randomLookQueue[i].m_flRamp - 0.2)
 			{
-				m_randomLookQueue[i].m_flEndTime = gpGlobals->curtime + m_randomLookQueue[i].m_flRamp + 0.2;
+				m_randomLookQueue[i].m_flEndTime = gpGlobals->GetCurTime() + m_randomLookQueue[i].m_flRamp + 0.2;
 			}
 		}
-		m_flNextRandomLookTime = gpGlobals->curtime + 1.0;
+		m_flNextRandomLookTime = gpGlobals->GetCurTime() + 1.0;
 	}
-	else if (gpGlobals->curtime >= m_flNextRandomLookTime && GetState() != NPC_STATE_SCRIPT)
+	else if (gpGlobals->GetCurTime() >= m_flNextRandomLookTime && GetState() != NPC_STATE_SCRIPT)
 	{
 		// Look at whatever!
-		m_flNextRandomLookTime = gpGlobals->curtime + PickLookTarget( m_randomLookQueue ) - 0.4;
+		m_flNextRandomLookTime = gpGlobals->GetCurTime() + PickLookTarget( m_randomLookQueue ) - 0.4;
 	}
 
 	// don't bother with any of the rest if the player can't see you
@@ -1501,7 +1501,7 @@ void CAI_BaseActor::MaintainLookTargets( float flInterval )
 	}
 
 	// Time to finish the current random expression? Or time to pick a new one?
-	if ( m_flNextRandomExpressionTime && gpGlobals->curtime > m_flNextRandomExpressionTime )
+	if ( m_flNextRandomExpressionTime && gpGlobals->GetCurTime() > m_flNextRandomExpressionTime )
 	{
 		// Random expressions need to be cleared, because they don't loop. So if we
 		// pick the same one again, we want to restart it.
@@ -1715,10 +1715,10 @@ void CAI_BaseActor::MaintainLookTargets( float flInterval )
 	// DevMsg("pitch %.1f yaw %.1f\n", GetFlexWeight( "eyes_updown" ), GetFlexWeight( "eyes_rightleft" ) );
 
 	// blink
-	if (m_flBlinktime < gpGlobals->curtime)
+	if (m_flBlinktime < gpGlobals->GetCurTime())
 	{
 		Blink();
-		m_flBlinktime = gpGlobals->curtime + random->RandomFloat( 1.5, 4.5 );
+		m_flBlinktime = gpGlobals->GetCurTime() + random->RandomFloat( 1.5, 4.5 );
 	}
 
 	if ( ai_debug_looktargets.GetInt() == 1 && (m_debugOverlays & OVERLAY_NPC_SELECTED_BIT) )
@@ -1744,7 +1744,7 @@ void CAI_BaseActor::PlayExpressionForState( NPC_STATE state )
 	if ( pszExpression && *pszExpression )
 	{
 		float flDuration = SetExpression( pszExpression );
-		m_flNextRandomExpressionTime = gpGlobals->curtime + flDuration;
+		m_flNextRandomExpressionTime = gpGlobals->GetCurTime() + flDuration;
 		return;
 	}
 	else

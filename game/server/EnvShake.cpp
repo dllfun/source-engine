@@ -203,10 +203,10 @@ void CEnvShake::ApplyShake( ShakeCommand_t command )
 		case SHAKE_START_NORUMBLE:
 		case SHAKE_START_RUMBLEONLY:
 			{
-				m_stopTime = gpGlobals->curtime + Duration();
+				m_stopTime = gpGlobals->GetCurTime() + Duration();
 				m_nextShake = 0;
 				m_pShakeController->ClearObjects();
-				SetNextThink( gpGlobals->curtime );
+				SetNextThink( gpGlobals->GetCurTime() );
 				m_currentAmp = Amplitude();
 				CBaseEntity *list[1024];
 				float radius = Radius(false);
@@ -309,10 +309,10 @@ void CEnvShake::Think( void )
 {
 	int i;
 
-	if ( gpGlobals->curtime > m_nextShake )
+	if ( gpGlobals->GetCurTime() > m_nextShake )
 	{
 		// Higher frequency means we recalc the extents more often and perturb the display again
-		m_nextShake = gpGlobals->curtime + (1.0f / Frequency());
+		m_nextShake = gpGlobals->GetCurTime() + (1.0f / Frequency());
 
 		// Compute random shake extents (the shake will settle down from this)
 		for (i = 0; i < 2; i++ )
@@ -325,7 +325,7 @@ void CEnvShake::Think( void )
 		m_maxForce *= m_currentAmp * 400;	// amplitude is the acceleration of a 100kg object
 	}
 
-	float fraction = ( m_stopTime - gpGlobals->curtime ) / Duration();
+	float fraction = ( m_stopTime - gpGlobals->GetCurTime() ) / Duration();
 
 	if ( fraction < 0 )
 	{
@@ -344,7 +344,7 @@ void CEnvShake::Think( void )
 	fraction *= fraction;
 
 	// Sine wave that slowly settles to zero
-	fraction = fraction * sin( gpGlobals->curtime * freq );
+	fraction = fraction * sin( gpGlobals->GetCurTime() * freq );
 
 	// Add to view origin
 	for ( i = 0; i < 3; i++ )
@@ -354,8 +354,8 @@ void CEnvShake::Think( void )
 	}
 
 	// Drop amplitude a bit, less for higher frequency shakes
-	m_currentAmp -= m_currentAmp * ( gpGlobals->frametime / (Duration() * Frequency()) );
-	SetNextThink( gpGlobals->curtime );
+	m_currentAmp -= m_currentAmp * ( gpGlobals->GetFrameTime() / (Duration() * Frequency()) );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 

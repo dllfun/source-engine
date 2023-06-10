@@ -109,7 +109,7 @@ void CBotManager::StartFrame( void )
 	//
 	// Process each active bot
 	//
-	for( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -128,7 +128,7 @@ void CBotManager::StartFrame( void )
 			{
 				bot->Upkeep();
 
-				if (((gpGlobals->tickcount + bot->NetworkProp()->entindex()) % g_BotUpdateSkipCount) == 0)
+				if (((gpGlobals->GetTickCount() + bot->NetworkProp()->entindex()) % g_BotUpdateSkipCount) == 0)
 				{
 					bot->ResetCommand();
 					bot->Update();

@@ -98,7 +98,7 @@ void CAnimationLayer::Init( CBaseAnimatingOverlay *pOverlay )
 	m_flKillDelay = 0.0;
 	m_flPlaybackRate = 1.0;
 	m_flLastEventCheck = 0.0;
-	m_flLastAccess = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastAccess = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 	m_flLayerAnimtime = 0;
 	m_flLayerFadeOuttime = 0;
 }
@@ -174,7 +174,7 @@ void CAnimationLayer::StudioFrameAdvance( float flInterval, CBaseAnimating *pOwn
 
 bool CAnimationLayer::IsAbandoned( void )
 { 
-	if (IsActive() && !IsAutokill() && !IsKillMe() && m_flLastAccess > 0.0 && (gpGlobals->curtime - m_flLastAccess > 0.2)) 
+	if (IsActive() && !IsAutokill() && !IsKillMe() && m_flLastAccess > 0.0 && (gpGlobals->GetCurTime() - m_flLastAccess > 0.2)) 
 		return true; 
 	else 
 		return false;
@@ -182,7 +182,7 @@ bool CAnimationLayer::IsAbandoned( void )
 
 void CAnimationLayer::MarkActive( void )
 { 
-	m_flLastAccess = gpGlobals->curtime;
+	m_flLastAccess = gpGlobals->GetCurTime();
 }
 
 //------------------------------------------------------------------------------
@@ -318,7 +318,7 @@ void CBaseAnimatingOverlay::StudioFrameAdvance ()
 				/*
 				if (m_AnimOverlay[ i ].IsAbandoned())
 				{
-					Msg(" %d abandoned %.2f (%.2f)\n", i, gpGlobals->curtime, m_AnimOverlay[ i ].m_flLastAccess );
+					Msg(" %d abandoned %.2f (%.2f)\n", i, gpGlobals->GetCurTime(), m_AnimOverlay[ i ].m_flLastAccess );
 				}
 				*/
 				Msg(" %d (%d): %s : %5.3f (%.3f)\n", i, m_AnimOverlay[ i ].m_nOrder.Get(), GetSequenceName( m_AnimOverlay[ i ].m_nSequence ), m_AnimOverlay[ i ].m_flCycle.Get(), m_AnimOverlay[ i ].m_flWeight.Get() );
@@ -436,7 +436,7 @@ void CBaseAnimatingOverlay::GetSkeleton( CStudioHdr *pStudioHdr, Vector pos[], Q
 	IBoneSetup boneSetup( pStudioHdr, boneMask, GetPoseParameterArray() );
 	boneSetup.InitPose( pos, q );
 
-	boneSetup.AccumulatePose( pos, q, GetSequence(), GetCycle(), 1.0, gpGlobals->curtime, m_pIk );
+	boneSetup.AccumulatePose( pos, q, GetSequence(), GetCycle(), 1.0, gpGlobals->GetCurTime(), m_pIk );
 
 	// sort the layers
 	int layer[MAX_OVERLAYS] = {};
@@ -459,19 +459,19 @@ void CBaseAnimatingOverlay::GetSkeleton( CStudioHdr *pStudioHdr, Vector pos[], Q
 		{
 			CAnimationLayer &pLayer = m_AnimOverlay[layer[i]];
 			// UNDONE: Is it correct to use overlay weight for IK too?
-			boneSetup.AccumulatePose( pos, q, pLayer.m_nSequence, pLayer.m_flCycle, pLayer.m_flWeight, gpGlobals->curtime, m_pIk );
+			boneSetup.AccumulatePose( pos, q, pLayer.m_nSequence, pLayer.m_flCycle, pLayer.m_flWeight, gpGlobals->GetCurTime(), m_pIk );
 		}
 	}
 
 	if ( m_pIk )
 	{
 		CIKContext auto_ik;
-		auto_ik.Init( pStudioHdr, GetAbsAngles(), GetAbsOrigin(), gpGlobals->curtime, 0, boneMask );
-		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->curtime, &auto_ik );
+		auto_ik.Init( pStudioHdr, GetAbsAngles(), GetAbsOrigin(), gpGlobals->GetCurTime(), 0, boneMask );
+		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->GetCurTime(), &auto_ik );
 	}
 	else
 	{
-		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->curtime, NULL );
+		boneSetup.CalcAutoplaySequences( pos, q, gpGlobals->GetCurTime(), NULL );
 	}
 	boneSetup.CalcBoneAdj( pos, q, GetEncodedControllerArray() );
 }
@@ -641,7 +641,7 @@ int	CBaseAnimatingOverlay::AddLayeredSequence( int sequence, int iPriority )
 		m_AnimOverlay[i].m_bLooping = ((GetSequenceFlags( GetModelPtr(), sequence ) & STUDIO_LOOPING) != 0);
 		if (ai_sequence_debug.GetBool() == true && m_debugOverlays & OVERLAY_NPC_SELECTED_BIT)
 		{
-			Msg("%5.3f : adding %d (%d): %s : %5.3f (%.3f)\n", gpGlobals->curtime, i, m_AnimOverlay[ i ].m_nOrder.Get(), GetSequenceName( m_AnimOverlay[ i ].m_nSequence ), m_AnimOverlay[ i ].m_flCycle.Get(), m_AnimOverlay[ i ].m_flWeight.Get() );
+			Msg("%5.3f : adding %d (%d): %s : %5.3f (%.3f)\n", gpGlobals->GetCurTime(), i, m_AnimOverlay[ i ].m_nOrder.Get(), GetSequenceName( m_AnimOverlay[ i ].m_nSequence ), m_AnimOverlay[ i ].m_flCycle.Get(), m_AnimOverlay[ i ].m_flWeight.Get() );
 		}
 	}
 

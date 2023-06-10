@@ -114,7 +114,7 @@ void CHudMenu::OnThink()
 	float flSelectionTimeout = MENU_SELECTION_TIMEOUT;
 
 	// If we've been open for a while without input, hide
-	if ( m_bMenuDisplayed && ( gpGlobals->curtime - m_flSelectionTime > flSelectionTimeout ) )
+	if ( m_bMenuDisplayed && ( gpGlobals->GetCurTime() - m_flSelectionTime > flSelectionTimeout ) )
 	{
 		m_bMenuDisplayed = false;
 	}
@@ -130,7 +130,7 @@ bool CHudMenu::ShouldDraw( void )
 		return false;
 
 	// check for if menu is set to disappear
-	if ( m_flShutoffTime > 0 && m_flShutoffTime <= gpGlobals->realtime )
+	if ( m_flShutoffTime > 0 && m_flShutoffTime <= gpGlobals->GetRealTime() )
 	{  
 		// times up, shutoff
 		m_bMenuDisplayed = false;
@@ -260,7 +260,7 @@ void CHudMenu::SelectMenuItem( int menu_item )
 
 		// remove the menu quickly
 		m_bMenuTakesInput = false;
-		m_flShutoffTime = gpGlobals->realtime + m_flOpenCloseTime;
+		m_flShutoffTime = gpGlobals->GetRealTime() + m_flOpenCloseTime;
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("MenuClose");
 	}
 }
@@ -364,7 +364,7 @@ void CHudMenu::ProcessText( void )
 void CHudMenu::HideMenu( void )
 {
 	m_bMenuTakesInput = false;
-	m_flShutoffTime = gpGlobals->realtime + m_flOpenCloseTime;
+	m_flShutoffTime = gpGlobals->GetRealTime() + m_flOpenCloseTime;
 	g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("MenuClose");
 }
 
@@ -397,7 +397,7 @@ void CHudMenu::ShowMenu( const char * menuName, int validSlots )
 	m_bMenuDisplayed = true;
 	m_bMenuTakesInput = true;
 
-	m_flSelectionTime = gpGlobals->curtime;
+	m_flSelectionTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -445,7 +445,7 @@ void CHudMenu::ShowMenu_KeyValueItems( KeyValues *pKV )
 	m_bMenuDisplayed = true;
 	m_bMenuTakesInput = true;
 
-	m_flSelectionTime = gpGlobals->curtime;
+	m_flSelectionTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -465,7 +465,7 @@ void CHudMenu::MsgFunc_ShowMenu( bf_read &msg)
 
 	if ( DisplayTime > 0 )
 	{
-		m_flShutoffTime = m_flOpenCloseTime + DisplayTime + gpGlobals->realtime;
+		m_flShutoffTime = m_flOpenCloseTime + DisplayTime + gpGlobals->GetRealTime();
 
 	}
 	else
@@ -503,7 +503,7 @@ void CHudMenu::MsgFunc_ShowMenu( bf_read &msg)
 		m_bMenuDisplayed = true;
 		m_bMenuTakesInput = true;
 
-		m_flSelectionTime = gpGlobals->curtime;
+		m_flSelectionTime = gpGlobals->GetCurTime();
 	}
 	else
 	{

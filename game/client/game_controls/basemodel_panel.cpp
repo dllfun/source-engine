@@ -862,7 +862,7 @@ void CBaseModelPanel::PostPaint3D( IMatRenderContext *pRenderContext )
 		return;
 
 	// This needs calling to reset various counters.
-	g_pParticleSystemMgr->SetLastSimulationTime( gpGlobals->curtime );
+	g_pParticleSystemMgr->SetLastSimulationTime( gpGlobals->GetCurTime() );
 
 	// Render Particles
 	pRenderContext->MatrixMode( MATERIAL_MODEL );
@@ -873,7 +873,7 @@ void CBaseModelPanel::PostPaint3D( IMatRenderContext *pRenderContext )
 	{
 		if ( m_particleList[i]->m_bIsUpdateToDate )
 		{
-			m_particleList[i]->m_pParticleSystem->Simulate( gpGlobals->frametime, false );
+			m_particleList[i]->m_pParticleSystem->Simulate( gpGlobals->GetFrameTime(), false );
 			m_particleList[i]->m_pParticleSystem->Render( pRenderContext );
 			m_particleList[i]->m_bIsUpdateToDate = false;
 		}

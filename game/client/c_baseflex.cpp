@@ -220,7 +220,7 @@ void C_BaseFlex::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 	if (hdr->GetNumIKChains() != 0 && (m_vecShift.x != 0.0 || m_vecShift.y != 0.0))
 	{
 		//CIKContext auto_ik;
-		//auto_ik.Init( hdr, GetRenderAngles(), GetRenderOrigin(), currentTime, gpGlobals->framecount, boneMask );
+		//auto_ik.Init( hdr, GetRenderAngles(), GetRenderOrigin(), currentTime, gpGlobals->GetFrameCount(), boneMask );
 		//auto_ik.AddAllLocks( pos, q );
 
 		matrix3x4_t rootxform;
@@ -1013,7 +1013,7 @@ void C_BaseFlex::GetToolRecordingState( KeyValues *msg )
 	if (m_blinktoggle != m_prevblinktoggle)
 	{
 		m_prevblinktoggle = m_blinktoggle;
-		m_blinktime = gpGlobals->curtime + g_CV_BlinkDuration.GetFloat();
+		m_blinktime = gpGlobals->GetCurTime() + g_CV_BlinkDuration.GetFloat();
 	}
 
 	if (m_iBlink == -1)
@@ -1022,7 +1022,7 @@ void C_BaseFlex::GetToolRecordingState( KeyValues *msg )
 
 	// FIXME: this needs a better algorithm
 	// blink the eyes
-	float t = (m_blinktime - gpGlobals->curtime) * M_PI * 0.5 * (1.0/g_CV_BlinkDuration.GetFloat());
+	float t = (m_blinktime - gpGlobals->GetCurTime()) * M_PI * 0.5 * (1.0/g_CV_BlinkDuration.GetFloat());
 	if (t > 0)
 	{
 		// do eyeblink falloff curve
@@ -1217,7 +1217,7 @@ bool C_BaseFlex::SetupGlobalWeights( const matrix3x4_t *pBoneToWorld, int nFlexW
 	if (m_blinktoggle != m_prevblinktoggle)
 	{
 		m_prevblinktoggle = m_blinktoggle;
-		m_blinktime = gpGlobals->curtime + g_CV_BlinkDuration.GetFloat();
+		m_blinktime = gpGlobals->GetCurTime() + g_CV_BlinkDuration.GetFloat();
 	}
 
 	if (m_iBlink == -1)
@@ -1229,7 +1229,7 @@ bool C_BaseFlex::SetupGlobalWeights( const matrix3x4_t *pBoneToWorld, int nFlexW
 	// blink the eyes
 	float flBlinkDuration = g_CV_BlinkDuration.GetFloat();
 	float flOOBlinkDuration = ( flBlinkDuration > 0 ) ? 1.0f / flBlinkDuration : 0.0f;
-	float t = ( m_blinktime - gpGlobals->curtime ) * M_PI * 0.5 * flOOBlinkDuration;
+	float t = ( m_blinktime - gpGlobals->GetCurTime() ) * M_PI * 0.5 * flOOBlinkDuration;
 	if (t > 0)
 	{
 		// do eyeblink falloff curve
@@ -1254,9 +1254,9 @@ bool C_BaseFlex::SetupGlobalWeights( const matrix3x4_t *pBoneToWorld, int nFlexW
 void C_BaseFlex::RunFlexDelay( int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights, float &flFlexDelayTime )
 {
 	// process the delayed version of the flexweights
-	if ( flFlexDelayTime > 0.0f && flFlexDelayTime < gpGlobals->curtime )
+	if ( flFlexDelayTime > 0.0f && flFlexDelayTime < gpGlobals->GetCurTime() )
 	{
-		float d = clamp( gpGlobals->curtime - flFlexDelayTime, 0.0, gpGlobals->frametime );
+		float d = clamp( gpGlobals->GetCurTime() - flFlexDelayTime, 0.0, gpGlobals->GetFrameTime() );
 		d = ExponentialDecay( 0.8, 0.033, d );
 
 		for ( int i = 0; i < nFlexWeightCount; i++)
@@ -1264,7 +1264,7 @@ void C_BaseFlex::RunFlexDelay( int nFlexWeightCount, float *pFlexWeights, float 
 			pFlexDelayedWeights[i] = pFlexDelayedWeights[i] * d + pFlexWeights[i] * (1.0f - d);
 		}
 	}
-	flFlexDelayTime = gpGlobals->curtime;
+	flFlexDelayTime = gpGlobals->GetCurTime();
 }
 
 

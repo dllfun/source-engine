@@ -255,7 +255,7 @@ bool CAI_Enemies::ShouldDiscardMemory( AI_EnemyInfo_t *pMemory )
 	}
 
 	if ( !pMemory->bUnforgettable &&
-		 gpGlobals->curtime > pMemory->timeLastSeen + m_flEnemyDiscardTime )
+		 gpGlobals->GetCurTime() > pMemory->timeLastSeen + m_flEnemyDiscardTime )
 	{
 		return true;
 	}
@@ -292,7 +292,7 @@ void CAI_Enemies::RefreshMemories(void)
 		}
 		else if ( pMemory->hEnemy )
 		{
-			if ( gpGlobals->curtime <= pMemory->timeLastSeen + m_flFreeKnowledgeDuration )
+			if ( gpGlobals->GetCurTime() <= pMemory->timeLastSeen + m_flFreeKnowledgeDuration )
 			{
 				// Free knowledge is ignored if the target has notarget on
 				if ( !(pMemory->hEnemy->GetFlags() & FL_NOTARGET) )
@@ -301,7 +301,7 @@ void CAI_Enemies::RefreshMemories(void)
 				}
 			}
 
-			if ( gpGlobals->curtime <= pMemory->timeLastSeen )
+			if ( gpGlobals->GetCurTime() <= pMemory->timeLastSeen )
 			{
 				pMemory->vLastSeenLocation = pMemory->hEnemy->GetAbsOrigin();
 			}
@@ -334,14 +334,14 @@ bool CAI_Enemies::UpdateMemory(CAI_Network* pAINet, CBaseEntity *pEnemy, const V
 		Assert(pEnemy || pMemory->bDangerMemory == true);
 
 		if ( firstHand )
-			pMemory->timeLastSeen = gpGlobals->curtime;
+			pMemory->timeLastSeen = gpGlobals->GetCurTime();
 		pMemory->bEludedMe = false;
 		
 		float deltaDist = (pMemory->vLastKnownLocation - vPosition).LengthSqr();
 		
-		if (deltaDist>DIST_TRIGGER_REACQUIRE_SQ || ( deltaDist>MIN_DIST_TIME_TRIGGER_REACQUIRE_SQ && ( gpGlobals->curtime - pMemory->timeLastSeen ) > TIME_TRIGGER_REACQUIRE ) )
+		if (deltaDist>DIST_TRIGGER_REACQUIRE_SQ || ( deltaDist>MIN_DIST_TIME_TRIGGER_REACQUIRE_SQ && ( gpGlobals->GetCurTime() - pMemory->timeLastSeen ) > TIME_TRIGGER_REACQUIRE ) )
 		{
-			pMemory->timeLastReacquired = gpGlobals->curtime;
+			pMemory->timeLastReacquired = gpGlobals->GetCurTime();
 		}
 
 		// Only update if the enemy has moved
@@ -354,7 +354,7 @@ bool CAI_Enemies::UpdateMemory(CAI_Network* pAINet, CBaseEntity *pEnemy, const V
 		// Update the time at which we first saw him firsthand
 		if ( firstHand && pMemory->timeAtFirstHand == AI_INVALID_TIME )
 		{
-			pMemory->timeAtFirstHand = gpGlobals->curtime;
+			pMemory->timeAtFirstHand = gpGlobals->GetCurTime();
 		}
 
 		return false;
@@ -366,17 +366,17 @@ bool CAI_Enemies::UpdateMemory(CAI_Network* pAINet, CBaseEntity *pEnemy, const V
 
 	if ( firstHand )
 	{
-		pAddMemory->timeLastReacquired = pAddMemory->timeFirstSeen = pAddMemory->timeLastSeen = pAddMemory->timeAtFirstHand = gpGlobals->curtime;
+		pAddMemory->timeLastReacquired = pAddMemory->timeFirstSeen = pAddMemory->timeLastSeen = pAddMemory->timeAtFirstHand = gpGlobals->GetCurTime();
 	}
 	else
 	{
 		// Block free knowledge
-		pAddMemory->timeLastReacquired = pAddMemory->timeFirstSeen = pAddMemory->timeLastSeen = ( gpGlobals->curtime - (m_flFreeKnowledgeDuration + 0.01) );
+		pAddMemory->timeLastReacquired = pAddMemory->timeFirstSeen = pAddMemory->timeLastSeen = ( gpGlobals->GetCurTime() - (m_flFreeKnowledgeDuration + 0.01) );
 		pAddMemory->timeAtFirstHand = AI_INVALID_TIME;
 	}
 
 	if ( reactionDelay > 0.0 )
-		pAddMemory->timeValidEnemy = gpGlobals->curtime + reactionDelay;
+		pAddMemory->timeValidEnemy = gpGlobals->GetCurTime() + reactionDelay;
 
 	pAddMemory->bEludedMe = false;
 
@@ -398,7 +398,7 @@ void CAI_Enemies::OnTookDamageFrom( CBaseEntity *pEnemy )
 {
 	AI_EnemyInfo_t *pMemory = Find( pEnemy, true );
 	if ( pMemory )
-		pMemory->timeLastReceivedDamageFrom = gpGlobals->curtime;
+		pMemory->timeLastReceivedDamageFrom = gpGlobals->GetCurTime();
 }
 
 //------------------------------------------------------------------------------
@@ -541,7 +541,7 @@ bool CAI_Enemies::HasFreeKnowledgeOf( CBaseEntity *pEnemy )
 	if ( pMemory )
 	{
 		float flFreeKnowledgeTime = pMemory->timeLastSeen + m_flFreeKnowledgeDuration;
-		return ( gpGlobals->curtime < flFreeKnowledgeTime );
+		return ( gpGlobals->GetCurTime() < flFreeKnowledgeTime );
 	}
 
 	if ( pEnemy != AI_UNKNOWN_ENEMY )

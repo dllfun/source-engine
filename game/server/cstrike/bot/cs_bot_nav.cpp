@@ -326,7 +326,7 @@ void CCSBot::BreakablesCheck( void )
 		{
 			EquipBestWeapon( MUST_EQUIP );
 		}
-		else if ( GetActiveWeapon() && GetActiveWeapon()->m_flNextPrimaryAttack <= gpGlobals->curtime )
+		else if ( GetActiveWeapon() && GetActiveWeapon()->m_flNextPrimaryAttack <= gpGlobals->GetCurTime() )
 		{
 			bool shouldShoot = IsLookingAtPosition( m_lookAtSpot, 10.0f );
 
@@ -419,7 +419,7 @@ void CCSBot::ResetStuckMonitor( void )
 	m_avgVelIndex = 0;
 	m_avgVelCount = 0;
 
-	m_areaEnteredTimestamp = gpGlobals->curtime;
+	m_areaEnteredTimestamp = gpGlobals->GetCurTime();
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -482,7 +482,7 @@ void CCSBot::StuckCheck( void )
 			if (avgVel < stuckVel)
 			{
 				// we are stuck - note when and where we initially become stuck
-				m_stuckTimestamp = gpGlobals->curtime;			
+				m_stuckTimestamp = gpGlobals->GetCurTime();			
 				m_stuckSpot = GetAbsOrigin();
 				m_stuckJumpTimer.Start( RandomFloat( 0.3f, 0.75f ) );		// 1.0
 

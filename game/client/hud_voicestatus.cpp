@@ -207,7 +207,7 @@ void CHudVoiceStatus::VidInit( void )
 
 void CHudVoiceStatus::OnThink( void )
 {
-	for ( int iPlayerIndex=1; iPlayerIndex<=gpGlobals->maxClients; iPlayerIndex++ )
+	for ( int iPlayerIndex=1; iPlayerIndex<=gpGlobals->GetMaxClients(); iPlayerIndex++ )
 	{
 		int activeSpeakerIndex = FindActiveSpeaker(iPlayerIndex);
 		bool bSpeaking = GetClientVoiceMgr()->IsPlayerSpeaking(iPlayerIndex);
@@ -271,7 +271,7 @@ void CHudVoiceStatus::OnThink( void )
 		}
 	}
 
-	float fTime = gpGlobals->frametime;
+	float fTime = gpGlobals->GetFrameTime();
 
 	for ( int i = m_SpeakingList.Head(); i != m_SpeakingList.InvalidIndex(); )
 	{

@@ -182,10 +182,10 @@ void CCSBot::SetupLadderMovement( void )
 	if (to->ladder)
 	{
 		m_spotEncounter = NULL;
-		m_areaEnteredTimestamp = gpGlobals->curtime;
+		m_areaEnteredTimestamp = gpGlobals->GetCurTime();
 
 		m_pathLadder = to->ladder;
-		m_pathLadderTimestamp = gpGlobals->curtime;
+		m_pathLadderTimestamp = gpGlobals->GetCurTime();
 
 		QAngle ladderAngles;
 		VectorAngles( m_pathLadder->GetNormal(), ladderAngles );
@@ -268,7 +268,7 @@ bool CCSBot::UpdateLadderMovement( void )
 
 	// check for timeout
 	const float ladderTimeoutDuration = 10.0f;
-	if (gpGlobals->curtime - m_pathLadderTimestamp > ladderTimeoutDuration && !cv_bot_debug.GetBool())
+	if (gpGlobals->GetCurTime() - m_pathLadderTimestamp > ladderTimeoutDuration && !cv_bot_debug.GetBool())
 	{
 		PrintIfWatched( "Ladder timeout!\n" );
 		giveUp = true;
@@ -328,7 +328,7 @@ bool CCSBot::UpdateLadderMovement( void )
 	}
 
 
-	m_areaEnteredTimestamp = gpGlobals->curtime;
+	m_areaEnteredTimestamp = gpGlobals->GetCurTime();
 
 	const float tolerance = 10.0f;
 	const float closeToGoal = 25.0f;
@@ -589,7 +589,7 @@ bool CCSBot::UpdateLadderMovement( void )
 				else if (m_path[ m_pathIndex ].area == m_pathLadder->m_topRightArea)
 					m_pathLadderDismountDir = RIGHT;
 
-				m_pathLadderDismountTimestamp = gpGlobals->curtime;
+				m_pathLadderDismountTimestamp = gpGlobals->GetCurTime();
 			}
 			else if (!IsOnLadder())
 			{
@@ -633,7 +633,7 @@ bool CCSBot::UpdateLadderMovement( void )
 
 		case DISMOUNT_ASCENDING_LADDER:
 		{
-			if (gpGlobals->curtime - m_pathLadderDismountTimestamp >= 0.4f)
+			if (gpGlobals->GetCurTime() - m_pathLadderDismountTimestamp >= 0.4f)
 			{
 				m_pathLadderState = MOVE_TO_DESTINATION;
 				m_path[ m_pathIndex ].area->GetClosestPointOnArea( myOrigin, &m_goalPosition );
@@ -1127,7 +1127,7 @@ int CCSBot::FindPathPoint( float aheadRange, Vector *point, int *prevIndex )
 void CCSBot::SetPathIndex( int newIndex )
 {
 	m_pathIndex = MIN( newIndex, m_pathLength-1 );
-	m_areaEnteredTimestamp = gpGlobals->curtime;
+	m_areaEnteredTimestamp = gpGlobals->GetCurTime();
 
 	if (m_path[ m_pathIndex ].ladder)
 	{
@@ -1211,7 +1211,7 @@ bool CCSBot::IsFriendInTheWay( const Vector &goalPos )
 	m_isFriendInTheWay = false;
 
 	// check if any friends are overlapping this linear path
-	for( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CCSPlayer *player = static_cast<CCSPlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -1775,7 +1775,7 @@ CCSBot::PathResult CCSBot::UpdatePathMovement( bool allowSpeedChange )
 	// enough that it never becomes "stuck"
 	//
 	const float giveUpDuration = 4.0f;
-	if (didFall || gpGlobals->curtime - m_areaEnteredTimestamp > giveUpDuration)
+	if (didFall || gpGlobals->GetCurTime() - m_areaEnteredTimestamp > giveUpDuration)
 	{
 		if (didFall)
 		{
@@ -1861,7 +1861,7 @@ void CCSBot::BuildTrivialPath( const Vector &goal )
 	m_path[1].ladder = NULL;
 	m_path[1].how = NUM_TRAVERSE_TYPES;
 
-	m_areaEnteredTimestamp = gpGlobals->curtime;
+	m_areaEnteredTimestamp = gpGlobals->GetCurTime();
 	m_spotEncounter = NULL;
 	m_pathLadder = NULL;
 
@@ -1989,7 +1989,7 @@ bool CCSBot::ComputePath( const Vector &goal, RouteType route )
 
 	// do movement setup
 	m_pathIndex = 1;
-	m_areaEnteredTimestamp = gpGlobals->curtime;
+	m_areaEnteredTimestamp = gpGlobals->GetCurTime();
 	m_spotEncounter = NULL;
 	m_goalPosition = m_path[1].pos;
 

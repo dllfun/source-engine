@@ -335,7 +335,7 @@ void CEnvSoundscape::UpdateForPlayer( ss_update_t &update )
 				// also draw lines to each sound position.
 				// we don't store the number of local sound positions, just a bitvector of which ones are on.
 				unsigned int soundbits = audio.localBits.Get();
-				float periodic = 2.0f * sin((fmod(gpGlobals->curtime,2.0f) - 1.0f) * M_PI); // = -4f .. 4f
+				float periodic = 2.0f * sin((fmod(gpGlobals->GetCurTime(),2.0f) - 1.0f) * M_PI); // = -4f .. 4f
 				for (int ii = 0 ; ii < NUM_AUDIO_LOCAL_SOUNDS ; ++ii )
 				{
 					if ( soundbits & (1 << ii) )
@@ -540,7 +540,7 @@ void CTriggerSoundscape::Spawn()
 	InitTrigger();
 
 	SetThink( &CTriggerSoundscape::PlayerUpdateThink );
-	SetNextThink( gpGlobals->curtime + 0.2 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.2 );
 }
 
 
@@ -555,13 +555,13 @@ void CTriggerSoundscape::Activate()
 void CTriggerSoundscape::PlayerUpdateThink()
 {
 	int i;
-	SetNextThink( gpGlobals->curtime + 0.2 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.2 );
 
 	CUtlVector<CBasePlayerHandle> oldSpectators;
 	oldSpectators = m_spectators;
 	m_spectators.RemoveAll();
 
-	for ( i=1; i <= gpGlobals->maxClients; ++i )
+	for ( i=1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex( i );
 

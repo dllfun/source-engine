@@ -458,7 +458,7 @@ void CModelPanel::SetupModel( void )
 				}
 			}
 
-			pEnt->m_flAnimTime = gpGlobals->curtime;
+			pEnt->m_flAnimTime = gpGlobals->GetCurTime();
 		}
 	}
 
@@ -486,7 +486,7 @@ void CModelPanel::SetupModel( void )
 				pTemp->m_nSkin = pInfo->m_nSkin;
 			}
 
-			pTemp->m_flAnimTime = gpGlobals->curtime;
+			pTemp->m_flAnimTime = gpGlobals->GetCurTime();
 			m_AttachedModels.AddToTail( pTemp );
 		}
 	}
@@ -593,7 +593,7 @@ void CModelPanel::Paint()
 	// do we have a valid sequence?
 	if ( m_hModel->GetSequence() != -1 )
 	{
-		m_hModel->FrameAdvance( gpGlobals->frametime );
+		m_hModel->FrameAdvance( gpGlobals->GetFrameTime() );
 	}
 
 	CMatRenderContextPtr pRenderContext( materials );

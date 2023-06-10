@@ -18,7 +18,7 @@
 #include "tier1/utlhash.h"
 
 #include <string_t.h> // NULL_STRING define
-struct edict_t;
+class edict_t;
 
 
 #ifdef EHANDLE_H // not available to engine

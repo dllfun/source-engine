@@ -88,11 +88,11 @@ void CEntityParticleTrail::Spawn()
 
 	/*
 	SetThink( &CEntityParticleTrail::BoogieThink );
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 
 	if ( HasSpawnFlags( SF_RAGDOLL_BOOGIE_ELECTRICAL ) )
 	{
-		SetContextThink( ZapThink, gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
+		SetContextThink( ZapThink, gpGlobals->GetCurTime() + random->RandomFloat( 0.1f, 0.3f ), s_pZapContext ); 
 	}
 	*/
 }
@@ -135,7 +135,7 @@ void CEntityParticleTrail::IncrementRefCount()
 {
 	if ( m_nRefCount == 0 )
 	{
-		SetContextThink( NULL, gpGlobals->curtime, s_pRetireContext );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), s_pRetireContext );
 	}
 	++m_nRefCount;
 }
@@ -148,7 +148,7 @@ void CEntityParticleTrail::DecrementRefCount()
 	{
 		FollowEntity( NULL );
 		g_pNotify->ClearEntity( this );
-		SetContextThink( &CEntityParticleTrail::SUB_Remove, gpGlobals->curtime + m_Info.m_flLifetime, s_pRetireContext );
+		SetContextThink( &CEntityParticleTrail::SUB_Remove, gpGlobals->GetCurTime() + m_Info.m_flLifetime, s_pRetireContext );
 	}
 }
 
@@ -167,7 +167,7 @@ void CEntityParticleTrail::NotifySystemEvent( CBaseEntity *pNotify, notify_syste
 		if ( m_nRefCount != 0 )
 		{
 			m_nRefCount = 0;
-			SetContextThink( &CEntityParticleTrail::SUB_Remove, gpGlobals->curtime + m_Info.m_flLifetime, s_pRetireContext );
+			SetContextThink( &CEntityParticleTrail::SUB_Remove, gpGlobals->GetCurTime() + m_Info.m_flLifetime, s_pRetireContext );
 		}
 	}
 }

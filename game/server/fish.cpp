@@ -557,7 +557,7 @@ CFishPool::CFishPool( void )
 void CFishPool::Spawn()
 {
 	SetThink( &CFishPool::Update );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	m_waterLevel = UTIL_WaterLevel( GetAbsOrigin(), GetAbsOrigin().z, GetAbsOrigin().z + 1000.0f );
 
@@ -650,7 +650,7 @@ void CFishPool::FireGameEvent( IGameEvent *event )
 void CFishPool::Update( void )
 {
 	float deltaT = 0.1f;
-	SetNextThink( gpGlobals->curtime + deltaT );
+	SetNextThink( gpGlobals->GetCurTime() + deltaT );
 
 	/// @todo Go dormant when no players are around to see us
 

@@ -90,7 +90,7 @@ void C_DynamicLight::OnDataChanged(DataUpdateType_t updateType)
 {
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
-		SetNextClientThink(gpGlobals->curtime + 0.05);
+		SetNextClientThink(gpGlobals->GetCurTime() + 0.05);
 	}
 
 	BaseClass::OnDataChanged( updateType );
@@ -112,13 +112,13 @@ void C_DynamicLight::Release()
 {
 	if (m_pDynamicLight)
 	{
-		m_pDynamicLight->die = gpGlobals->curtime;
+		m_pDynamicLight->die = gpGlobals->GetCurTime();
 		m_pDynamicLight = 0;
 	}
 	
 	if (m_pSpotlightEnd)
 	{
-		m_pSpotlightEnd->die = gpGlobals->curtime;
+		m_pSpotlightEnd->die = gpGlobals->GetCurTime();
 		m_pSpotlightEnd = 0;
 	}
 
@@ -162,7 +162,7 @@ void C_DynamicLight::ClientThink(void)
 		m_pDynamicLight->origin		= GetAbsOrigin();
 		m_pDynamicLight->m_InnerAngle = m_InnerAngle;
 		m_pDynamicLight->m_OuterAngle = m_OuterAngle;
-		m_pDynamicLight->die = gpGlobals->curtime + 1e6;
+		m_pDynamicLight->die = gpGlobals->GetCurTime() + 1e6;
 		m_pDynamicLight->m_Direction = forward;
 	}
 	else
@@ -170,7 +170,7 @@ void C_DynamicLight::ClientThink(void)
 		// In this case, the m_Flags could have changed; which is how we turn the light off
 		if (m_pDynamicLight)
 		{
-			m_pDynamicLight->die = gpGlobals->curtime;
+			m_pDynamicLight->die = gpGlobals->GetCurTime();
 			m_pDynamicLight = 0;
 		}
 	}
@@ -201,7 +201,7 @@ void C_DynamicLight::ClientThink(void)
 		
 		if (pm.fraction == 1.0f)
 		{
-			m_pSpotlightEnd->die = gpGlobals->curtime;
+			m_pSpotlightEnd->die = gpGlobals->GetCurTime();
 			m_pSpotlightEnd = 0;
 		}
 		else
@@ -212,7 +212,7 @@ void C_DynamicLight::ClientThink(void)
 			m_pSpotlightEnd->style = m_LightStyle;
 			m_pSpotlightEnd->flags = DLIGHT_NO_MODEL_ILLUMINATION | (m_Flags & DLIGHT_DISPLACEMENT_MASK);
 			m_pSpotlightEnd->radius		= m_SpotRadius; // * falloff;
-			m_pSpotlightEnd->die		= gpGlobals->curtime + 1e6;
+			m_pSpotlightEnd->die		= gpGlobals->GetCurTime() + 1e6;
 			m_pSpotlightEnd->color.r	= m_clrRender->r * falloff;
 			m_pSpotlightEnd->color.g	= m_clrRender->g * falloff;
 			m_pSpotlightEnd->color.b	= m_clrRender->b * falloff;
@@ -230,11 +230,11 @@ void C_DynamicLight::ClientThink(void)
 		// In this case, the m_Flags could have changed; which is how we turn the light off
 		if (m_pSpotlightEnd)
 		{
-			m_pSpotlightEnd->die = gpGlobals->curtime;
+			m_pSpotlightEnd->die = gpGlobals->GetCurTime();
 			m_pSpotlightEnd = 0;
 		}
 	}
 
-	SetNextClientThink(gpGlobals->curtime + 0.001);
+	SetNextClientThink(gpGlobals->GetCurTime() + 0.001);
 }
 

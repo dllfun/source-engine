@@ -312,7 +312,7 @@ void C_ClientRagdoll::OnRestore( void )
 	VPhysicsSetObject( NULL );
 	VPhysicsSetObject( pRagdollT->list[0].pObject );
 
-	SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+	SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 
 	pRagdollT->list[0].parentIndex = -1;
 	pRagdollT->list[0].originParentSpace.Init();
@@ -410,7 +410,7 @@ void C_ClientRagdoll::HandleAnimatedFriction( void )
 				m_iFrictionAnimState = RAGDOLL_FRICTION_IN;
 
 				m_flFrictionModTime = pRagdollT->animfriction.flFrictionTimeIn;
-				m_flFrictionTime = gpGlobals->curtime + m_flFrictionModTime;
+				m_flFrictionTime = gpGlobals->GetCurTime() + m_flFrictionModTime;
 				
 				m_iCurrentFriction = m_iMinFriction;
 			}
@@ -424,14 +424,14 @@ void C_ClientRagdoll::HandleAnimatedFriction( void )
 
 		case RAGDOLL_FRICTION_IN:
 		{
-			float flDeltaTime = (m_flFrictionTime - gpGlobals->curtime);
+			float flDeltaTime = (m_flFrictionTime - gpGlobals->GetCurTime());
 
 			m_iCurrentFriction = RemapValClamped( flDeltaTime , m_flFrictionModTime, 0, m_iMinFriction, m_iMaxFriction );
 
 			if ( flDeltaTime <= 0.0f )
 			{
 				m_flFrictionModTime = pRagdollT->animfriction.flFrictionTimeHold;
-				m_flFrictionTime = gpGlobals->curtime + m_flFrictionModTime;
+				m_flFrictionTime = gpGlobals->GetCurTime() + m_flFrictionModTime;
 				m_iFrictionAnimState = RAGDOLL_FRICTION_HOLD;
 			}
 			break;
@@ -439,10 +439,10 @@ void C_ClientRagdoll::HandleAnimatedFriction( void )
 
 		case RAGDOLL_FRICTION_HOLD:
 		{
-			if ( m_flFrictionTime < gpGlobals->curtime )
+			if ( m_flFrictionTime < gpGlobals->GetCurTime() )
 			{
 				m_flFrictionModTime = pRagdollT->animfriction.flFrictionTimeOut;
-				m_flFrictionTime = gpGlobals->curtime + m_flFrictionModTime;
+				m_flFrictionTime = gpGlobals->GetCurTime() + m_flFrictionModTime;
 				m_iFrictionAnimState = RAGDOLL_FRICTION_OUT;
 			}
 			
@@ -451,7 +451,7 @@ void C_ClientRagdoll::HandleAnimatedFriction( void )
 
 		case RAGDOLL_FRICTION_OUT:
 		{
-			float flDeltaTime = (m_flFrictionTime - gpGlobals->curtime);
+			float flDeltaTime = (m_flFrictionTime - gpGlobals->GetCurTime());
 
 			m_iCurrentFriction = RemapValClamped( flDeltaTime , 0, m_flFrictionModTime, m_iMinFriction, m_iMaxFriction );
 
@@ -503,7 +503,7 @@ void C_ClientRagdoll::FadeOut( void )
 	int iAlpha = GetRenderColor().a;
 	int iFadeSpeed = ( g_RagdollLVManager.IsLowViolence() ) ? g_ragdoll_lvfadespeed.GetInt() : g_ragdoll_fadespeed.GetInt();
 
-	iAlpha = MAX( iAlpha - ( iFadeSpeed * gpGlobals->frametime ), 0 );
+	iAlpha = MAX( iAlpha - ( iFadeSpeed * gpGlobals->GetFrameTime() ), 0 );
 
 	SetRenderMode( kRenderTransAlpha );
 	SetRenderColorA( iAlpha );
@@ -1347,7 +1347,7 @@ void C_BaseAnimating::GetPoseParameters( CStudioHdr *pStudioHdr, float poseParam
 	if (/* Q_stristr( pStudioHdr->pszName(), r_sequence_debug.GetString()) != NULL || */ r_sequence_debug.GetInt() == entindex())
 	{
 		DevMsgRT( "%s\n", pStudioHdr->pszName() );
-		DevMsgRT( "%6.2f : ", gpGlobals->curtime );
+		DevMsgRT( "%6.2f : ", gpGlobals->GetCurTime() );
 		for( i=0; i < pStudioHdr->GetNumPoseParameters(); i++)
 		{
 			const mstudioposeparamdesc_t &Pose = pStudioHdr->pPoseParameter( i );
@@ -1504,7 +1504,7 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 				}
 
 				// do jiggle physics
-				m_pJiggleBones->BuildJiggleTransformations( i, gpGlobals->realtime, jiggleInfo, goalMX, GetBoneForWrite( i ) );
+				m_pJiggleBones->BuildJiggleTransformations( i, gpGlobals->GetRealTime(), jiggleInfo, goalMX, GetBoneForWrite( i ) );
 
 			}
 			else if (hdr->boneParent(i) == -1) 
@@ -1558,7 +1558,7 @@ void C_BaseAnimating::ApplyBoneMatrixTransform( matrix3x4_t& transform )
 		{
 			float scale;
 			
-			scale = 1.0 + (gpGlobals->curtime - m_flAnimTime) * 10.0;
+			scale = 1.0 + (gpGlobals->GetCurTime() - m_flAnimTime) * 10.0;
 			if ( scale > 2 )	// Don't blow up more than 200%
 				scale = 2;
 			transform[0][1] *= scale;
@@ -1605,7 +1605,7 @@ void C_BaseAnimating::CreateUnragdollInfo( C_BaseAnimating *pRagdoll )
 	}
 
 	// Now do the current bone setup
-	pRagdoll->SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+	pRagdoll->SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 
 	matrix3x4_t parentTransform;
 	QAngle newAngles( 0, pRagdoll->GetAbsAngles()[YAW], 0 );
@@ -1629,7 +1629,7 @@ void C_BaseAnimating::CreateUnragdollInfo( C_BaseAnimating *pRagdoll )
 	int numbones = hdr->numbones();
 
 	m_pRagdollInfo->m_bActive = true;
-	m_pRagdollInfo->m_flSaveTime = gpGlobals->curtime;
+	m_pRagdollInfo->m_flSaveTime = gpGlobals->GetCurTime();
 	m_pRagdollInfo->m_nNumBones = numbones;
 
 	for ( int i = 0;  i < numbones; i++ )
@@ -1678,7 +1678,7 @@ void C_BaseAnimating::SaveRagdollInfo( int numbones, const matrix3x4_t &cameraTr
 	mstudiobone_t *pbones = hdr->pBone( 0 );
 
 	m_pRagdollInfo->m_bActive = true;
-	m_pRagdollInfo->m_flSaveTime = gpGlobals->curtime;
+	m_pRagdollInfo->m_flSaveTime = gpGlobals->GetCurTime();
 	m_pRagdollInfo->m_nNumBones = numbones;
 
 	for ( int i = 0;  i < numbones; i++ )
@@ -1761,7 +1761,7 @@ void C_BaseAnimating::MaintainSequenceTransitions( IBoneSetup &boneSetup, float 
 		GetSequence(),
 		flCycle,
 		m_flPlaybackRate,
-		gpGlobals->curtime
+		gpGlobals->GetCurTime()
 		);
 
 
@@ -1770,18 +1770,18 @@ void C_BaseAnimating::MaintainSequenceTransitions( IBoneSetup &boneSetup, float 
 	{
 		C_AnimationLayer *blend = &m_SequenceTransitioner.m_animationQueue[i];
 
-		float dt = (gpGlobals->curtime - blend->m_flLayerAnimtime);
+		float dt = (gpGlobals->GetCurTime() - blend->m_flLayerAnimtime);
 		flCycle = blend->m_flCycle + dt * blend->m_flPlaybackRate * GetSequenceCycleRate( boneSetup.GetStudioHdr(), blend->m_nSequence );
 		flCycle = ClampCycle( flCycle, IsSequenceLooping( boneSetup.GetStudioHdr(), blend->m_nSequence ) );
 
 #if 1 // _DEBUG
 		if (/*Q_stristr( hdr->pszName(), r_sequence_debug.GetString()) != NULL || */ r_sequence_debug.GetInt() == entindex())
 		{
-			DevMsgRT( "%8.4f : %30s : %5.3f : %4.2f  +\n", gpGlobals->curtime, boneSetup.GetStudioHdr()->pSeqdesc( blend->m_nSequence ).pszLabel(), flCycle, (float)blend->m_flWeight );
+			DevMsgRT( "%8.4f : %30s : %5.3f : %4.2f  +\n", gpGlobals->GetCurTime(), boneSetup.GetStudioHdr()->pSeqdesc( blend->m_nSequence ).pszLabel(), flCycle, (float)blend->m_flWeight );
 		}
 #endif
 
-		boneSetup.AccumulatePose( pos, q, blend->m_nSequence, flCycle, blend->m_flWeight, gpGlobals->curtime, m_pIk );
+		boneSetup.AccumulatePose( pos, q, blend->m_nSequence, flCycle, blend->m_flWeight, gpGlobals->GetCurTime(), m_pIk );
 	}
 }
 
@@ -1913,7 +1913,7 @@ void C_BaseAnimating::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quat
 	AccumulateLayers( boneSetup, pos, q, currentTime );
 
 	CIKContext auto_ik;
-	auto_ik.Init( hdr, GetRenderAngles(), GetRenderOrigin(), currentTime, gpGlobals->framecount, boneMask );
+	auto_ik.Init( hdr, GetRenderAngles(), GetRenderOrigin(), currentTime, gpGlobals->GetFrameCount(), boneMask );
 	boneSetup.CalcAutoplaySequences( pos, q, currentTime, &auto_ik );
 
 	if ( hdr->numbonecontrollers() )
@@ -1950,18 +1950,18 @@ bool C_BaseAnimating::PutAttachment( int number, const matrix3x4_t &attachmentTo
 		return false;
 
 	CAttachmentData *pAtt = &m_Attachments[number-1];
-	if ( gpGlobals->frametime > 0 && pAtt->m_nLastFramecount > 0 && pAtt->m_nLastFramecount == gpGlobals->framecount - 1 )
+	if ( gpGlobals->GetFrameTime() > 0 && pAtt->m_nLastFramecount > 0 && pAtt->m_nLastFramecount == gpGlobals->GetFrameCount() - 1 )
 	{
 		Vector vecPreviousOrigin, vecOrigin;
 		MatrixPosition( pAtt->m_AttachmentToWorld, vecPreviousOrigin );
 		MatrixPosition( attachmentToWorld, vecOrigin );
-		pAtt->m_vOriginVelocity = (vecOrigin - vecPreviousOrigin) / gpGlobals->frametime;
+		pAtt->m_vOriginVelocity = (vecOrigin - vecPreviousOrigin) / gpGlobals->GetFrameTime();
 	}
 	else
 	{
 		pAtt->m_vOriginVelocity.Init();
 	}
-	pAtt->m_nLastFramecount = gpGlobals->framecount;
+	pAtt->m_nLastFramecount = gpGlobals->GetFrameCount();
 	pAtt->m_bAnglesComputed = false;
 	pAtt->m_AttachmentToWorld = attachmentToWorld;
 
@@ -2010,7 +2010,7 @@ bool C_BaseAnimating::CalcAttachments()
 
 
 	// Make sure m_CachedBones is valid.
-	return SetupBones( NULL, -1, BONE_USED_BY_ATTACHMENT, gpGlobals->curtime );
+	return SetupBones( NULL, -1, BONE_USED_BY_ATTACHMENT, gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -2210,7 +2210,7 @@ CBoneCache *C_BaseAnimating::GetBoneCache( CStudioHdr *pStudioHdr )
 	CBoneCache *pcache = Studio_GetBoneCache( m_hitboxBoneCacheHandle );
 	if ( pcache )
 	{
-		if ( pcache->IsValid( gpGlobals->curtime, 0.0 ) )
+		if ( pcache->IsValid( gpGlobals->GetCurTime(), 0.0 ) )
 		{
 			// in memory and still valid, use it!
 			return pcache;
@@ -2229,13 +2229,13 @@ CBoneCache *C_BaseAnimating::GetBoneCache( CStudioHdr *pStudioHdr )
 	Assert(pStudioHdr);
 
 	C_BaseAnimating::PushAllowBoneAccess( true, false, "GetBoneCache" );
-	SetupBones( NULL, -1, boneMask, gpGlobals->curtime );
+	SetupBones( NULL, -1, boneMask, gpGlobals->GetCurTime() );
 	C_BaseAnimating::PopBoneAccess( "GetBoneCache" );
 
 	if ( pcache )
 	{
 		// still in memory but out of date, refresh the bones.
-		pcache->UpdateBones( m_CachedBoneData.Base(), pStudioHdr->numbones(), gpGlobals->curtime );
+		pcache->UpdateBones( m_CachedBoneData.Base(), pStudioHdr->numbones(), gpGlobals->GetCurTime() );
 	}
 	else
 	{
@@ -2243,7 +2243,7 @@ CBoneCache *C_BaseAnimating::GetBoneCache( CStudioHdr *pStudioHdr )
 		params.pStudioHdr = pStudioHdr;
 		// HACKHACK: We need the pointer to all bones here
 		params.pBoneToWorld = m_CachedBoneData.Base();
-		params.curtime = gpGlobals->curtime;
+		params.curtime = gpGlobals->GetCurTime();
 		params.boneMask = boneMask;
 
 		m_hitboxBoneCacheHandle = Studio_CreateBoneCache( params );
@@ -2630,7 +2630,7 @@ ConVar cl_threaded_bone_setup("cl_threaded_bone_setup", "0", 0, "Enable parallel
 static void SetupBonesOnBaseAnimating( C_BaseAnimating *&pBaseAnimating )
 {
 	if ( !pBaseAnimating->GetMoveParent() )
-		pBaseAnimating->SetupBones( NULL, -1, -1, gpGlobals->curtime );
+		pBaseAnimating->SetupBones( NULL, -1, -1, gpGlobals->GetCurTime() );
 }
 
 static void PreThreadedBoneSetup()
@@ -2692,10 +2692,10 @@ bool C_BaseAnimating::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, i
 		static float lastWarning = 0.0f;
 
 		// Prevent spammage!!!
-		if ( gpGlobals->realtime >= lastWarning + 1.0f )
+		if ( gpGlobals->GetRealTime() >= lastWarning + 1.0f )
 		{
 			DevMsgRT( "*** ERROR: Bone access not allowed (entity %i:%s)\n", index, GetClassname() );
-			lastWarning = gpGlobals->realtime;
+			lastWarning = gpGlobals->GetRealTime();
 		}
 	}
 
@@ -2735,7 +2735,7 @@ bool C_BaseAnimating::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, i
 	{
 		if ( !m_BoneSetupLock.TryLock() )
 		{
-			Msg( "Contested bone setup in frame %d!\n", gpGlobals->framecount );
+			Msg( "Contested bone setup in frame %d!\n", gpGlobals->GetFrameCount() );
 		}
 		else
 		{
@@ -2858,7 +2858,7 @@ bool C_BaseAnimating::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, i
 				if (Teleported() || IsNoInterpolationFrame())
 					m_pIk->ClearTargets();
 
-				m_pIk->Init( hdr, GetRenderAngles(), GetRenderOrigin(), currentTime, gpGlobals->framecount, bonesMaskNeedRecalc );
+				m_pIk->Init( hdr, GetRenderAngles(), GetRenderOrigin(), currentTime, gpGlobals->GetFrameCount(), bonesMaskNeedRecalc );
 			}
 
 			// Let pose debugger know that we are blending
@@ -3296,7 +3296,7 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 			el->origin = vAttachment;
 			el->radius = random->RandomInt( 32, 64 ); 
 			el->decay = el->radius / 0.05f;
-			el->die = gpGlobals->curtime + 0.05f;
+			el->die = gpGlobals->GetCurTime() + 0.05f;
 			el->color.r = 255;
 			el->color.g = 192;
 			el->color.b = 64;
@@ -3371,7 +3371,7 @@ void C_BaseAnimating::DoAnimationEvents( CStudioHdr *pStudioHdr )
 
 	if ( watch )
 	{
-		Msg( "%i cycle %f\n", gpGlobals->tickcount, GetCycle() );
+		Msg( "%i cycle %f\n", gpGlobals->GetTickCount(), GetCycle() );
 	}
 
 	bool resetEvents = m_nResetEventsParity != m_nPrevResetEventsParity;
@@ -3385,7 +3385,7 @@ void C_BaseAnimating::DoAnimationEvents( CStudioHdr *pStudioHdr )
 				GetSequence(), m_nEventSequence,
 				resetEvents ? "true" : "false",
 				GetCycle(), pStudioHdr->pszName(),
-				gpGlobals->curtime);
+				gpGlobals->GetCurTime());
 		}
 
 		m_nEventSequence = GetSequence();
@@ -3400,12 +3400,12 @@ void C_BaseAnimating::DoAnimationEvents( CStudioHdr *pStudioHdr )
 	if ( watch )
 	{
 		 Msg( "%i (seq %d cycle %.3f ) evcycle %.3f prevevcycle %.3f (time %.3f)\n",
-			 gpGlobals->tickcount, 
+			 gpGlobals->GetTickCount(), 
 			 GetSequence(),
 			 GetCycle(),
 			 flEventCycle,
 			 m_flPrevEventCycle,
-			 gpGlobals->curtime );
+			 gpGlobals->GetCurTime() );
 	}
 
 	// check for looping
@@ -3446,12 +3446,12 @@ void C_BaseAnimating::DoAnimationEvents( CStudioHdr *pStudioHdr )
 			if ( watch )
 			{
 				Msg( "%i FE %i Looped cycle %f, prev %f ev %f (time %.3f)\n",
-					gpGlobals->tickcount,
+					gpGlobals->GetTickCount(),
 					pevent[i].event,
 					pevent[i].cycle,
 					m_flPrevEventCycle,
 					flEventCycle,
-					gpGlobals->curtime );
+					gpGlobals->GetCurTime() );
 			}
 				
 				
@@ -3477,13 +3477,13 @@ void C_BaseAnimating::DoAnimationEvents( CStudioHdr *pStudioHdr )
 			if ( watch )
 			{
 				Msg( "%i (seq: %d) FE %i Normal cycle %f, prev %f ev %f (time %.3f)\n",
-					gpGlobals->tickcount,
+					gpGlobals->GetTickCount(),
 					GetSequence(),
 					pevent[i].event,
 					pevent[i].cycle,
 					m_flPrevEventCycle,
 					flEventCycle,
-					gpGlobals->curtime );
+					gpGlobals->GetCurTime() );
 			}
 
 			FireEvent( GetAbsOrigin(), GetAbsAngles(), pevent[ i ].event, pevent[ i ].pszOptions() );
@@ -4511,10 +4511,10 @@ void C_BaseAnimating::ForceSetupBonesAtTime( matrix3x4_t *pBonesOut, float flTim
 
 void C_BaseAnimating::GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x4_t *pDeltaBones1, matrix3x4_t *pCurrentBones, float boneDt )
 {
-	ForceSetupBonesAtTime( pDeltaBones0, gpGlobals->curtime - boneDt );
-	ForceSetupBonesAtTime( pDeltaBones1, gpGlobals->curtime );
+	ForceSetupBonesAtTime( pDeltaBones0, gpGlobals->GetCurTime() - boneDt );
+	ForceSetupBonesAtTime( pDeltaBones1, gpGlobals->GetCurTime() );
 	float ragdollCreateTime = PhysGetSyncCreateTime();
-	if ( ragdollCreateTime != gpGlobals->curtime )
+	if ( ragdollCreateTime != gpGlobals->GetCurTime() )
 	{
 		// The next simulation frame begins before the end of this frame
 		// so initialize the ragdoll at that time so that it will reach the current
@@ -4870,7 +4870,7 @@ void C_BaseAnimating::Simulate()
 		DelayedInitModelEffects();
 	}
 
-	if ( gpGlobals->frametime != 0.0f  )
+	if ( gpGlobals->GetFrameTime() != 0.0f  )
 	{
 		DoAnimationEvents( GetModelPtr() );
 	}
@@ -4978,7 +4978,7 @@ float C_BaseAnimating::GetAnimTimeInterval( void ) const
 {
 #define MAX_ANIMTIME_INTERVAL 0.2f
 
-	float flInterval = MIN( gpGlobals->curtime - m_flAnimTime, MAX_ANIMTIME_INTERVAL );
+	float flInterval = MIN( gpGlobals->GetCurTime() - m_flAnimTime, MAX_ANIMTIME_INTERVAL );
 	return flInterval;
 }
 
@@ -5041,7 +5041,7 @@ void C_BaseAnimating::StudioFrameAdvance()
 
 	//if (!anim.prevanimtime)
 	//{
-		//anim.prevanimtime = m_flAnimTime = gpGlobals->curtime;
+		//anim.prevanimtime = m_flAnimTime = gpGlobals->GetCurTime();
 	//}
 
 	// How long since last animtime
@@ -5058,11 +5058,11 @@ void C_BaseAnimating::StudioFrameAdvance()
 	//anim.prevanimtime = m_flAnimTime;
 	float cycleAdvance = flInterval * GetSequenceCycleRate( hdr, GetSequence() ) * m_flPlaybackRate;
 	float flNewCycle = GetCycle() + cycleAdvance;
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 
 	if ( watch )
 	{
-		Msg("%s %6.3f : %6.3f (%.3f)\n", GetClassname(), gpGlobals->curtime, m_flAnimTime, flInterval );
+		Msg("%s %6.3f : %6.3f (%.3f)\n", GetClassname(), gpGlobals->GetCurTime(), m_flAnimTime, flInterval );
 	}
 
 	if ( flNewCycle < 0.0f || flNewCycle >= 1.0f ) 
@@ -5159,7 +5159,7 @@ void C_BaseAnimating::GetBlendedLinearVelocity( Vector *pVec )
 
 		VectorScale( vecDist, 1.0 / flDuration, tmp );
 
-		float flWeight = blend->GetFadeout( gpGlobals->curtime );
+		float flWeight = blend->GetFadeout( gpGlobals->GetCurTime() );
 		*pVec = Lerp( flWeight, *pVec, tmp );
 	}
 }
@@ -5181,7 +5181,7 @@ float C_BaseAnimating::FrameAdvance( float flInterval )
 	bool bWatch = false; // Q_strstr( hdr->name, "medkit_large" ) ? true : false;
 #endif
 
-	float curtime = gpGlobals->curtime;
+	float curtime = gpGlobals->GetCurTime();
 
 	if (flInterval == 0.0f)
 	{
@@ -5235,7 +5235,7 @@ float C_BaseAnimating::FrameAdvance( float flInterval )
 	if ( bWatch )
 	{
 		Msg("%i CLIENT Time: %6.3f : (Interval %f) : cycle %f rate %f add %f\n", 
-			gpGlobals->tickcount, gpGlobals->curtime, flInterval, flNewCycle, cyclerate, addcycle );
+			gpGlobals->GetTickCount(), gpGlobals->GetCurTime(), flInterval, flNewCycle, cyclerate, addcycle );
 	}
 
 	if ( (flNewCycle < 0.0f) || (flNewCycle >= 1.0f) ) 
@@ -5834,7 +5834,7 @@ void C_BaseAnimating::SetModelScale( float scale, float change_duration /*= 0.0f
 		ModelScale *mvs = ( ModelScale * )CreateDataObject( MODELSCALE );
 		mvs->m_flModelScaleStart = m_flModelScale;
 		mvs->m_flModelScaleGoal = scale;
-		mvs->m_flModelScaleStartTime = gpGlobals->curtime;
+		mvs->m_flModelScaleStartTime = gpGlobals->GetCurTime();
 		mvs->m_flModelScaleFinishTime = mvs->m_flModelScaleStartTime + change_duration;
 	}
 	else
@@ -5863,10 +5863,10 @@ void C_BaseAnimating::UpdateModelScale()
 	float dt = mvs->m_flModelScaleFinishTime - mvs->m_flModelScaleStartTime;
 	Assert( dt > 0.0f );
 
-	float frac = ( gpGlobals->curtime - mvs->m_flModelScaleStartTime ) / dt;
+	float frac = ( gpGlobals->GetCurTime() - mvs->m_flModelScaleStartTime ) / dt;
 	frac = clamp( frac, 0.0f, 1.0f );
 
-	if ( gpGlobals->curtime >= mvs->m_flModelScaleFinishTime )
+	if ( gpGlobals->GetCurTime() >= mvs->m_flModelScaleFinishTime )
 	{
 		m_flModelScale = mvs->m_flModelScaleGoal;
 		DestroyDataObject( MODELSCALE );
@@ -5984,7 +5984,7 @@ void C_BaseAnimating::DoMuzzleFlash()
 //-----------------------------------------------------------------------------
 void DevMsgRT( char const* pMsg, ... )
 {
-	if (gpGlobals->frametime != 0.0f)
+	if (gpGlobals->GetFrameTime() != 0.0f)
 	{
 		va_list argptr;
 		va_start( argptr, pMsg );
@@ -6137,11 +6137,11 @@ void C_BaseAnimating::GetToolRecordingState( KeyValues *msg )
 	matrix3x4_t *pBones = (matrix3x4_t*)_alloca( ( hdr ? hdr->numbones() : 1 ) * sizeof(matrix3x4_t) );
 	if ( hdr )
 	{
-		SetupBones( pBones, hdr->numbones(), BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+		SetupBones( pBones, hdr->numbones(), BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 	}
 	else
 	{
-		SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+		SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 	}
 
 	BaseClass::GetToolRecordingState( msg );

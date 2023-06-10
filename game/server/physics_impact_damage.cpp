@@ -335,7 +335,7 @@ float CalculatePhysicsImpactDamage( int index, gamevcollisionevent_t *pEvent, co
 
 	if ( pEvent->pObjects[otherIndex]->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
 	{
-		if ( gpGlobals->maxClients == 1 )
+		if ( gpGlobals->GetMaxClients() == 1 )
 		{
 			// if the player is holding the object, use it's real mass (player holding reduced the mass)
 			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
@@ -438,7 +438,7 @@ float CalculatePhysicsImpactDamage( int index, gamevcollisionevent_t *pEvent, co
 	}
 	else if ( pEvent->pObjects[index]->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
 	{
-		if ( gpGlobals->maxClients == 1 )
+		if ( gpGlobals->GetMaxClients() == 1 )
 		{
 			// if the player is holding the object, use it's real mass (player holding reduced the mass)
 			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();

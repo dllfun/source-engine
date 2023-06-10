@@ -218,7 +218,7 @@ void CTankTrainAI::InputTargetEntity( inputdata_t &inputdata )
 {
 	m_targetEntityName = inputdata.value.StringID();
 	m_hTargetEntity = FindTarget( m_targetEntityName, inputdata.pActivator );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -375,7 +375,7 @@ void CTankTrainAI::Activate( void )
 
 	if ( pTrain )
 	{
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 
 		if ( m_movementSoundName != NULL_STRING )
@@ -505,7 +505,7 @@ void CTankTrainAI::Think( void )
 	}
 	
 	// UNDONE: Align the think time with arrival, and bump this up to a few seconds
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 	if ( desired != 0 )
 	{
@@ -530,6 +530,6 @@ void CTankTrainAI::Think( void )
 	{
 		SoundEngineStop();
 		// UNDONE: Align the think time with arrival, and bump this up to a few seconds
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	}
 }

@@ -187,7 +187,7 @@ void CReplayBrowserThumbnail::OnTick()
 	// If we are just starting to hover over the thumbnail, mark the time
 	if ( bOldMouseOver != m_bMouseOver && m_bMouseOver )
 	{
-		m_flHoverStartTime = gpGlobals->realtime;
+		m_flHoverStartTime = gpGlobals->GetRealTime();
 	}
 
 	const char *pBorderName = m_bMouseOver ? "ReplayHighlightBorder" : "ReplayDefaultBorder";
@@ -222,7 +222,7 @@ void CReplayBrowserThumbnail::UpdateProgress( bool bDownloadPhase, const CReplay
 	// Has progress changed?
 	const int nNewProgress = 100 * flProgress;
 	const int nOldProgress = 100 * m_pDownloadProgress->GetProgress();
-	const float flCurTime = gpGlobals->realtime;
+	const float flCurTime = gpGlobals->GetRealTime();
 	if ( nNewProgress != nOldProgress )
 	{
 		m_flLastProgressChangeTime = flCurTime;
@@ -247,7 +247,7 @@ void CReplayBrowserThumbnail::UpdateProgress( bool bDownloadPhase, const CReplay
 		// Add animating '...' to end of string
 		wchar_t wszText[128];
 		wcscpy( wszText, pLocalizedText );
-		int nNumPeriods = fmod( gpGlobals->realtime * 2.0f, 4.0f );	// Max of 3 dots
+		int nNumPeriods = fmod( gpGlobals->GetRealTime() * 2.0f, 4.0f );	// Max of 3 dots
 		const int nLen = wcslen( wszText );
 		wcscat( wszText, L"..." );
 		wszText[ nLen + nNumPeriods ] = L'\0';

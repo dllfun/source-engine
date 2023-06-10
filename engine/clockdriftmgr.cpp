@@ -66,6 +66,21 @@ void CClockDriftMgr::Clear()
 	memset( m_ClockOffsets, 0, sizeof( m_ClockOffsets ) );
 }
 
+int CClockDriftMgr::GetServerTick() const {
+	return m_nServerTick;
+}
+
+int CClockDriftMgr::GetClientTick() const {
+	return m_nClientTick;
+}
+
+void CClockDriftMgr::SetServerTick(int iServerTick) {
+	m_nServerTick = iServerTick;
+}
+
+void CClockDriftMgr::SetClientTick(int iClientTick) {
+	m_nClientTick = iClientTick;
+}
 
 // when running in threaded host mode, the clock drifts by a predictable algorithm
 // because the client lags the server by one frame
@@ -76,7 +91,7 @@ void CClockDriftMgr::Clear()
 // NOTE: or decrementing the client tick after receiving pause
 // NOTE: This is due to the fact that currently pause is applied at frame start on the server
 // NOTE: and frame end on the client
-void CClockDriftMgr::SetServerTick( int nTick )
+void CClockDriftMgr::SetRealServerTick( int nTick )
 {
 #if !defined( SWDS )
 	m_nServerTick = nTick;
@@ -85,7 +100,7 @@ void CClockDriftMgr::SetServerTick( int nTick )
 		TIME_TO_TICKS( (cl_clockdrift_max_ms_threadmode.GetFloat() / 1000.0) ) :
 		TIME_TO_TICKS( (cl_clockdrift_max_ms.GetFloat() / 1000.0) );
 
-	int clientTick = cl.GetClientTickCount() + g_ClientGlobalVariables.simTicksThisFrame - 1;
+	int clientTick = cl.GetClientTickCount() + g_ClientGlobalVariables.GetSimTicksThisFrame() - 1;
 	if ( cl_clock_correction_force_server_tick.GetInt() == 999 )
 	{
 		// If this is the first tick from the server, or if we get further than cl_clockdrift_max_ticks off, then 
@@ -95,7 +110,7 @@ void CClockDriftMgr::SetServerTick( int nTick )
 			 abs(nTick - clientTick) > nMaxDriftTicks
 			)
 		{
-			cl.SetClientTickCount( nTick - (g_ClientGlobalVariables.simTicksThisFrame - 1) );
+			cl.SetClientTickCount( nTick - (g_ClientGlobalVariables.GetSimTicksThisFrame() - 1));
 			if ( cl.GetClientTickCount() < cl.oldtickcount )
 			{
 				cl.oldtickcount = cl.GetClientTickCount();

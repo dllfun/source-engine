@@ -94,7 +94,7 @@ void CPupilProxy::OnBind( C_BaseEntity *pBaseEntity )
 	float flLastIntensity = m_pLightingVar->GetFloatValue( );
 	if ( flIntensity > flLastIntensity )
 	{
-		float flMaxChange = m_flPupilCloseRate.GetFloat() * gpGlobals->frametime;
+		float flMaxChange = m_flPupilCloseRate.GetFloat() * gpGlobals->GetFrameTime();
 		if ( flIntensity > (flMaxChange + flLastIntensity) )
 		{
 			flIntensity = flLastIntensity + flMaxChange;
@@ -102,7 +102,7 @@ void CPupilProxy::OnBind( C_BaseEntity *pBaseEntity )
 	}
 	else
 	{
-		float flMaxChange = m_flPupilOpenRate.GetFloat() * gpGlobals->frametime;
+		float flMaxChange = m_flPupilOpenRate.GetFloat() * gpGlobals->GetFrameTime();
 		if ( flIntensity < (flLastIntensity - flMaxChange) )
 		{
 			flIntensity = flLastIntensity - flMaxChange;

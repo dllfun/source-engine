@@ -395,7 +395,7 @@ void CHudCommentary::ApplySchemeSettings( vgui::IScheme *pScheme )
 void CHudCommentary::Paint()
 {
 	float flDuration = (m_flEndTime - m_flStartTime);
-	float flPercentage = clamp( ( gpGlobals->curtime - m_flStartTime ) / flDuration, 0.f, 1.f );
+	float flPercentage = clamp( ( gpGlobals->GetCurTime() - m_flStartTime ) / flDuration, 0.f, 1.f );
 
 	if ( !m_hActiveNode )
 	{
@@ -547,7 +547,7 @@ void CHudCommentary::StartCommentary( C_PointCommentaryNode *pNode, char *pszSpe
 	g_pVGuiLocalize->ConvertANSIToUnicode( sz, m_szCount, sizeof(m_szCount) );
 
 	// If the commentary just started, play the commentary fade in.
-	if ( fabs(flStartTime - gpGlobals->curtime) < 1.0 )
+	if ( fabs(flStartTime - gpGlobals->GetCurTime()) < 1.0 )
 	{
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "ShowCommentary" );
 	}

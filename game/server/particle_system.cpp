@@ -184,7 +184,7 @@ void CParticleSystem::StartParticleSystem( void )
 {
 	if ( m_bActive == false )
 	{
-		m_flStartTime = gpGlobals->curtime;
+		m_flStartTime = gpGlobals->GetCurTime();
 		m_bActive = true;
 		
 		// Setup our control points at this time (in case our targets weren't around at spawn time)

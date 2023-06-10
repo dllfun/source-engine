@@ -751,7 +751,7 @@ private:
 			{												\
 				if ( m_actor && (m_actor->IsDebugging(NEXTBOT_EVENTS) || NextBotDebugHistory.GetBool()))	\
 				{															\
-					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
+					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
 				}											\
 				_result = _action->METHOD( m_actor );	\
 				if ( !_result.IsContinue() )				\
@@ -763,7 +763,7 @@ private:
 			{												\
 				if ( m_actor && _result.IsRequestingChange() && (m_actor->IsDebugging(NEXTBOT_BEHAVIOR) || NextBotDebugHistory.GetBool()) )	\
 				{																						\
-					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
+					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "%s ", _action->GetFullName() );			\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255,   0, 255 ), "reponded to EVENT %s with ", #METHOD );	\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0,   0, 255 ), "%s %s ", _result.GetTypeName(), _result.m_action ? _result.m_action->GetName() : "" );		\
@@ -789,7 +789,7 @@ private:
 			{												\
 				if ( m_actor && (m_actor->IsDebugging(NEXTBOT_EVENTS) || NextBotDebugHistory.GetBool()) )	\
 				{															\
-					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
+					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
 				}											\
 				_result = _action->METHOD( m_actor, ARG1 );		\
 				if ( !_result.IsContinue() )				\
@@ -801,7 +801,7 @@ private:
 			{												\
 				if ( m_actor && (m_actor->IsDebugging(NEXTBOT_BEHAVIOR) || NextBotDebugHistory.GetBool()) && _result.IsRequestingChange() && _action )	\
 				{																		\
-					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
+					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "%s ", _action->GetFullName() );			\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255,   0, 255 ), "reponded to EVENT %s with ", #METHOD );	\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0,   0, 255 ), "%s %s ", _result.GetTypeName(), _result.m_action ? _result.m_action->GetName() : "" );		\
@@ -827,7 +827,7 @@ private:
 			{												\
 				if ( m_actor && (m_actor->IsDebugging(NEXTBOT_EVENTS) || NextBotDebugHistory.GetBool()) )	\
 				{															\
-					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
+					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
 				}											\
 				_result = _action->METHOD( m_actor, ARG1, ARG2 );		\
 				if ( !_result.IsContinue() )				\
@@ -839,7 +839,7 @@ private:
 			{												\
 				if ( m_actor && (m_actor->IsDebugging(NEXTBOT_BEHAVIOR) || NextBotDebugHistory.GetBool()) && _result.IsRequestingChange() && _action )	\
 				{																		\
-					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
+					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "%s ", _action->GetFullName() );			\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255,   0, 255 ), "reponded to EVENT %s with ", #METHOD );	\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0,   0, 255 ), "%s %s ", _result.GetTypeName(), _result.m_action ? _result.m_action->GetName() : "" );		\
@@ -865,7 +865,7 @@ private:
 			{												\
 				if ( m_actor && (m_actor->IsDebugging(NEXTBOT_EVENTS) || NextBotDebugHistory.GetBool()) )	\
 				{															\
-					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
+					m_actor->DebugConColorMsg( NEXTBOT_EVENTS, Color( 100, 100, 100, 255 ), "%3.2f: %s:%s: %s received EVENT %s\n", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName(), _action->GetFullName(), #METHOD );	\
 				}											\
 				_result = _action->METHOD( m_actor, ARG1, ARG2, ARG3 );		\
 				if ( !_result.IsContinue() )				\
@@ -877,7 +877,7 @@ private:
 			{												\
 				if ( m_actor && (m_actor->IsDebugging(NEXTBOT_BEHAVIOR) || NextBotDebugHistory.GetBool()) && _result.IsRequestingChange() && _action )	\
 				{																		\
-					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
+					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 0, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), m_actor->GetDebugIdentifier(), m_behavior->GetName() ); \
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "%s ", _action->GetFullName() );			\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255,   0, 255 ), "reponded to EVENT %s with ", #METHOD );	\
 					m_actor->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0,   0, 255 ), "%s %s ", _result.GetTypeName(), _result.m_action ? _result.m_action->GetName() : "" );		\
@@ -1063,7 +1063,7 @@ private:
 			{				
 				if ( developer.GetBool() )
 				{
-					DevMsg( "%3.2f: WARNING: %s::%s() RESULT_CRITICAL collision\n", gpGlobals->curtime, GetName(), eventName );
+					DevMsg( "%3.2f: WARNING: %s::%s() RESULT_CRITICAL collision\n", gpGlobals->GetCurTime(), GetName(), eventName );
 				}
 			}
 
@@ -1112,7 +1112,7 @@ Action< Actor >::Action( void )
 	m_eventResult = TryContinue( RESULT_NONE );
 
 #ifdef DEBUG_BEHAVIOR_MEMORY
-	ConColorMsg( Color( 255, 0, 255, 255 ), "%3.2f: NEW %0X\n", gpGlobals->curtime, this );
+	ConColorMsg( Color( 255, 0, 255, 255 ), "%3.2f: NEW %0X\n", gpGlobals->GetCurTime(), this );
 #endif
 }
 
@@ -1122,7 +1122,7 @@ template < typename Actor >
 Action< Actor >::~Action()
 {
 #ifdef DEBUG_BEHAVIOR_MEMORY
-	ConColorMsg( Color( 255, 0, 255, 255 ), "%3.2f: DELETE %0X\n", gpGlobals->curtime, this );
+	ConColorMsg( Color( 255, 0, 255, 255 ), "%3.2f: DELETE %0X\n", gpGlobals->GetCurTime(), this );
 #endif
 
 	if ( m_parent )
@@ -1279,7 +1279,7 @@ ActionResult< Actor > Action< Actor >::InvokeOnStart( Actor *me, Behavior< Actor
 	// debug display
 	if ( (me->IsDebugging(NEXTBOT_BEHAVIOR) || NextBotDebugHistory.GetBool()) )
 	{
-		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, me->GetDebugIdentifier(), behavior->GetName() );
+		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), me->GetDebugIdentifier(), behavior->GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color(   0, 255,   0, 255 ), " STARTING " );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "\n" );
@@ -1394,7 +1394,7 @@ void Action< Actor >::InvokeOnEnd( Actor *me, Behavior< Actor > *behavior, Actio
 
 	if ( me->IsDebugging( NEXTBOT_BEHAVIOR ) || NextBotDebugHistory.GetBool() )
 	{
-		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, me->GetDebugIdentifier(), behavior->GetName() );
+		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), me->GetDebugIdentifier(), behavior->GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0,   0, 255 ), " ENDING " );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "\n" );
@@ -1433,7 +1433,7 @@ Action< Actor > * Action< Actor >::InvokeOnSuspend( Actor *me, Behavior< Actor >
 {
 	if ( me->IsDebugging( NEXTBOT_BEHAVIOR ) || NextBotDebugHistory.GetBool() )
 	{
-		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, me->GetDebugIdentifier(), behavior->GetName() );
+		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), me->GetDebugIdentifier(), behavior->GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0, 255, 255 ), " SUSPENDING " );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "\n" );
@@ -1473,7 +1473,7 @@ ActionResult< Actor > Action< Actor >::InvokeOnResume( Actor *me, Behavior< Acto
 {
 	if ( me->IsDebugging( NEXTBOT_BEHAVIOR ) || NextBotDebugHistory.GetBool() )
 	{
-		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, me->GetDebugIdentifier(), behavior->GetName() );
+		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), me->GetDebugIdentifier(), behavior->GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0, 255, 255 ), " RESUMING " );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), GetName() );
 		me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), "\n" );
@@ -1540,7 +1540,7 @@ Action< Actor > *Action< Actor >::ApplyResult( Actor *me, Behavior< Actor > *beh
 			// debug display
 			if ( me->IsDebugging( NEXTBOT_BEHAVIOR ) || NextBotDebugHistory.GetBool() )
 			{
-				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, me->GetDebugIdentifier(), behavior->GetName() );
+				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), me->GetDebugIdentifier(), behavior->GetName() );
 				
 				if ( this == newAction )
 				{
@@ -1600,7 +1600,7 @@ Action< Actor > *Action< Actor >::ApplyResult( Actor *me, Behavior< Actor > *beh
 			// debug display
 			if ( me->IsDebugging( NEXTBOT_BEHAVIOR ) || NextBotDebugHistory.GetBool() )
 			{
-				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, me->GetDebugIdentifier(), behavior->GetName() );
+				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), me->GetDebugIdentifier(), behavior->GetName() );
 
 				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), this->GetName() );
 				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255,   0, 255, 255 ), " caused " );
@@ -1645,7 +1645,7 @@ Action< Actor > *Action< Actor >::ApplyResult( Actor *me, Behavior< Actor > *beh
 			// debug display
 			if ( me->IsDebugging( NEXTBOT_BEHAVIOR ) || NextBotDebugHistory.GetBool() )
 			{
-				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->curtime, me->GetDebugIdentifier(), behavior->GetName() );
+				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 150, 255 ), "%3.2f: %s:%s: ", gpGlobals->GetCurTime(), me->GetDebugIdentifier(), behavior->GetName() );
 
 				me->DebugConColorMsg( NEXTBOT_BEHAVIOR, Color( 255, 255, 255, 255 ), this->GetName() );
 

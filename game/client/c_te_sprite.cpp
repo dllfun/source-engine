@@ -90,7 +90,7 @@ static inline void RecordSprite( const Vector& start, int nModelIndex,
 
  		msg->SetInt( "te", TE_SPRITE_SINGLE );
  		msg->SetString( "name", "TE_Sprite" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

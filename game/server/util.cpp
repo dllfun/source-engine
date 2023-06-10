@@ -448,7 +448,7 @@ CBasePlayer	*UTIL_PlayerByIndex( int playerIndex )
 {
 	CBasePlayer *pPlayer = NULL;
 
-	if ( playerIndex > 0 && playerIndex <= gpGlobals->maxClients )
+	if ( playerIndex > 0 && playerIndex <= gpGlobals->GetMaxClients() )
 	{
 		edict_t *pPlayerEdict = INDEXENT( playerIndex );
 		if ( pPlayerEdict && !pPlayerEdict->IsFree() )
@@ -465,7 +465,7 @@ CBasePlayer* UTIL_PlayerByName( const char *name )
 	if ( !name || !name[0] )
 		return NULL;
 
-	for (int i = 1; i<=gpGlobals->maxClients; i++ )
+	for (int i = 1; i<=gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 		
@@ -486,7 +486,7 @@ CBasePlayer* UTIL_PlayerByName( const char *name )
 
 CBasePlayer* UTIL_PlayerByUserId( int userID )
 {
-	for (int i = 1; i<=gpGlobals->maxClients; i++ )
+	for (int i = 1; i<=gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 		
@@ -511,7 +511,7 @@ CBasePlayer* UTIL_PlayerByUserId( int userID )
 // 
 CBasePlayer *UTIL_GetLocalPlayer( void )
 {
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1 )
 	{
 		if ( developer.GetBool() )
 		{
@@ -736,7 +736,7 @@ void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, f
 	{
 		amplitude = MAX_SHAKE_AMPLITUDE;
 	}
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -769,7 +769,7 @@ void UTIL_ScreenShakeObject( CBaseEntity *pEnt, const Vector &center, float ampl
 	float		localAmplitude;
 
 	CBaseEntity *pHighestParent = pEnt->GetRootMoveParent();
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 		if (!pPlayer)
@@ -824,7 +824,7 @@ void UTIL_ScreenShakeObject( CBaseEntity *pEnt, const Vector &center, float ampl
 //-----------------------------------------------------------------------------
 void UTIL_ViewPunch( const Vector &center, QAngle angPunch, float radius, bool bInAir )
 {
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -900,7 +900,7 @@ void UTIL_ScreenFadeAll( const color32 &color, float fadeTime, float fadeHold, i
 
 	UTIL_ScreenFadeBuild( fade, color, fadeTime, fadeHold, flags );
 
-	for ( i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 	
@@ -2006,22 +2006,22 @@ static int UTIL_GetNewCheckClient( int check )
 
 	if (check < 1)
 		check = 1;
-	if (check > gpGlobals->maxClients)
-		check = gpGlobals->maxClients;
+	if (check > gpGlobals->GetMaxClients())
+		check = gpGlobals->GetMaxClients();
 
-	if (check == gpGlobals->maxClients)
+	if (check == gpGlobals->GetMaxClients())
 		i = 1;
 	else
 		i = check + 1;
 
 	for ( ;  ; i++)
 	{
-		if ( i > gpGlobals->maxClients )
+		if ( i > gpGlobals->GetMaxClients() )
 		{
 			i = 1;
 		}
 
-		ent = engineServer->PEntityOfEntIndex( i );
+		ent = INDEXENT( i );
 		if ( !ent )
 			continue;
 
@@ -2078,15 +2078,15 @@ static edict_t *UTIL_GetCurrentCheckClient()
 	edict_t	*ent;
 
 	// find a new check if on a new frame
-	float delta = gpGlobals->curtime - g_CheckClient.m_lastchecktime;
+	float delta = gpGlobals->GetCurTime() - g_CheckClient.m_lastchecktime;
 	if ( delta >= 0.1 || delta < 0 )
 	{
 		g_CheckClient.m_lastcheck = UTIL_GetNewCheckClient( g_CheckClient.m_lastcheck );
-		g_CheckClient.m_lastchecktime = gpGlobals->curtime;
+		g_CheckClient.m_lastchecktime = gpGlobals->GetCurTime();
 	}
 
 	// return check if it might be visible	
-	ent = engineServer->PEntityOfEntIndex( g_CheckClient.m_lastcheck );
+	ent = INDEXENT( g_CheckClient.m_lastcheck );
 
 	// Allow dead clients -- JAY
 	// Our monsters know the difference, and this function gates alot of behavior

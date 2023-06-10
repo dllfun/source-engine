@@ -134,7 +134,7 @@ CEntityFlame *CEntityFlame::Create( CBaseEntity *pTarget, bool useHitboxes )
 
 	pFlame->m_flSize = size;
 	pFlame->SetThink( &CEntityFlame::FlameThink );
-	pFlame->SetNextThink( gpGlobals->curtime + 0.1f );
+	pFlame->SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	pFlame->AttachToEntity( pTarget );
 	pFlame->SetLifetime( 2.0f );
@@ -179,7 +179,7 @@ void CEntityFlame::AttachToEntity( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 void CEntityFlame::SetLifetime( float lifetime )
 {
-	m_flLifetime = gpGlobals->curtime + lifetime;
+	m_flLifetime = gpGlobals->GetCurTime() + lifetime;
 }
 
 //-----------------------------------------------------------------------------
@@ -211,7 +211,7 @@ void CEntityFlame::SetHitboxFireScale( float flHitboxFireScale )
 
 float CEntityFlame::GetRemainingLife( void )
 {
-	return m_flLifetime - gpGlobals->curtime;
+	return m_flLifetime - gpGlobals->GetCurTime();
 }
 
 int CEntityFlame::GetNumHitboxFires( void )
@@ -230,7 +230,7 @@ float CEntityFlame::GetHitboxFireScale( void )
 void CEntityFlame::FlameThink( void )
 {
 	// Assure that this function will be ticked again even if we early-out in the if below.
-	SetNextThink( gpGlobals->curtime + FLAME_DAMAGE_INTERVAL );
+	SetNextThink( gpGlobals->GetCurTime() + FLAME_DAMAGE_INTERVAL );
 
 	if ( m_hEntAttached )
 	{
@@ -274,12 +274,12 @@ void CEntityFlame::FlameThink( void )
 	}
 
 	// See if we're done burning, or our attached ent has vanished
-	if ( m_flLifetime < gpGlobals->curtime || m_hEntAttached == NULL )
+	if ( m_flLifetime < gpGlobals->GetCurTime() || m_hEntAttached == NULL )
 	{
 		EmitSound( "General.StopBurning" );
 		m_bPlayingSound = false;
 		SetThink( &CEntityFlame::SUB_Remove );
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 		// Notify anything we're attached to
 		if ( m_hEntAttached )

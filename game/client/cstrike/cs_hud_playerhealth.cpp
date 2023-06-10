@@ -37,7 +37,7 @@ CCSHudPlayerHealth::CCSHudPlayerHealth( Panel *parent, const char *name ) : Edit
 //-----------------------------------------------------------------------------
 void CCSHudPlayerHealth::Reset()
 {
-	//m_flNextThink = gpGlobals->curtime + 0.05f;
+	//m_flNextThink = gpGlobals->GetCurTime() + 0.05f;
 	m_nHealth = -1;
 }
 

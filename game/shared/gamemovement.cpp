@@ -36,8 +36,8 @@ extern IFileSystem *filesystem;
 #endif
 
 
-// tickcount currently isn't set during prediction, although gpGlobals->curtime and
-// gpGlobals->frametime are. We should probably set tickcount (to player->m_nTickBase),
+// tickcount currently isn't set during prediction, although gpGlobals->GetCurTime() and
+// gpGlobals->GetFrameTime() are. We should probably set tickcount (to player->m_nTickBase),
 // but we're REALLY close to shipping, so we can change that later and people can use
 // player->CurrentCommandNumber() in the meantime.
 #define tickcount USE_PLAYER_CURRENT_COMMAND_NUMBER__INSTEAD_OF_TICKCOUNT
@@ -666,7 +666,7 @@ int CGameMovement::GetCheckInterval( IntervalType_t type )
 		}
 		else
 		{
-			if ( gpGlobals->maxClients == 1 )
+			if ( gpGlobals->GetMaxClients() == 1 )
 			{
 				tickInterval = CHECK_STUCK_TICK_INTERVAL_SP;
 			}
@@ -1090,7 +1090,7 @@ void CGameMovement::CheckParameters( void )
 
 void CGameMovement::ReduceTimers( void )
 {
-	float frame_msec = 1000.0f * gpGlobals->frametime;
+	float frame_msec = 1000.0f * gpGlobals->GetFrameTime();
 
 	if ( player->m_Local.m_flDucktime > 0 )
 	{
@@ -1134,11 +1134,11 @@ void CGameMovement::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMove )
 {
 	Assert( pMove && pPlayer );
 
-	float flStoreFrametime = gpGlobals->frametime;
+	float flStoreFrametime = gpGlobals->GetFrameTime();
 
 	//!!HACK HACK: Adrian - slow down all player movement by this factor.
 	//!!Blame Yahn for this one.
-	gpGlobals->frametime *= pPlayer->GetLaggedMovementValue();
+	gpGlobals->SetFrameTime(gpGlobals->GetFrameTime() * pPlayer->GetLaggedMovementValue());
 
 	ResetGetPointContentsCache();
 
@@ -1168,7 +1168,7 @@ void CGameMovement::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMove )
 	// CheckV( player->CurrentCommandNumber(), "EndPos", mv->GetAbsOrigin() );
 
 	//This is probably not needed, but just in case.
-	gpGlobals->frametime = flStoreFrametime;
+	gpGlobals->SetFrameTime(flStoreFrametime);
 
 // 	player = NULL;
 }
@@ -1214,8 +1214,8 @@ void CGameMovement::DecayPunchAngle( void )
 {
 	if ( player->m_Local.m_vecPunchAngle->LengthSqr() > 0.001 || player->m_Local.m_vecPunchAngleVel->LengthSqr() > 0.001 )
 	{
-		player->m_Local.m_vecPunchAngle += player->m_Local.m_vecPunchAngleVel * gpGlobals->frametime;
-		float damping = 1 - (PUNCH_DAMPING * gpGlobals->frametime);
+		player->m_Local.m_vecPunchAngle += player->m_Local.m_vecPunchAngleVel * gpGlobals->GetFrameTime();
+		float damping = 1 - (PUNCH_DAMPING * gpGlobals->GetFrameTime());
 		
 		if ( damping < 0 )
 		{
@@ -1225,7 +1225,7 @@ void CGameMovement::DecayPunchAngle( void )
 		 
 		// torsional spring
 		// UNDONE: Per-axis spring constant?
-		float springForceMagnitude = PUNCH_SPRING_CONSTANT * gpGlobals->frametime;
+		float springForceMagnitude = PUNCH_SPRING_CONSTANT * gpGlobals->GetFrameTime();
 		springForceMagnitude = clamp(springForceMagnitude, 0.f, 2.f );
 		player->m_Local.m_vecPunchAngleVel -= player->m_Local.m_vecPunchAngle * springForceMagnitude;
 
@@ -1256,8 +1256,8 @@ void CGameMovement::StartGravity( void )
 
 	// Add gravity so they'll be in the correct position during movement
 	// yes, this 0.5 looks wrong, but it's not.  
-	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * 0.5 * gpGlobals->frametime );
-	mv->m_vecVelocity[2] += player->GetBaseVelocity()[2] * gpGlobals->frametime;
+	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * 0.5 * gpGlobals->GetFrameTime() );
+	mv->m_vecVelocity[2] += player->GetBaseVelocity()[2] * gpGlobals->GetFrameTime();
 
 	Vector temp = player->GetBaseVelocity();
 	temp[ 2 ] = 0;
@@ -1355,7 +1355,7 @@ void CGameMovement::WaterJump( void )
 	if (!player->m_flWaterJumpTime)
 		return;
 
-	player->m_flWaterJumpTime -= 1000.0f * gpGlobals->frametime;
+	player->m_flWaterJumpTime -= 1000.0f * gpGlobals->GetFrameTime();
 
 	if (player->m_flWaterJumpTime <= 0 || !player->GetWaterLevel())
 	{
@@ -1429,7 +1429,7 @@ void CGameMovement::WaterMove( void )
 	speed = VectorNormalize(temp);
 	if (speed)
 	{
-		newspeed = speed - gpGlobals->frametime * speed * sv_friction.GetFloat() * player->m_surfaceFriction;
+		newspeed = speed - gpGlobals->GetFrameTime() * speed * sv_friction.GetFloat() * player->m_surfaceFriction;
 		if (newspeed < 0.1f)
 		{
 			newspeed = 0;
@@ -1449,7 +1449,7 @@ void CGameMovement::WaterMove( void )
 		if (addspeed > 0)
 		{
 			VectorNormalize(wishvel);
-			accelspeed = sv_accelerate.GetFloat() * wishspeed * gpGlobals->frametime * player->m_surfaceFriction;
+			accelspeed = sv_accelerate.GetFloat() * wishspeed * gpGlobals->GetFrameTime() * player->m_surfaceFriction;
 			if (accelspeed > addspeed)
 			{
 				accelspeed = addspeed;
@@ -1468,7 +1468,7 @@ void CGameMovement::WaterMove( void )
 
 	// Now move
 	// assume it is a stair or a slope, so press down from stepheight above
-	VectorMA (mv->GetAbsOrigin(), gpGlobals->frametime, mv->m_vecVelocity, dest);
+	VectorMA (mv->GetAbsOrigin(), gpGlobals->GetFrameTime(), mv->m_vecVelocity, dest);
 	
 	TracePlayerBBox( mv->GetAbsOrigin(), dest, PlayerSolidMask(), COLLISION_GROUP_PLAYER_MOVEMENT, pm );
 	if ( pm.fraction == 1.0f )
@@ -1659,7 +1659,7 @@ void CGameMovement::Friction( void )
 		}
 
 		// Add the amount to the drop amount.
-		drop += control*friction*gpGlobals->frametime;
+		drop += control*friction*gpGlobals->GetFrameTime();
 	}
 
 	// scale the velocity
@@ -1694,7 +1694,7 @@ void CGameMovement::FinishGravity( void )
 		ent_gravity = 1.0;
 
 	// Get the correct velocity for the end of the dt 
-  	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * gpGlobals->frametime * 0.5);
+  	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * gpGlobals->GetFrameTime() * 0.5);
 
 	CheckVelocity();
 }
@@ -1733,7 +1733,7 @@ void CGameMovement::AirAccelerate( Vector& wishdir, float wishspeed, float accel
 		return;
 
 	// Determine acceleration speed after acceleration
-	accelspeed = accel * wishspeed * gpGlobals->frametime * player->m_surfaceFriction;
+	accelspeed = accel * wishspeed * gpGlobals->GetFrameTime() * player->m_surfaceFriction;
 
 	// Cap it
 	if (accelspeed > addspeed)
@@ -1840,7 +1840,7 @@ void CGameMovement::Accelerate( Vector& wishdir, float wishspeed, float accel )
 		return;
 
 	// Determine amount of accleration.
-	accelspeed = accel * gpGlobals->frametime * wishspeed * player->m_surfaceFriction;
+	accelspeed = accel * gpGlobals->GetFrameTime() * wishspeed * player->m_surfaceFriction;
 
 	// Cap at addspeed
 	if (accelspeed > addspeed)
@@ -1975,8 +1975,8 @@ void CGameMovement::WalkMove( void )
 	}
 
 	// first try just moving to the destination	
-	dest[0] = mv->GetAbsOrigin()[0] + mv->m_vecVelocity[0]*gpGlobals->frametime;
-	dest[1] = mv->GetAbsOrigin()[1] + mv->m_vecVelocity[1]*gpGlobals->frametime;	
+	dest[0] = mv->GetAbsOrigin()[0] + mv->m_vecVelocity[0]*gpGlobals->GetFrameTime();
+	dest[1] = mv->GetAbsOrigin()[1] + mv->m_vecVelocity[1]*gpGlobals->GetFrameTime();	
 	dest[2] = mv->GetAbsOrigin()[2];
 
 	// first try moving directly to the next spot
@@ -2231,7 +2231,7 @@ void CGameMovement::FullObserverMove( void )
 	float friction = sv_friction.GetFloat();
 					
 	// Add the amount to the drop amount.
-	float drop = spd * friction * gpGlobals->frametime;
+	float drop = spd * friction * gpGlobals->GetFrameTime();
 
 			// scale the velocity
 	float newspeed = spd - drop;
@@ -2310,7 +2310,7 @@ void CGameMovement::FullNoClipMove( float factor, float maxacceleration )
 		float friction = sv_friction.GetFloat() * player->m_surfaceFriction;
 				
 		// Add the amount to the drop amount.
-		float drop = control * friction * gpGlobals->frametime;
+		float drop = control * friction * gpGlobals->GetFrameTime();
 
 		// scale the velocity
 		float newspeed = spd - drop;
@@ -2328,7 +2328,7 @@ void CGameMovement::FullNoClipMove( float factor, float maxacceleration )
 
 	// Just move ( don't clip or anything )
 	Vector out;
-	VectorMA( mv->GetAbsOrigin(), gpGlobals->frametime, mv->m_vecVelocity, out );
+	VectorMA( mv->GetAbsOrigin(), gpGlobals->GetFrameTime(), mv->m_vecVelocity, out );
 	mv->SetAbsOrigin( out );
 
 	// Zero out velocity if in noaccel mode
@@ -2362,7 +2362,7 @@ bool CGameMovement::CheckJumpButton( void )
 	// See if we are waterjumping.  If so, decrement count and return.
 	if (player->m_flWaterJumpTime)
 	{
-		player->m_flWaterJumpTime -= gpGlobals->frametime;
+		player->m_flWaterJumpTime -= gpGlobals->GetFrameTime();
 		if (player->m_flWaterJumpTime < 0)
 			player->m_flWaterJumpTime = 0;
 		
@@ -2466,7 +2466,7 @@ bool CGameMovement::CheckJumpButton( void )
 
 	// Add a little forward velocity based on your current forward velocity - if you are not sprinting.
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		CHLMoveData *pMoveData = ( CHLMoveData* )mv;
 		Vector vecForward;
@@ -2505,7 +2505,7 @@ bool CGameMovement::CheckJumpButton( void )
 	OnJump(mv->m_outJumpVel.z);
 
 	// Set jump time.
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		player->m_Local.m_flJumpTime = GAMEMOVEMENT_JUMP_TIME;
 		player->m_Local.m_bInDuckJump = true;
@@ -2581,7 +2581,7 @@ int CGameMovement::TryPlayerMove( Vector *pFirstDest, trace_t *pFirstTrace )
 	VectorCopy (mv->m_vecVelocity, primal_velocity);
 	
 	allFraction = 0;
-	time_left = gpGlobals->frametime;   // Total time for this movement operation.
+	time_left = gpGlobals->GetFrameTime();   // Total time for this movement operation.
 
 	new_velocity.Init();
 
@@ -3102,8 +3102,8 @@ void CGameMovement::AddGravity( void )
 		ent_gravity = 1.0;
 
 	// Add gravity incorrectly
-	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * gpGlobals->frametime);
-	mv->m_vecVelocity[2] += player->GetBaseVelocity()[2] * gpGlobals->frametime;
+	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * gpGlobals->GetFrameTime());
+	mv->m_vecVelocity[2] += player->GetBaseVelocity()[2] * gpGlobals->GetFrameTime();
 	Vector temp = player->GetBaseVelocity();
 	temp[2] = 0;
 	player->SetBaseVelocity( temp );
@@ -3592,7 +3592,7 @@ bool CGameMovement::CheckWater( void )
 	// if we just transitioned from not in water to in water, record the time it happened
 	if ( ( WL_NotInWater == m_nOldWaterLevel ) && ( player->GetWaterLevel() >  WL_NotInWater ) )
 	{
-		m_flWaterEntryTime = gpGlobals->curtime;
+		m_flWaterEntryTime = gpGlobals->GetCurTime();
 	}
 
 	return ( player->GetWaterLevel() > WL_Feet );
@@ -4735,7 +4735,7 @@ void CGameMovement::PerformFlyCollisionResolution( trace_t &pm, Vector &move )
 	if (pm.plane.normal[2] > 0.7)
 	{		
 		base.Init();
-		if (mv->m_vecVelocity[2] < GetCurrentGravity() * gpGlobals->frametime)
+		if (mv->m_vecVelocity[2] < GetCurrentGravity() * gpGlobals->GetFrameTime())
 		{
 			// we're rolling on the ground, add static friction.
 			SetGroundEntity( &pm ); 
@@ -4753,7 +4753,7 @@ void CGameMovement::PerformFlyCollisionResolution( trace_t &pm, Vector &move )
 		}
 		else
 		{
-			VectorScale (mv->m_vecVelocity, (1.0 - pm.fraction) * gpGlobals->frametime * 0.9, move);
+			VectorScale (mv->m_vecVelocity, (1.0 - pm.fraction) * gpGlobals->GetFrameTime() * 0.9, move);
 			PushEntity( move, &pm );
 		}
 		VectorSubtract( mv->m_vecVelocity, base, mv->m_vecVelocity );
@@ -4838,7 +4838,7 @@ void CGameMovement::FullTossMove( void )
 	
 	CheckVelocity();
 
-	VectorScale (mv->m_vecVelocity, gpGlobals->frametime, move);
+	VectorScale (mv->m_vecVelocity, gpGlobals->GetFrameTime(), move);
 	VectorSubtract (mv->m_vecVelocity, player->GetBaseVelocity(), mv->m_vecVelocity);
 
 	PushEntity( move, &pm );	// Should this clear basevelocity
@@ -4893,7 +4893,7 @@ void CGameMovement::IsometricMove( void )
 	//wishvel[2] += mv->m_flUpMove;
 
 	Vector out;
-	VectorMA (mv->GetAbsOrigin(), gpGlobals->frametime, wishvel, out );
+	VectorMA (mv->GetAbsOrigin(), gpGlobals->GetFrameTime(), wishvel, out );
 	mv->SetAbsOrigin( out );
 	
 	// Zero out the velocity so that we don't accumulate a huge downward velocity from

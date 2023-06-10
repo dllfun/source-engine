@@ -113,12 +113,12 @@ void CHudGeiger::Paint()
 	float flvol=0;
 	bool highsound = false;
 	
-	if ( gpGlobals->curtime - m_flLastSoundTestTime < 0.06 )
+	if ( gpGlobals->GetCurTime() - m_flLastSoundTestTime < 0.06 )
 	{
 		return;
 	}
 
-	m_flLastSoundTestTime = gpGlobals->curtime;
+	m_flLastSoundTestTime = gpGlobals->GetCurTime();
 
 	// piecewise linear is better than continuous formula for this
 	if (m_iGeigerRange > 800)

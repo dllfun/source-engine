@@ -225,7 +225,7 @@ void MoveToState::OnUpdate( CCSBot *me )
 							if (!m_radioedPlan)
 							{
 								const float radioTime = 2.0f;
-								if (gpGlobals->curtime - me->GetStateTimestamp() > radioTime)
+								if (gpGlobals->GetCurTime() - me->GetStateTimestamp() > radioTime)
 								{
 									// radio to the team if we're more than 10 seconds (2400 units) out
 									const float nearPlantSite = 2400.0f;
@@ -342,7 +342,7 @@ void MoveToState::OnUpdate( CCSBot *me )
 					BotStatement *say = new BotStatement( me->GetChatter(), REPORT_ENEMY_LOST, 8.0f );
 
 					say->AppendPhrase( TheBotPhrases->GetPhrase( "LostEnemy" ) );
-					say->SetStartTime( gpGlobals->curtime + RandomFloat( 3.0f, 5.0f ) );
+					say->SetStartTime( gpGlobals->GetCurTime() + RandomFloat( 3.0f, 5.0f ) );
 
 					me->GetChatter()->AddStatement( say );
 				}

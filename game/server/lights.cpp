@@ -186,7 +186,7 @@ void CLight::InputFadeToPattern( inputdata_t &inputdata )
 	m_iTargetFade	= inputdata.value.String()[0];
 	m_iszPattern	= inputdata.value.StringID();
 	SetThink(&CLight::FadeThink);
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	// Light is on if pattern is set
 	CLEARBITS(m_spawnflags, SF_LIGHT_START_OFF);
@@ -222,7 +222,7 @@ void CLight::FadeThink(void)
 		engineServer->LightStyle(m_iStyle, sCurString);
 
 		// UNDONE: Consider making this settable war to control fade speed
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 

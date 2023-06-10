@@ -79,7 +79,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 	// if frames have been skipped since our last update, we were likely
 	// disabled and re-enabled, so re-init
 #if defined(CLIENT_DLL) || defined(GAME_DLL)
-	float timeTolerance = 1.2f * gpGlobals->frametime;
+	float timeTolerance = 1.2f * gpGlobals->GetFrameTime();
 #else
 	float timeTolerance = 0.5f;
 #endif
@@ -585,7 +585,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 		{
 			if ( debugoverlay )
 			{
-				debugoverlay->AddLineOverlay( data->lastBoingPos, goalBasePosition, 0, 128, ( gpGlobals->framecount & 0x1 ) ? 0 : 200, true, 999.9f );
+				debugoverlay->AddLineOverlay( data->lastBoingPos, goalBasePosition, 0, 128, ( gpGlobals->GetFrameCount() & 0x1 ) ? 0 : 200, true, 999.9f );
 			}
 		}
 #endif

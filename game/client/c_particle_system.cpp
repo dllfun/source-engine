@@ -97,7 +97,7 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 		if ( m_bActive )
 		{
 			// Delayed here so that we don't get invalid abs queries on level init with active particle systems
-			SetNextClientThink( gpGlobals->curtime );
+			SetNextClientThink( gpGlobals->GetCurTime() );
 		}
 	}
 	else
@@ -107,7 +107,7 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 			if ( m_bActive )
 			{
 				// Delayed here so that we don't get invalid abs queries on level init with active particle systems
-				SetNextClientThink( gpGlobals->curtime );
+				SetNextClientThink( gpGlobals->GetCurTime() );
 			}
 			else
 			{
@@ -162,7 +162,7 @@ void C_ParticleSystem::ClientThink( void )
 				ParticleProp()->OnParticleSystemUpdated( pEffect, 0.0f );
 
 				// Skip the effect ahead if we're restarting it
-				float flTimeDelta = gpGlobals->curtime - m_flStartTime;
+				float flTimeDelta = gpGlobals->GetCurTime() - m_flStartTime;
 				if ( flTimeDelta > 0.01f )
 				{
 					VPROF_BUDGET( "C_ParticleSystem::ClientThink SkipToTime", "Particle Simulation" );

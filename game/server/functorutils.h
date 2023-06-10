@@ -307,7 +307,7 @@ template < typename Functor >
 inline bool ForEachActor( Functor &func )
 {
 	// iterate all non-bot players
-	for( int i=1; i<=gpGlobals->maxClients; ++i )
+	for( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex( i );
 
@@ -377,7 +377,7 @@ inline bool ForEachActor( IActorFunctor &func )
 	bool isComplete = true;
 
 	// iterate all non-bot players
-	for( int i=1; i<=gpGlobals->maxClients; ++i )
+	for( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex( i );
 

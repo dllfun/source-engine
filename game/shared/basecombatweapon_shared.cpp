@@ -628,7 +628,7 @@ bool CBaseCombatWeapon::VisibleInWeaponSelection( void )
 //-----------------------------------------------------------------------------
 bool CBaseCombatWeapon::HasWeaponIdleTimeElapsed( void )
 {
-	if ( gpGlobals->curtime > m_flTimeWeaponIdle )
+	if ( gpGlobals->GetCurTime() > m_flTimeWeaponIdle )
 		return true;
 
 	return false;
@@ -698,7 +698,7 @@ void CBaseCombatWeapon::Drop( const Vector &vecVelocity )
 
 	CBaseEntity *pOwner = GetOwnerEntity();
 
-	SetNextThink( gpGlobals->curtime + 1.0f );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	SetOwnerEntity( NULL );
 	SetOwner( NULL );
 
@@ -731,7 +731,7 @@ void CBaseCombatWeapon::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 
 		// Play the pickup sound for 1st-person observers
 		CRecipientFilter filter;
-		for ( int i=1; i <= gpGlobals->maxClients; ++i )
+		for ( int i=1; i <= gpGlobals->GetMaxClients(); ++i )
 		{
 			CBasePlayer *player = UTIL_PlayerByIndex(i);
 			if ( player && !player->IsAlive() && player->GetObserverMode() == OBS_MODE_IN_EYE )
@@ -877,7 +877,7 @@ void CBaseCombatWeapon::DisplayAltFireHudHint()
 	UTIL_HudHintText( GetOwner(), hint.Access() );
 	m_iAltFireHudHintCount++;
 	m_bAltFireHudHintDisplayed = true;
-	m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
+	m_flHudHintMinDisplayTime = gpGlobals->GetCurTime() + MIN_HUDHINT_DISPLAY_TIME;
 #endif//CLIENT_DLL
 }
 
@@ -923,7 +923,7 @@ void CBaseCombatWeapon::DisplayReloadHudHint()
 	UTIL_HudHintText( GetOwner(), "valve_hint_reload" );
 	m_iReloadHudHintCount++;
 	m_bReloadHudHintDisplayed = true;
-	m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
+	m_flHudHintMinDisplayTime = gpGlobals->GetCurTime() + MIN_HUDHINT_DISPLAY_TIME;
 #endif//CLIENT_DLL
 }
 //-----------------------------------------------------------------------------
@@ -945,12 +945,12 @@ void CBaseCombatWeapon::SetPickupTouch( void )
 #if !defined( CLIENT_DLL )
 	SetTouch(&CBaseCombatWeapon::DefaultTouch);
 
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1 )
 	{
 		if ( GetSpawnFlags() & SF_NORESPAWN )
 		{
 			SetThink( &CBaseEntity::SUB_Remove );
-			SetNextThink( gpGlobals->curtime + 30.0f );
+			SetNextThink( gpGlobals->GetCurTime() + 30.0f );
 		}
 	}
 
@@ -985,8 +985,8 @@ void CBaseCombatWeapon::Equip( CBaseCombatCharacter *pOwner )
 #endif
 
 
-	m_flNextPrimaryAttack		= gpGlobals->curtime;
-	m_flNextSecondaryAttack		= gpGlobals->curtime;
+	m_flNextPrimaryAttack		= gpGlobals->GetCurTime();
+	m_flNextSecondaryAttack		= gpGlobals->GetCurTime();
 	SetTouch( NULL );
 	SetThink( NULL );
 #if !defined( CLIENT_DLL )
@@ -1000,8 +1000,8 @@ void CBaseCombatWeapon::Equip( CBaseCombatCharacter *pOwner )
 	else
 	{
 		// Make the weapon ready as soon as any NPC picks it up.
-		m_flNextPrimaryAttack = gpGlobals->curtime;
-		m_flNextSecondaryAttack = gpGlobals->curtime;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime();
+		m_flNextSecondaryAttack = gpGlobals->GetCurTime();
 		SetModel( GetWorldModel() );
 	}
 }
@@ -1349,12 +1349,12 @@ bool CBaseCombatWeapon::ReloadOrSwitchWeapons( void )
 	m_bFireOnEmpty = false;
 
 	// If we don't have any ammo, switch to the next best weapon
-	if ( !HasAnyAmmo() && m_flNextPrimaryAttack < gpGlobals->curtime && m_flNextSecondaryAttack < gpGlobals->curtime )
+	if ( !HasAnyAmmo() && m_flNextPrimaryAttack < gpGlobals->GetCurTime() && m_flNextSecondaryAttack < gpGlobals->GetCurTime() )
 	{
 		// weapon isn't useable, switch.
 		if ( ( (GetWeaponFlags() & ITEM_FLAG_NOAUTOSWITCHEMPTY) == false ) && ( g_pGameRules->SwitchToNextBestWeapon( pOwner, this ) ) )
 		{
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.3;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.3;
 			return true;
 		}
 	}
@@ -1364,8 +1364,8 @@ bool CBaseCombatWeapon::ReloadOrSwitchWeapons( void )
 		if ( UsesClipsForAmmo1() && !AutoFiresFullClip() && 
 			 (m_iClip1 == 0) && 
 			 (GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD) == false && 
-			 m_flNextPrimaryAttack < gpGlobals->curtime && 
-			 m_flNextSecondaryAttack < gpGlobals->curtime )
+			 m_flNextPrimaryAttack < gpGlobals->GetCurTime() && 
+			 m_flNextSecondaryAttack < gpGlobals->GetCurTime() )
 		{
 			// if we're successfully reloading, we're done
 			if ( Reload() )
@@ -1386,7 +1386,7 @@ bool CBaseCombatWeapon::ReloadOrSwitchWeapons( void )
 //-----------------------------------------------------------------------------
 bool CBaseCombatWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, int iActivity, char *szAnimExt )
 {
-	// Msg( "deploy %s at %f\n", GetClassname(), gpGlobals->curtime );
+	// Msg( "deploy %s at %f\n", GetClassname(), gpGlobals->GetCurTime() );
 
 	// Weapons that don't autoswitch away when they run out of ammo 
 	// can still be deployed when they have no ammo.
@@ -1405,17 +1405,17 @@ bool CBaseCombatWeapon::DefaultDeploy( char *szViewModel, char *szWeaponModel, i
 		SetViewModel();
 		SendWeaponAnim( iActivity );
 
-		pOwner->SetNextAttack( gpGlobals->curtime + SequenceDuration() );
+		pOwner->SetNextAttack( gpGlobals->GetCurTime() + SequenceDuration() );
 	}
 
 	// Can't shoot again until we've finished deploying
-	m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
-	m_flNextSecondaryAttack	= gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
+	m_flNextSecondaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
 	m_flHudHintMinDisplayTime = 0;
 
 	m_bAltFireHudHintDisplayed = false;
 	m_bReloadHudHintDisplayed = false;
-	m_flHudHintPollTime = gpGlobals->curtime + 5.0f;
+	m_flHudHintPollTime = gpGlobals->GetCurTime() + 5.0f;
 	
 	WeaponSound( DEPLOY );
 
@@ -1474,7 +1474,7 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 	CBaseCombatCharacter *pOwner = GetOwner();
 	if (pOwner)
 	{
-		pOwner->SetNextAttack( gpGlobals->curtime + flSequenceDuration );
+		pOwner->SetNextAttack( gpGlobals->GetCurTime() + flSequenceDuration );
 	}
 
 	// If we don't have a holster anim, hide immediately to avoid timing issues
@@ -1485,11 +1485,11 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 	else
 	{
 		// Hide the weapon when the holster animation's finished
-		SetContextThink( &CBaseCombatWeapon::HideThink, gpGlobals->curtime + flSequenceDuration, HIDEWEAPON_THINK_CONTEXT );
+		SetContextThink( &CBaseCombatWeapon::HideThink, gpGlobals->GetCurTime() + flSequenceDuration, HIDEWEAPON_THINK_CONTEXT );
 	}
 
 	// if we were displaying a hud hint, squelch it.
-	if (m_flHudHintMinDisplayTime && gpGlobals->curtime < m_flHudHintMinDisplayTime)
+	if (m_flHudHintMinDisplayTime && gpGlobals->GetCurTime() < m_flHudHintMinDisplayTime)
 	{
 		if( m_bAltFireHudHintDisplayed )
 			RescindAltFireHudHint();
@@ -1618,7 +1618,7 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 		// display the hint, and the player is not standing still, try to show a hud hint.
 		// If the player IS standing still, assume they could change away from this weapon at
 		// any second.
-		if( (!m_bAltFireHudHintDisplayed || !m_bReloadHudHintDisplayed) && gpGlobals->curtime > m_flHudHintMinDisplayTime && gpGlobals->curtime > m_flHudHintPollTime && GetOwner() && GetOwner()->IsPlayer() )
+		if( (!m_bAltFireHudHintDisplayed || !m_bReloadHudHintDisplayed) && gpGlobals->GetCurTime() > m_flHudHintMinDisplayTime && gpGlobals->GetCurTime() > m_flHudHintPollTime && GetOwner() && GetOwner()->IsPlayer() )
 		{
 			CBasePlayer *pPlayer = (CBasePlayer*)(GetOwner());
 
@@ -1637,7 +1637,7 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 			}
 			else
 			{
-				m_flHudHintPollTime = gpGlobals->curtime + 2.0f;
+				m_flHudHintPollTime = gpGlobals->GetCurTime() + 2.0f;
 			}
 		}
 	}
@@ -1658,7 +1658,7 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 	//Track the duration of the fire
 	//FIXME: Check for IN_ATTACK2 as well?
 	//FIXME: What if we're calling ItemBusyFrame?
-	m_fFireDuration = ( pOwner->m_nButtons & IN_ATTACK ) ? ( m_fFireDuration + gpGlobals->frametime ) : 0.0f;
+	m_fFireDuration = ( pOwner->m_nButtons & IN_ATTACK ) ? ( m_fFireDuration + gpGlobals->GetFrameTime() ) : 0.0f;
 
 	if ( UsesClipsForAmmo1() )
 	{
@@ -1668,21 +1668,21 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 	bool bFired = false;
 
 	// Secondary attack has priority
-	if ((pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime))
+	if ((pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->GetCurTime()))
 	{
 		if (UsesSecondaryAmmo() && pOwner->GetAmmoCount(m_iSecondaryAmmoType)<=0 )
 		{
-			if (m_flNextEmptySoundTime < gpGlobals->curtime)
+			if (m_flNextEmptySoundTime < gpGlobals->GetCurTime())
 			{
 				WeaponSound(EMPTY);
-				m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
+				m_flNextSecondaryAttack = m_flNextEmptySoundTime = gpGlobals->GetCurTime() + 0.5;
 			}
 		}
 		else if (pOwner->GetWaterLevel() == 3 && m_bAltFiresUnderwater == false)
 		{
 			// This weapon doesn't fire underwater
 			WeaponSound(EMPTY);
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.2;
 			return;
 		}
 		else
@@ -1713,7 +1713,7 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 		}
 	}
 	
-	if ( !bFired && (pOwner->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+	if ( !bFired && (pOwner->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->GetCurTime()))
 	{
 		// Clip empty? Or out of ammo on a no-clip weapon?
 		if ( !IsMeleeWeapon() &&  
@@ -1725,7 +1725,7 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 		{
 			// This weapon doesn't fire underwater
 			WeaponSound(EMPTY);
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.2;
 			return;
 		}
 		else
@@ -1739,7 +1739,7 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 			// If the firing button was just pressed, or the alt-fire just released, reset the firing time
 			if ( ( pOwner->m_afButtonPressed & IN_ATTACK ) || ( pOwner->m_afButtonReleased & IN_ATTACK2 ) )
 			{
-				 m_flNextPrimaryAttack = gpGlobals->curtime;
+				 m_flNextPrimaryAttack = gpGlobals->GetCurTime();
 			}
 
 			PrimaryAttack();
@@ -1788,10 +1788,10 @@ void CBaseCombatWeapon::HandleFireOnEmpty()
 	}
 	else
 	{
-		if (m_flNextEmptySoundTime < gpGlobals->curtime)
+		if (m_flNextEmptySoundTime < gpGlobals->GetCurTime())
 		{
 			WeaponSound(EMPTY);
-			m_flNextEmptySoundTime = gpGlobals->curtime + 0.5;
+			m_flNextEmptySoundTime = gpGlobals->GetCurTime() + 0.5;
 		}
 		m_bFireOnEmpty = true;
 	}
@@ -2006,7 +2006,7 @@ bool CBaseCombatWeapon::DefaultReload( int iClipSize1, int iClipSize2, int iActi
 	}
 
 	MDLCACHE_CRITICAL_SECTION();
-	float flSequenceEndTime = gpGlobals->curtime + SequenceDuration();
+	float flSequenceEndTime = gpGlobals->GetCurTime() + SequenceDuration();
 	pOwner->SetNextAttack( flSequenceEndTime );
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = flSequenceEndTime;
 
@@ -2098,7 +2098,7 @@ void CBaseCombatWeapon::CheckReload( void )
 		if ( !pOwner )
 			return;
 
-		if ((m_bInReload) && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+		if ((m_bInReload) && (m_flNextPrimaryAttack <= gpGlobals->GetCurTime()))
 		{
 			if ( pOwner->m_nButtons & (IN_ATTACK | IN_ATTACK2) && m_iClip1 > 0 )
 			{
@@ -2126,19 +2126,19 @@ void CBaseCombatWeapon::CheckReload( void )
 			else
 			{
 				FinishReload();
-				m_flNextPrimaryAttack	= gpGlobals->curtime;
-				m_flNextSecondaryAttack = gpGlobals->curtime;
+				m_flNextPrimaryAttack	= gpGlobals->GetCurTime();
+				m_flNextSecondaryAttack = gpGlobals->GetCurTime();
 				return;
 			}
 		}
 	}
 	else
 	{
-		if ( (m_bInReload) && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+		if ( (m_bInReload) && (m_flNextPrimaryAttack <= gpGlobals->GetCurTime()))
 		{
 			FinishReload();
-			m_flNextPrimaryAttack	= gpGlobals->curtime;
-			m_flNextSecondaryAttack = gpGlobals->curtime;
+			m_flNextPrimaryAttack	= gpGlobals->GetCurTime();
+			m_flNextSecondaryAttack = gpGlobals->GetCurTime();
 			m_bInReload = false;
 		}
 	}
@@ -2272,7 +2272,7 @@ void CBaseCombatWeapon::PrimaryAttack( void )
 	info.m_iShots = 0;
 	float fireRate = GetFireRate();
 
-	while ( m_flNextPrimaryAttack <= gpGlobals->curtime )
+	while ( m_flNextPrimaryAttack <= gpGlobals->GetCurTime() )
 	{
 		// MUST call sound before removing a round from the clip of a CMachineGun
 		WeaponSound(SINGLE, m_flNextPrimaryAttack);
@@ -2375,7 +2375,7 @@ bool CBaseCombatWeapon::SetIdealActivity( Activity ideal )
 	}
 
 	//Set the next time the weapon will idle
-	SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration() );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + SequenceDuration() );
 	return true;
 }
 
@@ -2402,7 +2402,7 @@ void CBaseCombatWeapon::GetControlPanelClassName( int nPanelIndex, const char *&
 //-----------------------------------------------------------------------------
 void CBaseCombatWeapon::Lock( float lockTime, CBaseEntity *pLocker )
 {
-	m_flUnlockTime = gpGlobals->curtime + lockTime;
+	m_flUnlockTime = gpGlobals->GetCurTime() + lockTime;
 	m_hLocker.Set( pLocker );
 }
 
@@ -2412,7 +2412,7 @@ void CBaseCombatWeapon::Lock( float lockTime, CBaseEntity *pLocker )
 //-----------------------------------------------------------------------------
 bool CBaseCombatWeapon::IsLocked( CBaseEntity *pAsker )
 {
-	return ( m_flUnlockTime > gpGlobals->curtime && m_hLocker != pAsker );
+	return ( m_flUnlockTime > gpGlobals->GetCurTime() && m_hLocker != pAsker );
 }
 
 //-----------------------------------------------------------------------------

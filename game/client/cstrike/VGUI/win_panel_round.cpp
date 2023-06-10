@@ -421,7 +421,7 @@ void WinPanel_Round::Hide( void )
 	if ( m_bShouldBeVisible && !m_bIsFading )
 	{
 		m_bIsFading = true;
-		m_fFadeBeginTime = gpGlobals->realtime;
+		m_fFadeBeginTime = gpGlobals->GetRealTime();
 	}
 }
 
@@ -429,7 +429,7 @@ void WinPanel_Round::OnThink()
 {
 	if ( m_bShouldBeVisible && m_bIsFading )
 	{
-		float fAlpha = 1.0f - (gpGlobals->realtime - m_fFadeBeginTime) / cl_round_win_fade_time.GetFloat();
+		float fAlpha = 1.0f - (gpGlobals->GetRealTime() - m_fFadeBeginTime) / cl_round_win_fade_time.GetFloat();
 
 		if (fAlpha >= 0.0f)
 		{

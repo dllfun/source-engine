@@ -92,7 +92,7 @@ static inline void RecordGlowSprite( const Vector &start, int nModelIndex,
 
  		msg->SetInt( "te", TE_GLOW_SPRITE );
  		msg->SetString( "name", "TE_GlowSprite" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

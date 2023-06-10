@@ -364,10 +364,10 @@ void C_EntityDissolve::ComputeRenderInfo( mstudiobbox_t *pHitBox, const matrix3x
 //-----------------------------------------------------------------------------
 void C_EntityDissolve::DoSparks( mstudiohitboxset_t *set, matrix3x4_t *hitboxbones[MAXSTUDIOBONES] )
 {
-	if ( m_flNextSparkTime > gpGlobals->curtime )
+	if ( m_flNextSparkTime > gpGlobals->GetCurTime() )
 		return;
 
-	float dt = m_flStartTime + m_flFadeOutStart - gpGlobals->curtime;
+	float dt = m_flStartTime + m_flFadeOutStart - gpGlobals->GetCurTime();
 	dt = clamp( dt, 0.0f, m_flFadeOutStart );
 	
 	float flNextTime;
@@ -381,7 +381,7 @@ void C_EntityDissolve::DoSparks( mstudiohitboxset_t *set, matrix3x4_t *hitboxbon
 		flNextTime = SimpleSplineRemapVal( dt, 0.0f, m_flFadeOutStart, 0.3f, 1.0f );
 	}
 
-	m_flNextSparkTime = gpGlobals->curtime + flNextTime;
+	m_flNextSparkTime = gpGlobals->GetCurTime() + flNextTime;
 
 	// Send out beams around us
 	int iNumBeamsAround = 2;
@@ -422,7 +422,7 @@ void C_EntityDissolve::SetupEmitter( void )
 //-----------------------------------------------------------------------------
 float C_EntityDissolve::GetFadeInPercentage( void )
 {
-	float dt = gpGlobals->curtime - m_flStartTime;
+	float dt = gpGlobals->GetCurTime() - m_flStartTime;
 	
 	if ( dt > m_flFadeOutStart )
 		return 1.0f;
@@ -446,7 +446,7 @@ float C_EntityDissolve::GetFadeInPercentage( void )
 //-----------------------------------------------------------------------------
 float C_EntityDissolve::GetFadeOutPercentage( void )
 {
-	float dt = gpGlobals->curtime - m_flStartTime;
+	float dt = gpGlobals->GetCurTime() - m_flStartTime;
 	
 	if ( dt < m_flFadeInStart )
 		return 1.0f;
@@ -470,7 +470,7 @@ float C_EntityDissolve::GetFadeOutPercentage( void )
 //-----------------------------------------------------------------------------
 float C_EntityDissolve::GetModelFadeOutPercentage( void )
 {
-	float dt = gpGlobals->curtime - m_flStartTime;
+	float dt = gpGlobals->GetCurTime() - m_flStartTime;
 	
 	if ( dt < m_flFadeOutModelStart )
 		return 1.0f;
@@ -580,7 +580,7 @@ void C_EntityDissolve::ClientThink( void )
 int C_EntityDissolve::DrawModel(IVModel* pWorld, int flags )
 {
 	// See if we should draw
-	if ( gpGlobals->frametime == 0 || m_bReadyToDraw == false )
+	if ( gpGlobals->GetFrameTime() == 0 || m_bReadyToDraw == false )
 		return 0;
 
 	C_BaseAnimating *pAnimating = GetMoveParent() ? GetMoveParent()->GetBaseAnimating() : NULL;
@@ -619,7 +619,7 @@ int C_EntityDissolve::DrawModel(IVModel* pWorld, int flags )
 	// Skew the particles in front or in back of their targets
 	vecSkew = g_pView->CurrentViewForward() * ( 8.0f - ( ( 1.0f - fadePerc ) * 32.0f ) );
 
-	float spriteScale = ( ( gpGlobals->curtime - m_flStartTime ) / m_flFadeOutLength );
+	float spriteScale = ( ( gpGlobals->GetCurTime() - m_flStartTime ) / m_flFadeOutLength );
 	spriteScale = clamp( spriteScale, 0.75f, 1.0f );
 
 	// Cache off this material reference

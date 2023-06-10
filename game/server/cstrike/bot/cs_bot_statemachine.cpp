@@ -51,7 +51,7 @@ void CCSBot::SetState( BotState *state )
 	state->OnEnter( this );
 
 	m_state = state;
-	m_stateTimestamp = gpGlobals->curtime;
+	m_stateTimestamp = gpGlobals->GetCurTime();
 }
 
 
@@ -79,7 +79,7 @@ void CCSBot::Follow( CCSPlayer *player )
 
 	// note when we began following
 	if (!m_isFollowing || m_leader != player)
-		m_followTimestamp = gpGlobals->curtime;
+		m_followTimestamp = gpGlobals->GetCurTime();
 
 	m_isFollowing = true;
 	m_leader = player;
@@ -112,7 +112,7 @@ void CCSBot::StopFollowing( void )
 {
 	m_isFollowing = false;
 	m_leader = NULL;
-	m_allowAutoFollowTime = gpGlobals->curtime + 10.0f;
+	m_allowAutoFollowTime = gpGlobals->GetCurTime() + 10.0f;
 }
 
 
@@ -393,8 +393,8 @@ void CCSBot::Attack( CCSPlayer *victim )
 
 	// cheat a bit and give the bot the initial location of its victim
 	m_lastEnemyPosition = victimOrigin;
-	m_lastSawEnemyTimestamp = gpGlobals->curtime;
-	m_aimSpreadTimestamp = gpGlobals->curtime;
+	m_lastSawEnemyTimestamp = gpGlobals->GetCurTime();
+	m_aimSpreadTimestamp = gpGlobals->GetCurTime();
 
 	// compute the angle difference between where are looking, and where we need to look
 	Vector toEnemy = victimOrigin - GetCentroid( this );
@@ -419,7 +419,7 @@ void CCSBot::Attack( CCSPlayer *victim )
 
 	// define time when aim offset will automatically be updated
 	// longer time the more we had to turn (surprise)
-	m_aimOffsetTimestamp = gpGlobals->curtime + RandomFloat( 0.25f + turn, 1.5f );
+	m_aimOffsetTimestamp = gpGlobals->GetCurTime() + RandomFloat( 0.25f + turn, 1.5f );
 
 	// forget any look at targets we have
 	ClearLookAt();

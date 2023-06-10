@@ -216,7 +216,7 @@ void CPerfVisualBenchmark::Start()
 	cl_mouseenable.SetValue( 0 );
 #endif
 	m_iCurVar = 0;
-	m_flTimer = gpGlobals->realtime + FPS_STABILIZE_TIME;
+	m_flTimer = gpGlobals->GetRealTime() + FPS_STABILIZE_TIME;
 	m_bWaiting = true;
 	m_bIsOn = true;									// showtime!
 	engineClient->ClientCmd_Unrestricted("cancelselect");				// exit menu and console
@@ -245,30 +245,30 @@ void CPerfVisualBenchmark::PreRender( )
 		return;
 
 	// Wait for the timer
-	if ( m_flTimer > gpGlobals->realtime )
+	if ( m_flTimer > gpGlobals->GetRealTime() )
 		return;
 
 	if ( m_bWaiting )
 	{
-		m_flTimer = gpGlobals->realtime + FPS_MEASURE_TIME;
-		m_flStartMeasureTime = gpGlobals->realtime;
-		m_nStartFrameCount = gpGlobals->framecount;
+		m_flTimer = gpGlobals->GetRealTime() + FPS_MEASURE_TIME;
+		m_flStartMeasureTime = gpGlobals->GetRealTime();
+		m_nStartFrameCount = gpGlobals->GetFrameCount();
 		m_bWaiting = false;
 		return;
 	}
 
 	// Ok, we were measuring, lets calculate the results
-	float flDenom = gpGlobals->realtime - m_flStartMeasureTime;
+	float flDenom = gpGlobals->GetRealTime() - m_flStartMeasureTime;
 	if (flDenom == 0)
 	{
 		flDenom = 1.0f;
 	}
 
 	// note the current avged fps;
-	float flAveFPS = (gpGlobals->framecount - m_nStartFrameCount) / flDenom;
+	float flAveFPS = (gpGlobals->GetFrameCount() - m_nStartFrameCount) / flDenom;
 	m_RunInfo[m_iCurVar].m_flFPS = flAveFPS;
 
-	m_flTimer = gpGlobals->realtime + FPS_STABILIZE_TIME;
+	m_flTimer = gpGlobals->GetRealTime() + FPS_STABILIZE_TIME;
 	m_bWaiting = true;
 
 	char combuffer[255];

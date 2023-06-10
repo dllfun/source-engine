@@ -48,8 +48,8 @@ public:
 	bool GetForcedShadowCastType( ShadowType_t* pForcedShadowType ) const;
 
 	// Local In View Data.
-	void InitFrustumData( void )						{ m_bInFrustum = false; m_flFrustumDistanceSqr = FLT_MAX; m_nInFrustumFrame = gpGlobals->framecount; }
-	bool IsInFrustumValid( void )						{ return ( m_nInFrustumFrame == gpGlobals->framecount ); }
+	void InitFrustumData( void )						{ m_bInFrustum = false; m_flFrustumDistanceSqr = FLT_MAX; m_nInFrustumFrame = gpGlobals->GetFrameCount(); }
+	bool IsInFrustumValid( void )						{ return ( m_nInFrustumFrame == gpGlobals->GetFrameCount() ); }
 	void SetInFrustum( bool bInFrustum )				{ m_bInFrustum = bInFrustum; }
 	bool IsInFrustum( void )							{ return m_bInFrustum; }
 	void SetInFrustumDistanceSqr( float flDistance )	{ m_flFrustumDistanceSqr = flDistance; }
@@ -118,7 +118,7 @@ public:
 	int	 GetActiveCount()						    { return m_botList.Count(); }
 
 	bool SetupInFrustumData( void );
-	bool IsInFrustumDataValid( void )				{ return ( m_nInFrustumFrame == gpGlobals->framecount ); }
+	bool IsInFrustumDataValid( void )				{ return ( m_nInFrustumFrame == gpGlobals->GetFrameCount() ); }
 
 private:
 	friend class C_NextBotCombatCharacter;

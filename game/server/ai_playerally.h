@@ -377,7 +377,7 @@ public:
 
 	//---------------------------------
 	
-	float		GetTimePlayerStaring()		{ return ( m_flTimePlayerStartStare != 0 ) ? gpGlobals->curtime - m_flTimePlayerStartStare : 0; }
+	float		GetTimePlayerStaring()		{ return ( m_flTimePlayerStartStare != 0 ) ? gpGlobals->GetCurTime() - m_flTimePlayerStartStare : 0; }
 
 	//---------------------------------
 	// NPC Event Response System

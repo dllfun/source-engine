@@ -150,13 +150,13 @@ void CEnvTonemapController::InputBlendTonemapScale( inputdata_t &inputdata )
 		Warning("%s (%s) received BlendTonemapScale input without a blend time. Syntax: <target tonemap scale> <blend time>\n", GetClassname(), GetDebugName() );
 		return;
 	}
-	m_flBlendEndTime = gpGlobals->curtime + atof( pszParam );
+	m_flBlendEndTime = gpGlobals->GetCurTime() + atof( pszParam );
 
-	m_flBlendStartTime = gpGlobals->curtime;
+	m_flBlendStartTime = gpGlobals->GetCurTime();
 	m_flBlendTonemapStart = mat_hdr_tonemapscale.GetFloat();
 
 	// Start thinking
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 	SetThink( &CEnvTonemapController::UpdateTonemapScaleBlend );
 }
 
@@ -195,16 +195,16 @@ void CEnvTonemapController::InputSetTonemapRate( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CEnvTonemapController::UpdateTonemapScaleBlend( void )
 { 
-	float flRemapped = RemapValClamped( gpGlobals->curtime, m_flBlendStartTime, m_flBlendEndTime, m_flBlendTonemapStart, m_flBlendTonemapEnd );
+	float flRemapped = RemapValClamped( gpGlobals->GetCurTime(), m_flBlendStartTime, m_flBlendEndTime, m_flBlendTonemapStart, m_flBlendTonemapEnd );
 	mat_hdr_tonemapscale.SetValue( flRemapped );
 
-	//Msg("Setting tonemap scale to %f (curtime %f, %f -> %f)\n", flRemapped, gpGlobals->curtime, m_flBlendStartTime, m_flBlendEndTime ); 
+	//Msg("Setting tonemap scale to %f (curtime %f, %f -> %f)\n", flRemapped, gpGlobals->GetCurTime(), m_flBlendStartTime, m_flBlendEndTime ); 
 
 	// Stop when we're out of the blend range
-	if ( gpGlobals->curtime >= m_flBlendEndTime )
+	if ( gpGlobals->GetCurTime() >= m_flBlendEndTime )
 		return;
 
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 }
 
 //-----------------------------------------------------------------------------

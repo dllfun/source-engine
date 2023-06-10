@@ -2561,17 +2561,17 @@ void Host_CheckDumpMemoryStats( void )
 void Host::_Host_SetGlobalTime()
 {
 	// Server
-	g_ServerGlobalVariables.realtime			= g_host.host_realtime;
-	g_ServerGlobalVariables.framecount			= g_host.host_framecount;
-	g_ServerGlobalVariables.absoluteframetime	= g_host.host_frametime;
-	g_ServerGlobalVariables.interval_per_tick	= g_host.interval_per_tick;
+	g_ServerGlobalVariables.SetRealTime(g_host.host_realtime);
+	g_ServerGlobalVariables.SetFrameCount( g_host.host_framecount);
+	g_ServerGlobalVariables.SetAbsoluteFrameTime( g_host.host_frametime);
+	g_ServerGlobalVariables.SetIntervalPerTick( g_host.interval_per_tick);
 	g_ServerGlobalVariables.serverCount			= g_pHost->Host_GetServerCount();
 #ifndef SWDS
 	// Client
-	g_ClientGlobalVariables.realtime			= g_host.host_realtime;
-	g_ClientGlobalVariables.framecount			= g_host.host_framecount;
-	g_ClientGlobalVariables.absoluteframetime	= g_host.host_frametime;
-	g_ClientGlobalVariables.interval_per_tick	= g_host.interval_per_tick;
+	g_ClientGlobalVariables.SetRealTime(g_host.host_realtime);
+	g_ClientGlobalVariables.SetFrameCount(g_host.host_framecount);
+	g_ClientGlobalVariables.SetAbsoluteFrameTime( g_host.host_frametime);
+	g_ClientGlobalVariables.SetIntervalPerTick( g_host.interval_per_tick);
 #endif
 }
 
@@ -2644,8 +2644,8 @@ void _Host_RunFrame_Server_Async( int numticks )
 
 	for ( int tick = 0; tick < numticks; tick++ )
 	{ 
-		g_ServerGlobalVariables.tickcount = sv.GetTickCount();
-		g_ServerGlobalVariables.simTicksThisFrame = numticks - tick;
+		g_ServerGlobalVariables.SetTickCount( sv.GetTickCount());
+		g_ServerGlobalVariables.SetSimTicksThisFrame( numticks - tick);
 		bool bFinalTick = ( tick == (numticks - 1) );
 		_Host_RunFrame_Server( bFinalTick );
 	}
@@ -3001,8 +3001,8 @@ void Host_SetClientInSimulation( bool bInSimulation )
 	cl.insimulation = bInSimulation || cl.IsPaused();
 
 	// Compute absolute/render time stamp
-	g_ClientGlobalVariables.curtime = cl.GetTime();
-	g_ClientGlobalVariables.frametime = cl.GetFrameTime();
+	g_ClientGlobalVariables.SetCurTime( cl.GetTime());
+	g_ClientGlobalVariables.SetFrameTime( cl.GetFrameTime());
 #endif
 }
 
@@ -3095,7 +3095,7 @@ void Host::_Host_RunFrame (float time)
 			if (g_host.Host_IsSinglePlayerGame() &&
 				sv_alternateticks.GetBool() )
 			{
-				int startTick = g_ServerGlobalVariables.tickcount;
+				int startTick = g_ServerGlobalVariables.GetTickCount();
 				int endTick = startTick + numticks;
 				endTick = AlignValue( endTick, 2 );
 				numticks = endTick - startTick;
@@ -3126,9 +3126,9 @@ void Host::_Host_RunFrame (float time)
 		g_HostTimes.EndFrameSegment( FRAME_SEGMENT_CMD_EXECUTE );
 
 		// Msg( "Running %i ticks (%f remainder) for frametime %f total %f tick %f delta %f\n", numticks, remainder, host_frametime, host_time );
-		g_ServerGlobalVariables.interpolation_amount = 0.0f;
+		g_ServerGlobalVariables.SetInterpolationAmount( 0.0f);
 #ifndef SWDS
-		g_ClientGlobalVariables.interpolation_amount = 0.0f;
+		g_ClientGlobalVariables.SetInterpolationAmount( 0.0f);
 
 		cl.insimulation = true;
 #endif
@@ -3155,10 +3155,10 @@ void Host::_Host_RunFrame (float time)
 			{
 				g_ClientDLL->IN_SetSampleTime(g_host.host_frametime);
 			}
-			g_ClientGlobalVariables.simTicksThisFrame = 1;
+			g_ClientGlobalVariables.SetSimTicksThisFrame( 1);
 #endif
 			cl.m_tickRemainder = host_remainder;
-			g_ServerGlobalVariables.simTicksThisFrame = 1;
+			g_ServerGlobalVariables.SetSimTicksThisFrame( 1);
 			cl.SetFrameTime(g_host.host_frametime );
 			for ( int tick = 0; tick < numticks; tick++ )
 			{ 
@@ -3192,12 +3192,12 @@ void Host::_Host_RunFrame (float time)
 				if (g_pNetworkSystem->NET_IsDedicated() && !g_pNetworkSystem->NET_IsMultiplayer() )
 					g_pNetworkSystem->NET_SetMutiplayer( true );
 
-				g_ServerGlobalVariables.tickcount = sv.GetTickCount();
+				g_ServerGlobalVariables.SetTickCount( sv.GetTickCount());
 				// NOTE:  Do we want do this at start or end of this loop?
 				++g_host.host_tickcount;
 				++g_host.host_currentframetick;
 #ifndef SWDS
-				g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
+				g_ClientGlobalVariables.SetTickCount( cl.GetClientTickCount());
 
 				// Make sure state is correct
 				CL_CheckClientState();
@@ -3277,7 +3277,7 @@ void Host::_Host_RunFrame (float time)
 				// This causes cl.gettime() to return the true clock being used for rendering (tickcount * rate + remainder)
 				Host_SetClientInSimulation( false );
 				// Now allow for interpolation on client
-				g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / interval_per_tick );
+				g_ClientGlobalVariables.SetInterpolationAmount( ( cl.m_tickRemainder / interval_per_tick ));
 
 #if defined( REPLAY_ENABLED )
 				// Update client-side replay history manager - called here since interpolation_amount is set
@@ -3301,7 +3301,7 @@ void Host::_Host_RunFrame (float time)
 				// continuous controllers affecting the view are also simulated this way
 				// but they have a cap applied by IN_SetSampleTime() so they are not also
 				// simulated during input gathering
-				CL_ExtraMouseUpdate( g_ClientGlobalVariables.frametime );
+				CL_ExtraMouseUpdate( g_ClientGlobalVariables.GetFrameTime() );
 			}
 #endif
 #if defined( REPLAY_ENABLED )
@@ -3338,9 +3338,9 @@ void Host::_Host_RunFrame (float time)
 			last_frame_time = g_host.host_frametime;
 
 			serverticks = numticks;
-			g_ClientGlobalVariables.simTicksThisFrame = clientticks;
-			g_ServerGlobalVariables.simTicksThisFrame = serverticks;
-			g_ServerGlobalVariables.tickcount = sv.GetTickCount();
+			g_ClientGlobalVariables.SetSimTicksThisFrame( clientticks);
+			g_ServerGlobalVariables.SetSimTicksThisFrame( serverticks);
+			g_ServerGlobalVariables.SetTickCount( sv.GetTickCount());
 
 			// THREADED: Run Client
 			// -------------------
@@ -3355,7 +3355,7 @@ void Host::_Host_RunFrame (float time)
 				// initialize networking for dedicated server after commandline & autoexec.cfg have been parsed
 				if (g_pNetworkSystem->NET_IsDedicated() && !g_pNetworkSystem->NET_IsMultiplayer() )
 					g_pNetworkSystem->NET_SetMutiplayer( true );
-				g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
+				g_ClientGlobalVariables.SetTickCount( cl.GetClientTickCount());
 
 				// Make sure state is correct
 				CL_CheckClientState();
@@ -3383,7 +3383,7 @@ void Host::_Host_RunFrame (float time)
 			// This causes cl.gettime() to return the true clock being used for rendering (tickcount * rate + remainder)
 			Host_SetClientInSimulation( false );
 			// Now allow for interpolation on client
-			g_ClientGlobalVariables.interpolation_amount = ( cl.m_tickRemainder / interval_per_tick );
+			g_ClientGlobalVariables.SetInterpolationAmount( ( cl.m_tickRemainder / interval_per_tick ));
 
 			//-------------------
 			// Run prediction if it hasn't been run yet
@@ -3398,14 +3398,14 @@ void Host::_Host_RunFrame (float time)
 
 			// THREADED: Run Input
 			// -------------------
-			int saveTick = g_ClientGlobalVariables.tickcount;
+			int saveTick = g_ClientGlobalVariables.GetTickCount();
 
 			for ( int tick = 0; tick < serverticks; tick++ )
 			{
 				// NOTE:  Do we want do this at start or end of this loop?
 				++g_host.host_tickcount;
 				++g_host.host_currentframetick;
-				g_ClientGlobalVariables.tickcount = g_host.host_tickcount;
+				g_ClientGlobalVariables.SetTickCount( g_host.host_tickcount);
 				bool bFinalTick = tick==(serverticks-1) ? true : false;
 				_Host_RunFrame_Input( prevremainder, bFinalTick );
 				prevremainder = 0;
@@ -3420,9 +3420,9 @@ void Host::_Host_RunFrame (float time)
 			// continuous controllers affecting the view are also simulated this way
 			// but they have a cap applied by IN_SetSampleTime() so they are not also
 			// simulated during input gathering
-			CL_ExtraMouseUpdate( g_ClientGlobalVariables.frametime );
+			CL_ExtraMouseUpdate( g_ClientGlobalVariables.GetFrameTime() );
 
-			g_ClientGlobalVariables.tickcount = saveTick;
+			g_ClientGlobalVariables.SetTickCount( saveTick);
 			numticks_last_frame = numticks;
 			host_remainder_last_frame = host_remainder;
 
@@ -4472,7 +4472,7 @@ bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const 
 	saverestore->SetIsXSave( IsX360() );
 
 	// Add on time passed since the last time we kept track till this transition
-	int iAdditionalSeconds = g_ServerGlobalVariables.curtime - saverestore->GetMostRecentElapsedTimeSet();
+	int iAdditionalSeconds = g_ServerGlobalVariables.GetCurTime() - saverestore->GetMostRecentElapsedTimeSet();
 	int iElapsedSeconds = saverestore->GetMostRecentElapsedSeconds() + iAdditionalSeconds;
 	int iElapsedMinutes = saverestore->GetMostRecentElapsedMinutes() + ( iElapsedSeconds / 60 );
 	saverestore->SetMostRecentElapsedMinutes( iElapsedMinutes );
@@ -4496,7 +4496,7 @@ bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const 
 		}
 
 		// Not going to load a save after the transition, so add this map's elapsed time to the total elapsed time
-		int totalSeconds = g_ServerGlobalVariables.curtime + saverestore->GetMostRecentElapsedSeconds();
+		int totalSeconds = g_ServerGlobalVariables.GetCurTime() + saverestore->GetMostRecentElapsedSeconds();
 		saverestore->SetMostRecentElapsedMinutes( (int)( totalSeconds / 60.0f ) + saverestore->GetMostRecentElapsedMinutes() );
 		saverestore->SetMostRecentElapsedSeconds( (int)fmod( totalSeconds, 60.0f ) );
 	}
@@ -4560,7 +4560,7 @@ bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const 
 			saverestore->Finish( pSaveData );
 		}
 
-		g_ServerGlobalVariables.curtime = sv.GetTime();
+		g_ServerGlobalVariables.SetCurTime( sv.GetTime());
 
 		audiosourcecache->LevelInit( szMapName );
 		g_pServerPluginHandler->LevelInit( szMapName, CM_EntityString(g_pHost->Host_GetWorldModel()), oldlevel, startspot, true, false );
@@ -4571,7 +4571,7 @@ bool Host::Host_Changelevel( bool loadfromsavedgame, const char *mapname, const 
 	else
 #endif
 	{
-		g_ServerGlobalVariables.curtime = sv.GetTime();
+		g_ServerGlobalVariables.SetCurTime( sv.GetTime());
 #if !defined(SWDS)
 		audiosourcecache->LevelInit( szMapName );
 #endif
@@ -4685,7 +4685,7 @@ bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, co
 	VPROF_SCOPE_END();
 
 	// make sure the time is set
-	g_ServerGlobalVariables.curtime = sv.GetTime();
+	g_ServerGlobalVariables.SetCurTime( sv.GetTime());
 
 	COM_TimestampedLog( "serverGameDLL->LevelInit" );
 
@@ -4701,7 +4701,7 @@ bool Host::Host_NewGame( char *mapName, bool loadGame, bool bBackgroundLevel, co
 	{
 		sv.SetPaused( true );		// pause until all clients connect
 		sv.m_bLoadgame = true;
-		g_ServerGlobalVariables.curtime = sv.GetTime();
+		g_ServerGlobalVariables.SetCurTime( sv.GetTime());
 	}
 
 	if( !SV_ActivateServer() )

@@ -97,7 +97,7 @@ void CWeaponGalil::PrimaryAttack()
 	if (pPlayer->GetWaterLevel() == 3)
 	{
 		PlayEmptySound( );
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.15;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.15;
 		return;
 	}
 	

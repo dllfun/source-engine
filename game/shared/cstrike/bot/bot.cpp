@@ -58,7 +58,7 @@ void ActiveGrenade::OnEntityGone( void )
 	{
 		// smoke lingers after grenade is gone
 		const float smokeLingerTime = 4.0f;
-		m_dieTimestamp = gpGlobals->curtime + smokeLingerTime;
+		m_dieTimestamp = gpGlobals->GetCurTime() + smokeLingerTime;
 	}
 
 	m_entity = NULL;
@@ -81,7 +81,7 @@ bool ActiveGrenade::IsValid( void ) const
 {
 	if ( m_isSmoke )
 	{
-		if ( m_entity == NULL && gpGlobals->curtime > m_dieTimestamp )
+		if ( m_entity == NULL && gpGlobals->GetCurTime() > m_dieTimestamp )
 		{
 			return false;
 		}

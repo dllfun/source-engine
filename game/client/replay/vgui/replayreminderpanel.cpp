@@ -81,7 +81,7 @@ void CReplayReminderPanel::ApplySchemeSettings( IScheme *pScheme )
 //-----------------------------------------------------------------------------
 void CReplayReminderPanel::Show()
 {
-	m_flShowTime = gpGlobals->curtime;
+	m_flShowTime = gpGlobals->GetCurTime();
 	SetVisible( true );
 	g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( GetParent(), "HudReplayReminderIn" );
 }
@@ -128,7 +128,7 @@ void CReplayReminderPanel::OnThink()
 		ConVarRef replay_postwinreminderduration( "replay_postwinreminderduration" );
 		float flShowLength = replay_postwinreminderduration.IsValid() ? replay_postwinreminderduration.GetFloat() : 5.0f;
 
-		if ( gpGlobals->curtime >= m_flShowTime + flShowLength )
+		if ( gpGlobals->GetCurTime() >= m_flShowTime + flShowLength )
 		{
 			m_flShowTime = 0;
 			SetVisible( false );

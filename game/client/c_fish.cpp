@@ -153,7 +153,7 @@ void C_Fish::ClientThink()
 		}
 	}
 
-	float deltaT = gpGlobals->frametime;
+	float deltaT = gpGlobals->GetFrameTime();
 
 
 	// check if we just died
@@ -210,19 +210,19 @@ void C_Fish::ClientThink()
 			// bob on surface
 			const float rollAmp = 5.0f;
 			const float rollFreq = 2.33f;
-			m_angles.z += rollAmp * sin( rollFreq * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_angles.z += rollAmp * sin( rollFreq * (gpGlobals->GetCurTime() + 10.0f * entindex()) ) * deltaT;
 
 			const float rollAmp2 = 7.0f;
 			const float rollFreq2 = 4.0f;
-			m_angles.x += rollAmp2 * sin( rollFreq2 * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_angles.x += rollAmp2 * sin( rollFreq2 * (gpGlobals->GetCurTime() + 10.0f * entindex()) ) * deltaT;
 
 			const float bobAmp = 0.75f;
 			const float bobFreq = 4.0f;
-			m_vel.z += bobAmp * sin( bobFreq * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_vel.z += bobAmp * sin( bobFreq * (gpGlobals->GetCurTime() + 10.0f * entindex()) ) * deltaT;
 
 			const float bobAmp2 = 0.75f;
 			const float bobFreq2 = 3.333f;
-			m_vel.z += bobAmp2 * sin( bobFreq2 * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_vel.z += bobAmp2 * sin( bobFreq2 * (gpGlobals->GetCurTime() + 10.0f * entindex()) ) * deltaT;
 
 			// decay movement speed to zero
 			const float drag = 1.0f;

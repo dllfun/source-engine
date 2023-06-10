@@ -312,7 +312,7 @@ void FX_BloodBulletImpact( const Vector &origin, const Vector &normal, float sca
 	//Find area ambient light color and use it to tint smoke
 	Vector worldLight = WorldGetLightForPoint( origin, true );
 	
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1)
 	{
 		worldLight = Vector( 1.0, 1.0, 1.0 );
 		r = 96;

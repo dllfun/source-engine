@@ -292,7 +292,7 @@ void LocalTransfer_InitFastCopy(
 
 
 inline int MapPropOffsetsToIndices( 
-	const CBaseEdict *pEdict,
+	const edict_t *pEdict,
 	CSendTablePrecalc *pPrecalc, 
 	const unsigned short *pOffsets,
 	unsigned short nOffsets,
@@ -472,7 +472,7 @@ void PrintPartialChangeEntsList()
 
 
 void LocalTransfer_TransferEntity( 
-	const CBaseEdict *pEdict,
+	const edict_t *pEdict,
 	const SendTable *pSendTable, 
 	const void *pSrcEnt, 
 	RecvTable *pRecvTable, 

@@ -256,7 +256,7 @@ bool C_LocalTempEntity::IsActive( void )
 {
 	bool active = true;
 
-	float life = die - gpGlobals->curtime;
+	float life = die - gpGlobals->GetCurTime();
 	
 	if ( life < 0 )
 	{
@@ -295,7 +295,7 @@ bool C_LocalTempEntity::IsActive( void )
 
 bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 {
-	float fastFreq = gpGlobals->curtime * 5.5;
+	float fastFreq = gpGlobals->GetCurTime() * 5.5;
 	float gravity = -frametime * GetCurrentGravity();
 	float gravitySlow = gravity * 0.5;
 	float traceFraction = 1;
@@ -319,7 +319,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 		y += m_vecTempEntVelocity[1] * frametime;
 
 		SetLocalOrigin( Vector(
-			x + sin( m_vecTempEntVelocity[2] + gpGlobals->curtime /* * anim.prevframe */ ) * (10*m_flSpriteScale),
+			x + sin( m_vecTempEntVelocity[2] + gpGlobals->GetCurTime() /* * anim.prevframe */ ) * (10*m_flSpriteScale),
 			y + sin( m_vecTempEntVelocity[2] + fastFreq + 0.7 ) * (8*m_flSpriteScale),
 			GetLocalOriginDim( Z_INDEX ) + m_vecTempEntVelocity[2] * frametime ) );
 	}
@@ -329,8 +329,8 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 		SinCos( m_vecTempEntVelocity[2] + fastFreq, &s, &c );
 
 		SetLocalOrigin( GetLocalOrigin() + Vector(
-			m_vecTempEntVelocity[0] * frametime + 8 * sin( gpGlobals->curtime * 20 ),
-			m_vecTempEntVelocity[1] * frametime + 4 * sin( gpGlobals->curtime * 30 ),
+			m_vecTempEntVelocity[0] * frametime + 8 * sin( gpGlobals->GetCurTime() * 20 ),
+			m_vecTempEntVelocity[1] * frametime + 4 * sin( gpGlobals->GetCurTime() * 30 ),
 			m_vecTempEntVelocity[2] * frametime ) );
 	}
 	else
@@ -396,7 +396,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 
 			if ( cl_fasttempentcollision.GetInt() > 0 && flags & FTENT_USEFASTCOLLISIONS )
 			{
-				if ( m_iLastCollisionFrame + cl_fasttempentcollision.GetInt() > gpGlobals->framecount )
+				if ( m_iLastCollisionFrame + cl_fasttempentcollision.GetInt() > gpGlobals->GetFrameCount() )
 				{
 					bShouldCollide = false;
 				}
@@ -407,7 +407,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 						vPrevOrigin = m_vLastCollisionOrigin;
 					}
 
-					m_iLastCollisionFrame = gpGlobals->framecount;
+					m_iLastCollisionFrame = gpGlobals->GetFrameCount();
 					bShouldCollide = true; 
 				}
 			}
@@ -530,7 +530,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 			{
 				// die on impact
 				flags &= ~FTENT_FADEOUT;	
-				die = gpGlobals->curtime;			
+				die = gpGlobals->GetCurTime();			
 			}
 			else if ( flags & FTENT_ATTACHTOTARGET)
 			{
@@ -547,7 +547,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 				{
 					// Couldn't attach to this entity. Die.
 					flags &= ~FTENT_FADEOUT;
-					die = gpGlobals->curtime;
+					die = gpGlobals->GetCurTime();
 				}
 			}
 			else
@@ -579,7 +579,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 		dl->color.r = 255;
 		dl->color.g = 120;
 		dl->color.b = 0;
-		dl->die = gpGlobals->curtime + 0.01;
+		dl->die = gpGlobals->GetCurTime() + 0.01;
 	}
 
 	if ( flags & FTENT_SMOKETRAIL )
@@ -599,7 +599,7 @@ bool C_LocalTempEntity::Frame( float frametime, int framenumber )
 	if ( flags & FTENT_WINDBLOWN )
 	{
 		Vector vecWind;
-		GetWindspeedAtTime( gpGlobals->curtime, vecWind );
+		GetWindspeedAtTime( gpGlobals->GetCurTime(), vecWind );
 
 		for ( int i = 0 ; i < 2 ; i++ )
 		{
@@ -836,7 +836,7 @@ void CTempEnts::FizzEffect( C_BaseEntity *pent, int modelIndex, int density, int
 
 		float zspeed = random->RandomInt(80,140);
 		pTemp->SetVelocity( Vector(xspeed, yspeed, zspeed) );
-		pTemp->die = gpGlobals->curtime + (maxHeight / zspeed) - 0.1;
+		pTemp->die = gpGlobals->GetCurTime() + (maxHeight / zspeed) - 0.1;
 		pTemp->m_flFrame = random->RandomInt(0,frameCount-1);
 		// Set sprite scale
 		pTemp->m_flSpriteScale = 1.0 / random->RandomFloat(2,5);
@@ -888,7 +888,7 @@ void CTempEnts::Bubbles( const Vector &mins, const Vector &maxs, float height, i
 		
 		float zspeed = random->RandomInt(80,140);
 		pTemp->SetVelocity( Vector(speed * cosine, speed * sine, zspeed) );
-		pTemp->die = gpGlobals->curtime + ((height - (origin[2] - mins[2])) / zspeed) - 0.1;
+		pTemp->die = gpGlobals->GetCurTime() + ((height - (origin[2] - mins[2])) / zspeed) - 0.1;
 		pTemp->m_flFrame = random->RandomInt( 0, frameCount-1 );
 		
 		// Set sprite scale
@@ -941,7 +941,7 @@ void CTempEnts::BubbleTrail( const Vector &start, const Vector &end, float flWat
 
 		float zspeed = random->RandomInt(80,140);
 		pTemp->SetVelocity( Vector(speed * cos(angle), speed * sin(angle), zspeed) );
-		pTemp->die = gpGlobals->curtime + ((flWaterZ - origin[2]) / zspeed) - 0.1;
+		pTemp->die = gpGlobals->GetCurTime() + ((flWaterZ - origin[2]) / zspeed) - 0.1;
 		pTemp->m_flFrame = random->RandomInt(0,frameCount-1);
 		// Set sprite scale
 		pTemp->m_flSpriteScale = 1.0 / random->RandomFloat(4,8);
@@ -1088,7 +1088,7 @@ void CTempEnts::BreakModel( const Vector &pos, const QAngle &angles, const Vecto
 							dir[1] + random->RandomFloat(-randRange,randRange),
 							dir[2] + random->RandomFloat(   0,randRange) ) );
 
-		pTemp->die = gpGlobals->curtime + life + random->RandomFloat(0,1);	// Add an extra 0-1 secs of life
+		pTemp->die = gpGlobals->GetCurTime() + life + random->RandomFloat(0,1);	// Add an extra 0-1 secs of life
 
 		// We use a special rendering function because these objects will want to share their lighting
 		//  origin with the first/master object.  Prevents a huge spike in Light Cache building in maps
@@ -1179,7 +1179,7 @@ C_LocalTempEntity *CTempEnts::ClientProjectile( const Vector& vecOrigin, const V
 	VectorAngles( vecVelocity, angles );
 	pTemp->SetAbsAngles( angles );
 	pTemp->SetAbsOrigin( vecOrigin );
-	pTemp->die = gpGlobals->curtime + lifetime;
+	pTemp->die = gpGlobals->GetCurTime() + lifetime;
 	pTemp->flags = FTENT_COLLIDEALL | FTENT_ATTACHTOTARGET | FTENT_ALIGNTOMOTION;
 	pTemp->clientIndex = ( pOwner != NULL ) ? pOwner->entindex() : 0; 
 	pTemp->SetOwnerEntity( pOwner );
@@ -1246,9 +1246,9 @@ C_LocalTempEntity *CTempEnts::TempSprite( const Vector &pos, const Vector &dir, 
 	pTemp->SetVelocity( dir );
 	pTemp->SetLocalOrigin( pos );
 	if ( life )
-		pTemp->die = gpGlobals->curtime + life;
+		pTemp->die = gpGlobals->GetCurTime() + life;
 	else
-		pTemp->die = gpGlobals->curtime + (frameCount * 0.1) + 1;
+		pTemp->die = gpGlobals->GetCurTime() + (frameCount * 0.1) + 1;
 
 	pTemp->m_flFrame = 0;
 	return pTemp;
@@ -1317,7 +1317,7 @@ void CTempEnts::Sprite_Spray( const Vector &pos, const Vector &dir, int modelInd
 
 		pTemp->SetLocalOrigin( pos );
 
-		pTemp->die = gpGlobals->curtime + 0.35;
+		pTemp->die = gpGlobals->GetCurTime() + 0.35;
 
 		pTemp->m_flFrame = random->RandomInt( 0, frameCount );
 	}
@@ -1383,7 +1383,7 @@ void CTempEnts::Sprite_Trail( const Vector &vecStart, const Vector &vecEnd, int 
 
 		pTemp->m_flFrame	= random->RandomInt( 0, flFrameCount - 1 );
 		pTemp->m_flFrameMax	= flFrameCount - 1;
-		pTemp->die			= gpGlobals->curtime + flLife + random->RandomFloat( 0, 4 );
+		pTemp->die			= gpGlobals->GetCurTime() + flLife + random->RandomFloat( 0, 4 );
 	}
 }
 
@@ -1401,7 +1401,7 @@ void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, f
 	Vector				position;
 	int					frameCount;
 
-	if ( client <= 0 || client > gpGlobals->maxClients )
+	if ( client <= 0 || client > gpGlobals->GetMaxClients() )
 	{
 		Warning("Bad client in AttachTentToPlayer()!\n");
 		return;
@@ -1441,7 +1441,7 @@ void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, f
 	pTemp->tentOffset[ 0 ] = 0;
 	pTemp->tentOffset[ 1 ] = 0;
 	pTemp->tentOffset[ 2 ] = zoffset;
-	pTemp->die = gpGlobals->curtime + life;
+	pTemp->die = gpGlobals->GetCurTime() + life;
 	pTemp->flags |= FTENT_PLYRATTACHMENT | FTENT_PERSIST;
 
 	// is the model a sprite?
@@ -1466,7 +1466,7 @@ void CTempEnts::AttachTentToPlayer( int client, int modelIndex, float zoffset, f
 //-----------------------------------------------------------------------------
 void CTempEnts::KillAttachedTents( int client )
 {
-	if ( client <= 0 || client > gpGlobals->maxClients )
+	if ( client <= 0 || client > gpGlobals->GetMaxClients() )
 	{
 		Warning("Bad client in KillAttachedTents()!\n");
 		return;
@@ -1482,7 +1482,7 @@ void CTempEnts::KillAttachedTents( int client )
 			// if it is attached to this client, set it to die instantly.
 			if ( pTemp->clientIndex == client )
 			{
-				pTemp->die = gpGlobals->curtime;// good enough, it will die on next tent update. 
+				pTemp->die = gpGlobals->GetCurTime();// good enough, it will die on next tent update. 
 			}
 		}
 	}
@@ -1517,7 +1517,7 @@ void CTempEnts::RicochetSprite( const Vector &pos, IVModel *pmodel, float durati
 	pTemp->SetLocalOrigin( pos );
 	
 	pTemp->fadeSpeed = 8;
-	pTemp->die = gpGlobals->curtime;
+	pTemp->die = gpGlobals->GetCurTime();
 
 	pTemp->m_flFrame = 0;
 	pTemp->SetLocalAnglesDim( Z_INDEX, 45 * random->RandomInt( 0, 7 ) );
@@ -1556,7 +1556,7 @@ void CTempEnts::BloodSprite( const Vector &org, int r, int g, int b, int a, int 
 			pTemp->SetVelocity( vec3_origin );
 
 			pTemp->m_flFrameRate	= frameCount * 4; // Finish in 0.250 seconds
-			pTemp->die				= gpGlobals->curtime + (frameCount / pTemp->m_flFrameRate); // Play the whole thing Once
+			pTemp->die				= gpGlobals->GetCurTime() + (frameCount / pTemp->m_flFrameRate); // Play the whole thing Once
 
 			pTemp->m_flFrame		= 0;
 			pTemp->m_flFrameMax		= frameCount - 1;
@@ -1580,7 +1580,7 @@ C_LocalTempEntity *CTempEnts::DefaultSprite( const Vector &pos, int spriteIndex,
 	const IVModel	*pSprite;
 
 	// don't spawn while paused
-	if ( gpGlobals->frametime == 0.0 )
+	if ( gpGlobals->GetFrameTime() == 0.0 )
 		return NULL;
 
 	pSprite = engineClient->GetModel( spriteIndex );
@@ -1603,7 +1603,7 @@ C_LocalTempEntity *CTempEnts::DefaultSprite( const Vector &pos, int spriteIndex,
 		framerate = 10;
 
 	pTemp->m_flFrameRate = framerate;
-	pTemp->die = gpGlobals->curtime + (float)frameCount / framerate;
+	pTemp->die = gpGlobals->GetCurTime() + (float)frameCount / framerate;
 	pTemp->m_flFrame = 0;
 	pTemp->SetLocalOrigin( pos );
 
@@ -1689,7 +1689,7 @@ void CTempEnts::EjectBrass( const Vector &pos1, const QAngle &angles, const QAng
 						dir[1] + random->RandomFloat(-64,64),
 						dir[2] + random->RandomFloat(  0,64) ) );
 
-	pTemp->die = gpGlobals->curtime + 1.0f + random->RandomFloat( 0.0f, 1.0f );	// Add an extra 0-1 secs of life	
+	pTemp->die = gpGlobals->GetCurTime() + 1.0f + random->RandomFloat( 0.0f, 1.0f );	// Add an extra 0-1 secs of life	
 }
 
 //-----------------------------------------------------------------------------
@@ -1713,7 +1713,7 @@ C_LocalTempEntity * CTempEnts::SpawnTempModel( const IVModel *pModel, const Vect
 	pTemp->SetRenderMode( kRenderNormal );
 	pTemp->tempent_renderamt = 255;
 	pTemp->SetVelocity( vecVelocity );
-	pTemp->die = gpGlobals->curtime + flLifeTime;
+	pTemp->die = gpGlobals->GetCurTime() + flLifeTime;
 
 	return pTemp;
 }
@@ -1984,7 +1984,7 @@ C_LocalTempEntity *CTempEnts::TempEntAlloc( const Vector& org, const IVModel *mo
 
 	m_TempEnts.AddToTail( pTemp );
 
-	pTemp->Prepare( model, gpGlobals->curtime );
+	pTemp->Prepare( model, gpGlobals->GetCurTime() );
 
 	pTemp->priority = TENTPRIORITY_LOW;
 	pTemp->SetAbsOrigin( org );
@@ -2109,7 +2109,7 @@ C_LocalTempEntity *CTempEnts::TempEntAllocHigh( const Vector& org, const IVModel
 
 	m_TempEnts.AddToTail( pTemp );
 
-	pTemp->Prepare( model, gpGlobals->curtime );
+	pTemp->Prepare( model, gpGlobals->GetCurTime() );
 
 	pTemp->priority = TENTPRIORITY_HIGH;
 	pTemp->SetLocalOrigin( org );
@@ -2336,7 +2336,7 @@ void CTempEnts::Update(void)
 	// !!!BUGBUG	-- This needs to be time based
 	gTempEntFrame = (gTempEntFrame+1) & 31;
 
-	frametime = gpGlobals->frametime;
+	frametime = gpGlobals->GetFrameTime();
 
 	// in order to have tents collide with players, we have to run the player prediction code so
 	// that the client has the player list. We run this code once when we detect any COLLIDEALL 
@@ -2375,7 +2375,7 @@ void CTempEnts::Update(void)
 					if ( !( current->flags & FTENT_PERSIST ) ) 
 					{
 						// If we can't draw it this frame, just dump it.
-						current->die = gpGlobals->curtime;
+						current->die = gpGlobals->GetCurTime();
 						// Don't fade out, just die
 						current->flags &= ~FTENT_FADEOUT;
 
@@ -2793,7 +2793,7 @@ void CTempEnts::MuzzleFlash_Combine_NPC( ClientEntityHandle_t hEntity, int attac
 
 			el->radius	= random->RandomInt( 32, 128 );
 			el->decay	= el->radius / 0.05f;
-			el->die		= gpGlobals->curtime + 0.05f;
+			el->die		= gpGlobals->GetCurTime() + 0.05f;
 		}
 	}
 }
@@ -3266,7 +3266,7 @@ void CTempEnts::RocketFlare( const Vector& pos )
 	pTemp->m_flFrame = random->RandomInt( 0, nframeCount - 1);
 	pTemp->m_flSpriteScale = 1.0;
 	pTemp->SetAbsOrigin( pos );
-	pTemp->die = gpGlobals->curtime + 0.01;
+	pTemp->die = gpGlobals->GetCurTime() + 0.01;
 }
 
 
@@ -3320,7 +3320,7 @@ void CTempEnts::HL1EjectBrass( const Vector &vecPosition, const QAngle &angAngle
 
 	pTemp->SetVelocity( vecVelocity );
 
-	pTemp->die = gpGlobals->curtime + 2.5;
+	pTemp->die = gpGlobals->GetCurTime() + 2.5;
 }
 
 #define SHELLTYPE_PISTOL	0
@@ -3408,7 +3408,7 @@ void CTempEnts::CSEjectBrass( const Vector &vecPosition, const QAngle &angVeloci
 	pTemp->SetRenderMode( kRenderNormal );
 	pTemp->tempent_renderamt = 255;
 	
-	pTemp->die = gpGlobals->curtime + 10;
+	pTemp->die = gpGlobals->GetCurTime() + 10;
 
 	bool bViewModelBrass = false;
 

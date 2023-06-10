@@ -101,7 +101,7 @@ static inline void RecordPhysicsProp( const Vector& start, const QAngle &angles,
 
  		msg->SetInt( "te", TE_PHYSICS_PROP );
  		msg->SetString( "name", "TE_PhysicsProp" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

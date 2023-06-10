@@ -981,7 +981,7 @@ void CHudVote::MsgFunc_CallVoteFailed( bf_read &msg )
 	m_pCallVoteFailed->SetVisible( true );
 	m_pVoteSetupDialog->SetVisible( false );
 
-	m_flHideTime = gpGlobals->curtime + 4.0;
+	m_flHideTime = gpGlobals->GetCurTime() + 4.0;
 
 	char szTime[256];
 	wchar_t wszTime[256];
@@ -1083,8 +1083,8 @@ void CHudVote::MsgFunc_VoteFailed( bf_read &msg )
 	// Visibility of this error is handled by OnThink()
 	SetVoteActive( false );
 	m_bVotePassed = false;
-	m_flVoteResultCycleTime = gpGlobals->curtime + 2;
-	m_flHideTime = gpGlobals->curtime + 5;
+	m_flVoteResultCycleTime = gpGlobals->GetCurTime() + 2;
+	m_flHideTime = gpGlobals->GetCurTime() + 5;
 
 	switch ( nReason )
 	{
@@ -1388,8 +1388,8 @@ void CHudVote::MsgFunc_VotePass( bf_read &msg )
 
 	SetVoteActive( false );
 	m_bVotePassed = true;
-	m_flVoteResultCycleTime = gpGlobals->curtime + 2;
-	m_flHideTime = gpGlobals->curtime + 5;
+	m_flVoteResultCycleTime = gpGlobals->GetCurTime() + 2;
+	m_flHideTime = gpGlobals->GetCurTime() + 5;
 
 	// driller:  this event has no listeners - will eventually hook into stats
 	IGameEvent *event = gameeventmanager->CreateEvent( "vote_passed" );
@@ -1624,7 +1624,7 @@ void CHudVote::FireGameEvent( IGameEvent *event )
 
 		if ( !cl_vote_ui_active_after_voting.GetBool() && !bForceActive )
 		{
-			m_flPostVotedHideTime = gpGlobals->curtime + 1.5f;
+			m_flPostVotedHideTime = gpGlobals->GetCurTime() + 1.5f;
 		}
 	}
 }
@@ -1635,14 +1635,14 @@ void CHudVote::FireGameEvent( IGameEvent *event )
 void CHudVote::OnThink()
 {
 	// We delay hiding the menu after we cast a vote
-	if ( m_bPlayerVoted && m_flPostVotedHideTime > 0 && m_flPostVotedHideTime < gpGlobals->curtime )
+	if ( m_bPlayerVoted && m_flPostVotedHideTime > 0 && m_flPostVotedHideTime < gpGlobals->GetCurTime() )
 	{
 		m_pVoteActive->SetVisible( false );
 		m_bShowVoteActivePanel = false;
 		m_flPostVotedHideTime = -1;
 	}
 
-	if ( m_flVoteResultCycleTime > 0 && m_flVoteResultCycleTime < gpGlobals->curtime )
+	if ( m_flVoteResultCycleTime > 0 && m_flVoteResultCycleTime < gpGlobals->GetCurTime() )
 	{
 		m_pVoteActive->SetVisible( false );
 		m_pVoteFailed->SetVisible( !m_bVotePassed );
@@ -1691,7 +1691,7 @@ void CHudVote::OnThink()
 //-----------------------------------------------------------------------------
 bool CHudVote::ShouldDraw( void )
 {
-	return ( m_bVoteActive || m_flHideTime > gpGlobals->curtime );
+	return ( m_bVoteActive || m_flHideTime > gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------

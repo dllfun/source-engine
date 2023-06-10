@@ -376,7 +376,7 @@ void PackEntities_NetworkBackDoor(
 		// directly over to the client.
 		Assert( index < snapshot->m_nNumEntities );
 		ServerClass *pSVClass = snapshot->m_pEntities[ index ].m_pClass;
-		g_pLocalNetworkBackdoor->EntState( index, edict->m_NetworkSerialNumber, 
+		g_pLocalNetworkBackdoor->EntState( index, edict->GetNetworkSerialNumber(),
 			pSVClass->m_ClassID, pSVClass->m_pTable, edict->GetUnknown(), edict->HasStateChanged(), bShouldTransmit );
 		edict->ClearStateChanged();
 	}
@@ -516,8 +516,8 @@ void SV_ComputeClientPacks(
 		cl.SetServerTickCount( sv.GetTickCount());
 
 		cl.m_flLastServerTickTime = sv.GetTickCount() * g_pHost->Host_GetIntervalPerTick();
-		g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
-		g_ClientGlobalVariables.curtime = cl.GetTime();
+		g_ClientGlobalVariables.SetTickCount( cl.GetClientTickCount());
+		g_ClientGlobalVariables.SetCurTime( cl.GetTime());
 #endif
 
 		PackEntities_NetworkBackDoor( clientCount, clients, snapshot );
@@ -530,8 +530,8 @@ void SV_ComputeClientPacks(
 		cl.insimulation = bSaveSimulation;
 		cl.m_flLastServerTickTime = flSaveLastServerTickTime;
 
-		g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
-		g_ClientGlobalVariables.curtime = cl.GetTime();
+		g_ClientGlobalVariables.SetTickCount( cl.GetClientTickCount());
+		g_ClientGlobalVariables.SetCurTime( cl.GetTime());
 #endif
 
 		PrintPartialChangeEntsList();

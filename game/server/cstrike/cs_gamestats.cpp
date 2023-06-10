@@ -97,7 +97,7 @@ static void SvNoNemesisChangeCallback( IConVar *pConVar, const char *pOldValue, 
 	if ( var.IsValid() && var.GetBool() )
 	{
 		// Clear all nemesis relationships.
-		for ( int i = 1 ; i <= gpGlobals->maxClients ; i++ )
+		for ( int i = 1 ; i <= gpGlobals->GetMaxClients() ; i++ )
 		{
 			CCSPlayer *pTemp = ToCSPlayer( UTIL_PlayerByIndex( i ) );
 			if ( pTemp )
@@ -1539,8 +1539,8 @@ void CCSGameStats::SendStatsToPlayer( CCSPlayer * pPlayer, int iMinStatPriority 
 void CCSGameStats::PreClientUpdate()
 {
 	int iMinStatPriority = -1;
-	m_fDisseminationTimerHigh += gpGlobals->frametime;
-	m_fDisseminationTimerLow += gpGlobals->frametime;
+	m_fDisseminationTimerHigh += gpGlobals->GetFrameTime();
+	m_fDisseminationTimerLow += gpGlobals->GetFrameTime();
 
 	if ( m_fDisseminationTimerHigh > cDisseminationTimeHigh)
 	{
@@ -1641,7 +1641,7 @@ void CCSGameStats::CalcDominationAndRevenge( CCSPlayer *pAttacker, CCSPlayer *pV
 
         //Check concurrent dominations achievement
         int numConcurrentDominations = 0;
-        for ( int i = 1 ; i <= gpGlobals->maxClients ; i++ )
+        for ( int i = 1 ; i <= gpGlobals->GetMaxClients() ; i++ )
         {
             CCSPlayer *pPlayer= ToCSPlayer( UTIL_PlayerByIndex( i ) );
             if (pPlayer && pAttacker->IsPlayerDominated(pPlayer->NetworkProp()->entindex()))

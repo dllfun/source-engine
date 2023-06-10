@@ -36,9 +36,9 @@ template < typename T >
 T * NextBotCreatePlayerBot( const char *name, bool bReportFakeClient = true )
 {
 	/*
-	if ( UTIL_ClientsInGame() >= gpGlobals->maxClients )
+	if ( UTIL_ClientsInGame() >= gpGlobals->GetMaxClients() )
 	{
-	Msg( "CreatePlayerBot: Failed - server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->maxClients );
+	Msg( "CreatePlayerBot: Failed - server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->GetMaxClients() );
 	return NULL;
 	}
 	*/
@@ -559,7 +559,7 @@ inline void _NextBot_BuildUserCommand( CUserCmd *cmd, const QAngle &viewangles, 
 {
 	Q_memset( cmd, 0, sizeof( CUserCmd ) );
 
-	cmd->command_number = gpGlobals->tickcount;
+	cmd->command_number = gpGlobals->GetTickCount();
 	cmd->forwardmove = forwardmove;
 	cmd->sidemove = sidemove;
 	cmd->upmove = upmove;
@@ -579,7 +579,7 @@ inline void NextBotPlayer< PlayerType >::PhysicsSimulate( void )
 	VPROF( "NextBotPlayer::PhysicsSimulate" );
 
 	// Make sure not to simulate this guy twice per frame
-	if ( PlayerType::m_nSimulationTick == gpGlobals->tickcount )
+	if ( PlayerType::m_nSimulationTick == gpGlobals->GetTickCount() )
 	{
 		return;
 	}

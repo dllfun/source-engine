@@ -1355,7 +1355,7 @@ void CPredictionCopy::WatchMsg( const char *fmt, ... )
 	len = Q_vsnprintf(data, sizeof( data ), fmt, argptr);
 	va_end(argptr);
 
-	Msg( "%i %s %s : %s\n", gpGlobals->tickcount, m_pOperation, m_pCurrentField->fieldName, data );
+	Msg( "%i %s %s : %s\n", gpGlobals->GetTickCount(), m_pOperation, m_pCurrentField->fieldName, data );
 }
 
 //-----------------------------------------------------------------------------

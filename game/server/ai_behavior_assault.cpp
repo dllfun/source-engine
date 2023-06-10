@@ -316,7 +316,7 @@ CAssaultPoint *CAI_AssaultBehavior::FindAssaultPoint( string_t iszAssaultPointNa
 void CAI_AssaultBehavior::SetAssaultPoint( CAssaultPoint *pAssaultPoint )
 {
 	m_hAssaultPoint = pAssaultPoint;
-	pAssaultPoint->m_flTimeLastUsed = gpGlobals->curtime;
+	pAssaultPoint->m_flTimeLastUsed = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -452,7 +452,7 @@ void CAI_AssaultBehavior::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_ASSAULT_DEFER_SCHEDULE_SELECTION:
-		m_flTimeDeferScheduleSelection = gpGlobals->curtime + pTask->flTaskData;
+		m_flTimeDeferScheduleSelection = gpGlobals->GetCurTime() + pTask->flTaskData;
 		TaskComplete();
 		break;
 
@@ -707,7 +707,7 @@ void CAI_AssaultBehavior::RunTask( const Task_t *pTask )
 			return;
 		}
 
-		if ( ( ( !GetOuter()->DidChooseEnemy() && gpGlobals->curtime - GetOuter()->GetTimeEnemyAcquired() > 1 ) || !GetOuter()->GetEnemy() ) )
+		if ( ( ( !GetOuter()->DidChooseEnemy() && gpGlobals->GetCurTime() - GetOuter()->GetTimeEnemyAcquired() > 1 ) || !GetOuter()->GetEnemy() ) )
 		{
 			CBaseEntity *pNewEnemy = GetOuter()->BestEnemy();
 
@@ -1144,7 +1144,7 @@ bool CAI_AssaultBehavior::CanSelectSchedule()
 		return false;
 
 	// We're letting other AI run for a little while because the assault AI failed recently.
-	if ( m_flTimeDeferScheduleSelection > gpGlobals->curtime )
+	if ( m_flTimeDeferScheduleSelection > gpGlobals->GetCurTime() )
 		return false;
 
 	// No schedule selection if no assault is being conducted.
@@ -1160,7 +1160,7 @@ bool CAI_AssaultBehavior::CanSelectSchedule()
 	// Remember when we last saw an enemy
 	if ( GetEnemy() )
 	{
-		m_flLastSawAnEnemyAt = gpGlobals->curtime;
+		m_flLastSawAnEnemyAt = gpGlobals->GetCurTime();
 	}
 
 	// If we've seen an enemy in the last few seconds, and we're allowed to divert,
@@ -1315,7 +1315,7 @@ bool CAI_AssaultBehavior::IsAllowedToDivert( void )
 	{
 		if ( m_hAssaultPoint->m_flAllowDiversionRadius == 0.0f || (m_bHitAssaultPoint && GetEnemy() != NULL && GetEnemy()->GetAbsOrigin().DistToSqr(m_hAssaultPoint->GetAbsOrigin()) <= Square(m_hAssaultPoint->m_flAllowDiversionRadius)) ) 
 		{
-			if ( m_flLastSawAnEnemyAt && ((gpGlobals->curtime - m_flLastSawAnEnemyAt) < ASSAULT_DIVERSION_TIME) )
+			if ( m_flLastSawAnEnemyAt && ((gpGlobals->GetCurTime() - m_flLastSawAnEnemyAt) < ASSAULT_DIVERSION_TIME) )
 				return true;
 		}
 	}

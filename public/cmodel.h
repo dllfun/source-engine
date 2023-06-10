@@ -26,7 +26,7 @@
 //#include "gametrace.h"
 #include "bsptreedata.h"
 
-struct edict_t;
+class edict_t;
 class IVModel;
 class CGameTrace;
 typedef CGameTrace trace_t;

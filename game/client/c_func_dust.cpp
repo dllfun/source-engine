@@ -76,7 +76,7 @@ void CDustEffect::RenderParticles( CParticleRenderIterator *pIterator )
 void CDustEffect::SimulateParticles( CParticleSimulateIterator *pIterator )
 {
 	Vector vecWind;
-	GetWindspeedAtTime( gpGlobals->curtime, vecWind );
+	GetWindspeedAtTime( gpGlobals->GetCurTime(), vecWind );
 
 
 	CFuncDustParticle *pParticle = (CFuncDustParticle*)pIterator->GetFirst();
@@ -97,7 +97,7 @@ void CDustEffect::SimulateParticles( CParticleSimulateIterator *pIterator )
 				{
 					if ( pParticle->m_vVelocity[i] < vecWind[i] )
 					{
-						pParticle->m_vVelocity[i] += ( gpGlobals->frametime * DUST_ACCEL );
+						pParticle->m_vVelocity[i] += ( gpGlobals->GetFrameTime() * DUST_ACCEL );
 
 						// clamp
 						if ( pParticle->m_vVelocity[i] > vecWind[i] )
@@ -105,7 +105,7 @@ void CDustEffect::SimulateParticles( CParticleSimulateIterator *pIterator )
 					}
 					else if (pParticle->m_vVelocity[i] > vecWind[i] )
 					{
-						pParticle->m_vVelocity[i] -= ( gpGlobals->frametime * DUST_ACCEL );
+						pParticle->m_vVelocity[i] -= ( gpGlobals->GetFrameTime() * DUST_ACCEL );
 
 						// clamp.
 						if ( pParticle->m_vVelocity[i] < vecWind[i] )
@@ -174,7 +174,7 @@ void C_Func_Dust::ClientThink()
 	// Spawn particles?
 	if( m_DustFlags & DUSTFLAGS_ON )
 	{
-		float flDelta = MIN( gpGlobals->frametime, 0.1f );
+		float flDelta = MIN( gpGlobals->GetFrameTime(), 0.1f );
 		while( m_Spawner.NextEvent( flDelta ) )
 		{
 			AttemptSpawnNewParticle();

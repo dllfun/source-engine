@@ -90,7 +90,7 @@ void CHud::Think(void)
 		pWeapon->HandleInput();
 	}
 
-	if ( ( m_flScreenShotTime > 0 ) && ( m_flScreenShotTime < gpGlobals->curtime ) )
+	if ( ( m_flScreenShotTime > 0 ) && ( m_flScreenShotTime < gpGlobals->GetCurTime() ) )
 	{
 		if ( !IsX360() )
 		{

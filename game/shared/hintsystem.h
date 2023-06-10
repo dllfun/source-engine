@@ -78,7 +78,7 @@ public:
 
 	// Not really an optimal solution, but saves us querying the hud element,
 	// which wouldn't be easy with derived versions in different mods.
-	bool				HintIsCurrentlyVisible( void ) { return (gpGlobals->curtime - m_flLastHintPlayedAt < 11 ); }
+	bool				HintIsCurrentlyVisible( void ) { return (gpGlobals->GetCurTime() - m_flLastHintPlayedAt < 11); }
 
 private:
 	void				ReAddHintTimerIfNotDisplayed( int iHintID, float flTimerDuration );

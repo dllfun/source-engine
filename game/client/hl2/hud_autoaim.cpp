@@ -209,7 +209,7 @@ void CHUDAutoAim::OnThink()
 		flFixedAlphaGoal = 0.0f;
 	}
 
-	m_alphaFixed = Approach( flFixedAlphaGoal, m_alphaFixed, (hud_alpha_speed.GetFloat() * gpGlobals->frametime) );
+	m_alphaFixed = Approach( flFixedAlphaGoal, m_alphaFixed, (hud_alpha_speed.GetFloat() * gpGlobals->GetFrameTime()) );
 	
 
 	switch( hud_autoaim_method.GetInt() )
@@ -318,11 +318,11 @@ void CHUDAutoAim::OnThink()
 			Vector vecGoal( goalx, goaly, 0 );
 			Vector vecDir = vecGoal - m_vecPos;
 			float flDistRemaining = VectorNormalize( vecDir );
-			m_vecPos += vecDir * min(flDistRemaining, (speed * gpGlobals->frametime) );
+			m_vecPos += vecDir * min(flDistRemaining, (speed * gpGlobals->GetFrameTime()) );
 
 			// Lerp and Clamp scale
 			float scaleDelta = fabs( goalscale - m_scale );
-			float scaleMove = MIN( AUTOAIM_SCALE_SPEED * gpGlobals->frametime, scaleDelta );
+			float scaleMove = MIN( AUTOAIM_SCALE_SPEED * gpGlobals->GetFrameTime(), scaleDelta );
 			if( m_scale < goalscale )
 			{
 				m_scale += scaleMove;
@@ -342,11 +342,11 @@ void CHUDAutoAim::OnThink()
 
 			if( goalalpha > m_alpha )
 			{
-				m_alpha += AUTOAIM_ALPHA_UP_SPEED * gpGlobals->frametime;
+				m_alpha += AUTOAIM_ALPHA_UP_SPEED * gpGlobals->GetFrameTime();
 			}
 			else if( goalalpha < m_alpha )
 			{
-				m_alpha -= AUTOAIM_ALPHA_DOWN_SPEED * gpGlobals->frametime;
+				m_alpha -= AUTOAIM_ALPHA_DOWN_SPEED * gpGlobals->GetFrameTime();
 			}
 
 			// Clamp alpha

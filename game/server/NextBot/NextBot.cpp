@@ -241,7 +241,7 @@ void NextBotCombatCharacter::Spawn( void )
 
 	// set up think callback
 	SetThink( &NextBotCombatCharacter::DoThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	m_lastAttacker = NULL;
 }
@@ -263,7 +263,7 @@ void NextBotCombatCharacter::DoThink( void )
 {
 	VPROF_BUDGET( "NextBotCombatCharacter::DoThink", "NextBot" );
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	if ( BeginUpdate() )
 	{

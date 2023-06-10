@@ -179,7 +179,7 @@ void CCSSpectatorGUI::UpdateTimer()
 		m_pTimer->SetText( "\\" ); // bomb icon  
 		m_pTimerLabel->SetVisible( false );
 
-		if( g_PlantedC4s[0]->m_flNextGlow > gpGlobals->curtime + 0.1f )
+		if( g_PlantedC4s[0]->m_flNextGlow > gpGlobals->GetCurTime() + 0.1f )
 			timerColor[3] = 80;
 		else
 			timerColor[3] = 255;
@@ -609,13 +609,13 @@ bool CCSMapOverview::CanPlayerBeSeen( MapPlayer_t *player )
 	if( GetMode() == MAP_MODE_RADAR )
 	{
 		// This level will be for all the RadarMode thinking.  Base class will be the old way for the other modes.
-		float now = gpGlobals->curtime;
+		float now = gpGlobals->GetCurTime();
 
 		if( player->position == Vector(0,0,0) )
 			return false; // Invalid guy.
 
 		// draw special icons if within time
-		if ( csPlayer->overrideExpirationTime != -1  &&  csPlayer->overrideExpirationTime > gpGlobals->curtime )
+		if ( csPlayer->overrideExpirationTime != -1  &&  csPlayer->overrideExpirationTime > gpGlobals->GetCurTime() )
 			return true;
 
 		// otherwise, not dead people
@@ -637,7 +637,7 @@ bool CCSMapOverview::CanPlayerBeSeen( MapPlayer_t *player )
 	else if( player->health <= 0 )
 	{
 		// Have to be under the overriden icon time to draw when dead.
-		if ( csPlayer->overrideExpirationTime == -1  ||  csPlayer->overrideExpirationTime <= gpGlobals->curtime )
+		if ( csPlayer->overrideExpirationTime == -1  ||  csPlayer->overrideExpirationTime <= gpGlobals->GetCurTime() )
 			return false;
 	}
 	
@@ -660,13 +660,13 @@ bool CCSMapOverview::CanHostageBeSeen( MapPlayer_t *hostage )
 	if( GetMode() == MAP_MODE_RADAR )
 	{
 		// This level will be for all the RadarMode thinking.  Base class will be the old way for the other modes.
-		float now = gpGlobals->curtime;
+		float now = gpGlobals->GetCurTime();
 
 		if( hostage->position == Vector(0,0,0) )
 			return false; // Invalid guy.
 
 		// draw special icons if within time
-		if ( csHostage->overrideExpirationTime != -1  &&  csHostage->overrideExpirationTime > gpGlobals->curtime )
+		if ( csHostage->overrideExpirationTime != -1  &&  csHostage->overrideExpirationTime > gpGlobals->GetCurTime() )
 			return true;
 
 		// otherwise, not dead people
@@ -685,7 +685,7 @@ bool CCSMapOverview::CanHostageBeSeen( MapPlayer_t *hostage )
 	else if( hostage->health <= 0 )
 	{
 		// Have to be under the overriden icon time to draw when dead.
-		if ( csHostage->overrideExpirationTime == -1  ||  csHostage->overrideExpirationTime <= gpGlobals->curtime )
+		if ( csHostage->overrideExpirationTime == -1  ||  csHostage->overrideExpirationTime <= gpGlobals->GetCurTime() )
 			return false;
 	}
 
@@ -748,7 +748,7 @@ void CCSMapOverview::UpdatePlayers()
 	if ( !pCSPR )
 		return;
 
-	float now = gpGlobals->curtime;
+	float now = gpGlobals->GetCurTime();
 
 	CBasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
 	if( localPlayer == NULL )
@@ -758,7 +758,7 @@ void CCSMapOverview::UpdatePlayers()
 	if( localMapPlayer == NULL )
 		return;
 
-	for ( int i = 1; i<= gpGlobals->maxClients; i++)
+	for ( int i = 1; i<= gpGlobals->GetMaxClients(); i++)
 	{
 		MapPlayer_t *player = &m_Players[i-1];
 		CSMapPlayer_t *playerCS = GetCSInfoForPlayerIndex(i-1);
@@ -813,7 +813,7 @@ void CCSMapOverview::UpdatePlayers()
 		}
 
 		// Check for teammates spotting enemy players
-		for ( int i = 1; i<= gpGlobals->maxClients; ++i )
+		for ( int i = 1; i<= gpGlobals->GetMaxClients(); ++i )
 		{
 			if ( !pCSPR->IsConnected(i) )
 				continue;
@@ -847,7 +847,7 @@ void CCSMapOverview::UpdatePlayers()
 			}
 		}
 
-		for( int i = 1; i<= gpGlobals->maxClients; i++ )
+		for( int i = 1; i<= gpGlobals->GetMaxClients(); i++ )
 		{
 			MapPlayer_t *player = &m_Players[i-1];
 			CSMapPlayer_t *playerCS = GetCSInfoForPlayerIndex(i-1);
@@ -938,7 +938,7 @@ void CCSMapOverview::UpdateBomb()
 	if( m_bomb.state == CSMapBomb_s::BOMB_GONE )
 		return;// no more updates until map restart
 
-	float now = gpGlobals->curtime;
+	float now = gpGlobals->GetCurTime();
 
 	// First, decide if it has been too long since the bomb has been seen to clear visibility timers.
 	if( now - m_bomb.timeLastSeen >= TIME_SPOTS_STAY_SEEN  &&  m_bomb.timeFirstSeen != -1 )
@@ -991,7 +991,7 @@ void CCSMapOverview::UpdateBomb()
 	}
 	else
 	{
-		for( int i = 1; i<= gpGlobals->maxClients; i++ )
+		for( int i = 1; i<= gpGlobals->GetMaxClients(); i++ )
 		{
 			if( pCSPR->HasC4(i) )
 			{
@@ -1027,7 +1027,7 @@ void CCSMapOverview::UpdateBomb()
 	}
 	else
 	{
-		m_bomb.currentRingRadius += (m_bomb.maxRingRadius - m_flIconSize) * gpGlobals->frametime / m_bomb.ringTravelTime;
+		m_bomb.currentRingRadius += (m_bomb.maxRingRadius - m_flIconSize) * gpGlobals->GetFrameTime() / m_bomb.ringTravelTime;
 		m_bomb.currentRingRadius = MIN( m_bomb.currentRingRadius, m_bomb.maxRingRadius );
 		m_bomb.currentRingAlpha = (alpha - 55) * ((m_bomb.maxRingRadius - m_bomb.currentRingRadius) / (m_bomb.maxRingRadius - m_flIconSize)) + 55;
 	}
@@ -1051,7 +1051,7 @@ bool CCSMapOverview::ShouldDraw( void )
 	// HPE_END
 	//=============================================================================
 
-	float now = gpGlobals->curtime;
+	float now = gpGlobals->GetCurTime();
 	if( GetMode() == MAP_MODE_RADAR )
 	{
 		if ( (GET_HUDELEMENT( CHudRadar ))->ShouldDraw() == false )
@@ -1217,7 +1217,7 @@ void CCSMapOverview::DrawBomb()
 	MapPlayer_t *localMapPlayer = GetPlayerByUserID(localPlayer->GetUserID());
 	if( localMapPlayer == NULL )
 		return;
-	float now = gpGlobals->curtime;
+	float now = gpGlobals->GetCurTime();
 
 	if( localMapPlayer->team == TEAM_CT )
 	{
@@ -1277,8 +1277,8 @@ void CCSMapOverview::DrawBomb()
 
 	int alpha = 255;
 
-	if( m_bomb.timeGone != -1  &&  m_bomb.timeFade <= gpGlobals->curtime )
-		alpha *= 1 - ( (float)(gpGlobals->curtime - m_bomb.timeFade) / (float)(m_bomb.timeGone - m_bomb.timeFade) );
+	if( m_bomb.timeGone != -1  &&  m_bomb.timeFade <= gpGlobals->GetCurTime() )
+		alpha *= 1 - ( (float)(gpGlobals->GetCurTime() - m_bomb.timeFade) / (float)(m_bomb.timeGone - m_bomb.timeFade) );
 
 	if( m_bomb.state != CSMapBomb_t::BOMB_GONE )
 		DrawIconCS(bombRing, bombRingOffscreen, m_bomb.position, m_bomb.currentRingRadius, 0, m_bomb.currentRingAlpha);
@@ -1454,13 +1454,13 @@ void CCSMapOverview::DrawMapPlayers()
 			status = player->health/100.0f;
 
 		// Now draw them
-		if( playerCS->overrideExpirationTime > gpGlobals->curtime )// If dead, an X, if alive, an alpha'd normal icon
+		if( playerCS->overrideExpirationTime > gpGlobals->GetCurTime() )// If dead, an X, if alive, an alpha'd normal icon
 		{
 			int alphaToUse = alpha;
-			if( playerCS->overrideFadeTime != -1 && playerCS->overrideFadeTime <= gpGlobals->curtime )
+			if( playerCS->overrideFadeTime != -1 && playerCS->overrideFadeTime <= gpGlobals->GetCurTime() )
 			{
 				// Fade linearly from fade start to disappear
-				alphaToUse *= 1 - (float)(gpGlobals->curtime - playerCS->overrideFadeTime) / (float)(playerCS->overrideExpirationTime - playerCS->overrideFadeTime);
+				alphaToUse *= 1 - (float)(gpGlobals->GetCurTime() - playerCS->overrideFadeTime) / (float)(playerCS->overrideExpirationTime - playerCS->overrideFadeTime);
 			}
 
 			DrawIconCS( playerCS->overrideIcon, playerCS->overrideIconOffscreen, playerCS->overridePosition, m_flIconSize * 1.1f, GetViewAngle(), player->health > 0 ? alphaToUse / 2 : alphaToUse, true, name, &player->color, -1, &colorGreen );
@@ -1562,14 +1562,14 @@ void CCSMapOverview::DrawHostages()
 		float status = -1;
 		const char *name = NULL;
 
-		if( hostageCS->overrideExpirationTime > gpGlobals->curtime )// If dead, an X, if alive, an alpha'd normal icon
+		if( hostageCS->overrideExpirationTime > gpGlobals->GetCurTime() )// If dead, an X, if alive, an alpha'd normal icon
 		{
 //			engine->Con_NPrintf( i + 30, "ID:%d Override Pos:(%.0f,%.0f,%.0f)", hostage->index, hostageCS->overridePosition.x, hostageCS->overridePosition.y, hostageCS->overridePosition.z );
 			int alphaToUse = alpha;
-			if( hostageCS->overrideFadeTime != -1 && hostageCS->overrideFadeTime <= gpGlobals->curtime )
+			if( hostageCS->overrideFadeTime != -1 && hostageCS->overrideFadeTime <= gpGlobals->GetCurTime() )
 			{
 				// Fade linearly from fade start to disappear
-				alphaToUse *= 1 - (float)(gpGlobals->curtime - hostageCS->overrideFadeTime) / (float)(hostageCS->overrideExpirationTime - hostageCS->overrideFadeTime);
+				alphaToUse *= 1 - (float)(gpGlobals->GetCurTime() - hostageCS->overrideFadeTime) / (float)(hostageCS->overrideExpirationTime - hostageCS->overrideFadeTime);
 			}
 
 			DrawIconCS( hostageCS->overrideIcon, hostageCS->overrideIconOffscreen, hostageCS->overridePosition, m_flIconSize, hostageCS->overrideAngle[YAW], hostage->health > 0 ? alphaToUse / 2 : alphaToUse, true, name, &hostage->color, status, &colorGreen );
@@ -1867,8 +1867,8 @@ void CCSMapOverview::FireGameEvent( IGameEvent *event )
 		hostageCS->overrideIconOffscreen = hostageCS->overrideIcon;
 		hostageCS->overridePosition = hostage->position;
 		hostageCS->overrideAngle = hostage->angle;
-		hostageCS->overrideFadeTime = gpGlobals->curtime + DEATH_ICON_FADE;
-		hostageCS->overrideExpirationTime = gpGlobals->curtime + DEATH_ICON_DURATION;
+		hostageCS->overrideFadeTime = gpGlobals->GetCurTime() + DEATH_ICON_FADE;
+		hostageCS->overrideExpirationTime = gpGlobals->GetCurTime() + DEATH_ICON_DURATION;
 	}
 	else if ( Q_strcmp(type,"hostage_rescued") == 0 )
 	{
@@ -1892,20 +1892,20 @@ void CCSMapOverview::FireGameEvent( IGameEvent *event )
 		hostageCS->overrideIconOffscreen = -1;
 		hostageCS->overridePosition = hostage->position;
 		hostageCS->overrideAngle = hostage->angle;
-		hostageCS->overrideFadeTime = gpGlobals->curtime;
-		hostageCS->overrideExpirationTime = gpGlobals->curtime + HOSTAGE_RESCUE_DURATION;
+		hostageCS->overrideFadeTime = gpGlobals->GetCurTime();
+		hostageCS->overrideExpirationTime = gpGlobals->GetCurTime() + HOSTAGE_RESCUE_DURATION;
 	}
 	else if ( Q_strcmp(type,"bomb_defused") == 0 )
 	{
 		m_bomb.state = CSMapBomb_t::BOMB_GONE;
-		m_bomb.timeFade = gpGlobals->curtime;
-		m_bomb.timeGone = gpGlobals->curtime + BOMB_FADE_DURATION;
+		m_bomb.timeFade = gpGlobals->GetCurTime();
+		m_bomb.timeGone = gpGlobals->GetCurTime() + BOMB_FADE_DURATION;
 	}
 	else if ( Q_strcmp(type,"bomb_exploded") == 0 )
 	{
 		m_bomb.state = CSMapBomb_t::BOMB_GONE;
-		m_bomb.timeFade = gpGlobals->curtime;
-		m_bomb.timeGone = gpGlobals->curtime + BOMB_FADE_DURATION;
+		m_bomb.timeFade = gpGlobals->GetCurTime();
+		m_bomb.timeGone = gpGlobals->GetCurTime() + BOMB_FADE_DURATION;
 	}
 	else if ( Q_strcmp(type,"player_death") == 0 )
 	{
@@ -1927,8 +1927,8 @@ void CCSMapOverview::FireGameEvent( IGameEvent *event )
 		playerCS->overrideIconOffscreen = playerCS->overrideIcon;
 		playerCS->overridePosition = player->position;
 		playerCS->overrideAngle = player->angle;
-		playerCS->overrideFadeTime = gpGlobals->curtime + DEATH_ICON_FADE;
-		playerCS->overrideExpirationTime = gpGlobals->curtime + DEATH_ICON_DURATION;
+		playerCS->overrideFadeTime = gpGlobals->GetCurTime() + DEATH_ICON_FADE;
+		playerCS->overrideExpirationTime = gpGlobals->GetCurTime() + DEATH_ICON_DURATION;
 	}
 	else if ( Q_strcmp(type,"player_team") == 0 )
 	{
@@ -2058,7 +2058,7 @@ void CCSMapOverview::UpdateSizeAndPosition()
 	if ( m_flChangeSpeed > 0 )
 	{
 		// adjust slowly
-		int pixels = m_flChangeSpeed * gpGlobals->frametime;
+		int pixels = m_flChangeSpeed * gpGlobals->GetFrameTime();
 		x = AdjustValue( x, m_vPosition.x, pixels );
 		y = AdjustValue( y, m_vPosition.y, pixels );
 		w = AdjustValue( w, m_vSize.x, pixels );
@@ -2080,7 +2080,7 @@ void CCSMapOverview::SetPlayerSeen( int index )
 {
 	CSMapPlayer_t *pCS = GetCSInfoForPlayerIndex(index);
 
-	float now = gpGlobals->curtime;
+	float now = gpGlobals->GetCurTime();
 
 	if( pCS )
 	{
@@ -2095,7 +2095,7 @@ void CCSMapOverview::SetBombSeen( bool seen )
 {
 	if( seen )
 	{
-		float now = gpGlobals->curtime;
+		float now = gpGlobals->GetCurTime();
 
 		if( m_bomb.timeLastSeen == -1 )
 			m_bomb.timeFirstSeen = now;
@@ -2120,14 +2120,14 @@ void CCSMapOverview::FlashEntity( int entityID )
 	if ( !playerCS )
 		return;
 
-	playerCS->flashUntilTime = gpGlobals->curtime + 2.0f;
+	playerCS->flashUntilTime = gpGlobals->GetCurTime() + 2.0f;
 	playerCS->currentFlashAlpha = 255;
-	playerCS->nextFlashPeakTime = gpGlobals->curtime + 0.5f;
+	playerCS->nextFlashPeakTime = gpGlobals->GetCurTime() + 0.5f;
 }
 
 void CCSMapOverview::UpdateFlashes()
 {
-	float now = gpGlobals->curtime;
+	float now = gpGlobals->GetCurTime();
 	for (int i=0; i<MAX_PLAYERS; i++)
 	{
 		CSMapPlayer_t *playerCS = GetCSInfoForPlayerIndex(i);
@@ -2148,7 +2148,7 @@ void CCSMapOverview::UpdateFlashes()
 			else
 			{
 				// Just fade away
-				playerCS->currentFlashAlpha -= ((playerCS->currentFlashAlpha * gpGlobals->frametime) / (playerCS->nextFlashPeakTime - now));
+				playerCS->currentFlashAlpha -= ((playerCS->currentFlashAlpha * gpGlobals->GetFrameTime()) / (playerCS->nextFlashPeakTime - now));
 				playerCS->currentFlashAlpha = MAX( 0, playerCS->currentFlashAlpha );
 			}
 		}

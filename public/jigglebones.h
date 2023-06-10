@@ -48,7 +48,7 @@ struct JiggleData
 
 	int bone;
 
-	float lastUpdate;	// based on gpGlobals->realtime
+	float lastUpdate;	// based on gpGlobals->GetRealTime()
 
 	Vector basePos;		// position of the base of the jiggle bone
 	Vector baseLastPos;

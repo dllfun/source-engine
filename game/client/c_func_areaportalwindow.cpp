@@ -68,7 +68,7 @@ void C_FuncAreaPortalWindow::ComputeFxBlend()
 	m_nRenderFXBlend = 255;
 
 #ifdef _DEBUG
-	m_nFXComputeFrame = gpGlobals->framecount;
+	m_nFXComputeFrame = gpGlobals->GetFrameCount();
 #endif
 
 }

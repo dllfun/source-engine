@@ -1061,7 +1061,7 @@ void CVisibleShadowList::EnumShadow( unsigned short clientShadowHandle )
 	CClientShadowMgr::ClientShadow_t& shadow = s_ClientShadowMgr.m_Shadows[clientShadowHandle];
 
 	// Don't bother if we rendered it this frame, no matter which view it was rendered for
-	if ( shadow.m_nRenderFrame == gpGlobals->framecount )
+	if ( shadow.m_nRenderFrame == gpGlobals->GetFrameCount() )
 		return;
 
 	// We don't need to bother with it if it's not render-to-texture
@@ -1105,7 +1105,7 @@ void CVisibleShadowList::EnumShadow( unsigned short clientShadowHandle )
 	// we may well initially render from a viewpoint which doesn't include this shadow. 
 	// That doesn't mean we shouldn't check it again though. Sucks that we need to compute
 	// the sphere + bbox multiply times though.
-	shadow.m_nRenderFrame = gpGlobals->framecount;
+	shadow.m_nRenderFrame = gpGlobals->GetFrameCount();
 }
 
 
@@ -3987,7 +3987,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 //-----------------------------------------------------------------------------
 static void SetupBonesOnBaseAnimating( C_BaseAnimating *&pBaseAnimating )
 {
-	pBaseAnimating->SetupBones( NULL, -1, -1, gpGlobals->curtime );
+	pBaseAnimating->SetupBones( NULL, -1, -1, gpGlobals->GetCurTime() );
 }
 
 

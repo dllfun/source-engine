@@ -164,7 +164,7 @@ C_SmokeTrail::~C_SmokeTrail()
 		msg->SetInt( "id", m_pSmokeEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", false );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
 	}
@@ -270,7 +270,7 @@ void C_SmokeTrail::Update( float fTimeDelta )
 	if ( !m_bEmit )
 		return;
 
-	if ( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->curtime ) )
+	if ( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->GetCurTime() ) )
 		return;
 
 	float tempDelta = fTimeDelta;
@@ -375,7 +375,7 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg )
 	if ( !pEnt )
 		return;
 
-	bool bEmitterActive = m_bEmit && ( ( m_StopEmitTime == 0 ) || ( m_StopEmitTime > gpGlobals->curtime ) );
+	bool bEmitterActive = m_bEmit && ( ( m_StopEmitTime == 0 ) || ( m_StopEmitTime > gpGlobals->GetCurTime() ) );
 
 	// NOTE: Particle system destruction message will be sent by the particle effect itself.
 	if ( m_pSmokeEmitter->GetToolParticleEffectId() == TOOLPARTICLESYSTEMID_INVALID )
@@ -385,7 +385,7 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg )
 		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
 		msg->SetString( "name", "C_SmokeTrail" );
 		msg->SetInt( "id", nId );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 
 		KeyValues *pRandomEmitter = msg->FindKey( "DmeRandomEmitter", true );
 		pRandomEmitter->SetInt( "count", m_SpawnRate );	// particles per second, when duration is < 0
@@ -482,7 +482,7 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg )
 		msg->SetInt( "id", m_pSmokeEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", bEmitterActive );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
 	}
@@ -629,7 +629,7 @@ void C_RocketTrail::Update( float fTimeDelta )
 	if ( !m_pRocketEmitter )
 		return;
 
-	if ( gpGlobals->frametime == 0.0f )
+	if ( gpGlobals->GetFrameTime() == 0.0f )
 		return;
 
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "MuzzleFlash" );
@@ -1448,7 +1448,7 @@ void C_FireTrail::Update( float fTimeDelta )
 	if ( !m_pTrailEmitter )
 		return;
 
-	if ( ( m_flLifetime != 0 ) && ( m_flLifetime <= gpGlobals->curtime ) )
+	if ( ( m_flLifetime != 0 ) && ( m_flLifetime <= gpGlobals->GetCurTime() ) )
 		return;
 
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "FireTrail" );
@@ -1609,7 +1609,7 @@ C_DustTrail::C_DustTrail()
 	m_ParticleSpawn.Init(10);
 	m_Color.Init(0.5, 0.5, 0.5);
 	m_ParticleLifetime = 5;
-	m_StartEmitTime = gpGlobals->curtime;
+	m_StartEmitTime = gpGlobals->GetCurTime();
 	m_StopEmitTime = 0;	// No end time
 	m_MinSpeed = 2;
 	m_MaxSpeed = 4;
@@ -1634,7 +1634,7 @@ C_DustTrail::~C_DustTrail()
 		msg->SetInt( "id", m_pDustEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", false );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
 	}
@@ -1750,7 +1750,7 @@ void C_DustTrail::Update( float fTimeDelta )
 	if ( !m_bEmit )
 		return;
 
-	if ( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->curtime ) )
+	if ( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->GetCurTime() ) )
 		return;
 
 	float tempDelta = fTimeDelta;
@@ -1818,7 +1818,7 @@ void C_DustTrail::Update( float fTimeDelta )
 
 		if ( m_StopEmitTime != 0 && m_StopEmitTime > m_StartEmitTime )
 		{
-			alpha *= sqrt( (m_StopEmitTime - gpGlobals->curtime) /(m_StopEmitTime - m_StartEmitTime) );
+			alpha *= sqrt( (m_StopEmitTime - gpGlobals->GetCurTime()) /(m_StopEmitTime - m_StartEmitTime) );
 		}
 
 		pParticle->m_uchStartAlpha	= alpha * 255; 
@@ -1863,7 +1863,7 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg )
 	if ( !pEnt )
 		return;
 
-	bool bEmitterActive = m_bEmit && ( ( m_StopEmitTime == 0 ) || ( m_StopEmitTime > gpGlobals->curtime ) );
+	bool bEmitterActive = m_bEmit && ( ( m_StopEmitTime == 0 ) || ( m_StopEmitTime > gpGlobals->GetCurTime() ) );
 
 	// NOTE: Particle system destruction message will be sent by the particle effect itself.
 	if ( m_pDustEmitter->GetToolParticleEffectId() == TOOLPARTICLESYSTEMID_INVALID )
@@ -1873,7 +1873,7 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg )
 		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
 		msg->SetString( "name", "C_DustTrail" );
 		msg->SetInt( "id", nId );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 
 		KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
 		pEmitter->SetString( "material", "particle/smokesprites_0001" );
@@ -1958,7 +1958,7 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg )
 		msg->SetInt( "id", m_pDustEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", bEmitterActive );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
 	}

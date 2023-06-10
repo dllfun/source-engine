@@ -80,7 +80,7 @@ static inline void RecordMetalSparks( const Vector &start, const Vector &directi
 
  		msg->SetInt( "te", TE_METAL_SPARKS );
  		msg->SetString( "name", "TE_MetalSparks" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );
@@ -142,7 +142,7 @@ static inline void RecordArmorRicochet( const Vector &start, const Vector &direc
 
  		msg->SetInt( "te", TE_ARMOR_RICOCHET );
  		msg->SetString( "name", "TE_ArmorRicochet" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

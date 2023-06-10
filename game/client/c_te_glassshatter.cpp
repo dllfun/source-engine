@@ -133,7 +133,7 @@ void C_TEShatterSurface::RecordShatterSurface( )
 
  		msg->SetInt( "te", TE_SHATTER_SURFACE );
  		msg->SetString( "name", "TE_ShatterSurface" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", m_vecOrigin.x );
 		msg->SetFloat( "originy", m_vecOrigin.y );
 		msg->SetFloat( "originz", m_vecOrigin.z );

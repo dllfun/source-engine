@@ -292,7 +292,7 @@ int CRagdollProp::ObjectCaps()
 //-----------------------------------------------------------------------------
 void CRagdollProp::InitRagdollAnimation()
 {
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	m_flPlaybackRate = 0.0;
 	SetCycle( 0 );
 	
@@ -343,7 +343,7 @@ void CRagdollProp::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 void CRagdollProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	// Clear out the classname if we've been physgunned before
 	// so that the screams, etc. don't happen. Simulate that the first
@@ -358,11 +358,11 @@ void CRagdollProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 	{
 		if ( reason == PUNTED_BY_CANNON )
 		{
-			CRagdollBoogie::Create( this, 150, gpGlobals->curtime, 3.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
+			CRagdollBoogie::Create( this, 150, gpGlobals->GetCurTime(), 3.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
 		}
 		else
 		{
-			CRagdollBoogie::Create( this, 150, gpGlobals->curtime, 2.0f, 0.0f );
+			CRagdollBoogie::Create( this, 150, gpGlobals->GetCurTime(), 2.0f, 0.0f );
 		}
 	}
 
@@ -390,11 +390,11 @@ void CRagdollProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 {
 	CDefaultPlayerPickupVPhysics::OnPhysGunDrop( pPhysGunUser, Reason );
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	if( HasPhysgunInteraction( "onpickup", "boogie" ) )
 	{
-		CRagdollBoogie::Create( this, 150, gpGlobals->curtime, 3.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
+		CRagdollBoogie::Create( this, 150, gpGlobals->GetCurTime(), 3.0f, SF_RAGDOLL_BOOGIE_ELECTRICAL );
 	}
 
 	if ( HasSpawnFlags( SF_RAGDOLLPROP_USE_LRU_RETIREMENT ) )
@@ -405,7 +405,7 @@ void CRagdollProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 	// Make sure it's interactive debris for at most 5 seconds
 	if ( GetCollisionGroup() == COLLISION_GROUP_INTERACTIVE_DEBRIS )
 	{
-		SetContextThink( &CRagdollProp::SetDebrisThink, gpGlobals->curtime + 5, s_pDebrisContext );
+		SetContextThink( &CRagdollProp::SetDebrisThink, gpGlobals->GetCurTime() + 5, s_pDebrisContext );
 	}
 
 	if ( Reason != LAUNCHED_BY_CANNON )
@@ -451,7 +451,7 @@ void CRagdollProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 //-----------------------------------------------------------------------------
 CBasePlayer *CRagdollProp::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime)
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -523,7 +523,7 @@ void CRagdollProp::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 	{
 		// Setup the think function to remove the flags
 		SetThink( &CRagdollProp::ClearFlagsThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -676,7 +676,7 @@ void CRagdollProp::InitRagdoll( const Vector &forceVector, int forceBone, const 
 	// Make sure it's interactive debris for at most 5 seconds
 	if ( collisionGroup == COLLISION_GROUP_INTERACTIVE_DEBRIS )
 	{
-		SetContextThink( &CRagdollProp::SetDebrisThink, gpGlobals->curtime + 5, s_pDebrisContext );
+		SetContextThink( &CRagdollProp::SetDebrisThink, gpGlobals->GetCurTime() + 5, s_pDebrisContext );
 	}
 
 	SetMoveType( MOVETYPE_VPHYSICS );
@@ -960,10 +960,10 @@ void CRagdollProp::Teleport( const Vector *newPosition, const QAngle *newAngles,
 
 void CRagdollProp::VPhysicsUpdate( IPhysicsObject *pPhysics )
 {
-	if ( m_lastUpdateTickCount == (unsigned int)gpGlobals->tickcount )
+	if ( m_lastUpdateTickCount == (unsigned int)gpGlobals->GetTickCount() )
 		return;
 
-	m_lastUpdateTickCount = gpGlobals->tickcount;
+	m_lastUpdateTickCount = gpGlobals->GetTickCount();
 	//NetworkStateChanged();
 
 	matrix3x4_t boneToWorld[MAXSTUDIOBONES];
@@ -1009,7 +1009,7 @@ void CRagdollProp::VPhysicsUpdate( IPhysicsObject *pPhysics )
 	{
 		SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 		RecheckCollisionFilter();
-		SetContextThink( NULL, gpGlobals->curtime, s_pDebrisContext );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), s_pDebrisContext );
 	}
 
 	Vector vecFullMins, vecFullMaxs;
@@ -1095,22 +1095,22 @@ void CRagdollProp::FadeOut( float flDelay, float fadeTime )
 
 	m_flFadeTime = ( fadeTime == -1 ) ? FADE_OUT_LENGTH : fadeTime;
 
-	m_flFadeOutStartTime = gpGlobals->curtime + flDelay;
+	m_flFadeOutStartTime = gpGlobals->GetCurTime() + flDelay;
 	m_flFadeScale = 0;
-	SetContextThink( &CRagdollProp::FadeOutThink, gpGlobals->curtime + flDelay + 0.01f, s_pFadeOutContext );
+	SetContextThink( &CRagdollProp::FadeOutThink, gpGlobals->GetCurTime() + flDelay + 0.01f, s_pFadeOutContext );
 }
 
 bool CRagdollProp::IsFading()
 {
-	return ( GetNextThink( s_pFadeOutContext ) >= gpGlobals->curtime );
+	return ( GetNextThink( s_pFadeOutContext ) >= gpGlobals->GetCurTime() );
 }
 
 void CRagdollProp::FadeOutThink(void) 
 {
-	float dt = gpGlobals->curtime - m_flFadeOutStartTime;
+	float dt = gpGlobals->GetCurTime() - m_flFadeOutStartTime;
 	if ( dt < 0 )
 	{
-		SetContextThink( &CRagdollProp::FadeOutThink, gpGlobals->curtime + 0.1, s_pFadeOutContext );
+		SetContextThink( &CRagdollProp::FadeOutThink, gpGlobals->GetCurTime() + 0.1, s_pFadeOutContext );
 	}
 	else if ( dt < m_flFadeTime )
 	{
@@ -1119,7 +1119,7 @@ void CRagdollProp::FadeOutThink(void)
 		m_nRenderMode = kRenderTransTexture;
 		SetRenderColorA( nFade );
 		NetworkStateChanged();
-		SetContextThink( &CRagdollProp::FadeOutThink, gpGlobals->curtime + TICK_INTERVAL, s_pFadeOutContext );
+		SetContextThink( &CRagdollProp::FadeOutThink, gpGlobals->GetCurTime() + TICK_INTERVAL, s_pFadeOutContext );
 	}
 	else
 	{
@@ -1657,7 +1657,7 @@ void CRagdollProp::InputStartRadgollBoogie( inputdata_t &inputdata )
 		duration = 5.0f;
 	}
 
-	CRagdollBoogie::Create( this, 100, gpGlobals->curtime, duration, 0 );
+	CRagdollBoogie::Create( this, 100, gpGlobals->GetCurTime(), duration, 0 );
 }
 
 //-----------------------------------------------------------------------------

@@ -359,7 +359,7 @@ void ClientModeCSNormal::UpdateSpectatorMode( void )
 	if ( !overviewmap )
 		return;
 
-	overviewmap->SetTime( gpGlobals->curtime );
+	overviewmap->SetTime( gpGlobals->GetCurTime() );
 
 	int obs_mode = pPlayer->GetObserverMode();
 
@@ -677,7 +677,7 @@ void ClientModeCSNormal::FireGameEvent( IGameEvent *event )
         {
             if ( !pPlayer->IsDormant() && pPlayer->ShouldAnnounceAchievement() )
             {
-                pPlayer->SetNextAchievementAnnounceTime( gpGlobals->curtime + ACHIEVEMENT_ANNOUNCEMENT_MIN_TIME );
+                pPlayer->SetNextAchievementAnnounceTime( gpGlobals->GetCurTime() + ACHIEVEMENT_ANNOUNCEMENT_MIN_TIME );
 
                 //Do something for the player - Actually we should probably do this client-side when the achievement is first earned.
                 if (pPlayer->IsLocalPlayer()) 
@@ -831,7 +831,7 @@ void UpdateClassImageEntity(
 		pPlayerModel->SetPoseParameter( "body_yaw", 0.0f ); // body_yaw
 		pPlayerModel->SetPoseParameter( "move_y", 0.0f ); // move_y
 		pPlayerModel->SetPoseParameter( "move_x", 1.0f ); // move_x, walk forward
-		pPlayerModel->m_flAnimTime = gpGlobals->curtime;
+		pPlayerModel->m_flAnimTime = gpGlobals->GetCurTime();
 
 		g_ClassImagePlayer = pPlayerModel;
 	}
@@ -848,7 +848,7 @@ void UpdateClassImageEntity(
 		pWeaponModel->InitializeAsClientEntity( pWeaponName, RENDER_GROUP_OPAQUE_ENTITY );
 		pWeaponModel->AddEffects( EF_NODRAW ); // don't let the renderer draw the model normally
 		pWeaponModel->FollowEntity( pPlayerModel ); // attach to player model
-		pWeaponModel->m_flAnimTime = gpGlobals->curtime;
+		pWeaponModel->m_flAnimTime = gpGlobals->GetCurTime();
 		g_ClassImageWeapon = pWeaponModel;
 	}
 
@@ -889,7 +889,7 @@ void UpdateClassImageEntity(
 		pPlayerModel->LookupSequence( "walk_lower" ),
 		pPlayerModel->GetCycle(),
 		pPlayerModel->GetPlaybackRate(),
-		gpGlobals->realtime
+		gpGlobals->GetRealTime()
 	);
 
 	// Now, blend the lower and upper (aim) anims together
@@ -910,7 +910,7 @@ void UpdateClassImageEntity(
 		layer->SetOrder( i );
 	}
 
-	pPlayerModel->FrameAdvance( gpGlobals->frametime );
+	pPlayerModel->FrameAdvance( gpGlobals->GetFrameTime() );
 
 	// Now draw it.
 	CViewSetup view;
@@ -1049,7 +1049,7 @@ bool ClientModeCSNormal::CanRecordDemo( char *errorMsg, int length ) const
 	}
 
 	// don't start recording while flashed, as it would remove the flash
-	if ( player->m_flFlashBangTime > gpGlobals->curtime )
+	if ( player->m_flFlashBangTime > gpGlobals->GetCurTime() )
 	{
 		Q_strncpy( errorMsg, "Cannot record demos while blind.", length );
 		return false;

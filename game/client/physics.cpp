@@ -434,7 +434,7 @@ void CPhysicsSystem::Update( float frametime )
 void CPhysicsSystem::PhysicsSimulate()
 {
 	VPROF_BUDGET( "CPhysicsSystem::PhysicsSimulate", VPROF_BUDGETGROUP_PHYSICS );
-	float frametime = gpGlobals->frametime;
+	float frametime = gpGlobals->GetFrameTime();
 
 	if ( physenv )
 	{
@@ -669,13 +669,13 @@ void CCollisionEvent::Friction( IPhysicsObject *pObject, float energy, int surfa
 	{
 		friction_t *pFriction = g_Collisions.FindFriction( pEntity );
 
-		if ( (gpGlobals->maxClients > 1) && pFriction && pFriction->pObject) 
+		if ( (gpGlobals->GetMaxClients() > 1) && pFriction && pFriction->pObject) 
 		{
 			// in MP mode play sound and effects once every 500 msecs,
 			// no ongoing updates, takes too much bandwidth
-			if ( (pFriction->flLastEffectTime + 0.5f) > gpGlobals->curtime)
+			if ( (pFriction->flLastEffectTime + 0.5f) > gpGlobals->GetCurTime())
 			{
-				pFriction->flLastUpdateTime = gpGlobals->curtime;
+				pFriction->flLastUpdateTime = gpGlobals->GetCurTime();
 				return; 			
 			}
 		}
@@ -716,7 +716,7 @@ void CCollisionEvent::UpdateFrictionSounds( void )
 	{
 		if ( m_current[i].patch )
 		{
-			if ( m_current[i].flLastUpdateTime < (gpGlobals->curtime-0.1f) )
+			if ( m_current[i].flLastUpdateTime < (gpGlobals->GetCurTime()-0.1f) )
 			{
 				// friction wasn't updated the last 100msec, assume fiction finished
 				ShutdownFriction( m_current[i] );
@@ -899,7 +899,7 @@ void CCollisionEvent::UpdateFluidEvents( void )
 {
 	for ( int i = m_fluidEvents.Count()-1; i >= 0; --i )
 	{
-		if ( (gpGlobals->curtime - m_fluidEvents[i].impactTime) > FLUID_TIME_MAX )
+		if ( (gpGlobals->GetCurTime() - m_fluidEvents[i].impactTime) > FLUID_TIME_MAX )
 		{
 			m_fluidEvents.FastRemove(i);
 		}
@@ -917,13 +917,13 @@ float CCollisionEvent::DeltaTimeSinceLastFluid( CBaseEntity *pEntity )
 	{
 		if ( m_fluidEvents[i].hEntity.Get() == pEntity )
 		{
-			return gpGlobals->curtime - m_fluidEvents[i].impactTime;
+			return gpGlobals->GetCurTime() - m_fluidEvents[i].impactTime;
 		}
 	}
 
 	int index = m_fluidEvents.AddToTail();
 	m_fluidEvents[index].hEntity = pEntity;
-	m_fluidEvents[index].impactTime = gpGlobals->curtime;
+	m_fluidEvents[index].impactTime = gpGlobals->GetCurTime();
 	return FLUID_TIME_MAX;
 }
 
@@ -1010,8 +1010,8 @@ void PhysFrictionSound( CBaseEntity *pEntity, IPhysicsObject *pObject, const cha
 			CSoundEnvelopeController::GetController().SoundChangePitch( pFriction->patch, pitch, 0.1f );
 		}
 
-		pFriction->flLastUpdateTime = gpGlobals->curtime;
-		pFriction->flLastEffectTime = gpGlobals->curtime;
+		pFriction->flLastUpdateTime = gpGlobals->GetCurTime();
+		pFriction->flLastEffectTime = gpGlobals->GetCurTime();
 	}
 }
 
@@ -1026,7 +1026,7 @@ void PhysCleanupFrictionSounds( CBaseEntity *pEntity )
 
 float PhysGetNextSimTime()
 {
-	return physenv->GetSimulationTime() + gpGlobals->frametime * cl_phys_timescale.GetFloat();
+	return physenv->GetSimulationTime() + gpGlobals->GetFrameTime() * cl_phys_timescale.GetFloat();
 }
 
 float PhysGetSyncCreateTime()
@@ -1039,7 +1039,7 @@ float PhysGetSyncCreateTime()
 		// so create physics objects at that time so that they will reach the current
 		// position at curtime.  Otherwise the physics object will simulate forward from curtime
 		// and pop into the future a bit at this point of transition
-		return gpGlobals->curtime + nextTime - simTime;
+		return gpGlobals->GetCurTime() + nextTime - simTime;
 	}
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }

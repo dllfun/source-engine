@@ -108,7 +108,7 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_OnlyToTeam );
 // This table encodes edict data.
 static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
 {
-	float clock_base = floor( gpGlobals->curtime );
+	float clock_base = floor( gpGlobals->GetCurTime() );
 	float t = *( float * )pVarData;
 	float dt = t - clock_base;
 	int addt = Floor2Int( 1000.0f * dt + 0.5f );

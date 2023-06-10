@@ -528,11 +528,11 @@ const Vector &CCSBot::GetPartPosition( CCSPlayer *player, VisiblePartType part )
 	// which PartInfo corresponds to the given player
 	PartInfo *info = &m_partInfo[ player->NetworkProp()->entindex() % MAX_PLAYERS ];
 
-	if (gpGlobals->framecount > info->m_validFrame)
+	if (gpGlobals->GetFrameCount() > info->m_validFrame)
 	{
 		// update part positions
 		const_cast< CCSBot * >( this )->ComputePartPositions( player );
-		info->m_validFrame = gpGlobals->framecount;
+		info->m_validFrame = gpGlobals->GetFrameCount();
 	}
 
 	// return requested part position
@@ -615,7 +615,7 @@ void CCSBot::SetLookAt( const char *desc, const Vector &pos, PriorityType pri, f
 	m_lookAtDesc = desc;
 	m_lookAtSpotAttack = attack;
 
-	PrintIfWatched( "%3.1f SetLookAt( %s ), duration = %f\n", gpGlobals->curtime, desc, duration );
+	PrintIfWatched( "%3.1f SetLookAt( %s ), duration = %f\n", gpGlobals->GetCurTime(), desc, duration );
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -624,7 +624,7 @@ void CCSBot::SetLookAt( const char *desc, const Vector &pos, PriorityType pri, f
  */
 void CCSBot::InhibitLookAround( float duration )
 {
-	m_inhibitLookAroundTimestamp = gpGlobals->curtime + duration;
+	m_inhibitLookAroundTimestamp = gpGlobals->GetCurTime() + duration;
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -636,10 +636,10 @@ void CCSBot::UpdatePeripheralVision()
 	VPROF_BUDGET( "CCSBot::UpdatePeripheralVision", VPROF_BUDGETGROUP_NPCS );
 
 	const float peripheralUpdateInterval = 0.29f;		// if we update at 10Hz, this ensures we test once every three
-	if (gpGlobals->curtime - m_peripheralTimestamp < peripheralUpdateInterval)
+	if (gpGlobals->GetCurTime() - m_peripheralTimestamp < peripheralUpdateInterval)
 		return;
 
-	m_peripheralTimestamp = gpGlobals->curtime;
+	m_peripheralTimestamp = gpGlobals->GetCurTime();
 
 	if (m_spotEncounter)
 	{
@@ -682,7 +682,7 @@ void CCSBot::UpdateLookAround( bool updateNow )
 	if (!IsNoiseHeard() || GetNoiseRange() > closeRange)
 	{
 		const float recentThreatTime = 1.0f; // 0.25f;
-		if (!IsLookingAtSpot( PRIORITY_MEDIUM ) && gpGlobals->curtime - m_lastSawEnemyTimestamp < recentThreatTime)
+		if (!IsLookingAtSpot( PRIORITY_MEDIUM ) && gpGlobals->GetCurTime() - m_lastSawEnemyTimestamp < recentThreatTime)
 		{
 			ClearLookAt();
 
@@ -707,7 +707,7 @@ void CCSBot::UpdateLookAround( bool updateNow )
 
 	// check if looking around has been inhibited
 	// Moved inhibit to allow high priority enemy lookats to still occur
-	if (gpGlobals->curtime < m_inhibitLookAroundTimestamp)
+	if (gpGlobals->GetCurTime() < m_inhibitLookAroundTimestamp)
 		return;
 
 	//
@@ -747,14 +747,14 @@ void CCSBot::UpdateLookAround( bool updateNow )
 		if (m_lastKnownArea == NULL)
 			return;
 
-		if (gpGlobals->curtime < m_lookAroundStateTimestamp)
+		if (gpGlobals->GetCurTime() < m_lookAroundStateTimestamp)
 			return;
 
 		// if we're sniping, switch look-at spots less often
 		if (IsUsingSniperRifle())
-			m_lookAroundStateTimestamp = gpGlobals->curtime + RandomFloat( 5.0f, 10.0f );
+			m_lookAroundStateTimestamp = gpGlobals->GetCurTime() + RandomFloat( 5.0f, 10.0f );
 		else
-			m_lookAroundStateTimestamp = gpGlobals->curtime + RandomFloat( 1.0f, 2.0f );	// 0.5, 1.0
+			m_lookAroundStateTimestamp = gpGlobals->GetCurTime() + RandomFloat( 1.0f, 2.0f );	// 0.5, 1.0
 
 
 		#define MAX_APPROACHES 16
@@ -821,7 +821,7 @@ void CCSBot::UpdateLookAround( bool updateNow )
 		if (!IsSafe() && !IsLookingAtSpot( PRIORITY_LOW ))
 		{
 			// allow a short time to look where we're going
-			if (gpGlobals->curtime < m_spotCheckTimestamp)
+			if (gpGlobals->GetCurTime() < m_spotCheckTimestamp)
 				return;
 
 			/// @todo Use skill parameter instead of accuracy
@@ -831,7 +831,7 @@ void CCSBot::UpdateLookAround( bool updateNow )
 			asleep *= asleep;
 			asleep *= asleep;
 
-			m_spotCheckTimestamp = gpGlobals->curtime + asleep * RandomFloat( 10.0f, 30.0f );
+			m_spotCheckTimestamp = gpGlobals->GetCurTime() + asleep * RandomFloat( 10.0f, 30.0f );
 
 
 			// figure out how far along the path segment we are
@@ -869,7 +869,7 @@ void CCSBot::UpdateLookAround( bool updateNow )
 				spotOrder = &(m_spotEncounter->spots[ it ]);
 
 				// if we have seen this spot recently, we don't need to look at it
-				if (gpGlobals->curtime - GetHidingSpotCheckTimestamp( spotOrder->spot ) <= checkTime)
+				if (gpGlobals->GetCurTime() - GetHidingSpotCheckTimestamp( spotOrder->spot ) <= checkTime)
 					continue;
 
 				if (spotOrder->t > t)
@@ -1237,7 +1237,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 	{
 		VPROF_BUDGET( "CCSBot::Collect Threats", VPROF_BUDGETGROUP_NPCS );
 
-		for( i = 1; i <= gpGlobals->maxClients; ++i )
+		for( i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 		{
 			CBaseEntity *entity = UTIL_PlayerByIndex( i );
 
@@ -1266,7 +1266,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 				{
 					// update watch timestamp
 					int idx = player->NetworkProp()->entindex();
-					m_watchInfo[idx].timestamp = gpGlobals->curtime;
+					m_watchInfo[idx].timestamp = gpGlobals->GetCurTime();
 					m_watchInfo[idx].isEnemy = false;
 
 					// keep track of our closest friend 
@@ -1305,7 +1305,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 
 			// update watch timestamp
 			int idx = player->NetworkProp()->entindex();
-			m_watchInfo[idx].timestamp = gpGlobals->curtime;
+			m_watchInfo[idx].timestamp = gpGlobals->GetCurTime();
 			m_watchInfo[idx].isEnemy = true;
 
 			// note if we see the bomber
@@ -1415,7 +1415,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 				continue;
 
 			const float recentTime = 3.0f;
-			if (gpGlobals->curtime - m_watchInfo[i].timestamp < recentTime)
+			if (gpGlobals->GetCurTime() - m_watchInfo[i].timestamp < recentTime)
 			{
 				if (m_watchInfo[i].isEnemy)
 					++m_nearbyEnemyCount;
@@ -1427,7 +1427,7 @@ CCSPlayer *CCSBot::FindMostDangerousThreat( void )
 		// note when we saw this batch of enemies
 		if (prevEnemies == 0 && m_nearbyEnemyCount > 0)
 		{
-			m_firstSawEnemyTimestamp = gpGlobals->curtime;
+			m_firstSawEnemyTimestamp = gpGlobals->GetCurTime();
 		}
 	}
 

@@ -219,7 +219,7 @@ void CEffectsClient::Ricochet( const Vector &position, const Vector &direction )
 // other client-server neutral interface?
 float CEffectsClient::Time()
 {
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
 

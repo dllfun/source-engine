@@ -606,9 +606,9 @@ void CSteamWorksGameStatsUploader::FrameUpdatePostEntityThink()
 	if (!m_ServiceTicking)
 		return;
 
-	if (gpGlobals->realtime - m_LastServiceTick < 3)
+	if (gpGlobals->GetRealTime() - m_LastServiceTick < 3)
 		return;
-	m_LastServiceTick = gpGlobals->realtime;
+	m_LastServiceTick = gpGlobals->GetRealTime();
 
 	if (!AccessToSteamAPI())
 		return;

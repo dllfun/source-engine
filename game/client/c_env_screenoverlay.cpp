@@ -160,7 +160,7 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 	if ( m_flOverlayTimes[m_iCurrentOverlay] == -1 )
 		 m_flCurrentOverlayTime = -1;
 	else
-		 m_flCurrentOverlayTime = gpGlobals->curtime + m_flOverlayTimes[m_iCurrentOverlay];
+		 m_flCurrentOverlayTime = gpGlobals->GetCurTime() + m_flOverlayTimes[m_iCurrentOverlay];
 
 	// Bring up the current overlay
 	IMaterial *pMaterial = materials->FindMaterial( m_iszOverlayNames[m_iCurrentOverlay], TEXTURE_GROUP_CLIENT_EFFECTS, false );
@@ -181,7 +181,7 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 void C_EnvScreenOverlay::ClientThink( void )
 {
 	// If the current overlay's run out, go to the next one
-	if ( m_flCurrentOverlayTime != -1 && m_flCurrentOverlayTime < gpGlobals->curtime )
+	if ( m_flCurrentOverlayTime != -1 && m_flCurrentOverlayTime < gpGlobals->GetCurTime() )
 	{
 		m_iCurrentOverlay++;
 		StartCurrentOverlay();

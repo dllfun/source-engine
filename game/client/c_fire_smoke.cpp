@@ -373,7 +373,7 @@ void C_EntityFlame::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void C_EntityFlame::Simulate( void )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if ( gpGlobals->GetFrameTime() <= 0.0f )
 		return;
 
 #ifdef HL2_EPISODIC 
@@ -387,7 +387,7 @@ void C_EntityFlame::Simulate( void )
 		dl->color.g = 174;
 		dl->color.b = 10;
 		dl->radius = random->RandomFloat(400,431);
-		dl->die = gpGlobals->curtime + 0.001;
+		dl->die = gpGlobals->GetCurTime() + 0.001;
 	}
 
 #endif // HL2_EPISODIC 

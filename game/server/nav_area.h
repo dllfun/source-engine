@@ -885,7 +885,7 @@ inline void CNavArea::RemoveFromClosedList( void )
 //--------------------------------------------------------------------------------------------------------------
 inline void CNavArea::SetClearedTimestamp( int teamID )
 {
-	m_clearedTimestamp[ teamID % MAX_NAV_TEAMS ] = gpGlobals->curtime;
+	m_clearedTimestamp[ teamID % MAX_NAV_TEAMS ] = gpGlobals->GetCurTime();
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -904,14 +904,14 @@ inline float CNavArea::GetEarliestOccupyTime( int teamID ) const
 //--------------------------------------------------------------------------------------------------------------
 inline bool CNavArea::IsDamaging( void ) const
 {
-	return ( gpGlobals->tickcount <= m_damagingTickCount );
+	return ( gpGlobals->GetTickCount() <= m_damagingTickCount );
 }
 
 
 //--------------------------------------------------------------------------------------------------------------
 inline void CNavArea::MarkAsDamaging( float duration )
 {
-	m_damagingTickCount = gpGlobals->tickcount + TIME_TO_TICKS( duration );
+	m_damagingTickCount = gpGlobals->GetTickCount() + TIME_TO_TICKS( duration );
 }
 
 

@@ -121,7 +121,7 @@ void CRagdoll::Init(
 	RagdollActivate( m_ragdoll, params.pCollide, ent->GetModelIndex() );
 
 	// It's moving now...
-	m_flLastOriginChangeTime = gpGlobals->curtime;
+	m_flLastOriginChangeTime = gpGlobals->GetCurTime();
 
 	// So traces hit it.
 	ent->AddEFlags( EFL_USE_PARTITION_WHEN_NOT_SOLID );
@@ -187,9 +187,9 @@ void CRagdoll::GetRagdollBounds( Vector &theMins, Vector &theMaxs )
 
 void CRagdoll::VPhysicsUpdate( IPhysicsObject *pPhysics )
 {
-	if ( m_lastUpdate == gpGlobals->curtime )
+	if ( m_lastUpdate == gpGlobals->GetCurTime() )
 		return;
-	m_lastUpdate = gpGlobals->curtime;
+	m_lastUpdate = gpGlobals->GetCurTime();
 	m_allAsleep = RagdollIsAsleep( m_ragdoll );
 	if ( m_allAsleep )
 	{
@@ -273,8 +273,8 @@ void CRagdoll::CheckSettleStationaryRagdoll()
 		// It's still moving...
 		if ( fabs( delta[ i ] ) > RAGDOLL_SLEEP_TOLERANCE )
 		{
-			m_flLastOriginChangeTime = gpGlobals->curtime;
-			// Msg( "%d [%p] Still moving\n", gpGlobals->tickcount, this );
+			m_flLastOriginChangeTime = gpGlobals->GetCurTime();
+			// Msg( "%d [%p] Still moving\n", gpGlobals->GetTickCount(), this );
 			return;
 		}
 	}
@@ -283,14 +283,14 @@ void CRagdoll::CheckSettleStationaryRagdoll()
 	if ( m_allAsleep )
 		return;
 
-	// Msg( "%d [%p] Settling\n", gpGlobals->tickcount, this );
+	// Msg( "%d [%p] Settling\n", gpGlobals->GetTickCount(), this );
 
 	// It has stopped moving, see if it
-	float dt = gpGlobals->curtime - m_flLastOriginChangeTime;
+	float dt = gpGlobals->GetCurTime() - m_flLastOriginChangeTime;
 	if ( dt < ragdoll_sleepaftertime.GetFloat() )
 		return;
 
-	// Msg( "%d [%p] FORCE SLEEP\n",gpGlobals->tickcount, this );
+	// Msg( "%d [%p] FORCE SLEEP\n",gpGlobals->GetTickCount(), this );
 
 	// Force it to go to sleep
 	PhysForceRagdollToSleep();
@@ -298,7 +298,7 @@ void CRagdoll::CheckSettleStationaryRagdoll()
 
 void CRagdoll::ResetRagdollSleepAfterTime( void )
 {
-	m_flLastOriginChangeTime = gpGlobals->curtime;
+	m_flLastOriginChangeTime = gpGlobals->GetCurTime();
 }
 
 void CRagdoll::DrawWireframe()
@@ -449,10 +449,10 @@ void C_ServerRagdoll::PostDataUpdate( DataUpdateType_t updateType )
 {
 	BaseClass::PostDataUpdate( updateType );
 
-	m_iv_ragPos.NoteChanged( gpGlobals->curtime, true );
-	m_iv_ragAngles.NoteChanged( gpGlobals->curtime, true );
+	m_iv_ragPos.NoteChanged( gpGlobals->GetCurTime(), true );
+	m_iv_ragAngles.NoteChanged( gpGlobals->GetCurTime(), true );
 	// this is the local client time at which this update becomes stale
-	m_flLastBoneChangeTime = gpGlobals->curtime + GetInterpolationAmount(m_iv_ragPos.GetType());
+	m_flLastBoneChangeTime = gpGlobals->GetCurTime() + GetInterpolationAmount(m_iv_ragPos.GetType());
 }
 
 float C_ServerRagdoll::LastBoneChangedTime()
@@ -555,7 +555,7 @@ void C_ServerRagdoll::AddEntity( void )
 	BaseClass::AddEntity();
 
 	// Move blend weight toward target over 0.2 seconds
-	m_flBlendWeightCurrent = Approach( m_flBlendWeight, m_flBlendWeightCurrent, gpGlobals->frametime * 5.0f );
+	m_flBlendWeightCurrent = Approach( m_flBlendWeight, m_flBlendWeightCurrent, gpGlobals->GetFrameTime() * 5.0f );
 }
 
 void C_ServerRagdoll::AccumulateLayers( IBoneSetup &boneSetup, Vector pos[], Quaternion q[], float currentTime )
@@ -724,7 +724,7 @@ public:
 		if ( !hdr )
 			return;
 
-		float frac = RemapVal( gpGlobals->curtime, m_parentTime, m_parentTime+ATTACH_INTERP_TIME, 0, 1 );
+		float frac = RemapVal( gpGlobals->GetCurTime(), m_parentTime, m_parentTime+ATTACH_INTERP_TIME, 0, 1 );
 		frac = clamp( frac, 0.f, 1.f );
 		// interpolate offset over some time
 		Vector offset = m_vecOffset * (1-frac);
@@ -737,7 +737,7 @@ public:
 		if ( parent )
 		{
 			Assert( parent != this );
-			parent->SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+			parent->SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 
 			matrix3x4_t boneToWorld;
 			parent->GetCachedBoneMatrix( m_boneIndexAttached, boneToWorld );
@@ -803,7 +803,7 @@ void C_ServerRagdollAttached::OnDataChanged( DataUpdateType_t updateType )
 	{
 		if ( m_bHasParent )
 		{
-			m_parentTime = gpGlobals->curtime;
+			m_parentTime = gpGlobals->GetCurTime();
 		}
 		m_bHasParent = bParentNow;
 	}
@@ -823,7 +823,7 @@ struct ragdoll_memory_list_t
 
 	void Update()
 	{
-		if ( tickCount > gpGlobals->tickcount )
+		if ( tickCount > gpGlobals->GetTickCount() )
 		{
 			list.RemoveAll();
 			return;
@@ -831,7 +831,7 @@ struct ragdoll_memory_list_t
 
 		for ( int i = list.Count()-1; i >= 0; --i )
 		{
-			if ( list[i].tickCount != gpGlobals->tickcount )
+			if ( list[i].tickCount != gpGlobals->GetTickCount() )
 			{
 				list.FastRemove(i);
 			}
@@ -853,7 +853,7 @@ struct ragdoll_memory_list_t
 		Update();
 		int index = list.AddToTail();
 		list[index].ragdoll = pRagdoll;
-		list[index].tickCount = gpGlobals->tickcount;
+		list[index].tickCount = gpGlobals->GetTickCount();
 	}
 };
 

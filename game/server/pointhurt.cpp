@@ -79,7 +79,7 @@ void CPointHurt::Spawn(void)
 		SetThink( &CPointHurt::HurtThink );
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	
 	if ( m_flRadius <= 0.0f )
 	{
@@ -128,7 +128,7 @@ void CPointHurt::HurtThink( void )
 		RadiusDamage( CTakeDamageInfo( this, this, m_nDamage, m_bitsDamageType ), GetAbsOrigin(), m_flRadius, CLASS_NONE, NULL );
 	}
 
-	SetNextThink( gpGlobals->curtime + m_flDelay );
+	SetNextThink( gpGlobals->GetCurTime() + m_flDelay );
 }
 
 //-----------------------------------------------------------------------------
@@ -138,7 +138,7 @@ void CPointHurt::InputTurnOn( inputdata_t &data )
 {
 	SetThink( &CPointHurt::HurtThink );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	m_pActivator = data.pActivator;
 }

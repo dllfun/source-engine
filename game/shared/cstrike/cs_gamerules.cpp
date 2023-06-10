@@ -518,7 +518,7 @@ ConVar cl_autohelp(
 	{
 		int iCount = 0;
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *entity = CCSPlayer::Instance( i );
 
@@ -644,7 +644,7 @@ ConVar cl_autohelp(
 
 		m_bAllowWeaponSwitch = true;
 
-		m_flNextHostageAnnouncement = gpGlobals==NULL?0:gpGlobals->curtime;	// asap.
+		m_flNextHostageAnnouncement = gpGlobals==NULL?0:gpGlobals->GetCurTime();	// asap.
 
 		ReadMultiplayCvars();
 
@@ -734,7 +734,7 @@ ConVar cl_autohelp(
 		}
 		else if ( FStrEq( args[0], "nextmap" ) )
 		{
-			if ( pPlayer->m_iNextTimeCheck < gpGlobals->curtime )
+			if ( pPlayer->m_iNextTimeCheck < gpGlobals->GetCurTime() )
 			{
 				char szNextMap[32];
 
@@ -749,7 +749,7 @@ ConVar cl_autohelp(
 
 				ClientPrint( pPlayer, HUD_PRINTTALK, "#game_nextmap", szNextMap);
 
-				pPlayer->m_iNextTimeCheck = gpGlobals->curtime + 1;
+				pPlayer->m_iNextTimeCheck = gpGlobals->GetCurTime() + 1;
 			}
 			return true;
 		}
@@ -1367,7 +1367,7 @@ ConVar cl_autohelp(
 		if ( m_pFirstKill == NULL && pCSScorer != pVictim )
 		{
 			m_pFirstKill = pCSScorer;
-			m_firstKillTime = gpGlobals->curtime - m_fRoundStartTime;
+			m_firstKillTime = gpGlobals->GetCurTime() - m_fRoundStartTime;
 		}
 
 		// determine if this kill affected a nemesis relationship
@@ -2245,7 +2245,7 @@ ConVar cl_autohelp(
 		// HPE_BEGIN:
 		// [tj] Notify players that the round is about to be reset
 		//=============================================================================
-        for ( int clientIndex = 1; clientIndex <= gpGlobals->maxClients; clientIndex++ )
+        for ( int clientIndex = 1; clientIndex <= gpGlobals->GetMaxClients(); clientIndex++ )
 		{
 			CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( clientIndex );
 			if(pPlayer)
@@ -2258,10 +2258,10 @@ ConVar cl_autohelp(
 		// HPE_END
 		//=============================================================================    
 
-		if ( !IsFinite( gpGlobals->curtime ) )
+		if ( !IsFinite( gpGlobals->GetCurTime() ) )
 		{
 			Warning( "NaN curtime in RestartRound\n" );
-			gpGlobals->curtime = 0.0f;
+			gpGlobals->SetCurTime(0.0f);
 		}
 
 		int i;
@@ -2328,7 +2328,7 @@ ConVar cl_autohelp(
 			{
 				mp_timelimit.SetValue( 0 );
 			}
-			m_flGameStartTime = gpGlobals->curtime;
+			m_flGameStartTime = gpGlobals->GetCurTime();
 			if ( !IsFinite( m_flGameStartTime.Get() ) )
 			{
 				Warning( "Trying to set a NaN game start time\n" );
@@ -2350,7 +2350,7 @@ ConVar cl_autohelp(
 
 
 			// Reset the player stats
-			for ( i = 1; i <= gpGlobals->maxClients; i++ )
+			for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 			{
 				CCSPlayer *pPlayer = CCSPlayer::Instance( i );
 
@@ -2534,7 +2534,7 @@ ConVar cl_autohelp(
 		//**********new code by SupraFiend
 		//##########code changed by MartinO 
 		//the round time stamp must be set before players are spawned
-		m_fRoundStartTime = gpGlobals->curtime + m_iFreezeTime;
+		m_fRoundStartTime = gpGlobals->GetCurTime() + m_iFreezeTime;
 
 		if ( !IsFinite( m_fRoundStartTime.Get() ) )
 		{
@@ -2555,7 +2555,7 @@ ConVar cl_autohelp(
 			m_iLoserBonus					= 1400;
 		}
 
-		for ( i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 
@@ -2605,7 +2605,7 @@ ConVar cl_autohelp(
         //=============================================================================
 
 		// know respawn all players
-		for ( i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 
@@ -2675,7 +2675,7 @@ ConVar cl_autohelp(
         //=============================================================================
 
         // [tj] Award same uniform achievement for qualifying teams
-        for ( i = 1; i <= gpGlobals->maxClients; i++ )
+        for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
         {
             CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 
@@ -2694,7 +2694,7 @@ ConVar cl_autohelp(
         }
 
 		// [menglish] reset per-round achievement variables for each player
-		for ( i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 			if( pPlayer )
@@ -2722,7 +2722,7 @@ ConVar cl_autohelp(
 		CleanUpMap();
 
 		// now run a tkpunish check, after the map has been cleaned up
-		for ( i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 
@@ -2780,7 +2780,7 @@ ConVar cl_autohelp(
 		m_iRoundWinStatus = WINNER_NONE;
 		m_bTargetBombed = m_bBombDefused = false;
 		m_bCompleteReset = false;
-		m_flNextHostageAnnouncement = gpGlobals->curtime;
+		m_flNextHostageAnnouncement = gpGlobals->GetCurTime();
 
 		m_iHostagesRemaining = g_Hostages.Count();
 
@@ -2827,7 +2827,7 @@ ConVar cl_autohelp(
 		// create its factory, it removes itself in any case.
 		//=============================================================================
 
-		// CreateWeaponManager( "weapon_*", gpGlobals->maxClients * 2 );
+		// CreateWeaponManager( "weapon_*", gpGlobals->GetMaxClients() * 2 );
 		
 		//=============================================================================
 		// HPE_END
@@ -2845,7 +2845,7 @@ ConVar cl_autohelp(
 		int lastBombGuyIndex[2] = { -1, -1 };
 
 		//Create an array of the indeces of bomb carrier candidates
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = ToCSPlayer( UTIL_PlayerByIndex( i ) );
 
@@ -2950,10 +2950,10 @@ ConVar cl_autohelp(
 
 		CheckLevelInitialized();
 		
-		if ( m_flRestartRoundTime > 0.0f && m_flRestartRoundTime <= gpGlobals->curtime )
+		if ( m_flRestartRoundTime > 0.0f && m_flRestartRoundTime <= gpGlobals->GetCurTime() )
 		{
 			bool botSpeaking = false;
-			for ( int i=1; i <= gpGlobals->maxClients; ++i )
+			for ( int i=1; i <= gpGlobals->GetMaxClients(); ++i )
 			{
 				CBasePlayer *player = UTIL_PlayerByIndex( i );
 				if (player == NULL)
@@ -2968,7 +2968,7 @@ ConVar cl_autohelp(
 
 				if ( bot->IsUsingVoice() )
 				{
-					if ( gpGlobals->curtime > m_flRestartRoundTime + 10.0f )
+					if ( gpGlobals->GetCurTime() > m_flRestartRoundTime + 10.0f )
 					{
 						Msg( "Ignoring speaking bot %s at round end\n", bot->GetPlayerName() );
 					}
@@ -2986,10 +2986,10 @@ ConVar cl_autohelp(
 			}
 		}
 		
-		if ( gpGlobals->curtime > m_tmNextPeriodicThink )
+		if ( gpGlobals->GetCurTime() > m_tmNextPeriodicThink )
 		{
 			CheckRestartRound();
-			m_tmNextPeriodicThink = gpGlobals->curtime + 1.0;
+			m_tmNextPeriodicThink = gpGlobals->GetCurTime() + 1.0;
 		}
 	}
 
@@ -3013,7 +3013,7 @@ ConVar cl_autohelp(
 			// to skip over maps in the list.  Avoid this using a technique from CTeamplayRoundBasedRules::Think.
 			//=============================================================================
 			// check to see if we should change levels now
-			if ( m_flIntermissionEndTime && ( m_flIntermissionEndTime < gpGlobals->curtime ) )
+			if ( m_flIntermissionEndTime && ( m_flIntermissionEndTime < gpGlobals->GetCurTime() ) )
 			{
 				ChangeLevel(); // intermission is over
 
@@ -3035,7 +3035,7 @@ ConVar cl_autohelp(
 		if ( fraglimit.GetInt() <= 0 )
 			return false;
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -3105,10 +3105,10 @@ ConVar cl_autohelp(
 		if ( !IsFinite( startTime ) )
 		{
 			Warning( "Infinite round start time!\n" );
-			m_fRoundStartTime.GetForModify() = gpGlobals->curtime;
+			m_fRoundStartTime.GetForModify() = gpGlobals->GetCurTime();
 		}
 
-		if ( IsFinite( startTime ) && gpGlobals->curtime < startTime )
+		if ( IsFinite( startTime ) && gpGlobals->GetCurTime() < startTime )
 		{
 			return; // not time yet to start round
 		}
@@ -3167,7 +3167,7 @@ ConVar cl_autohelp(
 		bool bCTPlayed = false;
 		bool bTPlayed = false;
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = CCSPlayer::Instance( i );
 			if ( pPlayer && !FNullEnt( pPlayer->NetworkProp()->edict()) )
@@ -3479,7 +3479,7 @@ ConVar cl_autohelp(
 		CBasePlayer *player = UTIL_GetCommandClient();
 		CFmtStr str;
 
-		PrintToConsole( player, str.sprintf( "Timers and related info at %f:\n", gpGlobals->curtime ) );
+		PrintToConsole( player, str.sprintf( "Timers and related info at %f:\n", gpGlobals->GetCurTime() ) );
 		PrintToConsole( player, str.sprintf( "m_bCompleteReset: %d\n", m_bCompleteReset ) );
 		PrintToConsole( player, str.sprintf( "m_iTotalRoundsPlayed: %d\n", m_iTotalRoundsPlayed ) );
 		PrintToConsole( player, str.sprintf( "m_iRoundTime: %d\n", m_iRoundTime.Get() ) );
@@ -3534,7 +3534,7 @@ ConVar cl_autohelp(
 	void CCSGameRules::MarkLivingPlayersOnTeamAsNotReceivingMoneyNextRound(int team)
 	{
 		int playerNum;
-		for (playerNum = 1; playerNum <= gpGlobals->maxClients; ++playerNum)
+		for (playerNum = 1; playerNum <= gpGlobals->GetMaxClients(); ++playerNum)
 		{
 			CCSPlayer *player = (CCSPlayer *)UTIL_PlayerByIndex(playerNum);
 			if (player == NULL)
@@ -3647,7 +3647,7 @@ ConVar cl_autohelp(
 			UTIL_ClientPrintAll( HUD_PRINTCENTER, "#Game_will_restart_in", strRestartDelay, iRestartDelay == 1 ? "SECOND" : "SECONDS" );
 			UTIL_ClientPrintAll( HUD_PRINTCONSOLE, "#Game_will_restart_in", strRestartDelay, iRestartDelay == 1 ? "SECOND" : "SECONDS" );
 
-			m_flRestartRoundTime = gpGlobals->curtime + iRestartDelay;
+			m_flRestartRoundTime = gpGlobals->GetCurTime() + iRestartDelay;
 			m_bCompleteReset = true;
 			mp_restartgame.SetValue( 0 );
 		}
@@ -3810,7 +3810,7 @@ ConVar cl_autohelp(
 				break;
 
 			// search for player with highest UserID = most recently joined to switch over
-			for ( int j = 1; j <= gpGlobals->maxClients; j++ )
+			for ( int j = 1; j <= gpGlobals->GetMaxClients(); j++ )
 			{
 				CCSPlayer *pPlayer = (CCSPlayer *)UTIL_PlayerByIndex( j );
 
@@ -4015,7 +4015,7 @@ ConVar cl_autohelp(
 
 		// If they're dead after the map has ended, and it's about to start the next round,
 		// wait for the round restart to respawn them.
-		if ( gpGlobals->curtime < m_flRestartRoundTime )
+		if ( gpGlobals->GetCurTime() < m_flRestartRoundTime )
 			return false;
 
 		// Only valid team members can spawn
@@ -4034,7 +4034,7 @@ ConVar cl_autohelp(
 
 		if ( m_iNumTerrorist > 0 && m_iNumCT > 0 )
 		{
-			if ( gpGlobals->curtime > (m_fRoundStartTime + 20) )
+			if ( gpGlobals->GetCurTime() > (m_fRoundStartTime + 20) )
 			{
 				//If this player just connected and fadetoblack is on, then maybe
 				//the server admin doesn't want him peeking around.
@@ -4152,7 +4152,7 @@ ConVar cl_autohelp(
 		}
 
 		m_iRoundWinStatus = iWinnerTeam;
-		m_flRestartRoundTime = gpGlobals->curtime + tmDelay;
+		m_flRestartRoundTime = gpGlobals->GetCurTime() + tmDelay;
 
 		if ( iWinnerTeam == WINNER_CT )
 		{
@@ -4226,7 +4226,7 @@ ConVar cl_autohelp(
 		}
 
 		// [tj] Inform players that the round is over
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 			if(pPlayer)
@@ -4297,7 +4297,7 @@ ConVar cl_autohelp(
 			//Check for players we should ignore when checking team size.
 			int ignoreCount = 0;
 			
-			for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+			for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 			{
 				CCSPlayer* pPlayer = (CCSPlayer*)UTIL_PlayerByIndex( i );
 				if (pPlayer)
@@ -4388,7 +4388,7 @@ ConVar cl_autohelp(
 	{
 		memset(teamCounts, 0, sizeof(TeamPlayerCounts) * TEAM_MAXCOUNT);
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer* pPlayer = (CCSPlayer*)UTIL_PlayerByIndex( i );
 			if (pPlayer)
@@ -4509,7 +4509,7 @@ ConVar cl_autohelp(
 	{
 		// MOTODO we have to make sure that enought spaning points exits
 		Assert ( 0 );
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			/* CCSPlayer *pPlayer = CCSPlayer::Instance( i );
 			if ( pPlayer && !FNullEnt( pPlayer->edict() ) )
@@ -4618,7 +4618,7 @@ ConVar cl_autohelp(
 					CMapEntityRef &ref = g_MapEntityRefs[m_iIterator];
 					m_iIterator = g_MapEntityRefs.Next( m_iIterator );	// Seek to the next entity.
 
-					if ( ref.m_iEdict == -1 || engineServer->PEntityOfEntIndex( ref.m_iEdict ) )
+					if ( ref.m_iEdict == -1 || INDEXENT( ref.m_iEdict ) )
 					{
 						// Doh! The entity was delete and its slot was reused.
 						// Just use any old edict slot. This case sucks because we lose the baseline.
@@ -4647,7 +4647,7 @@ ConVar cl_autohelp(
 
 	bool CCSGameRules::IsThereABomber()
 	{
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = CCSPlayer::Instance( i );
 
@@ -4726,10 +4726,10 @@ ConVar cl_autohelp(
 
 	void CCSGameRules::HostageTouched()
 	{
-		if( gpGlobals->curtime > m_flNextHostageAnnouncement && m_iRoundWinStatus == WINNER_NONE )
+		if( gpGlobals->GetCurTime() > m_flNextHostageAnnouncement && m_iRoundWinStatus == WINNER_NONE )
 		{
 			//BroadcastSound( "Event.HostageTouched" );
-			m_flNextHostageAnnouncement = gpGlobals->curtime + 60.0;
+			m_flNextHostageAnnouncement = gpGlobals->GetCurTime() + 60.0;
 		}		
 	}
 
@@ -4768,7 +4768,7 @@ bool DataHasChanged( void )
 
 void CCSGameRules::UploadGameStats( void )
 {
-	g_flGameStatsUpdateTime -= gpGlobals->curtime;
+	g_flGameStatsUpdateTime -= gpGlobals->GetCurTime();
 
 	if ( g_flGameStatsUpdateTime > 0 )
 		return;
@@ -4807,7 +4807,7 @@ void CCSGameRules::UploadGameStats( void )
 
 		stats.header.serverid = 0;
 
-		stats.iMinutesPlayed = clamp( (short)( gpGlobals->curtime / 60 ), 0, MY_USHRT_MAX ); 
+		stats.iMinutesPlayed = clamp( (short)( gpGlobals->GetCurTime() / 60 ), 0, MY_USHRT_MAX ); 
 
 		memcpy( stats.iTerroristVictories, g_iTerroristVictories, sizeof( g_iTerroristVictories) );
 		memcpy( stats.iCounterTVictories, g_iCounterTVictories, sizeof( g_iCounterTVictories) );
@@ -4910,7 +4910,7 @@ float CCSGameRules::GetMapRemainingTime()
 		return -1;
 
 	// timelimit is in minutes
-	float flTimeLeft =  ( m_flGameStartTime + mp_timelimit.GetInt() * 60 ) - gpGlobals->curtime;
+	float flTimeLeft =  ( m_flGameStartTime + mp_timelimit.GetInt() * 60 ) - gpGlobals->GetCurTime();
 
 	// never return a negative value
 	if ( flTimeLeft < 0 )
@@ -4921,12 +4921,12 @@ float CCSGameRules::GetMapRemainingTime()
 
 float CCSGameRules::GetMapElapsedTime( void )
 {
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
 float CCSGameRules::GetRoundRemainingTime()
 {
-	return (float) (m_fRoundStartTime + m_iRoundTime) - gpGlobals->curtime; 
+	return (float) (m_fRoundStartTime + m_iRoundTime) - gpGlobals->GetCurTime(); 
 }
 
 float CCSGameRules::GetRoundStartTime()
@@ -4937,7 +4937,7 @@ float CCSGameRules::GetRoundStartTime()
 
 float CCSGameRules::GetRoundElapsedTime()
 {
-	return gpGlobals->curtime - m_fRoundStartTime;
+	return gpGlobals->GetCurTime() - m_fRoundStartTime;
 }
 
 
@@ -5400,7 +5400,7 @@ int CCSGameRules::GetStartMoney( void )
 void CCSGameRules::SpawningLatePlayer( CCSPlayer* pLatePlayer )
 {
 	//Reset the round kills number of enemies for the opposite team
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 		if(pPlayer)
@@ -5460,7 +5460,7 @@ void CCSGameRules::PlayerTookDamage(CCSPlayer* player, const CTakeDamageInfo &da
 		if ( m_pFirstBlood == NULL && pCSScorer != player && pCSScorer->GetTeamNumber() != player ->GetTeamNumber() )
 		{
 			m_pFirstBlood = pCSScorer;
-			m_firstBloodTime = gpGlobals->curtime - m_fRoundStartTime;
+			m_firstBloodTime = gpGlobals->GetCurTime() - m_fRoundStartTime;
 		}
 	}
 }

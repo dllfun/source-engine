@@ -69,7 +69,7 @@ void CAI_FearBehavior::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_FEAR_WAIT_FOR_SAFETY:
-		m_flTimeToSafety = gpGlobals->curtime + BEHAVIOR_FEAR_SAFETY_TIME;
+		m_flTimeToSafety = gpGlobals->GetCurTime() + BEHAVIOR_FEAR_SAFETY_TIME;
 		break;
 
 	default:
@@ -90,11 +90,11 @@ void CAI_FearBehavior::RunTask( const Task_t *pTask )
 	case TASK_FEAR_WAIT_FOR_SAFETY:
 		if( HasCondition(COND_SEE_ENEMY) )
 		{
-			m_flTimeToSafety = gpGlobals->curtime + BEHAVIOR_FEAR_SAFETY_TIME;
+			m_flTimeToSafety = gpGlobals->GetCurTime() + BEHAVIOR_FEAR_SAFETY_TIME;
 		}
 		else
 		{
-			if( gpGlobals->curtime > m_flTimeToSafety )
+			if( gpGlobals->GetCurTime() > m_flTimeToSafety )
 			{
 				TaskComplete();
 			}
@@ -113,7 +113,7 @@ void CAI_FearBehavior::RunTask( const Task_t *pTask )
 					if( pHint == NULL )
 					{
 						TaskFail("Fear: Couldn't find hint node\n");
-						m_flDeferUntil = gpGlobals->curtime + 3.0f;// Don't bang the hell out of this behavior. If we don't find a node, take a short break and run regular AI.
+						m_flDeferUntil = gpGlobals->GetCurTime() + 3.0f;// Don't bang the hell out of this behavior. If we don't find a node, take a short break and run regular AI.
 					}
 					else
 					{
@@ -257,7 +257,7 @@ bool CAI_FearBehavior::CanSelectSchedule()
 	if( !GetOuter()->IsInterruptable() )
 		return false;
 
-	if( m_flDeferUntil > gpGlobals->curtime )
+	if( m_flDeferUntil > gpGlobals->GetCurTime() )
 		return false;
 
 	CBaseEntity *pEnemy = GetEnemy();
@@ -327,11 +327,11 @@ void CAI_FearBehavior::GatherConditions()
 	// Here's the visibility check. We can't skip this because it's time-sensitive
 	if( GetOuter()->FVisible(pPlayer) )
 	{
-		m_flTimePlayerLastVisible = gpGlobals->curtime;
+		m_flTimePlayerLastVisible = gpGlobals->GetCurTime();
 	}
 	else
 	{
-		if( gpGlobals->curtime - m_flTimePlayerLastVisible >= 2.0f )
+		if( gpGlobals->GetCurTime() - m_flTimePlayerLastVisible >= 2.0f )
 		{
 			SetCondition(COND_FEAR_SEPARATED_FROM_PLAYER);
 		}
@@ -362,7 +362,7 @@ void CAI_FearBehavior::BeginScheduleSelection()
 		}
 	}
 
-	m_flTimePlayerLastVisible = gpGlobals->curtime;
+	m_flTimePlayerLastVisible = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------

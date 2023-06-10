@@ -445,7 +445,7 @@ void CCSPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 		// Play the jump animation.
 		m_bJumping = true;
 		m_bFirstJumpFrame = true;
-		m_flJumpStartTime = gpGlobals->curtime;
+		m_flJumpStartTime = gpGlobals->GetCurTime();
 		break;
 
 	case PLAYERANIMEVENT_RELOAD:
@@ -471,7 +471,7 @@ void CCSPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 	case PLAYERANIMEVENT_RELOAD_START:
 	case PLAYERANIMEVENT_RELOAD_LOOP:
 		// Set the hold time for _start and _loop anims, then fall through to the _end case
-		m_flReloadHoldEndTime = gpGlobals->curtime + 0.75f;
+		m_flReloadHoldEndTime = gpGlobals->GetCurTime() + 0.75f;
 
 	case PLAYERANIMEVENT_RELOAD_END:
 		{
@@ -619,7 +619,7 @@ int CCSPlayerAnimState::CalcReloadLayerSequence( PlayerAnimEvent_t event )
 		return;
 
 		// Increment the fire sequence's cycle.
-		flCurCycle += m_pOuter->GetSequenceCycleRate( pStudioHdr, iSequence ) * gpGlobals->frametime;
+		flCurCycle += m_pOuter->GetSequenceCycleRate( pStudioHdr, iSequence ) * gpGlobals->GetFrameTime();
 		if ( flCurCycle > 1 )
 		{
 			if ( bWaitAtEnd )
@@ -759,7 +759,7 @@ int CCSPlayerAnimState::GetOuterGrenadeThrowCounter()
 void CCSPlayerAnimState::ComputeReloadSequence( CStudioHdr *pStudioHdr )
 {
 	VPROF( "CCSPlayerAnimState::ComputeReloadSequence" );
-	bool hold = m_flReloadHoldEndTime > gpGlobals->curtime;
+	bool hold = m_flReloadHoldEndTime > gpGlobals->GetCurTime();
 	UpdateLayerSequenceGeneric( pStudioHdr, RELOADSEQUENCE_LAYER, m_bReloading, m_flReloadCycle, m_iReloadSequence, hold );
 	if ( !m_bReloading )
 	{
@@ -952,7 +952,7 @@ bool CCSPlayerAnimState::HandleJumping()
 
 		// Don't check if he's on the ground for a sec.. sometimes the client still has the
 		// on-ground flag set right when the message comes in.
-		if ( gpGlobals->curtime - m_flJumpStartTime > 0.2f )
+		if ( gpGlobals->GetCurTime() - m_flJumpStartTime > 0.2f )
 		{
 			if ( m_pOuter->GetFlags() & FL_ONGROUND )
 			{

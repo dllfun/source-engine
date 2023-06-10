@@ -224,7 +224,7 @@ void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float
   	float dist = VectorLength( trace.endpos -  targetOrigin1 );
 
 	// grow distance by 32 unit a second
-  	m_flLastDistance += gpGlobals->frametime * 32.0f; 
+  	m_flLastDistance += gpGlobals->GetFrameTime() * 32.0f; 
 
   	if ( dist > m_flLastDistance )
 	{
@@ -354,7 +354,7 @@ void C_HLTVCamera::Accelerate( Vector& wishdir, float wishspeed, float accel )
 		return;
 
 	// Determine amount of acceleration.
-	accelspeed = accel * gpGlobals->frametime * wishspeed;
+	accelspeed = accel * gpGlobals->GetFrameTime() * wishspeed;
 
 	// Cap at addspeed
 	if (accelspeed > addspeed)
@@ -431,7 +431,7 @@ void C_HLTVCamera::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& 
 				float friction = sv_friction.GetFloat();
 
 				// Add the amount to the drop amount.
-				float drop = control * friction * gpGlobals->frametime;
+				float drop = control * friction * gpGlobals->GetFrameTime();
 
 				// scale the velocity
 				float newspeed = spd - drop;
@@ -449,7 +449,7 @@ void C_HLTVCamera::CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& 
 		}
 
 		// Just move ( don't clip or anything )
-		VectorMA( m_vCamOrigin, gpGlobals->frametime, m_vecVelocity, m_vCamOrigin );
+		VectorMA( m_vCamOrigin, gpGlobals->GetFrameTime(), m_vecVelocity, m_vCamOrigin );
 		
 		// get camera angle directly from engine
 		engineClient->GetViewAngles( m_aCamAngle );
@@ -607,7 +607,7 @@ void C_HLTVCamera::SpecNextPlayer( bool bInverse )
 {
 	int start = 1;
 
-	if ( m_iTraget1 > 0 && m_iTraget1 <= gpGlobals->maxClients )
+	if ( m_iTraget1 > 0 && m_iTraget1 <= gpGlobals->GetMaxClients() )
 		start = m_iTraget1;
 
 	int index = start;
@@ -622,8 +622,8 @@ void C_HLTVCamera::SpecNextPlayer( bool bInverse )
 
 		// check bounds
 		if ( index < 1 )
-			index = gpGlobals->maxClients;
-		else if ( index > gpGlobals->maxClients )
+			index = gpGlobals->GetMaxClients();
+		else if ( index > gpGlobals->GetMaxClients() )
 			index = 1;
 
 		if ( index == start )
@@ -649,7 +649,7 @@ void C_HLTVCamera::SpecNextPlayer( bool bInverse )
 
 void C_HLTVCamera::SpecNamedPlayer( const char *szPlayerName )
 {
-	for ( int index = 1; index <= gpGlobals->maxClients; ++index )
+	for ( int index = 1; index <= gpGlobals->GetMaxClients(); ++index )
 	{
 		C_BasePlayer *pPlayer =	UTIL_PlayerByIndex( index );
 
@@ -826,14 +826,14 @@ void C_HLTVCamera::SetCameraAngle( QAngle& targetAngle )
 {
 	m_aCamAngle	= targetAngle;
  	NormalizeAngles( m_aCamAngle );
-	m_flLastAngleUpdateTime = gpGlobals->realtime;
+	m_flLastAngleUpdateTime = gpGlobals->GetRealTime();
 }
 
 void C_HLTVCamera::SmoothCameraAngle( QAngle& targetAngle )
 {
 	if ( m_flLastAngleUpdateTime > 0 )
 	{
-		float deltaTime = gpGlobals->realtime - m_flLastAngleUpdateTime;
+		float deltaTime = gpGlobals->GetRealTime() - m_flLastAngleUpdateTime;
 
 		deltaTime = clamp( deltaTime*m_flInertia, 0.01f, 1.f);
 
@@ -844,7 +844,7 @@ void C_HLTVCamera::SmoothCameraAngle( QAngle& targetAngle )
 		m_aCamAngle = targetAngle;
 	}
 
-	m_flLastAngleUpdateTime = gpGlobals->realtime;
+	m_flLastAngleUpdateTime = gpGlobals->GetRealTime();
 }
 
 void C_HLTVCamera::ToggleChaseAsFirstPerson()

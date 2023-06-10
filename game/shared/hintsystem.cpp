@@ -96,7 +96,7 @@ bool CHintSystem::HintMessage( int hint, bool bForce /* = false */, bool bOnlyIf
 
 	// Not really an optimal solution, but saves us querying the hud element,
 	// which wouldn't be easy with derived versions in different mods.
-	if ( bOnlyIfClear && (gpGlobals->curtime - m_flLastHintPlayedAt < 11 ) )
+	if ( bOnlyIfClear && (gpGlobals->GetCurTime() - m_flLastHintPlayedAt < 11 ) )
 		return false;
 
 	if ( bForce || !HasPlayedHint(hint) )
@@ -278,7 +278,7 @@ bool CHintSystem::ShouldShowHints( void )
 //-----------------------------------------------------------------------------
 void CHintSystem::PlayedAHint( void )
 {
-	m_flLastHintPlayedAt = gpGlobals->curtime;
+	m_flLastHintPlayedAt = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------

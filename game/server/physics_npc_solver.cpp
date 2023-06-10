@@ -120,7 +120,7 @@ void CPhysicsNPCSolver::Init( CAI_BaseNPC *pNPC, CBaseEntity *pPhysicsObject, bo
 
 void CPhysicsNPCSolver::ResetCancelTime()
 {
-	m_cancelTime = gpGlobals->curtime + m_separationDuration;
+	m_cancelTime = gpGlobals->GetCurTime() + m_separationDuration;
 	SetNextThink( m_cancelTime );
 }
 
@@ -425,7 +425,7 @@ void CPhysicsEntitySolver::Init( CBaseEntity *pMovingEntity, CBaseEntity *pPhysi
 
 void CPhysicsEntitySolver::Spawn()
 {
-	SetNextThink( gpGlobals->curtime + m_separationDuration );
+	SetNextThink( gpGlobals->GetCurTime() + m_separationDuration );
 	PhysDisableEntityCollisions( m_hMovingEntity, m_hPhysicsBlocker );
 	m_savedCollisionGroup = m_hPhysicsBlocker->GetCollisionGroup();
 	m_hPhysicsBlocker->SetCollisionGroup( COLLISION_GROUP_DEBRIS );

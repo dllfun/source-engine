@@ -289,7 +289,7 @@ void C_SmokeStack::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs)
 	// For the first N seconds, always simulate so it can build up the smokestack.
 	// Afterwards, we set it to freeze when it's not being rendered.
 	m_ParticleEffect.SetAlwaysSimulate( true );
-	SetNextClientThink( gpGlobals->curtime + 5 );
+	SetNextClientThink( gpGlobals->GetCurTime() + 5 );
 }
 
 

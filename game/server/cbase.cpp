@@ -284,7 +284,7 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 #ifdef TF_DLL
 						engineServer->GetServerTime(),
 #else
-						gpGlobals->curtime,
+						gpGlobals->GetCurTime(),
 #endif
 						pCaller ? STRING(pCaller->m_iClassname) : "NULL",
 						pCaller ? STRING(pCaller->GetEntityName()) : "NULL",
@@ -305,7 +305,7 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 #ifdef TF_DLL
 						engineServer->GetServerTime(),
 #else
-						gpGlobals->curtime,
+						gpGlobals->GetCurTime(),
 #endif
 						pCaller ? STRING(pCaller->m_iClassname) : "NULL",
 						pCaller ? STRING(pCaller->GetEntityName()) : "NULL", STRING(ev->m_iTarget),
@@ -779,7 +779,7 @@ void CEventQueue::Dump( void )
 #ifdef TF_DLL
 		engineServer->GetServerTime()
 #else
-		gpGlobals->curtime
+		gpGlobals->GetCurTime()
 #endif
 		);
 
@@ -812,7 +812,7 @@ void CEventQueue::AddEvent( const char *target, const char *targetInput, variant
 #ifdef TF_DLL
 	newEvent->m_flFireTime = engineServer->GetServerTime() + fireDelay;	// priority key in the priority queue
 #else
-	newEvent->m_flFireTime = gpGlobals->curtime + fireDelay;	// priority key in the priority queue
+	newEvent->m_flFireTime = gpGlobals->GetCurTime() + fireDelay;	// priority key in the priority queue
 #endif
 	newEvent->m_iTarget = MAKE_STRING( target );
 	newEvent->m_pEntTarget = NULL;
@@ -835,7 +835,7 @@ void CEventQueue::AddEvent( CBaseEntity *target, const char *targetInput, varian
 #ifdef TF_DLL
 	newEvent->m_flFireTime = engineServer->GetServerTime() + fireDelay;	// primary priority key in the priority queue
 #else
-	newEvent->m_flFireTime = gpGlobals->curtime + fireDelay;	// primary priority key in the priority queue
+	newEvent->m_flFireTime = gpGlobals->GetCurTime() + fireDelay;	// primary priority key in the priority queue
 #endif
 	newEvent->m_iTarget = NULL_STRING;
 	newEvent->m_pEntTarget = target;
@@ -910,7 +910,7 @@ void CEventQueue::ServiceEvents( void )
 #ifdef TF_DLL
 	while ( pe != NULL && pe->m_flFireTime <= engineServer->GetServerTime() )
 #else
-	while ( pe != NULL && pe->m_flFireTime <= gpGlobals->curtime )
+	while ( pe != NULL && pe->m_flFireTime <= gpGlobals->GetCurTime() )
 #endif
 	{
 		MDLCACHE_CRITICAL_SECTION();
@@ -1200,7 +1200,7 @@ int CEventQueue::Restore( IRestore &restore )
 #ifdef TF_DLL
 					  tmpEvent.m_flFireTime - engineServer->GetServerTime(),
 #else
-					  tmpEvent.m_flFireTime - gpGlobals->curtime,
+					  tmpEvent.m_flFireTime - gpGlobals->GetCurTime(),
 #endif
 					  tmpEvent.m_pActivator,
 					  tmpEvent.m_pCaller,
@@ -1214,7 +1214,7 @@ int CEventQueue::Restore( IRestore &restore )
 #ifdef TF_DLL
 					  tmpEvent.m_flFireTime - engineServer->GetServerTime(),
 #else
-					  tmpEvent.m_flFireTime - gpGlobals->curtime,
+					  tmpEvent.m_flFireTime - gpGlobals->GetCurTime(),
 #endif
 					  tmpEvent.m_pActivator,
 					  tmpEvent.m_pCaller,

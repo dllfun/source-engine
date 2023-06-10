@@ -33,7 +33,7 @@ CBaseEntity *CTempEntTester::Create( const Vector &vecOrigin, const QAngle &vecA
 		life = MAX( 1.0, life );
 		life = MIN( 1000.0, life );
 
-		life += gpGlobals->curtime;
+		life += gpGlobals->GetCurTime();
 	}
 	else
 	{
@@ -98,7 +98,7 @@ void CTempEntTester::Spawn( void )
 	}
 
 	// Think right away
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -114,10 +114,10 @@ void CTempEntTester::Think( void )
 	}
 
 	m_pCurrent->Test( GetLocalOrigin(), GetLocalAngles() );
-	SetNextThink( gpGlobals->curtime + TEMPENT_TEST_GAP );
+	SetNextThink( gpGlobals->GetCurTime() + TEMPENT_TEST_GAP );
 
 	// Time to destroy?
-	if ( gpGlobals->curtime >= m_fLifeTime )
+	if ( gpGlobals->GetCurTime() >= m_fLifeTime )
 	{
 		UTIL_Remove( this );
 		return;

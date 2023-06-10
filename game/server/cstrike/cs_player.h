@@ -1177,7 +1177,7 @@ inline bool CCSPlayer::IsProtectedByShield( void ) const
 
 inline bool CCSPlayer::IsBlind( void ) const
 { 
-	return gpGlobals->curtime < m_blindUntilTime;
+	return gpGlobals->GetCurTime() < m_blindUntilTime;
 }
 
 //=============================================================================
@@ -1186,7 +1186,7 @@ inline bool CCSPlayer::IsBlind( void ) const
 //=============================================================================
 inline bool CCSPlayer::IsBlindForAchievement()
 {
-	return (m_blindStartTime + m_flFlashDuration) > gpGlobals->curtime;
+	return (m_blindStartTime + m_flFlashDuration) > gpGlobals->GetCurTime();
 }
 //=============================================================================
 // HPE_END
@@ -1194,12 +1194,12 @@ inline bool CCSPlayer::IsBlindForAchievement()
 
 inline bool CCSPlayer::IsAutoFollowAllowed( void ) const		
 { 
-	return (gpGlobals->curtime > m_allowAutoFollowTime); 
+	return (gpGlobals->GetCurTime() > m_allowAutoFollowTime); 
 }
 
 inline void CCSPlayer::InhibitAutoFollow( float duration )	
 { 
-	m_allowAutoFollowTime = gpGlobals->curtime + duration; 
+	m_allowAutoFollowTime = gpGlobals->GetCurTime() + duration; 
 }
 
 inline void CCSPlayer::AllowAutoFollow( void )	

@@ -121,7 +121,7 @@ void CAvatarImage::LoadAvatarImage()
 	return;
 #endif
 	// attempt to retrieve the avatar image from Steam
-	if ( m_bLoadPending && steamapicontext->SteamFriends() && steamapicontext->SteamUtils() && gpGlobals->curtime >= m_fNextLoadTime )
+	if ( m_bLoadPending && steamapicontext->SteamFriends() && steamapicontext->SteamUtils() && gpGlobals->GetCurTime() >= m_fNextLoadTime )
 	{
 		if ( !steamapicontext->SteamFriends()->RequestUserInformation( m_SteamID, false ) )
 		{
@@ -164,7 +164,7 @@ void CAvatarImage::LoadAvatarImage()
 		else
 		{
 			// otherwise schedule another attempt to retrieve the image
-			m_fNextLoadTime = gpGlobals->curtime + 1.0f;
+			m_fNextLoadTime = gpGlobals->GetCurTime() + 1.0f;
 		}
 	}
 }

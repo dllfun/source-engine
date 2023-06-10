@@ -54,7 +54,7 @@ void CEventRegister::SetUpdateInterval( float interval )
 	{
 		// Register for this event.
 		m_flUpdateInterval = interval;
-		m_flNextEventTime = gpGlobals->curtime + m_flUpdateInterval;
+		m_flNextEventTime = gpGlobals->GetCurTime() + m_flUpdateInterval;
 
 		m_pEventMgr->RegisterForNextEvent( this );
 	}
@@ -75,7 +75,7 @@ void CEventRegister::Reregister()
 {
 	if ( m_flUpdateInterval > 1e-6 && m_pEventMgr )
 	{
-		while ( m_flNextEventTime <= gpGlobals->curtime )
+		while ( m_flNextEventTime <= gpGlobals->GetCurTime() )
 		{
 			m_flNextEventTime += m_flUpdateInterval;
 		}
@@ -108,7 +108,7 @@ void CTimedEventMgr::FireEvents()
 	{
 		// Fire the top element, then break out.
 		CEventRegister *pEvent = m_Events.ElementAtHead();
-		if ( gpGlobals->curtime >= pEvent->m_flNextEventTime )
+		if ( gpGlobals->GetCurTime() >= pEvent->m_flNextEventTime )
 		{
 			// Reregister for the timed event, then fire the callback for the event.
 			m_Events.RemoveAtHead();

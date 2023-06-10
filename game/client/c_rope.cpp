@@ -856,7 +856,7 @@ void C_RopeKeyframe::CPhysicsDelegate::GetNodeForces( CSimplePhysics::CNode *pNo
 	if( !m_pKeyframe->m_LinksTouchingSomething[iNode] && m_pKeyframe->m_bApplyWind)
 	{
 		Vector vecWindVel;
-		GetWindspeedAtTime(gpGlobals->curtime, vecWindVel);
+		GetWindspeedAtTime(gpGlobals->GetCurTime(), vecWindVel);
 		if ( vecWindVel.LengthSqr() > 0 )
 		{
 			Vector vecWindAccel;
@@ -1380,15 +1380,15 @@ void C_RopeKeyframe::ClientThink()
 		// Update the simulation.
 		CTimeAdder adder( &g_RopeSimulateTicks );
 		
-		RunRopeSimulation( gpGlobals->frametime );
+		RunRopeSimulation( gpGlobals->GetFrameTime() );
 
 		g_nRopePointsSimulated += m_RopePhysics.NumNodes();
 
 		m_bNewDataThisFrame = false;
 
 		// Setup a new wind gust?
-		m_flCurrentGustTimer += gpGlobals->frametime;
-		m_flTimeToNextGust -= gpGlobals->frametime;
+		m_flCurrentGustTimer += gpGlobals->GetFrameTime();
+		m_flTimeToNextGust -= gpGlobals->GetFrameTime();
 		if( m_flTimeToNextGust <= 0 )
 		{
 			m_vWindDir = RandomVector( -1, 1 );

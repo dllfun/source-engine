@@ -401,7 +401,7 @@ void ILocomotion::ClearStuckStatus( const char *reason )
 
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		DevMsg( "%3.2f: ClearStuckStatus: %s %s\n", gpGlobals->curtime, GetBot()->GetDebugIdentifier(), reason );
+		DevMsg( "%3.2f: ClearStuckStatus: %s %s\n", gpGlobals->GetCurTime(), GetBot()->GetDebugIdentifier(), reason );
 	}
 }
 
@@ -457,7 +457,7 @@ void ILocomotion::StuckMonitor( void )
 
 				if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 				{
-					DevMsg( "%3.2f: %s STILL STUCK\n", gpGlobals->curtime, GetBot()->GetDebugIdentifier() );
+					DevMsg( "%3.2f: %s STILL STUCK\n", gpGlobals->GetCurTime(), GetBot()->GetDebugIdentifier() );
 					NDebugOverlay::Circle( m_stuckPos + Vector( 0, 0, 5.0f ), QAngle( -90.0f, 0, 0 ), 5.0f, 255, 0, 0, 255, true, 1.0f );
 				}
 
@@ -498,7 +498,7 @@ void ILocomotion::StuckMonitor( void )
 
 				if ( GetBot()->IsDebugging( NEXTBOT_ERRORS ) )
 				{
-					DevMsg( "%3.2f: %s STUCK at position( %3.2f, %3.2f, %3.2f )\n", gpGlobals->curtime, GetBot()->GetDebugIdentifier(), m_stuckPos.x, m_stuckPos.y, m_stuckPos.z );
+					DevMsg( "%3.2f: %s STUCK at position( %3.2f, %3.2f, %3.2f )\n", gpGlobals->GetCurTime(), GetBot()->GetDebugIdentifier(), m_stuckPos.x, m_stuckPos.y, m_stuckPos.z );
 
 					NDebugOverlay::Circle( m_stuckPos + Vector( 0, 0, 15.0f ), QAngle( -90.0f, 0, 0 ), 3.0f, 255, 255, 0, 255, true, 1.0f );
 					NDebugOverlay::Circle( m_stuckPos + Vector( 0, 0, 5.0f ), QAngle( -90.0f, 0, 0 ), 5.0f, 255, 0, 0, 255, true, 9999999.9f );

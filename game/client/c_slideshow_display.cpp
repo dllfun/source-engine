@@ -98,11 +98,11 @@ void C_SlideshowDisplay::ClientThink( void )
 		return;
 
 	// Check if it's time for the next slide
-	if ( m_NextSlideTime > gpGlobals->curtime )
+	if ( m_NextSlideTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Set the time to cycle to the next slide
-	m_NextSlideTime = gpGlobals->curtime + RandomFloat( m_fMinSlideTime, m_fMaxSlideTime );
+	m_NextSlideTime = gpGlobals->GetCurTime() + RandomFloat( m_fMinSlideTime, m_fMaxSlideTime );
 
 	// Get the amount of items to pick from
 	int iNumCurrentSlideLists;

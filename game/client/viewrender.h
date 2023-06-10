@@ -277,9 +277,9 @@ private:
 		if (!pFogParams)
 			return;
 
-		if (pFogParams->lerptime >= gpGlobals->curtime)
+		if (pFogParams->lerptime >= gpGlobals->GetCurTime())
 		{
-			float flPercent = 1.0f - ((pFogParams->lerptime - gpGlobals->curtime) / pFogParams->duration);
+			float flPercent = 1.0f - ((pFogParams->lerptime - gpGlobals->GetCurTime()) / pFogParams->duration);
 
 			float flPrimaryColorLerp[3] = { (float)pFogParams->colorPrimaryLerpTo.GetR(), (float)pFogParams->colorPrimaryLerpTo.GetG(), (float)pFogParams->colorPrimaryLerpTo.GetB() };
 			float flSecondaryColorLerp[3] = { (float)pFogParams->colorSecondaryLerpTo.GetR(), (float)pFogParams->colorSecondaryLerpTo.GetG(), (float)pFogParams->colorSecondaryLerpTo.GetB() };
@@ -359,13 +359,13 @@ private:
 		}
 		else
 		{
-			if (pFogParams->lerptime > gpGlobals->curtime)
+			if (pFogParams->lerptime > gpGlobals->GetCurTime())
 			{
 				if (pFogParams->start != pFogParams->startLerpTo)
 				{
-					if (pFogParams->lerptime > gpGlobals->curtime)
+					if (pFogParams->lerptime > gpGlobals->GetCurTime())
 					{
-						float flPercent = 1.0f - ((pFogParams->lerptime - gpGlobals->curtime) / pFogParams->duration);
+						float flPercent = 1.0f - ((pFogParams->lerptime - gpGlobals->GetCurTime()) / pFogParams->duration);
 
 						return FLerp(pFogParams->start, pFogParams->startLerpTo, flPercent);
 					}
@@ -401,13 +401,13 @@ private:
 		}
 		else
 		{
-			if (pFogParams->lerptime > gpGlobals->curtime)
+			if (pFogParams->lerptime > gpGlobals->GetCurTime())
 			{
 				if (pFogParams->end != pFogParams->endLerpTo)
 				{
-					if (pFogParams->lerptime > gpGlobals->curtime)
+					if (pFogParams->lerptime > gpGlobals->GetCurTime())
 					{
-						float flPercent = 1.0f - ((pFogParams->lerptime - gpGlobals->curtime) / pFogParams->duration);
+						float flPercent = 1.0f - ((pFogParams->lerptime - gpGlobals->GetCurTime()) / pFogParams->duration);
 
 						return FLerp(pFogParams->end, pFogParams->endLerpTo, flPercent);
 					}
@@ -1950,7 +1950,7 @@ private:
 	{
 		engineClient->SetViewAngles(s_DemoAngle);
 
-		input->ExtraMouseSample(gpGlobals->absoluteframetime, true);
+		input->ExtraMouseSample(gpGlobals->GetAbsoluteFrameTime(), true);
 
 		engineClient->GetViewAngles(s_DemoAngle);
 
@@ -1958,7 +1958,7 @@ private:
 
 		AngleVectors(s_DemoAngle, &forward, &right, &up);
 
-		float speed = gpGlobals->absoluteframetime * cl_demoviewoverride.GetFloat() * 320;
+		float speed = gpGlobals->GetAbsoluteFrameTime() * cl_demoviewoverride.GetFloat() * 320;
 
 		s_DemoView += speed * input->KeyState(&in_forward) * forward;
 		s_DemoView -= speed * input->KeyState(&in_back) * forward;

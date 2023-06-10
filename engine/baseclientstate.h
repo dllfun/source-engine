@@ -243,27 +243,37 @@ inline CClockDriftMgr& CBaseClientState::GetClockDriftMgr()
 
 inline void CBaseClientState::SetClientTickCount( int tick )
 {
-	m_ClockDriftMgr.m_nClientTick = tick;
+	if (tick == 0) {
+		int aaa = 0;
+	}
+	m_ClockDriftMgr.SetClientTick(tick);
 }
 
 inline int CBaseClientState::GetClientTickCount() const
 {
-	return m_ClockDriftMgr.m_nClientTick;
+	return m_ClockDriftMgr.GetClientTick();
 }
 
 inline int CBaseClientState::GetServerTickCount() const
 {
-	return m_ClockDriftMgr.m_nServerTick;
+	return m_ClockDriftMgr.GetServerTick();
 }
 
 inline void CBaseClientState::SetServerTickCount( int tick )
 {
-	m_ClockDriftMgr.m_nServerTick = tick;
+	if (tick == 0) {
+		int aaa = 0;
+	}
+	m_ClockDriftMgr.SetServerTick(tick);
 }
 
 inline void CBaseClientState::SetClientAndServerTickCount( int tick )
 {
-	m_ClockDriftMgr.m_nServerTick = m_ClockDriftMgr.m_nClientTick = tick;
+	if (tick == 0) {
+		int aaa = 0;
+	}
+	m_ClockDriftMgr.SetServerTick(tick);
+	m_ClockDriftMgr.SetClientTick(tick);
 }
 
 

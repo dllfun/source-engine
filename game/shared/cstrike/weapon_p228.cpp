@@ -72,7 +72,7 @@ PRECACHE_WEAPON_REGISTER( weapon_p228 );
 
 CWeaponP228::CWeaponP228()
 {
-	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 }
 
 
@@ -125,21 +125,21 @@ void CWeaponP228::PrimaryAttack( void )
 		return;
 
 	// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-	m_flAccuracy -= (0.3)*(0.325 - (gpGlobals->curtime - m_flLastFire));
+	m_flAccuracy -= (0.3)*(0.325 - (gpGlobals->GetCurTime() - m_flLastFire));
 
 	if (m_flAccuracy > 0.9)
 		m_flAccuracy = 0.9;
 	else if (m_flAccuracy < 0.6)
 		m_flAccuracy = 0.6;
 
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals->GetCurTime();
 	
 	if (m_iClip1 <= 0)
 	{
 		if ( m_bFireOnEmpty )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.1f;
 			m_bFireOnEmpty = false;
 		}
 
@@ -169,7 +169,7 @@ void CWeaponP228::PrimaryAttack( void )
 		GetInaccuracy(),
 		GetSpread());
 	
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetCSWpnData().m_flCycleTime;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->GetCurTime() + GetCSWpnData().m_flCycleTime;
 
 	if (!m_iClip1 && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) <= 0)
 	{
@@ -177,7 +177,7 @@ void CWeaponP228::PrimaryAttack( void )
 		pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 	}
 
-	SetWeaponIdleTime( gpGlobals->curtime + 2 );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 2 );
 
 	//ResetPlayerShieldAnim();
 
@@ -201,13 +201,13 @@ bool CWeaponP228::Reload()
 
 void CWeaponP228::WeaponIdle()
 {
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 	// only idle if the slid isn't back
 	if (m_iClip1 != 0)
 	{	
-		SetWeaponIdleTime( gpGlobals->curtime + 3.0 ) ;
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 3.0 ) ;
 		SendWeaponAnim( ACT_VM_IDLE );
 	}
 }

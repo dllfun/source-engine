@@ -233,9 +233,9 @@ void CHudDamageIndicator::DrawDamageIndicatorRight( float flFade )
 //-----------------------------------------------------------------------------
 void CHudDamageIndicator::Paint()
 {
-	if( m_flFadeCompleteTime > gpGlobals->curtime )
+	if( m_flFadeCompleteTime > gpGlobals->GetCurTime() )
 	{
-		float flFade = gpGlobals->frametime * 2;
+		float flFade = gpGlobals->GetFrameTime() * 2;
 		// draw damage indicators	
 		DrawDamageIndicatorFront( flFade );
 		DrawDamageIndicatorRear( flFade );
@@ -261,7 +261,7 @@ void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
 
 	if ( damageTaken > 0 )
 	{
-		m_flFadeCompleteTime = gpGlobals->curtime + 1.0;
+		m_flFadeCompleteTime = gpGlobals->GetCurTime() + 1.0;
 		CalcDamageDirection( vecFrom );
 	}
 //=============================================================================

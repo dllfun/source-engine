@@ -498,7 +498,7 @@ void CAI_Squad::SquadNewEnemy( CBaseEntity *pEnemy )
 			if ( !pMember->GetEnemy() || 
 				 ( pMember->GetEnemy() != pEnemy && 
 				   !pMember->HasCondition( COND_SEE_ENEMY) &&
-				   gpGlobals->curtime - pMember->GetEnemyLastTimeSeen() > 3.0 ) )
+				   gpGlobals->GetCurTime() - pMember->GetEnemyLastTimeSeen() > 3.0 ) )
 			{
 				// give them a new enemy
 				if( !hl2_episodic.GetBool() || pMember->IsValidEnemy(pEnemy) )
@@ -548,7 +548,7 @@ int	CAI_Squad::BroadcastInteraction( int interactionType, void *data, CBaseComba
 //-----------------------------------------------------------------------------
 bool CAI_Squad::FOkToMakeSound( int soundPriority )
 {
-	if (gpGlobals->curtime <= m_flSquadSoundWaitTime)
+	if (gpGlobals->GetCurTime() <= m_flSquadSoundWaitTime)
 	{
 		if ( soundPriority <= m_nSquadSoundPriority )
 			return false;
@@ -671,7 +671,7 @@ void CAI_Squad::UpdateEnemyMemory( CAI_BaseNPC *pUpdater, CBaseEntity *pEnemy, c
 AISquadEnemyInfo_t *CAI_Squad::FindEnemyInfo( CBaseEntity *pEnemy )
 {
 	int i;
-	if ( gpGlobals->curtime > m_flEnemyInfoCleanupTime )
+	if ( gpGlobals->GetCurTime() > m_flEnemyInfoCleanupTime )
 	{
 		if ( m_EnemyInfos.Count() )
 		{
@@ -699,7 +699,7 @@ AISquadEnemyInfo_t *CAI_Squad::FindEnemyInfo( CBaseEntity *pEnemy )
 			}
 		}
 		
-		m_flEnemyInfoCleanupTime = gpGlobals->curtime + 30;
+		m_flEnemyInfoCleanupTime = gpGlobals->GetCurTime() + 30;
 	}
 
 	if ( m_pLastFoundEnemyInfo && m_pLastFoundEnemyInfo->hEnemy == pEnemy )

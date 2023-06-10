@@ -66,7 +66,7 @@ void CAI_BaseNPC::ForceSelectedGo(CBaseEntity *pPlayer, const Vector &targetPos,
 				npc->SetSchedule( SCHED_FORCED_GO_RUN );
 			else
 				npc->SetSchedule( SCHED_FORCED_GO );
-			npc->m_flMoveWaitFinished = gpGlobals->curtime;
+			npc->m_flMoveWaitFinished = gpGlobals->GetCurTime();
 		}
 		npc = gEntList.NextEntByClass(npc);
 	}
@@ -271,7 +271,7 @@ float CAI_BaseNPC::OpenDoorAndWait( CBaseEntity *pDoor )
 		}
 	}
 
-	return gpGlobals->curtime + flTravelTime;
+	return gpGlobals->GetCurTime() + flTravelTime;
 }
 
 //-----------------------------------------------------------------------------
@@ -383,7 +383,7 @@ Vector CAI_BaseNPC::CalcThrowVelocity(const Vector &startPos, const Vector &endP
 
 bool CAI_BaseNPC::ShouldMoveWait()
 {
-	return (m_flMoveWaitFinished > gpGlobals->curtime);
+	return (m_flMoveWaitFinished > gpGlobals->GetCurTime());
 }
 
 float CAI_BaseNPC::GetStepDownMultiplier() const
@@ -421,7 +421,7 @@ bool CAI_BaseNPC::AutoMovement( float flInterval, CBaseEntity *pTarget, AIMoveTr
 
 	if (GetIntervalMovement( flInterval, ignored, newPos, newAngles ))
 	{
-		// DevMsg( "%.2f : (%.1f) %.1f %.1f %.1f\n", gpGlobals->curtime, (newPos - GetLocalOrigin()).Length(), newPos.x, newPos.y, newAngles.y );
+		// DevMsg( "%.2f : (%.1f) %.1f %.1f %.1f\n", gpGlobals->GetCurTime(), (newPos - GetLocalOrigin()).Length(), newPos.x, newPos.y, newAngles.y );
 	
 		if ( m_hCine )
 		{

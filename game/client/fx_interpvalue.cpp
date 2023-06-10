@@ -35,7 +35,7 @@ void CInterpolatedValue::SetType( InterpType_t type )
 void CInterpolatedValue::SetAbsolute( float value )
 {
 	m_flStartValue = m_flEndValue = value;
-	m_flStartTime = m_flEndTime = gpGlobals->curtime;
+	m_flStartTime = m_flEndTime = gpGlobals->GetCurTime();
 	m_nInterpType = INTERP_LINEAR;
 }
 
@@ -48,7 +48,7 @@ void CInterpolatedValue::Init( float startValue, float endValue, float dt, Inter
 		return;
 	}
 
-	SetTime( gpGlobals->curtime, gpGlobals->curtime + dt );
+	SetTime( gpGlobals->GetCurTime(), gpGlobals->GetCurTime() + dt );
 	SetRange( startValue, endValue );
 	SetType( type );
 }
@@ -56,7 +56,7 @@ void CInterpolatedValue::Init( float startValue, float endValue, float dt, Inter
 // Start from the current value and move towards the end value
 void CInterpolatedValue::InitFromCurrent( float endValue, float dt, InterpType_t type /*= INTERP_LINEAR*/ )
 {
-	Init( Interp( gpGlobals->curtime ), endValue, dt, type );
+	Init( Interp( gpGlobals->GetCurTime() ), endValue, dt, type );
 }
 
 // Find our interpolated value at the given point in time

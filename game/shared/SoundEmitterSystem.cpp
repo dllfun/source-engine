@@ -89,7 +89,7 @@ EmitSound_t::EmitSound_t( const CSoundParameters &src )
 	m_nPitch = src.pitch;
 	m_nSpecialDSP = 0;
 	m_pOrigin = 0;
-	m_flSoundTime = ( src.delay_msec == 0 ) ? 0.0f : gpGlobals->curtime + ( (float)src.delay_msec / 1000.0f );
+	m_flSoundTime = ( src.delay_msec == 0 ) ? 0.0f : gpGlobals->GetCurTime() + ( (float)src.delay_msec / 1000.0f );
 	m_pflSoundDuration = 0;
 	m_bEmitCloseCaption = true;
 	m_bWarnOnMissingCloseCaption = false;
@@ -514,7 +514,7 @@ public:
 		if ( !st && 
 			params.delay_msec != 0 )
 		{
-			st = gpGlobals->curtime + (float)params.delay_msec / 1000.f;
+			st = gpGlobals->GetCurTime() + (float)params.delay_msec / 1000.f;
 		}
 
 		enginesound->EmitSound( 
@@ -636,7 +636,7 @@ public:
 	void EmitCloseCaption( IRecipientFilter& filter, int entindex, bool fromplayer, char const *token, CUtlVector< Vector >& originlist, float duration, bool warnifmissing /*= false*/ )
 	{
 		// No close captions in multiplayer...
-		if ( gpGlobals->maxClients > 1 || (gpGlobals->maxClients==1 && !g_pClosecaption->GetBool()))
+		if ( gpGlobals->GetMaxClients() > 1 || (gpGlobals->GetMaxClients()==1 && !g_pClosecaption->GetBool()))
 		{
 			return;
 		}
@@ -747,7 +747,7 @@ public:
 	void EmitCloseCaption( IRecipientFilter& filter, int entindex, const CSoundParameters & params, const EmitSound_t & ep )
 	{
 		// No close captions in multiplayer...
-		if ( gpGlobals->maxClients > 1 || (gpGlobals->maxClients==1 && !g_pClosecaption->GetBool()))
+		if ( gpGlobals->GetMaxClients() > 1 || (gpGlobals->GetMaxClients()==1 && !g_pClosecaption->GetBool()))
 		{
 			return;
 		}

@@ -29,7 +29,7 @@ static int s_iBeamSprite = 0;
  */
 bool UTIL_IsNameTaken( const char *name, bool ignoreHumans )
 {
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -65,7 +65,7 @@ int UTIL_ClientsInGame( void )
 {
 	int count = 0;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBaseEntity *player = UTIL_PlayerByIndex( i );
 
@@ -86,7 +86,7 @@ int UTIL_HumansOnTeam( int teamID, bool isAlive )
 {
 	int count = 0;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBaseEntity *entity = UTIL_PlayerByIndex( i );
 
@@ -116,7 +116,7 @@ int UTIL_BotsInGame( void )
 {
 	int count = 0;
 
-	for (int i = 1; i <= gpGlobals->maxClients; ++i )
+	for (int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>(UTIL_PlayerByIndex( i ));
 
@@ -141,7 +141,7 @@ bool UTIL_KickBotFromTeam( int kickTeam )
 	int i;
 
 	// try to kick a dead bot first
-	for ( i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -161,7 +161,7 @@ bool UTIL_KickBotFromTeam( int kickTeam )
 	}
 
 	// no dead bots, kick any bot on the given team
-	for ( i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -191,7 +191,7 @@ bool UTIL_IsTeamAllBots( int team )
 {
 	int botCount = 0;
 
-	for( int i=1; i <= gpGlobals->maxClients; ++i )
+	for( int i=1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -224,7 +224,7 @@ extern CBasePlayer *UTIL_GetClosestPlayer( const Vector &pos, float *distance )
 	CBasePlayer *closePlayer = NULL;
 	float closeDistSq = 999999999999.9f;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -259,7 +259,7 @@ extern CBasePlayer *UTIL_GetClosestPlayer( const Vector &pos, int team, float *d
 	CBasePlayer *closePlayer = NULL;
 	float closeDistSq = 999999999999.9f;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -359,7 +359,7 @@ void UTIL_ConstructBotNetName( char *name, int nameLength, const BotProfile *pro
  */
 bool UTIL_IsVisibleToTeam( const Vector &spot, int team )
 {
-	for( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -521,7 +521,7 @@ void HintMessageToAllPlayers( const char *message )
  */
 bool IsCrossingLineOfFire( const Vector &start, const Vector &finish, CBaseEntity *ignore, int ignoreTeam  )
 {
-	for ( int p=1; p <= gpGlobals->maxClients; ++p )
+	for ( int p=1; p <= gpGlobals->GetMaxClients(); ++p )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( p ) );
 

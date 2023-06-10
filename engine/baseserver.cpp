@@ -1944,14 +1944,14 @@ void CBaseServer::RunFrame( void )
 
 	UpdateMasterServer();
 
-	if ( m_flLastRandomNumberGenerationTime < 0 || (m_flLastRandomNumberGenerationTime + CHALLENGE_NONCE_LIFETIME) < g_ServerGlobalVariables.realtime  )
+	if ( m_flLastRandomNumberGenerationTime < 0 || (m_flLastRandomNumberGenerationTime + CHALLENGE_NONCE_LIFETIME) < g_ServerGlobalVariables.GetRealTime()  )
 	{
 		m_LastRandomNonce = m_CurrentRandomNonce;
 
 		// RandomInt maps a uniform distribution on the interval [0,INT_MAX], so make two calls to get the random number.
 		// RandomInt will always return the minimum value if the difference in min and max is greater than or equal to INT_MAX.
 		m_CurrentRandomNonce = ( ( (uint32)RandomInt( 0, 0xFFFF ) ) << 16 ) | RandomInt( 0, 0xFFFF );
-		m_flLastRandomNumberGenerationTime = g_ServerGlobalVariables.realtime;
+		m_flLastRandomNumberGenerationTime = g_ServerGlobalVariables.GetRealTime();
 	}
 
 	// Timed pause - resume game when time expires

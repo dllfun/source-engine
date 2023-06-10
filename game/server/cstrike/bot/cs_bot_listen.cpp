@@ -21,7 +21,7 @@ bool CCSBot::IsNoiseHeard( void ) const
 		return false;
 
 	// primitive reaction time simulation - cannot "hear" noise until reaction time has elapsed
-	if (gpGlobals->curtime - m_noiseTimestamp >= GetProfile()->GetReactionTime())
+	if (gpGlobals->GetCurTime() - m_noiseTimestamp >= GetProfile()->GetReactionTime())
 		return true;
 
 	return false;
@@ -90,7 +90,7 @@ bool CCSBot::CanHearNearbyEnemyGunfire( float range ) const
 	Vector myOrigin = GetCentroid( this );
 
 	// only attend to noise if it just happened
-	if (gpGlobals->curtime - m_noiseTimestamp > 0.5f)
+	if (gpGlobals->GetCurTime() - m_noiseTimestamp > 0.5f)
 		return false;
 
 	// gunfire is high priority

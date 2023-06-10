@@ -128,12 +128,12 @@ void CAI_ShotRegulator::Reset( bool bStartShooting )
 	m_nBurstShotsRemaining = random->RandomInt( m_nMinBurstShots, m_nMaxBurstShots );
 	if ( bStartShooting )
 	{
-		m_flNextShotTime = gpGlobals->curtime;
+		m_flNextShotTime = gpGlobals->GetCurTime();
 		m_bInRestInterval = false;
 	}
 	else
 	{
-		m_flNextShotTime = gpGlobals->curtime + random->RandomFloat( m_flMinRestInterval, m_flMaxRestInterval );
+		m_flNextShotTime = gpGlobals->GetCurTime() + random->RandomFloat( m_flMinRestInterval, m_flMaxRestInterval );
 		m_bInRestInterval = true;
 	}
 }
@@ -144,7 +144,7 @@ void CAI_ShotRegulator::Reset( bool bStartShooting )
 //-----------------------------------------------------------------------------
 bool CAI_ShotRegulator::ShouldShoot() const
 { 
-	return ( !m_bDisabled && (m_flNextShotTime <= gpGlobals->curtime) ); 
+	return ( !m_bDisabled && (m_flNextShotTime <= gpGlobals->GetCurTime()) ); 
 }
 
 
@@ -206,9 +206,9 @@ void CAI_ShotRegulator::OnFiredWeapon()
 	{
 		m_bInRestInterval = false;
 		m_flNextShotTime += random->RandomFloat( m_flMinBurstInterval, m_flMaxBurstInterval );
-		if ( m_flNextShotTime < gpGlobals->curtime )
+		if ( m_flNextShotTime < gpGlobals->GetCurTime() )
 		{
-			m_flNextShotTime = gpGlobals->curtime;
+			m_flNextShotTime = gpGlobals->GetCurTime();
 		}
 	}
 }
@@ -400,7 +400,7 @@ void CAI_FreePass::Update( )
 		float timePlayerLastSeen = (pTargetInfo) ? pTargetInfo->timeLastSeen : AI_INVALID_TIME;
 		float lastTimeDamagedBy = (pTargetInfo) ? pTargetInfo->timeLastReceivedDamageFrom : AI_INVALID_TIME;
 
-		if ( timePlayerLastSeen == AI_INVALID_TIME || gpGlobals->curtime - timePlayerLastSeen > .15 ) // If didn't see the player last think
+		if ( timePlayerLastSeen == AI_INVALID_TIME || gpGlobals->GetCurTime() - timePlayerLastSeen > .15 ) // If didn't see the player last think
 		{
 			trace_t tr;
 			UTIL_TraceLine( pTarget->EyePosition(), GetOuter()->EyePosition(), MASK_BLOCKLOS, GetOuter(), COLLISION_GROUP_NONE, &tr );
@@ -410,8 +410,8 @@ void CAI_FreePass::Update( )
 
 				if ( dist < m_Params.coverDist )
 				{
-					if ( ( timePlayerLastSeen == AI_INVALID_TIME || gpGlobals->curtime - timePlayerLastSeen > m_Params.timeToTrigger ) &&
-						 ( lastTimeDamagedBy == AI_INVALID_TIME || gpGlobals->curtime - lastTimeDamagedBy > m_Params.timeToTrigger ) )
+					if ( ( timePlayerLastSeen == AI_INVALID_TIME || gpGlobals->GetCurTime() - timePlayerLastSeen > m_Params.timeToTrigger ) &&
+						 ( lastTimeDamagedBy == AI_INVALID_TIME || gpGlobals->GetCurTime() - lastTimeDamagedBy > m_Params.timeToTrigger ) )
 					{
 						m_FreePassTimeRemaining = m_Params.duration;
 						m_FreePassMoveMonitor.SetMark( pTarget, m_Params.moveTolerance );
@@ -481,8 +481,8 @@ bool CAI_FreePass::ShouldAllowFVisible(bool bBaseResult )
 		float lastTimeSeen = (pTargetInfo) ? pTargetInfo->timeLastSeen : AI_INVALID_TIME;
 		float lastTimeDamagedBy = (pTargetInfo) ? pTargetInfo->timeLastReceivedDamageFrom : AI_INVALID_TIME;
 		
-		if ( ( lastTimeSeen == AI_INVALID_TIME || gpGlobals->curtime - lastTimeSeen > m_Params.peekTime ) &&
-			 ( lastTimeDamagedBy == AI_INVALID_TIME || gpGlobals->curtime - lastTimeDamagedBy > m_Params.peekTimeAfterDamage ) )
+		if ( ( lastTimeSeen == AI_INVALID_TIME || gpGlobals->GetCurTime() - lastTimeSeen > m_Params.peekTime ) &&
+			 ( lastTimeDamagedBy == AI_INVALID_TIME || gpGlobals->GetCurTime() - lastTimeDamagedBy > m_Params.peekTimeAfterDamage ) )
 		{
 			Vector vToTarget;
 

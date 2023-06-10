@@ -156,7 +156,7 @@ void C_AI_BaseHumanoid::StandardBlendingRules( CStudioHdr *pStudioHdr, Vector po
 #endif
 
 	CIKContext auto_ik;
-	auto_ik.Init( hdr, GetRenderAngles(), GetRenderOrigin(), gpGlobals->curtime );
+	auto_ik.Init( hdr, GetRenderAngles(), GetRenderOrigin(), gpGlobals->GetCurTime() );
 	CalcAutoplaySequences( hdr, &auto_ik, pos, q, poseparam, boneMask, currentTime );
 
 	float controllers[MAXSTUDIOBONECTRLS];

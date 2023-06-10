@@ -189,7 +189,7 @@ void CEffectsServer::Ricochet( const Vector &position, const Vector &direction )
 //-----------------------------------------------------------------------------
 float CEffectsServer::Time()
 {
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
 bool CEffectsServer::IsServer()

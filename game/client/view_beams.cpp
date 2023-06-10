@@ -662,13 +662,13 @@ void CViewRenderBeams::KillDeadBeams( C_BaseEntity *pDeadEntity )
 		if ( pbeam->type != TE_BEAMFOLLOW )
 		{
 			// Die Die Die!
-			pbeam->die = gpGlobals->curtime - 0.1;  
+			pbeam->die = gpGlobals->GetCurTime() - 0.1;  
 
 			// Kill off particles
 			pHead = pbeam->trail;
 			while (pHead)
 			{
-				pHead->die = gpGlobals->curtime - 0.1;
+				pHead->die = gpGlobals->GetCurTime() - 0.1;
 				pHead = pHead->next;
 			}
 
@@ -706,8 +706,8 @@ void CViewRenderBeams::SetupBeam( Beam_t *pBeam, const BeamInfo_t &beamInfo )
 	pBeam->frame			= 0;
 	pBeam->frameRate		= 0;
 	pBeam->frameCount		= pSprite->ModelFrameCount();//pSprite
-	pBeam->freq				= gpGlobals->curtime * beamInfo.m_flSpeed;
-	pBeam->die				= gpGlobals->curtime + beamInfo.m_flLife;
+	pBeam->freq				= gpGlobals->GetCurTime() * beamInfo.m_flSpeed;
+	pBeam->die				= gpGlobals->GetCurTime() + beamInfo.m_flLife;
 	pBeam->width			= beamInfo.m_flWidth;
 	pBeam->endWidth			= beamInfo.m_flEndWidth;
 	pBeam->fadeLength		= beamInfo.m_flFadeLength;
@@ -827,7 +827,7 @@ Beam_t *CViewRenderBeams::CreateGenericBeam( BeamInfo_t &beamInfo )
 		return NULL;
 
 	// In case we fail.
-	pBeam->die = gpGlobals->curtime;
+	pBeam->die = gpGlobals->GetCurTime();
 
 	// Need a valid model.
 	if ( beamInfo.m_nModelIndex < 0 )
@@ -1433,7 +1433,7 @@ void CViewRenderBeams::FreeDeadTrails( BeamTrail_t **trail )
 	for ( ;; ) 
 	{
 		kill = *trail;
-		if (kill && kill->die < gpGlobals->curtime)
+		if (kill && kill->die < gpGlobals->GetCurTime())
 		{
 			*trail = kill->next;
 			kill->next = m_pFreeTrails;
@@ -1449,7 +1449,7 @@ void CViewRenderBeams::FreeDeadTrails( BeamTrail_t **trail )
 		for ( ;; )
 		{
 			kill = p->next;
-			if (kill && kill->die < gpGlobals->curtime)
+			if (kill && kill->die < gpGlobals->GetCurTime())
 			{
 				p->next = kill->next;
 				kill->next = m_pFreeTrails;
@@ -1470,14 +1470,14 @@ void CViewRenderBeams::UpdateBeam( Beam_t *pbeam, float frametime )
 {
 	if ( pbeam->modelIndex < 0 )
 	{
-		pbeam->die = gpGlobals->curtime;
+		pbeam->die = gpGlobals->GetCurTime();
 		return;
 	}
 
 	// if we are paused, force random numbers used by noise to generate the same value every frame
 	if ( frametime == 0.0f )
 	{
-		beamRandom.SetSeed( (int)gpGlobals->curtime );
+		beamRandom.SetSeed( (int)gpGlobals->GetCurTime() );
 	}
 
 	// If FBEAM_ONLYNOISEONCE is set, we don't want to move once we've first calculated noise
@@ -1553,7 +1553,7 @@ void CViewRenderBeams::UpdateBeam( Beam_t *pbeam, float frametime )
 			{
 				float frac = 1.0f;
 				// Go some portion of the way there based on life
-				float remaining = pbeam->die - gpGlobals->curtime;
+				float remaining = pbeam->die - gpGlobals->GetCurTime();
 				if ( remaining < pbeam->life && pbeam->life > 0.0f )
 				{
 					frac = remaining / pbeam->life;
@@ -1590,7 +1590,7 @@ void CViewRenderBeams::UpdateBeam( Beam_t *pbeam, float frametime )
 	}
 
 	// update life cycle
-	pbeam->t = pbeam->freq + (pbeam->die - gpGlobals->curtime);
+	pbeam->t = pbeam->freq + (pbeam->die - gpGlobals->GetCurTime());
 	if (pbeam->t != 0)
 	{
 		pbeam->t = pbeam->freq / pbeam->t;
@@ -1621,7 +1621,7 @@ void CViewRenderBeams::UpdateTempEntBeams( void )
 		return;
 
 	// Get frame time
-	float frametime = gpGlobals->frametime;
+	float frametime = gpGlobals->GetFrameTime();
 
 	if ( frametime == 0.0f )
 		return;
@@ -1636,7 +1636,7 @@ void CViewRenderBeams::UpdateTempEntBeams( void )
 
 		// Retire old beams
 		if ( !(pBeam->flags & FBEAM_FOREVER) && 
-			pBeam->die <= gpGlobals->curtime )
+			pBeam->die <= gpGlobals->GetCurTime() )
 		{
 			// Reset links
 			if ( pPrev )
@@ -1718,10 +1718,10 @@ void CViewRenderBeams::DrawBeamFollow( const IVModel* pSprite, Beam_t *pbeam,
 	if (pnew)
 	{
 		VectorCopy( pbeam->attachment[0], pnew->org );
-		pnew->die = gpGlobals->curtime + pbeam->amplitude;
+		pnew->die = gpGlobals->GetCurTime() + pbeam->amplitude;
 		VectorCopy( vec3_origin, pnew->vel );
 
-		pbeam->die = gpGlobals->curtime + pbeam->amplitude;
+		pbeam->die = gpGlobals->GetCurTime() + pbeam->amplitude;
 		pnew->next = particles;
 		pbeam->trail = pnew;
 		particles = pnew;
@@ -1946,7 +1946,7 @@ void CViewRenderBeams::DrawBeam( Beam_t *pbeam )
 
 	if ( pbeam->modelIndex < 0 )
 	{
-		pbeam->die = gpGlobals->curtime;
+		pbeam->die = gpGlobals->GetCurTime();
 		return;
 	}
 	
@@ -1958,7 +1958,7 @@ void CViewRenderBeams::DrawBeam( Beam_t *pbeam )
 	
 	halosprite = engineClient->GetModel( pbeam->haloIndex );
 
-	int frame = ( ( int )( pbeam->frame + gpGlobals->curtime * pbeam->frameRate) % pbeam->frameCount );
+	int frame = ( ( int )( pbeam->frame + gpGlobals->GetCurTime() * pbeam->frameRate) % pbeam->frameCount );
 	int rendermode = ( pbeam->flags & FBEAM_SOLID ) ? kRenderNormal : kRenderTransAdd;
 
 	// set color
@@ -2015,7 +2015,7 @@ void CViewRenderBeams::DrawBeam( Beam_t *pbeam )
 		break;
 
 	case TE_BEAMFOLLOW:
-		DrawBeamFollow( sprite, pbeam, frame, rendermode, gpGlobals->frametime, color, pbeam->m_flHDRColorScale );
+		DrawBeamFollow( sprite, pbeam, frame, rendermode, gpGlobals->GetFrameTime(), color, pbeam->m_flHDRColorScale );
 		break;
 
 	case TE_BEAMRING:
@@ -2096,7 +2096,7 @@ bool CViewRenderBeams::RecomputeBeamEndpoints( Beam_t *pbeam )
 		else if (! (pbeam->flags & FBEAM_FOREVER))
 		{
 			pbeam->flags &= ~(FBEAM_ENDENTITY);
-			pbeam->die = gpGlobals->curtime;
+			pbeam->die = gpGlobals->GetCurTime();
 			return false;
 		}
 		else
@@ -2349,6 +2349,6 @@ void CViewRenderBeams::DrawBeam( C_Beam* pbeam, ITraceFilter *pEntityBeamTraceFi
 	beam.m_flHDRColorScale = pbeam->GetHDRColorScale();
 
 	// Draw it
-	UpdateBeam( &beam, gpGlobals->frametime );
+	UpdateBeam( &beam, gpGlobals->GetFrameTime() );
 	DrawBeam( &beam );
 }

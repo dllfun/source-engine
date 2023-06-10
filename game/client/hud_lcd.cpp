@@ -367,7 +367,7 @@ void CLCD::Update( void )
 
 	bool pageChanged = prevPage != m_nCurrentPage;
 
-	unsigned int dwCurTime = (unsigned int)( 1000.0 * gpGlobals->realtime );
+	unsigned int dwCurTime = (unsigned int)( 1000.0 * gpGlobals->GetRealTime() );
 
 	if ( m_lcd->IsConnected() )
 	{
@@ -477,7 +477,7 @@ void CLCD::ShowItems_R( CLCDPage *page, unsigned int dwCurTime, CUtlVector< CLCD
 					case AGGTYPE_PERPLAYER:
 						// Add all players into list
 						{
-							for ( int pl = 1; pl <= gpGlobals->maxClients; ++pl )
+							for ( int pl = 1; pl <= gpGlobals->GetMaxClients(); ++pl )
 							{
 								if ( g_PR && g_PR->IsConnected( pl ) )
 								{
@@ -495,7 +495,7 @@ void CLCD::ShowItems_R( CLCDPage *page, unsigned int dwCurTime, CUtlVector< CLCD
 
 							if ( local )
 							{
-								for ( int pl = 1; pl <= gpGlobals->maxClients; ++pl )
+								for ( int pl = 1; pl <= gpGlobals->GetMaxClients(); ++pl )
 								{
 									if ( g_PR && g_PR->IsConnected( pl ) && local->GetTeamNumber() == g_PR->GetTeam( pl ) )
 									{

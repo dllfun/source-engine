@@ -106,7 +106,7 @@ bool C_LowViolenceHostageDeathModel::SetupLowViolenceModel( C_CHostage *pHostage
 		return false;
 	}
 
-	m_flFadeOutStart = gpGlobals->curtime + 5.0f;
+	m_flFadeOutStart = gpGlobals->GetCurTime() + 5.0f;
 	SetNextClientThink( CLIENT_THINK_ALWAYS );
 
 	SetSequence( LookupSequence( "death1" ) );
@@ -143,14 +143,14 @@ bool C_LowViolenceHostageDeathModel::SetupLowViolenceModel( C_CHostage *pHostage
 //-----------------------------------------------------------------------------
 void C_LowViolenceHostageDeathModel::ClientThink( void )
 {
-	if ( m_flFadeOutStart > gpGlobals->curtime )
+	if ( m_flFadeOutStart > gpGlobals->GetCurTime() )
 	{
 		 return;
 	}
 
 	int iAlpha = GetRenderColor().a;
 
-	iAlpha = MAX( iAlpha - ( g_ragdoll_fadespeed.GetInt() * gpGlobals->frametime ), 0 );
+	iAlpha = MAX( iAlpha - ( g_ragdoll_fadespeed.GetInt() * gpGlobals->GetFrameTime() ), 0 );
 
 	SetRenderMode( kRenderTransAlpha );
 	SetRenderColorA( iAlpha );
@@ -172,9 +172,9 @@ void C_CHostage::RecvProxy_Rescued( const CRecvProxyData *pData, void *pStruct, 
 	if ( isRescued && !pHostage->m_isRescued )
 	{
 		// hostage was rescued
-		pHostage->m_flDeadOrRescuedTime = gpGlobals->curtime + 2;
+		pHostage->m_flDeadOrRescuedTime = gpGlobals->GetCurTime() + 2;
 		pHostage->SetRenderMode( kRenderGlow );
-		pHostage->SetNextClientThink( gpGlobals->curtime );
+		pHostage->SetNextClientThink( gpGlobals->GetCurTime() );
 	}
 
 	pHostage->m_isRescued = isRescued;
@@ -382,7 +382,7 @@ void C_CHostage::UpdateLookAt( CStudioHdr *pStudioHdr )
 	// Set the head's yaw.
 	float desired = AngleNormalize( desiredAngles[YAW] - bodyAngles[YAW] );
 	desired = clamp( desired, m_headYawMin, m_headYawMax );
-	m_flCurrentHeadYaw = ApproachAngle( desired, m_flCurrentHeadYaw, HOSTAGE_HEAD_TURN_RATE * gpGlobals->frametime );
+	m_flCurrentHeadYaw = ApproachAngle( desired, m_flCurrentHeadYaw, HOSTAGE_HEAD_TURN_RATE * gpGlobals->GetFrameTime() );
 
 	// Counterrotate the head from the body rotation so it doesn't rotate past its target.
 	m_flCurrentHeadYaw = AngleNormalize( m_flCurrentHeadYaw - flBodyYawDiff );
@@ -395,7 +395,7 @@ void C_CHostage::UpdateLookAt( CStudioHdr *pStudioHdr )
 	desired = AngleNormalize( desiredAngles[PITCH] );
 	desired = clamp( desired, m_headPitchMin, m_headPitchMax );
 	
-	m_flCurrentHeadPitch = ApproachAngle( desired, m_flCurrentHeadPitch, HOSTAGE_HEAD_TURN_RATE * gpGlobals->frametime );
+	m_flCurrentHeadPitch = ApproachAngle( desired, m_flCurrentHeadPitch, HOSTAGE_HEAD_TURN_RATE * gpGlobals->GetFrameTime() );
 	m_flCurrentHeadPitch = AngleNormalize( m_flCurrentHeadPitch );
 	SetPoseParameter( pStudioHdr, m_headPitchPoseParam, m_flCurrentHeadPitch );
 
@@ -468,14 +468,14 @@ void C_CHostage::ClientThink()
 
 	if ( m_clrRender->a > 0 )
 	{
-		SetNextClientThink( gpGlobals->curtime + 0.001 );
+		SetNextClientThink( gpGlobals->GetCurTime() + 0.001 );
 	}
 }
 
 //-----------------------------------------------------------------------------
 bool C_CHostage::WasRecentlyKilledOrRescued( void )
 {
-	return ( gpGlobals->curtime < m_flDeadOrRescuedTime );
+	return ( gpGlobals->GetCurTime() < m_flDeadOrRescuedTime );
 }
 
 //-----------------------------------------------------------------------------
@@ -494,7 +494,7 @@ void C_CHostage::OnDataChanged( DataUpdateType_t updateType )
 	if ( m_OldLifestate != m_lifeState )
 	{
 		if( m_lifeState == LIFE_DEAD || m_lifeState == LIFE_DYING )
-			m_flDeadOrRescuedTime = gpGlobals->curtime + 2;
+			m_flDeadOrRescuedTime = gpGlobals->GetCurTime() + 2;
 	}
 }
 

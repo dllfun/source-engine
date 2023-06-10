@@ -1165,7 +1165,7 @@ void CParticleMgr::Term()
 
 void CParticleMgr::LevelInit()
 {
-	g_pParticleSystemMgr->SetLastSimulationTime( gpGlobals->curtime );
+	g_pParticleSystemMgr->SetLastSimulationTime( gpGlobals->GetCurTime() );
 }
 
 
@@ -1711,10 +1711,10 @@ bool CParticleMgr::EarlyRetireParticleSystems( int nCount, CNewParticleEffect **
 		if ( !ppEffects[i]->GetFirstFrameFlag() )
 			continue;
 
-		if ( pDef->HasRetirementBeenChecked( gpGlobals->framecount ) )
+		if ( pDef->HasRetirementBeenChecked( gpGlobals->GetFrameCount() ) )
 			continue;
 
-		pDef->MarkRetirementCheck( gpGlobals->framecount );
+		pDef->MarkRetirementCheck( gpGlobals->GetFrameCount() );
 
 		ppDefs[nDefCount++] = ppEffects[i]->m_pDef;
 	}
@@ -1808,7 +1808,7 @@ void CParticleMgr::UpdateNewEffects( float flTimeDelta )
 	flTimeDelta *= r_particle_timescale.GetFloat();
 	VPROF_BUDGET( "CParticleMSG::UpdateNewEffects", "Particle Simulation" );
 
-	g_pParticleSystemMgr->SetLastSimulationTime( gpGlobals->curtime );
+	g_pParticleSystemMgr->SetLastSimulationTime( gpGlobals->GetCurTime() );
 
 	int nParticleActiveParticlesCount = 0;
 	int nParticleStatsTriggerCount = cl_particle_stats_trigger_count.GetInt();
@@ -2182,7 +2182,7 @@ float Helper_GetTime()
 
 	return (float)elapsed.GetSeconds();
 #else
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 #endif
 }
 
@@ -2213,7 +2213,7 @@ float Helper_GetFrameTime()
 	extern float g_ParticleAppFrameTime;
 	return g_ParticleAppFrameTime;
 #else
-	return gpGlobals->frametime;
+	return gpGlobals->GetFrameTime();
 #endif
 }
 

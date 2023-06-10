@@ -84,7 +84,7 @@ void CCSReplay::FireGameEvent( IGameEvent *pEvent )
 		ConVarRef replay_debug( "replay_debug" );
 		if ( replay_debug.IsValid() && replay_debug.GetBool() )
 		{
-			DevMsg( "%i: CCSReplay::FireGameEvent(): player_death\n", gpGlobals->tickcount );
+			DevMsg( "%i: CCSReplay::FireGameEvent(): player_death\n", gpGlobals->GetTickCount() );
 		}
 
 		int nKillerID = pEvent->GetInt( "attacker" );

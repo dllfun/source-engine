@@ -144,7 +144,7 @@ void CTargetID::Paint()
 		return;
 
 	// don't show target IDs when flashed
-	if ( pPlayer->m_flFlashBangTime > (gpGlobals->curtime+0.5) )
+	if ( pPlayer->m_flFlashBangTime > (gpGlobals->GetCurTime()+0.5) )
 		return;
 
 	//=============================================================================
@@ -165,7 +165,7 @@ void CTargetID::Paint()
 	if ( !iEntIndex )
 	{
 		// Check to see if we should clear our ID
-		if ( m_flLastChangeTime && (gpGlobals->curtime > (m_flLastChangeTime + 0.5)) )
+		if ( m_flLastChangeTime && (gpGlobals->GetCurTime() > (m_flLastChangeTime + 0.5)) )
 		{
 			m_flLastChangeTime = 0;
 			sIDString[0] = 0;
@@ -179,7 +179,7 @@ void CTargetID::Paint()
 	}
 	else
 	{
-		m_flLastChangeTime = gpGlobals->curtime;
+		m_flLastChangeTime = gpGlobals->GetCurTime();
 	}
 
 	// Is this an entindex sent by the server?

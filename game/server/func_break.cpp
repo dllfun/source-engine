@@ -608,7 +608,7 @@ void CBreakable::BreakTouch( CBaseEntity *pOther )
 		SetTouch( NULL );
 		
 		// Add optional delay 
-		SetNextThink( gpGlobals->curtime + m_flPressureDelay );
+		SetNextThink( gpGlobals->GetCurTime() + m_flPressureDelay );
 
 	}
 }
@@ -1112,7 +1112,7 @@ void CBreakable::Die( void )
 
 	VPhysicsDestroyObject();
 	SetThink( &CBreakable::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	if ( m_iszSpawnObject != NULL_STRING )
 	{
 		CBaseEntity::Create( STRING(m_iszSpawnObject), vecSpot, pCollisionProp->GetCollisionAngles(), this );
@@ -1185,18 +1185,18 @@ int CBreakable::DrawDebugTextOverlays(void)
 void CBreakable::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 }
 
 void CBreakable::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 }
 
 CBasePlayer *CBreakable::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime)
 	{
 		return m_hPhysicsAttacker;
 	}

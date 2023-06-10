@@ -349,10 +349,10 @@ void CPhysicsSpring::Spawn( void )
 void CPhysicsSpring::NotifySystemEvent( CBaseEntity *pNotify, notify_system_event_t eventType, const notify_system_event_params_t &params )
 {
 	// don't recurse
-	if ( eventType != NOTIFY_EVENT_TELEPORT || (unsigned int)gpGlobals->tickcount == m_teleportTick )
+	if ( eventType != NOTIFY_EVENT_TELEPORT || (unsigned int)gpGlobals->GetTickCount() == m_teleportTick )
 		return;
 
-	m_teleportTick = gpGlobals->tickcount;
+	m_teleportTick = gpGlobals->GetTickCount();
 	PhysTeleportConstrainedEntity( pNotify, m_pSpring->GetStartObject(), m_pSpring->GetEndObject(), params.pTeleport->prevOrigin, params.pTeleport->prevAngles, params.pTeleport->physicsRotate );
 }
 
@@ -1741,7 +1741,7 @@ void CPhysMagnet::DoMagnetSuck( CBaseEntity *pOther )
 		return;
 
 	// Don't repeatedly suck
-	if ( m_flNextSuckTime > gpGlobals->curtime )
+	if ( m_flNextSuckTime > gpGlobals->GetCurTime() )
 		return;
 	
 	// Look for physics objects underneath the magnet and suck them onto it
@@ -1774,7 +1774,7 @@ void CPhysMagnet::DoMagnetSuck( CBaseEntity *pOther )
 		}
 	}
 
-	m_flNextSuckTime = gpGlobals->curtime + 2.0;
+	m_flNextSuckTime = gpGlobals->GetCurTime() + 2.0;
 }
 
 //-----------------------------------------------------------------------------
@@ -1967,7 +1967,7 @@ void CPointPush::Activate( void )
 	if ( m_bEnabled )
 	{
 		SetThink( &CPointPush::PushThink );
-		SetNextThink( gpGlobals->curtime + 0.05f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 	}
 
 	BaseClass::Activate();
@@ -2007,7 +2007,7 @@ void CPointPush::PushEntity( CBaseEntity *pTarget )
 			if ( pPhys )
 			{
 				// UNDONE: Assume the velocity is for a 100kg object, scale with mass
-				pPhys->ApplyForceCenter( m_flMagnitude * flFalloff * 100.0f * vecPushDir * pPhys->GetMass() * gpGlobals->frametime );
+				pPhys->ApplyForceCenter( m_flMagnitude * flFalloff * 100.0f * vecPushDir * pPhys->GetMass() * gpGlobals->GetFrameTime() );
 				return;
 			}
 		}
@@ -2107,7 +2107,7 @@ void CPointPush::PushThink( void )
 	}
 
 	// Set us up for the next think
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 //-----------------------------------------------------------------------------
@@ -2117,7 +2117,7 @@ void CPointPush::InputEnable( inputdata_t &inputdata )
 {
 	m_bEnabled = true;
 	SetThink( &CPointPush::PushThink );
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 //-----------------------------------------------------------------------------
@@ -2127,5 +2127,5 @@ void CPointPush::InputDisable( inputdata_t &inputdata )
 {
 	m_bEnabled = false;
 	SetThink( NULL );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }

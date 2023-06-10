@@ -188,9 +188,9 @@ void CColorCorrection::Activate( void )
 void CColorCorrection::FadeIn ( void )
 {
 	m_bEnabled = true;
-	m_flTimeStartFadeIn = gpGlobals->curtime;
+	m_flTimeStartFadeIn = gpGlobals->GetCurTime();
 	m_flStartFadeInWeight = m_flCurWeight;
-	SetNextThink ( gpGlobals->curtime + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeInContextThink );
+	SetNextThink ( gpGlobals->GetCurTime() + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeInContextThink );
 }
 
 //-----------------------------------------------------------------------------
@@ -199,9 +199,9 @@ void CColorCorrection::FadeIn ( void )
 void CColorCorrection::FadeOut ( void )
 {
 	m_bEnabled = false;
-	m_flTimeStartFadeOut = gpGlobals->curtime;
+	m_flTimeStartFadeOut = gpGlobals->GetCurTime();
 	m_flStartFadeOutWeight = m_flCurWeight;
-	SetNextThink ( gpGlobals->curtime + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeOutContextThink );
+	SetNextThink ( gpGlobals->GetCurTime() + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeOutContextThink );
 }
 
 //-----------------------------------------------------------------------------
@@ -230,13 +230,13 @@ void CColorCorrection::FadeInThink( void )
 	}	
 	
 	Assert ( flTimeToFade > 0.0f );
-	float flFadeRatio = (gpGlobals->curtime - m_flTimeStartFadeIn) / flTimeToFade;
+	float flFadeRatio = (gpGlobals->GetCurTime() - m_flTimeStartFadeIn) / flTimeToFade;
 	flFadeRatio = clamp ( flFadeRatio, 0.0f, 1.0f );
 	m_flStartFadeInWeight = clamp ( m_flStartFadeInWeight, 0.0f, 1.0f );
 
 	m_flCurWeight = Lerp( flFadeRatio, m_flStartFadeInWeight, m_flMaxWeight );
 
-	SetNextThink( gpGlobals->curtime + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeInContextThink );
+	SetNextThink( gpGlobals->GetCurTime() + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeInContextThink );
 }
 
 //-----------------------------------------------------------------------------
@@ -265,13 +265,13 @@ void CColorCorrection::FadeOutThink( void )
 	}	
 	
 	Assert ( flTimeToFade > 0.0f );
-	float flFadeRatio = (gpGlobals->curtime - m_flTimeStartFadeOut) / flTimeToFade;
+	float flFadeRatio = (gpGlobals->GetCurTime() - m_flTimeStartFadeOut) / flTimeToFade;
 	flFadeRatio = clamp ( flFadeRatio, 0.0f, 1.0f );
 	m_flStartFadeOutWeight = clamp ( m_flStartFadeOutWeight, 0.0f, 1.0f );
 
 	m_flCurWeight = Lerp( 1.0f - flFadeRatio, 0.0f, m_flStartFadeOutWeight );
 
-	SetNextThink( gpGlobals->curtime + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeOutContextThink );
+	SetNextThink( gpGlobals->GetCurTime() + COLOR_CORRECTION_ENT_THINK_RATE, s_pFadeOutContextThink );
 }
 
 //------------------------------------------------------------------------------

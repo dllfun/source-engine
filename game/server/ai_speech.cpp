@@ -467,7 +467,7 @@ bool CAI_Expresser::SpeakDispatchResponse( AIConcept_t concept, AI_Response *res
 
 	if ( spoke )
 	{
-		m_flLastTimeAcceptedSpeak = gpGlobals->curtime;
+		m_flLastTimeAcceptedSpeak = gpGlobals->GetCurTime();
 		if ( DebuggingSpeech() && g_pDeveloper->GetInt() > 0 && response && result->GetType() != RESPONSE_PRINT )
 		{
 			Vector vPrintPos;
@@ -477,7 +477,7 @@ bool CAI_Expresser::SpeakDispatchResponse( AIConcept_t concept, AI_Response *res
 
 		if ( result->IsApplyContextToWorld() )
 		{
-			CBaseEntity *pEntity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex( 0 ) );
+			CBaseEntity *pEntity = CBaseEntity::Instance(INDEXENT( 0 ) );
 			if ( pEntity )
 			{
 				pEntity->AddContext( result->GetContext() );
@@ -558,7 +558,7 @@ bool CAI_Expresser::Speak( AIConcept_t concept, const char *modifiers /*= NULL*/
 		return false;
 	}
 
-	SpeechMsg( GetOuter(), "%s (%p) spoke %s (%f)\n", STRING(GetOuter()->GetEntityName()), GetOuter(), concept, gpGlobals->curtime );
+	SpeechMsg( GetOuter(), "%s (%p) spoke %s (%f)\n", STRING(GetOuter()->GetEntityName()), GetOuter(), concept, gpGlobals->GetCurTime() );
 
 	bool spoke = SpeakDispatchResponse( concept, result, filter );
 	if ( pszOutResponseChosen )
@@ -646,7 +646,7 @@ int CAI_Expresser::SpeakRawSentence( const char *pszSentence, float delay, float
 
 void CAI_Expresser::BlockSpeechUntil( float time ) 	
 { 
-	SpeechMsg( GetOuter(), "BlockSpeechUntil(%f) %f\n", time, time - gpGlobals->curtime );
+	SpeechMsg( GetOuter(), "BlockSpeechUntil(%f) %f\n", time, time - gpGlobals->GetCurTime() );
 	m_flBlockedTalkTime = time; 
 }
 
@@ -662,12 +662,12 @@ void CAI_Expresser::NoteSpeaking( float duration, float delay )
 	if ( duration <= 0 )
 	{
 		// no duration :( 
-		m_flStopTalkTime = gpGlobals->curtime + 3;
+		m_flStopTalkTime = gpGlobals->GetCurTime() + 3;
 		duration = 0;
 	}
 	else
 	{
-		m_flStopTalkTime = gpGlobals->curtime + duration;
+		m_flStopTalkTime = gpGlobals->GetCurTime() + duration;
 	}
 
 	m_flStopTalkTimeWithoutDelay = m_flStopTalkTime - delay;
@@ -690,8 +690,8 @@ void CAI_Expresser::ForceNotSpeaking( void )
 {
 	if ( IsSpeaking() )
 	{
-		m_flStopTalkTime = gpGlobals->curtime;
-		m_flStopTalkTimeWithoutDelay = gpGlobals->curtime;
+		m_flStopTalkTime = gpGlobals->GetCurTime();
+		m_flStopTalkTimeWithoutDelay = gpGlobals->GetCurTime();
 
 		CAI_TimedSemaphore *pSemaphore = GetMySpeechSemaphore( GetOuter() );
 		if ( pSemaphore )
@@ -708,24 +708,24 @@ void CAI_Expresser::ForceNotSpeaking( void )
 
 bool CAI_Expresser::IsSpeaking( void )
 {
-	if ( m_flStopTalkTime > gpGlobals->curtime )
-		SpeechMsg( GetOuter(), "IsSpeaking() %f\n", m_flStopTalkTime - gpGlobals->curtime );
+	if ( m_flStopTalkTime > gpGlobals->GetCurTime() )
+		SpeechMsg( GetOuter(), "IsSpeaking() %f\n", m_flStopTalkTime - gpGlobals->GetCurTime() );
 
-	if ( m_flLastTimeAcceptedSpeak == gpGlobals->curtime ) // only one speak accepted per think
+	if ( m_flLastTimeAcceptedSpeak == gpGlobals->GetCurTime() ) // only one speak accepted per think
 		return true;
 
-	return ( m_flStopTalkTime > gpGlobals->curtime );
+	return ( m_flStopTalkTime > gpGlobals->GetCurTime() );
 }
 
 //-------------------------------------
 
 bool CAI_Expresser::CanSpeak()
 {
-	if ( m_flLastTimeAcceptedSpeak == gpGlobals->curtime ) // only one speak accepted per think
+	if ( m_flLastTimeAcceptedSpeak == gpGlobals->GetCurTime() ) // only one speak accepted per think
 		return false;
 
 	float timeOk = MAX( m_flStopTalkTime, m_flBlockedTalkTime );
-	return ( timeOk <= gpGlobals->curtime );
+	return ( timeOk <= gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -736,11 +736,11 @@ bool CAI_Expresser::CanSpeak()
 //-----------------------------------------------------------------------------
 bool CAI_Expresser::CanSpeakAfterMyself()
 {
-	if ( m_flLastTimeAcceptedSpeak == gpGlobals->curtime ) // only one speak accepted per think
+	if ( m_flLastTimeAcceptedSpeak == gpGlobals->GetCurTime() ) // only one speak accepted per think
 		return false;
 
 	float timeOk = MAX( m_flStopTalkTimeWithoutDelay, m_flBlockedTalkTime );
-	return ( timeOk <= gpGlobals->curtime );
+	return ( timeOk <= gpGlobals->GetCurTime() );
 }
 
 //-------------------------------------
@@ -767,7 +767,7 @@ bool CAI_Expresser::CanSpeakConcept( AIConcept_t concept )
 
 	if ( respeakDelay != 0.0f )
 	{
-		if ( history->timeSpoken != -1 && ( gpGlobals->curtime < history->timeSpoken + respeakDelay ) )
+		if ( history->timeSpoken != -1 && ( gpGlobals->GetCurTime() < history->timeSpoken + respeakDelay ) )
 			return false;
 	}
 
@@ -801,13 +801,13 @@ void CAI_Expresser::SetSpokeConcept( AIConcept_t concept, AI_Response *response,
 	if ( idx == m_ConceptHistories.InvalidIndex() )
 	{
 		ConceptHistory_t h;
-		h.timeSpoken = gpGlobals->curtime;
+		h.timeSpoken = gpGlobals->GetCurTime();
 		idx = m_ConceptHistories.Insert( concept, h );
 	}
 
 	ConceptHistory_t *slot = &m_ConceptHistories[ idx ];
 
-	slot->timeSpoken = gpGlobals->curtime;
+	slot->timeSpoken = gpGlobals->GetCurTime();
 	// Update response info
 	if ( response )
 	{
@@ -922,7 +922,7 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 		if ( pSpeaker->GetLastEnemyTime() == 0.0 )
 			set.AppendCriteria( "timesincecombat", "999999.0" );
 		else
-			set.AppendCriteria( "timesincecombat", UTIL_VarArgs( "%f", gpGlobals->curtime - pSpeaker->GetLastEnemyTime() ) );
+			set.AppendCriteria( "timesincecombat", UTIL_VarArgs( "%f", gpGlobals->GetCurTime() - pSpeaker->GetLastEnemyTime() ) );
 	}
 
 	set.AppendCriteria( "speed", UTIL_VarArgs( "%.3f", pSpeaker->GetSmoothedVelocity().Length() ) );

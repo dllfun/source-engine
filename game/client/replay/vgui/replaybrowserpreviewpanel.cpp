@@ -231,7 +231,7 @@ CReplayPreviewPanelMovie::CReplayPreviewPanelMovie( Panel *pParent, QueryableRep
 :	BaseClass( pParent, hItem, pItemManager ),
 	m_pMoviePlayerPanel( NULL )
 {
-	m_flCreateTime = gpGlobals->realtime;
+	m_flCreateTime = gpGlobals->GetRealTime();
 
 	ivgui()->AddTickSignal( GetVPanel(), 10 );
 }
@@ -243,7 +243,7 @@ CReplayPreviewPanelMovie::~CReplayPreviewPanelMovie()
 
 void CReplayPreviewPanelMovie::OnTick()
 {
-	if ( gpGlobals->realtime >= m_flCreateTime + 0.5f )
+	if ( gpGlobals->GetRealTime() >= m_flCreateTime + 0.5f )
 	{
 		if ( !m_pMoviePlayerPanel )
 		{

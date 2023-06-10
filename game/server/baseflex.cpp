@@ -1176,19 +1176,19 @@ bool CBaseFlex::ProcessFlexAnimationSceneEvent( CSceneEventInfo *info, CChoreoSc
 				if (scene->IsBackground())
 				{
 					// if framerate too slow, disable
-					if (gpGlobals->frametime > ai_expression_frametime.GetFloat())
+					if (gpGlobals->GetFrameTime() > ai_expression_frametime.GetFloat())
 					{
 						info->m_bHasArrived = true;
-						info->m_flNext = gpGlobals->curtime + RandomFloat( 0.7, 1.2 );
+						info->m_flNext = gpGlobals->GetCurTime() + RandomFloat( 0.7, 1.2 );
 					}
 					// only check occasionally
-					else if (info->m_flNext <= gpGlobals->curtime)
+					else if (info->m_flNext <= gpGlobals->GetCurTime())
 					{
 						CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 
 						// if not in view, disable
 						info->m_bHasArrived = (pPlayer && !pPlayer->FInViewCone( this ) );
-						info->m_flNext = gpGlobals->curtime + RandomFloat( 0.7, 1.2 );
+						info->m_flNext = gpGlobals->GetCurTime() + RandomFloat( 0.7, 1.2 );
 					}
 
 					if (info->m_bHasArrived)
@@ -1955,7 +1955,7 @@ bool CBaseFlex::PermitResponse( float response_length )
 	}
 
 	// If response ends before end of allow time, then that's okay
-	if ( gpGlobals->curtime + response_length <= m_flAllowResponsesEndTime )
+	if ( gpGlobals->GetCurTime() + response_length <= m_flAllowResponsesEndTime )
 	{
 		return true;
 	}
@@ -2069,10 +2069,10 @@ bool CBaseFlex::IsSuppressedFlexAnimation( CSceneEventInfo *info )
 	if (info->m_pScene && info->m_pScene->IsBackground())
 	{
 		// allow for slight jitter
-		return m_flLastFlexAnimationTime > gpGlobals->curtime - GetAnimTimeInterval() * 1.5;
+		return m_flLastFlexAnimationTime > gpGlobals->GetCurTime() - GetAnimTimeInterval() * 1.5;
 	}
 	// keep track of last non-suppressable flex animation
-	m_flLastFlexAnimationTime = gpGlobals->curtime;
+	m_flLastFlexAnimationTime = gpGlobals->GetCurTime();
 	return false;
 }
 
@@ -2117,7 +2117,7 @@ void CBaseFlex::DoBodyLean( void )
 		vecDelta.y = clamp( vecDelta.y, -50, 50 );
 		vecDelta.z = clamp( vecDelta.z, -50, 50 );
 
-		float dt = gpGlobals->curtime - GetLastThink();
+		float dt = gpGlobals->GetCurTime() - GetLastThink();
 		bool bSkip = ((GetFlags() & (FL_FLY | FL_SWIM)) != 0) || (GetMoveParent() != NULL) || (GetGroundEntity() == NULL) || (GetGroundEntity()->IsMoving());
 		bSkip |= myNpc->TaskRanAutomovement() || (myNpc->GetVehicleEntity() != NULL);
 
@@ -2328,7 +2328,7 @@ void CFlexCycler::Spawn( )
 	m_flGroundSpeed		= 0;
 
 
-	SetNextThink( gpGlobals->curtime + 1.0f );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 
 	ResetSequenceInfo( );
 
@@ -2443,7 +2443,7 @@ LocalFlexController_t CFlexCycler::LookupFlex( const char *szTarget  )
 
 void CFlexCycler::Think( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	StudioFrameAdvance ( );
 
@@ -2451,7 +2451,7 @@ void CFlexCycler::Think( void )
 	{
 		// ResetSequenceInfo();
 		// hack to avoid reloading model every frame
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		m_flPlaybackRate = 1.0;
 		m_bSequenceFinished = false;
 		m_flLastEventCheck = 0;
@@ -2493,7 +2493,7 @@ void CFlexCycler::Think( void )
 			for ( LocalFlexController_t i = LocalFlexController_t(0); i < GetNumFlexControllers(); i++ )
 			{
 				// Throw a differently offset sine wave on all of the flex controllers
-				float fFlexTime = i * (1.0f / (float)GetNumFlexControllers()) + gpGlobals->curtime;
+				float fFlexTime = i * (1.0f / (float)GetNumFlexControllers()) + gpGlobals->GetCurTime();
 				m_flextarget[i] = sinf( fFlexTime ) * 0.5f + 0.5f;
 				SetFlexWeight( i, m_flextarget[i] );
 			}
@@ -2554,10 +2554,10 @@ void CFlexCycler::Think( void )
 				pszExpression++;
 			}
 		}
-		else if (m_flextime < gpGlobals->curtime)
+		else if (m_flextime < gpGlobals->GetCurTime())
 		{
-			// m_flextime = gpGlobals->curtime + 1.0; // RandomFloat( 0.1, 0.5 );
-			m_flextime = gpGlobals->curtime + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
+			// m_flextime = gpGlobals->GetCurTime() + 1.0; // RandomFloat( 0.1, 0.5 );
+			m_flextime = gpGlobals->GetCurTime() + random->RandomFloat( 0.3, 0.5 ) * (30.0 / GetNumFlexControllers());
 			m_flexnum = (LocalFlexController_t)random->RandomInt( 0, GetNumFlexControllers() - 1 );
 
 			// m_flexnum = (pflex->num + 1) % r_psubmodel->numflexes;
@@ -2643,7 +2643,7 @@ void CFlexCycler::Think( void )
 #else
 		if (flex_talk.GetInt())
 		{
-			if (m_speaktime < gpGlobals->curtime)
+			if (m_speaktime < gpGlobals->GetCurTime())
 			{
 				if (m_phoneme == 0)
 				{
@@ -2656,12 +2656,12 @@ void CFlexCycler::Think( void )
 				m_istalking = !m_istalking;
 				if (m_istalking)
 				{
-					m_looktime = gpGlobals->curtime - 1.0;
-					m_speaktime = gpGlobals->curtime + random->RandomFloat( 0.5, 2.0 );
+					m_looktime = gpGlobals->GetCurTime() - 1.0;
+					m_speaktime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5, 2.0 );
 				}
 				else
 				{
-					m_speaktime = gpGlobals->curtime + random->RandomFloat( 1.0, 3.0 );
+					m_speaktime = gpGlobals->GetCurTime() + random->RandomFloat( 1.0, 3.0 );
 				}
 			}
 
@@ -2672,7 +2672,7 @@ void CFlexCycler::Think( void )
 
 			if (m_istalking)
 			{
-				m_flextime = gpGlobals->curtime + random->RandomFloat( 0.0, 0.2 );
+				m_flextime = gpGlobals->GetCurTime() + random->RandomFloat( 0.0, 0.2 );
 				m_flexWeight[random->RandomInt(m_phoneme, GetNumFlexControllers()-1)] = random->RandomFloat( 0.5, 1.0 );
 				float mouth = random->RandomFloat( 0.0, 1.0 );
 				float jaw = random->RandomFloat( 0.0, 1.0 );
@@ -2688,10 +2688,10 @@ void CFlexCycler::Think( void )
 #endif
 
 		// blink
-		if (m_blinktime < gpGlobals->curtime)
+		if (m_blinktime < gpGlobals->GetCurTime())
 		{
 			Blink();
-			m_blinktime = gpGlobals->curtime + random->RandomFloat( 1.5, 4.5 );
+			m_blinktime = gpGlobals->GetCurTime() + random->RandomFloat( 1.5, 4.5 );
 		}
 	}
 
@@ -2705,16 +2705,16 @@ void CFlexCycler::Think( void )
 		if (pPlayer->GetSmoothedVelocity().Length() != 0 && DotProduct( forward, pPlayer->EyePosition() - EyePosition()) > 0.5)
 		{
 			m_lookTarget = pPlayer->EyePosition();
-			m_looktime = gpGlobals->curtime + random->RandomFloat(2.0,4.0);
+			m_looktime = gpGlobals->GetCurTime() + random->RandomFloat(2.0,4.0);
 		}
-		else if (m_looktime < gpGlobals->curtime)
+		else if (m_looktime < gpGlobals->GetCurTime())
 		{
 			if ((!m_istalking) && random->RandomInt( 0, 1 ) == 0)
 			{
 				m_lookTarget = EyePosition() + forward * 128 + right * random->RandomFloat(-64,64) + up * random->RandomFloat(-32,32);
-				m_looktime = gpGlobals->curtime + random->RandomFloat(0.3,1.0);
+				m_looktime = gpGlobals->GetCurTime() + random->RandomFloat(0.3,1.0);
 
-				if (m_blinktime - 0.5 < gpGlobals->curtime)
+				if (m_blinktime - 0.5 < gpGlobals->GetCurTime())
 				{
 					Blink();
 				}
@@ -2722,7 +2722,7 @@ void CFlexCycler::Think( void )
 			else
 			{
 				m_lookTarget = pPlayer->EyePosition();
-				m_looktime = gpGlobals->curtime + random->RandomFloat(1.0,4.0);
+				m_looktime = gpGlobals->GetCurTime() + random->RandomFloat(1.0,4.0);
 			}
 		}
 

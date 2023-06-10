@@ -257,7 +257,7 @@ void CVProfGraphPanel::Paint()
 	double RootTime =  g_VProfCurrentProfile.GetRoot()->GetPrevTime();
 
 	char sz[256];
-	if ( ( g_ClientGlobalVariables.absoluteframetime) > 0.f )
+	if ( ( g_ClientGlobalVariables.GetAbsoluteFrameTime()) > 0.f )
 	{
 		Q_snprintf( sz, sizeof( sz ), "%s - %0.1f%%%%", m_CurrentNode->GetName(), ( m_CurrentNode->GetPrevTime() /  RootTime ) * 100.f);
 		g_pMatSystemSurface->DrawColoredText( m_hFont, x, y, GRAPH_RED, GRAPH_GREEN, GRAPH_BLUE, 255, "%s", sz );

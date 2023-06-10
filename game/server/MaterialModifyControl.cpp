@@ -190,7 +190,7 @@ void CMaterialModifyControl::SetMaterialVar( inputdata_t &inputdata )
 void CMaterialModifyControl::SetMaterialVarToCurrentTime( inputdata_t &inputdata )
 {
 	char temp[32];
-	Q_snprintf( temp, 32, "%f", gpGlobals->curtime );
+	Q_snprintf( temp, 32, "%f", gpGlobals->GetCurTime() );
 	Q_strncpy( m_szMaterialVarValue.GetForModify(), temp, MATERIAL_MODIFY_STRING_SIZE );
 	m_nModifyMode = MATERIAL_MODIFY_MODE_SETVAR;
 }

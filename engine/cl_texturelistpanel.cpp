@@ -452,7 +452,7 @@ static IMaterial * UseDebugMaterial( char const *szMaterial, ITexture *pMatTextu
 		if ( pMatTexture->IsRenderTarget() || pMatTexture->IsProcedural() )
 			numAnimFrames = 0; // Cannot use the stencil parts of the render targets and shouldn't use the other frames of procedural textures
 
-		FrameVar->SetIntValue( ( numAnimFrames > 0 ) ? ( g_ClientGlobalVariables.tickcount % numAnimFrames ) : 0 );
+		FrameVar->SetIntValue( ( numAnimFrames > 0 ) ? ( g_ClientGlobalVariables.GetTickCount() % numAnimFrames) : 0);
 	}
 
 	BaseTextureVar->SetTextureValue( pMatTexture );

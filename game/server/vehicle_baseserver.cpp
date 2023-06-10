@@ -1060,7 +1060,7 @@ void CBaseServerVehicle::HandlePassengerEntry( CBaseCombatCharacter *pPassenger,
 			{
 				// Setup the "enter" vehicle sequence and skip the animation if it isn't present.
 				pAnimating->SetCycle( 0 );
-				pAnimating->m_flAnimTime = gpGlobals->curtime;
+				pAnimating->m_flAnimTime = gpGlobals->GetCurTime();
 				pAnimating->ResetSequence( iEntryAnim );
 				pAnimating->ResetClientsideFrame();
 				pAnimating->InvalidateBoneCache();	// This is necessary because we need to query attachment points this frame for blending!
@@ -1125,7 +1125,7 @@ bool CBaseServerVehicle::HandlePassengerExit( CBaseCombatCharacter *pPassenger )
 			if ( pAnimating )
 			{
 				pAnimating->SetCycle( 0 );
-				pAnimating->m_flAnimTime = gpGlobals->curtime;
+				pAnimating->m_flAnimTime = gpGlobals->GetCurTime();
 				pAnimating->ResetSequence( iSequence );
 				pAnimating->ResetClientsideFrame();
 				GetDrivableVehicle()->SetVehicleExitAnim( true, vecExitPoint );
@@ -1490,7 +1490,7 @@ void CBaseServerVehicle::HandleEntryExitFinish( bool bExitAnimOn, bool bResetAni
 		if ( iSequence > ACTIVITY_NOT_AVAILABLE )
 		{
 			pAnimating->SetCycle( 0 );
-			pAnimating->m_flAnimTime = gpGlobals->curtime;
+			pAnimating->m_flAnimTime = gpGlobals->GetCurTime();
 			pAnimating->ResetSequence( iSequence );
 			pAnimating->ResetClientsideFrame();
 		}
@@ -1704,7 +1704,7 @@ void CBaseServerVehicle::Weapon_SecondaryRanges( float *flMinRange, float *flMax
 //-----------------------------------------------------------------------------
 float CBaseServerVehicle::Weapon_PrimaryCanFireAt( void )
 {
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -1712,7 +1712,7 @@ float CBaseServerVehicle::Weapon_PrimaryCanFireAt( void )
 //-----------------------------------------------------------------------------
 float CBaseServerVehicle::Weapon_SecondaryCanFireAt( void )
 {
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
 const char *pSoundStateNames[] =
@@ -1916,7 +1916,7 @@ bool CBaseServerVehicle::CheckCrash( vbs_sound_update_t &params )
 
 sound_states CBaseServerVehicle::SoundState_ChooseState( vbs_sound_update_t &params )
 {
-	float timeInState = gpGlobals->curtime - m_soundStateStartTime;
+	float timeInState = gpGlobals->GetCurTime() - m_soundStateStartTime;
 	bool bInStateForMinTime = timeInState > m_vehicleSounds.minStateTime[m_soundState] ? true : false;
 
 	sound_states stateOut = m_soundState;
@@ -2148,7 +2148,7 @@ void CBaseServerVehicle::SoundState_OnNewState( sound_states lastState )
 	default:break;
 	}
 
-	m_soundStateStartTime = gpGlobals->curtime;
+	m_soundStateStartTime = gpGlobals->GetCurTime();
 }
 
 

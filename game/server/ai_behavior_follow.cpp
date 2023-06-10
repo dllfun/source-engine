@@ -431,7 +431,7 @@ bool CAI_FollowBehavior::UpdateFollowPosition()
 {
 	AI_PROFILE_SCOPE( CAI_FollowBehavior_UpdateFollowPosition );
 
-	if ( m_flTimeUpdatedFollowPosition == gpGlobals->curtime )
+	if ( m_flTimeUpdatedFollowPosition == gpGlobals->GetCurTime() )
 	{
 		return true;
 	}
@@ -462,7 +462,7 @@ bool CAI_FollowBehavior::UpdateFollowPosition()
 	m_FollowNavGoal.position += targetVelocity * 0.5;
 #endif
 	
-	m_flTimeUpdatedFollowPosition = gpGlobals->curtime;
+	m_flTimeUpdatedFollowPosition = gpGlobals->GetCurTime();
 
 	return true;
 }
@@ -575,7 +575,7 @@ void CAI_FollowBehavior::NoteFailedFollow()
 {
 	m_nFailedFollowAttempts++;
 	if ( m_flTimeFailFollowStarted == FLT_MAX )
-		m_flTimeFailFollowStarted = gpGlobals->curtime;
+		m_flTimeFailFollowStarted = gpGlobals->GetCurTime();
 
 	if ( GetOuter() && ai_debug_follow.GetBool() ) 
 		DevMsg( GetOuter(), "Follow: NoteFailedFollow() (%d, %f)\n", m_nFailedFollowAttempts, m_flTimeFailFollowStarted );
@@ -725,7 +725,7 @@ void CAI_FollowBehavior::GatherConditions( void )
 		}
 	}
 
-	if ( m_flTimeUpdatedFollowPosition == 0 || gpGlobals->curtime - m_flTimeUpdatedFollowPosition > 2.0 )
+	if ( m_flTimeUpdatedFollowPosition == 0 || gpGlobals->GetCurTime() - m_flTimeUpdatedFollowPosition > 2.0 )
 		UpdateFollowPosition();
 
 	if ( IsFollowTargetInRange() )
@@ -784,7 +784,7 @@ void CAI_FollowBehavior::GatherConditions( void )
 	{
 		SetCondition( COND_FOLLOW_TARGET_VISIBLE );
 		ClearCondition( COND_FOLLOW_TARGET_NOT_VISIBLE );
-		m_flTimeFollowTargetVisible = gpGlobals->curtime;
+		m_flTimeFollowTargetVisible = gpGlobals->GetCurTime();
 	}
 	else
 	{
@@ -792,7 +792,7 @@ void CAI_FollowBehavior::GatherConditions( void )
 		SetCondition( COND_FOLLOW_TARGET_NOT_VISIBLE );
 	}
 
-	if ( HasFollowPoint() && ( m_flTimeFollowTargetVisible != 0 && gpGlobals->curtime - m_flTimeFollowTargetVisible > 5.0 ) )
+	if ( HasFollowPoint() && ( m_flTimeFollowTargetVisible != 0 && gpGlobals->GetCurTime() - m_flTimeFollowTargetVisible > 5.0 ) )
 		SetCondition( COND_FOLLOW_WAIT_POINT_INVALID );
 	else
 		ClearCondition( COND_FOLLOW_WAIT_POINT_INVALID );
@@ -1371,7 +1371,7 @@ void CAI_FollowBehavior::StartTask( const Task_t *pTask )
 			bool bFollowingPoint = ( dynamic_cast<CPointEntity *>(m_hFollowTarget.Get()) != NULL );
 			if ( GetNpcState() == NPC_STATE_COMBAT )
 			{
-				if( gpGlobals->curtime - GetOuter()->GetEnemyLastTimeSeen() < 5.0 )
+				if( gpGlobals->GetCurTime() - GetOuter()->GetEnemyLastTimeSeen() < 5.0 )
 				{
 					faceTarget = GetEnemyLKP();
 				}
@@ -1525,7 +1525,7 @@ void CAI_FollowBehavior::StartTask( const Task_t *pTask )
 					AI_NavGoal_t goal(GOALTYPE_COVER, coverPos, ACT_RUN, AIN_HULL_TOLERANCE, AIN_DEF_FLAGS);
 					GetNavigator()->SetGoal( goal );
 
-					GetOuter()->m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+					GetOuter()->m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 					TaskComplete();
 				}
 				else

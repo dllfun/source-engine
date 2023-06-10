@@ -177,7 +177,7 @@ void PreUpdateProfile(IEngine* eng, float filteredtime )
 		bool bSuppressRestart = false;
 		if ( g_VProfSignalSpike || eng->GetFrameTime() > ( 1.f / spikeThreash ) )
 		{
-			if( g_VProfSignalSpike || ( Sys_FloatTime() - LastSpikeTime > MAX_SPIKE_REPORT && g_ServerGlobalVariables.framecount > LastSpikeFrame + MAX_SPIKE_REPORT_FRAMES ) )
+			if( g_VProfSignalSpike || ( Sys_FloatTime() - LastSpikeTime > MAX_SPIKE_REPORT && g_ServerGlobalVariables.GetFrameCount() > LastSpikeFrame + MAX_SPIKE_REPORT_FRAMES))
 			{
 				ConsoleLogger consoleLog;
 				// Print a message so that spikes can be seen even when going to VTrace.
@@ -191,7 +191,7 @@ void PreUpdateProfile(IEngine* eng, float filteredtime )
 					Msg( "******* %s\n", GetLastProfileFileRead() );
 #endif
 				LastSpikeTime = Sys_FloatTime();
-				LastSpikeFrame = g_ServerGlobalVariables.framecount;
+				LastSpikeFrame = g_ServerGlobalVariables.GetFrameCount();
 
 				if ( vprof_dump_spikes.GetFloat() < 0.0 )
 				{

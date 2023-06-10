@@ -252,7 +252,7 @@ void CParticleProperty::StopEmission( CNewParticleEffect *pEffect, bool bWakeOnS
 {
 	// If we return from dormancy and are then told to stop emitting,
 	// we should have died while dormant. Remove ourselves immediately.
-	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->framecount);
+	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->GetFrameCount());
 
 	if ( pEffect )
 	{
@@ -327,7 +327,7 @@ void CParticleProperty::StopParticlesInvolving( CBaseEntity *pEntity )
 
 	// If we return from dormancy and are then told to stop emitting,
 	// we should have died while dormant. Remove ourselves immediately.
-	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->framecount);
+	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->GetFrameCount());
 	
 	int nCount = m_ParticleEffects.Count();
 	for ( int i = 0; i < nCount; ++i )
@@ -366,7 +366,7 @@ void CParticleProperty::StopParticlesNamed( const char *pszEffectName, bool bFor
 
 	// If we return from dormancy and are then told to stop emitting,
 	// we should have died while dormant. Remove ourselves immediately.
-	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->framecount);
+	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->GetFrameCount());
 	// force remove particles instantly if caller specified
 	bRemoveInstantly |= bForceRemoveInstantly;
 
@@ -392,7 +392,7 @@ void CParticleProperty::StopParticlesWithNameAndAttachment( const char *pszEffec
 
 	// If we return from dormancy and are then told to stop emitting,
 	// we should have died while dormant. Remove ourselves immediately.
-	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->framecount);
+	bool bRemoveInstantly = (m_iDormancyChangedAtFrame == gpGlobals->GetFrameCount());
 	// force remove particles instantly if caller specified
 	bRemoveInstantly |= bForceRemoveInstantly;
 
@@ -460,7 +460,7 @@ void CParticleProperty::OnParticleSystemDeleted( CNewParticleEffect *pEffect )
 //-----------------------------------------------------------------------------
 void CParticleProperty::OwnerSetDormantTo( bool bDormant )
 {
-	m_iDormancyChangedAtFrame = gpGlobals->framecount;
+	m_iDormancyChangedAtFrame = gpGlobals->GetFrameCount();
 
 	int nCount = m_ParticleEffects.Count();
 	for ( int i = 0; i < nCount; i++ )

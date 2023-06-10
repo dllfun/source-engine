@@ -287,7 +287,7 @@ public:
 
 	CPerformanceTip( const char *pText )
 	:	BaseClass( g_pClientMode->GetViewport(), "Tip" ),
-		m_flBornTime( gpGlobals->realtime ),
+		m_flBornTime( gpGlobals->GetRealTime() ),
 		m_flAge( 0.0f ),
 		m_flShowDuration( 15.0f )
 	{
@@ -298,7 +298,7 @@ public:
 	{
 		// Delete the panel if life exceeded
 		const float flEndTime = m_flBornTime + m_flShowDuration;
-		if ( gpGlobals->realtime >= flEndTime )
+		if ( gpGlobals->GetRealTime() >= flEndTime )
 		{
 			SetVisible( false );
 			MarkForDeletion();
@@ -312,15 +312,15 @@ public:
 		float flAlpha;
 
 		// Fade out?
-		if ( gpGlobals->realtime >= flEndTime - flFadeDuration )
+		if ( gpGlobals->GetRealTime() >= flEndTime - flFadeDuration )
 		{
-			flAlpha = LerpScale( gpGlobals->realtime, flEndTime - flFadeDuration, flEndTime, 1.0f, 0.0f );
+			flAlpha = LerpScale( gpGlobals->GetRealTime(), flEndTime - flFadeDuration, flEndTime, 1.0f, 0.0f );
 		}
 
 		// Fade in?
-		else if ( gpGlobals->realtime <= m_flBornTime + flFadeDuration )
+		else if ( gpGlobals->GetRealTime() <= m_flBornTime + flFadeDuration )
 		{
-			flAlpha = LerpScale( gpGlobals->realtime, m_flBornTime, m_flBornTime + flFadeDuration, 0.0f, 1.0f );
+			flAlpha = LerpScale( gpGlobals->GetRealTime(), m_flBornTime, m_flBornTime + flFadeDuration, 0.0f, 1.0f );
 		}
 
 		// Otherwise, we must be in between fade in/fade out
@@ -401,7 +401,7 @@ inline void DisplayPerformanceTip( const char *pText, ConVar* pCountCv = NULL, i
 inline float GetPlaybackTime()
 {
 	CReplay *pPlayingReplay = g_pReplayManager->GetPlayingReplay();
-	return gpGlobals->curtime - TICKS_TO_TIME( pPlayingReplay->m_nSpawnTick );
+	return gpGlobals->GetCurTime() - TICKS_TO_TIME( pPlayingReplay->m_nSpawnTick );
 }
 
 //-----------------------------------------------------------------------------
@@ -918,7 +918,7 @@ public:
 
 	virtual void OnMousePressed( MouseCode code )
 	{
-		m_flPressTime = gpGlobals->realtime;
+		m_flPressTime = gpGlobals->GetRealTime();
 		PlayDemo();
 
 		BaseClass::OnMousePressed( code );
@@ -942,7 +942,7 @@ public:
 		}
 		else
 		{
-			const float flElapsed = clamp( gpGlobals->realtime - m_flPressTime, 0.0f, MAX_FF_RAMP_TIME );
+			const float flElapsed = clamp( gpGlobals->GetRealTime() - m_flPressTime, 0.0f, MAX_FF_RAMP_TIME );
 			const float t = CubicEaseIn( flElapsed / MAX_FF_RAMP_TIME );
 
 			// If a shift key is down...
@@ -1066,7 +1066,7 @@ public:
 
 	virtual void OnThink()
 	{
-		const float flTime = gpGlobals->realtime;
+		const float flTime = gpGlobals->GetRealTime();
 		bool bPauseAnimating = m_flPlayPauseTime > 0.0f &&
 			                   flTime >= m_flPlayPauseTime &&
 							   flTime < ( m_flPlayPauseTime + m_flAnimTime );
@@ -1115,7 +1115,7 @@ public:
 
 		m_bPaused = bPaused;
 
-		m_flPlayPauseTime = gpGlobals->realtime;
+		m_flPlayPauseTime = gpGlobals->GetRealTime();
 	}
 
 	void SetPerforming( bool bPerforming )
@@ -1466,8 +1466,8 @@ void CReplayPerformanceEditorPanel::OnTick()
 		return;
 
 	// Calc elapsed time
-	float flElapsed = gpGlobals->realtime - m_flLastTime;
-	m_flLastTime = gpGlobals->realtime;
+	float flElapsed = gpGlobals->GetRealTime() - m_flLastTime;
+	m_flLastTime = gpGlobals->GetRealTime();
 
 	// If this is the first time we're running and camera is valid, get primary target
 	if ( m_iCurPlayerTarget < 0 )
@@ -1767,7 +1767,7 @@ void CReplayPerformanceEditorPanel::OnTick()
 
 void CReplayPerformanceEditorPanel::Achievements_OnSpaceBarPressed()
 {
-	m_flLastTimeSpaceBarPressed = gpGlobals->realtime;
+	m_flLastTimeSpaceBarPressed = gpGlobals->GetRealTime();
 }
 
 void CReplayPerformanceEditorPanel::Achievements_Think( float flElapsed )
@@ -1780,7 +1780,7 @@ void CReplayPerformanceEditorPanel::Achievements_Think( float flElapsed )
 		return;
 	
 	// Too much idle time since last activity?
-	if ( gpGlobals->realtime - m_flLastTimeSpaceBarPressed > 60.0f )
+	if ( gpGlobals->GetRealTime() - m_flLastTimeSpaceBarPressed > 60.0f )
 	{
 		m_flActiveTimeInEditor = 0.0f;
 		return;

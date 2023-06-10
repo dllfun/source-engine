@@ -129,7 +129,7 @@ void CDecal::TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 		&GetAbsOrigin(), entityIndex, m_nTexture );
 
 	SetThink( &CDecal::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 
@@ -329,7 +329,7 @@ void CProjectedDecal::TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCall
 	ProjectDecal( filter );
 
 	SetThink( &CProjectedDecal::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 void CProjectedDecal::StaticDecal( void )
@@ -683,7 +683,7 @@ void CWorld::Precache( void )
 			// send the message entity a play message command, delayed by 1 second
 			pMessage->AddSpawnFlags( SF_MESSAGE_ONCE );
 			pMessage->SetThink( &CMessage::SUB_CallUseToggle );
-			pMessage->SetNextThink( gpGlobals->curtime + 1.0f );
+			pMessage->SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 		}
 	}
 

@@ -227,7 +227,7 @@ ILagCompensationManager *lagcompensation = &g_LagCompensationManager;
 //-----------------------------------------------------------------------------
 void CLagCompensationManager::FrameUpdatePostEntityThink()
 {
-	if ( (gpGlobals->maxClients <= 1) || !sv_unlag.GetBool() )
+	if ( (gpGlobals->GetMaxClients() <= 1) || !sv_unlag.GetBool() )
 	{
 		ClearHistory();
 		return;
@@ -238,10 +238,10 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 	VPROF_BUDGET( "FrameUpdatePostEntityThink", "CLagCompensationManager" );
 
 	// remove all records before that time:
-	int flDeadtime = gpGlobals->curtime - sv_maxunlag.GetFloat();
+	int flDeadtime = gpGlobals->GetCurTime() - sv_maxunlag.GetFloat();
 
 	// Iterate all active players
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -338,7 +338,7 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	m_pCurrentPlayer = player;
 	
 	if ( !player->m_bLagCompensation		// Player not wanting lag compensation
-		 || (gpGlobals->maxClients <= 1)	// no lag compensation in single player
+		 || (gpGlobals->GetMaxClients() <= 1)	// no lag compensation in single player
 		 || !sv_unlag.GetBool()				// disabled by server admin
 		 || player->IsBot() 				// not for bots
 		 || player->IsObserver()			// not for spectators
@@ -376,18 +376,18 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	int targettick = cmd->tick_count - lerpTicks;
 
 	// calc difference between tick send by player and our latency based tick
-	float deltaTime =  correct - TICKS_TO_TIME(gpGlobals->tickcount - targettick);
+	float deltaTime =  correct - TICKS_TO_TIME(gpGlobals->GetTickCount() - targettick);
 
 	if ( fabs( deltaTime ) > 0.2f )
 	{
 		// difference between cmd time and latency is too big > 200ms, use time correction based on latency
 		// DevMsg("StartLagCompensation: delta too big (%.3f)\n", deltaTime );
-		targettick = gpGlobals->tickcount - TIME_TO_TICKS( correct );
+		targettick = gpGlobals->GetTickCount() - TIME_TO_TICKS( correct );
 	}
 	
 	// Iterate all active players
 	const CBitVec<MAX_EDICTS> *pEntityTransmitBits = engineServer->GetEntityTransmitBitsForClient( player->NetworkProp()->entindex() - 1 );
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -737,7 +737,7 @@ void CLagCompensationManager::FinishLagCompensation( CBasePlayer *player )
 		return; // no player was changed at all
 
 	// Iterate all active players
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		int pl_index = i - 1;
 		

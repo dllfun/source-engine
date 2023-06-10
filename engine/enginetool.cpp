@@ -121,16 +121,16 @@ public:
 	//virtual int			HostTick(); // host_tickcount
 	//virtual int			HostFrameCount(); // total famecount
 
-	virtual float		ServerTime(); // gpGlobals->curtime on server
-	virtual float		ServerFrameTime(); // gpGlobals->frametime on server
-	virtual int			ServerTick(); // gpGlobals->tickcount on server
-	virtual float		ServerTickInterval(); // tick interval on server
+	//virtual float		ServerTime(); // gpGlobals->GetCurTime() on server
+	//virtual float		ServerFrameTime(); // gpGlobals->GetFrameTime() on server
+	//virtual int			ServerTick(); // gpGlobals->GetTickCount() on server
+	//virtual float		ServerTickInterval(); // tick interval on server
 
-	virtual float		ClientTime(); // gpGlobals->curtime on client
-	virtual float		ClientFrameTime(); // gpGlobals->frametime on client
-	virtual int			ClientTick(); // gpGlobals->tickcount on client
+	//virtual float		ClientTime(); // gpGlobals->GetCurTime() on client
+	//virtual float		ClientFrameTime(); // gpGlobals->GetFrameTime() on client
+	//virtual int			ClientTick(); // gpGlobals->GetTickCount() on client
 
-	virtual void		SetClientFrameTime( float frametime ); // gpGlobals->frametime on client
+	//virtual void		SetClientFrameTime( float frametime ); // gpGlobals->GetFrameTime() on client
 
 	// Currently the engine doesn't like to do networking when it's paused, but if a tool changes entity state, it can be useful to force 
 	//  a network update to get that state over to the client
@@ -489,44 +489,44 @@ float CEngineTool::HostTime()
 //	return g_pHost->host_framecount;
 //}
 
-float CEngineTool::ServerTime()
-{
-	return g_ServerGlobalVariables.curtime;
-}
+//float CEngineTool::ServerTime()
+//{
+//	return g_ServerGlobalVariables.curtime;
+//}
 
-float CEngineTool::ServerFrameTime()
-{
-	return g_ServerGlobalVariables.frametime;
-}
-int CEngineTool::ServerTick()
-{
-	return g_ServerGlobalVariables.tickcount;
-}
+//float CEngineTool::ServerFrameTime()
+//{
+//	return g_ServerGlobalVariables.frametime;
+//}
+//int CEngineTool::ServerTick()
+//{
+//	return g_ServerGlobalVariables.tickcount;
+//}
 
-float CEngineTool::ServerTickInterval()
-{
-	return g_ServerGlobalVariables.interval_per_tick;
-}
+//float CEngineTool::ServerTickInterval()
+//{
+//	return g_ServerGlobalVariables.interval_per_tick;
+//}
 
-float CEngineTool::ClientTime()
-{
-	return g_ClientGlobalVariables.curtime;
-}
+//float CEngineTool::ClientTime()
+//{
+//	return g_ClientGlobalVariables.curtime;
+//}
 
-float CEngineTool::ClientFrameTime()
-{
-	return g_ClientGlobalVariables.frametime;
-}
+//float CEngineTool::ClientFrameTime()
+//{
+//	return g_ClientGlobalVariables.frametime;
+//}
 
-int CEngineTool::ClientTick()
-{
-	return g_ClientGlobalVariables.tickcount;
-}
+//int CEngineTool::ClientTick()
+//{
+//	return g_ClientGlobalVariables.tickcount;
+//}
 
-void CEngineTool::SetClientFrameTime( float frametime )
-{
-	g_ClientGlobalVariables.frametime = frametime;
-}
+//void CEngineTool::SetClientFrameTime( float frametime )
+//{
+//	g_ClientGlobalVariables.frametime = frametime;
+//}
 
 void CEngineTool::ForceUpdateDuringPause()
 {

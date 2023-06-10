@@ -171,9 +171,9 @@ void CBaseGrenade::Explode( trace_t *pTrace, int bitsDamageType )
 	// intermittent bugs with env_microphones who are listening for explosions. They will 'randomly' not
 	// hear explosion sounds when the grenade is removed and the SoundEnt thinks (and removes the sound)
 	// before the env_microphone thinks and hears the sound.
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 #else
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 #endif//HL2_EPISODIC
 
 #if defined( HL2_DLL )
@@ -207,7 +207,7 @@ void CBaseGrenade::Smoke( void )
 #if !defined( CLIENT_DLL )
 	SetThink ( &CBaseGrenade::SUB_Remove );
 #endif
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CBaseGrenade::Event_Killed( const CTakeDamageInfo &info )
@@ -243,7 +243,7 @@ void CBaseGrenade::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 void CBaseGrenade::DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	SetThink( &CBaseGrenade::Detonate );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CBaseGrenade::PreDetonate( void )
@@ -253,7 +253,7 @@ void CBaseGrenade::PreDetonate( void )
 #endif
 
 	SetThink( &CBaseGrenade::Detonate );
-	SetNextThink( gpGlobals->curtime + 1.5 );
+	SetNextThink( gpGlobals->GetCurTime() + 1.5 );
 }
 
 
@@ -317,7 +317,7 @@ void CBaseGrenade::DangerSoundThink( void )
 	CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * 0.5, GetAbsVelocity().Length( ), 0.2, this );
 #endif
 
-	SetNextThink( gpGlobals->curtime + 0.2 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.2 );
 
 	if (GetWaterLevel() != 0)
 	{
@@ -336,7 +336,7 @@ void CBaseGrenade::BounceTouch( CBaseEntity *pOther )
 		return;
 
 	// only do damage if we're moving fairly fast
-	if ( (pOther->m_takedamage != DAMAGE_NO) && (m_flNextAttack < gpGlobals->curtime && GetAbsVelocity().Length() > 100))
+	if ( (pOther->m_takedamage != DAMAGE_NO) && (m_flNextAttack < gpGlobals->GetCurTime() && GetAbsVelocity().Length() > 100))
 	{
 		if (m_hThrower)
 		{
@@ -352,7 +352,7 @@ void CBaseGrenade::BounceTouch( CBaseEntity *pOther )
 			ApplyMultiDamage();
 #endif
 		}
-		m_flNextAttack = gpGlobals->curtime + 1.0; // debounce
+		m_flNextAttack = gpGlobals->GetCurTime() + 1.0; // debounce
 	}
 
 	Vector vecTestVelocity;
@@ -436,19 +436,19 @@ void CBaseGrenade ::TumbleThink( void )
 	}
 
 	StudioFrameAdvance( );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	//
 	// Emit a danger sound one second before exploding.
 	//
-	if (m_flDetonateTime - 1 < gpGlobals->curtime)
+	if (m_flDetonateTime - 1 < gpGlobals->GetCurTime())
 	{
 #if !defined( CLIENT_DLL )
-		CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * (m_flDetonateTime - gpGlobals->curtime), 400, 0.1, this );
+		CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * (m_flDetonateTime - gpGlobals->GetCurTime()), 400, 0.1, this );
 #endif
 	}
 
-	if (m_flDetonateTime <= gpGlobals->curtime)
+	if (m_flDetonateTime <= gpGlobals->GetCurTime())
 	{
 		SetThink( &CBaseGrenade::Detonate );
 	}

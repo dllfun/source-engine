@@ -1189,7 +1189,7 @@ void CBaseEntity::VPhysicsUpdate( IPhysicsObject *pPhysics )
 
 #ifndef CLIENT_DLL 
 			PhysicsTouchTriggers( &prevOrigin );
-			PhysicsRelinkChildren(gpGlobals->frametime);
+			PhysicsRelinkChildren(gpGlobals->GetFrameTime());
 #endif
 		}
 	break;
@@ -2048,7 +2048,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 bool CBaseEntity::ShouldDrawUnderwaterBulletBubbles()
 {
 #if defined( HL2_DLL ) && defined( GAME_DLL )
-	CBaseEntity *pPlayer = ( gpGlobals->maxClients == 1 ) ? UTIL_GetLocalPlayer() : NULL;
+	CBaseEntity *pPlayer = ( gpGlobals->GetMaxClients() == 1 ) ? UTIL_GetLocalPlayer() : NULL;
 	return pPlayer && (pPlayer->GetWaterLevel() == 3);
 #else
 	return false;
@@ -2541,7 +2541,7 @@ ConVar	sv_alternateticks( "sv_alternateticks", ( IsX360() ) ? "1" : "0", FCVAR_S
 //-----------------------------------------------------------------------------
 bool CBaseEntity::IsSimulatingOnAlternateTicks()
 {
-	if ( gpGlobals->maxClients != 1 )
+	if ( gpGlobals->GetMaxClients() != 1 )
 	{
 		return false;
 	}

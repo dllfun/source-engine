@@ -1039,7 +1039,7 @@ void CDetailModel::DrawTypeSprite( CMeshBuilder &meshBuilder )
 		if ( flSwayAmplitude > 0 )
 		{
 			// sway based on time plus a random seed that is constant for this instance of the sprite
-			vecSway += dx * sin(gpGlobals->curtime+m_Origin.x) * flSwayAmplitude;
+			vecSway += dx * sin(gpGlobals->GetCurTime()+m_Origin.x) * flSwayAmplitude;
 		}
 	}
 #endif
@@ -1147,7 +1147,7 @@ void CDetailModel::DrawTypeShapeCross( CMeshBuilder &meshBuilder )
 	float flSwayAmplitude = m_pAdvInfo->m_flSwayAmount * cl_detail_max_sway.GetFloat();
 	if ( flSwayAmplitude > 0 )
 	{
-		vecSway += UTIL_YawToVector( m_pAdvInfo->m_flSwayYaw ) * sin(gpGlobals->curtime+m_Origin.x) * flSwayAmplitude;
+		vecSway += UTIL_YawToVector( m_pAdvInfo->m_flSwayYaw ) * sin(gpGlobals->GetCurTime()+m_Origin.x) * flSwayAmplitude;
 	}
 
 	Vector vecOrigin;
@@ -1281,7 +1281,7 @@ void CDetailModel::DrawTypeShapeTri( CMeshBuilder &meshBuilder )
 
 		// sway is calculated per side so they don't sway exactly the same
 		Vector vecSway = ( m_pAdvInfo->m_vecCurrentAvoid * flWidth ) + 
-			vecSwayYaw * sin(gpGlobals->curtime+m_Origin.x+iBranch) * flSwayAmplitude;
+			vecSwayYaw * sin(gpGlobals->GetCurTime()+m_Origin.x+iBranch) * flSwayAmplitude;
 
 		DrawSwayingQuad( meshBuilder, vecOrigin, vecSway, texul, texlr, color, vecWidth, vecHeight );
 		

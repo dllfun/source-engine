@@ -96,7 +96,7 @@ bool CAI_LookTarget::IsEligible( CBaseEntity *pLooker )
 //---------------------------------------------------------
 void CAI_LookTarget::Reserve( float flDuration )
 {
-	m_flTimeNextAvailable = gpGlobals->curtime + flDuration;
+	m_flTimeNextAvailable = gpGlobals->GetCurTime() + flDuration;
 
 	if( HasSpawnFlags( SF_LOOKTARGET_ONLYONCE ) )
 	{

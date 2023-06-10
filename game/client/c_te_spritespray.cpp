@@ -94,7 +94,7 @@ static inline void RecordSpriteSpray( const Vector& start, const Vector &directi
 
  		msg->SetInt( "te", TE_SPRITE_SPRAY );
  		msg->SetString( "name", "TE_SpriteSpray" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

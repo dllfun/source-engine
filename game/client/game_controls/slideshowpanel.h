@@ -56,7 +56,7 @@ private:
 
 	void SetupImageBlend( float flBlendTime );
 
-	float			m_flStartBlendTime;	// the gpGlobals->realtime when we started blending
+	float			m_flStartBlendTime;	// the gpGlobals->GetRealTime() when we started blending
 	float			m_flBlendTime;		// amount of time to blend from one image to the next one
 	float			m_flBlend;			// blend value in [0,1] where 0 maps to the source image, and 1 maps to the dest image
 	bool			m_bBlending;		// are we currently transitioning/blending from one image to another?
@@ -96,7 +96,7 @@ private:
 
 	CCrossfadableImagePanel		*m_pImagePanel;
 	CUtlVector< vgui::IImage * >		m_vecImages;
-	float						m_flNextTransitionTime;	// gpGlobals->realtime of time when we should transition next
+	float						m_flNextTransitionTime;	// gpGlobals->GetRealTime() of time when we should transition next
 	float						m_flInterval;			// Amount of time between blend begins to next image, in seconds
 	float						m_flTransitionLength;	// Length of each transition
 	int							m_iCurImg;				// Current image index

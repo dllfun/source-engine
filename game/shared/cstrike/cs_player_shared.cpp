@@ -362,7 +362,7 @@ void CCSPlayer::FireBullet(
 	//Adrian: visualize server/client player positions
 	//This is used to show where the lag compesator thinks the player should be at.
 #if 0
-	for ( int k = 1; k <= gpGlobals->maxClients; k++ )
+	for ( int k = 1; k <= gpGlobals->GetMaxClients(); k++ )
 	{
 		CBasePlayer *clientClass = (CBasePlayer *)CBaseEntity::Instance( k );
 
@@ -439,7 +439,7 @@ void CCSPlayer::FireBullet(
 
 #ifdef _DEBUG
 		if ( bFirstHit )
-			AddBulletStat( gpGlobals->realtime, VectorLength( vecSrc-tr.endpos), tr.endpos );
+			AddBulletStat( gpGlobals->GetRealTime(), VectorLength( vecSrc-tr.endpos), tr.endpos );
 #endif
 
 		bFirstHit = false;

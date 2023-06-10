@@ -40,7 +40,7 @@ CON_COMMAND(soundscape_flush, "Flushes the server & client side soundscapes")
 	if (engineServer->IsDedicatedServer() )
 	{
 		// If the ds console typed it, send it to everyone.
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer	*pSendToPlayer = UTIL_PlayerByIndex( i );
 			if ( pSendToPlayer )
@@ -301,7 +301,7 @@ void CSoundscapeSystem::FrameUpdatePostEntityThink()
 		// use radius -1 for all soundscapes.  So to trace one player you'll often need that many and this code must
 		// always trace one player's soundscapes.
 		// If the map has been optimized, then allow more players to update per frame.
-		int maxPlayers = gpGlobals->maxClients / 2;
+		int maxPlayers = gpGlobals->GetMaxClients() / 2;
 		// maxPlayers has to be at least 1
 		maxPlayers = MAX( 1, maxPlayers );
 		int maxTraces = 20;
@@ -314,9 +314,9 @@ void CSoundscapeSystem::FrameUpdatePostEntityThink()
 		// load balance across server ticks a bit by limiting the numbers of players (get cluster for origin)
 		// and traces processed in a single tick.  In single player this will update the player every tick
 		// because it always does at least one player's full load of work
-		for ( int i = 0; i < gpGlobals->maxClients && traceCount <= maxTraces && playerCount <= maxPlayers; i++ )
+		for ( int i = 0; i < gpGlobals->GetMaxClients() && traceCount <= maxTraces && playerCount <= maxPlayers; i++ )
 		{
-			m_activeIndex = (m_activeIndex+1) % gpGlobals->maxClients;
+			m_activeIndex = (m_activeIndex+1) % gpGlobals->GetMaxClients();
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( m_activeIndex + 1 );
 			if ( pPlayer && pPlayer->IsNetClient() )
 			{

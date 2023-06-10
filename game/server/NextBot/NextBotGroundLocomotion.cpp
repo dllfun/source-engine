@@ -962,9 +962,9 @@ void NextBotGroundLocomotion::UpdateGroundConstraint( void )
 	if ( ground.startsolid )
 	{
 		// we're inside the ground - bad news
-		if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) && !( gpGlobals->framecount % 60 ) )
+		if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) && !( gpGlobals->GetFrameCount() % 60 ) )
 		{
-			DevMsg( "%3.2f: Inside ground, ( %.0f, %.0f, %.0f )\n", gpGlobals->curtime, m_nextBot->GetPosition().x, m_nextBot->GetPosition().y, m_nextBot->GetPosition().z );
+			DevMsg( "%3.2f: Inside ground, ( %.0f, %.0f, %.0f )\n", gpGlobals->GetCurTime(), m_nextBot->GetPosition().x, m_nextBot->GetPosition().y, m_nextBot->GetPosition().z );
 		}
 		return;
 	}
@@ -999,7 +999,7 @@ void NextBotGroundLocomotion::UpdateGroundConstraint( void )
 
 			if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 			{
-				DevMsg( "%3.2f: NextBotGroundLocomotion - Too steep to stand here\n", gpGlobals->curtime );
+				DevMsg( "%3.2f: NextBotGroundLocomotion - Too steep to stand here\n", gpGlobals->GetCurTime() );
 				NDebugOverlay::Line( GetFeet(), GetFeet() + 20.0f * ground.plane.normal, 255, 150, 0, true, 5.0f );
 			}
 
@@ -1215,7 +1215,7 @@ void NextBotGroundLocomotion::OnLeaveGround( CBaseEntity *ground )
 
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		DevMsg( "%3.2f: NextBotGroundLocomotion::OnLeaveGround\n", gpGlobals->curtime );
+		DevMsg( "%3.2f: NextBotGroundLocomotion::OnLeaveGround\n", gpGlobals->GetCurTime() );
 	}
 }
 
@@ -1228,7 +1228,7 @@ void NextBotGroundLocomotion::OnLandOnGround( CBaseEntity *ground )
 {
 	if ( GetBot()->IsDebugging( NEXTBOT_LOCOMOTION ) )
 	{
-		DevMsg( "%3.2f: NextBotGroundLocomotion::GetBot()->OnLandOnGround\n", gpGlobals->curtime );
+		DevMsg( "%3.2f: NextBotGroundLocomotion::GetBot()->OnLandOnGround\n", gpGlobals->GetCurTime() );
 	}
 }
 

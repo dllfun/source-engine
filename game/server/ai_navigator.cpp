@@ -284,7 +284,7 @@ void CAI_Navigator::Restore( IRestore &restore )
 		{
 			m_pClippedWaypoints->PrependWaypoint( minPathArray[i].GetPos(), minPathArray[i].NavType(), ( minPathArray[i].Flags() & ~bits_WP_TO_PATHCORNER ), minPathArray[i].flYaw );
 		}
-		m_flTimeClipped = gpGlobals->curtime + 1000; // time passes between restore and onrestore
+		m_flTimeClipped = gpGlobals->GetCurTime() + 1000; // time passes between restore and onrestore
 	}
 
 }
@@ -735,10 +735,10 @@ bool CAI_Navigator::PrependLocalAvoidance( float distObstacle, const AIMoveTrace
 	if ( GetOuter()->IsFlaggedEfficient() )
 		return false;
 
-	if ( m_flTimeLastAvoidanceTriangulate >= gpGlobals->curtime )
+	if ( m_flTimeLastAvoidanceTriangulate >= gpGlobals->GetCurTime() )
 		return false; // Only triangulate once per think at most
 
-	m_flTimeLastAvoidanceTriangulate = gpGlobals->curtime;
+	m_flTimeLastAvoidanceTriangulate = gpGlobals->GetCurTime();
 
 	AI_PROFILE_SCOPE(CAI_Navigator_PrependLocalAvoidance);
 
@@ -1303,7 +1303,7 @@ void CAI_Navigator::OnNavFailed( AI_TaskFailureCode_t code, bool bMovement )
 	else
 	{
 		m_nNavFailCounter++;
-		m_flLastNavFailTime = gpGlobals->curtime;
+		m_flLastNavFailTime = gpGlobals->GetCurTime();
 		if ( GetOuter()->ShouldBruteForceFailedNav() )
 		{
 			if (bMovement)
@@ -1487,7 +1487,7 @@ AIMoveResult_t CAI_Navigator::MoveClimb()
 					bAbort = true;
 					if ( pOther->GetNavigator()->GetStoppingPath( m_pClippedWaypoints ) )
 					{
-						m_flTimeClipped = gpGlobals->curtime;
+						m_flTimeClipped = gpGlobals->GetCurTime();
 						SetNavType(NAV_GROUND); // end of clipped will be on ground
 						SetGravity( 1.0 );
 						if ( RefindPathToGoal( false ) )
@@ -1962,10 +1962,10 @@ bool CAI_Navigator::OnFailedSteer( AILocalMoveGoal_t *pMoveGoal, float distClear
 	if ( m_vPosBeginFailedSteer == vec3_invalid || ( m_vPosBeginFailedSteer - GetAbsOrigin() ).LengthSqr() > Square(MOVE_TOLERANCE) )
 	{
 		m_vPosBeginFailedSteer = GetAbsOrigin();
-		m_timeBeginFailedSteer = gpGlobals->curtime;
+		m_timeBeginFailedSteer = gpGlobals->GetCurTime();
 	}
 	else if ( GetNavType() == NAV_GROUND && 
-			  gpGlobals->curtime - m_timeBeginFailedSteer > TIME_TOLERANCE && 
+			  gpGlobals->GetCurTime() - m_timeBeginFailedSteer > TIME_TOLERANCE && 
 			  GetOuter()->m_flGroundSpeed * TIME_TOLERANCE > MOVE_TOLERANCE )
 	{
 		*pResult = AIMR_ILLEGAL;
@@ -2209,7 +2209,7 @@ AIMoveResult_t CAI_Navigator::MoveEnact( const AILocalMoveGoal_t &baseMove )
 	AIMoveResult_t result = AIMR_ILLEGAL;
 	AILocalMoveGoal_t move = baseMove;
 
-	result = GetLocalNavigator()->MoveCalc( &move, ( m_flLastSuccessfulSimplifyTime == gpGlobals->curtime ) );
+	result = GetLocalNavigator()->MoveCalc( &move, ( m_flLastSuccessfulSimplifyTime == gpGlobals->GetCurTime() ) );
 
 	if ( result != AIMR_OK )
 		m_hLastBlockingEnt = move.directTrace.pObstruction;
@@ -2418,7 +2418,7 @@ bool CAI_Navigator::Move( float flInterval )
 		{
 			if ( bIsTurning )
 			{
-				if ( gpGlobals->curtime - GetPath()->GetStartTime() > 5 )
+				if ( gpGlobals->GetCurTime() - GetPath()->GetStartTime() > 5 )
 				{
 					Forget( bits_MEMORY_TURNING );
 					bIsTurning = false;
@@ -3049,7 +3049,7 @@ bool CAI_Navigator::SimplifyPath( bool bFirstForPath, float scanDist )
 
 		bool bFullSimplify;
 		
-		bFullSimplify = ( m_flNextSimplifyTime <= gpGlobals->curtime );
+		bFullSimplify = ( m_flNextSimplifyTime <= gpGlobals->GetCurTime() );
 
 		if ( bFirstForPath && !bFullSimplify )
 		{
@@ -3058,9 +3058,9 @@ bool CAI_Navigator::SimplifyPath( bool bFirstForPath, float scanDist )
 
 		if ( AIStrongOpt() && bFullSimplify )
 		{
-			if ( g_iFrameLastSimplified != gpGlobals->framecount )
+			if ( g_iFrameLastSimplified != gpGlobals->GetFrameCount() )
 			{
-				g_iFrameLastSimplified = gpGlobals->framecount;
+				g_iFrameLastSimplified = gpGlobals->GetFrameCount();
 			}
 			else
 			{
@@ -3079,7 +3079,7 @@ bool CAI_Navigator::SimplifyPath( bool bFirstForPath, float scanDist )
 			if ( GetOuter()->GetMoveEfficiency() > AIME_NORMAL )
 				simplifyDelay *= 2;
 
-			m_flNextSimplifyTime = gpGlobals->curtime + simplifyDelay;
+			m_flNextSimplifyTime = gpGlobals->GetCurTime() + simplifyDelay;
 
 			if ( SimplifyPathForward( scanDist ) )
 				bRetVal = true;
@@ -3090,7 +3090,7 @@ bool CAI_Navigator::SimplifyPath( bool bFirstForPath, float scanDist )
 		}
 		else if ( bFirstForPath || ( bInPVS && GetOuter()->GetMoveEfficiency() == AIME_NORMAL ) )
 		{
-			if ( !AIStrongOpt() || gpGlobals->curtime - m_flLastSuccessfulSimplifyTime > QUICK_SIMPLIFY_TIME_DELAY[AIStrongOpt()] )
+			if ( !AIStrongOpt() || gpGlobals->GetCurTime() - m_flLastSuccessfulSimplifyTime > QUICK_SIMPLIFY_TIME_DELAY[AIStrongOpt()] )
 			{
 				if ( SimplifyPathQuick() )
 					bRetVal = true;
@@ -3100,7 +3100,7 @@ bool CAI_Navigator::SimplifyPath( bool bFirstForPath, float scanDist )
 
 	if ( bRetVal )
 	{
-		m_flLastSuccessfulSimplifyTime = gpGlobals->curtime;
+		m_flLastSuccessfulSimplifyTime = gpGlobals->GetCurTime();
 		DbgNavMsg( GetOuter(), "Simplified path\n" );
 	}
 
@@ -3165,10 +3165,10 @@ bool CAI_Navigator::SimplifyFlyPath(  const AI_ProgressFlyPathParams_t &params )
 	if ( !GetPath()->GetCurWaypoint() )
 		return false;
 
-	if ( m_flNextSimplifyTime > gpGlobals->curtime)
+	if ( m_flNextSimplifyTime > gpGlobals->GetCurTime())
 		return false;
 
-	m_flNextSimplifyTime = gpGlobals->curtime + FLY_ROUTE_SIMPLIFY_TIME_DELAY;
+	m_flNextSimplifyTime = gpGlobals->GetCurTime() + FLY_ROUTE_SIMPLIFY_TIME_DELAY;
 
 	if ( params.bTrySimplify && SimplifyPathForward( FLY_ROUTE_SIMPLIFY_LOOK_DIST ) )
 		return true;
@@ -3368,7 +3368,7 @@ bool CAI_Navigator::FindPath( bool fSignalTaskStatus, bool bDontIgnoreBadLinks )
 	if ( bRetrying )
 	{
 		// If I've passed by fail time, fail this task
-		if (m_timePathRebuildFail < gpGlobals->curtime)
+		if (m_timePathRebuildFail < gpGlobals->GetCurTime())
 		{
 			if ( fSignalTaskStatus )
 				OnNavFailed( FAIL_NO_ROUTE );
@@ -3376,7 +3376,7 @@ bool CAI_Navigator::FindPath( bool fSignalTaskStatus, bool bDontIgnoreBadLinks )
 				OnNavFailed();
 			return false;
 		}
-		else if ( m_timePathRebuildNext > gpGlobals->curtime )
+		else if ( m_timePathRebuildNext > gpGlobals->GetCurTime() )
 		{
 			return false;
 		}
@@ -3414,9 +3414,9 @@ bool CAI_Navigator::FindPath( bool fSignalTaskStatus, bool bDontIgnoreBadLinks )
 		if ( !bRetrying )
 		{
 			Remember(bits_MEMORY_PATH_FAILED);
-			m_timePathRebuildFail = gpGlobals->curtime + m_timePathRebuildMax;
+			m_timePathRebuildFail = gpGlobals->GetCurTime() + m_timePathRebuildMax;
 		}
-		m_timePathRebuildNext = gpGlobals->curtime + m_timePathRebuildDelay;
+		m_timePathRebuildNext = gpGlobals->GetCurTime() + m_timePathRebuildDelay;
 		return false;
 	}
 	return true;
@@ -3499,7 +3499,7 @@ bool CAI_Navigator::MarkCurWaypointFailedLink( void )
 			{
 				CAI_Link *pLink = pDestNode->GetLinkByIndex( i );
 				pLink->m_LinkInfo |= bits_LINK_STALE_SUGGESTED;
-				pLink->m_timeStaleExpires = gpGlobals->curtime + 4.0;
+				pLink->m_timeStaleExpires = gpGlobals->GetCurTime() + 4.0;
 				didMark = true;
 			}
 
@@ -3512,7 +3512,7 @@ bool CAI_Navigator::MarkCurWaypointFailedLink( void )
 			if ( pLink )
 			{
 				pLink->m_LinkInfo |= bits_LINK_STALE_SUGGESTED;
-				pLink->m_timeStaleExpires = gpGlobals->curtime + 4.0;
+				pLink->m_timeStaleExpires = gpGlobals->GetCurTime() + 4.0;
 				didMark = true;
 			}
 		}
@@ -3537,7 +3537,7 @@ bool CAI_Navigator::DoFindPathToPos(void)
 	float 			tolerance 		= pPath->GetGoalTolerance();
 	Vector			origin;
 	
-	if ( gpGlobals->curtime - m_flTimeClipped > 0.11  || m_bLastNavFailed )
+	if ( gpGlobals->GetCurTime() - m_flTimeClipped > 0.11  || m_bLastNavFailed )
 		m_pClippedWaypoints->RemoveAll();
 
 	if ( m_pClippedWaypoints->IsEmpty() )
@@ -4015,7 +4015,7 @@ void CAI_Navigator::SaveStoppingPath( void )
 		if ( ( pCurWaypoint->NavType() == NAV_CLIMB || pCurWaypoint->NavType() == NAV_JUMP ) || ai_use_clipped_paths.GetBool() )
 		{	
 			if ( GetStoppingPath( m_pClippedWaypoints ) )
-				m_flTimeClipped = gpGlobals->curtime;
+				m_flTimeClipped = gpGlobals->GetCurTime();
 		}
 	}
 }

@@ -30,6 +30,102 @@ public:
 
 public:
 	
+	void SetCurTime(float fCurtime) {
+		curtime = fCurtime;
+	}
+
+	float GetCurTime() {
+		return curtime;
+	}
+
+	void SetAbsoluteFrameTime(float fAbsoluteframetime) {
+		absoluteframetime = fAbsoluteframetime;
+	}
+
+	float GetAbsoluteFrameTime() {
+		return absoluteframetime;
+	}
+
+	void SetFrameTime(float fFrameTime) {
+		frametime = fFrameTime;
+	}
+
+	float GetFrameTime() {
+		return frametime;
+	}
+
+	void SetFrameCount(int iFramecount) {
+		framecount = iFramecount;
+	}
+
+	int GetFrameCount() {
+		return framecount;
+	}
+
+	int GetMaxClients() {
+		return maxClients;
+	}
+
+	void SetMaxClients(int iMaxClients) {
+		maxClients = iMaxClients;
+	}
+
+	void SetIntervalPerTick(float fIntervalPerTick) {
+		interval_per_tick = fIntervalPerTick;
+	}
+
+	float GetIntervalPerTick() {
+		return interval_per_tick;
+	}
+
+	void SetRealTime(float fRealtime) {
+		realtime = fRealtime;
+	}
+
+	float GetRealTime() {
+		return realtime;
+	}
+
+	int GetTickCount() {
+		return tickcount;
+	}
+
+	void SetTickCount(int iTickCount) {
+		tickcount = iTickCount;
+	}
+
+	void SetSaveData(CSaveRestoreData* ppSaveData) {
+		pSaveData = ppSaveData;
+	}
+
+	CSaveRestoreData* GetSaveData() {
+		return pSaveData;
+	}
+
+	void SetInterpolationAmount(float fInterpolationAmount) {
+		interpolation_amount = fInterpolationAmount;
+	}
+
+	float GetInterpolationAmount() {
+		return interpolation_amount;
+	}
+
+	void SetSimTicksThisFrame(int iSimTicksThisFrame) {
+		simTicksThisFrame = iSimTicksThisFrame;
+	}
+
+	int GetSimTicksThisFrame() {
+		return simTicksThisFrame;
+	}
+
+	int GetNetworkProtocol() {
+		return network_protocol;
+	}
+
+	void SetNetworkProtocol(int iNetwork_protocol) {
+		network_protocol = iNetwork_protocol;
+	}
+protected:
 	// Absolute time (per frame still - Use Plat_FloatTime() for a high precision real time 
 	//  perf clock, but not that it doesn't obey host_timescale/host_framerate)
 	float			realtime;
@@ -81,7 +177,7 @@ private:
 
 	// 100 (i.e., tickcount is rounded down to this base and then the "delta" from this base is networked
 	int				nTimestampNetworkingBase;   
-	// 32 (entindex() % nTimestampRandomizeWindow ) is subtracted from gpGlobals->tickcount to set the networking basis, prevents
+	// 32 (entindex() % nTimestampRandomizeWindow ) is subtracted from gpGlobals->GetTickCount() to set the networking basis, prevents
 	//  all of the entities from forcing a new PackedEntity on the same tick (i.e., prevents them from getting lockstepped on this)
 	int				nTimestampRandomizeWindow;  
 	

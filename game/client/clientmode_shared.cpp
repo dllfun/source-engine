@@ -259,7 +259,7 @@ static void __MsgFunc_VGUIMenu( bf_read &msg )
 	{
 		if ( hud_takesshots.GetBool() == true )
 		{
-			gHUD.SetScreenShotTime( gpGlobals->curtime + 1.0 ); // take a screenshot in 1 second
+			gHUD.SetScreenShotTime( gpGlobals->GetCurTime() + 1.0 ); // take a screenshot in 1 second
 		}
 	}
 
@@ -780,7 +780,7 @@ vgui::Panel *ClientModeShared::GetMessagePanel()
 void ClientModeShared::StartMessageMode( int iMessageModeType )
 {
 	// Can only show chat UI in multiplayer!!!
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1)
 	{
 		return;
 	}
@@ -1161,7 +1161,7 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 			{
 				if ( !pPlayer->IsDormant() && pPlayer->ShouldAnnounceAchievement() )
 				{
-					pPlayer->SetNextAchievementAnnounceTime( gpGlobals->curtime + ACHIEVEMENT_ANNOUNCEMENT_MIN_TIME );
+					pPlayer->SetNextAchievementAnnounceTime( gpGlobals->GetCurTime() + ACHIEVEMENT_ANNOUNCEMENT_MIN_TIME );
 
 					// no particle effect if the local player is the one with the achievement or the player is dead
 					if ( !pPlayer->IsLocalPlayer() && pPlayer->IsAlive() ) 
@@ -1252,11 +1252,11 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 	}
 	else if ( !V_strcmp( "replay_startrecord", eventname ) )
 	{
-		m_flReplayStartRecordTime = gpGlobals->curtime;
+		m_flReplayStartRecordTime = gpGlobals->GetCurTime();
 	}
 	else if ( !V_strcmp( "replay_endrecord", eventname ) )
 	{
-		m_flReplayStopRecordTime = gpGlobals->curtime;
+		m_flReplayStopRecordTime = gpGlobals->GetCurTime();
 	}
 	else if ( !V_strcmp( "replay_replaysavailable", eventname ) )
 	{

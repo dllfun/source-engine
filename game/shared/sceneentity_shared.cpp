@@ -44,7 +44,7 @@ void Scene_Printf( const char *pFormat, ... )
 	Q_vsnprintf(msg, sizeof(msg), pFormat, marker);
 	va_end(marker);	
 	
-	Msg( "%8.3f[%d] %s:  %s", gpGlobals->curtime, gpGlobals->tickcount, CBaseEntity::IsServer() ? "sv" : "cl", msg );
+	Msg( "%8.3f[%d] %s:  %s", gpGlobals->GetCurTime(), gpGlobals->GetTickCount(), CBaseEntity::IsServer() ? "sv" : "cl", msg );
 }
 
 //-----------------------------------------------------------------------------

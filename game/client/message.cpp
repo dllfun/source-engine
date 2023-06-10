@@ -617,13 +617,13 @@ void CHudMessage::Paint()
 
 	if ( m_gameTitleTime > 0 )
 	{
-		float localTime = gpGlobals->curtime - m_gameTitleTime;
+		float localTime = gpGlobals->GetCurTime() - m_gameTitleTime;
 		float brightness;
 
 		// Maybe timer isn't set yet
-		if ( m_gameTitleTime > gpGlobals->curtime )
+		if ( m_gameTitleTime > gpGlobals->GetCurTime() )
 		{
-			m_gameTitleTime = gpGlobals->curtime;
+			m_gameTitleTime = gpGlobals->GetCurTime();
 		}
 
 		if ( localTime > (m_pGameTitle->fadein + m_pGameTitle->holdtime + m_pGameTitle->fadeout) )
@@ -654,8 +654,8 @@ void CHudMessage::Paint()
 		if ( m_pMessages[i] )
 		{
 			pMessage = m_pMessages[i];
-			if ( m_startTime[i] > gpGlobals->curtime )
-				m_startTime[i] = gpGlobals->curtime + m_parms.time - m_startTime[i] + 0.2;	// Server takes 0.2 seconds to spawn, adjust for this
+			if ( m_startTime[i] > gpGlobals->GetCurTime() )
+				m_startTime[i] = gpGlobals->GetCurTime() + m_parms.time - m_startTime[i] + 0.2;	// Server takes 0.2 seconds to spawn, adjust for this
 		}
 	}
 
@@ -683,9 +683,9 @@ void CHudMessage::Paint()
 				break;
 			}
 
-			if ( gpGlobals->curtime <= endTime )
+			if ( gpGlobals->GetCurTime() <= endTime )
 			{
-				float messageTime = gpGlobals->curtime - m_startTime[i];
+				float messageTime = gpGlobals->GetCurTime() - m_startTime[i];
 
 				// Draw the message
 				// effect 0 is fade in/fade out
@@ -704,7 +704,7 @@ void CHudMessage::Paint()
 	}
 
 	// Remember the time -- to fix up level transitions
-	m_parms.time = gpGlobals->curtime;
+	m_parms.time = gpGlobals->GetCurTime();
 
 	// Did we draw any messages?
 	if ( !drawn )
@@ -722,7 +722,7 @@ void CHudMessage::MessageAdd( const char *pName )
 {
 	int i;
 
-	float time = gpGlobals->curtime;
+	float time = gpGlobals->GetCurTime();
 
 	client_textmessage_t *pMessage = NULL;
 
@@ -791,7 +791,7 @@ void CHudMessage::MsgFunc_GameTitle( bf_read &msg )
 	m_pGameTitle = TextMessageGet( "GAMETITLE" );
 	if ( m_pGameTitle != NULL )
 	{
-		m_gameTitleTime = gpGlobals->curtime;
+		m_gameTitleTime = gpGlobals->GetCurTime();
 
 		m_bHaveMessage = true;
 	}
@@ -809,7 +809,7 @@ void CHudMessage::MsgFunc_GameTitle( bf_read &msg )
 		sf.fadeFlags = FFADE_IN | FFADE_PURGE;
 		vieweffects->Fade( sf );
 
-		Msg( "%i gametitle fade\n", gpGlobals->framecount );
+		Msg( "%i gametitle fade\n", gpGlobals->GetFrameCount() );
 	}
 }
 

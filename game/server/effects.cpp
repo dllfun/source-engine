@@ -114,7 +114,7 @@ void CBubbling::Spawn( void )
 	if ( !HasSpawnFlags(SF_BUBBLES_STARTOFF) )
 	{
 		SetThink( &CBubbling::FizzThink );
-		SetNextThink( gpGlobals->curtime + 2.0 );
+		SetNextThink( gpGlobals->GetCurTime() + 2.0 );
 		m_state = 1;
 	}
 	else
@@ -146,7 +146,7 @@ void CBubbling::TurnOn()
 {
 	m_state = 1;
 	SetThink( &CBubbling::FizzThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 void CBubbling::TurnOff()
@@ -211,11 +211,11 @@ void CBubbling::InputSetFrequency( inputdata_t &inputdata )
 	{
 		if ( m_frequency > 19 )
 		{
-			SetNextThink( gpGlobals->curtime + 0.5f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 		}
 		else
 		{
-			SetNextThink( gpGlobals->curtime + 2.5 - (0.1 * m_frequency) );
+			SetNextThink( gpGlobals->GetCurTime() + 2.5 - (0.1 * m_frequency) );
 		}
 	}
 }
@@ -228,11 +228,11 @@ void CBubbling::FizzThink( void )
 
 	if ( m_frequency > 19 )
 	{
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 2.5 - (0.1 * m_frequency) );
+		SetNextThink( gpGlobals->GetCurTime() + 2.5 - (0.1 * m_frequency) );
 	}
 }
 
@@ -294,7 +294,7 @@ void CEnvTracer::Activate( void )
 	{
 		m_vecEnd = pEnd->GetLocalOrigin();
 		SetThink( &CEnvTracer::TracerThink );
-		SetNextThink( gpGlobals->curtime + m_flDelay );
+		SetNextThink( gpGlobals->GetCurTime() + m_flDelay );
 	}
 	else
 	{
@@ -307,7 +307,7 @@ void CEnvTracer::TracerThink( void )
 {
 	UTIL_Tracer( GetAbsOrigin(), m_vecEnd );
 
-	SetNextThink( gpGlobals->curtime + m_flDelay );
+	SetNextThink( gpGlobals->GetCurTime() + m_flDelay );
 }
 
 
@@ -413,7 +413,7 @@ void CGibShooter::Precache ( void )
 void CGibShooter::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	SetThink( &CGibShooter::ShootThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -423,7 +423,7 @@ void CGibShooter::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 void CGibShooter::InputShoot( inputdata_t &inputdata )
 {
 	SetThink( &CGibShooter::ShootThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -486,7 +486,7 @@ void CGibShooter::InitPointGib( CGib *pGib, const Vector &vecShootDir, float flS
 		QAngle angVel( random->RandomFloat ( 100, 200 ), random->RandomFloat ( 100, 300 ), 0 );
 		pGib->SetLocalAngularVelocity( angVel );
 
-		float thinkTime = ( pGib->GetNextThink() - gpGlobals->curtime );
+		float thinkTime = ( pGib->GetNextThink() - gpGlobals->GetCurTime() );
 
 		pGib->m_lifeTime = (m_flGibLife * random->RandomFloat( 0.95, 1.05 ));	// +/- 5%
 
@@ -495,13 +495,13 @@ void CGibShooter::InitPointGib( CGib *pGib, const Vector &vecShootDir, float flS
 		if( HasSpawnFlags( SF_SHOOTER_STRICT_REMOVE ) )
 #endif
 		{
-			pGib->SetNextThink( gpGlobals->curtime + pGib->m_lifeTime );
+			pGib->SetNextThink( gpGlobals->GetCurTime() + pGib->m_lifeTime );
 			pGib->SetThink ( &CGib::DieThink );
 		}
 
 		if ( pGib->m_lifeTime < thinkTime )
 		{
-			pGib->SetNextThink( gpGlobals->curtime + pGib->m_lifeTime );
+			pGib->SetNextThink( gpGlobals->GetCurTime() + pGib->m_lifeTime );
 			pGib->m_lifeTime = 0;
 		}
 
@@ -573,7 +573,7 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 #endif
 					{
 						pGib->m_bForceRemove = true;
-						pGib->SetNextThink( gpGlobals->curtime + pGib->m_lifeTime );
+						pGib->SetNextThink( gpGlobals->GetCurTime() + pGib->m_lifeTime );
 						pGib->SetThink ( &CGib::DieThink );
 					}
 
@@ -609,7 +609,7 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 //-----------------------------------------------------------------------------
 void CGibShooter::ShootThink ( void )
 {
-	SetNextThink( gpGlobals->curtime + m_flDelay );
+	SetNextThink( gpGlobals->GetCurTime() + m_flDelay );
 
 	Vector vecShootDir, vForward,vRight,vUp;
 	AngleVectors( GetAbsAngles(), &vForward, &vRight, &vUp );
@@ -628,12 +628,12 @@ void CGibShooter::ShootThink ( void )
 		{
 			m_iGibs = m_iGibCapacity;
 			SetThink ( NULL );
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 		else
 		{
 			SetThink ( &CGibShooter::SUB_Remove );
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 }
@@ -760,7 +760,7 @@ CGib *CEnvShooter::CreateGib ( void )
 	pGib->m_clrRender = m_clrRender;
 	pGib->m_nRenderFX = m_nRenderFX;
 	pGib->m_nSkin = m_nSkin;
-	pGib->m_lifeTime = gpGlobals->curtime + m_flGibLife;
+	pGib->m_lifeTime = gpGlobals->GetCurTime() + m_flGibLife;
 
 	pGib->SetGravity( m_flGibGravityScale );
 
@@ -874,15 +874,15 @@ CBaseEntity *CRotorWashShooter::DoWashPush( float flWashStartTime, const Vector 
 {
 	if ( flWashStartTime == m_flLastWashStartTime )
 	{
-		if ( m_flNextGibTime > gpGlobals->curtime )
+		if ( m_flNextGibTime > gpGlobals->GetCurTime() )
 			return NULL;
 	}
 
 	m_flLastWashStartTime = flWashStartTime;
-	m_flNextGibTime	= gpGlobals->curtime + m_flTimeUnderRotor + random->RandomFloat( -1, 1) * m_flTimeUnderRotorVariance;
-	if ( m_flNextGibTime <= gpGlobals->curtime )
+	m_flNextGibTime	= gpGlobals->GetCurTime() + m_flTimeUnderRotor + random->RandomFloat( -1, 1) * m_flTimeUnderRotorVariance;
+	if ( m_flNextGibTime <= gpGlobals->GetCurTime() )
 	{
-		m_flNextGibTime = gpGlobals->curtime + 0.01f;
+		m_flNextGibTime = gpGlobals->GetCurTime() + 0.01f;
 	}
 
 	// Set the velocity to be what the force would cause it to accelerate to
@@ -907,7 +907,7 @@ CBaseEntity *CRotorWashShooter::DoWashPush( float flWashStartTime, const Vector 
 		else
 		{
 			SetThink ( &CGibShooter::SUB_Remove );
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 
@@ -952,7 +952,7 @@ void CTestEffect::Precache( void )
 void CTestEffect::Think( void )
 {
 	int i;
-	float t = (gpGlobals->curtime - m_flStartTime);
+	float t = (gpGlobals->GetCurTime() - m_flStartTime);
 
 	if (m_iBeam < 24)
 	{
@@ -971,7 +971,7 @@ void CTestEffect::Think( void )
 		pbeam->SetWidth( 10.0 );
 		pbeam->SetScrollRate( 12 );
 
-		m_flBeamTime[m_iBeam] = gpGlobals->curtime;
+		m_flBeamTime[m_iBeam] = gpGlobals->GetCurTime();
 		m_pBeam[m_iBeam] = pbeam;
 		m_iBeam++;
 
@@ -987,11 +987,11 @@ void CTestEffect::Think( void )
 	{
 		for (i = 0; i < m_iBeam; i++)
 		{
-			t = (gpGlobals->curtime - m_flBeamTime[i]) / ( 3 + m_flStartTime - m_flBeamTime[i]);
+			t = (gpGlobals->GetCurTime() - m_flBeamTime[i]) / ( 3 + m_flStartTime - m_flBeamTime[i]);
 			m_pBeam[i]->SetBrightness( 255 * t );
 			// m_pBeam[i]->SetScrollRate( 20 * t );
 		}
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 	else
 	{
@@ -999,7 +999,7 @@ void CTestEffect::Think( void )
 		{
 			UTIL_Remove( m_pBeam[i] );
 		}
-		m_flStartTime = gpGlobals->curtime;
+		m_flStartTime = gpGlobals->GetCurTime();
 		m_iBeam = 0;
 		SetNextThink( TICK_NEVER_THINK );
 	}
@@ -1008,8 +1008,8 @@ void CTestEffect::Think( void )
 
 void CTestEffect::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	SetNextThink( gpGlobals->curtime + 0.1f );
-	m_flStartTime = gpGlobals->curtime;
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
+	m_flStartTime = gpGlobals->GetCurTime();
 }
 
 
@@ -1273,7 +1273,7 @@ void CEnvFunnel::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE us
 		&GetAbsOrigin(), m_iSprite, HasSpawnFlags( SF_FUNNEL_REVERSE ) ? 1 : 0 );
 
 	SetThink( &CEnvFunnel::SUB_Remove );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CEnvFunnel::Spawn( void )
@@ -1360,7 +1360,7 @@ void CEnvBeverage::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	m_iHealth -= 1;
 
 	//SetThink (SUB_Remove);
-	//SetNextThink( gpGlobals->curtime );
+	//SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CEnvBeverage::InputActivate( inputdata_t &inputdata )
@@ -1425,7 +1425,7 @@ void CItemSoda::Spawn( void )
 	UTIL_SetSize ( this, Vector ( 0, 0, 0 ), Vector ( 0, 0, 0 ) );
 
 	SetThink (&CItemSoda::CanThink);
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 }
 
 void CItemSoda::CanThink ( void )
@@ -1468,7 +1468,7 @@ void CItemSoda::CanTouch ( CBaseEntity *pOther )
 	AddEffects( EF_NODRAW );
 	SetTouch ( NULL );
 	SetThink ( &CItemSoda::SUB_Remove );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 #ifndef _XBOX
@@ -1609,10 +1609,10 @@ void CEnvWind::Spawn( void )
 	SetSolid( SOLID_NONE );
 	AddEffects( EF_NODRAW );
 
-	m_EnvWindShared.Init(NetworkProp()->entindex(), 0, gpGlobals->frametime, GetLocalAngles().y, 0 );
+	m_EnvWindShared.Init(NetworkProp()->entindex(), 0, gpGlobals->GetFrameTime(), GetLocalAngles().y, 0 );
 
 	SetThink( &CEnvWind::WindThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 int CEnvWind::UpdateTransmitState()
@@ -1622,7 +1622,7 @@ int CEnvWind::UpdateTransmitState()
 
 void CEnvWind::WindThink( void )
 {
-	SetNextThink( m_EnvWindShared.WindThink( gpGlobals->curtime ) );
+	SetNextThink( m_EnvWindShared.WindThink( gpGlobals->GetCurTime() ) );
 }
 
 
@@ -2152,7 +2152,7 @@ void CEnvGunfire::StartShooting()
 	m_iShotsRemaining = random->RandomInt( m_iMinBurstSize, m_iMaxBurstSize );
 
 	SetThink( &CEnvGunfire::ShootThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -2187,7 +2187,7 @@ void CEnvGunfire::ShootThink()
 		StopShooting();
 	}
 
-	SetNextThink( gpGlobals->curtime + m_flRateOfFire );
+	SetNextThink( gpGlobals->GetCurTime() + m_flRateOfFire );
 
 	UpdateTarget();
 
@@ -2234,7 +2234,7 @@ void CEnvGunfire::ShootThink()
 	if( m_iShotsRemaining == 0 )
 	{
 		StartShooting();
-		SetNextThink( gpGlobals->curtime + random->RandomFloat( m_flMinBurstDelay, m_flMaxBurstDelay ) );
+		SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( m_flMinBurstDelay, m_flMaxBurstDelay ) );
 	}
 }
 
@@ -2296,7 +2296,7 @@ void EffectsPrecache( void *pUser )
 	CBaseEntity::PrecacheScriptSound( "BaseExplosionEffect.Sound" );
 	CBaseEntity::PrecacheScriptSound( "Splash.SplashSound" );
 
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1 )
 	{
 		CBaseEntity::PrecacheScriptSound( "HudChat.Message" );
 	}

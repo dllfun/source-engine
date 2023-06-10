@@ -152,7 +152,7 @@ CGameRules::CGameRules() : CAutoGameSystemPerFrame( "CGameRules" )
 		Assert( !g_pGameRules );
 		g_pGameRules = this;
 
-		GetVoiceGameMgr()->Init( g_pVoiceGameMgrHelper, gpGlobals->maxClients );
+		GetVoiceGameMgr()->Init( g_pVoiceGameMgrHelper, gpGlobals->GetMaxClients() );
 		ClearMultiDamage();
 
 		m_flNextVerboseLogOutput = 0.0f;
@@ -578,15 +578,15 @@ ConVar skill( "skill", "1" );
 
 void CGameRules::Think()
 {
-	GetVoiceGameMgr()->Update( gpGlobals->frametime );
+	GetVoiceGameMgr()->Update( gpGlobals->GetFrameTime() );
 	SetSkillLevel( skill.GetInt() );
 
 	if ( log_verbose_enable.GetBool() )
 	{
-		if ( m_flNextVerboseLogOutput < gpGlobals->curtime )
+		if ( m_flNextVerboseLogOutput < gpGlobals->GetCurTime() )
 		{
 			ProcessVerboseLogOutput();
-			m_flNextVerboseLogOutput = gpGlobals->curtime + log_verbose_interval.GetFloat();
+			m_flNextVerboseLogOutput = gpGlobals->GetCurTime() + log_verbose_interval.GetFloat();
 		}
 	}
 }

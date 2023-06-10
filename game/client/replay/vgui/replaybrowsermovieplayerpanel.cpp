@@ -96,7 +96,7 @@ void CMoviePlayerPanel::SetScrubOnMouseOverMode( bool bOn )
 void CMoviePlayerPanel::Play()
 {
 	m_bPlaying = true;
-	m_flLastTime = gpGlobals->realtime;
+	m_flLastTime = gpGlobals->GetRealTime();
 
 	enginesound->NotifyBeginMoviePlayback();
 }
@@ -139,8 +139,8 @@ void CMoviePlayerPanel::OnTick()
 	}
 	else if ( m_bPlaying )
 	{
-		float flElapsed = gpGlobals->realtime - m_flLastTime;
-		m_flLastTime = gpGlobals->realtime;
+		float flElapsed = gpGlobals->GetRealTime() - m_flLastTime;
+		m_flLastTime = gpGlobals->GetRealTime();
 
 		m_flCurFrame += flElapsed * m_pVideoMaterial->GetVideoFrameRate().GetFPS();
 		// Loop if necessary

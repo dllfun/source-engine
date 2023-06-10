@@ -131,7 +131,7 @@ void CBoneMergeCache::MergeMatchingBones( int boneMask )
 		return;
 
 	// Have the entity we're following setup its bones.
-	bool bWorked = m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->curtime );
+	bool bWorked = m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->GetCurTime() );
 	// We suspect there's some cases where SetupBones couldn't do its thing, and then this causes Captain Canteen.
 	Assert ( bWorked );
 	if ( !bWorked )
@@ -255,7 +255,7 @@ bool CBoneMergeCache::GetAimEntOrigin( Vector *pAbsOrigin, QAngle *pAbsAngles )
 	// all over the place, then this won't get the right results.
 	
 	// Get mFollowBone.
-	m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->curtime );
+	m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->GetCurTime() );
 	const matrix3x4_t &mFollowBone = m_pFollow->GetBone( m_MergedBones[0].m_iParentBone );
 
 	// Get Inverse( mBoneLocal )
@@ -280,7 +280,7 @@ bool CBoneMergeCache::GetRootBone( matrix3x4_t &rootBone )
 		return false;
 
 	// Get mFollowBone.
-	m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->curtime );
+	m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->GetCurTime() );
 	rootBone = m_pFollow->GetBone( m_MergedBones[0].m_iParentBone );
 	return true;
 }

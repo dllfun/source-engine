@@ -209,7 +209,7 @@ public:
 		{
 			ref.m_iEdict = pRet->NetworkProp()->entindex();
 			if ( pRet->NetworkProp()->edict())
-				ref.m_iSerialNumber = pRet->NetworkProp()->edict()->m_NetworkSerialNumber;
+				ref.m_iSerialNumber = pRet->NetworkProp()->edict()->GetNetworkSerialNumber();
 		}
 
 		g_MapEntityRefs.AddToTail( ref );

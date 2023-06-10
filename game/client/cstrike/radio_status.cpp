@@ -295,7 +295,7 @@ void CRadioStatus::DrawHeadLabels()
 
 	for(int i=0; i < VOICE_MAX_PLAYERS; i++)
 	{
-		if ( m_radioUntil[i] < gpGlobals->curtime )
+		if ( m_radioUntil[i] < gpGlobals->GetCurTime() )
 			continue;
 
 		IClientNetworkable *pClient = cl_entitylist->GetClientEntity( i+1 );
@@ -373,7 +373,7 @@ void CRadioStatus::UpdateRadioStatus(int entindex, float duration)
 		if(iClient < 0)
 			return;
 
-		m_radioUntil[iClient] = gpGlobals->curtime + duration;
+		m_radioUntil[iClient] = gpGlobals->GetCurTime() + duration;
 	}
 }
 
@@ -386,7 +386,7 @@ void CRadioStatus::UpdateVoiceStatus(int entindex, float duration)
 		if(iClient < 0)
 			return;
 
-		m_voiceUntil[iClient] = gpGlobals->curtime + duration;
+		m_voiceUntil[iClient] = gpGlobals->GetCurTime() + duration;
 		GetClientVoiceMgr()->UpdateSpeakerStatus( entindex, true );
 	}
 }
@@ -405,7 +405,7 @@ void CRadioStatus::ExpireBotVoice( bool force )
 				// player left the game
 				expire = true;
 			}
-			else if ( m_voiceUntil[i] < gpGlobals->curtime )
+			else if ( m_voiceUntil[i] < gpGlobals->GetCurTime() )
 			{
 				// player is done speaking
 				expire = true;

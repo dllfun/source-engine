@@ -415,7 +415,7 @@ void CPlayerLogoProxy::OnBind( void *pC_BaseEntity )
 	if ( playerindex <= 0 )
 		return;
 
-	if ( playerindex > gpGlobals->maxClients )
+	if ( playerindex > gpGlobals->GetMaxClients() )
 		return;
 
 	if ( !m_pBaseTextureVar )

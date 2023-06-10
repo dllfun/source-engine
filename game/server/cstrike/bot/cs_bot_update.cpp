@@ -197,7 +197,7 @@ void CCSBot::Upkeep( void )
 				if (IsLookingAtPosition( m_lookAtSpot, m_lookAtSpotAngleTolerance ))
 				{
 					m_lookAtSpotState = LOOK_AT_SPOT;
-					m_lookAtSpotTimestamp = gpGlobals->curtime;
+					m_lookAtSpotTimestamp = gpGlobals->GetCurTime();
 				}
 				break;
 			}
@@ -206,7 +206,7 @@ void CCSBot::Upkeep( void )
 			{
 				UpdateLookAt();
 
-				if (m_lookAtSpotDuration >= 0.0f && gpGlobals->curtime - m_lookAtSpotTimestamp > m_lookAtSpotDuration)
+				if (m_lookAtSpotDuration >= 0.0f && gpGlobals->GetCurTime() - m_lookAtSpotTimestamp > m_lookAtSpotDuration)
 				{
 					m_lookAtSpotState = NOT_LOOKING_AT_SPOT;
 					m_lookAtSpotDuration = 0.0f;
@@ -224,8 +224,8 @@ void CCSBot::Upkeep( void )
 				driftAmplitude = 5.0f;
 			}
 
-			m_lookYaw += driftAmplitude * BotCOS( 33.0f * gpGlobals->curtime );
-			m_lookPitch += driftAmplitude * BotSIN( 13.0f * gpGlobals->curtime );
+			m_lookYaw += driftAmplitude * BotCOS( 33.0f * gpGlobals->GetCurTime() );
+			m_lookPitch += driftAmplitude * BotSIN( 13.0f * gpGlobals->GetCurTime() );
 		}
 	}
 
@@ -308,7 +308,7 @@ void CCSBot::Update( void )
 
 	// if our current 'noise' was heard a long time ago, forget it
 	const float rememberNoiseDuration = 20.0f;
-	if (m_noiseTimestamp > 0.0f && gpGlobals->curtime - m_noiseTimestamp > rememberNoiseDuration)
+	if (m_noiseTimestamp > 0.0f && gpGlobals->GetCurTime() - m_noiseTimestamp > rememberNoiseDuration)
 	{
 		ForgetNoise();
 	}
@@ -485,7 +485,7 @@ void CCSBot::Update( void )
 			if (IsVisible( m_enemy, false, &m_visibleEnemyParts ))
 			{
 				m_isEnemyVisible = true;
-				m_lastSawEnemyTimestamp = gpGlobals->curtime;
+				m_lastSawEnemyTimestamp = gpGlobals->GetCurTime();
 				m_lastEnemyPosition = GetCentroid( m_enemy );
 			}
 			else
@@ -502,7 +502,7 @@ void CCSBot::Update( void )
 			else if (m_enemyDeathTimestamp == 0.0f)
 			{
 				// note time of death (to allow bots to overshoot for a time)
-				m_enemyDeathTimestamp = gpGlobals->curtime;
+				m_enemyDeathTimestamp = gpGlobals->GetCurTime();
 				m_isLastEnemyDead = true;
 			}
 		}
@@ -582,7 +582,7 @@ void CCSBot::Update( void )
 
 	// make way
 	const float avoidTime = 0.33f;
-	if (gpGlobals->curtime - m_avoidTimestamp < avoidTime && m_avoid != NULL)
+	if (gpGlobals->GetCurTime() - m_avoidTimestamp < avoidTime && m_avoid != NULL)
 	{
 		StrafeAwayFromPosition( GetCentroid( m_avoid ) );
 	}
@@ -736,7 +736,7 @@ void CCSBot::Update( void )
 		else
 		{
 			// we decided not to follow, don't re-check for a duration
-			m_allowAutoFollowTime = gpGlobals->curtime + 15.0f + (1.0f - GetProfile()->GetTeamwork()) * 30.0f;
+			m_allowAutoFollowTime = gpGlobals->GetCurTime() + 15.0f + (1.0f - GetProfile()->GetTeamwork()) * 30.0f;
 		}
 	}
 
@@ -1156,7 +1156,7 @@ void CCSBot::UpdateTravelDistanceToAllPlayers( void )
 	{
 		ShortestPathCost pathCost;
 
-		for( int i=1; i<=gpGlobals->maxClients; ++i )
+		for( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 		{
 			CCSPlayer *player = static_cast< CCSPlayer * >( UTIL_PlayerByIndex( i ) );
 

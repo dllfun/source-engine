@@ -43,14 +43,14 @@ void CCSBot::FireWeaponAtEnemy( void )
 		}
 	}
 
-	if (gpGlobals->curtime > m_fireWeaponTimestamp &&
+	if (gpGlobals->GetCurTime() > m_fireWeaponTimestamp &&
 		GetTimeSinceAcquiredCurrentEnemy() >= GetProfile()->GetAttackDelay() &&
 		!IsSurprised())
 	{
 		if (!(IsRecognizedEnemyProtectedByShield() && IsPlayerFacingMe( enemy )) &&	// don't shoot at enemies behind shields
 			!IsReloading() && 
 			!IsActiveWeaponClipEmpty() && 
-			//gpGlobals->curtime > m_reacquireTimestamp &&
+			//gpGlobals->GetCurTime() > m_reacquireTimestamp &&
 			IsEnemyVisible())
 		{
 			// we have a clear shot - pull trigger if we are aiming at enemy
@@ -171,7 +171,7 @@ void CCSBot::FireWeaponAtEnemy( void )
 				// subtract system latency
 				m_fireWeaponTimestamp -= g_BotUpdateInterval;
 
-				m_fireWeaponTimestamp += gpGlobals->curtime;
+				m_fireWeaponTimestamp += gpGlobals->GetCurTime();
 			}
 		}
 	}
@@ -188,11 +188,11 @@ void CCSBot::SetAimOffset( float accuracy )
 	{
 		// if we moved our view, reset our "focus" mechanism
 		if (IsViewMoving( 100.0f ))
-			m_aimSpreadTimestamp = gpGlobals->curtime;
+			m_aimSpreadTimestamp = gpGlobals->GetCurTime();
 
 		// focusTime is the time it takes for a bot to "focus in" for very good aim, from 2 to 5 seconds
 		const float focusTime = MAX( 5.0f * (1.0f - accuracy), 2.0f );
-		float focusInterval = gpGlobals->curtime - m_aimSpreadTimestamp;
+		float focusInterval = gpGlobals->GetCurTime() - m_aimSpreadTimestamp;
 
 		float focusAccuracy = focusInterval / focusTime;
 
@@ -216,7 +216,7 @@ void CCSBot::SetAimOffset( float accuracy )
 	m_aimOffsetGoal.z = RandomFloat( -error, error );
 
 	// define time when aim offset will automatically be updated
-	m_aimOffsetTimestamp = gpGlobals->curtime + RandomFloat( 0.25f, 1.0f ); // 0.25, 1.5f
+	m_aimOffsetTimestamp = gpGlobals->GetCurTime() + RandomFloat( 0.25f, 1.0f ); // 0.25, 1.5f
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -225,7 +225,7 @@ void CCSBot::SetAimOffset( float accuracy )
  */
 void CCSBot::UpdateAimOffset( void )
 {
-	if (gpGlobals->curtime >= m_aimOffsetTimestamp)
+	if (gpGlobals->GetCurTime() >= m_aimOffsetTimestamp)
 	{
 		SetAimOffset( GetProfile()->GetSkill() );
 	}
@@ -637,7 +637,7 @@ void CCSBot::ThrowGrenade( const Vector &target )
 			NDebugOverlay::Cross3D( target, 25.0f, 255, 125, 0, true, 3.0f );
 		}
 
-		PrintIfWatched( "%3.2f: Grenade: START_THROW\n", gpGlobals->curtime );
+		PrintIfWatched( "%3.2f: Grenade: START_THROW\n", gpGlobals->GetCurTime() );
 	}
 }
 
@@ -647,7 +647,7 @@ void CCSBot::ThrowGrenade( const Vector &target )
  */
 bool CCSBot::CanActiveWeaponFire( void ) const
 {
-	return ( GetActiveWeapon() && GetActiveWeapon()->m_flNextPrimaryAttack <= gpGlobals->curtime );
+	return ( GetActiveWeapon() && GetActiveWeapon()->m_flNextPrimaryAttack <= gpGlobals->GetCurTime() );
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -772,7 +772,7 @@ void CCSBot::LookForGrenadeTargets( void )
 	int enemyTeam = OtherTeam( GetTeamNumber() );
 
 	// check if we should put our grenade away
-	if (tossArea->GetEarliestOccupyTime( enemyTeam ) > gpGlobals->curtime)
+	if (tossArea->GetEarliestOccupyTime( enemyTeam ) > gpGlobals->GetCurTime())
 	{
 		EquipBestWeapon( MUST_EQUIP );
 		return;
@@ -960,7 +960,7 @@ void CCSBot::UpdateGrenadeThrow( void )
 				EquipBestWeapon( MUST_EQUIP );
 				ClearLookAt();
 				m_grenadeTossState = NOT_THROWING;
-				PrintIfWatched( "%3.2f: Grenade: THROW FAILED\n", gpGlobals->curtime );
+				PrintIfWatched( "%3.2f: Grenade: THROW FAILED\n", gpGlobals->GetCurTime() );
 				return;
 			}
 
@@ -972,11 +972,11 @@ void CCSBot::UpdateGrenadeThrow( void )
 				{
 					m_grenadeTossState = FINISH_THROW;
 					m_tossGrenadeTimer.Start( 1.0f );
-					PrintIfWatched( "%3.2f: Grenade: FINISH_THROW\n", gpGlobals->curtime );
+					PrintIfWatched( "%3.2f: Grenade: FINISH_THROW\n", gpGlobals->GetCurTime() );
 				}
 				else
 				{
-					PrintIfWatched( "%3.2f: Grenade: Friend is in the way...\n", gpGlobals->curtime );
+					PrintIfWatched( "%3.2f: Grenade: Friend is in the way...\n", gpGlobals->GetCurTime() );
 				}
 			}
 
@@ -994,7 +994,7 @@ void CCSBot::UpdateGrenadeThrow( void )
 				ClearLookAt();
 
 				m_grenadeTossState = NOT_THROWING;
-				PrintIfWatched( "%3.2f: Grenade: THROW COMPLETE\n", gpGlobals->curtime );
+				PrintIfWatched( "%3.2f: Grenade: THROW COMPLETE\n", gpGlobals->GetCurTime() );
 			}
 			break;
 		}
@@ -1041,7 +1041,7 @@ public:
 			const float atRestSpeed = 50.0f;
 
 			const float aboutToBlow = 0.5f;
-			if (ag->IsFlashbang() && ag->GetEntity()->m_flDetonateTime - gpGlobals->curtime < aboutToBlow)
+			if (ag->IsFlashbang() && ag->GetEntity()->m_flDetonateTime - gpGlobals->GetCurTime() < aboutToBlow)
 			{
 				// turn away from flashbangs about to explode
 				QAngle eyeAngles = m_me->EyeAngles();
@@ -1237,7 +1237,7 @@ void CCSBot::SilencerCheck( void )
 
 		bool isSilencerOn = weapon->IsSilenced();
 
-		if ( weapon->m_flNextSecondaryAttack >= gpGlobals->curtime )
+		if ( weapon->m_flNextSecondaryAttack >= gpGlobals->GetCurTime() )
 			return;
 
 		// equip silencer if we want to and we don't have a shield.
@@ -1358,6 +1358,6 @@ bool CCSBot::DidPlayerJustFireWeapon( const CCSPlayer *player ) const
 {
 	// if this player has just fired his weapon, we notice him
 	CWeaponCSBase *weapon = player->GetActiveCSWeapon();
-	return (weapon && !weapon->IsSilenced() && weapon->m_flNextPrimaryAttack > gpGlobals->curtime);
+	return (weapon && !weapon->IsSilenced() && weapon->m_flNextPrimaryAttack > gpGlobals->GetCurTime());
 }
 

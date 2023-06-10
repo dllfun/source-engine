@@ -253,7 +253,7 @@ void CPhysForce::ForceOn( void )
 	ActivateForce();
 	if ( m_forceTime )
 	{
-		SetNextThink( gpGlobals->curtime + m_forceTime );
+		SetNextThink( gpGlobals->GetCurTime() + m_forceTime );
 		SetThink( &CPhysForce::ForceOff );
 	}
 }
@@ -664,8 +664,8 @@ void CPhysMotor::InputSetTargetSpeed( inputdata_t &inputdata )
 
 void CPhysMotor::TargetSpeedChanged( void )
 {
-	SetNextThink( gpGlobals->curtime );
-	m_lastTime = gpGlobals->curtime;
+	SetNextThink( gpGlobals->GetCurTime() );
+	m_lastTime = gpGlobals->GetCurTime();
 	m_pController->WakeObjects();
 }
 
@@ -738,7 +738,7 @@ void CPhysMotor::TurnOn( void )
 		m_pController->WakeObjects();
 		// If the current speed is zero, the objects can run a tick without getting torque'd and go back to sleep
 		// so force a think now and have some acceleration happen before the controller gets called.
-		m_lastTime = gpGlobals->curtime - TICK_INTERVAL;
+		m_lastTime = gpGlobals->GetCurTime() - TICK_INTERVAL;
 		Think();
 	}
 }
@@ -828,11 +828,11 @@ void CPhysMotor::Think( void )
 	// will apply it in the proper direction
 	Assert(m_angularAcceleration>=0);
 
-	m_motor.m_speed = UTIL_Approach( m_flSpeed, m_motor.m_speed, m_angularAcceleration*(gpGlobals->curtime-m_lastTime) );
-	m_lastTime = gpGlobals->curtime;
+	m_motor.m_speed = UTIL_Approach( m_flSpeed, m_motor.m_speed, m_angularAcceleration*(gpGlobals->GetCurTime()-m_lastTime) );
+	m_lastTime = gpGlobals->GetCurTime();
 	if ( m_motor.m_speed != m_flSpeed )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 

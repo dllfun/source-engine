@@ -154,7 +154,7 @@ void CCenterStringLabel::Print(const char *text )
 {
 	SetText( text );
 	
-	m_flCentertimeOff = scr_centertime.GetFloat() + gpGlobals->curtime;
+	m_flCentertimeOff = scr_centertime.GetFloat() + gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -164,7 +164,7 @@ void CCenterStringLabel::Print( wchar_t *text )
 {
 	SetText( text );
 	
-	m_flCentertimeOff = scr_centertime.GetFloat() + gpGlobals->curtime;
+	m_flCentertimeOff = scr_centertime.GetFloat() + gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -217,7 +217,7 @@ bool CCenterStringLabel::ShouldDraw( void )
 		return false;
 	}
 
-	if ( m_flCentertimeOff <= gpGlobals->curtime )
+	if ( m_flCentertimeOff <= gpGlobals->GetCurTime() )
 	{
 		// not time to turn off the message yet
 		return false;

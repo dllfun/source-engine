@@ -597,7 +597,7 @@ int GetAnimationEvent( CStudioHdr *pstudiohdr, int sequence, animevent_t *pNPCEv
 			pNPCEvent->pSource = NULL;
 			pNPCEvent->cycle = pevent[index].cycle;
 #if !defined( MAKEXVCD )
-			pNPCEvent->eventtime = gpGlobals->curtime;
+			pNPCEvent->eventtime = gpGlobals->GetCurTime();
 #else
 			pNPCEvent->eventtime = 0.0f;
 #endif

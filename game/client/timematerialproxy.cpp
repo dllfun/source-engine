@@ -18,7 +18,7 @@ public:
 
 void CTimeMaterialProxy::OnBind( void *pC_BaseEntity )
 {
-	SetFloatResult( gpGlobals->curtime );
+	SetFloatResult( gpGlobals->GetCurTime() );
 }
 
 EXPOSE_INTERFACE( CTimeMaterialProxy, IMaterialProxy, "CurrentTime" IMATERIAL_PROXY_INTERFACE_VERSION );

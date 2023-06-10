@@ -903,9 +903,9 @@ void CLuminanceHistogramSystem::DisplayHistogram( void )
 	if ( IsX360() )
 	{
 		static float s_flLastTimeUpdate = 0.0f;
-		if ( int( gpGlobals->curtime ) - int( s_flLastTimeUpdate ) >= 2 )
+		if ( int( gpGlobals->GetCurTime() ) - int( s_flLastTimeUpdate ) >= 2 )
 		{
-			s_flLastTimeUpdate = gpGlobals->curtime;
+			s_flLastTimeUpdate = gpGlobals->GetCurTime();
 			bDrawTextThisFrame = true;
 		}
 		else
@@ -1630,9 +1630,9 @@ static void DoPreBloomTonemapping( IMatRenderContext *pRenderContext, int nX, in
 				if ( IsX360() )
 				{
 					static float s_flLastTimeUpdate = 0.0f;
-					if ( int( gpGlobals->curtime ) - int( s_flLastTimeUpdate ) >= 2 )
+					if ( int( gpGlobals->GetCurTime() ) - int( s_flLastTimeUpdate ) >= 2 )
 					{
-						s_flLastTimeUpdate = gpGlobals->curtime;
+						s_flLastTimeUpdate = gpGlobals->GetCurTime();
 						bDrawTextThisFrame = true;
 					}
 					else
@@ -1909,7 +1909,7 @@ static void DrawPyroVignette( int nDestX, int nDestY, int nWidth, int nHeight,	/
 			{
 				if ( pSide->m_bIncreasing )
 				{
-					pSide->m_flIntensity += pSide->m_flRate * gpGlobals->frametime;
+					pSide->m_flIntensity += pSide->m_flRate * gpGlobals->GetFrameTime();
 					if ( pSide->m_flIntensity >= pSide->m_flIntensityLimit )
 					{
 						pSide->m_bIncreasing = false;
@@ -1917,7 +1917,7 @@ static void DrawPyroVignette( int nDestX, int nDestY, int nWidth, int nHeight,	/
 				}
 				else
 				{
-					pSide->m_flIntensity -= pSide->m_flRate * gpGlobals->frametime;
+					pSide->m_flIntensity -= pSide->m_flRate * gpGlobals->GetFrameTime();
 					if ( pSide->m_flIntensity <= 0.0f )
 					{
 						pSide->m_bAlive = false;
@@ -2737,7 +2737,7 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 		//float vPreviousForwardVec[3] = { s_mPreviousFrameBasisVectors[0][0], s_mPreviousFrameBasisVectors[1][0], s_mPreviousFrameBasisVectors[2][0] };
 		//float vPreviousUpVec[3] = { s_mPreviousFrameBasisVectors[0][2], s_mPreviousFrameBasisVectors[1][2], s_mPreviousFrameBasisVectors[2][2] };
 
-		float flTimeElapsed = gpGlobals->realtime - s_flLastTimeUpdate;
+		float flTimeElapsed = gpGlobals->GetRealTime() - s_flLastTimeUpdate;
 
 		//===================================//
 		// Get current pitch & wrap to +-180 //
@@ -2786,7 +2786,7 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 			// If we moved a far distance in one frame and more than //
 			// half a second elapsed, disable motion blur this frame //
 			//=======================================================//
-			//engine->Con_NPrintf( 8, " Pos change && time > 0.5 seconds %f ", gpGlobals->realtime );
+			//engine->Con_NPrintf( 8, " Pos change && time > 0.5 seconds %f ", gpGlobals->GetRealTime() );
 
 			g_vMotionBlurValues[0] = 0.0f;
 			g_vMotionBlurValues[1] = 0.0f;
@@ -2809,9 +2809,9 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 			// We moved a far distance in a frame, use the same motion blur as last frame	  //
 			// because I think we just went through a portal (should we ifdef this behavior?) //
 			//================================================================================//
-			//engine->Con_NPrintf( 8, " Position changed %f units @ %.2f time ", VectorLength( vPositionChange ), gpGlobals->realtime );
+			//engine->Con_NPrintf( 8, " Position changed %f units @ %.2f time ", VectorLength( vPositionChange ), gpGlobals->GetRealTime() );
 
-			s_flNoRotationalMotionBlurUntil = gpGlobals->realtime + 1.0f; // Wait a second until the portal craziness calms down
+			s_flNoRotationalMotionBlurUntil = gpGlobals->GetRealTime() + 1.0f; // Wait a second until the portal craziness calms down
 		}
 		else
 		{
@@ -2916,7 +2916,7 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 				float flCurrentFps = ( flTimeElapsed > 0.0f ) ? ( 1.0f / flTimeElapsed ) : 0.0f;
 				float flDampenFactor = clamp( ( ( flCurrentFps - flSlowFps ) / ( flFastFps - flSlowFps ) ), 0.0f, 1.0f );
 
-				//engine->Con_NPrintf( 4, "gpGlobals->realtime %.2f  gpGlobals->curtime %.2f", gpGlobals->realtime, gpGlobals->curtime );
+				//engine->Con_NPrintf( 4, "gpGlobals->GetRealTime() %.2f  gpGlobals->GetCurTime() %.2f", gpGlobals->GetRealTime(), gpGlobals->GetCurTime() );
 				//engine->Con_NPrintf( 5, "flCurrentFps %.2f", flCurrentFps );
 				//engine->Con_NPrintf( 7, "flTimeElapsed %.2f", flTimeElapsed );
 
@@ -2934,9 +2934,9 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 		//============================================//
 		// Zero out blur if still in that time window //
 		//============================================//
-		if ( gpGlobals->realtime < s_flNoRotationalMotionBlurUntil )
+		if ( gpGlobals->GetRealTime() < s_flNoRotationalMotionBlurUntil )
 		{
-			//engine->Con_NPrintf( 9, " No Rotation @ %f ", gpGlobals->realtime );
+			//engine->Con_NPrintf( 9, " No Rotation @ %f ", gpGlobals->GetRealTime() );
 
 			// Zero out rotational blur but leave forward/falling blur alone
 			g_vMotionBlurValues[0] = 0.0f; // X
@@ -2955,7 +2955,7 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 		s_mPreviousFrameBasisVectors = mCurrentBasisVectors;
 		s_flPreviousPitch = flCurrentPitch;
 		s_flPreviousYaw = flCurrentYaw;
-		s_flLastTimeUpdate = gpGlobals->realtime;
+		s_flLastTimeUpdate = gpGlobals->GetRealTime();
 	}
 
 	//=============================================================================================//

@@ -72,7 +72,7 @@ static inline void RecordSparks( const Vector &start, int nMagnitude, int nTrail
 
  		msg->SetInt( "te", TE_SPARKS );
  		msg->SetString( "name", "TE_Sparks" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

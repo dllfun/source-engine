@@ -97,7 +97,7 @@ void SCR_BeginLoadingPlaque( void )
 		EngineVGui()->OnLevelLoadingStarted();
 
 		// Don't run any more simulation on the client!!!
-		g_ClientGlobalVariables.frametime = 0.0f;
+		g_ClientGlobalVariables.SetFrameTime( 0.0f);
 
 		//g_pHost->host_framecount++;//aaa
 		//g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
@@ -107,7 +107,7 @@ void SCR_BeginLoadingPlaque( void )
 		//g_ClientGlobalVariables.framecount = g_pHost->host_framecount;
 		SCR_UpdateScreen();
 
-		g_ClientGlobalVariables.frametime = cl.GetFrameTime();
+		g_ClientGlobalVariables.SetFrameTime( cl.GetFrameTime());
 
 		scr_disabled_for_loading = true;
 	}

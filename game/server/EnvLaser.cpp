@@ -195,7 +195,7 @@ void CEnvLaser::TurnOn( void )
 	if ( m_pSprite )
 		m_pSprite->TurnOn();
 
-	m_flFireTime = gpGlobals->curtime;
+	m_flFireTime = gpGlobals->GetCurTime();
 
 	SetThink( &CEnvLaser::StrikeThink );
 
@@ -219,7 +219,7 @@ void CEnvLaser::FireAtPoint( trace_t &tr )
 	}
 
 	// Apply damage and do sparks every 1/10th of a second.
-	if ( gpGlobals->curtime >= m_flFireTime + 0.1 )
+	if ( gpGlobals->GetCurTime() >= m_flFireTime + 0.1 )
 	{
 		BeamDamage( &tr );
 		DoSparks( GetAbsStartPos(), tr.endpos );
@@ -244,7 +244,7 @@ void CEnvLaser::StrikeThink( void )
 
 	UTIL_TraceLine( GetAbsOrigin(), vecFireAt, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &tr );
 	FireAtPoint( tr );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 

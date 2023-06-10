@@ -45,7 +45,7 @@ void DefuseBombState::OnUpdate( CCSBot *me )
 	// defuse...
 	me->UseEnvironment();
 
-	if (gpGlobals->curtime - me->GetStateTimestamp() > 1.0f)
+	if (gpGlobals->GetCurTime() - me->GetStateTimestamp() > 1.0f)
 	{
 		// if we missed starting the defuse, give up
 		if (TheCSBots()->GetBombDefuser() == NULL)

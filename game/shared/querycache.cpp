@@ -90,7 +90,7 @@ static QueryCacheEntry_t *FindOrAllocateCacheEntry( QueryCacheKey_t const &entry
 	else
 	{
 		if ( sv_disable_querycache.GetInt() || 
-			 ( gpGlobals->curtime - pFound->m_flLastUpdateTime >= 
+			 ( gpGlobals->GetCurTime() - pFound->m_flLastUpdateTime >= 
 			   pFound->m_QueryParams.m_flMinimumUpdateInterval ) )
 		{
 			pFound->m_bSpeculativelyDone = false;
@@ -175,7 +175,7 @@ struct QueryCacheUpdateRecord_t
 
 void ProcessQueryCacheUpdate( QueryCacheUpdateRecord_t &workItem )
 {
-	float flCurTime = gpGlobals->curtime;
+	float flCurTime = gpGlobals->GetCurTime();
 	// run through all of the cache.
 	for( int i = 0; i < workItem.m_nNumHashChainsToUpdate; i++ )
 	{
@@ -287,7 +287,7 @@ void QueryCacheEntry_t::IssueQuery( void )
 	UTIL_TraceLine( m_QueryParams.m_Points[0], m_QueryParams.m_Points[1],
 					m_QueryParams.m_nTraceMask, &filter, &result );
 	m_bResult = ! ( result.DidHit() );
-	m_flLastUpdateTime = gpGlobals->curtime;
+	m_flLastUpdateTime = gpGlobals->GetCurTime();
 }
 
 

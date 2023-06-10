@@ -60,7 +60,7 @@ float PercentageOfFlashForPlayer(CBaseEntity *player, Vector flashPos, CBaseEnti
 	{
 		ParticleSmokeGrenade *pPSG =( ParticleSmokeGrenade* ) pSGren;
 
-		if ( gpGlobals->curtime > pPSG->m_flSpawnTime + pPSG->m_FadeStartTime )		// ignore the smoke grenade if it's fading.
+		if ( gpGlobals->GetCurTime() > pPSG->m_flSpawnTime + pPSG->m_FadeStartTime )		// ignore the smoke grenade if it's fading.
 			continue;
 
 		float flHit1, flHit2;
@@ -254,7 +254,7 @@ CFlashbangProjectile* CFlashbangProjectile::Create(
 	pGrenade->SetTouch( &CBaseGrenade::BounceTouch );
 
 	pGrenade->SetThink( &CBaseCSGrenadeProjectile::DangerSoundThink );
-	pGrenade->SetNextThink( gpGlobals->curtime );
+	pGrenade->SetNextThink( gpGlobals->GetCurTime() );
 
 	pGrenade->SetDetonateTimerLength( 1.5 );
 

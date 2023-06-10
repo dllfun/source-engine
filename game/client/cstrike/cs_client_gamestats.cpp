@@ -200,10 +200,10 @@ void CCSClientGameStats::UpdateSteamStats()
 		// try to periodically download stats from Steam if we haven't gotten them yet
 		static float fLastStatsRetrieveTime = 0.0f;
 		const float kRetrieveInterval = 30.0f;
-		if ( gpGlobals->curtime > fLastStatsRetrieveTime + kRetrieveInterval )
+		if ( gpGlobals->GetCurTime() > fLastStatsRetrieveTime + kRetrieveInterval )
 		{
 			pAchievementMgr->DownloadUserData();
-			fLastStatsRetrieveTime = gpGlobals->curtime;
+			fLastStatsRetrieveTime = gpGlobals->GetCurTime();
 		}
 
 		return;

@@ -405,13 +405,13 @@ void IVision::UpdateKnownEntities( void )
 				known.UpdateVisibilityStatus( true );
 
 				// has our reaction time just elapsed?
-				if ( gpGlobals->curtime - known.GetTimeWhenBecameVisible() >= GetMinRecognizeTime() &&
+				if ( gpGlobals->GetCurTime() - known.GetTimeWhenBecameVisible() >= GetMinRecognizeTime() &&
 					 m_lastVisionUpdateTimestamp - known.GetTimeWhenBecameVisible() < GetMinRecognizeTime() )
 				{
 					if ( GetBot()->IsDebugging( NEXTBOT_VISION ) )
 					{
 						ConColorMsg( Color( 0, 255, 0, 255 ), "%3.2f: %s caught sight of %s(#%d)\n", 
-										gpGlobals->curtime,
+										gpGlobals->GetCurTime(),
 										GetBot()->GetDebugIdentifier(),
 										known.GetEntity()->GetClassname(),
 										known.GetEntity()->NetworkProp()->entindex());
@@ -436,7 +436,7 @@ void IVision::UpdateKnownEntities( void )
 					if ( GetBot()->IsDebugging( NEXTBOT_VISION ) )
 					{
 						ConColorMsg( Color( 255, 0, 0, 255 ), "%3.2f: %s Lost sight of %s(#%d)\n", 
-										gpGlobals->curtime,
+										gpGlobals->GetCurTime(),
 										GetBot()->GetDebugIdentifier(),
 										known.GetEntity()->GetClassname(),
 										known.GetEntity()->NetworkProp()->entindex());
@@ -560,7 +560,7 @@ void IVision::Update( void )
 
 	UpdateKnownEntities();
 
-	m_lastVisionUpdateTimestamp = gpGlobals->curtime;
+	m_lastVisionUpdateTimestamp = gpGlobals->GetCurTime();
 }
 
 

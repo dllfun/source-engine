@@ -292,15 +292,24 @@ bool CClientState::ProcessTick( NET_Tick *msg )
 
 	m_NetChannel->SetRemoteFramerate( msg->m_flHostFrameTime, msg->m_flHostFrameTimeStdDeviation );
 
-	m_ClockDriftMgr.SetServerTick( tick );
+	m_ClockDriftMgr.SetRealServerTick( tick );
 
 	// Remember this for GetLastTimeStamp().
 	m_flLastServerTickTime = tick * g_pHost->Host_GetIntervalPerTick();
 
 	// Use the server tick while reading network data (used for interpolation samples, etc).
-	g_ClientGlobalVariables.tickcount = tick;	
-	g_ClientGlobalVariables.curtime = tick * g_pHost->Host_GetIntervalPerTick();
-	g_ClientGlobalVariables.frametime = (tick - oldtickcount) * g_pHost->Host_GetIntervalPerTick();	// We used to call GetFrameTime() here, but 'insimulation' is always
+	int clientTick = cl.GetClientTickCount();
+	if (clientTick != tick) {
+		int aaa = 0;
+	}
+	g_ClientGlobalVariables.SetTickCount(tick);	//tick
+	float clientTime = cl.GetTime();
+	float serverTime = tick * g_pHost->Host_GetIntervalPerTick();
+	if (clientTime != serverTime) {
+		int aaa = 0;
+	}
+	g_ClientGlobalVariables.SetCurTime(serverTime);//serverTime
+	g_ClientGlobalVariables.SetFrameTime( (tick - oldtickcount) * g_pHost->Host_GetIntervalPerTick());	// We used to call GetFrameTime() here, but 'insimulation' is always
 																								// true so we have this code right in here to keep it simple.
 
 	return true;
@@ -359,8 +368,8 @@ bool CClientState::ProcessServerInfo( SVC_ServerInfo *msg )
 		}
 	}
 
-	g_ClientGlobalVariables.maxClients = m_nMaxClients;
-	g_ClientGlobalVariables.network_protocol = msg->m_nProtocol;
+	g_ClientGlobalVariables.SetMaxClients(m_nMaxClients);
+	g_ClientGlobalVariables.SetNetworkProtocol(msg->m_nProtocol);
 
 #ifdef SHARED_NET_STRING_TABLES
 	// use same instance of StringTableContainer as the server does
@@ -609,7 +618,7 @@ bool CClientState::ProcessSounds( SVC_Sounds *msg )
 	int startbit = msg->m_DataIn.GetNumBitsRead();
 
 	// Process with the reported proto version
-	ProcessSoundsWithProtoVersion( msg, sounds, g_ClientGlobalVariables.network_protocol );
+	ProcessSoundsWithProtoVersion( msg, sounds, g_ClientGlobalVariables.GetNetworkProtocol() );
 
 	int nRelativeBitsRead = msg->m_DataIn.GetNumBitsRead() - startbit;
 
@@ -623,11 +632,11 @@ bool CClientState::ProcessSounds( SVC_Sounds *msg )
 		// If the demo file thinks it's version 18 or 19, it might actually be the other.
 		// This is a work around for when we broke compatibility Halloween 2011.
 		// -Jeep
-		if ( g_ClientGlobalVariables.network_protocol == PROTOCOL_VERSION_18 )
+		if ( g_ClientGlobalVariables.GetNetworkProtocol() == PROTOCOL_VERSION_18)
 		{
 			nFallbackProtocol = PROTOCOL_VERSION_19;
 		}
-		else if ( g_ClientGlobalVariables.network_protocol == PROTOCOL_VERSION_19 )
+		else if ( g_ClientGlobalVariables.GetNetworkProtocol() == PROTOCOL_VERSION_19)
 		{
 			nFallbackProtocol = PROTOCOL_VERSION_18;
 		}

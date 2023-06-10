@@ -140,7 +140,7 @@ void WeaponManager_RemoveManaged( CBaseEntity *pWeapon )
 void CGameWeaponManager::Spawn()
 {
 	SetThink( &CGameWeaponManager::Think );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	CBaseEntity *pEntity = engineServer->CreateEntityByName( STRING(m_iszWeaponName) );
 	if ( !pEntity )
 	{
@@ -183,7 +183,7 @@ void CGameWeaponManager::Think()
 	int i;
 
 	// Don't have to think all that often. 
-	SetNextThink( gpGlobals->curtime + 2.0 );
+	SetNextThink( gpGlobals->GetCurTime() + 2.0 );
 
 	const char *pszWeaponName = STRING( m_iszWeaponName );
 
@@ -239,7 +239,7 @@ void CGameWeaponManager::Think()
 		pCandidate = candidates[i];
 		Assert( !pCandidate->IsEffectActive( EF_NODRAW ) );
 
-		if ( gpGlobals->maxClients == 1 )
+		if ( gpGlobals->GetMaxClients() == 1 )
 		{
 			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 			// Nodraw serves as a flag that this weapon is already being removed since

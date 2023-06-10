@@ -57,7 +57,7 @@ END_DATADESC()
 void	CTestTraceline::Spawn( void )
 {
 	SetRenderColor( 255, 255, 255, 255 );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	SetThink( &CTestTraceline::Spin );
 }
@@ -68,16 +68,16 @@ void	CTestTraceline::Spin( void )
 
 	if (traceline_spin.GetInt())
 	{
-		float s = sin( gpGlobals->curtime );
+		float s = sin( gpGlobals->GetCurTime() );
 		QAngle angles = GetLocalAngles();
 
 		angles[0] = 180.0 * 0.5 * (s * s * s + 1.0f) + 90;
-		angles[1] = gpGlobals->curtime * 10;
+		angles[1] = gpGlobals->GetCurTime() * 10;
 		   
 		SetLocalAngles( angles );
 
 	}
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 int CTestTraceline::UpdateTransmitState()

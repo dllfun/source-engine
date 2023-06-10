@@ -393,7 +393,7 @@ CCSPlayer::CCSPlayer()
 	m_bJustKilledTeammate = false;
 	m_bPunishedForTK = false;
 	m_iTeamKills = 0;
-	m_flLastMovement = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastMovement = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 	m_iNextTimeCheck = 0;
 
 	m_szNewName[0] = 0;
@@ -410,7 +410,7 @@ CCSPlayer::CCSPlayer()
 	m_pHintMessageQueue = new CHintMessageQueue(this);
 	m_iDisplayHistoryBits = 0;
 	m_bShowHints = true;
-	m_flNextMouseoverUpdate = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flNextMouseoverUpdate = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 
 	m_lastDamageHealth = 0;
 	m_lastDamageArmor = 0;
@@ -478,7 +478,7 @@ CCSPlayer *CCSPlayer::CreatePlayer( const char *className, edict_t *edict)
 	//CCSPlayer::s_PlayerEdict = ed;
 	if (!edict || edict->GetUnknown())
 		Error("CreatePlayer( %s ) - CreateEdict failed.", className);
-	return (CCSPlayer*)engineServer->CreateEntityByName( className, edict->m_EdictIndex );
+	return (CCSPlayer*)engineServer->CreateEntityByName( className, edict->GetIndex() );
 }
 
 
@@ -559,9 +559,9 @@ void CCSPlayer::PlayerRunCommand( CUserCmd *ucmd, IMoveHelper *moveHelper )
 
 	// don't run commands in the future
 	if ( !IsEngineThreaded() &&
-		( ucmd->tick_count > (gpGlobals->tickcount + sv_max_usercmd_future_ticks.GetInt()) ) )
+		( ucmd->tick_count > (gpGlobals->GetTickCount() + sv_max_usercmd_future_ticks.GetInt()) ) )
 	{
-		DevMsg( "Client cmd out of sync (delta %i).\n", ucmd->tick_count - gpGlobals->tickcount );
+		DevMsg( "Client cmd out of sync (delta %i).\n", ucmd->tick_count - gpGlobals->GetTickCount() );
 		return;
 	}
 
@@ -591,7 +591,7 @@ bool CCSPlayer::RunMimicCommand( CUserCmd& cmd )
 		return false;
 
 	int iMimic = abs( bot_mimic.GetInt() );
-	if ( iMimic > gpGlobals->maxClients )
+	if ( iMimic > gpGlobals->GetMaxClients() )
 		return false;
 
 	CBasePlayer *pPlayer = UTIL_PlayerByIndex( iMimic );
@@ -618,10 +618,10 @@ void CCSPlayer::RunPlayerMove( const QAngle& viewangles, float forwardmove, floa
 	CUserCmd cmd;
 
 	// Store off the globals.. they're gonna get whacked
-	float flOldFrametime = gpGlobals->frametime;
-	float flOldCurtime = gpGlobals->curtime;
+	float flOldFrametime = gpGlobals->GetFrameTime();
+	float flOldCurtime = gpGlobals->GetCurTime();
 
-	float flTimeBase = gpGlobals->curtime + gpGlobals->frametime - frametime;
+	float flTimeBase = gpGlobals->GetCurTime() + gpGlobals->GetFrameTime() - frametime;
 	this->SetTimeBase( flTimeBase );
 
 	CUserCmd lastUserCmd = *GetLastUserCommand();
@@ -659,8 +659,8 @@ void CCSPlayer::RunPlayerMove( const QAngle& viewangles, float forwardmove, floa
 	pl.fixangle = FIXANGLE_NONE;
 
 	// Restore the globals..
-	gpGlobals->frametime = flOldFrametime;
-	gpGlobals->curtime = flOldCurtime;
+	gpGlobals->SetFrameTime(flOldFrametime);
+	gpGlobals->SetCurTime(flOldCurtime);
 
 	MoveHelperServer()->SetHost( NULL );
 }
@@ -818,7 +818,7 @@ void CCSPlayer::Spawn()
 	m_iOldTeam = TEAM_UNASSIGNED;
 
 	m_iRadioMessages = 60;
-	m_flRadioTime = gpGlobals->curtime;
+	m_flRadioTime = gpGlobals->GetCurTime();
 
 	if ( m_hRagdoll )
 	{
@@ -843,12 +843,12 @@ void CCSPlayer::Spawn()
 	m_bIsInRebuy = false;
 	m_bAutoReload = false;
 
-	SetContextThink( &CCSPlayer::PushawayThink, gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL, CS_PUSHAWAY_THINK_CONTEXT );
+	SetContextThink( &CCSPlayer::PushawayThink, gpGlobals->GetCurTime() + PUSHAWAY_THINK_INTERVAL, CS_PUSHAWAY_THINK_CONTEXT );
 
 	if ( GetActiveWeapon() && !IsObserver() )
 	{
 		GetActiveWeapon()->Deploy();
-		m_flNextAttack = gpGlobals->curtime; // Allow reloads to finish, since we're playing the deploy anim instead.  This mimics goldsrc behavior, anyway.
+		m_flNextAttack = gpGlobals->GetCurTime(); // Allow reloads to finish, since we're playing the deploy anim instead.  This mimics goldsrc behavior, anyway.
 	}
 
 	m_applyDeafnessTime = 0.0f;
@@ -1183,7 +1183,7 @@ void CCSPlayer::Event_Killed( const CTakeDamageInfo &info )
 		int maxKills = 0;
 		int maxDamage = 0;
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer* pPlayer = ToCSPlayer( UTIL_PlayerByIndex( i ) );
 			if ( pPlayer )
@@ -1417,10 +1417,10 @@ void CCSPlayer::UpdateAddonBits()
 void CCSPlayer::UpdateRadar()
 {
 	// update once a second
-	if ( (m_flLastRadarUpdateTime + 1.0) > gpGlobals->curtime )
+	if ( (m_flLastRadarUpdateTime + 1.0) > gpGlobals->GetCurTime() )
 		return;
 
-	m_flLastRadarUpdateTime = gpGlobals->curtime;
+	m_flLastRadarUpdateTime = gpGlobals->GetCurTime();
 
 	// update positions of all players outside of my PVS
 	CBitVec< ABSOLUTE_PLAYER_LIMIT > playerbits;
@@ -1550,9 +1550,9 @@ void CCSPlayer::PostThink()
 		HintMessage( "#Hint_press_buy_to_purchase", false );
 		m_iDisplayHistoryBits |= DHF_ROUND_STARTED;
 	}
-	if ( m_flNextMouseoverUpdate < gpGlobals->curtime )
+	if ( m_flNextMouseoverUpdate < gpGlobals->GetCurTime() )
 	{
-		m_flNextMouseoverUpdate = gpGlobals->curtime + 0.2f;
+		m_flNextMouseoverUpdate = gpGlobals->GetCurTime() + 0.2f;
 		if ( m_bShowHints )
 		{
 			UpdateMouseoverHints();
@@ -1578,7 +1578,7 @@ void CCSPlayer::PostThink()
 	m_PlayerAnimState->Update( m_angEyeAngles[YAW], m_angEyeAngles[PITCH] );
 
 	// check if we need to apply a deafness DSP effect.
-	if ((m_applyDeafnessTime != 0.0f) && (m_applyDeafnessTime <= gpGlobals->curtime))
+	if ((m_applyDeafnessTime != 0.0f) && (m_applyDeafnessTime <= gpGlobals->GetCurTime()))
 	{
 		ApplyDeafnessEffect();
 	}
@@ -1603,7 +1603,7 @@ void CCSPlayer::PushawayThink()
 {
 	// Push physics props out of our way.
 	PerformObstaclePushaway( this );
-	SetNextThink( gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL, CS_PUSHAWAY_THINK_CONTEXT );
+	SetNextThink( gpGlobals->GetCurTime() + PUSHAWAY_THINK_INTERVAL, CS_PUSHAWAY_THINK_CONTEXT );
 }
 
 
@@ -1791,13 +1791,13 @@ int CCSPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 				pCSAttacker->m_iDisplayHistoryBits |= DHF_FRIEND_INJURED;
 			}
 
-			if ( (pCSAttacker->m_flLastAttackedTeammate + 0.6f) < gpGlobals->curtime )
+			if ( (pCSAttacker->m_flLastAttackedTeammate + 0.6f) < gpGlobals->GetCurTime() )
 			{
-				pCSAttacker->m_flLastAttackedTeammate = gpGlobals->curtime;
+				pCSAttacker->m_flLastAttackedTeammate = gpGlobals->GetCurTime();
 
 				// tell the rest of this player's team
 				Msg( "%s attacked a teammate\n", pCSAttacker->GetPlayerName() );
-				for ( int i=1; i<=gpGlobals->maxClients; ++i )
+				for ( int i=1; i<=gpGlobals->GetMaxClients(); ++i )
 				{
 					CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 					if ( pPlayer && pPlayer->GetTeamNumber() == GetTeamNumber()	)
@@ -2030,7 +2030,7 @@ int CCSPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 		char outputString[256];
 		Q_snprintf( outputString, sizeof(outputString), "%f: Player %s incoming %f damage from %s, type %s; applied %d health and %d armor\n", 
-			gpGlobals->curtime, GetPlayerName(),
+			gpGlobals->GetCurTime(), GetPlayerName(),
 			inputInfo.GetDamage(), info.GetInflictor()->GetDebugName(), dmgtype,
 			m_lastDamageHealth, m_lastDamageArmor);
 
@@ -2417,8 +2417,8 @@ void CCSPlayer::Blind( float holdTime, float fadeTime, float startingAlpha )
 	// estimate when we can see again
 	float oldBlindUntilTime = m_blindUntilTime;
 	float oldBlindStartTime = m_blindStartTime;
-	m_blindUntilTime = MAX( m_blindUntilTime, gpGlobals->curtime + holdTime + 0.5f * fadeTime );
-	m_blindStartTime = gpGlobals->curtime;
+	m_blindUntilTime = MAX( m_blindUntilTime, gpGlobals->GetCurTime() + holdTime + 0.5f * fadeTime );
+	m_blindStartTime = gpGlobals->GetCurTime();
 
 	// Spectators get a lessened flash.
 	if ( (GetObserverMode() != OBS_MODE_NONE)  &&  (GetObserverMode() != OBS_MODE_IN_EYE) )
@@ -2436,7 +2436,7 @@ void CCSPlayer::Blind( float holdTime, float fadeTime, float startingAlpha )
 	{
 		fadeTime /= 1.4;
 
-		if ( gpGlobals->curtime > oldBlindUntilTime )
+		if ( gpGlobals->GetCurTime() > oldBlindUntilTime )
 		{
 			// The previous flashbang is wearing off, or completely gone
 			m_flFlashDuration = fadeTime;
@@ -2445,7 +2445,7 @@ void CCSPlayer::Blind( float holdTime, float fadeTime, float startingAlpha )
 		else
 		{
 			// The previous flashbang is still going strong - only extend the duration
-			float remainingDuration = oldBlindStartTime + m_flFlashDuration - gpGlobals->curtime;
+			float remainingDuration = oldBlindStartTime + m_flFlashDuration - gpGlobals->GetCurTime();
 
 			m_flFlashDuration = MAX( remainingDuration, fadeTime );
 			m_flFlashMaxAlpha = MAX( m_flFlashMaxAlpha, startingAlpha );
@@ -2632,7 +2632,7 @@ void CCSPlayer::PreThink()
 	}
 
 	if ( m_afButtonLast != m_nButtons )
-		m_flLastMovement = gpGlobals->curtime;
+		m_flLastMovement = gpGlobals->GetCurTime();
 
 	if ( g_fGameOver )
 		return;
@@ -2647,11 +2647,11 @@ void CCSPlayer::PreThink()
 
 	if ( mp_autokick.GetBool() && !IsBot() && !IsHLTV() && !IsAutoKickDisabled() )
 	{
-		if ( m_flLastMovement + CSGameRules()->GetRoundLength()*2 < gpGlobals->curtime )
+		if ( m_flLastMovement + CSGameRules()->GetRoundLength()*2 < gpGlobals->GetCurTime() )
 		{
 			UTIL_ClientPrintAll( HUD_PRINTCONSOLE, "#Game_idle_kick", GetPlayerName() );
 			engineServer->ServerCommand( UTIL_VarArgs( "kickid %d\n", GetUserID() ) );
-			m_flLastMovement = gpGlobals->curtime;
+			m_flLastMovement = gpGlobals->GetCurTime();
 		}
 	}
 #ifndef _XBOX
@@ -2719,7 +2719,7 @@ void CCSPlayer::MoveToNextIntroCamera()
 	SetAbsOrigin( vIntroCamera );
 	SetAbsAngles( CamAngles );
 	SnapEyeAngles( CamAngles );
-	m_fIntroCamTime = gpGlobals->curtime + 6;
+	m_fIntroCamTime = gpGlobals->GetCurTime() + 6;
 }
 
 class NotVIP
@@ -3703,11 +3703,11 @@ void CCSPlayer::HandleMenu_Radio1( int slot )
 	if( m_iRadioMessages < 0 )
 		return;
 
-	if( m_flRadioTime > gpGlobals->curtime )
+	if( m_flRadioTime > gpGlobals->GetCurTime() )
 		return;
 
 	m_iRadioMessages--;
-	m_flRadioTime = gpGlobals->curtime + 1.5;
+	m_flRadioTime = gpGlobals->GetCurTime() + 1.5;
 
 	switch ( slot )
 	{
@@ -3751,11 +3751,11 @@ void CCSPlayer::HandleMenu_Radio2( int slot )
 	if( m_iRadioMessages < 0 )
 		return;
 
-	if( m_flRadioTime > gpGlobals->curtime )
+	if( m_flRadioTime > gpGlobals->GetCurTime() )
 		return;
 
 	m_iRadioMessages--;
-	m_flRadioTime = gpGlobals->curtime + 1.5;
+	m_flRadioTime = gpGlobals->GetCurTime() + 1.5;
 
 	switch ( slot )
 	{
@@ -3799,11 +3799,11 @@ void CCSPlayer::HandleMenu_Radio3( int slot )
 	if( m_iRadioMessages < 0 )
 		return;
 
-	if( m_flRadioTime > gpGlobals->curtime )
+	if( m_flRadioTime > gpGlobals->GetCurTime() )
 		return;
 
 	m_iRadioMessages--;
-	m_flRadioTime = gpGlobals->curtime + 1.5;
+	m_flRadioTime = gpGlobals->GetCurTime() + 1.5;
 
 	switch ( slot )
 	{
@@ -3895,7 +3895,7 @@ void CCSPlayer::ConstructRadioFilter( CRecipientFilter& filter )
 	int localTeam = GetTeamNumber();
 
 	int i;
-	for ( i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CCSPlayer *player = static_cast<CCSPlayer *>( UTIL_PlayerByIndex( i ) );
 		if ( !player )
@@ -3959,7 +3959,7 @@ void CCSPlayer::Radio( const char *pszRadioSound, const char *pszRadioText )
 void CCSPlayer::ListPlayers()
 {
 	char buf[64];
-	for ( int i=1; i <= gpGlobals->maxClients; i++ )
+	for ( int i=1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CCSPlayer *pPlayer = dynamic_cast< CCSPlayer* >( UTIL_PlayerByIndex( i ) );
 		if ( pPlayer && !pPlayer->IsDormant() )
@@ -4005,7 +4005,7 @@ void CCSPlayer::OnDamagedByExplosion( const CTakeDamageInfo &info )
 	if ( !shock )
 		return;
 
-	m_applyDeafnessTime = gpGlobals->curtime + 0.3;
+	m_applyDeafnessTime = gpGlobals->GetCurTime() + 0.3;
 	m_currentDeafnessFilter = 0;
 }
 
@@ -4032,7 +4032,7 @@ void CCSPlayer::ApplyDeafnessEffect()
 	const float timeForEachFilterInFadeIn = fadeInSectionTime / (lastGrenadeFilterIndex - firstGrenadeFilterIndex);
 	const float timeForEachFilterInFadeOut = fadeOutSectionTime / (lastGrenadeFilterIndex - firstGrenadeFilterIndex);
 
-	float timeIntoEffect = gpGlobals->curtime - m_applyDeafnessTime;
+	float timeIntoEffect = gpGlobals->GetCurTime() - m_applyDeafnessTime;
 
 	if (timeIntoEffect >= grenadeEffectLengthInSecs)
 	{
@@ -4247,17 +4247,17 @@ bool CCSPlayer::ShouldRunRateLimitedCommand( const CCommand &args )
 	int i = m_RateLimitLastCommandTimes.Find( pcmd );
 	if ( i == m_RateLimitLastCommandTimes.InvalidIndex() )
 	{
-		m_RateLimitLastCommandTimes.Insert( pcmd, gpGlobals->curtime );
+		m_RateLimitLastCommandTimes.Insert( pcmd, gpGlobals->GetCurTime() );
 		return true;
 	}
-	else if ( (gpGlobals->curtime - m_RateLimitLastCommandTimes[i]) < CS_COMMAND_MAX_RATE )
+	else if ( (gpGlobals->GetCurTime() - m_RateLimitLastCommandTimes[i]) < CS_COMMAND_MAX_RATE )
 	{
 		// Too fast.
 		return false;
 	}
 	else
 	{
-		m_RateLimitLastCommandTimes[i] = gpGlobals->curtime;
+		m_RateLimitLastCommandTimes[i] = gpGlobals->GetCurTime();
 		return true;
 	}
 }
@@ -4270,7 +4270,7 @@ bool CCSPlayer::ClientCommand( const CCommand &args )
 /*
 	if ( bot_mimic.GetInt() && !( GetFlags() & FL_FAKECLIENT ) )
 	{
-		for ( int i=1; i <= gpGlobals->maxClients; i++ )
+		for ( int i=1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = dynamic_cast< CCSPlayer* >( UTIL_PlayerByIndex( i ) );
 			if ( pPlayer && pPlayer != this && ( pPlayer->GetFlags() & FL_FAKECLIENT ) )
@@ -4319,7 +4319,7 @@ bool CCSPlayer::ClientCommand( const CCommand &args )
 
 	if ( FStrEq( pcmd, "he_deafen" ) )
 	{
-		m_applyDeafnessTime = gpGlobals->curtime + 0.3;
+		m_applyDeafnessTime = gpGlobals->GetCurTime() + 0.3;
 		m_currentDeafnessFilter = 0;
 		return true;
 	}
@@ -4740,7 +4740,7 @@ bool CCSPlayer::HandleCommand_JoinTeam( int team )
 
 		if ( GetTeamNumber() != TEAM_UNASSIGNED && State_Get() == STATE_ACTIVE )
 		{
-			m_fNextSuicideTime = gpGlobals->curtime;	// allow the suicide to work
+			m_fNextSuicideTime = gpGlobals->GetCurTime();	// allow the suicide to work
 
 			CommitSuicide();
 
@@ -4880,7 +4880,7 @@ void CCSPlayer::GetIntoGame()
 	//SetPlayerModel( iClass );
 
 	SetFOV( this, 0 );
-	m_flLastMovement = gpGlobals->curtime;
+	m_flLastMovement = gpGlobals->GetCurTime();
 
 	CCSGameRules *MPRules = CSGameRules();
 
@@ -5232,7 +5232,7 @@ void CCSPlayer::State_PreThink_WELCOME()
 	Assert( GetAbsVelocity().Length() == 0 );
 
 	// Update whatever intro camera it's at.
-	if( m_pIntroCamera && (gpGlobals->curtime >= m_fIntroCamTime) )
+	if( m_pIntroCamera && (gpGlobals->GetCurTime() >= m_fIntroCamTime) )
 	{
 		MoveToNextIntroCamera();
 	}
@@ -5257,7 +5257,7 @@ void CCSPlayer::State_Enter_DEATH_ANIM()
 	}
 
 	// Used for a timer.
-	m_flDeathTime = gpGlobals->curtime;
+	m_flDeathTime = gpGlobals->GetCurTime();
 
 	m_bAbortFreezeCam = false;
 
@@ -5303,10 +5303,10 @@ void CCSPlayer::State_PreThink_DEATH_ANIM()
 	float fFreezeEnd = fDeathEnd + spec_freeze_traveltime.GetFloat() + spec_freeze_time.GetFloat();
 
 	// transition to Freezecam mode once the death animation is complete
-	if ( gpGlobals->curtime >= fDeathEnd )
+	if ( gpGlobals->GetCurTime() >= fDeathEnd )
 	{
 		if ( GetObserverTarget() && GetObserverTarget() != this &&
-			!m_bAbortFreezeCam && gpGlobals->curtime < fFreezeEnd && GetObserverMode() != OBS_MODE_FREEZECAM)
+			!m_bAbortFreezeCam && gpGlobals->GetCurTime() < fFreezeEnd && GetObserverMode() != OBS_MODE_FREEZECAM)
 		{
 			StartObserverMode( OBS_MODE_FREEZECAM );
 		}
@@ -5320,7 +5320,7 @@ void CCSPlayer::State_PreThink_DEATH_ANIM()
 	}
 
 	// Don't transfer to observer state until the freeze cam is done
-	if ( gpGlobals->curtime < fFreezeEnd )
+	if ( gpGlobals->GetCurTime() < fFreezeEnd )
 		return;
 
 	State_Transition( STATE_OBSERVER_MODE );
@@ -5364,7 +5364,7 @@ void CCSPlayer::State_PreThink_DEATH_WAIT_FOR_KEY()
 		fAnyButtonDown = false;
 
 	// after a certain amount of time switch to observer mode even if they don't press a key.
-	if (gpGlobals->curtime >= (m_flDeathTime + DEATH_ANIMATION_TIME + 3.0))
+	if (gpGlobals->GetCurTime() >= (m_flDeathTime + DEATH_ANIMATION_TIME + 3.0))
 	{
 		fAnyButtonDown = true;
 	}
@@ -5689,7 +5689,7 @@ void CCSPlayer::RescueZoneTouch( inputdata_t &inputdata )
 CON_COMMAND( timeleft, "prints the time remaining in the match" )
 {
 	CCSPlayer *pPlayer = ToCSPlayer( UTIL_GetCommandClient() );
-	if ( pPlayer && pPlayer->m_iNextTimeCheck >= gpGlobals->curtime )
+	if ( pPlayer && pPlayer->m_iNextTimeCheck >= gpGlobals->GetCurTime() )
 	{
 		return; // rate limiting
 	}
@@ -5742,7 +5742,7 @@ CON_COMMAND( timeleft, "prints the time remaining in the match" )
 
 	if ( pPlayer )
 	{
-		pPlayer->m_iNextTimeCheck = gpGlobals->curtime + 1;
+		pPlayer->m_iNextTimeCheck = gpGlobals->GetCurTime() + 1;
 	}
 }
 
@@ -7253,14 +7253,14 @@ bool CCSPlayer::CanChangeName( void )
 		return true;
 
 	// enforce the minimum interval
-	if ( (m_flNameChangeHistory[0] + MIN_NAME_CHANGE_INTERVAL) >= gpGlobals->curtime )
+	if ( (m_flNameChangeHistory[0] + MIN_NAME_CHANGE_INTERVAL) >= gpGlobals->GetCurTime() )
 	{
 		return false;
 	}
 
 	// enforce that we dont do more than NAME_CHANGE_HISTORY_SIZE
 	// changes within NAME_CHANGE_HISTORY_INTERVAL
-	if ( (m_flNameChangeHistory[NAME_CHANGE_HISTORY_SIZE-1] + NAME_CHANGE_HISTORY_INTERVAL) >= gpGlobals->curtime )
+	if ( (m_flNameChangeHistory[NAME_CHANGE_HISTORY_SIZE-1] + NAME_CHANGE_HISTORY_INTERVAL) >= gpGlobals->GetCurTime() )
 	{
 		return false;
 	}
@@ -7302,7 +7302,7 @@ void CCSPlayer::ChangeName( const char *pszNewName )
 		m_flNameChangeHistory[i] = m_flNameChangeHistory[i-1];
 	}
 
-	m_flNameChangeHistory[0] = gpGlobals->curtime; // last change
+	m_flNameChangeHistory[0] = gpGlobals->GetCurTime(); // last change
 }
 
 bool CCSPlayer::StartReplayMode( float fDelay, float fDuration, int iEntity )
@@ -7585,7 +7585,7 @@ void CCSPlayer::ProcessPlayerDeathAchievements( CCSPlayer *pAttacker, CCSPlayer 
 		pAttacker->m_NumEnemiesKilledThisRound++;
 
 		//store a list of kill times for spree tracking
-		pAttacker->m_killTimes.AddToTail(gpGlobals->curtime);
+		pAttacker->m_killTimes.AddToTail(gpGlobals->GetCurTime());
 
 		//Add the victim to the list of players killed this round
 		pAttacker->m_enemyPlayersKilledThisRound.AddToTail(pVictim);
@@ -7608,7 +7608,7 @@ void CCSPlayer::ProcessPlayerDeathAchievements( CCSPlayer *pAttacker, CCSPlayer 
 
 
 		//remove elements older than a certain time
-		while (pAttacker->m_killTimes.Count() > 0 && pAttacker->m_killTimes[0] + AchievementConsts::KillingSpree_WindowTime < gpGlobals->curtime)
+		while (pAttacker->m_killTimes.Count() > 0 && pAttacker->m_killTimes[0] + AchievementConsts::KillingSpree_WindowTime < gpGlobals->GetCurTime())
 		{
 			pAttacker->m_killTimes.Remove(0);
 		}
@@ -7616,12 +7616,12 @@ void CCSPlayer::ProcessPlayerDeathAchievements( CCSPlayer *pAttacker, CCSPlayer 
 		//If we killed enough players in the time window, award the achievement
 		if (pAttacker->m_killTimes.Count() >= AchievementConsts::KillingSpree_Kills)
 		{
-			pAttacker->m_KillingSpreeStartTime = gpGlobals->curtime;
+			pAttacker->m_KillingSpreeStartTime = gpGlobals->GetCurTime();
 			pAttacker->AwardAchievement(CSKillingSpree);
 		}
 
 		// Did the attacker just kill someone on a killing spree?
-		if (pVictim->m_KillingSpreeStartTime >= 0 && pVictim->m_KillingSpreeStartTime - gpGlobals->curtime <= AchievementConsts::KillingSpreeEnder_TimeWindow)
+		if (pVictim->m_KillingSpreeStartTime >= 0 && pVictim->m_KillingSpreeStartTime - gpGlobals->GetCurTime() <= AchievementConsts::KillingSpreeEnder_TimeWindow)
 		{
 			pAttacker->AwardAchievement(CSKillingSpreeEnder);
 		}
@@ -7774,7 +7774,7 @@ void CCSPlayer::ProcessPlayerDeathAchievements( CCSPlayer *pAttacker, CCSPlayer 
 			pAttacker->m_defuseDefenseStep = DD_KILLED_TERRORIST;            
 		}
 
-		if (pVictim->HasC4() && pVictim->GetBombPickuptime() + AchievementConsts::KillBombPickup_MaxTime > gpGlobals->curtime)
+		if (pVictim->HasC4() && pVictim->GetBombPickuptime() + AchievementConsts::KillBombPickup_MaxTime > gpGlobals->GetCurTime())
 		{
 			pAttacker->AwardAchievement(CSKillBombPickup);
 		}
@@ -7799,7 +7799,7 @@ void CCSPlayer::ProcessPlayerDeathAchievements( CCSPlayer *pAttacker, CCSPlayer 
 	memset(teamCount, 0, sizeof(teamCount));
 	memset(teamIgnoreCount, 0, sizeof(teamIgnoreCount));
 	CCSPlayer *pAlivePlayer = NULL;
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CCSPlayer* pPlayer = (CCSPlayer*)UTIL_PlayerByIndex( i );
 		if (pPlayer)
@@ -7878,7 +7878,7 @@ void CCSPlayer::OnRoundEnd(int winningTeam, int reason)
 			losingTeamPlayers = losingTeam->GetNumPlayers();
 			
 			int ignoreCount = 0;
-			for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+			for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 			{
 				CCSPlayer* pPlayer = (CCSPlayer*)UTIL_PlayerByIndex( i );
 				if (pPlayer)
@@ -7900,7 +7900,7 @@ void CCSPlayer::OnRoundEnd(int winningTeam, int reason)
 
 		//Check fast round win achievement
 		if (    IsAlive() && 
-				gpGlobals->curtime - CSGameRules()->GetRoundStartTime() < AchievementConsts::FastRoundWin_Time &&
+				gpGlobals->GetCurTime() - CSGameRules()->GetRoundStartTime() < AchievementConsts::FastRoundWin_Time &&
 				GetTeamNumber() == winningTeam &&
 				losingTeamPlayers >= AchievementConsts::DefaultMinOpponentsForAchievement)
 		{
@@ -7991,7 +7991,7 @@ void CCSPlayer::OnStartedDefuse()
 void CCSPlayer::AttemptToExitFreezeCam( void )
 {
 	float fEndFreezeTravel = m_flDeathTime + CS_DEATH_ANIMATION_TIME + spec_freeze_traveltime.GetFloat();
-	if ( gpGlobals->curtime < fEndFreezeTravel )
+	if ( gpGlobals->GetCurTime() < fEndFreezeTravel )
 		return;
 
 	m_bAbortFreezeCam = true;
@@ -8086,7 +8086,7 @@ int CCSPlayer::GetNumMVPs()
 //-----------------------------------------------------------------------------
 void CCSPlayer::RemoveNemesisRelationships()
 {
-	for ( int i = 1 ; i <= gpGlobals->maxClients ; i++ )
+	for ( int i = 1 ; i <= gpGlobals->GetMaxClients() ; i++ )
 	{
 		CCSPlayer *pTemp = ToCSPlayer( UTIL_PlayerByIndex( i ) );
 		if ( pTemp && pTemp != this )
@@ -8165,7 +8165,7 @@ int CCSPlayer::GetNumEnemiesDamaged()
 
 void UTIL_AwardMoneyToTeam( int iAmount, int iTeam, CBaseEntity *pIgnore )
 {
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CCSPlayer *pPlayer = (CCSPlayer*) UTIL_PlayerByIndex( i );
 

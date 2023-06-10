@@ -239,7 +239,7 @@ void CViewEffects::CalcShake( void )
 			continue;
 		}
 
-		if ( ( gpGlobals->curtime > pShake->endtime ) || 
+		if ( ( gpGlobals->GetCurTime() > pShake->endtime ) || 
 			pShake->duration <= 0 || 
 			pShake->amplitude <= 0 || 
 			pShake->frequency <= 0 )
@@ -263,10 +263,10 @@ void CViewEffects::CalcShake( void )
 			engineClient->Con_NXPrintf( &np, "%02d: dur(%8.2f) amp(%8.2f) freq(%8.2f)", nShake + 1, (double)pShake->duration, (double)pShake->amplitude, (double)pShake->frequency );
 		}
 
-		if ( gpGlobals->curtime > pShake->nextShake )
+		if ( gpGlobals->GetCurTime() > pShake->nextShake )
 		{
 			// Higher frequency means we recalc the extents more often and perturb the display again
-			pShake->nextShake = gpGlobals->curtime + (1.0f / pShake->frequency);
+			pShake->nextShake = gpGlobals->GetCurTime() + (1.0f / pShake->frequency);
 
 			// Compute random shake extents (the shake will settle down from this)
 			for (int i = 0; i < 3; i++ )
@@ -278,7 +278,7 @@ void CViewEffects::CalcShake( void )
 		}
 
 		// Ramp down amplitude over duration (fraction goes from 1 to 0 linearly with slope 1/duration)
-		fraction = ( pShake->endtime - gpGlobals->curtime ) / pShake->duration;
+		fraction = ( pShake->endtime - gpGlobals->GetCurTime() ) / pShake->duration;
 
 		// Ramp up frequency over duration
 		if ( fraction )
@@ -294,7 +294,7 @@ void CViewEffects::CalcShake( void )
 		fraction *= fraction;
 
 		// Sine wave that slowly settles to zero
-		float angle = gpGlobals->curtime * freq;
+		float angle = gpGlobals->GetCurTime() * freq;
 		if ( angle > 1e8 )
 		{
 			angle = 1e8;
@@ -319,7 +319,7 @@ void CViewEffects::CalcShake( void )
 		}
 
 		// Drop amplitude a bit, less for higher frequency shakes
-		pShake->amplitude -= pShake->amplitude * ( gpGlobals->frametime / (pShake->duration * pShake->frequency) );
+		pShake->amplitude -= pShake->amplitude * ( gpGlobals->GetFrameTime() / (pShake->duration * pShake->frequency) );
 		// NVNT - update our amplitude.
 		hapticShakeAmp += pShake->amplitude*fraction;
 	}
@@ -402,7 +402,7 @@ void CViewEffects::Shake( ScreenShake_t &data )
 		pNewShake->frequency = data.frequency;
 		pNewShake->duration = data.duration;
 		pNewShake->nextShake = 0;
-		pNewShake->endtime = gpGlobals->curtime + data.duration;
+		pNewShake->endtime = gpGlobals->GetCurTime() + data.duration;
 		pNewShake->command = data.command;
 
 		m_ShakeList.AddToTail( pNewShake );
@@ -462,7 +462,7 @@ void CViewEffects::Fade( ScreenFade_t &data )
 				pNewFade->Speed = -(float)pNewFade->alpha / pNewFade->End;
 			}
 
-			pNewFade->End	+= gpGlobals->curtime;
+			pNewFade->End	+= gpGlobals->GetCurTime();
 			pNewFade->Reset	+= pNewFade->End;
 		}
 		else
@@ -472,7 +472,7 @@ void CViewEffects::Fade( ScreenFade_t &data )
 				pNewFade->Speed = (float)pNewFade->alpha / pNewFade->End;
 			}
 
-			pNewFade->Reset	+= gpGlobals->curtime;
+			pNewFade->Reset	+= gpGlobals->GetCurTime();
 			pNewFade->End	+= pNewFade->Reset;
 		}
 	}
@@ -500,11 +500,11 @@ void CViewEffects::FadeCalculate( void )
 		// Keep pushing reset time out indefinitely
 		if ( pFade->Flags & FFADE_STAYOUT )
 		{
-			pFade->Reset = gpGlobals->curtime + 0.1;
+			pFade->Reset = gpGlobals->GetCurTime() + 0.1;
 		}
 
 		// All done?
-		if ( ( gpGlobals->curtime > pFade->Reset ) && ( gpGlobals->curtime > pFade->End ) )
+		if ( ( gpGlobals->GetCurTime() > pFade->Reset ) && ( gpGlobals->GetCurTime() > pFade->End ) )
 		{
 			// User passed in a callback function, call it now
 			if ( s_pfnFadeDoneCallback )
@@ -537,7 +537,7 @@ void CViewEffects::FadeCalculate( void )
 		int iFadeAlpha;
 		if ( pFade->Flags & (FFADE_OUT|FFADE_IN) )
 		{
-			iFadeAlpha = pFade->Speed * ( pFade->End - gpGlobals->curtime );
+			iFadeAlpha = pFade->Speed * ( pFade->End - gpGlobals->GetCurTime() );
 			if ( pFade->Flags & FFADE_OUT )
 			{
 				iFadeAlpha += pFade->alpha;

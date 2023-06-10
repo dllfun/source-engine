@@ -68,7 +68,7 @@ void DBG_AssertFunction(bool fExpr, const char* szExpr, const char* szFile, int 
 //
 inline int	  ENTINDEX( edict_t *pEdict)			
 { 
-	int nResult = pEdict ? pEdict->m_EdictIndex : 0;
+	int nResult = pEdict ? pEdict->GetIndex() : 0;
 	Assert( nResult == engineServer->IndexOfEdict(pEdict) );
 	return nResult;
 }

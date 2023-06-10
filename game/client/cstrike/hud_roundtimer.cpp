@@ -110,7 +110,7 @@ void CHudRoundTimer::Think()
 	if ( pRules->IsFreezePeriod() )
 	{
 		// in freeze period countdown to round start time
-		timer = (int)ceil(pRules->GetRoundStartTime()-gpGlobals->curtime);
+		timer = (int)ceil(pRules->GetRoundStartTime()-gpGlobals->GetCurTime());
 	}
 
 	//If the bomb is planted don't draw -- the timer is irrelevant
@@ -129,7 +129,7 @@ void CHudRoundTimer::Think()
 		return;
 	}
 
-	if(gpGlobals->curtime > m_flNextToggle)
+	if(gpGlobals->GetCurTime() > m_flNextToggle)
 	{
 		if( timer <= 0)
 		{
@@ -137,32 +137,32 @@ void CHudRoundTimer::Think()
 		}
 		else if( timer <= 2)
 		{
-			m_flToggleTime = gpGlobals->curtime;
-			m_flNextToggle = gpGlobals->curtime + 0.05;
+			m_flToggleTime = gpGlobals->GetCurTime();
+			m_flNextToggle = gpGlobals->GetCurTime() + 0.05;
 			m_bFlash = !m_bFlash;
 		}
 		else if( timer <= 5)
 		{
-			m_flToggleTime = gpGlobals->curtime;
-			m_flNextToggle = gpGlobals->curtime + 0.1;
+			m_flToggleTime = gpGlobals->GetCurTime();
+			m_flNextToggle = gpGlobals->GetCurTime() + 0.1;
 			m_bFlash = !m_bFlash;
 		}
 		else if( timer <= 10)
 		{
-			m_flToggleTime = gpGlobals->curtime;
-			m_flNextToggle = gpGlobals->curtime + 0.2;
+			m_flToggleTime = gpGlobals->GetCurTime();
+			m_flNextToggle = gpGlobals->GetCurTime() + 0.2;
 			m_bFlash = !m_bFlash;
 		}
 		else if( timer <= 20)
 		{
-			m_flToggleTime = gpGlobals->curtime;
-			m_flNextToggle = gpGlobals->curtime + 0.4;
+			m_flToggleTime = gpGlobals->GetCurTime();
+			m_flNextToggle = gpGlobals->GetCurTime() + 0.4;
 			m_bFlash = !m_bFlash;
 		}
 		else if( timer <= 30)
 		{
-			m_flToggleTime = gpGlobals->curtime;
-			m_flNextToggle = gpGlobals->curtime + 0.8;
+			m_flToggleTime = gpGlobals->GetCurTime();
+			m_flNextToggle = gpGlobals->GetCurTime() + 0.8;
 			m_bFlash = !m_bFlash;
 		}
 		else
@@ -183,7 +183,7 @@ void CHudRoundTimer::Think()
 		endValue = m_FlashColor;
 	}
 
-	float pos = (gpGlobals->curtime - m_flToggleTime) / (m_flNextToggle - m_flToggleTime);
+	float pos = (gpGlobals->GetCurTime() - m_flToggleTime) / (m_flNextToggle - m_flToggleTime);
 	pos = clamp( SimpleSpline( pos ), 0, 1 );
 
 	interp_color[0] = ((endValue[0] - startValue[0]) * pos) + startValue[0];
@@ -206,7 +206,7 @@ void CHudRoundTimer::Paint()
 	if ( pRules->IsFreezePeriod() )
 	{
 		// in freeze period countdown to round start time
-		timer = (int)ceil(pRules->GetRoundStartTime()-gpGlobals->curtime);
+		timer = (int)ceil(pRules->GetRoundStartTime()-gpGlobals->GetCurTime());
 	}
 	
 	if(timer < 0) 

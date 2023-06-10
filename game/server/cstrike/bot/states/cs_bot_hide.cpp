@@ -224,7 +224,7 @@ void HideState::OnUpdate( CCSBot *me )
 			me->GetDisposition() == CCSBot::ENGAGE_AND_INVESTIGATE)
 		{
 			// if we are holding position, and have heard the enemy nearby, investigate after our hold time is up
-			if (m_isHoldingPosition && m_heardEnemy && (gpGlobals->curtime - m_firstHeardEnemyTime > m_holdPositionTime))
+			if (m_isHoldingPosition && m_heardEnemy && (gpGlobals->GetCurTime() - m_firstHeardEnemyTime > m_holdPositionTime))
 			{
 				/// @todo We might need to remember specific location of last enemy noise here
 				me->InvestigateNoise();
@@ -241,7 +241,7 @@ void HideState::OnUpdate( CCSBot *me )
 					{
 						// first time we heard the enemy
 						m_heardEnemy = true;
-						m_firstHeardEnemyTime = gpGlobals->curtime;
+						m_firstHeardEnemyTime = gpGlobals->GetCurTime();
 						me->PrintIfWatched( "Heard enemy, holding position for %f2.1 seconds...\n", m_holdPositionTime );
 					}
 				}

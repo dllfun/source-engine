@@ -71,7 +71,7 @@ void CNewParticleEffect::Construct()
 
 		static ParticleSystemCreatedState_t state;
 		state.m_nParticleSystemId = nId;
-		state.m_flTime = gpGlobals->curtime;
+		state.m_flTime = gpGlobals->GetCurTime();
 		state.m_pName = GetName();
 		state.m_nOwner = m_hOwner.Get() ? m_hOwner->entindex() : -1;
 
@@ -86,8 +86,8 @@ CNewParticleEffect::~CNewParticleEffect(void)
 	if ( m_nToolParticleEffectId != TOOLPARTICLESYSTEMID_INVALID && clienttools->IsInRecordingMode() )
 	{
 		static ParticleSystemDestroyedState_t state;
-		state.m_nParticleSystemId = gpGlobals->curtime;
-		state.m_flTime = gpGlobals->curtime;
+		state.m_nParticleSystemId = gpGlobals->GetCurTime();
+		state.m_flTime = gpGlobals->GetCurTime();
 
 		KeyValues *msg = new KeyValues( "ParticleSystem_Destroy" );
 		msg->SetPtr( "state", &state );
@@ -179,7 +179,7 @@ void CNewParticleEffect::StopEmission( bool bInfiniteOnly, bool bRemoveAllPartic
 
 		static ParticleSystemStopEmissionState_t state;
 		state.m_nParticleSystemId = GetToolParticleEffectId();
-		state.m_flTime = gpGlobals->curtime;
+		state.m_flTime = gpGlobals->GetCurTime();
 		state.m_bInfiniteOnly = bInfiniteOnly;
 
 		msg->SetPtr( "state", &state );
@@ -203,7 +203,7 @@ void CNewParticleEffect::SetControlPointEntity( int nWhichPoint, CBaseEntity *pE
 	{
 		static ParticleSystemSetControlPointObjectState_t state;
 		state.m_nParticleSystemId = GetToolParticleEffectId();
-		state.m_flTime = gpGlobals->curtime;
+		state.m_flTime = gpGlobals->GetCurTime();
 		state.m_nControlPoint = nWhichPoint;
 		state.m_nObject = pEntity ? pEntity->entindex() : -1;
 
@@ -228,7 +228,7 @@ void CNewParticleEffect::SetControlPoint( int nWhichPoint, const Vector &v )
 	{
 		static ParticleSystemSetControlPointPositionState_t state;
 		state.m_nParticleSystemId = GetToolParticleEffectId();
-		state.m_flTime = gpGlobals->curtime;
+		state.m_flTime = gpGlobals->GetCurTime();
 		state.m_nControlPoint = nWhichPoint;
 		state.m_vecPosition = v;
 
@@ -251,7 +251,7 @@ void CNewParticleEffect::RecordControlPointOrientation( int nWhichPoint )
 
 		static ParticleSystemSetControlPointOrientationState_t state;
 		state.m_nParticleSystemId = GetToolParticleEffectId();
-		state.m_flTime = gpGlobals->curtime;
+		state.m_flTime = gpGlobals->GetCurTime();
 		state.m_nControlPoint = nWhichPoint;
 		AngleQuaternion( angles, state.m_qOrientation );
 

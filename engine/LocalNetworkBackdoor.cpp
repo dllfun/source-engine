@@ -224,9 +224,9 @@ void CLocalNetworkBackdoor::EntityDormant( int iEnt, int iSerialNum )
 void CLocalNetworkBackdoor::AddToPendingDormantEntityList( unsigned short iEdict )
 {
 	edict_t *e = EDICT_NUM(iEdict);
-	if ( !( e->m_fStateFlags & FL_EDICT_PENDING_DORMANT_CHECK ) )
+	if ( !( e->IsPendingDormantCheck()) )
 	{
-		e->m_fStateFlags |= FL_EDICT_PENDING_DORMANT_CHECK;
+		e->SetPendingDormantCheck();
 		m_PendingDormantEntities.AddToTail( iEdict );
 	}
 }		
@@ -239,14 +239,14 @@ void CLocalNetworkBackdoor::ProcessDormantEntities()
 		edict_t *e = EDICT_NUM(iEdict);
 
 		// Make sure the entity still exists and stil has the dontsend flag set.
-		if ( e->IsFree() || !(e->m_fStateFlags & FL_EDICT_DONTSEND) )
+		if ( e->IsFree() || !(e->IsDontSend()) )
 		{
-			e->m_fStateFlags &= ~FL_EDICT_PENDING_DORMANT_CHECK;
+			e->ClearPendingDormantCheck();
 			continue;
 		}
 
-		EntityDormant( iEdict, e->m_NetworkSerialNumber );
-		e->m_fStateFlags &= ~FL_EDICT_PENDING_DORMANT_CHECK;
+		EntityDormant( iEdict, e->GetNetworkSerialNumber() );
+		e->ClearPendingDormantCheck();
 	}
 	m_PendingDormantEntities.Purge();
 }

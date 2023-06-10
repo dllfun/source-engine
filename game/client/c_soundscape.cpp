@@ -128,7 +128,7 @@ public:
 	virtual void OnSave() {}
 	virtual void OnRestore()
 	{
-		m_nRestoreFrame = gpGlobals->framecount;
+		m_nRestoreFrame = gpGlobals->GetFrameCount();
 	}
 	virtual void SafeRemoveIfDesired() {}
 
@@ -213,7 +213,7 @@ private:
 
 	bool	IsBeingRestored() const
 	{
-		return gpGlobals->framecount == m_nRestoreFrame ? true : false;
+		return gpGlobals->GetFrameCount() == m_nRestoreFrame ? true : false;
 	}
 
 	void	AddSoundScapeFile( const char *filename );
@@ -549,7 +549,7 @@ void C_SoundscapeSystem::Update( float frametime )
 	}
 	// fade out the old sounds over soundscape_fadetime seconds
 	UpdateLoopingSounds( frametime );
-	UpdateRandomSounds( gpGlobals->curtime );
+	UpdateRandomSounds( gpGlobals->GetCurTime() );
 }
 
 
@@ -599,7 +599,7 @@ void C_SoundscapeSystem::StartNewSoundscape( KeyValues *pSoundscape )
 
 	// clear all random sounds
 	m_randomSounds.RemoveAll();
-	m_nextRandomTime = gpGlobals->curtime;
+	m_nextRandomTime = gpGlobals->GetCurTime();
 
 	if ( pSoundscape )
 	{
@@ -1238,7 +1238,7 @@ void C_SoundscapeSystem::UpdateLoopingSound( loopingsound_t &loopSound )
 int C_SoundscapeSystem::AddRandomSound( const randomsound_t &sound )
 {
 	int index = m_randomSounds.AddToTail( sound );
-	m_randomSounds[index].nextPlayTime = gpGlobals->curtime + 0.5 * RandomInterval( sound.time );
+	m_randomSounds[index].nextPlayTime = gpGlobals->GetCurTime() + 0.5 * RandomInterval( sound.time );
 	
 	return index;
 }

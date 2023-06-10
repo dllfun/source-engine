@@ -423,8 +423,8 @@ void CPrediction::PostNetworkDataReceived( int commands_acknowledged )
 	CPDumpPanel *dump = GetPDumpPanel();
 #endif
 	//Msg( "%i/%i ack %i commands/slot\n",
-	//	gpGlobals->framecount,
-	//	gpGlobals->tickcount,
+	//	gpGlobals->GetFrameCount(),
+	//	gpGlobals->GetTickCount(),
 	//	commands_acknowledged - 1 );
 
 	m_nServerCommandsAcknowledged += commands_acknowledged;
@@ -834,8 +834,8 @@ void CPrediction::RunCommand( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 	StartCommand( player, ucmd );
 
 	// Set globals appropriately
-	gpGlobals->curtime		= player->m_nTickBase * TICK_INTERVAL;
-	gpGlobals->frametime	= m_bEnginePaused ? 0 : TICK_INTERVAL;
+	gpGlobals->SetCurTime(player->m_nTickBase * TICK_INTERVAL);
+	gpGlobals->SetFrameTime(m_bEnginePaused ? 0 : TICK_INTERVAL);
 
 	g_pGameMovement->StartTrackPredictionErrors( player );
 
@@ -911,7 +911,7 @@ void CPrediction::RunCommand( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 
 	FinishCommand( player );
 
-	if ( gpGlobals->frametime > 0 )
+	if ( gpGlobals->GetFrameTime() > 0 )
 	{
 		player->m_nTickBase++;
 	}
@@ -1162,8 +1162,8 @@ void CPrediction::RunSimulation( int current_command, float curtime, CUserCmd *c
 	for ( i = 0; i < predictables->GetPredictableCount(); i++ )
 	{
 		// Always reset
-		gpGlobals->curtime		= curtime;
-		gpGlobals->frametime	= m_bEnginePaused ? 0 : TICK_INTERVAL;
+		gpGlobals->SetCurTime(curtime);
+		gpGlobals->SetFrameTime(m_bEnginePaused ? 0 : TICK_INTERVAL);
 
 		C_BaseEntity *entity = predictables->GetPredictable( i );
 
@@ -1394,8 +1394,8 @@ int CPrediction::ComputeFirstCommandToExecute( bool received_new_world_update, i
 		RestoreEntityToPredictedFrame( skipahead - 1 );
 
 		//Msg( "%i/%i no world, skip to %i restore from slot %i\n", 
-		//	gpGlobals->framecount,
-		//	gpGlobals->tickcount,
+		//	gpGlobals->GetFrameCount(),
+		//	gpGlobals->GetTickCount(),
 		//	skipahead,
 		//	skipahead - 1 );
 	}
@@ -1423,8 +1423,8 @@ int CPrediction::ComputeFirstCommandToExecute( bool received_new_world_update, i
 			skipahead = ( m_nCommandsPredicted - m_nServerCommandsAcknowledged );
 
 			//Msg( "%i/%i optimize2, skip to %i restore from slot %i\n", 
-			//	gpGlobals->framecount,
-			//	gpGlobals->tickcount,
+			//	gpGlobals->GetFrameCount(),
+			//	gpGlobals->GetTickCount(),
 			//	skipahead,
 			//	m_nCommandsPredicted - 1 );
 		}
@@ -1439,8 +1439,8 @@ int CPrediction::ComputeFirstCommandToExecute( bool received_new_world_update, i
 				// if we don't, we'll have 3 interpolation entries with the same timestamp as this predicted
 				// frame, so we won't be able to interpolate (which leads to jerky movement in the player when
 				// ANY entity like your gun gets a prediction error).
-				float flPrev = gpGlobals->curtime;
-				gpGlobals->curtime = pLocalPlayer->GetTimeBase() - TICK_INTERVAL;
+				float flPrev = gpGlobals->GetCurTime();
+				gpGlobals->SetCurTime(pLocalPlayer->GetTimeBase() - TICK_INTERVAL);
 				
 				for ( int i = 0; i < predictables->GetPredictableCount(); i++ )
 				{
@@ -1451,7 +1451,7 @@ int CPrediction::ComputeFirstCommandToExecute( bool received_new_world_update, i
 					}
 				}
 
-				gpGlobals->curtime = flPrev;
+				gpGlobals->SetCurTime(flPrev);
 			}
 		}
 	}
@@ -1497,14 +1497,14 @@ bool CPrediction::PerformPrediction( bool received_new_world_update, C_BasePlaye
 	int i = ComputeFirstCommandToExecute( received_new_world_update, incoming_acknowledged, outgoing_command );
 
 	//Msg( "%i/%i tickbase %i\n",
-	//	gpGlobals->framecount,
-	//	gpGlobals->tickcount,
+	//	gpGlobals->GetFrameCount(),
+	//	gpGlobals->GetTickCount(),
 	//	localPlayer->m_nTickBase );
 
 	//for ( int k = 1; k < i; k++ )
 	//{
 	//	Msg( "%i/%i Skip final tick %i into slot %i\n", 
-	//		gpGlobals->framecount, gpGlobals->tickcount,
+	//		gpGlobals->GetFrameCount(), gpGlobals->GetTickCount(),
 	//		localPlayer->m_nTickBase - i + k + 1,
 	//		k - 1 );
 	//}
@@ -1538,8 +1538,8 @@ bool CPrediction::PerformPrediction( bool received_new_world_update, C_BasePlaye
 
 		RunSimulation( current_command, curtime, cmd, localPlayer );
 
-		gpGlobals->curtime		= curtime;
-		gpGlobals->frametime	= m_bEnginePaused ? 0 : TICK_INTERVAL;
+		gpGlobals->SetCurTime(curtime);
+		gpGlobals->SetFrameTime(m_bEnginePaused ? 0 : TICK_INTERVAL);
 
 		// Call untouch on any entities no longer predicted to be touching
 		Untouch();
@@ -1558,7 +1558,7 @@ bool CPrediction::PerformPrediction( bool received_new_world_update, C_BasePlaye
 		{
 			localPlayer->m_nFinalPredictedTick = localPlayer->m_nTickBase;
 			Msg( "%i/%i Latch final tick %i start == %i into slot %i\n", 
-				gpGlobals->framecount, gpGlobals->tickcount,
+				gpGlobals->GetFrameCount(), gpGlobals->GetTickCount(),
 				localPlayer->m_nFinalPredictedTick,
 				localPlayer->m_nFinalPredictedTick - i,
 				i - 1 );
@@ -1567,7 +1567,7 @@ bool CPrediction::PerformPrediction( bool received_new_world_update, C_BasePlaye
 
 		/*
 		Msg( "%i/%i Predicted command %i tickbase == %i first %s\n", 
-			gpGlobals->framecount, gpGlobals->tickcount,
+			gpGlobals->GetFrameCount(), gpGlobals->GetTickCount(),
 			m_nCommandsPredicted,
 			localPlayer->m_nTickBase,
 			m_bFirstTimePredicted ? "yes" : "no" );
@@ -1581,7 +1581,7 @@ bool CPrediction::PerformPrediction( bool received_new_world_update, C_BasePlaye
 	}
 
 //	Msg( "%i : predicted %i commands forward, %i ack'd last frame, had errors %s\n", 
-//		gpGlobals->tickcount, 
+//		gpGlobals->GetTickCount(), 
 //		m_nCommandsPredicted, 
 //		m_nServerCommandsAcknowledged,
 //		m_bPreviousAckHadErrors ? "true" : "false" );

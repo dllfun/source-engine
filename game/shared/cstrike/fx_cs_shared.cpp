@@ -158,7 +158,7 @@ void FX_FireBullets(
 		float fVelocity = pPlayer->GetAbsVelocity().Length2D();
 
 		Msg("FireBullets @ %10f [ %s ]: inaccuracy=%f  spread=%f  max dispersion=%f  mode=%2i  vel=%10f  seed=%3i  %s\n", 
-			gpGlobals->curtime, weaponAlias, fInaccuracy, fSpread, fInaccuracy + fSpread, iMode, fVelocity, iSeed, szFlags);
+			gpGlobals->GetCurTime(), weaponAlias, fInaccuracy, fSpread, fInaccuracy + fSpread, iMode, fVelocity, iSeed, szFlags);
 	}
 #endif
 

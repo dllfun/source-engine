@@ -121,7 +121,7 @@ void CWeaponFamas::SecondaryAttack()
 		m_bBurstMode = true;
 		m_weaponMode = Secondary_Mode;
 	}
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.3;
 }
 
 float CWeaponFamas::GetInaccuracy() const
@@ -150,7 +150,7 @@ float CWeaponFamas::GetInaccuracy() const
 
 void CWeaponFamas::ItemPostFrame()
 {
-	if ( m_iBurstShotsRemaining > 0 && gpGlobals->curtime >= m_fNextBurstShot )
+	if ( m_iBurstShotsRemaining > 0 && gpGlobals->GetCurTime() >= m_fNextBurstShot )
 		FireRemaining();
 
 	BaseClass::ItemPostFrame();
@@ -215,7 +215,7 @@ void CWeaponFamas::PrimaryAttack()
 	if (pPlayer->GetWaterLevel() == 3)
 	{
 		PlayEmptySound( );
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.15;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.15;
 		return;
 	}
 
@@ -230,7 +230,7 @@ void CWeaponFamas::PrimaryAttack()
 	{
 		flCycleTime = 0.55f;
 		m_iBurstShotsRemaining = 2;
-		m_fNextBurstShot = gpGlobals->curtime + kFamasBurstCycleTime;
+		m_fNextBurstShot = gpGlobals->GetCurTime() + kFamasBurstCycleTime;
 	}
 
 	if ( !CSBaseGunFire( flCycleTime, m_weaponMode ) )

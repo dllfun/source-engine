@@ -87,7 +87,7 @@ static inline void RecordBloodStream( const Vector &start, const Vector &directi
 
  		msg->SetInt( "te", TE_BLOOD_STREAM );
  		msg->SetString( "name", "TE_BloodStream" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

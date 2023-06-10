@@ -182,7 +182,7 @@ void C_LightGlow::OnDataChanged( DataUpdateType_t updateType )
 			m_Glow.SetOneSided();
 		}
 
-		SetNextClientThink( gpGlobals->curtime + RandomFloat(0,3.0) );
+		SetNextClientThink( gpGlobals->GetCurTime() + RandomFloat(0,3.0) );
 	}
 	else if ( updateType == DATA_UPDATE_DATATABLE_CHANGED ) //Right now only color should change.
 	{
@@ -217,5 +217,5 @@ void C_LightGlow::ClientThink( void )
 		m_Glow.Deactivate();
 	}
 
-	SetNextClientThink( gpGlobals->curtime + RandomFloat(1.0,3.0) );
+	SetNextClientThink( gpGlobals->GetCurTime() + RandomFloat(1.0,3.0) );
 }

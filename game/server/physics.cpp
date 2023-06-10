@@ -243,7 +243,7 @@ void CPhysicsHook::LevelInitPreEntity()
 
 	physenv->SetObjectEventHandler( &g_Collisions );
 
-	physenv->SetSimulationTimestep( gpGlobals->interval_per_tick ); // 15 ms per tick
+	physenv->SetSimulationTimestep( gpGlobals->GetIntervalPerTick() ); // 15 ms per tick
 	// HL Game gravity, not real-world gravity
 	physenv->SetGravity( Vector( 0, 0, -GetCurrentGravity() ) );
 	g_PhysAverageSimTime = 0;
@@ -376,9 +376,9 @@ void CPhysicsHook::FrameUpdatePostEntityThink( )
 	VPROF_BUDGET( "CPhysicsHook::FrameUpdatePostEntityThink", VPROF_BUDGETGROUP_PHYSICS );
 
 	// Tracker 24846:  If game is paused, don't simulate vphysics
-	float interval = ( gpGlobals->frametime > 0.0f ) ? TICK_INTERVAL : 0.0f;
+	float interval = ( gpGlobals->GetFrameTime() > 0.0f ) ? TICK_INTERVAL : 0.0f;
 
-	// update the physics simulation, not we don't use gpGlobals->frametime, since that can be 30 msec or 15 msec
+	// update the physics simulation, not we don't use gpGlobals->GetFrameTime(), since that can be 30 msec or 15 msec
 	// depending on whether IsSimulatingOnAlternateTicks is true or not
 	if ( CBaseEntity::IsSimulatingOnAlternateTicks() )
 	{
@@ -403,7 +403,7 @@ void CPhysicsHook::FrameUpdatePostEntityThink( )
 
 void CPhysicsHook::PreClientUpdate()
 {
-	m_impactSoundTime += gpGlobals->frametime;
+	m_impactSoundTime += gpGlobals->GetFrameTime();
 	if ( m_impactSoundTime > 0.05f )
 	{
 		physicssound::PlayImpactSounds( m_impactSounds );
@@ -717,7 +717,7 @@ bool CCollisionEvent::ShouldFreezeObject( IPhysicsObject *pObject )
 
 bool CCollisionEvent::ShouldFreezeContacts( IPhysicsObject **pObjectList, int objectCount )
 {
-	if ( m_lastTickFrictionError > gpGlobals->tickcount || m_lastTickFrictionError < (gpGlobals->tickcount-1) )
+	if ( m_lastTickFrictionError > gpGlobals->GetTickCount() || m_lastTickFrictionError < (gpGlobals->GetTickCount()-1) )
 	{
 		DevWarning("Performance Warning: large friction system (%d objects)!!!\n", objectCount );
 #if _DEBUG
@@ -728,7 +728,7 @@ bool CCollisionEvent::ShouldFreezeContacts( IPhysicsObject **pObjectList, int ob
 		}
 #endif
 	}
-	m_lastTickFrictionError = gpGlobals->tickcount;
+	m_lastTickFrictionError = gpGlobals->GetTickCount();
 	return false;
 }
 
@@ -890,7 +890,7 @@ void CCollisionEvent::UpdatePenetrateEvents( void )
 			}
 			// transferred to solver, clear event
 		}
-		else if ( gpGlobals->curtime - m_penetrateEvents[i].timeStamp > 1.0 )
+		else if ( gpGlobals->GetCurTime() - m_penetrateEvents[i].timeStamp > 1.0 )
 		{
 			if ( m_penetrateEvents[i].collisionState == COLLSTATE_DISABLED )
 			{
@@ -936,13 +936,13 @@ penetrateevent_t &CCollisionEvent::FindOrAddPenetrateEvent( CBaseEntity *pEntity
 		penetrateevent_t &event = m_penetrateEvents[index];
 		event.hEntity0 = pEntity0;
 		event.hEntity1 = pEntity1;
-		event.startTime = gpGlobals->curtime;
+		event.startTime = gpGlobals->GetCurTime();
 		event.collisionState = COLLSTATE_ENABLED;
 		UpdateEntityPenetrationFlag( pEntity0, true );
 		UpdateEntityPenetrationFlag( pEntity1, true );
 	}
 	penetrateevent_t &event = m_penetrateEvents[index];
-	event.timeStamp = gpGlobals->curtime;
+	event.timeStamp = gpGlobals->GetCurTime();
 	return event;
 }
 
@@ -999,7 +999,7 @@ int CCollisionEvent::ShouldSolvePenetration( IPhysicsObject *pObj0, IPhysicsObje
 		}
 	}
 	penetrateevent_t &event = FindOrAddPenetrateEvent( pEntity0, pEntity1 );
-	float eventTime = gpGlobals->curtime - event.startTime;
+	float eventTime = gpGlobals->GetCurTime() - event.startTime;
 	 
 	// NPC vs. physics object.  Create a game DLL solver and remove this event
 	if ( (pEntity0->MyNPCPointer() && CanResolvePenetrationWithNPC(pEntity1, pObj1)) ||
@@ -1025,11 +1025,11 @@ int CCollisionEvent::ShouldSolvePenetration( IPhysicsObject *pObj0, IPhysicsObje
 		{
 			int index0 = physcollision->CollideIndex( pObj0->GetCollide() );
 			int index1 = physcollision->CollideIndex( pObj1->GetCollide() );
-			DevMsg(1, "***Inter-penetration on %s (%d & %d) (%.0f, %.0f)\n", pName1?pName1:"(null)", index0, index1, gpGlobals->curtime, eventTime );
+			DevMsg(1, "***Inter-penetration on %s (%d & %d) (%.0f, %.0f)\n", pName1?pName1:"(null)", index0, index1, gpGlobals->GetCurTime(), eventTime );
 		}
 		else
 		{
-			DevMsg(1, "***Inter-penetration between %s(%s) AND %s(%s) (%.0f, %.0f)\n", pName1?pName1:"(null)", pEntity0->GetDebugName(), pName2?pName2:"(null)", pEntity1->GetDebugName(), gpGlobals->curtime, eventTime );
+			DevMsg(1, "***Inter-penetration between %s(%s) AND %s(%s) (%.0f, %.0f)\n", pName1?pName1:"(null)", pEntity0->GetDebugName(), pName2?pName2:"(null)", pEntity1->GetDebugName(), gpGlobals->GetCurTime(), eventTime );
 		}
 	}
 #endif
@@ -1042,7 +1042,7 @@ int CCollisionEvent::ShouldSolvePenetration( IPhysicsObject *pObj0, IPhysicsObje
 			ReportPenetration( pEntity0, phys_penetration_error_time.GetFloat() );
 			ReportPenetration( pEntity1, phys_penetration_error_time.GetFloat() );
 		}
-		event.startTime = gpGlobals->curtime;
+		event.startTime = gpGlobals->GetCurTime();
 		// don't put players or game physics controlled objects to sleep
 		if ( !pEntity0->IsPlayer() && !pEntity1->IsPlayer() && !pObj0->GetShadowController() && !pObj1->GetShadowController() )
 		{
@@ -1607,7 +1607,7 @@ CON_COMMAND( physics_budget, "Times the cost of each active object" )
 		float totalTime = 0.f;
 		g_Collisions.BufferTouchEvents( true );
 		float full = engineServer->Time();
-		physenv->Simulate( gpGlobals->interval_per_tick );
+		physenv->Simulate( gpGlobals->GetIntervalPerTick() );
 		full = engineServer->Time() - full;
 		float lastTime = full;
 
@@ -1624,7 +1624,7 @@ CON_COMMAND( physics_budget, "Times the cost of each active object" )
 				PhysForceEntityToSleep( ents[j], ents[j]->VPhysicsGetObject() );
 			}
 			float start = engineServer->Time();
-			physenv->Simulate( gpGlobals->interval_per_tick );
+			physenv->Simulate( gpGlobals->GetIntervalPerTick() );
 			float end = engineServer->Time();
 
 			float elapsed = end - start;
@@ -1956,9 +1956,9 @@ void CCollisionEvent::Friction( IPhysicsObject *pObject, float energy, int surfa
 		{
 			// in MP mode play sound and effects once every 500 msecs,
 			// no ongoing updates, takes too much bandwidth
-			if ( (pFriction->flLastEffectTime + 0.5f) > gpGlobals->curtime)
+			if ( (pFriction->flLastEffectTime + 0.5f) > gpGlobals->GetCurTime())
 			{
-				pFriction->flLastUpdateTime = gpGlobals->curtime;
+				pFriction->flLastUpdateTime = gpGlobals->GetCurTime();
 				return; 			
 			}
 		}
@@ -2059,7 +2059,7 @@ void CCollisionEvent::UpdateFluidEvents( void )
 {
 	for ( int i = m_fluidEvents.Count()-1; i >= 0; --i )
 	{
-		if ( (gpGlobals->curtime - m_fluidEvents[i].impactTime) > FLUID_TIME_MAX )
+		if ( (gpGlobals->GetCurTime() - m_fluidEvents[i].impactTime) > FLUID_TIME_MAX )
 		{
 			m_fluidEvents.FastRemove(i);
 		}
@@ -2073,13 +2073,13 @@ float CCollisionEvent::DeltaTimeSinceLastFluid( CBaseEntity *pEntity )
 	{
 		if ( m_fluidEvents[i].hEntity.Get() == pEntity )
 		{
-			return gpGlobals->curtime - m_fluidEvents[i].impactTime;
+			return gpGlobals->GetCurTime() - m_fluidEvents[i].impactTime;
 		}
 	}
 
 	int index = m_fluidEvents.AddToTail();
 	m_fluidEvents[index].hEntity = pEntity;
-	m_fluidEvents[index].impactTime = gpGlobals->curtime;
+	m_fluidEvents[index].impactTime = gpGlobals->GetCurTime();
 	return FLUID_TIME_MAX;
 }
 
@@ -2089,7 +2089,7 @@ void CCollisionEvent::UpdateFrictionSounds( void )
 	{
 		if ( m_current[i].patch )
 		{
-			if ( m_current[i].flLastUpdateTime < (gpGlobals->curtime-0.1f) )
+			if ( m_current[i].flLastUpdateTime < (gpGlobals->GetCurTime()-0.1f) )
 			{
 				// friction wasn't updated the last 100msec, assume fiction finished
 				ShutdownFriction( m_current[i] );
@@ -2725,8 +2725,8 @@ void PhysFrictionSound( CBaseEntity *pEntity, IPhysicsObject *pObject, const cha
 			CSoundEnvelopeController::GetController().SoundChangePitch( pFriction->patch, pitch, 0.1f );
 		}
 
-		pFriction->flLastUpdateTime = gpGlobals->curtime;
-		pFriction->flLastEffectTime = gpGlobals->curtime;
+		pFriction->flLastUpdateTime = gpGlobals->GetCurTime();
+		pFriction->flLastEffectTime = gpGlobals->GetCurTime();
 	}
 }
 

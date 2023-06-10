@@ -100,7 +100,7 @@ public:
 
 	// Time.
 	void SetBusy( float flTime )		{ m_flBusyTime = flTime; }
-	bool IsBusy( void )					{ return ( gpGlobals->curtime < m_flBusyTime ); }
+	bool IsBusy( void )					{ return ( gpGlobals->GetCurTime() < m_flBusyTime ); }
 
 	bool IsMounted( void )				{ return m_bMounted; }
 

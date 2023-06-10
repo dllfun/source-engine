@@ -88,7 +88,7 @@ void CBaseHudWeaponSelection::Init(void)
 	// Initialise the weapons resource
 	gWR.Init();
 
-	m_flSelectionTime = gpGlobals->curtime;
+	m_flSelectionTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -100,7 +100,7 @@ void CBaseHudWeaponSelection::Reset(void)
 
 	// Start hidden
 	m_bSelectionVisible = false;
-	m_flSelectionTime = gpGlobals->curtime;
+	m_flSelectionTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ void CBaseHudWeaponSelection::Reset(void)
 //-----------------------------------------------------------------------------
 void CBaseHudWeaponSelection::UpdateSelectionTime( void )
 {
-	m_flSelectionTime = gpGlobals->curtime;
+	m_flSelectionTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------

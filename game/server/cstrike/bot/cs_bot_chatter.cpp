@@ -61,7 +61,7 @@ const Vector *GetRandomSpotAtPlace( Place place )
  */
 void BotMeme::Transmit( CCSBot *sender ) const
 {
-	for( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -882,7 +882,7 @@ BotStatement::BotStatement( BotChatterInterface *chatter, BotStatementType type,
 
 	m_next = NULL;
 	m_prev = NULL;
-	m_timestamp = gpGlobals->curtime;
+	m_timestamp = gpGlobals->GetCurTime();
 	m_speakTimestamp = 0.0f;
 
 	m_type = type;
@@ -890,8 +890,8 @@ BotStatement::BotStatement( BotChatterInterface *chatter, BotStatementType type,
 	m_place = UNDEFINED_PLACE;
 	m_meme = NULL;
 
-	m_startTime = gpGlobals->curtime;
-	m_expireTime = gpGlobals->curtime + expireDuration;
+	m_startTime = gpGlobals->GetCurTime();
+	m_expireTime = gpGlobals->GetCurTime() + expireDuration;
 	m_isSpeaking = false;
 
 	m_nextTime = 0.0f;
@@ -1053,7 +1053,7 @@ bool BotStatement::IsObsolete( void ) const
 	}
 
 	// check if statement lifetime has expired
-	return (gpGlobals->curtime > m_expireTime);
+	return (gpGlobals->GetCurTime() > m_expireTime);
 }
 
 
@@ -1078,12 +1078,12 @@ void BotStatement::Convert( const BotStatement *say )
 			{
 				// same plan at the same place - convert to "me too"
 				m_statement[0].phrase = meToo;
-				m_startTime = gpGlobals->curtime + RandomFloat( 0.5f, 1.0f );
+				m_startTime = gpGlobals->GetCurTime() + RandomFloat( 0.5f, 1.0f );
 			}
 			else
 			{
 				// same plan at different place - wait a bit to allow others to respond "me too"
-				m_startTime = gpGlobals->curtime + RandomFloat( 3.0f, 4.0f );
+				m_startTime = gpGlobals->GetCurTime() + RandomFloat( 3.0f, 4.0f );
 			}
 		}
 	}
@@ -1129,7 +1129,7 @@ bool BotStatement::Update( void )
 	if (!m_isSpeaking)
 	{
 		m_isSpeaking = true;
-		m_speakTimestamp = gpGlobals->curtime;
+		m_speakTimestamp = gpGlobals->GetCurTime();
 	}
 
 	// special case - context dependent delay
@@ -1137,7 +1137,7 @@ bool BotStatement::Update( void )
 	{
 		// report if we see a lot of enemies, or if enough time has passed
 		const float reportTime = 2.0f;		// 1
-		if (me->GetNearbyEnemyCount() > 3 || gpGlobals->curtime - m_speakTimestamp > reportTime)
+		if (me->GetNearbyEnemyCount() > 3 || gpGlobals->GetCurTime() - m_speakTimestamp > reportTime)
 		{
 			// enough enemies have accumulated to expire this delay
 			m_nextTime = 0.0f;
@@ -1145,7 +1145,7 @@ bool BotStatement::Update( void )
 	}
 
 
-	if (gpGlobals->curtime > m_nextTime)
+	if (gpGlobals->GetCurTime() > m_nextTime)
 	{
 		// check for end of statement
 		if (++m_index == m_count)
@@ -1212,13 +1212,13 @@ bool BotStatement::Update( void )
 
 				case SHORT_DELAY:
 				{
-					m_nextTime = gpGlobals->curtime + RandomFloat( 0.1f, 0.5f );
+					m_nextTime = gpGlobals->GetCurTime() + RandomFloat( 0.1f, 0.5f );
 					return true;
 				}
 
 				case LONG_DELAY:
 				{
-					m_nextTime = gpGlobals->curtime + RandomFloat( 1.0f, 2.0f );
+					m_nextTime = gpGlobals->GetCurTime() + RandomFloat( 1.0f, 2.0f );
 					return true;
 				}
 
@@ -1308,7 +1308,7 @@ bool BotStatement::Update( void )
 			}
 
 			const float gap = 0.1f;
-			m_nextTime = gpGlobals->curtime + duration + gap;
+			m_nextTime = gpGlobals->GetCurTime() + duration + gap;
 		}
 		else
 		{
@@ -1562,7 +1562,7 @@ void BotChatterInterface::ReportEnemies( void )
 	else if (!m_seeAtLeastOneEnemy)
 	{
 		m_seeAtLeastOneEnemy = true;
-		m_timeWhenSawFirstEnemy = gpGlobals->curtime;
+		m_timeWhenSawFirstEnemy = gpGlobals->GetCurTime();
 	}
 
 	// determine whether we should report enemy activity
@@ -1712,7 +1712,7 @@ BotStatement *BotChatterInterface::GetActiveStatement( void )
 	BotStatement *earliest = NULL;
 	float earlyTime = 999999999.9f;
 
-	for( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -1750,7 +1750,7 @@ BotStatement *BotChatterInterface::GetActiveStatement( void )
 	}
 
 	// make sure it is time to start this statement
-	if (earliest && earliest->GetStartTime() > gpGlobals->curtime)
+	if (earliest && earliest->GetStartTime() > gpGlobals->GetCurTime())
 		return NULL;
 
 	return earliest;
@@ -1971,7 +1971,7 @@ void BotChatterInterface::ReportingIn( void )
 	else
 	{
 		// not in combat, start our report a little later
-		say->SetStartTime( gpGlobals->curtime + 2.0f );
+		say->SetStartTime( gpGlobals->GetCurTime() + 2.0f );
 
 		const float recentTime = 10.0f;
 		if (m_me->GetEnemyDeathTimestamp() < recentTime && m_me->GetEnemyDeathTimestamp() >= m_me->GetTimeSinceLastSawEnemy() + 0.5f)
@@ -2112,7 +2112,7 @@ void BotChatterInterface::EnemiesRemaining( void )
 
 	BotStatement *say = new BotStatement( this, REPORT_ENEMIES_REMAINING, 5.0f );
 	say->AppendPhrase( BotStatement::REMAINING_ENEMY_COUNT );
-	say->SetStartTime( gpGlobals->curtime + RandomFloat( 2.0f, 4.0f ) );
+	say->SetStartTime( gpGlobals->GetCurTime() + RandomFloat( 2.0f, 4.0f ) );
 
 	AddStatement( say );
 }
@@ -2379,7 +2379,7 @@ void BotChatterInterface::CelebrateWin( void )
 	BotStatement *say = new BotStatement( this, REPORT_EMOTE, 15.0f );
 
 	// wait a bit before speaking
-	say->SetStartTime( gpGlobals->curtime + RandomFloat( 2.0f, 5.0f ) );
+	say->SetStartTime( gpGlobals->GetCurTime() + RandomFloat( 2.0f, 5.0f ) );
 
 	const float quickRound = 45.0f;
 
@@ -2558,7 +2558,7 @@ void BotChatterInterface::KilledFriend( void )
 	say->AppendPhrase( TheBotPhrases->GetPhrase( "KilledFriend" ) );
 
 	// give them time to react
-	say->SetStartTime( gpGlobals->curtime + RandomFloat( 0.5f, 1.0f ) );
+	say->SetStartTime( gpGlobals->GetCurTime() + RandomFloat( 0.5f, 1.0f ) );
 
 	AddStatement( say );
 }
@@ -2574,7 +2574,7 @@ void BotChatterInterface::FriendlyFire( void )
 	say->AppendPhrase( TheBotPhrases->GetPhrase( "FriendlyFire" ) );
 
 	// give them time to react
-	say->SetStartTime( gpGlobals->curtime + RandomFloat( 0.3f, 0.5f ) );
+	say->SetStartTime( gpGlobals->GetCurTime() + RandomFloat( 0.3f, 0.5f ) );
 
 	AddStatement( say );
 }

@@ -1263,7 +1263,7 @@ void CHLClient::HudProcessInput( bool bActive )
 //-----------------------------------------------------------------------------
 void CHLClient::HudUpdate( bool bActive )
 {
-	float frametime = gpGlobals->frametime;
+	float frametime = gpGlobals->GetFrameTime();
 
 #if defined( TF_CLIENT_DLL )
 	CRTime::UpdateRealTime();
@@ -1281,8 +1281,8 @@ void CHLClient::HudUpdate( bool bActive )
 	// run vgui animations
 	vgui::GetAnimationController()->UpdateAnimations(engineClient->Time() );
 
-	hudlcd->SetGlobalStat( "(time_int)", VarArgs( "%d", (int)gpGlobals->curtime ) );
-	hudlcd->SetGlobalStat( "(time_float)", VarArgs( "%.2f", gpGlobals->curtime ) );
+	hudlcd->SetGlobalStat( "(time_int)", VarArgs( "%d", (int)gpGlobals->GetCurTime() ) );
+	hudlcd->SetGlobalStat( "(time_float)", VarArgs( "%.2f", gpGlobals->GetCurTime() ) );
 
 	// I don't think this is necessary any longer, but I will leave it until
 	// I can check into this further.
@@ -1626,7 +1626,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 #if !defined( NO_ENTITY_PREDICTION )
 	// don't do prediction if single player!
 	// don't set direct because of FCVAR_USERINFO
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1)
 	{
 		if ( !cl_predict->GetInt() )
 		{
@@ -2211,7 +2211,7 @@ void OnRenderStart()
 		// to help track down bad math.
 		FPExceptionEnabler enableExceptions;
 		VPROF_BUDGET( "ParticleMgr()->Simulate", VPROF_BUDGETGROUP_PARTICLE_SIMULATION );
-		ParticleMgr()->Simulate( gpGlobals->frametime );
+		ParticleMgr()->Simulate( gpGlobals->GetFrameTime() );
 	}
 
 	// Now that the view model's position is setup and aiments are marked dirty, update

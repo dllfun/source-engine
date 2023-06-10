@@ -153,13 +153,13 @@ void RecvProxy_PlasmaScaleTime( const CRecvProxyData *pData, void *pStruct, void
 	{
 		if ( time == -1.0f )
 		{
-			pPlasmaSmoke->m_flScaleTimeStart	= gpGlobals->curtime-1.0f;
+			pPlasmaSmoke->m_flScaleTimeStart	= gpGlobals->GetCurTime()-1.0f;
 			pPlasmaSmoke->m_flScaleTimeEnd	= pPlasmaSmoke->m_flScaleTimeStart;
 		}
 		else
 		{
-			pPlasmaSmoke->m_flScaleTimeStart	= gpGlobals->curtime;
-			pPlasmaSmoke->m_flScaleTimeEnd	= gpGlobals->curtime + time;
+			pPlasmaSmoke->m_flScaleTimeStart	= gpGlobals->GetCurTime();
+			pPlasmaSmoke->m_flScaleTimeEnd	= gpGlobals->GetCurTime() + time;
 		}
 
 		pPlasmaSmoke->m_flScaleTime = time;
@@ -217,9 +217,9 @@ float C_Plasma::GetFlickerScale( void )
 {
 	float	result = 0.0f;
 
-	result = sin( gpGlobals->curtime * 10000.0f );
-	result += 0.5f * sin( gpGlobals->curtime * 2000.0f );
-	result -= 0.5f * cos( gpGlobals->curtime * 8000.0f );
+	result = sin( gpGlobals->GetCurTime() * 10000.0f );
+	result += 0.5f * sin( gpGlobals->GetCurTime() * 2000.0f );
+	result -= 0.5f * cos( gpGlobals->GetCurTime() * 8000.0f );
 	
 	return result * 0.1f;
 }
@@ -376,7 +376,7 @@ void C_Plasma::Start( void )
 void C_Plasma::UpdateAnimation( void )
 {
 	int		numFrames;
-	float	frametime	= gpGlobals->frametime;
+	float	frametime	= gpGlobals->GetFrameTime();
 
 	for ( int i = 0; i < NUM_CHILD_FLAMES; i++ )
 	{
@@ -429,7 +429,7 @@ void C_Plasma::UpdateFlames( void )
 //-----------------------------------------------------------------------------
 void C_Plasma::UpdateScale( void )
 {
-	float	time = gpGlobals->curtime;
+	float	time = gpGlobals->GetCurTime();
 
 	if ( m_flScaleRegister != m_flScaleEnd )
 	{
@@ -462,7 +462,7 @@ void C_Plasma::Update( void )
 
 	if (m_flScaleRegister > 0.1)
 	{
-		float tempDelta = gpGlobals->frametime;
+		float tempDelta = gpGlobals->GetFrameTime();
 		while( m_tDecalSpawn.NextEvent( tempDelta ) )
 		{
 			// Add decal to floor

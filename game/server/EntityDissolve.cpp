@@ -112,7 +112,7 @@ void CEntityDissolve::Spawn()
 	{
 		if ( dynamic_cast< CRagdollProp* >( GetMoveParent() ) )
 		{
-			SetContextThink( &CEntityDissolve::ElectrocuteThink, gpGlobals->curtime + 0.01f, s_pElectroThinkContext );
+			SetContextThink( &CEntityDissolve::ElectrocuteThink, gpGlobals->GetCurTime() + 0.01f, s_pElectroThinkContext );
 		}
 	}
 	
@@ -140,14 +140,14 @@ void CEntityDissolve::Spawn()
 	m_nRenderFX = kRenderFxNone;
 
 	SetThink( &CEntityDissolve::DissolveThink );
-	if ( gpGlobals->curtime > m_flStartTime )
+	if ( gpGlobals->GetCurTime() > m_flStartTime )
 	{
 		// Necessary for server-side ragdolls
 		DissolveThink();
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 0.01f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 	}
 }
 
@@ -171,7 +171,7 @@ void CEntityDissolve::InputDissolve( inputdata_t &inputdata )
 		CBaseAnimating *pBaseAnim = pTarget->GetBaseAnimating();
 		if (pBaseAnim)
 		{
-			pBaseAnim->Dissolve( NULL, gpGlobals->curtime, false, m_nDissolveType, GetAbsOrigin(), m_nMagnitude );
+			pBaseAnim->Dissolve( NULL, gpGlobals->GetCurTime(), false, m_nDissolveType, GetAbsOrigin(), m_nMagnitude );
 		}
 	}
 }
@@ -323,7 +323,7 @@ void CEntityDissolve::DissolveThink( void )
 		SetRenderColorA( 0 );
 	}
 
-	float dt = gpGlobals->curtime - m_flStartTime;
+	float dt = gpGlobals->GetCurTime() - m_flStartTime;
 
 	if ( dt < m_flFadeInStart )
 	{
@@ -352,7 +352,7 @@ void CEntityDissolve::DissolveThink( void )
 		return;
 	}
 
-	SetNextThink( gpGlobals->curtime + TICK_INTERVAL );
+	SetNextThink( gpGlobals->GetCurTime() + TICK_INTERVAL );
 }
 
 
@@ -373,6 +373,6 @@ void CEntityDissolve::ElectrocuteThink( void )
 		pRagdollPhys->list[j].pObject->ApplyForceCenter( vecForce ); 
 	}
 
-	SetContextThink( &CEntityDissolve::ElectrocuteThink, gpGlobals->curtime + random->RandomFloat( 0.1, 0.2f ), 
+	SetContextThink( &CEntityDissolve::ElectrocuteThink, gpGlobals->GetCurTime() + random->RandomFloat( 0.1, 0.2f ), 
 		s_pElectroThinkContext );
 }

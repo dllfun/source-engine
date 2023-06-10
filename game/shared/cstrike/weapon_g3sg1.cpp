@@ -74,7 +74,7 @@ PRECACHE_WEAPON_REGISTER( weapon_g3sg1 );
 
 CWeaponG3SG1::CWeaponG3SG1()
 {
-	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 }
 
 void CWeaponG3SG1::Spawn()
@@ -134,8 +134,8 @@ void CWeaponG3SG1::SecondaryAttack()
 	}
 #endif
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.3f;   
-	m_zoomFullyActiveTime = gpGlobals->curtime + 0.3; // The worst zoom time from above.  
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.3f;   
+	m_zoomFullyActiveTime = gpGlobals->GetCurTime() + 0.3; // The worst zoom time from above.  
 }
 
 float CWeaponG3SG1::GetInaccuracy() const
@@ -158,7 +158,7 @@ float CWeaponG3SG1::GetInaccuracy() const
 			fSpread = 0.055f * (1.0f - m_flAccuracy);
 	
 		// If we are not zoomed in, or we have very recently zoomed and are still transitioning, the bullet diverts more.
-		if (pPlayer->GetFOV() == pPlayer->GetDefaultFOV() || (gpGlobals->curtime < m_zoomFullyActiveTime))
+		if (pPlayer->GetFOV() == pPlayer->GetDefaultFOV() || (gpGlobals->GetCurTime() < m_zoomFullyActiveTime))
 			fSpread += 0.025;
 	
 		return fSpread;
@@ -174,12 +174,12 @@ void CWeaponG3SG1::PrimaryAttack()
 		return;
 	
 	// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-	m_flAccuracy = 0.55 + (0.3) * (gpGlobals->curtime - m_flLastFire);	
+	m_flAccuracy = 0.55 + (0.3) * (gpGlobals->GetCurTime() - m_flLastFire);	
 
 	if (m_flAccuracy > 0.98)
 		m_flAccuracy = 0.98;
 
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals->GetCurTime();
 
 	if ( !CSBaseGunFire( GetCSWpnData().m_flCycleTime, m_weaponMode ) )
 		return;

@@ -506,7 +506,7 @@ CAI_Hint *CAI_HintManager::FindHint( CAI_BaseNPC *pNPC, const Vector &position, 
 	if ( !pBestHint )
 	{
 		Msg( "%i search failed for [%d] at pos %.3f %.3f %.3f [%.4f msec ~ %.4f msec per node]\n",
-			gpGlobals->tickcount,
+			gpGlobals->GetTickCount(),
 			pNPC ? pNPC->entindex() : -1,
 			position.x, position.y, position.z,
 			timer.GetDuration().GetMillisecondsF(),
@@ -1095,7 +1095,7 @@ bool CAI_Hint::Lock( CBaseEntity* pNPC )
 void CAI_Hint::Unlock( float delay )
 {
 	m_hHintOwner	= NULL;
-	m_flNextUseTime = gpGlobals->curtime + delay;
+	m_flNextUseTime = gpGlobals->GetCurTime() + delay;
 }
 
 //-----------------------------------------------------------------------------
@@ -1120,7 +1120,7 @@ bool CAI_Hint::IsLocked( void )
 		return true;
 	}
 
-	if (gpGlobals->curtime < m_flNextUseTime)
+	if (gpGlobals->GetCurTime() < m_flNextUseTime)
 	{
 		return true;
 	}
@@ -1367,7 +1367,7 @@ bool CAI_Hint::HintMatchesCriteria( CAI_BaseNPC *pNPC, const CHintCriteria &hint
 	{
 		bool bWasSeen = false;
 		// Test all potential seers
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 			
@@ -1422,7 +1422,7 @@ int CAI_Hint::DrawDebugTextOverlays(void)
 		Q_snprintf(tempstr,sizeof(tempstr),"%s (%i)", GetHintTypeDescription( HintType() ), HintType());
 		EntityText(text_offset,tempstr,0);
 		text_offset++;
-		Q_snprintf(tempstr,sizeof(tempstr),"delay %f", MAX( 0.0f, m_flNextUseTime - gpGlobals->curtime ) ) ;
+		Q_snprintf(tempstr,sizeof(tempstr),"delay %f", MAX( 0.0f, m_flNextUseTime - gpGlobals->GetCurTime() ) ) ;
 		EntityText(text_offset,tempstr,0);
 		text_offset++;
 

@@ -79,7 +79,7 @@
 
 #define SPROP_NUMFLAGBITS_NETWORKED		16
 
-// This is server side only, it's used to mark properties whose SendProxy_* functions encode against gpGlobals->tickcount (the only ones that currently do this are
+// This is server side only, it's used to mark properties whose SendProxy_* functions encode against gpGlobals->GetTickCount() (the only ones that currently do this are
 //  m_flAnimTime and m_flSimulationTime.  MODs shouldn't need to mess with this probably
 #define SPROP_ENCODED_AGAINST_TICKCOUNT	(1<<16)
 

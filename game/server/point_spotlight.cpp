@@ -177,7 +177,7 @@ void CPointSpotlight::Spawn(void)
 	m_bSpotlightOn = HasSpawnFlags( SF_SPOTLIGHT_START_LIGHT_ON );
 
 	SetThink( &CPointSpotlight::SpotlightThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 
@@ -282,7 +282,7 @@ void CPointSpotlight::OnEntityEvent( EntityEvent_t event, void *pEventData )
 				m_hSpotlightTarget->SetMoveType( MOVETYPE_FLY );
 			}
 			SetThink( &CPointSpotlight::SpotlightThink );
-			SetNextThink( gpGlobals->curtime + 0.1f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		}
 	}
 
@@ -310,11 +310,11 @@ void CPointSpotlight::SpotlightThink( void )
 {
 	if ( GetMoveParent() )
 	{
-		SetNextThink( gpGlobals->curtime + TICK_INTERVAL );
+		SetNextThink( gpGlobals->GetCurTime() + TICK_INTERVAL );
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 
 	SpotlightUpdate();

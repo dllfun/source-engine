@@ -397,10 +397,10 @@ CSprite *CSprite::SpriteCreatePredictable( const char *module, int line, const c
 //-----------------------------------------------------------------------------
 void CSprite::AnimateThink( void )
 {
-	Animate( m_flSpriteFramerate * (gpGlobals->curtime - m_flLastTime) );
+	Animate( m_flSpriteFramerate * (gpGlobals->GetCurTime() - m_flLastTime) );
 
-	SetNextThink( gpGlobals->curtime );
-	m_flLastTime			= gpGlobals->curtime;
+	SetNextThink( gpGlobals->GetCurTime() );
+	m_flLastTime			= gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -408,14 +408,14 @@ void CSprite::AnimateThink( void )
 //-----------------------------------------------------------------------------
 void CSprite::AnimateUntilDead( void )
 {
-	if ( gpGlobals->curtime > m_flDieTime )
+	if ( gpGlobals->GetCurTime() > m_flDieTime )
 	{
 		Remove( );
 	}
 	else
 	{
 		AnimateThink();
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -430,8 +430,8 @@ void CSprite::Expand( float scaleSpeed, float fadeSpeed )
 	m_iHealth = fadeSpeed;
 	SetThink( &CSprite::ExpandThink );
 
-	SetNextThink( gpGlobals->curtime );
-	m_flLastTime	= gpGlobals->curtime;
+	SetNextThink( gpGlobals->GetCurTime() );
+	m_flLastTime	= gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -439,7 +439,7 @@ void CSprite::Expand( float scaleSpeed, float fadeSpeed )
 //-----------------------------------------------------------------------------
 void CSprite::ExpandThink( void )
 {
-	float frametime = gpGlobals->curtime - m_flLastTime;
+	float frametime = gpGlobals->GetCurTime() - m_flLastTime;
 	SetSpriteScale( m_flSpriteScale + m_flSpeed * frametime );
 
 	int sub = (int)(m_iHealth * frametime);
@@ -451,8 +451,8 @@ void CSprite::ExpandThink( void )
 	else
 	{
 		SetRenderColorA( m_clrRender->a - sub );
-		SetNextThink( gpGlobals->curtime );
-		m_flLastTime		= gpGlobals->curtime;
+		SetNextThink( gpGlobals->GetCurTime() );
+		m_flLastTime		= gpGlobals->GetCurTime();
 	}
 }
 
@@ -531,8 +531,8 @@ void CSprite::TurnOn( void )
 		)
 	{
 		SetThink( &CSprite::AnimateThink );
-		SetNextThink( gpGlobals->curtime );
-		m_flLastTime = gpGlobals->curtime;
+		SetNextThink( gpGlobals->GetCurTime() );
+		m_flLastTime = gpGlobals->GetCurTime();
 	}
 	m_flFrame = 0;
 }
@@ -615,11 +615,11 @@ void CSprite::InputToggleSprite( inputdata_t &inputdata )
 float CSprite::GetRenderScale( void )
 {
 	//See if we're done scaling
-	if ( ( m_flScaleTime == 0 ) || ( (m_flScaleTimeStart+m_flScaleTime) < gpGlobals->curtime ) )
+	if ( ( m_flScaleTime == 0 ) || ( (m_flScaleTimeStart+m_flScaleTime) < gpGlobals->GetCurTime() ) )
 		return m_flSpriteScale;
 
 	//Get our percentage
-	float timeDelta = ( gpGlobals->curtime - m_flScaleTimeStart ) / m_flScaleTime;
+	float timeDelta = ( gpGlobals->GetCurTime() - m_flScaleTimeStart ) / m_flScaleTime;
 
 	//Return the result
 	return ( m_flStartScale + ( ( m_flDestScale - m_flStartScale  ) * timeDelta ) );
@@ -658,13 +658,13 @@ void CSprite::GetRenderBounds( Vector &vecMins, Vector &vecMaxs )
 int	CSprite::GetRenderBrightness( void )
 {
 	//See if we're done scaling
-	if ( ( m_flBrightnessTime == 0 ) || ( (m_flBrightnessTimeStart+m_flBrightnessTime) < gpGlobals->curtime ) )
+	if ( ( m_flBrightnessTime == 0 ) || ( (m_flBrightnessTimeStart+m_flBrightnessTime) < gpGlobals->GetCurTime() ) )
 	{
 		return m_nBrightness;
 	}
 
 	//Get our percentage
-	float timeDelta = ( gpGlobals->curtime - m_flBrightnessTimeStart ) / m_flBrightnessTime;
+	float timeDelta = ( gpGlobals->GetCurTime() - m_flBrightnessTimeStart ) / m_flBrightnessTime;
 
 	float brightness = ( (float) m_nStartBrightness + ( (float) ( m_nDestBrightness - m_nStartBrightness  ) * timeDelta ) );
 
@@ -699,14 +699,14 @@ void CSprite::ClientThink( void )
 	{
 		m_flStartScale		= m_flDestScale;
 		m_flDestScale		= m_flSpriteScale;
-		m_flScaleTimeStart	= gpGlobals->curtime;
+		m_flScaleTimeStart	= gpGlobals->GetCurTime();
 	}
 
 	if ( m_nBrightness != m_nDestBrightness )
 	{
 		m_nStartBrightness		= m_nDestBrightness;
 		m_nDestBrightness		= m_nBrightness;
-		m_flBrightnessTimeStart = gpGlobals->curtime;
+		m_flBrightnessTimeStart = gpGlobals->GetCurTime();
 	}
 }
 

@@ -610,7 +610,7 @@ void CAI_RadialLinkController::Activate()
 	SetThink( &CAI_RadialLinkController::PollMotionThink );
 
 	// Spread think times out.
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.0f, 1.0f) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.0f, 1.0f) );
 
 	if( GetParent() != NULL )
 	{
@@ -629,7 +629,7 @@ void CAI_RadialLinkController::Activate()
 //---------------------------------------------------------
 void CAI_RadialLinkController::PollMotionThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 	CBaseEntity *pParent = GetParent();
 

@@ -115,9 +115,9 @@ public:
 	CAI_Link *		GetLink( int destNodeId );
 	CAI_Link *		GetLinkByIndex( int i )	{ return m_Links[i]; }
 
-	bool 			IsLocked() const			{ return ( m_flNextUseTime > gpGlobals->curtime ); }
-	void			Lock( float duration )		{ m_flNextUseTime = gpGlobals->curtime + duration; }
-	void			Unlock()					{ m_flNextUseTime = gpGlobals->curtime; }
+	bool 			IsLocked() const			{ return ( m_flNextUseTime > gpGlobals->GetCurTime() ); }
+	void			Lock( float duration )		{ m_flNextUseTime = gpGlobals->GetCurTime() + duration; }
+	void			Unlock()					{ m_flNextUseTime = gpGlobals->GetCurTime(); }
 
 	int 			GetZone() const			{ return m_zone; }
 	void 			SetZone( int zone )		{ m_zone = zone; }

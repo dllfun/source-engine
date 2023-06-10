@@ -77,7 +77,7 @@ PRECACHE_WEAPON_REGISTER( weapon_fiveseven );
 
 CWeaponFiveSeven::CWeaponFiveSeven()
 {
-	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 }
 
 
@@ -123,21 +123,21 @@ void CWeaponFiveSeven::PrimaryAttack()
 		return;
 
 	// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-	m_flAccuracy -= (0.25)*(0.275 - (gpGlobals->curtime - m_flLastFire));
+	m_flAccuracy -= (0.25)*(0.275 - (gpGlobals->GetCurTime() - m_flLastFire));
 
 	if (m_flAccuracy > 0.92)
 		m_flAccuracy = 0.92;
 	else if (m_flAccuracy < 0.725)
 		m_flAccuracy = 0.725;
 
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals->GetCurTime();
 
 	if (m_iClip1 <= 0)
 	{
 		if ( m_bFireOnEmpty )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.1f;
 			m_bFireOnEmpty = false;
 		}
 
@@ -164,7 +164,7 @@ void CWeaponFiveSeven::PrimaryAttack()
 		GetInaccuracy(),
 		GetSpread()); 
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + GetCSWpnData().m_flCycleTime;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->GetCurTime() + GetCSWpnData().m_flCycleTime;
 
 	if (!m_iClip1 && pPlayer->GetAmmoCount( GetPrimaryAmmoType() ) <= 0)
 	{
@@ -172,7 +172,7 @@ void CWeaponFiveSeven::PrimaryAttack()
 		pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 	}
 
-	SetWeaponIdleTime( gpGlobals->curtime + 2 );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 2 );
 
 	// update accuracy
 	m_fAccuracyPenalty += GetCSWpnData().m_fInaccuracyImpulseFire[Primary_Mode];
@@ -199,13 +199,13 @@ bool CWeaponFiveSeven::Reload()
 
 void CWeaponFiveSeven::WeaponIdle()
 {
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 	// only idle if the slid isn't back
 	if (m_iClip1 != 0)
 	{	
-		SetWeaponIdleTime( gpGlobals->curtime + 4 );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 4 );
 		SendWeaponAnim( ACT_VM_IDLE );
 	}
 }

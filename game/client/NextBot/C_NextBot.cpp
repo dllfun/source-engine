@@ -236,7 +236,7 @@ bool C_NextBotManager::SetupInFrustumData( void )
 	}
 
 	// Mark as setup this frame.
-	m_nInFrustumFrame = gpGlobals->framecount;
+	m_nInFrustumFrame = gpGlobals->GetFrameCount();
 #endif
 
 	return true;

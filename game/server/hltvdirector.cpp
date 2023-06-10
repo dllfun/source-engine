@@ -128,7 +128,7 @@ void CHLTVDirector::FireGameEvent( IGameEvent * event )
 
 	gameevent.m_Event = gameeventmanager->DuplicateEvent( event );
 	gameevent.m_Priority = event->GetInt( "priority", -1 ); // priorities are leveled between 0..10, -1 means ignore
-	gameevent.m_Tick = gpGlobals->tickcount;
+	gameevent.m_Tick = gpGlobals->GetTickCount();
 	
 	m_EventHistory.Insert( gameevent );
 }
@@ -203,7 +203,7 @@ void CHLTVDirector::UpdateSettings()
 	// set delay
 	m_fDelay = tv_delay.GetFloat();
 
-	int newBroadcastTick = gpGlobals->tickcount;
+	int newBroadcastTick = gpGlobals->GetTickCount();
 	
 	if ( m_fDelay < HLTV_MIN_DIRECTOR_DELAY )
 	{
@@ -307,10 +307,10 @@ void CHLTVDirector::FrameUpdatePostEntityThink( void )
 	// This function is called each tick
 	UpdateSettings();	// update settings from cvars
 
-	if ( (m_nNextAnalyzeTick < gpGlobals->tickcount) && 
+	if ( (m_nNextAnalyzeTick < gpGlobals->GetTickCount()) && 
 		 (m_fDelay >= HLTV_MIN_DIRECTOR_DELAY) )
 	{
-		m_nNextAnalyzeTick = gpGlobals->tickcount + TIME_TO_TICKS( 0.5f );
+		m_nNextAnalyzeTick = gpGlobals->GetTickCount() + TIME_TO_TICKS( 0.5f );
 
 		AnalyzePlayers();
 
@@ -331,11 +331,11 @@ void CHLTVDirector::FrameUpdatePostEntityThink( void )
 
 void CHLTVDirector::StartDelayMessage()
 {
-	if ( m_nNextShotTick > gpGlobals->tickcount )
+	if ( m_nNextShotTick > gpGlobals->GetTickCount() )
 		return;
 
 	// check the next 8 seconds for interrupts/important events
-	m_nNextShotTick = gpGlobals->tickcount + TIME_TO_TICKS( DEF_SHOT_LENGTH );
+	m_nNextShotTick = gpGlobals->GetTickCount() + TIME_TO_TICKS( DEF_SHOT_LENGTH );
 
 	// game hasn't started yet, we are still in the broadcast delay hole
 	IGameEvent *msg = gameeventmanager->CreateEvent( "hltv_message", true );
@@ -684,7 +684,7 @@ bool CHLTVDirector::SetCameraMan( int iPlayerIndex )
 
 	CRecipientFilter filter;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -832,7 +832,7 @@ void CHLTVDirector::StartInstantBroadcastShot()
 void CHLTVDirector::StartNewShot()
 {
 	// we can remove all events the
-	int smallestTick = MAX(0, gpGlobals->tickcount - TIME_TO_TICKS(HLTV_MAX_DELAY) );
+	int smallestTick = MAX(0, gpGlobals->GetTickCount() - TIME_TO_TICKS(HLTV_MAX_DELAY) );
     RemoveEventsFromHistory( smallestTick );
 
 	// if the delay time is to short for autodirector, just show next best thing
@@ -1076,7 +1076,7 @@ void CHLTVDirector::BuildActivePlayerList()
 
 	m_nNumActivePlayers = 0;
 
-	for ( int i =1; i <= gpGlobals->maxClients; i++ )
+	for ( int i =1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 

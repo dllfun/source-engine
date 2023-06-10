@@ -127,7 +127,7 @@ public:
 	virtual bool			HasActiveLookTargets( void );
 	virtual void 			OnSelectedLookTarget( AILookTargetArgs_t *pArgs ) { return; }
 	virtual void 			ClearLookTarget( CBaseEntity *pTarget );
-	virtual void			ExpireCurrentRandomLookTarget() { m_flNextRandomLookTime = gpGlobals->curtime - 0.1f; }
+	virtual void			ExpireCurrentRandomLookTarget() { m_flNextRandomLookTime = gpGlobals->GetCurTime() - 0.1f; }
 
 	virtual void			StartTaskRangeAttack1( const Task_t *pTask );
 

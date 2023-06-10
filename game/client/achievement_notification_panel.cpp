@@ -158,7 +158,7 @@ void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::OnTick( void )
 {
-	if ( ( m_flHideTime > 0 ) && ( m_flHideTime < gpGlobals->curtime ) )
+	if ( ( m_flHideTime > 0 ) && ( m_flHideTime < gpGlobals->GetCurTime() ) )
 	{
 		m_flHideTime = 0;
 		ShowNextNotification();
@@ -170,7 +170,7 @@ void CAchievementNotificationPanel::OnTick( void )
 //-----------------------------------------------------------------------------
 bool CAchievementNotificationPanel::ShouldDraw( void )
 {
-	return ( ( m_flHideTime > 0 ) && ( m_flHideTime > gpGlobals->curtime ) && CHudElement::ShouldDraw() );
+	return ( ( m_flHideTime > 0 ) && ( m_flHideTime > gpGlobals->GetCurTime() ) && CHudElement::ShouldDraw() );
 }
 
 //-----------------------------------------------------------------------------
@@ -206,7 +206,7 @@ void CAchievementNotificationPanel::ShowNextNotification()
 
 	Notification_t &notification = m_queueNotification[ m_queueNotification.Head() ];
 
-	m_flHideTime = gpGlobals->curtime + ACHIEVEMENT_NOTIFICATION_DURATION;
+	m_flHideTime = gpGlobals->GetCurTime() + ACHIEVEMENT_NOTIFICATION_DURATION;
 
 	// set the text and icon in the dialog
 	SetDialogVariable( "heading", notification.szHeading );

@@ -387,7 +387,7 @@ const Vector &CBeam::GetAbsStartPos( void ) const
 {
 	if ( GetType() == BEAM_ENTS && GetStartEntity() )
 	{
-		edict_t *pent = engineServer->PEntityOfEntIndex( GetStartEntity() );
+		edict_t *pent = INDEXENT( GetStartEntity() );
 		CBaseEntity *ent = CBaseEntity::Instance( pent );
 		if ( !ent )
 		{
@@ -403,7 +403,7 @@ const Vector &CBeam::GetAbsEndPos( void ) const
 {
 	if ( GetType() != BEAM_POINTS && GetType() != BEAM_HOSE && GetEndEntity() ) 
 	{
-		edict_t *pent = engineServer->PEntityOfEntIndex( GetEndEntity() );
+		edict_t *pent = INDEXENT( GetEndEntity() );
 		CBaseEntity *ent = CBaseEntity::Instance( pent );
 		if ( ent )
 			return ent->GetAbsOrigin();
@@ -702,7 +702,7 @@ void CBeam::BeamDamage( trace_t *ptr )
 			}
 #endif
 
-			CTakeDamageInfo info( this, this, m_flDamage * (gpGlobals->curtime - m_flFireTime), nDamageType );
+			CTakeDamageInfo info( this, this, m_flDamage * (gpGlobals->GetCurTime() - m_flFireTime), nDamageType );
 			CalculateMeleeDamageForce( &info, dir, ptr->endpos );
 			pHit->DispatchTraceAttack( info, dir, ptr );
 			ApplyMultiDamage();
@@ -716,7 +716,7 @@ void CBeam::BeamDamage( trace_t *ptr )
 		}
 	}
 #endif
-	m_flFireTime = gpGlobals->curtime;
+	m_flFireTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------

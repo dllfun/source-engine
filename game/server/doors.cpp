@@ -128,8 +128,8 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 
 	if ( flocked )
 	{
-		int		fplaysound = (pls->sLockedSound != NULL_STRING && gpGlobals->curtime > pls->flwaitSound);
-		int		fplaysentence = (pls->sLockedSentence != NULL_STRING && !pls->bEOFLocked && gpGlobals->curtime > pls->flwaitSentence);
+		int		fplaysound = (pls->sLockedSound != NULL_STRING && gpGlobals->GetCurTime() > pls->flwaitSound);
+		int		fplaysentence = (pls->sLockedSentence != NULL_STRING && !pls->bEOFLocked && gpGlobals->GetCurTime() > pls->flwaitSentence);
 		float	fvol = ( fplaysound && fplaysentence ) ? 0.25f : 1.0f;
 
 		// if there is a locked sound, and we've debounced, play sound
@@ -145,7 +145,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 			ep.m_SoundLevel = SNDLVL_NORM;
 
 			CBaseEntity::EmitSound( filter, pEdict->NetworkProp()->entindex(), ep );
-			pls->flwaitSound = gpGlobals->curtime + flsoundwait;
+			pls->flwaitSound = gpGlobals->GetCurTime() + flsoundwait;
 		}
 
 		// if there is a sentence, we've not played all in list, and we've debounced, play sound
@@ -167,15 +167,15 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 			// make sure we don't keep calling last sentence in list
 			pls->bEOFLocked = (iprev == pls->iLockedSentence);
 		
-			pls->flwaitSentence = gpGlobals->curtime + DOOR_SENTENCEWAIT;
+			pls->flwaitSentence = gpGlobals->GetCurTime() + DOOR_SENTENCEWAIT;
 		}
 	}
 	else
 	{
 		// UNLOCKED SOUND
 
-		int fplaysound = (pls->sUnlockedSound != NULL_STRING && gpGlobals->curtime > pls->flwaitSound);
-		int fplaysentence = (pls->sUnlockedSentence != NULL_STRING && !pls->bEOFUnlocked && gpGlobals->curtime > pls->flwaitSentence);
+		int fplaysound = (pls->sUnlockedSound != NULL_STRING && gpGlobals->GetCurTime() > pls->flwaitSound);
+		int fplaysentence = (pls->sUnlockedSentence != NULL_STRING && !pls->bEOFUnlocked && gpGlobals->GetCurTime() > pls->flwaitSentence);
 		float fvol;
 
 		// if playing both sentence and sound, lower sound volume so we hear sentence
@@ -193,7 +193,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 			ep.m_SoundLevel = SNDLVL_NORM;
 
 			CBaseEntity::EmitSound( filter, pEdict->NetworkProp()->entindex(), ep );
-			pls->flwaitSound = gpGlobals->curtime + flsoundwait;
+			pls->flwaitSound = gpGlobals->GetCurTime() + flsoundwait;
 		}
 
 		// play next 'door unlocked' sentence in group
@@ -207,7 +207,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 
 			// make sure we don't keep calling last sentence in list
 			pls->bEOFUnlocked = (iprev == pls->iUnlockedSentence);
-			pls->flwaitSentence = gpGlobals->curtime + DOOR_SENTENCEWAIT;
+			pls->flwaitSentence = gpGlobals->GetCurTime() + DOOR_SENTENCEWAIT;
 		}
 	}
 }
@@ -371,7 +371,7 @@ void CBaseDoor::MovingSoundThink( void )
 	if( ShouldLoopMoveSound() )
 	{
 		float duration = enginesound->GetSoundDuration( ep.m_pSoundName );
-		SetContextThink( &CBaseDoor::MovingSoundThink, gpGlobals->curtime + duration, "MovingSound" );
+		SetContextThink( &CBaseDoor::MovingSoundThink, gpGlobals->GetCurTime() + duration, "MovingSound" );
 	}
 }
 
@@ -395,7 +395,7 @@ void CBaseDoor::StartMovingSound( void )
 
 void CBaseDoor::StopMovingSound(void)
 {
-	SetContextThink( NULL, gpGlobals->curtime, "MovingSound" );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), "MovingSound" );
 	char *pSoundName;
 	if ( m_NoiseMovingClosed == NULL_STRING || m_toggle_state == TS_GOING_UP || m_toggle_state == TS_AT_TOP )
 	{
@@ -675,7 +675,7 @@ bool CBaseDoor::PassesBlockTouchFilter(CBaseEntity *pOther)
 void CBaseDoor::CloseAreaPortalsThink( void )
 {
 	UpdateAreaPortals( false );
-	SetContextThink( NULL, gpGlobals->curtime, CLOSE_AREAPORTAL_THINK_CONTEXT );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), CLOSE_AREAPORTAL_THINK_CONTEXT );
 }
 
 
@@ -686,7 +686,7 @@ void CBaseDoor::CloseAreaPortalsThink( void )
 void CBaseDoor::UpdateAreaPortals( bool isOpen )
 {
 	// cancel pending close
-	SetContextThink( NULL, gpGlobals->curtime, CLOSE_AREAPORTAL_THINK_CONTEXT );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), CLOSE_AREAPORTAL_THINK_CONTEXT );
 
 	if ( IsRotatingDoor() && HasSpawnFlags(SF_DOOR_START_OPEN_OBSOLETE) ) // logic inverted when using rot doors that start open
 		isOpen = !isOpen;
@@ -1126,7 +1126,7 @@ void CBaseDoor::DoorHitBottom( void )
 	}
 
 	// Close the area portals just after the door closes, to prevent visual artifacts in multiplayer games
-	SetContextThink( &CBaseDoor::CloseAreaPortalsThink, gpGlobals->curtime + 0.5f, CLOSE_AREAPORTAL_THINK_CONTEXT );
+	SetContextThink( &CBaseDoor::CloseAreaPortalsThink, gpGlobals->GetCurTime() + 0.5f, CLOSE_AREAPORTAL_THINK_CONTEXT );
 }
 
 

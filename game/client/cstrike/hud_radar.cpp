@@ -431,7 +431,7 @@ void Radar_FlashPlayer( int iPlayer )
 	}
 
 	CPlayerRadarFlash *pFlash = &g_RadarFlashes[iPlayer];
-	pFlash->m_flNextRadarFlashTime = gpGlobals->curtime;
+	pFlash->m_flNextRadarFlashTime = gpGlobals->GetCurTime();
 	pFlash->m_iNumRadarFlashes = 16;
 	pFlash->m_bRadarFlash = false;
 

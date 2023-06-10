@@ -134,7 +134,7 @@ void CreateCrossbowBolt( const Vector &vecOrigin, const Vector &vecDirection )
 
 	VectorAngles( vecDirection, vAngles );
 	
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1)
 	{
 		tempents->SpawnTempModel( pModel, vecOrigin - vecDirection * 8, vAngles, Vector(0, 0, 0 ), 30.0f, FTENT_NONE );
 	}

@@ -136,9 +136,9 @@ void CBaseCSGrenade::PrimaryAttack()
 
 	// Don't let weapon idle interfere in the middle of a throw!
 	MDLCACHE_CRITICAL_SECTION();
-	SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration() );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + SequenceDuration() );
 
-	m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -167,9 +167,9 @@ void CBaseCSGrenade::SecondaryAttack()
 	}
 
 	// Don't let weapon idle interfere in the middle of a throw!
-	SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration() );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + SequenceDuration() );
 
-	m_flNextSecondaryAttack	= gpGlobals->curtime + SequenceDuration();
+	m_flNextSecondaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -178,16 +178,16 @@ void CBaseCSGrenade::SecondaryAttack()
 //-----------------------------------------------------------------------------
 bool CBaseCSGrenade::Reload()
 {
-	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) && ( m_flNextSecondaryAttack <= gpGlobals->curtime ) )
+	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->GetCurTime() ) && ( m_flNextSecondaryAttack <= gpGlobals->GetCurTime() ) )
 	{
 		//Redraw the weapon
 		SendWeaponAnim( ACT_VM_DRAW );
 
 		//Update our times
-		m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
-		m_flNextSecondaryAttack	= gpGlobals->curtime + SequenceDuration();
+		m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
+		m_flNextSecondaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
 
-		SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration() );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + SequenceDuration() );
 		
 		//Mark this as done
 	//	m_bRedraw = false;
@@ -219,9 +219,9 @@ void CBaseCSGrenade::ItemPostFrame()
 		MDLCACHE_CRITICAL_SECTION();
 		m_bPinPulled = false;
 		SendWeaponAnim( ACT_VM_THROW );	
-		SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration() );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + SequenceDuration() );
 
-		m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration(); // we're still throwing, so reset our next primary attack
+		m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + SequenceDuration(); // we're still throwing, so reset our next primary attack
 
 #ifndef CLIENT_DLL
 		IGameEvent * event = gameeventmanager->CreateEvent( "weapon_fire" );
@@ -239,7 +239,7 @@ void CBaseCSGrenade::ItemPostFrame()
 		}
 #endif
 	}
-	else if ((m_fThrowTime > 0) && (m_fThrowTime < gpGlobals->curtime))
+	else if ((m_fThrowTime > 0) && (m_fThrowTime < gpGlobals->GetCurTime()))
 	{
 		// only decrement our ammo when we actually create the projectile
 		DecrementAmmo( pPlayer );
@@ -249,7 +249,7 @@ void CBaseCSGrenade::ItemPostFrame()
 	else if( m_bRedraw )
 	{
 		// Has the throw animation finished playing
-		if( m_flTimeWeaponIdle < gpGlobals->curtime )
+		if( m_flTimeWeaponIdle < gpGlobals->GetCurTime() )
 		{
 #ifdef GAME_DLL
 			// if we're officially out of grenades, ditch this weapon
@@ -294,7 +294,7 @@ void CBaseCSGrenade::ItemPostFrame()
 
 	void CBaseCSGrenade::StartGrenadeThrow()
 	{
-		m_fThrowTime = gpGlobals->curtime + 0.1f;
+		m_fThrowTime = gpGlobals->GetCurTime() + 0.1f;
 	}
 
 #else
@@ -319,7 +319,7 @@ void CBaseCSGrenade::ItemPostFrame()
 
 	void CBaseCSGrenade::StartGrenadeThrow()
 	{
-		m_fThrowTime = gpGlobals->curtime + 0.1f;
+		m_fThrowTime = gpGlobals->GetCurTime() + 0.1f;
 	}
 
 	void CBaseCSGrenade::ThrowGrenade()

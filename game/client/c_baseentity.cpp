@@ -322,16 +322,16 @@ void RecvProxy_AnimTime( const CRecvProxyData *pData, void *pStruct, void *pOut 
 	addt	= pData->m_Value.m_Int;
 
 	// Note, this needs to be encoded relative to packet timestamp, not raw client clock
-	tickbase = gpGlobals->GetNetworkBase( gpGlobals->tickcount, pEntity->entindex() );
+	tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->entindex() );
 
 	t = tickbase;
 											//  and then go back to floating point time.
 	t += addt;				// Add in an additional up to 256 100ths from the server
 
 	// center m_flAnimTime around current time.
-	while (t < gpGlobals->tickcount - 127)
+	while (t < gpGlobals->GetTickCount() - 127)
 		t += 256;
-	while (t > gpGlobals->tickcount + 127)
+	while (t > gpGlobals->GetTickCount() + 127)
 		t -= 256;
 	
 	pEntity->m_flAnimTime = ( t * TICK_INTERVAL );
@@ -350,16 +350,16 @@ void RecvProxy_SimulationTime( const CRecvProxyData *pData, void *pStruct, void 
 	addt	= pData->m_Value.m_Int;
 
 	// Note, this needs to be encoded relative to packet timestamp, not raw client clock
-	tickbase = gpGlobals->GetNetworkBase( gpGlobals->tickcount, pEntity->entindex() );
+	tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->entindex() );
 
 	t = tickbase;
 											//  and then go back to floating point time.
 	t += addt;				// Add in an additional up to 256 100ths from the server
 
 	// center m_flSimulationTime around current time.
-	while (t < gpGlobals->tickcount - 127)
+	while (t < gpGlobals->GetTickCount() - 127)
 		t += 256;
-	while (t > gpGlobals->tickcount + 127)
+	while (t > gpGlobals->GetTickCount() + 127)
 		t -= 256;
 	
 	pEntity->m_flSimulationTime = ( t * TICK_INTERVAL );
@@ -971,7 +971,7 @@ void C_BaseEntity::Clear( void )
 	SetCheckUntouch( false );
 	m_ShadowDirUseOtherEntity = NULL;
 
-	m_nLastThinkTick = gpGlobals->tickcount;
+	m_nLastThinkTick = gpGlobals->GetTickCount();
 
 #if defined(SIXENSE)
 	m_vecEyeOffset.Init();
@@ -1035,7 +1035,7 @@ bool C_BaseEntity::Init( int entnum, int iSerialNum )
 
 	Interp_SetupMappings( GetVarMapping() );
 
-	m_nCreationTick = gpGlobals->tickcount;
+	m_nCreationTick = gpGlobals->GetTickCount();
 
 	return true;
 }
@@ -2538,7 +2538,7 @@ void C_BaseEntity::PostDataUpdate( DataUpdateType_t updateType )
 
 		ResetLatched();
 
-		m_nCreationTick = gpGlobals->tickcount;
+		m_nCreationTick = gpGlobals->GetTickCount();
 	}
 
 	CheckInitPredictable( "PostDataUpdate" );
@@ -2758,11 +2758,11 @@ int CBaseEntity::BaseInterpolatePart1( float &currentTime, Vector &oldOrigin, QA
 	if ( GetPredictable() || IsClientCreated() )
 	{
 		C_BasePlayer *localplayer = C_BasePlayer::GetLocalPlayer();
-		if ( localplayer && currentTime == gpGlobals->curtime )
+		if ( localplayer && currentTime == gpGlobals->GetCurTime() )
 		{
 			currentTime = localplayer->GetFinalPredictedTime();
 			currentTime -= TICK_INTERVAL;
-			currentTime += ( gpGlobals->interpolation_amount * TICK_INTERVAL );
+			currentTime += ( gpGlobals->GetInterpolationAmount() * TICK_INTERVAL );
 		}
 	}
 
@@ -2806,7 +2806,7 @@ void C_BaseEntity::BaseInterpolatePart2( Vector &oldOrigin, QAngle &oldAngles, V
 #if 0
 	if ( index == 1 )
 	{
-		SpewInterpolatedVar( &m_iv_vecOrigin, gpGlobals->curtime, GetInterpolationAmount( LATCH_SIMULATION_VAR ), true );
+		SpewInterpolatedVar( &m_iv_vecOrigin, gpGlobals->GetCurTime(), GetInterpolationAmount( LATCH_SIMULATION_VAR ), true );
 	}
 #endif
 }
@@ -2910,7 +2910,7 @@ void C_BaseEntity::CreateLightEffects( void )
 		dl->origin[2] += 16;
 		dl->color.r = dl->color.g = dl->color.b = 250;
 		dl->radius = random->RandomFloat(400,431);
-		dl->die = gpGlobals->curtime + 0.001;
+		dl->die = gpGlobals->GetCurTime() + 0.001;
 	}
 	if (IsEffectActive(EF_DIMLIGHT))
 	{			
@@ -2918,7 +2918,7 @@ void C_BaseEntity::CreateLightEffects( void )
 		dl->origin = GetAbsOrigin();
 		dl->color.r = dl->color.g = dl->color.b = 100;
 		dl->radius = random->RandomFloat(200,231);
-		dl->die = gpGlobals->curtime + 0.001;
+		dl->die = gpGlobals->GetCurTime() + 0.001;
 	}
 }
 
@@ -3011,7 +3011,7 @@ void C_BaseEntity::CheckInterpolatedVarParanoidMeasurement()
 
 		g_bRestoreInterpolatedVarValues = true;
 		g_nInterpolatedVarsChanged = 0;
-		pEnt->Interpolate( gpGlobals->curtime );
+		pEnt->Interpolate( gpGlobals->GetCurTime() );
 		g_bRestoreInterpolatedVarValues = false;
 		
 		if ( g_nInterpolatedVarsChanged > 0 )
@@ -3036,7 +3036,7 @@ void C_BaseEntity::ProcessInterpolatedList()
 		iNext = g_InterpolationList.Next( iCur );
 		C_BaseEntity *pCur = g_InterpolationList[iCur];
 		
-		pCur->m_bReadyToDraw = pCur->Interpolate( gpGlobals->curtime );
+		pCur->m_bReadyToDraw = pCur->Interpolate( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -3248,7 +3248,7 @@ void C_BaseEntity::SetThinkHandle( ClientThinkHandle_t hThink )
 void C_BaseEntity::ComputeFxBlend( void )
 {
 	// Don't recompute if we've already computed this frame
-	if ( m_nFXComputeFrame == gpGlobals->framecount )
+	if ( m_nFXComputeFrame == gpGlobals->GetFrameCount() )
 		return;
 
 	MDLCACHE_CRITICAL_SECTION();
@@ -3260,23 +3260,23 @@ void C_BaseEntity::ComputeFxBlend( void )
 	switch( m_nRenderFX ) 
 	{
 	case kRenderFxPulseSlowWide:
-		blend = m_clrRender->a + 0x40 * sin( gpGlobals->curtime * 2 + offset );	
+		blend = m_clrRender->a + 0x40 * sin( gpGlobals->GetCurTime() * 2 + offset );	
 		break;
 		
 	case kRenderFxPulseFastWide:
-		blend = m_clrRender->a + 0x40 * sin( gpGlobals->curtime * 8 + offset );
+		blend = m_clrRender->a + 0x40 * sin( gpGlobals->GetCurTime() * 8 + offset );
 		break;
 	
 	case kRenderFxPulseFastWider:
-		blend = ( 0xff * fabs(sin( gpGlobals->curtime * 12 + offset ) ) );
+		blend = ( 0xff * fabs(sin( gpGlobals->GetCurTime() * 12 + offset ) ) );
 		break;
 
 	case kRenderFxPulseSlow:
-		blend = m_clrRender->a + 0x10 * sin( gpGlobals->curtime * 2 + offset );
+		blend = m_clrRender->a + 0x10 * sin( gpGlobals->GetCurTime() * 2 + offset );
 		break;
 		
 	case kRenderFxPulseFast:
-		blend = m_clrRender->a + 0x10 * sin( gpGlobals->curtime * 8 + offset );
+		blend = m_clrRender->a + 0x10 * sin( gpGlobals->GetCurTime() * 8 + offset );
 		break;
 		
 	// JAY: HACK for now -- not time based
@@ -3329,7 +3329,7 @@ void C_BaseEntity::ComputeFxBlend( void )
 		break;
 		
 	case kRenderFxStrobeSlow:
-		blend = 20 * sin( gpGlobals->curtime * 4 + offset );
+		blend = 20 * sin( gpGlobals->GetCurTime() * 4 + offset );
 		if ( blend < 0 )
 		{
 			blend = 0;
@@ -3341,7 +3341,7 @@ void C_BaseEntity::ComputeFxBlend( void )
 		break;
 		
 	case kRenderFxStrobeFast:
-		blend = 20 * sin( gpGlobals->curtime * 16 + offset );
+		blend = 20 * sin( gpGlobals->GetCurTime() * 16 + offset );
 		if ( blend < 0 )
 		{
 			blend = 0;
@@ -3353,7 +3353,7 @@ void C_BaseEntity::ComputeFxBlend( void )
 		break;
 		
 	case kRenderFxStrobeFaster:
-		blend = 20 * sin( gpGlobals->curtime * 36 + offset );
+		blend = 20 * sin( gpGlobals->GetCurTime() * 36 + offset );
 		if ( blend < 0 )
 		{
 			blend = 0;
@@ -3365,7 +3365,7 @@ void C_BaseEntity::ComputeFxBlend( void )
 		break;
 		
 	case kRenderFxFlickerSlow:
-		blend = 20 * (sin( gpGlobals->curtime * 2 ) + sin( gpGlobals->curtime * 17 + offset ));
+		blend = 20 * (sin( gpGlobals->GetCurTime() * 2 ) + sin( gpGlobals->GetCurTime() * 17 + offset ));
 		if ( blend < 0 )
 		{
 			blend = 0;
@@ -3377,7 +3377,7 @@ void C_BaseEntity::ComputeFxBlend( void )
 		break;
 		
 	case kRenderFxFlickerFast:
-		blend = 20 * (sin( gpGlobals->curtime * 16 ) + sin( gpGlobals->curtime * 23 + offset ));
+		blend = 20 * (sin( gpGlobals->GetCurTime() * 16 ) + sin( gpGlobals->GetCurTime() * 23 + offset ));
 		if ( blend < 0 )
 		{
 			blend = 0;
@@ -3443,7 +3443,7 @@ void C_BaseEntity::ComputeFxBlend( void )
 	}
 
 	m_nRenderFXBlend = blend;
-	m_nFXComputeFrame = gpGlobals->framecount;
+	m_nFXComputeFrame = gpGlobals->GetFrameCount();
 
 	// Update the render group
 	if ( GetRenderHandle() != INVALID_CLIENT_RENDER_HANDLE )
@@ -3463,7 +3463,7 @@ void C_BaseEntity::ComputeFxBlend( void )
 //-----------------------------------------------------------------------------
 int C_BaseEntity::GetFxBlend( void )
 {
-	Assert( m_nFXComputeFrame == gpGlobals->framecount );
+	Assert( m_nFXComputeFrame == gpGlobals->GetFrameCount() );
 	return m_nRenderFXBlend;
 }
 
@@ -4615,7 +4615,7 @@ bool C_BaseEntity::PostNetworkDataReceived( int commands_acknowledged )
 		if ( ecount > 0 )
 		{
 			haderrors = true;
-		//	Msg( "%i errors %i on entity %i %s\n", gpGlobals->tickcount, ecount, index, IsClientCreated() ? "true" : "false" );
+		//	Msg( "%i errors %i on entity %i %s\n", gpGlobals->GetTickCount(), ecount, index, IsClientCreated() ? "true" : "false" );
 		}
 	}
 #endif
@@ -4775,7 +4775,7 @@ CON_COMMAND_F( dlight_debug, "Creates a dlight in front of the player", FCVAR_CH
 	el->origin = tr.endpos - forward * 12.0f;
 	el->radius = 200; 
 	el->decay = el->radius / 5.0f;
-	el->die = gpGlobals->curtime + 5.0f;
+	el->die = gpGlobals->GetCurTime() + 5.0f;
 	el->color.r = 255;
 	el->color.g = 192;
 	el->color.b = 64;
@@ -5576,7 +5576,7 @@ RenderGroup_t C_BaseEntity::GetRenderGroup()
 	// NOTE: Bypassing the GetFXBlend protection logic because we want this to
 	// be able to be called from AddToLeafSystem.
 	int nTempComputeFrame = m_nFXComputeFrame;
-	m_nFXComputeFrame = gpGlobals->framecount;
+	m_nFXComputeFrame = gpGlobals->GetFrameCount();
 
 	int nFXBlend = GetFxBlend();
 
@@ -5769,7 +5769,7 @@ void C_BaseEntity::EstimateAbsVelocity( Vector& vel )
 
 	CInterpolationContext context;
 	context.EnableExtrapolation( true );
-	m_iv_vecOrigin.GetDerivative_SmoothVelocity( &vel, gpGlobals->curtime );
+	m_iv_vecOrigin.GetDerivative_SmoothVelocity( &vel, gpGlobals->GetCurTime() );
 }
 
 void C_BaseEntity::Interp_Reset( VarMapping_t *map )
@@ -5839,7 +5839,7 @@ float C_BaseEntity::GetInterpolationAmount( int flags )
 	// Always fully interpolate during multi-player or during demo playback, if the recorded
 	// demo was recorded locally.
 	const bool bPlayingDemo = engineClient->IsPlayingDemo();
-	const bool bPlayingMultiplayer = !bPlayingDemo && ( gpGlobals->maxClients > 1 );
+	const bool bPlayingMultiplayer = !bPlayingDemo && ( gpGlobals->GetMaxClients() > 1);
 	const bool bPlayingNonLocallyRecordedDemo = bPlayingDemo && !engineClient->IsPlayingDemoALocallyRecordedDemo();
 	if ( bPlayingMultiplayer || bPlayingNonLocallyRecordedDemo )
 	{
@@ -5874,7 +5874,7 @@ float C_BaseEntity::GetLastChangeTime( int flags )
 {
 	if ( GetPredictable() || IsClientCreated() )
 	{
-		return gpGlobals->curtime;
+		return gpGlobals->GetCurTime();
 	}
 	
 	// make sure not both flags are set, we can't resolve that
@@ -5890,14 +5890,14 @@ float C_BaseEntity::GetLastChangeTime( int flags )
 		float st = GetSimulationTime();
 		if ( st == 0.0f )
 		{
-			return gpGlobals->curtime;
+			return gpGlobals->GetCurTime();
 		}
 		return st;
 	}
 
 	Assert( 0 );
 
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
 const Vector& C_BaseEntity::GetPrevLocalOrigin() const
@@ -6094,8 +6094,8 @@ void C_BaseEntity::SetToolRecording( bool recording )
 bool C_BaseEntity::HasRecordedThisFrame() const
 {
 #ifndef NO_TOOLFRAMEWORK
-	Assert( m_nLastRecordedFrame <= gpGlobals->framecount );
-	return m_nLastRecordedFrame == gpGlobals->framecount;
+	Assert( m_nLastRecordedFrame <= gpGlobals->GetFrameCount() );
+	return m_nLastRecordedFrame == gpGlobals->GetFrameCount();
 #else
 	return false;
 #endif
@@ -6112,7 +6112,7 @@ void C_BaseEntity::GetToolRecordingState( KeyValues *msg )
 	C_BaseEntity *pOwner = m_hOwnerEntity;
 
 	static BaseEntityRecordingState_t state;
-	state.m_flTime = gpGlobals->curtime;
+	state.m_flTime = gpGlobals->GetCurTime();
 	state.m_pModelName = GetModel()?GetModel()->GetModelName():"";//GetModel()
 	state.m_nOwner = pOwner ? pOwner->entindex() : -1;
 	state.m_nEffects = m_fEffects;
@@ -6164,7 +6164,7 @@ void C_BaseEntity::RecordToolMessage()
 
 	msg->deleteThis();
 
-	m_nLastRecordedFrame = gpGlobals->framecount;
+	m_nLastRecordedFrame = gpGlobals->GetFrameCount();
 }
 
 // (static function)

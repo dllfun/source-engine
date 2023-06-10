@@ -92,7 +92,7 @@ bool SmokeTrail::KeyValue( const char *szKeyName, const char *szValue )
 
 	if ( FStrEq( szKeyName, "emittime" ) )
 	{
-		m_StopEmitTime = gpGlobals->curtime + atof( szValue );
+		m_StopEmitTime = gpGlobals->GetCurTime() + atof( szValue );
 		return true;
 	}
 
@@ -542,7 +542,7 @@ bool DustTrail::KeyValue( const char *szKeyName, const char *szValue )
 
 	if ( FStrEq( szKeyName, "emittime" ) )
 	{
-		m_StopEmitTime = gpGlobals->curtime + atof( szValue );
+		m_StopEmitTime = gpGlobals->GetCurTime() + atof( szValue );
 		return true;
 	}
 

@@ -139,7 +139,7 @@ void CPointAngularVelocitySensor::Activate(void)
 
 	if (m_hTargetEntity)
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -193,7 +193,7 @@ float CPointAngularVelocitySensor::SampleAngularVelocity(CBaseEntity *pEntity)
 			QAngle angles;
 			pPhys->GetPosition( NULL, &angles );
 
-			float dt = gpGlobals->curtime - GetLastThink();
+			float dt = gpGlobals->GetCurTime() - GetLastThink();
 			if ( dt == 0 )
 				dt = 0.1;
 
@@ -303,12 +303,12 @@ void CPointAngularVelocitySensor::Think(void)
 				// The value has changed -- reset the timer. We'll fire the output if
 				// it stays at this value until the interval expires.
 				//
-				m_flFireTime = gpGlobals->curtime + m_flFireInterval;
+				m_flFireTime = gpGlobals->GetCurTime() + m_flFireInterval;
 			}
 			
 			m_nLastCompareResult = nCompare;
 		}
-		else if ((m_flFireTime != 0) && (gpGlobals->curtime >= m_flFireTime))
+		else if ((m_flFireTime != 0) && (gpGlobals->GetCurTime() >= m_flFireTime))
 		{
 			//
 			// The compare result has held steady long enough -- time to
@@ -319,7 +319,7 @@ void CPointAngularVelocitySensor::Think(void)
 			m_flFireTime = 0;
 		}
 
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -331,11 +331,11 @@ void CPointAngularVelocitySensor::InputTestWithInterval( inputdata_t &inputdata 
 {
 	if (m_hTargetEntity != NULL)
 	{
-		m_flFireTime = gpGlobals->curtime + m_flFireInterval;
+		m_flFireTime = gpGlobals->GetCurTime() + m_flFireInterval;
 		m_nLastFireResult = AVELOCITY_SENSOR_NO_LAST_RESULT;
 		m_nLastCompareResult = CompareToThreshold(m_hTargetEntity, m_flThreshold, true);
 
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -449,7 +449,7 @@ void CPointVelocitySensor::Activate( void )
 	
 	if ( m_bEnabled && m_hTargetEntity )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -466,7 +466,7 @@ void CPointVelocitySensor::InputEnable( inputdata_t &inputdata )
 	
 	if ( m_hTargetEntity )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -486,7 +486,7 @@ void CPointVelocitySensor::Think( void )
 	if ( m_hTargetEntity != NULL && m_bEnabled )
 	{
 		SampleVelocity();
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 

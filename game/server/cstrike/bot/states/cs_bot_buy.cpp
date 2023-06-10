@@ -316,7 +316,7 @@ void BuyState::OnUpdate( CCSBot *me )
 	if (m_isInitialDelay)
 	{
 		const float waitToBuyTime = 0.25f;
-		if (gpGlobals->curtime - me->GetStateTimestamp() < waitToBuyTime)
+		if (gpGlobals->GetCurTime() - me->GetStateTimestamp() < waitToBuyTime)
 			return;
 
 		m_isInitialDelay = false;
@@ -397,9 +397,9 @@ void BuyState::OnUpdate( CCSBot *me )
 
 	// try to buy some weapons
 	const float buyInterval = 0.02f;
-	if (gpGlobals->curtime - me->GetStateTimestamp() > buyInterval)
+	if (gpGlobals->GetCurTime() - me->GetStateTimestamp() > buyInterval)
 	{
-		me->m_stateTimestamp = gpGlobals->curtime;
+		me->m_stateTimestamp = gpGlobals->GetCurTime();
 
 		bool isPreferredAllDisallowed = true;
 

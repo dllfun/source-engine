@@ -98,7 +98,7 @@ public:
  */
 #define CCSBOTMANAGER_ITERATE_BOTS( Callback, arg1 ) \
 	{ \
-		for ( int idx = 1; idx <= gpGlobals->maxClients; ++idx ) \
+		for ( int idx = 1; idx <= gpGlobals->GetMaxClients(); ++idx ) \
 		{ \
 			CBasePlayer *player = UTIL_PlayerByIndex( idx ); \
 			if (player == NULL) continue; \
@@ -267,10 +267,10 @@ public:
 	void ResetRadioMessageTimestamps( void );
 
 	float GetLastSeenEnemyTimestamp( void ) const	{ return m_lastSeenEnemyTimestamp; }	///< return the last time anyone has seen an enemy
-	void SetLastSeenEnemyTimestamp( void ) 			{ m_lastSeenEnemyTimestamp = gpGlobals->curtime; }
+	void SetLastSeenEnemyTimestamp( void ) 			{ m_lastSeenEnemyTimestamp = gpGlobals->GetCurTime(); }
 
 	float GetRoundStartTime( void ) const			{ return m_roundStartTimestamp; }
-	float GetElapsedRoundTime( void ) const			{ return gpGlobals->curtime - m_roundStartTimestamp; }	///< return the elapsed time since the current round began
+	float GetElapsedRoundTime( void ) const			{ return gpGlobals->GetCurTime() - m_roundStartTimestamp; }	///< return the elapsed time since the current round began
 
 	bool AllowRogues( void ) const					{ return cv_bot_allow_rogues.GetBool(); }
 	bool AllowPistols( void ) const					{ return cv_bot_allow_pistols.GetBool(); }
@@ -379,12 +379,12 @@ private:
 
 inline CBasePlayer *CCSBotManager::AllocateBotEntity(edict_t* edict)
 {
-	return static_cast<CBasePlayer *>(engineServer->CreateEntityByName( "cs_bot" , edict->m_EdictIndex) );
+	return static_cast<CBasePlayer *>(engineServer->CreateEntityByName( "cs_bot" , edict->GetIndex()) );
 }
 
 inline bool CCSBotManager::IsTimeToPlantBomb( void ) const
 {
-	return (gpGlobals->curtime >= m_earliestBombPlantTimestamp);
+	return (gpGlobals->GetCurTime() >= m_earliestBombPlantTimestamp);
 }
 
 inline const CCSBotManager::Zone *CCSBotManager::GetClosestZone( const CBaseEntity *entity ) const

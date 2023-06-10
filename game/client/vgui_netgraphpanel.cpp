@@ -717,7 +717,7 @@ void CNetGraphPanel::DrawTextFields( int graphvalue, int x, int y, int w, netban
 	HFont font = GetNetgraphFont();
 
 	// Move rolling average
-	m_Framerate = FRAMERATE_AVG_FRAC * m_Framerate + ( 1.0 - FRAMERATE_AVG_FRAC ) * gpGlobals->absoluteframetime;
+	m_Framerate = FRAMERATE_AVG_FRAC * m_Framerate + ( 1.0 - FRAMERATE_AVG_FRAC ) * gpGlobals->GetAbsoluteFrameTime();
 
 	// Print it out
 	y -= m_nNetGraphHeight;

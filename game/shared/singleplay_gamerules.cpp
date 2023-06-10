@@ -331,7 +331,7 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 	//=========================================================
 	float CSingleplayRules::FlPlayerSpawnTime( CBasePlayer *pPlayer )
 	{
-		return gpGlobals->curtime;//now!
+		return gpGlobals->GetCurTime();//now!
 	}
 
 	//=========================================================

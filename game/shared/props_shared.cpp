@@ -824,7 +824,7 @@ bool CGameGibManager::AllowedToSpawnGib( void )
 	if ( m_iCurrentMaxPieces == 0 )
 		return false;
 
-	if ( m_iLastFrame == gpGlobals->framecount )
+	if ( m_iLastFrame == gpGlobals->GetFrameCount() )
 	{
 		if ( m_LRU.Count() >= m_iCurrentMaxPieces )
 		{
@@ -879,7 +879,7 @@ void CGameGibManager::AddGibToLRU( CBaseAnimating *pEntity )
 	}
 	
 	m_LRU.AddToTail( pEntity );
-	m_iLastFrame = gpGlobals->framecount;
+	m_iLastFrame = gpGlobals->GetFrameCount();
 }
 
 EHANDLE g_hGameGibManager;
@@ -906,10 +906,10 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 	int nPropCount = props_break_max_pieces_perframe.GetInt(); 
 	if ( nPropCount != -1 ) 
 	{ 
-		if ( nFrameNumber != gpGlobals->framecount ) 
+		if ( nFrameNumber != gpGlobals->GetFrameCount() ) 
 		{ 
 			nPropBreakablesPerFrameCount = 0; 
-			nFrameNumber = gpGlobals->framecount; 
+			nFrameNumber = gpGlobals->GetFrameCount(); 
 		} 
       
 		// Check for max breakable count for the frame. 
@@ -1016,9 +1016,9 @@ void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const bre
 
 			// Skip multiplayer pieces that should be spawning on the other dll
 #ifdef GAME_DLL
-			if ( gpGlobals->maxClients > 1 && breakable_multiplayer.GetBool() )
+			if ( gpGlobals->GetMaxClients() > 1 && breakable_multiplayer.GetBool() )
 #else
-			if ( gpGlobals->maxClients > 1 )
+			if ( gpGlobals->GetMaxClients() > 1 )
 #endif
 			{
 #ifdef GAME_DLL
@@ -1329,10 +1329,10 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 	int nPropCount = props_break_max_pieces_perframe.GetInt(); 
 	if ( nPropCount != -1 ) 
 	{ 
-		if ( nFrameNumber != gpGlobals->framecount ) 
+		if ( nFrameNumber != gpGlobals->GetFrameCount() ) 
 		{ 
 			nPropBreakablesPerFrameCount = 0; 
-			nFrameNumber = gpGlobals->framecount; 
+			nFrameNumber = gpGlobals->GetFrameCount(); 
 		} 
       
 		// Check for max breakable count for the frame. 
@@ -1439,9 +1439,9 @@ CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex,
 
 			// Skip multiplayer pieces that should be spawning on the other dll
 #ifdef GAME_DLL
-			if ( gpGlobals->maxClients > 1 && breakable_multiplayer.GetBool() )
+			if ( gpGlobals->GetMaxClients() > 1 && breakable_multiplayer.GetBool() )
 #else
-			if ( gpGlobals->maxClients > 1 )
+			if ( gpGlobals->GetMaxClients() > 1 )
 #endif
 			{
 #ifdef GAME_DLL

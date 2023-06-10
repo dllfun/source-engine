@@ -253,7 +253,7 @@ void CFuncMoveLinear::MoveDone( void )
 	// Stop sounds at the next think, rather than here as another
 	// SetPosition call might immediately follow the end of this move
 	SetThink(&CFuncMoveLinear::StopMoveSound);
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	BaseClass::MoveDone();
 
 	if ( GetAbsOrigin() == m_vecPosition2 )

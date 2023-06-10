@@ -33,7 +33,7 @@ public:
 
 	bool Expired() const
 	{
-		return ( gpGlobals->curtime - m_next > -ST_EPS );
+		return ( gpGlobals->GetCurTime() - m_next > -ST_EPS );
 	}
 
 	float Delay( float delayTime )
@@ -48,20 +48,20 @@ public:
 
 	void Set( float interval )
 	{
-		m_next = gpGlobals->curtime + interval;
+		m_next = gpGlobals->GetCurTime() + interval;
 	}
 
 	void Set( float minInterval, float maxInterval )
 	{ 
 		if ( maxInterval > 0.0 )
-			m_next = gpGlobals->curtime + random->RandomFloat( minInterval, maxInterval );
+			m_next = gpGlobals->GetCurTime() + random->RandomFloat( minInterval, maxInterval );
 		else
-			m_next = gpGlobals->curtime + minInterval;
+			m_next = gpGlobals->GetCurTime() + minInterval;
 	}
 
 	float GetRemaining() const
 	{
-		float result = m_next - gpGlobals->curtime;
+		float result = m_next - gpGlobals->GetCurTime();
 		if (result < 0 )
 			return 0;
 		return result;
@@ -86,18 +86,18 @@ public:
 	void Set( float interval, bool startExpired = true )
 	{ 
 		m_interval = interval;
-		m_next = (startExpired) ? -1.0 : gpGlobals->curtime + m_interval;
+		m_next = (startExpired) ? -1.0 : gpGlobals->GetCurTime() + m_interval;
 	}
 
 	void Reset( float interval = -1.0 )
 	{
 		if ( interval == -1.0 )
 		{
-			m_next = gpGlobals->curtime + m_interval;
+			m_next = gpGlobals->GetCurTime() + m_interval;
 		}
 		else
 		{
-			m_next = gpGlobals->curtime + interval;
+			m_next = gpGlobals->GetCurTime() + interval;
 		}
 	}
 
@@ -136,18 +136,18 @@ public:
 		else
 		{
 			if ( m_maxInterval == 0 )
-				m_next = gpGlobals->curtime + m_minInterval;
+				m_next = gpGlobals->GetCurTime() + m_minInterval;
 			else
-				m_next = gpGlobals->curtime + random->RandomFloat( m_minInterval, m_maxInterval );
+				m_next = gpGlobals->GetCurTime() + random->RandomFloat( m_minInterval, m_maxInterval );
 		}
 	}
 
 	void Reset()
 	{
 		if ( m_maxInterval == 0 )
-			m_next = gpGlobals->curtime + m_minInterval;
+			m_next = gpGlobals->GetCurTime() + m_minInterval;
 		else
-			m_next = gpGlobals->curtime + random->RandomFloat( m_minInterval, m_maxInterval );
+			m_next = gpGlobals->GetCurTime() + random->RandomFloat( m_minInterval, m_maxInterval );
 	}
 
 	float GetMinInterval() const
@@ -237,7 +237,7 @@ public:
 	void Start( float intervalOverride )
 	{ 
 		m_fIsRunning = true;
-		m_next = gpGlobals->curtime + intervalOverride;
+		m_next = gpGlobals->GetCurTime() + intervalOverride;
 	}
 
 	void Start()
@@ -276,9 +276,9 @@ public:
 	{ 
 		m_fIsRunning = true;
 		if ( maxOverride == 0 )
-			m_next = gpGlobals->curtime + minOverride;
+			m_next = gpGlobals->GetCurTime() + minOverride;
 		else
-			m_next = gpGlobals->curtime + random->RandomFloat( minOverride, maxOverride );
+			m_next = gpGlobals->GetCurTime() + random->RandomFloat( minOverride, maxOverride );
 	}
 
 	void Start()
@@ -320,21 +320,21 @@ public:
 
 	bool EnterThink()
 	{
-		if ( m_lastTime == gpGlobals->curtime )
+		if ( m_lastTime == gpGlobals->GetCurTime() )
 			return false;
-		m_lastTime = gpGlobals->curtime;
+		m_lastTime = gpGlobals->GetCurTime();
 		return true;
 	}
 
 	bool DidThink() const
 	{
-		return ( gpGlobals->curtime == m_lastTime );
+		return ( gpGlobals->GetCurTime() == m_lastTime );
 
 	}
 
 	void SetDidThink()
 	{
-		m_lastTime = gpGlobals->curtime;
+		m_lastTime = gpGlobals->GetCurTime();
 	}
 
 private:

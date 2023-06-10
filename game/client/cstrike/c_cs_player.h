@@ -365,7 +365,7 @@ private:
 	{
 	public:
 		string_t m_SoundName;
-		float m_flEventTime;	// Play the event when gpGlobals->curtime goes past this.
+		float m_flEventTime;	// Play the event when gpGlobals->GetCurTime() goes past this.
 	};
 	CUtlLinkedList<CCSSoundEvent,int> m_SoundEvents;
 

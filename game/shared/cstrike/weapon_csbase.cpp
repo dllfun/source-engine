@@ -482,8 +482,8 @@ void CWeaponCSBase::SecondaryAttack( void )
 		else
 			 SendWeaponAnim( ACT_SHIELD_DOWN );
 
-		m_flNextSecondaryAttack = gpGlobals->curtime + 0.4;
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.4;
+		m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.4;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.4;
 	}
 #endif
 }
@@ -526,7 +526,7 @@ void CWeaponCSBase::ItemPostFrame()
 
 	UpdateShieldState();
 
-	if ((m_bInReload) && (pPlayer->m_flNextAttack <= gpGlobals->curtime))
+	if ((m_bInReload) && (pPlayer->m_flNextAttack <= gpGlobals->GetCurTime()))
 	{
 		// complete the reload.
 		int j = MIN( GetMaxClip1() - m_iClip1, pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) );
@@ -538,7 +538,7 @@ void CWeaponCSBase::ItemPostFrame()
 		m_bInReload = false;
 	}
 
-	if ((pPlayer->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime))
+	if ((pPlayer->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->GetCurTime()))
 	{
 		if ( pPlayer->HasShield() )
 			CWeaponCSBase::SecondaryAttack();
@@ -547,7 +547,7 @@ void CWeaponCSBase::ItemPostFrame()
 
 		pPlayer->m_nButtons &= ~IN_ATTACK2;
 	}
-	else if ((pPlayer->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->curtime ))
+	else if ((pPlayer->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->GetCurTime() ))
 	{
 		if ( CSGameRules()->IsFreezePeriod() )	// Can't shoot during the freeze period
 			return;
@@ -590,7 +590,7 @@ void CWeaponCSBase::ItemPostFrame()
 #endif
 		PrimaryAttack();
 	}
-	else if ( pPlayer->m_nButtons & IN_RELOAD && GetMaxClip1() != WEAPON_NOCLIP && !m_bInReload && m_flNextPrimaryAttack < gpGlobals->curtime)
+	else if ( pPlayer->m_nButtons & IN_RELOAD && GetMaxClip1() != WEAPON_NOCLIP && !m_bInReload && m_flNextPrimaryAttack < gpGlobals->GetCurTime())
 	{
 		// reload when reload is pressed, or if no buttons are down and weapon is empty.
 
@@ -633,7 +633,7 @@ void CWeaponCSBase::ItemPostFrame()
 			if (pPlayer->m_iShotsFired > 15)
 				pPlayer->m_iShotsFired = 15;
 
-			m_flDecreaseShotsFired = gpGlobals->curtime + 0.4;
+			m_flDecreaseShotsFired = gpGlobals->GetCurTime() + 0.4;
 		}
 
 		m_bFireOnEmpty = true;
@@ -645,21 +645,21 @@ void CWeaponCSBase::ItemPostFrame()
 		}
 		else
 		{
-			if ( (pPlayer->m_iShotsFired > 0) && (m_flDecreaseShotsFired < gpGlobals->curtime)	)
+			if ( (pPlayer->m_iShotsFired > 0) && (m_flDecreaseShotsFired < gpGlobals->GetCurTime())	)
 			{
-				m_flDecreaseShotsFired = gpGlobals->curtime + 0.0225;
+				m_flDecreaseShotsFired = gpGlobals->GetCurTime() + 0.0225;
 				pPlayer->m_iShotsFired--;
 			}
 		}
 
-		if ( (!IsUseable() && m_flNextPrimaryAttack < gpGlobals->curtime) )
+		if ( (!IsUseable() && m_flNextPrimaryAttack < gpGlobals->GetCurTime()) )
 		{
 			// Intentionally blank -- used to switch weapons here
 		}
 		else
 		{
 			// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
-			if ( m_iClip1 == 0 && !(GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < gpGlobals->curtime )
+			if ( m_iClip1 == 0 && !(GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < gpGlobals->GetCurTime() )
 			{
 				Reload();
 				return;
@@ -776,7 +776,7 @@ Activity CWeaponCSBase::GetDeployActivity( void )
 
 bool CWeaponCSBase::DefaultDeploy( char *szViewModel, char *szWeaponModel, int iActivity, char *szAnimExt )
 {
-	// Msg( "deploy %s at %f\n", GetClassname(), gpGlobals->curtime );
+	// Msg( "deploy %s at %f\n", GetClassname(), gpGlobals->GetCurTime() );
 	CCSPlayer *pOwner = GetPlayerOwner();
 	if ( !pOwner )
 	{
@@ -788,9 +788,9 @@ bool CWeaponCSBase::DefaultDeploy( char *szViewModel, char *szWeaponModel, int i
 	SetViewModel();
 	SendWeaponAnim( GetDeployActivity() );
 
-	pOwner->SetNextAttack( gpGlobals->curtime + SequenceDuration() );
-	m_flNextPrimaryAttack	= gpGlobals->curtime;
-	m_flNextSecondaryAttack	= gpGlobals->curtime;
+	pOwner->SetNextAttack( gpGlobals->GetCurTime() + SequenceDuration() );
+	m_flNextPrimaryAttack	= gpGlobals->GetCurTime();
+	m_flNextSecondaryAttack	= gpGlobals->GetCurTime();
 
 	SetWeaponVisible( true );
 	pOwner->SetShieldDrawnState( false );
@@ -859,10 +859,10 @@ bool CWeaponCSBase::CanDeploy( void )
 float CWeaponCSBase::CalculateNextAttackTime( float fCycleTime )
 {
 	float fCurAttack = m_flNextPrimaryAttack;
-	float fDeltaAttack = gpGlobals->curtime - fCurAttack;
-	if ( fDeltaAttack < 0 || fDeltaAttack > gpGlobals->interval_per_tick )
+	float fDeltaAttack = gpGlobals->GetCurTime() - fCurAttack;
+	if ( fDeltaAttack < 0 || fDeltaAttack > gpGlobals->GetIntervalPerTick() )
 	{
-		fCurAttack = gpGlobals->curtime;
+		fCurAttack = gpGlobals->GetCurTime();
 	}
 	m_flNextSecondaryAttack = m_flNextPrimaryAttack = fCurAttack + fCycleTime;
 
@@ -897,7 +897,7 @@ bool CWeaponCSBase::Deploy()
 	}
 #else
 
-	m_flDecreaseShotsFired = gpGlobals->curtime;
+	m_flDecreaseShotsFired = gpGlobals->GetCurTime();
 
 
 	if ( pPlayer )
@@ -919,7 +919,7 @@ bool CWeaponCSBase::IsRemoveable()
 {
 	if ( BaseClass::IsRemoveable() == true )
 	{
-		if ( m_nextPrevOwnerTouchTime > gpGlobals->curtime )
+		if ( m_nextPrevOwnerTouchTime > gpGlobals->GetCurTime() )
 		{
 			return false;
 		}
@@ -955,7 +955,7 @@ void CWeaponCSBase::Drop(const Vector &vecVelocity)
 	m_bInReload = false; // stop reloading
 
 	SetThink( NULL );
-	m_nextPrevOwnerTouchTime = gpGlobals->curtime + 0.8f;
+	m_nextPrevOwnerTouchTime = gpGlobals->GetCurTime() + 0.8f;
 	m_prevOwner = GetPlayerOwner();
 
 	SetTouch(&CWeaponCSBase::DefaultTouch);
@@ -971,7 +971,7 @@ void CWeaponCSBase::Drop(const Vector &vecVelocity)
 		SetAbsVelocity( vecVelocity );
 	}
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	SetOwnerEntity( NULL );
 	SetOwner( NULL );
@@ -982,7 +982,7 @@ void CWeaponCSBase::Drop(const Vector &vecVelocity)
 // for a little while.  But if they throw it at someone else, the other player should get it immediately.
 void CWeaponCSBase::DefaultTouch(CBaseEntity *pOther)
 {
-	if ((m_prevOwner != NULL) && (pOther == m_prevOwner) && (gpGlobals->curtime < m_nextPrevOwnerTouchTime))
+	if ((m_prevOwner != NULL) && (pOther == m_prevOwner) && (gpGlobals->GetCurTime() < m_nextPrevOwnerTouchTime))
 	{
 		return;
 	}
@@ -1130,7 +1130,7 @@ void CWeaponCSBase::DefaultTouch(CBaseEntity *pOther)
 					if ( !cl_legacy_crosshair_recoil.GetBool() )
 					{
 						// .44888 on the next line makes the decay very close to what old method produces at 100fps.
-						m_flCrosshairDistance = Lerp(expf(-gpGlobals->frametime / 0.44888f), fCrosshairDistanceGoal, m_flCrosshairDistance);
+						m_flCrosshairDistance = Lerp(expf(-gpGlobals->GetFrameTime() / 0.44888f), fCrosshairDistanceGoal, m_flCrosshairDistance);
 					}
 					else
 					{
@@ -1434,7 +1434,7 @@ void CWeaponCSBase::DefaultTouch(CBaseEntity *pOther)
 			return;
 		}
 
-		SetNextThink( gpGlobals->curtime + time );
+		SetNextThink( gpGlobals->GetCurTime() + time );
 	}
 
 	//=========================================================
@@ -1468,7 +1468,7 @@ void CWeaponCSBase::DefaultTouch(CBaseEntity *pOther)
 
 			// not a typo! We want to know when the weapon the player just picked up should respawn! This new entity we created is the replacement,
 			// but when it should respawn is based on conditions belonging to the weapon that was taken.
-			pNewWeapon->SetNextThink( gpGlobals->curtime + g_pGameRules->FlWeaponRespawnTime( this ) );
+			pNewWeapon->SetNextThink( gpGlobals->GetCurTime() + g_pGameRules->FlWeaponRespawnTime( this ) );
 		}
 		else
 		{
@@ -1631,7 +1631,7 @@ bool CWeaponCSBase::IsUseable()
 
 		//NOTENOTE: For now, let this cycle continue when in the air, because it snaps badly without it
 
-		if ( ( !gpGlobals->frametime ) ||
+		if ( ( !gpGlobals->GetFrameTime() ) ||
 			 ( player == NULL ) ||
 			 ( cl_bobcycle.GetFloat() <= 0.0f ) ||
 			 ( cl_bobup.GetFloat() <= 0.0f ) ||
@@ -1643,7 +1643,7 @@ bool CWeaponCSBase::IsUseable()
 
 		//Find the speed of the player
 		float speed = player->GetLocalVelocity().Length2D();
-		float flmaxSpeedDelta = MAX( 0, (gpGlobals->curtime - lastbobtime) * 320.0f );
+		float flmaxSpeedDelta = MAX( 0, (gpGlobals->GetCurTime() - lastbobtime) * 320.0f );
 
 		// don't allow too big speed changes
 		speed = clamp( speed, lastspeed-flmaxSpeedDelta, lastspeed+flmaxSpeedDelta );
@@ -1658,8 +1658,8 @@ bool CWeaponCSBase::IsUseable()
 
 		float bob_offset = RemapVal( speed, 0, 320, 0.0f, 1.0f );
 
-		bobtime += ( gpGlobals->curtime - lastbobtime ) * bob_offset;
-		lastbobtime = gpGlobals->curtime;
+		bobtime += ( gpGlobals->GetCurTime() - lastbobtime ) * bob_offset;
+		lastbobtime = gpGlobals->GetCurTime();
 
 		//Calculate the vertical bob
 		cycle = bobtime - (int)(bobtime/cl_bobcycle.GetFloat())*cl_bobcycle.GetFloat();
@@ -1790,7 +1790,7 @@ void CWeaponCSBase::OnPickedUp( CBaseCombatCharacter *pNewOwner )
 
 		// Play the pickup sound for 1st-person observers
 		CRecipientFilter filter;
-		for ( int i=0; i<gpGlobals->maxClients; ++i )
+		for ( int i=0; i<gpGlobals->GetMaxClients(); ++i )
 		{
 			CBasePlayer *player = UTIL_PlayerByIndex(i);
 			if ( player && !player->IsAlive() && player->GetObserverMode() == OBS_MODE_IN_EYE )

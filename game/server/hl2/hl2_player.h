@@ -102,7 +102,7 @@ public:
 	virtual void		CheatImpulseCommands( int iImpulse );
 	virtual void		PlayerRunCommand( CUserCmd *ucmd, IMoveHelper *moveHelper);
 	virtual void		PlayerUse ( void );
-	virtual void		SuspendUse( float flDuration ) { m_flTimeUseSuspended = gpGlobals->curtime + flDuration; }
+	virtual void		SuspendUse( float flDuration ) { m_flTimeUseSuspended = gpGlobals->GetCurTime() + flDuration; }
 	virtual void		UpdateClientData( void );
 	virtual void		OnRestore();
 	virtual void		StopLoopingSounds( void );
@@ -271,7 +271,7 @@ public:
 
 	bool IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
 	void HandleArmorReduction( void );
-	void StartArmorReduction( void ) { m_flArmorReductionTime = gpGlobals->curtime + ARMOR_DECAY_TIME; 
+	void StartArmorReduction( void ) { m_flArmorReductionTime = gpGlobals->GetCurTime() + ARMOR_DECAY_TIME; 
 									   m_iArmorReductionFrom = ArmorValue(); 
 									 }
 

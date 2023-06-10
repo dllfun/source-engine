@@ -25,7 +25,7 @@ public:
 		m_whenLastSeen = -1.0f;
 		m_whenLastBecameVisible = -1.0f;
 		m_isVisible = false;
-		m_whenBecameKnown = gpGlobals->curtime;
+		m_whenBecameKnown = gpGlobals->GetCurTime();
 		m_hasLastKnownPositionBeenSeen = false;
 		UpdatePosition();
 	}
@@ -44,7 +44,7 @@ public:
 		{
 			m_lastKnownPostion = m_who->GetAbsOrigin();
 			m_lastKnownArea = m_who->MyCombatCharacterPointer() ? m_who->MyCombatCharacterPointer()->GetLastKnownArea() : NULL;
-			m_whenLastKnown = gpGlobals->curtime;
+			m_whenLastKnown = gpGlobals->GetCurTime();
 		}
 	}
 
@@ -77,12 +77,12 @@ public:
 
 	virtual float GetTimeSinceLastKnown( void ) const
 	{
-		return gpGlobals->curtime - m_whenLastKnown;
+		return gpGlobals->GetCurTime() - m_whenLastKnown;
 	}
 
 	virtual float GetTimeSinceBecameKnown( void ) const
 	{
-		return gpGlobals->curtime - m_whenBecameKnown;
+		return gpGlobals->GetCurTime() - m_whenBecameKnown;
 	}
 
 	virtual void UpdateVisibilityStatus( bool visible )
@@ -92,10 +92,10 @@ public:
 			if ( !m_isVisible )
 			{
 				// just became visible
-				m_whenLastBecameVisible = gpGlobals->curtime;
+				m_whenLastBecameVisible = gpGlobals->GetCurTime();
 			}
 
-			m_whenLastSeen = gpGlobals->curtime;
+			m_whenLastSeen = gpGlobals->GetCurTime();
 		}
 
 		m_isVisible = visible;
@@ -119,7 +119,7 @@ public:
 
 	virtual float GetTimeSinceBecameVisible( void ) const
 	{
-		return gpGlobals->curtime - m_whenLastBecameVisible;
+		return gpGlobals->GetCurTime() - m_whenLastBecameVisible;
 	}
 
 	virtual float GetTimeWhenBecameVisible( void ) const
@@ -129,7 +129,7 @@ public:
 
 	virtual float GetTimeSinceLastSeen( void ) const
 	{
-		return gpGlobals->curtime - m_whenLastSeen;
+		return gpGlobals->GetCurTime() - m_whenLastSeen;
 	}
 
 	virtual bool WasEverVisible( void ) const

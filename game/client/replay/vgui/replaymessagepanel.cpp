@@ -221,7 +221,7 @@ void CReplayMessagePanel::Show()
 	m_pMessageLabel->SetVisible( true );
 
 	// Setup start time
-	m_flShowStartTime = gpGlobals->curtime;
+	m_flShowStartTime = gpGlobals->GetCurTime();
 
 	m_pMessageLabel->MoveToFront();
 
@@ -257,7 +257,7 @@ void CReplayMessagePanel::OnTick()
 
 	// Delete the panel if life exceeded
 	const float flEndTime = m_flShowStartTime + m_flShowDuration;
-	if ( gpGlobals->curtime >= flEndTime )
+	if ( gpGlobals->GetCurTime() >= flEndTime )
 	{
 		SetVisible( false );
 		MarkForDeletion();
@@ -270,15 +270,15 @@ void CReplayMessagePanel::OnTick()
 	float flAlpha;
 
 	// Fade out?
-	if ( gpGlobals->curtime >= flEndTime - flFadeDuration )
+	if ( gpGlobals->GetCurTime() >= flEndTime - flFadeDuration )
 	{
-		flAlpha = LerpScale( gpGlobals->curtime, flEndTime - flFadeDuration, flEndTime, 1.0f, 0.0f );
+		flAlpha = LerpScale( gpGlobals->GetCurTime(), flEndTime - flFadeDuration, flEndTime, 1.0f, 0.0f );
 	}
 
 	// Fade in?
-	else if ( gpGlobals->curtime <= m_flShowStartTime + flFadeDuration )
+	else if ( gpGlobals->GetCurTime() <= m_flShowStartTime + flFadeDuration )
 	{
-		flAlpha = LerpScale( gpGlobals->curtime, m_flShowStartTime, m_flShowStartTime + flFadeDuration, 0.0f, 1.0f );
+		flAlpha = LerpScale( gpGlobals->GetCurTime(), m_flShowStartTime, m_flShowStartTime + flFadeDuration, 0.0f, 1.0f );
 	}
 
 	// Otherwise, we must be in between fade in/fade out

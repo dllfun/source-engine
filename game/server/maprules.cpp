@@ -356,7 +356,7 @@ void CGameText::Display( CBaseEntity *pActivator )
 	else
 	{
 		// If we're in singleplayer, show the message to the player.
-		if ( gpGlobals->maxClients == 1 )
+		if ( gpGlobals->GetMaxClients() == 1 )
 		{
 			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 			UTIL_HudMessage( pPlayer, m_textParms, MessageGet() );
@@ -470,7 +470,7 @@ void CGamePlayerZone::InputCountPlayersInZone( inputdata_t &inputdata )
 
 	CBaseEntity *pPlayer = NULL;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		pPlayer = UTIL_PlayerByIndex( i );
 		if ( pPlayer )

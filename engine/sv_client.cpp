@@ -176,8 +176,8 @@ bool CGameClient::ProcessMove(CLC_Move *msg)
 #endif
 
 	// Make sure player knows of correct server time
-	g_ServerGlobalVariables.curtime = sv.GetTime();
-	g_ServerGlobalVariables.frametime = g_pHost->Host_GetIntervalPerTick();
+	g_ServerGlobalVariables.SetCurTime(sv.GetTime());
+	g_ServerGlobalVariables.SetFrameTime(g_pHost->Host_GetIntervalPerTick());
 
 //	COM_Log( "sv.log", "  executing %i move commands from client starting with command %i(%i)\n",
 //		numcmds, 
@@ -894,7 +894,7 @@ void CGameClient::ActivatePlayer( void )
 	// call the spawn function
 	if ( !sv.m_bLoadgame )
 	{
-		g_ServerGlobalVariables.curtime = sv.GetTime();
+		g_ServerGlobalVariables.SetCurTime(sv.GetTime());
 
 		COM_TimestampedLog( "g_pServerPluginHandler->ClientPutInServer" );
 
@@ -1342,7 +1342,7 @@ void CGameClient::PacketStart(int incoming_sequence, int outgoing_acknowledged)
 void CGameClient::PacketEnd()
 {
 	// Fix up clock in case prediction/etc. code reset it.
-	g_ServerGlobalVariables.frametime = g_pHost->Host_GetIntervalPerTick();
+	g_ServerGlobalVariables.SetFrameTime(g_pHost->Host_GetIntervalPerTick());
 }
 
 void CGameClient::ConnectionClosing(const char *reason)

@@ -63,7 +63,7 @@ void CWeaponCSBaseGun::ItemPostFrame()
 
 	//GOOSEMAN : Return zoom level back to previous zoom level before we fired a shot. This is used only for the AWP.
 	// And Scout.
-	if ( (m_flNextPrimaryAttack <= gpGlobals->curtime) && (pPlayer->m_bResumeZoom == TRUE) )
+	if ( (m_flNextPrimaryAttack <= gpGlobals->GetCurTime()) && (pPlayer->m_bResumeZoom == TRUE) )
 	{
 		pPlayer->m_bResumeZoom = false;
 		
@@ -71,7 +71,7 @@ void CWeaponCSBaseGun::ItemPostFrame()
 		{
 			m_weaponMode = Secondary_Mode;
 			pPlayer->SetFOV( pPlayer, pPlayer->m_iLastZoom, 0.05f );
-			m_zoomFullyActiveTime = gpGlobals->curtime + 0.05f;// Make sure we think that we are zooming on the server so we don't get instant acc bonus
+			m_zoomFullyActiveTime = gpGlobals->GetCurTime() + 0.05f;// Make sure we think that we are zooming on the server so we don't get instant acc bonus
 		}
 	}
 
@@ -127,7 +127,7 @@ bool CWeaponCSBaseGun::CSBaseGunFire( float flCycleTime, CSWeaponMode weaponMode
 			// SendWeaponAnim( ACT_VM_DRYFIRE );
 
 			m_bFireOnEmpty = false;
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.1f;
 		}
 
 		return false;
@@ -155,7 +155,7 @@ bool CWeaponCSBaseGun::CSBaseGunFire( float flCycleTime, CSWeaponMode weaponMode
 
 	DoFireEffects();
 
-	SetWeaponIdleTime( gpGlobals->curtime + GetCSWpnData().m_flTimeToIdleAfterFire );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + GetCSWpnData().m_flTimeToIdleAfterFire );
 
 	// update accuracy
 	m_fAccuracyPenalty += GetCSWpnData().m_fInaccuracyImpulseFire[weaponMode];
@@ -205,13 +205,13 @@ bool CWeaponCSBaseGun::Reload()
 
 void CWeaponCSBaseGun::WeaponIdle()
 {
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 	// only idle if the slid isn't back
 	if ( m_iClip1 != 0 )
 	{
-		SetWeaponIdleTime( gpGlobals->curtime + GetCSWpnData().m_flIdleInterval );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + GetCSWpnData().m_flIdleInterval );
 		SendWeaponAnim( ACT_VM_IDLE );
 	}
 }

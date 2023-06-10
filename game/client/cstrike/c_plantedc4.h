@@ -37,7 +37,7 @@ public:
 
 	void ClientThink( void );
 
-	int GetSecondsRemaining( void ) { return ceil( m_flC4Blow - gpGlobals->curtime ); }
+	int GetSecondsRemaining( void ) { return ceil( m_flC4Blow - gpGlobals->GetCurTime() ); }
 
 	inline bool IsBombActive( void ) { return m_bBombTicking; }
 	CNetworkVar( bool, m_bBombTicking );
@@ -57,7 +57,7 @@ public:
 
 		if( m_flDefuseLength > 0.0 )
 		{
-			flProgress = ( ( m_flDefuseCountDown - gpGlobals->curtime ) / m_flDefuseLength );
+			flProgress = ( ( m_flDefuseCountDown - gpGlobals->GetCurTime() ) / m_flDefuseLength );
 		}
 
 		return flProgress;

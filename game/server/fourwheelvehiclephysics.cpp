@@ -520,7 +520,7 @@ void CFourWheelVehiclePhysics::SetBoost( float flBoost )
 //------------------------------------------------------
 bool CFourWheelVehiclePhysics::UpdateBooster( void )
 {
-	float retval = m_pVehicle->UpdateBooster(gpGlobals->frametime );
+	float retval = m_pVehicle->UpdateBooster(gpGlobals->GetFrameTime() );
 	return ( retval > 0 );
 }
 
@@ -721,17 +721,17 @@ bool CFourWheelVehiclePhysics::Think()
 	m_nRPM = ( int )carState.engineRPM;
 	m_nHasBoost = vehicleData.engine.boostDelay;	// if we have any boost delay, vehicle has boost ability
 
-	m_pVehicle->Update( gpGlobals->frametime, m_controls);
+	m_pVehicle->Update( gpGlobals->GetFrameTime(), m_controls);
 
 	// boost sounds
 	if( IsBoosting() && !m_bLastBoost )
 	{
 		m_bLastBoost = true;
-		m_turboTimer = gpGlobals->curtime + 2.75f;		// min duration for turbo sound
+		m_turboTimer = gpGlobals->GetCurTime() + 2.75f;		// min duration for turbo sound
 	}
 	else if( !IsBoosting() && m_bLastBoost )
 	{
-		if ( gpGlobals->curtime >= m_turboTimer )
+		if ( gpGlobals->GetCurTime() >= m_turboTimer )
 		{
 			m_bLastBoost = false;
 		}
@@ -791,7 +791,7 @@ bool CFourWheelVehiclePhysics::Think()
 	float flPhysicsSteer = carState.steeringAngle / vehicleData.steering.degreesSlow;
 	SetPoseParameter( m_poseParameters[VEH_STEER], (STEER_DAMPING * flSteer) + ((1 - STEER_DAMPING) * flPhysicsSteer) );
 
-	m_actionValue += m_actionSpeed * m_actionScale * gpGlobals->frametime;
+	m_actionValue += m_actionSpeed * m_actionScale * gpGlobals->GetFrameTime();
 	SetPoseParameter( m_poseParameters[VEH_ACTION], m_actionValue );
 
 	// setup speedometer
@@ -954,7 +954,7 @@ void CFourWheelVehiclePhysics::SteeringRest( float carSpeed, const vehicleparams
 {
 	float flSteeringRate = RemapValClamped( carSpeed, vehicleData.steering.speedSlow, vehicleData.steering.speedFast, 
 		vehicleData.steering.steeringRestRateSlow, vehicleData.steering.steeringRestRateFast );
-	m_controls.steering = Approach(0, m_controls.steering, flSteeringRate * gpGlobals->frametime );
+	m_controls.steering = Approach(0, m_controls.steering, flSteeringRate * gpGlobals->GetFrameTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -1012,7 +1012,7 @@ void CFourWheelVehiclePhysics::SteeringTurn( float carSpeed, const vehicleparams
 	{
 		flSteeringRate *= vehicleData.steering.brakeSteeringRateFactor;
 	}
-	flSteeringRate *= gpGlobals->frametime;
+	flSteeringRate *= gpGlobals->GetFrameTime();
 	m_controls.steering = Approach( flTargetSteering, m_controls.steering, flSteeringRate );
 	m_controls.bAnalogSteering = false;
 }
@@ -1031,7 +1031,7 @@ void CFourWheelVehiclePhysics::SteeringTurnAnalog( float carSpeed, const vehicle
 
 	factor *= 30;
 	flSteeringRate *= log( factor );
-	flSteeringRate *= gpGlobals->frametime;
+	flSteeringRate *= gpGlobals->GetFrameTime();
 
 	SetSteering( sidemove < 0.0f ? -1 : 1, flSteeringRate );
 #else
@@ -1046,7 +1046,7 @@ void CFourWheelVehiclePhysics::SteeringTurnAnalog( float carSpeed, const vehicle
 	flSteeringRate *= vehicleData.steering.throttleSteeringRestRateFactor;
 
 	m_controls.bAnalogSteering = true;
-	SetSteering( flSign * flSteerAdj, flSteeringRate * gpGlobals->frametime );
+	SetSteering( flSign * flSteerAdj, flSteeringRate * gpGlobals->GetFrameTime() );
 #endif
 }
 
@@ -1377,13 +1377,13 @@ void CFourWheelVehiclePhysics::UpdateDriverControls( CUserCmd *cmd, float flFram
 	// throttle down now but not before??? (or we're braking)
 	if ( !m_controls.handbrake && !m_controls.brakepedal && bThrottle && !m_bLastThrottle )
 	{
-		m_throttleStartTime = gpGlobals->curtime;		// need to track how long throttle is down
+		m_throttleStartTime = gpGlobals->GetCurTime();		// need to track how long throttle is down
 		m_bLastThrottle = true;
 	}
 	// throttle up now but not before??
 	else if ( !bThrottle && m_bLastThrottle && IsEngineDisabled() == false )
 	{
-		m_throttleActiveTime = gpGlobals->curtime - m_throttleStartTime;
+		m_throttleActiveTime = gpGlobals->GetCurTime() - m_throttleStartTime;
 		m_bLastThrottle = false;
 	}
 

@@ -449,7 +449,7 @@ void CAI_Path::SetGoalType(GoalType_t goalType)
 
 	if (m_goalType != GOALTYPE_NONE)
 	{
-		m_routeStartTime = gpGlobals->curtime;
+		m_routeStartTime = gpGlobals->GetCurTime();
 		m_bGoalTypeSet	= true;
 	}
 	else

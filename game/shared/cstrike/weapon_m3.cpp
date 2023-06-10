@@ -114,7 +114,7 @@ void CWeaponM3::PrimaryAttack()
 	if (pPlayer->GetWaterLevel() == 3)
 	{
 		PlayEmptySound( );
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.15;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.15;
 		return;
 	}
 
@@ -125,7 +125,7 @@ void CWeaponM3::PrimaryAttack()
 		if ( m_iClip1 == 0 )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.2;
 		}
 
 		return;
@@ -159,12 +159,12 @@ void CWeaponM3::PrimaryAttack()
 	}
 
 	if (m_iClip1 != 0)
-		m_flPumpTime = gpGlobals->curtime + 0.5;
+		m_flPumpTime = gpGlobals->GetCurTime() + 0.5;
 
 	if (m_iClip1 != 0)
-		SetWeaponIdleTime( gpGlobals->curtime + 2.5 );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 2.5 );
 	else
-		SetWeaponIdleTime( gpGlobals->curtime + 0.875 );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 0.875 );
 	m_reloadState = 0;
 
 	// update accuracy
@@ -196,7 +196,7 @@ bool CWeaponM3::Reload()
 		return true;
 
 	// don't reload until recoil is done
-	if (m_flNextPrimaryAttack > gpGlobals->curtime)
+	if (m_flNextPrimaryAttack > gpGlobals->GetCurTime())
 		return true;
 		
 	// check to see if we're ready to reload
@@ -206,10 +206,10 @@ bool CWeaponM3::Reload()
 
 		SendWeaponAnim( ACT_SHOTGUN_RELOAD_START );
 		m_reloadState = 1;
-		pPlayer->m_flNextAttack = gpGlobals->curtime + 0.5;
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.5;
-		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5;
-		SetWeaponIdleTime( gpGlobals->curtime + 0.5 );
+		pPlayer->m_flNextAttack = gpGlobals->GetCurTime() + 0.5;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5;
+		m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.5;
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 0.5 );
 
 #ifdef GAME_DLL
 		pPlayer->DoAnimationEvent( PLAYERANIMEVENT_RELOAD_START );
@@ -219,13 +219,13 @@ bool CWeaponM3::Reload()
 	}
 	else if (m_reloadState == 1)
 	{
-		if (m_flTimeWeaponIdle > gpGlobals->curtime)
+		if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 			return true;
 		// was waiting for gun to move to side
 		m_reloadState = 2;
 
 		SendWeaponAnim( ACT_VM_RELOAD );
-		SetWeaponIdleTime( gpGlobals->curtime + 0.5 );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 0.5 );
 #ifdef GAME_DLL
 		if ( m_iClip1 == 7 )
 		{
@@ -264,13 +264,13 @@ void CWeaponM3::WeaponIdle()
 	if ( !pPlayer )
 		return;
 
-	if (m_flPumpTime && m_flPumpTime < gpGlobals->curtime)
+	if (m_flPumpTime && m_flPumpTime < gpGlobals->GetCurTime())
 	{
 		// play pumping sound
 		m_flPumpTime = 0;
 	}
 
-	if (m_flTimeWeaponIdle < gpGlobals->curtime)
+	if (m_flTimeWeaponIdle < gpGlobals->GetCurTime())
 	{
 		if (m_iClip1 == 0 && m_reloadState == 0 && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ))
 		{
@@ -290,7 +290,7 @@ void CWeaponM3::WeaponIdle()
 				
 				// play cocking sound
 				m_reloadState = 0;
-				SetWeaponIdleTime( gpGlobals->curtime + 1.5 );
+				SetWeaponIdleTime( gpGlobals->GetCurTime() + 1.5 );
 			}
 		}
 		else

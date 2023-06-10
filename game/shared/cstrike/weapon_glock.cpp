@@ -96,7 +96,7 @@ const float kGlockBurstCycleTime = 0.06f;
 CWeaponGlock::CWeaponGlock()
 {
 	m_bBurstMode = false;
-	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 	m_iBurstShotsRemaining = 0;
 	m_fNextBurstShot = 0.0f;
 }
@@ -140,7 +140,7 @@ void CWeaponGlock::SecondaryAttack()
 		m_weaponMode = Secondary_Mode;
 	}
 	
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.3;
 }
 
 float CWeaponGlock::GetInaccuracy() const
@@ -194,14 +194,14 @@ void CWeaponGlock::PrimaryAttack()
 	float flCycleTime = m_bBurstMode ? 0.5f : GetCSWpnData().m_flCycleTime;
 
 	// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-	m_flAccuracy -= (0.275)*(0.325 - (gpGlobals->curtime - m_flLastFire));
+	m_flAccuracy -= (0.275)*(0.325 - (gpGlobals->GetCurTime() - m_flLastFire));
 
 	if (m_flAccuracy > 0.9)
 		m_flAccuracy = 0.9;
 	else if (m_flAccuracy < 0.6)
 		m_flAccuracy = 0.6;
 
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals->GetCurTime();
 
 	if (m_iClip1 <= 0)
 	{
@@ -209,7 +209,7 @@ void CWeaponGlock::PrimaryAttack()
 
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.1f;
 			m_bFireOnEmpty = false;
 		}
 
@@ -240,9 +240,9 @@ void CWeaponGlock::PrimaryAttack()
 		CBaseEntity::GetPredictionRandomSeed() & 255, // wrap it for network traffic so it's the same between client and server
 		GetInaccuracy(),
 		GetSpread(),
-		gpGlobals->curtime);
+		gpGlobals->GetCurTime());
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + flCycleTime;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->GetCurTime() + flCycleTime;
 
 	if (!m_iClip1 && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) <= 0)
 	{
@@ -250,12 +250,12 @@ void CWeaponGlock::PrimaryAttack()
 		pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 	}
 
-	SetWeaponIdleTime( gpGlobals->curtime + 2.5f );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 2.5f );
 
 	if ( m_bBurstMode )
 	{
 		// Fire off the next two rounds
-		m_fNextBurstShot = gpGlobals->curtime + kGlockBurstCycleTime;
+		m_fNextBurstShot = gpGlobals->GetCurTime() + kGlockBurstCycleTime;
 		m_iBurstShotsRemaining = 2;
 
 		SendWeaponAnim( ACT_VM_SECONDARYATTACK );
@@ -326,7 +326,7 @@ void CWeaponGlock::FireRemaining( float fSpread )
 
 void CWeaponGlock::ItemPostFrame()
 {
-	while ( m_iBurstShotsRemaining > 0 && gpGlobals->curtime >= m_fNextBurstShot )
+	while ( m_iBurstShotsRemaining > 0 && gpGlobals->GetCurTime() >= m_fNextBurstShot )
 	{
 		if ( weapon_accuracy_model.GetInt() == 1 )
 			FireRemaining(0.05f);
@@ -356,12 +356,12 @@ void CWeaponGlock::WeaponIdle()
 	if ( !pPlayer )
 		return;
 
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 	if ( pPlayer->HasShield() )
 	{
-		SetWeaponIdleTime( gpGlobals->curtime + 20 );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 20 );
 				
 		//MIKETODO: shields
 		//if ( FBitSet(m_iWeaponState, WPNSTATE_SHIELD_DRAWN) )

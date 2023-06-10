@@ -109,7 +109,7 @@ void CEnvMicrophone::Spawn(void)
 
 	if (!m_bDisabled)
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 
@@ -201,7 +201,7 @@ void CEnvMicrophone::InputEnable( inputdata_t &inputdata )
 	if (m_bDisabled)
 	{
 		m_bDisabled = false;
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 		ActivateSpeaker();
 	}
@@ -305,7 +305,7 @@ bool CEnvMicrophone::CanHearSound( int entindex, soundlevel_t soundlevel, float 
 	CBaseEntity *pEntity = NULL;
 	if ( entindex )
 	{
-		pEntity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex(entindex) );
+		pEntity = CBaseEntity::Instance(INDEXENT(entindex) );
 	}
 			    
 	// Cull out sounds except from specific entities
@@ -429,7 +429,7 @@ void CEnvMicrophone::Think(void)
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------

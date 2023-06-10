@@ -677,7 +677,7 @@ void CTriggerHurt::Spawn( void )
 	if (m_bitsDamageInflict & DMG_RADIATION)
 	{
 		SetThink ( &CTriggerHurt::RadiationThink );
-		SetNextThink( gpGlobals->curtime + random->RandomFloat(0.0, 0.5) );
+		SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat(0.0, 0.5) );
 	}
 }
 
@@ -703,13 +703,13 @@ void CTriggerHurt::RadiationThink( void )
 		pPlayer->NotifyNearbyRadiationSource(flRange);
 	}
 
-	float dt = gpGlobals->curtime - m_flLastDmgTime;
+	float dt = gpGlobals->GetCurTime() - m_flLastDmgTime;
 	if ( dt >= 0.5 )
 	{
 		HurtAllTouchers( dt );
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.25 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.25 );
 }
 
 
@@ -771,7 +771,7 @@ void CTriggerHurt::HurtThink()
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 	}
 }
 
@@ -804,7 +804,7 @@ int CTriggerHurt::HurtAllTouchers( float dt )
 	int hurtCount = 0;
 	// half second worth of damage
 	float fldmg = m_flDamage * dt;
-	m_flLastDmgTime = gpGlobals->curtime;
+	m_flLastDmgTime = gpGlobals->GetCurTime();
 
 	m_hurtEntities.RemoveAll();
 
@@ -828,7 +828,7 @@ int CTriggerHurt::HurtAllTouchers( float dt )
 	{
 		if( hurtCount == 0 )
 		{
-			if( gpGlobals->curtime > m_flDmgResetTime  )
+			if( gpGlobals->GetCurTime() > m_flDmgResetTime  )
 			{
 				// Didn't hurt anyone. Reset the damage if it's time. (hence, the forgiveness)
 				m_flDamage = m_flOriginalDamage;
@@ -850,7 +850,7 @@ int CTriggerHurt::HurtAllTouchers( float dt )
 			// set by the level designer. This is a stop-gap for an exploit where players could hop through
 			// slime and barely take any damage because the trigger would reset damage anytime there was no
 			// one in the trigger when this function was called. (sjb)
-			m_flDmgResetTime = gpGlobals->curtime + TRIGGER_HURT_FORGIVE_TIME;
+			m_flDmgResetTime = gpGlobals->GetCurTime() + TRIGGER_HURT_FORGIVE_TIME;
 		}
 	}
 
@@ -862,7 +862,7 @@ void CTriggerHurt::Touch( CBaseEntity *pOther )
 	if ( m_pfnThink == NULL )
 	{
 		SetThink( &CTriggerHurt::HurtThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -924,7 +924,7 @@ void CTriggerMultiple::MultiTouch(CBaseEntity *pOther)
 //-----------------------------------------------------------------------------
 void CTriggerMultiple::ActivateMultiTrigger(CBaseEntity *pActivator)
 {
-	if (GetNextThink() > gpGlobals->curtime)
+	if (GetNextThink() > gpGlobals->GetCurTime())
 		return;         // still waiting for reset time
 
 	m_hActivator = pActivator;
@@ -934,14 +934,14 @@ void CTriggerMultiple::ActivateMultiTrigger(CBaseEntity *pActivator)
 	if (m_flWait > 0)
 	{
 		SetThink( &CTriggerMultiple::MultiWaitOver );
-		SetNextThink( gpGlobals->curtime + m_flWait );
+		SetNextThink( gpGlobals->GetCurTime() + m_flWait );
 	}
 	else
 	{
 		// we can't just remove (self) here, because this is a touch function
 		// called while C code is looping through area links...
 		SetTouch( NULL );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		SetThink(  &CTriggerMultiple::SUB_Remove );
 	}
 }
@@ -1062,7 +1062,7 @@ void CTriggerLook::StartTouch(CBaseEntity *pOther)
 		m_bTimeoutFired = false;
 		m_hActivator = pOther;
 		SetThink(&CTriggerLook::TimeoutThink);
-		SetNextThink(gpGlobals->curtime + m_flTimeoutDuration);
+		SetNextThink(gpGlobals->GetCurTime() + m_flTimeoutDuration);
 	}
 }
 
@@ -1151,13 +1151,13 @@ void CTriggerLook::Touch(CBaseEntity *pOther)
 			// Is it the first time I'm looking?
 			if (m_flLookTimeTotal == -1)
 			{
-				m_flLookTimeLast	= gpGlobals->curtime;
+				m_flLookTimeLast	= gpGlobals->GetCurTime();
 				m_flLookTimeTotal	= 0;
 			}
 			else
 			{
-				m_flLookTimeTotal	+= gpGlobals->curtime - m_flLookTimeLast;
-				m_flLookTimeLast	=  gpGlobals->curtime;
+				m_flLookTimeTotal	+= gpGlobals->GetCurTime() - m_flLookTimeLast;
+				m_flLookTimeLast	=  gpGlobals->GetCurTime();
 			}
 
 			if (m_flLookTimeTotal >= m_flLookTime)
@@ -1200,7 +1200,7 @@ void CTriggerLook::Trigger(CBaseEntity *pActivator, bool bTimeout)
 	if (HasSpawnFlags(SF_TRIGGERLOOK_FIREONCE))
 	{
 		SetThink(&CTriggerLook::SUB_Remove);
-		SetNextThink(gpGlobals->curtime);
+		SetNextThink(gpGlobals->GetCurTime());
 	}
 }
 
@@ -1467,7 +1467,7 @@ CBaseEntity *CChangeLevel::FindLandmark( const char *pLandmarkName )
 void CChangeLevel::InputChangeLevel( inputdata_t &inputdata )
 {
 	// Ignore changelevel transitions if the player's dead or attempting a challenge
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 		if ( pPlayer && ( !pPlayer->IsAlive() || pPlayer->GetBonusChallenge() > 0 ) )
@@ -2093,10 +2093,10 @@ int CChangeLevel::ChangeList( levellist_t *pLevelList, int maxList )
 	// Find all of the possible level changes on this BSP
 	int count = BuildChangeLevelList( pLevelList, maxList );
 
-	if ( !gpGlobals->pSaveData || ( static_cast<CSaveRestoreData *>(gpGlobals->pSaveData)->NumEntities() == 0 ) )
+	if ( !gpGlobals->GetSaveData() || (static_cast<CSaveRestoreData*>(gpGlobals->GetSaveData())->NumEntities() == 0))
 		return count;
 
-	CSave saveHelper( static_cast<CSaveRestoreData *>(gpGlobals->pSaveData) );
+	CSave saveHelper( static_cast<CSaveRestoreData *>(gpGlobals->GetSaveData()) );
 
 	// For each level change, find nearby entities and save them
 	int	i;
@@ -2247,7 +2247,7 @@ void CTriggerPush::Touch( CBaseEntity *pOther )
 			if ( pPhys )
 			{
 				// UNDONE: Assume the velocity is for a 100kg object, scale with mass
-				pPhys->ApplyForceCenter( m_flPushSpeed * vecAbsDir * 100.0f * gpGlobals->frametime );
+				pPhys->ApplyForceCenter( m_flPushSpeed * vecAbsDir * 100.0f * gpGlobals->GetFrameTime() );
 				return;
 			}
 		}
@@ -2541,12 +2541,12 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
 
 	if ( m_fDangerousTimer != 0.0f )
 	{
-		if ( g_ServerGameDLL.m_fAutoSaveDangerousTime != 0.0f && g_ServerGameDLL.m_fAutoSaveDangerousTime >= gpGlobals->curtime )
+		if ( g_ServerGameDLL.m_fAutoSaveDangerousTime != 0.0f && g_ServerGameDLL.m_fAutoSaveDangerousTime >= gpGlobals->GetCurTime() )
 		{
 			// A previous dangerous auto save was waiting to become safe
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
 
-			if ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime )
+			if ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->GetCurTime() )
 			{
 				// The player isn't dead, so make the dangerous auto save safe
 				engineServer->ServerCommand( "autosavedangerousissafe\n" );
@@ -2569,7 +2569,7 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
 		if (pPlayer && pPlayer->GetHealth() >= m_minHitPoints)
 		{
 			engineServer->ServerCommand( "autosavedangerous\n" );
-			g_ServerGameDLL.m_fAutoSaveDangerousTime = gpGlobals->curtime + m_fDangerousTimer;
+			g_ServerGameDLL.m_fAutoSaveDangerousTime = gpGlobals->GetCurTime() + m_fDangerousTimer;
 		}
 	}
 	else
@@ -3026,7 +3026,7 @@ void CTriggerCamera::Enable( void )
 		m_hPlayer->AddSolidFlags( FSOLID_NOT_SOLID );
 	}
 	
-	m_flReturnTime = gpGlobals->curtime + m_flWait;
+	m_flReturnTime = gpGlobals->GetCurTime() + m_flWait;
 	m_flSpeed = m_initialSpeed;
 	m_targetSpeed = m_initialSpeed;
 
@@ -3080,7 +3080,7 @@ void CTriggerCamera::Enable( void )
 		m_pPath = NULL;
 	}
 
-	m_flStopTime = gpGlobals->curtime;
+	m_flStopTime = gpGlobals->GetCurTime();
 	if ( m_pPath )
 	{
 		if ( m_pPath->m_flSpeed != 0 )
@@ -3098,7 +3098,7 @@ void CTriggerCamera::Enable( void )
 		// initialize the values we'll spline between
 		m_vStartPos = m_hPlayer->EyePosition();
 		m_vEndPos = GetAbsOrigin();
-		m_flInterpStartTime = gpGlobals->curtime;
+		m_flInterpStartTime = gpGlobals->GetCurTime();
 		UTIL_SetOrigin( this, m_hPlayer->EyePosition() );
 		SetLocalAngles( QAngle( m_hPlayer->GetLocalAngles().x, m_hPlayer->GetLocalAngles().y, 0 ) );
 
@@ -3131,7 +3131,7 @@ void CTriggerCamera::Enable( void )
 	{
 		// follow the player down
 		SetThink( &CTriggerCamera::FollowTarget );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 
 	m_moveDistance = 0;
@@ -3165,7 +3165,7 @@ void CTriggerCamera::Disable( void )
 	}
 
 	m_state = USE_OFF;
-	m_flReturnTime = gpGlobals->curtime;
+	m_flReturnTime = gpGlobals->GetCurTime();
 	SetThink( NULL );
 
 	m_OnEndFollow.FireOutput(this, this); // dvsents2: what is the best name for this output?
@@ -3208,7 +3208,7 @@ void CTriggerCamera::FollowTarget( )
 		return;
 	}
 
-	if ( !HasSpawnFlags(SF_CAMERA_PLAYER_INFINITE_WAIT) && (!m_hTarget || m_flReturnTime < gpGlobals->curtime) )
+	if ( !HasSpawnFlags(SF_CAMERA_PLAYER_INFINITE_WAIT) && (!m_hTarget || m_flReturnTime < gpGlobals->GetCurTime()) )
 	{
 		Disable();
 		return;
@@ -3267,7 +3267,7 @@ void CTriggerCamera::FollowTarget( )
 			dy = dy - 360;
 
 		QAngle vecAngVel;
-		vecAngVel.Init( dx * 40 * gpGlobals->frametime, dy * 40 * gpGlobals->frametime, GetLocalAngularVelocity().z );
+		vecAngVel.Init( dx * 40 * gpGlobals->GetFrameTime(), dy * 40 * gpGlobals->GetFrameTime(), GetLocalAngularVelocity().z );
 		SetLocalAngularVelocity(vecAngVel);
 	}
 
@@ -3280,7 +3280,7 @@ void CTriggerCamera::FollowTarget( )
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	Move();
 }
@@ -3319,7 +3319,7 @@ void CTriggerCamera::Move()
 #endif
 	{
 		// Subtract movement from the previous frame
-		m_moveDistance -= m_flSpeed * gpGlobals->frametime;
+		m_moveDistance -= m_flSpeed * gpGlobals->GetFrameTime();
 
 		// Have we moved enough to reach the target?
 		if ( m_moveDistance <= 0 )
@@ -3341,23 +3341,23 @@ void CTriggerCamera::Move()
 
 				m_vecMoveDir = m_pPath->GetLocalOrigin() - GetLocalOrigin();
 				m_moveDistance = VectorNormalize( m_vecMoveDir );
-				m_flStopTime = gpGlobals->curtime + m_pPath->GetDelay();
+				m_flStopTime = gpGlobals->GetCurTime() + m_pPath->GetDelay();
 			}
 		}
 
-		if ( m_flStopTime > gpGlobals->curtime )
-			m_flSpeed = UTIL_Approach( 0, m_flSpeed, m_deceleration * gpGlobals->frametime );
+		if ( m_flStopTime > gpGlobals->GetCurTime() )
+			m_flSpeed = UTIL_Approach( 0, m_flSpeed, m_deceleration * gpGlobals->GetFrameTime() );
 		else
-			m_flSpeed = UTIL_Approach( m_targetSpeed, m_flSpeed, m_acceleration * gpGlobals->frametime );
+			m_flSpeed = UTIL_Approach( m_targetSpeed, m_flSpeed, m_acceleration * gpGlobals->GetFrameTime() );
 
-		float fraction = 2 * gpGlobals->frametime;
+		float fraction = 2 * gpGlobals->GetFrameTime();
 		SetAbsVelocity( ((m_vecMoveDir * m_flSpeed) * fraction) + (GetAbsVelocity() * (1-fraction)) );
 	}
 #if HL2_EPISODIC
 	else if (m_bInterpolatePosition)
 	{
 		// get the interpolation parameter [0..1]
-		float tt = (gpGlobals->curtime - m_flInterpStartTime) / kflPosInterpTime;
+		float tt = (gpGlobals->GetCurTime() - m_flInterpStartTime) / kflPosInterpTime;
 		if (tt >= 1.0f)
 		{
 			// we're there, we're done
@@ -3372,7 +3372,7 @@ void CTriggerCamera::Move()
 
 			Vector nextPos = ( (m_vEndPos - m_vStartPos) * SimpleSpline(tt) ) + m_vStartPos;
 			// rather than stomping origin, set the velocity so that we get there in the proper time
-			Vector desiredVel = (nextPos - GetAbsOrigin()) * (1.0f / gpGlobals->frametime);
+			Vector desiredVel = (nextPos - GetAbsOrigin()) * (1.0f / gpGlobals->GetFrameTime());
 			SetAbsVelocity( desiredVel );
 		}
 	}
@@ -3439,9 +3439,9 @@ static void PlayCDTrack( int iTrack )
 	edict_t *pClient;
 	
 	// manually find the single player. 
-	pClient = engineServer->PEntityOfEntIndex( 1 );
+	pClient = INDEXENT( 1 );
 
-	Assert(gpGlobals->maxClients == 1);
+	Assert(gpGlobals->GetMaxClients() == 1);
 	
 	// Can't play if the client is not connected!
 	if ( !pClient )
@@ -3577,7 +3577,7 @@ void CTriggerProximity::StartTouch(CBaseEntity *pOther)
 		m_nTouchers++;	
 
 		SetThink( &CTriggerProximity::MeasureThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -3658,7 +3658,7 @@ void CTriggerProximity::MeasureThink( void )
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -3692,12 +3692,12 @@ public:
 
 		// Turn wind yaw direction into a vector and add noise
 		QAngle vWindAngle = vec3_angle;	
-		vWindAngle[1] = m_nWindYaw+(30*cos(nNoiseMod * gpGlobals->curtime + nNoiseMod));
+		vWindAngle[1] = m_nWindYaw+(30*cos(nNoiseMod * gpGlobals->GetCurTime() + nNoiseMod));
 		Vector vWind;
 		AngleVectors(vWindAngle,&vWind);
 
 		// Add lift with noise
-		vWind.z = 1.1 + (1.0 * sin(nNoiseMod * gpGlobals->curtime + nNoiseMod));
+		vWind.z = 1.1 + (1.0 * sin(nNoiseMod * gpGlobals->GetCurTime() + nNoiseMod));
 
 		linear = 3*vWind*m_flWindSpeed;
 		angular = vec3_origin;
@@ -3804,7 +3804,7 @@ void CTriggerWind::Spawn( void )
 	m_nSpeedCurrent = m_nSpeedBase;
 	m_nDirCurrent = m_nDirBase;
 
-	SetContextThink( &CTriggerWind::WindThink, gpGlobals->curtime, WIND_THINK_CONTEXT );
+	SetContextThink( &CTriggerWind::WindThink, gpGlobals->GetCurTime(), WIND_THINK_CONTEXT );
 }
 
 //-----------------------------------------------------------------------------
@@ -3902,7 +3902,7 @@ void CTriggerWind::EndTouch(CBaseEntity *pOther)
 void CTriggerWind::InputEnable( inputdata_t &inputdata )
 {
 	BaseClass::InputEnable( inputdata );
-	SetContextThink( &CTriggerWind::WindThink, gpGlobals->curtime + 0.1f, WIND_THINK_CONTEXT );
+	SetContextThink( &CTriggerWind::WindThink, gpGlobals->GetCurTime() + 0.1f, WIND_THINK_CONTEXT );
 }
 
 //------------------------------------------------------------------------------
@@ -3911,7 +3911,7 @@ void CTriggerWind::InputEnable( inputdata_t &inputdata )
 void CTriggerWind::WindThink( void )
 {
 	// By default...
-	SetContextThink( &CTriggerWind::WindThink, gpGlobals->curtime + 0.1, WIND_THINK_CONTEXT );
+	SetContextThink( &CTriggerWind::WindThink, gpGlobals->GetCurTime() + 0.1, WIND_THINK_CONTEXT );
 
 	// Is it time to change the wind?
 	if (m_bSwitch)
@@ -4084,7 +4084,7 @@ void CTriggerImpact::InputImpact( inputdata_t &inputdata )
 
 	// Enable long enough to throw objects inside me
 	Enable();
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	SetThink(&CTriggerImpact::Disable);
 }
 
@@ -4539,7 +4539,7 @@ float CTriggerVPhysicsMotion::LinearLimit()
 	if ( m_linearLimitTime == 0.0f )
 		return m_linearLimit;
 
-	float dt = gpGlobals->curtime - m_linearLimitStartTime;
+	float dt = gpGlobals->GetCurTime() - m_linearLimitStartTime;
 	if ( dt >= m_linearLimitTime )
 	{
 		m_linearLimitTime = 0.0;
@@ -4677,7 +4677,7 @@ void CTriggerVPhysicsMotion::EndTouch( CBaseEntity *pOther )
 void CTriggerVPhysicsMotion::InputSetVelocityLimitTime( inputdata_t &inputdata )
 {
 	m_linearLimitStart = LinearLimit();
-	m_linearLimitStartTime = gpGlobals->curtime;
+	m_linearLimitStartTime = gpGlobals->GetCurTime();
 
 	float args[2];
 	UTIL_StringToFloatArray( args, 2, inputdata.value.String() );

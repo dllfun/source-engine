@@ -225,7 +225,7 @@ void CBaseProp::Spawn( void )
 	m_takedamage = DAMAGE_NO;
 	SetNextThink( TICK_NEVER_THINK );
 
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	m_flPlaybackRate = 0.0;
 	SetCycle( 0 );
 }
@@ -893,7 +893,7 @@ void CBreakableProp::Spawn()
 
 	m_iMaxHealth = ( m_iHealth > 0 ) ? m_iHealth : 1;
 
-	m_createTick = gpGlobals->tickcount;
+	m_createTick = gpGlobals->GetTickCount();
 	if ( m_impactEnergyScale == 0 )
 	{
 		m_impactEnergyScale = 0.1f;
@@ -943,9 +943,9 @@ void CBreakableProp::CopyFadeFrom( CBreakableProp *pSource )
 	if ( m_flFadeScale != m_flDefaultFadeScale )
 	{
 		float flNextThink = pSource->GetNextThink( s_pFadeScaleThink );
-		if ( flNextThink < gpGlobals->curtime + TICK_INTERVAL )
+		if ( flNextThink < gpGlobals->GetCurTime() + TICK_INTERVAL )
 		{
-			flNextThink = gpGlobals->curtime + TICK_INTERVAL;
+			flNextThink = gpGlobals->GetCurTime() + TICK_INTERVAL;
 		}
 
 		SetContextThink( &CBreakableProp::RampToDefaultFadeScale, flNextThink, s_pFadeScaleThink );
@@ -1004,7 +1004,7 @@ void CBreakableProp::BreakablePropTouch( CBaseEntity *pOther )
 			//SetTouch( NULL );
 		
 			// Add optional delay 
-			SetNextThink( gpGlobals->curtime + m_flPressureDelay );
+			SetNextThink( gpGlobals->GetCurTime() + m_flPressureDelay );
 		}
 	}
 
@@ -1067,7 +1067,7 @@ int CBreakableProp::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 	// don't take damage on the same frame you were created 
 	// (avoids a set of explosions progressively vaporizing a compound breakable)
-	if ( m_createTick == (unsigned int)gpGlobals->tickcount )
+	if ( m_createTick == (unsigned int)gpGlobals->GetTickCount() )
 	{
 		int saveFlags = m_takedamage;
 		m_takedamage = DAMAGE_EVENTS_ONLY;
@@ -1285,7 +1285,7 @@ bool CBreakableProp::OnAttemptPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunP
 		if ( iSequence != ACTIVITY_NOT_AVAILABLE )
 		{
 			m_nPhysgunState = PHYSGUN_ANIMATE_IS_PRE_ANIMATING;
-			SetContextThink( &CBreakableProp::AnimateThink, gpGlobals->curtime + 0.1, s_pPropAnimateThink );
+			SetContextThink( &CBreakableProp::AnimateThink, gpGlobals->GetCurTime() + 0.1, s_pPropAnimateThink );
 
 			m_OnPhysCannonAnimatePreStarted.FireOutput( NULL,this );
 		}
@@ -1314,7 +1314,7 @@ bool CBreakableProp::OnAttemptPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunP
 		if ( reason == PUNTED_BY_CANNON )
 			return false;
 
-		StudioFrameAdvanceManual( gpGlobals->frametime );
+		StudioFrameAdvanceManual( gpGlobals->GetFrameTime() );
  		DispatchAnimEvents( this );
 
 		if ( IsActivityFinished() )
@@ -1323,7 +1323,7 @@ bool CBreakableProp::OnAttemptPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunP
 			if ( iSequence != ACTIVITY_NOT_AVAILABLE )
 			{
 				m_nPhysgunState = PHYSGUN_ANIMATE_IS_POST_ANIMATING;
-				SetContextThink( &CBreakableProp::AnimateThink, gpGlobals->curtime + 0.1, s_pPropAnimateThink );
+				SetContextThink( &CBreakableProp::AnimateThink, gpGlobals->GetCurTime() + 0.1, s_pPropAnimateThink );
 				ResetSequence( iSequence );
 				SetPlaybackRate( 1.0f );
 				ResetClientsideFrame();
@@ -1340,7 +1340,7 @@ bool CBreakableProp::OnAttemptPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunP
 	else
 	{
 		// Here, we're grabbing it. If we try to punt it, advance frames by quite a bit.
-		StudioFrameAdvanceManual( (reason == PICKED_UP_BY_CANNON) ? gpGlobals->frametime : 0.5f );
+		StudioFrameAdvanceManual( (reason == PICKED_UP_BY_CANNON) ? gpGlobals->GetFrameTime() : 0.5f );
 		ResetClientsideFrame();
 		DispatchAnimEvents( this );
 
@@ -1365,7 +1365,7 @@ void CBreakableProp::AnimateThink( void )
 	{
 		StudioFrameAdvanceManual( 0.1 );
 		DispatchAnimEvents( this );
-		SetNextThink( gpGlobals->curtime + 0.1, s_pPropAnimateThink );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1, s_pPropAnimateThink );
 
 		if ( IsActivityFinished() )
 		{
@@ -1407,7 +1407,7 @@ void CBreakableProp::SetPhysicsAttacker( CBasePlayer *pEntity, float flTime )
 void CBreakableProp::ForceFadeScaleToAlwaysVisible()
 {
 	m_flFadeScale = 0.0f;
-	SetContextThink( NULL, gpGlobals->curtime, s_pFadeScaleThink );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pFadeScaleThink );
 }
 
 
@@ -1417,11 +1417,11 @@ void CBreakableProp::RampToDefaultFadeScale()
 	if ( m_flFadeScale >= m_flDefaultFadeScale )
 	{
 		m_flFadeScale = m_flDefaultFadeScale;
-		SetContextThink( NULL, gpGlobals->curtime, s_pFadeScaleThink );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), s_pFadeScaleThink );
 	}
 	else
 	{
-		SetContextThink( &CBreakableProp::RampToDefaultFadeScale, gpGlobals->curtime + TICK_INTERVAL, s_pFadeScaleThink );
+		SetContextThink( &CBreakableProp::RampToDefaultFadeScale, gpGlobals->GetCurTime() + TICK_INTERVAL, s_pFadeScaleThink );
 	}
 }
 
@@ -1437,7 +1437,7 @@ void CBreakableProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t
 	}
 	else
 	{
-		SetContextThink( &CBreakableProp::RampToDefaultFadeScale, gpGlobals->curtime + 2.0f, s_pFadeScaleThink );
+		SetContextThink( &CBreakableProp::RampToDefaultFadeScale, gpGlobals->GetCurTime() + 2.0f, s_pFadeScaleThink );
 	}
 
 	if( reason == PUNTED_BY_CANNON )
@@ -1457,7 +1457,7 @@ void CBreakableProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t
 		}
 	}
 
-	SetPhysicsAttacker( pPhysGunUser, gpGlobals->curtime );
+	SetPhysicsAttacker( pPhysGunUser, gpGlobals->GetCurTime() );
 
 	// Store original BlockLOS, and disable BlockLOS
 	m_bOriginalBlockLOS = BlocksLOS();
@@ -1497,7 +1497,7 @@ void CBreakableProp::CreateFlare( float flLifetime )
 		m_hFlareEnt = pFlare;
 
 		SetThink( &CBreakable::SUB_FadeOut );
-		SetNextThink( gpGlobals->curtime + flLifetime + 5.0f );
+		SetNextThink( gpGlobals->GetCurTime() + flLifetime + 5.0f );
 
 		m_nSkin = 1;
 
@@ -1513,9 +1513,9 @@ void CBreakableProp::CreateFlare( float flLifetime )
 //-----------------------------------------------------------------------------
 void CBreakableProp::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
-	SetContextThink( &CBreakableProp::RampToDefaultFadeScale, gpGlobals->curtime + 2.0f, s_pFadeScaleThink );
+	SetContextThink( &CBreakableProp::RampToDefaultFadeScale, gpGlobals->GetCurTime() + 2.0f, s_pFadeScaleThink );
 
-	SetPhysicsAttacker( pPhysGunUser, gpGlobals->curtime );
+	SetPhysicsAttacker( pPhysGunUser, gpGlobals->GetCurTime() );
 
 	if( (int)Reason == (int)PUNTED_BY_CANNON )
 	{
@@ -1544,7 +1544,7 @@ AngularImpulse CBreakableProp::PhysGunLaunchAngularImpulse()
 //-----------------------------------------------------------------------------
 CBasePlayer *CBreakableProp::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime)
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -1683,7 +1683,7 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 		// Make the attacker my physics attacker. This helps protect citizens from dying
 		// in the explosion of a physics object that was thrown by the player's physgun
 		// and exploded on impact.
-		if( gpGlobals->curtime - m_flLastPhysicsInfluenceTime <= 2.0f )
+		if( gpGlobals->GetCurTime() - m_flLastPhysicsInfluenceTime <= 2.0f )
 		{
 			pAttacker = m_hPhysicsAttacker;
 		}
@@ -1739,7 +1739,7 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 	}
 
 	// in multiplayer spawn break models as clientside temp ents
-	if ( gpGlobals->maxClients > 1 && breakable_multiplayer.GetBool() )
+	if ( gpGlobals->GetMaxClients() > 1 && breakable_multiplayer.GetBool() )
 	{
 		CPASFilter filter( WorldSpaceCenter() );
 
@@ -1905,8 +1905,8 @@ void CDynamicProp::Spawn( )
 		if ( m_bRandomAnimator )
 		{
 			SetThink( &CDynamicProp::AnimThink );
-			m_flNextRandAnim = gpGlobals->curtime + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
-			SetNextThink( gpGlobals->curtime + m_flNextRandAnim + 0.1 );
+			m_flNextRandAnim = gpGlobals->GetCurTime() + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
+			SetNextThink( gpGlobals->GetCurTime() + m_flNextRandAnim + 0.1 );
 		}
 		else
 		{
@@ -2161,7 +2161,7 @@ void CDynamicProp::AnimThink( void )
 		m_nPendingSequence = -1;
 	}
 
-	if ( m_bRandomAnimator && m_flNextRandAnim < gpGlobals->curtime )
+	if ( m_bRandomAnimator && m_flNextRandAnim < gpGlobals->GetCurTime() )
 	{
 		ResetSequence( SelectWeightedSequence( ACT_IDLE ) );
 		ResetClientsideFrame();
@@ -2169,7 +2169,7 @@ void CDynamicProp::AnimThink( void )
 		// Fire output
 		m_pOutputAnimBegun.FireOutput( NULL,this );
 
-		m_flNextRandAnim = gpGlobals->curtime + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
+		m_flNextRandAnim = gpGlobals->GetCurTime() + random->RandomFloat( m_flMinRandAnimTime, m_flMaxRandAnimTime );
 	}
 
 	if ( ((m_iTransitionDirection > 0 && GetCycle() >= 0.999f) || (m_iTransitionDirection < 0 && GetCycle() <= 0.0f)) && !SequenceLoops() )
@@ -2187,7 +2187,7 @@ void CDynamicProp::AnimThink( void )
 			// If I'm a random animator, think again when it's time to change sequence
 			if ( m_bRandomAnimator )
 			{
-				SetNextThink( gpGlobals->curtime + m_flNextRandAnim + 0.1 );
+				SetNextThink( gpGlobals->GetCurTime() + m_flNextRandAnim + 0.1 );
 			}
 			else 
 			{
@@ -2200,7 +2200,7 @@ void CDynamicProp::AnimThink( void )
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 
 	StudioFrameAdvance();
@@ -2266,9 +2266,9 @@ void CDynamicProp::InputSetPlaybackRate( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CDynamicProp::FinishSetSequence( int nSequence )
 {
-	// Msg("%.2f CDynamicProp::FinishSetSequence( %d )\n", gpGlobals->curtime, nSequence );
+	// Msg("%.2f CDynamicProp::FinishSetSequence( %d )\n", gpGlobals->GetCurTime(), nSequence );
 	SetCycle( 0 );
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	ResetSequence( nSequence );
 	ResetClientsideFrame();
 	RemoveFlag( FL_STATICPROP );
@@ -2284,7 +2284,7 @@ void CDynamicProp::PropSetSequence( int nSequence )
 {
 	m_iGoalSequence = nSequence;
 
-	// Msg("%.2f CDynamicProp::PropSetSequence( %d (%d:%.1f:%.3f)\n", gpGlobals->curtime, nSequence, GetSequence(), GetPlaybackRate(), GetCycle() );
+	// Msg("%.2f CDynamicProp::PropSetSequence( %d (%d:%.1f:%.3f)\n", gpGlobals->GetCurTime(), nSequence, GetSequence(), GetPlaybackRate(), GetCycle() );
 
 	int nNextSequence;
 	float nextCycle;
@@ -2296,8 +2296,8 @@ void CDynamicProp::PropSetSequence( int nSequence )
 	}
 
 	SetThink( &CDynamicProp::AnimThink );
-	if ( GetNextThink() <= gpGlobals->curtime )
-		SetNextThink( gpGlobals->curtime + flInterval );
+	if ( GetNextThink() <= gpGlobals->GetCurTime() )
+		SetNextThink( gpGlobals->GetCurTime() + flInterval );
 }
 
 
@@ -3076,7 +3076,7 @@ void CPhysicsProp::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 
 		// Setup the think function to remove the flags
 		RegisterThinkContext( "PROP_CLEARFLAGS" );
-		SetContextThink( &CPhysicsProp::ClearFlagsThink, gpGlobals->curtime, "PROP_CLEARFLAGS" );
+		SetContextThink( &CPhysicsProp::ClearFlagsThink, gpGlobals->GetCurTime(), "PROP_CLEARFLAGS" );
 	}
 }
 
@@ -5771,7 +5771,7 @@ void CPhysicsPropRespawnable::Event_Killed( const CTakeDamageInfo &info )
 	SetContextThink( NULL, 0, "PROP_CLEARFLAGS" );
 
 	SetThink( &CPhysicsPropRespawnable::Materialize );
-	SetNextThink( gpGlobals->curtime + m_flRespawnTime );
+	SetNextThink( gpGlobals->GetCurTime() + m_flRespawnTime );
 }
 
 void CPhysicsPropRespawnable::Materialize( void )
@@ -5782,7 +5782,7 @@ void CPhysicsPropRespawnable::Materialize( void )
 	if ( tr.startsolid || tr.allsolid )
 	{
 		//Try again in a second.
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 		return;
 	}
 

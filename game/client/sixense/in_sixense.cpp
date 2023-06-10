@@ -928,7 +928,7 @@ void SixenseInput::FireGameEvent( IGameEvent *pEvent )
 			newAngle.Init( x, y, z );
 			ResetView( newAngle );
 
-			m_fTeleportWaitToBlendTime = gpGlobals->curtime + sixense_teleport_wait_to_blend_time.GetFloat();
+			m_fTeleportWaitToBlendTime = gpGlobals->GetCurTime() + sixense_teleport_wait_to_blend_time.GetFloat();
 		}
 	}
 
@@ -1696,7 +1696,7 @@ bool SixenseInput::SixenseFrame( float flFrametime, CUserCmd *pCmd )
 
 	m_pFPSViewAngles->setParameter( sixenseUtils::IFPSViewAngles::AIM_METROID_MAX_SPEED, freeAimSpinSpeed );//sixense_aim_freeaim_max_speed.GetFloat() );
 
-	if ( m_fTeleportWaitToBlendTime - gpGlobals->curtime <= 0.0f )
+	if ( m_fTeleportWaitToBlendTime - gpGlobals->GetCurTime() <= 0.0f )
 	{
 		// teleport delay complete, blend in the view
 		if ( m_fTeleportWaitToBlendTime > 0.0f )
@@ -2985,10 +2985,10 @@ void SixenseInput::SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd )
 				{
 					m_pFPSViewAngles->setRatcheting( false );
 					m_bIs1to1ModeRatcheting = false;
-					fEndOneToOneRatchetDelayTime = gpGlobals->curtime;
+					fEndOneToOneRatchetDelayTime = gpGlobals->GetCurTime();
 				}
 				else if ( ( fEndOneToOneRatchetDelayTime == 0.0f ) ||
-					( ( gpGlobals->curtime - fEndOneToOneRatchetDelayTime ) > sixense_dist_one_to_one_end_ratchet_delay.GetFloat() ) )
+					( ( gpGlobals->GetCurTime() - fEndOneToOneRatchetDelayTime ) > sixense_dist_one_to_one_end_ratchet_delay.GetFloat() ) )
 				{
 					SetOneToOneMode( false );
 					fEndOneToOneRatchetDelayTime = 0.0f;

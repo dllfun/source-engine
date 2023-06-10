@@ -132,7 +132,7 @@ void CKnife::Holster( int skiplocal )
 {
 	if ( GetPlayerOwner() )
 	{
-		GetPlayerOwner()->m_flNextAttack = gpGlobals->curtime + 0.5;
+		GetPlayerOwner()->m_flNextAttack = gpGlobals->GetCurTime() + 0.5;
 	}
 }
 
@@ -286,7 +286,7 @@ void CKnife::Smack( void )
 
 void CKnife::WeaponIdle()
 {
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 	CCSPlayer *pPlayer = GetPlayerOwner();
@@ -296,7 +296,7 @@ void CKnife::WeaponIdle()
 	if ( pPlayer->IsShieldDrawn() )
 		 return;
 
-	SetWeaponIdleTime( gpGlobals->curtime + 20 );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 20 );
 
 	// only idle if the slid isn't back
 	SendWeaponAnim( ACT_VM_IDLE );
@@ -353,7 +353,7 @@ bool CKnife::SwingOrStab( bool bStab )
 	bool bDidHit = tr.fraction < 1.0f;
 
 #ifndef CLIENT_DLL
-	bool bFirstSwing = (m_flNextPrimaryAttack + 0.4) < gpGlobals->curtime;
+	bool bFirstSwing = (m_flNextPrimaryAttack + 0.4) < gpGlobals->GetCurTime();
 #endif
 
 	float fPrimDelay, fSecDelay;
@@ -382,9 +382,9 @@ bool CKnife::SwingOrStab( bool bStab )
 		fSecDelay += 0.7f;
 	}
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + fPrimDelay;
-	m_flNextSecondaryAttack = gpGlobals->curtime + fSecDelay;
-	SetWeaponIdleTime( gpGlobals->curtime + 2 );
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + fPrimDelay;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + fSecDelay;
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 2 );
 	
 	if ( !bDidHit )
 	{
@@ -477,7 +477,7 @@ bool CKnife::SwingOrStab( bool bStab )
 
 		m_bStab = bStab;	//store this so we know what hit sound to play
 
-		m_flSmackTime = gpGlobals->curtime + (bStab?0.2f:0.1f);
+		m_flSmackTime = gpGlobals->GetCurTime() + (bStab?0.2f:0.1f);
 	}
 
 	return bDidHit;
@@ -485,7 +485,7 @@ bool CKnife::SwingOrStab( bool bStab )
 
 void CKnife::ItemPostFrame( void )
 {
-	if( m_flSmackTime > 0 && gpGlobals->curtime > m_flSmackTime )
+	if( m_flSmackTime > 0 && gpGlobals->GetCurTime() > m_flSmackTime )
 	{
 		Smack();
 		m_flSmackTime = -1;

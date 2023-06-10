@@ -313,7 +313,7 @@ void ResetGlobalState( void )
 
 void ShowServerGameTime()
 {
-	Msg( "Server game time: %f\n", gpGlobals->curtime );
+	Msg( "Server game time: %f\n", gpGlobals->GetCurTime() );
 }
 
 CON_COMMAND(server_game_time, "Gives the game time in seconds (server's curtime)")

@@ -31,13 +31,13 @@ C_PlantedC4::C_PlantedC4()
 {
 	g_PlantedC4s.AddToTail( this );
 
-	m_flNextRadarFlashTime = gpGlobals->curtime;
+	m_flNextRadarFlashTime = gpGlobals->GetCurTime();
 	m_bRadarFlash = true;
 	m_pC4Explosion = NULL;
 
 	// Don't beep right away, leave time for the planting sound
-	m_flNextGlow = gpGlobals->curtime + 1.0;
-	m_flNextBeep = gpGlobals->curtime + 1.0;
+	m_flNextGlow = gpGlobals->GetCurTime() + 1.0;
+	m_flNextBeep = gpGlobals->GetCurTime() + 1.0;
 }
 
 
@@ -97,7 +97,7 @@ void C_PlantedC4::ClientThink( void )
 		return;
 	}
 
-	if( gpGlobals->curtime > m_flNextBeep )
+	if( gpGlobals->GetCurTime() > m_flNextBeep )
 	{
 		// as it gets closer to going off, increase the radius
 
@@ -106,7 +106,7 @@ void C_PlantedC4::ClientThink( void )
 		float freq;
 
 		//the percent complete of the bomb timer
-		float fComplete = ( ( m_flC4Blow - gpGlobals->curtime ) / m_flTimerLength );
+		float fComplete = ( ( m_flC4Blow - gpGlobals->GetCurTime() ) / m_flTimerLength );
 		
 		fComplete = clamp( fComplete, 0.0f, 1.0f );
 
@@ -125,10 +125,10 @@ void C_PlantedC4::ClientThink( void )
 
 		freq = MAX( 0.1 + 0.9 * fComplete, 0.15 );
 
-		m_flNextBeep = gpGlobals->curtime + freq;
+		m_flNextBeep = gpGlobals->GetCurTime() + freq;
 	}
 
-	if( gpGlobals->curtime > m_flNextGlow )
+	if( gpGlobals->GetCurTime() > m_flNextGlow )
 	{
 		int modelindex = engineClient->GetModelIndex( "sprites/ledglow.vmt" );
 
@@ -186,15 +186,15 @@ void C_PlantedC4::ClientThink( void )
 				dl->color.g = 0;
 				dl->color.b = 0;
 				dl->radius = 64;
-				dl->die = gpGlobals->curtime + 0.01;
+				dl->die = gpGlobals->GetCurTime() + 0.01;
 			}
 		}
 
-		float freq = 0.1 + 0.9 * ( ( m_flC4Blow - gpGlobals->curtime ) / m_flTimerLength );
+		float freq = 0.1 + 0.9 * ( ( m_flC4Blow - gpGlobals->GetCurTime() ) / m_flTimerLength );
 
 		if( freq < 0.15 ) freq = 0.15;
 
-		m_flNextGlow = gpGlobals->curtime + freq;
+		m_flNextGlow = gpGlobals->GetCurTime() + freq;
 	}
 }
 

@@ -118,7 +118,7 @@ public:
 				Msg( "Starting benchmark!\n" );
 				m_flLastBenchmarkCounterUpdate = m_flBenchmarkStartTime = Plat_FloatTime();
 				m_fl_ValidTime_BenchmarkStartTime = Benchmark_ValidTime();
-				m_nBenchmarkStartTick = gpGlobals->tickcount;
+				m_nBenchmarkStartTick = gpGlobals->GetTickCount();
 				m_nLastPhysicsObjectTick = m_nLastPhysicsForceTick = 0;
 				m_BenchmarkState = BENCHMARKSTATE_RUNNING;
 
@@ -129,7 +129,7 @@ public:
 			}
 		}
 
-		int nTicksRunSoFar = gpGlobals->tickcount - m_nBenchmarkStartTick;
+		int nTicksRunSoFar = gpGlobals->GetTickCount() - m_nBenchmarkStartTick;
 		UpdateBenchmarkCounter();
 	
 		// Are we finished with the benchmark?
@@ -212,7 +212,7 @@ public:
 			{
 				// Find a bot to spawn it from.
 				CUtlVector<CBasePlayer*> curPlayers;
-				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+				for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 				{
 					CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 					if ( pPlayer && (pPlayer->GetFlags() & FL_FAKECLIENT) )
@@ -288,7 +288,7 @@ public:
 		if ( (flCurTime - m_flLastBenchmarkCounterUpdate) > 3.0f )
 		{
 			m_flLastBenchmarkCounterUpdate = flCurTime;
-			Msg( "Benchmark: %d%% complete.\n", ((gpGlobals->tickcount - m_nBenchmarkStartTick) * 100) / sv_benchmark_numticks.GetInt() );
+			Msg( "Benchmark: %d%% complete.\n", ((gpGlobals->GetTickCount() - m_nBenchmarkStartTick) * 100) / sv_benchmark_numticks.GetInt() );
 		}
 	}
 
@@ -301,12 +301,12 @@ public:
 	{
 		if ( m_BenchmarkState == BENCHMARKSTATE_RUNNING )
 		{
-			Assert( gpGlobals->tickcount >= m_nBenchmarkStartTick );
-			return gpGlobals->tickcount - m_nBenchmarkStartTick;
+			Assert( gpGlobals->GetTickCount() >= m_nBenchmarkStartTick );
+			return gpGlobals->GetTickCount() - m_nBenchmarkStartTick;
 		}
 		else
 		{
-			return gpGlobals->tickcount;
+			return gpGlobals->GetTickCount();
 		}
 	}
 
@@ -317,7 +317,7 @@ public:
 			return;
 
 		// Spawn the player.
-		int nTicksRunSoFar = gpGlobals->tickcount - m_nBenchmarkStartTick;
+		int nTicksRunSoFar = gpGlobals->GetTickCount() - m_nBenchmarkStartTick;
 
 		if ( (nTicksRunSoFar % s_nBenchmarkBotCreateInterval) == 0 )
 		{
@@ -342,7 +342,7 @@ public:
 	{
 		int crc = 0;
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 			if ( pPlayer && (pPlayer->GetFlags() & FL_FAKECLIENT) )

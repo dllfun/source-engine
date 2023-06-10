@@ -701,7 +701,7 @@ void C_BasePlayer::PostDataUpdate( DataUpdateType_t updateType )
 		if ( !m_bWasFreezeFraming && GetObserverMode() == OBS_MODE_FREEZECAM )
 		{
 			m_vecFreezeFrameStart = g_pView->MainViewOrigin();
-			m_flFreezeFrameStartTime = gpGlobals->curtime;
+			m_flFreezeFrameStartTime = gpGlobals->GetCurTime();
 			m_flFreezeFrameDistance = RandomFloat( spec_freeze_distance_min.GetFloat(), spec_freeze_distance_max.GetFloat() );
 			m_flFreezeZOffset = RandomFloat( -30, 20 );
 			m_bSentFreezeFrame = false;
@@ -1170,7 +1170,7 @@ void C_BasePlayer::CreateWaterEffects( void )
 
 	SimpleParticle	*pParticle;
 
-	float curTime = gpGlobals->frametime;
+	float curTime = gpGlobals->GetFrameTime();
 
 	// Add as many particles as we need
 	while ( m_tWaterParticleTimer.NextEvent( curTime ) )
@@ -1347,7 +1347,7 @@ void C_BasePlayer::CalcChaseCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 	// HPE_END
 	//=============================================================================
 
-	m_flObserverChaseDistance += gpGlobals->frametime*48.0f;
+	m_flObserverChaseDistance += gpGlobals->GetFrameTime()*48.0f;
 
 	float flMinDistance = CHASE_CAM_DISTANCE_MIN;
 	float flMaxDistance = CHASE_CAM_DISTANCE_MAX;
@@ -1453,7 +1453,7 @@ void C_BasePlayer::CalcFreezeCamView( Vector& eyeOrigin, QAngle& eyeAngles, floa
 	}
 
 	// Zoom towards our target
-	float flCurTime = (gpGlobals->curtime - m_flFreezeFrameStartTime);
+	float flCurTime = (gpGlobals->GetCurTime() - m_flFreezeFrameStartTime);
 	float flBlendPerc = clamp( flCurTime / spec_freeze_traveltime.GetFloat(), 0.f, 1.f );
 	flBlendPerc = SimpleSpline( flBlendPerc );
 
@@ -1597,10 +1597,10 @@ void C_BasePlayer::CalcDeathCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 		eyeAngles = EyeAngles();
 	}
 
-	float interpolation = ( gpGlobals->curtime - m_flDeathTime ) / GetDeathCamInterpolationTime();
+	float interpolation = ( gpGlobals->GetCurTime() - m_flDeathTime ) / GetDeathCamInterpolationTime();
 	interpolation = clamp( interpolation, 0.0f, 1.0f );
 
-	m_flObserverChaseDistance += gpGlobals->frametime*48.0f;
+	m_flObserverChaseDistance += gpGlobals->GetFrameTime()*48.0f;
 	m_flObserverChaseDistance = clamp( m_flObserverChaseDistance, ( CHASE_CAM_DISTANCE_MIN * 2 ), CHASE_CAM_DISTANCE_MAX );
 
 	QAngle aForward = eyeAngles;
@@ -2130,10 +2130,10 @@ void C_BasePlayer::PhysicsSimulate( void )
 	}
 
 	// Make sure not to simulate this guy twice per frame
-	if (m_nSimulationTick == gpGlobals->tickcount)
+	if (m_nSimulationTick == gpGlobals->GetTickCount())
 		return;
 
-	m_nSimulationTick = gpGlobals->tickcount;
+	m_nSimulationTick = gpGlobals->GetTickCount();
 
 	if ( !IsLocalPlayer() )
 		return;
@@ -2256,14 +2256,14 @@ float C_BasePlayer::GetFOV( void )
 		// See if we need to lerp the values for local player
 		if ( IsLocalPlayer() && ( fFOV != m_iFOVStart ) && (m_Local.m_flFOVRate > 0.0f ) )
 		{
-			float deltaTime = (float)( gpGlobals->curtime - m_flFOVTime ) / m_Local.m_flFOVRate;
+			float deltaTime = (float)( gpGlobals->GetCurTime() - m_flFOVTime ) / m_Local.m_flFOVRate;
 
 #if !defined( NO_ENTITY_PREDICTION )
 			if ( GetPredictable() )
 			{
 				// m_flFOVTime was set to a predicted time in the future, because the FOV change was predicted.
 				deltaTime = (float)( GetFinalPredictedTime() - m_flFOVTime );
-				deltaTime += ( gpGlobals->interpolation_amount * TICK_INTERVAL );
+				deltaTime += ( gpGlobals->GetInterpolationAmount() * TICK_INTERVAL );
 				deltaTime /= m_Local.m_flFOVRate;
 			}
 #endif
@@ -2401,7 +2401,7 @@ void C_BasePlayer::LeaveVehicle( void )
 
 float C_BasePlayer::GetMinFOV()	const
 {
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1)
 	{
 		// Let them do whatever they want, more or less, in single player
 		return 5;
@@ -2432,7 +2432,7 @@ void C_BasePlayer::NotePredictionError( const Vector &vDelta )
 	m_vecPredictionError = vDelta + vOldDelta;
 
 	// remember when last error happened
-	m_flPredictionErrorTime = gpGlobals->curtime;
+	m_flPredictionErrorTime = gpGlobals->GetCurTime();
  
 	ResetLatched(); 
 #endif
@@ -2451,13 +2451,13 @@ void C_BasePlayer::ForceSetupBonesAtTimeFakeInterpolation( matrix3x4_t *pBonesOu
 	// blow the cached prev bones
 	InvalidateBoneCache();
 	// reset root position to flTime
-	Interpolate( gpGlobals->curtime + curtimeOffset );
+	Interpolate( gpGlobals->GetCurTime() + curtimeOffset );
 
 	// force cycle back by boneDt
 	m_flCycle = fmod( 10 + cycle + m_flPlaybackRate * curtimeOffset, 1.0f );
 	SetLocalOrigin( origin + curtimeOffset * GetLocalVelocity() );
 	// Setup bone state to extrapolate physics velocity
-	SetupBones( pBonesOut, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->curtime + curtimeOffset );
+	SetupBones( pBonesOut, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() + curtimeOffset );
 
 	m_flCycle = cycle;
 	SetLocalOrigin( origin );
@@ -2473,13 +2473,13 @@ void C_BasePlayer::GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x
 	ForceSetupBonesAtTimeFakeInterpolation( pDeltaBones0, -boneDt );
 	ForceSetupBonesAtTimeFakeInterpolation( pDeltaBones1, 0 );
 	float ragdollCreateTime = PhysGetSyncCreateTime();
-	if ( ragdollCreateTime != gpGlobals->curtime )
+	if ( ragdollCreateTime != gpGlobals->GetCurTime() )
 	{
-		ForceSetupBonesAtTimeFakeInterpolation( pCurrentBones, ragdollCreateTime - gpGlobals->curtime );
+		ForceSetupBonesAtTimeFakeInterpolation( pCurrentBones, ragdollCreateTime - gpGlobals->GetCurTime() );
 	}
 	else
 	{
-		SetupBones( pCurrentBones, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+		SetupBones( pCurrentBones, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 	}
 }
 
@@ -2493,7 +2493,7 @@ void C_BasePlayer::GetPredictionErrorSmoothingVector( Vector &vOffset )
 		return;
 	}
 
-	float errorAmount = ( gpGlobals->curtime - m_flPredictionErrorTime ) / cl_smoothtime.GetFloat();
+	float errorAmount = ( gpGlobals->GetCurTime() - m_flPredictionErrorTime ) / cl_smoothtime.GetFloat();
 
 	if ( errorAmount >= 1.0f )
 	{
@@ -2559,7 +2559,7 @@ void C_BasePlayer::FogControllerChanged( bool bSnap )
 		m_Local.m_PlayerFog.m_flNewStart = pFogParams->start;
 		m_Local.m_PlayerFog.m_flNewEnd = pFogParams->end;
 
-		m_Local.m_PlayerFog.m_flTransitionTime = bSnap ? -1 : gpGlobals->curtime;
+		m_Local.m_PlayerFog.m_flTransitionTime = bSnap ? -1 : gpGlobals->GetCurTime();
 
 		m_CurrentFog = *pFogParams;
 
@@ -2615,7 +2615,7 @@ void C_BasePlayer::UpdateFogBlend( void )
 	// Transition.
 	if ( m_Local.m_PlayerFog.m_flTransitionTime != -1 )
 	{
-		float flTimeDelta = gpGlobals->curtime - m_Local.m_PlayerFog.m_flTransitionTime;
+		float flTimeDelta = gpGlobals->GetCurTime() - m_Local.m_PlayerFog.m_flTransitionTime;
 		if ( flTimeDelta < m_CurrentFog.duration )
 		{
 			float flScale = flTimeDelta / m_CurrentFog.duration;

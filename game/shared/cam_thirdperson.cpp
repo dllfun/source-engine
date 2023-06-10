@@ -132,7 +132,7 @@ Vector CThirdPersonManager::GetDistanceFraction( void )
 	float flFraction = m_flFraction;
 	float flUpFraction = m_flUpFraction;
 
-	float flFrac = RemapValClamped( gpGlobals->curtime - m_flLerpTime, 0, CAMERA_OFFSET_LERP_TIME, 0, 1 );
+	float flFrac = RemapValClamped( gpGlobals->GetCurTime() - m_flLerpTime, 0, CAMERA_OFFSET_LERP_TIME, 0, 1 );
 
 	flFraction = Lerp( flFrac, m_flFraction, m_flTargetFraction );
 
@@ -141,7 +141,7 @@ Vector CThirdPersonManager::GetDistanceFraction( void )
 		m_flFraction = m_flTargetFraction;
 	}
 
-	flFrac = RemapValClamped( gpGlobals->curtime - m_flUpLerpTime, 0, CAMERA_UP_OFFSET_LERP_TIME, 0, 1 );
+	flFrac = RemapValClamped( gpGlobals->GetCurTime() - m_flUpLerpTime, 0, CAMERA_UP_OFFSET_LERP_TIME, 0, 1 );
 
 	flUpFraction = 1.0f - Lerp( flFrac, m_flUpFraction, m_flTargetUpFraction );
 
@@ -177,7 +177,7 @@ void CThirdPersonManager::PositionCamera( CBasePlayer *pPlayer, QAngle angles )
 		
 		if ( trace.fraction != m_flTargetFraction )
 		{
-			m_flLerpTime = gpGlobals->curtime;
+			m_flLerpTime = gpGlobals->GetCurTime();
 		}
 
 		m_flTargetFraction = trace.fraction;
@@ -187,7 +187,7 @@ void CThirdPersonManager::PositionCamera( CBasePlayer *pPlayer, QAngle angles )
 		if ( m_flTargetFraction < m_flFraction )
 		{
 			m_flFraction = m_flTargetFraction;
-			m_flLerpTime = gpGlobals->curtime;
+			m_flLerpTime = gpGlobals->GetCurTime();
 		}
 	
 
@@ -202,7 +202,7 @@ void CThirdPersonManager::PositionCamera( CBasePlayer *pPlayer, QAngle angles )
 			{
 				if ( trace.fraction != m_flTargetUpFraction )
 				{
-					m_flUpLerpTime = gpGlobals->curtime;
+					m_flUpLerpTime = gpGlobals->GetCurTime();
 				}
 
 				m_flTargetUpFraction = trace.fraction;
@@ -210,7 +210,7 @@ void CThirdPersonManager::PositionCamera( CBasePlayer *pPlayer, QAngle angles )
 				if ( m_flTargetUpFraction < m_flUpFraction )
 				{
 					m_flUpFraction = trace.fraction;
-					m_flUpLerpTime = gpGlobals->curtime;
+					m_flUpLerpTime = gpGlobals->GetCurTime();
 				}
 			}
 		}

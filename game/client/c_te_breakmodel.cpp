@@ -103,7 +103,7 @@ static inline void RecordBreakModel( const Vector &start, const QAngle &angles, 
 
  		msg->SetInt( "te", TE_BREAK_MODEL );
  		msg->SetString( "name", "TE_BreakModel" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

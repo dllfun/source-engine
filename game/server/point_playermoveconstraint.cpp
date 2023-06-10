@@ -82,7 +82,7 @@ void CPointPlayerMoveConstraint::InputTurnOn( inputdata_t &inputdata )
 	// Find all players within our radius and constraint them
 	float flRadius = m_flRadius;
 	// If we're in singleplayer, blow the radius a bunch
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		flRadius = MAX_COORD_RANGE;
 	}
@@ -105,7 +105,7 @@ void CPointPlayerMoveConstraint::InputTurnOn( inputdata_t &inputdata )
 	if ( m_hConstrainedPlayers.Count() )
 	{
 		SetThink( &CPointPlayerMoveConstraint::ConstraintThink );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 
@@ -156,6 +156,6 @@ void CPointPlayerMoveConstraint::ConstraintThink( void )
 	// Only keep thinking if we any left
 	if ( m_hConstrainedPlayers.Count() )
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }

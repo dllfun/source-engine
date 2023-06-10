@@ -89,7 +89,7 @@ void CBaseParticleEntity::SetLifetime(float lifetime)
 	if(lifetime == -1)
 		SetNextThink( TICK_NEVER_THINK );
 	else
-		SetNextThink( gpGlobals->curtime + lifetime );
+		SetNextThink( gpGlobals->GetCurTime() + lifetime );
 }
 
 #if defined( CLIENT_DLL )

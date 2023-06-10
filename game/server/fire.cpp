@@ -126,7 +126,7 @@ public:
 	{
 		if (m_debugOverlays & OVERLAY_BBOX_BIT) 
 		{	
-			if ( m_lastDamage > gpGlobals->curtime && m_flHeatAbsorb > 0 )
+			if ( m_lastDamage > gpGlobals->GetCurTime() && m_flHeatAbsorb > 0 )
 			{
 				NDebugOverlay::EntityBounds(this, 88, 255, 128, 0 ,0);
 				char tempstr[512];
@@ -977,9 +977,9 @@ void CFire::Update( float simTime )
 	// is it time to do damage?
 	bool damage = false;
 	int outputDamage = 0;
-	if ( m_flDamageTime <= gpGlobals->curtime )
+	if ( m_flDamageTime <= gpGlobals->GetCurTime() )
 	{
-		m_flDamageTime = gpGlobals->curtime + fire_dmginterval.GetFloat();
+		m_flDamageTime = gpGlobals->GetCurTime() + fire_dmginterval.GetFloat();
 		outputDamage = (fire_dmgbase.GetFloat() + outputHeat * fire_dmgscale.GetFloat() * m_flDamageScale) * fire_dmginterval.GetFloat();
 		if ( outputDamage )
 		{
@@ -1065,7 +1065,7 @@ void CFire::DestroyEffect()
 //-----------------------------------------------------------------------------
 void CFire::BurnThink( void )
 {
-	SetNextThink( gpGlobals->curtime + FIRE_THINK_INTERVAL );
+	SetNextThink( gpGlobals->GetCurTime() + FIRE_THINK_INTERVAL );
 
 	Update( FIRE_THINK_INTERVAL );
 }
@@ -1080,7 +1080,7 @@ void CFire::GoOutInSeconds( float seconds )
 	Scale( 0.0f, seconds );
 	
 	SetThink( &CFire::GoOutThink );
-	SetNextThink( gpGlobals->curtime + seconds );
+	SetNextThink( gpGlobals->GetCurTime() + seconds );
 }
 
 //------------------------------------------------------------------------------
@@ -1106,7 +1106,7 @@ void CFire::AddHeat( float heat, bool selfHeat )
 				heat *= fire_incomingheatscale.GetFloat();
 			}
 		}
-		m_lastDamage = gpGlobals->curtime + 0.5;
+		m_lastDamage = gpGlobals->GetCurTime() + 0.5;
 		bool start = m_flHeatLevel <= 0 ? true : false;
 		if ( m_flHeatAbsorb > 0 )
 		{
@@ -1158,7 +1158,7 @@ void CFire::Extinguish( float heat )
 	if ( !m_bEnabled )
 		return;
 
-	m_lastDamage = gpGlobals->curtime + 0.5;
+	m_lastDamage = gpGlobals->GetCurTime() + 0.5;
 	bool out = m_flHeatLevel > 0 ? true : false;
 
 	m_flHeatLevel -= heat;
@@ -1173,7 +1173,7 @@ void CFire::Extinguish( float heat )
 	// once interacted with.  Basically, this blends out the scripting 
 	// as the fire is sprayed with the extinguisher.
 	float averageAttackTime = m_flMaxHeat * (FIRE_NORMAL_ATTACK_TIME/FIRE_MAX_HEAT_LEVEL);
-	m_flAttackTime = Approach( averageAttackTime, m_flAttackTime, 2 * gpGlobals->frametime );
+	m_flAttackTime = Approach( averageAttackTime, m_flAttackTime, 2 * gpGlobals->GetFrameTime() );
 
 	if ( m_flHeatLevel <= 0 )
 	{
@@ -1266,7 +1266,7 @@ void CEnvFireSource::Think()
 {
 	if ( !m_bEnabled )
 		return;
-	SetNextThink( gpGlobals->curtime + FIRESOURCE_THINK_TIME );
+	SetNextThink( gpGlobals->GetCurTime() + FIRESOURCE_THINK_TIME );
 
 	CFire *pFires[128];
 	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), false, GetAbsOrigin(), m_radius );
@@ -1283,7 +1283,7 @@ void CEnvFireSource::TurnOn()
 		return;
 
 	m_bEnabled = true;
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CEnvFireSource::TurnOff()
@@ -1375,7 +1375,7 @@ void CEnvFireSensor::Think()
 	{
 		time = 0.1;
 	}
-	SetNextThink( gpGlobals->curtime + time );
+	SetNextThink( gpGlobals->GetCurTime() + time );
 
 	float heat = 0;
 	CFire *pFires[128];
@@ -1414,7 +1414,7 @@ void CEnvFireSensor::TurnOn()
 		return;
 
 	m_bEnabled = true;
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	m_bHeatAtLevel = false;
 	m_levelTime = 0;
 }

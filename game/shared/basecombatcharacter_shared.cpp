@@ -284,7 +284,7 @@ void CCombatCharVisCache::FrameUpdatePreEntityThink()
 			continue;
 
 		const VisCacheEntry_t &entry = m_VisCache[n];
-		if ( !entry.m_hEntity1.IsValid() || !entry.m_hEntity2.IsValid() || ( gpGlobals->curtime - entry.m_flTime > 10.0f ) )
+		if ( !entry.m_hEntity1.IsValid() || !entry.m_hEntity2.IsValid() || ( gpGlobals->GetCurTime() - entry.m_flTime > 10.0f ) )
 		{
 			m_VisCache.RemoveAt( n );
 		}
@@ -317,7 +317,7 @@ int CCombatCharVisCache::LookupVisibility( const CBaseCombatCharacter *pChar1, C
 			return VIS_CACHE_INVALID;
 
 		iCache = m_VisCache.Insert( cacheEntry );
-		m_VisCache[iCache].m_flTime = gpGlobals->curtime - 2.0f * VIS_CACHE_ENTRY_LIFE;
+		m_VisCache[iCache].m_flTime = gpGlobals->GetCurTime() - 2.0f * VIS_CACHE_ENTRY_LIFE;
 	}
 
 	return ( pChar1 < pChar2 ) ? iCache : - iCache - 1;
@@ -337,7 +337,7 @@ VisCacheResult_t CCombatCharVisCache::HasVisibility( int iCache ) const
 	}
 
 	const VisCacheEntry_t &entry = m_VisCache[iCache];
-	if ( gpGlobals->curtime - entry.m_flTime > VIS_CACHE_ENTRY_LIFE )
+	if ( gpGlobals->GetCurTime() - entry.m_flTime > VIS_CACHE_ENTRY_LIFE )
 		return VISCACHE_UNKNOWN;
 
 	m_nHitCount++;
@@ -358,7 +358,7 @@ void CCombatCharVisCache::RegisterVisibility( int iCache, bool bEntity1CanSeeEnt
 	}
 
 	VisCacheEntry_t &entry = m_VisCache[iCache];
-	entry.m_flTime = gpGlobals->curtime;
+	entry.m_flTime = gpGlobals->GetCurTime();
 	if ( !bReverse )
 	{
 		entry.m_bEntity1CanSeeEntity2 = bEntity1CanSeeEntity2;
@@ -672,10 +672,10 @@ bool CBaseCombatCharacter::IsLineOfSightClear( const Vector &pos, LineOfSightChe
 {
 #if defined(GAME_DLL) && defined(COUNT_BCC_LOS)
 	static int count, frame;
-	if ( frame != gpGlobals->framecount )
+	if ( frame != gpGlobals->GetFrameCount() )
 	{
 		Msg( ">> %d\n", count );
-		frame = gpGlobals->framecount;
+		frame = gpGlobals->GetFrameCount();
 		count = 0;
 	}
 	count++;

@@ -761,7 +761,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	// -----------------------------------
 	//  Fire outputs
  	// -----------------------------------
-	if ( m_flLastDamageTime != gpGlobals->curtime )
+	if ( m_flLastDamageTime != gpGlobals->GetCurTime() )
 	{
 		// only fire once per frame
 		m_OnDamaged.FireOutput( info.GetAttacker(), this);
@@ -868,7 +868,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		ForceGatherConditions();
 
 		// Keep track of how much consecutive damage I have recieved
-		if ((gpGlobals->curtime - m_flLastDamageTime) < 1.0)
+		if ((gpGlobals->GetCurTime() - m_flLastDamageTime) < 1.0)
 		{
 			m_flSumDamage += info.GetDamage();
 		}
@@ -876,9 +876,9 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		{
 			m_flSumDamage = info.GetDamage();
 		}
-		m_flLastDamageTime = gpGlobals->curtime;
+		m_flLastDamageTime = gpGlobals->GetCurTime();
 		if ( info.GetAttacker() && info.GetAttacker()->IsPlayer() )
-			m_flLastPlayerDamageTime = gpGlobals->curtime;
+			m_flLastPlayerDamageTime = gpGlobals->GetCurTime();
 		GetEnemies()->OnTookDamageFrom( info.GetAttacker() );
 
 		if (m_flSumDamage > m_iMaxHealth*0.3)
@@ -1282,7 +1282,7 @@ bool CAI_BaseNPC::PointInSpread( CBaseCombatCharacter *pCheckEntity, const Vecto
 bool CAI_BaseNPC::PlayerInSpread( const Vector &sourcePos, const Vector &targetPos, float flSpread, float maxDistOffCenter, bool ignoreHatedPlayers )
 {
 	// loop through all players
-	for (int i = 1; i <= gpGlobals->maxClients; i++ )
+	for (int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -1304,7 +1304,7 @@ bool CAI_BaseNPC::PlayerInSpread( const Vector &sourcePos, const Vector &targetP
 CBaseEntity *CAI_BaseNPC::PlayerInRange( const Vector &vecLocation, float flDist )
 {
 	// loop through all players
-	for (int i = 1; i <= gpGlobals->maxClients; i++ )
+	for (int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -1336,7 +1336,7 @@ void BulletWizz( Vector vecSrc, Vector vecEndPos, edict_t *pShooter, bool isTrac
 
 	// see how near this bullet passed by player in a single player game
 	// for multiplayer, we need to go through the list of clients.
-	for (int i = 1; i <= gpGlobals->maxClients; i++ )
+	for (int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		pPlayer = UTIL_PlayerByIndex( i );
 
@@ -2002,7 +2002,7 @@ void CAI_BaseNPC::OnLooked( int iDistance )
 		{
 			// if we see a client, remember that (mostly for scripted AI)
 			SetCondition(COND_SEE_PLAYER);
-			m_flLastSawPlayerTime = gpGlobals->curtime;
+			m_flLastSawPlayerTime = gpGlobals->GetCurTime();
 		}
 
 		Disposition_t relation = IRelationType( pSightEnt );
@@ -2103,7 +2103,7 @@ void CAI_BaseNPC::OnListened()
 			switch( pCurrentSound->SoundTypeNoContext() )
 			{
 				case SOUND_DANGER:			
-					if( gpGlobals->curtime > m_flIgnoreDangerSoundsUntil)
+					if( gpGlobals->GetCurTime() > m_flIgnoreDangerSoundsUntil)
 						condition = COND_HEAR_DANGER;			
 					break;
 
@@ -2535,7 +2535,7 @@ Vector CAI_BaseNPC::HeadDirection3D( void )
 //-----------------------------------------------------------------------------
 CBaseEntity *CAI_BaseNPC::EyeLookTarget( void )
 {
-	if (m_flNextEyeLookTime < gpGlobals->curtime)
+	if (m_flNextEyeLookTime < gpGlobals->GetCurTime())
 	{
 		CBaseEntity*	pBestEntity = NULL;
 		float			fBestDist	= MAX_COORD_RANGE;
@@ -2565,7 +2565,7 @@ CBaseEntity *CAI_BaseNPC::EyeLookTarget( void )
 		}
 		if (pBestEntity)
 		{
-			m_flNextEyeLookTime = gpGlobals->curtime + random->RandomInt(1,5);
+			m_flNextEyeLookTime = gpGlobals->GetCurTime() + random->RandomInt(1,5);
 			m_hEyeLookTarget = pBestEntity;
 		}
 	}
@@ -2771,7 +2771,7 @@ void CAI_BaseNPC::MaintainLookTargets ( float flInterval )
 	// -------------------------------------
 
 	// Check that look target position is still valid
-	if (m_flNextEyeLookTime > gpGlobals->curtime)
+	if (m_flNextEyeLookTime > gpGlobals->GetCurTime())
 	{
 		if (!ValidEyeTarget(m_vEyeLookTarget))
 		{
@@ -2780,7 +2780,7 @@ void CAI_BaseNPC::MaintainLookTargets ( float flInterval )
 		}
 	}
 
-	if (m_flNextEyeLookTime < gpGlobals->curtime)
+	if (m_flNextEyeLookTime < gpGlobals->GetCurTime())
 	{
 		Vector	vBodyDir = BodyDirection2D( );
 
@@ -2800,7 +2800,7 @@ void CAI_BaseNPC::MaintainLookTargets ( float flInterval )
 		m_vEyeLookTarget	= EyePosition() + lookDist*vecDir;
 		*/
 		m_vEyeLookTarget	= EyePosition() + 500*vBodyDir;
-		m_flNextEyeLookTime = gpGlobals->curtime + 0.5; // random->RandomInt(1,5);
+		m_flNextEyeLookTime = gpGlobals->GetCurTime() + 0.5; // random->RandomInt(1,5);
 	}
 	SetHeadDirection(m_vEyeLookTarget,flInterval);
 
@@ -2844,10 +2844,10 @@ void CAI_BaseNPC::PerformMovement()
 	AI_PROFILE_SCOPE(CAI_BaseNPC_PerformMovement);
 	g_AIMoveTimer.Start();
 
-	float flInterval = ( m_flTimeLastMovement != FLT_MAX ) ? gpGlobals->curtime - m_flTimeLastMovement : 0.1;
+	float flInterval = ( m_flTimeLastMovement != FLT_MAX ) ? gpGlobals->GetCurTime() - m_flTimeLastMovement : 0.1;
 
 	m_pNavigator->Move( ROUND_TO_TICKS( flInterval ) );
-	m_flTimeLastMovement = gpGlobals->curtime;
+	m_flTimeLastMovement = gpGlobals->GetCurTime();
 
 	g_AIMoveTimer.End();
 
@@ -2909,9 +2909,9 @@ bool CAI_BaseNPC::PreThink( void )
 	// ----------------------------------------------------------
 	if ( (CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI || !g_pAINetworkManager->NetworksLoaded()) )
 	{
-		if ( gpGlobals->curtime >= g_AINextDisabledMessageTime && !IsInCommentaryMode() )
+		if ( gpGlobals->GetCurTime() >= g_AINextDisabledMessageTime && !IsInCommentaryMode() )
 		{
-			g_AINextDisabledMessageTime = gpGlobals->curtime + 0.5f;
+			g_AINextDisabledMessageTime = gpGlobals->GetCurTime() + 0.5f;
 
 			hudtextparms_s tTextParam;
 			tTextParam.x			= 0.7;
@@ -3114,9 +3114,9 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 	static Vector vPlayerEyePosition;
 	static Vector vPlayerForward;
 	static int iPrevFrame = -1;
-	if ( gpGlobals->framecount != iPrevFrame )
+	if ( gpGlobals->GetFrameCount() != iPrevFrame )
 	{
-		iPrevFrame = gpGlobals->framecount;
+		iPrevFrame = gpGlobals->GetFrameCount();
 		if ( pPlayer )
 		{
 			pPlayer->EyePositionAndVectors( &vPlayerEyePosition, &vPlayerForward, NULL, NULL );
@@ -3165,17 +3165,17 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 	//---------------------------------
 
 	// Some conditions will always force normal
-	if ( gpGlobals->curtime - GetLastAttackTime() < .15 )
+	if ( gpGlobals->GetCurTime() - GetLastAttackTime() < .15 )
 	{
 		SetEfficiency( AIE_NORMAL );
 		return;
 	}
 
-	bool bFramerateOk = ( gpGlobals->frametime < ai_frametime_limit.GetFloat() );
+	bool bFramerateOk = ( gpGlobals->GetFrameTime() < ai_frametime_limit.GetFloat() );
 
 	if ( m_bForceConditionsGather || 
-		 gpGlobals->curtime - GetLastAttackTime() < .2 ||
-		 gpGlobals->curtime - m_flLastDamageTime < .2 ||
+		 gpGlobals->GetCurTime() - GetLastAttackTime() < .2 ||
+		 gpGlobals->GetCurTime() - m_flLastDamageTime < .2 ||
 		 ( GetState() < NPC_STATE_IDLE || GetState() > NPC_STATE_SCRIPT ) ||
 		 ( ( bInPVS || bInVisibilityPVS ) && 
 		   ( ( GetTask() && !TaskIsRunning() ) ||
@@ -3357,7 +3357,7 @@ void CAI_BaseNPC::UpdateSleepState( bool bInPVS )
 		CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
 		if ( !pLocalPlayer )
 		{
-			if ( gpGlobals->maxClients > 1 )
+			if ( gpGlobals->GetMaxClients() > 1 )
 			{
 				Wake();
 			}
@@ -3383,7 +3383,7 @@ void CAI_BaseNPC::UpdateSleepState( bool bInPVS )
 			{
 				if ( bInPVS )
 				{
-					for (int i = 1; i <= gpGlobals->maxClients; i++ )
+					for (int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 					{
 						CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 						if ( pPlayer && !(pPlayer->GetFlags() & FL_NOTARGET) && pPlayer->FVisible( this ) )
@@ -3533,10 +3533,10 @@ void CAI_BaseNPC::RebalanceThinks()
 		static int nThinksInTick;
 		static int nRebalanceableThinksInTick;
 
-		if ( gpGlobals->tickcount != iPrevTick )
+		if ( gpGlobals->GetTickCount() != iPrevTick )
 		{
-			DevMsg( "NPC per tick is %d [%d] (tick %d, frame %d)\n", nRebalanceableThinksInTick, nThinksInTick, iPrevTick, gpGlobals->framecount );
-			iPrevTick = gpGlobals->tickcount;
+			DevMsg( "NPC per tick is %d [%d] (tick %d, frame %d)\n", nRebalanceableThinksInTick, nThinksInTick, iPrevTick, gpGlobals->GetFrameCount() );
+			iPrevTick = gpGlobals->GetTickCount();
 			nThinksInTick = 0;
 			nRebalanceableThinksInTick = 0;
 		}
@@ -3545,12 +3545,12 @@ void CAI_BaseNPC::RebalanceThinks()
 			nRebalanceableThinksInTick++;
 	}
 
-	if ( ShouldRebalanceThinks() && gpGlobals->tickcount >= gm_iNextThinkRebalanceTick )
+	if ( ShouldRebalanceThinks() && gpGlobals->GetTickCount() >= gm_iNextThinkRebalanceTick )
 	{
 		AI_PROFILE_SCOPE(AI_Think_Rebalance );
 
 		static CUtlVector<AIRebalanceInfo_t> rebalanceCandidates( 16, 64 );
-		gm_iNextThinkRebalanceTick = gpGlobals->tickcount + TIME_TO_TICKS( random->RandomFloat( 3, 5) );
+		gm_iNextThinkRebalanceTick = gpGlobals->GetTickCount() + TIME_TO_TICKS( random->RandomFloat( 3, 5) );
 
 		int i;
 
@@ -3567,8 +3567,8 @@ void CAI_BaseNPC::RebalanceThinks()
 		}
 
 		int iTicksPer10Hz = TIME_TO_TICKS( .1 );
-		int iMinTickRebalance = gpGlobals->tickcount - 1; // -1 needed for alternate ticks
-		int iMaxTickRebalance = gpGlobals->tickcount + iTicksPer10Hz;
+		int iMinTickRebalance = gpGlobals->GetTickCount() - 1; // -1 needed for alternate ticks
+		int iMaxTickRebalance = gpGlobals->GetTickCount() + iTicksPer10Hz;
 
 		for ( i = 0; i < g_AI_Manager.NumAIs(); i++ )
 		{
@@ -3610,7 +3610,7 @@ void CAI_BaseNPC::RebalanceThinks()
 
 			int iMaxThinkersPerTick = ceil( (float)( rebalanceCandidates.Count() + 1 ) / (float)iTicksPer10Hz ); // +1 to account for "this"
 
-			int iCurTickDistributing = MIN( gpGlobals->tickcount, rebalanceCandidates[0].iNextThinkTick );
+			int iCurTickDistributing = MIN( gpGlobals->GetTickCount(), rebalanceCandidates[0].iNextThinkTick );
 			int iRemainingThinksToDistribute = iMaxThinkersPerTick - 1; // Start with one fewer first time because "this" is 
 			// always gets a slot in the current tick to avoid complications
 			// in the calculation of "last think"
@@ -3697,20 +3697,20 @@ bool CAI_BaseNPC::PreNPCThink()
 
 	if ( bUseThinkLimits && VCRGetMode() == VCR_Disabled )
 	{
-		if ( m_iFrameBlocked == gpGlobals->framecount )
+		if ( m_iFrameBlocked == gpGlobals->GetFrameCount() )
 		{
-			DbgFrameLimitMsg( "Stalled %d (%d)\n", this, gpGlobals->framecount );
-			SetNextThink( gpGlobals->curtime );
+			DbgFrameLimitMsg( "Stalled %d (%d)\n", this, gpGlobals->GetFrameCount() );
+			SetNextThink( gpGlobals->GetCurTime() );
 			return false;
 		}
-		else if ( gpGlobals->framecount != iPrevFrame )
+		else if ( gpGlobals->GetFrameCount() != iPrevFrame )
 		{
-			DbgFrameLimitMsg( "--- FRAME: %d (%d)\n", this, gpGlobals->framecount );
+			DbgFrameLimitMsg( "--- FRAME: %d (%d)\n", this, gpGlobals->GetFrameCount() );
 			float timescale = pHostTimescale->GetFloat();
 			if ( timescale < 1 )
 				timescale = 1;
 
-			iPrevFrame = gpGlobals->framecount;
+			iPrevFrame = gpGlobals->GetFrameCount();
 			frameTimeLimit = NPC_THINK_LIMIT * timescale;
 			g_NpcTimeThisFrame = 0;
 		}
@@ -3718,13 +3718,13 @@ bool CAI_BaseNPC::PreNPCThink()
 		{
 			if ( g_NpcTimeThisFrame > NPC_THINK_LIMIT )
 			{
-				float timeSinceLastRealThink = gpGlobals->curtime - m_flLastRealThinkTime;
+				float timeSinceLastRealThink = gpGlobals->GetCurTime() - m_flLastRealThinkTime;
 				// Don't bump anyone more that a quarter second
 				if ( timeSinceLastRealThink <= .25 )
 				{
-					DbgFrameLimitMsg( "Bumped %d (%d)\n", this, gpGlobals->framecount );
-					m_iFrameBlocked = gpGlobals->framecount;
-					SetNextThink( gpGlobals->curtime );
+					DbgFrameLimitMsg( "Bumped %d (%d)\n", this, gpGlobals->GetFrameCount() );
+					m_iFrameBlocked = gpGlobals->GetFrameCount();
+					SetNextThink( gpGlobals->GetCurTime() );
 					return false;
 				}
 				else
@@ -3734,7 +3734,7 @@ bool CAI_BaseNPC::PreNPCThink()
 			}
 		}
 
-		DbgFrameLimitMsg( "Running %d (%d)\n", this, gpGlobals->framecount );
+		DbgFrameLimitMsg( "Running %d (%d)\n", this, gpGlobals->GetFrameCount() );
 		g_StartTimeCurThink = engineServer->Time();
 
 		m_iFrameBlocked = -1;
@@ -3772,7 +3772,7 @@ void CAI_BaseNPC::CallNPCThink( void )
 
 	this->NPCThink(); 
 
-	m_flLastRealThinkTime = gpGlobals->curtime;
+	m_flLastRealThinkTime = gpGlobals->GetCurTime();
 
 	PostNPCThink();
 } 
@@ -3940,7 +3940,7 @@ void CAI_BaseNPC::NPCThink( void )
 
 			if ( PreThink() )
 			{
-				if ( m_flNextDecisionTime <= gpGlobals->curtime )
+				if ( m_flNextDecisionTime <= gpGlobals->GetCurTime() )
 				{
 					bRanDecision = true;
 					m_ScheduleState.bTaskRanAutomovement = false;
@@ -3963,7 +3963,7 @@ void CAI_BaseNPC::NPCThink( void )
 
 				PostMovement();
 
-				SetSimulationTime( gpGlobals->curtime );
+				SetSimulationTime( gpGlobals->GetCurTime() );
 			}
 			else
 				m_flTimeLastMovement = FLT_MAX;
@@ -4031,16 +4031,16 @@ void CAI_BaseNPC::NPCThink( void )
 
 		if ( bRanDecision )
 		{
-			m_flNextDecisionTime = gpGlobals->curtime + g_DecisionIntervals[GetEfficiency()];
+			m_flNextDecisionTime = gpGlobals->GetCurTime() + g_DecisionIntervals[GetEfficiency()];
 		}
 
 		if ( GetMoveEfficiency() == AIME_NORMAL || GetEfficiency() == AIE_NORMAL )
 		{
-			SetNextThink( gpGlobals->curtime + .1 );
+			SetNextThink( gpGlobals->GetCurTime() + .1 );
 		}
 		else
 		{
-			SetNextThink( gpGlobals->curtime + .2 );
+			SetNextThink( gpGlobals->GetCurTime() + .2 );
 		}
 	}
 	else
@@ -4368,7 +4368,7 @@ void CAI_BaseNPC::SetState( NPC_STATE State )
 
 	if ( State != m_NPCState )
 	{
-		m_flLastStateChangeTime = gpGlobals->curtime;
+		m_flLastStateChangeTime = gpGlobals->GetCurTime();
 	}
 
 	switch( State )
@@ -4404,7 +4404,7 @@ void CAI_BaseNPC::SetState( NPC_STATE State )
 
 bool CAI_BaseNPC::WokeThisTick() const
 {
-	return m_nWakeTick == gpGlobals->tickcount ? true : false;
+	return m_nWakeTick == gpGlobals->GetTickCount() ? true : false;
 }
 
 //-----------------------------------------------------------------------------
@@ -4413,7 +4413,7 @@ void CAI_BaseNPC::Wake( bool bFireOutput )
 {
 	if ( GetSleepState() != AISS_AWAKE )
 	{
-		m_nWakeTick = gpGlobals->tickcount;
+		m_nWakeTick = gpGlobals->GetTickCount();
 		SetSleepState( AISS_AWAKE );
 		RemoveEffects( EF_NODRAW );
 		if ( bFireOutput )
@@ -4580,7 +4580,7 @@ bool CAI_BaseNPC::CanFlinch( void )
 	if ( IsCurSchedule( SCHED_BIG_FLINCH ) )
 		return false;
 
-	if ( m_flNextFlinchTime >= gpGlobals->curtime )
+	if ( m_flNextFlinchTime >= gpGlobals->GetCurTime() )
 		return false;
 
 	return true;
@@ -4625,7 +4625,7 @@ void CAI_BaseNPC::CheckFlinches( void )
 	}
 
 	// If it's been a while since we did a full flinch, forget that we flinched so we'll flinch fully again
-	if ( HasMemory(bits_MEMORY_FLINCHED) && gpGlobals->curtime > m_flNextFlinchTime )
+	if ( HasMemory(bits_MEMORY_FLINCHED) && gpGlobals->GetCurTime() > m_flNextFlinchTime )
 	{
 		Forget(bits_MEMORY_FLINCHED);
 	}
@@ -4638,7 +4638,7 @@ void CAI_BaseNPC::GatherConditions( void )
 	m_bConditionsGathered = true;
 	g_AIConditionsTimer.Start();
 
-	if( gpGlobals->curtime > m_flTimePingEffect && m_flTimePingEffect > 0.0f )
+	if( gpGlobals->GetCurTime() > m_flTimePingEffect && m_flTimePingEffect > 0.0f )
 	{
 		// Turn off the pinging.
 		DispatchUpdateTransmitState();
@@ -4715,7 +4715,7 @@ void CAI_BaseNPC::GatherConditions( void )
 			if ( !IsFlaggedEfficient() )
 			{
 				GatherEnemyConditions( GetEnemy() );
-				m_flLastEnemyTime = gpGlobals->curtime;
+				m_flLastEnemyTime = gpGlobals->GetCurTime();
 			}
 			else
 			{
@@ -4896,7 +4896,7 @@ NPC_STATE CAI_BaseNPC::SelectIdleIdealState()
 	// Set our ideal yaw if we've taken damage
 	if ( HasCondition(COND_LIGHT_DAMAGE) || 
 		 HasCondition(COND_HEAVY_DAMAGE) ||
-	   (!GetEnemy() && gpGlobals->curtime - GetEnemies()->LastTimeSeen( AI_UNKNOWN_ENEMY ) < TIME_CARE_ABOUT_DAMAGE ) )
+	   (!GetEnemy() && gpGlobals->GetCurTime() - GetEnemies()->LastTimeSeen( AI_UNKNOWN_ENEMY ) < TIME_CARE_ABOUT_DAMAGE ) )
 	{
 		Vector vecEnemyLKP;
 
@@ -4977,7 +4977,7 @@ NPC_STATE CAI_BaseNPC::SelectAlertIdealState()
 	// Set our ideal yaw if we've taken damage
 	if ( HasCondition(COND_LIGHT_DAMAGE) ||
 		 HasCondition(COND_HEAVY_DAMAGE) ||
-		(!GetEnemy() && gpGlobals->curtime - GetEnemies()->LastTimeSeen( AI_UNKNOWN_ENEMY ) < TIME_CARE_ABOUT_DAMAGE ) )
+		(!GetEnemy() && gpGlobals->GetCurTime() - GetEnemies()->LastTimeSeen( AI_UNKNOWN_ENEMY ) < TIME_CARE_ABOUT_DAMAGE ) )
 	{
 		Vector vecEnemyLKP;
 
@@ -5172,7 +5172,7 @@ bool CAI_BaseNPC::IsMovingToPickupWeapon()
 //-----------------------------------------------------------------------------
 bool CAI_BaseNPC::ShouldLookForBetterWeapon()
 {
-	if( m_flNextWeaponSearchTime > gpGlobals->curtime )
+	if( m_flNextWeaponSearchTime > gpGlobals->GetCurTime() )
 		return false;
 
 	if( !(CapabilitiesGet() & bits_CAP_USE_WEAPONS) )
@@ -5214,18 +5214,18 @@ bool CAI_BaseNPC::Weapon_IsBetterAvailable()
 	{
 		if( GetActiveWeapon() )
 		{
-			m_flNextWeaponSearchTime = gpGlobals->curtime + 2;
+			m_flNextWeaponSearchTime = gpGlobals->GetCurTime() + 2;
 		}
 		else
 		{
 			if( IsInPlayerSquad() )
 			{
 				// Look for a weapon frequently.
-				m_flNextWeaponSearchTime = gpGlobals->curtime + 1;
+				m_flNextWeaponSearchTime = gpGlobals->GetCurTime() + 1;
 			}
 			else
 			{
-				m_flNextWeaponSearchTime = gpGlobals->curtime + 2;
+				m_flNextWeaponSearchTime = gpGlobals->GetCurTime() + 2;
 			}
 		}
 
@@ -5546,7 +5546,7 @@ void CAI_BaseNPC::GatherEnemyConditions( CBaseEntity *pEnemy )
 	// ---------------------------
 	//  Set visibility conditions
 	// ---------------------------
-	if ( HasCondition( COND_NEW_ENEMY ) || GetSenses()->GetTimeLastUpdate( GetEnemy() ) == gpGlobals->curtime )
+	if ( HasCondition( COND_NEW_ENEMY ) || GetSenses()->GetTimeLastUpdate( GetEnemy() ) == gpGlobals->GetCurTime() )
 	{
 		AI_PROFILE_SCOPE_BEGIN(CAI_BaseNPC_GatherEnemyConditions_Visibility);
 
@@ -5714,7 +5714,7 @@ void CAI_BaseNPC::GatherEnemyConditions( CBaseEntity *pEnemy )
 	//-----------------------------------------------------------------------
 	// If I haven't seen the enemy in a while he may have eluded me
 	//-----------------------------------------------------------------------
-	if (gpGlobals->curtime - GetEnemyLastTimeSeen() > 8)
+	if (gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() > 8)
 	{
 		//-----------------------------------------------------------------------
 		// I'm at last known position at enemy isn't in sight then has eluded me
@@ -6080,12 +6080,12 @@ void CAI_BaseNPC::ResolveActivityToSequence(Activity NewActivity, int &iSequence
 			static Activity lastWarnActivity;
 			static float timeLastWarn;
 
-			if ( ( pLastWarn != this && lastWarnActivity != translatedActivity ) || gpGlobals->curtime - timeLastWarn > 5.0 )
+			if ( ( pLastWarn != this && lastWarnActivity != translatedActivity ) || gpGlobals->GetCurTime() - timeLastWarn > 5.0 )
 			{
 				DevWarning( "%s:%s:%s has no sequence for act:%s\n", GetClassname(), GetDebugName(), STRING( GetModelName() ), ActivityList_NameForIndex(translatedActivity) );
 				pLastWarn = this;
 				lastWarnActivity = translatedActivity;
-				timeLastWarn = gpGlobals->curtime;
+				timeLastWarn = gpGlobals->GetCurTime();
 			}
 
 			if ( translatedActivity == ACT_RUN )
@@ -6598,7 +6598,7 @@ void CAI_BaseNPC::SetupVPhysicsHull()
 ConVar ai_auto_contact_solver( "ai_auto_contact_solver", "1" );
 void CAI_BaseNPC::CheckPhysicsContacts()
 {
-	if ( gpGlobals->frametime <= 0.0f || !ai_auto_contact_solver.GetBool() )
+	if ( gpGlobals->GetFrameTime() <= 0.0f || !ai_auto_contact_solver.GetBool() )
 		return;
 
 	m_bCheckContacts = false;
@@ -6892,7 +6892,7 @@ void CAI_BaseNPC::NPCInit ( void )
 	// until we're sure everything else has had a chance to spawn. Otherwise
 	// we may try to reference entities that haven't spawned yet.(sjb)
 	SetThink( &CAI_BaseNPC::NPCInitThink );
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 
 	ForceGatherConditions();
 
@@ -7006,7 +7006,7 @@ int	CAI_BaseNPC::HolsterWeapon( void )
 	{
 		// Prevent firing during the holster / unholster
 		float flDuration = GetLayerDuration( iLayer );
-		m_ShotRegulator.FireNoEarlierThan( gpGlobals->curtime + flDuration + 0.5 );
+		m_ShotRegulator.FireNoEarlierThan( gpGlobals->GetCurTime() + flDuration + 0.5 );
 
 		if( m_iDesiredWeaponState == DESIREDWEAPONSTATE_HOLSTERED_DESTROYED )
 		{
@@ -7052,7 +7052,7 @@ int CAI_BaseNPC::UnholsterWeapon( void )
 			{
 				// Prevent firing during the holster / unholster
 				float flDuration = GetLayerDuration( iLayer );
-				m_ShotRegulator.FireNoEarlierThan( gpGlobals->curtime + flDuration + 0.5 );
+				m_ShotRegulator.FireNoEarlierThan( gpGlobals->GetCurTime() + flDuration + 0.5 );
 
 				m_iDesiredWeaponState = DESIREDWEAPONSTATE_CHANGING;
 			}
@@ -7126,7 +7126,7 @@ bool CAI_BaseNPC::IsWeaponStateChanging( void )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::OnRangeAttack1()
 {
-	SetLastAttackTime( gpGlobals->curtime );
+	SetLastAttackTime( gpGlobals->GetCurTime() );
 
 	// Houston, there is a problem!
 	AssertOnce( GetShotRegulator()->ShouldShoot() );
@@ -7298,7 +7298,7 @@ void CAI_BaseNPC::NPCInitThink ( void )
 		Sleep();
 	}
 
-	m_flLastRealThinkTime = gpGlobals->curtime;
+	m_flLastRealThinkTime = gpGlobals->GetCurTime();
 }
 
 //=========================================================
@@ -7384,10 +7384,10 @@ void CAI_BaseNPC::StartNPC( void )
 	// a bunch of NPCs into the level
 	SetThink ( &CAI_BaseNPC::CallNPCThink );
 
-	if ( gm_flTimeLastSpawn != gpGlobals->curtime )
+	if ( gm_flTimeLastSpawn != gpGlobals->GetCurTime() )
 	{
 		gm_nSpawnedThisFrame = 0;
-		gm_flTimeLastSpawn = gpGlobals->curtime;
+		gm_flTimeLastSpawn = gpGlobals->GetCurTime();
 	}
 
 	static const float nextThinkTimes[20] = 
@@ -7395,7 +7395,7 @@ void CAI_BaseNPC::StartNPC( void )
 		.0, .150, .075, .225, .030, .180, .120, .270, .045, .210, .105, .255, .015, .165, .090, .240, .135, .060, .195, .285
 	};
 
-	SetNextThink( gpGlobals->curtime + nextThinkTimes[gm_nSpawnedThisFrame % 20] );
+	SetNextThink( gpGlobals->GetCurTime() + nextThinkTimes[gm_nSpawnedThisFrame % 20] );
 
 	gm_nSpawnedThisFrame++;
 
@@ -7605,7 +7605,7 @@ void CAI_BaseNPC::RememberUnreachable(CBaseEntity *pEntity, float duration )
 		// If record already exists just update mark time
 		if (pEntity == m_UnreachableEnts[i].hUnreachableEnt)
 		{
-			m_UnreachableEnts[i].fExpireTime	 = gpGlobals->curtime + NPC_UNREACHABLE_TIMEOUT;
+			m_UnreachableEnts[i].fExpireTime	 = gpGlobals->GetCurTime() + NPC_UNREACHABLE_TIMEOUT;
 			m_UnreachableEnts[i].vLocationWhenUnreachable = pEntity->GetAbsOrigin();
 			return;
 		}
@@ -7614,7 +7614,7 @@ void CAI_BaseNPC::RememberUnreachable(CBaseEntity *pEntity, float duration )
 	// Add new unreachabe entity to list
 	int nNewIndex = m_UnreachableEnts.AddToTail();
 	m_UnreachableEnts[nNewIndex].hUnreachableEnt = pEntity;
-	m_UnreachableEnts[nNewIndex].fExpireTime	 = gpGlobals->curtime + NPC_UNREACHABLE_TIMEOUT;
+	m_UnreachableEnts[nNewIndex].fExpireTime	 = gpGlobals->GetCurTime() + NPC_UNREACHABLE_TIMEOUT;
 	m_UnreachableEnts[nNewIndex].vLocationWhenUnreachable = pEntity->GetAbsOrigin();
 }
 
@@ -7640,7 +7640,7 @@ bool CAI_BaseNPC::IsUnreachable(CBaseEntity *pEntity)
 		else if (pEntity == m_UnreachableEnts[i].hUnreachableEnt)
 		{
 			// Test for reachablility on any elements that have timed out
-			if ( gpGlobals->curtime > m_UnreachableEnts[i].fExpireTime ||
+			if ( gpGlobals->GetCurTime() > m_UnreachableEnts[i].fExpireTime ||
 				  pEntity->GetAbsOrigin().DistToSqr(m_UnreachableEnts[i].vLocationWhenUnreachable) > UNREACHABLE_DIST_TOLERANCE_SQ)
 			{
 				m_UnreachableEnts.FastRemove(i);
@@ -7723,7 +7723,7 @@ CBaseEntity *CAI_BaseNPC::BestEnemy( void )
 		if ( m_bIgnoreUnseenEnemies )
 		{
 			const float TIME_CONSIDER_ENEMY_UNSEEN = .4;
-			if ( pEMemory->timeLastSeen < gpGlobals->curtime - TIME_CONSIDER_ENEMY_UNSEEN )
+			if ( pEMemory->timeLastSeen < gpGlobals->GetCurTime() - TIME_CONSIDER_ENEMY_UNSEEN )
 			{
 				DbgEnemyMsg( this, "    %s rejected: not seen and set to ignore unseen enemies\n", pEnemy->GetDebugName() );
 				continue;
@@ -7744,7 +7744,7 @@ CBaseEntity *CAI_BaseNPC::BestEnemy( void )
 			continue;
 		}
 
-		if ( pEMemory->timeValidEnemy > gpGlobals->curtime )
+		if ( pEMemory->timeValidEnemy > gpGlobals->GetCurTime() )
 		{
 			DbgEnemyMsg( this, "    %s rejected: not yet valid\n", pEnemy->GetDebugName() );
 			continue;
@@ -8771,7 +8771,7 @@ void CAI_BaseNPC::DrawDebugGeometryOverlays(void)
 		}
 
 		// Also include all players
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer	*pPlayer = UTIL_PlayerByIndex( i );
 			if ( pPlayer == NULL )
@@ -9306,8 +9306,8 @@ void CAI_BaseNPC::ReportAIState( void )
 	if ( IsMoving() )
 	{
 		DevMsg( " Moving " );
-		if ( m_flMoveWaitFinished > gpGlobals->curtime )
-			DevMsg( ": Stopped for %.2f. ", m_flMoveWaitFinished - gpGlobals->curtime );
+		if ( m_flMoveWaitFinished > gpGlobals->GetCurTime() )
+			DevMsg( ": Stopped for %.2f. ", m_flMoveWaitFinished - gpGlobals->GetCurTime() );
 		else if ( m_IdealActivity == GetStoppedActivity() )
 			DevMsg( ": In stopped anim. " );
 	}
@@ -9600,12 +9600,12 @@ float CAI_BaseNPC::GetSpreadBias( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarg
 		float timeToFocus = ai_spread_pattern_focus_time.GetFloat();
 		if ( timeToFocus > 0.0 )
 		{
-			float timeSinceValidEnemy = gpGlobals->curtime - pEnemyInfo->timeValidEnemy;
+			float timeSinceValidEnemy = gpGlobals->GetCurTime() - pEnemyInfo->timeValidEnemy;
 			if ( timeSinceValidEnemy < 0.0f )
 			{
 				timeSinceValidEnemy = 0.0f;
 			}
-			float timeSinceReacquire = gpGlobals->curtime - pEnemyInfo->timeLastReacquired;
+			float timeSinceReacquire = gpGlobals->GetCurTime() - pEnemyInfo->timeLastReacquired;
 			if ( timeSinceValidEnemy < timeToFocus )
 			{
 				float scale = timeSinceValidEnemy / timeToFocus;
@@ -9635,7 +9635,7 @@ Vector CAI_BaseNPC::GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pT
 		float timeToFocus = ai_spread_cone_focus_time.GetFloat();
 		if ( timeToFocus > 0.0 )
 		{
-			float timeSinceValidEnemy = gpGlobals->curtime - pEnemyInfo->timeValidEnemy;
+			float timeSinceValidEnemy = gpGlobals->GetCurTime() - pEnemyInfo->timeValidEnemy;
 			if ( timeSinceValidEnemy < 0 )
 				timeSinceValidEnemy = 0;
 			if ( timeSinceValidEnemy < timeToFocus )
@@ -9973,7 +9973,7 @@ void CAI_BaseNPC::CorpseFallThink( void )
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 
@@ -10000,7 +10000,7 @@ void CAI_BaseNPC::NPCInitDead( void )
 	// Setup health counters, etc.
 	SetThink( &CAI_BaseNPC::CorpseFallThink );
 
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 }
 
 //=========================================================
@@ -10084,7 +10084,7 @@ void CAI_BaseNPC::SetEnemy( CBaseEntity *pEnemy, bool bSetCondNewEnemy )
 	// Assert( (pEnemy == NULL) || (m_NPCState == NPC_STATE_COMBAT) );
 
 	m_hEnemy = pEnemy;
-	m_flTimeEnemyAcquired = gpGlobals->curtime;
+	m_flTimeEnemyAcquired = gpGlobals->GetCurTime();
 
 	m_LastShootAccuracy = -1;
 	m_TotalShots		= 0;
@@ -10171,13 +10171,13 @@ bool CAI_BaseNPC::ShouldChooseNewEnemy()
 		{
 			m_FailChooseEnemyTimer.Set( 1.5 );
 			if ( HasCondition( COND_TASK_FAILED ) || 
-				 ( pInfo && ( pInfo->timeAtFirstHand == AI_INVALID_TIME || gpGlobals->curtime - pInfo->timeLastSeen > 10 ) ) )
+				 ( pInfo && ( pInfo->timeAtFirstHand == AI_INVALID_TIME || gpGlobals->GetCurTime() - pInfo->timeLastSeen > 10 ) ) )
 			{
 				return true;
 			}
 		}
 
-		if ( pInfo && pInfo->timeValidEnemy < gpGlobals->curtime )
+		if ( pInfo && pInfo->timeValidEnemy < gpGlobals->GetCurTime() )
 		{
 			DbgEnemyMsg( this, "ShouldChooseNewEnemy() --> false\n" );
 			return false;
@@ -10451,7 +10451,7 @@ bool CAI_BaseNPC::FOkToMakeSound( int soundPriority )
 	{
 		// otherwise, check my own sound timer
 		// Am I making uninterruptable sound?
-		if (gpGlobals->curtime <= m_flSoundWaitTime)
+		if (gpGlobals->GetCurTime() <= m_flSoundWaitTime)
 		{
 			if ( soundPriority <= m_nSoundPriority )
 				return false;
@@ -10473,12 +10473,12 @@ bool CAI_BaseNPC::FOkToMakeSound( int soundPriority )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::JustMadeSound( int soundPriority, float flSoundLength )
 {
-	m_flSoundWaitTime = gpGlobals->curtime + flSoundLength + random->RandomFloat(1.5, 2.0);
+	m_flSoundWaitTime = gpGlobals->GetCurTime() + flSoundLength + random->RandomFloat(1.5, 2.0);
 	m_nSoundPriority = soundPriority;
 
 	if (m_pSquad)
 	{
-		m_pSquad->JustMadeSound( soundPriority, gpGlobals->curtime + flSoundLength + random->RandomFloat(1.5, 2.0) );
+		m_pSquad->JustMadeSound( soundPriority, gpGlobals->GetCurTime() + flSoundLength + random->RandomFloat(1.5, 2.0) );
 	}
 }
 
@@ -11409,7 +11409,7 @@ void CAI_BaseNPC::UpdateOnRemove(void)
 //-----------------------------------------------------------------------------
 int CAI_BaseNPC::UpdateTransmitState()
 {
-	if( gpGlobals->curtime < m_flTimePingEffect )
+	if( gpGlobals->GetCurTime() < m_flTimePingEffect )
 	{
 		return SetTransmitState( FL_EDICT_ALWAYS );
 	}
@@ -11642,7 +11642,7 @@ void CAI_BaseNPC::InputIgnoreDangerSounds( inputdata_t &inputdata )
 		flDelay = inputdata.value.Float();
 	}
 
-	m_flIgnoreDangerSoundsUntil = gpGlobals->curtime + flDelay;
+	m_flIgnoreDangerSoundsUntil = gpGlobals->GetCurTime() + flDelay;
 }
 
 //-----------------------------------------------------------------------------
@@ -11784,7 +11784,7 @@ bool CAI_BaseNPC::CineCleanup()
 		if ( m_hInteractionPartner )
 		{
 			PhysEnableEntityCollisions( this, m_hInteractionPartner );
-			//Msg("%s(%s) enabled collisions with %s(%s) at %0.2f\n", GetClassname(), GetDebugName(), m_hInteractionPartner->GetClassName(), m_hInteractionPartner->GetDebugName(), gpGlobals->curtime );
+			//Msg("%s(%s) enabled collisions with %s(%s) at %0.2f\n", GetClassname(), GetDebugName(), m_hInteractionPartner->GetClassName(), m_hInteractionPartner->GetDebugName(), gpGlobals->GetCurTime() );
 		}
 
 		if ( m_hForcedInteractionPartner )
@@ -12290,7 +12290,7 @@ void CAI_BaseNPC::OpenPropDoorNow( CBasePropDoor *pDoor )
 	pDoor->NPCOpenDoor(this);
 
 	// Wait for the door to finish opening before trying to move through the doorway.
-	m_flMoveWaitFinished = gpGlobals->curtime + pDoor->GetOpenInterval();
+	m_flMoveWaitFinished = gpGlobals->GetCurTime() + pDoor->GetOpenInterval();
 }
 
 
@@ -12466,7 +12466,7 @@ static void AIMsgGuts( CAI_BaseNPC *pAI, unsigned flags, const char *pszMsg )
 		 pAI->GetClassname(),
 		 pAI->NetworkProp()->entindex(),
 		 ( pAI->GetEntityName() == NULL_STRING ) ? "<unnamed>" : STRING(pAI->GetEntityName()),
-		 gpGlobals->tickcount );
+		 gpGlobals->GetTickCount() );
 }
 
 void DevMsg( CAI_BaseNPC *pAI, unsigned flags, const char *pszFormat, ... )
@@ -12617,7 +12617,7 @@ float CAI_BaseNPC::SetWait( float minWait, float maxWait )
 
 	if ( maxWait == 0.0 )
 	{
-		m_flWaitFinished = gpGlobals->curtime + ( 0.1 * minThinks );
+		m_flWaitFinished = gpGlobals->GetCurTime() + ( 0.1 * minThinks );
 	}
 	else
 	{
@@ -12625,7 +12625,7 @@ float CAI_BaseNPC::SetWait( float minWait, float maxWait )
 			minThinks = 1;
 		int maxThinks = Ceil2Int( maxWait * 10 );
 
-		m_flWaitFinished = gpGlobals->curtime + ( 0.1 * random->RandomInt( minThinks, maxThinks ) );
+		m_flWaitFinished = gpGlobals->GetCurTime() + ( 0.1 * random->RandomInt( minThinks, maxThinks ) );
 	}
 	return m_flWaitFinished;
 }
@@ -12641,7 +12641,7 @@ void CAI_BaseNPC::ClearWait()
 
 bool CAI_BaseNPC::IsWaitFinished()
 {
-	return ( gpGlobals->curtime >= m_flWaitFinished );
+	return ( gpGlobals->GetCurTime() >= m_flWaitFinished );
 }
 
 //-----------------------------------------------------------------------------
@@ -12909,7 +12909,7 @@ bool CAI_BaseNPC::IsAllowedToDodge( void )
 	if ( m_NPCState != NPC_STATE_IDLE && m_NPCState != NPC_STATE_ALERT && m_NPCState != NPC_STATE_COMBAT  )
 		return false;
 
-	return ( m_flNextDodgeTime <= gpGlobals->curtime );
+	return ( m_flNextDodgeTime <= gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -13179,7 +13179,7 @@ void CAI_BaseNPC::StartScriptedNPCInteraction( CAI_BaseNPC *pOtherNPC, ScriptedN
 	{
 		pOtherNPC->StartRunningInteraction( this, false );
 
-		//Msg("%s(%s) disabled collisions with %s(%s) at %0.2f\n", GetClassname(), GetDebugName(), pOtherNPC->GetClassName(), pOtherNPC->GetDebugName(), gpGlobals->curtime );
+		//Msg("%s(%s) disabled collisions with %s(%s) at %0.2f\n", GetClassname(), GetDebugName(), pOtherNPC->GetClassName(), pOtherNPC->GetDebugName(), gpGlobals->GetCurTime() );
 		PhysDisableEntityCollisions( this, pOtherNPC );
 	}
 
@@ -13219,7 +13219,7 @@ void CAI_BaseNPC::StartScriptedNPCInteraction( CAI_BaseNPC *pOtherNPC, ScriptedN
   	string_t iszSSName = AllocPooledString(szSSName);
 
 	// Setup next attempt
-	pInteraction->flNextAttemptTime = gpGlobals->curtime + pInteraction->flDelay + RandomFloat(-2,2);
+	pInteraction->flNextAttemptTime = gpGlobals->GetCurTime() + pInteraction->flDelay + RandomFloat(-2,2);
 
 	// Spawn a scripted sequence for this NPC to play the interaction anim
    	CAI_ScriptedSequence *pMySequence = (CAI_ScriptedSequence*)engineServer->CreateEntityByName( "scripted_sequence" );
@@ -13406,7 +13406,7 @@ void CAI_BaseNPC::CheckForScriptedNPCInteractions( void )
 		if ( !pInteraction->bValidOnCurrentEnemy )
 			continue;
 
-		if ( pInteraction->flNextAttemptTime > gpGlobals->curtime )
+		if ( pInteraction->flNextAttemptTime > gpGlobals->GetCurTime() )
 			continue;
 
 		Vector vecOrigin;
@@ -13546,7 +13546,7 @@ void CAI_BaseNPC::CheckForcedNPCInteractions( void )
 	{
 		if ( !InteractionCouldStart( pNPC, pInteraction, vecOrigin, angAngles ) )
 		{
-			if ( ( gpGlobals->curtime > m_flForcedInteractionTimeout ) && ( m_iInteractionState == NPCINT_MOVING_TO_MARK ) )
+			if ( ( gpGlobals->GetCurTime() > m_flForcedInteractionTimeout ) && ( m_iInteractionState == NPCINT_MOVING_TO_MARK ) )
 			{
 				bAbort = true;
 			}
@@ -13885,7 +13885,7 @@ void CAI_BaseNPC::StartForcedInteraction( CAI_BaseNPC *pNPC, int iInteraction )
 	m_hForcedInteractionPartner = pNPC;
 	ClearSchedule( "Starting a forced interaction" );
 
-	m_flForcedInteractionTimeout = gpGlobals->curtime + 8.0f;
+	m_flForcedInteractionTimeout = gpGlobals->GetCurTime() + 8.0f;
 	m_iInteractionPlaying = iInteraction;
 	m_iInteractionState = NPCINT_MOVING_TO_MARK;
 }
@@ -13968,7 +13968,7 @@ void CAI_BaseNPC::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	// Append time since seen player
 	if ( m_flLastSawPlayerTime )
 	{
-		set.AppendCriteria( "timesinceseenplayer", UTIL_VarArgs( "%f", gpGlobals->curtime - m_flLastSawPlayerTime ) );
+		set.AppendCriteria( "timesinceseenplayer", UTIL_VarArgs( "%f", gpGlobals->GetCurTime() - m_flLastSawPlayerTime ) );
 	}
 	else
 	{

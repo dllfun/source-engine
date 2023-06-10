@@ -99,7 +99,7 @@ void CCycler::Spawn( )
 	m_flPlaybackRate	= 1.0;
 	m_flGroundSpeed		= 0;
 
-	SetNextThink( gpGlobals->curtime + 1.0f );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 
 	ResetSequenceInfo( );
 
@@ -126,7 +126,7 @@ void CCycler::Spawn( )
 //
 void CCycler::Think( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	if (m_animate)
 	{
@@ -137,7 +137,7 @@ void CCycler::Think( void )
 	{
 		// ResetSequenceInfo();
 		// hack to avoid reloading model every frame
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		m_flPlaybackRate = 1.0;
 		m_bSequenceFinished = false;
 		m_flLastEventCheck = 0;
@@ -277,7 +277,7 @@ bool CWeaponCycler::Deploy( )
 
 	if (pOwner)
 	{
-		pOwner->m_flNextAttack = gpGlobals->curtime + 1.0;
+		pOwner->m_flNextAttack = gpGlobals->GetCurTime() + 1.0;
 		SendWeaponAnim( 0 );
 		m_iClip1 = 0;
 		m_iClip2 = 0;
@@ -292,7 +292,7 @@ bool CWeaponCycler::Holster( CBaseCombatWeapon *pSwitchingTo )
 	CBaseCombatCharacter *pOwner = GetOwner();
 	if (pOwner)
 	{
-		pOwner->m_flNextAttack = gpGlobals->curtime + 0.5;
+		pOwner->m_flNextAttack = gpGlobals->GetCurTime() + 0.5;
 	}
 
 	return true;
@@ -302,7 +302,7 @@ bool CWeaponCycler::Holster( CBaseCombatWeapon *pSwitchingTo )
 void CWeaponCycler::PrimaryAttack()
 {
 	SendWeaponAnim( GetSequence() );
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.3;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.3;
 }
 
 
@@ -326,7 +326,7 @@ void CWeaponCycler::SecondaryAttack( void )
 	SetSequence( nSequence );
 	SendWeaponAnim( nSequence );
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.3;
 }
 
 
@@ -364,7 +364,7 @@ void CWreckage::Spawn( void )
 	m_takedamage		= 0;
 
 	SetCycle( 0 );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	if (GetModelName() != NULL_STRING)
 	{
@@ -372,7 +372,7 @@ void CWreckage::Spawn( void )
 		SetModel( STRING( GetModelName() ) );
 	}
 
-	m_flStartTime		= gpGlobals->curtime;
+	m_flStartTime		= gpGlobals->GetCurTime();
 }
 
 void CWreckage::Precache( )
@@ -384,16 +384,16 @@ void CWreckage::Precache( )
 void CWreckage::Think( void )
 {
 	StudioFrameAdvance( );
-	SetNextThink( gpGlobals->curtime + 0.2 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.2 );
 
 	if (m_flDieTime)
 	{
-		if (m_flDieTime < gpGlobals->curtime)
+		if (m_flDieTime < gpGlobals->GetCurTime())
 		{
 			UTIL_Remove( this );
 			return;
 		}
-		else if (random->RandomFloat( 0, m_flDieTime - m_flStartTime ) > m_flDieTime - gpGlobals->curtime)
+		else if (random->RandomFloat( 0, m_flDieTime - m_flStartTime ) > m_flDieTime - gpGlobals->GetCurTime())
 		{
 			return;
 		}
@@ -491,7 +491,7 @@ bool CBlendingCycler::KeyValue( const char *szKeyName, const char *szValue )
 // Blending Cycler think
 void CBlendingCycler::Think( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// Move
 	m_iCurrent += m_iBlendspeed;
@@ -507,7 +507,7 @@ void CBlendingCycler::Think( void )
 	{
 		// ResetSequenceInfo();
 		// hack to avoid reloading model every frame
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		m_flPlaybackRate = 1.0;
 		m_bSequenceFinished = false;
 		m_flLastEventCheck = 0;

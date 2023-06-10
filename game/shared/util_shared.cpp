@@ -693,7 +693,7 @@ void UTIL_ClipTraceToPlayers( const Vector& vecAbsStart, const Vector& vecAbsEnd
 
 	ray.Init( vecAbsStart, vecAbsEnd );
 
-	for ( int k = 1; k <= gpGlobals->maxClients; ++k )
+	for ( int k = 1; k <= gpGlobals->GetMaxClients(); ++k )
 	{
 		CBasePlayer *player = UTIL_PlayerByIndex( k );
 
@@ -1019,16 +1019,16 @@ void UTIL_DecodeICE( unsigned char * buffer, int size, const unsigned char *key)
 }
 #endif
 
-// work-around since client header doesn't like inlined gpGlobals->curtime
+// work-around since client header doesn't like inlined gpGlobals->GetCurTime()
 float IntervalTimer::Now( void ) const
 {
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
-// work-around since client header doesn't like inlined gpGlobals->curtime
+// work-around since client header doesn't like inlined gpGlobals->GetCurTime()
 float CountdownTimer::Now( void ) const
 {
-	return gpGlobals->curtime;
+	return gpGlobals->GetCurTime();
 }
 
 
@@ -1045,7 +1045,7 @@ float CountdownTimer::Now( void ) const
 
 	CBasePlayer* UTIL_PlayerByUserId( int userID )
 	{
-		for (int i = 1; i<=gpGlobals->maxClients; i++ )
+		for (int i = 1; i<=gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 

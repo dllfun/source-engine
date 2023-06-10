@@ -197,7 +197,7 @@ public:
 		for ( int i = 0; i < count; i++ )
 		{
 			// only copy out entities that will simulate or think this frame
-			if ( m_simThinkList[i].nextThinkTick <= gpGlobals->tickcount )
+			if ( m_simThinkList[i].nextThinkTick <= gpGlobals->GetTickCount() )
 			{
 				Assert(m_simThinkList[i].nextThinkTick>=0);
 				int entinfoIndex = m_simThinkList[i].entEntry;
@@ -1469,7 +1469,7 @@ public:
 			// Allocate a CBasePlayer for pev, and call spawn
 			if ( nPlayerIndex >= 0 )
 			{
-				edict_t *pEdict = engineServer->PEntityOfEntIndex( nPlayerIndex );
+				edict_t *pEdict = INDEXENT( nPlayerIndex );
 				ClientPutInServer( pEdict, "unnamed" );
 				ClientActive( pEdict, false );
 

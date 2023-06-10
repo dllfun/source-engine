@@ -192,7 +192,7 @@ void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternat
 	if ( m_spawnflags & SF_ENTMAKER_AUTOSPAWN )
 	{
 		SetThink( &CEnvEntityMaker::CheckSpawnThink );
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 	}
 
 	// If we have a specified post spawn speed, apply it to all spawned entities
@@ -281,7 +281,7 @@ bool CEnvEntityMaker::HasRoomToSpawn()
 //-----------------------------------------------------------------------------
 bool CEnvEntityMaker::IsPlayerLooking()
 {
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 		if ( pPlayer )
@@ -306,7 +306,7 @@ bool CEnvEntityMaker::IsPlayerLooking()
 //-----------------------------------------------------------------------------
 void CEnvEntityMaker::CheckSpawnThink( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 	// Do we have an instance?
 	if ( m_hCurrentInstance )

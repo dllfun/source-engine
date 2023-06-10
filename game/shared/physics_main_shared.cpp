@@ -1290,19 +1290,19 @@ void CBaseEntity::PhysicsAddGravityMove( Vector &move )
 {
 	Vector vecAbsVelocity = GetAbsVelocity();
 
-	move.x = (vecAbsVelocity.x + GetBaseVelocity().x ) * gpGlobals->frametime;
-	move.y = (vecAbsVelocity.y + GetBaseVelocity().y ) * gpGlobals->frametime;
+	move.x = (vecAbsVelocity.x + GetBaseVelocity().x ) * gpGlobals->GetFrameTime();
+	move.y = (vecAbsVelocity.y + GetBaseVelocity().y ) * gpGlobals->GetFrameTime();
 
 	if ( GetFlags() & FL_ONGROUND )
 	{
-		move.z = GetBaseVelocity().z * gpGlobals->frametime;
+		move.z = GetBaseVelocity().z * gpGlobals->GetFrameTime();
 		return;
 	}
 
 	// linear acceleration due to gravity
-	float newZVelocity = vecAbsVelocity.z - GetActualGravity( this ) * gpGlobals->frametime;
+	float newZVelocity = vecAbsVelocity.z - GetActualGravity( this ) * gpGlobals->GetFrameTime();
 
-	move.z = ((vecAbsVelocity.z + newZVelocity) / 2.0 + GetBaseVelocity().z ) * gpGlobals->frametime;
+	move.z = ((vecAbsVelocity.z + newZVelocity) / 2.0 + GetBaseVelocity().z ) * gpGlobals->GetFrameTime();
 
 	Vector vecBaseVelocity = GetBaseVelocity();
 	vecBaseVelocity.z = 0.0f;
@@ -1397,7 +1397,7 @@ void CBaseEntity::ResolveFlyCollisionBounce( trace_t &trace, Vector &vecVelocity
 		Assert( pEntity );
 
 		// Are we on the ground?
-		if ( vecVelocity.z < ( GetActualGravity( this ) * gpGlobals->frametime ) )
+		if ( vecVelocity.z < ( GetActualGravity( this ) * gpGlobals->GetFrameTime() ) )
 		{
 			vecAbsVelocity.z = 0.0f;
 
@@ -1426,8 +1426,8 @@ void CBaseEntity::ResolveFlyCollisionBounce( trace_t &trace, Vector &vecVelocity
 			VectorNormalize( vecBaseDir );
 			float flScale = vecDelta.Dot( vecBaseDir );
 
-			VectorScale( vecAbsVelocity, ( 1.0f - trace.fraction ) * gpGlobals->frametime, vecVelocity ); 
-			VectorMA( vecVelocity, ( 1.0f - trace.fraction ) * gpGlobals->frametime, GetBaseVelocity() * flScale, vecVelocity );
+			VectorScale( vecAbsVelocity, ( 1.0f - trace.fraction ) * gpGlobals->GetFrameTime(), vecVelocity ); 
+			VectorMA( vecVelocity, ( 1.0f - trace.fraction ) * gpGlobals->GetFrameTime(), GetBaseVelocity() * flScale, vecVelocity );
 			PhysicsPushEntity( vecVelocity, &trace );
 		}
 	}
@@ -1478,7 +1478,7 @@ void CBaseEntity::ResolveFlyCollisionSlide( trace_t &trace, Vector &vecVelocity 
 	Assert( pEntity );
 
 	// Are we on the ground?
-	if ( vecVelocity.z < ( GetActualGravity( this ) * gpGlobals->frametime ) )
+	if ( vecVelocity.z < ( GetActualGravity( this ) * gpGlobals->GetFrameTime() ) )
 	{
 		vecAbsVelocity.z = 0.0f;
 
@@ -1502,7 +1502,7 @@ void CBaseEntity::ResolveFlyCollisionSlide( trace_t &trace, Vector &vecVelocity 
 	else
 	{
 		vecAbsVelocity += GetBaseVelocity();
-		vecAbsVelocity *= ( 1.0f - trace.fraction ) * gpGlobals->frametime * flSurfaceFriction;
+		vecAbsVelocity *= ( 1.0f - trace.fraction ) * gpGlobals->GetFrameTime() * flSurfaceFriction;
 		PhysicsPushEntity( vecAbsVelocity, &trace );
 	}
 }
@@ -1524,7 +1524,7 @@ void CBaseEntity::ResolveFlyCollisionCustom( trace_t &trace, Vector &vecVelocity
 		Assert( pEntity );
 
 		// Are we on the ground?
-		if ( vecVelocity.z < ( GetActualGravity( this ) * gpGlobals->frametime ) )
+		if ( vecVelocity.z < ( GetActualGravity( this ) * gpGlobals->GetFrameTime() ) )
 		{
 			Vector vecAbsVelocity = GetAbsVelocity();
 			vecAbsVelocity.z = 0.0f;
@@ -1673,12 +1673,12 @@ void CBaseEntity::PhysicsToss( void )
 		// taking it into account
 		Vector vecAbsVelocity = GetAbsVelocity();
 		vecAbsVelocity += GetBaseVelocity();
-		VectorScale(vecAbsVelocity, gpGlobals->frametime, move);
+		VectorScale(vecAbsVelocity, gpGlobals->GetFrameTime(), move);
 		PhysicsCheckVelocity( );
 	}
 
 	// move angles
-	SimulateAngles( gpGlobals->frametime );
+	SimulateAngles( gpGlobals->GetFrameTime() );
 
 	// move origin
 	PhysicsPushEntity( move, &trace );
@@ -1686,7 +1686,7 @@ void CBaseEntity::PhysicsToss( void )
 #if !defined( CLIENT_DLL )
 	if ( VPhysicsGetObject() )
 	{
-		VPhysicsGetObject()->UpdateShadow( GetAbsOrigin(), vec3_angle, true, gpGlobals->frametime );
+		VPhysicsGetObject()->UpdateShadow( GetAbsOrigin(), vec3_angle, true, gpGlobals->GetFrameTime() );
 	}
 #endif
 
@@ -1743,7 +1743,7 @@ void CBaseEntity::PhysicsRigidChild( void )
 	{
 		int solidType = GetSolid();
 		bool bAxisAligned = ( solidType == SOLID_BBOX || solidType == SOLID_NONE ) ? true : false;
-		VPhysicsGetObject()->UpdateShadow( GetAbsOrigin(), bAxisAligned ? vec3_angle : GetAbsAngles(), true, gpGlobals->frametime );
+		VPhysicsGetObject()->UpdateShadow( GetAbsOrigin(), bAxisAligned ? vec3_angle : GetAbsAngles(), true, gpGlobals->GetFrameTime() );
 	}
 #endif
 
@@ -1790,10 +1790,10 @@ void CBaseEntity::PhysicsSimulate( void )
 	// NOTE:  Players override PhysicsSimulate and drive through their CUserCmds at that point instead of
 	//  processng through this function call!!!  They shouldn't chain to here ever.
 	// Make sure not to simulate this guy twice per frame
-	if (m_nSimulationTick == gpGlobals->tickcount)
+	if (m_nSimulationTick == gpGlobals->GetTickCount())
 		return;
 
-	m_nSimulationTick = gpGlobals->tickcount;
+	m_nSimulationTick = gpGlobals->GetTickCount();
 
 	Assert( !IsPlayer() );
 
@@ -1828,7 +1828,7 @@ void CBaseEntity::PhysicsSimulate( void )
 			// Apply momentum (add in half of the previous frame of velocity first)
 			// BUGBUG: This will break with PhysicsStep() because of the timestep difference
 			Vector vecAbsVelocity;
-			VectorMA( GetAbsVelocity(), 1.0 + (gpGlobals->frametime*0.5), GetBaseVelocity(), vecAbsVelocity );
+			VectorMA( GetAbsVelocity(), 1.0 + (gpGlobals->GetFrameTime()*0.5), GetBaseVelocity(), vecAbsVelocity );
 			SetAbsVelocity( vecAbsVelocity );
 			SetBaseVelocity( vec3_origin );
 		}
@@ -2044,7 +2044,7 @@ private:
 		if ( m_Thinkers.Count() == 0 )
 			return;
 
-		Msg( "-----------------\nThink report frame %i\n", gpGlobals->tickcount );
+		Msg( "-----------------\nThink report frame %i\n", gpGlobals->GetTickCount() );
 
 		for ( int i = m_Thinkers.FirstInorder(); 
 			i != m_Thinkers.InvalidIndex(); 
@@ -2094,7 +2094,7 @@ bool CBaseEntity::PhysicsRunSpecificThink( int nContextIndex, BASEPTR thinkFunc 
 {
 	int thinktick = GetNextThinkTick( nContextIndex );
 
-	if ( thinktick <= 0 || thinktick > gpGlobals->tickcount )
+	if ( thinktick <= 0 || thinktick > gpGlobals->GetTickCount() )
 		return true;
 	
 	float thinktime = thinktick * TICK_INTERVAL;
@@ -2102,21 +2102,21 @@ bool CBaseEntity::PhysicsRunSpecificThink( int nContextIndex, BASEPTR thinkFunc 
 	// Don't let things stay in the past.
 	//  it is possible to start that way
 	//  by a trigger with a local time.
-	if ( thinktime < gpGlobals->curtime )
+	if ( thinktime < gpGlobals->GetCurTime() )
 	{
-		thinktime = gpGlobals->curtime;	
+		thinktime = gpGlobals->GetCurTime();	
 	}
 	
 	// Only do this on the game server
 #if !defined( CLIENT_DLL )
-	g_ThinkChecker.EntityThinking( gpGlobals->tickcount, this, thinktime, m_nNextThinkTick );
+	g_ThinkChecker.EntityThinking( gpGlobals->GetTickCount(), this, thinktime, m_nNextThinkTick );
 #endif
 
 	SetNextThink( nContextIndex, TICK_NEVER_THINK );
 
 	PhysicsDispatchThink( thinkFunc );
 
-	SetLastThink( nContextIndex, gpGlobals->curtime );
+	SetLastThink( nContextIndex, gpGlobals->GetCurTime() );
 
 	// Return whether entity is still valid
 	return ( !IsMarkedForDeletion() );

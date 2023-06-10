@@ -409,7 +409,7 @@ void CSineProxy::OnBind( void *pC_BaseEntity )
 		flSinePeriod = 1;
 
 	// get a value in [0,1]
-	flValue = ( sin( 2.0f * M_PI * (gpGlobals->curtime - flSineTimeOffset) / flSinePeriod ) * 0.5f ) + 0.5f;
+	flValue = ( sin( 2.0f * M_PI * (gpGlobals->GetCurTime() - flSineTimeOffset) / flSinePeriod ) * 0.5f ) + 0.5f;
 	// get a value in [min,max]	
 	flValue = ( flSineMax - flSineMin ) * flValue + flSineMin;
 	
@@ -615,7 +615,7 @@ void CLinearRampProxy::OnBind( void *pC_BaseEntity )
 	float flValue;
 	
 	// get a value in [0,1]
-	flValue = m_Rate.GetFloat() * gpGlobals->curtime + m_InitialValue.GetFloat();	
+	flValue = m_Rate.GetFloat() * gpGlobals->GetCurTime() + m_InitialValue.GetFloat();	
 	SetFloatResult( flValue );
 
 	if ( ToolsEnabled() )

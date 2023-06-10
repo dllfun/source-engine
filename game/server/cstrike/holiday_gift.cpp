@@ -77,8 +77,8 @@ void CHolidayGift::Spawn( void )
 	SetModel( CHRISTMAS_MODEL );
 
 	// Die in 30 seconds
-	SetContextThink( &CBaseEntity::SUB_Remove, gpGlobals->curtime + 30, "DIE_THINK" );
-	SetContextThink( &CHolidayGift::DropSoundThink, gpGlobals->curtime + 0.2f, "SOUND_THINK" );
+	SetContextThink( &CBaseEntity::SUB_Remove, gpGlobals->GetCurTime() + 30, "DIE_THINK" );
+	SetContextThink( &CHolidayGift::DropSoundThink, gpGlobals->GetCurTime() + 0.2f, "SOUND_THINK" );
 }
 
 //-----------------------------------------------------------------------------

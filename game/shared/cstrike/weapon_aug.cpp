@@ -97,7 +97,7 @@ void CWeaponAug::SecondaryAttack()
 		m_weaponMode = Primary_Mode;
 	}
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.3;
 }
 
 

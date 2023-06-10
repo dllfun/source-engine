@@ -22,7 +22,7 @@ static void PrefixChanged( IConVar *c, const char *oldPrefix, float flOldValue )
 {
 	if ( TheCSBots() && TheCSBots()->IsServerActive() )
 	{
-		for( int i = 1; i <= gpGlobals->maxClients; ++i )
+		for( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 		{
 			CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 

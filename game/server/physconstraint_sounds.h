@@ -234,7 +234,7 @@ void VelocitySampler::BeginSampling(const Vector &relativeVelocity)
 void VelocitySampler::AddSample(const Vector &relativeVelocity)
 {
 	m_prevSample = relativeVelocity;
-	m_fPrevSampleTime = gpGlobals->curtime;
+	m_fPrevSampleTime = gpGlobals->GetCurTime();
 }
 
 

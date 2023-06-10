@@ -1435,14 +1435,14 @@ void CMP3Player::PlaySong( int songIndex, float skipTime /*= 0.0f */ )
 		volume,
 		PITCH_NORM,
 		0,
-		skipTime == 0.0f ? 0.0f : ( gpGlobals->curtime + skipTime  ) ); 
+		skipTime == 0.0f ? 0.0f : ( gpGlobals->GetCurTime() + skipTime  ) ); 
 
 	m_nSongGuid = enginesound->GetGuidForLastSoundEmitted();
 
 	m_nCurrentSong = songIndex;
 	m_bPlaying = true;
 	m_LastSong = song.playbackfilename;
-	m_SongStart = gpGlobals->realtime;
+	m_SongStart = gpGlobals->GetRealTime();
 	m_flSongDuration = GetMP3Duration( soundname );
 
 	m_pCurrentSong->SetText( song.shortname.String() );
@@ -1569,7 +1569,7 @@ void CMP3Player::OnTick()
 
 		if ( m_flSongDuration >= 0.001f )
 		{
-			float elapsed = gpGlobals->realtime - m_SongStart;
+			float elapsed = gpGlobals->GetRealTime() - m_SongStart;
 
 			float frac = elapsed / m_flSongDuration;
 			frac = clamp( frac, 0.0f, 1.0f );

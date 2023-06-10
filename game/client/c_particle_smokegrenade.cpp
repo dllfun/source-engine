@@ -551,7 +551,7 @@ void C_ParticleSmokeGrenade::UpdateParticleAndFindTrade( int iParticle, float fT
 
 void C_ParticleSmokeGrenade::Update(float fTimeDelta)
 {
-	float flLifetime = gpGlobals->curtime - m_flSpawnTime;
+	float flLifetime = gpGlobals->GetCurTime() - m_flSpawnTime;
 
 	// Update the smoke trail.
 	UpdateSmokeTrail( fTimeDelta );
@@ -950,7 +950,7 @@ void C_ParticleSmokeGrenade::CleanupToolRecordingState( KeyValues *msg )
 		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
 		msg->SetString( "name", "C_ParticleSmokeGrenade" );
 		msg->SetInt( "id", nId );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 
 		KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
 		pEmitter->SetInt( "count", NUM_PARTICLES_PER_DIMENSION * NUM_PARTICLES_PER_DIMENSION * NUM_PARTICLES_PER_DIMENSION );

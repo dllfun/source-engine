@@ -72,9 +72,9 @@ template < class T > T * CreateBot( const BotProfile *profile, int team )
 	if ( !AreBotsAllowed() )
 		return NULL;
 
-	if ( UTIL_ClientsInGame() >= gpGlobals->maxClients )
+	if ( UTIL_ClientsInGame() >= gpGlobals->GetMaxClients() )
 	{
-		CONSOLE_ECHO( "Unable to create bot: Server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->maxClients );
+		CONSOLE_ECHO( "Unable to create bot: Server is full (%d/%d clients).\n", UTIL_ClientsInGame(), gpGlobals->GetMaxClients() );
 		return NULL;
 	}
 
@@ -488,9 +488,9 @@ float g_flBotFullThinkInterval	= 1.0 / 15.0;	// full AI at lower frequency (was 
 	
 	Upkeep();
 
-	if (gpGlobals->curtime >= m_flNextFullBotThink)
+	if (gpGlobals->GetCurTime() >= m_flNextFullBotThink)
 	{
-		m_flNextFullBotThink = gpGlobals->curtime + g_flBotFullThinkInterval;
+		m_flNextFullBotThink = gpGlobals->GetCurTime() + g_flBotFullThinkInterval;
 
 		ResetCommand();
 		Update();
@@ -556,18 +556,18 @@ inline bool CBot< PlayerType >::Jump( bool mustJump )
 	if (!mustJump)
 	{
 		const float minJumpInterval = 0.9f; // 1.5f;
-		if (gpGlobals->curtime - m_jumpTimestamp < minJumpInterval)
+		if (gpGlobals->GetCurTime() - m_jumpTimestamp < minJumpInterval)
 			return false;
 	}
 
 	// still need sanity check for jumping frequency
 	const float sanityInterval = 0.3f;
-	if (gpGlobals->curtime - m_jumpTimestamp < sanityInterval)
+	if (gpGlobals->GetCurTime() - m_jumpTimestamp < sanityInterval)
 		return false;
 
 	// jump
 	SETBITS( m_buttonFlags, IN_JUMP );
-	m_jumpTimestamp = gpGlobals->curtime;
+	m_jumpTimestamp = gpGlobals->GetCurTime();
 	return true;
 }
 
@@ -592,11 +592,11 @@ template < class PlayerType >
 inline bool CBot< PlayerType >::IsJumping( void )
 {
 	// if long time after last jump, we can't be jumping
-	if (gpGlobals->curtime - m_jumpTimestamp > 3.0f)
+	if (gpGlobals->GetCurTime() - m_jumpTimestamp > 3.0f)
 		return false;
 
 	// if we just jumped, we're still jumping
-	if (gpGlobals->curtime - m_jumpTimestamp < 0.9f) // 1.0f
+	if (gpGlobals->GetCurTime() - m_jumpTimestamp < 0.9f) // 1.0f
 		return true;
 
 	// a little after our jump, we're jumping until we hit the ground
@@ -743,7 +743,7 @@ template < class PlayerType >
 inline void CBot< PlayerType >::BuildUserCmd( CUserCmd& cmd, const QAngle& viewangles, float forwardmove, float sidemove, float upmove, int buttons, byte impulse )
 {
 	Q_memset( &cmd, 0, sizeof( cmd ) );
-	cmd.command_number = gpGlobals->tickcount;
+	cmd.command_number = gpGlobals->GetTickCount();
 	cmd.forwardmove = forwardmove;
 	cmd.sidemove = sidemove;
 	cmd.upmove = upmove;
@@ -805,7 +805,7 @@ inline byte CBot< PlayerType >::ThrottledMsec( void ) const
 	int iNewMsec;
 
 	// Estimate Msec to use for this command based on time passed from the previous command
-	iNewMsec = (int)( (gpGlobals->curtime - m_flPreviousCommandTime) * 1000 );
+	iNewMsec = (int)( (gpGlobals->GetCurTime() - m_flPreviousCommandTime) * 1000 );
 	if (iNewMsec > 255)		// Doh, bots are going to be slower than they should if this happens.
 		iNewMsec = 255;		// Upgrade that CPU or use less bots!
 
@@ -917,7 +917,7 @@ inline int CBot< PlayerType >::GetEnemiesRemaining( void ) const
 {
 	int count = 0;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBaseEntity *player = UTIL_PlayerByIndex( i );
 
@@ -945,7 +945,7 @@ inline int CBot< PlayerType >::GetFriendsRemaining( void ) const
 {
 	int count = 0;
 
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CBaseEntity *player = UTIL_PlayerByIndex( i );
 

@@ -144,7 +144,7 @@ void CEnvScreenOverlay::InputStartOverlay( inputdata_t &inputdata )
 		return;
 	}
 
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 	m_bIsActive = true;
 
 	// Turn off any other screen overlays out there
@@ -177,7 +177,7 @@ void CEnvScreenOverlay::InputSwitchOverlay( inputdata_t &inputdata )
 	}
 
 	m_iDesiredOverlay = iNewOverlay;
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 }
 
 void CEnvScreenOverlay::InputStopOverlay( inputdata_t &inputdata )

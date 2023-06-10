@@ -98,7 +98,7 @@ PRECACHE_WEAPON_REGISTER( weapon_deagle );
 
 CDEagle::CDEagle()
 {
-	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 }
 
 
@@ -146,21 +146,21 @@ void CDEagle::PrimaryAttack()
 		return;
 		
 	// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-	m_flAccuracy -= (0.35)*(0.4 - ( gpGlobals->curtime - m_flLastFire ) );
+	m_flAccuracy -= (0.35)*(0.4 - ( gpGlobals->GetCurTime() - m_flLastFire ) );
 
 	if (m_flAccuracy > 0.9)
 		m_flAccuracy = 0.9;
 	else if (m_flAccuracy < 0.55)
 		m_flAccuracy = 0.55;
 
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals->GetCurTime();
 
 	if (m_iClip1 <= 0)
 	{
 		if ( m_bFireOnEmpty )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.1f;
 			m_bFireOnEmpty = false;
 		}
 
@@ -196,7 +196,7 @@ void CDEagle::PrimaryAttack()
 		GetInaccuracy(),
 		GetSpread());
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetCSWpnData().m_flCycleTime;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + GetCSWpnData().m_flCycleTime;
 
 	if ( !m_iClip1 && pPlayer->GetAmmoCount( GetPrimaryAmmoType() ) <= 0 )
 	{
@@ -204,7 +204,7 @@ void CDEagle::PrimaryAttack()
 		pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 	}
 
-	SetWeaponIdleTime( gpGlobals->curtime + 1.8 );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 1.8 );
 
 	// update accuracy
 	m_fAccuracyPenalty += GetCSWpnData().m_fInaccuracyImpulseFire[Primary_Mode];
@@ -228,10 +228,10 @@ bool CDEagle::Reload()
 
 void CDEagle::WeaponIdle()
 {
-	if ( m_flTimeWeaponIdle > gpGlobals->curtime )
+	if ( m_flTimeWeaponIdle > gpGlobals->GetCurTime() )
 		return;
 
-	SetWeaponIdleTime( gpGlobals->curtime + 20 );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 20 );
 
 	if (m_iClip1 != 0)
 	{

@@ -99,7 +99,7 @@ static inline void RecordProjectDecal( const Vector &pos, const QAngle &angles,
 
  		msg->SetInt( "te", TE_PROJECT_DECAL );
  		msg->SetString( "name", "TE_ProjectDecal" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", pos.x );
 		msg->SetFloat( "originy", pos.y );
 		msg->SetFloat( "originz", pos.z );

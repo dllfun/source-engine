@@ -49,7 +49,7 @@ public:
 	virtual bool						ReconstructReplayIfNecessary( CReplay *pReplay ) = 0;
 	virtual void						OnPlayerSpawn() = 0;	// Called on the client when player is spawned
 	virtual void						OnPlayerClassChanged() = 0;	// Called when the player's class changes - we use this instead of an event for immediacy
-	virtual void						GetPlaybackTimes( float &flOutTime, float &flOutLength, const CReplay *pReplay, const CReplayPerformance *pPerformance ) = 0;	// Calculate the current time and length of a replay or performance - takes in tick and out tick into account for performances - flCurTime should be gpGlobals->curtime. pPerformance can be NULL.
+	virtual void						GetPlaybackTimes( float &flOutTime, float &flOutLength, const CReplay *pReplay, const CReplayPerformance *pPerformance ) = 0;	// Calculate the current time and length of a replay or performance - takes in tick and out tick into account for performances - flCurTime should be gpGlobals->GetCurTime(). pPerformance can be NULL.
 	virtual uint64						GetServerSessionId( ReplayHandle_t hReplay ) = 0;
 };
 

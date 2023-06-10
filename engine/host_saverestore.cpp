@@ -1252,7 +1252,7 @@ int CSaveRestore::GetMostRecentElapsedTimeSet( void )
 void CSaveRestore::SetMostRecentElapsedMinutes( const int min )
 {
 	m_MostRecentElapsedMinutes = min;
-	m_MostRecentElapsedTimeSet = g_ServerGlobalVariables.curtime;
+	m_MostRecentElapsedTimeSet = g_ServerGlobalVariables.GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -1261,7 +1261,7 @@ void CSaveRestore::SetMostRecentElapsedMinutes( const int min )
 void CSaveRestore::SetMostRecentElapsedSeconds( const int sec )
 {
 	m_MostRecentElapsedSeconds = sec;
-	m_MostRecentElapsedTimeSet = g_ServerGlobalVariables.curtime;
+	m_MostRecentElapsedTimeSet = g_ServerGlobalVariables.GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -1546,7 +1546,7 @@ void CSaveRestore::Finish( CSaveRestoreData *save )
 	SaveFreeMemory( save );
 
 
-	g_ServerGlobalVariables.pSaveData = NULL;
+	g_ServerGlobalVariables.SetSaveData( NULL);
 }
 
 BEGIN_SIMPLE_DATADESC( musicsave_t )
@@ -2312,7 +2312,7 @@ CSaveRestoreData *CSaveRestore::LoadSaveData( const char *level )
 	pSaveData->levelInfo.fUseLandmark = true;
 	pSaveData->levelInfo.time = 0;
 	VectorCopy( vec3_origin, pSaveData->levelInfo.vecLandmarkOffset );
-	g_ServerGlobalVariables.pSaveData = (CSaveRestoreData*)pSaveData;
+	g_ServerGlobalVariables.SetSaveData( (CSaveRestoreData*)pSaveData);
 
 	return pSaveData;
 }
@@ -2602,7 +2602,7 @@ void CSaveRestore::LoadAdjacentEnts( const char *pOldLevel, const char *pLandmar
 	Vector			landmarkOrigin;
 
 	memset( &currentLevelData, 0, sizeof(CSaveRestoreData) );
-	g_ServerGlobalVariables.pSaveData = &currentLevelData;
+	g_ServerGlobalVariables.SetSaveData(& currentLevelData);
 	// Build the adjacent map list
 	serverGameDLL->BuildAdjacentMapList();
 	bool foundprevious = false;
@@ -2665,7 +2665,7 @@ void CSaveRestore::LoadAdjacentEnts( const char *pOldLevel, const char *pLandmar
 			Finish( pSaveData );
 		}
 	}
-	g_ServerGlobalVariables.pSaveData = NULL;
+	g_ServerGlobalVariables.SetSaveData( NULL);
 	if ( !foundprevious )
 	{
 		// Host_Error( "Level transition ERROR\nCan't find connection to %s from %s\n", pOldLevel, sv.GetMapName() );
@@ -2908,7 +2908,7 @@ static void SaveGame( const CCommand &args )
 		Q_strncpy( sv.GetMapname(), args[1], 64);
 	}
 
-	int iAdditionalSeconds = g_ServerGlobalVariables.curtime - saverestore->GetMostRecentElapsedTimeSet();
+	int iAdditionalSeconds = g_ServerGlobalVariables.GetCurTime() - saverestore->GetMostRecentElapsedTimeSet();
 	int iAdditionalMinutes = iAdditionalSeconds / 60;
 	iAdditionalSeconds -= iAdditionalMinutes * 60;
 
@@ -3015,7 +3015,7 @@ CON_COMMAND_F( minisave, "Saves game (for current level only!)", FCVAR_DONTRECOR
 	if (args.ArgC() != 2 || strstr(args[1], ".."))
 		return;
 
-	int iAdditionalSeconds = g_ServerGlobalVariables.curtime - saverestore->GetMostRecentElapsedTimeSet();
+	int iAdditionalSeconds = g_ServerGlobalVariables.GetCurTime() - saverestore->GetMostRecentElapsedTimeSet();
 	int iAdditionalMinutes = iAdditionalSeconds / 60;
 	iAdditionalSeconds -= iAdditionalMinutes * 60;
 
@@ -3034,7 +3034,7 @@ static void AutoSave_Silent( bool bDangerous )
 	if ( !saverestore->IsValidSave() )
 		return;
 
-	int iAdditionalSeconds = g_ServerGlobalVariables.curtime - saverestore->GetMostRecentElapsedTimeSet();
+	int iAdditionalSeconds = g_ServerGlobalVariables.GetCurTime() - saverestore->GetMostRecentElapsedTimeSet();
 	int iAdditionalMinutes = iAdditionalSeconds / 60;
 	iAdditionalSeconds -= iAdditionalMinutes * 60;
 

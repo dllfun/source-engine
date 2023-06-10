@@ -77,14 +77,14 @@ void C_AI_BaseNPC::ClientThink( void )
 						if ( flDist < flDistOther )
 						{
 							pPlayer->m_hClosestNPC = this;
-							pPlayer->m_flSpeedModTime = gpGlobals->curtime + cl_npc_speedmod_intime.GetFloat();
+							pPlayer->m_flSpeedModTime = gpGlobals->GetCurTime() + cl_npc_speedmod_intime.GetFloat();
 						}
 					}
 				}
 				else
 				{
 					pPlayer->m_hClosestNPC = this;
-					pPlayer->m_flSpeedModTime = gpGlobals->curtime + cl_npc_speedmod_intime.GetFloat();
+					pPlayer->m_flSpeedModTime = gpGlobals->GetCurTime() + cl_npc_speedmod_intime.GetFloat();
 				}
 			}
 		}
@@ -94,9 +94,9 @@ void C_AI_BaseNPC::ClientThink( void )
 #ifdef HL2_EPISODIC
 	C_BaseHLPlayer *pPlayer = dynamic_cast<C_BaseHLPlayer*>( C_BasePlayer::GetLocalPlayer() );
 
-	if ( pPlayer && m_flTimePingEffect > gpGlobals->curtime )
+	if ( pPlayer && m_flTimePingEffect > gpGlobals->GetCurTime() )
 	{
-		float fPingEffectTime = m_flTimePingEffect - gpGlobals->curtime;
+		float fPingEffectTime = m_flTimePingEffect - gpGlobals->GetCurTime();
 		
 		if ( fPingEffectTime > 0.0f )
 		{
@@ -136,7 +136,7 @@ void C_AI_BaseNPC::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
 
-	if ( ( ShouldModifyPlayerSpeed() == true ) || ( m_flTimePingEffect > gpGlobals->curtime ) )
+	if ( ( ShouldModifyPlayerSpeed() == true ) || ( m_flTimePingEffect > gpGlobals->GetCurTime() ) )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
@@ -144,10 +144,10 @@ void C_AI_BaseNPC::OnDataChanged( DataUpdateType_t type )
 
 void C_AI_BaseNPC::GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x4_t *pDeltaBones1, matrix3x4_t *pCurrentBones, float boneDt )
 {
-	ForceSetupBonesAtTime( pDeltaBones0, gpGlobals->curtime - boneDt );
-	GetRagdollCurSequenceWithDeathPose( this, pDeltaBones1, gpGlobals->curtime, m_iDeathPose, m_iDeathFrame );
+	ForceSetupBonesAtTime( pDeltaBones0, gpGlobals->GetCurTime() - boneDt );
+	GetRagdollCurSequenceWithDeathPose( this, pDeltaBones1, gpGlobals->GetCurTime(), m_iDeathPose, m_iDeathFrame );
 	float ragdollCreateTime = PhysGetSyncCreateTime();
-	if ( ragdollCreateTime != gpGlobals->curtime )
+	if ( ragdollCreateTime != gpGlobals->GetCurTime() )
 	{
 		// The next simulation frame begins before the end of this frame
 		// so initialize the ragdoll at that time so that it will reach the current
@@ -157,7 +157,7 @@ void C_AI_BaseNPC::GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x
 	}
 	else
 	{
-		SetupBones( pCurrentBones, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+		SetupBones( pCurrentBones, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 	}
 }
 

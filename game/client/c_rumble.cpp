@@ -30,7 +30,7 @@ typedef struct
 //=========================================================
 typedef struct
 {
-	float			starttime;			// When did this effect start playing? (gpGlobals->curtime)
+	float			starttime;			// When did this effect start playing? (gpGlobals->GetCurTime())
 	int				waveformIndex;		// Type of effect waveform used (an enum from rumble_shared.h)
 	int				priority;			// How important this effect is (for making replacement decisions)
 	bool			in_use;				// Is this channel in use?? (true if effect is currently playing, false if done or otherwise available)
@@ -485,7 +485,7 @@ RumbleChannel_t	*CRumbleEffects::FindAvailableChannel( int priority )
 			if( pBestChannel )
 			{
 				// If we already have a channel of the same priority to discard, make sure we discard the oldest.
-				float age = gpGlobals->curtime - pChannel->starttime;
+				float age = gpGlobals->GetCurTime() - pChannel->starttime;
 
 				if( age > oldestChannel )
 				{
@@ -497,7 +497,7 @@ RumbleChannel_t	*CRumbleEffects::FindAvailableChannel( int priority )
 			{
 				// Take it.
 				pBestChannel = pChannel;
-				oldestChannel = gpGlobals->curtime - pChannel->starttime;
+				oldestChannel = gpGlobals->GetCurTime() - pChannel->starttime;
 			}
 		}
 	}
@@ -579,7 +579,7 @@ void CRumbleEffects::StartEffect( unsigned char effectIndex, unsigned char rumbl
 	{
 		pChannel->waveformIndex = effectIndex;
 		pChannel->priority = 1;
-		pChannel->starttime = gpGlobals->curtime;
+		pChannel->starttime = gpGlobals->GetCurTime();
 		pChannel->in_use = true;
 		pChannel->rumbleFlags = rumbleFlags;
 
@@ -667,7 +667,7 @@ void CRumbleEffects::ComputeAmplitudes( RumbleChannel_t *pChannel, float curtime
 		if( (pChannel->rumbleFlags & RUMBLE_FLAG_LOOP) )
 		{
 			// Loop this effect
-			pChannel->starttime = gpGlobals->curtime;
+			pChannel->starttime = gpGlobals->GetCurTime();
 
 			// Send the first sample.
 			left = m_Waveforms[pChannel->waveformIndex].amplitude_left[0];
@@ -802,7 +802,7 @@ void UpdateRumbleEffects()
 		return;
 	}
 
-	g_RumbleEffects.UpdateEffects( gpGlobals->curtime );
+	g_RumbleEffects.UpdateEffects( gpGlobals->GetCurTime() );
 }
 
 //---------------------------------------------------------

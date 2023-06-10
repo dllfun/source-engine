@@ -223,7 +223,7 @@ bool CAI_LeadBehavior::SetGoal( const AI_LeadArgs_t &args )
 	m_hasPausedScenes = false;
 	m_flSpeakNextNagTime = 0;
 	m_flWeaponSafetyTimeOut = 0;
-	m_flNextLeadIdle = gpGlobals->curtime + 10;
+	m_flNextLeadIdle = gpGlobals->GetCurTime() + 10;
 	m_bInitialAheadTest = true;
 
 	if ( args.pszWaitPoint && args.pszWaitPoint[0] )
@@ -540,7 +540,7 @@ int CAI_LeadBehavior::SelectSchedule()
 			if ( pFollower && !pFollower->Weapon_OwnsThisType( STRING(m_weaponname) ) )
 			{
 				// If the safety timeout has run out, just give the player the weapon
-				if ( !m_flWeaponSafetyTimeOut || (m_flWeaponSafetyTimeOut > gpGlobals->curtime) )
+				if ( !m_flWeaponSafetyTimeOut || (m_flWeaponSafetyTimeOut > gpGlobals->GetCurTime()) )
 					return SCHED_LEAD_PLAYERNEEDSWEAPON;
 
 				string_t iszItem = AllocPooledString( "weapon_bugbait" );
@@ -793,7 +793,7 @@ void CAI_LeadBehavior::StartTask( const Task_t *pTask )
 			float flAvailableTime = GetOuter()->GetExpresser()->GetSemaphoreAvailableTime( GetOuter() );
 
 			// if someone else is talking, don't speak
-			if ( flAvailableTime <= gpGlobals->curtime )
+			if ( flAvailableTime <= gpGlobals->GetCurTime() )
 			{
 				Speak( TLK_LEAD_MISSINGWEAPON );
 			}
@@ -859,7 +859,7 @@ void CAI_LeadBehavior::StartTask( const Task_t *pTask )
 			// Instead, just wait a wee tad, and then start moving. NPC will speak on the go.
 			if ( TaskIsRunning() && !m_args.iRetrievePlayer )
 			{
-				if ( gpGlobals->curtime - GetOuter()->GetTimeTaskStarted() > 0.3 )
+				if ( gpGlobals->GetCurTime() - GetOuter()->GetTimeTaskStarted() > 0.3 )
 				{
 					TaskComplete();
 				}
@@ -971,9 +971,9 @@ void CAI_LeadBehavior::RunTask( const Task_t *pTask )
 			if ( TaskIsRunning() && IsCurSchedule( SCHED_LEAD_PLAYER, false ) )
 			{
 				// If we're not speaking, and we haven't tried for a while, try to speak lead idle
-				if ( m_flNextLeadIdle < gpGlobals->curtime && !IsSpeaking() )
+				if ( m_flNextLeadIdle < gpGlobals->GetCurTime() && !IsSpeaking() )
 				{
-					m_flNextLeadIdle = gpGlobals->curtime + RandomFloat( 10,15 );
+					m_flNextLeadIdle = gpGlobals->GetCurTime() + RandomFloat( 10,15 );
 
 					if ( !m_args.iRetrievePlayer && HasCondition( COND_LEAD_FOLLOWER_LOST ) && HasCondition(COND_SEE_PLAYER) )
 					{
@@ -1024,7 +1024,7 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 	// Don't spam Nags
 	if ( bNag )
 	{
-		if ( m_flSpeakNextNagTime > gpGlobals->curtime )
+		if ( m_flSpeakNextNagTime > gpGlobals->GetCurTime() )
 		{
 			DevMsg( GetOuter(), "Leader didn't speak due to Nag timer.\n");
 			return false;
@@ -1033,7 +1033,7 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 	
 	if ( pExpresser->Speak( concept, GetConceptModifiers( concept ) ) )
 	{
-		m_flSpeakNextNagTime = gpGlobals->curtime + LEAD_NAG_TIME;
+		m_flSpeakNextNagTime = gpGlobals->GetCurTime() + LEAD_NAG_TIME;
 		return true;
 	}
 

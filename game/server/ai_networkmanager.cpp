@@ -154,7 +154,7 @@ void CAI_NetworkManager::RebuildNetworkGraph( void )
 	{
 		UTIL_CenterPrintAll( "Doing partial rebuild of Node Graph...\n" );
 		SetThink(&CAI_NetworkManager::RebuildThink);
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 
@@ -949,7 +949,7 @@ void CAI_NetworkManager::InitializeAINetworks()
 	CNodeEnt::m_nNodeCount = 0;
 
 	pNetwork->SetThink( &CAI_NetworkManager::DelayedInit );
-	pNetwork->SetNextThink( gpGlobals->curtime );
+	pNetwork->SetNextThink( gpGlobals->GetCurTime() );
 }
 
 // UNDONE: Where should this be defined?
@@ -1112,7 +1112,7 @@ void CAI_NetworkManager::DelayedInit( void )
 			DevMsg( "Node Graph out of Date. Rebuilding... (%d, %d, %d)\n", (int)m_bDontSaveGraph, (int)!CAI_NetworkManager::NetworksLoaded(), (int)engineServer->IsInEditMode() );
 			UTIL_CenterPrintAll( "Node Graph out of Date. Rebuilding...\n" );
 			m_bNeedGraphRebuild = true;
-			g_pAINetworkManager->SetNextThink( gpGlobals->curtime + 1 );
+			g_pAINetworkManager->SetNextThink( gpGlobals->GetCurTime() + 1 );
 			return;
 		}	
 
@@ -1960,13 +1960,13 @@ void CAI_NetworkEditTools::DrawAINetworkOverlay(void)
 	// Output performance stats
 	// ----------------------------
 #ifdef AI_PERF_MON
-		if (m_fNextPerfStatTime < gpGlobals->curtime)
+		if (m_fNextPerfStatTime < gpGlobals->GetCurTime())
 		{
 			char temp[512];
 			Q_snprintf(temp,sizeof(temp),"%3.2f NN/m\n%3.2f P/m\n",(m_nPerfStatNN/1.0),(m_nPerfStatPB/1.0));
 			UTIL_CenterPrintAll(temp);
 
-			m_fNextPerfStatTime = gpGlobals->curtime + 1;
+			m_fNextPerfStatTime = gpGlobals->GetCurTime() + 1;
 			m_nPerfStatNN		= 0;
 			m_nPerfStatPB		= 0;
 		}

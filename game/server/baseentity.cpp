@@ -115,7 +115,7 @@ void SendProxy_AnimTime( const SendProp *pProp, const void *pStruct, const void 
 	
 	int ticknumber = TIME_TO_TICKS( pEntity->m_flAnimTime );
 	// Tickbase is current tick rounded down to closes 100 ticks
-	int tickbase = gpGlobals->GetNetworkBase( gpGlobals->tickcount, pEntity->NetworkProp()->entindex());
+	int tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->NetworkProp()->entindex());
 	int addt = 0;
 	// If it's within the last tick interval through the current one, then we can encode it
 	if ( ticknumber >= ( tickbase - 100 ) )
@@ -133,7 +133,7 @@ void SendProxy_SimulationTime( const SendProp *pProp, const void *pStruct, const
 
 	int ticknumber = TIME_TO_TICKS( pEntity->m_flSimulationTime );
 	// tickbase is current tick rounded down to closest 100 ticks
-	int tickbase = gpGlobals->GetNetworkBase( gpGlobals->tickcount, pEntity->NetworkProp()->entindex());
+	int tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->NetworkProp()->entindex());
 	int addt = 0;
 	if ( ticknumber >= tickbase )
 	{
@@ -314,7 +314,7 @@ CBaseEntity::CBaseEntity( bool bServerOnly )
 	m_flShadowCastDistance = m_flDesiredShadowCastDistance = 0;
 	SetRenderColor( 255, 255, 255, 255 );
 	m_iTeamNum = m_iInitialTeamNum = TEAM_UNASSIGNED;
-	m_nLastThinkTick = gpGlobals==NULL?0:gpGlobals->tickcount;
+	m_nLastThinkTick = gpGlobals==NULL?0:gpGlobals->GetTickCount();
 	m_nSimulationTick = -1;
 	SetIdentityMatrix( m_rgflCoordinateFrame );
 	m_pBlocker = NULL;
@@ -642,8 +642,8 @@ void CBaseEntity::AddTimedOverlay( const char *msg, int endTime )
 	int len = strlen(msg);
 	pNewTO->msg = new char[len + 1];
 	Q_strncpy(pNewTO->msg,msg, len+1);
-	pNewTO->msgEndTime = gpGlobals->curtime + endTime;
-	pNewTO->msgStartTime = gpGlobals->curtime;
+	pNewTO->msgEndTime = gpGlobals->GetCurTime() + endTime;
+	pNewTO->msgStartTime = gpGlobals->GetCurTime();
 	pNewTO->pNextTimedOverlay = m_pTimedOverlay;
 	m_pTimedOverlay = pNewTO;
 }
@@ -762,7 +762,7 @@ void CBaseEntity::DrawTimedOverlays(void)
 		pNextTO = pTO->pNextTimedOverlay;
 
 		// Remove old messages unless messages are paused
-		if ((!CBaseEntity::Debug_IsPaused() && gpGlobals->curtime > pTO->msgEndTime) ||
+		if ((!CBaseEntity::Debug_IsPaused() && gpGlobals->GetCurTime() > pTO->msgEndTime) ||
 			(nCount > 10))
 		{
 			if (pLastTO)
@@ -784,7 +784,7 @@ void CBaseEntity::DrawTimedOverlays(void)
 			// If messages aren't paused fade out
 			if (!CBaseEntity::Debug_IsPaused())
 			{
-				nAlpha = 255*((gpGlobals->curtime - pTO->msgStartTime)/(pTO->msgEndTime - pTO->msgStartTime));
+				nAlpha = 255*((gpGlobals->GetCurTime() - pTO->msgStartTime)/(pTO->msgEndTime - pTO->msgStartTime));
 			}
 			int r = 185;
 			int g = 145;
@@ -887,7 +887,7 @@ void CBaseEntity::DrawDebugGeometryOverlays(void)
 
 		int r,g,b;
 
-		if( ((int)gpGlobals->curtime) % 2 == 1 )
+		if( ((int)gpGlobals->GetCurTime()) % 2 == 1 )
 		{
 			r = 255; 
 			g = 255;
@@ -1435,7 +1435,7 @@ void CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 		// Scale the damage by my own modifiers
 		info.ScaleDamage( GetReceivedDamageScale( info.GetAttacker() ) );
 
-		//Msg("%s took %.2f Damage, at %.2f\n", GetClassname(), info.GetDamage(), gpGlobals->curtime );
+		//Msg("%s took %.2f Damage, at %.2f\n", GetClassname(), info.GetDamage(), gpGlobals->GetCurTime() );
 
 		OnTakeDamage( info );
 	}
@@ -2377,7 +2377,7 @@ void CBaseEntity::VPhysicsUpdatePusher( IPhysicsObject *pPhysics )
 	{
 		CUtlVector<CBaseEntity *> list;
 		GetAllInHierarchy( this, list );
-		//NDebugOverlay::BoxAngles( origin, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs(), angles, 255,0,0,0, gpGlobals->frametime);
+		//NDebugOverlay::BoxAngles( origin, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs(), angles, 255,0,0,0, gpGlobals->GetFrameTime());
 
 		physicspushlist_t *pList = NULL;
 		if ( HasDataObjectType(PHYSICSPUSHLIST) )
@@ -2873,7 +2873,7 @@ float CBaseEntity::GetAutoAimRadius()
 void CBaseEntity::ShadowCastDistThink( )
 {
 	SetShadowCastDistance( m_flDesiredShadowCastDistance );
-	SetContextThink( NULL, gpGlobals->curtime, "ShadowCastDistThink" );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), "ShadowCastDistThink" );
 }
 
 void CBaseEntity::SetShadowCastDistance( float flDesiredDistance, float flDelay )
@@ -2881,7 +2881,7 @@ void CBaseEntity::SetShadowCastDistance( float flDesiredDistance, float flDelay 
 	m_flDesiredShadowCastDistance = flDesiredDistance;
 	if ( m_flDesiredShadowCastDistance != m_flShadowCastDistance )
 	{
-		SetContextThink( &CBaseEntity::ShadowCastDistThink, gpGlobals->curtime + flDelay, "ShadowCastDistThink" );
+		SetContextThink( &CBaseEntity::ShadowCastDistThink, gpGlobals->GetCurTime() + flDelay, "ShadowCastDistThink" );
 	}
 }
 
@@ -3424,7 +3424,7 @@ int CBaseEntity::GetTransmitState( void )
 	if ( !ed )
 		return 0;
 
-	return ed->m_fStateFlags;
+	return ed->GetStateFlags();
 }
 
 int	CBaseEntity::SetTransmitState( int nFlag)
@@ -3437,14 +3437,14 @@ int	CBaseEntity::SetTransmitState( int nFlag)
 	// clear current flags = check ShouldTransmit()
 	ed->ClearTransmitState();	
 	
-	int oldFlags = ed->m_fStateFlags;
-	ed->m_fStateFlags |= nFlag;
+	int oldFlags = ed->GetStateFlags();
+	ed->GetStateFlags() |= nFlag;
 	
 	// Tell the engine (used for a network backdoor optimization).
-	if ( (oldFlags & FL_EDICT_DONTSEND) != (ed->m_fStateFlags & FL_EDICT_DONTSEND) )
+	if ( (oldFlags & FL_EDICT_DONTSEND) != (ed->IsDontSend()) )
 		engineServer->NotifyEdictFlagsChange(NetworkProp()->entindex());
 
-	return ed->m_fStateFlags;
+	return ed->GetStateFlags();
 }
 
 int CBaseEntity::UpdateTransmitState()
@@ -3488,7 +3488,7 @@ int CBaseEntity::DispatchUpdateTransmitState()
 {
 	edict_t *ed = NetworkProp()->edict();
 	if ( m_nTransmitStateOwnedCounter != 0 )
-		return ed ? ed->m_fStateFlags : 0;
+		return ed ? ed->GetStateFlags() : 0;
 	
 	g_nInsideDispatchUpdateTransmitState++;
 	int ret = UpdateTransmitState();
@@ -3671,15 +3671,15 @@ void CBaseEntity::DrawInputOverlay(const char *szInputName, CBaseEntity *pCaller
 	char bigstring[1024];
 	if ( Value.FieldType() == FIELD_INTEGER )
 	{
-		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s,%d) <-- (%s)\n", gpGlobals->curtime, szInputName, Value.Int(), pCaller ? pCaller->GetDebugName() : NULL);
+		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s,%d) <-- (%s)\n", gpGlobals->GetCurTime(), szInputName, Value.Int(), pCaller ? pCaller->GetDebugName() : NULL);
 	}
 	else if ( Value.FieldType() == FIELD_STRING )
 	{
-		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s,%s) <-- (%s)\n", gpGlobals->curtime, szInputName, Value.String(), pCaller ? pCaller->GetDebugName() : NULL);
+		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s,%s) <-- (%s)\n", gpGlobals->GetCurTime(), szInputName, Value.String(), pCaller ? pCaller->GetDebugName() : NULL);
 	}
 	else
 	{
-		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s) <-- (%s)\n", gpGlobals->curtime, szInputName, pCaller ? pCaller->GetDebugName() : NULL);
+		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s) <-- (%s)\n", gpGlobals->GetCurTime(), szInputName, pCaller ? pCaller->GetDebugName() : NULL);
 	}
 	AddTimedOverlay(bigstring, 10.0);
 
@@ -3706,11 +3706,11 @@ void CBaseEntity::DrawOutputOverlay(CEventAction *ev)
 	char bigstring[1024];
 	if ( ev->m_flDelay )
 	{
-		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s) --> (%s),%.1f) \n", gpGlobals->curtime, STRING(ev->m_iTargetInput), STRING(ev->m_iTarget), ev->m_flDelay);
+		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s) --> (%s),%.1f) \n", gpGlobals->GetCurTime(), STRING(ev->m_iTargetInput), STRING(ev->m_iTarget), ev->m_flDelay);
 	}
 	else
 	{
-		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s) --> (%s)\n", gpGlobals->curtime,  STRING(ev->m_iTargetInput), STRING(ev->m_iTarget));
+		Q_snprintf( bigstring,sizeof(bigstring), "%3.1f  (%s) --> (%s)\n", gpGlobals->GetCurTime(),  STRING(ev->m_iTargetInput), STRING(ev->m_iTarget));
 	}
 	AddTimedOverlay(bigstring, 10.0);
 
@@ -3834,11 +3834,11 @@ bool CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator,
 					// mapper debug message
 					if (pCaller != NULL)
 					{
-						Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input %s: %s.%s(%s)\n", gpGlobals->curtime, STRING(pCaller->m_iName), GetDebugName(), szInputName, Value.String() );
+						Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input %s: %s.%s(%s)\n", gpGlobals->GetCurTime(), STRING(pCaller->m_iName), GetDebugName(), szInputName, Value.String() );
 					}
 					else
 					{
-						Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input <NULL>: %s.%s(%s)\n", gpGlobals->curtime, GetDebugName(), szInputName, Value.String() );
+						Q_snprintf( szBuffer, sizeof(szBuffer), "(%0.2f) input <NULL>: %s.%s(%s)\n", gpGlobals->GetCurTime(), GetDebugName(), szInputName, Value.String() );
 					}
 					DevMsg( 2, "%s", szBuffer );
 					ADD_DEBUG_HISTORY( HISTORY_ENTITY_IO, szBuffer );
@@ -4904,7 +4904,7 @@ void ConsoleFireTargets( CBasePlayer *pPlayer, const char *name)
 		CBaseEntity *pEntity = FindPickerEntity( pPlayer );
 		if ( pEntity && !pEntity->IsMarkedForDeletion())
 		{
-			Msg( "[%03d] Found: %s, firing\n", gpGlobals->tickcount%1000, pEntity->GetDebugName());
+			Msg( "[%03d] Found: %s, firing\n", gpGlobals->GetTickCount()%1000, pEntity->GetDebugName());
 			pEntity->Use( pPlayer, pPlayer, USE_TOGGLE, 0 );
 			return;
 		}
@@ -5293,7 +5293,7 @@ public:
 				if ( pPlayer->IsAutoKickDisabled() == false )
 					return;
 			}
-			else if ( gpGlobals->maxClients > 1 )
+			else if ( gpGlobals->GetMaxClients() > 1 )
 			{
 				// On listen servers with more than 1 player, only allow the host to issue ent_fires.
 				CBasePlayer *pHostPlayer = UTIL_GetListenServerHost();
@@ -5852,7 +5852,7 @@ void CBaseEntity::SetAbsOrigin( const Vector& absOrigin )
 	if (m_vecOrigin != vecNewOrigin)
 	{
 		m_vecOrigin = vecNewOrigin;
-		SetSimulationTime( gpGlobals->curtime );
+		SetSimulationTime( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -5901,7 +5901,7 @@ void CBaseEntity::SetAbsAngles( const QAngle& absAngles )
 	if (m_angRotation != angNewRotation)
 	{
 		m_angRotation = angNewRotation;
-		SetSimulationTime( gpGlobals->curtime );
+		SetSimulationTime( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -6002,7 +6002,7 @@ void CBaseEntity::SetLocalOrigin( const Vector& origin )
 		
 		InvalidatePhysicsRecursive( POSITION_CHANGED );
 		m_vecOrigin = origin;
-		SetSimulationTime( gpGlobals->curtime );
+		SetSimulationTime( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -6031,7 +6031,7 @@ void CBaseEntity::SetLocalAngles( const QAngle& angles )
 	{
 		InvalidatePhysicsRecursive( ANGLES_CHANGED );
 		m_angRotation = angles;
-		SetSimulationTime( gpGlobals->curtime );
+		SetSimulationTime( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -6265,7 +6265,7 @@ void CBaseEntity::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	}
 
 	// Append anything from world I/O/keyvalues with "world" as prefix
-	CWorld *world = dynamic_cast< CWorld * >( CBaseEntity::Instance(engineServer->PEntityOfEntIndex( 0 ) ) );
+	CWorld *world = dynamic_cast< CWorld * >( CBaseEntity::Instance(INDEXENT( 0 ) ) );
 	if ( world )
 	{
 		world->AppendContextToCriteria( set, "world" );
@@ -6376,7 +6376,7 @@ bool CBaseEntity::ContextExpired( int index ) const
 		return false;
 	}
 
-	return ( m_ResponseContexts[ index ].m_fExpirationTime <= gpGlobals->curtime );
+	return ( m_ResponseContexts[ index ].m_fExpirationTime <= gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -6459,7 +6459,7 @@ void CBaseEntity::AddContext( const char *contextName )
 		p = SplitContext( p, key, sizeof( key ), value, sizeof( value ), &duration );
 		if ( duration )
 		{
-			duration += gpGlobals->curtime;
+			duration += gpGlobals->GetCurTime();
 		}
 
 		int iIndex = FindContextByName( key );
@@ -6702,12 +6702,12 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 	}
 
 	// Don't run again if we've already calculated this tick
-	if ( step->m_nLastProcessTickCount == gpGlobals->tickcount )
+	if ( step->m_nLastProcessTickCount == gpGlobals->GetTickCount() )
 	{
 		return;
 	}
 
-	step->m_nLastProcessTickCount = gpGlobals->tickcount;
+	step->m_nLastProcessTickCount = gpGlobals->GetTickCount();
 
 	// Origin
 	// It's inactive
@@ -6725,7 +6725,7 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 			int tickdelta = step->m_Next.nTickCount - step->m_Previous.nTickCount;
 			if ( tickdelta > 0 )
 			{
-				frac = (float)( gpGlobals->tickcount - step->m_Previous.nTickCount ) / (float) tickdelta;
+				frac = (float)( gpGlobals->GetTickCount() - step->m_Previous.nTickCount ) / (float) tickdelta;
 				frac = clamp( frac, 0.0f, 1.0f );
 			}
 		
@@ -6741,7 +6741,7 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 		
 				if (step->m_Discontinuity.nTickCount > step->m_Previous.nTickCount)
 				{
-					if (gpGlobals->tickcount > step->m_Discontinuity.nTickCount)
+					if (gpGlobals->GetTickCount() > step->m_Discontinuity.nTickCount)
 					{
 						pOlder = &step->m_Discontinuity;
 					}
@@ -6753,7 +6753,7 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 					tickdelta = pNewer->nTickCount - pOlder->nTickCount;
 					if ( tickdelta > 0 )
 					{
-						frac = (float)( gpGlobals->tickcount - pOlder->nTickCount ) / (float) tickdelta;
+						frac = (float)( gpGlobals->GetTickCount() - pOlder->nTickCount ) / (float) tickdelta;
 						frac = clamp( frac, 0.0f, 1.0f );
 					}
 				}
@@ -6783,7 +6783,7 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 			int tickdelta = step->m_Next.nTickCount - step->m_Previous.nTickCount;
 			if ( tickdelta > 0 )
 			{
-				frac = (float)( gpGlobals->tickcount - step->m_Previous.nTickCount ) / (float) tickdelta;
+				frac = (float)( gpGlobals->GetTickCount() - step->m_Previous.nTickCount ) / (float) tickdelta;
 				frac = clamp( frac, 0.0f, 1.0f );
 			}
 		
@@ -6801,7 +6801,7 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 		
 				if (step->m_Discontinuity.nTickCount > step->m_Previous.nTickCount)
 				{
-					if (gpGlobals->tickcount > step->m_Discontinuity.nTickCount)
+					if (gpGlobals->GetTickCount() > step->m_Discontinuity.nTickCount)
 					{
 						pOlder = &step->m_Discontinuity;
 					}
@@ -6813,7 +6813,7 @@ void CBaseEntity::ComputeStepSimulationNetwork( StepSimulationData *step )
 					tickdelta = pNewer->nTickCount - pOlder->nTickCount;
 					if ( tickdelta > 0 )
 					{
-						frac = (float)( gpGlobals->tickcount - pOlder->nTickCount ) / (float) tickdelta;
+						frac = (float)( gpGlobals->GetTickCount() - pOlder->nTickCount ) / (float) tickdelta;
 						frac = clamp( frac, 0.0f, 1.0f );
 					}
 				}
@@ -6982,8 +6982,8 @@ void CBaseEntity::SetRefEHandle( const CBaseHandle &handle )
 	m_RefEHandle = handle;
 	if (NetworkProp()->edict())
 	{
-		COMPILE_TIME_ASSERT( NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS <= 8*sizeof(NetworkProp()->edict()->m_NetworkSerialNumber ) );
-		NetworkProp()->edict()->m_NetworkSerialNumber = (m_RefEHandle.GetSerialNumber() & (1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS) - 1);
+		COMPILE_TIME_ASSERT( NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS <= 8*sizeof(NetworkProp()->edict()->GetNetworkSerialNumber() ) );
+		NetworkProp()->edict()->SetNetworkSerialNumber(m_RefEHandle.GetSerialNumber() & (1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS) - 1);
 	}
 }
 
@@ -7029,7 +7029,7 @@ void CBaseEntity::RemoveDeferred( void )
 {
 	// Set our next think to remove us
 	SetThink( &CBaseEntity::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// Hide us completely
 	AddEffects( EF_NODRAW );
@@ -7049,7 +7049,7 @@ void CBaseEntity::RemoveDeferred( void )
 void CBaseEntity::SUB_StartFadeOut( float delay, bool notSolid )
 {
 	SetThink( &CBaseEntity::SUB_FadeOut );
-	SetNextThink( gpGlobals->curtime + delay );
+	SetNextThink( gpGlobals->GetCurTime() + delay );
 	SetRenderColorA( 255 );
 	m_nRenderMode = kRenderNormal;
 
@@ -7071,12 +7071,12 @@ void CBaseEntity::SUB_StartFadeOutInstant()
 void CBaseEntity::SUB_Vanish( void )
 {
 	//Always think again next frame
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	CBasePlayer *pPlayer;
 
 	//Get all players
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		//Get the next client
 		if ( ( pPlayer = UTIL_PlayerByIndex( i ) ) != NULL )
@@ -7111,7 +7111,7 @@ void CBaseEntity::SUB_Vanish( void )
 
 void CBaseEntity::SUB_PerformFadeOut( void )
 {
-	float dt = gpGlobals->frametime;
+	float dt = gpGlobals->GetFrameTime();
 	if ( dt > 0.1f )
 	{
 		dt = 0.1f;
@@ -7147,7 +7147,7 @@ void CBaseEntity::SUB_FadeOut( void  )
 {
 	if ( SUB_AllowedToFade() == false )
 	{
-		SetNextThink( gpGlobals->curtime + 1 );
+		SetNextThink( gpGlobals->GetCurTime() + 1 );
 		SetRenderColorA( 255 );
 		return;
 	}
@@ -7160,7 +7160,7 @@ void CBaseEntity::SUB_FadeOut( void  )
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -7260,7 +7260,7 @@ void CC_Ent_Create( const CCommand& args )
 			if ( pPlayer->IsAutoKickDisabled() == false )
 				return;
 		}
-		else if ( gpGlobals->maxClients > 1 )
+		else if ( gpGlobals->GetMaxClients() > 1 )
 		{
 			// On listen servers with more than 1 player, only allow the host to create point_servercommand.
 			CBasePlayer *pHostPlayer = UTIL_GetListenServerHost();

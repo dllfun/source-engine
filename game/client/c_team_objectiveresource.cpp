@@ -293,8 +293,8 @@ void C_BaseTeamObjectiveResource::SetCappingTeam( int index, int team )
 	m_iCappingTeam[index] = team;
 	m_bWarnedOnFinalCap[index] = false;
 
-	m_flCapLastThinkTime[index] = gpGlobals->curtime;
-	SetNextClientThink( gpGlobals->curtime + RESOURCE_THINK_TIME );
+	m_flCapLastThinkTime[index] = gpGlobals->GetCurTime();
+	SetNextClientThink( gpGlobals->GetCurTime() + RESOURCE_THINK_TIME );
 	UpdateControlPoint( "controlpoint_updatecapping", index );
 }
 
@@ -344,13 +344,13 @@ void C_BaseTeamObjectiveResource::ClientThink()
 				int iPlayersCapping = GetNumPlayersInArea( i, GetTeamInZone(i) );
 				if ( iPlayersCapping > 0 )
 				{
-					float flReduction = gpGlobals->curtime - m_flCapLastThinkTime[i];
+					float flReduction = gpGlobals->GetCurTime() - m_flCapLastThinkTime[i];
 					if ( mp_capstyle.GetInt() == 1 && m_bCPCapRateScalesWithPlayers[i] )
 					{
 						// Diminishing returns for successive players.
 						for ( int iPlayer = 1; iPlayer < iPlayersCapping; iPlayer++ )
 						{
-							flReduction += ((gpGlobals->curtime - m_flCapLastThinkTime[i]) / (float)(iPlayer+1));
+							flReduction += ((gpGlobals->GetCurTime() - m_flCapLastThinkTime[i]) / (float)(iPlayer+1));
 						}
 					}
 
@@ -370,12 +370,12 @@ void C_BaseTeamObjectiveResource::ClientThink()
 									GetCapWarningLevel( i ) == CP_WARN_FINALCAP )
 								{
 									// Prevent spam
-									if ( gpGlobals->curtime > ( m_flLastCapWarningTime[i] + 5 ) )
+									if ( gpGlobals->GetCurTime() > ( m_flLastCapWarningTime[i] + 5 ) )
 									{
 										pPlayer->EmitSound( GetWarnSound( i ) );
 
 										m_bWarnedOnFinalCap[i] = true;
-										m_flLastCapWarningTime[i] = gpGlobals->curtime;
+										m_flLastCapWarningTime[i] = gpGlobals->GetCurTime();
 									}
 								}
 							}
@@ -396,7 +396,7 @@ void C_BaseTeamObjectiveResource::ClientThink()
 					{
 						float flCapLength = m_flTeamCapTime[ TEAM_ARRAY(i,m_iCappingTeam[i]) ];
 						float flDecreaseScale = m_bCPCapRateScalesWithPlayers[i] ? mp_capdeteriorate_time.GetFloat() : flCapLength;
-						float flDecrease = (flCapLength / flDecreaseScale) * (gpGlobals->curtime - m_flCapLastThinkTime[i]);
+						float flDecrease = (flCapLength / flDecreaseScale) * (gpGlobals->GetCurTime() - m_flCapLastThinkTime[i]);
 						if ( TeamplayRoundBasedRules() && TeamplayRoundBasedRules()->InOvertime() )
 						{
 							flDecrease *= 6;
@@ -413,10 +413,10 @@ void C_BaseTeamObjectiveResource::ClientThink()
 			}
 			
 			UpdateControlPoint( "controlpoint_updatelayout", i );
-			m_flCapLastThinkTime[i] = gpGlobals->curtime;
+			m_flCapLastThinkTime[i] = gpGlobals->GetCurTime();
 		}
 	}
 
 
-	SetNextClientThink( gpGlobals->curtime + RESOURCE_THINK_TIME );
+	SetNextClientThink( gpGlobals->GetCurTime() + RESOURCE_THINK_TIME );
 }

@@ -1355,7 +1355,7 @@ public:
 
 	//---------------------------------
 	
-	void				DelayMoveStart( float delay )	{ m_flMoveWaitFinished = gpGlobals->curtime + delay; }
+	void				DelayMoveStart( float delay )	{ m_flMoveWaitFinished = gpGlobals->GetCurTime() + delay; }
 	
 	float				m_flMoveWaitFinished;
 	
@@ -1517,9 +1517,9 @@ public:
 	//
 	//-----------------------------------------------------
 
-	void				AddSceneLock( float flDuration = 0.2f ) { m_flSceneTime = MAX( gpGlobals->curtime + flDuration, m_flSceneTime ); };
-	void				ClearSceneLock( float flDuration = 0.2f ) { m_flSceneTime = gpGlobals->curtime + flDuration; };
-	bool				IsInLockedScene( void ) { return m_flSceneTime > gpGlobals->curtime; };
+	void				AddSceneLock( float flDuration = 0.2f ) { m_flSceneTime = MAX( gpGlobals->GetCurTime() + flDuration, m_flSceneTime ); };
+	void				ClearSceneLock( float flDuration = 0.2f ) { m_flSceneTime = gpGlobals->GetCurTime() + flDuration; };
+	bool				IsInLockedScene( void ) { return m_flSceneTime > gpGlobals->GetCurTime(); };
 	float				m_flSceneTime;
 	string_t			m_iszSceneCustomMoveSeq;
 
@@ -2122,7 +2122,7 @@ public:
 	bool				m_bPlayerAvoidState;
 	void				GetPlayerAvoidBounds( Vector *pMins, Vector *pMaxs );
 
-	void				StartPingEffect( void ) { m_flTimePingEffect = gpGlobals->curtime + 2.0f; DispatchUpdateTransmitState(); }
+	void				StartPingEffect( void ) { m_flTimePingEffect = gpGlobals->GetCurTime() + 2.0f; DispatchUpdateTransmitState(); }
 
 	BEGIN_SEND_TABLE(CAI_BaseNPC, DT_AI_BaseNPC, DT_BaseCombatCharacter)
 		SendPropInt(SENDINFO(m_lifeState), 3, SPROP_UNSIGNED),

@@ -25,7 +25,7 @@ void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4_t *c
 
 		float flVelocity = VectorNormalize( vDirection );
 
-		Vector vAdjustedOrigin = vNewOrigin + vDirection * ( ( flVelocity * flVelocity ) * gpGlobals->frametime );
+		Vector vAdjustedOrigin = vNewOrigin + vDirection * ( ( flVelocity * flVelocity ) * gpGlobals->GetFrameTime() );
 
 		int iTempSequence = entity->GetSequence();
 		float flTempCycle = entity->GetCycle();
@@ -47,9 +47,9 @@ void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4_t *c
 		entity->SetSequence( iTempSequence );
 		entity->SetCycle( flTempCycle );
 
-		entity->Interpolate( gpGlobals->curtime );
+		entity->Interpolate( gpGlobals->GetCurTime() );
 
-		entity->SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+		entity->SetupBones( NULL, -1, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 	}
 	else
 	{

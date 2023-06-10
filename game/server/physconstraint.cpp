@@ -685,7 +685,7 @@ bool CPhysConstraint::ActivateConstraint( void )
 void CPhysConstraint::NotifySystemEvent( CBaseEntity *pNotify, notify_system_event_t eventType, const notify_system_event_params_t &params )
 {
 	// don't recurse
-	if ( eventType != NOTIFY_EVENT_TELEPORT || (unsigned int)gpGlobals->tickcount == m_teleportTick )
+	if ( eventType != NOTIFY_EVENT_TELEPORT || (unsigned int)gpGlobals->GetTickCount() == m_teleportTick )
 		return;
 
 	float distance = (params.pTeleport->prevOrigin - pNotify->GetAbsOrigin()).Length();
@@ -694,7 +694,7 @@ void CPhysConstraint::NotifySystemEvent( CBaseEntity *pNotify, notify_system_eve
 	if ( distance <= m_minTeleportDistance )
 		return;
 
-	m_teleportTick = gpGlobals->tickcount;
+	m_teleportTick = gpGlobals->GetTickCount();
 
 	PhysTeleportConstrainedEntity( pNotify, m_pConstraint->GetReferenceObject(), m_pConstraint->GetAttachedObject(), params.pTeleport->prevOrigin, params.pTeleport->prevAngles, params.pTeleport->physicsRotate );
 }
@@ -811,7 +811,7 @@ public:
 					);
 
 				SetThink(&CPhysHinge::SoundThink);
-				SetNextThink(gpGlobals->curtime + m_soundInfo.getThinkRate());
+				SetNextThink(gpGlobals->GetCurTime() + m_soundInfo.getThinkRate());
 			}
 		}
 		else
@@ -946,7 +946,7 @@ void CPhysHinge::Activate( void )
 			);
 
 		SetThink(&CPhysHinge::SoundThink);
-		SetNextThink( gpGlobals->curtime + m_soundInfo.getThinkRate() );
+		SetNextThink( gpGlobals->GetCurTime() + m_soundInfo.getThinkRate() );
 	}
 }
 
@@ -1019,7 +1019,7 @@ void CPhysHinge::SoundThink( void )
 		}
 		m_soundInfo.OnThink( this, relativeVel );
 
-		SetNextThink(gpGlobals->curtime + m_soundInfo.getThinkRate());
+		SetNextThink(gpGlobals->GetCurTime() + m_soundInfo.getThinkRate());
 	}
 }
 #endif
@@ -1116,7 +1116,7 @@ public:
 					axisDirection
 					);
 				SetThink(&CPhysSlideConstraint::SoundThink);
-				SetNextThink(gpGlobals->curtime + m_soundInfo.getThinkRate());
+				SetNextThink(gpGlobals->GetCurTime() + m_soundInfo.getThinkRate());
 			}
 		}
 		else
@@ -1260,7 +1260,7 @@ void CPhysSlideConstraint::SoundThink( void )
 
 		m_soundInfo.OnThink( this, relativeVel );
 
-		SetNextThink(gpGlobals->curtime + m_soundInfo.getThinkRate());
+		SetNextThink(gpGlobals->GetCurTime() + m_soundInfo.getThinkRate());
 	}
 
 }
@@ -1280,7 +1280,7 @@ void CPhysSlideConstraint::Activate( void )
 		);
 
 	SetThink(&CPhysSlideConstraint::SoundThink);
-	SetNextThink(gpGlobals->curtime + m_soundInfo.getThinkRate());
+	SetNextThink(gpGlobals->GetCurTime() + m_soundInfo.getThinkRate());
 }
 
 void CPhysSlideConstraint::Precache()
@@ -1657,11 +1657,11 @@ bool VelocitySampler::HasReversed(const Vector &relativeVelocity, float threshol
 		// divide through by dt to get the accel per sec
 		if (prevSampleLength)
 		{
-			projection = -(accel.Dot(m_prevSample) / prevSampleLength) / (gpGlobals->curtime - m_fPrevSampleTime);
+			projection = -(accel.Dot(m_prevSample) / prevSampleLength) / (gpGlobals->GetCurTime() - m_fPrevSampleTime);
 		}
 		else
 		{
-			projection = accel.Length() / (gpGlobals->curtime - m_fPrevSampleTime);
+			projection = accel.Length() / (gpGlobals->GetCurTime() - m_fPrevSampleTime);
 		}
 
 		if (g_debug_constraint_sounds.GetBool())
@@ -1696,11 +1696,11 @@ int VelocitySampler::HasReversed(const Vector &relativeVelocity, const float thr
 		if (prevSampleLength)
 		{
 			// the scalar projection is negative because the acceleration is against vel
-			projection = -(accel.Dot(m_prevSample) / prevSampleLength) / (gpGlobals->curtime - m_fPrevSampleTime);
+			projection = -(accel.Dot(m_prevSample) / prevSampleLength) / (gpGlobals->GetCurTime() - m_fPrevSampleTime);
 		}
 		else
 		{
-			projection = accel.Length() / (gpGlobals->curtime - m_fPrevSampleTime);
+			projection = accel.Length() / (gpGlobals->GetCurTime() - m_fPrevSampleTime);
 		}
 
 		if (g_debug_constraint_sounds.GetBool())
@@ -1756,7 +1756,7 @@ void ConstraintSoundInfo::OnActivate( CPhysConstraint *pOuter )
 
 	/*
 	SetThink(&CPhysSlideConstraint::SoundThink);
-	SetNextThink(gpGlobals->curtime + m_vSampler.getSampleRate());
+	SetNextThink(gpGlobals->GetCurTime() + m_vSampler.getSampleRate());
 	*/
 }
 

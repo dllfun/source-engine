@@ -135,14 +135,14 @@ void CCSBotManager::RestartRound( void )
 
 	SetLooseBomb( NULL );
 	m_isBombPlanted = false;
-	m_earliestBombPlantTimestamp = gpGlobals->curtime + RandomFloat( 10.0f, 30.0f ); // 60
+	m_earliestBombPlantTimestamp = gpGlobals->GetCurTime() + RandomFloat( 10.0f, 30.0f ); // 60
 	m_bombDefuser = NULL;
 
 	ResetRadioMessageTimestamps();
 
 	m_lastSeenEnemyTimestamp = -9999.9f;
 
-	m_roundStartTimestamp = gpGlobals->curtime + mp_freezetime.GetFloat();
+	m_roundStartTimestamp = gpGlobals->GetCurTime() + mp_freezetime.GetFloat();
 
 	// randomly decide if defensive team wants to "rush" as a whole
 	const float defenseRushChance = 33.3f;	// 25.0f;
@@ -833,7 +833,7 @@ CON_COMMAND_F( bot_goto_mark, "Sends a bot to the selected nav area (useful for 
 	CNavArea *area = TheNavMesh->GetMarkedArea();
 	if (area)
 	{
-		for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 		{
 			CBasePlayer *player = static_cast<CBasePlayer *>( UTIL_PlayerByIndex( i ) );
 
@@ -1064,7 +1064,7 @@ int UTIL_CSSBotsInGame()
 {
 	int count = 0;
 
-	for (int i = 1; i <= gpGlobals->maxClients; ++i )
+	for (int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CCSBot *player = dynamic_cast<CCSBot *>(UTIL_PlayerByIndex( i ));
 
@@ -1082,7 +1082,7 @@ bool UTIL_CSSKickBotFromTeam( int kickTeam )
 	int i;
 
 	// try to kick a dead bot first
-	for ( i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CCSBot *player = dynamic_cast<CCSBot *>( UTIL_PlayerByIndex( i ) );
 
@@ -1099,7 +1099,7 @@ bool UTIL_CSSKickBotFromTeam( int kickTeam )
 	}
 
 	// no dead bots, kick any bot on the given team
-	for ( i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		CCSBot *player = dynamic_cast<CCSBot *>( UTIL_PlayerByIndex( i ) );
 
@@ -1195,9 +1195,9 @@ void CCSBotManager::MaintainBotQuota( void )
 
 	// if bots will auto-vacate, we need to keep one slot open to allow players to join
 	if (cv_bot_auto_vacate.GetBool())
-		desiredBotCount = MIN( desiredBotCount, gpGlobals->maxClients - (humanPlayersInGame + 1) );
+		desiredBotCount = MIN( desiredBotCount, gpGlobals->GetMaxClients() - (humanPlayersInGame + 1) );
 	else
-		desiredBotCount = MIN( desiredBotCount, gpGlobals->maxClients - humanPlayersInGame );
+		desiredBotCount = MIN( desiredBotCount, gpGlobals->GetMaxClients() - humanPlayersInGame );
 
 	// Try to balance teams, if we are in the first 20 seconds of a round and bots can join either team.
 	if ( botsInGame > 0 && desiredBotCount == botsInGame && CSGameRules()->m_bFirstConnected )
@@ -1345,7 +1345,7 @@ void CCSBotManager::ExtractScenarioData( void )
 	int i;
 	for( i=1; i<gpGlobals->maxEntities; ++i )
 	{
-		entity = CBaseEntity::Instance(engineServer->PEntityOfEntIndex( i ) );
+		entity = CBaseEntity::Instance(INDEXENT( i ) );
 
 		if (entity == NULL)
 			continue;
@@ -1714,7 +1714,7 @@ void CCSBotManager::OnBombPickedUp( IGameEvent *event )
 void CCSBotManager::OnBombPlanted( IGameEvent *event )
 {
 	m_isBombPlanted = true;
-	m_bombPlantTimestamp = gpGlobals->curtime;
+	m_bombPlantTimestamp = gpGlobals->GetCurTime();
 
 	CCSBOTMANAGER_ITERATE_BOTS( OnBombPlanted, event );
 }
@@ -1848,7 +1848,7 @@ void CCSBotManager::CheckForBlockedZones( void )
 		{
 			if ( m_zone[i].m_isBlocked )
 				DevMsg( "%.1f: Zone %d, area %d (%.0f %.0f %.0f) is blocked from spawn area %d (%.0f %.0f %.0f)\n",
-					gpGlobals->curtime, i, m_zone[i].m_area[0]->GetID(),
+					gpGlobals->GetCurTime(), i, m_zone[i].m_area[0]->GetID(),
 					m_zone[i].m_area[0]->GetCenter().x, m_zone[i].m_area[0]->GetCenter().y, m_zone[i].m_area[0]->GetCenter().z,
 					spawnArea->GetID(),
 					spawnPos.x, spawnPos.y, spawnPos.z );
@@ -2039,7 +2039,7 @@ void CCSBotManager::OnGrenadeBounce( IGameEvent *event )
  */
 float CCSBotManager::GetBombTimeLeft( void ) const
 { 
-	return (mp_c4timer.GetFloat() - (gpGlobals->curtime - m_bombPlantTimestamp));
+	return (mp_c4timer.GetFloat() - (gpGlobals->GetCurTime() - m_bombPlantTimestamp));
 }
 
 //--------------------------------------------------------------------------------------------------------------
@@ -2216,7 +2216,7 @@ float CCSBotManager::GetRadioMessageInterval( RadioType event, int teamID ) cons
 	int i = (teamID == TEAM_TERRORIST) ? 0 : 1;
 
 	if (event > RADIO_START_1 && event < RADIO_END)
-		return gpGlobals->curtime - m_radioMsgTimestamp[ event - RADIO_START_1 ][ i ];
+		return gpGlobals->GetCurTime() - m_radioMsgTimestamp[ event - RADIO_START_1 ][ i ];
 
 	return 99999999.9f;
 }
@@ -2231,7 +2231,7 @@ void CCSBotManager::SetRadioMessageTimestamp( RadioType event, int teamID )
 	int i = (teamID == TEAM_TERRORIST) ? 0 : 1;
 
 	if (event > RADIO_START_1 && event < RADIO_END)
-		m_radioMsgTimestamp[ event - RADIO_START_1 ][ i ] = gpGlobals->curtime;
+		m_radioMsgTimestamp[ event - RADIO_START_1 ][ i ] = gpGlobals->GetCurTime();
 }
 
 //--------------------------------------------------------------------------------------------------------------

@@ -103,7 +103,7 @@ static inline void RecordDecal( const Vector &pos, const Vector &start,
 
  		msg->SetInt( "te", TE_DECAL );
  		msg->SetString( "name", "TE_Decal" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", pos.x );
 		msg->SetFloat( "originy", pos.y );
 		msg->SetFloat( "originz", pos.z );

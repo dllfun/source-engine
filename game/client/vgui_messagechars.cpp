@@ -241,7 +241,7 @@ int CMessageCharsPanel::AddText(
 	Q_strncpy( msg->text, data, textLength );
 
 	if ( flTime )
-		msg->fTTL = gpGlobals->curtime + flTime;
+		msg->fTTL = gpGlobals->GetCurTime() + flTime;
 	else
 		msg->fTTL = 0;
 	SetVisible( true );
@@ -319,7 +319,7 @@ void CMessageCharsPanel::Paint()
 	message_t *pCurrent = m_pActive;
 	while ( pCurrent )
 	{
-		if ( pCurrent->fTTL <= gpGlobals->curtime )
+		if ( pCurrent->fTTL <= gpGlobals->GetCurTime() )
 		{
 			// Move it to the free list
 			if ( !pPrev )
@@ -354,7 +354,7 @@ void CMessageCharsPanel::RemoveStringsByID( int messageID )
 	for ( message_t *pCurrent = m_pActive; pCurrent; pCurrent = pCurrent->next )
 	{
 		if ( pCurrent->messageID == messageID )
-			pCurrent->fTTL = gpGlobals->curtime - 1000;
+			pCurrent->fTTL = gpGlobals->GetCurTime() - 1000;
 	}
 }
 

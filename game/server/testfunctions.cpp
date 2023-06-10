@@ -40,7 +40,7 @@ void Test_CreateEntity( const CCommand &args )
 			if ( pPlayer->IsAutoKickDisabled() == false )
 				return;
 		}
-		else if ( gpGlobals->maxClients > 1 )
+		else if ( gpGlobals->GetMaxClients() > 1 )
 		{
 			// On listen servers with more than 1 player, only allow the host to create point_servercommand.
 			CBasePlayer *pHostPlayer = UTIL_GetListenServerHost();

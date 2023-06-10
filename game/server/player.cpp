@@ -539,7 +539,7 @@ CBasePlayer *CBasePlayer::CreatePlayer( const char *className, edict_t *edict )
 	//CBasePlayer::s_PlayerEdict = ed;
 	if (!edict || edict->GetUnknown())
 		Error("CreatePlayer( %s ) - CreateEdict failed.", className);
-	player = ( CBasePlayer * )engineServer->CreateEntityByName( className, edict->m_EdictIndex );
+	player = ( CBasePlayer * )engineServer->CreateEntityByName( className, edict->GetIndex() );
 	return player;
 }
 
@@ -717,8 +717,8 @@ int CBasePlayer::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 	// Transmit for a short time after death and our death anim finishes so ragdolls can access reliable player data.
 	// Note that if m_flDeathAnimTime is never set, as long as m_lifeState is set to LIFE_DEAD after dying, this
 	// test will act as if the death anim is finished.
-	if ( IsEffectActive( EF_NODRAW ) || ( IsObserver() && ( gpGlobals->curtime - m_flDeathTime > 0.5 ) && 
-		( m_lifeState == LIFE_DEAD ) && ( gpGlobals->curtime - m_flDeathAnimTime > 0.5 ) ) )
+	if ( IsEffectActive( EF_NODRAW ) || ( IsObserver() && ( gpGlobals->GetCurTime() - m_flDeathTime > 0.5 ) && 
+		( m_lifeState == LIFE_DEAD ) && ( gpGlobals->GetCurTime() - m_flDeathAnimTime > 0.5 ) ) )
 	{
 		return FL_EDICT_DONTSEND;
 	}
@@ -862,7 +862,7 @@ int CBasePlayer::TakeHealth( float flHealth, int bitsDamageType )
 #else
 	const int healingTaken = BaseClass::TakeHealth(flHealth,bitsDamageType);
 	char buf[256];
-	Q_snprintf(buf, 256, "[%f] Player %s healed for %d with damagetype %X\n", gpGlobals->curtime, GetDebugName(), healingTaken, bitsDamageType);
+	Q_snprintf(buf, 256, "[%f] Player %s healed for %d with damagetype %X\n", gpGlobals->GetCurTime(), GetDebugName(), healingTaken, bitsDamageType);
 	ADD_DEBUG_HISTORY( HISTORY_PLAYER_DAMAGE, buf );
 
 	return healingTaken;
@@ -1138,10 +1138,10 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		char dmgtype[64];
 		CTakeDamageInfo::DebugGetDamageTypeString( info.GetDamageType(), dmgtype, 512 );
 		char outputString[256];
-		Q_snprintf( outputString, 256, "%f: Player %s at [%0.2f %0.2f %0.2f] took %f damage from %s, type %s\n", gpGlobals->curtime, GetDebugName(),
+		Q_snprintf( outputString, 256, "%f: Player %s at [%0.2f %0.2f %0.2f] took %f damage from %s, type %s\n", gpGlobals->GetCurTime(), GetDebugName(),
 			GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z, info.GetDamage(), info.GetInflictor()->GetDebugName(), dmgtype );
 
-		//Msg( "%f: Player %s at [%0.2f %0.2f %0.2f] took %f damage from %s, type %s\n", gpGlobals->curtime, GetDebugName(),
+		//Msg( "%f: Player %s at [%0.2f %0.2f %0.2f] took %f damage from %s, type %s\n", gpGlobals->GetCurTime(), GetDebugName(),
 		//	GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z, info.GetDamage(), info.GetInflictor()->GetDebugName(), dmgtype );
 
 		ADD_DEBUG_HISTORY( HISTORY_PLAYER_DAMAGE, outputString );
@@ -1312,7 +1312,7 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 			if (bitsDamage & DMG_POISON)
 			{
 				m_nPoisonDmg += info.GetDamage();
-				m_tbdPrev = gpGlobals->curtime;
+				m_tbdPrev = gpGlobals->GetCurTime();
 				m_rgbTimeBasedDamage[itbd_PoisonRecover] = 0;
 			}
 
@@ -1723,7 +1723,7 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 		 FlashlightTurnOff();
 	}
 
-	m_flDeathTime = gpGlobals->curtime;
+	m_flDeathTime = gpGlobals->GetCurTime();
 
 	ClearLastKnownArea();
 
@@ -1750,7 +1750,7 @@ void CBasePlayer::Event_Dying( const CTakeDamageInfo& info )
 	SetLocalAngles( angles );
 
 	SetThink(&CBasePlayer::PlayerDeathThink);
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	BaseClass::Event_Dying( info );
 }
 
@@ -1928,7 +1928,7 @@ void CBasePlayer::WaterMove()
 {
 	if ( ( GetMoveType() == MOVETYPE_NOCLIP ) && !GetMoveParent() )
 	{
-		m_AirFinished = gpGlobals->curtime + AIRTIME;
+		m_AirFinished = gpGlobals->GetCurTime() + AIRTIME;
 		return;
 	}
 
@@ -1949,12 +1949,12 @@ void CBasePlayer::WaterMove()
 		
 		// play 'up for air' sound
 		
-		if (m_AirFinished < gpGlobals->curtime)
+		if (m_AirFinished < gpGlobals->GetCurTime())
 		{
 			EmitSound( "Player.DrownStart" );
 		}
 
-		m_AirFinished = gpGlobals->curtime + AIRTIME;
+		m_AirFinished = gpGlobals->GetCurTime() + AIRTIME;
 		m_nDrownDmgRate = DROWNING_DAMAGE_INITIAL;
 
 		// if we took drowning damage, give it back slowly
@@ -1979,9 +1979,9 @@ void CBasePlayer::WaterMove()
 		m_bitsDamageType &= ~DMG_DROWNRECOVER;
 		m_rgbTimeBasedDamage[itbd_DrownRecover] = 0;
 
-		if (m_AirFinished < gpGlobals->curtime && !(GetFlags() & FL_GODMODE) )		// drown!
+		if (m_AirFinished < gpGlobals->GetCurTime() && !(GetFlags() & FL_GODMODE) )		// drown!
 		{
-			if (m_PainFinished < gpGlobals->curtime)
+			if (m_PainFinished < gpGlobals->GetCurTime())
 			{
 				// take drowning damage
 				m_nDrownDmgRate += 1;
@@ -1991,7 +1991,7 @@ void CBasePlayer::WaterMove()
 				}
 
 				OnTakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), m_nDrownDmgRate, DMG_DROWN ) );
-				m_PainFinished = gpGlobals->curtime + 1;
+				m_PainFinished = gpGlobals->GetCurTime() + 1;
 				
 				// track drowning damage, give it back when
 				// player finally takes a breath
@@ -2074,7 +2074,7 @@ void CBasePlayer::PlayerDeathThink(void)
 {
 	float flForward;
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	if (GetFlags() & FL_ONGROUND)
 	{
@@ -2113,7 +2113,7 @@ void CBasePlayer::PlayerDeathThink(void)
 	if (m_lifeState == LIFE_DYING)
 	{
 		m_lifeState = LIFE_DEAD;
-		m_flDeathAnimTime = gpGlobals->curtime;
+		m_flDeathAnimTime = gpGlobals->GetCurTime();
 	}
 	
 	StopAnimation();
@@ -2146,7 +2146,7 @@ void CBasePlayer::PlayerDeathThink(void)
 // if the player has been dead for one second longer than allowed by forcerespawn, 
 // forcerespawn isn't on. Send the player off to an intermission camera until they 
 // choose to respawn.
-	if ( g_pGameRules->IsMultiplayer() && ( gpGlobals->curtime > (m_flDeathTime + DEATH_ANIMATION_TIME) ) && !IsObserver() )
+	if ( g_pGameRules->IsMultiplayer() && ( gpGlobals->GetCurTime() > (m_flDeathTime + DEATH_ANIMATION_TIME) ) && !IsObserver() )
 	{
 		// go to dead camera. 
 		StartObserverMode( m_iObserverLastMode );
@@ -2154,7 +2154,7 @@ void CBasePlayer::PlayerDeathThink(void)
 	
 // wait for any button down,  or mp_forcerespawn is set and the respawn time is up
 	if (!fAnyButtonDown 
-		&& !( g_pGameRules->IsMultiplayer() && forcerespawn.GetInt() > 0 && (gpGlobals->curtime > (m_flDeathTime + 5))) )
+		&& !( g_pGameRules->IsMultiplayer() && forcerespawn.GetInt() > 0 && (gpGlobals->GetCurTime() > (m_flDeathTime + 5))) )
 		return;
 
 	m_nButtons = 0;
@@ -2283,7 +2283,7 @@ bool CBasePlayer::StartObserverMode(int mode)
 
 	m_iHealth = 1;
 	m_lifeState = LIFE_DEAD; // Can't be dead, otherwise movement doesn't work right.
-	m_flDeathAnimTime = gpGlobals->curtime;
+	m_flDeathAnimTime = gpGlobals->GetCurTime();
 	pl.deadflag = true;
 
 	return true;
@@ -2505,7 +2505,7 @@ bool CBasePlayer::StartReplayMode( float fDelay, float fDuration, int iEntity )
 		return false;
 
 	m_fDelay = fDelay;
-	m_fReplayEnd = gpGlobals->curtime + fDuration;
+	m_fReplayEnd = gpGlobals->GetCurTime() + fDuration;
 	m_iReplayEntity = iEntity;
 
 	return true;
@@ -2520,7 +2520,7 @@ void CBasePlayer::StopReplayMode()
 
 int	CBasePlayer::GetDelayTicks()
 {
-	if ( m_fReplayEnd > gpGlobals->curtime )
+	if ( m_fReplayEnd > gpGlobals->GetCurTime() )
 	{
 		return TIME_TO_TICKS( m_fDelay );
 	}
@@ -2674,7 +2674,7 @@ bool CBasePlayer::IsValidObserverTarget(CBaseEntity * target)
 
 	if ( player->m_lifeState == LIFE_DEAD || player->m_lifeState == LIFE_DYING )
 	{
-		if ( (player->m_flDeathTime + DEATH_ANIMATION_TIME ) < gpGlobals->curtime )
+		if ( (player->m_flDeathTime + DEATH_ANIMATION_TIME ) < gpGlobals->GetCurTime() )
 		{
 			return false;	// allow watching until 3 seconds after death to see death animation
 		}
@@ -2714,10 +2714,10 @@ int CBasePlayer::GetNextObserverSearchStartPoint( bool bReverse )
 	}
 
 	startIndex += iDir;
-	if (startIndex > gpGlobals->maxClients)
+	if (startIndex > gpGlobals->GetMaxClients())
 		startIndex = 1;
 	else if (startIndex < 1)
-		startIndex = gpGlobals->maxClients;
+		startIndex = gpGlobals->GetMaxClients();
 
 	return startIndex;
 }
@@ -2752,10 +2752,10 @@ CBaseEntity * CBasePlayer::FindNextObserverTarget(bool bReverse)
 		currentIndex += iDir;
 
 		// Loop through the clients
-  		if (currentIndex > gpGlobals->maxClients)
+  		if (currentIndex > gpGlobals->GetMaxClients())
   			currentIndex = 1;
 		else if (currentIndex < 1)
-  			currentIndex = gpGlobals->maxClients;
+  			currentIndex = gpGlobals->GetMaxClients();
 
 	} while ( currentIndex != startIndex );
 		
@@ -3098,11 +3098,11 @@ void CBasePlayer::AdjustPlayerTimeBase( int simulation_ticks )
 	// Start in the past so that we get to the sv.time that we'll hit at the end of the
 	//  frame, just as we process the final command
 	
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
-		// set TickBase so that player simulation tick matches gpGlobals->tickcount after
+		// set TickBase so that player simulation tick matches gpGlobals->GetTickCount() after
 		// all commands have been executed
-		m_nTickBase = gpGlobals->tickcount - simulation_ticks + gpGlobals->simTicksThisFrame;
+		m_nTickBase = gpGlobals->GetTickCount() - simulation_ticks + gpGlobals->GetSimTicksThisFrame();
 	}
 	else // multiplayer
 	{
@@ -3110,11 +3110,11 @@ void CBasePlayer::AdjustPlayerTimeBase( int simulation_ticks )
 		int nCorrectionTicks = TIME_TO_TICKS( flCorrectionSeconds );
 
 		// Set the target tick flCorrectionSeconds (rounded to ticks) ahead in the future. this way the client can
-		//  alternate around this target tick without getting smaller than gpGlobals->tickcount.
-		// After running the commands simulation time should be equal or after current gpGlobals->tickcount, 
+		//  alternate around this target tick without getting smaller than gpGlobals->GetTickCount().
+		// After running the commands simulation time should be equal or after current gpGlobals->GetTickCount(), 
 		//  otherwise the simulation time drops out of the client side interpolated var history window.
 
-		int	nIdealFinalTick = gpGlobals->tickcount + nCorrectionTicks;
+		int	nIdealFinalTick = gpGlobals->GetTickCount() + nCorrectionTicks;
 
 		int nEstimatedFinalTick = m_nTickBase + simulation_ticks;
 		
@@ -3127,7 +3127,7 @@ void CBasePlayer::AdjustPlayerTimeBase( int simulation_ticks )
 		if ( nEstimatedFinalTick > too_fast_limit ||
 			 nEstimatedFinalTick < too_slow_limit )
 		{
-			int nCorrectedTick = nIdealFinalTick - simulation_ticks + gpGlobals->simTicksThisFrame;
+			int nCorrectedTick = nIdealFinalTick - simulation_ticks + gpGlobals->GetSimTicksThisFrame();
 
 			if ( pi )
 			{
@@ -3140,7 +3140,7 @@ void CBasePlayer::AdjustPlayerTimeBase( int simulation_ticks )
 
 	if ( pi )
 	{
-		pi->m_flFinalSimulationTime = TICKS_TO_TIME( m_nTickBase + simulation_ticks + gpGlobals->simTicksThisFrame );
+		pi->m_flFinalSimulationTime = TICKS_TO_TIME( m_nTickBase + simulation_ticks + gpGlobals->GetSimTicksThisFrame() );
 	}
 }
 
@@ -3149,8 +3149,8 @@ void CBasePlayer::RunNullCommand( void )
 	CUserCmd cmd;	// NULL command
 
 	// Store off the globals.. they're gonna get whacked
-	float flOldFrametime = gpGlobals->frametime;
-	float flOldCurtime = gpGlobals->curtime;
+	float flOldFrametime = gpGlobals->GetFrameTime();
+	float flOldCurtime = gpGlobals->GetCurTime();
 
 	pl.fixangle = FIXANGLE_NONE;
 
@@ -3163,7 +3163,7 @@ void CBasePlayer::RunNullCommand( void )
 		cmd.viewangles = EyeAngles();
 	}
 
-	float flTimeBase = gpGlobals->curtime;
+	float flTimeBase = gpGlobals->GetCurTime();
 	SetTimeBase( flTimeBase );
 
 	MoveHelperServer()->SetHost( this );
@@ -3173,8 +3173,8 @@ void CBasePlayer::RunNullCommand( void )
 	SetLastUserCommand( cmd );
 
 	// Restore the globals..
-	gpGlobals->frametime = flOldFrametime;
-	gpGlobals->curtime = flOldCurtime;
+	gpGlobals->SetFrameTime(flOldFrametime);
+	gpGlobals->SetCurTime(flOldCurtime);
 
 	MoveHelperServer()->SetHost( NULL );
 }
@@ -3194,12 +3194,12 @@ void CBasePlayer::PhysicsSimulate( void )
 	}
 
 	// Make sure not to simulate this guy twice per frame
-	if ( m_nSimulationTick == gpGlobals->tickcount )
+	if ( m_nSimulationTick == gpGlobals->GetTickCount() )
 	{
 		return;
 	}
 	
-	m_nSimulationTick = gpGlobals->tickcount;
+	m_nSimulationTick = gpGlobals->GetTickCount();
 
 	// See how many CUserCmds are queued up for running
 	int simulation_ticks = DetermineSimulationTicks();
@@ -3221,8 +3221,8 @@ void CBasePlayer::PhysicsSimulate( void )
 	}
 
 	// Store off true server timestamps
-	float savetime		= gpGlobals->curtime;
-	float saveframetime = gpGlobals->frametime;
+	float savetime		= gpGlobals->GetCurTime();
+	float saveframetime = gpGlobals->GetFrameTime();
 
 	int command_context_count = GetCommandContextCount();
 	
@@ -3282,9 +3282,9 @@ void CBasePlayer::PhysicsSimulate( void )
 	// the server ticks.  Use blocks of two in alternate ticks
 	int commandLimit = CBaseEntity::IsSimulatingOnAlternateTicks() ? 2 : 1;
 	int commandsToRun = vecAvailCommands.Count();
-	if ( gpGlobals->simTicksThisFrame >= commandLimit && vecAvailCommands.Count() > commandLimit )
+	if ( gpGlobals->GetSimTicksThisFrame() >= commandLimit && vecAvailCommands.Count() > commandLimit)
 	{
-		int commandsToRollOver = MIN( vecAvailCommands.Count(), ( gpGlobals->simTicksThisFrame - 1 ) );
+		int commandsToRollOver = MIN( vecAvailCommands.Count(), ( gpGlobals->GetSimTicksThisFrame() - 1));
 		commandsToRun = vecAvailCommands.Count() - commandsToRollOver;
 		Assert( commandsToRun >= 0 );
 		// Clear all contexts except the last one
@@ -3315,7 +3315,7 @@ void CBasePlayer::PhysicsSimulate( void )
 #endif // _DEBUG
 
 	int numUsrCmdProcessTicksMax = sv_maxusrcmdprocessticks.GetInt();
-	if ( gpGlobals->maxClients != 1 && numUsrCmdProcessTicksMax ) // don't apply this filter in SP games
+	if ( gpGlobals->GetMaxClients() != 1 && numUsrCmdProcessTicksMax ) // don't apply this filter in SP games
 	{
 		// Grant the client some time buffer to execute user commands
 		m_flMovementTimeForUserCmdProcessingRemaining += TICK_INTERVAL;
@@ -3369,7 +3369,7 @@ void CBasePlayer::PhysicsSimulate( void )
 			pi = &m_vecPlayerSimInfo[ m_vecPlayerSimInfo.Tail() ];
 			pi->m_flTime = Plat_FloatTime();
 			pi->m_vecAbsOrigin = GetAbsOrigin();
-			pi->m_flGameSimulationTime = gpGlobals->curtime;
+			pi->m_flGameSimulationTime = gpGlobals->GetCurTime();
 			pi->m_nNumCmds = commandsToRun;
 		}
 	}
@@ -3377,8 +3377,8 @@ void CBasePlayer::PhysicsSimulate( void )
 	// Restore the true server clock
 	// FIXME:  Should this occur after simulation of children so
 	//  that they are in the timespace of the player?
-	gpGlobals->curtime		= savetime;
-	gpGlobals->frametime	= saveframetime;	
+	gpGlobals->SetCurTime(savetime);
+	gpGlobals->SetFrameTime(saveframetime);	
 
 // 	// Kick the player if they haven't sent a user command in awhile in order to prevent clients
 // 	// from using packet-level manipulation to mess with gamestate.  Not sending usercommands seems
@@ -3505,9 +3505,9 @@ bool CBasePlayer::IsUserCmdDataValid( CUserCmd *pCmd )
 		return true;
 
 	// Maximum difference between client's and server's tick_count
-	const int nCmdMaxTickDelta = ( 1.f / gpGlobals->interval_per_tick ) * 2.5f;
-	const int nMinDelta = Max( 0, gpGlobals->tickcount - nCmdMaxTickDelta );
-	const int nMaxDelta = gpGlobals->tickcount + nCmdMaxTickDelta;
+	const int nCmdMaxTickDelta = ( 1.f / gpGlobals->GetIntervalPerTick() ) * 2.5f;
+	const int nMinDelta = Max( 0, gpGlobals->GetTickCount() - nCmdMaxTickDelta );
+	const int nMaxDelta = gpGlobals->GetTickCount() + nCmdMaxTickDelta;
 
 	bool bValid = ( pCmd->tick_count >= nMinDelta && pCmd->tick_count < nMaxDelta ) &&
 				  // Prevent clients from sending invalid view angles to try to get leaf server code to crash
@@ -3650,7 +3650,7 @@ void CBasePlayer::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 	// Handle FL_FROZEN.
 	// Prevent player moving for some seconds after New Game, so that they pick up everything
 	if( GetFlags() & FL_FROZEN || 
-		(developer.GetInt() == 0 && gpGlobals->eLoadType == MapLoad_NewGame && gpGlobals->curtime < 3.0 ) )
+		(developer.GetInt() == 0 && gpGlobals->eLoadType == MapLoad_NewGame && gpGlobals->GetCurTime() < 3.0 ) )
 	{
 		ucmd->forwardmove = 0;
 		ucmd->sidemove = 0;
@@ -3963,10 +3963,10 @@ void CBasePlayer::CheckTimeBasedDamage()
 		return;
 
 	// only check for time based damage approx. every 2 seconds
-	if ( abs( gpGlobals->curtime - m_tbdPrev ) < 2.0 )
+	if ( abs( gpGlobals->GetCurTime() - m_tbdPrev ) < 2.0 )
 		return;
 	
-	m_tbdPrev = gpGlobals->curtime;
+	m_tbdPrev = gpGlobals->GetCurTime();
 
 	for (i = 0; i < CDMG_TIMEBASED; i++)
 	{
@@ -4134,10 +4134,10 @@ void CBasePlayer::UpdateGeigerCounter( void )
 	byte range;
 
 	// delay per update ie: don't flood net with these msgs
-	if (gpGlobals->curtime < m_flgeigerDelay)
+	if (gpGlobals->GetCurTime() < m_flgeigerDelay)
 		return;
 
-	m_flgeigerDelay = gpGlobals->curtime + GEIGERDELAY;
+	m_flgeigerDelay = gpGlobals->GetCurTime() + GEIGERDELAY;
 		
 	// send range to radition source to client
 	range = (byte) clamp(Floor2Int(m_flgeigerRange / 4), 0, 255);
@@ -4196,7 +4196,7 @@ void CBasePlayer::CheckSuitUpdate()
 		return;
 	}
 
-	if ( gpGlobals->curtime >= m_flSuitUpdate && m_flSuitUpdate > 0)
+	if ( gpGlobals->GetCurTime() >= m_flSuitUpdate && m_flSuitUpdate > 0)
 	{
 		// play a sentence off of the end of the queue
 		for (i = 0; i < CSUITPLAYLIST; i++)
@@ -4224,7 +4224,7 @@ void CBasePlayer::CheckSuitUpdate()
 				// play sentence group
 				UTIL_EmitGroupIDSuit(NetworkProp()->edict(), -isentence);
 			}
-		m_flSuitUpdate = gpGlobals->curtime + SUITUPDATETIME;
+		m_flSuitUpdate = gpGlobals->GetCurTime() + SUITUPDATETIME;
 		}
 		else
 			// queue is empty, don't check 
@@ -4285,7 +4285,7 @@ void CBasePlayer::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 			// this sentence or group is already in 
 			// the norepeat list
 
-			if (m_rgflSuitNoRepeatTime[i] < gpGlobals->curtime)
+			if (m_rgflSuitNoRepeatTime[i] < gpGlobals->GetCurTime())
 				{
 				// norepeat time has expired, clear it out
 				m_rgiSuitNoRepeat[i] = 0;
@@ -4311,7 +4311,7 @@ void CBasePlayer::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 		if (iempty < 0)
 			iempty = random->RandomInt(0, CSUITNOREPEAT-1); // pick random slot to take over
 		m_rgiSuitNoRepeat[iempty] = isentence;
-		m_rgflSuitNoRepeatTime[iempty] = iNoRepeatTime + gpGlobals->curtime;
+		m_rgflSuitNoRepeatTime[iempty] = iNoRepeatTime + gpGlobals->GetCurTime();
 	}
 
 	// find empty spot in queue, or overwrite last spot
@@ -4320,13 +4320,13 @@ void CBasePlayer::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 	if (m_iSuitPlayNext == CSUITPLAYLIST)
 		m_iSuitPlayNext = 0;
 
-	if (m_flSuitUpdate <= gpGlobals->curtime)
+	if (m_flSuitUpdate <= gpGlobals->GetCurTime())
 	{
 		if (m_flSuitUpdate == 0)
 			// play queue is empty, don't delay too long before playback
-			m_flSuitUpdate = gpGlobals->curtime + SUITFIRSTUPDATETIME;
+			m_flSuitUpdate = gpGlobals->GetCurTime() + SUITFIRSTUPDATETIME;
 		else 
-			m_flSuitUpdate = gpGlobals->curtime + SUITUPDATETIME; 
+			m_flSuitUpdate = gpGlobals->GetCurTime() + SUITUPDATETIME; 
 	}
 
 }
@@ -4394,7 +4394,7 @@ void CBasePlayer::UpdatePlayerSound ( void )
 	}
 	else if ( iVolume > m_iTargetVolume )
 	{
-		iVolume -= 250 * gpGlobals->frametime;
+		iVolume -= 250 * gpGlobals->GetFrameTime();
 
 		if ( iVolume < m_iTargetVolume )
 		{
@@ -4582,7 +4582,7 @@ void CBasePlayer::PostThink()
 		DispatchAnimEvents( this );
 		VPROF_SCOPE_END();
 
-		SetSimulationTime( gpGlobals->curtime );
+		SetSimulationTime( gpGlobals->GetCurTime() );
 
 		//Let the weapon update as well
 		VPROF_SCOPE_BEGIN( "CBasePlayer::PostThink-Weapon_FrameUpdate" );
@@ -4639,7 +4639,7 @@ void CBasePlayer::PostThinkVPhysics( void )
 		return;
 
 	Vector newPosition = GetAbsOrigin();
-	float frametime = gpGlobals->frametime;
+	float frametime = gpGlobals->GetFrameTime();
 	if ( frametime <= 0 || frametime > 0.1f )
 		frametime = 0.1f;
 
@@ -4723,12 +4723,12 @@ void CBasePlayer::UpdateVPhysicsPosition( const Vector &position, const Vector &
 
 void CBasePlayer::UpdatePhysicsShadowToCurrentPosition()
 {
-	UpdateVPhysicsPosition( GetAbsOrigin(), vec3_origin, gpGlobals->frametime );
+	UpdateVPhysicsPosition( GetAbsOrigin(), vec3_origin, gpGlobals->GetFrameTime() );
 }
 
 void CBasePlayer::UpdatePhysicsShadowToPosition( const Vector &vecAbsOrigin )
 {
-	UpdateVPhysicsPosition( vecAbsOrigin, vec3_origin, gpGlobals->frametime );
+	UpdateVPhysicsPosition( vecAbsOrigin, vec3_origin, gpGlobals->GetFrameTime() );
 }
 
 Vector CBasePlayer::GetSmoothedVelocity( void )
@@ -4914,7 +4914,7 @@ void CBasePlayer::Spawn( void )
 
 	AddFlag( FL_AIMTARGET );
 
-	m_AirFinished	= gpGlobals->curtime + AIRTIME;
+	m_AirFinished	= gpGlobals->GetCurTime() + AIRTIME;
 	m_nDrownDmgRate	= DROWNING_DAMAGE_INITIAL;
 	
  // only preserve the shadow flag
@@ -4938,7 +4938,7 @@ void CBasePlayer::Spawn( void )
 
 	m_flNextDecalTime	= 0;// let this player decal as soon as he spawns.
 
-	m_flgeigerDelay = gpGlobals->curtime + 2.0;	// wait a few seconds until user-defined message registrations
+	m_flgeigerDelay = gpGlobals->GetCurTime() + 2.0;	// wait a few seconds until user-defined message registrations
 												// are recieved by all clients
 	
 	m_flFieldOfView		= 0.766;// some NPCs use this to determine whether or not the player is looking at them.
@@ -5169,7 +5169,7 @@ int CBasePlayer::Restore( IRestore &restore )
 	if ( !status )
 		return 0;
 
-	CSaveRestoreData *pSaveData = gpGlobals->pSaveData;
+	CSaveRestoreData *pSaveData = gpGlobals->GetSaveData();
 	// landmark isn't present.
 	if ( !pSaveData->levelInfo.fUseLandmark )
 	{
@@ -5274,7 +5274,7 @@ void CBasePlayer::NotifyNearbyRadiationSource( float flRange )
 
 void CBasePlayer::AllowImmediateDecalPainting()
 {
-	m_flNextDecalTime = gpGlobals->curtime;
+	m_flNextDecalTime = gpGlobals->GetCurTime();
 }
 
 // Suicide...
@@ -5286,11 +5286,11 @@ void CBasePlayer::CommitSuicide( bool bExplode /*= false*/, bool bForce /*= fals
 		return;
 		
 	// prevent suiciding too often
-	if ( m_fNextSuicideTime > gpGlobals->curtime && !bForce )
+	if ( m_fNextSuicideTime > gpGlobals->GetCurTime() && !bForce )
 		return;
 
 	// don't let them suicide for 5 seconds after suiciding
-	m_fNextSuicideTime = gpGlobals->curtime + 5;
+	m_fNextSuicideTime = gpGlobals->GetCurTime() + 5;
 
 	int fDamage = DMG_PREVENT_PHYSICS_FORCE | ( bExplode ? ( DMG_BLAST | DMG_ALWAYSGIB ) : DMG_NEVERGIB );
 
@@ -5312,10 +5312,10 @@ void CBasePlayer::CommitSuicide( const Vector &vecForce, bool bExplode /*= false
 		return;
 
 	// Prevent suicides for a time.
-	if ( m_fNextSuicideTime > gpGlobals->curtime && !bForce )
+	if ( m_fNextSuicideTime > gpGlobals->GetCurTime() && !bForce )
 		return;
 
-	m_fNextSuicideTime = gpGlobals->curtime + 5;  
+	m_fNextSuicideTime = gpGlobals->GetCurTime() + 5;  
 
 	// Apply the force.
 	int nHealth = GetHealth();
@@ -5581,7 +5581,7 @@ void CSprayCan::Spawn ( CBasePlayer *pOwner )
 	SetLocalOrigin( pOwner->WorldSpaceCenter() + Vector ( 0 , 0 , 32 ) );
 	SetLocalAngles( pOwner->EyeAngles() );
 	SetOwnerEntity( pOwner );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	EmitSound( "SprayCan.Paint" );
 }
 
@@ -5628,7 +5628,7 @@ void CBloodSplat::Spawn ( CBaseEntity *pOwner )
 	SetLocalAngles( pOwner->GetLocalAngles() );
 	SetOwnerEntity( pOwner );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 void CBloodSplat::Think( void )
@@ -5906,7 +5906,7 @@ void CBasePlayer::ImpulseCommands( )
 
 	case	201:// paint decal
 		
-		if ( gpGlobals->curtime < m_flNextDecalTime )
+		if ( gpGlobals->GetCurTime() < m_flNextDecalTime )
 		{
 			// too early!
 			break;
@@ -5922,7 +5922,7 @@ void CBasePlayer::ImpulseCommands( )
 
 		if ( tr.fraction != 1.0 )
 		{// line hit something, so paint a decal
-			m_flNextDecalTime = gpGlobals->curtime + decalfrequency.GetFloat();
+			m_flNextDecalTime = gpGlobals->GetCurTime() + decalfrequency.GetFloat();
 			CSprayCan *pCan = CREATE_UNSAVED_ENTITY( CSprayCan, "spraycan" );
 			pCan->Spawn( this );
 
@@ -5949,7 +5949,7 @@ void CBasePlayer::ImpulseCommands( )
 		break;
 
 	case	202:// player jungle sound 
-		if ( gpGlobals->curtime < m_flNextDecalTime )
+		if ( gpGlobals->GetCurTime() < m_flNextDecalTime )
 		{
 			// too early!
 			break;
@@ -5960,7 +5960,7 @@ void CBasePlayer::ImpulseCommands( )
 			WRITE_BYTE( PLAY_PLAYER_JINGLE );
 		MessageEnd();
 
-		m_flNextDecalTime = gpGlobals->curtime + decalfrequency.GetFloat();
+		m_flNextDecalTime = gpGlobals->GetCurTime() + decalfrequency.GetFloat();
 		break;
 
 	default:
@@ -6221,7 +6221,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		{
 			trace_t tr;
 
-			edict_t		*pWorld = engineServer->PEntityOfEntIndex( 0 );
+			edict_t		*pWorld = INDEXENT( 0 );
 
 			Vector start = EyePosition();
 			Vector forward;
@@ -6531,7 +6531,7 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 		int nRecip = NetworkProp()->entindex();
 		if ( args.ArgC() >= 2 )
 		{
-			nRecip = clamp( Q_atoi( args.Arg( 1 ) ), 1, gpGlobals->maxClients );
+			nRecip = clamp( Q_atoi( args.Arg( 1 ) ), 1, gpGlobals->GetMaxClients() );
 		}
 		int nRecords = -1; // all
 		if ( args.ArgC() >= 3 )
@@ -6794,13 +6794,13 @@ void CBasePlayer::UpdateClientData( void )
 
 #if 0 // BYE BYE!!
 	// Update Flashlight
-	if ((m_flFlashLightTime) && (m_flFlashLightTime <= gpGlobals->curtime))
+	if ((m_flFlashLightTime) && (m_flFlashLightTime <= gpGlobals->GetCurTime()))
 	{
 		if (FlashlightIsOn())
 		{
 			if (m_iFlashBattery)
 			{
-				m_flFlashLightTime = FLASH_DRAIN_TIME + gpGlobals->curtime;
+				m_flFlashLightTime = FLASH_DRAIN_TIME + gpGlobals->GetCurTime();
 				m_iFlashBattery--;
 				
 				if (!m_iFlashBattery)
@@ -6811,7 +6811,7 @@ void CBasePlayer::UpdateClientData( void )
 		{
 			if (m_iFlashBattery < 100)
 			{
-				m_flFlashLightTime = FLASH_CHARGE_TIME + gpGlobals->curtime;
+				m_flFlashLightTime = FLASH_CHARGE_TIME + gpGlobals->GetCurTime();
 				m_iFlashBattery++;
 			}
 			else
@@ -6891,7 +6891,7 @@ void CBasePlayer::CheckTrainUpdate( void )
 bool CBasePlayer::ShouldAutoaim( void )
 {
 	// cannot be in multiplayer
-	if ( gpGlobals->maxClients > 1 )
+	if ( gpGlobals->GetMaxClients() > 1 )
 		return false;
 
 	// autoaiming is only for easy and medium skill
@@ -7691,7 +7691,7 @@ CBaseEntity *CreatePlayerLoadSave( Vector vOrigin, float flDuration, float flHol
 void CRevertSaved::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	UTIL_ScreenFadeAll( m_clrRender, Duration(), HoldTime(), FFADE_OUT );
-	SetNextThink( gpGlobals->curtime + LoadTime() );
+	SetNextThink( gpGlobals->GetCurTime() + LoadTime() );
 	SetThink( &CRevertSaved::LoadThink );
 
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
@@ -7713,10 +7713,10 @@ void CRevertSaved::InputReload( inputdata_t &inputdata )
 	UTIL_ScreenFadeAll( m_clrRender, Duration(), HoldTime(), FFADE_OUT );
 
 #ifdef HL1_DLL
-	SetNextThink( gpGlobals->curtime + MessageTime() );
+	SetNextThink( gpGlobals->GetCurTime() + MessageTime() );
 	SetThink( &CRevertSaved::MessageThink );
 #else
-	SetNextThink( gpGlobals->curtime + LoadTime() );
+	SetNextThink( gpGlobals->GetCurTime() + LoadTime() );
 	SetThink( &CRevertSaved::LoadThink );
 #endif
 
@@ -7741,7 +7741,7 @@ void CRevertSaved::MessageThink( void )
 	float nextThink = LoadTime() - MessageTime();
 	if ( nextThink > 0 ) 
 	{
-		SetNextThink( gpGlobals->curtime + nextThink );
+		SetNextThink( gpGlobals->GetCurTime() + nextThink );
 		SetThink( &CRevertSaved::LoadThink );
 	}
 	else
@@ -8329,7 +8329,7 @@ int CBasePlayer::GetFOV( void )
 	if ( m_Local.m_flFOVRate == 0.0f )
 		return fFOV;
 
-	float deltaTime = (float)( gpGlobals->curtime - m_flFOVTime ) / m_Local.m_flFOVRate;
+	float deltaTime = (float)( gpGlobals->GetCurTime() - m_flFOVTime ) / m_Local.m_flFOVRate;
 
 	if ( deltaTime >= 1.0f )
 	{
@@ -8370,7 +8370,7 @@ int CBasePlayer::GetFOVForNetworking( void )
 	if ( m_Local.m_flFOVRate == 0.0f )
 		return fFOV;
 
-	if ( gpGlobals->curtime - m_flFOVTime < m_Local.m_flFOVRate )
+	if ( gpGlobals->GetCurTime() - m_flFOVTime < m_Local.m_flFOVRate )
 	{
 		fFOV = MIN( fFOV, m_iFOVStart );
 	}
@@ -8450,7 +8450,7 @@ void CBasePlayer::SetPunchAngle( const QAngle &punchAngle )
 	{
 		int index = NetworkProp()->entindex();
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -8855,7 +8855,7 @@ void CBasePlayer::HandleAnimEvent( animevent_t *pEvent )
  
 			// Force the player to start death thinking
 			SetThink(&CBasePlayer::PlayerDeathThink);
-			SetNextThink( gpGlobals->curtime + 0.1f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 			return;
 		}
 	}
@@ -9141,10 +9141,10 @@ void CPlayerInfo::RunPlayerMove( CBotCmd *ucmd )
 		cmd.weaponsubtype = ucmd->weaponsubtype;
 
 		// Store off the globals.. they're gonna get whacked
-		float flOldFrametime = gpGlobals->frametime;
-		float flOldCurtime = gpGlobals->curtime;
+		float flOldFrametime = gpGlobals->GetFrameTime();
+		float flOldCurtime = gpGlobals->GetCurTime();
 
-		m_pParent->SetTimeBase( gpGlobals->curtime );
+		m_pParent->SetTimeBase( gpGlobals->GetCurTime() );
 
 		MoveHelperServer()->SetHost( m_pParent );
 		m_pParent->PlayerRunCommand( &cmd, MoveHelperServer() );
@@ -9156,8 +9156,8 @@ void CPlayerInfo::RunPlayerMove( CBotCmd *ucmd )
 		m_pParent->pl.fixangle = FIXANGLE_NONE;
 
 		// Restore the globals..
-		gpGlobals->frametime = flOldFrametime;
-		gpGlobals->curtime = flOldCurtime;
+		gpGlobals->SetFrameTime(flOldFrametime);
+		gpGlobals->SetCurTime(flOldCurtime);
 		MoveHelperServer()->SetHost( NULL );
 	}
 }

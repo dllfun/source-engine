@@ -1283,7 +1283,7 @@ inline bool CCSBot::IsAwareOfEnemyDeath( void ) const
 	if (m_enemy == NULL)
 		return true;
 
-	if (!m_enemy->IsAlive() && gpGlobals->curtime - GetEnemyDeathTimestamp() > (1.0f - 0.8f * GetProfile()->GetSkill()))
+	if (!m_enemy->IsAlive() && gpGlobals->GetCurTime() - GetEnemyDeathTimestamp() > (1.0f - 0.8f * GetProfile()->GetSkill()))
 		return true;
 
 	return false;
@@ -1382,12 +1382,12 @@ inline CCSPlayer *CCSBot::GetFollowLeader( void ) const
 
 inline float CCSBot::GetFollowDuration( void ) const
 {
-	return gpGlobals->curtime - m_followTimestamp;
+	return gpGlobals->GetCurTime() - m_followTimestamp;
 }
 
 inline bool CCSBot::CanAutoFollow( void ) const
 { 
-	return (gpGlobals->curtime > m_allowAutoFollowTime);
+	return (gpGlobals->GetCurTime() > m_allowAutoFollowTime);
 }
 
 inline void CCSBot::AimAtEnemy( void )
@@ -1526,7 +1526,7 @@ inline CCSPlayer *CCSBot::GetClosestVisibleHumanFriend( void ) const
 
 inline float CCSBot::GetTimeSinceAttacked( void ) const
 {
-	return gpGlobals->curtime - m_attackedTimestamp;
+	return gpGlobals->GetCurTime() - m_attackedTimestamp;
 }
 
 inline float CCSBot::GetFirstSawEnemyTimestamp( void ) const
@@ -1541,12 +1541,12 @@ inline float CCSBot::GetLastSawEnemyTimestamp( void ) const
 
 inline float CCSBot::GetTimeSinceLastSawEnemy( void ) const
 {
-	return gpGlobals->curtime - m_lastSawEnemyTimestamp;
+	return gpGlobals->GetCurTime() - m_lastSawEnemyTimestamp;
 }
 
 inline float CCSBot::GetTimeSinceAcquiredCurrentEnemy( void ) const
 {
-	return gpGlobals->curtime - m_currentEnemyAcquireTimestamp;
+	return gpGlobals->GetCurTime() - m_currentEnemyAcquireTimestamp;
 }
 
 inline const Vector &CCSBot::GetLastKnownEnemyPosition( void ) const
@@ -1809,7 +1809,7 @@ inline void CCSBot::ResetWaitForHostagePatience( void )
 
 inline bool CCSBot::IsUsingVoice() const
 {
-	return m_voiceEndTimestamp > gpGlobals->curtime; 
+	return m_voiceEndTimestamp > gpGlobals->GetCurTime(); 
 }
 
 inline bool CCSBot::IsOpeningDoor( void ) const

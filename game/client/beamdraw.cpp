@@ -1394,7 +1394,7 @@ void DrawBeamFollow( const IVModel* spritemodel, BeamTrail_t* pHead, int frame, 
 	VectorMA( delta, -width, normal, last2 );
 
 	div = 1.0 / amplitude;
-	fraction = ( die - gpGlobals->curtime ) * div;
+	fraction = ( die - gpGlobals->GetCurTime() ) * div;
 	unsigned char nColor[3];
 
 	VectorScale( color, fraction, scaledColor );
@@ -1448,7 +1448,7 @@ void DrawBeamFollow( const IVModel* spritemodel, BeamTrail_t* pHead, int frame, 
 
 		if (pHead->next != NULL)
 		{
-			fraction = (pHead->die - gpGlobals->curtime) * div;
+			fraction = (pHead->die - gpGlobals->GetCurTime()) * div;
 			VectorScale( color, fraction, scaledColor );
 			nColor[0] = (unsigned char)clamp( (int)(scaledColor[0] * 255.0f), 0, 255 );
 			nColor[1] = (unsigned char)clamp( (int)(scaledColor[1] * 255.0f), 0, 255 );

@@ -377,7 +377,7 @@ void CBaseButton::Spawn( )
 	if ( HasSpawnFlags( SF_BUTTON_SPARK_IF_OFF ) )// this button should spark in OFF state
 	{
 		SetThink ( &CBaseButton::ButtonSpark );
-		SetNextThink( gpGlobals->curtime + 0.5f );// no hurry, make sure everything else spawns
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );// no hurry, make sure everything else spawns
 	}
 
 	// Convert movedir from angles to a vector
@@ -483,7 +483,7 @@ string_t MakeButtonSound( int sound )
 void CBaseButton::ButtonSpark ( void )
 {
 	SetThink ( &CBaseButton::ButtonSpark );
-	SetNextThink( gpGlobals->curtime + 0.1 + random->RandomFloat ( 0, 1.5 ) );// spark again at random interval
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 + random->RandomFloat ( 0, 1.5 ) );// spark again at random interval
 
 	DoSpark( this, WorldSpaceCenter(), 1, 1, true, vec3_origin );
 }
@@ -496,10 +496,10 @@ bool CBaseButton::OnUseLocked( CBaseEntity *pActivator )
 {
 	PlayLockSounds(this, &m_ls, TRUE, TRUE);
 
-	if ( gpGlobals->curtime > m_flUseLockedTime )
+	if ( gpGlobals->GetCurTime() > m_flUseLockedTime )
 	{
 		m_OnUseLocked.FireOutput( pActivator, this );
-		m_flUseLockedTime = gpGlobals->curtime + 0.5;
+		m_flUseLockedTime = gpGlobals->GetCurTime() + 0.5;
 		return true;
 	}
 
@@ -733,7 +733,7 @@ void CBaseButton::TriggerAndWait( void )
 	//
 	else
 	{
-		SetNextThink( gpGlobals->curtime + m_flWait );
+		SetNextThink( gpGlobals->GetCurTime() + m_flWait );
 		SetThink( &CBaseButton::ButtonReturn );
 	}
 	
@@ -789,7 +789,7 @@ void CBaseButton::ButtonBackHome( void )
 	if (HasSpawnFlags( SF_BUTTON_SPARK_IF_OFF ) )
 	{
 		SetThink ( &CBaseButton::ButtonSpark );
-		SetNextThink( gpGlobals->curtime + 0.5f );// no hurry
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );// no hurry
 	}
 }
 
@@ -1159,7 +1159,7 @@ void CMomentaryRotButton::InputSetPosition( inputdata_t &inputdata )
 	SetMoveDone( &CMomentaryRotButton::SetPositionMoveDone );
 
 	SetThink( &CMomentaryRotButton::UpdateThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	//
 	// Think again in 0.1 seconds or the time that it will take us to reach our movement goal,
@@ -1371,7 +1371,7 @@ void CMomentaryRotButton::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, US
 	if ( !m_pfnThink )
 	{
 		SetThink( &CMomentaryRotButton::UpdateThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -1499,7 +1499,7 @@ void CMomentaryRotButton::ReturnMoveDone( void )
 		SetMoveDoneTime( 0.1f );
 
 		SetThink( &CMomentaryRotButton::UpdateThink );
-		SetNextThink( gpGlobals->curtime + 0.01f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 	}
 }
 
@@ -1511,7 +1511,7 @@ void CMomentaryRotButton::UpdateThink( void )
 {
 	float value = GetPos( GetLocalAngles() );
 	UpdateTarget( value, NULL );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 

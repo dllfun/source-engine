@@ -439,7 +439,7 @@ void CAI_PlayerAlly::GatherConditions( void )
 		{
 			SetCondition( COND_TALKER_PLAYER_STARING );
 			if ( m_flTimePlayerStartStare == 0 )
-				m_flTimePlayerStartStare = gpGlobals->curtime;
+				m_flTimePlayerStartStare = gpGlobals->GetCurTime();
 		}
 		else
 		{
@@ -454,7 +454,7 @@ void CAI_PlayerAlly::GatherConditions( void )
 void CAI_PlayerAlly::GatherEnemyConditions( CBaseEntity *pEnemy )
 {
 	BaseClass::GatherEnemyConditions( pEnemy );
-	if ( GetLastEnemyTime() == 0 || gpGlobals->curtime - GetLastEnemyTime() > 30 )
+	if ( GetLastEnemyTime() == 0 || gpGlobals->GetCurTime() - GetLastEnemyTime() > 30 )
 	{
 #ifdef HL2_DLL
 		if ( HasCondition( COND_SEE_ENEMY ) && ( pEnemy->Classify() != CLASS_BULLSEYE ) )
@@ -505,7 +505,7 @@ void CAI_PlayerAlly::OnStateChange( NPC_STATE OldState, NPC_STATE NewState )
  
 	if ( GetState() == NPC_STATE_IDLE || GetState() == NPC_STATE_ALERT )
 	{
-		m_flNextIdleSpeechTime = gpGlobals->curtime + RandomFloat(5,10);
+		m_flNextIdleSpeechTime = gpGlobals->GetCurTime() + RandomFloat(5,10);
 	}
 	else
 	{
@@ -524,11 +524,11 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 	if( GetHealth() >= GetMaxHealth() )
 	{
 		// Avoid huge deltas on first regeneration of health after long period of time at full health.
-		m_flTimeLastRegen = gpGlobals->curtime;
+		m_flTimeLastRegen = gpGlobals->GetCurTime();
 	}
 	else if ( ShouldRegenerateHealth() )
 	{
-		float flDelta = gpGlobals->curtime - m_flTimeLastRegen;
+		float flDelta = gpGlobals->GetCurTime() - m_flTimeLastRegen;
 		float flHealthPerSecond = 1.0f / sk_ally_regen_time.GetFloat();
 
 		float flHealthRegen = flHealthPerSecond * flDelta;
@@ -538,7 +538,7 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 		else if ( g_pGameRules->IsSkillLevel(SKILL_EASY) )
 			flHealthRegen *= 1.5f;
 
-		m_flTimeLastRegen = gpGlobals->curtime;
+		m_flTimeLastRegen = gpGlobals->GetCurTime();
 
 		TakeHealth( flHealthRegen, DMG_GENERIC );
 	}
@@ -547,18 +547,18 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 	if ( (GetState() == NPC_STATE_IDLE || GetState() == NPC_STATE_ALERT) 
 		 && !HasCondition(COND_RECEIVED_ORDERS) && !IsInAScript() )
 	{
-		if ( m_flNextIdleSpeechTime && m_flNextIdleSpeechTime < gpGlobals->curtime )
+		if ( m_flNextIdleSpeechTime && m_flNextIdleSpeechTime < gpGlobals->GetCurTime() )
 		{
 			AISpeechSelection_t selection;
 			if ( SelectNonCombatSpeech( &selection ) )
 			{
 				SetSpeechTarget( selection.hSpeechTarget );
 				SpeakDispatchResponse( selection.concept.c_str(), selection.pResponse );
-				m_flNextIdleSpeechTime = gpGlobals->curtime + RandomFloat( 20,30 );
+				m_flNextIdleSpeechTime = gpGlobals->GetCurTime() + RandomFloat( 20,30 );
 			}
 			else
 			{
-				m_flNextIdleSpeechTime = gpGlobals->curtime + RandomFloat( 10,20 );
+				m_flNextIdleSpeechTime = gpGlobals->GetCurTime() + RandomFloat( 10,20 );
 			}
 		}
 	}
@@ -612,7 +612,7 @@ void CAI_PlayerAlly::SetPendingSpeech( AIConcept_t concept, AI_Response *pRespon
 	m_PendingResponse = *pResponse;
 	pResponse->Release();
 	m_PendingConcept = concept;
-	m_TimePendingSet = gpGlobals->curtime;
+	m_TimePendingSet = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -746,7 +746,7 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response
 	{
 		bool bSaidHelloToNPC = !Q_strcmp(concept, "TLK_HELLO_NPC");
 
-		float duration = GetExpresser()->GetSemaphoreAvailableTime(this) - gpGlobals->curtime;
+		float duration = GetExpresser()->GetSemaphoreAvailableTime(this) - gpGlobals->GetCurTime();
 
 		if ( rr_debug_qa.GetBool() )
 		{
@@ -788,7 +788,7 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response
 	}
 	else if ( pConceptInfo && (pConceptInfo->flags & AICF_ANSWER) && GetSpeechTarget() )
 	{
-		float duration = GetExpresser()->GetSemaphoreAvailableTime(this) - gpGlobals->curtime;
+		float duration = GetExpresser()->GetSemaphoreAvailableTime(this) - gpGlobals->GetCurTime();
 		if ( rr_debug_qa.GetBool() )
 		{
 			NDebugOverlay::HorzArrow( GetAbsOrigin(), GetSpeechTarget()->GetAbsOrigin(), 8, 0, 255, 0, 64, true, duration );
@@ -951,7 +951,7 @@ int CAI_PlayerAlly::SelectNonCombatSpeechSchedule()
 	
 	if ( HasPendingSpeech() )
 	{
-		if ( m_TimePendingSet == gpGlobals->curtime || IsAllowedToSpeak( m_PendingConcept.c_str() ) )
+		if ( m_TimePendingSet == gpGlobals->GetCurTime() || IsAllowedToSpeak( m_PendingConcept.c_str() ) )
 			return SCHED_TALKER_SPEAK_PENDING_IDLE;
 	}
 	
@@ -1087,7 +1087,7 @@ void CAI_PlayerAlly::OnKilledNPC( CBaseCombatCharacter *pKilled )
 	{
 		if ( !pKilled->IsNPC() || 
 			( pKilled->MyNPCPointer()->GetLastPlayerDamageTime() == 0 ||
-			  gpGlobals->curtime - pKilled->MyNPCPointer()->GetLastPlayerDamageTime() > 5 ) )
+			  gpGlobals->GetCurTime() - pKilled->MyNPCPointer()->GetLastPlayerDamageTime() > 5 ) )
 		{
 			SpeakIfAllowed( TLK_ENEMY_DEAD );
 		}
@@ -1313,7 +1313,7 @@ CBaseEntity *CAI_PlayerAlly::FindSpeechTarget( int flags )
 	
 	if ( flags & AIST_PLAYERS )
 	{
-		for ( i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 			if ( pPlayer )
@@ -1623,7 +1623,7 @@ void CAI_PlayerAlly::OnSpokeConcept( AIConcept_t concept, AI_Response *response 
 	if( response != NULL && (response->GetParams()->flags & AI_ResponseParams::RG_WEAPONDELAY) )
 	{
 		// Stop shooting, as instructed, so that my speech can be heard.
-		GetShotRegulator()->FireNoEarlierThan( gpGlobals->curtime + response->GetWeaponDelay() );
+		GetShotRegulator()->FireNoEarlierThan( gpGlobals->GetCurTime() + response->GetWeaponDelay() );
 	}
 }
 

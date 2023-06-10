@@ -159,12 +159,12 @@ bool C_BaseViewModel::Interpolate( float currentTime )
 	if ( GetPredictable() || IsClientCreated() )
 	{
 		Assert( pPlayer );
-		float curtime = pPlayer ? pPlayer->GetFinalPredictedTime() : gpGlobals->curtime;
+		float curtime = pPlayer ? pPlayer->GetFinalPredictedTime() : gpGlobals->GetCurTime();
 		elapsed_time = curtime - m_flAnimTime;
 		// Adjust for interpolated partial frame
 		if ( !engineClient->IsPaused() )
 		{
-			elapsed_time += ( gpGlobals->interpolation_amount * TICK_INTERVAL );
+			elapsed_time += ( gpGlobals->GetInterpolationAmount() * TICK_INTERVAL );
 		}
 	}
 
@@ -435,7 +435,7 @@ void C_BaseViewModel::UpdateAnimationParity( void )
 	// tells us if we need to reset the animation.
 	if ( m_nOldAnimationParity != m_nAnimationParity && !GetPredictable() )
 	{
-		float curtime = (pPlayer && IsIntermediateDataAllocated()) ? pPlayer->GetFinalPredictedTime() : gpGlobals->curtime;
+		float curtime = (pPlayer && IsIntermediateDataAllocated()) ? pPlayer->GetFinalPredictedTime() : gpGlobals->GetCurTime();
 		// FIXME: this is bad
 		// Simulate a networked m_flAnimTime and m_flCycle
 		// FIXME:  Do we need the magic 0.1?

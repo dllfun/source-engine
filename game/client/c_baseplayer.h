@@ -390,7 +390,7 @@ public:
 
 	virtual void			OnAchievementAchieved( int iAchievement ) {}
 	
-	bool					ShouldAnnounceAchievement( void ){ return m_flNextAchievementAnnounceTime < gpGlobals->curtime; }
+	bool					ShouldAnnounceAchievement( void ){ return m_flNextAchievementAnnounceTime < gpGlobals->GetCurTime(); }
 	void					SetNextAchievementAnnounceTime( float flTime ){ m_flNextAchievementAnnounceTime = flTime; }
 
 #if defined USES_ECON_ITEMS

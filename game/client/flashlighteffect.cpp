@@ -286,7 +286,7 @@ void CFlashlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecFo
 
 			if ( flScale < 0.35f )
 			{
-				float flFlicker = cosf( gpGlobals->curtime * 6.0f ) * sinf( gpGlobals->curtime * 15.0f );
+				float flFlicker = cosf( gpGlobals->GetCurTime() * 6.0f ) * sinf( gpGlobals->GetCurTime() * 15.0f );
 				
 				if ( flFlicker > 0.25f && flFlicker < 0.75f )
 				{
@@ -301,7 +301,7 @@ void CFlashlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecFo
 			}
 			else
 			{
-				float flNoise = cosf( gpGlobals->curtime * 7.0f ) * sinf( gpGlobals->curtime * 25.0f );
+				float flNoise = cosf( gpGlobals->GetCurTime() * 7.0f ) * sinf( gpGlobals->GetCurTime() * 25.0f );
 				state.m_fLinearAtten = r_flashlightlinear.GetFloat() * flScale + 1.5f * flNoise;
 			}
 
@@ -358,7 +358,7 @@ void CFlashlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecFo
 	if ( clienttools->IsInRecordingMode() )
 	{
 		KeyValues *msg = new KeyValues( "FlashlightState" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetInt( "entindex", m_nEntIndex );
 		msg->SetInt( "flashlightHandle", m_FlashlightHandle );
 		msg->SetPtr( "flashlightState", &state );
@@ -407,7 +407,7 @@ void CFlashlightEffect::UpdateLightOld(const Vector &vecPos, const Vector &vecDi
 	m_pPointLight->color.exponent = 0;
 	
 	// Make it live for a bit
-	m_pPointLight->die = gpGlobals->curtime + 0.2f;
+	m_pPointLight->die = gpGlobals->GetCurTime() + 0.2f;
 	
 	// Update list of surfaces we influence
 	render->TouchLight( m_pPointLight );
@@ -445,7 +445,7 @@ void CFlashlightEffect::LightOffNew()
 	if ( clienttools->IsInRecordingMode() )
 	{
 		KeyValues *msg = new KeyValues( "FlashlightState" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetInt( "entindex", m_nEntIndex );
 		msg->SetInt( "flashlightHandle", m_FlashlightHandle );
 		msg->SetPtr( "flashlightState", NULL );
@@ -469,7 +469,7 @@ void CFlashlightEffect::LightOffOld()
 {	
 	if ( m_pPointLight && ( m_pPointLight->key == m_nEntIndex ) )
 	{
-		m_pPointLight->die = gpGlobals->curtime;
+		m_pPointLight->die = gpGlobals->GetCurTime();
 		m_pPointLight = NULL;
 	}
 }

@@ -385,7 +385,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		float flTimeLimit = mp_timelimit.GetFloat() * 60;
 		float flFragLimit = fraglimit.GetFloat();
 		
-		if ( flTimeLimit != 0 && gpGlobals->curtime >= flTimeLimit )
+		if ( flTimeLimit != 0 && gpGlobals->GetCurTime() >= flTimeLimit )
 		{
 			GoToIntermission();
 			return;
@@ -394,7 +394,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		if ( flFragLimit )
 		{
 			// check if any player is over the frag limit
-			for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+			for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 			{
 				CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -698,7 +698,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	//=========================================================
 	float CMultiplayRules::FlPlayerSpawnTime( CBasePlayer *pPlayer )
 	{
-		return gpGlobals->curtime;//now!
+		return gpGlobals->GetCurTime();//now!
 	}
 
 	bool CMultiplayRules::AllowAutoTargetCrosshair( void )
@@ -903,11 +903,11 @@ ConVarRef suitcharger( "sk_suitcharger" );
 			// make sure it's only certain weapons
 			if ( !(pWeapon->GetWeaponFlags() & ITEM_FLAG_LIMITINWORLD) )
 			{
-				return gpGlobals->curtime + 0;		// weapon respawns almost instantly
+				return gpGlobals->GetCurTime() + 0;		// weapon respawns almost instantly
 			}
 		}
 
-		return gpGlobals->curtime + WEAPON_RESPAWN_TIME;
+		return gpGlobals->GetCurTime() + WEAPON_RESPAWN_TIME;
 	}
 
 	// when we are within this close to running out of entities,  items 
@@ -1011,7 +1011,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	//=========================================================
 	float CMultiplayRules::FlItemRespawnTime( CItem *pItem )
 	{
-		return gpGlobals->curtime + ITEM_RESPAWN_TIME;
+		return gpGlobals->GetCurTime() + ITEM_RESPAWN_TIME;
 	}
 
 	//=========================================================
@@ -1146,7 +1146,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 				flWaitTime = MAX( flWaitTime, HLTVDirector()->GetDelay() );
 		}
 				
-		m_flIntermissionEndTime = gpGlobals->curtime + flWaitTime;
+		m_flIntermissionEndTime = gpGlobals->GetCurTime() + flWaitTime;
 
 		for ( int i = 1; i <= MAX_PLAYERS; i++ )
 		{
@@ -1747,7 +1747,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	void CMultiplayRules::HaveAllPlayersSpeakConceptIfAllowed( int iConcept, int iTeam /* = TEAM_UNASSIGNED */, const char *modifiers /* = NULL */ )
 	{
 		CBaseMultiplayerPlayer *pPlayer;
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			pPlayer = ToBaseMultiplayerPlayer( UTIL_PlayerByIndex( i ) );
 
@@ -1769,7 +1769,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		CUtlVector< CBaseMultiplayerPlayer* > speakCandidates;
 
 		CBaseMultiplayerPlayer *pPlayer;
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			pPlayer = ToBaseMultiplayerPlayer( UTIL_PlayerByIndex( i ) );
 

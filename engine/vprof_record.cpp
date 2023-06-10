@@ -255,7 +255,8 @@ public:
 #ifdef SWDS
 		g_pFileSystem->Write( &host_tickcount, sizeof( host_tickcount ), m_hFile );		
 #else
-		g_pFileSystem->Write( &g_ClientGlobalVariables.tickcount, sizeof( g_ClientGlobalVariables.tickcount ), m_hFile );
+		int tickcount = g_ClientGlobalVariables.GetTickCount();
+		g_pFileSystem->Write( &tickcount, sizeof(tickcount), m_hFile );
 #endif
 		
 		// Record all the changes to get our tree and budget groups to g_VProfCurrentProfile.

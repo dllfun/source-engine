@@ -64,7 +64,7 @@ public:
 	virtual CAI_Expresser *GetExpresser() { return m_pExpresser; }
 	virtual CMultiplayer_Expresser *GetMultiplayerExpresser() { return m_pExpresser; }
 
-	void SetLastForcedChangeTeamTimeToNow( void ) { m_flLastForcedChangeTeamTime = gpGlobals->curtime; }
+	void SetLastForcedChangeTeamTimeToNow( void ) { m_flLastForcedChangeTeamTime = gpGlobals->GetCurTime(); }
 	float GetLastForcedChangeTeamTime( void ) { return m_flLastForcedChangeTeamTime; }
 
 	void SetTeamBalanceScore( int iScore ) { m_iBalanceScore = iScore; }

@@ -63,7 +63,7 @@ void CAI_BaseFlyingBot::TurnHeadToTarget(float flInterval, const Vector &MoveTar
 {
 	float flDestYaw = VecToYaw( MoveTarget - GetLocalOrigin() );
 	
-	float newYaw = AI_ClampYaw( GetHeadTurnRate() * 10.0f, m_fHeadYaw, flDestYaw, gpGlobals->curtime - GetLastThink() );
+	float newYaw = AI_ClampYaw( GetHeadTurnRate() * 10.0f, m_fHeadYaw, flDestYaw, gpGlobals->GetCurTime() - GetLastThink() );
 		
 	if ( newYaw != m_fHeadYaw )
 	{

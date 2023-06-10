@@ -50,9 +50,9 @@ CVoiceGameMgr g_VoiceGameMgr;
 // Find a player with a case-insensitive name search.
 static CBasePlayer* FindPlayerByName(const char *pTestName)
 {
-	for(int i=1; i <= gpGlobals->maxClients; i++)
+	for(int i=1; i <= gpGlobals->GetMaxClients(); i++)
 	{
-		edict_t *pEdict = engineServer->PEntityOfEntIndex(i);
+		edict_t *pEdict = INDEXENT(i);
 		if(pEdict)
 		{
 			CBaseEntity *pEnt = CBaseEntity::Instance(pEdict);
@@ -137,7 +137,7 @@ void CVoiceGameMgr::Update(double frametime)
 }
 
 
-void CVoiceGameMgr::ClientConnected(struct edict_t *pEdict)
+void CVoiceGameMgr::ClientConnected(class edict_t *pEdict)
 {
 	int index = ENTINDEX(pEdict) - 1;
 	

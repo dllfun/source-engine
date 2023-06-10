@@ -640,7 +640,7 @@ int CViewRender::BuildWorldListsNumber(void) const
 //-----------------------------------------------------------------------------
 void CViewRender::StartPitchDrift(void)
 {
-	if (m_PitchDrift.laststop == gpGlobals->curtime)
+	if (m_PitchDrift.laststop == gpGlobals->GetCurTime())
 	{
 		// Something else is blocking the drift.
 		return;
@@ -659,7 +659,7 @@ void CViewRender::StartPitchDrift(void)
 //-----------------------------------------------------------------------------
 void CViewRender::StopPitchDrift(void)
 {
-	m_PitchDrift.laststop = gpGlobals->curtime;
+	m_PitchDrift.laststop = gpGlobals->GetCurTime();
 	m_PitchDrift.nodrift = true;
 	m_PitchDrift.pitchvel = 0;
 }
@@ -697,7 +697,7 @@ void CViewRender::DriftPitch(void)
 		}
 		else
 		{
-			m_PitchDrift.driftmove += gpGlobals->frametime;
+			m_PitchDrift.driftmove += gpGlobals->GetFrameTime();
 		}
 
 		if (m_PitchDrift.driftmove > v_centermove.GetFloat())
@@ -716,9 +716,9 @@ void CViewRender::DriftPitch(void)
 	}
 
 	// Determine movement amount
-	move = gpGlobals->frametime * m_PitchDrift.pitchvel;
+	move = gpGlobals->GetFrameTime() * m_PitchDrift.pitchvel;
 	// Accelerate
-	m_PitchDrift.pitchvel += gpGlobals->frametime * v_centerspeed.GetFloat();
+	m_PitchDrift.pitchvel += gpGlobals->GetFrameTime() * v_centerspeed.GetFloat();
 
 	// Move predicted pitch appropriately
 	if (delta > 0)
@@ -1363,7 +1363,7 @@ void CViewRender::RenderRect(vrect_t* rect)
 		static ConVarRef sv_restrict_aspect_ratio_fov("sv_restrict_aspect_ratio_fov");
 		float aspectRatio = engineClient->GetScreenAspectRatio() * 0.75f;	 // / (4/3)
 		float limitedAspectRatio = aspectRatio;
-		if ((sv_restrict_aspect_ratio_fov.GetInt() > 0 && engineClient->IsWindowedMode() && gpGlobals->maxClients > 1) ||
+		if ((sv_restrict_aspect_ratio_fov.GetInt() > 0 && engineClient->IsWindowedMode() && gpGlobals->GetMaxClients() > 1) ||
 			sv_restrict_aspect_ratio_fov.GetInt() == 2)
 		{
 			limitedAspectRatio = MIN(aspectRatio, 1.85f * 0.75f); // cap out the FOV advantage at a 1.85:1 ratio (about the widest any legit user should be)
@@ -1575,7 +1575,7 @@ bool CViewRender::ShouldDrawViewModel( bool bDrawViewmodel )
 	if ( !ShouldDrawEntities() )
 		return false;
 
-	if ( render->GetViewEntity() > gpGlobals->maxClients )
+	if ( render->GetViewEntity() > gpGlobals->GetMaxClients() )
 		return false;
 
 	return true;
@@ -1920,7 +1920,7 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 
 	// this allows the refract texture to be updated once per *scene* on 360
 	// (e.g. once for a monitor scene and once for the main scene)
-	g_viewscene_refractUpdateFrame = gpGlobals->framecount - 1;
+	g_viewscene_refractUpdateFrame = gpGlobals->GetFrameCount() - 1;
 
 	g_pClientShadowMgr->PreRender();
 
@@ -1987,7 +1987,7 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 
 	// Draw client side effects
 	// NOTE: These are not sorted against the rest of the frame
-	clienteffects->DrawEffects( gpGlobals->frametime );	
+	clienteffects->DrawEffects( gpGlobals->GetFrameTime() );	
 
 	// Mark the frame as locked down for client fx additions
 	SetFXCreationAllowed( false );
@@ -2123,13 +2123,13 @@ void CViewRender::FreezeFrame( float flFreezeTime )
 	}
 	else
 	{
-		if ( m_flFreezeFrameUntil > gpGlobals->curtime )
+		if ( m_flFreezeFrameUntil > gpGlobals->GetCurTime() )
 		{
 			m_flFreezeFrameUntil += flFreezeTime;
 		}
 		else
 		{
-			m_flFreezeFrameUntil = gpGlobals->curtime + flFreezeTime;
+			m_flFreezeFrameUntil = gpGlobals->GetCurTime() + flFreezeTime;
 			for( int i=GetFirstEye(); i <= GetLastEye(); i++ )
 			{
 				m_rbTakeFreezeFrame[ i ] = true;
@@ -2177,7 +2177,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 	ITexture *saveRenderTarget = pRenderContext->GetRenderTarget();
 	pRenderContext.SafeRelease(); // don't want to hold for long periods in case in a locking active share thread mode
 
-	if ( !m_rbTakeFreezeFrame[ view.m_eStereoEye ] && m_flFreezeFrameUntil > gpGlobals->curtime )
+	if ( !m_rbTakeFreezeFrame[ view.m_eStereoEye ] && m_flFreezeFrameUntil > gpGlobals->GetCurTime() )
 	{
 		CRefPtr<CFreezeFrameView> pFreezeFrameView = new CFreezeFrameView( this );
 		pFreezeFrameView->Setup( view );
@@ -2993,7 +2993,7 @@ void CViewRender::ViewDrawScene_Intro( const CViewSetup &view, int nClearFlags, 
 
 	// this allows the refract texture to be updated once per *scene* on 360
 	// (e.g. once for a monitor scene and once for the main scene)
-	g_viewscene_refractUpdateFrame = gpGlobals->framecount - 1;
+	g_viewscene_refractUpdateFrame = gpGlobals->GetFrameCount() - 1;
 
 	// -----------------------------------------------------------------------
 	// Set the clear color to black since we are going to be adding up things
@@ -3593,7 +3593,7 @@ void CRendering3dView::DrawWorld( float waterZAdjust )
 //-------------------------------------
 void SetupBonesOnBaseAnimating(C_BaseAnimating*& pBaseAnimating)
 {
-	pBaseAnimating->SetupBones(NULL, -1, -1, gpGlobals->curtime);
+	pBaseAnimating->SetupBones(NULL, -1, -1, gpGlobals->GetCurTime());
 }
 
 void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
@@ -4676,12 +4676,12 @@ void CFreezeFrameView::Draw( void )
 		nTexX0, nTexY0, nTexX1-1, nTexY1-1, nTexWidth, nTexHeight );
 
 	//Fake a fade during freezeframe view.
-	if ( g_flFreezeFlash >= gpGlobals->curtime && engineClient->IsTakingScreenshot() == false )
+	if ( g_flFreezeFlash >= gpGlobals->GetCurTime() && engineClient->IsTakingScreenshot() == false )
 	{
 		// Overlay screen fade on entire screen
 		IMaterial* pMaterial = m_TranslucentSingleColor;
 
-		int iFadeAlpha = FREEZECAM_SNAPSHOT_FADE_SPEED * ( g_flFreezeFlash - gpGlobals->curtime );
+		int iFadeAlpha = FREEZECAM_SNAPSHOT_FADE_SPEED * ( g_flFreezeFlash - gpGlobals->GetCurTime() );
 		
 		iFadeAlpha = MIN( iFadeAlpha, 255 );
 		iFadeAlpha = MAX( 0, iFadeAlpha );

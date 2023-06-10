@@ -112,7 +112,7 @@ public:
 	virtual void			Spawn()
 	{
 		BaseClass::Spawn();
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 
 	virtual int				ObjectCaps( void ) { return BaseClass::ObjectCaps() | FCAP_DONT_SAVE; }
@@ -192,7 +192,7 @@ void LocalScene_Printf( const char *pFormat, ... )
 	va_end(marker);	
 
 	Scene_Printf( "%s", msg );
-	ADD_DEBUG_HISTORY( HISTORY_SCENE_PRINT, UTIL_VarArgs( "(%0.2f) %s", gpGlobals->curtime, msg ) );
+	ADD_DEBUG_HISTORY( HISTORY_SCENE_PRINT, UTIL_VarArgs( "(%0.2f) %s", gpGlobals->GetCurTime(), msg ) );
 }
 #endif
 
@@ -795,7 +795,7 @@ CSceneEntity::~CSceneEntity( void )
 void CSceneEntity::SetCurrentTime( float t, bool bForceClientSync )
 {
 	m_flCurrentTime = t;
-	if ((gpGlobals&&gpGlobals->maxClients == 1) || bForceClientSync )
+	if ((gpGlobals&&gpGlobals->GetMaxClients() == 1) || bForceClientSync )
 	{
 		m_flForceClientTime = t;
 	}
@@ -1226,7 +1226,7 @@ void CSceneEntity::PauseThink( void )
 
 	// Otherwise, see if resume/cancel is automatic and act accordingly if enough time
 	//  has passed
-	m_flAutomationTime += (gpGlobals->frametime);
+	m_flAutomationTime += (gpGlobals->GetFrameTime());
 
 	if ( m_flAutomationDelay > 0.0f &&
 		m_flAutomationTime < m_flAutomationDelay )
@@ -1698,7 +1698,7 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 
 		float time_in_past = m_flCurrentTime - event->GetStartTime() ;
 
-		float soundtime = gpGlobals->curtime - time_in_past;
+		float soundtime = gpGlobals->GetCurTime() - time_in_past;
 
 		if ( m_bRestoring )
 		{
@@ -1727,7 +1727,7 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 		es.m_flVolume = 1;
 		es.m_SoundLevel = iSoundlevel;
 		// Only specify exact delay in single player
-		es.m_flSoundTime = ( gpGlobals->maxClients == 1 ) ? soundtime : 0.0f;
+		es.m_flSoundTime = ( gpGlobals->GetMaxClients() == 1 ) ? soundtime : 0.0f;
 		if ( scene->ShouldIgnorePhonemes() )
 		{
 			es.m_nFlags |= SND_IGNORE_PHONEMES;
@@ -1761,7 +1761,7 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 			es.m_pSoundName = soundname;
 
 			// keep track of the last few sounds played for bug reports
-			speechListSounds[ speechListIndex ].time = gpGlobals->curtime;
+			speechListSounds[ speechListIndex ].time = gpGlobals->GetCurTime();
 			Q_strncpy( speechListSounds[ speechListIndex ].name, soundname, sizeof( speechListSounds[ 0 ].name ) );
 			Q_strncpy( speechListSounds[ speechListIndex ].sceneName, ( scene ) ? scene->GetFilename() : "", sizeof( speechListSounds[ 0 ].sceneName ) );
 			
@@ -1925,7 +1925,7 @@ void CSceneEntity::DispatchEndSequence( CChoreoScene *scene, CBaseFlex *actor, C
 //-----------------------------------------------------------------------------
 void CSceneEntity::DispatchStartPermitResponses( CChoreoScene *scene, CBaseFlex *actor, CChoreoEvent *event )
 {
-	actor->SetPermitResponse( gpGlobals->curtime + event->GetDuration() );
+	actor->SetPermitResponse( gpGlobals->GetCurTime() + event->GetDuration() );
 }
 
 //-----------------------------------------------------------------------------
@@ -2015,9 +2015,9 @@ void CSceneEntity::DoThink( float frametime )
 		return;
 	}
 
-	// Msg("%.2f %s\n", gpGlobals->curtime, STRING( m_iszSceneFile ) );
+	// Msg("%.2f %s\n", gpGlobals->GetCurTime(), STRING( m_iszSceneFile ) );
 
-	//Msg( "SV:  %d, %f for %s\n", gpGlobals->tickcount, m_flCurrentTime, m_pScene->GetFilename() );
+	//Msg( "SV:  %d, %f for %s\n", gpGlobals->GetTickCount(), m_flCurrentTime, m_pScene->GetFilename() );
 
 	m_flFrameTime = frametime;
 
@@ -2626,7 +2626,7 @@ void CSceneEntity::BuildSortedSpeakEventSoundsPrefetchList(
 				}
 				
 				// In single player, try to use the combined or regular .wav files as needed
-				if ( gpGlobals->maxClients == 1 )
+				if ( gpGlobals->GetMaxClients() == 1 )
 				{
 					CBasePlayer *player = UTIL_GetLocalPlayer();
 					if ( player && !GetSoundNameForPlayer( event, player, soundname, sizeof( soundname ), player ) )
@@ -3752,7 +3752,7 @@ CBaseEntity *CSceneEntity::FindNamedEntity( const char *name, CBaseEntity *pActo
 
 	if ( !stricmp( name, "Player" ) || !stricmp( name, "!player" ))
 	{
-		entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+		entity = ( gpGlobals->GetMaxClients() == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
 	}
 	else if ( !stricmp( name, "!target1" ) )
 	{
@@ -3879,7 +3879,7 @@ CBaseEntity *CSceneEntity::FindNamedEntityClosest( const char *name, CBaseEntity
 	} 
 	else if ( !stricmp( name, "Player" ) || !stricmp( name, "!player" ))
 	{
-		entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+		entity = ( gpGlobals->GetMaxClients() == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
 		return entity;
 	}
 	else if ( !stricmp( name, "!target1" ) )
@@ -4867,8 +4867,8 @@ void CSceneManager::Think()
 	g_bClientFlex = scene_clientflex.GetBool();
 
 	// The manager is always thinking at 20 hz
-	SetNextThink( gpGlobals->curtime + SCENE_THINK_INTERVAL );
-	float frameTime = ( gpGlobals->curtime - GetLastThink() );
+	SetNextThink( gpGlobals->GetCurTime() + SCENE_THINK_INTERVAL );
+	float frameTime = ( gpGlobals->GetCurTime() - GetLastThink() );
 	frameTime = MIN( 0.1, frameTime );
 
 	// stop if AI is diabled
@@ -4975,7 +4975,7 @@ void CSceneManager::OnClientActive( CBasePlayer *player )
 		es.m_flVolume = 1;
 		es.m_pSoundName = sound->soundname;
 		es.m_SoundLevel = sound->soundlevel;
-		es.m_flSoundTime = gpGlobals->curtime - sound->time_in_past;
+		es.m_flSoundTime = gpGlobals->GetCurTime() - sound->time_in_past;
 
 		EmitSound( filter, sound->actor->NetworkProp()->entindex(), es );
 	}
@@ -5644,7 +5644,7 @@ static void ListRecentNPCSpeech( void )
 	{
 		Msg( "   time: %6.3f   sound name: %s   scene: %s\n", speech[ i ].time, speech[ i ].name, speech[ i ].sceneName );
 	}
-	Msg( "Current time: %6.3f\n", gpGlobals->curtime );
+	Msg( "Current time: %6.3f\n", gpGlobals->GetCurTime() );
 }
 
 static ConCommand ListRecentNPCSpeechCmd( "listRecentNPCSpeech", ListRecentNPCSpeech, "Displays a list of the last 5 lines of speech from NPCs.", FCVAR_DONTRECORD|FCVAR_GAMEDLL );

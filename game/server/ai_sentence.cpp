@@ -47,11 +47,11 @@ void CAI_SentenceBase::SentenceMsg( const char *pStatus, const char *pSentence )
 		return;
 
 	case 1:
-		DevMsg( "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->NetworkProp()->entindex(), gpGlobals->curtime, pStatus, pSentence );
+		DevMsg( "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->NetworkProp()->entindex(), gpGlobals->GetCurTime(), pStatus, pSentence );
 		break;
 
 	case 2:
-		DevMsg( GetOuter(), "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->NetworkProp()->entindex(), gpGlobals->curtime, pStatus, pSentence );
+		DevMsg( GetOuter(), "SENTENCE [%d %.2f] %s: %s\n", GetOuter()->NetworkProp()->entindex(), gpGlobals->GetCurTime(), pStatus, pSentence );
 		break;
 	}
 }
@@ -75,7 +75,7 @@ void CAI_SentenceBase::UpdateSentenceQueue()
 		return;
 
 	// Check for timeout
-	if ( m_flQueueTimeout < gpGlobals->curtime )
+	if ( m_flQueueTimeout < gpGlobals->GetCurTime() )
 	{
 		ClearQueue();
 		return;
@@ -199,7 +199,7 @@ int CAI_SentenceBase::SpeakQueued( const char *pSentence, SentencePriority_t nSo
 		return -1;
 
 	int nSquadCount = GetOuter()->GetSquad() ? GetOuter()->GetSquad()->NumMembers() : 1;
-	m_flQueueTimeout = gpGlobals->curtime + nSquadCount * 2.0f;
+	m_flQueueTimeout = gpGlobals->GetCurTime() + nSquadCount * 2.0f;
 	m_nQueueSoundPriority = nSoundPriority;
 	m_nQueuedSentenceIndex = nQueuedSentenceIndex;
 	return -1;

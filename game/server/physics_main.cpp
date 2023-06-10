@@ -360,7 +360,7 @@ void CPhysicsPushedEntities::FinishPushers()
 		// FIXME: it'd be better for the engine to just have a touch method
 		info.m_pEntity->PhysicsTouchTriggers( &info.m_vecStartAbsOrigin );
 
-		info.m_pEntity->UpdatePhysicsShadowToCurrentPosition( gpGlobals->frametime );
+		info.m_pEntity->UpdatePhysicsShadowToCurrentPosition( gpGlobals->GetFrameTime() );
 	}
 }
 
@@ -411,7 +411,7 @@ void CPhysicsPushedEntities::FinishPush( bool bIsRotPush, const RotatingPushMove
 		// Cause touch functions to be called
 		// FIXME: it'd be better for the engine to just have a touch method
 		info.m_pEntity->PhysicsTouchTriggers( &info.m_vecStartAbsOrigin );
-		info.m_pEntity->UpdatePhysicsShadowToCurrentPosition( gpGlobals->frametime );
+		info.m_pEntity->UpdatePhysicsShadowToCurrentPosition( gpGlobals->GetFrameTime() );
 		CAI_BaseNPC *pNPC = info.m_pEntity->MyNPCPointer();
 		if ( info.m_bPusherIsGround && pNPC )
 		{
@@ -1068,7 +1068,7 @@ int CBaseEntity::PhysicsTryMove( float flTime, trace_t *steptrace )
 				// keep track of time when changing ground entity
 				if (GetGroundEntity() != trace.m_pEnt)
 				{
-					SetGroundChangeTime( gpGlobals->curtime + (flTime - (1 - trace.fraction) * time_left) );
+					SetGroundChangeTime( gpGlobals->GetCurTime() + (flTime - (1 - trace.fraction) * time_left) );
 				}
 
 				SetGroundEntity( trace.m_pEnt );
@@ -1194,7 +1194,7 @@ void CBaseEntity::PhysicsAddHalfGravity( float timestep )
 	// Add 1/2 of the total gravitational effects over this timestep
 	Vector vecAbsVelocity = GetAbsVelocity();
 	vecAbsVelocity[2] -= ( 0.5 * ent_gravity * GetCurrentGravity() * timestep );
-	vecAbsVelocity[2] += GetBaseVelocity()[2] * gpGlobals->frametime;
+	vecAbsVelocity[2] += GetBaseVelocity()[2] * gpGlobals->GetFrameTime();
 	SetAbsVelocity( vecAbsVelocity );
 
 	Vector vecNewBaseVelocity = GetBaseVelocity();
@@ -1449,9 +1449,9 @@ void CBaseEntity::PhysicsPusher( void )
 	m_flVPhysicsUpdateLocalTime = m_flLocalTime;
 
 	float movetime = GetMoveDoneTime();
-	if (movetime > gpGlobals->frametime)
+	if (movetime > gpGlobals->GetFrameTime())
 	{
-		movetime = gpGlobals->frametime;
+		movetime = gpGlobals->GetFrameTime();
 	}
 
 	PerformPush( movetime );
@@ -1485,10 +1485,10 @@ void CBaseEntity::PhysicsNoclip( void )
 	}
 	
 	// Apply angular velocity
-	SimulateAngles( gpGlobals->frametime );
+	SimulateAngles( gpGlobals->GetFrameTime() );
 
 	Vector origin;
-	VectorMA( GetLocalOrigin(), gpGlobals->frametime, GetLocalVelocity(), origin );
+	VectorMA( GetLocalOrigin(), gpGlobals->GetFrameTime(), GetLocalVelocity(), origin );
 	SetLocalOrigin( origin );
 }
 
@@ -1622,7 +1622,7 @@ void CBaseEntity::StepSimulationThink( float dt )
 		step->m_Previous2 = step->m_Previous;
 
 		// Remember old values
-		step->m_Previous.nTickCount = gpGlobals->tickcount;
+		step->m_Previous.nTickCount = gpGlobals->GetTickCount();
 		step->m_Previous.vecOrigin = GetStepOrigin();
 		QAngle stepAngles = GetStepAngles();
 		AngleQuaternion( stepAngles, step->m_Previous.qRotation );
@@ -1691,7 +1691,7 @@ void CBaseEntity::PhysicsStep()
 	// HACK:  Make sure that the client latches the networked origin/orientation changes with the current server tick count
 	//  so that we don't get jittery interpolation.  All of this is necessary to mimic actual continuous simulation of the underlying
 	//  variables.
-	SetSimulationTime( gpGlobals->curtime );
+	SetSimulationTime( gpGlobals->GetCurTime() );
 	
 	// Run all but the base think function
 	PhysicsRunThink( THINK_FIRE_ALL_BUT_BASE );
@@ -1706,14 +1706,14 @@ void CBaseEntity::PhysicsStep()
 	// they aren't thinking?
 	// UNDONE: this happens as the first frame for a bunch of things like dynamically created ents.
 	// can't remove until initial conditions are resolved
-	float deltaThink = thinktime - gpGlobals->curtime;
+	float deltaThink = thinktime - gpGlobals->GetCurTime();
 	if ( thinktime <= 0 || deltaThink > 0.5 )
 	{
-		PhysicsStepRunTimestep( gpGlobals->frametime );
+		PhysicsStepRunTimestep( gpGlobals->GetFrameTime() );
 		PhysicsCheckWaterTransition();
-		SetLastThink( -1, gpGlobals->curtime );
-		UpdatePhysicsShadowToCurrentPosition(gpGlobals->frametime);
-		PhysicsRelinkChildren(gpGlobals->frametime);
+		SetLastThink( -1, gpGlobals->GetCurTime() );
+		UpdatePhysicsShadowToCurrentPosition(gpGlobals->GetFrameTime());
+		PhysicsRelinkChildren(gpGlobals->GetFrameTime());
 		return;
 	}
 
@@ -1724,7 +1724,7 @@ void CBaseEntity::PhysicsStep()
 	if ( HasDataObjectType(VPHYSICSUPDATEAI) )
 	{
 		vphysicsupdateai_t *pUpdate = static_cast<vphysicsupdateai_t *>(GetDataObject( VPHYSICSUPDATEAI ));
-		if ( pUpdate->stopUpdateTime > gpGlobals->curtime )
+		if ( pUpdate->stopUpdateTime > gpGlobals->GetCurTime() )
 		{
 			updateFromVPhysics = true;
 		}
@@ -1760,15 +1760,15 @@ void CBaseEntity::PhysicsStep()
 	}
 
 	// not going to think, don't run game physics either
-	if ( thinktick > gpGlobals->tickcount )
+	if ( thinktick > gpGlobals->GetTickCount() )
 		return;
 	
 	// Don't let things stay in the past.
 	//  it is possible to start that way
 	//  by a trigger with a local time.
-	if ( thinktime < gpGlobals->curtime )
+	if ( thinktime < gpGlobals->GetCurTime() )
 	{
-		thinktime = gpGlobals->curtime;	
+		thinktime = gpGlobals->GetCurTime();	
 	}
 
 	// simulate over the timestep
@@ -1955,7 +1955,7 @@ void Physics_SimulateEntity( CBaseEntity *pEntity )
 			//  control to the game code.
 			CBasePlayer *simulatingPlayer = pEntity->GetSimulatingPlayer();
 			if ( simulatingPlayer &&
-				( simulatingPlayer->GetTimeBase() > gpGlobals->curtime - PLAYER_PACKETS_STOPPED_SO_RETURN_TO_PHYSICS_TIME ) )
+				( simulatingPlayer->GetTimeBase() > gpGlobals->GetCurTime() - PLAYER_PACKETS_STOPPED_SO_RETURN_TO_PHYSICS_TIME ) )
 			{
 				// Okay, the guy is still around
 				return;
@@ -2022,21 +2022,21 @@ void Physics_RunThinkFunctions( bool simulating )
 
 	g_bTestMoveTypeStepSimulation = sv_teststepsimulation.GetBool();
 
-	float starttime = gpGlobals->curtime;
+	float starttime = gpGlobals->GetCurTime();
 	// clear all entites freed outside of this loop
 	gEntList.CleanupDeleteList();
 
 	if ( !simulating )
 	{
 		// only simulate players
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 			if ( pPlayer )
 			{
 				// Always reset clock to real sv.time
-				gpGlobals->curtime = starttime;
-				// Force usercmd processing even though gpGlobals->tickcount isn't incrementing
+				gpGlobals->SetCurTime(starttime);
+				// Force usercmd processing even though gpGlobals->GetTickCount() isn't incrementing
 				pPlayer->ForceSimulation();
 				Physics_SimulateEntity( pPlayer );
 			}
@@ -2060,7 +2060,7 @@ void Physics_RunThinkFunctions( bool simulating )
 			if ( !list[i] )
 				continue;
 			// Always reset clock to real sv.time
-			gpGlobals->curtime = starttime;
+			gpGlobals->SetCurTime(starttime);
 			Physics_SimulateEntity( list[i] );
 		}
 
@@ -2068,6 +2068,6 @@ void Physics_RunThinkFunctions( bool simulating )
 		UTIL_EnableRemoveImmediate();
 	}
 
-	gpGlobals->curtime = starttime;
+	gpGlobals->SetCurTime(starttime);
 }
 

@@ -162,7 +162,7 @@ bool CFPSPanel::ShouldDraw( void )
 {
 	if ( g_bDisplayParticlePerformance )
 		return true;
-	if ( ( !cl_showfps.GetInt() || ( gpGlobals->absoluteframetime <= 0 ) ) &&
+	if ( ( !cl_showfps.GetInt() || ( gpGlobals->GetAbsoluteFrameTime() <= 0 ) ) &&
 		 ( !cl_showpos.GetInt() ) )
 	{
 		m_bLastDraw = false;
@@ -230,7 +230,7 @@ void CFPSPanel::Paint()
 				255, "Particle Performance Metric : %d", (nPerf+50)/100 );
 		}
 	}
-	float realFrameTime = gpGlobals->realtime - m_lastRealTime;
+	float realFrameTime = gpGlobals->GetRealTime() - m_lastRealTime;
 
 	if ( cl_showfps.GetInt() && realFrameTime > 0.0 )
 	{
@@ -275,7 +275,7 @@ void CFPSPanel::Paint()
 			}
 		}
 	}
-	m_lastRealTime = gpGlobals->realtime;
+	m_lastRealTime = gpGlobals->GetRealTime();
 
 	int nShowPosMode = cl_showpos.GetInt();
 	if ( nShowPosMode > 0 )
@@ -326,10 +326,10 @@ void CFPSPanel::Paint()
 	if ( cl_showbattery.GetInt() > 0 )
 	{
 		if ( steamapicontext && steamapicontext->SteamUtils() && 
-			( m_lastBatteryPercent == -1.0f || (gpGlobals->realtime - m_lastBatteryPercent) > 10.0f ) )
+			( m_lastBatteryPercent == -1.0f || (gpGlobals->GetRealTime() - m_lastBatteryPercent) > 10.0f ) )
 		{
 			m_BatteryPercent = steamapicontext->SteamUtils()->GetCurrentBatteryPower();
-			m_lastBatteryPercent = gpGlobals->realtime;
+			m_lastBatteryPercent = gpGlobals->GetRealTime();
 		}
 		
 		if ( m_BatteryPercent > 0 )
@@ -555,7 +555,7 @@ void CBlockingFileIOPanel::Paint()
 				m_History[ item.m_ItemType ].m_flCurrent += item.m_flElapsed;
 
 				RecentPeaks_t recent;
-				recent.time = gpGlobals->realtime;
+				recent.time = gpGlobals->GetRealTime();
 				recent.elapsed = item.m_flElapsed;
 				recent.fileName = item.GetFileName();
 				recent.reason = item.m_ItemType;
@@ -604,12 +604,12 @@ void CBlockingFileIOPanel::Paint()
 			{
 				m_History[ i ].m_flHistory = m_History[ i ].m_flCurrent;
 				m_History[ i ].m_flHistorySpike = m_History[ i ].m_flCurrent;
-				m_History[ i ].m_flLatchTime = gpGlobals->realtime;
+				m_History[ i ].m_flLatchTime = gpGlobals->GetRealTime();
 			}
 			else
 			{
 				// After this long, start to decay the previous history value
-				if ( gpGlobals->realtime > m_History[ i ].m_flLatchTime + 1.0f )
+				if ( gpGlobals->GetRealTime() > m_History[ i ].m_flLatchTime + 1.0f )
 				{
 					m_History[ i ].m_flHistory = m_History[ i ].m_flHistory * IO_DECAY_FRAC + ( 1.0f - IO_DECAY_FRAC ) * m_History[ i ].m_flCurrent;
 				}
@@ -736,7 +736,7 @@ void  CBlockingFileIOPanel::DrawIOTime( int x, int y, int w, int h, int slot, ch
 	bool bDrawHistorySpike = false;
 
 	if ( m_History[ slot ].m_LastFile.IsValid() && 
-		 ( gpGlobals->realtime < latchedtime + 10.0f ) )
+		 ( gpGlobals->GetRealTime() < latchedtime + 10.0f ) )
 	{
 		bDrawHistorySpike = true;
 		g_pMatSystemSurface->DrawColoredText( m_hFont, x + w + 5, y + 1, 

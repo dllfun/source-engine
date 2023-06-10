@@ -32,7 +32,7 @@ void LocalTransfer_InitFastCopy(
 
 // Transfer the data from pSrcEnt to pDestEnt using the specified SendTable and RecvTable.
 void LocalTransfer_TransferEntity( 
-	const CBaseEdict *pEdict, 
+	const edict_t* pEdict,
 	const SendTable *pSendTable, 
 	const void *pSrcEnt, 
 	RecvTable *pRecvTable, 

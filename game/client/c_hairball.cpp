@@ -182,7 +182,7 @@ void C_Hairball::ClientThink()
 	Assert( !GetMoveParent() );
 
 	// Sophisticated AI.
-	m_flCurSpinTime += gpGlobals->frametime;
+	m_flCurSpinTime += gpGlobals->GetFrameTime();
 	if ( m_flCurSpinTime < m_flSpinDuration )
 	{
 		float div = m_flCurSpinTime / m_flSpinDuration;
@@ -219,7 +219,7 @@ void C_Hairball::ClientThink()
 	
 	if ( m_flSitStillTime > 0 )
 	{
-		m_flSitStillTime -= gpGlobals->frametime;
+		m_flSitStillTime -= gpGlobals->GetFrameTime();
 
 		if ( m_flSitStillTime <= 0 )
 		{
@@ -251,7 +251,7 @@ void C_Hairball::ClientThink()
 	else
 	{
 		// Move in the specified direction.
-		Vector vEnd = GetAbsOrigin() + m_vMoveDir * gpGlobals->frametime;
+		Vector vEnd = GetAbsOrigin() + m_vMoveDir * gpGlobals->GetFrameTime();
 
 		trace_t trace;
 		UTIL_TraceLine( GetAbsOrigin(), vEnd, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &trace );
@@ -263,7 +263,7 @@ void C_Hairball::ClientThink()
 		}
 		else
 		{
-			SetLocalOrigin( GetLocalOrigin() + m_vMoveDir * gpGlobals->frametime );
+			SetLocalOrigin( GetLocalOrigin() + m_vMoveDir * gpGlobals->GetFrameTime() );
 		}
 	}
 
@@ -290,7 +290,7 @@ void C_Hairball::ClientThink()
 	}
 
 	// Simulate the physics and apply constraints.
-	m_Physics.Simulate( m_Nodes.Base(), m_Nodes.Count(), &m_Delegate, gpGlobals->frametime, 0.98 );
+	m_Physics.Simulate( m_Nodes.Base(), m_Nodes.Count(), &m_Delegate, gpGlobals->GetFrameTime(), 0.98 );
 }
 
 

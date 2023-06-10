@@ -643,7 +643,7 @@ inline bool CInterpolatedVarArrayBase<Type, IS_ARRAY>::NoteChanged( float change
 	{
 		char const *pDiffString = bRet ? "differs" : "identical";
 
-		Msg( "%s LatchChanged at %f changetime %f:  %s\n", GetDebugName(), gpGlobals->curtime, changetime, pDiffString );
+		Msg( "%s LatchChanged at %f changetime %f:  %s\n", GetDebugName(), gpGlobals->GetCurTime(), changetime, pDiffString);
 	}
 
 	AddToHead( changetime, m_pValue, true );
@@ -656,15 +656,15 @@ inline bool CInterpolatedVarArrayBase<Type, IS_ARRAY>::NoteChanged( float change
 #if 0
 	// Since we don't clean out the old entries until Interpolate(), make sure that there
 	// aren't any super old entries hanging around.
-	RemoveOldEntries( gpGlobals->curtime - interpolation_amount - 2.0f );
+	RemoveOldEntries( gpGlobals->GetCurTime() - interpolation_amount - 2.0f );
 #else
 	// JAY: It doesn't seem like the above code is correct.  This is keeping more than two seconds of history
 	// for variables that aren't being interpolated for some reason.  For example, the player model isn't drawn
 	// in first person, so the history is only truncated here and will accumulate ~40 entries instead of 2 or 3
 	// changing over to the method in Interpolate() means that we always have a 3-sample neighborhood around
-	// any data we're going to need.  Unless gpGlobals->curtime is different when samples are added vs. when
+	// any data we're going to need.  Unless gpGlobals->GetCurTime() is different when samples are added vs. when
 	// they are interpolated I can't see this having any ill effects.  
-	RemoveEntriesPreviousTo( gpGlobals->curtime - interpolation_amount - EXTRA_INTERPOLATION_HISTORY_STORED );
+	RemoveEntriesPreviousTo( gpGlobals->GetCurTime() - interpolation_amount - EXTRA_INTERPOLATION_HISTORY_STORED);
 #endif
 	
 	return bRet;
@@ -743,9 +743,9 @@ inline void CInterpolatedVarArrayBase<Type, IS_ARRAY>::Reset()
 
 	if ( m_pValue )
 	{
-		AddToHead( gpGlobals->curtime, m_pValue, false );
-		AddToHead( gpGlobals->curtime, m_pValue, false );
-		AddToHead( gpGlobals->curtime, m_pValue, false );
+		AddToHead( gpGlobals->GetCurTime(), m_pValue, false);
+		AddToHead( gpGlobals->GetCurTime(), m_pValue, false);
+		AddToHead( gpGlobals->GetCurTime(), m_pValue, false);
 
 		memcpy( m_LastNetworkedValue, m_pValue, m_nMaxCount * sizeof( Type ) );
 	}

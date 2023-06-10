@@ -177,9 +177,9 @@ bool CHudDeathNotice::ShouldDraw( void )
 		return false;
 
 	// don't show death notices when flashed
-	if ( pPlayer->IsAlive() && pPlayer->m_flFlashBangTime >= gpGlobals->curtime )
+	if ( pPlayer->IsAlive() && pPlayer->m_flFlashBangTime >= gpGlobals->GetCurTime() )
 	{
-		float flAlpha = pPlayer->m_flFlashMaxAlpha * (pPlayer->m_flFlashBangTime - gpGlobals->curtime) / pPlayer->m_flFlashDuration;
+		float flAlpha = pPlayer->m_flFlashMaxAlpha * (pPlayer->m_flFlashBangTime - gpGlobals->GetCurTime()) / pPlayer->m_flFlashDuration;
 		if ( flAlpha > 75.0f ) // 0..255
 		{
 			return false;
@@ -346,7 +346,7 @@ void CHudDeathNotice::RetireExpiredDeathNotices( void )
 	int iSize = m_DeathNotices.Size();
 	for ( int i = iSize-1; i >= 0; i-- )
 	{
-		if ( m_DeathNotices[i].flDisplayTime < gpGlobals->curtime )
+		if ( m_DeathNotices[i].flDisplayTime < gpGlobals->GetCurTime() )
 		{
 			m_DeathNotices.Remove(i);
 		}
@@ -421,7 +421,7 @@ void CHudDeathNotice::FireGameEvent( IGameEvent *event )
 	Q_snprintf( deathMsg.Victim.szClan, sizeof( deathMsg.Victim.szClan ), "%s ", victim_clan );
 	Q_strncpy( deathMsg.Killer.szName, killer_name, MAX_PLAYER_NAME_LENGTH );
 	Q_strncpy( deathMsg.Victim.szName, victim_name, MAX_PLAYER_NAME_LENGTH );
-	deathMsg.flDisplayTime = gpGlobals->curtime + hud_deathnotice_time.GetFloat();
+	deathMsg.flDisplayTime = gpGlobals->GetCurTime() + hud_deathnotice_time.GetFloat();
 	deathMsg.iSuicide = ( !iKiller || iKiller == iVictim );
 	deathMsg.bHeadshot = headshot;
 	deathMsg.iDominationImageId = -1;

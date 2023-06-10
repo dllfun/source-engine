@@ -115,7 +115,7 @@ Activity g_SilencedTranslations[][2] =
 
 CWeaponUSP::CWeaponUSP()
 {
-	m_flLastFire = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flLastFire = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 	m_bSilencerOn = false;
 	m_flDoneSwitchingSilencer = 0.0f;
 	m_inPrecache = false;
@@ -181,7 +181,7 @@ bool CWeaponUSP::Deploy()
 
 bool CWeaponUSP::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
-	if ( gpGlobals->curtime < m_flDoneSwitchingSilencer )
+	if ( gpGlobals->GetCurTime() < m_flDoneSwitchingSilencer )
 	{
 		// still switching the silencer.  Cancel the switch.
 		m_bSilencerOn = !m_bSilencerOn;
@@ -194,7 +194,7 @@ bool CWeaponUSP::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 void CWeaponUSP::Drop( const Vector &vecVelocity )
 {
-	if ( gpGlobals->curtime < m_flDoneSwitchingSilencer )
+	if ( gpGlobals->GetCurTime() < m_flDoneSwitchingSilencer )
 	{
 		// still switching the silencer.  Cancel the switch.
 		m_bSilencerOn = !m_bSilencerOn;
@@ -229,11 +229,11 @@ void CWeaponUSP::SecondaryAttack()
 	}
 	m_bSilencerOn = !m_bSilencerOn;
 	m_weaponMode = m_bSilencerOn ? Secondary_Mode : Primary_Mode;
-	m_flDoneSwitchingSilencer = gpGlobals->curtime + 3;
+	m_flDoneSwitchingSilencer = gpGlobals->GetCurTime() + 3;
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 3;
-	m_flNextPrimaryAttack = gpGlobals->curtime + 3;
-	SetWeaponIdleTime( gpGlobals->curtime + 3 );
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 3;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 3;
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 3 );
 
 	SetWeaponModelIndex( GetWorldModel() );
 }
@@ -284,21 +284,21 @@ void CWeaponUSP::PrimaryAttack()
 	float flCycleTime =  GetCSWpnData().m_flCycleTime;
 
 	// Mark the time of this shot and determine the accuracy modifier based on the last shot fired...
-	m_flAccuracy -= (0.275)*(0.3 - (gpGlobals->curtime - m_flLastFire));
+	m_flAccuracy -= (0.275)*(0.3 - (gpGlobals->GetCurTime() - m_flLastFire));
 
 	if (m_flAccuracy > 0.92)
 		m_flAccuracy = 0.92;
 	else if (m_flAccuracy < 0.6)
 		m_flAccuracy = 0.6;
 
-	m_flLastFire = gpGlobals->curtime;
+	m_flLastFire = gpGlobals->GetCurTime();
 
 	if (m_iClip1 <= 0)
 	{
 		if ( m_bFireOnEmpty )
 		{
 			PlayEmptySound();
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.2;
 			m_bFireOnEmpty = false;
 		}
 
@@ -307,7 +307,7 @@ void CWeaponUSP::PrimaryAttack()
 
 	pPlayer->m_iShotsFired++;
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + flCycleTime;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->GetCurTime() + flCycleTime;
 
 	m_iClip1--;
 
@@ -338,7 +338,7 @@ void CWeaponUSP::PrimaryAttack()
 		pPlayer->SetSuitUpdate("!HEV_AMO0", false, 0);
 	}
  
-	SetWeaponIdleTime( gpGlobals->curtime + 2 );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + 2 );
 
 	// update accuracy
 	m_fAccuracyPenalty += GetCSWpnData().m_fInaccuracyImpulseFire[m_weaponMode];
@@ -360,13 +360,13 @@ bool CWeaponUSP::Reload()
 
 void CWeaponUSP::WeaponIdle()
 {
-	if (m_flTimeWeaponIdle > gpGlobals->curtime)
+	if (m_flTimeWeaponIdle > gpGlobals->GetCurTime())
 		return;
 
 	// only idle if the slid isn't back
 	if (m_iClip1 != 0)
 	{
-		SetWeaponIdleTime( gpGlobals->curtime + 6.0 );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 6.0 );
 	}
 }
 

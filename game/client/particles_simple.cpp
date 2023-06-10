@@ -68,7 +68,7 @@ CParticleEffect::~CParticleEffect( void )
 	{
 		KeyValues *msg = new KeyValues( "OldParticleSystem_Destroy" );
 		msg->SetInt( "id", m_nToolParticleEffectId );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		m_nToolParticleEffectId = TOOLPARTICLESYSTEMID_INVALID; 
 	}
@@ -312,7 +312,7 @@ void CSimpleEmitter::UpdateVelocity( SimpleParticle *pParticle, float timeDelta 
 	if (pParticle->m_iFlags & SIMPLE_PARTICLE_FLAG_WINDBLOWN)
 	{
 		Vector vecWind;
-		GetWindspeedAtTime( gpGlobals->curtime, vecWind );
+		GetWindspeedAtTime( gpGlobals->GetCurTime(), vecWind );
 
 		for ( int i = 0 ; i < 2 ; i++ )
 		{

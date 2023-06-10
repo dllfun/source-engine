@@ -45,5 +45,5 @@ void CParticleSphereRenderer::StartRender( VMatrix &effectMatrix )
 		m_pParticleMgr->SetDirectionalLightInfo( m_DirectionalLight );
 	}
 
-	m_iLastTickStartRenderCalled = gpGlobals->tickcount;
+	m_iLastTickStartRenderCalled = gpGlobals->GetTickCount();
 }

@@ -252,15 +252,15 @@ CSharedEdictChangeInfo *g_pSharedChangeInfo = NULL;
 
 #endif
 
-IChangeInfoAccessor *CBaseEdict::GetChangeAccessor()
-{
-	return engineServer->GetChangeAccessor( (const edict_t *)this );
-}
-
-const IChangeInfoAccessor *CBaseEdict::GetChangeAccessor() const
-{
-	return engineServer->GetChangeAccessor( (const edict_t *)this );
-}
+//IChangeInfoAccessor *CBaseEdict::GetChangeAccessor()
+//{
+//	return engineServer->GetChangeAccessor( (const edict_t *)this );
+//}
+//
+//const IChangeInfoAccessor *CBaseEdict::GetChangeAccessor() const
+//{
+//	return engineServer->GetChangeAccessor( (const edict_t *)this );
+//}
 
 const char *GetHintTypeDescription( CAI_Hint *pHint );
 
@@ -939,7 +939,7 @@ void BeginRestoreEntities()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: This prevents sv.tickcount/gpGlobals->tickcount from advancing during restore which
+// Purpose: This prevents sv.tickcount/gpGlobals->GetTickCount() from advancing during restore which
 //  would cause a lot of the NPCs to fast forward their think times to the same
 //  tick due to some ticks being elapsed during restore where there was no simulation going on
 //-----------------------------------------------------------------------------
@@ -964,7 +964,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	ResetWindspeed();
 	UpdateChapterRestrictions( pMapName );
 
-	if ( IsX360() && !background && (gpGlobals->maxClients == 1) && (g_nCurrentChapterIndex >= 0) )
+	if ( IsX360() && !background && (gpGlobals->GetMaxClients() == 1) && (g_nCurrentChapterIndex >= 0) )
 	{
 		// Single player games tell xbox live what game & chapter the user is playing
 		UpdateRichPresence();
@@ -1206,16 +1206,16 @@ void CServerGameDLL::GameFrame( bool simulating )
 	if ( CBaseEntity::IsSimulatingOnAlternateTicks() )
 	{
 		// only run simulation on even numbered ticks
-		if ( gpGlobals->tickcount & 1 )
+		if ( gpGlobals->GetTickCount() & 1 )
 		{
 			UpdateAllClientData();
 			return;
 		}
 		// If we're skipping frames, then the frametime is 2x the normal tick
-		gpGlobals->frametime *= 2.0f;
+		gpGlobals->SetFrameTime(gpGlobals->GetFrameTime() * 2.0f);
 	}
 
-	float oldframetime = gpGlobals->frametime;
+	float oldframetime = gpGlobals->GetFrameTime();
 
 #ifdef _DEBUG
 	// For profiling.. let them enable/disable the networkvar manual mode stuff.
@@ -1288,7 +1288,7 @@ void CServerGameDLL::GameFrame( bool simulating )
 	// Any entities that detect network state changes on a timer do it here.
 	g_NetworkPropertyEventMgr.FireEvents();
 
-	gpGlobals->frametime = oldframetime;
+	gpGlobals->SetFrameTime(oldframetime);
 }
 
 //-----------------------------------------------------------------------------
@@ -1348,12 +1348,12 @@ void CServerGameDLL::PreClientUpdate( bool simulating )
 
 void CServerGameDLL::Think( bool finalTick )
 {
-	if ( m_fAutoSaveDangerousTime != 0.0f && m_fAutoSaveDangerousTime < gpGlobals->curtime )
+	if ( m_fAutoSaveDangerousTime != 0.0f && m_fAutoSaveDangerousTime < gpGlobals->GetCurTime() )
 	{
 		// The safety timer for a dangerous auto save has expired
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
 
-		if ( pPlayer && ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime )
+		if ( pPlayer && ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->GetCurTime() )
 			&& !pPlayer->IsSinglePlayerGameEnding()
 			)
 		{
@@ -2017,7 +2017,7 @@ bool CServerGameDLL::IsManualMapChangeOkay( const char **pszReason )
 void CServerGameDLL::BuildAdjacentMapList( void )
 {
 	// retrieve the pointer to the save data
-	CSaveRestoreData *pSaveData = gpGlobals->pSaveData;
+	CSaveRestoreData *pSaveData = gpGlobals->GetSaveData();
 
 	if ( pSaveData )
 		pSaveData->levelInfo.connectionCount = BuildChangeList( pSaveData->levelInfo.levelList, MAX_LEVEL_CONNECTIONS );
@@ -2220,7 +2220,7 @@ void UpdateChapterRestrictions( const char *mapname )
 void UpdateRichPresence ( void )
 {
 	// This assumes we're playing a single player game
-	Assert ( gpGlobals->maxClients == 1 );
+	Assert ( gpGlobals->GetMaxClients() == 1 );
 
 	// Shouldn't get here unless we're playing a map and we've updated sv_unlockedchapters
 	Assert ( g_nCurrentChapterIndex >= 0 );
@@ -2508,9 +2508,9 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 	{
 		int iEdict = pEdictIndices[i];
 
-		edict_t *pEdict = &pBaseEdict[iEdict];
+		edict_t* pEdict = engineServer->PEntityOfEntIndex(iEdict);// &pBaseEdict[iEdict];
 		Assert( pEdict == engineServer->PEntityOfEntIndex( iEdict ) );
-		int nFlags = pEdict->m_fStateFlags & (FL_EDICT_DONTSEND|FL_EDICT_ALWAYS|FL_EDICT_PVSCHECK|FL_EDICT_FULLCHECK);
+		int nFlags = pEdict->GetStateFlags() & (FL_EDICT_DONTSEND | FL_EDICT_ALWAYS | FL_EDICT_PVSCHECK | FL_EDICT_FULLCHECK);
 
 		// entity needs no transmit
 		if ( nFlags & FL_EDICT_DONTSEND )
@@ -2652,7 +2652,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 			}
 
 			edict_t *checkEdict = check->edict();
-			int checkFlags = checkEdict->m_fStateFlags & (FL_EDICT_DONTSEND|FL_EDICT_ALWAYS|FL_EDICT_PVSCHECK|FL_EDICT_FULLCHECK);
+			int checkFlags = checkEdict->GetStateFlags() & (FL_EDICT_DONTSEND | FL_EDICT_ALWAYS | FL_EDICT_PVSCHECK | FL_EDICT_FULLCHECK);
 			if ( checkFlags & FL_EDICT_DONTSEND )
 				break;
 
@@ -3250,7 +3250,7 @@ void CServerGameClients::GetBugReportInfo( char *buf, int buflen )
 
 	buf[ 0 ] = 0;
 
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		CBaseEntity *ent = FindPickerEntity( UTIL_PlayerByIndex(1) );
 		if ( ent )
@@ -3271,7 +3271,7 @@ void CServerGameClients::GetBugReportInfo( char *buf, int buflen )
 			{
 				Q_snprintf( buf, buflen, "%s   time: %6.3f   sound name: %s   scene: %s\n", buf, speech[ i ].time, speech[ i ].name, speech[ i ].sceneName );
 			}
-			Q_snprintf( buf, buflen, "%sCurrent time: %6.3f\n", buf, gpGlobals->curtime );
+			Q_snprintf( buf, buflen, "%sCurrent time: %6.3f\n", buf, gpGlobals->GetCurTime() );
 		}
 	}
 }

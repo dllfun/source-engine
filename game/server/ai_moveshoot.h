@@ -29,7 +29,7 @@ public:
 	void RunShootWhileMove();
 	void EndShootWhileMove();
 	void SuspendMoveAndShoot( float flDuration );
-	bool IsSuspended() { return m_flSuspendUntilTime > gpGlobals->curtime; }
+	bool IsSuspended() { return m_flSuspendUntilTime > gpGlobals->GetCurTime(); }
 
 	void SetInitialDelay( float delay );
 

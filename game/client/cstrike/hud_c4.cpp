@@ -99,10 +99,10 @@ void CHudC4::Paint()
 
 	if( pPlayer->m_bInBombZone )
 	{
-		if( m_flNextFlashTime < gpGlobals->curtime )
+		if( m_flNextFlashTime < gpGlobals->GetCurTime() )
 		{
 			m_bFlash = !m_bFlash;
-			m_flNextFlashTime = gpGlobals->curtime + 0.15;
+			m_flNextFlashTime = gpGlobals->GetCurTime() + 0.15;
 		}
 	}
 	else

@@ -562,13 +562,13 @@ inline float CBeam::GetHDRColorScale( void ) const
 inline void CBeam::LiveForTime( float time ) 
 { 
 	SetThink(&CBeam::SUB_Remove); 
-	SetNextThink( gpGlobals->curtime + time ); 
+	SetNextThink( gpGlobals->GetCurTime() + time ); 
 }
 
 inline void	CBeam::BeamDamageInstant( trace_t *ptr, float damage ) 
 { 
 	m_flDamage = damage; 
-	m_flFireTime = gpGlobals->curtime - 1;
+	m_flFireTime = gpGlobals->GetCurTime() - 1;
 	BeamDamage(ptr); 
 }
 

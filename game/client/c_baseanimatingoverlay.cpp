@@ -428,7 +428,7 @@ void C_BaseAnimatingOverlay::DoAnimationEvents( CStudioHdr *pStudioHdr )
 
 	bool watch = false; // Q_strstr( hdr->name, "rifle" ) ? true : false;
 
-	CheckForLayerChanges( pStudioHdr, gpGlobals->curtime ); // !!!
+	CheckForLayerChanges( pStudioHdr, gpGlobals->GetCurTime() ); // !!!
 
 	int j;
 	for (j = 0; j < m_AnimOverlay.Count(); j++)
@@ -490,12 +490,12 @@ void C_BaseAnimatingOverlay::DoAnimationEvents( CStudioHdr *pStudioHdr )
 				if ( watch )
 				{
 					Msg( "%i FE %i Looped cycle %f, prev %f ev %f (time %.3f)\n",
-						gpGlobals->tickcount,
+						gpGlobals->GetTickCount(),
 						pevent[i].event,
 						pevent[i].cycle,
 						m_flOverlayPrevEventCycle[j],
 						(float)m_AnimOverlay[j].m_flCycle,
-						gpGlobals->curtime );
+						gpGlobals->GetCurTime() );
 				}
 					
 					
@@ -521,13 +521,13 @@ void C_BaseAnimatingOverlay::DoAnimationEvents( CStudioHdr *pStudioHdr )
 				if ( watch )
 				{
 					Msg( "%i (seq: %d) FE %i Normal cycle %f, prev %f ev %f (time %.3f)\n",
-						gpGlobals->tickcount,
+						gpGlobals->GetTickCount(),
 						m_AnimOverlay[j].m_nSequence.GetRaw(),
 						pevent[i].event,
 						pevent[i].cycle,
 						m_flOverlayPrevEventCycle[j],
 						(float)m_AnimOverlay[j].m_flCycle,
-						gpGlobals->curtime );
+						gpGlobals->GetCurTime() );
 				}
 
 				FireEvent( GetAbsOrigin(), GetAbsAngles(), pevent[ i ].event, pevent[ i ].pszOptions() );

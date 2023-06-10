@@ -250,7 +250,7 @@ void CBaseHudChatLine::ApplySchemeSettings(vgui::IScheme *pScheme)
 void CBaseHudChatLine::PerformFadeout( void )
 {
 	// Flash + Extra bright when new
-	float curtime = gpGlobals->curtime;
+	float curtime = gpGlobals->GetCurTime();
 
 	int lr = m_clrText[0];
 	int lg = m_clrText[1];
@@ -323,7 +323,7 @@ void CBaseHudChatLine::PerformFadeout( void )
 //-----------------------------------------------------------------------------
 void CBaseHudChatLine::SetExpireTime( void )
 {
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 	m_flExpireTime = m_flStartTime + hud_saytext_time.GetFloat();
 	m_nCount = CBaseHudChat::m_nLineCounter++;
 }
@@ -346,7 +346,7 @@ bool CBaseHudChatLine::IsReadyToExpire( void )
 	if ( !engineClient->IsInGame() && !engineClient->IsConnected() )
 		return true;
 
-	if ( gpGlobals->curtime >= m_flExpireTime )
+	if ( gpGlobals->GetCurTime() >= m_flExpireTime )
 		return true;
 	return false;
 }
@@ -1233,7 +1233,7 @@ void CBaseHudChat::StartMessageMode( int iMessageModeType )
 	GetChatHistory()->GetBounds( x, y, w, h );
 	vgui::input()->SetCursorPos( x + ( w/2), y + (h/2) );
 
-	m_flHistoryFadeTime = gpGlobals->curtime + CHAT_HISTORY_FADE_TIME;
+	m_flHistoryFadeTime = gpGlobals->GetCurTime() + CHAT_HISTORY_FADE_TIME;
 
 	m_pFilterPanel->SetVisible( false );
 
@@ -1270,7 +1270,7 @@ void CBaseHudChat::StopMessageMode( void )
 	//hide filter panel
 	m_pFilterPanel->SetVisible( false );
 
-	m_flHistoryFadeTime = gpGlobals->curtime + CHAT_HISTORY_FADE_TIME;
+	m_flHistoryFadeTime = gpGlobals->GetCurTime() + CHAT_HISTORY_FADE_TIME;
 
 	m_nMessageMode = MM_NONE;
 #endif
@@ -1294,7 +1294,7 @@ void CBaseHudChat::OnChatEntryStopMessageMode( void )
 
 void CBaseHudChat::FadeChatHistory( void )
 {
-	float frac = ( m_flHistoryFadeTime -  gpGlobals->curtime ) / CHAT_HISTORY_FADE_TIME;
+	float frac = ( m_flHistoryFadeTime -  gpGlobals->GetCurTime() ) / CHAT_HISTORY_FADE_TIME;
 
 	int alpha = frac * CHAT_HISTORY_ALPHA;
 	alpha = clamp( alpha, 0, CHAT_HISTORY_ALPHA );

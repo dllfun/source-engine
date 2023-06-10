@@ -66,7 +66,7 @@ public:
 	
 	virtual bool Update( void )
 	{
-		m_flLifetime += gpGlobals->frametime;
+		m_flLifetime += gpGlobals->GetFrameTime();
 		
 		const float flTotalLifetime = 0.1f;
 
@@ -78,8 +78,8 @@ public:
 			{
 				m_Sprites[i].m_vColor = m_vBaseColors[i] * flColorScale;
 				
-				m_Sprites[i].m_flHorzSize += 1.0f * gpGlobals->frametime;
-				m_Sprites[i].m_flVertSize += 1.0f * gpGlobals->frametime;
+				m_Sprites[i].m_flHorzSize += 1.0f * gpGlobals->GetFrameTime();
+				m_Sprites[i].m_flVertSize += 1.0f * gpGlobals->GetFrameTime();
 			}
 	
 			return true;
@@ -393,7 +393,7 @@ void FX_MuzzleEffectAttached(
 	KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
 	msg->SetString( "name", "FX_MuzzleEffectAttached" );
 	msg->SetInt( "id", nId );
-	msg->SetFloat( "time", gpGlobals->curtime );
+	msg->SetFloat( "time", gpGlobals->GetCurTime() );
 
 	KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
 	pEmitter->SetInt( "count", 9 );
@@ -618,7 +618,7 @@ public:
 
 	void SetLifeTime( float flTime )
 	{
-		m_flDeathTime = gpGlobals->curtime + flTime;
+		m_flDeathTime = gpGlobals->GetCurTime() + flTime;
 	}
 
 	void SetSpurtAngle( QAngle &vecAngles )
@@ -691,7 +691,7 @@ public:
 			pParticle->m_flRollDelta = RandomFloat( -4.0f, 4.0f );
 		}			
 
-		m_flLastParticleSpawnTime = gpGlobals->curtime + m_flSpawnRate;
+		m_flLastParticleSpawnTime = gpGlobals->GetCurTime() + m_flSpawnRate;
 	}
 
 	virtual void SimulateParticles( CParticleSimulateIterator *pIterator )
@@ -700,9 +700,9 @@ public:
 		while ( pParticle )
 		{
 			// If our lifetime isn't up, create more particles
-			if ( m_flDeathTime > gpGlobals->curtime )
+			if ( m_flDeathTime > gpGlobals->GetCurTime() )
 			{
-				if ( m_flLastParticleSpawnTime <= gpGlobals->curtime )
+				if ( m_flLastParticleSpawnTime <= gpGlobals->GetCurTime() )
 				{
 					CreateSpurtParticles();
 				}
@@ -1245,7 +1245,7 @@ void FX_BuildTeslaHitbox(
 
 		el->radius	= random->RandomInt( 32, 128 );
 		el->decay	= el->radius / 0.1f;
-		el->die		= gpGlobals->curtime + 0.1f;
+		el->die		= gpGlobals->GetCurTime() + 0.1f;
 	}
 }
 

@@ -185,7 +185,7 @@ void C_TEExplosion::AffectRagdolls( void )
 
 bool CExplosionOverlay::Update( void )
 {
-	m_flLifetime += gpGlobals->frametime;
+	m_flLifetime += gpGlobals->GetFrameTime();
 	
 	const float flTotalLifetime = 0.1f;
 
@@ -197,8 +197,8 @@ bool CExplosionOverlay::Update( void )
 		{
 			m_Sprites[i].m_vColor = m_vBaseColors[i] * flColorScale;
 			
-			m_Sprites[i].m_flHorzSize += 16.0f * gpGlobals->frametime;
-			m_Sprites[i].m_flVertSize += 16.0f * gpGlobals->frametime;
+			m_Sprites[i].m_flHorzSize += 16.0f * gpGlobals->GetFrameTime();
+			m_Sprites[i].m_flVertSize += 16.0f * gpGlobals->GetFrameTime();
 		}
 
 		return true;
@@ -225,7 +225,7 @@ void C_TEExplosion::RecordExplosion( )
 
  		msg->SetInt( "te", TE_EXPLOSION );
  		msg->SetString( "name", "TE_Explosion" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", m_vecOrigin.x );
 		msg->SetFloat( "originy", m_vecOrigin.y );
 		msg->SetFloat( "originz", m_vecOrigin.z );

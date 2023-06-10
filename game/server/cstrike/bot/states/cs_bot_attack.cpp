@@ -42,9 +42,9 @@ void AttackState::OnEnter( CCSBot *me )
 	m_isEnemyHidden = false;
 	m_reacquireTimestamp = 0.0f;
 
-	m_pinnedDownTimestamp = gpGlobals->curtime + RandomFloat( 7.0f, 10.0f );
+	m_pinnedDownTimestamp = gpGlobals->GetCurTime() + RandomFloat( 7.0f, 10.0f );
 
-	m_shieldToggleTimestamp = gpGlobals->curtime + RandomFloat( 2.0f, 10.0f );
+	m_shieldToggleTimestamp = gpGlobals->GetCurTime() + RandomFloat( 2.0f, 10.0f );
 	m_shieldForceOpen = false;
 
 	// if we encountered someone while escaping, grab our weapon and fight!
@@ -196,7 +196,7 @@ void AttackState::Dodge( CCSBot *me )
 			m_dodgeState = STEADY_ON;
 			m_nextDodgeStateTimestamp = 0.0f;
 		}
-		else if (gpGlobals->curtime >= m_nextDodgeStateTimestamp)
+		else if (gpGlobals->GetCurTime() >= m_nextDodgeStateTimestamp)
 		{
 			int next;
 
@@ -229,7 +229,7 @@ void AttackState::Dodge( CCSBot *me )
 			}
 
 			m_dodgeState = (DodgeStateType)next;
-			m_nextDodgeStateTimestamp = gpGlobals->curtime + RandomFloat( 0.3f, 1.0f );
+			m_nextDodgeStateTimestamp = gpGlobals->GetCurTime() + RandomFloat( 0.3f, 1.0f );
 			m_firstDodge = false;
 		}
 
@@ -338,7 +338,7 @@ void AttackState::OnUpdate( CCSBot *me )
 		// If we are outnumbered, retreat.
 		// If we see a sniper and we aren't a sniper, retreat.
 
-		bool isPinnedDown = (gpGlobals->curtime > m_pinnedDownTimestamp);
+		bool isPinnedDown = (gpGlobals->GetCurTime() > m_pinnedDownTimestamp);
 
 		if (isPinnedDown || 
 			(me->CanSeeSniper() && !me->IsSniper()) ||
@@ -470,9 +470,9 @@ void AttackState::OnUpdate( CCSBot *me )
 				me->SecondaryAttack();
 		}
 
-		if (gpGlobals->curtime > m_shieldToggleTimestamp)
+		if (gpGlobals->GetCurTime() > m_shieldToggleTimestamp)
 		{
-			m_shieldToggleTimestamp = gpGlobals->curtime + RandomFloat( 0.5, 2.0f );
+			m_shieldToggleTimestamp = gpGlobals->GetCurTime() + RandomFloat( 0.5, 2.0f );
 
 			// toggle shield force open
 			m_shieldForceOpen = !m_shieldForceOpen;
@@ -502,7 +502,7 @@ void AttackState::OnUpdate( CCSBot *me )
 		// for Scouts and AWPs, we need to wait for zoom to resume
 		if (me->m_bResumeZoom)
 		{
-			m_scopeTimestamp = gpGlobals->curtime;
+			m_scopeTimestamp = gpGlobals->GetCurTime();
 			return;
 		}
 
@@ -511,10 +511,10 @@ void AttackState::OnUpdate( CCSBot *me )
 
 		// dont adjust zoom level if we're already zoomed in - just fire
 		if (me->GetZoomLevel() == CCSBot::NO_ZOOM && me->AdjustZoom( targetRange ))
-			m_scopeTimestamp = gpGlobals->curtime;
+			m_scopeTimestamp = gpGlobals->GetCurTime();
 	
 		const float waitScopeTime = 0.3f + me->GetProfile()->GetReactionTime();
-		if (gpGlobals->curtime - m_scopeTimestamp < waitScopeTime)
+		if (gpGlobals->GetCurTime() - m_scopeTimestamp < waitScopeTime)
 		{
 			// force us to wait until zoomed in before firing
 			return;
@@ -540,7 +540,7 @@ void AttackState::OnUpdate( CCSBot *me )
 		return;
 	}
 
-	float notSeenEnemyTime = gpGlobals->curtime - me->GetLastSawEnemyTimestamp();
+	float notSeenEnemyTime = gpGlobals->GetCurTime() - me->GetLastSawEnemyTimestamp();
 
 	// if we haven't seen our enemy for a moment, continue on if we dont want to fight, or decide to ambush if we do
 	if (!me->IsEnemyVisible())
@@ -614,7 +614,7 @@ void AttackState::OnUpdate( CCSBot *me )
 		// if the enemy is coming out of hiding, we need time to react
 		if (m_isEnemyHidden)
 		{
-			m_reacquireTimestamp = gpGlobals->curtime + me->GetProfile()->GetReactionTime();
+			m_reacquireTimestamp = gpGlobals->GetCurTime() + me->GetProfile()->GetReactionTime();
 			m_isEnemyHidden = false;
 		}
 	}
@@ -675,7 +675,7 @@ void AttackState::OnUpdate( CCSBot *me )
 		return;
 	}
 
-	if (true || gpGlobals->curtime > m_reacquireTimestamp)
+	if (true || gpGlobals->GetCurTime() > m_reacquireTimestamp)
 		me->FireWeaponAtEnemy();
 
 

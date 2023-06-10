@@ -160,8 +160,8 @@ void CEnvBeam::Spawn( void )
 	if ( ServerSide() )
 	{
 		SetThink( &CEnvBeam::UpdateThink );
-		SetNextThink( gpGlobals->curtime );
-		SetFireTime( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
+		SetFireTime( gpGlobals->GetCurTime() );
 
 		if ( GetEntityName() != NULL_STRING )
 		{
@@ -183,7 +183,7 @@ void CEnvBeam::Spawn( void )
 		if ( !GetEntityName() || FBitSet(m_spawnflags, SF_BEAM_STARTON) )
 		{
 			SetThink( &CEnvBeam::StrikeThink );
-			SetNextThink( gpGlobals->curtime + 1.0f );
+			SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 		}
 	}
 
@@ -301,13 +301,13 @@ void CEnvBeam::TurnOn( void )
 		DoSparks( GetAbsStartPos(), GetAbsEndPos() );
 
 		SetThink( &CEnvBeam::UpdateThink );
-		SetNextThink( gpGlobals->curtime );
-		SetFireTime( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
+		SetFireTime( gpGlobals->GetCurTime() );
 	}
 	else
 	{
 		SetThink( &CEnvBeam::StrikeThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -337,9 +337,9 @@ void CEnvBeam::StrikeThink( void )
 	if ( m_life != 0 )
 	{
 		if ( m_spawnflags & SF_BEAM_RANDOM )
-			SetNextThink( gpGlobals->curtime + m_life + random->RandomFloat( 0, m_restrike ) );
+			SetNextThink( gpGlobals->GetCurTime() + m_life + random->RandomFloat( 0, m_restrike ) );
 		else
-			SetNextThink( gpGlobals->curtime + m_life + m_restrike );
+			SetNextThink( gpGlobals->GetCurTime() + m_life + m_restrike );
 	}
 	m_active = 1;
 
@@ -552,7 +552,7 @@ bool CEnvBeam::PassesTouchFilters(CBaseEntity *pOther)
 void CEnvBeam::UpdateThink( void )
 {
 	// Apply damage every 1/10th of a second.
-	if ( ( m_flDamage > 0 ) && ( gpGlobals->curtime >= m_flFireTime + 0.1 ) )
+	if ( ( m_flDamage > 0 ) && ( gpGlobals->GetCurTime() >= m_flFireTime + 0.1 ) )
 	{
 		trace_t tr;
 		UTIL_TraceLine( GetAbsStartPos(), GetAbsEndPos(), MASK_SOLID, NULL, COLLISION_GROUP_NONE, &tr );
@@ -588,7 +588,7 @@ void CEnvBeam::UpdateThink( void )
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 

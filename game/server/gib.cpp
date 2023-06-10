@@ -350,7 +350,7 @@ void CGib::WaitTillLand ( void )
 		}
 		SetLocalAngularVelocity( vec3_angle );
 
-		SetNextThink( gpGlobals->curtime + m_lifeTime );
+		SetNextThink( gpGlobals->GetCurTime() + m_lifeTime );
 		SetThink ( &CGib::SUB_FadeOut );
 
 		if ( GetSprite() )
@@ -388,7 +388,7 @@ void CGib::WaitTillLand ( void )
 	else
 	{
 		// wait and check again in another half second.
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 	}
 }
 
@@ -440,7 +440,7 @@ void CGib::DieThink ( void )
 	else
 	{
 		SetThink ( &CGib::SUB_FadeOut );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -472,7 +472,7 @@ void CGib::SetPhysicsAttacker( CBasePlayer *pEntity, float flTime )
 //-----------------------------------------------------------------------------
 void CGib::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
-	SetPhysicsAttacker( pPhysGunUser, gpGlobals->curtime );
+	SetPhysicsAttacker( pPhysGunUser, gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -480,14 +480,14 @@ void CGib::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 //-----------------------------------------------------------------------------
 void CGib::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
-	SetPhysicsAttacker( pPhysGunUser, gpGlobals->curtime );
+	SetPhysicsAttacker( pPhysGunUser, gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 CBasePlayer *CGib::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime)
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -556,11 +556,11 @@ void CGib::StickyGibTouch ( CBaseEntity *pOther )
 	trace_t tr;
 	
 	SetThink ( &CGib::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 10 );
+	SetNextThink( gpGlobals->GetCurTime() + 10 );
 
 	if ( !FClassnameIs( pOther, "worldspawn" ) )
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 		return;
 	}
 
@@ -604,7 +604,7 @@ void CGib::Spawn( const char *szGibModel )
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
 #endif//HL1_DLL
 
-	SetNextThink( gpGlobals->curtime + 4 );
+	SetNextThink( gpGlobals->GetCurTime() + 4 );
 	m_lifeTime = 25;
 	SetTouch ( &CGib::BounceGibTouch );
 
@@ -624,7 +624,7 @@ void CGib::Spawn( const char *szGibModel, float flLifetime )
 	Spawn( szGibModel );
 	m_lifeTime = flLifetime;
 	SetThink ( &CGib::SUB_FadeOut );
-	SetNextThink( gpGlobals->curtime + m_lifeTime );
+	SetNextThink( gpGlobals->GetCurTime() + m_lifeTime );
 }
 
 

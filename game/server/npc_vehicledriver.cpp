@@ -308,7 +308,7 @@ int CNPC_VehicleDriver::SelectSchedule( void )
 int	CNPC_VehicleDriver::RangeAttack1Conditions( float flDot, float flDist )
 {
 	// Vehicle not ready to fire again yet?
-	if ( m_pVehicleInterface->Weapon_PrimaryCanFireAt() > gpGlobals->curtime )
+	if ( m_pVehicleInterface->Weapon_PrimaryCanFireAt() > gpGlobals->GetCurTime() )
 		return 0;
 
 	// Check weapon range
@@ -337,7 +337,7 @@ int	CNPC_VehicleDriver::RangeAttack1Conditions( float flDot, float flDist )
 int CNPC_VehicleDriver::RangeAttack2Conditions( float flDot, float flDist )
 {
 	// Vehicle not ready to fire again yet?
-	if ( m_pVehicleInterface->Weapon_SecondaryCanFireAt() > gpGlobals->curtime )
+	if ( m_pVehicleInterface->Weapon_SecondaryCanFireAt() > gpGlobals->GetCurTime() )
 		return 0;
 
 	// Check weapon range
@@ -759,7 +759,7 @@ bool CNPC_VehicleDriver::OverridePathMove( float flInterval )
 
 	pVehiclePhysics->GetVelocity( &vecVelocity, &angVel );
 	float flSpeed = vecVelocity.Length();
-	float flIncTime = gpGlobals->curtime - GetLastThink();
+	float flIncTime = gpGlobals->GetCurTime() - GetLastThink();
 	float flIncrement = flIncTime * (flSpeed / pCurrentSplineBeingTraversed->GetLength());
 
 	// Now advance our point along the spline

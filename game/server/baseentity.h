@@ -2193,7 +2193,7 @@ inline bool CBaseEntity::IsEFlagSet( int nEFlagMask ) const
 
 inline void	CBaseEntity::SetNavIgnore( float duration )
 {
-	float flNavIgnoreUntilTime = ( duration == FLT_MAX ) ? FLT_MAX : gpGlobals->curtime + duration;
+	float flNavIgnoreUntilTime = ( duration == FLT_MAX ) ? FLT_MAX : gpGlobals->GetCurTime() + duration;
 	if ( flNavIgnoreUntilTime > m_flNavIgnoreUntilTime )
 		m_flNavIgnoreUntilTime = flNavIgnoreUntilTime;
 }
@@ -2205,7 +2205,7 @@ inline void	CBaseEntity::ClearNavIgnore()
 
 inline bool	CBaseEntity::IsNavIgnored() const
 {
-	return ( gpGlobals->curtime <= m_flNavIgnoreUntilTime );
+	return ( gpGlobals->GetCurTime() <= m_flNavIgnoreUntilTime );
 }
 
 inline bool CBaseEntity::GetCheckUntouch() const

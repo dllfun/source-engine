@@ -431,7 +431,7 @@ bool CL_CheckCRCs( const char *pszMap )
 	}
 
 	bool couldHash = false;
-	if ( g_ClientGlobalVariables.network_protocol > PROTOCOL_VERSION_17 )
+	if ( g_ClientGlobalVariables.GetNetworkProtocol() > PROTOCOL_VERSION_17)
 	{
 		couldHash = MD5_MapFile( &mapMD5, pszMap );
 	}
@@ -466,7 +466,7 @@ bool CL_CheckCRCs( const char *pszMap )
 	}
 
 	bool hashValid = false;
-	if ( g_ClientGlobalVariables.network_protocol > PROTOCOL_VERSION_17 )
+	if ( g_ClientGlobalVariables.GetNetworkProtocol() > PROTOCOL_VERSION_17)
 	{
 		hashValid = MD5_Compare( cl.serverMD5, mapMD5 );
 	}
@@ -526,11 +526,11 @@ void CL_ReadPackets ( bool bFinalTick )
 		if ( !CClockDriftMgr::IsClockCorrectionEnabled() )
 			cl.SetServerTickCount( cl.GetClientTickCount() );
 
-		g_ClientGlobalVariables.tickcount = cl.GetClientTickCount();
-		g_ClientGlobalVariables.curtime = cl.GetTime();
+		g_ClientGlobalVariables.SetTickCount( cl.GetClientTickCount());
+		g_ClientGlobalVariables.SetCurTime( cl.GetTime());
 	}
 	// 0 or tick_rate if simulating
-	g_ClientGlobalVariables.frametime = cl.GetFrameTime();
+	g_ClientGlobalVariables.SetFrameTime( cl.GetFrameTime());
 
 	// read packets, if any in queue
 	if ( demoplayer->IsPlayingBack() && cl.m_NetChannel )
@@ -735,7 +735,7 @@ void CL_DispatchSound( const SoundInfo_t &sound )
 			float soundtime = cl.m_flLastServerTickTime + sound.fDelay;
 			// this adjusts for host_thread_mode or any other cases where we're running more than one
 			// tick at a time, but we get network updates on the first tick
-			soundtime -= ((g_ClientGlobalVariables.simTicksThisFrame-1) * g_pHost->Host_GetIntervalPerTick());
+			soundtime -= ((g_ClientGlobalVariables.GetSimTicksThisFrame() - 1) * g_pHost->Host_GetIntervalPerTick());
 			// this sound was networked over from the server, use server clock
 			params.delay = S_ComputeDelayForSoundtime( soundtime, CLOCK_SYNC_SERVER );
 #if 0

@@ -162,7 +162,7 @@ void CAI_BaseNPC::SetSchedule( CAI_Schedule *pNewSchedule )
 {
 	Assert( pNewSchedule != NULL );
 	
-	m_ScheduleState.timeCurTaskStarted = m_ScheduleState.timeStarted = gpGlobals->curtime;
+	m_ScheduleState.timeCurTaskStarted = m_ScheduleState.timeStarted = gpGlobals->GetCurTime();
 	m_ScheduleState.bScheduleWasInterrupted = false;
 	
 	m_pSchedule = pNewSchedule ;
@@ -191,16 +191,16 @@ void CAI_BaseNPC::SetSchedule( CAI_Schedule *pNewSchedule )
 
 	if (m_debugOverlays & OVERLAY_TASK_TEXT_BIT)
 	{
-		DevMsg(this, AIMF_IGNORE_SELECTED, "Schedule: %s (time: %.2f)\n", pNewSchedule->GetName(), gpGlobals->curtime );
+		DevMsg(this, AIMF_IGNORE_SELECTED, "Schedule: %s (time: %.2f)\n", pNewSchedule->GetName(), gpGlobals->GetCurTime() );
 	}
 
-	ADD_DEBUG_HISTORY( HISTORY_AI_DECISIONS, UTIL_VarArgs("%s(%d): Schedule: %s (time: %.2f)\n", GetDebugName(), entindex(), pNewSchedule->GetName(), gpGlobals->curtime ) );
+	ADD_DEBUG_HISTORY( HISTORY_AI_DECISIONS, UTIL_VarArgs("%s(%d): Schedule: %s (time: %.2f)\n", GetDebugName(), entindex(), pNewSchedule->GetName(), gpGlobals->GetCurTime() ) );
 
 #ifdef AI_MONITOR_FOR_OSCILLATION
 	if( m_bSelected )
 	{
 		AIScheduleChoice_t choice;
-		choice.m_flTimeSelected = gpGlobals->curtime;
+		choice.m_flTimeSelected = gpGlobals->GetCurTime();
 		choice.m_pScheduleSelected = pNewSchedule;
 		m_ScheduleHistory.AddToHead(choice);
 
@@ -725,7 +725,7 @@ void CAI_BaseNPC::MaintainSchedule ( void )
 			OnStartTask();
 			
 			m_ScheduleState.taskFailureCode    = NO_TASK_FAILURE;
-			m_ScheduleState.timeCurTaskStarted = gpGlobals->curtime;
+			m_ScheduleState.timeCurTaskStarted = gpGlobals->GetCurTime();
 			
 			AI_PROFILE_SCOPE_BEGIN_( pszTaskName );
 			AI_PROFILE_SCOPE_BEGIN(CAI_BaseNPC_StartTask);
@@ -739,7 +739,7 @@ void CAI_BaseNPC::MaintainSchedule ( void )
 				StartTaskOverlay();
 
 			g_AITaskTimings[curTiming].startTimer.End();
-			// DevMsg( "%.2f StartTask( %s )\n", gpGlobals->curtime, m_pTaskSR->GetStringText( pTask->iTask ) );
+			// DevMsg( "%.2f StartTask( %s )\n", gpGlobals->GetCurTime(), m_pTaskSR->GetStringText( pTask->iTask ) );
 		}
 
 		AI_PROFILE_SCOPE_END();
@@ -757,7 +757,7 @@ void CAI_BaseNPC::MaintainSchedule ( void )
 				const char *pszTaskName = ( bDebugTaskNames ) ? TaskName( pTask->iTask ) : "ai_task";
 				Assert( pTask != NULL );
 				g_AITaskTimings[i].pszTask = pszTaskName;
-				// DevMsg( "%.2f RunTask( %s )\n", gpGlobals->curtime, m_pTaskSR->GetStringText( pTask->iTask ) );
+				// DevMsg( "%.2f RunTask( %s )\n", gpGlobals->GetCurTime(), m_pTaskSR->GetStringText( pTask->iTask ) );
 				g_AITaskTimings[curTiming].runTimer.Start();
 
 				AI_PROFILE_SCOPE_BEGIN_( pszTaskName );
@@ -1221,7 +1221,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_DEFER_DODGE:
-		m_flNextDodgeTime = gpGlobals->curtime + pTask->flTaskData;
+		m_flNextDodgeTime = gpGlobals->GetCurTime() + pTask->flTaskData;
 		TaskComplete();
 		break;
 
@@ -1498,7 +1498,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 			if ( FindCoverFromEnemy( bNodeCover, flMinDistance, flMaxDistance ) )
 			{
 				if ( task == TASK_FIND_COVER_FROM_ENEMY )
-					m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+					m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 				TaskComplete();
 			}
 			else
@@ -1516,7 +1516,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 				AI_NavGoal_t goal(coverPos, ACT_RUN, AIN_HULL_TOLERANCE);
 				GetNavigator()->SetGoal( goal );
 
-				m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+				m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 			}
 			else
 			{
@@ -1725,27 +1725,27 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_CLEAR_MOVE_WAIT:
-		m_flMoveWaitFinished = gpGlobals->curtime;
+		m_flMoveWaitFinished = gpGlobals->GetCurTime();
 		TaskComplete();
 		break;
 
 	case TASK_MELEE_ATTACK1:
-		SetLastAttackTime( gpGlobals->curtime );
+		SetLastAttackTime( gpGlobals->GetCurTime() );
 		ResetIdealActivity( ACT_MELEE_ATTACK1 );
 		break;
 
 	case TASK_MELEE_ATTACK2:
-		SetLastAttackTime( gpGlobals->curtime );
+		SetLastAttackTime( gpGlobals->GetCurTime() );
 		ResetIdealActivity( ACT_MELEE_ATTACK2 );
 		break;
 
 	case TASK_RANGE_ATTACK1:
-		SetLastAttackTime( gpGlobals->curtime );
+		SetLastAttackTime( gpGlobals->GetCurTime() );
 		ResetIdealActivity( ACT_RANGE_ATTACK1 );
 		break;
 
 	case TASK_RANGE_ATTACK2:
-		SetLastAttackTime( gpGlobals->curtime );
+		SetLastAttackTime( gpGlobals->GetCurTime() );
 		ResetIdealActivity( ACT_RANGE_ATTACK2 );
 		break;
 
@@ -2121,7 +2121,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 						GetNavigator()->SetGoal( goal, AIN_CLEAR_PREVIOUS_STATE );
 						
  						//FIXME: What exactly is this doing internally?
-						m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+						m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 						TaskComplete();
 						return;
 					}
@@ -2140,7 +2140,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 							
 							foundPath = GetNavigator()->SetGoal( goal );
 
-							m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+							m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 						}
 						else
 						{
@@ -2660,14 +2660,14 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		{
 			Remember(bits_MEMORY_FLINCHED);
 			SetIdealActivity( GetFlinchActivity( false, false ) );
-			m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+			m_flNextFlinchTime = gpGlobals->GetCurTime() + random->RandomFloat( 3, 5 );
 			break;
 		}
 	case TASK_BIG_FLINCH:
 		{
 			Remember(bits_MEMORY_FLINCHED);
 			SetIdealActivity( GetFlinchActivity( true, false ) );
-			m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+			m_flNextFlinchTime = gpGlobals->GetCurTime() + random->RandomFloat( 3, 5 );
 			break;
 		}
 	case TASK_DIE:
@@ -3068,7 +3068,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_IGNORE_OLD_ENEMIES:
-		m_flAcceptableTimeSeenEnemy = gpGlobals->curtime;
+		m_flAcceptableTimeSeenEnemy = gpGlobals->GetCurTime();
 		if ( GetEnemy() && GetEnemyLastTimeSeen() < m_flAcceptableTimeSeenEnemy )
 		{
 			CBaseEntity *pNewEnemy = BestEnemy();
@@ -3407,7 +3407,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 
 					if ( GetNavigator()->SetGoal( goal ) )
 					{
-						m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+						m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 					}
 				}
 				break;
@@ -3453,7 +3453,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 		{
 			if ( ShouldAlwaysThink() || 
 				 UTIL_FindClientInPVS(NetworkProp()->edict()) ||
-				 ( GetState() == NPC_STATE_COMBAT && GetEnemy() && gpGlobals->curtime - GetEnemies()->LastTimeSeen( GetEnemy() ) < 15 ) )
+				 ( GetState() == NPC_STATE_COMBAT && GetEnemy() && gpGlobals->GetCurTime() - GetEnemies()->LastTimeSeen( GetEnemy() ) < 15 ) )
 			{
 				TaskComplete();
 			}
@@ -3761,7 +3761,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 					if ( GetTacticalServices()->FindCoverPos( GetLocalOrigin(), EyePosition(), 0, CoverRadius(), &coverPos ) && IsValidMoveAwayDest( GetNavigator()->GetGoalPos() ) ) 
 					{
 						GetNavigator()->SetGoal( AI_NavGoal_t( coverPos, ACT_RUN ) );
-						m_flMoveWaitFinished = gpGlobals->curtime + 2;
+						m_flMoveWaitFinished = gpGlobals->GetCurTime() + 2;
 					}
 					else
 					{
@@ -3800,7 +3800,7 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 	case TASK_WAIT_FOR_MOVEMENT_STEP:
 	case TASK_WAIT_FOR_MOVEMENT:
 		{
-			bool fTimeExpired = ( pTask->flTaskData != 0 && pTask->flTaskData < gpGlobals->curtime - GetTimeTaskStarted() );
+			bool fTimeExpired = ( pTask->flTaskData != 0 && pTask->flTaskData < gpGlobals->GetCurTime() - GetTimeTaskStarted() );
 			
 			if (fTimeExpired || GetNavigator()->GetGoalType() == GOALTYPE_NONE)
 			{
@@ -4442,7 +4442,7 @@ int CAI_BaseNPC::SelectAlertSchedule()
 		return SCHED_ALERT_FACE_BESTSOUND;
 	}
 
-	if ( gpGlobals->curtime - GetEnemies()->LastTimeSeen( AI_UNKNOWN_ENEMY ) < TIME_CARE_ABOUT_DAMAGE )
+	if ( gpGlobals->GetCurTime() - GetEnemies()->LastTimeSeen( AI_UNKNOWN_ENEMY ) < TIME_CARE_ABOUT_DAMAGE )
 		return SCHED_ALERT_FACE;
 
 	return SCHED_ALERT_STAND;
@@ -4461,7 +4461,7 @@ int CAI_BaseNPC::SelectCombatSchedule()
 	if ( nSched != SCHED_NONE )
 		return nSched;
 
-	if ( HasCondition(COND_NEW_ENEMY) && gpGlobals->curtime - GetEnemies()->FirstTimeSeen(GetEnemy()) < 2.0 )
+	if ( HasCondition(COND_NEW_ENEMY) && gpGlobals->GetCurTime() - GetEnemies()->FirstTimeSeen(GetEnemy()) < 2.0 )
 	{
 		return SCHED_WAKE_ANGRY;
 	}
@@ -4495,7 +4495,7 @@ int CAI_BaseNPC::SelectCombatSchedule()
 
 		// If I've seen the enemy recently, cower. Ignore the time for unforgettable enemies.
 		AI_EnemyInfo_t *pMemory = GetEnemies()->Find( GetEnemy() );
-		if ( (pMemory && pMemory->bUnforgettable) || (GetEnemyLastTimeSeen() > (gpGlobals->curtime - 5.0)) )
+		if ( (pMemory && pMemory->bUnforgettable) || (GetEnemyLastTimeSeen() > (gpGlobals->GetCurTime() - 5.0)) )
 		{
 			// If we're facing him, just look ready. Otherwise, face him.
 			if ( FInAimCone( GetEnemy()->EyePosition() ) )
@@ -4666,7 +4666,7 @@ void CAI_BaseNPC::PlayFlinchGesture()
 			flNextFlinch += SequenceDuration( iSequence );
 		}
 
-		m_flNextFlinchTime = gpGlobals->curtime + flNextFlinch;
+		m_flNextFlinchTime = gpGlobals->GetCurTime() + flNextFlinch;
 	}
 }
 

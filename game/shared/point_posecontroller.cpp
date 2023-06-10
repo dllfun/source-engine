@@ -69,7 +69,7 @@ void CPoseController::Spawn( void )
 
 	// Think to refresh the list of models
 	SetThink( &CPoseController::Think );
-	SetNextThink( gpGlobals->curtime + 1.0 );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0 );
 }
 
 void CPoseController::Think( void )
@@ -83,7 +83,7 @@ void CPoseController::Think( void )
 
 		m_bDisablePropLookup = true;
 
-		SetNextThink( gpGlobals->curtime + 1.0 );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0 );
 	}
 }
 
@@ -126,7 +126,7 @@ void CPoseController::BuildPropList( void )
 		++iPropNum;
 	}
 
-	SetNextThink( gpGlobals->curtime + 1.0 );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0 );
 }
 
 void CPoseController::BuildPoseIndexList( void )
@@ -352,7 +352,7 @@ void C_PoseController::OnDataChanged( DataUpdateType_t updateType )
 	if ( m_bOldPoseValueParity != m_bPoseValueParity )
 	{
 		// If the pose value was set directly set the actual pose value
-		float fClientPoseValue = m_fCurrentPoseValue + m_PoseTransitionValue.Interp( gpGlobals->curtime );
+		float fClientPoseValue = m_fCurrentPoseValue + m_PoseTransitionValue.Interp( gpGlobals->GetCurTime() );
 
 		if ( fClientPoseValue < 0.0f )
 			fClientPoseValue += 1.0f;
@@ -397,7 +397,7 @@ void C_PoseController::UpdateModulation( void )
 
 	case POSECONTROLLER_FMODTYPE_SINE:
 		{
-			float fCycleTime = m_fFModRate * ( gpGlobals->curtime + m_fFModTimeOffset );
+			float fCycleTime = m_fFModRate * ( gpGlobals->GetCurTime() + m_fFModTimeOffset );
 
 			m_fCurrentFMod = m_fFModAmplitude * sinf( fCycleTime * ( 2.0f * M_PI ) );
 			break;
@@ -405,7 +405,7 @@ void C_PoseController::UpdateModulation( void )
 
 	case POSECONTROLLER_FMODTYPE_SQUARE:
 		{
-			float fCycleTime = fabsf( m_fFModRate * 2.0f * ( gpGlobals->curtime + m_fFModTimeOffset ) );
+			float fCycleTime = fabsf( m_fFModRate * 2.0f * ( gpGlobals->GetCurTime() + m_fFModTimeOffset ) );
 
 			// Separate the current time into integer and decimal
 			int iIntegerPortion = static_cast<int>( fCycleTime );
@@ -421,7 +421,7 @@ void C_PoseController::UpdateModulation( void )
 
 	case POSECONTROLLER_FMODTYPE_TRIANGLE:
 		{
-			float fCycleTime = fabsf( m_fFModRate * 4.0f * ( gpGlobals->curtime + m_fFModTimeOffset ) );
+			float fCycleTime = fabsf( m_fFModRate * 4.0f * ( gpGlobals->GetCurTime() + m_fFModTimeOffset ) );
 
 			// Separate the current time into integer and decimal
 			int iIntegerPortion = static_cast<int>( fCycleTime );
@@ -449,7 +449,7 @@ void C_PoseController::UpdateModulation( void )
 
 	case POSECONTROLLER_FMODTYPE_SAWTOOTH:
 		{
-			float fCycleTime = fabsf( m_fFModRate * 2.0f * ( gpGlobals->curtime + m_fFModTimeOffset ) );
+			float fCycleTime = fabsf( m_fFModRate * 2.0f * ( gpGlobals->GetCurTime() + m_fFModTimeOffset ) );
 
 			// Separate the current time into integer and decimal
 			int iIntegerPortion = static_cast<int>( fCycleTime );
@@ -468,9 +468,9 @@ void C_PoseController::UpdateModulation( void )
 		{
 			// Randomly increase or decrease by the rate
 			if ( RandomInt( 0, 1 ) == 0 )
-				m_fCurrentFMod += m_fFModRate * gpGlobals->frametime;
+				m_fCurrentFMod += m_fFModRate * gpGlobals->GetFrameTime();
 			else
-				m_fCurrentFMod -= m_fFModRate * gpGlobals->frametime;
+				m_fCurrentFMod -= m_fFModRate * gpGlobals->GetFrameTime();
 
 			m_fCurrentFMod = clamp( m_fCurrentFMod, -m_fFModAmplitude, m_fFModAmplitude );
 
@@ -481,9 +481,9 @@ void C_PoseController::UpdateModulation( void )
 
 void C_PoseController::UpdatePoseCycle( float fCycleAmount )
 {
-	m_fCurrentPoseValue += fCycleAmount * gpGlobals->frametime;
+	m_fCurrentPoseValue += fCycleAmount * gpGlobals->GetFrameTime();
 
-	float fNewPoseValue = m_fCurrentPoseValue + m_PoseTransitionValue.Interp( gpGlobals->curtime );
+	float fNewPoseValue = m_fCurrentPoseValue + m_PoseTransitionValue.Interp( gpGlobals->GetCurTime() );
 
 	if ( fNewPoseValue < 0.0f )
 		fNewPoseValue += 1.0f;

@@ -247,7 +247,7 @@ void CMapOverview::UpdatePlayers()
 		m_Players[i].team = TEAM_SPECTATOR;
 	}
 
-	for ( int i = 1; i<= gpGlobals->maxClients; i++)
+	for ( int i = 1; i<= gpGlobals->GetMaxClients(); i++)
 	{
 		// update from global player resources
 		if ( g_PR && g_PR->IsConnected(i) )
@@ -452,13 +452,13 @@ void CMapOverview::OnThink( void )
 	if ( NeedsUpdate() )
 	{
 		Update();
-		m_fNextUpdateTime = gpGlobals->curtime + 0.2f; // update 5 times a second
+		m_fNextUpdateTime = gpGlobals->GetCurTime() + 0.2f; // update 5 times a second
 	}
 }
 
 bool CMapOverview::NeedsUpdate( void )
 {
-	return m_fNextUpdateTime < gpGlobals->curtime;
+	return m_fNextUpdateTime < gpGlobals->GetCurTime();
 }
 
 void CMapOverview::Update( void )
@@ -469,7 +469,7 @@ void CMapOverview::Update( void )
 	m_bFollowAngle = ( GetMode() != MAP_MODE_RADAR  && !overview_locked.GetBool() ) || ( GetMode() == MAP_MODE_RADAR  &&  !IsRadarLocked() );
 	m_fTrailUpdateInterval = overview_tracks.GetInt() && ( GetMode() != MAP_MODE_RADAR );
 
-	m_fWorldTime = gpGlobals->curtime;
+	m_fWorldTime = gpGlobals->GetCurTime();
 
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 
@@ -1209,7 +1209,7 @@ int	CMapOverview::AddObject( const char *icon, int entity, float timeToLive )
 	obj.status = -1;
 	
 	if ( timeToLive > 0 )
-		obj.endtime = gpGlobals->curtime + timeToLive;
+		obj.endtime = gpGlobals->GetCurTime() + timeToLive;
 	else
 		obj.endtime = -1;
 
@@ -1320,7 +1320,7 @@ void CMapOverview::UpdateObjects()
 	{
 		MapObject_t *obj = &m_Objects[i];
 
-		if ( obj->endtime > 0 && obj->endtime < gpGlobals->curtime )
+		if ( obj->endtime > 0 && obj->endtime < gpGlobals->GetCurTime() )
 		{
 			m_Objects.Remove( i );
 			i--;

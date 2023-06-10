@@ -66,15 +66,15 @@ public:
 
 inline float CPortalRenderable_Func_LiquidPortal::GetFillInterpolationAmount( void )
 {
-	if( m_fFillEndTime < gpGlobals->curtime )
+	if( m_fFillEndTime < gpGlobals->GetCurTime() )
 		return 0.0f;
 
-	return ((gpGlobals->curtime - m_fFillStartTime) / (m_fFillEndTime - m_fFillStartTime));
+	return ((gpGlobals->GetCurTime() - m_fFillStartTime) / (m_fFillEndTime - m_fFillStartTime));
 }
 
 inline bool CPortalRenderable_Func_LiquidPortal::IsFillingNow( void )
 {
-	return ((m_fFillEndTime >= gpGlobals->curtime) && (m_fFillStartTime <= gpGlobals->curtime));
+	return ((m_fFillEndTime >= gpGlobals->GetCurTime()) && (m_fFillStartTime <= gpGlobals->GetCurTime()));
 }
 
 

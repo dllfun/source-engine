@@ -288,7 +288,7 @@ void CMoveHelperServer::StartSound( const Vector& origin, int channel, char cons
 	CRecipientFilter filter;
 	filter.AddRecipientsByPAS( origin );
 	// FIXME, these sounds should not go to the host entity ( SND_NOTHOST )
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1 )
 	{
 		// Always send sounds down in SP
 

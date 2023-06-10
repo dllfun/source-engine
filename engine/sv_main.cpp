@@ -1765,7 +1765,7 @@ void CGameServer::FinishRestore()
 	if ( !m_bLoadgame )
 		return;
 
-	g_ServerGlobalVariables.pSaveData = &currentLevelData;
+	g_ServerGlobalVariables.SetSaveData(&currentLevelData);
 	// Build the adjacent map list
 	serverGameDLL->BuildAdjacentMapList();
 
@@ -1792,7 +1792,7 @@ void CGameServer::FinishRestore()
 
 	saverestore->OnFinishedClientRestore();
 
-	g_ServerGlobalVariables.pSaveData = NULL;
+	g_ServerGlobalVariables.SetSaveData(NULL);
 
 	// Reset
 	m_bLoadgame = false;
@@ -2514,9 +2514,9 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	SV_AllocateEdicts();
 
 	g_ServerGlobalVariables.maxEntities = SV_MAX_Edicts();
-	g_ServerGlobalVariables.maxClients = GetMaxClients();
+	g_ServerGlobalVariables.SetMaxClients(GetMaxClients());
 #ifndef SWDS
-	g_ClientGlobalVariables.network_protocol = PROTOCOL_VERSION;
+	g_ClientGlobalVariables.SetNetworkProtocol(PROTOCOL_VERSION);
 #endif
 
 	// Assume no entities beyond world and client slots
@@ -2559,8 +2559,8 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 	m_flTickInterval = g_pHost->Host_GetIntervalPerTick();
 	m_nTickCount = (int)( 1.0 / g_pHost->Host_GetIntervalPerTick()) + 1; // Start at appropriate 1
 
-	g_ServerGlobalVariables.tickcount = m_nTickCount;
-	g_ServerGlobalVariables.curtime = GetTime();
+	g_ServerGlobalVariables.SetTickCount(m_nTickCount);
+	g_ServerGlobalVariables.SetCurTime( GetTime() );
 
 	// Load the world model.
 	g_pFileSystem->AddSearchPath( szMapFile, "GAME", PATH_ADD_TO_HEAD );
@@ -2831,9 +2831,9 @@ void SV_Think( bool bIsSimulating )
 //		}
 //	}
 
-	g_ServerGlobalVariables.tickcount   = sv.GetTickCount();
-	g_ServerGlobalVariables.curtime		= sv.GetTime();
-	g_ServerGlobalVariables.frametime	= bIsSimulating ? g_pHost->Host_GetIntervalPerTick() : 0;
+	g_ServerGlobalVariables.SetTickCount( sv.GetTickCount());
+	g_ServerGlobalVariables.SetCurTime( sv.GetTime());
+	g_ServerGlobalVariables.SetFrameTime( bIsSimulating ? g_pHost->Host_GetIntervalPerTick() : 0);
 
 	// in singleplayer only run think/simulation if localplayer is connected
 	bIsSimulating =  bIsSimulating && ( sv.IsMultiplayer() || cl.IsActive() );
@@ -2909,7 +2909,7 @@ void SV_Frame( bool finalTick )
 		return;
 	}
 
-	g_ServerGlobalVariables.frametime = g_pHost->Host_GetIntervalPerTick();
+	g_ServerGlobalVariables.SetFrameTime( g_pHost->Host_GetIntervalPerTick());
 
 	bool bIsSimulating = SV_IsSimulating();
 	bool bSendDuringPause = sv_noclipduringpause ? sv_noclipduringpause->GetBool() : false;

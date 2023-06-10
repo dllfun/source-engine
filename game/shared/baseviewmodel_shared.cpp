@@ -328,7 +328,7 @@ void CBaseViewModel::SetWeaponModel( const char *modelname, CBaseCombatWeapon *w
 
 	if ( str != m_sVMName )
 	{
-		// Msg( "SetWeaponModel %s at %f\n", modelname, gpGlobals->curtime );
+		// Msg( "SetWeaponModel %s at %f\n", modelname, gpGlobals->GetCurTime() );
 		m_sVMName = str;
 		SetModel( STRING( m_sVMName ) );
 
@@ -366,7 +366,7 @@ void CBaseViewModel::SendViewModelMatchingSequence( int sequence )
 	m_nOldAnimationParity = m_nAnimationParity;
 
 	// Force frame interpolation to start at exactly frame zero
-	m_flAnimTime			= gpGlobals->curtime;
+	m_flAnimTime			= gpGlobals->GetCurTime();
 #else
 	CBaseCombatWeapon *weapon = m_hWeapon.Get();
 	bool showControlPanels = weapon && weapon->ShouldShowControlPanels();
@@ -473,7 +473,7 @@ void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& o
 	Vector	forward;
 	AngleVectors( angles, &forward, NULL, NULL );
 
-	if ( gpGlobals->frametime != 0.0f )
+	if ( gpGlobals->GetFrameTime() != 0.0f )
 	{
 		Vector vDifference;
 		VectorSubtract( forward, m_vecLastFacing, vDifference );
@@ -490,7 +490,7 @@ void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& o
 		}
 
 		// FIXME:  Needs to be predictable?
-		VectorMA( m_vecLastFacing, flSpeed * gpGlobals->frametime, vDifference, m_vecLastFacing );
+		VectorMA( m_vecLastFacing, flSpeed * gpGlobals->GetFrameTime(), vDifference, m_vecLastFacing );
 		// Make sure it doesn't grow out of control!!!
 		VectorNormalize( m_vecLastFacing );
 		VectorMA( origin, 5.0f, vDifference * -1.0f, origin );
@@ -539,7 +539,7 @@ void RecvProxy_Weapon( const CRecvProxyData *pData, void *pStruct, void *pOut )
 	{
 		// Restart animation at frame 0
 		pViewModel->SetCycle( 0 );
-		pViewModel->m_flAnimTime = gpGlobals->curtime;
+		pViewModel->m_flAnimTime = gpGlobals->GetCurTime();
 	}
 }
 #endif
@@ -582,7 +582,7 @@ void RecvProxy_SequenceNum( const CRecvProxyData *pData, void *pStruct, void *pO
 		MDLCACHE_CRITICAL_SECTION();
 
 		model->SetSequence(pData->m_Value.m_Int);
-		model->m_flAnimTime = gpGlobals->curtime;
+		model->m_flAnimTime = gpGlobals->GetCurTime();
 		model->SetCycle(0);
 	}
 }

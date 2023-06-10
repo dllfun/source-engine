@@ -82,7 +82,7 @@ bool C_Gib::InitializeGib( const char *pszModelName, Vector vecOrigin, Vector ve
 		return false;
 	}
 
-	SetNextClientThink( gpGlobals->curtime + flLifetime );
+	SetNextClientThink( gpGlobals->GetCurTime() + flLifetime );
 
 	return true;
 }
@@ -104,7 +104,7 @@ void C_Gib::ClientThink( void )
 		return;
 	}
 
-	SetNextClientThink( gpGlobals->curtime + 1.0f );
+	SetNextClientThink( gpGlobals->GetCurTime() + 1.0f );
 }
 
 //-----------------------------------------------------------------------------
@@ -114,10 +114,10 @@ void C_Gib::ClientThink( void )
 void C_Gib::StartTouch( C_BaseEntity *pOther )
 {
 	// Limit the amount of times we can bounce
-	if ( m_flTouchDelta < gpGlobals->curtime )
+	if ( m_flTouchDelta < gpGlobals->GetCurTime() )
 	{
 		HitSurface( pOther );
-		m_flTouchDelta = gpGlobals->curtime + 0.1f;
+		m_flTouchDelta = gpGlobals->GetCurTime() + 0.1f;
 	}
 
 	BaseClass::StartTouch( pOther );

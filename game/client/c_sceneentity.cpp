@@ -651,7 +651,7 @@ void C_SceneEntity::DispatchStartSpeak( CChoreoScene *scene, C_BaseFlex *actor, 
 		CSingleUserRecipientFilter filter( C_BasePlayer::GetLocalPlayer() );
 
 		float time_in_past = m_flCurrentTime - event->GetStartTime() ;
-		float soundtime = gpGlobals->curtime - time_in_past;
+		float soundtime = gpGlobals->GetCurTime() - time_in_past;
 
 		EmitSound_t es;
 		es.m_nChannel = CHAN_VOICE;
@@ -1027,17 +1027,17 @@ void C_SceneEntity::DoThink( float frametime )
 		return;
 	}
 
-	// Msg( "CL:  %d, %f for %s\n", gpGlobals->tickcount, m_flCurrentTime, m_pScene->GetFilename() );
+	// Msg( "CL:  %d, %f for %s\n", gpGlobals->GetTickCount(), m_flCurrentTime, m_pScene->GetFilename() );
 
 	// Tell scene to go
 	m_pScene->Think( m_flCurrentTime );
 	// Drive simulation time for scene
-	m_flCurrentTime += gpGlobals->frametime;
+	m_flCurrentTime += gpGlobals->GetFrameTime();
 }
 
 void C_SceneEntity::ClientThink()
 {
-	DoThink( gpGlobals->frametime );
+	DoThink( gpGlobals->GetFrameTime() );
 }
 
 void C_SceneEntity::CheckQueuedEvents()

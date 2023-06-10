@@ -260,7 +260,7 @@ void FX_TracerSound( const Vector &start, const Vector &end, int iTracerType )
 		return;
 
 	// Is it time yet?
-	float dt = g_BulletWhiz.m_nextWhizTime - gpGlobals->curtime;
+	float dt = g_BulletWhiz.m_nextWhizTime - gpGlobals->GetCurTime();
 	if ( dt > 0 )
 		return;
 
@@ -286,7 +286,7 @@ void FX_TracerSound( const Vector &start, const Vector &end, int iTracerType )
 	// Could use different timers for the different types.
 
 	// Don't play another bullet whiz for this client until this time has run out
-	g_BulletWhiz.m_nextWhizTime = gpGlobals->curtime + random->RandomFloat( flMinWhizTime, flMaxWhizTime );
+	g_BulletWhiz.m_nextWhizTime = gpGlobals->GetCurTime() + random->RandomFloat( flMinWhizTime, flMaxWhizTime );
 }
 
 

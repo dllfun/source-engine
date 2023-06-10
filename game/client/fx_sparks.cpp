@@ -70,7 +70,7 @@ CSimpleGlowEmitter::CSimpleGlowEmitter( const char *pDebugName, const Vector &so
 	m_queryHandle = 0;
 	m_wasTested = 0;
 	m_isVisible = 0;
-	m_startTime = gpGlobals->curtime;
+	m_startTime = gpGlobals->GetCurTime();
 	m_flDeathTime = flDeathTime;
 }
 	
@@ -82,7 +82,7 @@ CSimpleGlowEmitter *CSimpleGlowEmitter::Create( const char *pDebugName, const Ve
 
 void CSimpleGlowEmitter::SimulateParticles( CParticleSimulateIterator *pIterator )
 {
-	if ( gpGlobals->curtime > m_flDeathTime )
+	if ( gpGlobals->GetCurTime() > m_flDeathTime )
 	{
 		pIterator->RemoveAllParticles();
 		return;
@@ -140,7 +140,7 @@ void CSimpleGlowEmitter::RenderParticles( CParticleRenderIterator *pIterator )
 		float visible = PixelVisibility_FractionVisible( params, &m_queryHandle );
 		if ( visible == 0.0f )
 		{
-			if ( (gpGlobals->curtime - m_startTime) <= 0.1f )
+			if ( (gpGlobals->GetCurTime() - m_startTime) <= 0.1f )
 				return;
 			SetVisibleInView(viewMask, false);
 		}
@@ -436,7 +436,7 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 	//
 	// Caps
 	//
-	CSmartPtr<CSimpleGlowEmitter> pSimple = CSimpleGlowEmitter::Create( "FX_ElectricSpark 3", pos, gpGlobals->curtime + 0.2 );
+	CSmartPtr<CSimpleGlowEmitter> pSimple = CSimpleGlowEmitter::Create( "FX_ElectricSpark 3", pos, gpGlobals->GetCurTime() + 0.2 );
 
 	// NOTE: None of these will render unless the effect is visible!
 	//
@@ -529,7 +529,7 @@ void FX_ElectricSpark( const Vector &pos, int nMagnitude, int nTrailLength, cons
 	dl->origin	= pos;
 	dl->color.r = dl->color.g = dl->color.b = 250;
 	dl->radius	= random->RandomFloat(16,32);
-	dl->die		= gpGlobals->curtime + 0.001;
+	dl->die		= gpGlobals->GetCurTime() + 0.001;
 	*/
 
 #endif	// !_XBOX
@@ -1374,7 +1374,7 @@ void FX_ConcussiveExplosion( Vector &origin, Vector &normal )
 	dl->origin	= offset;
 	dl->color.r = dl->color.g = dl->color.b = 64;
 	dl->radius	= random->RandomFloat(128,256);
-	dl->die		= gpGlobals->curtime + 0.1;
+	dl->die		= gpGlobals->GetCurTime() + 0.1;
 
 
 	//

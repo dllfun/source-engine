@@ -22,7 +22,7 @@ class SINGLE_INHERITANCE CBaseEntity;
 
 class Vector;
 class VMatrix;
-struct edict_t;
+class edict_t;
 template< class T > class CHandle;
 typedef CHandle<CBaseEntity> EHANDLE;
 struct matrix3x4_t;

@@ -2513,7 +2513,7 @@ void CEntitySaveRestoreBlockHandler::Save( ISave *pSave )
 			pEntInfo->globalname = pEnt->m_iGlobalname; // remember global name
 			pEntInfo->landmarkModelSpace = ModelSpaceLandmark( pEnt->GetModelIndex() );
 			int nEntIndex = pEnt->NetworkProp()->edict() ? ENTINDEX(pEnt->NetworkProp()->edict()) : -1;
-			bool bIsPlayer = ( ( nEntIndex >= 1 ) && ( nEntIndex <= gpGlobals->maxClients ) ) ? true : false;
+			bool bIsPlayer = ( ( nEntIndex >= 1 ) && ( nEntIndex <= gpGlobals->GetMaxClients() ) ) ? true : false;
 			if ( bIsPlayer )
 			{
 				pEntInfo->flags |= FENTTABLE_PLAYER;
@@ -2615,7 +2615,7 @@ void CEntitySaveRestoreBlockHandler::Restore( IRestore *pRestore, bool createPla
 					AddRestoredEntity( pent );
 				}
 			}
-			else if ( (pEntInfo->edictindex > 0) && (pEntInfo->edictindex <= gpGlobals->maxClients) )
+			else if ( (pEntInfo->edictindex > 0) && (pEntInfo->edictindex <= gpGlobals->GetMaxClients()) )
 			{
 				if ( !(pEntInfo->flags & FENTTABLE_PLAYER) )
 				{
@@ -3100,14 +3100,14 @@ CSaveRestoreData *SaveInit( int size )
 
 	//---------------------------------
 	
-	pSaveData->levelInfo.time = gpGlobals->curtime;	// Use DLL time
+	pSaveData->levelInfo.time = gpGlobals->GetCurTime();	// Use DLL time
 	pSaveData->levelInfo.vecLandmarkOffset = vec3_origin;
 	pSaveData->levelInfo.fUseLandmark = false;
 	pSaveData->levelInfo.connectionCount = 0;
 		
 	//---------------------------------
 	
-	gpGlobals->pSaveData = pSaveData;
+	gpGlobals->SetSaveData(pSaveData);
 
 	return pSaveData;
 }
@@ -3374,7 +3374,7 @@ void CreateEntitiesInTransitionList( CSaveRestoreData *pSaveData, int levelMask 
 
 		// spawn players
 		pent = NULL;
-		if ( (pEntInfo->edictindex > 0) && (pEntInfo->edictindex <= gpGlobals->maxClients) )	
+		if ( (pEntInfo->edictindex > 0) && (pEntInfo->edictindex <= gpGlobals->GetMaxClients()) )	
 		{
 			edict_t *ed = INDEXENT( pEntInfo->edictindex );
 

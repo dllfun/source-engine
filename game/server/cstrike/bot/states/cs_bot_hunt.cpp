@@ -43,7 +43,7 @@ void HuntState::OnUpdate( CCSBot *me )
 	// if we've been hunting for a long time, drop into Idle for a moment to
 	// select something else to do
 	const float huntingTooLongTime = 30.0f;
-	if (gpGlobals->curtime - me->GetStateTimestamp() > huntingTooLongTime)
+	if (gpGlobals->GetCurTime() - me->GetStateTimestamp() > huntingTooLongTime)
 	{
 		// stop being a rogue and do the scenario, since there must not be many enemies left to hunt
 		me->PrintIfWatched( "Giving up hunting.\n" );
@@ -63,7 +63,7 @@ void HuntState::OnUpdate( CCSBot *me )
 				const float safeTime = 3.0f;
 
 				if (TheCSBots()->IsTimeToPlantBomb() || 
-						(me->IsAtBombsite() && gpGlobals->curtime - me->GetLastSawEnemyTimestamp() > safeTime))
+						(me->IsAtBombsite() && gpGlobals->GetCurTime() - me->GetLastSawEnemyTimestamp() > safeTime))
 				{
 					me->Idle();
 					return;
@@ -194,7 +194,7 @@ void HuntState::OnUpdate( CCSBot *me )
 					continue;
 
 				// keep track of the least recently cleared area
-				float age = gpGlobals->curtime - area->GetClearedTimestamp( me->GetTeamNumber()-1 );
+				float age = gpGlobals->GetCurTime() - area->GetClearedTimestamp( me->GetTeamNumber()-1 );
 				if (age > oldest)
 				{
 					oldest = age;

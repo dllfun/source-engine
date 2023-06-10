@@ -92,7 +92,7 @@ protected:
 	bool		m_bOverrideView;
 	View_t		m_OverrideViewData;
 	View_t		m_CachedView;
-	float		m_flOldTime;	// Time of last CalcView() (uses gpGlobals->realtime)
+	float		m_flOldTime;	// Time of last CalcView() (uses gpGlobals->GetRealTime())
 	int			m_nCameraMode; // current camera mode
 	Vector		m_vCamOrigin;  //current camera origin
 	QAngle		m_aCamAngle;   //current camera angle

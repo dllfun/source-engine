@@ -546,8 +546,8 @@ AIMotorMoveResult_t CAI_BlendedMotor::MoveGroundExecute( const AILocalMoveGoal_t
 	/*
 	if (1 || flNewSpeed > GetIdealSpeed())
 	{
-		// DevMsg( "%6.2f : Speed %.1f : %.1f (%.1f) :  %d\n", gpGlobals->curtime, flNewSpeed, move.maxDist, move.transitionDist, GetOuter()->m_pHintNode != NULL );
-		// DevMsg( "%6.2f : Speed %.1f : %.1f\n", gpGlobals->curtime, flNewSpeed, GetIdealSpeed() );
+		// DevMsg( "%6.2f : Speed %.1f : %.1f (%.1f) :  %d\n", gpGlobals->GetCurTime(), flNewSpeed, move.maxDist, move.transitionDist, GetOuter()->m_pHintNode != NULL );
+		// DevMsg( "%6.2f : Speed %.1f : %.1f\n", gpGlobals->GetCurTime(), flNewSpeed, GetIdealSpeed() );
 	}
 	*/
 
@@ -556,7 +556,7 @@ AIMotorMoveResult_t CAI_BlendedMotor::MoveGroundExecute( const AILocalMoveGoal_t
 	/*
 	if ((GetOuter()->m_debugOverlays & OVERLAY_NPC_SELECTED_BIT))
 	{
-		DevMsg( "%6.2f : Speed %.1f : %.1f : %.2f\n", gpGlobals->curtime, flNewSpeed, GetIdealSpeed(), flNewSpeed / GetIdealSpeed() );
+		DevMsg( "%6.2f : Speed %.1f : %.1f : %.2f\n", gpGlobals->GetCurTime(), flNewSpeed, GetIdealSpeed(), flNewSpeed / GetIdealSpeed() );
 	}
 	*/
 
@@ -600,7 +600,7 @@ AIMotorMoveResult_t CAI_BlendedMotor::MoveFlyExecute( const AILocalMoveGoal_t &m
 
 	SetMoveScriptAnim( flNewSpeed );
 
-	// DevMsg( "%6.2f : Speed %.1f : %.1f\n", gpGlobals->curtime, flNewSpeed, GetIdealSpeed() );
+	// DevMsg( "%6.2f : Speed %.1f : %.1f\n", gpGlobals->GetCurTime(), flNewSpeed, GetIdealSpeed() );
 
 	// reset actual "sequence" ground speed based current movement sequence, orientation
 
@@ -1566,13 +1566,13 @@ void CAI_BlendedMotor::MaintainTurnActivity( void )
 {
 	AI_PROFILE_SCOPE(CAI_BlendedMotor_MaintainTurnActivity);
 
-	if (m_flNextTurnGesture > gpGlobals->curtime || m_flNextTurnAct > gpGlobals->curtime || GetOuter()->IsMoving() )
+	if (m_flNextTurnGesture > gpGlobals->GetCurTime() || m_flNextTurnAct > gpGlobals->GetCurTime() || GetOuter()->IsMoving() )
 	{
 		// clear out turn detection if currently turing or moving
 		m_doTurn = m_doRight = m_doLeft = 0;
 		if ( GetOuter()->IsMoving())
 		{
-			m_flNextTurnAct = gpGlobals->curtime + 0.3;
+			m_flNextTurnAct = gpGlobals->GetCurTime() + 0.3;
 		}
 	}
 	else 
@@ -1626,12 +1626,12 @@ void CAI_BlendedMotor::MaintainTurnActivity( void )
 				}
 				GetOuter()->SetLayerPlaybackRate( iLayer, rate );
 				// disable turing for the duration of the gesture
-				m_flNextTurnAct = gpGlobals->curtime + GetOuter()->GetLayerDuration( iLayer );
+				m_flNextTurnAct = gpGlobals->GetCurTime() + GetOuter()->GetLayerDuration( iLayer );
 			}
 			else
 			{
 				// too many active gestures, try again in half a second
-				m_flNextTurnAct = gpGlobals->curtime + 0.3;
+				m_flNextTurnAct = gpGlobals->GetCurTime() + 0.3;
 			}
 		}
 		m_doTurn = m_doRight = m_doLeft = 0;
@@ -1651,12 +1651,12 @@ bool CAI_BlendedMotor::AddTurnGesture( float flYD )
 	float weight = 1.0;
 	float turnCompletion = 1.0;
 
-	if (m_flNextTurnGesture > gpGlobals->curtime)
+	if (m_flNextTurnGesture > gpGlobals->GetCurTime())
 	{
 		/*
 		if ( GetOuter()->m_debugOverlays & OVERLAY_NPC_SELECTED_BIT )
 		{
-			Msg( "%.1f : [ %.2f ]\n", flYD, m_flNextTurnAct - gpGlobals->curtime );
+			Msg( "%.1f : [ %.2f ]\n", flYD, m_flNextTurnAct - gpGlobals->GetCurTime() );
 		}
 		*/
 		return false;
@@ -1757,7 +1757,7 @@ bool CAI_BlendedMotor::AddTurnGesture( float flYD )
 			Remember( bits_MEMORY_TURNING );
 
 			// don't overlap the turn portion of the gestures, and don't play them too often
-			m_flNextTurnGesture = gpGlobals->curtime + MAX( turnCompletion * actualDuration, 0.3 );
+			m_flNextTurnGesture = gpGlobals->GetCurTime() + MAX( turnCompletion * actualDuration, 0.3 );
 
 			/*
 			if ( GetOuter()->m_debugOverlays & OVERLAY_NPC_SELECTED_BIT )

@@ -259,7 +259,7 @@ void CClientScoreBoardDialog::FireGameEvent( IGameEvent *event )
 
 bool CClientScoreBoardDialog::NeedsUpdate( void )
 {
-	return (m_fNextUpdateTime < gpGlobals->curtime);	
+	return (m_fNextUpdateTime < gpGlobals->GetCurTime());	
 }
 
 //-----------------------------------------------------------------------------
@@ -293,7 +293,7 @@ void CClientScoreBoardDialog::Update( void )
 	MoveToCenterOfScreen();
 
 	// update every second
-	m_fNextUpdateTime = gpGlobals->curtime + 1.0f; 
+	m_fNextUpdateTime = gpGlobals->GetCurTime() + 1.0f; 
 }
 
 //-----------------------------------------------------------------------------
@@ -313,7 +313,7 @@ void CClientScoreBoardDialog::UpdatePlayerInfo()
 	int selectedRow = -1;
 
 	// walk all the players and make sure they're in the scoreboard
-	for ( int i = 1; i <= gpGlobals->maxClients; ++i )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); ++i )
 	{
 		IGameResources *gr = GameResources();
 

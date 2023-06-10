@@ -393,7 +393,7 @@ AIMoveResult_t CAI_Motor::MoveJumpStop()
 
 		SetActivity( ACT_LAND );
 		// FIXME: find out why the client doesn't interpolate immediatly after sequence change
-		// GetOuter()->SetCycle( flTime - gpGlobals->curtime );
+		// GetOuter()->SetCycle( flTime - gpGlobals->GetCurTime() );
 	}
 	if (GetOuter()->GetActivity() != ACT_LAND || GetOuter()->IsActivityFinished())
 	{
@@ -758,7 +758,7 @@ void CAI_Motor::UpdateYaw( int yawSpeed )
 	ideal = UTIL_AngleMod( GetIdealYaw() );
 
 	// FIXME: this needs a proper interval
-	float dt = MIN( 0.2, gpGlobals->curtime - GetLastThink() );
+	float dt = MIN( 0.2, gpGlobals->GetCurTime() - GetLastThink() );
 	
 	newYaw = AI_ClampYaw( (float)yawSpeed * 10.0, current, ideal, dt );
 		

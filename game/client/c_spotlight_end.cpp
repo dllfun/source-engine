@@ -124,7 +124,7 @@ void C_SpotlightEnd::ClientThink(void)
 	//m_pDynamicLight->flags = DLIGHT_NO_MODEL_ILLUMINATION;
 	m_pDynamicLight->radius		= m_flLightScale*3.0f;
 	m_pDynamicLight->origin		= GetAbsOrigin() + Vector(0,0,5);
-	m_pDynamicLight->die		= gpGlobals->curtime + 0.05f;
+	m_pDynamicLight->die		= gpGlobals->GetCurTime() + 0.05f;
 	m_pDynamicLight->color		= color;
 
 	/*
@@ -147,7 +147,7 @@ void C_SpotlightEnd::ClientThink(void)
 	m_pModelLight->origin		= m_vSpotlightOrg;
 	m_pModelLight->m_InnerAngle = 6;
 	m_pModelLight->m_OuterAngle = 8;
-	m_pModelLight->die = gpGlobals->curtime + 0.05;
+	m_pModelLight->die = gpGlobals->GetCurTime() + 0.05;
 	VectorCopy( m_vSpotlightDir, m_pModelLight->m_Direction );
 	*/
 

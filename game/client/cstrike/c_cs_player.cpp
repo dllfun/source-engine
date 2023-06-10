@@ -276,9 +276,9 @@ C_CSRagdoll::~C_CSRagdoll()
 void C_CSRagdoll::GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x4_t *pDeltaBones1, matrix3x4_t *pCurrentBones, float boneDt )
 {
 	// otherwise use the death pose to set up the ragdoll
-	ForceSetupBonesAtTime( pDeltaBones0, gpGlobals->curtime - boneDt );
-	GetRagdollCurSequenceWithDeathPose( this, pDeltaBones1, gpGlobals->curtime, m_iDeathPose, m_iDeathFrame );
-	SetupBones( pCurrentBones, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+	ForceSetupBonesAtTime( pDeltaBones0, gpGlobals->GetCurTime() - boneDt );
+	GetRagdollCurSequenceWithDeathPose( this, pDeltaBones1, gpGlobals->GetCurTime(), m_iDeathPose, m_iDeathFrame );
+	SetupBones( pCurrentBones, MAXSTUDIOBONES, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 }
 
 void C_CSRagdoll::Interp_Copy( C_BaseAnimatingOverlay *pSourceEntity )
@@ -520,7 +520,7 @@ void C_CSRagdoll::CreateCSRagdoll()
 	}
 	else
 	{
-		m_flRagdollSinkStart = gpGlobals->curtime;
+		m_flRagdollSinkStart = gpGlobals->GetCurTime();
 		DestroyShadow();
 		ClientLeafSystem()->SetRenderGroup( GetRenderHandle(), RENDER_GROUP_TRANSLUCENT_ENTITY );
 	}
@@ -536,13 +536,13 @@ void C_CSRagdoll::ComputeFxBlend( void )
 	}
 	else
 	{
-		float elapsed = gpGlobals->curtime - m_flRagdollSinkStart;
+		float elapsed = gpGlobals->GetCurTime() - m_flRagdollSinkStart;
 		float flVal = RemapVal( elapsed, 0, g_flDieTranslucentTime, 255, 0 );
 		flVal = clamp( flVal, 0, 255 );
 		m_nRenderFXBlend = (int)flVal;
 
 #ifdef _DEBUG
-		m_nFXComputeFrame = gpGlobals->framecount;
+		m_nFXComputeFrame = gpGlobals->GetFrameCount();
 #endif
 	}
 }
@@ -635,7 +635,7 @@ void RecvProxy_FlashTime( const CRecvProxyData *pData, void *pStruct, void *pOut
 	}
 
 	pPlayerData->m_flFlashDuration = pData->m_Value.m_Float;
-	pPlayerData->m_flFlashBangTime = gpGlobals->curtime + pPlayerData->m_flFlashDuration;
+	pPlayerData->m_flFlashBangTime = gpGlobals->GetCurTime() + pPlayerData->m_flFlashDuration;
 }
 
 void RecvProxy_HasDefuser( const CRecvProxyData *pData, void *pStruct, void *pOut )
@@ -1176,7 +1176,7 @@ void C_CSPlayer::UpdateSoundEvents()
 		iNext = m_SoundEvents.Next( i );
 
 		CCSSoundEvent *pEvent = &m_SoundEvents[i];
-		if ( gpGlobals->curtime >= pEvent->m_flEventTime )
+		if ( gpGlobals->GetCurTime() >= pEvent->m_flEventTime )
 		{
 			CLocalPlayerFilter filter;
 			EmitSound( filter, GetSoundSourceIndex(), STRING( pEvent->m_SoundName ) );
@@ -1229,10 +1229,10 @@ void C_CSPlayer::ClientThink()
 
 	UpdateIDTarget();
 
-	if ( gpGlobals->curtime >= m_fNextThinkPushAway )
+	if ( gpGlobals->GetCurTime() >= m_fNextThinkPushAway )
 	{
 		PerformObstaclePushaway( this );
-		m_fNextThinkPushAway =  gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL;
+		m_fNextThinkPushAway =  gpGlobals->GetCurTime() + PUSHAWAY_THINK_INTERVAL;
 	}
 
 	// NVNT - check for spectating forces
@@ -1717,7 +1717,7 @@ void C_CSPlayer::ProcessMuzzleFlashEvent()
 				el->origin = vector;
 				el->radius = 70;
 				el->decay = el->radius / 0.05f;
-				el->die = gpGlobals->curtime + 0.05f;
+				el->die = gpGlobals->GetCurTime() + 0.05f;
 				el->color.r = 255;
 				el->color.g = 192;
 				el->color.b = 64;
@@ -1923,7 +1923,7 @@ void C_CSPlayer::BuildTransformations( CStudioHdr *pHdr, Vector *pos, Quaternion
 		return;
 
 	// Have the weapon setup its bones.
-	pWeapon->SetupBones( NULL, 0, BONE_USED_BY_ANYTHING, gpGlobals->curtime );
+	pWeapon->SetupBones( NULL, 0, BONE_USED_BY_ANYTHING, gpGlobals->GetCurTime() );
 
 	int iWeaponBone = 0;
 	if ( FindWeaponAttachmentBone( pWeapon, iWeaponBone ) )
@@ -2032,7 +2032,7 @@ void C_CSPlayer::PlayReloadEffect()
 				{
 					CCSSoundEvent event;
 					event.m_SoundName = MAKE_STRING( pEvent->options);
-					event.m_flEventTime = gpGlobals->curtime + pEvent->cycle / cyclesPerSecond;
+					event.m_flEventTime = gpGlobals->GetCurTime() + pEvent->cycle / cyclesPerSecond;
 					m_SoundEvents.AddToTail( event );
 				}
 			}
@@ -2212,7 +2212,7 @@ void C_CSPlayer::Simulate( void )
 				el->color.r = 200;
 				el->color.g = 200;
 				el->color.b = 200;
-				el->die = gpGlobals->curtime + 0.1;
+				el->die = gpGlobals->GetCurTime() + 0.1;
 			}
 		}
 		else if ( m_pFlashlightBeam )
@@ -2229,7 +2229,7 @@ void C_CSPlayer::ReleaseFlashlight( void )
 	if( m_pFlashlightBeam )
 	{
 		m_pFlashlightBeam->flags = 0;
-		m_pFlashlightBeam->die = gpGlobals->curtime - 1;
+		m_pFlashlightBeam->die = gpGlobals->GetCurTime() - 1;
 
 		m_pFlashlightBeam = NULL;
 	}
@@ -2451,7 +2451,7 @@ void C_CSPlayer::CalcFreezeCamView( Vector& eyeOrigin, QAngle& eyeAngles, float&
 	VectorNormalize( vToTarget );
 	VectorAngles( vToTarget, eyeAngles );
 
-	float fCurTime = gpGlobals->curtime - m_flFreezeFrameStartTime;
+	float fCurTime = gpGlobals->GetCurTime() - m_flFreezeFrameStartTime;
 	float fInterpolant = clamp( fCurTime / spec_freeze_traveltime.GetFloat(), 0.0f, 1.0f );
 	fInterpolant = Interpolators::SmoothStepEnd( fInterpolant );
 

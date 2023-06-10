@@ -13,7 +13,7 @@
 
 class CClockDriftMgr
 {
-friend class CBaseClientState;
+//friend class CBaseClientState;
 
 public:
 	CClockDriftMgr();
@@ -26,7 +26,7 @@ public:
 
 	// This is called each time a server packet comes in. It is used to correlate
 	// where the server is in time compared to us.
-	void SetServerTick( int iServerTick );
+	void SetRealServerTick( int iServerTick );
 	
 	// Pass in the frametime you would use, and it will drift it towards the server clock.
 	float AdjustFrameTime( float inputFrameTime );
@@ -34,7 +34,13 @@ public:
 	// Returns how many ticks ahead of the server the client is.
 	float GetCurrentClockDifference() const;
 
+	int GetServerTick() const;
 
+	int GetClientTick() const;
+
+	void SetServerTick(int iServerTick);
+
+	void SetClientTick(int iClientTick);
 private:
 
 	void ShowDebugInfo( float flAdjustment );

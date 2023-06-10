@@ -341,7 +341,7 @@ void CAI_Senses::EndGather( int nSeen, CUtlVector<EHANDLE> *pResult )
 
 void CAI_Senses::Look( int iDistance )
 {
-	if ( m_TimeLastLook != gpGlobals->curtime || m_LastLookDist != iDistance )
+	if ( m_TimeLastLook != gpGlobals->GetCurTime() || m_LastLookDist != iDistance )
 	{
 		//-----------------------------
 		
@@ -352,7 +352,7 @@ void CAI_Senses::Look( int iDistance )
 		//-----------------------------
 		
 		m_LastLookDist = iDistance;
-		m_TimeLastLook = gpGlobals->curtime;
+		m_TimeLastLook = gpGlobals->GetCurTime();
 	}
 	
 	GetOuter()->OnLooked( iDistance );
@@ -391,10 +391,10 @@ bool CAI_Senses::LookThroughPortal( const CProp_Portal *pPortal, CBaseEntity *pS
 int CAI_Senses::LookForHighPriorityEntities( int iDistance )
 {
 	int nSeen = 0;
-	if ( gpGlobals->curtime - m_TimeLastLookHighPriority > AI_HIGH_PRIORITY_SEARCH_TIME )
+	if ( gpGlobals->GetCurTime() - m_TimeLastLookHighPriority > AI_HIGH_PRIORITY_SEARCH_TIME )
 	{
 		AI_PROFILE_SENSES(CAI_Senses_LookForHighPriorityEntities);
-		m_TimeLastLookHighPriority = gpGlobals->curtime;
+		m_TimeLastLookHighPriority = gpGlobals->GetCurTime();
 		
 		BeginGather();
 	
@@ -402,7 +402,7 @@ int CAI_Senses::LookForHighPriorityEntities( int iDistance )
 		const Vector &origin = GetAbsOrigin();
 		
 		// Players
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -449,11 +449,11 @@ int CAI_Senses::LookForNPCs( int iDistance )
 	const Vector &origin = GetAbsOrigin();
 	AI_Efficiency_t efficiency = GetOuter()->GetEfficiency();
 	float timeNPCs = ( efficiency < AIE_VERY_EFFICIENT ) ? AI_STANDARD_NPC_SEARCH_TIME : AI_EFFICIENT_NPC_SEARCH_TIME;
-	if ( gpGlobals->curtime - m_TimeLastLookNPCs > timeNPCs )
+	if ( gpGlobals->GetCurTime() - m_TimeLastLookNPCs > timeNPCs )
 	{
 		AI_PROFILE_SENSES(CAI_Senses_LookForNPCs);
 
-		m_TimeLastLookNPCs = gpGlobals->curtime;
+		m_TimeLastLookNPCs = gpGlobals->GetCurTime();
 
 		if ( efficiency < AIE_SUPER_EFFICIENT )
 		{
@@ -510,10 +510,10 @@ int CAI_Senses::LookForObjects( int iDistance )
 	const int BOX_QUERY_MASK = FL_OBJECT;
 	int	nSeen = 0;
 
-	if ( gpGlobals->curtime - m_TimeLastLookMisc > AI_MISC_SEARCH_TIME )
+	if ( gpGlobals->GetCurTime() - m_TimeLastLookMisc > AI_MISC_SEARCH_TIME )
 	{
 		AI_PROFILE_SENSES(CAI_Senses_LookForObjects);
-		m_TimeLastLookMisc = gpGlobals->curtime;
+		m_TimeLastLookMisc = gpGlobals->GetCurTime();
 		
 		BeginGather();
 

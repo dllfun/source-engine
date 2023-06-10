@@ -141,7 +141,7 @@ void CCrossfadableImagePanel::SetupImageBlend( float flBlendTime )
 {
 	m_bBlending = true;
 	m_flBlendTime = flBlendTime;
-	m_flStartBlendTime = gpGlobals->realtime;
+	m_flStartBlendTime = gpGlobals->GetRealTime();
 	m_flBlend = 0.0f;
 }
 
@@ -162,7 +162,7 @@ void CCrossfadableImagePanel::OnTick()
 		}
 		else
 		{
-			float t = clamp( ( gpGlobals->realtime - m_flStartBlendTime ) / m_flBlendTime, 0.0f, 1.0f );
+			float t = clamp( ( gpGlobals->GetRealTime() - m_flStartBlendTime ) / m_flBlendTime, 0.0f, 1.0f );
 			m_flBlend = clamp( t * t * (3 - 2*t), 0.0f, 1.0f );	// S-curve
 		}
 
@@ -224,7 +224,7 @@ void CSlideshowPanel::SetTransitionTime( float flTransitionLength )
 
 void CSlideshowPanel::UpdateNextTransitionTime()
 {
-	m_flNextTransitionTime = gpGlobals->realtime + m_flInterval;
+	m_flNextTransitionTime = gpGlobals->GetRealTime() + m_flInterval;
 }
 
 void CSlideshowPanel::AddImage( const char *pImageName )
@@ -303,7 +303,7 @@ void CSlideshowPanel::OnSizeChanged( int nWide, int nTall )
 
 void CSlideshowPanel::OnTick()
 {
-	if ( GetImageCount() > 1 && gpGlobals->realtime >= m_flNextTransitionTime )
+	if ( GetImageCount() > 1 && gpGlobals->GetRealTime() >= m_flNextTransitionTime )
 	{
 		// Iterate to next image
 		m_iCurImg = ( m_iCurImg + 1 ) % GetImageCount();
@@ -312,7 +312,7 @@ void CSlideshowPanel::OnTick()
 		GetImagePanel()->SetImage( m_vecImages[ m_iCurImg ], m_flTransitionLength );
 
 		// Set transition time to be the end of the blend
-		m_flNextTransitionTime = gpGlobals->realtime + m_flInterval;
+		m_flNextTransitionTime = gpGlobals->GetRealTime() + m_flInterval;
 	}
 }
 

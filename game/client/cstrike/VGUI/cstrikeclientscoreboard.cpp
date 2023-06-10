@@ -600,7 +600,7 @@ void CCSClientScoreBoardDialog::Update()
 	UpdateMvpElements();
 
     // update every second
-    m_fNextUpdateTime = gpGlobals->curtime + kUpdateInterval;
+    m_fNextUpdateTime = gpGlobals->GetCurTime() + kUpdateInterval;
 
     // Catch the case where we call ShowPanel before ApplySchemeSettings, eg when going from windowed <-> fullscreen
     if ( m_pImageList == NULL )

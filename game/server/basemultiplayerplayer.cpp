@@ -17,7 +17,7 @@ CBaseMultiplayerPlayer::CBaseMultiplayerPlayer()
 	m_iCurrentConcept = MP_CONCEPT_NONE;
 	m_flLastForcedChangeTeamTime = -1;
 	m_iBalanceScore = 0;
-	m_flConnectionTime = gpGlobals==NULL?0:gpGlobals->curtime;
+	m_flConnectionTime = gpGlobals==NULL?0:gpGlobals->GetCurTime();
 
 	// per life achievement counters
 	m_pAchievementKV = new KeyValues( "achievement_counts" );
@@ -145,17 +145,17 @@ bool CBaseMultiplayerPlayer::ShouldRunRateLimitedCommand( const char *pszCommand
 	int i = m_RateLimitLastCommandTimes.Find( pcmd );
 	if ( i == m_RateLimitLastCommandTimes.InvalidIndex() )
 	{
-		m_RateLimitLastCommandTimes.Insert( pcmd, gpGlobals->curtime );
+		m_RateLimitLastCommandTimes.Insert( pcmd, gpGlobals->GetCurTime() );
 		return true;
 	}
-	else if ( (gpGlobals->curtime - m_RateLimitLastCommandTimes[i]) < COMMAND_MAX_RATE )
+	else if ( (gpGlobals->GetCurTime() - m_RateLimitLastCommandTimes[i]) < COMMAND_MAX_RATE )
 	{
 		// Too fast.
 		return false;
 	}
 	else
 	{
-		m_RateLimitLastCommandTimes[i] = gpGlobals->curtime;
+		m_RateLimitLastCommandTimes[i] = gpGlobals->GetCurTime();
 		return true;
 	}
 }
@@ -204,12 +204,12 @@ bool CBaseMultiplayerPlayer::ShouldShowVoiceSubtitleToEnemy( void )
 int	CBaseMultiplayerPlayer::CalculateTeamBalanceScore( void )
 {
 	// base score is 0 - ( seconds on server )
-	float flTimeConnected = gpGlobals->curtime - m_flConnectionTime;
+	float flTimeConnected = gpGlobals->GetCurTime() - m_flConnectionTime;
 	int iScore = 0 - (int)flTimeConnected;
 
 	// if we were switched recently, score us way down
 	float flLastSwitchedTime = GetLastForcedChangeTeamTime();
-	if ( flLastSwitchedTime > 0 && ( gpGlobals->curtime - flLastSwitchedTime ) < 300 )
+	if ( flLastSwitchedTime > 0 && ( gpGlobals->GetCurTime() - flLastSwitchedTime ) < 300 )
 	{
 		iScore -= 10000;
 	}
@@ -326,7 +326,7 @@ void CBaseMultiplayerPlayer::EscortScoringThink( void )
 		}
 	}
 
-	SetContextThink( &CBaseMultiplayerPlayer::EscortScoringThink, gpGlobals->curtime + ESCORT_SCORE_INTERVAL, ESCORT_SCORE_CONTEXT );	
+	SetContextThink( &CBaseMultiplayerPlayer::EscortScoringThink, gpGlobals->GetCurTime() + ESCORT_SCORE_INTERVAL, ESCORT_SCORE_CONTEXT );	
 }
 
 //-----------------------------------------------------------------------------
@@ -336,7 +336,7 @@ void CBaseMultiplayerPlayer::StartScoringEscortPoints( float flRate )
 {
 	Assert( flRate > 0.0f );
 	m_flCapPointScoreRate = flRate;
-	SetContextThink( &CBaseMultiplayerPlayer::EscortScoringThink, gpGlobals->curtime + ESCORT_SCORE_INTERVAL, ESCORT_SCORE_CONTEXT );
+	SetContextThink( &CBaseMultiplayerPlayer::EscortScoringThink, gpGlobals->GetCurTime() + ESCORT_SCORE_INTERVAL, ESCORT_SCORE_CONTEXT );
 }
 
 //-----------------------------------------------------------------------------
