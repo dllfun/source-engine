@@ -4,3 +4,6 @@
 [submodule "thirdparty"]
 	path = thirdparty
 	url = https://github.com/dllfun/source-thirdparty.git
+[submodule "ivp"]
+	path = ivp
+	url = https://github.com/dllfun/source-physics.git
