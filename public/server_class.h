@@ -31,7 +31,7 @@ T* _CreateEntityTemplate(T* newEnt, const char* className, edict_t* edict)
 #define CREATE_UNSAVED_ENTITY( newClass, className ) _CreateEntityTemplate( (newClass*)NULL, className ,NULL)
 
 
-inline CBaseEntity* GetContainingEntity(edict_t* pent);
+CBaseEntity* GetContainingEntity(edict_t* pent);
 
 void FreeContainingEntity(edict_t* ed);
 

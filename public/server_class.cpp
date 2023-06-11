@@ -155,7 +155,7 @@ void CEntityFactoryDictionary::ReportEntitySizes()
 //}
 
 // handling entity/edict transforms
-inline CBaseEntity* GetContainingEntity(edict_t* pent)
+CBaseEntity* GetContainingEntity(edict_t* pent)
 {
 	if (pent && pent->GetUnknown())
 	{
