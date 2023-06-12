@@ -78,6 +78,10 @@ void CClockDriftMgr::SetServerTick(int iServerTick) {
 	m_nServerTick = iServerTick;
 }
 
+void CClockDriftMgr::IncClientTick() {
+	m_nClientTick = m_nClientTick+1;
+}
+
 void CClockDriftMgr::SetClientTick(int iClientTick) {
 	m_nClientTick = iClientTick;
 }

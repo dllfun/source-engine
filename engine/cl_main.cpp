@@ -520,7 +520,7 @@ void CL_ReadPackets ( bool bFinalTick )
 	cl.oldtickcount = cl.GetServerTickCount();
 	if ( !cl.IsPaused() )
 	{
-		cl.SetClientTickCount( cl.GetClientTickCount() + 1 );
+		cl.IncClientTickCount();
 		
 		// While clock correction is off, we have the old behavior of matching the client and server clocks.
 		if ( !CClockDriftMgr::IsClockCorrectionEnabled() )

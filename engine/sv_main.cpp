@@ -2929,7 +2929,7 @@ void SV_Frame( bool finalTick )
 		if ( serverCanSimulate && ( bIsSimulating || bSendDuringPause ) )
 		{
 			simulated = true;
-			sv.SetTickCount( sv.GetTickCount()+1);
+			sv.IncTickCount();
 
 			networkStringTableContainerServer->SetTick( sv.GetTickCount());
 		}

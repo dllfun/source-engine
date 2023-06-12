@@ -142,6 +142,7 @@ public:
 	CClockDriftMgr& GetClockDriftMgr();
 	
 	int GetClientTickCount() const;	// Get the client tick count.
+	void IncClientTickCount();
 	void SetClientTickCount( int tick );
 
 	int GetServerTickCount() const;
@@ -240,6 +241,10 @@ inline CClockDriftMgr& CBaseClientState::GetClockDriftMgr()
 	return m_ClockDriftMgr;
 }
 
+inline void CBaseClientState::IncClientTickCount()
+{
+	m_ClockDriftMgr.IncClientTick();
+}
 
 inline void CBaseClientState::SetClientTickCount( int tick )
 {

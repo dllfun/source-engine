@@ -147,6 +147,10 @@ public: // IServer implementation
 		return m_szSkyname;
 	}
 
+	void IncTickCount() {
+		m_nTickCount = m_nTickCount + 1;
+	}
+
 	void SetTickCount(int tickCount) {
 		m_nTickCount = tickCount;
 	}

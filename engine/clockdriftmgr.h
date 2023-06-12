@@ -40,6 +40,8 @@ public:
 
 	void SetServerTick(int iServerTick);
 
+	void IncClientTick();
+
 	void SetClientTick(int iClientTick);
 private:
 
