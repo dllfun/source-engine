@@ -307,12 +307,12 @@ public:
 	void					MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 	void					DoImpactEffect( trace_t &tr, int nDamageType );
 
-#if !defined( NO_ENTITY_PREDICTION )
-	void					AddToPlayerSimulationList( CBaseEntity *other );
-	void					RemoveFromPlayerSimulationList( CBaseEntity *other );
-	void					SimulatePlayerSimulatedEntities( void );
-	void					ClearPlayerSimulationList( void );
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	void					AddToPlayerSimulationList( CBaseEntity *other );
+//	void					RemoveFromPlayerSimulationList( CBaseEntity *other );
+//	void					SimulatePlayerSimulatedEntities( void );
+//	void					ClearPlayerSimulationList( void );
+//#endif
 
 	// Physics simulation (player executes it's usercmd's here)
 	virtual void			PhysicsSimulate( void );
@@ -1111,9 +1111,9 @@ private:
 	
 	CNetworkVar( CBaseCombatWeaponHandle, m_hLastWeapon );
 
-#if !defined( NO_ENTITY_PREDICTION )
-	CUtlVector< CHandle< CBaseEntity > > m_SimulatedByThisPlayer;
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	CUtlVector< CHandle< CBaseEntity > > m_SimulatedByThisPlayer;
+//#endif
 
 	float					m_flOldPlayerZ;
 	float					m_flOldPlayerViewOffsetZ;

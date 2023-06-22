@@ -1790,6 +1790,15 @@ void CBaseEntity::PhysicsSimulate( void )
 	// NOTE:  Players override PhysicsSimulate and drive through their CUserCmds at that point instead of
 	//  processng through this function call!!!  They shouldn't chain to here ever.
 	// Make sure not to simulate this guy twice per frame
+#ifdef GAME_DLL
+	int aaa = 0;
+#endif // GAME_DLL
+
+#ifdef CLIENT_DLL
+	int aaa = 0;
+#endif // CLIENT_DLL
+
+
 	if (m_nSimulationTick == gpGlobals->GetTickCount())
 		return;
 

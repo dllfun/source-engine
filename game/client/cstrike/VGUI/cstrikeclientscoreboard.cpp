@@ -314,7 +314,7 @@ void CCSClientScoreBoardDialog::SetupTeamDisplay( TeamDisplayInfo& teamDisplay, 
 
 	// determine the line height needed
 	int x, y, wide, tall;
-	teamDisplay.scoreAreaLineHeight = 0;
+	teamDisplay.scoreAreaLineHeight = 1;
 	teamDisplay.scoreAreaMinX = INT_MAX;
 	teamDisplay.scoreAreaMaxX = INT_MIN;
 

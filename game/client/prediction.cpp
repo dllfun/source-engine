@@ -53,33 +53,33 @@ extern CMoveData *g_pMoveData;
 void COM_Log( char *pszFile, const char *fmt, ...);
 typedescription_t *FindFieldByName( const char *fieldname, datamap_t *dmap );
 
-#if !defined( NO_ENTITY_PREDICTION )
+//#if !defined( NO_ENTITY_PREDICTION )
 //-----------------------------------------------------------------------------
 // Purpose: For debugging, find predictable by classname
 // Input  : *classname - 
 // Output : static C_BaseEntity
 //-----------------------------------------------------------------------------
-static C_BaseEntity *FindPredictableByGameClass( const char *classname )
-{
-	// Walk backward due to deletion from UtlVector
-	int c = predictables->GetPredictableCount();
-	int i;
-	for ( i = 0; i < c; i++ )
-	{
-		C_BaseEntity *ent = predictables->GetPredictable( i );
-		if ( !ent )
-			continue;
-
-		// Don't do anything to truly predicted things (like player and weapons )
-		if ( !FClassnameIs( ent, classname ) )
-			continue;
-
-		return ent;
-	}
-
-	return NULL;
-}
-#endif
+//static C_BaseEntity *FindPredictableByGameClass( const char *classname )
+//{
+//	// Walk backward due to deletion from UtlVector
+//	int c = predictables->GetPredictableCount();
+//	int i;
+//	for ( i = 0; i < c; i++ )
+//	{
+//		C_BaseEntity *ent = predictables->GetPredictable( i );
+//		if ( !ent )
+//			continue;
+//
+//		// Don't do anything to truly predicted things (like player and weapons )
+//		if ( !FClassnameIs( ent, classname ) )
+//			continue;
+//
+//		return ent;
+//	}
+//
+//	return NULL;
+//}
+//#endif
 
 
 //-----------------------------------------------------------------------------
@@ -91,7 +91,7 @@ CPrediction::CPrediction( void )
 	m_bInPrediction = false;
 	m_bFirstTimePredicted = false;
 
-	m_nIncomingPacketNumber = 0;
+	//m_nIncomingPacketNumber = 0;
 	m_flIdealPitch = 0.0f;
 
 	m_nPreviousStartFrame = -1;
@@ -295,7 +295,7 @@ void CPrediction::PreEntityPacketReceived ( int commands_acknowledged, int curre
 	VPROF( "CPrediction::PreEntityPacketReceived" );
 
 	// Cache off incoming packet #
-	m_nIncomingPacketNumber = current_world_update_packet;
+	//m_nIncomingPacketNumber = current_world_update_packet;
 
 	// Don't screw up memory of current player from history buffers if not filling in history buffers
 	//  during prediction!!!
@@ -728,7 +728,7 @@ void CPrediction::StartCommand( C_BasePlayer *player, CUserCmd *cmd )
 #if !defined( NO_ENTITY_PREDICTION )
 	VPROF( "CPrediction::StartCommand" );
 
-	CPredictableId::ResetInstanceCounters();
+	//CPredictableId::ResetInstanceCounters();
 
 	player->m_pCurrentCommand = cmd;
 	C_BaseEntity::SetPredictionRandomSeed( cmd );
@@ -1004,96 +1004,96 @@ void CPrediction::SetIdealPitch ( C_BasePlayer *player, const Vector& origin, co
 // 2) were ack'd and made dormant and can now safely be removed
 // Input  : last_command_packet - 
 //-----------------------------------------------------------------------------
-void CPrediction::RemoveStalePredictedEntities( int sequence_number )
-{
-#if !defined( NO_ENTITY_PREDICTION )
-	VPROF( "CPrediction::RemoveStalePredictedEntities" );
-
-	int oldest_allowable_command = sequence_number;
-
-	// Walk backward due to deletion from UtlVector
-	int c = predictables->GetPredictableCount();
-	int i;
-	for ( i = c - 1; i >= 0; i-- )
-	{
-		C_BaseEntity *ent = predictables->GetPredictable( i );
-		if ( !ent )
-			continue;
-
-		// Don't do anything to truly predicted things (like player and weapons )
-		if ( ent->GetPredictable() )
-			continue;
-
-		// What's left should be things like projectiles that are just waiting to be "linked"
-		//  to their server counterpart and deleted
-		Assert( ent->IsClientCreated() );
-		if ( !ent->IsClientCreated() )
-			continue;
-
-		// Snag the PredictionContext
-		PredictionContext *ctx = ent->m_pPredictionContext;
-		if ( !ctx )
-		{
-			continue;
-		}
-
-		// If it was ack'd then the server sent us the entity.
-		// Leave it unless it wasn't made dormant this frame, in
-		//  which case it can be removed now
-		if ( ent->m_PredictableID.GetAcknowledged() )
-		{
-			// Hasn't become dormant yet!!!
-			if ( !ent->IsDormantPredictable() )
-			{
-				Assert( 0 );
-				continue;
-			}
-
-			// Still gets to live till next frame
-			if ( ent->BecameDormantThisPacket() )
-				continue;
-
-			C_BaseEntity *serverEntity = ctx->m_hServerEntity;
-			if ( serverEntity )
-			{
-				// Notify that it's going to go away
-				serverEntity->OnPredictedEntityRemove( true, ent );
-			}
-		}
-		else
-		{
-			// Check context to see if it's too old?
-			int command_entity_creation_happened = ctx->m_nCreationCommandNumber;
-			// Give it more time to live...not time to kill it yet
-			if ( command_entity_creation_happened > oldest_allowable_command )
-				continue;
-
-			// If the client predicted the KILLME flag it's possible
-			//  that entity had such a short life that it actually
-			//  never was sent to us.  In that case, just let it die a silent death
-			if ( !ent->IsEFlagSet( EFL_KILLME ) )
-			{
-				if ( cl_showerror.GetInt() != 0 )
-				{
-					// It's bogus, server doesn't have a match, destroy it:
-					Msg( "Removing unack'ed predicted entity:  %s created %s(%i) id == %s : %p\n",
-						ent->GetClassname(),
-						ctx->m_pszCreationModule,
-						ctx->m_nCreationLineNumber,
-						ent->m_PredictableID.Describe(),
-						ent );
-				}
-			}
-
-			// FIXME:  Do we need an OnPredictedEntityRemove call with an "it's not valid"
-			// flag of some kind
-		}
-
-		// This will remove it from predictables list and will also free the entity, etc.
-		ent->Release();
-	}
-#endif
-}
+//void CPrediction::RemoveStalePredictedEntities( int sequence_number )
+//{
+//#if !defined( NO_ENTITY_PREDICTION )
+//	VPROF( "CPrediction::RemoveStalePredictedEntities" );
+//
+//	int oldest_allowable_command = sequence_number;
+//
+//	// Walk backward due to deletion from UtlVector
+//	int c = predictables->GetPredictableCount();
+//	int i;
+//	for ( i = c - 1; i >= 0; i-- )
+//	{
+//		C_BaseEntity *ent = predictables->GetPredictable( i );
+//		if ( !ent )
+//			continue;
+//
+//		// Don't do anything to truly predicted things (like player and weapons )
+//		if ( ent->GetPredictable() )
+//			continue;
+//
+//		// What's left should be things like projectiles that are just waiting to be "linked"
+//		//  to their server counterpart and deleted
+//		Assert( ent->IsClientCreated() );
+//		if ( !ent->IsClientCreated() )
+//			continue;
+//
+//		// Snag the PredictionContext
+//		PredictionContext *ctx = ent->m_pPredictionContext;
+//		if ( !ctx )
+//		{
+//			continue;
+//		}
+//
+//		// If it was ack'd then the server sent us the entity.
+//		// Leave it unless it wasn't made dormant this frame, in
+//		//  which case it can be removed now
+//		if ( ent->m_PredictableID.GetAcknowledged() )
+//		{
+//			// Hasn't become dormant yet!!!
+//			if ( !ent->IsDormantPredictable() )
+//			{
+//				Assert( 0 );
+//				continue;
+//			}
+//
+//			// Still gets to live till next frame
+//			if ( ent->BecameDormantThisPacket() )
+//				continue;
+//
+//			C_BaseEntity *serverEntity = ctx->m_hServerEntity;
+//			if ( serverEntity )
+//			{
+//				// Notify that it's going to go away
+//				serverEntity->OnPredictedEntityRemove( true, ent );
+//			}
+//		}
+//		else
+//		{
+//			// Check context to see if it's too old?
+//			int command_entity_creation_happened = ctx->m_nCreationCommandNumber;
+//			// Give it more time to live...not time to kill it yet
+//			if ( command_entity_creation_happened > oldest_allowable_command )
+//				continue;
+//
+//			// If the client predicted the KILLME flag it's possible
+//			//  that entity had such a short life that it actually
+//			//  never was sent to us.  In that case, just let it die a silent death
+//			if ( !ent->IsEFlagSet( EFL_KILLME ) )
+//			{
+//				if ( cl_showerror.GetInt() != 0 )
+//				{
+//					// It's bogus, server doesn't have a match, destroy it:
+//					Msg( "Removing unack'ed predicted entity:  %s created %s(%i) id == %s : %p\n",
+//						ent->GetClassname(),
+//						ctx->m_pszCreationModule,
+//						ctx->m_nCreationLineNumber,
+//						ent->m_PredictableID.Describe(),
+//						ent );
+//				}
+//			}
+//
+//			// FIXME:  Do we need an OnPredictedEntityRemove call with an "it's not valid"
+//			// flag of some kind
+//		}
+//
+//		// This will remove it from predictables list and will also free the entity, etc.
+//		ent->Release();
+//	}
+//#endif
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1186,10 +1186,10 @@ void CPrediction::RunSimulation( int current_command, float curtime, CUserCmd *c
 		}
 
 		// Player is not actually in the m_SimulatedByThisPlayer list, of course
-		if ( entity->IsPlayerSimulated() )
-		{
-			continue;
-		}
+		//if ( entity->IsPlayerSimulated() )
+		//{
+		//	continue;
+		//}
 
 		if ( AddDataChangeEvent( entity, DATA_UPDATE_DATATABLE_CHANGED, &entity->m_DataChangeEventRef ) )
 		{
@@ -1677,7 +1677,7 @@ void CPrediction::_Update( bool received_new_world_update, bool validframe,
 
 		// Remove any purely client predicted entities that were left "dangling" because the 
 		//  server didn't acknowledge them or which can now safely be removed
-		RemoveStalePredictedEntities( incoming_acknowledged );
+		//RemoveStalePredictedEntities( incoming_acknowledged );
 
 		// Restore objects back to "pristine" state from last network/world state update
 		if ( received_new_world_update )
@@ -1809,17 +1809,17 @@ void CPrediction::SetLocalViewAngles( QAngle& ang )
 	player->SetLocalViewAngles( ang );
 }
 
-#if !defined( NO_ENTITY_PREDICTION )
-//-----------------------------------------------------------------------------
-// Purpose: For determining that predicted creation entities are un-acked and should
-//  be deleted
-// Output : int
-//-----------------------------------------------------------------------------
-int CPrediction::GetIncomingPacketNumber( void ) const
-{
-	return m_nIncomingPacketNumber;
-}
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+////-----------------------------------------------------------------------------
+//// Purpose: For determining that predicted creation entities are un-acked and should
+////  be deleted
+//// Output : int
+////-----------------------------------------------------------------------------
+//int CPrediction::GetIncomingPacketNumber( void ) const
+//{
+//	return m_nIncomingPacketNumber;
+//}
+//#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 

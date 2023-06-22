@@ -409,9 +409,9 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_fLastPlayerTalkTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_hLastWeapon, FIELD_EHANDLE ),
 
-#if !defined( NO_ENTITY_PREDICTION )
+//#if !defined( NO_ENTITY_PREDICTION )
 	// DEFINE_FIELD( m_SimulatedByThisPlayer, CUtlVector < CHandle < CBaseEntity > > ),
-#endif
+//#endif
 
 	DEFINE_FIELD( m_flOldPlayerZ, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flOldPlayerViewOffsetZ, FIELD_FLOAT ),
@@ -4606,10 +4606,10 @@ void CBasePlayer::PostThink()
 		VPROF_SCOPE_END();
 	}
 
-#if !defined( NO_ENTITY_PREDICTION )
-	// Even if dead simulate entities
-	SimulatePlayerSimulatedEntities();
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	// Even if dead simulate entities
+//	SimulatePlayerSimulatedEntities();
+//#endif
 
 }
 

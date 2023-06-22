@@ -79,7 +79,7 @@ void CEntityFactoryDictionary::InstallFactory(IEntityFactory* pFactory, const ch
 int CEntityFactoryDictionary::RequiredEdictIndex(const char* pClassName) {
 	unsigned short nIndex = m_Factories.Find(pClassName);
 	if (nIndex == m_Factories.InvalidIndex())
-		return false;
+		return -1;
 	return m_Factories[nIndex]->RequiredEdictIndex();
 }
 //-----------------------------------------------------------------------------

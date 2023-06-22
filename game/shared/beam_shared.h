@@ -56,7 +56,7 @@ enum
 };
 
 #if !defined( CLIENT_DLL )
-void* SendProxy_SendBeamPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+//void* SendProxy_SendBeamPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
 #endif
 #ifdef CLIENT_DLL
 void RecvProxy_Beam_ScrollSpeed(const CRecvProxyData* pData, void* pStruct, void* pOut);
@@ -171,7 +171,7 @@ public:
 	// Input handlers
 
 	static CBeam *BeamCreate( const char *pSpriteName, float width );
-	static CBeam *BeamCreatePredictable( const char *module, int line, bool persist, const char *pSpriteName, float width, CBasePlayer *pOwner );
+	//static CBeam *BeamCreatePredictable( const char *module, int line, bool persist, const char *pSpriteName, float width, CBasePlayer *pOwner );
 
 	void LiveForTime( float time );
 	void BeamDamageInstant( trace_t *ptr, float damage );
@@ -195,7 +195,7 @@ public:
 	virtual bool		IgnoresZBuffer( void ) const { return true; }
 	virtual void		OnDataChanged( DataUpdateType_t updateType );
 
-	virtual bool		OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity *predicted );
+	//virtual bool		OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity *predicted );
 
 	// Add beam to visible entities list?
 	virtual void		AddEntity( void );
@@ -263,13 +263,13 @@ public:
 	CNetworkVar( bool, m_bDrawInPortalRender );
 #endif //#ifdef PORTAL
 
-#if !defined( NO_ENTITY_PREDICTION )
 #if !defined( CLIENT_DLL )
-	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_BeamPredictableId)
-		SendPropPredictableId(SENDINFO(m_PredictableID)),
-		SendPropInt(SENDINFO(m_bIsPlayerSimulated), 1, SPROP_UNSIGNED),
-	END_NETWORK_TABLE(DT_BeamPredictableId)
-
+//#if !defined( NO_ENTITY_PREDICTION )
+//	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_BeamPredictableId)
+//		//SendPropPredictableId(SENDINFO(m_PredictableID)),
+//		//SendPropInt(SENDINFO(m_bIsPlayerSimulated), 1, SPROP_UNSIGNED),
+//	END_NETWORK_TABLE(DT_BeamPredictableId)
+//#endif
 	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_Beam)
 		SendPropInt(SENDINFO(m_nBeamType), Q_log2(NUM_BEAM_TYPES) + 1, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nBeamFlags), NUM_BEAM_FLAGS, SPROP_UNSIGNED),
@@ -307,21 +307,21 @@ public:
 		SendPropVector(SENDINFO(m_vecOrigin), 19, SPROP_CHANGES_OFTEN, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
 		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
 		SendPropInt(SENDINFO(m_nMinDXLevel), 8, SPROP_UNSIGNED),
-#if !defined( NO_ENTITY_PREDICTION )
-		SendPropDataTable("beampredictable_id", 0, REFERENCE_SEND_TABLE(DT_BeamPredictableId), SendProxy_SendBeamPredictableId),
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//		SendPropDataTable("beampredictable_id", 0, REFERENCE_SEND_TABLE(DT_BeamPredictableId), SendProxy_SendBeamPredictableId),
+//#endif
 	END_NETWORK_TABLE(DT_Beam)
 #endif
-#endif
 
-#if !defined( NO_ENTITY_PREDICTION )
-#if defined( CLIENT_DLL )
-	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_BeamPredictableId)
-		RecvPropPredictableId(RECVINFO(m_PredictableID)),
-		RecvPropInt(RECVINFO(m_bIsPlayerSimulated)),
-	END_NETWORK_TABLE(DT_BeamPredictableId)
-#endif
-#endif
+
+//#if !defined( NO_ENTITY_PREDICTION )
+//#if defined( CLIENT_DLL )
+//	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_BeamPredictableId)
+//		//RecvPropPredictableId(RECVINFO(m_PredictableID)),
+//		//RecvPropInt(RECVINFO(m_bIsPlayerSimulated)),
+//	END_NETWORK_TABLE(DT_BeamPredictableId)
+//#endif
+//#endif
 
 #if defined( CLIENT_DLL )
 	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_Beam)
@@ -362,9 +362,9 @@ public:
 
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
-#if !defined( NO_ENTITY_PREDICTION )
-		RecvPropDataTable("beampredictable_id", 0, 0, REFERENCE_RECV_TABLE(DT_BeamPredictableId)),
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//		RecvPropDataTable("beampredictable_id", 0, 0, REFERENCE_RECV_TABLE(DT_BeamPredictableId)),
+//#endif
 
 	END_NETWORK_TABLE(DT_Beam)
 #endif
@@ -575,11 +575,11 @@ inline void	CBeam::BeamDamageInstant( trace_t *ptr, float damage )
 bool IsStaticPointEntity( CBaseEntity *pEnt );
 
 // Macro to wrap creation
-#define BEAM_CREATE_PREDICTABLE( name, width, player ) \
-	CBeam::BeamCreatePredictable( __FILE__, __LINE__, false, name, width, player )
+//#define BEAM_CREATE_PREDICTABLE( name, width, player ) \
+//	CBeam::BeamCreatePredictable( __FILE__, __LINE__, false, name, width, player )
 
-#define BEAM_CREATE_PREDICTABLE_PERSIST( name, width, player ) \
-	CBeam::BeamCreatePredictable( __FILE__, __LINE__, true, name, width, player )
+//#define BEAM_CREATE_PREDICTABLE_PERSIST( name, width, player ) \
+//	CBeam::BeamCreatePredictable( __FILE__, __LINE__, true, name, width, player )
 
 // Start/End Entity is encoded as 12 bits of entity index, and 4 bits of attachment (4:12)
 #define BEAMENT_ENTITY(x)		((x)&0xFFF)

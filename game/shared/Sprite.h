@@ -229,7 +229,7 @@ public:
 
 	static CSprite *SpriteCreate( const char *pSpriteName, const Vector &origin, bool animate );
 #endif
-	static CSprite *SpriteCreatePredictable( const char *module, int line, const char *pSpriteName, const Vector &origin, bool animate );
+	//static CSprite *SpriteCreatePredictable( const char *module, int line, const char *pSpriteName, const Vector &origin, bool animate );
 
 #if defined( CLIENT_DLL )
 	virtual float	GetRenderScale( void );
@@ -366,7 +366,7 @@ public:
 
 
 // Macro to wrap creation
-#define SPRITE_CREATE_PREDICTABLE( name, origin, animate ) \
-	CSprite::SpriteCreatePredictable( __FILE__, __LINE__, name, origin, animate )
+//#define SPRITE_CREATE_PREDICTABLE( name, origin, animate ) \
+//	CSprite::SpriteCreatePredictable( __FILE__, __LINE__, name, origin, animate )
 
 #endif // SPRITE_H

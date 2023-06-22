@@ -55,9 +55,9 @@ public:
 	virtual bool	InPrediction( void ) const;
 	virtual bool	IsFirstTimePredicted( void ) const;
 
-#if !defined( NO_ENTITY_PREDICTION )
-	virtual int		GetIncomingPacketNumber( void ) const;
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	virtual int		GetIncomingPacketNumber( void ) const;
+//#endif
 
 	float			GetIdealPitch( void ) const 
 	{
@@ -113,7 +113,7 @@ private:
 	void			ShutdownPredictables( void );
 	void			ReinitPredictables( void );
 
-	void			RemoveStalePredictedEntities( int last_command_packet );
+	//void			RemoveStalePredictedEntities( int last_command_packet );
 	void			RestoreOriginalEntityState( void );
 	void			RunSimulation( int current_command, float curtime, CUserCmd *cmd, C_BasePlayer *localPlayer );
 	void			Untouch( void );
@@ -139,7 +139,7 @@ private:
 	int				m_nCommandsPredicted;
 	int				m_nServerCommandsAcknowledged;
 	int				m_bPreviousAckHadErrors;
-	int				m_nIncomingPacketNumber;
+	//int				m_nIncomingPacketNumber;
 
 #endif
 	float			m_flIdealPitch;

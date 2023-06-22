@@ -24,9 +24,9 @@
 #include "ehandle.h"
 #include "iclientunknown.h"
 #include "client_thinklist.h"
-#if !defined( NO_ENTITY_PREDICTION )
-#include "predictableid.h"
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//#include "predictableid.h"
+//#endif
 #include "soundflags.h"
 #include "shareddefs.h"
 #include "networkvar.h"
@@ -121,31 +121,31 @@ typedef C_BaseEntity* (*DISPATCHFUNCTION)( void );
 #include "touchlink.h"
 #include "groundlink.h"
 
-#if !defined( NO_ENTITY_PREDICTION )
-//-----------------------------------------------------------------------------
-// Purpose: For fully client side entities we use this information to determine
-//  authoritatively if the server has acknowledged creating this entity, etc.
-//-----------------------------------------------------------------------------
-struct PredictionContext
-{
-	PredictionContext()
-	{
-		m_bActive					= false;
-		m_nCreationCommandNumber	= -1;
-		m_pszCreationModule			= NULL;
-		m_nCreationLineNumber		= 0;
-		m_hServerEntity				= NULL;
-	}
-
-	// The command_number of the usercmd which created this entity
-	bool						m_bActive;
-	int							m_nCreationCommandNumber;
-	char const					*m_pszCreationModule;
-	int							m_nCreationLineNumber;
-	// The entity to whom we are attached
-	CHandle< C_BaseEntity >		m_hServerEntity;
-};
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+////-----------------------------------------------------------------------------
+//// Purpose: For fully client side entities we use this information to determine
+////  authoritatively if the server has acknowledged creating this entity, etc.
+////-----------------------------------------------------------------------------
+//struct PredictionContext
+//{
+//	PredictionContext()
+//	{
+//		m_bActive					= false;
+//		m_nCreationCommandNumber	= -1;
+//		m_pszCreationModule			= NULL;
+//		m_nCreationLineNumber		= 0;
+//		m_hServerEntity				= NULL;
+//	}
+//
+//	// The command_number of the usercmd which created this entity
+//	bool						m_bActive;
+//	int							m_nCreationCommandNumber;
+//	char const					*m_pszCreationModule;
+//	int							m_nCreationLineNumber;
+//	// The entity to whom we are attached
+//	CHandle< C_BaseEntity >		m_hServerEntity;
+//};
+//#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: think contexts
@@ -158,8 +158,8 @@ struct thinkfunc_t
 	int			m_nLastThinkTick;
 };
 
-#define CREATE_PREDICTED_ENTITY( className )	\
-	C_BaseEntity::CreatePredictedEntityByName( className, __FILE__, __LINE__ );
+//#define CREATE_PREDICTED_ENTITY( className )	\
+//	C_BaseEntity::CreatePredictedEntityByName( className, __FILE__, __LINE__ );
 
 
 
@@ -194,7 +194,7 @@ public:
 									C_BaseEntity();
 	virtual							~C_BaseEntity();
 
-	static C_BaseEntity				*CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist = false );
+	//static C_BaseEntity				*CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist = false );
 	
 	// FireBullets uses shared code for prediction.
 	virtual void					FireBullets( const FireBulletsInfo_t &info );
@@ -890,13 +890,13 @@ public:
 	// Determine approximate velocity based on updates from server
 	void					EstimateAbsVelocity( Vector& vel );
 
-#if !defined( NO_ENTITY_PREDICTION )
-	// The player drives simulation of this entity
-	void					SetPlayerSimulated( C_BasePlayer *pOwner );
-	bool					IsPlayerSimulated( void ) const;
-	CBasePlayer				*GetSimulatingPlayer( void );
-	void					UnsetPlayerSimulated( void );
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	// The player drives simulation of this entity
+//	void					SetPlayerSimulated( C_BasePlayer *pOwner );
+//	bool					IsPlayerSimulated( void ) const;
+//	CBasePlayer				*GetSimulatingPlayer( void );
+//	void					UnsetPlayerSimulated( void );
+//#endif
 
 	// Sorry folks, here lies TF2-specific stuff that really has no other place to go
 	virtual bool			CanBePoweredUp( void ) { return false; }
@@ -1346,11 +1346,11 @@ public:
 	// Team Handling
 	int								m_iTeamNum;
 
-#if !defined( NO_ENTITY_PREDICTION )
-	// Certain entities (projectiles) can be created on the client
-	CPredictableId					m_PredictableID;
-	PredictionContext				*m_pPredictionContext;
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	// Certain entities (projectiles) can be created on the client
+//	CPredictableId					m_PredictableID;
+//	PredictionContext				*m_pPredictionContext;
+//#endif
 
 	// used so we know when things are no longer touching
 	int								touchStamp;	
@@ -1358,11 +1358,11 @@ public:
 	// Called after predicted entity has been acknowledged so that no longer needed entity can
 	//  be deleted
 	// Return true to force deletion right now, regardless of isbeingremoved
-	virtual bool					OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity *predicted );
+	//virtual bool					OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity *predicted );
 
-	bool							IsDormantPredictable( void ) const;
-	bool							BecameDormantThisPacket( void ) const;
-	void							SetDormantPredictable( bool dormant );
+	//bool							IsDormantPredictable( void ) const;
+	//bool							BecameDormantThisPacket( void ) const;
+	//void							SetDormantPredictable( bool dormant );
 
 	int								GetWaterLevel() const;
 	void							SetWaterLevel( int nLevel );
@@ -1519,13 +1519,13 @@ private:
 
 //	QAngle							m_vecAbsAngVelocity;
 
-#if !defined( NO_ENTITY_PREDICTION )
-	// It's still in the list for "fixup purposes" and simulation, but don't try to render it any more...
-	bool							m_bDormantPredictable;
-
-	// So we can clean it up
-	int								m_nIncomingPacketEntityBecameDormant;
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	// It's still in the list for "fixup purposes" and simulation, but don't try to render it any more...
+//	bool							m_bDormantPredictable;
+//
+//	// So we can clean it up
+//	int								m_nIncomingPacketEntityBecameDormant;
+//#endif
 
 	// The spawn time of the entity
 	float							m_flSpawnTime;
@@ -1645,7 +1645,7 @@ private:
 	int								m_nIntermediateDataCount;
 
 protected:
-	bool							m_bIsPlayerSimulated;
+	//bool							m_bIsPlayerSimulated;
 private:
 #endif
 
@@ -1663,10 +1663,10 @@ private:
 	// OnDataChanged calls in the same frame if the client receives multiple packets.
 	int								m_DataChangeEventRef;
 
-#if !defined( NO_ENTITY_PREDICTION )
-	// Player who is driving my simulation
-	CHandle< CBasePlayer >			m_hPlayerSimulationOwner;
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	// Player who is driving my simulation
+//	CHandle< CBasePlayer >			m_hPlayerSimulationOwner;
+//#endif
 
 	// The owner!
 	EHANDLE							m_hOwnerEntity;
@@ -1724,12 +1724,12 @@ protected:
 		RecvPropInt(RECVINFO(m_flAnimTime), 0, RecvProxy_AnimTime),
 	END_RECV_TABLE(DT_AnimTimeMustBeFirst)
 
-#ifndef NO_ENTITY_PREDICTION
-	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_PredictableId)
-		RecvPropPredictableId(RECVINFO(m_PredictableID)),
-		RecvPropInt(RECVINFO(m_bIsPlayerSimulated)),
-	END_RECV_TABLE(DT_PredictableId)
-#endif
+//#ifndef NO_ENTITY_PREDICTION
+//	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_PredictableId)
+//		//RecvPropPredictableId(RECVINFO(m_PredictableID)),
+//		RecvPropInt(RECVINFO(m_bIsPlayerSimulated)),
+//	END_RECV_TABLE(DT_PredictableId)
+//#endif
 
 	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
 		RecvPropDataTable("AnimTimeMustBeFirst", 0, 0, REFERENCE_RECV_TABLE(DT_AnimTimeMustBeFirst)),
@@ -1767,9 +1767,9 @@ protected:
 		RecvPropDataTable(RECVINFO_DT(m_Collision), 0, REFERENCE_RECV_TABLE(DT_CollisionProperty)),
 
 		RecvPropInt(RECVINFO(m_iTextureFrameIndex)),
-#if !defined( NO_ENTITY_PREDICTION )
-		RecvPropDataTable("predictable_id", 0, 0, REFERENCE_RECV_TABLE(DT_PredictableId)),
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//		RecvPropDataTable("predictable_id", 0, 0, REFERENCE_RECV_TABLE(DT_PredictableId)),
+//#endif
 
 		RecvPropInt(RECVINFO(m_bSimulatedEveryTick), 0, RecvProxy_InterpolationAmountChanged),
 		RecvPropInt(RECVINFO(m_bAnimatedEveryTick), 0, RecvProxy_InterpolationAmountChanged),

@@ -2822,10 +2822,10 @@ void CServerGameClients::ClientDisconnect( edict_t *pEdict )
 		CBaseEntity::PhysicsRemoveTouchedList( player );
 		CBaseEntity::PhysicsRemoveGroundList( player );
 
-#if !defined( NO_ENTITY_PREDICTION )
-		// Make sure anything we "own" is simulated by the server from now on
-		player->ClearPlayerSimulationList();
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//		// Make sure anything we "own" is simulated by the server from now on
+//		player->ClearPlayerSimulationList();
+//#endif
 		#if defined( TF_DLL )
 			if ( !player->IsFakeClient() )
 			{

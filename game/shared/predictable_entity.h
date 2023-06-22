@@ -65,7 +65,12 @@ class SendTable;
 		virtual datamap_t *GetPredDescMap( void );						\
 		template <typename T> friend datamap_t *PredMapInit(T *)
 #else
-#define DECLARE_PREDICTABLE()	template <typename T> friend datamap_t *PredMapInit(T *)
+#define DECLARE_PREDICTABLE()										\
+	public:																\
+		static typedescription_t m_PredDesc[];							\
+		static datamap_t m_PredMap;										\
+		virtual datamap_t* GetPredDescMap(void);						\
+		template <typename T> friend datamap_t* PredMapInit(T*)
 #endif
 
 #ifndef NO_ENTITY_PREDICTION
@@ -111,21 +116,44 @@ class SendTable;
 	}
 #else
 #define BEGIN_PREDICTION_DATA( className ) \
-	template <> inline datamap_t *PredMapInit<className>( className * ) \
-	{ \
-		if ( 0 ) \
-		{ \
-			typedef className classNameTypedef; \
-			typedescription_t predDesc[] = \
-			{ \
-				{ FIELD_VOID,0, {0,0},0,0,0,0,0,0},
+	datamap_t className::m_PredMap = { 0, 0, #className, &BaseClass::m_PredMap }; \
+	datamap_t *className::GetPredDescMap( void ) { return &m_PredMap; } \
+	BEGIN_PREDICTION_DATA_GUTS( className )
 
-#define BEGIN_PREDICTION_DATA_NO_BASE( className ) BEGIN_PREDICTION_DATA( className )
+#define BEGIN_PREDICTION_DATA_NO_BASE( className ) \
+	datamap_t className::m_PredMap = { 0, 0, #className, NULL }; \
+	datamap_t *className::GetPredDescMap( void ) { return &m_PredMap; } \
+	BEGIN_PREDICTION_DATA_GUTS( className )
+
+#define BEGIN_PREDICTION_DATA_GUTS( className ) \
+	template <typename T> datamap_t *PredMapInit(T *); \
+	template <> datamap_t *PredMapInit<className>( className * ); \
+	namespace className##_PredDataDescInit \
+	{ \
+		datamap_t *g_PredMapHolder = PredMapInit( (className *)NULL ); /* This can/will be used for some clean up duties later */ \
+	} \
+	\
+	template <> datamap_t *PredMapInit<className>( className * ) \
+	{ \
+		typedef className classNameTypedef; \
+		static typedescription_t predDesc[] = \
+		{ \
+		{ FIELD_VOID,0, {0,0},0,0,0,0,0,0}, /* so you can define "empty" tables */
 
 #define END_PREDICTION_DATA() \
-			}; \
-			predDesc[0].flags = 0; /* avoid compiler warning of unused data */ \
+		}; \
+		\
+		if ( sizeof( predDesc ) > sizeof( predDesc[0] ) ) \
+		{ \
+			classNameTypedef::m_PredMap.dataNumFields = ARRAYSIZE( predDesc ) - 1; \
+			classNameTypedef::m_PredMap.dataDesc 	  = &predDesc[1]; \
 		} \
+		else \
+		{ \
+			classNameTypedef::m_PredMap.dataNumFields = 1; \
+			classNameTypedef::m_PredMap.dataDesc 	  = predDesc; \
+		} \
+		return &classNameTypedef::m_PredMap; \
 	}
 #endif
 

@@ -1150,12 +1150,15 @@ void CDescribeData::DescribeFields_R( int chain_count, datamap_t *pRootMap, type
 }
 
 static int g_nChainCount = 1;
+#if !defined( NO_ENTITY_PREDICTION )
 extern void ValidateChains_R( datamap_t *dmap );
+#endif
 
 void CDescribeData::DumpDescription( datamap_t *pMap )
 {
 	++g_nChainCount;
 
+#if !defined( NO_ENTITY_PREDICTION )
 	if ( !pMap->chains_validated )
 	{
 		ValidateChains_R( pMap );
@@ -1167,6 +1170,7 @@ void CDescribeData::DumpDescription( datamap_t *pMap )
 
 		pMap = pMap->baseMap;
 	}
+#endif
 }
 
 

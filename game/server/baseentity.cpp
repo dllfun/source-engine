@@ -158,20 +158,20 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_ClientSideAnimation );
 
 
 
-#if !defined( NO_ENTITY_PREDICTION )
-void* SendProxy_SendPredictableId( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
-{
-	CBaseEntity *pEntity = (CBaseEntity *)pStruct;
-	if ( !pEntity || !pEntity->m_PredictableID->IsActive() )
-		return NULL;
-
-	int id_player_index = pEntity->m_PredictableID->GetPlayer();
-	pRecipients->SetOnly( id_player_index );
-	
-	return ( void * )pVarData;
-}
-REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendPredictableId );
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//void* SendProxy_SendPredictableId( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
+//{
+//	CBaseEntity *pEntity = (CBaseEntity *)pStruct;
+//	if ( !pEntity || !pEntity->m_PredictableID->IsActive() )
+//		return NULL;
+//
+//	int id_player_index = pEntity->m_PredictableID->GetPlayer();
+//	pRecipients->SetOnly( id_player_index );
+//	
+//	return ( void * )pVarData;
+//}
+//REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendPredictableId );
+//#endif
 
 void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
 {
@@ -1718,9 +1718,9 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	DEFINE_KEYFIELD( m_fEffects, FIELD_INTEGER, "effects" ),
 	DEFINE_KEYFIELD( m_clrRender, FIELD_COLOR32, "rendercolor" ),
 	DEFINE_GLOBAL_KEYFIELD( m_nModelIndex, FIELD_SHORT, "modelindex" ),
-#if !defined( NO_ENTITY_PREDICTION )
+//#if !defined( NO_ENTITY_PREDICTION )
 	// DEFINE_FIELD( m_PredictableID, CPredictableId ),
-#endif
+//#endif
 	DEFINE_FIELD( touchStamp, FIELD_INTEGER ),
 	DEFINE_CUSTOM_FIELD( m_aThinkFunctions, thinkcontextFuncs ),
 	//								m_iCurrentThinkContext (not saved, debug field only, and think transient to boot)
@@ -1812,10 +1812,10 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	DEFINE_KEYFIELD( m_vecViewOffset, FIELD_VECTOR, "view_ofs" ),
 
 	DEFINE_FIELD( m_fFlags, FIELD_INTEGER ),
-#if !defined( NO_ENTITY_PREDICTION )
+//#if !defined( NO_ENTITY_PREDICTION )
 //	DEFINE_FIELD( m_bIsPlayerSimulated, FIELD_INTEGER ),
 //	DEFINE_FIELD( m_hPlayerSimulationOwner, FIELD_EHANDLE ),
-#endif
+//#endif
 	// DEFINE_FIELD( m_pTimedOverlay, TimedOverlay_t* ),
 	DEFINE_FIELD( m_nSimulationTick, FIELD_TICK ),
 	// DEFINE_FIELD( m_RefEHandle, CBaseHandle ),
@@ -6132,36 +6132,36 @@ bool CBaseEntity::IsFloating()
 //			persist - 
 // Output : CBaseEntity
 //-----------------------------------------------------------------------------
-CBaseEntity *CBaseEntity::CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist /* = false */ )
-{
-#if !defined( NO_ENTITY_PREDICTION )
-	CBasePlayer *player = CBaseEntity::GetPredictionPlayer();
-	Assert( player );
-
-	CBaseEntity *ent = NULL;
-
-	int command_number = player->CurrentCommandNumber();
-	int player_index = player->NetworkProp()->entindex() - 1;
-
-	CPredictableId testId;
-	testId.Init( player_index, command_number, classname, module, line );
-
-	ent = engineServer->CreateEntityByName( classname );
-	// No factory???
-	if ( !ent )
-		return NULL;
-
-	ent->SetPredictionEligible( true );
-
-	// Set up "shared" id number
-	ent->m_PredictableID.GetForModify().SetRaw( testId.GetRaw() );
-
-	return ent;
-#else
-	return NULL;
-#endif
-
-}
+//CBaseEntity *CBaseEntity::CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist /* = false */ )
+//{
+//#if !defined( NO_ENTITY_PREDICTION )
+//	CBasePlayer *player = CBaseEntity::GetPredictionPlayer();
+//	Assert( player );
+//
+//	CBaseEntity *ent = NULL;
+//
+//	int command_number = player->CurrentCommandNumber();
+//	int player_index = player->NetworkProp()->entindex() - 1;
+//
+//	CPredictableId testId;
+//	testId.Init( player_index, command_number, classname, module, line );
+//
+//	ent = engineServer->CreateEntityByName( classname );
+//	// No factory???
+//	if ( !ent )
+//		return NULL;
+//
+//	ent->SetPredictionEligible( true );
+//
+//	// Set up "shared" id number
+//	ent->m_PredictableID.GetForModify().SetRaw( testId.GetRaw() );
+//
+//	return ent;
+//#else
+//	return NULL;
+//#endif
+//
+//}
 
 void CBaseEntity::SetPredictionEligible( bool canpredict )
 {

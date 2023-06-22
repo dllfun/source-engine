@@ -1893,7 +1893,7 @@ void C_BasePlayer::PostThink( void )
 	}
 
 	// Even if dead simulate entities
-	SimulatePlayerSimulatedEntities();
+	//SimulatePlayerSimulatedEntities();
 #endif
 }
 

@@ -334,8 +334,8 @@ struct thinkfunc_t
 struct EmitSound_t;
 struct rotatingpushmove_t;
 
-#define CREATE_PREDICTED_ENTITY( className )	\
-	CBaseEntity::CreatePredictedEntityByName( className, __FILE__, __LINE__ );
+//#define CREATE_PREDICTED_ENTITY( className )	\
+//	CBaseEntity::CreatePredictedEntityByName( className, __FILE__, __LINE__ );
 
 class TestStatic {
 public:
@@ -355,7 +355,7 @@ void* SendProxy_ClientSideAnimation(const SendProp* pProp, const void* pStruct, 
 void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
 void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 void SendProxy_Angles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
-void* SendProxy_SendPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
+//void* SendProxy_SendPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
 void SendProxy_AnimTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
 //
 // Base Entity.  All entity types derive from this
@@ -400,7 +400,7 @@ public:
 
 	DECLARE_SEND_TABLE_ACCESS(DT_BaseEntity);
 	DECLARE_SEND_TABLE_ACCESS(DT_AnimTimeMustBeFirst);
-	DECLARE_SEND_TABLE_ACCESS(DT_PredictableId);
+	//DECLARE_SEND_TABLE_ACCESS(DT_PredictableId);
 	DECLARE_SEND_TABLE_ACCESS(DT_FuncRotating);
 	DECLARE_SEND_TABLE_ACCESS(DT_ColorCorrection);
 	DECLARE_SEND_TABLE_ACCESS(DT_CSRagdoll);
@@ -427,7 +427,7 @@ public:
 	void operator delete( void *pMem, int nBlockUse, const char *pFileName, int nLine ) { operator delete(pMem); }
 
 	// Class factory
-	static CBaseEntity				*CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist = false );
+	//static CBaseEntity				*CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist = false );
 
 // IHandleEntity overrides.
 public:
@@ -856,10 +856,10 @@ public:
 
 	int				m_nLastThinkTick;
 
-#if !defined( NO_ENTITY_PREDICTION )
-	// Certain entities (projectiles) can be created on the client and thus need a matching id number
-	CNetworkVar( CPredictableId, m_PredictableID );
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	// Certain entities (projectiles) can be created on the client and thus need a matching id number
+//	CNetworkVar( CPredictableId, m_PredictableID );
+//#endif
 
 	// used so we know when things are no longer touching
 	int			touchStamp;			
@@ -1512,13 +1512,13 @@ public:
 	// --------------------------------------------------------------------
 
 public:
-#if !defined( NO_ENTITY_PREDICTION )
-	// The player drives simulation of this entity
-	void					SetPlayerSimulated( CBasePlayer *pOwner );
-	void					UnsetPlayerSimulated( void );
-	bool					IsPlayerSimulated( void ) const;
-	CBasePlayer				*GetSimulatingPlayer( void );
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	// The player drives simulation of this entity
+//	void					SetPlayerSimulated( CBasePlayer *pOwner );
+//	void					UnsetPlayerSimulated( void );
+//	bool					IsPlayerSimulated( void ) const;
+//	CBasePlayer				*GetSimulatingPlayer( void );
+//#endif
 	// FIXME: Make these private!
 	void					PhysicsCheckForEntityUntouch( void );
  	bool					PhysicsRunThink( thinkmethods_t thinkMethod = THINK_FIRE_ALL_FUNCTIONS );
@@ -1817,11 +1817,11 @@ public:
 	//bool IsDynamicModelLoading() const { return m_bDynamicModelPending; } 
 	void SetCollisionBoundsFromModel();
 
-#if !defined( NO_ENTITY_PREDICTION )
-	CNetworkVar( bool, m_bIsPlayerSimulated );
-	// Player who is driving my simulation
-	CHandle< CBasePlayer >			m_hPlayerSimulationOwner;
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	CNetworkVar( bool, m_bIsPlayerSimulated );
+//	// Player who is driving my simulation
+//	CHandle< CBasePlayer >			m_hPlayerSimulationOwner;
+//#endif
 
 	int								m_fDataObjectTypes;
 
@@ -1902,12 +1902,12 @@ public:
 		SendPropInt(SENDINFO(m_flAnimTime), 8, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_AnimTime),
 	END_SEND_TABLE(DT_AnimTimeMustBeFirst)
 
-#if !defined( NO_ENTITY_PREDICTION )
-	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_PredictableId)
-		SendPropPredictableId(SENDINFO(m_PredictableID)),
-		SendPropInt(SENDINFO(m_bIsPlayerSimulated), 1, SPROP_UNSIGNED),
-	END_SEND_TABLE(DT_PredictableId)
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_PredictableId)
+//		//SendPropPredictableId(SENDINFO(m_PredictableID)),
+//		SendPropInt(SENDINFO(m_bIsPlayerSimulated), 1, SPROP_UNSIGNED),
+//	END_SEND_TABLE(DT_PredictableId)
+//#endif
 
 	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_BaseEntity)
 		SendPropDataTable("AnimTimeMustBeFirst", 0, REFERENCE_SEND_TABLE(DT_AnimTimeMustBeFirst), SendProxy_ClientSideAnimation),
@@ -1945,9 +1945,9 @@ public:
 
 		SendPropInt(SENDINFO(m_iTextureFrameIndex), 8, SPROP_UNSIGNED),
 
-#if !defined( NO_ENTITY_PREDICTION )
-		SendPropDataTable("predictable_id", 0, REFERENCE_SEND_TABLE(DT_PredictableId), SendProxy_SendPredictableId),
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+//		SendPropDataTable("predictable_id", 0, REFERENCE_SEND_TABLE(DT_PredictableId), SendProxy_SendPredictableId),
+//#endif
 
 		// FIXME: Collapse into another flag field?
 		SendPropInt(SENDINFO(m_bSimulatedEveryTick), 1, SPROP_UNSIGNED),

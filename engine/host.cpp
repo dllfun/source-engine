@@ -3193,7 +3193,7 @@ void Host::_Host_RunFrame (float time)
 					g_pNetworkSystem->NET_SetMutiplayer( true );
 
 				g_ServerGlobalVariables.SetTickCount( sv.GetTickCount());
-				// NOTE:  Do we want do this at start or end of this loop?
+					// NOTE:  Do we want do this at start or end of this loop?
 				++g_host.host_tickcount;
 				++g_host.host_currentframetick;
 #ifndef SWDS

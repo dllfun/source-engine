@@ -106,27 +106,27 @@ void SpawnBlood(Vector vecSpot, const Vector &vecDir, int bloodColor, float flDa
 	UTIL_BloodDrips( vecSpot, vecDir, bloodColor, (int)flDamage );
 }
 
-#if !defined( NO_ENTITY_PREDICTION )
-//-----------------------------------------------------------------------------
-// The player drives simulation of this entity
-//-----------------------------------------------------------------------------
-void CBaseEntity::SetPlayerSimulated( CBasePlayer *pOwner )
-{
-	m_bIsPlayerSimulated = true;
-	pOwner->AddToPlayerSimulationList( this );
-	m_hPlayerSimulationOwner = pOwner;
-}
-
-void CBaseEntity::UnsetPlayerSimulated( void )
-{
-	if ( m_hPlayerSimulationOwner != NULL )
-	{
-		m_hPlayerSimulationOwner->RemoveFromPlayerSimulationList( this );
-	}
-	m_hPlayerSimulationOwner = NULL;
-	m_bIsPlayerSimulated = false;
-}
-#endif
+//#if !defined( NO_ENTITY_PREDICTION )
+////-----------------------------------------------------------------------------
+//// The player drives simulation of this entity
+////-----------------------------------------------------------------------------
+//void CBaseEntity::SetPlayerSimulated( CBasePlayer *pOwner )
+//{
+//	m_bIsPlayerSimulated = true;
+//	pOwner->AddToPlayerSimulationList( this );
+//	m_hPlayerSimulationOwner = pOwner;
+//}
+//
+//void CBaseEntity::UnsetPlayerSimulated( void )
+//{
+//	if ( m_hPlayerSimulationOwner != NULL )
+//	{
+//		m_hPlayerSimulationOwner->RemoveFromPlayerSimulationList( this );
+//	}
+//	m_hPlayerSimulationOwner = NULL;
+//	m_bIsPlayerSimulated = false;
+//}
+//#endif
 
 // position of eyes
 Vector CBaseEntity::EyePosition( void )
