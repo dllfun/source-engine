@@ -137,8 +137,8 @@ private:
 	int				m_nPreviousStartFrame;
 
 	int				m_nCommandsPredicted;
-	int				m_nServerCommandsAcknowledged;
-	int				m_bPreviousAckHadErrors;
+	//int				m_nServerCommandsAcknowledged;
+	//int				m_bPreviousAckHadErrors;
 	//int				m_nIncomingPacketNumber;
 
 #endif

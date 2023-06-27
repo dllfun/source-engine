@@ -97,8 +97,8 @@ CPrediction::CPrediction( void )
 	m_nPreviousStartFrame = -1;
 
 	m_nCommandsPredicted = 0;
-	m_nServerCommandsAcknowledged = 0;
-	m_bPreviousAckHadErrors = false;
+	//m_nServerCommandsAcknowledged = 0;
+	//m_bPreviousAckHadErrors = false;
 #endif
 }
 
@@ -273,7 +273,7 @@ void CPrediction::OnReceivedUncompressedPacket( void )
 {
 #if !defined( NO_ENTITY_PREDICTION )
 	m_nCommandsPredicted = 0;
-	m_nServerCommandsAcknowledged = 0;
+	//m_nServerCommandsAcknowledged = 0;
 	m_nPreviousStartFrame = -1;
 #endif
 }
@@ -408,6 +408,7 @@ bool CPrediction::ShouldDumpEntity( C_BaseEntity *ent )
 // Input  : error_check - 
 //			last_predicted - 
 //-----------------------------------------------------------------------------
+static bool hasErrorLastPredict = false;
 void CPrediction::PostNetworkDataReceived( int commands_acknowledged )
 {
 #if !defined( NO_ENTITY_PREDICTION )
@@ -427,8 +428,8 @@ void CPrediction::PostNetworkDataReceived( int commands_acknowledged )
 	//	gpGlobals->GetTickCount(),
 	//	commands_acknowledged - 1 );
 
-	m_nServerCommandsAcknowledged += commands_acknowledged;
-	m_bPreviousAckHadErrors = false;
+	int m_nServerCommandsAcknowledged = commands_acknowledged;
+	bool m_bPreviousAckHadErrors = false;
 
 	bool entityDumped = false;
 
@@ -567,6 +568,71 @@ void CPrediction::PostNetworkDataReceived( int commands_acknowledged )
 			}
 		}
 	}
+
+	if (m_nCommandsPredicted == 0) {
+		return;
+	}
+
+	if (m_nServerCommandsAcknowledged > m_nCommandsPredicted) {
+		m_nCommandsPredicted = 0;
+		return;
+	}
+	
+	if (m_bPreviousAckHadErrors) {
+		C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+
+		// If an entity gets a prediction error, then we want to clear out its interpolated variables
+		// so we don't mix different samples at the same timestamps. We subtract 1 tick interval here because
+		// if we don't, we'll have 3 interpolation entries with the same timestamp as this predicted
+		// frame, so we won't be able to interpolate (which leads to jerky movement in the player when
+		// ANY entity like your gun gets a prediction error).
+		float flPrev = gpGlobals->GetCurTime();
+		gpGlobals->SetCurTime(pLocalPlayer->GetTimeBase() - TICK_INTERVAL);
+
+		for (int i = 0; i < predictables->GetPredictableCount(); i++)
+		{
+			C_BaseEntity* entity = predictables->GetPredictable(i);
+			if (entity)
+			{
+				entity->ResetLatched();
+			}
+		}
+
+		gpGlobals->SetCurTime(flPrev);
+		hasErrorLastPredict = true;
+		m_nCommandsPredicted = 0;
+		m_nServerCommandsAcknowledged = 0;
+	}
+	else 
+	{
+		if (cl_pred_optimize.GetInt() >= 2 &&
+			m_nCommandsPredicted > 0 &&
+			m_nServerCommandsAcknowledged > 0 &&
+			m_nServerCommandsAcknowledged <= m_nCommandsPredicted)
+		{
+
+			// Shift intermediate state blocks down by # of commands ack'd
+			ShiftIntermediateDataForward(m_nServerCommandsAcknowledged, m_nCommandsPredicted);
+
+			// Only predict new commands (note, this should be the same number that we could compute
+			//  above based on outgoing_command - incoming_acknowledged - 1
+
+			m_nCommandsPredicted -= m_nServerCommandsAcknowledged;
+			m_nServerCommandsAcknowledged = 0;
+
+
+			//Msg( "%i/%i optimize2, skip to %i restore from slot %i\n", 
+			//	gpGlobals->GetFrameCount(),
+			//	gpGlobals->GetTickCount(),
+			//	skipahead,
+			//	m_nCommandsPredicted - 1 );
+		}
+		else {
+			m_nCommandsPredicted = 0;
+			m_nServerCommandsAcknowledged = 0;
+		}
+	}
+	
 #endif
 	if ( cl_predict->GetBool() != m_bOldCLPredictValue )
 	{
@@ -1358,7 +1424,11 @@ void CPrediction::RestoreEntityToPredictedFrame( int predicted_frame )
 		if ( !ent->GetPredictable() )
 			continue;
 
+		int modelIndex = ent->GetModelIndex();
 		ent->RestoreData( "RestoreEntityToPredictedFrame", predicted_frame, PC_EVERYTHING );
+		if (modelIndex && ent->GetModelIndex() == 0) {
+			int aaa = 0;
+		}
 	}
 #endif
 }
@@ -1375,13 +1445,35 @@ int CPrediction::ComputeFirstCommandToExecute( bool received_new_world_update, i
 	int destination_slot = 1;
 #if !defined( NO_ENTITY_PREDICTION )
 	int skipahead = 0;
-
+	//if (received_new_world_update) {
+	//	if (m_nServerCommandsAcknowledged > 0) {
+	//		int aaa = 0;
+	//	}
+	//	else if(m_nServerCommandsAcknowledged==0){
+	//		int aaa = 0;
+	//	}
+	//	else {
+	//		int aaa = 0;
+	//	}
+	//}
+	//else {
+	//	if (m_nServerCommandsAcknowledged > 0) {
+	//		int aaa = 0;
+	//	}
+	//	else if (m_nServerCommandsAcknowledged == 0) {
+	//		int aaa = 0;
+	//	}
+	//	else {
+	//		int aaa = 0;
+	//	}
+	//}
+	
 	// If we didn't receive a new update ( or we received an update that didn't ack any new CUserCmds -- 
 	//  so for the player it should be just like receiving no update ), just jump right up to the very 
 	//  last command we created for this very frame since we probably wouldn't have had any errors without 
 	//  being notified by the server of such a case.
 	// NOTE:  received_new_world_update only gets set to false if cl_pred_optimize >= 1
-	if ( !received_new_world_update || !m_nServerCommandsAcknowledged )
+	if (m_nCommandsPredicted > 0)// !received_new_world_update || 
 	{
 		// this is where we would normally start
 		int start = incoming_acknowledged + 1;
@@ -1401,67 +1493,69 @@ int CPrediction::ComputeFirstCommandToExecute( bool received_new_world_update, i
 	}
 	else
 	{
+		int aaa = 0;
 		// Otherwise, there is a second optimization, wherein if we did receive an update, but no
 		//  values differed (or were outside their epsilon) and the server actually acknowledged running
 		//  one or more commands, then we can revert the entity to the predicted state from last frame, 
 		//  shift the # of commands worth of intermediate state off of front the intermediate state array, and
 		//  only predict the usercmd from the latest render frame.
-		if ( cl_pred_optimize.GetInt() >= 2 && 
-			!m_bPreviousAckHadErrors && 
-			m_nCommandsPredicted > 0 && 
-			m_nServerCommandsAcknowledged <= m_nCommandsPredicted )
-		{
-			// Copy all of the previously predicted data back into entity so we can skip repredicting it
-			// This is the final slot that we previously predicted
-			RestoreEntityToPredictedFrame( m_nCommandsPredicted - 1 );
+		//if ( cl_pred_optimize.GetInt() >= 2 && 
+		//	!m_bPreviousAckHadErrors && 
+		//	m_nCommandsPredicted > 0 && 
+		//	m_nServerCommandsAcknowledged <= m_nCommandsPredicted )
+		//{
+		//	// Copy all of the previously predicted data back into entity so we can skip repredicting it
+		//	// This is the final slot that we previously predicted
+		//	RestoreEntityToPredictedFrame( m_nCommandsPredicted - 1 );
 
-			// Shift intermediate state blocks down by # of commands ack'd
-			ShiftIntermediateDataForward( m_nServerCommandsAcknowledged, m_nCommandsPredicted );
-			
-			// Only predict new commands (note, this should be the same number that we could compute
-			//  above based on outgoing_command - incoming_acknowledged - 1
-			skipahead = ( m_nCommandsPredicted - m_nServerCommandsAcknowledged );
+		//	// Shift intermediate state blocks down by # of commands ack'd
+		//	ShiftIntermediateDataForward( m_nServerCommandsAcknowledged, m_nCommandsPredicted );
+		//	
+		//	// Only predict new commands (note, this should be the same number that we could compute
+		//	//  above based on outgoing_command - incoming_acknowledged - 1
+		//	skipahead = ( m_nCommandsPredicted - m_nServerCommandsAcknowledged );
 
-			//Msg( "%i/%i optimize2, skip to %i restore from slot %i\n", 
-			//	gpGlobals->GetFrameCount(),
-			//	gpGlobals->GetTickCount(),
-			//	skipahead,
-			//	m_nCommandsPredicted - 1 );
-		}
-		else
-		{
-			if ( m_bPreviousAckHadErrors )
-			{
-				C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
-				
-				// If an entity gets a prediction error, then we want to clear out its interpolated variables
-				// so we don't mix different samples at the same timestamps. We subtract 1 tick interval here because
-				// if we don't, we'll have 3 interpolation entries with the same timestamp as this predicted
-				// frame, so we won't be able to interpolate (which leads to jerky movement in the player when
-				// ANY entity like your gun gets a prediction error).
-				float flPrev = gpGlobals->GetCurTime();
-				gpGlobals->SetCurTime(pLocalPlayer->GetTimeBase() - TICK_INTERVAL);
-				
-				for ( int i = 0; i < predictables->GetPredictableCount(); i++ )
-				{
-					C_BaseEntity *entity = predictables->GetPredictable( i );
-					if ( entity )
-					{
-						entity->ResetLatched();
-					}
-				}
+		//	//Msg( "%i/%i optimize2, skip to %i restore from slot %i\n", 
+		//	//	gpGlobals->GetFrameCount(),
+		//	//	gpGlobals->GetTickCount(),
+		//	//	skipahead,
+		//	//	m_nCommandsPredicted - 1 );
+		//}
+		//else
+		//{
+		//	if ( m_bPreviousAckHadErrors )
+		//	{
+		//		C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+		//		
+		//		// If an entity gets a prediction error, then we want to clear out its interpolated variables
+		//		// so we don't mix different samples at the same timestamps. We subtract 1 tick interval here because
+		//		// if we don't, we'll have 3 interpolation entries with the same timestamp as this predicted
+		//		// frame, so we won't be able to interpolate (which leads to jerky movement in the player when
+		//		// ANY entity like your gun gets a prediction error).
+		//		float flPrev = gpGlobals->GetCurTime();
+		//		gpGlobals->SetCurTime(pLocalPlayer->GetTimeBase() - TICK_INTERVAL);
+		//		
+		//		for ( int i = 0; i < predictables->GetPredictableCount(); i++ )
+		//		{
+		//			C_BaseEntity *entity = predictables->GetPredictable( i );
+		//			if ( entity )
+		//			{
+		//				entity->ResetLatched();
+		//			}
+		//		}
 
-				gpGlobals->SetCurTime(flPrev);
-			}
-		}
+		//		gpGlobals->SetCurTime(flPrev);
+		//		hasErrorLastPredict = true;
+		//	}
+		//}
 	}
 
 	destination_slot += skipahead;
 
 	// Always reset these values now that we handled them
 	m_nCommandsPredicted			= 0;
-	m_bPreviousAckHadErrors			= false;
-	m_nServerCommandsAcknowledged	= 0;
+	//m_bPreviousAckHadErrors			= false;
+	//m_nServerCommandsAcknowledged	= 0;
 #endif
 	return destination_slot;
 }
@@ -1494,6 +1588,7 @@ bool CPrediction::PerformPrediction( bool received_new_world_update, C_BasePlaye
 
 	// Start at command after last one server has processed and 
 	//  go until we get to targettime or we run out of new commands
+	hasErrorLastPredict = false;
 	int i = ComputeFirstCommandToExecute( received_new_world_update, incoming_acknowledged, outgoing_command );
 
 	//Msg( "%i/%i tickbase %i\n",
@@ -1531,6 +1626,14 @@ bool CPrediction::PerformPrediction( bool received_new_world_update, C_BasePlaye
 
 
 		// Is this the first time predicting this
+		if (cmd->hasbeenpredicted) {
+			if (hasErrorLastPredict) {
+				int aaa = 0;
+			}
+			else {
+				int aaa = 0;
+			}
+		}
 		m_bFirstTimePredicted = !cmd->hasbeenpredicted;
 
 		// Set globals appropriately
