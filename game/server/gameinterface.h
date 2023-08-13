@@ -79,7 +79,7 @@ public:
 
 	virtual ServerClass*	GetAllServerClasses( void ) OVERRIDE;
 	virtual SendTableManager*GetSengTableManager(void) OVERRIDE;
-	virtual IEntityFactoryDictionary* EntityFactoryDictionary() OVERRIDE;
+	virtual IServerEntityFactoryDictionary* EntityFactoryDictionary() OVERRIDE;
 	virtual const char     *GetGameDescription( void ) OVERRIDE;
 	virtual void			CreateNetworkStringTables( void ) OVERRIDE;
 	

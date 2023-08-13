@@ -87,6 +87,6 @@ inline const char *C_World::GetDetailSpriteMaterial() const
 
 void ClientWorldFactoryInit();
 void ClientWorldFactoryShutdown();
-C_World* GetClientWorldEntity();
+//C_World* GetClientWorldEntity();
 
 #endif // C_WORLD_H

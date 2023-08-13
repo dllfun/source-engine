@@ -423,7 +423,7 @@ void CClient_Precipitation::Simulate( float dt )
 	// calculate the max amount of time it will take this flake to fall.
 	// This works if we assume the wind doesn't have a z component
 	if ( r_RainHack.GetInt() )
-		m_Lifetime = (GetClientWorldEntity()->m_WorldMaxs[2] - GetClientWorldEntity()->m_WorldMins[2]) / m_Speed;
+		m_Lifetime = (((C_World*)ClientEntityList().GetEnt(0))->m_WorldMaxs[2] - ((C_World*)ClientEntityList().GetEnt(0))->m_WorldMins[2]) / m_Speed;
 	else
 		m_Lifetime = (WorldAlignMaxs()[2] - WorldAlignMins()[2]) / m_Speed;
 
@@ -753,8 +753,8 @@ bool CClient_Precipitation::ComputeEmissionArea( Vector& origin, Vector2D& size 
 	Vector vMaxs = WorldAlignMaxs();
 	if ( r_RainHack.GetInt() )
 	{
-		vMins = GetClientWorldEntity()->m_WorldMins;
-		vMaxs = GetClientWorldEntity()->m_WorldMaxs;
+		vMins = ((C_World*)ClientEntityList().GetEnt(0))->m_WorldMins;
+		vMaxs = ((C_World*)ClientEntityList().GetEnt(0))->m_WorldMaxs;
 	}
 
 	// calculate a volume around the player to snow in. Intersect this big magic

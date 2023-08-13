@@ -1437,8 +1437,8 @@ SendTableManager* CServerGameDLL::GetSengTableManager()
 	return g_pSendTableManager;
 }
 
-IEntityFactoryDictionary* CServerGameDLL::EntityFactoryDictionary() {
-	return ::EntityFactoryDictionary();
+IServerEntityFactoryDictionary* CServerGameDLL::EntityFactoryDictionary() {
+	return ::ServerEntityFactoryDictionary();
 }
 
 const char *CServerGameDLL::GetGameDescription( void )

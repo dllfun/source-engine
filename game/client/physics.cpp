@@ -181,7 +181,7 @@ void PhysicsLevelInit( void )
 	physenv->SetCollisionEventHandler( &g_Collisions );
 	physenv->SetCollisionSolver( &g_Collisions );
 
-	g_PhysWorldObject = PhysCreateWorld_Shared(engineClient->GetWorldModel(), GetClientWorldEntity(), engineClient->GetWorldModel()->GetVCollide(), g_PhysDefaultObjectParams );
+	g_PhysWorldObject = PhysCreateWorld_Shared(engineClient->GetWorldModel(), ((C_World*)ClientEntityList().GetEnt(0)), engineClient->GetWorldModel()->GetVCollide(), g_PhysDefaultObjectParams );
 
 	staticpropmgr->CreateVPhysicsRepresentations( physenv, &g_SolidSetup, NULL );
 }

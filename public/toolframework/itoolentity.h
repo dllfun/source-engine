@@ -31,7 +31,7 @@ class CBaseEntity;
 class CBaseAnimating;
 class CTakeDamageInfo;
 class ITempEntsSystem;
-class IEntityFactoryDictionary;
+class IServerEntityFactoryDictionary;
 class CBaseTempEntity;
 class CGlobalEntityList;
 class IEntityFindFilter;
@@ -207,7 +207,7 @@ public:
 	virtual CBaseEntity *GetBaseEntityByEntIndex( int iEntIndex ) = 0;
 	virtual void RemoveEntity( CBaseEntity *pEntity ) = 0;
 	virtual void RemoveEntityImmediate( CBaseEntity *pEntity ) = 0;
-	virtual IEntityFactoryDictionary *GetEntityFactoryDictionary( void ) = 0;
+	virtual IServerEntityFactoryDictionary* GetEntityFactoryDictionary( void ) = 0;
 
 	virtual void SetMoveType( CBaseEntity *pEntity, int val ) = 0;
 	virtual void SetMoveType( CBaseEntity *pEntity, int val, int moveCollide ) = 0;

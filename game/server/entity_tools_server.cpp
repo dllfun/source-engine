@@ -44,7 +44,7 @@ public:
 	virtual CBaseEntity *GetBaseEntityByEntIndex( int iEntIndex );
 	virtual void RemoveEntity( CBaseEntity *pEntity );
 	virtual void RemoveEntityImmediate( CBaseEntity *pEntity );
-	virtual IEntityFactoryDictionary *GetEntityFactoryDictionary( void );
+	virtual IServerEntityFactoryDictionary* GetEntityFactoryDictionary( void );
 	virtual void SetMoveType( CBaseEntity *pEntity, int val );
 	virtual void SetMoveType( CBaseEntity *pEntity, int val, int moveCollide );
 	virtual void ResetSequence( CBaseAnimating *pEntity, int nSequence );
@@ -315,9 +315,9 @@ CBaseEntity *CServerTools::GetBaseEntityByEntIndex( int iEntIndex )
 		return NULL;
 }
 
-IEntityFactoryDictionary *CServerTools::GetEntityFactoryDictionary( void )
+IServerEntityFactoryDictionary* CServerTools::GetEntityFactoryDictionary( void )
 {
-	return ::EntityFactoryDictionary();
+	return ::ServerEntityFactoryDictionary();
 }
 
 

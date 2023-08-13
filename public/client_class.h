@@ -34,6 +34,77 @@ class CMouthInfo;
 #include "iclientrenderable.h"
 #include "iclientnetworkable.h"
 
+// entity creation
+// creates an entity that has not been linked to a classname
+template< class T >
+T* _CreateEntityTemplate(T* newEnt, int entnum, int serialNum)
+{
+	newEnt = new T; // this is the only place 'new' should be used!
+	newEnt->Init(entnum, serialNum);
+	return newEnt;
+}
+
+class IClientEntityFactory;
+// This is the glue that hooks .MAP entity class names to our CPP classes
+abstract_class IClientEntityFactoryDictionary
+{
+public:
+	virtual void InstallFactory(IClientEntityFactory* pFactory, const char* pClassName) = 0;
+	virtual IClientNetworkable* Create(const char* pClassName, int entnum, int serialNum) = 0;
+	virtual void Destroy(const char* pClassName, IClientNetworkable* pNetworkable) = 0;
+	virtual IClientEntityFactory* FindFactory(const char* pClassName) = 0;
+	virtual const char* GetCannonicalName(const char* pClassName) = 0;
+	virtual void ReportEntityNames() = 0;
+	virtual void ReportEntitySizes() = 0;
+};
+
+IClientEntityFactoryDictionary* ClientEntityFactoryDictionary();
+
+inline bool CanCreateClientEntity(const char* pszClassname)
+{
+	return (ClientEntityFactoryDictionary() != NULL && ClientEntityFactoryDictionary()->FindFactory(pszClassname) != NULL);
+}
+
+abstract_class IClientEntityFactory
+{
+public:
+	virtual IClientNetworkable* Create(int entnum, int serialNum) = 0;//const char* pClassName, 
+	virtual void Destroy(IClientNetworkable* pNetworkable) = 0;
+	virtual size_t GetEntitySize() = 0;
+};
+
+template <class T>
+class CClientEntityFactory : public IClientEntityFactory
+{
+public:
+	CClientEntityFactory(const char* pMapClassName)
+	{
+		m_pMapClassName = pMapClassName;
+		ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
+	}
+
+	IClientNetworkable* Create(int entnum, int serialNum)
+	{
+		T* pEnt = _CreateEntityTemplate((T*)NULL, entnum, serialNum);
+		return pEnt->NetworkProp();
+	}
+
+	void Destroy(IClientNetworkable* pNetworkable)
+	{
+		if (pNetworkable)
+		{
+			pNetworkable->Release();
+		}
+	}
+
+	virtual size_t GetEntitySize()
+	{
+		return sizeof(T);
+	}
+
+private:
+	const char* m_pMapClassName = NULL;
+};
 
 class ClientClass;
 // Linked list of all known client classes
@@ -185,5 +256,25 @@ public:
 	extern ClientClass __g_##clientClassName##ClientClass;\
 	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
 	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##ClientClass;}
+
+// On the client .dll this creates a mapping between a classname and
+//  a client side class.  Probably could be templatized at some point.
+
+#define LINK_ENTITY_TO_CLASS( mapClassName, DLLClassName )						\
+	static C_BaseEntity *C##DLLClassName##Factory( void )						\
+	{																		\
+		return static_cast< C_BaseEntity * >( new DLLClassName );				\
+	};																		\
+	class C##mapClassName##Foo													\
+	{																		\
+	public:																	\
+		C##mapClassName##Foo( void )											\
+		{																	\
+			GetClassMap().Add( #mapClassName, #DLLClassName, sizeof( DLLClassName ),	\
+				&C##DLLClassName##Factory );									\
+		}																	\
+	};																		\
+	static C##mapClassName##Foo g_C##mapClassName##Foo;							\
+	static CClientEntityFactory<DLLClassName> mapClassName( #mapClassName );
 
 #endif // CLIENT_CLASS_H

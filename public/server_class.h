@@ -36,29 +36,29 @@ CBaseEntity* GetContainingEntity(edict_t* pent);
 void FreeContainingEntity(edict_t* ed);
 
 
-class IEntityFactory;
+class IServerEntityFactory;
 // This is the glue that hooks .MAP entity class names to our CPP classes
-abstract_class IEntityFactoryDictionary
+abstract_class IServerEntityFactoryDictionary
 {
 public:
-	virtual void InstallFactory(IEntityFactory * pFactory, const char* pClassName) = 0;
+	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pClassName) = 0;
 	virtual int RequiredEdictIndex(const char* pClassName) = 0;
 	virtual IServerNetworkable* Create(const char* pClassName, edict_t* edict) = 0;
 	virtual void Destroy(const char* pClassName, IServerNetworkable* pNetworkable) = 0;
-	virtual IEntityFactory* FindFactory(const char* pClassName) = 0;
+	virtual IServerEntityFactory* FindFactory(const char* pClassName) = 0;
 	virtual const char* GetCannonicalName(const char* pClassName) = 0;
 	virtual void ReportEntityNames() = 0;
 	virtual void ReportEntitySizes() = 0;
 };
 
-IEntityFactoryDictionary* EntityFactoryDictionary();
+IServerEntityFactoryDictionary* ServerEntityFactoryDictionary();
 
-inline bool CanCreateEntityClass(const char* pszClassname)
+inline bool CanCreateServerEntity(const char* pszClassname)
 {
-	return (EntityFactoryDictionary() != NULL && EntityFactoryDictionary()->FindFactory(pszClassname) != NULL);
+	return (ServerEntityFactoryDictionary() != NULL && ServerEntityFactoryDictionary()->FindFactory(pszClassname) != NULL);
 }
 
-abstract_class IEntityFactory
+abstract_class IServerEntityFactory
 {
 public:
 	virtual int RequiredEdictIndex() = 0;
@@ -68,19 +68,19 @@ public:
 };
 
 template <class T>
-class CEntityFactory : public IEntityFactory
+class CServerEntityFactory : public IServerEntityFactory
 {
 public:
-	CEntityFactory(const char* pClassName, int RequiredEdictIndex = -1)
+	CServerEntityFactory(const char* pMapClassName, int RequiredEdictIndex = -1)
 	{
-		m_pClassName = pClassName;
+		m_pMapClassName = pMapClassName;
 		m_RequiredEdictIndex = RequiredEdictIndex;
-		EntityFactoryDictionary()->InstallFactory(this, pClassName);
+		ServerEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
 	}
 
 	IServerNetworkable* Create(edict_t* edict)
 	{
-		T* pEnt = _CreateEntityTemplate((T*)NULL, m_pClassName, edict);
+		T* pEnt = _CreateEntityTemplate((T*)NULL, m_pMapClassName, edict);
 		return pEnt->NetworkProp();
 	}
 
@@ -102,15 +102,15 @@ public:
 	};
 
 private:
-	const char* m_pClassName = NULL;
+	const char* m_pMapClassName = NULL;
 	int m_RequiredEdictIndex = -1;
 };
 
 #define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) \
-	static CEntityFactory<DLLClassName> mapClassName( #mapClassName );
+	static CServerEntityFactory<DLLClassName> mapClassName( #mapClassName );
 
 #define LINK_WORLD_TO_CLASS(mapClassName,DLLClassName) \
-	static CEntityFactory<DLLClassName> mapClassName( #mapClassName, 0 );
+	static CServerEntityFactory<DLLClassName> mapClassName( #mapClassName, 0 );
 
 
 class ServerClass;

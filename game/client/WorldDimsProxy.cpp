@@ -54,7 +54,7 @@ void CWorldDimsProxy::OnBind( void *pC_BaseEntity )
 {
 	if ( m_pMinsVar && m_pMaxsVar )
 	{
-		C_World *pWorld = GetClientWorldEntity();
+		C_World *pWorld = ((C_World*)ClientEntityList().GetEnt(0));
 		if ( pWorld )
 		{
 			m_pMinsVar->SetVecValue( (const float*)&pWorld->m_WorldMins, 3 );

@@ -2417,7 +2417,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 																 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
 																 partialViewportPostSrcCorners.z,			partialViewportPostSrcCorners.w, 
 																 dest_rt1->GetActualWidth(),dest_rt1->GetActualHeight(),
-																 GetClientWorldEntity()->GetClientRenderable(),
+																((C_World*)ClientEntityList().GetEnt(0))->GetClientRenderable(),
 																 mat_postprocess_x.GetInt(), mat_postprocess_y.GetInt() );
 
 						if (bSplitScreenHDR)
@@ -2445,7 +2445,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 																	 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
 																	 partialViewportPostSrcCorners.z,			partialViewportPostSrcCorners.w, 
 																	 dest_rt1->GetActualWidth(),dest_rt1->GetActualHeight(),
-																	 GetClientWorldEntity()->GetClientRenderable());
+																	((C_World*)ClientEntityList().GetEnt(0))->GetClientRenderable());
 
 							if (bSplitScreenHDR)
 							{
@@ -2470,7 +2470,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 																	 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
 																	 partialViewportPostSrcCorners.z,			partialViewportPostSrcCorners.w, 
 																	 dest_rt1->GetActualWidth(),dest_rt1->GetActualHeight(),
-																	 GetClientWorldEntity()->GetClientRenderable());
+																	((C_World*)ClientEntityList().GetEnt(0))->GetClientRenderable());
 
 							if (bSplitScreenHDR)
 							{
@@ -2501,7 +2501,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 																	 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
 																	 partialViewportPostSrcCorners.z,			partialViewportPostSrcCorners.w, 
 																	 dest_rt1->GetActualWidth(),dest_rt1->GetActualHeight(),
-																	 GetClientWorldEntity()->GetClientRenderable());
+																	((C_World*)ClientEntityList().GetEnt(0))->GetClientRenderable());
 
 							if (bSplitScreenHDR)
 							{
@@ -2527,7 +2527,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 							partialViewportPostDestRect.width,			partialViewportPostDestRect.height, 
 							partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
 							partialViewportPostSrcCorners.z,			partialViewportPostSrcCorners.w, 
-							GetClientWorldEntity()->GetClientRenderable() );
+							((C_World*)ClientEntityList().GetEnt(0))->GetClientRenderable() );
 
 						IMaterial *pPyroVisionPostMaterial = materials->FindMaterial( "dev/pyro_post", TEXTURE_GROUP_OTHER, true);
 						DrawPyroPost( pPyroVisionPostMaterial,
@@ -2537,7 +2537,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 							partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
 							partialViewportPostSrcCorners.z,			partialViewportPostSrcCorners.w, 
 							dest_rt1->GetActualWidth(),dest_rt1->GetActualHeight(),
-							GetClientWorldEntity()->GetClientRenderable() );
+							((C_World*)ClientEntityList().GetEnt(0))->GetClientRenderable() );
 					}
 
 					if ( g_bDumpRenderTargets )
@@ -2988,7 +2988,7 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 				pMatMotionBlur,
 				0, 0, dest_width, dest_height,
 				0, 0, nSrcWidth-1, nSrcHeight-1,
-				nSrcWidth, nSrcHeight, GetClientWorldEntity()->GetClientRenderable() );
+				nSrcWidth, nSrcHeight, ((C_World*)ClientEntityList().GetEnt(0))->GetClientRenderable() );
 
 			if ( g_bDumpRenderTargets )
 			{

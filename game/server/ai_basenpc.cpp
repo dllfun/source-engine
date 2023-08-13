@@ -7228,7 +7228,7 @@ void CAI_BaseNPC::AddRelationship( const char *pszRelationship, CBaseEntity *pAc
 			else
 			{
 				// HACKHACK:
-				CBaseEntity *pEntity = CanCreateEntityClass( entityString ) ? engineServer->CreateEntityByName( entityString ) : NULL;
+				CBaseEntity *pEntity = CanCreateServerEntity( entityString ) ? engineServer->CreateEntityByName( entityString ) : NULL;
 				if (pEntity)
 				{
 					AddClassRelationship( pEntity->Classify(), disposition, priority );

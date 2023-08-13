@@ -453,7 +453,7 @@ public:
 	// Give the list of datatable to the engine for networking
 	virtual SendTableManager*		GetSengTableManager(void) = 0;
 
-	virtual IEntityFactoryDictionary* EntityFactoryDictionary() = 0;
+	virtual IServerEntityFactoryDictionary* EntityFactoryDictionary() = 0;
 
 	// Returns string describing current .dll.  e.g., TeamFortress 2, Half-Life 2.  
 	//  Hey, it's more descriptive than just the name of the game directory

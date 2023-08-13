@@ -70,7 +70,7 @@ void DumpEntityFactories_f()
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;
 
-	IEntityFactoryDictionary* dict = EntityFactoryDictionary();
+	IServerEntityFactoryDictionary* dict = ServerEntityFactoryDictionary();
 	if ( dict )
 	{
 		dict->ReportEntityNames();
@@ -88,7 +88,7 @@ CON_COMMAND( dump_entity_sizes, "Print sizeof(entclass)" )
 	if ( !UTIL_IsCommandIssuedByServerAdmin() )
 		return;
 
-	EntityFactoryDictionary()->ReportEntitySizes();
+	ServerEntityFactoryDictionary()->ReportEntitySizes();
 }
 
 

@@ -19,12 +19,12 @@ ServerClass *g_pServerClassHead=0;
 //-----------------------------------------------------------------------------
 // Entity creation factory
 //-----------------------------------------------------------------------------
-class CEntityFactoryDictionary : public IEntityFactoryDictionary
+class CEntityFactoryDictionary : public IServerEntityFactoryDictionary
 {
 public:
 	CEntityFactoryDictionary();
 
-	virtual void InstallFactory(IEntityFactory* pFactory, const char* pClassName);
+	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pClassName);
 	virtual int RequiredEdictIndex(const char* pClassName);
 	virtual IServerNetworkable* Create(const char* pClassName, edict_t* edict);
 	virtual void Destroy(const char* pClassName, IServerNetworkable* pNetworkable);
@@ -33,15 +33,15 @@ public:
 	void ReportEntitySizes();
 
 private:
-	IEntityFactory* FindFactory(const char* pClassName);
+	IServerEntityFactory* FindFactory(const char* pClassName);
 public:
-	CUtlDict< IEntityFactory*, unsigned short > m_Factories;
+	CUtlDict< IServerEntityFactory*, unsigned short > m_Factories;
 };
 
 //-----------------------------------------------------------------------------
 // Singleton accessor
 //-----------------------------------------------------------------------------
-IEntityFactoryDictionary* EntityFactoryDictionary()
+IServerEntityFactoryDictionary* ServerEntityFactoryDictionary()
 {
 	static CEntityFactoryDictionary s_EntityFactory;
 	return &s_EntityFactory;
@@ -58,7 +58,7 @@ CEntityFactoryDictionary::CEntityFactoryDictionary() : m_Factories(true, 0, 128)
 //-----------------------------------------------------------------------------
 // Finds a new factory
 //-----------------------------------------------------------------------------
-IEntityFactory* CEntityFactoryDictionary::FindFactory(const char* pClassName)
+IServerEntityFactory* CEntityFactoryDictionary::FindFactory(const char* pClassName)
 {
 	unsigned short nIndex = m_Factories.Find(pClassName);
 	if (nIndex == m_Factories.InvalidIndex())
@@ -70,7 +70,7 @@ IEntityFactory* CEntityFactoryDictionary::FindFactory(const char* pClassName)
 //-----------------------------------------------------------------------------
 // Install a new factory
 //-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::InstallFactory(IEntityFactory* pFactory, const char* pClassName)
+void CEntityFactoryDictionary::InstallFactory(IServerEntityFactory* pFactory, const char* pClassName)
 {
 	Assert(FindFactory(pClassName) == NULL);
 	m_Factories.Insert(pClassName, pFactory);
@@ -87,7 +87,7 @@ int CEntityFactoryDictionary::RequiredEdictIndex(const char* pClassName) {
 //-----------------------------------------------------------------------------
 IServerNetworkable* CEntityFactoryDictionary::Create(const char* pClassName, edict_t* edict)
 {
-	IEntityFactory* pFactory = FindFactory(pClassName);
+	IServerEntityFactory* pFactory = FindFactory(pClassName);
 	if (!pFactory)
 	{
 		Warning("Attempted to create unknown entity type %s!\n", pClassName);
@@ -112,7 +112,7 @@ const char* CEntityFactoryDictionary::GetCannonicalName(const char* pClassName)
 //-----------------------------------------------------------------------------
 void CEntityFactoryDictionary::Destroy(const char* pClassName, IServerNetworkable* pNetworkable)
 {
-	IEntityFactory* pFactory = FindFactory(pClassName);
+	IServerEntityFactory* pFactory = FindFactory(pClassName);
 	if (!pFactory)
 	{
 		Warning("Attempted to destroy unknown entity type %s!\n", pClassName);

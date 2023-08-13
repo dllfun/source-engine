@@ -911,7 +911,7 @@ void CBaseEntity::PhysicsDispatchThink( BASEPTR thinkFunc )
 {
 	VPROF_ENTER_SCOPE( ( !vprof_scope_entity_thinks.GetBool() ) ? 
 						"CBaseEntity::PhysicsDispatchThink" : 
-						EntityFactoryDictionary()->GetCannonicalName( GetClassname() ) );
+						ServerEntityFactoryDictionary()->GetCannonicalName( GetClassname() ) );
 
 	float thinkLimit = think_limit.GetFloat();
 	
@@ -1943,7 +1943,7 @@ void Physics_SimulateEntity( CBaseEntity *pEntity )
 {
 	VPROF( ( !vprof_scope_entity_gamephys.GetBool() ) ? 
 			"Physics_SimulateEntity" : 
-			EntityFactoryDictionary()->GetCannonicalName( pEntity->GetClassname() ) );
+			ServerEntityFactoryDictionary()->GetCannonicalName( pEntity->GetClassname() ) );
 
 	if ( pEntity->NetworkProp()->edict())
 	{

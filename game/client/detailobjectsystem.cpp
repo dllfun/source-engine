@@ -1514,7 +1514,7 @@ void CDetailObjectSystem::LevelInitPreEntity()
 void CDetailObjectSystem::LevelInitPostEntity()
 {
 	const char *pDetailSpriteMaterial = DETAIL_SPRITE_MATERIAL;
-	C_World *pWorld = GetClientWorldEntity();
+	C_World *pWorld = ((C_World*)ClientEntityList().GetEnt(0));
 	if ( pWorld && pWorld->GetDetailSpriteMaterial() && *(pWorld->GetDetailSpriteMaterial()) )
 	{
 		pDetailSpriteMaterial = pWorld->GetDetailSpriteMaterial(); 

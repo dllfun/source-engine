@@ -34,7 +34,7 @@
 
 struct levellist_t;
 class IServerNetworkable;
-class IEntityFactory;
+class IServerEntityFactory;
 
 #ifdef _WIN32
 	#define SETUP_EXTERNC(mapClassName)\
