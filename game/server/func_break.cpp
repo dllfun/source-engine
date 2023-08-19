@@ -1094,7 +1094,7 @@ void CBreakable::Die( void )
 				slaveFlag = BREAK_SLAVE;
 			}
 
-			te->BreakModel( filter2, 0.0, 
+			g_pTESystem->BreakModel( filter2, 0.0,
 				vecSpot, pCollisionProp->GetCollisionAngles(), vSize, 
 				vecVelocity, iModelIndex, 100, 1, 2.5, cFlag | slaveFlag );
 		}

@@ -655,7 +655,7 @@ void CBaseEntity::DecalTrace( trace_t *pTrace, char const *decalName )
 	Assert( pTrace->m_pEnt );
 
 	CBroadcastRecipientFilter filter;
-	te->Decal( filter, 0.0, &pTrace->endpos, &pTrace->startpos,
+	g_pTESystem->Decal( filter, 0.0, &pTrace->endpos, &pTrace->startpos,
 		pTrace->GetEntityIndex(), pTrace->hitbox, index );
 }
 

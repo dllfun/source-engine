@@ -25,7 +25,7 @@
 // CLIENT DLL includes
 #if defined( CLIENT_DLL )
 
-#include "iclassmap.h"
+//#include "iclassmap.h"
 #include "recvproxy.h"
 
 class SendTable;

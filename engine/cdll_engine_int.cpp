@@ -1724,7 +1724,7 @@ IClientReplay *g_pClientReplay = NULL;
 ClientClass *ClientDLL_GetAllClasses( void )
 {
 	if ( g_ClientDLL )
-		return g_ClientDLL->GetAllClasses();
+		return g_ClientDLL->GetAllClientClasses();
 	else
 		return g_pClientClassHead;
 }

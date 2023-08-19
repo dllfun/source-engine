@@ -161,7 +161,7 @@ IClientNetworkable* CL_CreateDLLEntity( int iEnt, int iClass, int iSerialNum )
 		}
 
 		// Create the entity.
-		return pClientClass->m_pCreateFn( iEnt, iSerialNum );
+		return g_ClientDLL->EntityFactoryDictionary()->Create(pClientClass->GetClassName(), iEnt, iSerialNum);// pClientClass->m_pCreateFn(iEnt, iSerialNum);
 	}
 
 	Assert(false);

@@ -103,9 +103,9 @@ void CL_FireEvents( void )
 		Assert( ei->pClientClass );
 				
 		// Get pointer to the event.
-		if( ei->pClientClass->m_pCreateEventFn )
+		if( 1/*ei->pClientClass->m_pCreateEventFn*/)
 		{
-			IClientNetworkable *pCE = ei->pClientClass->m_pCreateEventFn();
+			IClientNetworkable* pCE = g_ClientDLL->EntityFactoryDictionary()->Create(ei->pClientClass->GetClassName(), -1, -1);// ei->pClientClass->m_pCreateEventFn();
 			if(pCE)
 			{
 				// Prepare to copy in the data

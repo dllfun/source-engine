@@ -359,7 +359,7 @@ void CPropJeep::DoImpactEffect( trace_t &tr, int nDamageType )
 	if ( (tr.surface.flags & SURF_SKY) == false )
 	{
 		CPVSFilter filter( tr.endpos );
-		te->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
+		g_pTESystem->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
 
 		UTIL_ImpactTrace( &tr, m_nBulletType );
 	}

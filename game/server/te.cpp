@@ -523,4 +523,4 @@ public:
 
 static CTempEntsSystem g_TESystem;
 // Expose to rest of engine
-ITempEntsSystem *te = &g_TESystem;
+ITempEntsSystem *g_pTESystem = &g_TESystem;

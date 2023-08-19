@@ -345,7 +345,7 @@ void CHLTVServer::InitClientRecvTables()
 		Assert ( recvt );
 		
 		// register class, constructor addes clientClass to g_pClientClassHead list
-		ClientClass * clientclass = new ClientClass( pCur->m_pNetworkName, NULL, NULL, recvt->GetName(), recvt );
+		ClientClass * clientclass = new ClientClass("", pCur->m_pNetworkName, recvt->GetName(), recvt);//NULL, NULL,
 
 		if ( !clientclass	)
 		{

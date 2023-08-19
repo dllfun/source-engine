@@ -88,5 +88,5 @@ void DispatchEffect( const char *pName, const CEffectData &data )
 
 void DispatchEffect( const char *pName, const CEffectData &data, CRecipientFilter &filter )
 {
-	te->DispatchEffect( filter, 0.0, data.m_vOrigin, pName, data );
+	g_pTESystem->DispatchEffect( filter, 0.0, data.m_vOrigin, pName, data );
 }

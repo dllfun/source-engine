@@ -109,7 +109,7 @@ void CEffectsServer::Beam( const Vector &vecStart, const Vector &vecEnd, int nMo
 	CBroadcastRecipientFilter filter;
 	if ( !SuppressTE( filter ) )
 	{
-		te->BeamPoints( filter, 0.0,
+		g_pTESystem->BeamPoints( filter, 0.0,
 			&vecStart, &vecEnd, nModelIndex, nHaloIndex, frameStart, frameRate, flLife,  
 			width, endWidth, fadeLength, noise, red, green, blue, brightness, speed );
 	}
@@ -124,7 +124,7 @@ void CEffectsServer::Smoke( const Vector &origin, int mModel, float flScale, flo
 	CPVSFilter filter( origin );
 	if ( !SuppressTE( filter ) )
 	{
-		te->Smoke( filter, 0.0, &origin, mModel, flScale * 0.1f, flFramerate );
+		g_pTESystem->Smoke( filter, 0.0, &origin, mModel, flScale * 0.1f, flFramerate );
 	}
 }
 
@@ -133,7 +133,7 @@ void CEffectsServer::Sparks( const Vector &position, int nMagnitude, int nTrailL
 	CPVSFilter filter( position );
 	if ( !SuppressTE( filter ) )
 	{
-		te->Sparks( filter, 0.0, &position, nMagnitude, nTrailLength, pvecDir );
+		g_pTESystem->Sparks( filter, 0.0, &position, nMagnitude, nTrailLength, pvecDir );
 	}
 }
 
@@ -142,7 +142,7 @@ void CEffectsServer::Dust( const Vector &pos, const Vector &dir, float size, flo
 	CPVSFilter filter( pos );
 	if ( !SuppressTE( filter ) )
 	{
-		te->Dust( filter, 0.0, pos, dir, size, speed );
+		g_pTESystem->Dust( filter, 0.0, pos, dir, size, speed );
 	}
 }
 
@@ -151,7 +151,7 @@ void CEffectsServer::MuzzleFlash( const Vector &origin, const QAngle &angles, fl
 	CPVSFilter filter( origin );
 	if ( !SuppressTE( filter ) )
 	{
-		te->MuzzleFlash( filter, 0.0f, origin, angles, scale, type );
+		g_pTESystem->MuzzleFlash( filter, 0.0f, origin, angles, scale, type );
 	}
 }
 
@@ -160,7 +160,7 @@ void CEffectsServer::MetalSparks( const Vector &position, const Vector &directio
 	CPVSFilter filter( position );
 	if ( !SuppressTE( filter ) )
 	{
-		te->MetalSparks( filter, 0.0, &position, &direction );
+		g_pTESystem->MetalSparks( filter, 0.0, &position, &direction );
 	}
 }
 
@@ -169,7 +169,7 @@ void CEffectsServer::EnergySplash( const Vector &position, const Vector &directi
 	CPVSFilter filter( position );
 	if ( !SuppressTE( filter ) )
 	{
-		te->EnergySplash( filter, 0.0, &position, &direction, bExplosive );
+		g_pTESystem->EnergySplash( filter, 0.0, &position, &direction, bExplosive );
 	}
 }
 
@@ -178,7 +178,7 @@ void CEffectsServer::Ricochet( const Vector &position, const Vector &direction )
 	CPVSFilter filter( position );
 	if ( !SuppressTE( filter ) )
 	{
-		te->ArmorRicochet( filter, 0.0, &position, &direction );
+		g_pTESystem->ArmorRicochet( filter, 0.0, &position, &direction );
 	}
 }
 

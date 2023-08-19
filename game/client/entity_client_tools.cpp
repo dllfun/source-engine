@@ -194,7 +194,7 @@ bool CClientTools::IsInRecordingMode() const
 //-----------------------------------------------------------------------------
 void CClientTools::TriggerTempEntity( KeyValues *pKeyValues )
 {
-	te->TriggerTempEntity( pKeyValues );
+	g_pTESystem->TriggerTempEntity( pKeyValues );
 }
 
 

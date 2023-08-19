@@ -227,7 +227,7 @@ void RadiusFlash(
 	}
 
 	CPVSFilter filter(vecSrc);
-	te->DynamicLight( filter, 0.0, &vecSrc, 255, 255, 255, 2, 400, 0.1, 768 );
+	g_pTESystem->DynamicLight( filter, 0.0, &vecSrc, 255, 255, 255, 2, 400, 0.1, 768 );
 }
 
 // --------------------------------------------------------------------------------------------------- //

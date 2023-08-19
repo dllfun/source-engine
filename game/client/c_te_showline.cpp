@@ -106,8 +106,9 @@ void TE_ShowLine( IRecipientFilter& filter, float delay,
 	const Vector* start, const Vector* end )
 {
 	// Major hack to simulate receiving network message
-	__g_C_TEShowLine.m_vecOrigin = *start;
-	__g_C_TEShowLine.m_vecEnd = *end;
+	//__g_C_TEShowLine.m_vecOrigin = *start;
+	//__g_C_TEShowLine.m_vecEnd = *end;
 
-	__g_C_TEShowLine.PostDataUpdate( DATA_UPDATE_CREATED );
+	//__g_C_TEShowLine.PostDataUpdate( DATA_UPDATE_CREATED );
+	//aaa
 }

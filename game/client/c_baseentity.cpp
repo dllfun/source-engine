@@ -4708,7 +4708,7 @@ const char *C_BaseEntity::GetClassname( void )
 //#ifndef NO_ENTITY_PREDICTION
 	if ( GetPredDescMap() )
 	{
-		const char *mapname =  GetClassMap().Lookup( GetPredDescMap()->dataClassName );
+		const char *mapname = ClientEntityFactoryDictionary()->GetMapClassName( GetPredDescMap()->dataClassName );
 		if ( mapname && mapname[ 0 ] ) 
 		{
 			Q_strncpy( outstr, mapname, sizeof( outstr ) );
@@ -4737,7 +4737,7 @@ const char *C_BaseEntity::GetDebugName( void )
 //-----------------------------------------------------------------------------
 C_BaseEntity *CreateEntityByName( const char *className )
 {
-	C_BaseEntity *ent = GetClassMap().CreateEntity( className );
+	C_BaseEntity *ent = (C_BaseEntity*)ClientEntityFactoryDictionary()->Create(className,-1,-1);
 	if ( ent )
 	{
 		return ent;
@@ -4756,7 +4756,7 @@ CON_COMMAND( cl_sizeof, "Determines the size of the specified client class." )
 		return;
 	}
 
-	int size = GetClassMap().GetClassSize( args[ 1 ] );
+	int size = ClientEntityFactoryDictionary()->GetEntitySize( args[ 1 ] );
 
 	Msg( "%s is %i bytes\n", args[ 1 ], size );
 }

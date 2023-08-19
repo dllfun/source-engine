@@ -365,7 +365,7 @@ void CServerTools::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecS
 
 ITempEntsSystem *CServerTools::GetTempEntsSystem( void )
 {
-	return (ITempEntsSystem *)te;
+	return (ITempEntsSystem *)g_pTESystem;
 }
 
 CBaseTempEntity *CServerTools::GetTempEntList( void )

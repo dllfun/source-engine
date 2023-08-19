@@ -46,7 +46,7 @@ public:
 	virtual IClientEntity*		GetIClientEntity()		{ return 0; }
 	virtual C_BaseEntity*		GetBaseEntity()			{ return 0; }
 	virtual IClientThinkable*	GetClientThinkable()	{ return 0; }
-
+	virtual C_BaseTempEntity*	NetworkProp()			{ return this; }
 
 // IClientNetworkable overrides.
 public:

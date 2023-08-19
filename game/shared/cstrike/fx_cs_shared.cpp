@@ -32,7 +32,7 @@ ConVar weapon_accuracy_logging( "weapon_accuracy_logging", "0", FCVAR_REPLICATED
 			return;
 
 		CBroadcastRecipientFilter filter; // this is client side only
-		if ( !te->CanPredict() )
+		if ( !g_pTESystem->CanPredict() )
 			return;
 				
 		CBaseEntity::EmitSound( filter, iPlayerIndex, shootsound, &vOrigin, flSoundTime ); 

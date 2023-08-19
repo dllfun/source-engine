@@ -156,11 +156,12 @@ void TE_LargeFunnel( IRecipientFilter& filter, float delay,
 	const Vector* pos, int modelindex, int reversed )
 {
 	// Major hack to simulate receiving network message
-	__g_C_TELargeFunnel.m_vecOrigin = *pos;
-	__g_C_TELargeFunnel.m_nModelIndex = modelindex;
-	__g_C_TELargeFunnel.m_nReversed = reversed;
+	//__g_C_TELargeFunnel.m_vecOrigin = *pos;
+	//__g_C_TELargeFunnel.m_nModelIndex = modelindex;
+	//__g_C_TELargeFunnel.m_nReversed = reversed;
 
-	__g_C_TELargeFunnel.PostDataUpdate( DATA_UPDATE_CREATED );
+	//__g_C_TELargeFunnel.PostDataUpdate( DATA_UPDATE_CREATED );
+	//aaa
 }
 
 

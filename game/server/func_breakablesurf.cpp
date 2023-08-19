@@ -112,7 +112,7 @@ void CWindowPane::Die( void )
 	Vector flForce = -1 * GetAbsVelocity();
 
 	CPASFilter filter( GetAbsOrigin() );
-	te->ShatterSurface( filter, 0.0,
+	g_pTESystem->ShatterSurface( filter, 0.0,
 					 &GetAbsOrigin(), &GetAbsAngles(), 
 					 &GetAbsVelocity(), &GetAbsOrigin(),
 					 WINDOW_PANEL_SIZE, WINDOW_PANEL_SIZE,WINDOW_SMALL_SHARD_SIZE,SHATTERSURFACE_GLASS,
@@ -410,7 +410,7 @@ void CBreakableSurface::TraceAttack( const CTakeDamageInfo &info, const Vector &
 			// client cannot trace against triggers
 			filter.SetIgnorePredictionCull( true );
 
-			te->DispatchEffect( filter, 0.0, data.m_vOrigin, "GlassImpact", data );
+			g_pTESystem->DispatchEffect( filter, 0.0, data.m_vOrigin, "GlassImpact", data );
 		}
 
 		if (m_nSurfaceType == SHATTERSURFACE_GLASS)
@@ -1136,7 +1136,7 @@ void CBreakableSurface::CreateShards(const Vector &vBreakPos, const QAngle &vAng
 	}
 	
 	CPASFilter filter( vAdjustedBreakPos );
-	te->ShatterSurface(filter, 0.0,
+	g_pTESystem->ShatterSurface(filter, 0.0,
 		&vAdjustedBreakPos, &vAngles, 
 		&vAdjustedForce, &vForcePos, 
 		flWidth, flHeight,WINDOW_SMALL_SHARD_SIZE,m_nSurfaceType,

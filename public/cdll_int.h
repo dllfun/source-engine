@@ -28,6 +28,7 @@
 // forward declarations
 //-----------------------------------------------------------------------------
 class ClientClass;
+class IClientEntityFactoryDictionary;
 class IVModel;
 class CSentence;
 struct vrect_t;
@@ -613,7 +614,9 @@ public:
 	virtual void			LevelShutdown( void ) = 0;
 
 	// Request a pointer to the list of client datatable classes
-	virtual ClientClass		*GetAllClasses( void ) = 0;
+	virtual ClientClass		*GetAllClientClasses( void ) = 0;
+
+	virtual IClientEntityFactoryDictionary* EntityFactoryDictionary() = 0;
 
 	// Called once per level to re-initialize any hud element drawing stuff
 	virtual int				HudVidInit( void ) = 0;

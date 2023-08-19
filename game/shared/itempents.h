@@ -126,6 +126,6 @@ public:
 		const Vector* vecOrigin, const Vector* vecVelocity, int modelindex, int lifetime, CBaseEntity *pOwner ) = 0;
 };
 
-extern ITempEntsSystem *te;
+extern ITempEntsSystem *g_pTESystem;
 
 #endif // ITEMPENTS_H

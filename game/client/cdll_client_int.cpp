@@ -610,7 +610,9 @@ public:
 	virtual void					LevelInitPostEntity();
 	virtual void					LevelShutdown( void );
 
-	virtual ClientClass				*GetAllClasses( void );
+	virtual ClientClass				* GetAllClientClasses( void );
+
+	virtual IClientEntityFactoryDictionary* EntityFactoryDictionary();
 
 	virtual int						HudVidInit( void );
 	virtual void					HudProcessInput( bool bActive );
@@ -1336,7 +1338,7 @@ bool CHLClient::ShouldDrawDropdownConsole()
 // Purpose: 
 // Output : ClientClass
 //-----------------------------------------------------------------------------
-ClientClass *CHLClient::GetAllClasses( void )
+ClientClass *CHLClient::GetAllClientClasses( void )
 {
 	for (RecvTable* pCur = g_pRecvTableManager->GetRecvTableHead(); pCur; pCur = pCur->m_pNext)
 	{
@@ -1347,6 +1349,10 @@ ClientClass *CHLClient::GetAllClasses( void )
 		pCur->InitRefRecvTable(g_pRecvTableManager);
 	}
 	return g_pClientClassHead;
+}
+
+IClientEntityFactoryDictionary* CHLClient::EntityFactoryDictionary() {
+	return ::ClientEntityFactoryDictionary();
 }
 
 //-----------------------------------------------------------------------------

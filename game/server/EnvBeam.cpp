@@ -394,7 +394,7 @@ void CEnvBeam::Strike( void )
 			return;
 		}
 
-		te->BeamEntPoint( filter, 0.0,
+		g_pTESystem->BeamEntPoint( filter, 0.0,
 			pointStart ? 0 : pStart->NetworkProp()->entindex(),
 			pointStart ? &pStart->GetAbsOrigin() : NULL,
 			pointEnd ? 0 : pEnd->NetworkProp()->entindex(),
@@ -415,7 +415,7 @@ void CEnvBeam::Strike( void )
 	{
 		if ( m_spawnflags & SF_BEAM_RING)
 		{
-			te->BeamRing( filter, 0.0,
+			g_pTESystem->BeamRing( filter, 0.0,
 				pStart->NetworkProp()->entindex(),
 				pEnd->NetworkProp()->entindex(),
 				m_spriteTexture, 
@@ -434,7 +434,7 @@ void CEnvBeam::Strike( void )
 		}
 		else
 		{
-			te->BeamEnts( filter, 0.0,
+			g_pTESystem->BeamEnts( filter, 0.0,
 				pStart->NetworkProp()->entindex(),
 				pEnd->NetworkProp()->entindex(),
 				m_spriteTexture,
@@ -601,7 +601,7 @@ void CEnvBeam::Zap( const Vector &vecSrc, const Vector &vecDest )
 {
 	CBroadcastRecipientFilter filter;
 
-	te->BeamPoints( filter, 0.0,
+	g_pTESystem->BeamPoints( filter, 0.0,
 		&vecSrc, 
 		&vecDest, 
 		m_spriteTexture, 

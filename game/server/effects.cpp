@@ -224,7 +224,7 @@ void CBubbling::FizzThink( void )
 {
 	Vector center = WorldSpaceCenter();
 	CPASFilter filter( center );
-	te->Fizz( filter, 0.0, this, m_bubbleModel, m_density, (int)m_flSpeed );
+	g_pTESystem->Fizz( filter, 0.0, this, m_bubbleModel, m_density, (int)m_flSpeed );
 
 	if ( m_frequency > 19 )
 	{
@@ -1269,7 +1269,7 @@ void CEnvFunnel::Precache ( void )
 void CEnvFunnel::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	CBroadcastRecipientFilter filter;
-	te->LargeFunnel( filter, 0.0,
+	g_pTESystem->LargeFunnel( filter, 0.0,
 		&GetAbsOrigin(), m_iSprite, HasSpawnFlags( SF_FUNNEL_REVERSE ) ? 1 : 0 );
 
 	SetThink( &CEnvFunnel::SUB_Remove );

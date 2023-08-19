@@ -310,7 +310,7 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 	int	iRadius = ( m_iRadiusOverride > 0 ) ? m_iRadiusOverride : ( m_iMagnitude * 2.5f );
 
 	CPASFilter filter( vecExplodeOrigin );
-	te->Explosion( filter, 0.0,
+	g_pTESystem->Explosion( filter, 0.0,
 		&vecExplodeOrigin, 
 		( m_sFireballSprite < 1 ) ? g_sModelIndexFireball : m_sFireballSprite,
 		!( m_spawnflags & SF_ENVEXPLOSION_NOFIREBALL ) ? ( m_spriteScale / 10.0 ) : 0.0,

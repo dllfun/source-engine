@@ -40,7 +40,9 @@ template< class T >
 T* _CreateEntityTemplate(T* newEnt, int entnum, int serialNum)
 {
 	newEnt = new T; // this is the only place 'new' should be used!
-	newEnt->Init(entnum, serialNum);
+	if (entnum >= 0) {
+		newEnt->Init(entnum, serialNum);
+	}
 	return newEnt;
 }
 
@@ -49,11 +51,14 @@ class IClientEntityFactory;
 abstract_class IClientEntityFactoryDictionary
 {
 public:
-	virtual void InstallFactory(IClientEntityFactory* pFactory, const char* pClassName) = 0;
-	virtual IClientNetworkable* Create(const char* pClassName, int entnum, int serialNum) = 0;
-	virtual void Destroy(const char* pClassName, IClientNetworkable* pNetworkable) = 0;
-	virtual IClientEntityFactory* FindFactory(const char* pClassName) = 0;
-	virtual const char* GetCannonicalName(const char* pClassName) = 0;
+	virtual void InstallFactory(IClientEntityFactory* pFactory, const char* pMapClassName) = 0;
+	virtual IClientNetworkable* Create(const char* pMapClassName, int entnum, int serialNum) = 0;
+	virtual void Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable) = 0;
+	virtual IClientEntityFactory* FindFactory(const char* pMapClassName) = 0;
+	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
+	virtual void RegisteMapClassName(const char* pDllClassName, const char* pMapClassName) = 0;
+	virtual const char* GetMapClassName(const char* pDllClassName) = 0;
+	virtual size_t GetEntitySize(const char* pMapClassName) = 0;
 	virtual void ReportEntityNames() = 0;
 	virtual void ReportEntitySizes() = 0;
 };
@@ -77,10 +82,16 @@ template <class T>
 class CClientEntityFactory : public IClientEntityFactory
 {
 public:
-	CClientEntityFactory(const char* pMapClassName)
+	CClientEntityFactory(const char* pDllClassName, const char* pMapClassName = NULL)
 	{
-		m_pMapClassName = pMapClassName;
-		ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
+		if (pMapClassName) {
+			m_pMapClassName = pMapClassName;
+			ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
+			ClientEntityFactoryDictionary()->RegisteMapClassName(pDllClassName, pMapClassName);
+		}
+		else {
+			ClientEntityFactoryDictionary()->InstallFactory(this, pDllClassName);
+		}
 	}
 
 	IClientNetworkable* Create(int entnum, int serialNum)
@@ -106,6 +117,40 @@ private:
 	const char* m_pMapClassName = NULL;
 };
 
+template <class T>
+class CClientEntitySingletonFactory : public IClientEntityFactory
+{
+public:
+	CClientEntitySingletonFactory(const char* pDllClassName, const char* pMapClassName = NULL)
+	{
+		ClientEntityFactoryDictionary()->InstallFactory(this, pDllClassName);
+		if (pMapClassName) {
+			m_pMapClassName = pMapClassName;
+			ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
+			ClientEntityFactoryDictionary()->RegisteMapClassName(pDllClassName, pMapClassName);
+		}
+	}
+
+	IClientNetworkable* Create(int entnum, int serialNum)
+	{
+		return pEnt.GetClientNetworkable();
+	}
+
+	void Destroy(IClientNetworkable* pNetworkable)
+	{
+		
+	}
+
+	virtual size_t GetEntitySize()
+	{
+		return sizeof(T);
+	}
+
+private:
+	const char* m_pMapClassName = NULL;
+	T pEnt;
+};
+
 class ClientClass;
 // Linked list of all known client classes
 extern ClientClass *g_pClientClassHead;
@@ -120,11 +165,10 @@ typedef IClientNetworkable*	(*CreateEventFn)();
 class ClientClass
 {
 public:
-	ClientClass( const char *pNetworkName, CreateClientClassFn createFn, CreateEventFn createEventFn, const char *pRecvTableName, RecvTable* pRecvTable=NULL)
+	ClientClass( const char* pDllClassName, const char *pNetworkName, const char *pRecvTableName, RecvTable* pRecvTable=NULL)
 	{
+		m_pDllClassName = pDllClassName;
 		m_pNetworkName	= pNetworkName;
-		m_pCreateFn		= createFn;
-		m_pCreateEventFn= createEventFn;
 		m_pRecvTableName= pRecvTableName;
 		m_pRecvTable	= pRecvTable;
 		// Link it in
@@ -144,14 +188,18 @@ public:
 		return m_pNetworkName;
 	}
 
+	const char* GetClassName() const
+	{
+		return m_pDllClassName;
+	}
+
 public:
-	CreateClientClassFn		m_pCreateFn;
-	CreateEventFn			m_pCreateEventFn;	// Only called for event objects.
+	const char*				m_pDllClassName;
 	const char				*m_pNetworkName;
 	const char*				m_pRecvTableName;
 	RecvTable				*m_pRecvTable;
 	ClientClass				*m_pNext;
-	int						m_ClassID;	// Managed by the engine.
+	int						m_ClassID = 0;	// Managed by the engine.
 };
 
 #define DECLARE_CLIENTCLASS() \
@@ -173,29 +221,19 @@ public:
 // networkName must match the network name of a class registered on the server.
 #define IMPLEMENT_CLIENTCLASS(clientClassName, dataTable, serverClassName) \
 	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
-	static IClientNetworkable* _##clientClassName##_CreateObject( int entnum, int serialNum ) \
-	{ \
-		clientClassName *pRet = new clientClassName; \
-		if ( !pRet ) \
-			return 0; \
-		pRet->Init( entnum, serialNum ); \
-		return pRet; \
-	} \
-	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
-													_##clientClassName##_CreateObject, \
-													NULL,\
-													#dataTable);\
-	static clientClassName g_##clientClassName##_EntityReg;
+	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, #dataTable);\
+	static clientClassName g_##clientClassName##_EntityReg;											\
+	static CClientEntityFactory<clientClassName> __g_##clientClassName##Factory(#clientClassName );
 
 // Implement a client class and provide a factory so you can allocate and delete it yourself
 // (or make it a singleton).
-#define IMPLEMENT_CLIENTCLASS_FACTORY(clientClassName, dataTable, serverClassName, factory) \
-	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
-	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
-													factory, \
-													NULL,\
-													#dataTable);\
-	static clientClassName g_##clientClassName##_EntityReg;
+//#define IMPLEMENT_CLIENTCLASS_FACTORY(clientClassName, dataTable, serverClassName, factory) \
+//	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
+//	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, \
+//													factory, \
+//													NULL,\
+//													#dataTable);\
+//	static clientClassName g_##clientClassName##_EntityReg;
 
 // The IMPLEMENT_CLIENTCLASS_DT macros do IMPLEMENT_CLIENT_CLASS and also do BEGIN_RECV_TABLE.
 #define IMPLEMENT_CLIENTCLASS_DT(clientClassName, dataTable, serverClassName)\
@@ -211,13 +249,9 @@ public:
 // is responsible for freeing itself.
 #define IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\
 	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName)\
-	static clientClassName __g_##clientClassName; \
-	static IClientNetworkable* _##clientClassName##_CreateObject() {return &__g_##clientClassName;}\
-	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
-													NULL,\
-													_##clientClassName##_CreateObject, \
-													#dataTable);\
-	static clientClassName g_##clientClassName##_EntityReg;
+	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, #dataTable);\
+	static clientClassName g_##clientClassName##_EntityReg;										\
+	static CClientEntitySingletonFactory<clientClassName> __g_##clientClassName##SingletonFactory(#clientClassName );
 
 #define IMPLEMENT_CLIENTCLASS_EVENT_DT(clientClassName, dataTable, serverClassName)\
 	IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\
@@ -227,28 +261,28 @@ public:
 // Register a client event singleton but specify a pointer to give to the engine rather than
 // have a global instance. This is useful if you're using Initializers and your object's constructor
 // uses some other global object (so you must use Initializers so you're constructed afterwards).
-#define IMPLEMENT_CLIENTCLASS_EVENT_POINTER(clientClassName, dataTable, serverClassName, ptr)\
-	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName)\
-	static IClientNetworkable* _##clientClassName##_CreateObject() {return ptr;}\
-	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
-													NULL,\
-													_##clientClassName##_CreateObject, \
-													#dataTable);\
-	static clientClassName g_##clientClassName##_EntityReg;
+//#define IMPLEMENT_CLIENTCLASS_EVENT_POINTER(clientClassName, dataTable, serverClassName, ptr)\
+//	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName)\
+//	static IClientNetworkable* _##clientClassName##_CreateObject() {return ptr;}\
+//	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, \
+//													NULL,\
+//													_##clientClassName##_CreateObject, \
+//													#dataTable);\
+//	static clientClassName g_##clientClassName##_EntityReg;
 
-#define IMPLEMENT_CLIENTCLASS_EVENT_NONSINGLETON(clientClassName, dataTable, serverClassName)\
-	static IClientNetworkable* _##clientClassName##_CreateObject() \
-	{ \
-		clientClassName *p = new clientClassName; \
-		if ( p ) \
-			p->Init( -1, 0 ); \
-		return p; \
-	} \
-	ClientClass __g_##clientClassName##ClientClass(#serverClassName, \
-													NULL,\
-													_##clientClassName##_CreateObject, \
-													#dataTable);\
-	static clientClassName g_##clientClassName##_EntityReg;
+//#define IMPLEMENT_CLIENTCLASS_EVENT_NONSINGLETON(clientClassName, dataTable, serverClassName)\
+//	static IClientNetworkable* _##clientClassName##_CreateObject() \
+//	{ \
+//		clientClassName *p = new clientClassName; \
+//		if ( p ) \
+//			p->Init( -1, 0 ); \
+//		return p; \
+//	} \
+//	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, \
+//													NULL,\
+//													_##clientClassName##_CreateObject, \
+//													#dataTable);\
+//	static clientClassName g_##clientClassName##_EntityReg;
 
 
 // Used internally..
@@ -261,20 +295,6 @@ public:
 //  a client side class.  Probably could be templatized at some point.
 
 #define LINK_ENTITY_TO_CLASS( mapClassName, DLLClassName )						\
-	static C_BaseEntity *C##DLLClassName##Factory( void )						\
-	{																		\
-		return static_cast< C_BaseEntity * >( new DLLClassName );				\
-	};																		\
-	class C##mapClassName##Foo													\
-	{																		\
-	public:																	\
-		C##mapClassName##Foo( void )											\
-		{																	\
-			GetClassMap().Add( #mapClassName, #DLLClassName, sizeof( DLLClassName ),	\
-				&C##DLLClassName##Factory );									\
-		}																	\
-	};																		\
-	static C##mapClassName##Foo g_C##mapClassName##Foo;							\
-	static CClientEntityFactory<DLLClassName> mapClassName( #mapClassName );
+	static CClientEntityFactory<DLLClassName> mapClassName(#DLLClassName, #mapClassName );	
 
 #endif // CLIENT_CLASS_H

@@ -211,12 +211,12 @@ void ApplyMultiDamage( void )
 		return;
 
 #ifndef CLIENT_DLL
-	const CBaseEntity *host = te->GetSuppressHost();
-	te->SetSuppressHost( NULL );
+	const CBaseEntity *host = g_pTESystem->GetSuppressHost();
+	g_pTESystem->SetSuppressHost( NULL );
 		
 	g_MultiDamage.GetTarget()->TakeDamage( g_MultiDamage );
 
-	te->SetSuppressHost( (CBaseEntity*)host );
+	g_pTESystem->SetSuppressHost( (CBaseEntity*)host );
 #endif
 
 	// Damage is done, clear it out

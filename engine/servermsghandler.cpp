@@ -951,7 +951,7 @@ bool CClientState::ProcessTempEntities( SVC_TempEntities *msg )
 			// Look up the client class, etc.
 	
 			// Match the server classes to the client classes.
-			pServerClass = m_pServerClasses ? &m_pServerClasses[ classID - 1 ] : NULL;
+			pServerClass = cl.m_pServerClasses ? &cl.m_pServerClasses[ classID - 1 ] : NULL;
 
 			if ( !pServerClass )
 			{
@@ -959,8 +959,9 @@ bool CClientState::ProcessTempEntities( SVC_TempEntities *msg )
 				return false;
 			}
 
+			pClientClass = pServerClass->m_pClientClass;
 			// See if the client .dll has a handler for this class
-			pClientClass = FindClientClass( pServerClass->m_ClassName );
+			//pClientClass = FindClientClass( pServerClass->m_ClassName );
 		
 			if ( !pClientClass || !pClientClass->m_pRecvTable )
 			{

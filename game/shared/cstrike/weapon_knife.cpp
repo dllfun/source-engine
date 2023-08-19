@@ -281,7 +281,7 @@ void CKnife::Smack( void )
 
 	data.m_vAngles = GetPlayerOwner()->GetAbsAngles();
 	data.m_fFlags = 0x1;	//IMPACT_NODECAL;
-	te->DispatchEffect( filter, 0.0, data.m_vOrigin, "KnifeSlash", data );
+	g_pTESystem->DispatchEffect( filter, 0.0, data.m_vOrigin, "KnifeSlash", data );
 }
 
 void CKnife::WeaponIdle()

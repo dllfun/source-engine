@@ -131,7 +131,7 @@ void CEnvSpark::SparkThink(void)
 	if (FBitSet(m_spawnflags, SF_SPARK_GLOW))
 	{
 		CPVSFilter filter( GetAbsOrigin() );
-		te->GlowSprite( filter, 0.0, &GetAbsOrigin(), m_nGlowSpriteIndex, 0.2, 1.5, 25 );
+		g_pTESystem->GlowSprite( filter, 0.0, &GetAbsOrigin(), m_nGlowSpriteIndex, 0.2, 1.5, 25 );
 	}
 }
 

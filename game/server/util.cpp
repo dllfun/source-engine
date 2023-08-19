@@ -1279,7 +1279,7 @@ void UTIL_BloodStream( const Vector &origin, const Vector &direction, int color,
 		color = 0;
 
 	CPVSFilter filter( origin );
-	te->BloodStream( filter, 0.0, &origin, &direction, 247, 63, 14, 255, MIN( amount, 255 ) );
+	g_pTESystem->BloodStream( filter, 0.0, &origin, &direction, 247, 63, 14, 255, MIN( amount, 255 ) );
 }				
 
 
@@ -1331,7 +1331,7 @@ void UTIL_PlayerDecalTrace( trace_t *pTrace, int playernum )
 
 	CBroadcastRecipientFilter filter;
 
-	te->PlayerDecal( filter, 0.0,
+	g_pTESystem->PlayerDecal( filter, 0.0,
 		&pTrace->endpos, playernum, pTrace->m_pEnt->NetworkProp()->entindex());
 }
 
@@ -1496,7 +1496,7 @@ void UTIL_Bubbles( const Vector& mins, const Vector& maxs, int count )
 
 	CPASFilter filter( mid );
 
-	te->Bubbles( filter, 0.0,
+	g_pTESystem->Bubbles( filter, 0.0,
 		&mins, &maxs, flHeight, g_sModelIndexBubbles, count, 8.0 );
 }
 
@@ -1544,7 +1544,7 @@ void UTIL_BubbleTrail( const Vector& from, const Vector& to, int count )
 	}
 
 	CBroadcastRecipientFilter filter;
-	te->BubbleTrail( filter, 0.0, pFrom, pTo, flWaterZ, g_sModelIndexBubbles, count, 8.0 );
+	g_pTESystem->BubbleTrail( filter, 0.0, pFrom, pTo, flWaterZ, g_sModelIndexBubbles, count, 8.0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1568,7 +1568,7 @@ void UTIL_Beam( Vector &Start, Vector &End, int nModelIndex, int nHaloIndex, uns
 {
 	CBroadcastRecipientFilter filter;
 
-	te->BeamPoints( filter, 0.0,
+	g_pTESystem->BeamPoints( filter, 0.0,
 		&Start, 
 		&End, 
 		nModelIndex, 
@@ -2413,7 +2413,7 @@ void UTIL_MuzzleFlash( const Vector &origin, const QAngle &angles, int scale, in
 {
 	CPASFilter filter( origin );
 
-	te->MuzzleFlash( filter, 0.0f, origin, angles, scale, type );
+	g_pTESystem->MuzzleFlash( filter, 0.0f, origin, angles, scale, type );
 }
 
 

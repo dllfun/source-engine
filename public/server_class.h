@@ -41,12 +41,12 @@ class IServerEntityFactory;
 abstract_class IServerEntityFactoryDictionary
 {
 public:
-	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pClassName) = 0;
-	virtual int RequiredEdictIndex(const char* pClassName) = 0;
-	virtual IServerNetworkable* Create(const char* pClassName, edict_t* edict) = 0;
-	virtual void Destroy(const char* pClassName, IServerNetworkable* pNetworkable) = 0;
-	virtual IServerEntityFactory* FindFactory(const char* pClassName) = 0;
-	virtual const char* GetCannonicalName(const char* pClassName) = 0;
+	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pMapClassName) = 0;
+	virtual int RequiredEdictIndex(const char* pMapClassName) = 0;
+	virtual IServerNetworkable* Create(const char* pMapClassName, edict_t* edict) = 0;
+	virtual void Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable) = 0;
+	virtual IServerEntityFactory* FindFactory(const char* pMapClassName) = 0;
+	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
 	virtual void ReportEntityNames() = 0;
 	virtual void ReportEntitySizes() = 0;
 };

@@ -402,7 +402,7 @@ void CWreckage::Think( void )
 	Vector vecSrc;
 	CollisionProp()->RandomPointInBounds( vec3_origin, Vector(1, 1, 1), &vecSrc );	
 	CPVSFilter filter( vecSrc );
-	te->Smoke( filter, 0.0, 
+	g_pTESystem->Smoke( filter, 0.0,
 		&vecSrc, g_sModelIndexSmoke,
 		random->RandomFloat(0,4.9) + 5.0,
 		random->RandomInt(0, 3) + 8 );

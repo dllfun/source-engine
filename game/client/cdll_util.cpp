@@ -319,7 +319,7 @@ void UTIL_Bubbles( const Vector& mins, const Vector& maxs, int count )
 
 	int bubbles = engineClient->GetModelIndex( "sprites/bubble.vmt" );
 
-	te->Bubbles( filter, 0.0,
+	g_pTESystem->Bubbles( filter, 0.0,
 		&mins, &maxs, flHeight, bubbles, count, 8.0 );
 }
 
@@ -407,7 +407,7 @@ extern short g_sModelIndexSmoke;
 void UTIL_Smoke( const Vector &origin, const float scale, const float framerate )
 {
 	CPVSFilter filter( origin );
-	te->Smoke( filter, 0.0f, &origin, g_sModelIndexSmoke, scale, framerate );
+	g_pTESystem->Smoke( filter, 0.0f, &origin, g_sModelIndexSmoke, scale, framerate );
 }
 
 void UTIL_SetOrigin( C_BaseEntity *entity, const Vector &vecOrigin )

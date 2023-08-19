@@ -291,6 +291,7 @@ public:
 	virtual IClientEntity*			GetIClientEntity()		{ return this; }
 	virtual C_BaseEntity*			GetBaseEntity()			{ return this; }
 	virtual IClientThinkable*		GetClientThinkable()	{ return this; }
+	virtual C_BaseEntity*			NetworkProp()			{ return this; }
 
 
 // Methods of IClientRenderable
@@ -397,7 +398,6 @@ public:
 	const CCollisionProperty*CollisionProp() const;
 	CParticleProperty		*ParticleProp();
 	const CParticleProperty *ParticleProp() const;
-	C_BaseEntity* NetworkProp() { return this; }
 
 	// Simply here for game shared 
 	bool					IsFloating();

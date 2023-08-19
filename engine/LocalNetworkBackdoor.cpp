@@ -331,7 +331,7 @@ void CLocalNetworkBackdoor::EntState(
 	else		
 	{
 		updateType = DATA_UPDATE_CREATED;
-		pNet = pClientClass->m_pCreateFn( iEnt, iSerialNum );
+		pNet = g_ClientDLL->EntityFactoryDictionary()->Create(pClientClass->GetClassName(), iEnt, iSerialNum);// pClientClass->m_pCreateFn(iEnt, iSerialNum);
 		bCreated = true;
 		m_EntsCreatedIndices[m_nEntsCreated++] = iEnt;
 

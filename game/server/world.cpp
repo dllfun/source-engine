@@ -125,7 +125,7 @@ void CDecal::TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 
 	CBroadcastRecipientFilter filter;
 
-	te->BSPDecal( filter, 0.0, 
+	g_pTESystem->BSPDecal( filter, 0.0,
 		&GetAbsOrigin(), entityIndex, m_nTexture );
 
 	SetThink( &CDecal::SUB_Remove );
@@ -318,7 +318,7 @@ void CProjectedDecal::InputActivate( inputdata_t &inputdata )
 
 void CProjectedDecal::ProjectDecal( CRecipientFilter& filter )
 {
-	te->ProjectDecal( filter, 0.0, 
+	g_pTESystem->ProjectDecal( filter, 0.0,
 		&GetAbsOrigin(), &GetAbsAngles(), m_flDistance, m_nTexture );
 }
 
@@ -490,11 +490,11 @@ void CWorld::DecalTrace( trace_t *pTrace, char const *decalName)
 	CBroadcastRecipientFilter filter;
 	if ( pTrace->hitbox != 0 )
 	{
-		te->Decal( filter, 0.0f, &pTrace->endpos, &pTrace->startpos, 0, pTrace->hitbox, index );
+		g_pTESystem->Decal( filter, 0.0f, &pTrace->endpos, &pTrace->startpos, 0, pTrace->hitbox, index );
 	}
 	else
 	{
-		te->WorldDecal( filter, 0.0, &pTrace->endpos, index );
+		g_pTESystem->WorldDecal( filter, 0.0, &pTrace->endpos, index );
 	}
 }
 

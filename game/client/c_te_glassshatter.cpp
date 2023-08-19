@@ -277,22 +277,23 @@ void TE_ShatterSurface( IRecipientFilter& filter, float delay,
 	int front_r, int front_g, int front_b, int back_r, int back_g, int back_b)
 {
 	// Major hack to simulate receiving network message
-	__g_C_TEShatterSurface.m_vecOrigin = *pos;
-	__g_C_TEShatterSurface.m_vecAngles = *angle;
-	__g_C_TEShatterSurface.m_vecForce = *vForce;
-	__g_C_TEShatterSurface.m_vecForcePos = *vForcePos;
-	__g_C_TEShatterSurface.m_flWidth = width;
-	__g_C_TEShatterSurface.m_flHeight = height;
-	__g_C_TEShatterSurface.m_flShardSize = shardsize;
-	__g_C_TEShatterSurface.m_nSurfaceType = surfacetype;
-	__g_C_TEShatterSurface.m_uchFrontColor[0] = front_r;
-	__g_C_TEShatterSurface.m_uchFrontColor[1] = front_g;
-	__g_C_TEShatterSurface.m_uchFrontColor[2] = front_b;
-	__g_C_TEShatterSurface.m_uchBackColor[0] = back_r;
-	__g_C_TEShatterSurface.m_uchBackColor[1] = back_g;
-	__g_C_TEShatterSurface.m_uchBackColor[2] = back_b;
+	//__g_C_TEShatterSurface.m_vecOrigin = *pos;
+	//__g_C_TEShatterSurface.m_vecAngles = *angle;
+	//__g_C_TEShatterSurface.m_vecForce = *vForce;
+	//__g_C_TEShatterSurface.m_vecForcePos = *vForcePos;
+	//__g_C_TEShatterSurface.m_flWidth = width;
+	//__g_C_TEShatterSurface.m_flHeight = height;
+	//__g_C_TEShatterSurface.m_flShardSize = shardsize;
+	//__g_C_TEShatterSurface.m_nSurfaceType = surfacetype;
+	//__g_C_TEShatterSurface.m_uchFrontColor[0] = front_r;
+	//__g_C_TEShatterSurface.m_uchFrontColor[1] = front_g;
+	//__g_C_TEShatterSurface.m_uchFrontColor[2] = front_b;
+	//__g_C_TEShatterSurface.m_uchBackColor[0] = back_r;
+	//__g_C_TEShatterSurface.m_uchBackColor[1] = back_g;
+	//__g_C_TEShatterSurface.m_uchBackColor[2] = back_b;
 
-	__g_C_TEShatterSurface.PostDataUpdate( DATA_UPDATE_CREATED );
+	//__g_C_TEShatterSurface.PostDataUpdate( DATA_UPDATE_CREATED );
+	//aaa
 }
 
 void TE_ShatterSurface( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
