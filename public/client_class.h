@@ -152,8 +152,27 @@ private:
 };
 
 class ClientClass;
+
+class ClientClassManager {
+public:
+
+	int		GetClientClassesCount();
+	ClientClass* FindClientClass(const char* pName);
+	ClientClass* GetClientClassHead();
+	void	RegisteClientClass(ClientClass* pClientClass);
+
+private:
+	ClientClass* m_pClientClassHead = NULL;
+	CUtlStringMap< ClientClass* >& GetClientClassMap() {
+		static CUtlStringMap< ClientClass* >	s_ClientClassMap;
+		return s_ClientClassMap;
+	}
+};
+
+extern ClientClassManager* g_pClientClassManager;
+
 // Linked list of all known client classes
-extern ClientClass *g_pClientClassHead;
+//extern ClientClass *g_pClientClassHead;
 
 // The serial number that gets passed in is used for ehandles.
 typedef IClientNetworkable*	(*CreateClientClassFn)( int entnum, int serialNum );
@@ -172,8 +191,9 @@ public:
 		m_pRecvTableName= pRecvTableName;
 		m_pRecvTable	= pRecvTable;
 		// Link it in
-		m_pNext				= g_pClientClassHead;
-		g_pClientClassHead	= this;
+		//m_pNext				= g_pClientClassHead;
+		//g_pClientClassHead	= this;
+		g_pClientClassManager->RegisteClientClass(this);
 	}
 
 	void InitRefRecvTable(RecvTableManager* pRecvTableNanager) {

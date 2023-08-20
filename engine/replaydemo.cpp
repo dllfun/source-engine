@@ -310,7 +310,7 @@ int CReplayDemoRecorder::WriteSignonData()
 
 	WriteServerInfo();
 
-	RecordServerClasses( serverGameDLL->GetAllServerClasses() );
+	RecordServerClasses( serverGameDLL->GetServerClassManager()->GetServerClassHead());
 	RecordStringTables();
 
 	ALIGN4 byte		buffer[ NET_MAX_PAYLOAD ] ALIGN4_POST;

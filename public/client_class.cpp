@@ -12,15 +12,15 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ClientClass *g_pClientClassHead=0;
+//ClientClass *g_pClientClassHead=0;
 
 //-----------------------------------------------------------------------------
 // Entity creation factory
 //-----------------------------------------------------------------------------
-class CEntityFactoryDictionary : public IClientEntityFactoryDictionary
+class CClientEntityFactoryDictionary : public IClientEntityFactoryDictionary
 {
 public:
-	CEntityFactoryDictionary();
+	CClientEntityFactoryDictionary();
 	virtual void InstallFactory(IClientEntityFactory* pFactory, const char* pMapClassName);
 	virtual IClientNetworkable* Create(const char* pMapClassName, int entnum, int serialNum);
 	virtual void Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable);
@@ -43,14 +43,14 @@ public:
 //-----------------------------------------------------------------------------
 IClientEntityFactoryDictionary* ClientEntityFactoryDictionary()
 {
-	static CEntityFactoryDictionary s_EntityFactory;
+	static CClientEntityFactoryDictionary s_EntityFactory;
 	return &s_EntityFactory;
 }
 
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CEntityFactoryDictionary::CEntityFactoryDictionary() : m_Factories(true, 0, 128)
+CClientEntityFactoryDictionary::CClientEntityFactoryDictionary() : m_Factories(true, 0, 128)
 {
 }
 
@@ -58,7 +58,7 @@ CEntityFactoryDictionary::CEntityFactoryDictionary() : m_Factories(true, 0, 128)
 //-----------------------------------------------------------------------------
 // Finds a new factory
 //-----------------------------------------------------------------------------
-IClientEntityFactory* CEntityFactoryDictionary::FindFactory(const char* pMapClassName)
+IClientEntityFactory* CClientEntityFactoryDictionary::FindFactory(const char* pMapClassName)
 {
 	unsigned short nIndex = m_Factories.Find(pMapClassName);
 	if (nIndex == m_Factories.InvalidIndex())
@@ -70,7 +70,7 @@ IClientEntityFactory* CEntityFactoryDictionary::FindFactory(const char* pMapClas
 //-----------------------------------------------------------------------------
 // Install a new factory
 //-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::InstallFactory(IClientEntityFactory* pFactory, const char* pMapClassName)
+void CClientEntityFactoryDictionary::InstallFactory(IClientEntityFactory* pFactory, const char* pMapClassName)
 {
 	Assert(FindFactory(pMapClassName) == NULL);
 	m_Factories.Insert(pMapClassName, pFactory);
@@ -80,7 +80,7 @@ void CEntityFactoryDictionary::InstallFactory(IClientEntityFactory* pFactory, co
 //-----------------------------------------------------------------------------
 // Instantiate something using a factory
 //-----------------------------------------------------------------------------
-IClientNetworkable* CEntityFactoryDictionary::Create(const char* pMapClassName, int entnum, int serialNum)
+IClientNetworkable* CClientEntityFactoryDictionary::Create(const char* pMapClassName, int entnum, int serialNum)
 {
 	IClientEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
@@ -97,7 +97,7 @@ IClientNetworkable* CEntityFactoryDictionary::Create(const char* pMapClassName, 
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-const char* CEntityFactoryDictionary::GetCannonicalName(const char* pMapClassName)
+const char* CClientEntityFactoryDictionary::GetCannonicalName(const char* pMapClassName)
 {
 	return m_Factories.GetElementName(m_Factories.Find(pMapClassName));
 }
@@ -105,7 +105,7 @@ const char* CEntityFactoryDictionary::GetCannonicalName(const char* pMapClassNam
 //-----------------------------------------------------------------------------
 // Destroy a networkable
 //-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable)
+void CClientEntityFactoryDictionary::Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable)
 {
 	IClientEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
@@ -117,21 +117,21 @@ void CEntityFactoryDictionary::Destroy(const char* pMapClassName, IClientNetwork
 	pFactory->Destroy(pNetworkable);
 }
 
-void CEntityFactoryDictionary::RegisteMapClassName(const char* pDllClassName, const char* pMapClassName) {
+void CClientEntityFactoryDictionary::RegisteMapClassName(const char* pDllClassName, const char* pMapClassName) {
 	if (m_StringMap.Defined(pDllClassName)) {
 		Error("duplicate pDllClassName: %s\n", pDllClassName);	// dedicated servers exit
 	}
 	m_StringMap[pDllClassName] = pMapClassName;
 }
 
-const char* CEntityFactoryDictionary::GetMapClassName(const char* pDllClassName) {
+const char* CClientEntityFactoryDictionary::GetMapClassName(const char* pDllClassName) {
 	if (m_StringMap.Defined(pDllClassName)) {
 		return m_StringMap[pDllClassName];
 	}
 	return "";
 }
 
-size_t CEntityFactoryDictionary::GetEntitySize(const char* pMapClassName) {
+size_t CClientEntityFactoryDictionary::GetEntitySize(const char* pMapClassName) {
 	IClientEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
 	{
@@ -141,7 +141,7 @@ size_t CEntityFactoryDictionary::GetEntitySize(const char* pMapClassName) {
 	return pFactory->GetEntitySize();
 }
 
-void CEntityFactoryDictionary::ReportEntityNames()
+void CClientEntityFactoryDictionary::ReportEntityNames()
 {
 	for (int i = m_Factories.First(); i != m_Factories.InvalidIndex(); i = m_Factories.Next(i))
 	{
@@ -152,7 +152,7 @@ void CEntityFactoryDictionary::ReportEntityNames()
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::ReportEntitySizes()
+void CClientEntityFactoryDictionary::ReportEntitySizes()
 {
 	for (int i = m_Factories.First(); i != m_Factories.InvalidIndex(); i = m_Factories.Next(i))
 	{
@@ -160,5 +160,62 @@ void CEntityFactoryDictionary::ReportEntitySizes()
 	}
 }
 
+int		ClientClassManager::GetClientClassesCount() {
+	return GetClientClassMap().GetNumStrings();
+}
 
+ClientClass* ClientClassManager::FindClientClass(const char* pName) {
+	if (GetClientClassMap().Defined(pName)) {
+		return GetClientClassMap()[pName];
+	}
+	return NULL;
+}
+
+ClientClass* ClientClassManager::GetClientClassHead() {
+	return m_pClientClassHead;
+}
+
+void	ClientClassManager::RegisteClientClass(ClientClass* pClientClass) {
+
+	if (GetClientClassMap().Defined(pClientClass->GetName())) {
+		Error("duplicate ClientClass: %s\n", pClientClass->GetName());	// dedicated servers exit
+	}
+	else {
+		GetClientClassMap()[pClientClass->GetName()] = pClientClass;
+	}
+	// g_pClientClassHead is sorted alphabetically, so find the correct place to insert
+	if (!m_pClientClassHead)
+	{
+		m_pClientClassHead = pClientClass;
+		pClientClass->m_pNext = NULL;
+	}
+	else
+	{
+		ClientClass* p1 = m_pClientClassHead;
+		ClientClass* p2 = p1->m_pNext;
+
+		// use _stricmp because Q_stricmp isn't hooked up properly yet
+		if (_stricmp(p1->GetName(), pClientClass->GetName()) > 0)
+		{
+			pClientClass->m_pNext = m_pClientClassHead;
+			m_pClientClassHead = pClientClass;
+			p1 = NULL;
+		}
+
+		while (p1)
+		{
+			if (p2 == NULL || _stricmp(p2->GetName(), pClientClass->GetName()) > 0)
+			{
+				pClientClass->m_pNext = p2;
+				p1->m_pNext = pClientClass;
+				break;
+			}
+			p1 = p2;
+			p2 = p2->m_pNext;
+		}
+	}
+}
+
+static ClientClassManager s_ClientClassManager;
+ClientClassManager* g_pClientClassManager = &s_ClientClassManager;
 

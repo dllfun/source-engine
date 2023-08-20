@@ -21,6 +21,7 @@
 #include "dt_common_eng.h"
 #include "host.h"
 #include "server.h"
+#include "server_class.h"
 #include "networkstringtableclient.h"
 #include "vcrmode.h"
 
@@ -296,7 +297,7 @@ int CHLTVDemoRecorder::WriteSignonData()
 
 	WriteServerInfo();
 
-	RecordServerClasses( serverGameDLL->GetAllServerClasses() );
+	RecordServerClasses( serverGameDLL->GetServerClassManager()->GetServerClassHead());
 	RecordStringTables();
 
 	ALIGN4 byte		buffer[ NET_MAX_PAYLOAD ] ALIGN4_POST;

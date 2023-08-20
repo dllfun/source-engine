@@ -16,7 +16,6 @@
 #include "cdll_engine_int.h"
 #include "voice.h"
 #include "host_cmd.h"
-#include "server.h"
 #include "convar.h"
 #include "dt_recv_eng.h"
 #include "dt_common_eng.h"
@@ -31,6 +30,7 @@
 #include "cl_ents_parse.h"
 #include "eiface.h"
 #include "server.h"
+#include "server_class.h"
 #include "cl_demoactionmanager.h"
 #include "decal.h"
 #include "r_decal.h"
@@ -426,7 +426,7 @@ bool CClientState::ProcessClassInfo( SVC_ClassInfo *msg )
 			// store the current data tables in demo file to make sure
 			// they are the same during playback 
 #ifndef _XBOX
-			demorecorder->RecordServerClasses( serverGameDLL->GetAllServerClasses() );
+			demorecorder->RecordServerClasses( serverGameDLL->GetServerClassManager()->GetServerClassHead());
 #endif
 		}
 

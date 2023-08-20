@@ -274,7 +274,7 @@ public:
 	}
 
 	RecvTable* GetRecvTableHead() {
-		return s_pRecvTableHead;
+		return m_pRecvTableHead;
 	}
 
 	void	RegisteRecvTable(RecvTable* pRecvTable) {
@@ -285,21 +285,21 @@ public:
 		else {
 			GetRecvTableMap()[pRecvTable->GetName()] = pRecvTable;
 		}
-		if (!s_pRecvTableHead)
+		if (!m_pRecvTableHead)
 		{
-			s_pRecvTableHead = pRecvTable;
+			m_pRecvTableHead = pRecvTable;
 			pRecvTable->m_pNext = NULL;
 		}
 		else
 		{
-			RecvTable* p1 = s_pRecvTableHead;
+			RecvTable* p1 = m_pRecvTableHead;
 			RecvTable* p2 = p1->m_pNext;
 
 			// use _stricmp because Q_stricmp isn't hooked up properly yet
 			if (_stricmp(p1->GetName(), pRecvTable->GetName()) > 0)
 			{
-				pRecvTable->m_pNext = s_pRecvTableHead;
-				s_pRecvTableHead = pRecvTable;
+				pRecvTable->m_pNext = m_pRecvTableHead;
+				m_pRecvTableHead = pRecvTable;
 				p1 = NULL;
 			}
 
@@ -317,7 +317,7 @@ public:
 		}
 	}
 private:
-	RecvTable* s_pRecvTableHead = NULL;
+	RecvTable* m_pRecvTableHead = NULL;
 	CUtlStringMap< RecvTable* >& GetRecvTableMap() {
 		static CUtlStringMap< RecvTable* >	s_RecvTableMap;
 		return s_RecvTableMap;

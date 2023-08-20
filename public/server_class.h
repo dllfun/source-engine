@@ -31,9 +31,7 @@ T* _CreateEntityTemplate(T* newEnt, const char* className, edict_t* edict)
 #define CREATE_UNSAVED_ENTITY( newClass, className ) _CreateEntityTemplate( (newClass*)NULL, className ,NULL)
 
 
-CBaseEntity* GetContainingEntity(edict_t* pent);
 
-void FreeContainingEntity(edict_t* ed);
 
 
 class IServerEntityFactory;
@@ -116,8 +114,24 @@ private:
 class ServerClass;
 class SendTable;
 
-extern ServerClass *g_pServerClassHead;
+class ServerClassManager {
+public:
 
+	int		GetServerClassesCount();
+	ServerClass* FindServerClass(const char* pName);
+	ServerClass* GetServerClassHead();
+	void	RegisteServerClass(ServerClass* pServerClass);
+
+private:
+	ServerClass* m_pServerClassHead = NULL;
+	CUtlStringMap< ServerClass* >& GetServerClassMap() {
+		static CUtlStringMap< ServerClass* >	s_ServerClassMap;
+		return s_ServerClassMap;
+	}
+};
+
+//extern ServerClass *g_pServerClassHead;
+extern ServerClassManager* g_pServerClassManager;
 
 class ServerClass
 {
@@ -127,37 +141,7 @@ public:
 					m_pNetworkName = pNetworkName;
 					m_pTableName = pTableName;
 					m_InstanceBaselineIndex = INVALID_STRING_INDEX;
-					// g_pServerClassHead is sorted alphabetically, so find the correct place to insert
-					if ( !g_pServerClassHead )
-					{
-						g_pServerClassHead = this;
-						m_pNext = NULL;
-					}
-					else
-					{
-						ServerClass *p1 = g_pServerClassHead;
-						ServerClass *p2 = p1->m_pNext;
-
-						// use _stricmp because Q_stricmp isn't hooked up properly yet
-						if ( _stricmp( p1->GetName(), pNetworkName ) > 0)
-						{
-							m_pNext = g_pServerClassHead;
-							g_pServerClassHead = this;
-							p1 = NULL;
-						}
-
-						while( p1 )
-						{
-							if ( p2 == NULL || _stricmp( p2->GetName(), pNetworkName ) > 0)
-							{
-								m_pNext = p2;
-								p1->m_pNext = this;
-								break;
-							}
-							p1 = p2;
-							p2 = p2->m_pNext;
-						}	
-					}
+					g_pServerClassManager->RegisteServerClass(this);
 				}
 
 				void InitRefSendTable(SendTableManager* pSendTableNanager) {
@@ -180,6 +164,8 @@ public:
 	// This is an index into the network string table (sv.GetInstanceBaselineTable()).
 	int							m_InstanceBaselineIndex; // INVALID_STRING_INDEX if not initialized yet.
 };
+
+
 
 
 class CBaseNetworkable;
@@ -244,7 +230,6 @@ class CBaseNetworkable;
 		#DLLClassName, \
 		#sendTable\
 	); \
-	\
 	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
 	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}\
 	static DLLClassName g_##DLLClassName##_EntityReg;

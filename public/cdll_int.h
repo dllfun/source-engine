@@ -28,6 +28,7 @@
 // forward declarations
 //-----------------------------------------------------------------------------
 class ClientClass;
+class ClientClassManager;
 class IClientEntityFactoryDictionary;
 class IVModel;
 class CSentence;
@@ -614,7 +615,7 @@ public:
 	virtual void			LevelShutdown( void ) = 0;
 
 	// Request a pointer to the list of client datatable classes
-	virtual ClientClass		*GetAllClientClasses( void ) = 0;
+	virtual ClientClassManager		*GetClientClassManager( void ) = 0;
 
 	virtual IClientEntityFactoryDictionary* EntityFactoryDictionary() = 0;
 

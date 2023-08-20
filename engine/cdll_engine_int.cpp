@@ -1718,15 +1718,15 @@ IClientEntityList *entitylist = NULL;
 ICenterPrint *centerprint = NULL;
 IClientLeafSystemEngine *clientleafsystem = NULL;
 bool g_bClientLeafSystemV1;
-ClientClass *g_pClientClassHead = NULL;
+//ClientClass *g_pClientClassHead = NULL;
 IClientReplay *g_pClientReplay = NULL;
 
 ClientClass *ClientDLL_GetAllClasses( void )
 {
 	if ( g_ClientDLL )
-		return g_ClientDLL->GetAllClientClasses();
+		return g_ClientDLL->GetClientClassManager()->GetClientClassHead();
 	else
-		return g_pClientClassHead;
+		return g_pClientClassManager->GetClientClassHead();
 }
 
 static void ClientDLL_InitRecvTableMgr()

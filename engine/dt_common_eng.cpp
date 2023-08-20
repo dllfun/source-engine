@@ -190,7 +190,7 @@ void DataTable_CreateClientTablesFromServerTables()
 		Sys_Error( "DataTable_CreateClientTablesFromServerTables:  No serverGameDLL loaded!" );
 	}
 
-	ServerClass *pClasses = serverGameDLL->GetAllServerClasses();
+	ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 	ServerClass *pCur;
 
 	CUtlVector< SendTable * > visited;
@@ -217,7 +217,7 @@ void DataTable_CreateClientClassInfosFromServerClasses( CBaseClientState *pState
 		Sys_Error( "DataTable_CreateClientClassInfosFromServerClasses:  No serverGameDLL loaded!" );
 	}
 
-	ServerClass *pClasses = serverGameDLL->GetAllServerClasses();
+	ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 
 	// Count the number of classes.
 	int nClasses = 0;

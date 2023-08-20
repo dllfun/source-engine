@@ -8,21 +8,21 @@
 
 #include "server_class.h"
 #include "utldict.h"
-#include "cbase.h"
+//#include "cbase.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ServerClass *g_pServerClassHead=0;
+//ServerClass *g_pServerClassHead=0;
 
 
 //-----------------------------------------------------------------------------
 // Entity creation factory
 //-----------------------------------------------------------------------------
-class CEntityFactoryDictionary : public IServerEntityFactoryDictionary
+class CServerEntityFactoryDictionary : public IServerEntityFactoryDictionary
 {
 public:
-	CEntityFactoryDictionary();
+	CServerEntityFactoryDictionary();
 
 	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pMapClassName);
 	virtual int RequiredEdictIndex(const char* pMapClassName);
@@ -43,14 +43,14 @@ public:
 //-----------------------------------------------------------------------------
 IServerEntityFactoryDictionary* ServerEntityFactoryDictionary()
 {
-	static CEntityFactoryDictionary s_EntityFactory;
+	static CServerEntityFactoryDictionary s_EntityFactory;
 	return &s_EntityFactory;
 }
 
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CEntityFactoryDictionary::CEntityFactoryDictionary() : m_Factories(true, 0, 128)
+CServerEntityFactoryDictionary::CServerEntityFactoryDictionary() : m_Factories(true, 0, 128)
 {
 }
 
@@ -58,7 +58,7 @@ CEntityFactoryDictionary::CEntityFactoryDictionary() : m_Factories(true, 0, 128)
 //-----------------------------------------------------------------------------
 // Finds a new factory
 //-----------------------------------------------------------------------------
-IServerEntityFactory* CEntityFactoryDictionary::FindFactory(const char* pMapClassName)
+IServerEntityFactory* CServerEntityFactoryDictionary::FindFactory(const char* pMapClassName)
 {
 	unsigned short nIndex = m_Factories.Find(pMapClassName);
 	if (nIndex == m_Factories.InvalidIndex())
@@ -70,13 +70,13 @@ IServerEntityFactory* CEntityFactoryDictionary::FindFactory(const char* pMapClas
 //-----------------------------------------------------------------------------
 // Install a new factory
 //-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::InstallFactory(IServerEntityFactory* pFactory, const char* pMapClassName)
+void CServerEntityFactoryDictionary::InstallFactory(IServerEntityFactory* pFactory, const char* pMapClassName)
 {
 	Assert(FindFactory(pMapClassName) == NULL);
 	m_Factories.Insert(pMapClassName, pFactory);
 }
 
-int CEntityFactoryDictionary::RequiredEdictIndex(const char* pMapClassName) {
+int CServerEntityFactoryDictionary::RequiredEdictIndex(const char* pMapClassName) {
 	unsigned short nIndex = m_Factories.Find(pMapClassName);
 	if (nIndex == m_Factories.InvalidIndex())
 		return -1;
@@ -85,7 +85,7 @@ int CEntityFactoryDictionary::RequiredEdictIndex(const char* pMapClassName) {
 //-----------------------------------------------------------------------------
 // Instantiate something using a factory
 //-----------------------------------------------------------------------------
-IServerNetworkable* CEntityFactoryDictionary::Create(const char* pMapClassName, edict_t* edict)
+IServerNetworkable* CServerEntityFactoryDictionary::Create(const char* pMapClassName, edict_t* edict)
 {
 	IServerEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
@@ -102,7 +102,7 @@ IServerNetworkable* CEntityFactoryDictionary::Create(const char* pMapClassName, 
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-const char* CEntityFactoryDictionary::GetCannonicalName(const char* pMapClassName)
+const char* CServerEntityFactoryDictionary::GetCannonicalName(const char* pMapClassName)
 {
 	return m_Factories.GetElementName(m_Factories.Find(pMapClassName));
 }
@@ -110,7 +110,7 @@ const char* CEntityFactoryDictionary::GetCannonicalName(const char* pMapClassNam
 //-----------------------------------------------------------------------------
 // Destroy a networkable
 //-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable)
+void CServerEntityFactoryDictionary::Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable)
 {
 	IServerEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
@@ -122,7 +122,7 @@ void CEntityFactoryDictionary::Destroy(const char* pMapClassName, IServerNetwork
 	pFactory->Destroy(pNetworkable);
 }
 
-void CEntityFactoryDictionary::ReportEntityNames() 
+void CServerEntityFactoryDictionary::ReportEntityNames() 
 {
 	for (int i = m_Factories.First(); i != m_Factories.InvalidIndex(); i = m_Factories.Next(i))
 	{
@@ -133,7 +133,7 @@ void CEntityFactoryDictionary::ReportEntityNames()
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
-void CEntityFactoryDictionary::ReportEntitySizes()
+void CServerEntityFactoryDictionary::ReportEntitySizes()
 {
 	for (int i = m_Factories.First(); i != m_Factories.InvalidIndex(); i = m_Factories.Next(i))
 	{
@@ -154,30 +154,63 @@ void CEntityFactoryDictionary::ReportEntitySizes()
 //	return pNetworkable;
 //}
 
-// handling entity/edict transforms
-CBaseEntity* GetContainingEntity(edict_t* pent)
-{
-	if (pent && pent->GetUnknown())
-	{
-		return pent->GetUnknown()->GetBaseEntity();
-	}
 
+
+int		ServerClassManager::GetServerClassesCount() {
+	return GetServerClassMap().GetNumStrings();
+}
+
+ServerClass* ServerClassManager::FindServerClass(const char* pName) {
+	if (GetServerClassMap().Defined(pName)) {
+		return GetServerClassMap()[pName];
+	}
 	return NULL;
 }
 
-void FreeContainingEntity(edict_t* ed)
-{
-	if (ed)
+ServerClass* ServerClassManager::GetServerClassHead() {
+	return m_pServerClassHead;
+}
+
+void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
+
+	if (GetServerClassMap().Defined(pServerClass->GetName())) {
+		Error("duplicate ServerClass: %s\n", pServerClass->GetName());	// dedicated servers exit
+	}
+	else {
+		GetServerClassMap()[pServerClass->GetName()] = pServerClass;
+	}
+	// g_pServerClassHead is sorted alphabetically, so find the correct place to insert
+	if (!m_pServerClassHead)
 	{
-		CBaseEntity* ent = GetContainingEntity(ed);
-		if (ent)
+		m_pServerClassHead = pServerClass;
+		pServerClass->m_pNext = NULL;
+	}
+	else
+	{
+		ServerClass* p1 = m_pServerClassHead;
+		ServerClass* p2 = p1->m_pNext;
+
+		// use _stricmp because Q_stricmp isn't hooked up properly yet
+		if (_stricmp(p1->GetName(), pServerClass->GetName()) > 0)
 		{
-			ed->SetEdict(NULL, false);
-			CBaseEntity::PhysicsRemoveTouchedList(ent);
-			CBaseEntity::PhysicsRemoveGroundList(ent);
-			UTIL_RemoveImmediate(ent);
+			pServerClass->m_pNext = m_pServerClassHead;
+			m_pServerClassHead = pServerClass;
+			p1 = NULL;
+		}
+
+		while (p1)
+		{
+			if (p2 == NULL || _stricmp(p2->GetName(), pServerClass->GetName()) > 0)
+			{
+				pServerClass->m_pNext = p2;
+				p1->m_pNext = pServerClass;
+				break;
+			}
+			p1 = p2;
+			p2 = p2->m_pNext;
 		}
 	}
 }
 
-
+static ServerClassManager s_ServerClassManager;
+ServerClassManager* g_pServerClassManager = &s_ServerClassManager;

@@ -611,7 +611,7 @@ void SV_WriteSendTables( ServerClass *pClasses, bf_write &pBuf )
 //-----------------------------------------------------------------------------
 void SV_ComputeClassInfosCRC( CRC32_t* crc )
 {
-	ServerClass *pClasses = serverGameDLL->GetAllServerClasses();
+	ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 
 	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->m_pNext )
 	{
@@ -622,7 +622,7 @@ void SV_ComputeClassInfosCRC( CRC32_t* crc )
 
 void CGameServer::AssignClassIds()
 {
-	ServerClass *pClasses = serverGameDLL->GetAllServerClasses();
+	ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 
 	// Count the number of classes.
 	int nClasses = 0;

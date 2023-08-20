@@ -15,7 +15,7 @@ extern void LoadMapEntities( const char *pMapEntities );
 extern void	DispatchObjectCollisionBox( edict_t *pent );
 extern float DispatchObjectPhysicsVelocity( edict_t *pent, float moveTime );
 extern ServerClass* DispatchGetObjectServerClass(edict_t *pent);
-extern ServerClass* GetAllServerClasses();
+extern ServerClassManager* GetServerClassManager();
 extern void SaveWriteFields( CSaveRestoreData *pSaveData, const char *pname, void *pBaseData, datamap_t *pMap, typedescription_t *pFields, int fieldCount );
 extern void SaveReadFields( CSaveRestoreData *pSaveData, const char *pname, void *pBaseData, datamap_t *pMap, typedescription_t *pFields, int fieldCount );
 extern void SaveGlobalState( CSaveRestoreData *pSaveData );

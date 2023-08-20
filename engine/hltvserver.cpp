@@ -320,7 +320,7 @@ void CHLTVServer::InitClientRecvTables()
 		return; //already initialized
 
 	// first create all SendTables
-	for ( pCur = serverGameDLL->GetAllServerClasses(); pCur; pCur=pCur->m_pNext )
+	for ( pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->m_pNext )
 	{
 		// create receive table from send table.
 		AddRecvTableR( pCur->m_pTable, m_pRecvTables, m_nRecvTables );
@@ -332,7 +332,7 @@ void CHLTVServer::InitClientRecvTables()
 	}
 
 	// now register client classes 
-	for ( pCur = serverGameDLL->GetAllServerClasses(); pCur; pCur=pCur->m_pNext )
+	for ( pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->m_pNext )
 	{
 		ErrorIfNot( 
 			m_nRecvTables < ARRAYSIZE( m_pRecvTables ), 
@@ -1113,7 +1113,7 @@ void CHLTVServer::LinkInstanceBaselines( void )
 	Assert( m_pInstanceBaselineTable );
 		
 	// update all found server classes 
-	for ( ServerClass *pClass = serverGameDLL->GetAllServerClasses(); pClass; pClass=pClass->m_pNext )
+	for ( ServerClass *pClass = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pClass; pClass=pClass->m_pNext )
 	{
 		char idString[32];
 		Q_snprintf( idString, sizeof( idString ), "%d", pClass->m_ClassID );

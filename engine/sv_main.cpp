@@ -393,7 +393,7 @@ void CGameServer::Clear( void )
 	// Clear the instance baseline indices in the ServerClasses.
 	if ( serverGameDLL )
 	{
-		for( ServerClass *pCur = serverGameDLL->GetAllServerClasses(); pCur; pCur=pCur->m_pNext )
+		for( ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->m_pNext )
 		{
 			pCur->m_InstanceBaselineIndex = INVALID_STRING_INDEX;
 		}
@@ -938,7 +938,7 @@ void SV_InitGameDLL( void )
 	COM_TimestampedLog( "SV_InitSendTables" );
 
 	// Make extra copies of data tables if they have SendPropExcludes.
-	SV_InitSendTables( serverGameDLL->GetAllServerClasses() );
+	SV_InitSendTables( serverGameDLL->GetServerClassManager()->GetServerClassHead());
 
 	g_pHost->Host_SetIntervalPerTick(serverGameDLL->GetTickInterval());
 	if (g_pHost->Host_GetIntervalPerTick() < MINIMUM_TICK_INTERVAL ||
@@ -987,7 +987,7 @@ void SV_ShutdownGameDLL( void )
 	}
 
 	// Delete any extra SendTable copies we've attached to the game DLL's classes, if any.
-	SV_TermSendTables( serverGameDLL->GetAllServerClasses() );
+	SV_TermSendTables( serverGameDLL->GetServerClassManager()->GetServerClassHead());
 	g_pServerPluginHandler->UnloadPlugins();
 	serverGameDLL->DLLShutdown();
 
@@ -999,7 +999,7 @@ void SV_ShutdownGameDLL( void )
 
 ServerClass* SV_FindServerClass( const char *pName )
 {
-	ServerClass *pCur = serverGameDLL->GetAllServerClasses();
+	ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 	while ( pCur )
 	{
 		if ( Q_stricmp( pCur->GetName(), pName ) == 0 )
@@ -1013,7 +1013,7 @@ ServerClass* SV_FindServerClass( const char *pName )
 
 ServerClass* SV_FindServerClass( int index )
 {
-	ServerClass *pCur = serverGameDLL->GetAllServerClasses();
+	ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 	int count = 0;
 
 	while ( (count < index) && (pCur != NULL) )
@@ -2040,7 +2040,7 @@ void SV_CreateBaseline (void)
 {
 	SV_WriteVoiceCodec( sv.GetSignon());
 
-	ServerClass *pClasses = serverGameDLL->GetAllServerClasses();
+	ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 
 	// Send SendTable info.
 	if ( sv_sendtables.GetInt() )

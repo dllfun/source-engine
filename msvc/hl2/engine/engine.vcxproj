@@ -400,6 +400,7 @@
     <ClCompile Include="..\..\..\engine\zone.cpp" />
     <ClCompile Include="..\..\..\public\blockingudpsocket.cpp" />
     <ClCompile Include="..\..\..\public\builddisp.cpp" />
+    <ClCompile Include="..\..\..\public\client_class.cpp" />
     <ClCompile Include="..\..\..\public\collisionutils.cpp" />
     <ClCompile Include="..\..\..\public\crtmemdebug.cpp" />
     <ClCompile Include="..\..\..\public\dispcoll_common.cpp" />
@@ -418,6 +419,7 @@
     <ClCompile Include="..\..\..\public\registry.cpp" />
     <ClCompile Include="..\..\..\public\scratchpad3d.cpp" />
     <ClCompile Include="..\..\..\public\sentence.cpp" />
+    <ClCompile Include="..\..\..\public\server_class.cpp" />
     <ClCompile Include="..\..\..\public\studio.cpp" />
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
     <ClCompile Include="..\..\..\public\vallocator.cpp" />

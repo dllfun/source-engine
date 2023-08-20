@@ -569,7 +569,7 @@ public:
 	}
 
 	SendTable* GetSendTableHead() {
-		return s_pSendTableHead;
+		return m_pSendTableHead;
 	}
 
 	void	RegisteSendTable(SendTable* pSendTable) {
@@ -580,21 +580,21 @@ public:
 		else {
 			GetSendTableMap()[pSendTable->GetName()] = pSendTable;
 		}
-		if (!s_pSendTableHead)
+		if (!m_pSendTableHead)
 		{
-			s_pSendTableHead = pSendTable;
+			m_pSendTableHead = pSendTable;
 			pSendTable->m_pNext = NULL;
 		}
 		else
 		{
-			SendTable* p1 = s_pSendTableHead;
+			SendTable* p1 = m_pSendTableHead;
 			SendTable* p2 = p1->m_pNext;
 
 			// use _stricmp because Q_stricmp isn't hooked up properly yet
 			if (_stricmp(p1->GetName(), pSendTable->GetName()) > 0)
 			{
-				pSendTable->m_pNext = s_pSendTableHead;
-				s_pSendTableHead = pSendTable;
+				pSendTable->m_pNext = m_pSendTableHead;
+				m_pSendTableHead = pSendTable;
 				p1 = NULL;
 			}
 
@@ -612,7 +612,7 @@ public:
 		}
 	}
 private:
-	SendTable* s_pSendTableHead = NULL;
+	SendTable* m_pSendTableHead = NULL;
 	CUtlStringMap< SendTable* >& GetSendTableMap() {
 		static CUtlStringMap< SendTable* >	s_SendTableMap;
 		return s_SendTableMap;

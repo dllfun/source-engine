@@ -31,6 +31,7 @@ class	SendTable;
 class	SendTableManager;
 class	IServerEntityFactoryDictionary;
 class	ServerClass;
+class	ServerClassManager;
 class	IMoveHelper;
 struct  Ray_t;
 class	CGameTrace;
@@ -518,7 +519,7 @@ public:
 
 	// Give the list of datatable classes to the engine.  The engine matches class names from here with
 	//  edict_t::classname to figure out how to encode a class's data for networking
-	virtual ServerClass*	GetAllServerClasses( void ) = 0;
+	virtual ServerClassManager* GetServerClassManager( void ) = 0;
 
 	// Give the list of datatable to the engine for networking
 	virtual SendTableManager*		GetSengTableManager(void) = 0;

@@ -337,6 +337,10 @@ struct rotatingpushmove_t;
 //#define CREATE_PREDICTED_ENTITY( className )	\
 //	CBaseEntity::CreatePredictedEntityByName( className, __FILE__, __LINE__ );
 
+CBaseEntity* GetContainingEntity(edict_t* pent);
+
+void FreeContainingEntity(edict_t* ed);
+
 class TestStatic {
 public:
 

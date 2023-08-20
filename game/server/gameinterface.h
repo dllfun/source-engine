@@ -77,7 +77,7 @@ public:
 	virtual void			GameFrame( bool simulating ) OVERRIDE; // could be called multiple times before sending data to clients
 	virtual void			PreClientUpdate( bool simulating ) OVERRIDE; // called after all GameFrame() calls, before sending data to clients
 
-	virtual ServerClass*	GetAllServerClasses( void ) OVERRIDE;
+	virtual ServerClassManager* GetServerClassManager( void ) OVERRIDE;
 	virtual SendTableManager*GetSengTableManager(void) OVERRIDE;
 	virtual IServerEntityFactoryDictionary* EntityFactoryDictionary() OVERRIDE;
 	virtual const char     *GetGameDescription( void ) OVERRIDE;

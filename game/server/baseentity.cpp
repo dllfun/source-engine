@@ -98,6 +98,32 @@ TestStaticInit testStaticInit;
 
 ConVar sv_netvisdist( "sv_netvisdist", "10000", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Test networking visibility distance" );
 
+// handling entity/edict transforms
+CBaseEntity* GetContainingEntity(edict_t* pent)
+{
+	if (pent && pent->GetUnknown())
+	{
+		return pent->GetUnknown()->GetBaseEntity();
+	}
+
+	return NULL;
+}
+
+void FreeContainingEntity(edict_t* ed)
+{
+	if (ed)
+	{
+		CBaseEntity* ent = GetContainingEntity(ed);
+		if (ent)
+		{
+			ed->SetEdict(NULL, false);
+			CBaseEntity::PhysicsRemoveTouchedList(ent);
+			CBaseEntity::PhysicsRemoveGroundList(ent);
+			UTIL_RemoveImmediate(ent);
+		}
+	}
+}
+
 // This table encodes edict data.
 void SendProxy_AnimTime( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
 {

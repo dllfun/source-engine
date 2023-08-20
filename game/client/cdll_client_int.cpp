@@ -610,7 +610,7 @@ public:
 	virtual void					LevelInitPostEntity();
 	virtual void					LevelShutdown( void );
 
-	virtual ClientClass				* GetAllClientClasses( void );
+	virtual ClientClassManager*		GetClientClassManager( void );
 
 	virtual IClientEntityFactoryDictionary* EntityFactoryDictionary();
 
@@ -1338,17 +1338,17 @@ bool CHLClient::ShouldDrawDropdownConsole()
 // Purpose: 
 // Output : ClientClass
 //-----------------------------------------------------------------------------
-ClientClass *CHLClient::GetAllClientClasses( void )
+ClientClassManager* CHLClient::GetClientClassManager( void )
 {
 	for (RecvTable* pCur = g_pRecvTableManager->GetRecvTableHead(); pCur; pCur = pCur->m_pNext)
 	{
 		pCur->InitRefRecvTable(g_pRecvTableManager);
 	}
-	for (ClientClass* pCur = g_pClientClassHead; pCur; pCur = pCur->m_pNext)
+	for (ClientClass* pCur = g_pClientClassManager->GetClientClassHead(); pCur; pCur = pCur->m_pNext)
 	{
 		pCur->InitRefRecvTable(g_pRecvTableManager);
 	}
-	return g_pClientClassHead;
+	return g_pClientClassManager;
 }
 
 IClientEntityFactoryDictionary* CHLClient::EntityFactoryDictionary() {
