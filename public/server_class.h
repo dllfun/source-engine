@@ -138,6 +138,9 @@ class ServerClass
 public:
 				ServerClass( const char *pNetworkName, const char* pTableName )
 				{
+					if (!pTableName || !pTableName[0]) {
+						Error("pTableName can not been NULL: %s\n", pNetworkName);
+					}
 					m_pNetworkName = pNetworkName;
 					m_pTableName = pTableName;
 					m_InstanceBaselineIndex = INVALID_STRING_INDEX;
@@ -145,9 +148,11 @@ public:
 				}
 
 				void InitRefSendTable(SendTableManager* pSendTableNanager) {
-					m_pTable = pSendTableNanager->FindSendTable(m_pTableName);
-					if (!m_pTable) {
-						Error("not found SendTable: %s\n", m_pTableName);	// dedicated servers exit
+					if (m_pTableName&& m_pTableName[0]) {
+						m_pTable = pSendTableNanager->FindSendTable(m_pTableName);
+						if (!m_pTable) {
+							Error("not found SendTable: %s\n", m_pTableName);	// dedicated servers exit
+						}
 					}
 				}
 

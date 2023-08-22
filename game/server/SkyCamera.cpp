@@ -30,6 +30,7 @@ CSkyCamera*	GetSkyCameraList()
 }
 
 //=============================================================================
+IMPLEMENT_SERVERCLASS(CSkyCamera, DT_SkyCamera)
 
 LINK_ENTITY_TO_CLASS( sky_camera, CSkyCamera );
 

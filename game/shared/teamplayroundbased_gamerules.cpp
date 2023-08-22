@@ -80,7 +80,8 @@ IMPLEMENT_NETWORKCLASS_ALIASED( TeamplayRoundBasedRulesProxy, DT_TeamplayRoundBa
 IMPLEMENT_SERVERCLASS(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
 #endif
 #ifdef CLIENT_DLL
-static CTeamplayRoundBasedRules g_C_TeamplayRoundBasedRules_EntityReg;
+IMPLEMENT_CLIENTCLASS(C_TeamplayRoundBasedRules, DT_TeamplayRoundBasedRules, CTeamplayRoundBasedRules)
+//static CTeamplayRoundBasedRules g_C_TeamplayRoundBasedRules_EntityReg;
 #endif
 
 #ifdef CLIENT_DLL

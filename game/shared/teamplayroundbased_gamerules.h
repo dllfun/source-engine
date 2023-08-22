@@ -185,7 +185,8 @@ public:
 	CTeamplayRoundBasedRules();
 
 #ifdef CLIENT_DLL
-	DECLARE_CLIENTCLASS_NOBASE(); // This makes datatables able to access our private vars.
+	virtual C_BaseEntity* NetworkProp() { return NULL; }
+	DECLARE_CLIENTCLASS(); // This makes datatables able to access our private vars.
 
 	void SetRoundState( int iRoundState );
 #else

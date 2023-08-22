@@ -41,6 +41,9 @@ CServerNetworkProperty::CServerNetworkProperty()
 
 CServerNetworkProperty::~CServerNetworkProperty()
 {
+	if (!engineServer) {
+		return;
+	}
 	/* Free our transmit proxy.
 	if ( m_pTransmitProxy )
 	{

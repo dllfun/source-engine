@@ -219,39 +219,39 @@ void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *p
 //--------------------------------------------------------------------------------------------------------
 // Used when breaking up origin, note we still have to deal with StepSimulation
 //--------------------------------------------------------------------------------------------------------
-void SendProxy_OriginXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	CBaseEntity *entity = (CBaseEntity*)pStruct;
-	Assert( entity );
-
-	const Vector *v;
-
-	if ( !entity->UseStepSimulationNetworkOrigin( &v ) )
-	{
-		v = &entity->GetLocalOrigin();
-	}
-
-	pOut->m_Vector[ 0 ] = v->x;
-	pOut->m_Vector[ 1 ] = v->y;
-}
+//void SendProxy_OriginXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+//{
+//	CBaseEntity *entity = (CBaseEntity*)pStruct;
+//	Assert( entity );
+//
+//	const Vector *v;
+//
+//	if ( !entity->UseStepSimulationNetworkOrigin( &v ) )
+//	{
+//		v = &entity->GetLocalOrigin();
+//	}
+//
+//	pOut->m_Vector[ 0 ] = v->x;
+//	pOut->m_Vector[ 1 ] = v->y;
+//}
 
 //--------------------------------------------------------------------------------------------------------
 // Used when breaking up origin, note we still have to deal with StepSimulation
 //--------------------------------------------------------------------------------------------------------
-void SendProxy_OriginZ( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	CBaseEntity *entity = (CBaseEntity*)pStruct;
-	Assert( entity );
-
-	const Vector *v;
-
-	if ( !entity->UseStepSimulationNetworkOrigin( &v ) )
-	{
-		v = &entity->GetLocalOrigin();
-	}
-
-	pOut->m_Float = v->z;
-}
+//void SendProxy_OriginZ( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+//{
+//	CBaseEntity *entity = (CBaseEntity*)pStruct;
+//	Assert( entity );
+//
+//	const Vector *v;
+//
+//	if ( !entity->UseStepSimulationNetworkOrigin( &v ) )
+//	{
+//		v = &entity->GetLocalOrigin();
+//	}
+//
+//	pOut->m_Float = v->z;
+//}
 
 
 void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
@@ -272,7 +272,8 @@ void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *p
 }
 
 // This table encodes the CBaseEntity data.
-IMPLEMENT_SERVERCLASS(CBaseEntity, DT_BaseEntity)
+//IMPLEMENT_SERVERCLASS(CBaseEntity, DT_BaseEntity)
+static CBaseEntity g_CBaseEntity_EntityReg;
 
 
 // dynamic models
@@ -403,6 +404,9 @@ extern bool g_bDisableEhandleAccess;
 //-----------------------------------------------------------------------------
 CBaseEntity::~CBaseEntity( )
 {
+	if (!engineServer) {
+		return;
+	}
 	// FIXME: This can't be called from UpdateOnRemove! There's at least one
 	// case where friction sounds are added between the call to UpdateOnRemove + ~CBaseEntity
 	PhysCleanupFrictionSounds( this );
@@ -3595,6 +3599,17 @@ void CBaseEntity::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 
 	CServerNetworkProperty *pNetworkParent = NetworkProp()->GetNetworkParent();
 
+	ServerClass* serverClass = GetServerClass();
+	if (serverClass == NULL) {
+		int aaa = 0;
+		return;
+	}
+	if (serverClass->m_pTable == NULL) {
+		return;
+	}
+	if (index == 332) {
+		int aaa = 0;
+	}
 	pInfo->m_pTransmitEdict->Set( index );
 
 	// HLTV/Replay need to know if this entity is culled by PVS limits
@@ -7012,41 +7027,6 @@ void CBaseEntity::SetRefEHandle( const CBaseHandle &handle )
 		NetworkProp()->edict()->SetNetworkSerialNumber(m_RefEHandle.GetSerialNumber() & (1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS) - 1);
 	}
 }
-
-
-bool CPointEntity::KeyValue( const char *szKeyName, const char *szValue ) 
-{
-	if ( FStrEq( szKeyName, "mins" ) || FStrEq( szKeyName, "maxs" ) )
-	{
-		Warning("Warning! Can't specify mins/maxs for point entities! (%s)\n", GetClassname() );
-		return true;
-	}
-
-	return BaseClass::KeyValue( szKeyName, szValue );
-}						 
-
-bool CServerOnlyPointEntity::KeyValue( const char *szKeyName, const char *szValue ) 
-{
-	if ( FStrEq( szKeyName, "mins" ) || FStrEq( szKeyName, "maxs" ) )
-	{
-		Warning("Warning! Can't specify mins/maxs for point entities! (%s)\n", GetClassname() );
-		return true;
-	}
-
-	return BaseClass::KeyValue( szKeyName, szValue );
-}
-
-bool CLogicalEntity::KeyValue( const char *szKeyName, const char *szValue ) 
-{
-	if ( FStrEq( szKeyName, "mins" ) || FStrEq( szKeyName, "maxs" ) )
-	{
-		Warning("Warning! Can't specify mins/maxs for point entities! (%s)\n", GetClassname() );
-		return true;
-	}
-
-	return BaseClass::KeyValue( szKeyName, szValue );
-}
-
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets the entity invisible, and makes it remove itself on the next frame

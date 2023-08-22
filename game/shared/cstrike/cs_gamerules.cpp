@@ -118,7 +118,8 @@ IMPLEMENT_NETWORKCLASS_ALIASED(CSGameRulesProxy, DT_CSGameRulesProxy)
 IMPLEMENT_SERVERCLASS(CCSGameRules, DT_CSGameRules)
 #endif
 #if defined( CLIENT_DLL )
-static CCSGameRules g_C_CSGameRules_EntityReg;
+IMPLEMENT_CLIENTCLASS(C_CSGameRules, DT_CSGameRules, CCSGameRules)
+//static CCSGameRules g_C_CSGameRules_EntityReg;
 #endif
 
 #ifdef CLIENT_DLL

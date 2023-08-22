@@ -22,6 +22,20 @@
 
 ConVar cl_c4dynamiclight( "cl_c4dynamiclight", "0", 0, "Draw dynamic light when planted c4 flashes" );
 
+
+class C_BombTarget : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_BombTarget() {}
+
+	BEGIN_RECV_TABLE(C_BombTarget, DT_BombTarget, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_BombTarget)
+};
+
+IMPLEMENT_CLIENTCLASS(C_BombTarget, DT_BombTarget, CBombTarget)
+
+
 IMPLEMENT_CLIENTCLASS(C_PlantedC4, DT_PlantedC4, CPlantedC4)
 
 

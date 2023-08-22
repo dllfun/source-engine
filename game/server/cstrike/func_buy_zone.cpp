@@ -19,15 +19,20 @@ class CBuyZone : public CBaseTrigger
 public:
 	DECLARE_CLASS( CBuyZone, CBaseTrigger );
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	CBuyZone();
 	void Spawn();
 	void EXPORT BuyZoneTouch( CBaseEntity* pOther );
 
 public:
 	int m_LegacyTeamNum;
+public:
+	BEGIN_SEND_TABLE(CBuyZone, DT_BuyZone, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_BuyZone)
 };
 
+IMPLEMENT_SERVERCLASS(CBuyZone, DT_BuyZone)
 
 LINK_ENTITY_TO_CLASS( func_buyzone, CBuyZone );
 

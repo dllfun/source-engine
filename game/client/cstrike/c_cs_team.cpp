@@ -13,6 +13,17 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+class C_BuyZone : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_BuyZone() {}
+
+	BEGIN_RECV_TABLE(C_BuyZone, DT_BuyZone, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_BuyZone)
+};
+
+IMPLEMENT_CLIENTCLASS(C_BuyZone, DT_BuyZone, CBuyZone)
 
 IMPLEMENT_CLIENTCLASS(C_CSTeam, DT_CSTeam, CCSTeam)
 

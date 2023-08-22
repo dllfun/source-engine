@@ -765,6 +765,12 @@ public:
 			return NULL;
 
 		CBaseEntity* pEntity = pNetwork->GetBaseEntity();
+
+		ServerClass* serverClass = pNetwork->GetServerClass();
+		if (serverClass == NULL) {
+			Error("serverClass can not been NULL: %s\n", className);
+		}
+
 		Assert(pEntity);
 		return pEntity;
 	}

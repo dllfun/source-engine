@@ -395,6 +395,9 @@ void CGameServer::Clear( void )
 	{
 		for( ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->m_pNext )
 		{
+			if (!pCur->m_pTable) {
+				continue;
+			}
 			pCur->m_InstanceBaselineIndex = INVALID_STRING_INDEX;
 		}
 	}
@@ -771,6 +774,9 @@ int SV_BuildSendTablesArray( ServerClass *pClasses, SendTable **pTables, int nMa
         for( ServerClass *pCur=pClasses; pCur; pCur=pCur->m_pNext )
         {
                 ErrorIfNot( nTables < nMaxTables, ("SV_BuildSendTablesArray: too many SendTables!") );
+				if (!pCur->m_pTable) {
+					continue;
+				}
                 pTables[nTables] = pCur->m_pTable;
                 ++nTables;
         }
@@ -2095,6 +2101,10 @@ void SV_CreateBaseline (void)
 				continue; // we already have a baseline for this class
 
 			SendTable *pSendTable = pClass->m_pTable;
+
+			if (!pSendTable) {
+				continue;
+			}
 
 			//
 			// create entity baseline

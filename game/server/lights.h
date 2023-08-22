@@ -18,6 +18,12 @@ class CLight : public CPointEntity
 public:
 	DECLARE_CLASS( CLight, CPointEntity );
 
+	CLight() {
+		int aaa = 0;
+	}
+
+	DECLARE_SERVERCLASS();
+
 	bool	KeyValue( const char *szKeyName, const char *szValue );
 	void	Spawn( void );
 	void	FadeThink( void );
@@ -43,6 +49,11 @@ private:
 	string_t m_iszPattern;
 	char	m_iCurrentFade;
 	char	m_iTargetFade;
+
+public:
+	BEGIN_SEND_TABLE(CLight, DT_Light, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_Light)
 };
 
 #endif // LIGHTS_H

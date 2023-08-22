@@ -146,6 +146,10 @@ CFrameSnapshot* CFrameSnapshotManager::TakeTickSnapshot( int tickcount )
 		Assert( edict->GetNetworkable() );
 		Assert( edict->GetNetworkable()->GetServerClass() );
 
+		ServerClass* serverClass = EDICT_NUM(edict)->GetNetworkable()->GetServerClass();
+		if (serverClass == NULL|| serverClass->m_pTable == NULL) {
+			continue;
+		}
 		entry->m_nSerialNumber	= EDICT_NUM(edict)->GetNetworkSerialNumber();
 		entry->m_pClass			= EDICT_NUM(edict)->GetNetworkable()->GetServerClass();
 		nValidEntities[snap->m_nValidEntities++] = i;

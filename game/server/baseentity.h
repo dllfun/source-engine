@@ -398,7 +398,8 @@ public:
 	// prediction system
 	DECLARE_PREDICTABLE();
 	// network data
-	DECLARE_SERVERCLASS();
+	//DECLARE_SERVERCLASS();
+	virtual ServerClass* GetServerClass() { return NULL; }
 	// data description
 	DECLARE_DATADESC();
 
@@ -2791,48 +2792,52 @@ inline bool FClassnameIs(CBaseEntity *pEntity, const char *szClassname)
 class CPointEntity : public CBaseEntity
 {
 public:
-	DECLARE_CLASS( CPointEntity, CBaseEntity );
-
-	void	Spawn( void );
-	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	DECLARE_CLASS(CPointEntity, CBaseEntity);
+	DECLARE_SERVERCLASS();
+	void	Spawn(void);
+	virtual int	ObjectCaps(void) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual bool KeyValue(const char* szKeyName, const char* szValue);
 private:
+
+public:
+	BEGIN_SEND_TABLE(CPointEntity, DT_PointEntity, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PointEntity)
 };
 
 // Has a position + size
 class CServerOnlyEntity : public CBaseEntity
 {
-	DECLARE_CLASS( CServerOnlyEntity, CBaseEntity );
+	DECLARE_CLASS(CServerOnlyEntity, CBaseEntity);
 public:
-	CServerOnlyEntity() : CBaseEntity( true ) {}
-	
-	virtual int ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-};
+	CServerOnlyEntity() : CBaseEntity(true) {}
 
-// Has only a position, no size
-class CServerOnlyPointEntity : public CServerOnlyEntity
-{
-	DECLARE_CLASS( CServerOnlyPointEntity, CServerOnlyEntity );
-
-public:
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual int ObjectCaps(void) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 };
 
 // Has no position or size
 class CLogicalEntity : public CServerOnlyEntity
 {
-	DECLARE_CLASS( CLogicalEntity, CServerOnlyEntity );
+	DECLARE_CLASS(CLogicalEntity, CServerOnlyEntity);
 
 public:
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue(const char* szKeyName, const char* szValue);
 };
 
+// Has only a position, no size
+class CServerOnlyPointEntity : public CServerOnlyEntity
+{
+	DECLARE_CLASS(CServerOnlyPointEntity, CServerOnlyEntity);
+
+public:
+	virtual bool KeyValue(const char* szKeyName, const char* szValue);
+};
 
 // Network proxy functions
 
-void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
-void SendProxy_OriginXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
-void SendProxy_OriginZ( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
+//void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
+//void SendProxy_OriginXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
+//void SendProxy_OriginZ( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
 
 
 #endif // BASEENTITY_H

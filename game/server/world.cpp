@@ -48,6 +48,8 @@ class CDecal : public CPointEntity
 public:
 	DECLARE_CLASS( CDecal, CPointEntity );
 
+	DECLARE_SERVERCLASS();
+
 	void	Spawn( void );
 	bool	KeyValue( const char *szKeyName, const char *szValue );
 
@@ -68,6 +70,11 @@ public:
 private:
 
 	void	StaticDecal( void );
+
+public:
+	BEGIN_SEND_TABLE(CDecal, DT_Decal, DT_PointEntity)
+
+	END_SEND_TABLE(DT_Decal)
 };
 
 BEGIN_DATADESC( CDecal )
@@ -82,6 +89,8 @@ BEGIN_DATADESC( CDecal )
 	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
 
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CDecal, DT_Decal)
 
 LINK_ENTITY_TO_CLASS( infodecal, CDecal );
 

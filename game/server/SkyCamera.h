@@ -21,7 +21,7 @@ class CSkyCamera;
 class CSkyCamera : public CLogicalEntity
 {
 	DECLARE_CLASS( CSkyCamera, CLogicalEntity );
-
+	DECLARE_SERVERCLASS();
 public:
 
 	DECLARE_DATADESC();
@@ -34,6 +34,10 @@ public:
 	sky3dparams_t	m_skyboxData;
 	bool			m_bUseAngles;
 	CSkyCamera		*m_pNext;
+public:
+	BEGIN_SEND_TABLE(CSkyCamera, DT_SkyCamera, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_SkyCamera)
 };
 
 

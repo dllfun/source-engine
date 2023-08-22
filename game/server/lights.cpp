@@ -36,7 +36,7 @@ BEGIN_DATADESC( CLight )
 END_DATADESC()
 
 
-
+IMPLEMENT_SERVERCLASS(CLight, DT_Light)
 //
 // Cache user-entity-field values until spawn is called.
 //

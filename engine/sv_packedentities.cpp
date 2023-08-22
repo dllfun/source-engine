@@ -441,7 +441,11 @@ void PackEntities_Normal(
 				w.nIdx = index;
 				w.pEdict = edict;
 				w.pSnapshot = snapshot;
-
+				CFrameSnapshotEntry entry = snapshot->m_pEntities[index];
+				if (entry.m_pClass == NULL) {
+					int aaa = 0;
+					continue;
+				}
 				workItems.AddToTail( w );
 				break;
 			}
@@ -594,6 +598,9 @@ void SV_WriteSendTables( ServerClass *pClasses, bf_write &pBuf )
 	// on the client.
 	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
 	{
+		if (!pCur->m_pTable) {
+			continue;
+		}
 		SV_MaybeWriteSendTable( pCur->m_pTable, pBuf, true );
 	}
 
@@ -601,6 +608,9 @@ void SV_WriteSendTables( ServerClass *pClasses, bf_write &pBuf )
 	// because we will never send these SendTables by themselves.
 	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
 	{
+		if (!pCur->m_pTable) {
+			continue;
+		}
 		SV_MaybeWriteSendTable_R( pCur->m_pTable, pBuf );
 	}
 }
@@ -615,6 +625,9 @@ void SV_ComputeClassInfosCRC( CRC32_t* crc )
 
 	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->m_pNext )
 	{
+		if (!pClass->m_pTable) {
+			continue;
+		}
 		CRC32_ProcessBuffer( crc, (void *)pClass->m_pNetworkName, Q_strlen( pClass->m_pNetworkName ) );
 		CRC32_ProcessBuffer( crc, (void *)pClass->m_pTable->GetName(), Q_strlen(pClass->m_pTable->GetName() ) );
 	}
@@ -628,6 +641,9 @@ void CGameServer::AssignClassIds()
 	int nClasses = 0;
 	for ( ServerClass *pCount=pClasses; pCount; pCount=pCount->m_pNext )
 	{
+		if (!pCount->m_pTable) {
+			continue;
+		}
 		++nClasses;
 	}
 	
@@ -644,6 +660,9 @@ void CGameServer::AssignClassIds()
 	int curID = 0;
 	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->m_pNext )
 	{
+		if (!pClass->m_pTable) {
+			continue;
+		}
 		pClass->m_ClassID = curID++;
 
 		if ( bSpew )

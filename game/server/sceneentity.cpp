@@ -107,7 +107,7 @@ class CSceneManager : public CBaseEntity
 {
 	DECLARE_CLASS( CSceneManager, CBaseEntity );
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 public:
 	virtual void			Spawn()
 	{
@@ -161,8 +161,14 @@ private:
 	CUtlVector< CHandle< CSceneEntity > >	m_ActiveScenes;
 
 	CUtlVector< CRestoreSceneSound >		m_QueuedSceneSounds;
+
+public:
+	BEGIN_SEND_TABLE(CSceneManager, DT_SceneManager, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_SceneManager)
 };
 
+IMPLEMENT_SERVERCLASS(CSceneManager, DT_SceneManager)
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------

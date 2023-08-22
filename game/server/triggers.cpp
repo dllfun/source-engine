@@ -2774,7 +2774,7 @@ class CTriggerCamera : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CTriggerCamera, CBaseEntity );
-
+	DECLARE_SERVERCLASS();
 	void Spawn( void );
 	bool KeyValue( const char *szKeyName, const char *szValue );
 	void Enable( void );
@@ -2830,11 +2830,17 @@ private:
 
 private:
 	COutputEvent m_OnEndFollow;
+public:
+	BEGIN_SEND_TABLE(CTriggerCamera, DT_TriggerCamera, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_TriggerCamera)
 };
 
 #if HL2_EPISODIC
 const float CTriggerCamera::kflPosInterpTime = 2.0f;
 #endif
+
+IMPLEMENT_SERVERCLASS(CTriggerCamera, DT_TriggerCamera)
 
 LINK_ENTITY_TO_CLASS( point_viewcontrol, CTriggerCamera );
 

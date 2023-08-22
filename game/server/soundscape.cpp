@@ -483,6 +483,8 @@ public:
 	DECLARE_CLASS( CTriggerSoundscape, CBaseTrigger );
 	DECLARE_DATADESC();
 
+	DECLARE_SERVERCLASS();
+
 	CTriggerSoundscape();
 
 	virtual void StartTouch( CBaseEntity *pOther );
@@ -498,8 +500,14 @@ private:
 	string_t m_SoundscapeName;
 
 	CUtlVector<CBasePlayerHandle> m_spectators; // spectators in our volume
+
+public:
+	BEGIN_SEND_TABLE(CTriggerSoundscape, DT_TriggerSoundscape, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_TriggerSoundscape)
 };
 
+IMPLEMENT_SERVERCLASS(CTriggerSoundscape, DT_TriggerSoundscape)
 
 LINK_ENTITY_TO_CLASS( trigger_soundscape, CTriggerSoundscape );
 

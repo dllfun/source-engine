@@ -25,6 +25,19 @@
 C_GameRules *g_pGameRules = NULL;
 //static C_World *g_pClientWorld;
 
+class C_Decal : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_Decal() {
+	
+	}
+
+	BEGIN_RECV_TABLE(C_Decal, DT_Decal, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_Decal)
+};
+
+IMPLEMENT_CLIENTCLASS(C_Decal, DT_Decal, CDecal)
 
 void ClientWorldFactoryInit()
 {

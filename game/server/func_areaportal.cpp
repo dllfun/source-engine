@@ -27,6 +27,7 @@ class CAreaPortal : public CFuncAreaPortalBase
 public:
 	DECLARE_CLASS( CAreaPortal, CFuncAreaPortalBase );
 
+	DECLARE_SERVERCLASS();
 					CAreaPortal();
 
 	virtual void	Spawn( void );
@@ -47,7 +48,14 @@ public:
 private:
 	bool UpdateState( void );
 	int m_state;
+
+public:
+	BEGIN_SEND_TABLE(CAreaPortal, DT_AreaPortal, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AreaPortal)
 };
+
+IMPLEMENT_SERVERCLASS(CAreaPortal, DT_AreaPortal)
 
 LINK_ENTITY_TO_CLASS( func_areaportal, CAreaPortal );
 

@@ -6433,3 +6433,76 @@ void CC_CL_Find_Ent_Index( const CCommand& args )
 	}
 }
 static ConCommand cl_find_ent_index("cl_find_ent_index", CC_CL_Find_Ent_Index, "Display data for clientside entity matching specified index.\nFormat: cl_find_ent_index <index>\n", FCVAR_CHEAT);
+
+
+class C_LogicAuto : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_LogicAuto() {}
+
+	BEGIN_RECV_TABLE(C_LogicAuto, DT_LogicAuto, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_LogicAuto)
+};
+
+IMPLEMENT_CLIENTCLASS(C_LogicAuto, DT_LogicAuto, CLogicAuto)
+
+class C_PointEntity : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PointEntity() {}
+
+	BEGIN_RECV_TABLE(C_PointEntity, DT_PointEntity, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PointEntity)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PointEntity, DT_PointEntity, CPointEntity)
+
+class C_SkyCamera : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_SkyCamera() {}
+
+	BEGIN_RECV_TABLE(C_SkyCamera, DT_SkyCamera, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_SkyCamera)
+};
+
+IMPLEMENT_CLIENTCLASS(C_SkyCamera, DT_SkyCamera, CSkyCamera)
+
+class C_TriggerCamera : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_TriggerCamera() {}
+
+	BEGIN_RECV_TABLE(C_TriggerCamera, DT_TriggerCamera, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_TriggerCamera)
+};
+
+IMPLEMENT_CLIENTCLASS(C_TriggerCamera, DT_TriggerCamera, CTriggerCamera)
+
+class C_TriggerSoundscape : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_TriggerSoundscape() {}
+
+	BEGIN_RECV_TABLE(C_TriggerSoundscape, DT_TriggerSoundscape, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_TriggerSoundscape)
+};
+
+IMPLEMENT_CLIENTCLASS(C_TriggerSoundscape, DT_TriggerSoundscape, CTriggerSoundscape)
+
+class C_SceneManager : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_SceneManager() {}
+
+	BEGIN_RECV_TABLE(C_SceneManager, DT_SceneManager, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_SceneManager)
+};
+
+IMPLEMENT_CLIENTCLASS(C_SceneManager, DT_SceneManager, CSceneManager)

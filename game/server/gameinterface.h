@@ -200,7 +200,10 @@ public:
 	virtual CBaseEntity* CreateNextEntity( const char *pClassname )
 	{
 		CBaseEntity *pRet = engineServer->CreateEntityByName( pClassname );
-
+		ServerClass* serverClass = pRet->GetServerClass();
+		if (serverClass == NULL) {
+			int aaa = 0;
+		}
 		CMapEntityRef ref;
 		ref.m_iEdict = -1;
 		ref.m_iSerialNumber = -1;

@@ -26,6 +26,7 @@ public:
 
 	CFuncBrush();
 	DECLARE_CLASS( CFuncBrush, CBaseEntity );
+	DECLARE_SERVERCLASS();
 
 	virtual void Spawn( void );
 	bool CreateVPhysics( void );
@@ -59,6 +60,10 @@ public:
 	DECLARE_DATADESC();
 
 	virtual bool IsOn( void );
+public:
+	BEGIN_SEND_TABLE(CFuncBrush, DT_FuncBrush, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncBrush)
 };
 
 

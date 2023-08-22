@@ -15,7 +15,7 @@
 extern ConVar ent_debugkeys;
 extern ConVar	showtriggers;
 
-
+IMPLEMENT_SERVERCLASS(CFuncBrush, DT_FuncBrush)
 
 LINK_ENTITY_TO_CLASS( func_brush, CFuncBrush );
 

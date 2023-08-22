@@ -173,8 +173,8 @@ public:
 	virtual const unsigned char *GetEncryptionKey( void ) { return (unsigned char *)"d7NSuLq2"; } // both the client and server need this key
 
 #ifdef CLIENT_DLL
-
-	DECLARE_CLIENTCLASS_NOBASE(); // This makes datatables able to access our private vars.
+	virtual C_BaseEntity* NetworkProp() { return NULL; }
+	DECLARE_CLIENTCLASS(); // This makes datatables able to access our private vars.
 	CCSGameRules();
 
 #else

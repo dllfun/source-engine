@@ -199,6 +199,9 @@ void DataTable_CreateClientTablesFromServerTables()
 	// on the client.
 	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
 	{
+		if (!pCur->m_pTable) {
+			continue;
+		}
 		DataTable_MaybeCreateReceiveTable( visited, pCur->m_pTable, true );
 	}
 
@@ -206,6 +209,9 @@ void DataTable_CreateClientTablesFromServerTables()
 	// because we will never send these SendTables by themselves.
 	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
 	{
+		if (!pCur->m_pTable) {
+			continue;
+		}
 		DataTable_MaybeCreateReceiveTable_R( visited, pCur->m_pTable );
 	}
 }
@@ -223,6 +229,9 @@ void DataTable_CreateClientClassInfosFromServerClasses( CBaseClientState *pState
 	int nClasses = 0;
 	for ( ServerClass *pCount=pClasses; pCount; pCount=pCount->m_pNext )
 	{
+		if (!pCount->m_pTable) {
+			continue;
+		}
 		++nClasses;
 	}
 
@@ -246,6 +255,9 @@ void DataTable_CreateClientClassInfosFromServerClasses( CBaseClientState *pState
 	int curID = 0;
 	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->m_pNext )
 	{
+		if (!pClass->m_pTable) {
+			continue;
+		}
 		Assert( pClass->m_ClassID >= 0 && pClass->m_ClassID < nClasses );
 
 		pClass->m_ClassID = curID++;
@@ -306,6 +318,9 @@ void DataTable_ClearWriteFlags( ServerClass *pClasses )
 {
 	for ( ServerClass *pCur=pClasses; pCur; pCur=pCur->m_pNext )
 	{
+		if (!pCur->m_pTable) {
+			continue;
+		}
 		DataTable_ClearWriteFlags_R( pCur->m_pTable );
 	}
 }
@@ -320,6 +335,9 @@ void DataTable_WriteSendTablesBuffer( ServerClass *pClasses, bf_write *pBuf )
 	// on the client.
 	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
 	{
+		if (!pCur->m_pTable) {
+			continue;
+		}
 		DataTable_MaybeWriteSendTableBuffer( pCur->m_pTable, pBuf, true );
 	}
 
@@ -327,6 +345,9 @@ void DataTable_WriteSendTablesBuffer( ServerClass *pClasses, bf_write *pBuf )
 	// because we will never send these SendTables by themselves.
 	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
 	{
+		if (!pCur->m_pTable) {
+			continue;
+		}
 		DataTable_MaybeWriteSendTableBuffer_R( pCur->m_pTable, pBuf );
 	}
 
@@ -343,8 +364,10 @@ void DataTable_WriteClassInfosBuffer(ServerClass *pClasses, bf_write *pBuf )
 	// first count total number of classes in list
 	while ( pClass != NULL )
 	{
-		pClass=pClass->m_pNext;
-		count++;
+		if (pClass->m_pTable) {
+			count++;
+		}
+		pClass = pClass->m_pNext;
 	}
 
 	// write number of classes
@@ -355,9 +378,11 @@ void DataTable_WriteClassInfosBuffer(ServerClass *pClasses, bf_write *pBuf )
 	// write each class info
 	while ( pClass != NULL )
 	{
-		pBuf->WriteShort( pClass->m_ClassID );
-		pBuf->WriteString( pClass->m_pNetworkName );
-		pBuf->WriteString( pClass->m_pTable->GetName() );
+		if (pClass->m_pTable) {
+			pBuf->WriteShort(pClass->m_ClassID);
+			pBuf->WriteString(pClass->m_pNetworkName);
+			pBuf->WriteString(pClass->m_pTable->GetName());
+		}
 		pClass=pClass->m_pNext;
 	}
 }

@@ -13,6 +13,18 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+class C_Light : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_Light() {}
+
+	BEGIN_RECV_TABLE(C_Light, DT_Light, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_Light)
+};
+
+IMPLEMENT_CLIENTCLASS(C_Light, DT_Light, CLight)
+
 class C_LightGlowOverlay : public CGlowOverlay
 {
 public:

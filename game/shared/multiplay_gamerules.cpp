@@ -330,6 +330,9 @@ bool CMultiplayRules::Init()
 	return BaseClass::Init();
 }
 
+bool CMultiplayRules::Init(int entnum, int iSerialNum) {
+	return Init();
+}
 
 #ifdef CLIENT_DLL
 

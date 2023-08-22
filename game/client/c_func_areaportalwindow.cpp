@@ -17,6 +17,18 @@
 
 #define VIEWER_PADDING	80.0f
 
+class C_AreaPortal : public C_BaseEntity{
+public:
+	DECLARE_CLIENTCLASS();
+	C_AreaPortal() {}
+
+	BEGIN_RECV_TABLE(C_AreaPortal, DT_AreaPortal, DT_BaseEntity)
+		
+	END_RECV_TABLE(DT_AreaPortal)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AreaPortal, DT_AreaPortal, CAreaPortal)
+
 class C_FuncAreaPortalWindow : public C_BaseEntity
 {
 public:
@@ -148,4 +160,15 @@ bool C_FuncAreaPortalWindow::ShouldReceiveProjectedTextures( int flags )
 	return false;
 }
 
+class C_FuncBrush : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FuncBrush() {}
+
+	BEGIN_RECV_TABLE(C_FuncBrush, DT_FuncBrush, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncBrush)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FuncBrush, DT_FuncBrush, CFuncBrush)
 

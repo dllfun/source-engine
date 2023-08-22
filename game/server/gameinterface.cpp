@@ -802,6 +802,7 @@ void CServerGameDLL::DLLShutdown( void )
 	DisconnectTier2Libraries();
 	ConVar_Unregister();
 	DisconnectTier1Libraries();
+	engineServer = NULL;
 }
 
 bool CServerGameDLL::ReplayInit( CreateInterfaceFn fnReplayFactory )
@@ -2554,6 +2555,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 				if (iEdict != 1) {
 					int aaa = 0;
 				}
+				
 				pInfo->m_pTransmitEdict->Set( iEdict );
 	
 #ifndef _X360
@@ -2570,6 +2572,9 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 				if ( !pParent )
 					break;
 
+				if (pEnt->GetServerClass() == NULL) {
+					int aaa = 0;
+				}
 				pEdict = pParent->edict();
 				iEdict = pParent->entindex();
 			}

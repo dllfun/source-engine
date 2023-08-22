@@ -13,7 +13,7 @@ class CBombTarget : public CBaseTrigger
 public:
 	DECLARE_CLASS( CBombTarget, CBaseTrigger );
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	CBombTarget();
 
 	void Spawn();
@@ -34,4 +34,8 @@ private:
 
 	bool		m_bIsHeistBombTarget;
 	string_t	m_szMountTarget;
+public:
+	BEGIN_SEND_TABLE(CBombTarget, DT_BombTarget, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_BombTarget)
 };

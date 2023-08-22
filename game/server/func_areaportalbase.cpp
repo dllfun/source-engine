@@ -35,6 +35,9 @@ END_DATADESC()
 
 CFuncAreaPortalBase::CFuncAreaPortalBase()
 {
+	if (!engineServer) {
+		return;
+	}
 	m_portalNumber = -1;
 	m_AreaPortalsElement = g_AreaPortals.AddToTail( this );
 	m_iPortalVersion = 0;
@@ -43,6 +46,9 @@ CFuncAreaPortalBase::CFuncAreaPortalBase()
 
 CFuncAreaPortalBase::~CFuncAreaPortalBase()
 {
+	if (!engineServer) {
+		return;
+	}
 	g_AreaPortals.Remove( m_AreaPortalsElement );
 }
 

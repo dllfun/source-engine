@@ -24,7 +24,7 @@ class CLogicAuto : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CLogicAuto, CBaseEntity );
-
+	DECLARE_SERVERCLASS();
 	void Activate(void);
 	void Think(void);
 
@@ -46,7 +46,13 @@ private:
 	COutputEvent m_OnMultiNewRound;
 
 	string_t m_globalstate;
+private:
+	BEGIN_SEND_TABLE(CLogicAuto, DT_LogicAuto, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_LogicAuto)
 };
+
+IMPLEMENT_SERVERCLASS(CLogicAuto, DT_LogicAuto)
 
 LINK_ENTITY_TO_CLASS(logic_auto, CLogicAuto);
 

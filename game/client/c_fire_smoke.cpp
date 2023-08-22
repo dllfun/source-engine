@@ -19,6 +19,17 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+class C_Fire : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_Fire() {}
+
+	BEGIN_RECV_TABLE(C_Fire, DT_Fire, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_Fire)
+};
+
+IMPLEMENT_CLIENTCLASS(C_Fire, DT_Fire, CFire)
 
 CLIENTEFFECT_REGISTER_BEGIN( SmokeStackMaterials )
 	CLIENTEFFECT_MATERIAL( "particle/SmokeStack" )

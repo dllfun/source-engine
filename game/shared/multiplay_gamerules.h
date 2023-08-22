@@ -82,6 +82,7 @@ public:
 	virtual bool IsMultiplayer( void );
 
 	virtual	bool	Init();
+	virtual bool	Init(int entnum, int iSerialNum);
 
 	// Damage query implementations.
 	virtual bool	Damage_IsTimeBased( int iDmgType );			// Damage types that are time-based.

@@ -21,6 +21,39 @@ void CPointEntity::Spawn( void )
 //	UTIL_SetSize(this, vec3_origin, vec3_origin);
 }
 
+bool CPointEntity::KeyValue(const char* szKeyName, const char* szValue)
+{
+	if (FStrEq(szKeyName, "mins") || FStrEq(szKeyName, "maxs"))
+	{
+		Warning("Warning! Can't specify mins/maxs for point entities! (%s)\n", GetClassname());
+		return true;
+	}
+
+	return BaseClass::KeyValue(szKeyName, szValue);
+}
+
+bool CServerOnlyPointEntity::KeyValue(const char* szKeyName, const char* szValue)
+{
+	if (FStrEq(szKeyName, "mins") || FStrEq(szKeyName, "maxs"))
+	{
+		Warning("Warning! Can't specify mins/maxs for point entities! (%s)\n", GetClassname());
+		return true;
+	}
+
+	return BaseClass::KeyValue(szKeyName, szValue);
+}
+
+bool CLogicalEntity::KeyValue(const char* szKeyName, const char* szValue)
+{
+	if (FStrEq(szKeyName, "mins") || FStrEq(szKeyName, "maxs"))
+	{
+		Warning("Warning! Can't specify mins/maxs for point entities! (%s)\n", GetClassname());
+		return true;
+	}
+
+	return BaseClass::KeyValue(szKeyName, szValue);
+}
+
 
 class CNullEntity : public CBaseEntity
 {
@@ -58,6 +91,7 @@ BEGIN_DATADESC( CBaseDMStart )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CPointEntity, DT_PointEntity)
 
 // These are the new entry points to entities. 
 LINK_ENTITY_TO_CLASS(info_player_deathmatch,CBaseDMStart);

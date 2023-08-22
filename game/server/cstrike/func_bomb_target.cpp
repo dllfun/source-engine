@@ -9,6 +9,8 @@
 #include "func_bomb_target.h"
 #include "cs_gamerules.h"
 
+IMPLEMENT_SERVERCLASS(CBombTarget, DT_BombTarget)
+
 LINK_ENTITY_TO_CLASS( func_bomb_target, CBombTarget );
 
 BEGIN_DATADESC( CBombTarget )

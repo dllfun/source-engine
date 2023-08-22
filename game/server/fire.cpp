@@ -80,6 +80,8 @@ class CFire : public CBaseEntity
 public:
 	DECLARE_CLASS( CFire, CBaseEntity );
 	
+	DECLARE_SERVERCLASS();
+
 	int DrawDebugTextOverlays(void);
 
 	CFire( void );
@@ -195,7 +197,13 @@ protected:
 	COutputEvent	m_OnExtinguished;
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CFire, DT_Fire, DT_BaseEntity)
+		
+	END_SEND_TABLE(DT_Fire)
 };
+
+IMPLEMENT_SERVERCLASS(CFire, DT_Fire)
 
 class CFireSphere : public IPartitionEnumerator
 {
