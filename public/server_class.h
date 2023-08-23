@@ -137,10 +137,10 @@ class ServerClass {
 
 public:
 	virtual void InitRefSendTable(SendTableManager* pSendTableNanager) = 0;
-	virtual const char* GetName() = 0;
+	virtual const char* GetNetworkName() = 0;
 	virtual int& GetClassID() = 0;
 	virtual int& GetInstanceBaselineIndex() = 0;
-	virtual SendTable*& GetTable() = 0;
+	virtual SendTable*& GetDataTable() = 0;
 	virtual ServerClass*& GetNext() = 0;
 
 };
@@ -148,39 +148,39 @@ public:
 class PrototypeServerClass : public ServerClass
 {
 public:
-				PrototypeServerClass( const char *pNetworkName, const char* pTableName )
+				PrototypeServerClass( const char *pNetworkName, const char* pDataTableName )
 				{
-					if (!pTableName || !pTableName[0]) {
+					if (!pDataTableName || !pDataTableName[0]) {
 						Error("pTableName can not been NULL: %s\n", pNetworkName);
 					}
 					m_pNetworkName = pNetworkName;
-					m_pTableName = pTableName;
+					m_pDataTableName = pDataTableName;
 					m_InstanceBaselineIndex = INVALID_STRING_INDEX;
 					g_pServerClassManager->RegisteServerClass(this);
 				}
 
 				void InitRefSendTable(SendTableManager* pSendTableNanager) {
-					if (m_pTableName&& m_pTableName[0]) {
-						m_pTable = pSendTableNanager->FindSendTable(m_pTableName);
-						if (!m_pTable) {
-							Error("not found SendTable: %s\n", m_pTableName);	// dedicated servers exit
+					if (m_pDataTableName&& m_pDataTableName[0]) {
+						m_pDataTable = pSendTableNanager->FindSendTable(m_pDataTableName);
+						if (!m_pDataTable) {
+							Error("not found SendTable: %s\n", m_pDataTableName);	// dedicated servers exit
 						}
 					}
 				}
 
-	const char*	GetName()		{ return m_pNetworkName; }
+	const char*	GetNetworkName()		{ return m_pNetworkName; }
 
 	virtual int& GetClassID() { return m_ClassID; }
 
 	virtual int& GetInstanceBaselineIndex() { return m_InstanceBaselineIndex; }
 
-	virtual SendTable*& GetTable() { return m_pTable; };
+	virtual SendTable*& GetDataTable() { return m_pDataTable; };
 
 	virtual ServerClass*& GetNext() { return m_pNext; };
 private:
 	const char					*m_pNetworkName;
-	const char*					m_pTableName;
-	SendTable					*m_pTable = NULL;
+	const char*					m_pDataTableName;
+	SendTable					*m_pDataTable = NULL;
 	ServerClass					*m_pNext = NULL;
 	int							m_ClassID = 0;	// Managed by the engine.
 

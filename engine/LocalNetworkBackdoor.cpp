@@ -55,14 +55,14 @@ void CLocalNetworkBackdoor::InitFastCopy()
 		if ( !pClientClass ) 
 			Error( "InitFastCopy - missing client class %d (Should be equivelent of server class: %s)", iClass, cl.m_pServerClasses[iClass].m_ClassName );
 
-		ServerClass *pServerClass = SV_FindServerClass( pClientClass->GetName() );
+		ServerClass *pServerClass = SV_FindServerClass( pClientClass->GetNetworkName() );
 		if ( !pServerClass )
-			Error( "InitFastCopy - missing server class %s", pClientClass->GetName() );
+			Error( "InitFastCopy - missing server class %s", pClientClass->GetNetworkName() );
 
 		LocalTransfer_InitFastCopy(
-			pServerClass->GetTable(),
+			pServerClass->GetDataTable(),
 			pSendProxies,
-			pClientClass->GetTable(),
+			pClientClass->GetDataTable(),
 			pRecvProxies,
 			nSlowCopyProps,
 			nFastCopyProps
@@ -354,7 +354,7 @@ void CLocalNetworkBackdoor::EntState(
 			EDICT_NUM(iEnt),
 			pSendTable, 
 			pSourceEnt, 
-			pClientClass->GetTable(),
+			pClientClass->GetDataTable(),
 			pCached->m_pDataPointer, 
 			bCreated, 
 			bExistedAndWasDormant,

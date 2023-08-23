@@ -199,20 +199,20 @@ void DataTable_CreateClientTablesFromServerTables()
 	// on the client.
 	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->GetTable()) {
+		if (!pCur->GetDataTable()) {
 			continue;
 		}
-		DataTable_MaybeCreateReceiveTable( visited, pCur->GetTable(), true);
+		DataTable_MaybeCreateReceiveTable( visited, pCur->GetDataTable(), true);
 	}
 
 	// Now, we send their base classes. These don't need decoders on the client
 	// because we will never send these SendTables by themselves.
 	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->GetTable()) {
+		if (!pCur->GetDataTable()) {
 			continue;
 		}
-		DataTable_MaybeCreateReceiveTable_R( visited, pCur->GetTable() );
+		DataTable_MaybeCreateReceiveTable_R( visited, pCur->GetDataTable() );
 	}
 }
 
@@ -229,7 +229,7 @@ void DataTable_CreateClientClassInfosFromServerClasses( CBaseClientState *pState
 	int nClasses = 0;
 	for ( ServerClass *pCount=pClasses; pCount; pCount=pCount->GetNext() )
 	{
-		if (!pCount->GetTable()) {
+		if (!pCount->GetDataTable()) {
 			continue;
 		}
 		++nClasses;
@@ -255,15 +255,15 @@ void DataTable_CreateClientClassInfosFromServerClasses( CBaseClientState *pState
 	int curID = 0;
 	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->GetNext() )
 	{
-		if (!pClass->GetTable()) {
+		if (!pClass->GetDataTable()) {
 			continue;
 		}
 		Assert( pClass->m_ClassID >= 0 && pClass->m_ClassID < nClasses );
 
 		pClass->GetClassID() = curID++;
 
-		pState->m_pServerClasses[ pClass->GetClassID()].m_ClassName = COM_StringCopy(pClass->GetName());
-		pState->m_pServerClasses[ pClass->GetClassID()].m_DatatableName = COM_StringCopy(pClass->GetTable()->GetName());
+		pState->m_pServerClasses[ pClass->GetClassID()].m_ClassName = COM_StringCopy(pClass->GetNetworkName());
+		pState->m_pServerClasses[ pClass->GetClassID()].m_DatatableName = COM_StringCopy(pClass->GetDataTable()->GetName());
 	}
 }
 
@@ -318,10 +318,10 @@ void DataTable_ClearWriteFlags( ServerClass *pClasses )
 {
 	for ( ServerClass *pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->GetTable()) {
+		if (!pCur->GetDataTable()) {
 			continue;
 		}
-		DataTable_ClearWriteFlags_R( pCur->GetTable() );
+		DataTable_ClearWriteFlags_R( pCur->GetDataTable() );
 	}
 }
 
@@ -335,20 +335,20 @@ void DataTable_WriteSendTablesBuffer( ServerClass *pClasses, bf_write *pBuf )
 	// on the client.
 	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->GetTable()) {
+		if (!pCur->GetDataTable()) {
 			continue;
 		}
-		DataTable_MaybeWriteSendTableBuffer( pCur->GetTable(), pBuf, true);
+		DataTable_MaybeWriteSendTableBuffer( pCur->GetDataTable(), pBuf, true);
 	}
 
 	// Now, we send their base classes. These don't need decoders on the client
 	// because we will never send these SendTables by themselves.
 	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->GetTable()) {
+		if (!pCur->GetDataTable()) {
 			continue;
 		}
-		DataTable_MaybeWriteSendTableBuffer_R( pCur->GetTable(), pBuf);
+		DataTable_MaybeWriteSendTableBuffer_R( pCur->GetDataTable(), pBuf);
 	}
 
 	// Signal no more send tables
@@ -364,7 +364,7 @@ void DataTable_WriteClassInfosBuffer(ServerClass *pClasses, bf_write *pBuf )
 	// first count total number of classes in list
 	while ( pClass != NULL )
 	{
-		if (pClass->GetTable()) {
+		if (pClass->GetDataTable()) {
 			count++;
 		}
 		pClass = pClass->GetNext();
@@ -378,10 +378,10 @@ void DataTable_WriteClassInfosBuffer(ServerClass *pClasses, bf_write *pBuf )
 	// write each class info
 	while ( pClass != NULL )
 	{
-		if (pClass->GetTable()) {
+		if (pClass->GetDataTable()) {
 			pBuf->WriteShort(pClass->GetClassID());
-			pBuf->WriteString(pClass->GetName());
-			pBuf->WriteString(pClass->GetTable()->GetName());
+			pBuf->WriteString(pClass->GetNetworkName());
+			pBuf->WriteString(pClass->GetDataTable()->GetName());
 		}
 		pClass=pClass->GetNext();
 	}

@@ -114,7 +114,7 @@ void CHLTVClientState::CopyNewEntity(
 	}
 
 	// create new ChangeFrameList containing all properties set as changed
-	int nFlatProps = SendTable_GetNumFlatProps( pServerClass->GetTable() );
+	int nFlatProps = SendTable_GetNumFlatProps( pServerClass->GetDataTable() );
 	IChangeFrameList *pChangeFrame = NULL;
 	
 	if ( !m_bSaveMemory )
@@ -135,7 +135,7 @@ void CHLTVClientState::CopyNewEntity(
 	int changedProps[MAX_DATATABLE_PROPS];
 	
 	// decode basline, is compressed against zero values 
-	int nChangedProps = RecvTable_MergeDeltas( pClientClass->GetTable(), &fromBuf,
+	int nChangedProps = RecvTable_MergeDeltas( pClientClass->GetDataTable(), &fromBuf,
 		u.m_pBuf, &writeBuf, -1, changedProps );
 
 	// update change tick in ChangeFrameList
@@ -748,7 +748,7 @@ void CHLTVClientState::ReadDeltaEnt( CEntityReadInfo &u )
 	int changedProps[MAX_DATATABLE_PROPS];
 	
 	// decode baseline, is compressed against zero values 
-	int nChangedProps = RecvTable_MergeDeltas( pToPackedEntity->m_pClientClass->GetTable(),
+	int nChangedProps = RecvTable_MergeDeltas( pToPackedEntity->m_pClientClass->GetDataTable(),
 		&fromBuf, u.m_pBuf, &writeBuf, -1, changedProps, false );
 
 	// update change tick in ChangeFrameList

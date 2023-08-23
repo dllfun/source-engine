@@ -1741,7 +1741,7 @@ static void ClientDLL_InitRecvTableMgr()
 			("ClientDLL_InitRecvTableMgr: overflowed MAX_DATATABLES")
 			);
 		
-		pRecvTables[nRecvTables] = pCur->GetTable();
+		pRecvTables[nRecvTables] = pCur->GetDataTable();
 		++nRecvTables;
 	}
 

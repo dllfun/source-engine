@@ -323,7 +323,7 @@ void CHLTVServer::InitClientRecvTables()
 	for ( pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->GetNext() )
 	{
 		// create receive table from send table.
-		AddRecvTableR( pCur->GetTable(), m_pRecvTables, m_nRecvTables);
+		AddRecvTableR( pCur->GetDataTable(), m_pRecvTables, m_nRecvTables);
 
 		ErrorIfNot( 
 			m_nRecvTables < ARRAYSIZE( m_pRecvTables ), 
@@ -340,16 +340,16 @@ void CHLTVServer::InitClientRecvTables()
 			);
 
 		// find top receive table for class
-		RecvTable * recvt = FindRecvTable( pCur->GetTable()->GetName(), m_pRecvTables, m_nRecvTables);
+		RecvTable * recvt = FindRecvTable( pCur->GetDataTable()->GetName(), m_pRecvTables, m_nRecvTables);
 
 		Assert ( recvt );
 		
 		// register class, constructor addes clientClass to g_pClientClassHead list
-		PrototypeClientClass* clientclass = new PrototypeClientClass("", pCur->GetName(), recvt->GetName(), recvt);//NULL, NULL,
+		PrototypeClientClass* clientclass = new PrototypeClientClass("", pCur->GetNetworkName(), recvt->GetName(), recvt);//NULL, NULL,
 
 		if ( !clientclass	)
 		{
-			Msg("HLTV_InitRecvTableMgr: failed to allocate client class %s.\n", pCur->GetName() );
+			Msg("HLTV_InitRecvTableMgr: failed to allocate client class %s.\n", pCur->GetNetworkName() );
 			return;
 		}
 	}

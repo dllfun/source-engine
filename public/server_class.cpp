@@ -173,11 +173,11 @@ ServerClass* ServerClassManager::GetServerClassHead() {
 
 void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
 
-	if (GetServerClassMap().Defined(pServerClass->GetName())) {
-		Error("duplicate ServerClass: %s\n", pServerClass->GetName());	// dedicated servers exit
+	if (GetServerClassMap().Defined(pServerClass->GetNetworkName())) {
+		Error("duplicate ServerClass: %s\n", pServerClass->GetNetworkName());	// dedicated servers exit
 	}
 	else {
-		GetServerClassMap()[pServerClass->GetName()] = pServerClass;
+		GetServerClassMap()[pServerClass->GetNetworkName()] = pServerClass;
 	}
 	// g_pServerClassHead is sorted alphabetically, so find the correct place to insert
 	if (!m_pServerClassHead)
@@ -191,7 +191,7 @@ void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
 		ServerClass* p2 = p1->GetNext();
 
 		// use _stricmp because Q_stricmp isn't hooked up properly yet
-		if (_stricmp(p1->GetName(), pServerClass->GetName()) > 0)
+		if (_stricmp(p1->GetNetworkName(), pServerClass->GetNetworkName()) > 0)
 		{
 			pServerClass->GetNext() = m_pServerClassHead;
 			m_pServerClassHead = pServerClass;
@@ -200,7 +200,7 @@ void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
 
 		while (p1)
 		{
-			if (p2 == NULL || _stricmp(p2->GetName(), pServerClass->GetName()) > 0)
+			if (p2 == NULL || _stricmp(p2->GetNetworkName(), pServerClass->GetNetworkName()) > 0)
 			{
 				pServerClass->GetNext() = p2;
 				p1->GetNext() = pServerClass;

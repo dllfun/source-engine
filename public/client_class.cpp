@@ -177,11 +177,11 @@ ClientClass* ClientClassManager::GetClientClassHead() {
 
 void	ClientClassManager::RegisteClientClass(ClientClass* pClientClass) {
 
-	if (GetClientClassMap().Defined(pClientClass->GetName())) {
-		Error("duplicate ClientClass: %s\n", pClientClass->GetName());	// dedicated servers exit
+	if (GetClientClassMap().Defined(pClientClass->GetNetworkName())) {
+		Error("duplicate ClientClass: %s\n", pClientClass->GetNetworkName());	// dedicated servers exit
 	}
 	else {
-		GetClientClassMap()[pClientClass->GetName()] = pClientClass;
+		GetClientClassMap()[pClientClass->GetNetworkName()] = pClientClass;
 	}
 	// g_pClientClassHead is sorted alphabetically, so find the correct place to insert
 	if (!m_pClientClassHead)
@@ -195,7 +195,7 @@ void	ClientClassManager::RegisteClientClass(ClientClass* pClientClass) {
 		ClientClass* p2 = p1->GetNext();
 
 		// use _stricmp because Q_stricmp isn't hooked up properly yet
-		if (_stricmp(p1->GetName(), pClientClass->GetName()) > 0)
+		if (_stricmp(p1->GetNetworkName(), pClientClass->GetNetworkName()) > 0)
 		{
 			pClientClass->GetNext() = m_pClientClassHead;
 			m_pClientClassHead = pClientClass;
@@ -204,7 +204,7 @@ void	ClientClassManager::RegisteClientClass(ClientClass* pClientClass) {
 
 		while (p1)
 		{
-			if (p2 == NULL || _stricmp(p2->GetName(), pClientClass->GetName()) > 0)
+			if (p2 == NULL || _stricmp(p2->GetNetworkName(), pClientClass->GetNetworkName()) > 0)
 			{
 				pClientClass->GetNext() = p2;
 				p1->GetNext() = pClientClass;

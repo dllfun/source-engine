@@ -185,10 +185,10 @@ typedef IClientNetworkable*	(*CreateEventFn)();
 class ClientClass {
 public:
 	virtual void InitRefRecvTable(RecvTableManager* pRecvTableNanager) = 0;
-	virtual const char* GetName() const = 0;
+	virtual const char* GetNetworkName() const = 0;
 	virtual const char* GetClassName() const = 0;
-	virtual RecvTable* GetTable() const = 0;
-	virtual RecvTable*& GetTable() = 0;
+	virtual RecvTable* GetDataTable() const = 0;
+	virtual RecvTable*& GetDataTable() = 0;
 	virtual ClientClass*& GetNext() = 0;
 	virtual int&		GetClassID() = 0;
 };
@@ -196,12 +196,12 @@ public:
 class PrototypeClientClass : public ClientClass
 {
 public:
-	PrototypeClientClass( const char* pDllClassName, const char *pNetworkName, const char *pRecvTableName, RecvTable* pRecvTable=NULL)
+	PrototypeClientClass( const char* pDllClassName, const char *pNetworkName, const char *pDataTableName, RecvTable* pRecvTable=NULL)
 	{
 		m_pDllClassName = pDllClassName;
 		m_pNetworkName	= pNetworkName;
-		m_pRecvTableName= pRecvTableName;
-		m_pRecvTable	= pRecvTable;
+		m_pDataTableName= pDataTableName;
+		m_pDataTable	= pRecvTable;
 		// Link it in
 		//m_pNext				= g_pClientClassHead;
 		//g_pClientClassHead	= this;
@@ -209,13 +209,13 @@ public:
 	}
 
 	void InitRefRecvTable(RecvTableManager* pRecvTableNanager) {
-		m_pRecvTable = pRecvTableNanager->FindRecvTable(m_pRecvTableName);
-		if (!m_pRecvTable) {
-			Error("not found RecvTable: %s\n", m_pRecvTableName);	// dedicated servers exit
+		m_pDataTable = pRecvTableNanager->FindRecvTable(m_pDataTableName);
+		if (!m_pDataTable) {
+			Error("not found RecvTable: %s\n", m_pDataTableName);	// dedicated servers exit
 		}
 	}
 
-	const char* GetName() const
+	const char* GetNetworkName() const
 	{
 		return m_pNetworkName;
 	}
@@ -225,12 +225,12 @@ public:
 		return m_pDllClassName;
 	}
 
-	virtual RecvTable* GetTable() const{
-		return m_pRecvTable;
+	virtual RecvTable* GetDataTable() const{
+		return m_pDataTable;
 	}
 
-	virtual RecvTable*& GetTable() {
-		return m_pRecvTable;
+	virtual RecvTable*& GetDataTable() {
+		return m_pDataTable;
 	}
 
 	virtual ClientClass*& GetNext() {
@@ -244,8 +244,8 @@ public:
 private:
 	const char*				m_pDllClassName;
 	const char				*m_pNetworkName;
-	const char*				m_pRecvTableName;
-	RecvTable				*m_pRecvTable = NULL;
+	const char*				m_pDataTableName;
+	RecvTable				*m_pDataTable = NULL;
 	ClientClass				*m_pNext = NULL;
 	int						m_ClassID = 0;	// Managed by the engine.
 };
@@ -253,12 +253,12 @@ private:
 class SingletonClientClass : public ClientClass
 {
 public:
-	SingletonClientClass(const char* pDllClassName, const char* pNetworkName, const char* pRecvTableName, RecvTable* pRecvTable = NULL)
+	SingletonClientClass(const char* pDllClassName, const char* pNetworkName, const char* pDataTableName, RecvTable* pRecvTable = NULL)
 	{
 		m_pDllClassName = pDllClassName;
 		m_pNetworkName = pNetworkName;
-		m_pRecvTableName = pRecvTableName;
-		m_pRecvTable = pRecvTable;
+		m_pDataTableName = pDataTableName;
+		m_pDataTable = pRecvTable;
 		// Link it in
 		//m_pNext				= g_pClientClassHead;
 		//g_pClientClassHead	= this;
@@ -266,13 +266,13 @@ public:
 	}
 
 	void InitRefRecvTable(RecvTableManager* pRecvTableNanager) {
-		m_pRecvTable = pRecvTableNanager->FindRecvTable(m_pRecvTableName);
-		if (!m_pRecvTable) {
-			Error("not found RecvTable: %s\n", m_pRecvTableName);	// dedicated servers exit
+		m_pDataTable = pRecvTableNanager->FindRecvTable(m_pDataTableName);
+		if (!m_pDataTable) {
+			Error("not found RecvTable: %s\n", m_pDataTableName);	// dedicated servers exit
 		}
 	}
 
-	const char* GetName() const
+	const char* GetNetworkName() const
 	{
 		return m_pNetworkName;
 	}
@@ -282,12 +282,12 @@ public:
 		return m_pDllClassName;
 	}
 
-	virtual RecvTable* GetTable() const {
-		return m_pRecvTable;
+	virtual RecvTable* GetDataTable() const {
+		return m_pDataTable;
 	}
 
-	virtual RecvTable*& GetTable() {
-		return m_pRecvTable;
+	virtual RecvTable*& GetDataTable() {
+		return m_pDataTable;
 	}
 
 	virtual ClientClass*& GetNext() {
@@ -301,8 +301,8 @@ public:
 private:
 	const char* m_pDllClassName;
 	const char* m_pNetworkName;
-	const char* m_pRecvTableName;
-	RecvTable* m_pRecvTable = NULL;
+	const char* m_pDataTableName;
+	RecvTable* m_pDataTable = NULL;
 	ClientClass* m_pNext = NULL;
 	int						m_ClassID = 0;	// Managed by the engine.
 };

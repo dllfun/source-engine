@@ -7249,7 +7249,7 @@ const char *GetClientClassname( SoundSource soundsource )
 			// check npc sounds 
 			if ( pClientClass )
 			{
-				return pClientClass->GetName();
+				return pClientClass->GetNetworkName();
 			}
 		}
 	}

@@ -434,7 +434,7 @@ bool CEntityReportPanel::DrawEntry( int row, int col, int rowheight, int colwidt
 		char	text[256];
 		wchar_t unicode[ 256 ];
 
-		Q_snprintf( text, sizeof(text), "(%i) %s", entityIdx, pClientClass->GetName() );
+		Q_snprintf( text, sizeof(text), "(%i) %s", entityIdx, pClientClass->GetNetworkName() );
 		
 		g_pVGuiLocalize->ConvertANSIToUnicode( text, unicode, sizeof( unicode ) );
 

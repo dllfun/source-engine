@@ -1707,7 +1707,7 @@ ClientClass* CBaseClientState::FindClientClass(const char *pClassName)
 
 	for(ClientClass *pCur=ClientDLL_GetAllClasses(); pCur; pCur=pCur->GetNext())
 	{
-		if( Q_stricmp(pCur->GetName(), pClassName) == 0)
+		if( Q_stricmp(pCur->GetNetworkName(), pClassName) == 0)
 			return pCur;
 	}
 
@@ -1743,7 +1743,7 @@ bool CBaseClientState::LinkClasses()
 			// It's ok if the client is missing a class that the server has. In that case,
 			// if the server actually tries to use it, the client will bomb out.
 			const char *pServerName = pServerClass->m_DatatableName;
-			const char *pClientName = pServerClass->m_pClientClass->GetTable()->GetName();
+			const char *pClientName = pServerClass->m_pClientClass->GetDataTable()->GetName();
 
 			if ( Q_stricmp( pServerName, pClientName ) != 0 )
 			{

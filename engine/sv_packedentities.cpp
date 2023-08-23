@@ -138,7 +138,7 @@ static inline void SV_PackEntity(
 	ALIGN4 char packedData[MAX_PACKEDENTITY_DATA] ALIGN4_POST;
 	bf_write writeBuf( "SV_PackEntity->writeBuf", packedData, sizeof( packedData ) );
 
-	SendTable *pSendTable = pServerClass->GetTable();
+	SendTable *pSendTable = pServerClass->GetDataTable();
 	
 	// (avoid constructor overhead).
 	unsigned char tempData[ sizeof( CSendProxyRecipients ) * MAX_DATATABLE_PROXIES ];
@@ -339,7 +339,7 @@ SendTable* GetEntSendTable(edict_t *pEdict)
 		ServerClass *pClass = pEdict->GetNetworkable()->GetServerClass();
 		if ( pClass )
 		{
-			return pClass->GetTable();
+			return pClass->GetDataTable();
 		}
 	}
 
@@ -377,7 +377,7 @@ void PackEntities_NetworkBackDoor(
 		Assert( index < snapshot->m_nNumEntities );
 		ServerClass *pSVClass = snapshot->m_pEntities[ index ].m_pClass;
 		g_pLocalNetworkBackdoor->EntState( index, edict->GetNetworkSerialNumber(),
-			pSVClass->GetClassID(), pSVClass->GetTable(), edict->GetUnknown(), edict->HasStateChanged(), bShouldTransmit);
+			pSVClass->GetClassID(), pSVClass->GetDataTable(), edict->GetUnknown(), edict->HasStateChanged(), bShouldTransmit);
 		edict->ClearStateChanged();
 	}
 	
@@ -598,20 +598,20 @@ void SV_WriteSendTables( ServerClass *pClasses, bf_write &pBuf )
 	// on the client.
 	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->GetTable()) {
+		if (!pCur->GetDataTable()) {
 			continue;
 		}
-		SV_MaybeWriteSendTable( pCur->GetTable(), pBuf, true);
+		SV_MaybeWriteSendTable( pCur->GetDataTable(), pBuf, true);
 	}
 
 	// Now, we send their base classes. These don't need decoders on the client
 	// because we will never send these SendTables by themselves.
 	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->GetTable()) {
+		if (!pCur->GetDataTable()) {
 			continue;
 		}
-		SV_MaybeWriteSendTable_R( pCur->GetTable(), pBuf);
+		SV_MaybeWriteSendTable_R( pCur->GetDataTable(), pBuf);
 	}
 }
 
@@ -625,11 +625,11 @@ void SV_ComputeClassInfosCRC( CRC32_t* crc )
 
 	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->GetNext() )
 	{
-		if (!pClass->GetTable()) {
+		if (!pClass->GetDataTable()) {
 			continue;
 		}
-		CRC32_ProcessBuffer( crc, (void *)pClass->GetName(), Q_strlen(pClass->GetName()));
-		CRC32_ProcessBuffer( crc, (void *)pClass->GetTable()->GetName(), Q_strlen(pClass->GetTable()->GetName()));
+		CRC32_ProcessBuffer( crc, (void *)pClass->GetNetworkName(), Q_strlen(pClass->GetNetworkName()));
+		CRC32_ProcessBuffer( crc, (void *)pClass->GetDataTable()->GetName(), Q_strlen(pClass->GetDataTable()->GetName()));
 	}
 }
 
@@ -641,7 +641,7 @@ void CGameServer::AssignClassIds()
 	int nClasses = 0;
 	for ( ServerClass *pCount=pClasses; pCount; pCount=pCount->GetNext() )
 	{
-		if (!pCount->GetTable()) {
+		if (!pCount->GetDataTable()) {
 			continue;
 		}
 		++nClasses;
@@ -660,14 +660,14 @@ void CGameServer::AssignClassIds()
 	int curID = 0;
 	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->GetNext() )
 	{
-		if (!pClass->GetTable()) {
+		if (!pClass->GetDataTable()) {
 			continue;
 		}
 		pClass->GetClassID() = curID++;
 
 		if ( bSpew )
 		{
-			Msg( "%d == '%s'\n", pClass->GetClassID(), pClass->GetName());
+			Msg( "%d == '%s'\n", pClass->GetClassID(), pClass->GetNetworkName());
 		}
 	}
 }
@@ -686,8 +686,8 @@ void SV_WriteClassInfos(ServerClass *pClasses, bf_write &pBuf)
 		SVC_ClassInfo::class_t svclass;
 
 		svclass.classID = pClass->GetClassID();
-		Q_strncpy( svclass.datatablename, pClass->GetTable()->GetName(), sizeof(svclass.datatablename));
-		Q_strncpy( svclass.classname, pClass->GetName(), sizeof(svclass.classname));
+		Q_strncpy( svclass.datatablename, pClass->GetDataTable()->GetName(), sizeof(svclass.datatablename));
+		Q_strncpy( svclass.classname, pClass->GetNetworkName(), sizeof(svclass.classname));
 				
 		classinfomsg.m_Classes.AddToTail( svclass );  // add all known classes to message
 	}

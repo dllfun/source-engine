@@ -147,7 +147,7 @@ CFrameSnapshot* CFrameSnapshotManager::TakeTickSnapshot( int tickcount )
 		Assert( edict->GetNetworkable()->GetServerClass() );
 
 		ServerClass* serverClass = EDICT_NUM(edict)->GetNetworkable()->GetServerClass();
-		if (serverClass == NULL|| serverClass->GetTable() == NULL) {
+		if (serverClass == NULL|| serverClass->GetDataTable() == NULL) {
 			continue;
 		}
 		entry->m_nSerialNumber	= EDICT_NUM(edict)->GetNetworkSerialNumber();

@@ -116,6 +116,6 @@ void PackedEntity::SetServerAndClientClass( ServerClass *pServerClass, ClientCla
 	if ( pServerClass )
 	{
 		Assert( pServerClass->m_pTable );
-		SetShouldCheckCreationTick( pServerClass->GetTable()->HasPropsEncodedAgainstTickCount());
+		SetShouldCheckCreationTick( pServerClass->GetDataTable()->HasPropsEncodedAgainstTickCount());
 	}
 }

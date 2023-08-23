@@ -395,7 +395,7 @@ void CGameServer::Clear( void )
 	{
 		for( ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->GetNext() )
 		{
-			if (!pCur->GetTable()) {
+			if (!pCur->GetDataTable()) {
 				continue;
 			}
 			pCur->GetInstanceBaselineIndex() = INVALID_STRING_INDEX;
@@ -774,10 +774,10 @@ int SV_BuildSendTablesArray( ServerClass *pClasses, SendTable **pTables, int nMa
         for( ServerClass *pCur=pClasses; pCur; pCur=pCur->GetNext() )
         {
                 ErrorIfNot( nTables < nMaxTables, ("SV_BuildSendTablesArray: too many SendTables!") );
-				if (!pCur->GetTable()) {
+				if (!pCur->GetDataTable()) {
 					continue;
 				}
-                pTables[nTables] = pCur->GetTable();
+                pTables[nTables] = pCur->GetDataTable();
                 ++nTables;
         }
 
@@ -1008,7 +1008,7 @@ ServerClass* SV_FindServerClass( const char *pName )
 	ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 	while ( pCur )
 	{
-		if ( Q_stricmp( pCur->GetName(), pName ) == 0 )
+		if ( Q_stricmp( pCur->GetNetworkName(), pName ) == 0 )
 			return pCur;
 
 		pCur = pCur->GetNext();
@@ -2100,7 +2100,7 @@ void SV_CreateBaseline (void)
 			if ( pClass->GetInstanceBaselineIndex() != INVALID_STRING_INDEX )
 				continue; // we already have a baseline for this class
 
-			SendTable *pSendTable = pClass->GetTable();
+			SendTable *pSendTable = pClass->GetDataTable();
 
 			if (!pSendTable) {
 				continue;
