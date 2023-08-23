@@ -3604,7 +3604,7 @@ void CBaseEntity::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 		int aaa = 0;
 		return;
 	}
-	if (serverClass->m_pTable == NULL) {
+	if (serverClass->GetTable() == NULL) {
 		return;
 	}
 	if (index == 332) {

@@ -393,12 +393,12 @@ void CGameServer::Clear( void )
 	// Clear the instance baseline indices in the ServerClasses.
 	if ( serverGameDLL )
 	{
-		for( ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->m_pNext )
+		for( ServerClass *pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->GetNext() )
 		{
-			if (!pCur->m_pTable) {
+			if (!pCur->GetTable()) {
 				continue;
 			}
-			pCur->m_InstanceBaselineIndex = INVALID_STRING_INDEX;
+			pCur->GetInstanceBaselineIndex() = INVALID_STRING_INDEX;
 		}
 	}
 
@@ -771,13 +771,13 @@ int SV_BuildSendTablesArray( ServerClass *pClasses, SendTable **pTables, int nMa
 {
         int nTables = 0;
 
-        for( ServerClass *pCur=pClasses; pCur; pCur=pCur->m_pNext )
+        for( ServerClass *pCur=pClasses; pCur; pCur=pCur->GetNext() )
         {
                 ErrorIfNot( nTables < nMaxTables, ("SV_BuildSendTablesArray: too many SendTables!") );
-				if (!pCur->m_pTable) {
+				if (!pCur->GetTable()) {
 					continue;
 				}
-                pTables[nTables] = pCur->m_pTable;
+                pTables[nTables] = pCur->GetTable();
                 ++nTables;
         }
 
@@ -1011,7 +1011,7 @@ ServerClass* SV_FindServerClass( const char *pName )
 		if ( Q_stricmp( pCur->GetName(), pName ) == 0 )
 			return pCur;
 
-		pCur = pCur->m_pNext;
+		pCur = pCur->GetNext();
 	}
 	
 	return NULL;
@@ -1025,7 +1025,7 @@ ServerClass* SV_FindServerClass( int index )
 	while ( (count < index) && (pCur != NULL) )
 	{
 		count++;
-		pCur = pCur->m_pNext;
+		pCur = pCur->GetNext();
 	}
 
 	return pCur;
@@ -2097,10 +2097,10 @@ void SV_CreateBaseline (void)
 				continue;	// no Class ?
 			}
 
-			if ( pClass->m_InstanceBaselineIndex != INVALID_STRING_INDEX )
+			if ( pClass->GetInstanceBaselineIndex() != INVALID_STRING_INDEX )
 				continue; // we already have a baseline for this class
 
-			SendTable *pSendTable = pClass->m_pTable;
+			SendTable *pSendTable = pClass->GetTable();
 
 			if (!pSendTable) {
 				continue;

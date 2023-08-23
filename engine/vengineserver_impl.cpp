@@ -1178,7 +1178,7 @@ public:
 		s_MsgData.currentMsg = &s_MsgData.entityMsg;
 		
 		s_MsgData.entityMsg.m_nEntityIndex = ent_index;
-		s_MsgData.entityMsg.m_nClassID = ent_class->m_ClassID;
+		s_MsgData.entityMsg.m_nClassID = ent_class->GetClassID();
 		s_MsgData.entityMsg.m_DataOut.Reset();	
 				
 		return &s_MsgData.entityMsg.m_DataOut;

@@ -183,17 +183,17 @@ void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
 	if (!m_pServerClassHead)
 	{
 		m_pServerClassHead = pServerClass;
-		pServerClass->m_pNext = NULL;
+		pServerClass->GetNext() = NULL;
 	}
 	else
 	{
 		ServerClass* p1 = m_pServerClassHead;
-		ServerClass* p2 = p1->m_pNext;
+		ServerClass* p2 = p1->GetNext();
 
 		// use _stricmp because Q_stricmp isn't hooked up properly yet
 		if (_stricmp(p1->GetName(), pServerClass->GetName()) > 0)
 		{
-			pServerClass->m_pNext = m_pServerClassHead;
+			pServerClass->GetNext() = m_pServerClassHead;
 			m_pServerClassHead = pServerClass;
 			p1 = NULL;
 		}
@@ -202,12 +202,12 @@ void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
 		{
 			if (p2 == NULL || _stricmp(p2->GetName(), pServerClass->GetName()) > 0)
 			{
-				pServerClass->m_pNext = p2;
-				p1->m_pNext = pServerClass;
+				pServerClass->GetNext() = p2;
+				p1->GetNext() = pServerClass;
 				break;
 			}
 			p1 = p2;
-			p2 = p2->m_pNext;
+			p2 = p2->GetNext();
 		}
 	}
 }

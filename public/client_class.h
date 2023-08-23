@@ -181,10 +181,22 @@ typedef IClientNetworkable*	(*CreateEventFn)();
 //-----------------------------------------------------------------------------
 // Purpose: Client side class definition
 //-----------------------------------------------------------------------------
-class ClientClass
+
+class ClientClass {
+public:
+	virtual void InitRefRecvTable(RecvTableManager* pRecvTableNanager) = 0;
+	virtual const char* GetName() const = 0;
+	virtual const char* GetClassName() const = 0;
+	virtual RecvTable* GetTable() const = 0;
+	virtual RecvTable*& GetTable() = 0;
+	virtual ClientClass*& GetNext() = 0;
+	virtual int&		GetClassID() = 0;
+};
+
+class PrototypeClientClass : public ClientClass
 {
 public:
-	ClientClass( const char* pDllClassName, const char *pNetworkName, const char *pRecvTableName, RecvTable* pRecvTable=NULL)
+	PrototypeClientClass( const char* pDllClassName, const char *pNetworkName, const char *pRecvTableName, RecvTable* pRecvTable=NULL)
 	{
 		m_pDllClassName = pDllClassName;
 		m_pNetworkName	= pNetworkName;
@@ -203,7 +215,7 @@ public:
 		}
 	}
 
-	const char* GetName()
+	const char* GetName() const
 	{
 		return m_pNetworkName;
 	}
@@ -213,12 +225,85 @@ public:
 		return m_pDllClassName;
 	}
 
-public:
+	virtual RecvTable* GetTable() const{
+		return m_pRecvTable;
+	}
+
+	virtual RecvTable*& GetTable() {
+		return m_pRecvTable;
+	}
+
+	virtual ClientClass*& GetNext() {
+		return m_pNext;
+	}
+
+	virtual int&		GetClassID() {
+		return m_ClassID;
+	}
+
+private:
 	const char*				m_pDllClassName;
 	const char				*m_pNetworkName;
 	const char*				m_pRecvTableName;
-	RecvTable				*m_pRecvTable;
-	ClientClass				*m_pNext;
+	RecvTable				*m_pRecvTable = NULL;
+	ClientClass				*m_pNext = NULL;
+	int						m_ClassID = 0;	// Managed by the engine.
+};
+
+class SingletonClientClass : public ClientClass
+{
+public:
+	SingletonClientClass(const char* pDllClassName, const char* pNetworkName, const char* pRecvTableName, RecvTable* pRecvTable = NULL)
+	{
+		m_pDllClassName = pDllClassName;
+		m_pNetworkName = pNetworkName;
+		m_pRecvTableName = pRecvTableName;
+		m_pRecvTable = pRecvTable;
+		// Link it in
+		//m_pNext				= g_pClientClassHead;
+		//g_pClientClassHead	= this;
+		g_pClientClassManager->RegisteClientClass(this);
+	}
+
+	void InitRefRecvTable(RecvTableManager* pRecvTableNanager) {
+		m_pRecvTable = pRecvTableNanager->FindRecvTable(m_pRecvTableName);
+		if (!m_pRecvTable) {
+			Error("not found RecvTable: %s\n", m_pRecvTableName);	// dedicated servers exit
+		}
+	}
+
+	const char* GetName() const
+	{
+		return m_pNetworkName;
+	}
+
+	const char* GetClassName() const
+	{
+		return m_pDllClassName;
+	}
+
+	virtual RecvTable* GetTable() const {
+		return m_pRecvTable;
+	}
+
+	virtual RecvTable*& GetTable() {
+		return m_pRecvTable;
+	}
+
+	virtual ClientClass*& GetNext() {
+		return m_pNext;
+	}
+
+	virtual int& GetClassID() {
+		return m_ClassID;
+	}
+
+private:
+	const char* m_pDllClassName;
+	const char* m_pNetworkName;
+	const char* m_pRecvTableName;
+	RecvTable* m_pRecvTable = NULL;
+	ClientClass* m_pNext = NULL;
 	int						m_ClassID = 0;	// Managed by the engine.
 };
 
@@ -240,8 +325,12 @@ public:
 // Use this macro to expose your client class to the engine.
 // networkName must match the network name of a class registered on the server.
 #define IMPLEMENT_CLIENTCLASS(clientClassName, dataTable, serverClassName) \
-	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
-	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, #dataTable);\
+	static PrototypeClientClass __g_##clientClassName##_ClassReg(\
+		#clientClassName, \
+		#serverClassName, \
+		#dataTable);\
+	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##_ClassReg;}\
+	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
 	static clientClassName g_##clientClassName##_EntityReg;											\
 	static CClientEntityFactory<clientClassName> __g_##clientClassName##Factory(#clientClassName );
 
@@ -268,8 +357,12 @@ public:
 // Using IMPLEMENT_CLIENTCLASS_EVENT means the engine thinks the entity is an event so the entity
 // is responsible for freeing itself.
 #define IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\
-	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName)\
-	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, #dataTable);\
+	static SingletonClientClass __g_##clientClassName##_ClassReg(\
+		#clientClassName, \
+		#serverClassName, \
+		#dataTable);\
+	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##_ClassReg;}\
+	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
 	static clientClassName g_##clientClassName##_EntityReg;										\
 	static CClientEntitySingletonFactory<clientClassName> __g_##clientClassName##SingletonFactory(#clientClassName );
 
@@ -307,9 +400,8 @@ public:
 
 // Used internally..
 #define INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
-	extern ClientClass __g_##clientClassName##ClientClass;\
-	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
-	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##ClientClass;}
+	extern PrototypeClientClass __g_##clientClassName##ClientClass;\
+	
 
 // On the client .dll this creates a mapping between a classname and
 //  a client side class.  Probably could be templatized at some point.

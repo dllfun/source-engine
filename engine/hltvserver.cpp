@@ -320,10 +320,10 @@ void CHLTVServer::InitClientRecvTables()
 		return; //already initialized
 
 	// first create all SendTables
-	for ( pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->m_pNext )
+	for ( pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->GetNext() )
 	{
 		// create receive table from send table.
-		AddRecvTableR( pCur->m_pTable, m_pRecvTables, m_nRecvTables );
+		AddRecvTableR( pCur->GetTable(), m_pRecvTables, m_nRecvTables);
 
 		ErrorIfNot( 
 			m_nRecvTables < ARRAYSIZE( m_pRecvTables ), 
@@ -332,7 +332,7 @@ void CHLTVServer::InitClientRecvTables()
 	}
 
 	// now register client classes 
-	for ( pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->m_pNext )
+	for ( pCur = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pCur; pCur=pCur->GetNext() )
 	{
 		ErrorIfNot( 
 			m_nRecvTables < ARRAYSIZE( m_pRecvTables ), 
@@ -340,16 +340,16 @@ void CHLTVServer::InitClientRecvTables()
 			);
 
 		// find top receive table for class
-		RecvTable * recvt = FindRecvTable( pCur->m_pTable->GetName(), m_pRecvTables, m_nRecvTables );
+		RecvTable * recvt = FindRecvTable( pCur->GetTable()->GetName(), m_pRecvTables, m_nRecvTables);
 
 		Assert ( recvt );
 		
 		// register class, constructor addes clientClass to g_pClientClassHead list
-		ClientClass * clientclass = new ClientClass("", pCur->m_pNetworkName, recvt->GetName(), recvt);//NULL, NULL,
+		PrototypeClientClass* clientclass = new PrototypeClientClass("", pCur->GetName(), recvt->GetName(), recvt);//NULL, NULL,
 
 		if ( !clientclass	)
 		{
-			Msg("HLTV_InitRecvTableMgr: failed to allocate client class %s.\n", pCur->m_pNetworkName );
+			Msg("HLTV_InitRecvTableMgr: failed to allocate client class %s.\n", pCur->GetName() );
 			return;
 		}
 	}
@@ -1113,21 +1113,21 @@ void CHLTVServer::LinkInstanceBaselines( void )
 	Assert( m_pInstanceBaselineTable );
 		
 	// update all found server classes 
-	for ( ServerClass *pClass = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pClass; pClass=pClass->m_pNext )
+	for ( ServerClass *pClass = serverGameDLL->GetServerClassManager()->GetServerClassHead(); pClass; pClass=pClass->GetNext() )
 	{
 		char idString[32];
-		Q_snprintf( idString, sizeof( idString ), "%d", pClass->m_ClassID );
+		Q_snprintf( idString, sizeof( idString ), "%d", pClass->GetClassID() );
 
 		// Ok, make a new instance baseline so they can reference it.
 		int index  = m_pInstanceBaselineTable->FindStringIndex( idString );
 			
 		if ( index != -1 )
 		{
-			pClass->m_InstanceBaselineIndex = index;
+			pClass->GetInstanceBaselineIndex() = index;
 		}
 		else
 		{
-			pClass->m_InstanceBaselineIndex = INVALID_STRING_INDEX;
+			pClass->GetInstanceBaselineIndex() = INVALID_STRING_INDEX;
 		}
 	}
 }

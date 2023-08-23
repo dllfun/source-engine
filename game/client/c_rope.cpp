@@ -2045,7 +2045,7 @@ void C_RopeKeyframe::CalcLightValues()
 //------------------------------------------------------------------------------
 void C_RopeKeyframe::ReceiveMessage( int classID, bf_read &msg )
 {
-	if ( classID != GetClientClass()->m_ClassID )
+	if ( classID != GetClientClass()->GetClassID() )
 	{
 		// message is for subclass
 		BaseClass::ReceiveMessage( classID, msg );

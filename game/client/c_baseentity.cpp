@@ -1937,7 +1937,7 @@ int C_BaseEntity::DrawModel(IVModel* pWorld, int flags )
 	case mod_studio:
 		// All studio models must be derived from C_BaseAnimating.  Issue warning.
 		Warning( "ERROR:  Can't draw studio model %s because %s is not derived from C_BaseAnimating\n",
-			GetModel()->GetModelName(), GetClientClass()->m_pNetworkName ? GetClientClass()->m_pNetworkName : "unknown");//model
+			GetModel()->GetModelName(), GetClientClass()->GetName() ? GetClientClass()->GetName() : "unknown");//model
 		break;
 	case mod_sprite:
 		//drawn = DrawSprite();

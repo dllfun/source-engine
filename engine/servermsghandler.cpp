@@ -963,13 +963,13 @@ bool CClientState::ProcessTempEntities( SVC_TempEntities *msg )
 			// See if the client .dll has a handler for this class
 			//pClientClass = FindClientClass( pServerClass->m_ClassName );
 		
-			if ( !pClientClass || !pClientClass->m_pRecvTable )
+			if ( !pClientClass || !pClientClass->GetTable() )
 			{
 				DevMsg("CL_QueueEvent: missing client receive table for %s.\n", pServerClass->m_ClassName );
 				return false;
 			}
 
-			RecvTable_MergeDeltas( pClientClass->m_pRecvTable, NULL, &buffer, &toBuf );
+			RecvTable_MergeDeltas( pClientClass->GetTable(), NULL, &buffer, &toBuf);
 		}
 		else
 		{
@@ -978,7 +978,7 @@ bool CClientState::ProcessTempEntities( SVC_TempEntities *msg )
 			unsigned int buffer_size = PAD_NUMBER( Bits2Bytes( ei->bits ), 4 );
 			bf_read fromBuf( ei->pData, buffer_size );
 		
-			RecvTable_MergeDeltas( pClientClass->m_pRecvTable, &fromBuf, &buffer, &toBuf );
+			RecvTable_MergeDeltas( pClientClass->GetTable(), &fromBuf, &buffer, &toBuf);
 		}
 
 		// Add a slot

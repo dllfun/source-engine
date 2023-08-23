@@ -133,10 +133,22 @@ private:
 //extern ServerClass *g_pServerClassHead;
 extern ServerClassManager* g_pServerClassManager;
 
-class ServerClass
+class ServerClass {
+
+public:
+	virtual void InitRefSendTable(SendTableManager* pSendTableNanager) = 0;
+	virtual const char* GetName() = 0;
+	virtual int& GetClassID() = 0;
+	virtual int& GetInstanceBaselineIndex() = 0;
+	virtual SendTable*& GetTable() = 0;
+	virtual ServerClass*& GetNext() = 0;
+
+};
+
+class PrototypeServerClass : public ServerClass
 {
 public:
-				ServerClass( const char *pNetworkName, const char* pTableName )
+				PrototypeServerClass( const char *pNetworkName, const char* pTableName )
 				{
 					if (!pTableName || !pTableName[0]) {
 						Error("pTableName can not been NULL: %s\n", pNetworkName);
@@ -158,13 +170,19 @@ public:
 
 	const char*	GetName()		{ return m_pNetworkName; }
 
+	virtual int& GetClassID() { return m_ClassID; }
 
-public:
+	virtual int& GetInstanceBaselineIndex() { return m_InstanceBaselineIndex; }
+
+	virtual SendTable*& GetTable() { return m_pTable; };
+
+	virtual ServerClass*& GetNext() { return m_pNext; };
+private:
 	const char					*m_pNetworkName;
 	const char*					m_pTableName;
-	SendTable					*m_pTable;
-	ServerClass					*m_pNext;
-	int							m_ClassID;	// Managed by the engine.
+	SendTable					*m_pTable = NULL;
+	ServerClass					*m_pNext = NULL;
+	int							m_ClassID = 0;	// Managed by the engine.
 
 	// This is an index into the network string table (sv.GetInstanceBaselineTable()).
 	int							m_InstanceBaselineIndex; // INVALID_STRING_INDEX if not initialized yet.
@@ -231,7 +249,7 @@ class CBaseNetworkable;
 
 #define IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable ) \
 	CHECK_DECLARE_CLASS( DLLClassName, sendTable ) \
-	static ServerClass g_##DLLClassName##_ClassReg(\
+	static PrototypeServerClass g_##DLLClassName##_ClassReg(\
 		#DLLClassName, \
 		#sendTable\
 	); \

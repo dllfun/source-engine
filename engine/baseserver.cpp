@@ -1334,7 +1334,7 @@ const char *CBaseServer::CompressPackedEntity(ServerClass *pServerClass, const c
 	Assert( pBaselineData != NULL );
 
 	SendTable_WriteAllDeltaProps(
-		pServerClass->m_pTable,
+		pServerClass->GetTable(),
 		pBaselineData,
 		nBaselineBits,
 		data,
@@ -1377,7 +1377,7 @@ const char* CBaseServer::UncompressPackedEntity(PackedEntity *pPackedEntity, int
 	Assert( pPackedEntity->m_pClientClass );
 
 	RecvTable_MergeDeltas( 
-		pPackedEntity->m_pClientClass->m_pRecvTable,
+		pPackedEntity->m_pClientClass->GetTable(),
 		&oldBuf,
 		&newBuf,
 		&outBuf );
@@ -1742,13 +1742,13 @@ bool CBaseServer::GetClassBaseline( ServerClass *pClass, void const **pData, int
 {
 	if ( sv_instancebaselines.GetInt() )
 	{
-		ErrorIfNot( pClass->m_InstanceBaselineIndex != INVALID_STRING_INDEX,
-			("SV_GetInstanceBaseline: missing instance baseline for class '%s'", pClass->m_pNetworkName)
+		ErrorIfNot( pClass->GetInstanceBaselineIndex() != INVALID_STRING_INDEX,
+			("SV_GetInstanceBaseline: missing instance baseline for class '%s'", pClass->GetName())
 		);
 		
 		AUTO_LOCK( g_svInstanceBaselineMutex );
 		*pData = GetInstanceBaselineTable()->GetStringUserData(
-			pClass->m_InstanceBaselineIndex,
+			pClass->GetInstanceBaselineIndex(),
 			pDatalen );
 		
 		return *pData != NULL;

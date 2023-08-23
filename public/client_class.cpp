@@ -187,17 +187,17 @@ void	ClientClassManager::RegisteClientClass(ClientClass* pClientClass) {
 	if (!m_pClientClassHead)
 	{
 		m_pClientClassHead = pClientClass;
-		pClientClass->m_pNext = NULL;
+		pClientClass->GetNext() = NULL;
 	}
 	else
 	{
 		ClientClass* p1 = m_pClientClassHead;
-		ClientClass* p2 = p1->m_pNext;
+		ClientClass* p2 = p1->GetNext();
 
 		// use _stricmp because Q_stricmp isn't hooked up properly yet
 		if (_stricmp(p1->GetName(), pClientClass->GetName()) > 0)
 		{
-			pClientClass->m_pNext = m_pClientClassHead;
+			pClientClass->GetNext() = m_pClientClassHead;
 			m_pClientClassHead = pClientClass;
 			p1 = NULL;
 		}
@@ -206,12 +206,12 @@ void	ClientClassManager::RegisteClientClass(ClientClass* pClientClass) {
 		{
 			if (p2 == NULL || _stricmp(p2->GetName(), pClientClass->GetName()) > 0)
 			{
-				pClientClass->m_pNext = p2;
-				p1->m_pNext = pClientClass;
+				pClientClass->GetNext() = p2;
+				p1->GetNext() = pClientClass;
 				break;
 			}
 			p1 = p2;
-			p2 = p2->m_pNext;
+			p2 = p2->GetNext();
 		}
 	}
 }

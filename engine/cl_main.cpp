@@ -2289,7 +2289,7 @@ CON_COMMAND_F( cl_showents, "Dump entity list to console.", FCVAR_CHEAT )
 		if((pEnt = entitylist->GetClientNetworkable(i)) != NULL)
 		{
 			entStr[0] = 0;
-			Q_snprintf(classStr, sizeof( classStr ), "'%s'", pEnt->GetClientClass()->m_pNetworkName);
+			Q_snprintf(classStr, sizeof( classStr ), "'%s'", pEnt->GetClientClass()->GetName());
 		}
 		else
 		{

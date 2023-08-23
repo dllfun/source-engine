@@ -229,7 +229,7 @@ IMPLEMENT_CLIENTCLASS( C_EnvScreenEffect, DT_EnvScreenEffect, CEnvScreenEffect )
 void C_EnvScreenEffect::ReceiveMessage( int classID, bf_read &msg )
 {
 	// Make sure our IDs match
-	if ( classID != GetClientClass()->m_ClassID )
+	if ( classID != GetClientClass()->GetClassID() )
 	{
 		// Message is for subclass
 		BaseClass::ReceiveMessage( classID, msg );

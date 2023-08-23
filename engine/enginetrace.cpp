@@ -1317,7 +1317,7 @@ void CEngineTraceClient::HandleEntityToCollideable( IHandleEntity *pHandleEntity
 	{
 		if (pNetwork->GetClientClass())
 		{
-			*ppDebugName = pNetwork->GetClientClass()->m_pNetworkName;
+			*ppDebugName = pNetwork->GetClientClass()->GetName();
 		}
 	}
 }

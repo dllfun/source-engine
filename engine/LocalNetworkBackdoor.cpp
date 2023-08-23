@@ -60,9 +60,9 @@ void CLocalNetworkBackdoor::InitFastCopy()
 			Error( "InitFastCopy - missing server class %s", pClientClass->GetName() );
 
 		LocalTransfer_InitFastCopy(
-			pServerClass->m_pTable,
+			pServerClass->GetTable(),
 			pSendProxies,
-			pClientClass->m_pRecvTable,
+			pClientClass->GetTable(),
 			pRecvProxies,
 			nSlowCopyProps,
 			nFastCopyProps
@@ -354,7 +354,7 @@ void CLocalNetworkBackdoor::EntState(
 			EDICT_NUM(iEnt),
 			pSendTable, 
 			pSourceEnt, 
-			pClientClass->m_pRecvTable, 
+			pClientClass->GetTable(),
 			pCached->m_pDataPointer, 
 			bCreated, 
 			bExistedAndWasDormant,

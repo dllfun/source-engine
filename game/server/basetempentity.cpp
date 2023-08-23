@@ -122,5 +122,5 @@ void CBaseTempEntity::Create( IRecipientFilter& filter, float delay )
 	Assert( delay >= -1 && delay <= 1); // 1 second max delay
 
 	engineServer->PlaybackTempEntity( filter, delay,
-		(void *)this, GetServerClass()->m_pTable, GetServerClass()->m_ClassID );
+		(void *)this, GetServerClass()->GetTable(), GetServerClass()->GetClassID());
 }

@@ -157,7 +157,7 @@ IClientNetworkable* CL_CreateDLLEntity( int iEnt, int iClass, int iSerialNum )
 
 		if ( !cl.IsActive() )
 		{
-			COM_TimestampedLog( "cl:  create '%s'", pClientClass->m_pNetworkName );
+			COM_TimestampedLog( "cl:  create '%s'", pClientClass->GetName() );
 		}
 
 		// Create the entity.
@@ -245,7 +245,7 @@ static inline RecvTable* GetEntRecvTable( int entnum )
 {
 	IClientNetworkable *pNet = entitylist->GetClientNetworkable( entnum );
 	if ( pNet )
-		return pNet->GetClientClass()->m_pRecvTable;
+		return pNet->GetClientClass()->GetTable();
 	else
 		return NULL;
 }
@@ -334,7 +334,7 @@ void CL_CopyNewEntity(
 		ent = CL_CreateDLLEntity( u.m_nNewEntity, iClass, iSerialNum );
 		if( !ent )
 		{
-			const char *pNetworkName = cl.m_pServerClasses[iClass].m_pClientClass ? cl.m_pServerClasses[iClass].m_pClientClass->m_pNetworkName : "";
+			const char *pNetworkName = cl.m_pServerClasses[iClass].m_pClientClass ? cl.m_pServerClasses[iClass].m_pClientClass->GetName() : "";
 			g_pHost->Host_Error( "CL_ParsePacketEntities:  Error creating entity %s(%i)\n", pNetworkName, u.m_nNewEntity );
 			return;
 		}

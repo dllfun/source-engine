@@ -113,13 +113,13 @@ void CL_FireEvents( void )
 
 				// Decode data into client event object
 				unsigned int buffer_size = PAD_NUMBER( Bits2Bytes( ei->bits ), 4 );
-				CL_ParseEventDelta( ei->pData, pCE->GetDataTableBasePtr(), ei->pClientClass->m_pRecvTable, buffer_size );
+				CL_ParseEventDelta( ei->pData, pCE->GetDataTableBasePtr(), ei->pClientClass->GetTable(), buffer_size);
 
 				// Fire the event!!!
 				pCE->PostDataUpdate( DATA_UPDATE_CREATED );
 
 				// Spew to debug area if needed
-				CL_DescribeEvent( i, ei, ei->pClientClass->m_pNetworkName );
+				CL_DescribeEvent( i, ei, ei->pClientClass->GetName() );
 
 				success = true;
 			}

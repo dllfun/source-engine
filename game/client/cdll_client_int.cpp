@@ -1344,7 +1344,7 @@ ClientClassManager* CHLClient::GetClientClassManager( void )
 	{
 		pCur->InitRefRecvTable(g_pRecvTableManager);
 	}
-	for (ClientClass* pCur = g_pClientClassManager->GetClientClassHead(); pCur; pCur = pCur->m_pNext)
+	for (ClientClass* pCur = g_pClientClassManager->GetClientClassHead(); pCur; pCur = pCur->GetNext())
 	{
 		pCur->InitRefRecvTable(g_pRecvTableManager);
 	}

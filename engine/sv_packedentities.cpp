@@ -69,15 +69,15 @@ void SV_EnsureInstanceBaseline( ServerClass *pServerClass, int iEdict, const voi
 	ServerClass *pClass = pEnt->GetNetworkable()->GetServerClass();
 
 	// See if we already have a baseline for this class.
-	if ( pClass->m_InstanceBaselineIndex == INVALID_STRING_INDEX )
+	if ( pClass->GetInstanceBaselineIndex() == INVALID_STRING_INDEX)
 	{
 		AUTO_LOCK( g_svInstanceBaselineMutex );
 
 		// We need this second check in case multiple instances of the same class have grabbed the lock.
-		if ( pClass->m_InstanceBaselineIndex == INVALID_STRING_INDEX )
+		if ( pClass->GetInstanceBaselineIndex() == INVALID_STRING_INDEX)
 		{
 			char idString[32];
-			Q_snprintf( idString, sizeof( idString ), "%d", pClass->m_ClassID );
+			Q_snprintf( idString, sizeof( idString ), "%d", pClass->GetClassID() );
 
 			// Ok, make a new instance baseline so they can reference it.
 			int temp = sv.GetInstanceBaselineTable()->AddString( 
@@ -94,7 +94,7 @@ void SV_EnsureInstanceBaseline( ServerClass *pServerClass, int iEdict, const voi
 			// http://en.wikipedia.org/wiki/Double-checked_locking
 			// Write-release barrier
 			ThreadMemoryBarrier();
-			pClass->m_InstanceBaselineIndex = temp;
+			pClass->GetInstanceBaselineIndex() = temp;
 			Assert( pClass->m_InstanceBaselineIndex != INVALID_STRING_INDEX );
 		}
 	}
@@ -138,7 +138,7 @@ static inline void SV_PackEntity(
 	ALIGN4 char packedData[MAX_PACKEDENTITY_DATA] ALIGN4_POST;
 	bf_write writeBuf( "SV_PackEntity->writeBuf", packedData, sizeof( packedData ) );
 
-	SendTable *pSendTable = pServerClass->m_pTable;
+	SendTable *pSendTable = pServerClass->GetTable();
 	
 	// (avoid constructor overhead).
 	unsigned char tempData[ sizeof( CSendProxyRecipients ) * MAX_DATATABLE_PROXIES ];
@@ -339,7 +339,7 @@ SendTable* GetEntSendTable(edict_t *pEdict)
 		ServerClass *pClass = pEdict->GetNetworkable()->GetServerClass();
 		if ( pClass )
 		{
-			return pClass->m_pTable;
+			return pClass->GetTable();
 		}
 	}
 
@@ -377,7 +377,7 @@ void PackEntities_NetworkBackDoor(
 		Assert( index < snapshot->m_nNumEntities );
 		ServerClass *pSVClass = snapshot->m_pEntities[ index ].m_pClass;
 		g_pLocalNetworkBackdoor->EntState( index, edict->GetNetworkSerialNumber(),
-			pSVClass->m_ClassID, pSVClass->m_pTable, edict->GetUnknown(), edict->HasStateChanged(), bShouldTransmit );
+			pSVClass->GetClassID(), pSVClass->GetTable(), edict->GetUnknown(), edict->HasStateChanged(), bShouldTransmit);
 		edict->ClearStateChanged();
 	}
 	
@@ -596,22 +596,22 @@ void SV_WriteSendTables( ServerClass *pClasses, bf_write &pBuf )
 
 	// First, we send all the leaf classes. These are the ones that will need decoders
 	// on the client.
-	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
+	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->m_pTable) {
+		if (!pCur->GetTable()) {
 			continue;
 		}
-		SV_MaybeWriteSendTable( pCur->m_pTable, pBuf, true );
+		SV_MaybeWriteSendTable( pCur->GetTable(), pBuf, true);
 	}
 
 	// Now, we send their base classes. These don't need decoders on the client
 	// because we will never send these SendTables by themselves.
-	for ( pCur=pClasses; pCur; pCur=pCur->m_pNext )
+	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
 	{
-		if (!pCur->m_pTable) {
+		if (!pCur->GetTable()) {
 			continue;
 		}
-		SV_MaybeWriteSendTable_R( pCur->m_pTable, pBuf );
+		SV_MaybeWriteSendTable_R( pCur->GetTable(), pBuf);
 	}
 }
 
@@ -623,13 +623,13 @@ void SV_ComputeClassInfosCRC( CRC32_t* crc )
 {
 	ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
 
-	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->m_pNext )
+	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->GetNext() )
 	{
-		if (!pClass->m_pTable) {
+		if (!pClass->GetTable()) {
 			continue;
 		}
-		CRC32_ProcessBuffer( crc, (void *)pClass->m_pNetworkName, Q_strlen( pClass->m_pNetworkName ) );
-		CRC32_ProcessBuffer( crc, (void *)pClass->m_pTable->GetName(), Q_strlen(pClass->m_pTable->GetName() ) );
+		CRC32_ProcessBuffer( crc, (void *)pClass->GetName(), Q_strlen(pClass->GetName()));
+		CRC32_ProcessBuffer( crc, (void *)pClass->GetTable()->GetName(), Q_strlen(pClass->GetTable()->GetName()));
 	}
 }
 
@@ -639,9 +639,9 @@ void CGameServer::AssignClassIds()
 
 	// Count the number of classes.
 	int nClasses = 0;
-	for ( ServerClass *pCount=pClasses; pCount; pCount=pCount->m_pNext )
+	for ( ServerClass *pCount=pClasses; pCount; pCount=pCount->GetNext() )
 	{
-		if (!pCount->m_pTable) {
+		if (!pCount->GetTable()) {
 			continue;
 		}
 		++nClasses;
@@ -658,16 +658,16 @@ void CGameServer::AssignClassIds()
 	bool bSpew = CommandLine()->FindParm( "-netspike" ) != 0;
 
 	int curID = 0;
-	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->m_pNext )
+	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->GetNext() )
 	{
-		if (!pClass->m_pTable) {
+		if (!pClass->GetTable()) {
 			continue;
 		}
-		pClass->m_ClassID = curID++;
+		pClass->GetClassID() = curID++;
 
 		if ( bSpew )
 		{
-			Msg( "%d == '%s'\n", pClass->m_ClassID, pClass->GetName() );
+			Msg( "%d == '%s'\n", pClass->GetClassID(), pClass->GetName());
 		}
 	}
 }
@@ -681,13 +681,13 @@ void SV_WriteClassInfos(ServerClass *pClasses, bf_write &pBuf)
 
 	classinfomsg.m_bCreateOnClient = false;
 	
-	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->m_pNext )
+	for ( ServerClass *pClass=pClasses; pClass; pClass=pClass->GetNext() )
 	{
 		SVC_ClassInfo::class_t svclass;
 
-		svclass.classID = pClass->m_ClassID;
-		Q_strncpy( svclass.datatablename, pClass->m_pTable->GetName(), sizeof(svclass.datatablename) );
-		Q_strncpy( svclass.classname, pClass->m_pNetworkName, sizeof(svclass.classname) );
+		svclass.classID = pClass->GetClassID();
+		Q_strncpy( svclass.datatablename, pClass->GetTable()->GetName(), sizeof(svclass.datatablename));
+		Q_strncpy( svclass.classname, pClass->GetName(), sizeof(svclass.classname));
 				
 		classinfomsg.m_Classes.AddToTail( svclass );  // add all known classes to message
 	}

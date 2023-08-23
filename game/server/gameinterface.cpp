@@ -1422,7 +1422,7 @@ void CServerGameDLL::LevelShutdown( void )
 //-----------------------------------------------------------------------------
 ServerClassManager* CServerGameDLL::GetServerClassManager()
 {
-	for (ServerClass* pCur = g_pServerClassManager->GetServerClassHead(); pCur; pCur = pCur->m_pNext)
+	for (ServerClass* pCur = g_pServerClassManager->GetServerClassHead(); pCur; pCur = pCur->GetNext())
 	{
 		pCur->InitRefSendTable(GetSengTableManager());
 	}

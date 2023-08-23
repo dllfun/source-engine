@@ -323,7 +323,7 @@ static inline void SV_WritePropsFromPackedEntity(
 {
 	PackedEntity * pTo = u.m_pNewPack;
 	PackedEntity * pFrom = u.m_pOldPack;
-	SendTable *pSendTable = pTo->m_pServerClass->m_pTable;
+	SendTable *pSendTable = pTo->m_pServerClass->GetTable();
 
 	CServerDTITimer timer( pSendTable, SERVERDTI_WRITE_DELTA_PROPS );
 	if ( g_bServerDTIEnabled && !u.m_pServer->IsHLTV() && !u.m_pServer->IsReplay() )
@@ -565,7 +565,7 @@ static inline void SV_DetermineUpdateType( CEntityWriteInfo &u )
 		}
 
 		nCheckProps = SendTable_CalcDelta(
-			u.m_pOldPack->m_pServerClass->m_pTable, 
+			u.m_pOldPack->m_pServerClass->GetTable(),
 			pOldData,
 			nOldBits,
 			pNewData,
@@ -650,13 +650,13 @@ static inline void SV_WriteEnterPVS( CEntityWriteInfo &u )
 	
 	TRACE_PACKET(( "  SV Enter Class %s\n", pClass->m_pNetworkName ) );
 
-	if ( pClass->m_ClassID >= u.m_pServer->GetServerclassesCount())
+	if ( pClass->GetClassID() >= u.m_pServer->GetServerclassesCount())
 	{
-		ConMsg( "pClass->m_ClassID(%i) >= %i\n", pClass->m_ClassID, u.m_pServer->GetServerclassesCount());
+		ConMsg( "pClass->m_ClassID(%i) >= %i\n", pClass->GetClassID(), u.m_pServer->GetServerclassesCount());
 		Assert( 0 );
 	}
 
-	u.m_pBuf->WriteUBitLong( pClass->m_ClassID, u.m_pServer->GetServerclassbits());
+	u.m_pBuf->WriteUBitLong( pClass->GetClassID(), u.m_pServer->GetServerclassbits());
 	
 	// Write some of the serial number's bits. 
 	u.m_pBuf->WriteUBitLong( entry->m_nSerialNumber, NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS );
@@ -679,11 +679,11 @@ static inline void SV_WriteEnterPVS( CEntityWriteInfo &u )
 		int nFromBytes;
 		if ( !u.m_pServer->GetClassBaseline( pClass, &pFromData, &nFromBytes ) )
 		{
-			Error( "SV_WriteEnterPVS: missing instance baseline for '%s'.", pClass->m_pNetworkName );
+			Error( "SV_WriteEnterPVS: missing instance baseline for '%s'.", pClass->GetName() );
 		}
 
 		ErrorIfNot( pFromData,
-			("SV_WriteEnterPVS: missing pFromData for '%s'.", pClass->m_pNetworkName)
+			("SV_WriteEnterPVS: missing pFromData for '%s'.", pClass->GetName())
 		);
 		
 		nFromBits = nFromBytes * 8;	// NOTE: this isn't the EXACT number of bits but that's ok since it's
@@ -713,7 +713,7 @@ static inline void SV_WriteEnterPVS( CEntityWriteInfo &u )
 	/*if ( server->IsHLTV() || server->IsReplay() )
 	{*/
 	// send all changed properties when entering PVS (no SendProxy culling since we may use it as baseline
-	u.m_nFullProps +=  SendTable_WriteAllDeltaProps( pClass->m_pTable, pFromData, nFromBits,
+	u.m_nFullProps +=  SendTable_WriteAllDeltaProps( pClass->GetTable(), pFromData, nFromBits,
 		pToData, nToBits, u.m_pNewPack->m_nEntityIndex, u.m_pBuf );
 	/*}
 	else
@@ -988,7 +988,7 @@ void CBaseServer::WriteDeltaEntities( CBaseClient *client, CClientFrame *to, CCl
 			case LeavePVS:
 				{
 					// Note, can't use GetNetworkable() since the edict has been freed at this point
-					char const *eString = u.m_pOldPack->m_pServerClass->m_pNetworkName;
+					char const *eString = u.m_pOldPack->m_pServerClass->GetName();
 					client->TraceNetworkData( pBuf, "leave [%s]", eString );
 					ETWMark1I( eString, pBuf.GetNumBitsWritten() - nEntityStartBit );
 				}
