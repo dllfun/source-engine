@@ -4784,12 +4784,17 @@ class CServerRagdollTrigger : public CBaseTrigger
 	DECLARE_CLASS( CServerRagdollTrigger, CBaseTrigger );
 
 public:
-
+	DECLARE_SERVERCLASS();
 	virtual void StartTouch( CBaseEntity *pOther );
 	virtual void EndTouch( CBaseEntity *pOther );
 	virtual void Spawn( void );
 
+	BEGIN_SEND_TABLE(CServerRagdollTrigger, DT_ServerRagdollTrigger, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_ServerRagdollTrigger)
 };
+
+IMPLEMENT_SERVERCLASS(CServerRagdollTrigger, DT_ServerRagdollTrigger)
 
 LINK_ENTITY_TO_CLASS( trigger_serverragdoll, CServerRagdollTrigger );
 

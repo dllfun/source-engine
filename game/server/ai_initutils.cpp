@@ -26,6 +26,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+IMPLEMENT_SERVERCLASS(CNodeEnt, DT_NodeEnt)
+
 LINK_ENTITY_TO_CLASS( info_hint,			CNodeEnt );	
 LINK_ENTITY_TO_CLASS( info_node,			CNodeEnt );	
 LINK_ENTITY_TO_CLASS( info_node_hint,		CNodeEnt );	

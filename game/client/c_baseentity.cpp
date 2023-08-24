@@ -6506,3 +6506,712 @@ public:
 };
 
 IMPLEMENT_CLIENTCLASS(C_SceneManager, DT_SceneManager, CSceneManager)
+
+
+class C_AI_AllySpeechManager : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_AllySpeechManager() {}
+
+	BEGIN_RECV_TABLE(C_AI_AllySpeechManager, DT_AI_AllySpeechManager, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_AllySpeechManager)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_AllySpeechManager, DT_AI_AllySpeechManager, CAI_AllySpeechManager)
+
+class C_AI_AssaultGoal : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_AssaultGoal() {}
+
+	BEGIN_RECV_TABLE(C_AI_AssaultGoal, DT_AI_AssaultGoal, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_AssaultGoal)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_AssaultGoal, DT_AI_AssaultGoal, CAI_AssaultGoal)
+
+class C_AI_FollowGoal : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_FollowGoal() {}
+
+	BEGIN_RECV_TABLE(C_AI_FollowGoal, DT_AI_FollowGoal, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_FollowGoal)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_FollowGoal, DT_AI_FollowGoal, CAI_FollowGoal)
+
+class C_AI_Hint : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_Hint() {}
+
+	BEGIN_RECV_TABLE(C_AI_Hint, DT_AI_Hint, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_Hint)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_Hint, DT_AI_Hint, CAI_Hint)
+
+class C_AI_LeadGoal_Weapon : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_LeadGoal_Weapon() {}
+
+	BEGIN_RECV_TABLE(C_AI_LeadGoal_Weapon, DT_AI_LeadGoal_Weapon, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_LeadGoal_Weapon)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_LeadGoal_Weapon, DT_AI_LeadGoal_Weapon, CAI_LeadGoal_Weapon)
+
+class C_AI_RadialLinkController : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_RadialLinkController() {}
+
+	BEGIN_RECV_TABLE(C_AI_RadialLinkController, DT_AI_RadialLinkController, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_RadialLinkController)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_RadialLinkController, DT_AI_RadialLinkController, CAI_RadialLinkController)
+
+class C_AI_ScriptConditions : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_ScriptConditions() {}
+
+	BEGIN_RECV_TABLE(C_AI_ScriptConditions, DT_AI_ScriptConditions, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_ScriptConditions)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_ScriptConditions, DT_AI_ScriptConditions, CAI_ScriptConditions)
+
+class C_AI_ScriptedSchedule : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_ScriptedSchedule() {}
+
+	BEGIN_RECV_TABLE(C_AI_ScriptedSchedule, DT_AI_ScriptedSchedule, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_ScriptedSchedule)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_ScriptedSchedule, DT_AI_ScriptedSchedule, CAI_ScriptedSchedule)
+
+class C_AI_SpeechFilter : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_SpeechFilter() {}
+
+	BEGIN_RECV_TABLE(C_AI_SpeechFilter, DT_AI_SpeechFilter, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_SpeechFilter)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_SpeechFilter, DT_AI_SpeechFilter, CAI_SpeechFilter)
+
+class C_AI_StandoffGoal : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_AI_StandoffGoal() {}
+
+	BEGIN_RECV_TABLE(C_AI_StandoffGoal, DT_AI_StandoffGoal, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_AI_StandoffGoal)
+};
+
+IMPLEMENT_CLIENTCLASS(C_AI_StandoffGoal, DT_AI_StandoffGoal, CAI_StandoffGoal)
+
+class C_BaseMoveBehavior : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_BaseMoveBehavior() {}
+
+	BEGIN_RECV_TABLE(C_BaseMoveBehavior, DT_BaseMoveBehavior, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_BaseMoveBehavior)
+};
+
+IMPLEMENT_CLIENTCLASS(C_BaseMoveBehavior, DT_BaseMoveBehavior, CBaseMoveBehavior)
+
+class C_CommentaryAuto : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_CommentaryAuto() {}
+
+	BEGIN_RECV_TABLE(C_CommentaryAuto, DT_CommentaryAuto, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_CommentaryAuto)
+};
+
+IMPLEMENT_CLIENTCLASS(C_CommentaryAuto, DT_CommentaryAuto, CCommentaryAuto)
+
+class C_DebugHistory : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_DebugHistory() {}
+
+	BEGIN_RECV_TABLE(C_DebugHistory, DT_DebugHistory, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_DebugHistory)
+};
+
+IMPLEMENT_CLIENTCLASS(C_DebugHistory, DT_DebugHistory, CDebugHistory)
+
+class C_EntityBlocker : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_EntityBlocker() {}
+
+	BEGIN_RECV_TABLE(C_EntityBlocker, DT_EntityBlocker, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_EntityBlocker)
+};
+
+IMPLEMENT_CLIENTCLASS(C_EntityBlocker, DT_EntityBlocker, CEntityBlocker)
+
+class C_EnvFade : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_EnvFade() {}
+
+	BEGIN_RECV_TABLE(C_EnvFade, DT_EnvFade, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_EnvFade)
+};
+
+IMPLEMENT_CLIENTCLASS(C_EnvFade, DT_EnvFade, CEnvFade)
+
+class C_EnvFireSensor : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_EnvFireSensor() {}
+
+	BEGIN_RECV_TABLE(C_EnvFireSensor, DT_EnvFireSensor, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_EnvFireSensor)
+};
+
+IMPLEMENT_CLIENTCLASS(C_EnvFireSensor, DT_EnvFireSensor, CEnvFireSensor)
+
+class C_EventQueueSaveLoadProxy : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_EventQueueSaveLoadProxy() {}
+
+	BEGIN_RECV_TABLE(C_EventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_EventQueueSaveLoadProxy)
+};
+
+IMPLEMENT_CLIENTCLASS(C_EventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy, CEventQueueSaveLoadProxy)
+
+class C_FilterEnemy : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FilterEnemy() {}
+
+	BEGIN_RECV_TABLE(C_FilterEnemy, DT_FilterEnemy, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FilterEnemy)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FilterEnemy, DT_FilterEnemy, CFilterEnemy)
+
+class C_FishPool : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FishPool() {}
+
+	BEGIN_RECV_TABLE(C_FishPool, DT_FishPool, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FishPool)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FishPool, DT_FishPool, CFishPool)
+
+class C_FuncLadderEndPoint : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FuncLadderEndPoint() {}
+
+	BEGIN_RECV_TABLE(C_FuncLadderEndPoint, DT_FuncLadderEndPoint, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncLadderEndPoint)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FuncLadderEndPoint, DT_FuncLadderEndPoint, CFuncLadderEndPoint)
+
+class C_FuncMoveLinear : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FuncMoveLinear() {}
+
+	BEGIN_RECV_TABLE(C_FuncMoveLinear, DT_FuncMoveLinear, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncMoveLinear)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FuncMoveLinear, DT_FuncMoveLinear, CFuncMoveLinear)
+
+class C_FuncNavObstruction : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FuncNavObstruction() {}
+
+	BEGIN_RECV_TABLE(C_FuncNavObstruction, DT_FuncNavObstruction, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncNavObstruction)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FuncNavObstruction, DT_FuncNavObstruction, CFuncNavObstruction)
+
+class C_FuncNavPrerequisite : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FuncNavPrerequisite() {}
+
+	BEGIN_RECV_TABLE(C_FuncNavPrerequisite, DT_FuncNavPrerequisite, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncNavPrerequisite)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FuncNavPrerequisite, DT_FuncNavPrerequisite, CFuncNavPrerequisite)
+
+class C_FuncTrackAuto : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FuncTrackAuto() {}
+
+	BEGIN_RECV_TABLE(C_FuncTrackAuto, DT_FuncTrackAuto, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncTrackAuto)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FuncTrackAuto, DT_FuncTrackAuto, CFuncTrackAuto)
+
+class C_FuncVPhysicsClip : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_FuncVPhysicsClip() {}
+
+	BEGIN_RECV_TABLE(C_FuncVPhysicsClip, DT_FuncVPhysicsClip, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_FuncVPhysicsClip)
+};
+
+IMPLEMENT_CLIENTCLASS(C_FuncVPhysicsClip, DT_FuncVPhysicsClip, CFuncVPhysicsClip)
+
+class C_GameGibManager : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_GameGibManager() {}
+
+	BEGIN_RECV_TABLE(C_GameGibManager, DT_GameGibManager, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_GameGibManager)
+};
+
+IMPLEMENT_CLIENTCLASS(C_GameGibManager, DT_GameGibManager, CGameGibManager)
+
+class C_GamePlayerTeam : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_GamePlayerTeam() {}
+
+	BEGIN_RECV_TABLE(C_GamePlayerTeam, DT_GamePlayerTeam, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_GamePlayerTeam)
+};
+
+IMPLEMENT_CLIENTCLASS(C_GamePlayerTeam, DT_GamePlayerTeam, CGamePlayerTeam)
+
+class C_GameUI : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_GameUI() {}
+
+	BEGIN_RECV_TABLE(C_GameUI, DT_GameUI, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_GameUI)
+};
+
+IMPLEMENT_CLIENTCLASS(C_GameUI, DT_GameUI, CGameUI)
+
+class C_GameWeaponManager : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_GameWeaponManager() {}
+
+	BEGIN_RECV_TABLE(C_GameWeaponManager, DT_GameWeaponManager, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_GameWeaponManager)
+};
+
+IMPLEMENT_CLIENTCLASS(C_GameWeaponManager, DT_GameWeaponManager, CGameWeaponManager)
+
+class C_GunTarget : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_GunTarget() {}
+
+	BEGIN_RECV_TABLE(C_GunTarget, DT_GunTarget, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_GunTarget)
+};
+
+IMPLEMENT_CLIENTCLASS(C_GunTarget, DT_GunTarget, CGunTarget)
+
+class C_HandleDummy : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_HandleDummy() {}
+
+	BEGIN_RECV_TABLE(C_HandleDummy, DT_HandleDummy, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_HandleDummy)
+};
+
+IMPLEMENT_CLIENTCLASS(C_HandleDummy, DT_HandleDummy, CHandleDummy)
+
+class C_HostageRescueZone : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_HostageRescueZone() {}
+
+	BEGIN_RECV_TABLE(C_HostageRescueZone, DT_HostageRescueZone, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_HostageRescueZone)
+};
+
+IMPLEMENT_CLIENTCLASS(C_HostageRescueZone, DT_HostageRescueZone, CHostageRescueZone)
+
+class C_InfoCameraLink : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_InfoCameraLink() {}
+
+	BEGIN_RECV_TABLE(C_InfoCameraLink, DT_InfoCameraLink, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_InfoCameraLink)
+};
+
+IMPLEMENT_CLIENTCLASS(C_InfoCameraLink, DT_InfoCameraLink, CInfoCameraLink)
+
+class C_InfoViewParameters : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_InfoViewParameters() {}
+
+	BEGIN_RECV_TABLE(C_InfoViewParameters, DT_InfoViewParameters, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_InfoViewParameters)
+};
+
+IMPLEMENT_CLIENTCLASS(C_InfoViewParameters, DT_InfoViewParameters, CInfoViewParameters)
+
+class C_LogicBranchList : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_LogicBranchList() {}
+
+	BEGIN_RECV_TABLE(C_LogicBranchList, DT_LogicBranchList, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_LogicBranchList)
+};
+
+IMPLEMENT_CLIENTCLASS(C_LogicBranchList, DT_LogicBranchList, CLogicBranchList)
+
+class C_LogicMeasureMovement : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_LogicMeasureMovement() {}
+
+	BEGIN_RECV_TABLE(C_LogicMeasureMovement, DT_LogicMeasureMovement, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_LogicMeasureMovement)
+};
+
+IMPLEMENT_CLIENTCLASS(C_LogicMeasureMovement, DT_LogicMeasureMovement, CLogicMeasureMovement)
+
+class C_LogicNavigation : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_LogicNavigation() {}
+
+	BEGIN_RECV_TABLE(C_LogicNavigation, DT_LogicNavigation, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_LogicNavigation)
+};
+
+IMPLEMENT_CLIENTCLASS(C_LogicNavigation, DT_LogicNavigation, CLogicNavigation)
+
+class C_LogicRelay : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_LogicRelay() {}
+
+	BEGIN_RECV_TABLE(C_LogicRelay, DT_LogicRelay, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_LogicRelay)
+};
+
+IMPLEMENT_CLIENTCLASS(C_LogicRelay, DT_LogicRelay, CLogicRelay)
+
+class C_MomentaryRotButton : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_MomentaryRotButton() {}
+
+	BEGIN_RECV_TABLE(C_MomentaryRotButton, DT_MomentaryRotButton, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_MomentaryRotButton)
+};
+
+IMPLEMENT_CLIENTCLASS(C_MomentaryRotButton, DT_MomentaryRotButton, CMomentaryRotButton)
+
+class C_NodeEnt : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_NodeEnt() {}
+
+	BEGIN_RECV_TABLE(C_NodeEnt, DT_NodeEnt, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_NodeEnt)
+};
+
+IMPLEMENT_CLIENTCLASS(C_NodeEnt, DT_NodeEnt, CNodeEnt)
+
+class C_NullEntity : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_NullEntity() {}
+
+	BEGIN_RECV_TABLE(C_NullEntity, DT_NullEntity, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_NullEntity)
+};
+
+IMPLEMENT_CLIENTCLASS(C_NullEntity, DT_NullEntity, CNullEntity)
+
+class C_ParticleLight : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_ParticleLight() {}
+
+	BEGIN_RECV_TABLE(C_ParticleLight, DT_ParticleLight, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_ParticleLight)
+};
+
+IMPLEMENT_CLIENTCLASS(C_ParticleLight, DT_ParticleLight, CParticleLight)
+
+class C_PhysConvert : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PhysConvert() {}
+
+	BEGIN_RECV_TABLE(C_PhysConvert, DT_PhysConvert, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PhysConvert)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PhysConvert, DT_PhysConvert, CPhysConvert)
+
+class C_PhysicsEntitySolver : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PhysicsEntitySolver() {}
+
+	BEGIN_RECV_TABLE(C_PhysicsEntitySolver, DT_PhysicsEntitySolver, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PhysicsEntitySolver)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PhysicsEntitySolver, DT_PhysicsEntitySolver, CPhysicsEntitySolver)
+
+class C_PhysicsWire : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PhysicsWire() {}
+
+	BEGIN_RECV_TABLE(C_PhysicsWire, DT_PhysicsWire, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PhysicsWire)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PhysicsWire, DT_PhysicsWire, CPhysicsWire)
+
+class C_PhysMotor : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PhysMotor() {}
+
+	BEGIN_RECV_TABLE(C_PhysMotor, DT_PhysMotor, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PhysMotor)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PhysMotor, DT_PhysMotor, CPhysMotor)
+
+class C_PointDevShotCamera : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PointDevShotCamera() {}
+
+	BEGIN_RECV_TABLE(C_PointDevShotCamera, DT_PointDevShotCamera, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PointDevShotCamera)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PointDevShotCamera, DT_PointDevShotCamera, CPointDevShotCamera)
+
+class C_PointPlayerMoveConstraint : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PointPlayerMoveConstraint() {}
+
+	BEGIN_RECV_TABLE(C_PointPlayerMoveConstraint, DT_PointPlayerMoveConstraint, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PointPlayerMoveConstraint)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PointPlayerMoveConstraint, DT_PointPlayerMoveConstraint, CPointPlayerMoveConstraint)
+
+class C_PointTeleport : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PointTeleport() {}
+
+	BEGIN_RECV_TABLE(C_PointTeleport, DT_PointTeleport, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PointTeleport)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PointTeleport, DT_PointTeleport, CPointTeleport)
+
+class C_PointTemplate : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_PointTemplate() {}
+
+	BEGIN_RECV_TABLE(C_PointTemplate, DT_PointTemplate, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_PointTemplate)
+};
+
+IMPLEMENT_CLIENTCLASS(C_PointTemplate, DT_PointTemplate, CPointTemplate)
+
+class C_Pushable : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_Pushable() {}
+
+	BEGIN_RECV_TABLE(C_Pushable, DT_Pushable, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_Pushable)
+};
+
+IMPLEMENT_CLIENTCLASS(C_Pushable, DT_Pushable, CPushable)
+
+class C_RagdollBoogie : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_RagdollBoogie() {}
+
+	BEGIN_RECV_TABLE(C_RagdollBoogie, DT_RagdollBoogie, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_RagdollBoogie)
+};
+
+IMPLEMENT_CLIENTCLASS(C_RagdollBoogie, DT_RagdollBoogie, CRagdollBoogie)
+
+class C_RagdollConstraint : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_RagdollConstraint() {}
+
+	BEGIN_RECV_TABLE(C_RagdollConstraint, DT_RagdollConstraint, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_RagdollConstraint)
+};
+
+IMPLEMENT_CLIENTCLASS(C_RagdollConstraint, DT_RagdollConstraint, CRagdollConstraint)
+
+class C_SceneListManager : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_SceneListManager() {}
+
+	BEGIN_RECV_TABLE(C_SceneListManager, DT_SceneListManager, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_SceneListManager)
+};
+
+IMPLEMENT_CLIENTCLASS(C_SceneListManager, DT_SceneListManager, CSceneListManager)
+
+class C_ServerRagdollTrigger : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_ServerRagdollTrigger() {}
+
+	BEGIN_RECV_TABLE(C_ServerRagdollTrigger, DT_ServerRagdollTrigger, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_ServerRagdollTrigger)
+};
+
+IMPLEMENT_CLIENTCLASS(C_ServerRagdollTrigger, DT_ServerRagdollTrigger, CServerRagdollTrigger)
+
+class C_TriggerBrush : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_TriggerBrush() {}
+
+	BEGIN_RECV_TABLE(C_TriggerBrush, DT_TriggerBrush, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_TriggerBrush)
+};
+
+IMPLEMENT_CLIENTCLASS(C_TriggerBrush, DT_TriggerBrush, CTriggerBrush)
+
+class C_WC_UpdateIgnoreList : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_WC_UpdateIgnoreList() {}
+
+	BEGIN_RECV_TABLE(C_WC_UpdateIgnoreList, DT_WC_UpdateIgnoreList, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_WC_UpdateIgnoreList)
+};
+
+IMPLEMENT_CLIENTCLASS(C_WC_UpdateIgnoreList, DT_WC_UpdateIgnoreList, CWC_UpdateIgnoreList)
+
+class C_WeightButton : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_WeightButton() {}
+
+	BEGIN_RECV_TABLE(C_WeightButton, DT_WeightButton, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_WeightButton)
+};
+
+IMPLEMENT_CLIENTCLASS(C_WeightButton, DT_WeightButton, CWeightButton)
+
+class C_TestEnntity : public C_BaseEntity {
+public:
+	DECLARE_CLIENTCLASS();
+	C_TestEnntity() {}
+
+	BEGIN_RECV_TABLE(C_TestEnntity, DT_TestEnntity, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_TestEnntity)
+};
+
+IMPLEMENT_CLIENTCLASS(C_TestEnntity, DT_TestEnntity, CTestEnntity)

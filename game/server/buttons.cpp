@@ -968,6 +968,7 @@ BEGIN_DATADESC( CMomentaryRotButton )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CMomentaryRotButton, DT_MomentaryRotButton)
 
 LINK_ENTITY_TO_CLASS( momentary_rot_button, CMomentaryRotButton );
 

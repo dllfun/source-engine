@@ -38,7 +38,7 @@ public:
 	{
 		g_Managers.FindAndRemove( this );
 	}
-
+	DECLARE_SERVERCLASS();
 	void Think();
 	void InputSetMaxPieces( inputdata_t &inputdata );
 	void InputSetAmmoModifier( inputdata_t &inputdata );
@@ -50,6 +50,9 @@ public:
 
 	CUtlVector<EHANDLE> m_ManagedNonWeapons;
 
+	BEGIN_SEND_TABLE(CGameWeaponManager, DT_GameWeaponManager, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_GameWeaponManager)
 };
 
 BEGIN_DATADESC( CGameWeaponManager )
@@ -68,6 +71,8 @@ BEGIN_DATADESC( CGameWeaponManager )
 	DEFINE_UTLVECTOR( m_ManagedNonWeapons, FIELD_EHANDLE ),
 
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CGameWeaponManager, DT_GameWeaponManager)
 
 LINK_ENTITY_TO_CLASS( game_weapon_manager, CGameWeaponManager );
 

@@ -34,7 +34,7 @@ public:
 	DECLARE_CLASS( CGameUI, CBaseEntity );
 
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	// Input handlers
 	void InputDeactivate( inputdata_t &inputdata );
 	void InputActivate( inputdata_t &inputdata );
@@ -71,6 +71,10 @@ public:
 	int					m_nLastButtonState;
 
 	CHandle<CBasePlayer>	m_player;
+
+	BEGIN_SEND_TABLE(CGameUI, DT_GameUI, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_GameUI)
 };
 
 
@@ -109,6 +113,7 @@ BEGIN_DATADESC( CGameUI )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CGameUI, DT_GameUI)
 
 LINK_ENTITY_TO_CLASS( game_ui, CGameUI );
 	

@@ -114,7 +114,7 @@ public:
 		m_hActor = NULL;
 #endif
 	}
-
+	DECLARE_SERVERCLASS();
 private:
 	void Spawn();
 	void Activate();
@@ -249,6 +249,9 @@ private:
 	//---------------------------------
 
 	DECLARE_DATADESC();
+	BEGIN_SEND_TABLE(CAI_ScriptConditions, DT_AI_ScriptConditions, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_ScriptConditions)
 };
 
 //=============================================================================

@@ -19,7 +19,7 @@ public:
 	DECLARE_CLASS( CLogicRelay, CLogicalEntity );
 
 	CLogicRelay();
-
+	DECLARE_SERVERCLASS();
 	void Activate();
 	void Think();
 
@@ -43,6 +43,10 @@ private:
 
 	bool m_bDisabled;
 	bool m_bWaitForRefire;			// Set to disallow a refire while we are waiting for our outputs to finish firing.
+
+	BEGIN_SEND_TABLE(CLogicRelay, DT_LogicRelay, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_LogicRelay)
 };
 
 #endif //LOGICRELAY_H

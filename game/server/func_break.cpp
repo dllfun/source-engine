@@ -1215,7 +1215,7 @@ class CPushable : public CBreakable
 {
 public:
 	DECLARE_CLASS( CPushable, CBreakable );
-
+	DECLARE_SERVERCLASS();
 	void	Spawn ( void );
 	bool	CreateVPhysics( void );
 	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
@@ -1226,8 +1226,13 @@ public:
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );
 	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
 	unsigned int PhysicsSolidMaskForEntity( void ) const { return MASK_PLAYERSOLID; }
+
+	BEGIN_SEND_TABLE(CPushable, DT_Pushable, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_Pushable)
 };
 
+IMPLEMENT_SERVERCLASS(CPushable, DT_Pushable)
 
 LINK_ENTITY_TO_CLASS( func_pushable, CPushable );
 

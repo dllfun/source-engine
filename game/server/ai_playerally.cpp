@@ -280,6 +280,7 @@ bool CAI_AllySpeechManager::ConceptDelayExpired( AIConcept_t concept )
 }
 
 //-----------------------------------------------------------------------------
+IMPLEMENT_SERVERCLASS(CAI_AllySpeechManager, DT_AI_AllySpeechManager)
 
 LINK_ENTITY_TO_CLASS( ai_ally_speech_manager, CAI_AllySpeechManager );
 

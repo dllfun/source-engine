@@ -24,7 +24,7 @@ class CLogicNavigation : public CLogicalEntity,
 						 public IEntityListener
 {
 	DECLARE_CLASS( CLogicNavigation, CLogicalEntity );
-
+	DECLARE_SERVERCLASS();
 	bool KeyValue( const char *szKeyName, const char *szValue );
 	void Activate( void );
 
@@ -52,7 +52,13 @@ private:
 
 	bool				m_isOn;
 	navproperties_t		m_navProperty;
+
+	BEGIN_SEND_TABLE(CLogicNavigation, DT_LogicNavigation, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_LogicNavigation)
 };
+
+IMPLEMENT_SERVERCLASS(CLogicNavigation, DT_LogicNavigation)
 
 LINK_ENTITY_TO_CLASS(logic_navigation, CLogicNavigation);
 

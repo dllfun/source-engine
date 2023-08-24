@@ -33,84 +33,6 @@ T* _CreateEntityTemplate(T* newEnt, const char* className, edict_t* edict)
 
 
 
-
-class IServerEntityFactory;
-// This is the glue that hooks .MAP entity class names to our CPP classes
-abstract_class IServerEntityFactoryDictionary
-{
-public:
-	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pMapClassName) = 0;
-	virtual int RequiredEdictIndex(const char* pMapClassName) = 0;
-	virtual IServerNetworkable* Create(const char* pMapClassName, edict_t* edict) = 0;
-	virtual void Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable) = 0;
-	virtual IServerEntityFactory* FindFactory(const char* pMapClassName) = 0;
-	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
-	virtual void ReportEntityNames() = 0;
-	virtual void ReportEntitySizes() = 0;
-};
-
-IServerEntityFactoryDictionary* ServerEntityFactoryDictionary();
-
-inline bool CanCreateServerEntity(const char* pszClassname)
-{
-	return (ServerEntityFactoryDictionary() != NULL && ServerEntityFactoryDictionary()->FindFactory(pszClassname) != NULL);
-}
-
-abstract_class IServerEntityFactory
-{
-public:
-	virtual int RequiredEdictIndex() = 0;
-	virtual IServerNetworkable * Create(edict_t* edict) = 0;//const char* pClassName, 
-	virtual void Destroy(IServerNetworkable* pNetworkable) = 0;
-	virtual size_t GetEntitySize() = 0;
-};
-
-template <class T>
-class CServerEntityFactory : public IServerEntityFactory
-{
-public:
-	CServerEntityFactory(const char* pMapClassName, int RequiredEdictIndex = -1)
-	{
-		m_pMapClassName = pMapClassName;
-		m_RequiredEdictIndex = RequiredEdictIndex;
-		ServerEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
-	}
-
-	IServerNetworkable* Create(edict_t* edict)
-	{
-		T* pEnt = _CreateEntityTemplate((T*)NULL, m_pMapClassName, edict);
-		return pEnt->NetworkProp();
-	}
-
-	void Destroy(IServerNetworkable* pNetworkable)
-	{
-		if (pNetworkable)
-		{
-			pNetworkable->Release();
-		}
-	}
-
-	virtual size_t GetEntitySize()
-	{
-		return sizeof(T);
-	}
-
-	virtual int RequiredEdictIndex() {
-		return m_RequiredEdictIndex;
-	};
-
-private:
-	const char* m_pMapClassName = NULL;
-	int m_RequiredEdictIndex = -1;
-};
-
-#define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) \
-	static CServerEntityFactory<DLLClassName> mapClassName( #mapClassName );
-
-#define LINK_WORLD_TO_CLASS(mapClassName,DLLClassName) \
-	static CServerEntityFactory<DLLClassName> mapClassName( #mapClassName, 0 );
-
-
 class ServerClass;
 class SendTable;
 
@@ -121,12 +43,16 @@ public:
 	ServerClass* FindServerClass(const char* pName);
 	ServerClass* GetServerClassHead();
 	void	RegisteServerClass(ServerClass* pServerClass);
-
+	void	RegisteServerClassAlias(ServerClass* pServerClass, const char* pMapClassName);
 private:
 	ServerClass* m_pServerClassHead = NULL;
-	CUtlStringMap< ServerClass* >& GetServerClassMap() {
-		static CUtlStringMap< ServerClass* >	s_ServerClassMap;
-		return s_ServerClassMap;
+	CUtlStringMap< ServerClass* >& GetMainServerClassMap() {
+		static CUtlStringMap< ServerClass* >	s_MainServerClassMap;
+		return s_MainServerClassMap;
+	}
+	CUtlStringMap< ServerClass* >& GetAliasServerClassMap() {
+		static CUtlStringMap< ServerClass* >	s_AliasServerClassMap;
+		return s_AliasServerClassMap;
 	}
 };
 
@@ -196,6 +122,7 @@ class CBaseNetworkable;
 // If you do a DECLARE_SERVERCLASS, you need to do this inside the class definition.
 #define DECLARE_SERVERCLASS()									\
 	public:														\
+		static ServerClass* GetServerClassStatic();				\
 		virtual ServerClass* GetServerClass();					\
 		virtual int YouForgotToImplementOrDeclareServerClass();	
 
@@ -253,9 +180,103 @@ class CBaseNetworkable;
 		#DLLClassName, \
 		#sendTable\
 	); \
+	ServerClass* DLLClassName::GetServerClassStatic() {return &g_##DLLClassName##_ClassReg;} \
 	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
 	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}\
 	static DLLClassName g_##DLLClassName##_EntityReg;
+
+template <class T>
+class ServerClassAliasRegister
+{
+public:
+	ServerClassAliasRegister(const char* pMapClassName) {
+		if (!pMapClassName || !pMapClassName[0]) {
+			Error("pMapClassName can not been NULL\n");
+		}
+		ServerClass* serverClass = T::GetServerClassStatic();
+		g_pServerClassManager->RegisteServerClassAlias(serverClass, pMapClassName);
+	}
+};
+
+
+
+class IServerEntityFactory;
+// This is the glue that hooks .MAP entity class names to our CPP classes
+abstract_class IServerEntityFactoryDictionary
+{
+public:
+	virtual void InstallFactory(IServerEntityFactory * pFactory, const char* pMapClassName) = 0;
+	virtual int RequiredEdictIndex(const char* pMapClassName) = 0;
+	virtual IServerNetworkable* Create(const char* pMapClassName, edict_t* edict) = 0;
+	virtual void Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable) = 0;
+	virtual IServerEntityFactory* FindFactory(const char* pMapClassName) = 0;
+	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
+	virtual void ReportEntityNames() = 0;
+	virtual void ReportEntitySizes() = 0;
+};
+
+IServerEntityFactoryDictionary* ServerEntityFactoryDictionary();
+
+inline bool CanCreateServerEntity(const char* pszClassname)
+{
+	return (ServerEntityFactoryDictionary() != NULL && ServerEntityFactoryDictionary()->FindFactory(pszClassname) != NULL);
+}
+
+abstract_class IServerEntityFactory
+{
+public:
+	virtual int RequiredEdictIndex() = 0;
+	virtual IServerNetworkable* Create(edict_t* edict) = 0;//const char* pClassName, 
+	virtual void Destroy(IServerNetworkable* pNetworkable) = 0;
+	virtual size_t GetEntitySize() = 0;
+};
+
+template <class T>
+class CServerEntityFactory : public IServerEntityFactory
+{
+public:
+	CServerEntityFactory(const char* pMapClassName, int RequiredEdictIndex = -1)
+	{
+		m_pMapClassName = pMapClassName;
+		m_RequiredEdictIndex = RequiredEdictIndex;
+		ServerEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
+	}
+
+	IServerNetworkable* Create(edict_t* edict)
+	{
+		T* pEnt = _CreateEntityTemplate((T*)NULL, m_pMapClassName, edict);
+		return pEnt->NetworkProp();
+	}
+
+	void Destroy(IServerNetworkable* pNetworkable)
+	{
+		if (pNetworkable)
+		{
+			pNetworkable->Release();
+		}
+	}
+
+	virtual size_t GetEntitySize()
+	{
+		return sizeof(T);
+	}
+
+	virtual int RequiredEdictIndex() {
+		return m_RequiredEdictIndex;
+	};
+
+private:
+	const char* m_pMapClassName = NULL;
+	int m_RequiredEdictIndex = -1;
+};
+
+#define LINK_ENTITY_TO_CLASS(mapClassName,DLLClassName) \
+	static CServerEntityFactory<DLLClassName> g_##mapClassName##_ClassReg( #mapClassName );\
+	static ServerClassAliasRegister<DLLClassName> g_##mapClassName##_ClassAliasReg( #mapClassName );
+
+#define LINK_WORLD_TO_CLASS(mapClassName,DLLClassName) \
+	static CServerEntityFactory<DLLClassName> mapClassName( #mapClassName, 0 );\
+	static ServerClassAliasRegister<DLLClassName> g_##mapClassName##_ClassAliasReg( #mapClassName );
 
 #endif
 

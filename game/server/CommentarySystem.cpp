@@ -1584,7 +1584,7 @@ class CCommentaryAuto : public CBaseEntity
 	DECLARE_CLASS( CCommentaryAuto, CBaseEntity );
 public:
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	void Spawn(void);
 	void Think(void);
 
@@ -1599,7 +1599,13 @@ private:
 
 	// fired when the player spawns in a multiplayer game
 	COutputEvent m_OnCommentaryMultiplayerSpawn;
+
+	BEGIN_SEND_TABLE(CCommentaryAuto, DT_CommentaryAuto, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_CommentaryAuto)
 };
+
+IMPLEMENT_SERVERCLASS(CCommentaryAuto, DT_CommentaryAuto)
 
 LINK_ENTITY_TO_CLASS(commentary_auto, CCommentaryAuto);
 

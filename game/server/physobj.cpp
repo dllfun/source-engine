@@ -1352,6 +1352,7 @@ class CPhysConvert : public CLogicalEntity
 
 public:
 	CPhysConvert( void ) : m_flMassOverride( 0.0f ) {};
+	DECLARE_SERVERCLASS();
 	COutputEvent m_OnConvert;	
 
 	// Input handlers
@@ -1362,7 +1363,13 @@ public:
 private:
 	string_t		m_swapModel;
 	float			m_flMassOverride;
+
+	BEGIN_SEND_TABLE(CPhysConvert, DT_PhysConvert, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PhysConvert)
 };
+
+IMPLEMENT_SERVERCLASS(CPhysConvert, DT_PhysConvert)
 
 LINK_ENTITY_TO_CLASS( phys_convert, CPhysConvert );
 

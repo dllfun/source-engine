@@ -20,7 +20,7 @@ class CPointPlayerMoveConstraint : public CBaseEntity
 	DECLARE_CLASS( CPointPlayerMoveConstraint, CBaseEntity );
 public:
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	int		UpdateTransmitState( void );
 	void	Activate( void );
 	void	ConstraintThink( void );
@@ -35,7 +35,13 @@ private:
 	float				m_flRadiusSquared;	
 	CUtlVector<EHANDLE>	m_hConstrainedPlayers;
 	COutputEvent		m_OnConstraintBroken;
+
+	BEGIN_SEND_TABLE(CPointPlayerMoveConstraint, DT_PointPlayerMoveConstraint, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PointPlayerMoveConstraint)
 };
+
+IMPLEMENT_SERVERCLASS(CPointPlayerMoveConstraint, DT_PointPlayerMoveConstraint)
 
 LINK_ENTITY_TO_CLASS( point_playermoveconstraint, CPointPlayerMoveConstraint );
 

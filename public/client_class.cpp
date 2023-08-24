@@ -216,6 +216,15 @@ void	ClientClassManager::RegisteClientClass(ClientClass* pClientClass) {
 	}
 }
 
+void	ClientClassManager::RegisteClientClassAlias(ClientClass* pClientClass, const char* pMapClassName) {
+	if (GetAliasClientClassMap().Defined(pMapClassName)) {
+		Error("duplicate ServerClass: %s\n", pMapClassName);	// dedicated servers exit
+	}
+	else {
+		GetAliasClientClassMap()[pMapClassName] = pClientClass;
+	}
+}
+
 static ClientClassManager s_ClientClassManager;
 ClientClassManager* g_pClientClassManager = &s_ClientClassManager;
 

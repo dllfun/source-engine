@@ -83,7 +83,7 @@ class CSceneListManager : public CLogicalEntity
 	DECLARE_CLASS( CSceneListManager, CLogicalEntity );
 public:
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	virtual void Activate( void );
 
 	void		 ShutdownList( void );
@@ -98,6 +98,10 @@ private:
 	CUtlVector< CHandle< CSceneListManager > >	m_hListManagers;
 	string_t				m_iszScenes[SCENE_LIST_MANAGER_MAX_SCENES];
 	EHANDLE					m_hScenes[SCENE_LIST_MANAGER_MAX_SCENES];
+
+	BEGIN_SEND_TABLE(CSceneListManager, DT_SceneListManager, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_SceneListManager)
 };
 
 //-----------------------------------------------------------------------------
@@ -5377,6 +5381,8 @@ bool IsRunningScriptedSceneWithSpeechAndNotPaused( CBaseFlex *pActor, bool bIgno
 //===========================================================================================================
 // SCENE LIST MANAGER
 //===========================================================================================================
+IMPLEMENT_SERVERCLASS(CSceneListManager, DT_SceneListManager)
+
 LINK_ENTITY_TO_CLASS( logic_scene_list_manager, CSceneListManager );
 
 BEGIN_DATADESC( CSceneListManager )

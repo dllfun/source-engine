@@ -696,7 +696,7 @@ class CWC_UpdateIgnoreList : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CWC_UpdateIgnoreList, CBaseEntity );
-
+	DECLARE_SERVERCLASS();
 	enum { MAX_IGNORELIST_NAMES = 16 }; ///< the number of names in the array below
 
 	inline const string_t &GetName( int x ) const { return m_nIgnoredEntityNames[x]; } 
@@ -707,8 +707,13 @@ protected:
 
 public:
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CWC_UpdateIgnoreList, DT_WC_UpdateIgnoreList, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_WC_UpdateIgnoreList)
 };
 
+IMPLEMENT_SERVERCLASS(CWC_UpdateIgnoreList, DT_WC_UpdateIgnoreList)
 
 LINK_ENTITY_TO_CLASS( hammer_updateignorelist, CWC_UpdateIgnoreList );
 

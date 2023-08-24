@@ -399,6 +399,7 @@ public:
 	DECLARE_PREDICTABLE();
 	// network data
 	//DECLARE_SERVERCLASS();
+	static ServerClass* GetServerClassStatic() { return NULL; }
 	virtual ServerClass* GetServerClass() { return NULL; }
 	// data description
 	DECLARE_DATADESC();

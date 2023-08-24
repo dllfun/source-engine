@@ -3241,16 +3241,23 @@ class CFuncTrackAuto : public CFuncTrackChange
 {
 	DECLARE_CLASS( CFuncTrackAuto, CFuncTrackChange );
 public:
+	DECLARE_SERVERCLASS();
 	void			Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	virtual void	UpdateAutoTargets( int toggleState );
 	void			TriggerTrackChange( inputdata_t &inputdata );
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CFuncTrackAuto, DT_FuncTrackAuto, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncTrackAuto)
 };
 
 BEGIN_DATADESC( CFuncTrackAuto )
 	DEFINE_INPUTFUNC( FIELD_VOID, "Trigger", TriggerTrackChange ),
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CFuncTrackAuto, DT_FuncTrackAuto)
 
 LINK_ENTITY_TO_CLASS( func_trackautochange, CFuncTrackAuto );
 

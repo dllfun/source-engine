@@ -114,7 +114,7 @@ class CFishPool : public CBaseEntity, public CGameEventListener
 public:
 	DECLARE_CLASS( CFishPool, CBaseEntity );
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	CFishPool( void );
 
 	virtual void Spawn();
@@ -140,6 +140,10 @@ private:
 	CUtlVector< CHandle<CFish> > m_fishes;	///< vector of all fish in this pool
 
 	CountdownTimer m_visTimer;				///< for throttling line of sight checks between all fish
+
+	BEGIN_SEND_TABLE(CFishPool, DT_FishPool, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FishPool)
 };
 
 

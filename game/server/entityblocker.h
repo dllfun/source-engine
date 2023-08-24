@@ -18,11 +18,15 @@ class CEntityBlocker : public CBaseEntity
 	DECLARE_CLASS( CEntityBlocker, CBaseEntity );
 
 public:
-
+	DECLARE_SERVERCLASS();
 	static CEntityBlocker *Create( const Vector &origin, const Vector &mins, const Vector &maxs, CBaseEntity *pOwner = NULL, bool bBlockPhysics = false );
 
 	void Spawn( void );
 	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+
+	BEGIN_SEND_TABLE(CEntityBlocker, DT_EntityBlocker, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_EntityBlocker)
 };
 
 #endif // ENTITYBLOCKER_H

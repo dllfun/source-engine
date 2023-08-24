@@ -269,7 +269,7 @@ class CAI_Hint : public CServerOnlyEntity
 public:
 	CAI_Hint( void );
 	~CAI_Hint( void );
-
+	DECLARE_SERVERCLASS();
 	// Interface for specific nodes
 	bool				Lock( CBaseEntity *pNPC );			// Makes unavailable for hints
 	void				Unlock( float delay = 0.0 );		// Makes available for hints after delay
@@ -333,6 +333,9 @@ private:
 	friend class CAI_HintManager;
 
 	DECLARE_DATADESC();
+	BEGIN_SEND_TABLE(CAI_Hint, DT_AI_Hint, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_Hint)
 };
 
 #define SF_ALLOW_JUMP_UP 65536

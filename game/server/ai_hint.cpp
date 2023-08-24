@@ -873,6 +873,8 @@ void CAI_HintManager::DrawHintOverlays(float flDrawDuration)
 //##################################################################
 // > CAI_Hint
 //##################################################################
+IMPLEMENT_SERVERCLASS(CAI_Hint, DT_AI_Hint)
+
 LINK_ENTITY_TO_CLASS( ai_hint, CAI_Hint );
 
 BEGIN_DATADESC( CAI_Hint )

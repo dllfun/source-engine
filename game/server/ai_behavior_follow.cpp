@@ -2119,6 +2119,8 @@ END_DATADESC()
 
 //-------------------------------------
 
+IMPLEMENT_SERVERCLASS(CAI_FollowGoal, DT_AI_FollowGoal)
+
 LINK_ENTITY_TO_CLASS( ai_goal_follow, CAI_FollowGoal );
 
 //-------------------------------------

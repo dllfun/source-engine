@@ -1195,7 +1195,7 @@ public:
 		m_bAbandonIfEnemyHides = false;
 		m_customParams = AI_DEFAULT_STANDOFF_PARAMS;
 	}
-
+	DECLARE_SERVERCLASS();
 	//---------------------------------
 
 	void EnableGoal( CAI_BaseNPC *pAI )	
@@ -1309,9 +1309,14 @@ private:
 	bool					m_fStayAtCover;
 	bool					m_bAbandonIfEnemyHides;
 	AI_StandoffParams_t		m_customParams;
+
+	BEGIN_SEND_TABLE(CAI_StandoffGoal, DT_AI_StandoffGoal, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_StandoffGoal)
 };
 
 //-------------------------------------
+IMPLEMENT_SERVERCLASS(CAI_StandoffGoal, DT_AI_StandoffGoal)
 
 LINK_ENTITY_TO_CLASS( ai_goal_standoff, CAI_StandoffGoal );
 

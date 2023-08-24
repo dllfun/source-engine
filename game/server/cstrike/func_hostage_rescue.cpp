@@ -12,13 +12,18 @@ class CHostageRescueZone : public CBaseTrigger
 public:
 	DECLARE_CLASS( CHostageRescueZone, CBaseTrigger );
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	void CHostageRescue();
 	void Spawn();
 
 	void HostageRescueTouch( CBaseEntity* pOther );
+
+	BEGIN_SEND_TABLE(CHostageRescueZone, DT_HostageRescueZone, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_HostageRescueZone)
 };
 
+IMPLEMENT_SERVERCLASS(CHostageRescueZone, DT_HostageRescueZone)
 
 LINK_ENTITY_TO_CLASS( func_hostage_rescue, CHostageRescueZone );
 

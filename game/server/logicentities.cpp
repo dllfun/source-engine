@@ -2523,7 +2523,7 @@ LINK_ENTITY_TO_CLASS( logic_collision_pair, CLogicCollisionPair );
 class CLogicBranchList : public CLogicalEntity
 {
 	DECLARE_CLASS( CLogicBranchList, CLogicalEntity );
-
+	DECLARE_SERVERCLASS();
 	virtual void Spawn();
 	virtual void Activate();
 	virtual int DrawDebugTextOverlays( void );
@@ -2555,7 +2555,13 @@ private:
 	COutputEvent m_OnMixed;				// Fired when one of the registered logic branches changes, but not all are true or false.
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CLogicBranchList, DT_LogicBranchList, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_LogicBranchList)
 };
+
+IMPLEMENT_SERVERCLASS(CLogicBranchList, DT_LogicBranchList)
 
 LINK_ENTITY_TO_CLASS(logic_branch_listener, CLogicBranchList);
 

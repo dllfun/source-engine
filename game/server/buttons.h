@@ -107,6 +107,7 @@ class CMomentaryRotButton : public CRotButton
 	DECLARE_CLASS( CMomentaryRotButton, CRotButton );
 
 public:
+	DECLARE_SERVERCLASS();
 	void	Spawn ( void );
 	bool	CreateVPhysics( void );
 	virtual int	ObjectCaps( void );
@@ -166,6 +167,10 @@ public:
 protected:
 
 	void UpdateThink( void );
+
+	BEGIN_SEND_TABLE(CMomentaryRotButton, DT_MomentaryRotButton, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_MomentaryRotButton)
 };
 
 

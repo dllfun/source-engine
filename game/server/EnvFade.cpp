@@ -24,7 +24,7 @@ private:
 
 public:
 	DECLARE_CLASS( CEnvFade, CLogicalEntity );
-
+	DECLARE_SERVERCLASS();
 	virtual void Spawn( void );
 
 	inline float Duration( void ) { return m_Duration; }
@@ -37,7 +37,13 @@ public:
 
 	// Inputs
 	void InputFade( inputdata_t &inputdata );
+
+	BEGIN_SEND_TABLE(CEnvFade, DT_EnvFade, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_EnvFade)
 };
+
+IMPLEMENT_SERVERCLASS(CEnvFade, DT_EnvFade)
 
 LINK_ENTITY_TO_CLASS( env_fade, CEnvFade );
 

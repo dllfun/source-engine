@@ -401,7 +401,7 @@ class CFilterEnemy : public CBaseFilter
 	DECLARE_DATADESC();
 
 public:
-
+	DECLARE_SERVERCLASS();
 	virtual bool PassesFilterImpl( CBaseEntity *pCaller, CBaseEntity *pEntity );
 	virtual bool PassesDamageFilterImpl( const CTakeDamageInfo &info );
 
@@ -416,6 +416,10 @@ private:
 	float		m_flOuterRadius;			// Outer radius (enemies are LOST at this range)
 	int		m_nMaxSquadmatesPerEnemy;	// Maximum number of squadmates who may share the same enemy
 	string_t	m_iszPlayerName;			// "!player"
+
+	BEGIN_SEND_TABLE(CFilterEnemy, DT_FilterEnemy, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FilterEnemy)
 };
 
 //-----------------------------------------------------------------------------
@@ -617,6 +621,8 @@ bool CFilterEnemy::PassesMobbedFilter( CBaseEntity *pCaller, CBaseEntity *pEnemy
 
 	return true;
 }
+
+IMPLEMENT_SERVERCLASS(CFilterEnemy, DT_FilterEnemy)
 
 LINK_ENTITY_TO_CLASS( filter_enemy, CFilterEnemy );
 

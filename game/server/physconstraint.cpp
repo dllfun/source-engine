@@ -420,6 +420,9 @@ CPhysConstraint::CPhysConstraint( void )
 
 CPhysConstraint::~CPhysConstraint()
 {
+	if (!engineServer) {
+		return;
+	}
 	Deactivate();
 	physenv->DestroyConstraint( m_pConstraint );
 }
@@ -1521,6 +1524,7 @@ class CRagdollConstraint : public CPhysConstraint
 	DECLARE_CLASS( CRagdollConstraint, CPhysConstraint );
 public:
 	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
 #if 0
 	void DrawDebugGeometryOverlays()
 	{
@@ -1545,6 +1549,10 @@ private:
 	float		m_xfriction;
 	float		m_yfriction;
 	float		m_zfriction;
+
+	BEGIN_SEND_TABLE(CRagdollConstraint, DT_RagdollConstraint, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_RagdollConstraint)
 };
 
 BEGIN_DATADESC( CRagdollConstraint )
@@ -1561,6 +1569,7 @@ BEGIN_DATADESC( CRagdollConstraint )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CRagdollConstraint, DT_RagdollConstraint)
 
 LINK_ENTITY_TO_CLASS( phys_ragdollconstraint, CRagdollConstraint );
 

@@ -28,7 +28,7 @@ class CPointDevShotCamera : public CBaseEntity
 	DECLARE_CLASS( CPointDevShotCamera, CBaseEntity );
 public:
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	void Spawn( void );
 	void DevShotThink_Setup( void );
 	void DevShotThink_TakeShot( void );
@@ -40,6 +40,10 @@ public:
 private:
 	string_t	m_iszCameraName;
 	int			m_iFOV;
+
+	BEGIN_SEND_TABLE(CPointDevShotCamera, DT_PointDevShotCamera, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PointDevShotCamera)
 };
 
 BEGIN_DATADESC( CPointDevShotCamera )
@@ -50,6 +54,8 @@ BEGIN_DATADESC( CPointDevShotCamera )
 	DEFINE_KEYFIELD( m_iszCameraName,	FIELD_STRING,	"cameraname" ),
 	DEFINE_KEYFIELD( m_iFOV,	FIELD_INTEGER,	"FOV" ),
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CPointDevShotCamera, DT_PointDevShotCamera)
 
 LINK_ENTITY_TO_CLASS( point_devshot_camera, CPointDevShotCamera );
 

@@ -22,6 +22,8 @@
 const int SF_REMOVE_ON_FIRE				= 0x001;	// Relay will remove itself after being triggered.
 const int SF_ALLOW_FAST_RETRIGGER		= 0x002;	// Unless set, relay will disable itself until the last output is sent.
 
+IMPLEMENT_SERVERCLASS(CLogicRelay, DT_LogicRelay)
+
 LINK_ENTITY_TO_CLASS(logic_relay, CLogicRelay);
 
 

@@ -28,7 +28,7 @@ class CPointTemplate : public CLogicalEntity
 	DECLARE_CLASS( CPointTemplate, CLogicalEntity );
 public:
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	virtual void	Spawn( void );
 	virtual void	Precache();
 
@@ -67,6 +67,10 @@ private:
 	CUtlVector< template_t >		m_hTemplates;
 
 	COutputEvent					m_pOutputOnSpawned;
+
+	BEGIN_SEND_TABLE(CPointTemplate, DT_PointTemplate, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PointTemplate)
 };
 
 #endif // POINT_TEMPLATE_H

@@ -14,6 +14,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+IMPLEMENT_SERVERCLASS(CAI_SpeechFilter, DT_AI_SpeechFilter)
+
 LINK_ENTITY_TO_CLASS( ai_speechfilter, CAI_SpeechFilter );
 
 BEGIN_DATADESC( CAI_SpeechFilter )

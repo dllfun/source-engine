@@ -21,6 +21,7 @@ class CPointTeleport : public CBaseEntity
 {
 	DECLARE_CLASS( CPointTeleport, CBaseEntity );
 public:
+	DECLARE_SERVERCLASS();
 	void	Activate( void );
 
 	void InputTeleport( inputdata_t &inputdata );
@@ -33,8 +34,13 @@ private:
 	QAngle m_vSaveAngles;
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CPointTeleport, DT_PointTeleport, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PointTeleport)
 };
 
+IMPLEMENT_SERVERCLASS(CPointTeleport, DT_PointTeleport)
 
 LINK_ENTITY_TO_CLASS( point_teleport, CPointTeleport );
 

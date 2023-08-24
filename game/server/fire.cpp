@@ -1320,6 +1320,7 @@ class CEnvFireSensor : public CBaseEntity
 {
 	DECLARE_CLASS( CEnvFireSensor, CBaseEntity );
 public:
+	DECLARE_SERVERCLASS();
 	void Spawn();
 	void Think();
 	void TurnOn();
@@ -1339,6 +1340,10 @@ private:
 
 	COutputEvent	m_OnHeatLevelStart;
 	COutputEvent	m_OnHeatLevelEnd;
+
+	BEGIN_SEND_TABLE(CEnvFireSensor, DT_EnvFireSensor, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_EnvFireSensor)
 };
 
 BEGIN_DATADESC( CEnvFireSensor )
@@ -1358,6 +1363,8 @@ BEGIN_DATADESC( CEnvFireSensor )
 	DEFINE_OUTPUT( m_OnHeatLevelEnd, "OnHeatLevelEnd"),
 
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CEnvFireSensor, DT_EnvFireSensor)
 
 LINK_ENTITY_TO_CLASS( env_firesensor, CEnvFireSensor );
 

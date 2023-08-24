@@ -18,7 +18,7 @@ class CFuncNavPrerequisite : public CBaseTrigger, public IFuncNavPrerequisiteAut
 
 public:
 	CFuncNavPrerequisite();
-
+	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
 	virtual void Spawn( void );
@@ -45,6 +45,10 @@ protected:
 	float m_taskValue;
 	bool m_isDisabled;
 	EHANDLE m_hTaskEntity;
+
+	BEGIN_SEND_TABLE(CFuncNavPrerequisite, DT_FuncNavPrerequisite, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncNavPrerequisite)
 };
 
 inline float CFuncNavPrerequisite::GetTaskValue( void ) const

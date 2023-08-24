@@ -515,6 +515,8 @@ void CFish::AddVisible( CFish *fish )
  * A CFishPool manages a collection of CFish, and defines where the "pool" is in the world.
  */
 
+IMPLEMENT_SERVERCLASS(CFishPool, DT_FishPool)
+
 LINK_ENTITY_TO_CLASS( func_fish_pool, CFishPool );
 
 BEGIN_DATADESC( CFishPool )
@@ -534,6 +536,9 @@ END_DATADESC()
 //-------------------------------------------------------------------------------------------------------------
 CFishPool::CFishPool( void )
 {
+	if (!engineServer) {
+		return;
+	}
 	m_fishCount = 0;
 	m_maxRange = 255.0f;
 	m_swimDepth = 0.0f;

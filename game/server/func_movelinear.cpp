@@ -21,6 +21,8 @@
 // -------------------------------
 #define SF_MOVELINEAR_NOTSOLID		8
 
+IMPLEMENT_SERVERCLASS(CFuncMoveLinear, DT_FuncMoveLinear)
+
 LINK_ENTITY_TO_CLASS( func_movelinear, CFuncMoveLinear );
 LINK_ENTITY_TO_CLASS( momentary_door, CFuncMoveLinear );	// For backward compatibility
 

@@ -46,110 +46,7 @@ T* _CreateEntityTemplate(T* newEnt, int entnum, int serialNum)
 	return newEnt;
 }
 
-class IClientEntityFactory;
-// This is the glue that hooks .MAP entity class names to our CPP classes
-abstract_class IClientEntityFactoryDictionary
-{
-public:
-	virtual void InstallFactory(IClientEntityFactory* pFactory, const char* pMapClassName) = 0;
-	virtual IClientNetworkable* Create(const char* pMapClassName, int entnum, int serialNum) = 0;
-	virtual void Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable) = 0;
-	virtual IClientEntityFactory* FindFactory(const char* pMapClassName) = 0;
-	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
-	virtual void RegisteMapClassName(const char* pDllClassName, const char* pMapClassName) = 0;
-	virtual const char* GetMapClassName(const char* pDllClassName) = 0;
-	virtual size_t GetEntitySize(const char* pMapClassName) = 0;
-	virtual void ReportEntityNames() = 0;
-	virtual void ReportEntitySizes() = 0;
-};
 
-IClientEntityFactoryDictionary* ClientEntityFactoryDictionary();
-
-inline bool CanCreateClientEntity(const char* pszClassname)
-{
-	return (ClientEntityFactoryDictionary() != NULL && ClientEntityFactoryDictionary()->FindFactory(pszClassname) != NULL);
-}
-
-abstract_class IClientEntityFactory
-{
-public:
-	virtual IClientNetworkable* Create(int entnum, int serialNum) = 0;//const char* pClassName, 
-	virtual void Destroy(IClientNetworkable* pNetworkable) = 0;
-	virtual size_t GetEntitySize() = 0;
-};
-
-template <class T>
-class CClientEntityFactory : public IClientEntityFactory
-{
-public:
-	CClientEntityFactory(const char* pDllClassName, const char* pMapClassName = NULL)
-	{
-		if (pMapClassName) {
-			m_pMapClassName = pMapClassName;
-			ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
-			ClientEntityFactoryDictionary()->RegisteMapClassName(pDllClassName, pMapClassName);
-		}
-		else {
-			ClientEntityFactoryDictionary()->InstallFactory(this, pDllClassName);
-		}
-	}
-
-	IClientNetworkable* Create(int entnum, int serialNum)
-	{
-		T* pEnt = _CreateEntityTemplate((T*)NULL, entnum, serialNum);
-		return pEnt->NetworkProp();
-	}
-
-	void Destroy(IClientNetworkable* pNetworkable)
-	{
-		if (pNetworkable)
-		{
-			pNetworkable->Release();
-		}
-	}
-
-	virtual size_t GetEntitySize()
-	{
-		return sizeof(T);
-	}
-
-private:
-	const char* m_pMapClassName = NULL;
-};
-
-template <class T>
-class CClientEntitySingletonFactory : public IClientEntityFactory
-{
-public:
-	CClientEntitySingletonFactory(const char* pDllClassName, const char* pMapClassName = NULL)
-	{
-		ClientEntityFactoryDictionary()->InstallFactory(this, pDllClassName);
-		if (pMapClassName) {
-			m_pMapClassName = pMapClassName;
-			ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
-			ClientEntityFactoryDictionary()->RegisteMapClassName(pDllClassName, pMapClassName);
-		}
-	}
-
-	IClientNetworkable* Create(int entnum, int serialNum)
-	{
-		return pEnt.GetClientNetworkable();
-	}
-
-	void Destroy(IClientNetworkable* pNetworkable)
-	{
-		
-	}
-
-	virtual size_t GetEntitySize()
-	{
-		return sizeof(T);
-	}
-
-private:
-	const char* m_pMapClassName = NULL;
-	T pEnt;
-};
 
 class ClientClass;
 
@@ -160,12 +57,16 @@ public:
 	ClientClass* FindClientClass(const char* pName);
 	ClientClass* GetClientClassHead();
 	void	RegisteClientClass(ClientClass* pClientClass);
-
+	void	RegisteClientClassAlias(ClientClass* pClientClass, const char* pMapClassName);
 private:
 	ClientClass* m_pClientClassHead = NULL;
 	CUtlStringMap< ClientClass* >& GetClientClassMap() {
 		static CUtlStringMap< ClientClass* >	s_ClientClassMap;
 		return s_ClientClassMap;
+	}
+	CUtlStringMap< ClientClass* >& GetAliasClientClassMap() {
+		static CUtlStringMap< ClientClass* >	s_AliasClientClassMap;
+		return s_AliasClientClassMap;
 	}
 };
 
@@ -309,6 +210,7 @@ private:
 
 #define DECLARE_CLIENTCLASS() \
 	virtual int YouForgotToImplementOrDeclareClientClass();\
+	static ClientClass* GetClientClassStatic();\
 	virtual ClientClass* GetClientClass();\
 	DECLARE_CLIENTCLASS_NOBASE()
 
@@ -329,6 +231,7 @@ private:
 		#clientClassName, \
 		#serverClassName, \
 		#dataTable);\
+	ClientClass*	clientClassName::GetClientClassStatic(){return &__g_##clientClassName##_ClassReg;}\
 	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##_ClassReg;}\
 	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
 	static clientClassName g_##clientClassName##_EntityReg;											\
@@ -401,12 +304,131 @@ private:
 // Used internally..
 #define INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
 	extern PrototypeClientClass __g_##clientClassName##ClientClass;\
-	
+
+template <class T>
+class ClientClassAliasRegister
+{
+public:
+	ClientClassAliasRegister(const char* pMapClassName) {
+		if (!pMapClassName || !pMapClassName[0]) {
+			Error("pMapClassName can not been NULL\n");
+		}
+		ClientClass* clientClass = T::GetClientClassStatic();
+		g_pClientClassManager->RegisteClientClassAlias(clientClass, pMapClassName);
+	}
+};
+
+
+class IClientEntityFactory;
+// This is the glue that hooks .MAP entity class names to our CPP classes
+abstract_class IClientEntityFactoryDictionary
+{
+public:
+	virtual void InstallFactory(IClientEntityFactory * pFactory, const char* pMapClassName) = 0;
+	virtual IClientNetworkable* Create(const char* pMapClassName, int entnum, int serialNum) = 0;
+	virtual void Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable) = 0;
+	virtual IClientEntityFactory* FindFactory(const char* pMapClassName) = 0;
+	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
+	virtual void RegisteMapClassName(const char* pDllClassName, const char* pMapClassName) = 0;
+	virtual const char* GetMapClassName(const char* pDllClassName) = 0;
+	virtual size_t GetEntitySize(const char* pMapClassName) = 0;
+	virtual void ReportEntityNames() = 0;
+	virtual void ReportEntitySizes() = 0;
+};
+
+IClientEntityFactoryDictionary* ClientEntityFactoryDictionary();
+
+inline bool CanCreateClientEntity(const char* pszClassname)
+{
+	return (ClientEntityFactoryDictionary() != NULL && ClientEntityFactoryDictionary()->FindFactory(pszClassname) != NULL);
+}
+
+abstract_class IClientEntityFactory
+{
+public:
+	virtual IClientNetworkable * Create(int entnum, int serialNum) = 0;//const char* pClassName, 
+	virtual void Destroy(IClientNetworkable* pNetworkable) = 0;
+	virtual size_t GetEntitySize() = 0;
+};
+
+template <class T>
+class CClientEntityFactory : public IClientEntityFactory
+{
+public:
+	CClientEntityFactory(const char* pDllClassName, const char* pMapClassName = NULL)
+	{
+		if (pMapClassName) {
+			m_pMapClassName = pMapClassName;
+			ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
+			ClientEntityFactoryDictionary()->RegisteMapClassName(pDllClassName, pMapClassName);
+		}
+		else {
+			ClientEntityFactoryDictionary()->InstallFactory(this, pDllClassName);
+		}
+	}
+
+	IClientNetworkable* Create(int entnum, int serialNum)
+	{
+		T* pEnt = _CreateEntityTemplate((T*)NULL, entnum, serialNum);
+		return pEnt->NetworkProp();
+	}
+
+	void Destroy(IClientNetworkable* pNetworkable)
+	{
+		if (pNetworkable)
+		{
+			pNetworkable->Release();
+		}
+	}
+
+	virtual size_t GetEntitySize()
+	{
+		return sizeof(T);
+	}
+
+private:
+	const char* m_pMapClassName = NULL;
+};
+
+template <class T>
+class CClientEntitySingletonFactory : public IClientEntityFactory
+{
+public:
+	CClientEntitySingletonFactory(const char* pDllClassName, const char* pMapClassName = NULL)
+	{
+		ClientEntityFactoryDictionary()->InstallFactory(this, pDllClassName);
+		if (pMapClassName) {
+			m_pMapClassName = pMapClassName;
+			ClientEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
+			ClientEntityFactoryDictionary()->RegisteMapClassName(pDllClassName, pMapClassName);
+		}
+	}
+
+	IClientNetworkable* Create(int entnum, int serialNum)
+	{
+		return pEnt.GetClientNetworkable();
+	}
+
+	void Destroy(IClientNetworkable* pNetworkable)
+	{
+
+	}
+
+	virtual size_t GetEntitySize()
+	{
+		return sizeof(T);
+	}
+
+private:
+	const char* m_pMapClassName = NULL;
+	T pEnt;
+};
 
 // On the client .dll this creates a mapping between a classname and
 //  a client side class.  Probably could be templatized at some point.
 
 #define LINK_ENTITY_TO_CLASS( mapClassName, DLLClassName )						\
-	static CClientEntityFactory<DLLClassName> mapClassName(#DLLClassName, #mapClassName );	
+	static CClientEntityFactory<DLLClassName> mapClassName(#DLLClassName, #mapClassName );\
+	static ClientClassAliasRegister<DLLClassName> g_##mapClassName##_ClassAliasReg( #mapClassName );
 
 #endif // CLIENT_CLASS_H

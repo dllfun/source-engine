@@ -1566,7 +1566,7 @@ class CAI_ScriptedSchedule : public CBaseEntity
 	DECLARE_CLASS( CAI_ScriptedSchedule, CBaseEntity );
 public:
 	CAI_ScriptedSchedule( void );
-
+	DECLARE_SERVERCLASS();
 private:
 
 	void StartSchedule( CAI_BaseNPC *pTarget );
@@ -1614,6 +1614,9 @@ private:
 
 	DECLARE_DATADESC();
 
+	BEGIN_SEND_TABLE(CAI_ScriptedSchedule, DT_AI_ScriptedSchedule, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_ScriptedSchedule)
 };
 
 BEGIN_DATADESC( CAI_ScriptedSchedule )
@@ -1638,6 +1641,7 @@ BEGIN_DATADESC( CAI_ScriptedSchedule )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CAI_ScriptedSchedule, DT_AI_ScriptedSchedule)
 
 LINK_ENTITY_TO_CLASS( aiscripted_schedule, CAI_ScriptedSchedule );
 

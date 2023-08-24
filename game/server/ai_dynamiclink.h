@@ -17,6 +17,7 @@
 #ifndef AI_DYNAMICLINK_H
 #define AI_DYNAMICLINK_H
 #pragma once
+#include "cbase.h"
 
 enum DynamicLinkState_t
 {
@@ -109,6 +110,7 @@ class CAI_RadialLinkController : public CBaseEntity
 	DECLARE_CLASS( CAI_RadialLinkController, CBaseEntity );
 
 public:
+	DECLARE_SERVERCLASS();
 	void	Spawn();
 	void	Activate();
 	void	PollMotionThink();
@@ -120,6 +122,10 @@ public:
 	bool	m_bAtRest;
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CAI_RadialLinkController, DT_AI_RadialLinkController, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_RadialLinkController)
 };
 
 #endif // AI_DYNAMICLINK_H

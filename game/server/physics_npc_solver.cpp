@@ -367,6 +367,7 @@ class CPhysicsEntitySolver : public CLogicalEntity//, public IMotionEvent
 	DECLARE_CLASS( CPhysicsEntitySolver, CLogicalEntity );
 public:
 	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
 	void Init( CBaseEntity *pMovingEntity, CBaseEntity *pPhysicsBlocker, float separationTime );
 	static CPhysicsEntitySolver *Create( CBaseEntity *pMovingEntity, CBaseEntity *pPhysicsBlocker, float separationTime );
 
@@ -391,7 +392,13 @@ private:
 	float						m_separationDuration;
 	float						m_cancelTime;
 	int							m_savedCollisionGroup;
+
+	BEGIN_SEND_TABLE(CPhysicsEntitySolver, DT_PhysicsEntitySolver, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PhysicsEntitySolver)
 };
+
+IMPLEMENT_SERVERCLASS(CPhysicsEntitySolver, DT_PhysicsEntitySolver)
 
 LINK_ENTITY_TO_CLASS( physics_entity_solver, CPhysicsEntitySolver );
 

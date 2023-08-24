@@ -25,7 +25,7 @@ class CGunTarget : public CBaseToggle
 	DECLARE_CLASS( CGunTarget, CBaseToggle );
 
 public:
-
+	DECLARE_SERVERCLASS();
 	virtual void Spawn( void );
 	virtual void Activate( void );
 	bool CreateVPhysics( void );
@@ -63,8 +63,13 @@ private:
 
 	// Outputs
 	COutputEvent	m_OnDeath;
+
+	BEGIN_SEND_TABLE(CGunTarget, DT_GunTarget, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_GunTarget)
 };
 
+IMPLEMENT_SERVERCLASS(CGunTarget, DT_GunTarget)
 
 LINK_ENTITY_TO_CLASS( func_guntarget, CGunTarget );
 

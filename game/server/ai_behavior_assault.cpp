@@ -1526,7 +1526,7 @@ int CAI_AssaultBehavior::SelectSchedule()
 class CAI_AssaultGoal : public CAI_GoalEntity
 {
 	typedef CAI_GoalEntity BaseClass;
-
+	DECLARE_SERVERCLASS();
 	virtual void EnableGoal( CAI_BaseNPC *pAI );
 	virtual void DisableGoal( CAI_BaseNPC *pAI );
 
@@ -1537,7 +1537,13 @@ class CAI_AssaultGoal : public CAI_GoalEntity
 	void InputBeginAssault( inputdata_t &inputdata );
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CAI_AssaultGoal, DT_AI_AssaultGoal, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_AssaultGoal)
 };
+
+IMPLEMENT_SERVERCLASS(CAI_AssaultGoal, DT_AI_AssaultGoal)
 
 BEGIN_DATADESC( CAI_AssaultGoal )
 	DEFINE_KEYFIELD( m_RallyPoint, FIELD_STRING, "rallypoint" ),

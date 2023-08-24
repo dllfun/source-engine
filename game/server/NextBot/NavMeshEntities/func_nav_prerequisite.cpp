@@ -10,6 +10,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+IMPLEMENT_SERVERCLASS(CFuncNavPrerequisite, DT_FuncNavPrerequisite)
 
 LINK_ENTITY_TO_CLASS( func_nav_prerequisite, CFuncNavPrerequisite );
 

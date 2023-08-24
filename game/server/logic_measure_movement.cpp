@@ -21,6 +21,7 @@ class CLogicMeasureMovement : public CLogicalEntity
 	DECLARE_CLASS( CLogicMeasureMovement, CLogicalEntity );
 
 public:
+	DECLARE_SERVERCLASS();
 	virtual void Activate();
 
 private:
@@ -57,8 +58,13 @@ private:
 
 	float m_flScale;
 	int m_nMeasureType;
+
+	BEGIN_SEND_TABLE(CLogicMeasureMovement, DT_LogicMeasureMovement, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_LogicMeasureMovement)
 };
 
+IMPLEMENT_SERVERCLASS(CLogicMeasureMovement, DT_LogicMeasureMovement)
 
 LINK_ENTITY_TO_CLASS( logic_measure_movement, CLogicMeasureMovement );
 

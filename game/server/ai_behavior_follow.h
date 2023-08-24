@@ -59,7 +59,7 @@ class CAI_FollowGoal : public CAI_GoalEntity
 	DECLARE_CLASS( CAI_FollowGoal, CAI_GoalEntity );
 
 public:
-
+	DECLARE_SERVERCLASS();
 	virtual void EnableGoal( CAI_BaseNPC *pAI );
 	virtual void DisableGoal( CAI_BaseNPC *pAI  );
 #ifdef HL2_EPISODIC
@@ -69,6 +69,10 @@ public:
 	int m_iFormation;
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CAI_FollowGoal, DT_AI_FollowGoal, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_FollowGoal)
 };
 
 //-----------------------------------------------------------------------------

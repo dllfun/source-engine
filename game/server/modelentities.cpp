@@ -222,7 +222,7 @@ class CTriggerBrush : public CBaseEntity
 
 public:
 	DECLARE_CLASS( CTriggerBrush, CBaseEntity );
-
+	DECLARE_SERVERCLASS();
 	// engine inputs
 	void Spawn( void );
 	void StartTouch( CBaseEntity *pOther );
@@ -254,7 +254,13 @@ public:
 	int m_iDontMessageParent;
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CTriggerBrush, DT_TriggerBrush, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_TriggerBrush)
 };
+
+IMPLEMENT_SERVERCLASS(CTriggerBrush, DT_TriggerBrush)
 
 LINK_ENTITY_TO_CLASS( trigger_brush, CTriggerBrush );
 

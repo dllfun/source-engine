@@ -684,7 +684,7 @@ class CGamePlayerTeam : public CRulePointEntity
 {
 public:
 	DECLARE_CLASS( CGamePlayerTeam, CRulePointEntity );
-
+	DECLARE_SERVERCLASS();
 	void		Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
 private:
@@ -694,7 +694,13 @@ private:
 	inline bool ShouldGibPlayer( void ) { return (m_spawnflags & SF_PTEAM_GIB) ? true : false; }
 	
 	const char *TargetTeamName( const char *pszTargetName, CBaseEntity *pActivator );
+
+	BEGIN_SEND_TABLE(CGamePlayerTeam, DT_GamePlayerTeam, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_GamePlayerTeam)
 };
+
+IMPLEMENT_SERVERCLASS(CGamePlayerTeam, DT_GamePlayerTeam)
 
 LINK_ENTITY_TO_CLASS( game_player_team, CGamePlayerTeam );
 

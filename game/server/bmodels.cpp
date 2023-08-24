@@ -1384,6 +1384,7 @@ class CFuncVPhysicsClip : public CBaseEntity
 	DECLARE_CLASS( CFuncVPhysicsClip, CBaseEntity );
 
 public:
+	DECLARE_SERVERCLASS();
 	void Spawn();
 	void Activate();
 	bool CreateVPhysics( void );
@@ -1399,6 +1400,10 @@ private:
 	string_t						m_iFilterName;
 	CHandle<CBaseFilter>			m_hFilter;
 	bool							m_bDisabled;
+
+	BEGIN_SEND_TABLE(CFuncVPhysicsClip, DT_FuncVPhysicsClip, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncVPhysicsClip)
 };
 
 // Global Savedata for base trigger
@@ -1414,6 +1419,7 @@ BEGIN_DATADESC( CFuncVPhysicsClip )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CFuncVPhysicsClip, DT_FuncVPhysicsClip)
 
 LINK_ENTITY_TO_CLASS( func_clip_vphysics, CFuncVPhysicsClip );
 

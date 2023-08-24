@@ -579,6 +579,8 @@ CAI_DynamicLink::~CAI_DynamicLink(void) {
 	}
 }
 
+IMPLEMENT_SERVERCLASS(CAI_RadialLinkController, DT_AI_RadialLinkController)
+
 LINK_ENTITY_TO_CLASS(info_radial_link_controller, CAI_RadialLinkController);
 
 BEGIN_DATADESC( CAI_RadialLinkController )

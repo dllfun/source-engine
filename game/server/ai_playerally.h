@@ -201,7 +201,7 @@ class CAI_AllySpeechManager : public CLogicalEntity
 public:
 	CAI_AllySpeechManager();
 	~CAI_AllySpeechManager();
-	
+	DECLARE_SERVERCLASS();
 	void Spawn();
 
 	void AddCustomConcept( const ConceptInfo_t &conceptInfo );
@@ -223,6 +223,9 @@ private:
 	static CAI_AllySpeechManager *gm_pSpeechManager;
 
 	DECLARE_DATADESC();
+	BEGIN_SEND_TABLE(CAI_AllySpeechManager, DT_AI_AllySpeechManager, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_AllySpeechManager)
 };
 
 //-------------------------------------

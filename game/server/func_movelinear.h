@@ -21,7 +21,7 @@ class CFuncMoveLinear : public CBaseToggle
 {
 public:
 	DECLARE_CLASS( CFuncMoveLinear, CBaseToggle );
-
+	DECLARE_SERVERCLASS();
 	void		Spawn( void );
 	void		Precache( void );
 	bool		CreateVPhysics( void );
@@ -59,5 +59,9 @@ public:
 	// Outputs
 	COutputEvent m_OnFullyOpen;
 	COutputEvent m_OnFullyClosed;
+
+	BEGIN_SEND_TABLE(CFuncMoveLinear, DT_FuncMoveLinear, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncMoveLinear)
 };
 #endif // FUNC_MOVELINEAR_H

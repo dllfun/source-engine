@@ -265,7 +265,7 @@ class CBaseMoveBehavior : public CPathKeyFrame
 {
 public:
 	DECLARE_CLASS( CBaseMoveBehavior, CPathKeyFrame );
-
+	DECLARE_SERVERCLASS();
 	void Spawn( void );
 	void Activate( void );
 	void MoveDone( void );
@@ -301,7 +301,13 @@ public:
 	float CalculateTimeAdvancementForSpeed( float moveTime, float speed );
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CBaseMoveBehavior, DT_BaseMoveBehavior, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_BaseMoveBehavior)
 };
+
+IMPLEMENT_SERVERCLASS(CBaseMoveBehavior, DT_BaseMoveBehavior)
 
 LINK_ENTITY_TO_CLASS( move_keyframed, CBaseMoveBehavior );
 

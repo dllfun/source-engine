@@ -16,8 +16,12 @@ class CInfoViewParameters : public CBaseEntity
 public:
 	DECLARE_CLASS( CInfoViewParameters, CBaseEntity );
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	int m_nViewMode;
+
+	BEGIN_SEND_TABLE(CInfoViewParameters, DT_InfoViewParameters, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_InfoViewParameters)
 };
 
 

@@ -742,7 +742,7 @@ class CGameGibManager : public CBaseEntity
 	DECLARE_DATADESC();
 
 public:
-
+	DECLARE_SERVERCLASS();
 	CGameGibManager() : m_iCurrentMaxPieces(-1), m_iMaxPieces(-1), m_iMaxPiecesDX8(-1) {}
 
 	void Activate( void );
@@ -767,6 +767,10 @@ private:
 	int			m_iMaxPieces;
 	int			m_iMaxPiecesDX8;
 	int			m_iLastFrame;
+
+	BEGIN_SEND_TABLE(CGameGibManager, DT_GameGibManager, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_GameGibManager)
 };
 
 BEGIN_DATADESC( CGameGibManager )
@@ -781,6 +785,8 @@ BEGIN_DATADESC( CGameGibManager )
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetMaxPieces", InputSetMaxPieces ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetMaxPiecesDX8", InputSetMaxPiecesDX8 ),
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CGameGibManager, DT_GameGibManager)
 
 LINK_ENTITY_TO_CLASS( game_gib_manager, CGameGibManager );
 

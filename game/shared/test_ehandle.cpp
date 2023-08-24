@@ -72,7 +72,15 @@
 	{
 		DECLARE_CLASS( CHandleDummy, CBaseEntity );
 	public:
+		DECLARE_SERVERCLASS();
+
+		BEGIN_SEND_TABLE(CHandleDummy, DT_HandleDummy, DT_BaseEntity)
+
+		END_SEND_TABLE(DT_HandleDummy)
 	};
+
+	IMPLEMENT_SERVERCLASS(CHandleDummy, DT_HandleDummy)
+
 	LINK_ENTITY_TO_CLASS( handle_dummy, CHandleDummy );
 
 	CHandle<CHandleTest> g_HandleTest;

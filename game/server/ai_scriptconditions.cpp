@@ -37,6 +37,7 @@ ConVar debugscriptconditions( "ai_debugscriptconditions", "0" );
 // CAI_ScriptConditions
 //
 //=============================================================================
+IMPLEMENT_SERVERCLASS(CAI_ScriptConditions, DT_AI_ScriptConditions)
 
 LINK_ENTITY_TO_CLASS(ai_script_conditions, CAI_ScriptConditions);
 

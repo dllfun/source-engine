@@ -13,7 +13,7 @@ public:
 
 	DECLARE_DATADESC();
 	DECLARE_CLASS( CWeightButton, CBaseEntity ); 
-
+	DECLARE_SERVERCLASS();
 	void Spawn( void );
 	bool CreateVPhysics( void );
 
@@ -26,7 +26,12 @@ public:
 
 	void TriggerThink ( void );
 
+	BEGIN_SEND_TABLE(CWeightButton, DT_WeightButton, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_WeightButton)
 };
+
+IMPLEMENT_SERVERCLASS(CWeightButton, DT_WeightButton)
 
 LINK_ENTITY_TO_CLASS( func_weight_button, CWeightButton );
 

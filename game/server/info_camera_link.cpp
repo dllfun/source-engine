@@ -25,7 +25,7 @@ class CInfoCameraLink : public CLogicalEntity
 public:
 	CInfoCameraLink();
 	~CInfoCameraLink();
-
+	DECLARE_SERVERCLASS();
 	virtual void Activate();
 
 private:
@@ -39,6 +39,10 @@ private:
 
 	friend CBaseEntity *CreateInfoCameraLink( CBaseEntity *pTarget, CPointCamera *pCamera );
 	friend void PointCameraSetupVisibility( CBaseEntity *pPlayer, int area, unsigned char *pvs, int pvssize );
+
+	BEGIN_SEND_TABLE(CInfoCameraLink, DT_InfoCameraLink, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_InfoCameraLink)
 };
 
 
@@ -63,6 +67,7 @@ BEGIN_DATADESC( CInfoCameraLink )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CInfoCameraLink, DT_InfoCameraLink)
 
 LINK_ENTITY_TO_CLASS( info_camera_link, CInfoCameraLink );
 

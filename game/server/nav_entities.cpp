@@ -584,6 +584,7 @@ class CFuncNavObstruction : public CBaseEntity, public INavAvoidanceObstacle
 	DECLARE_CLASS( CFuncNavObstruction, CBaseEntity );
 
 public:
+	DECLARE_SERVERCLASS();
 	void Spawn();
 	virtual void UpdateOnRemove( void );
 
@@ -610,6 +611,10 @@ private:
 
 	void ObstructNavAreas( void );
 	bool m_bDisabled;
+
+	BEGIN_SEND_TABLE(CFuncNavObstruction, DT_FuncNavObstruction, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncNavObstruction)
 };
 
 
@@ -619,6 +624,7 @@ BEGIN_DATADESC( CFuncNavObstruction )
 	DEFINE_KEYFIELD( m_bDisabled,	FIELD_BOOLEAN,	"StartDisabled" ),
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CFuncNavObstruction, DT_FuncNavObstruction)
 
 LINK_ENTITY_TO_CLASS( func_nav_avoidance_obstacle, CFuncNavObstruction );
 

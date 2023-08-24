@@ -28,6 +28,7 @@ class CRagdollBoogie : public CBaseEntity
 	DECLARE_CLASS( CRagdollBoogie, CBaseEntity );
 
 public:
+	DECLARE_SERVERCLASS();
 	static CRagdollBoogie	*Create( CBaseEntity *pTarget, float flMagnitude, float flStartTime, float flLengthTime = 0.0f, int nSpawnFlags = 0 );
 	static void IncrementSuppressionCount( CBaseEntity *pTarget );
 	static void DecrementSuppressionCount( CBaseEntity *pTarget );
@@ -45,6 +46,10 @@ private:
 	float m_flBoogieLength;
 	float m_flMagnitude;
 	int	m_nSuppressionCount;
+
+	BEGIN_SEND_TABLE(CRagdollBoogie, DT_RagdollBoogie, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_RagdollBoogie)
 };
 
 #endif // RAGDOLLBOOGIE_H

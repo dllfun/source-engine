@@ -1753,7 +1753,7 @@ class CPhysicsWire : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CPhysicsWire, CBaseEntity );
-
+	DECLARE_SERVERCLASS();
 	void	Spawn( void );
 	void	Precache( void );
 
@@ -1764,7 +1764,13 @@ protected:
 	bool SetupPhysics( void );
 
 	int		m_nDensity;
+
+	BEGIN_SEND_TABLE(CPhysicsWire, DT_PhysicsWire, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PhysicsWire)
 };
+
+IMPLEMENT_SERVERCLASS(CPhysicsWire, DT_PhysicsWire)
 
 LINK_ENTITY_TO_CLASS( env_physwire, CPhysicsWire );
 

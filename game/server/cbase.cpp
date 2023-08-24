@@ -659,7 +659,7 @@ CEventQueue::~CEventQueue()
 class CEventQueueSaveLoadProxy : public CLogicalEntity
 {
 	DECLARE_CLASS( CEventQueueSaveLoadProxy, CLogicalEntity );
-
+	DECLARE_SERVERCLASS();
 	int Save( ISave &save )
 	{
 		if ( !BaseClass::Save(save) )
@@ -684,7 +684,13 @@ class CEventQueueSaveLoadProxy : public CLogicalEntity
 
 		return iReturn;
 	}
+
+	BEGIN_SEND_TABLE(CEventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_EventQueueSaveLoadProxy)
 };
+
+IMPLEMENT_SERVERCLASS(CEventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy)
 
 LINK_ENTITY_TO_CLASS(event_queue_saveload_proxy, CEventQueueSaveLoadProxy);
 

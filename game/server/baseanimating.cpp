@@ -55,10 +55,10 @@ class CIKSaveRestoreOps : public CClassPtrSaveRestoreOps
 	}
 };
 
-class TestEnntity {
+class CTestEnntity {
 public:
 	CServerNetworkProperty m_Network;
-
+	DECLARE_SERVERCLASS();
 	void PostConstructor(const char* pName, edict_t* edict) {
 
 	}
@@ -67,8 +67,14 @@ public:
 	{
 		return &m_Network;
 	}
+
+	BEGIN_SEND_TABLE_NOBASE(CTestEnntity, DT_TestEnntity)
+
+	END_SEND_TABLE(DT_TestEnntity)
 };
-LINK_ENTITY_TO_CLASS(test_entity, TestEnntity);
+IMPLEMENT_SERVERCLASS(CTestEnntity, DT_TestEnntity)
+
+LINK_ENTITY_TO_CLASS(test_entity, CTestEnntity);
 
 //-----------------------------------------------------------------------------
 // Relative lighting entity

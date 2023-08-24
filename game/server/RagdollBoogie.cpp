@@ -42,6 +42,8 @@ BEGIN_DATADESC( CRagdollBoogie )
 
 END_DATADESC()
 
+IMPLEMENT_SERVERCLASS(CRagdollBoogie, DT_RagdollBoogie)
+
 LINK_ENTITY_TO_CLASS( env_ragdoll_boogie, CRagdollBoogie );
 
 

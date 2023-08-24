@@ -17,12 +17,18 @@ class CFuncLadderEndPoint : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CFuncLadderEndPoint, CBaseEntity );
-
+	DECLARE_SERVERCLASS();
 	virtual void Activate();
 
 private:
 	bool		Validate();
+
+	BEGIN_SEND_TABLE(CFuncLadderEndPoint, DT_FuncLadderEndPoint, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_FuncLadderEndPoint)
 };
+
+IMPLEMENT_SERVERCLASS(CFuncLadderEndPoint, DT_FuncLadderEndPoint)
 
 LINK_ENTITY_TO_CLASS( func_ladderendpoint, CFuncLadderEndPoint );
 

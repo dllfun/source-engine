@@ -34,7 +34,6 @@ class CSpriteTrail : public CSprite
 {
 	DECLARE_CLASS( CSpriteTrail, CSprite );
 	DECLARE_DATADESC();
-	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 #ifndef CLIENT_DLL
 	DECLARE_SEND_TABLE_ACCESS(DT_SpriteTrail);
@@ -42,6 +41,7 @@ class CSpriteTrail : public CSprite
 
 public:
 	CSpriteTrail( void );
+	DECLARE_NETWORKCLASS();
 
 	// Sets parameters of the sprite trail
 	void SetLifeTime( float time );

@@ -24,6 +24,7 @@
 // of the entities will ever be spawned at a time.
 #define	SF_POINTTEMPLATE_PRESERVE_NAMES					0x0002
 
+IMPLEMENT_SERVERCLASS(CPointTemplate, DT_PointTemplate)
 
 LINK_ENTITY_TO_CLASS(point_template, CPointTemplate);
 

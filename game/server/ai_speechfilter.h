@@ -18,6 +18,7 @@ class CAI_SpeechFilter : public CBaseEntity, public IEntityListener
 	DECLARE_CLASS( CAI_SpeechFilter, CBaseEntity );
 public:
 	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
 
 	void	Spawn( void );
 	void	Activate( void );
@@ -43,6 +44,10 @@ protected:
 	float		m_flIdleModifier;	// Multiplier to the percentage chance that our NPC will idle speak
 	bool		m_bNeverSayHello;	// If set, the NPC never says hello to the player
 	bool		m_bDisabled;
+
+	BEGIN_SEND_TABLE(CAI_SpeechFilter, DT_AI_SpeechFilter, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_SpeechFilter)
 };
 
 #endif // AI_SPEECHFILTER_H

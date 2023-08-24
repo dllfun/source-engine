@@ -157,12 +157,12 @@ void CServerEntityFactoryDictionary::ReportEntitySizes()
 
 
 int		ServerClassManager::GetServerClassesCount() {
-	return GetServerClassMap().GetNumStrings();
+	return GetMainServerClassMap().GetNumStrings();
 }
 
 ServerClass* ServerClassManager::FindServerClass(const char* pName) {
-	if (GetServerClassMap().Defined(pName)) {
-		return GetServerClassMap()[pName];
+	if (GetMainServerClassMap().Defined(pName)) {
+		return GetMainServerClassMap()[pName];
 	}
 	return NULL;
 }
@@ -173,11 +173,11 @@ ServerClass* ServerClassManager::GetServerClassHead() {
 
 void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
 
-	if (GetServerClassMap().Defined(pServerClass->GetNetworkName())) {
+	if (GetMainServerClassMap().Defined(pServerClass->GetNetworkName())) {
 		Error("duplicate ServerClass: %s\n", pServerClass->GetNetworkName());	// dedicated servers exit
 	}
 	else {
-		GetServerClassMap()[pServerClass->GetNetworkName()] = pServerClass;
+		GetMainServerClassMap()[pServerClass->GetNetworkName()] = pServerClass;
 	}
 	// g_pServerClassHead is sorted alphabetically, so find the correct place to insert
 	if (!m_pServerClassHead)
@@ -209,6 +209,15 @@ void	ServerClassManager::RegisteServerClass(ServerClass* pServerClass) {
 			p1 = p2;
 			p2 = p2->GetNext();
 		}
+	}
+}
+
+void	ServerClassManager::RegisteServerClassAlias(ServerClass* pServerClass, const char* pMapClassName) {
+	if (GetAliasServerClassMap().Defined(pMapClassName)) {
+		Error("duplicate ServerClass: %s\n", pMapClassName);	// dedicated servers exit
+	}
+	else {
+		GetAliasServerClassMap()[pMapClassName] = pServerClass;
 	}
 }
 

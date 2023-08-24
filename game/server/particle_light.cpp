@@ -11,6 +11,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+IMPLEMENT_SERVERCLASS(CParticleLight, DT_ParticleLight)
+
 LINK_ENTITY_TO_CLASS( env_particlelight, CParticleLight );
 
 

@@ -59,8 +59,12 @@ class CNullEntity : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CNullEntity, CBaseEntity );
-
+	DECLARE_SERVERCLASS();
 	void Spawn( void );
+
+	BEGIN_SEND_TABLE(CNullEntity, DT_NullEntity, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_NullEntity)
 };
 
 
@@ -69,6 +73,9 @@ void CNullEntity::Spawn( void )
 {
 	UTIL_Remove( this );
 }
+
+IMPLEMENT_SERVERCLASS(CNullEntity, DT_NullEntity)
+
 LINK_ENTITY_TO_CLASS(info_null,CNullEntity);
 
 class CBaseDMStart : public CPointEntity

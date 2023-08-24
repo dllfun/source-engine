@@ -586,6 +586,7 @@ class CPhysMotor : public CLogicalEntity
 public:
 	~CPhysMotor();
 	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
 	void Spawn( void );
 	void Activate( void );
 	void Think( void );
@@ -611,6 +612,10 @@ public:
 	IPhysicsConstraint	*m_pHinge;
 	IPhysicsMotionController *m_pController;
 	CMotorController m_motor;
+
+	BEGIN_SEND_TABLE(CPhysMotor, DT_PhysMotor, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_PhysMotor)
 };
 
 
@@ -632,6 +637,8 @@ BEGIN_DATADESC( CPhysMotor )
 	DEFINE_EMBEDDED( m_motor ),
 
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CPhysMotor, DT_PhysMotor)
 
 LINK_ENTITY_TO_CLASS( phys_motor, CPhysMotor );
 
@@ -691,6 +698,9 @@ void CPhysMotor::InputTurnOff( inputdata_t &inputdata )
 
 CPhysMotor::~CPhysMotor()
 {
+	if (!engineServer) {
+		return;
+	}
 	if ( m_attachedObject && m_pHinge )
 	{
 		IPhysicsObject *pPhys = m_attachedObject->VPhysicsGetObject();

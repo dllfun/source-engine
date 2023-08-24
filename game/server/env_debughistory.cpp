@@ -25,7 +25,7 @@ class CDebugHistory : public CBaseEntity
 	DECLARE_CLASS( CDebugHistory, CBaseEntity );
 public:
 	DECLARE_DATADESC();
-
+	DECLARE_SERVERCLASS();
 	void	Spawn();
 	void	AddDebugHistoryLine( int iCategory, const char *szLine );
 	void	ClearHistories( void );
@@ -37,12 +37,18 @@ public:
 private:
 	char m_DebugLines[MAX_HISTORY_CATEGORIES][MAX_DEBUG_HISTORY_LENGTH];
 	char *m_DebugLineEnd[MAX_HISTORY_CATEGORIES];
+
+	BEGIN_SEND_TABLE(CDebugHistory, DT_DebugHistory, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_DebugHistory)
 };
 
 BEGIN_DATADESC( CDebugHistory )
 	//DEFINE_FIELD( m_DebugLines, FIELD_CHARACTER ),		// Not saved because we write it out manually
 	//DEFINE_FIELD( m_DebugLineEnd, FIELD_CHARACTER ),
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS(CDebugHistory, DT_DebugHistory)
 
 LINK_ENTITY_TO_CLASS( env_debughistory, CDebugHistory );
 

@@ -1643,7 +1643,7 @@ class CAI_LeadGoal_Weapon : public CAI_LeadGoal
 {
 	DECLARE_CLASS( CAI_LeadGoal_Weapon, CAI_LeadGoal );
 public:
-
+	DECLARE_SERVERCLASS();
 	virtual const char *GetConceptModifiers( const char *pszConcept );
 	virtual void InputActivate( inputdata_t &inputdata );
 
@@ -1652,12 +1652,17 @@ private:
 	string_t	m_iszMissingWeaponConceptModifier;
 
 	DECLARE_DATADESC();
+
+	BEGIN_SEND_TABLE(CAI_LeadGoal_Weapon, DT_AI_LeadGoal_Weapon, DT_BaseEntity)
+
+	END_SEND_TABLE(DT_AI_LeadGoal_Weapon)
 };
 
 //-----------------------------------------------------------------------------
 //
 // CAI_LeadGoal_Weapon implementation
 //
+IMPLEMENT_SERVERCLASS(CAI_LeadGoal_Weapon, DT_AI_LeadGoal_Weapon)
 
 LINK_ENTITY_TO_CLASS( ai_goal_lead_weapon, CAI_LeadGoal_Weapon );
 
