@@ -81,8 +81,9 @@ void CTEImpact::Test( const Vector& current_origin, const Vector& current_normal
 
 
 //Server class implementation
-IMPLEMENT_SERVERCLASS( CTEImpact, DT_TEImpact, DT_BaseTempEntity)
-
+IMPLEMENT_SERVERCLASS(CTEImpact, DT_TEImpact, DT_BaseTempEntity)
+LINK_ENTITY_TO_CLASS(TEImpact, CTEImpact);
+PRECACHE_REGISTER(TEImpact);
 
 // Singleton to fire TEImpact objects
 static CTEImpact g_TEImpact( "Impact" );

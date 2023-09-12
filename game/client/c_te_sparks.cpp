@@ -105,4 +105,5 @@ void TE_Sparks( IRecipientFilter& filter, float delay,
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TESparks, DT_TESparks, CTESparks)
-
+LINK_ENTITY_TO_CLASS(TESparks, C_TESparks);
+PRECACHE_REGISTER(TESparks);

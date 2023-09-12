@@ -98,9 +98,9 @@ void CTEBeamPoints::Test( const Vector& current_origin, const QAngle& current_an
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS( CTEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
-
-
+IMPLEMENT_SERVERCLASS(CTEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
+LINK_ENTITY_TO_CLASS(TEBeamPoints, CTEBeamPoints);
+PRECACHE_REGISTER(TEBeamPoints);
 
 // Singleton to fire TEBeamPoints objects
 static CTEBeamPoints g_TEBeamPoints( "BeamPoints" );

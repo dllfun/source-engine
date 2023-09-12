@@ -24,16 +24,16 @@ IMPLEMENT_SERVERCLASS(CBaseTempEntity, DT_BaseTempEntity)
 
 
 // Global list of temp entity event classes
-CBaseTempEntity *CBaseTempEntity::s_pTempEntities = NULL;
+//CBaseTempEntity *CBaseTempEntity::s_pTempEntities = NULL;
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns head of list
 // Output : CBaseTempEntity * -- head of list
 //-----------------------------------------------------------------------------
-CBaseTempEntity *CBaseTempEntity::GetList( void )
-{
-	return s_pTempEntities;
-}
+//CBaseTempEntity *CBaseTempEntity::GetList( void )
+//{
+//	return s_pTempEntities;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: Creates temp entity, sets name, adds to global list
@@ -45,8 +45,8 @@ CBaseTempEntity::CBaseTempEntity( const char *name )
 	Assert( m_pszName );
 
 	// Add to list
-	m_pNext			= s_pTempEntities;
-	s_pTempEntities = this;
+	//m_pNext			= s_pTempEntities;
+	//s_pTempEntities = this;
 }
 
 //-----------------------------------------------------------------------------
@@ -69,10 +69,10 @@ const char *CBaseTempEntity::GetName( void )
 // Purpose: Get next temp ent in chain
 // Output : CBaseTempEntity *
 //-----------------------------------------------------------------------------
-CBaseTempEntity *CBaseTempEntity::GetNext( void )
-{
-	return m_pNext;
-}
+//CBaseTempEntity *CBaseTempEntity::GetNext( void )
+//{
+//	return m_pNext;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -104,15 +104,15 @@ void CBaseTempEntity::Test( const Vector& current_origin, const QAngle& current_
 //-----------------------------------------------------------------------------
 // Purpose: Called at startup to allow temp entities to precache any models/sounds that they need
 //-----------------------------------------------------------------------------
-void CBaseTempEntity::PrecacheTempEnts( void )
-{
-	CBaseTempEntity *te = GetList();
-	while ( te )
-	{
-		te->Precache();
-		te = te->GetNext();
-	}
-}
+//void CBaseTempEntity::PrecacheTempEnts( void )
+//{
+//	CBaseTempEntity *te = GetList();
+//	while ( te )
+//	{
+//		te->Precache();
+//		te = te->GetNext();
+//	}
+//}
 
 
 void CBaseTempEntity::Create( IRecipientFilter& filter, float delay )

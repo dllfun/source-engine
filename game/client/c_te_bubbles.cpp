@@ -84,5 +84,5 @@ void C_TEBubbles::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBubbles, DT_TEBubbles, CTEBubbles)
-
-
+LINK_ENTITY_TO_CLASS(TEBubbles, C_TEBubbles);
+PRECACHE_REGISTER(TEBubbles);

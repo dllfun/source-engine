@@ -60,9 +60,9 @@ public:
 
 
 // Expose it to the engine.
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEBloodSprite, DT_TEBloodSprite, CTEBloodSprite );
-
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBloodSprite, DT_TEBloodSprite, CTEBloodSprite );
+LINK_ENTITY_TO_CLASS(TEBloodSprite, C_TEBloodSprite);
+PRECACHE_REGISTER(TEBloodSprite);
 
 
 

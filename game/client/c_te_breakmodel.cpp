@@ -61,8 +61,8 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBreakModel, DT_TEBreakModel, CTEBreakModel)
-
-
+LINK_ENTITY_TO_CLASS(TEBreakModel, C_TEBreakModel);
+PRECACHE_REGISTER(TEBreakModel);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

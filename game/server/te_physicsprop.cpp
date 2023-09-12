@@ -115,7 +115,8 @@ void CTEPhysicsProp::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
-
+LINK_ENTITY_TO_CLASS(TEPhysicsProp, CTEPhysicsProp);
+PRECACHE_REGISTER(TEPhysicsProp);
 
 // Singleton to fire TEBreakModel objects
 static CTEPhysicsProp s_TEPhysicsProp( "physicsprop" );

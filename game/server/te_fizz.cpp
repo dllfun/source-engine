@@ -94,8 +94,8 @@ void CTEFizz::Precache( void )
 
 
 IMPLEMENT_SERVERCLASS(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEFizz, CTEFizz);
+PRECACHE_REGISTER(TEFizz);
 
 // Singleton to fire TEFizz objects
 static CTEFizz g_TEFizz( "Fizz" );

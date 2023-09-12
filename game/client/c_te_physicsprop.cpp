@@ -58,8 +58,8 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEPhysicsProp, DT_TEPhysicsProp, CTEPhysicsProp)
-
-
+LINK_ENTITY_TO_CLASS(TEPhysicsProp, C_TEPhysicsProp);
+PRECACHE_REGISTER(TEPhysicsProp);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

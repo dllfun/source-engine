@@ -276,4 +276,5 @@ void C_TEPlayerDecal::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEPlayerDecal, DT_TEPlayerDecal, CTEPlayerDecal)
-
+LINK_ENTITY_TO_CLASS(TEPlayerDecal, C_TEPlayerDecal);
+PRECACHE_REGISTER(TEPlayerDecal);

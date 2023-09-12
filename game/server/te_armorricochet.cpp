@@ -86,8 +86,9 @@ void CTEMetalSparks::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS( CTEMetalSparks, DT_TEMetalSparks)
-
+IMPLEMENT_SERVERCLASS(CTEMetalSparks, DT_TEMetalSparks)
+LINK_ENTITY_TO_CLASS(TEMetalSparks, CTEMetalSparks);
+PRECACHE_REGISTER(TEMetalSparks);
 
 // Singleton to fire TEMetalSparks objects
 static CTEMetalSparks g_TEMetalSparks( "Metal Sparks" );
@@ -128,8 +129,9 @@ public:
 	END_SEND_TABLE(DT_TEArmorRicochet)
 };
 
-IMPLEMENT_SERVERCLASS( CTEArmorRicochet, DT_TEArmorRicochet, DT_TEMetalSparks)
-
+IMPLEMENT_SERVERCLASS(CTEArmorRicochet, DT_TEArmorRicochet, DT_TEMetalSparks)
+LINK_ENTITY_TO_CLASS(TEArmorRicochet, CTEArmorRicochet);
+PRECACHE_REGISTER(TEArmorRicochet);
 
 static CTEArmorRicochet g_TEArmorRicochet( "Armor Ricochet" );
 //-----------------------------------------------------------------------------

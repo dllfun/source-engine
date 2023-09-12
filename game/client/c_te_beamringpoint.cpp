@@ -81,4 +81,5 @@ void C_TEBeamRingPoint::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamRingPoint, DT_TEBeamRingPoint, CTEBeamRingPoint)
-
+LINK_ENTITY_TO_CLASS(TEBeamRingPoint, C_TEBeamRingPoint);
+PRECACHE_REGISTER(TEBeamRingPoint);

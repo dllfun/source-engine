@@ -109,8 +109,8 @@ void CTEDynamicLight::Test( const Vector& current_origin, const QAngle& current_
 }
 
 IMPLEMENT_SERVERCLASS(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEDynamicLight, CTEDynamicLight);
+PRECACHE_REGISTER(TEDynamicLight);
 
 // Singleton
 static CTEDynamicLight g_TEDynamicLight( "Dynamic Light" );

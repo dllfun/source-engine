@@ -115,7 +115,8 @@ void CTEBloodSprite::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEBloodSprite, DT_TEBloodSprite)
-
+LINK_ENTITY_TO_CLASS(TEBloodSprite, CTEBloodSprite);
+PRECACHE_REGISTER(TEBloodSprite);
 
 // Singleton
 static CTEBloodSprite g_TEBloodSprite( "Blood Sprite" );

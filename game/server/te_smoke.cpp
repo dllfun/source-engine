@@ -96,8 +96,8 @@ void CTESmoke::Test( const Vector& current_origin, const QAngle& current_angles 
 }
 
 IMPLEMENT_SERVERCLASS(CTESmoke, DT_TESmoke, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TESmoke, CTESmoke);
+PRECACHE_REGISTER(TESmoke);
 
 // Singleton to fire TESmoke objects
 static CTESmoke g_TESmoke( "Smoke" );

@@ -62,9 +62,9 @@ void C_TEFireBullets::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEFireBullets, DT_TEFireBullets, CTEFireBullets );
-
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEFireBullets, DT_TEFireBullets, CTEFireBullets );
+LINK_ENTITY_TO_CLASS(TEFireBullets, C_TEFireBullets);
+PRECACHE_REGISTER(TEFireBullets);
 
 
 
@@ -96,9 +96,9 @@ void C_TEPlantBomb::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlantBomb, DT_TEPlantBomb, CTEPlantBomb );
-
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEPlantBomb, DT_TEPlantBomb, CTEPlantBomb );
+LINK_ENTITY_TO_CLASS(TEPlantBomb, C_TEPlantBomb);
+PRECACHE_REGISTER(TEPlantBomb);
 
 
 

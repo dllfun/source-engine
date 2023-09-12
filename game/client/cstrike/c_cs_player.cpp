@@ -143,8 +143,9 @@ public:
 	END_RECV_TABLE(DT_TEPlayerAnimEvent)
 };
 
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
+LINK_ENTITY_TO_CLASS(TEPlayerAnimEvent, C_TEPlayerAnimEvent);
+PRECACHE_REGISTER(TEPlayerAnimEvent);
 
 
 BEGIN_PREDICTION_DATA( C_CSPlayer )

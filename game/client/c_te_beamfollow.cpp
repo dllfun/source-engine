@@ -67,9 +67,9 @@ void C_TEBeamFollow::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 // Expose the TE to the engine.
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEBeamFollow, DT_TEBeamFollow, CTEBeamFollow );
-
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamFollow, DT_TEBeamFollow, CTEBeamFollow );
+LINK_ENTITY_TO_CLASS(TEBeamFollow, C_TEBeamFollow);
+PRECACHE_REGISTER(TEBeamFollow);
 
 
 void TE_BeamFollow( IRecipientFilter& filter, float delay,

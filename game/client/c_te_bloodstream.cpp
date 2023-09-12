@@ -48,8 +48,8 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBloodStream, DT_TEBloodStream, CTEBloodStream)
-
-
+LINK_ENTITY_TO_CLASS(TEBloodStream, C_TEBloodStream);
+PRECACHE_REGISTER(TEBloodStream);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

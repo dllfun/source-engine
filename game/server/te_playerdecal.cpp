@@ -98,8 +98,8 @@ void CTEPlayerDecal::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEPlayerDecal, CTEPlayerDecal);
+PRECACHE_REGISTER(TEPlayerDecal);
 
 // Singleton to fire TEPlayerDecal objects
 static CTEPlayerDecal g_TEPlayerDecal( "Player Decal" );

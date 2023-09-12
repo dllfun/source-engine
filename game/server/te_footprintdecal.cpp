@@ -49,8 +49,8 @@ public:
 };
 
 IMPLEMENT_SERVERCLASS(CTEFootprintDecal, DT_TEFootprintDecal, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEFootprintDecal, CTEFootprintDecal);
+PRECACHE_REGISTER(TEFootprintDecal);
 
 // Singleton to fire TEFootprintDecal objects
 static CTEFootprintDecal g_TEFootprintDecal( "Footprint Decal" );

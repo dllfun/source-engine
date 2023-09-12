@@ -109,8 +109,8 @@ void CTEBubbleTrail::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEBubbleTrail, DT_TEBubbleTrail, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEBubbleTrail, CTEBubbleTrail);
+PRECACHE_REGISTER(TEBubbleTrail);
 
 // Singleton to fire TEBubbleTrail objects
 static CTEBubbleTrail g_TEBubbleTrail( "Bubble Trail" );

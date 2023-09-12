@@ -72,8 +72,9 @@ void CTEMuzzleFlash::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 
-IMPLEMENT_SERVERCLASS( CTEMuzzleFlash, DT_TEMuzzleFlash , DT_BaseTempEntity)
-
+IMPLEMENT_SERVERCLASS(CTEMuzzleFlash, DT_TEMuzzleFlash , DT_BaseTempEntity)
+LINK_ENTITY_TO_CLASS(TEMuzzleFlash, CTEMuzzleFlash);
+PRECACHE_REGISTER(TEMuzzleFlash);
 
 // Singleton to fire TEMuzzleFlash objects
 static CTEMuzzleFlash g_TEMuzzleFlash( "MuzzleFlash" );

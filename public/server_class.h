@@ -68,9 +68,13 @@ public:
 	virtual int& GetInstanceBaselineIndex() = 0;
 	virtual SendTable*& GetDataTable() = 0;
 	virtual ServerClass*& GetNext() = 0;
-
+	//virtual int RequiredEdictIndex() = 0;
+	//virtual IServerNetworkable* Create(edict_t* edict) = 0;//const char* pClassName, 
+	//virtual void Destroy(IServerNetworkable* pNetworkable) = 0;
+	//virtual size_t GetEntitySize() = 0;
 };
 
+template <class T>
 class PrototypeServerClass : public ServerClass
 {
 public:
@@ -103,15 +107,41 @@ public:
 	virtual SendTable*& GetDataTable() { return m_pDataTable; };
 
 	virtual ServerClass*& GetNext() { return m_pNext; };
+
+	//IServerNetworkable* Create(edict_t* edict)
+	//{
+	//	T* pEnt = _CreateEntityTemplate((T*)NULL, m_pMapClassName, edict);
+	//	return pEnt->NetworkProp();
+	//}
+
+	//void Destroy(IServerNetworkable* pNetworkable)
+	//{
+	//	if (pNetworkable)
+	//	{
+	//		pNetworkable->Release();
+	//	}
+	//}
+
+	//virtual size_t GetEntitySize()
+	//{
+	//	return sizeof(T);
+	//}
+
+	//virtual int RequiredEdictIndex() {
+	//	return m_RequiredEdictIndex;
+	//};
+
 private:
-	const char					*m_pNetworkName;
-	const char*					m_pDataTableName;
+	const char					*m_pNetworkName = NULL;
+	const char*					m_pDataTableName = NULL;
+	const char*					m_pMapClassName = NULL;
 	SendTable					*m_pDataTable = NULL;
 	ServerClass					*m_pNext = NULL;
 	int							m_ClassID = 0;	// Managed by the engine.
 
 	// This is an index into the network string table (sv.GetInstanceBaselineTable()).
 	int							m_InstanceBaselineIndex; // INVALID_STRING_INDEX if not initialized yet.
+	int							m_RequiredEdictIndex = -1;
 };
 
 
@@ -176,7 +206,7 @@ class CBaseNetworkable;
 
 #define IMPLEMENT_SERVERCLASS_INTERNAL( DLLClassName, sendTable ) \
 	CHECK_DECLARE_CLASS( DLLClassName, sendTable ) \
-	static PrototypeServerClass g_##DLLClassName##_ClassReg(\
+	static PrototypeServerClass<DLLClassName> g_##DLLClassName##_ClassReg(\
 		#DLLClassName, \
 		#sendTable\
 	); \

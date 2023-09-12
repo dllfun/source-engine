@@ -178,9 +178,11 @@ void C_TEArmorRicochet::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 // Expose the TE to the engine.
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEMetalSparks, DT_TEMetalSparks, CTEMetalSparks );
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEMetalSparks, DT_TEMetalSparks, CTEMetalSparks );
+LINK_ENTITY_TO_CLASS(TEMetalSparks, C_TEMetalSparks);
+PRECACHE_REGISTER(TEMetalSparks);
 
 
-
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEArmorRicochet, DT_TEArmorRicochet, CTEArmorRicochet );
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEArmorRicochet, DT_TEArmorRicochet, CTEArmorRicochet );
+LINK_ENTITY_TO_CLASS(TEArmorRicochet, C_TEArmorRicochet);
+PRECACHE_REGISTER(TEArmorRicochet);

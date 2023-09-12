@@ -270,8 +270,9 @@ CTEDust::~CTEDust( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS( CTEDust, DT_TEDust, DT_TEParticleSystem)
-
+IMPLEMENT_SERVERCLASS(CTEDust, DT_TEDust, DT_TEParticleSystem)
+LINK_ENTITY_TO_CLASS(TEDust, CTEDust);
+PRECACHE_REGISTER(TEDust);
 
 static CTEDust g_TEDust( "Dust" );
 

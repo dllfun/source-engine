@@ -634,7 +634,7 @@ void CWorld::Precache( void )
 	ClientPrecache();
 	g_pGameRules->Precache();
 	// precache all temp ent stuff
-	CBaseTempEntity::PrecacheTempEnts();
+	//CBaseTempEntity::PrecacheTempEnts();
 
 	g_Language.SetValue( LANGUAGE_ENGLISH );	// TODO use VGUI to get current language
 

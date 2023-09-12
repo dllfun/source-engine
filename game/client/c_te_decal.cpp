@@ -54,8 +54,8 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEDecal, DT_TEDecal, CTEDecal)
-
-
+LINK_ENTITY_TO_CLASS(TEDecal, C_TEDecal);
+PRECACHE_REGISTER(TEDecal);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

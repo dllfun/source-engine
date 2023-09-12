@@ -99,8 +99,8 @@ void CTEBSPDecal::Test( const Vector& current_origin, const QAngle& current_angl
 
 
 IMPLEMENT_SERVERCLASS(CTEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEBSPDecal, CTEBSPDecal);
+PRECACHE_REGISTER(TEBSPDecal);
 
 // Singleton to fire TEBSPDecal objects
 static CTEBSPDecal g_TEBSPDecal( "BSP Decal" );

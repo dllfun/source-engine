@@ -92,9 +92,9 @@ void CTEBeamRingPoint::Test( const Vector& current_origin, const QAngle& current
 }
 
 
-IMPLEMENT_SERVERCLASS( CTEBeamRingPoint, DT_TEBeamRingPoint, DT_BaseBeam)
-
-
+IMPLEMENT_SERVERCLASS(CTEBeamRingPoint, DT_TEBeamRingPoint, DT_BaseBeam)
+LINK_ENTITY_TO_CLASS(TEBeamRingPoint, CTEBeamRingPoint);
+PRECACHE_REGISTER(TEBeamRingPoint);
 
 // Singleton to fire TEBeamRingPoint objects
 static CTEBeamRingPoint g_TEBeamRingPoint( "BeamRingPoint" );

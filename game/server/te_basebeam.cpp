@@ -46,6 +46,6 @@ CTEBaseBeam::~CTEBaseBeam( void )
 
 
 
-IMPLEMENT_SERVERCLASS( CTEBaseBeam, DT_BaseBeam )
-
-
+IMPLEMENT_SERVERCLASS(CTEBaseBeam, DT_BaseBeam )
+LINK_ENTITY_TO_CLASS(TEBaseBeam, CTEBaseBeam);
+PRECACHE_REGISTER(TEBaseBeam);

@@ -1393,8 +1393,9 @@ public:
 	END_RECV_TABLE(DT_TEGaussExplosion)
 };
 
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEGaussExplosion, DT_TEGaussExplosion, CTEGaussExplosion )
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEGaussExplosion, DT_TEGaussExplosion, CTEGaussExplosion )
+LINK_ENTITY_TO_CLASS(TEGaussExplosion, C_TEGaussExplosion);
+PRECACHE_REGISTER(TEGaussExplosion);
 
 //==================================================
 // C_TEGaussExplosion

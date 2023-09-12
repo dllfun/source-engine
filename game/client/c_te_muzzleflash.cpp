@@ -112,4 +112,5 @@ void TE_MuzzleFlash( IRecipientFilter& filter, float delay,
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEMuzzleFlash, DT_TEMuzzleFlash, CTEMuzzleFlash)
-
+LINK_ENTITY_TO_CLASS(TEMuzzleFlash, C_TEMuzzleFlash);
+PRECACHE_REGISTER(TEMuzzleFlash);

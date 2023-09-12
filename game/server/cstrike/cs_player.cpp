@@ -268,8 +268,9 @@ public:
 	END_SEND_TABLE(DT_TEPlayerAnimEvent)
 };
 
-IMPLEMENT_SERVERCLASS( CTEPlayerAnimEvent, DT_TEPlayerAnimEvent )
-
+IMPLEMENT_SERVERCLASS(CTEPlayerAnimEvent, DT_TEPlayerAnimEvent )
+LINK_ENTITY_TO_CLASS(TEPlayerAnimEvent, CTEPlayerAnimEvent);
+PRECACHE_REGISTER(TEPlayerAnimEvent);
 
 static CTEPlayerAnimEvent g_TEPlayerAnimEvent( "PlayerAnimEvent" );
 

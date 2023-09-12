@@ -105,8 +105,8 @@ void CTESprite::Test( const Vector& current_origin, const QAngle& current_angles
 
 
 IMPLEMENT_SERVERCLASS(CTESprite, DT_TESprite, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TESprite, CTESprite);
+PRECACHE_REGISTER(TESprite);
 
 // Singleton to fire TESprite objects
 static CTESprite g_TESprite( "Sprite" );

@@ -84,4 +84,5 @@ void C_TEBubbleTrail::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBubbleTrail, DT_TEBubbleTrail, CTEBubbleTrail)
-
+LINK_ENTITY_TO_CLASS(TEBubbleTrail, C_TEBubbleTrail);
+PRECACHE_REGISTER(TEBubbleTrail);

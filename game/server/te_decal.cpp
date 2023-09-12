@@ -103,8 +103,8 @@ void CTEDecal::Test( const Vector& current_origin, const QAngle& current_angles 
 
 
 IMPLEMENT_SERVERCLASS(CTEDecal, DT_TEDecal, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEDecal, CTEDecal);
+PRECACHE_REGISTER(TEDecal);
 
 // Singleton to fire TEDecal objects
 static CTEDecal g_TEDecal( "Entity Decal" );

@@ -138,8 +138,8 @@ public:
 // Networking 
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEExplosion, DT_TEExplosion, CTEExplosion)
-
-
+LINK_ENTITY_TO_CLASS(TEExplosion, C_TEExplosion);
+PRECACHE_REGISTER(TEExplosion);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

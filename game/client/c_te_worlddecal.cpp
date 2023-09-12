@@ -47,8 +47,8 @@ public:
 // Networking 
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEWorldDecal, DT_TEWorldDecal, CTEWorldDecal)
-
-
+LINK_ENTITY_TO_CLASS(TEWorldDecal, C_TEWorldDecal);
+PRECACHE_REGISTER(TEWorldDecal);
 
 //-----------------------------------------------------------------------------
 // Constructor, destructor

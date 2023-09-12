@@ -78,4 +78,5 @@ void C_TEClientProjectile::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEClientProjectile, DT_TEClientProjectile, CTEClientProjectile)
-
+LINK_ENTITY_TO_CLASS(TEClientProjectile, C_TEClientProjectile);
+PRECACHE_REGISTER(TEClientProjectile);

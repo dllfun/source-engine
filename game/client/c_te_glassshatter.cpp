@@ -87,8 +87,8 @@ public:
 // Networking
 //------------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEShatterSurface, DT_TEShatterSurface, CTEShatterSurface)
-
-
+LINK_ENTITY_TO_CLASS(TEShatterSurface, C_TEShatterSurface);
+PRECACHE_REGISTER(TEShatterSurface);
 
 //------------------------------------------------------------------------------
 // Constructor, destructor

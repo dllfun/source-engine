@@ -90,6 +90,6 @@ void TE_Fizz( IRecipientFilter& filter, float delay,
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEFizz, DT_TEFizz, CTEFizz)
-
-
+LINK_ENTITY_TO_CLASS(TEFizz, C_TEFizz);
+PRECACHE_REGISTER(TEFizz);
 

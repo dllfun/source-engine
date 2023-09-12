@@ -55,9 +55,9 @@ CTEEffectDispatch::~CTEEffectDispatch( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS( CTEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
-
-
+IMPLEMENT_SERVERCLASS(CTEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
+LINK_ENTITY_TO_CLASS(TEEffectDispatch, CTEEffectDispatch);
+PRECACHE_REGISTER(TEEffectDispatch);
 
 // Singleton to fire TEEffectDispatch objects
 static CTEEffectDispatch g_TEEffectDispatch( "EffectDispatch" );

@@ -1053,7 +1053,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	g_pView->Init();
 	vieweffects->Init();
 
-	C_BaseTempEntity::PrecacheTempEnts();
+	//C_BaseTempEntity::PrecacheTempEnts();
 
 	input->Init_All();
 
@@ -1191,7 +1191,7 @@ void CHLClient::Shutdown( void )
 	g_pClientMode->Shutdown();
 
 	input->Shutdown_All();
-	C_BaseTempEntity::ClearDynamicTempEnts();
+	//C_BaseTempEntity::ClearDynamicTempEnts();
 	TermSmokeFogOverlay();
 	g_pView->Shutdown();
 	g_pParticleSystemMgr->UncacheAllParticleSystems();
@@ -1288,7 +1288,7 @@ void CHLClient::HudUpdate( bool bActive )
 
 	// I don't think this is necessary any longer, but I will leave it until
 	// I can check into this further.
-	C_BaseTempEntity::CheckDynamicTempEnts();
+	//C_BaseTempEntity::CheckDynamicTempEnts();
 
 #ifdef SIXENSE
 	// If we're not connected, update sixense so we can move the mouse cursor when in the menus
@@ -1611,7 +1611,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 	hudlcd->SetGlobalStat( "(mapname)", pMapName );
 
-	C_BaseTempEntity::ClearDynamicTempEnts();
+	//C_BaseTempEntity::ClearDynamicTempEnts();
 	clienteffects->Flush();
 	g_pView->LevelInit();
 	tempents->LevelInit();

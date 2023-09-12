@@ -89,8 +89,8 @@ void CTEBeamEnts::Test( const Vector& current_origin, const QAngle& current_angl
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamEnts, DT_TEBeamEnts, DT_BaseBeam)
-
-
+LINK_ENTITY_TO_CLASS(TEBeamEnts, CTEBeamEnts);
+PRECACHE_REGISTER(TEBeamEnts);
 
 // Singleton to fire TEBeamEnts objects
 static CTEBeamEnts g_TEBeamEnts( "BeamEnts" );

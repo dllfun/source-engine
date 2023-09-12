@@ -82,9 +82,9 @@ void CTEBeamLaser::Test( const Vector& current_origin, const QAngle& current_ang
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS( CTEBeamLaser, DT_TEBeamLaser, DT_BaseBeam)
-
-
+IMPLEMENT_SERVERCLASS(CTEBeamLaser, DT_TEBeamLaser, DT_BaseBeam)
+LINK_ENTITY_TO_CLASS(TEBeamLaser, CTEBeamLaser);
+PRECACHE_REGISTER(TEBeamLaser);
 
 // Singleton to fire TEBeamLaser objects
 static CTEBeamLaser g_TEBeamLaser( "BeamLaser" );

@@ -82,7 +82,7 @@ void C_TEBeamSpline::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 // Expose the TE to the engine.
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEBeamSpline, DT_TEBeamSpline, CTEBeamSpline );
-
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamSpline, DT_TEBeamSpline, CTEBeamSpline );
+LINK_ENTITY_TO_CLASS(TEBeamSpline, C_TEBeamSpline);
+PRECACHE_REGISTER(TEBeamSpline);
 

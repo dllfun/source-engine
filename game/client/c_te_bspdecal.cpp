@@ -108,5 +108,5 @@ void C_TEBSPDecal::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBSPDecal, DT_TEBSPDecal, CTEBSPDecal)
-
-
+LINK_ENTITY_TO_CLASS(TEBSPDecal, C_TEBSPDecal);
+PRECACHE_REGISTER(TEBSPDecal);

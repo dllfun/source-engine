@@ -108,7 +108,8 @@ void CTEExplosion::Test( const Vector& current_origin, const QAngle& current_ang
 }
 
 IMPLEMENT_SERVERCLASS(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
-
+LINK_ENTITY_TO_CLASS(TEExplosion, CTEExplosion);
+PRECACHE_REGISTER(TEExplosion);
 
 // Singleton to fire TEExplosion objects
 static CTEExplosion g_TEExplosion( "Explosion" );

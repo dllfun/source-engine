@@ -323,8 +323,9 @@ protected:
 	END_RECV_TABLE(DT_TEDust)
 };
 
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEDust, DT_TEDust, CTEDust )
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEDust, DT_TEDust, CTEDust )
+LINK_ENTITY_TO_CLASS(TEDust, C_TEDust);
+PRECACHE_REGISTER(TEDust);
 
 //==================================================
 // C_TEDust

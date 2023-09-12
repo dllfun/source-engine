@@ -58,8 +58,8 @@ public:
 // Networking 
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEDynamicLight, DT_TEDynamicLight, CTEDynamicLight)
-
-
+LINK_ENTITY_TO_CLASS(TEDynamicLight, C_TEDynamicLight);
+PRECACHE_REGISTER(TEDynamicLight);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

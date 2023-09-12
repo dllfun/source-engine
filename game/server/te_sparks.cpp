@@ -77,8 +77,8 @@ void CTESparks::Test( const Vector& current_origin, const QAngle& current_angles
 }
 
 IMPLEMENT_SERVERCLASS(CTESparks, DT_TESparks, DT_TEParticleSystem)
-
-
+LINK_ENTITY_TO_CLASS(TESparks, CTESparks);
+PRECACHE_REGISTER(TESparks);
 
 // Singleton to fire TESparks objects
 static CTESparks g_TESparks( "Sparks" );

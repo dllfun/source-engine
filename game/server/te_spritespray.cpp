@@ -105,8 +105,8 @@ void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TESpriteSpray, CTESpriteSpray);
+PRECACHE_REGISTER(TESpriteSpray);
 
 // Singleton to fire TESpriteSpray objects
 static CTESpriteSpray g_TESpriteSpray( "Sprite Spray" );

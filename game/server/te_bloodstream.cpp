@@ -103,7 +103,8 @@ void CTEBloodStream::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
-
+LINK_ENTITY_TO_CLASS(TEBloodStream, CTEBloodStream);
+PRECACHE_REGISTER(TEBloodStream);
 
 // Singleton to fire TEBloodStream objects
 static CTEBloodStream g_TEBloodStream( "Blood Stream" );

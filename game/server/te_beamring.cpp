@@ -88,9 +88,9 @@ void CTEBeamRing::Test( const Vector& current_origin, const QAngle& current_angl
 }
 
 
-IMPLEMENT_SERVERCLASS( CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
-
-
+IMPLEMENT_SERVERCLASS(CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
+LINK_ENTITY_TO_CLASS(TEBeamRing, CTEBeamRing);
+PRECACHE_REGISTER(TEBeamRing);
 
 // Singleton to fire TEBeamRing objects
 static CTEBeamRing g_TEBeamRing( "BeamRing" );

@@ -50,8 +50,8 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TESprite, DT_TESprite, CTESprite)
-
-
+LINK_ENTITY_TO_CLASS(TESprite, C_TESprite);
+PRECACHE_REGISTER(TESprite);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

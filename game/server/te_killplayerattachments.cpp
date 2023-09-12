@@ -71,8 +71,8 @@ void CTEKillPlayerAttachments::Test( const Vector& current_origin, const QAngle&
 
 
 IMPLEMENT_SERVERCLASS(CTEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEKillPlayerAttachments, CTEKillPlayerAttachments);
+PRECACHE_REGISTER(TEKillPlayerAttachments);
 
 // Singleton to fire TEKillPlayerAttachments objects
 static CTEKillPlayerAttachments g_TEKillPlayerAttachments( "KillPlayerAttachments" );

@@ -98,8 +98,8 @@ void CTEWorldDecal::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEWorldDecal, CTEWorldDecal);
+PRECACHE_REGISTER(TEWorldDecal);
 
 // Singleton to fire TEWorldDecal objects
 static CTEWorldDecal g_TEWorldDecal( "World Decal" );

@@ -55,8 +55,8 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEProjectedDecal, DT_TEProjectedDecal, CTEProjectedDecal)
-
-
+LINK_ENTITY_TO_CLASS(TEProjectedDecal, C_TEProjectedDecal);
+PRECACHE_REGISTER(TEProjectedDecal);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

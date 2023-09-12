@@ -87,7 +87,7 @@ void TE_EnergySplash( IRecipientFilter& filter, float delay,
 }
 
 // Expose the TE to the engine.
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEEnergySplash, DT_TEEnergySplash, CTEEnergySplash );
-
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEEnergySplash, DT_TEEnergySplash, CTEEnergySplash );
+LINK_ENTITY_TO_CLASS(TEEnergySplash, C_TEEnergySplash);
+PRECACHE_REGISTER(TEEnergySplash);
 

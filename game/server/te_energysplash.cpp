@@ -89,8 +89,9 @@ void CTEEnergySplash::Test( const Vector& current_origin, const QAngle& current_
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS( CTEEnergySplash, DT_TEEnergySplash)
-
+IMPLEMENT_SERVERCLASS(CTEEnergySplash, DT_TEEnergySplash)
+LINK_ENTITY_TO_CLASS(TEEnergySplash, CTEEnergySplash);
+PRECACHE_REGISTER(TEEnergySplash);
 
 // Singleton to fire TEEnergySplash objects
 static CTEEnergySplash g_TEEnergySplash( "Energy Splash" );

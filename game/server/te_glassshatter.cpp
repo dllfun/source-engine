@@ -117,8 +117,8 @@ void CTEShatterSurface::Test( const Vector& current_origin, const QAngle& curren
 }
 
 IMPLEMENT_SERVERCLASS(CTEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEShatterSurface, CTEShatterSurface);
+PRECACHE_REGISTER(TEShatterSurface);
 
 // Singleton to fire TEShatterSurface objects
 static CTEShatterSurface g_TEShatterSurface( "Surface Shatter" );

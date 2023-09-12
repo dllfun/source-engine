@@ -52,8 +52,8 @@ public:
 // Networking 
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TESpriteSpray, DT_TESpriteSpray, CTESpriteSpray)
-
-
+LINK_ENTITY_TO_CLASS(TESpriteSpray, C_TESpriteSpray);
+PRECACHE_REGISTER(TESpriteSpray);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

@@ -71,8 +71,8 @@ CTEFireBullets::~CTEFireBullets( void )
 }
 
 IMPLEMENT_SERVERCLASS(CTEFireBullets, DT_TEFireBullets)
-
-
+LINK_ENTITY_TO_CLASS(TEFireBullets, CTEFireBullets);
+PRECACHE_REGISTER(TEFireBullets);
 
 // Singleton
 static CTEFireBullets g_TEFireBullets( "Shotgun Shot" );
@@ -150,8 +150,8 @@ CTEPlantBomb::~CTEPlantBomb( void )
 }
 
 IMPLEMENT_SERVERCLASS(CTEPlantBomb, DT_TEPlantBomb)
-
-
+LINK_ENTITY_TO_CLASS(TEPlantBomb, CTEPlantBomb);
+PRECACHE_REGISTER(TEPlantBomb);
 
 // Singleton
 static CTEPlantBomb g_TEPlantBomb( "Bomb Plant" );

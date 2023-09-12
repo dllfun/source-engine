@@ -101,8 +101,8 @@ void CTEGlowSprite::Test( const Vector& current_origin, const QAngle& current_an
 
 
 IMPLEMENT_SERVERCLASS(CTEGlowSprite, DT_TEGlowSprite, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEGlowSprite, CTEGlowSprite);
+PRECACHE_REGISTER(TEGlowSprite);
 
 // Singleton to fire TEGlowSprite objects
 static CTEGlowSprite g_TEGlowSprite( "GlowSprite" );

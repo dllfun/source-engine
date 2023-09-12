@@ -83,9 +83,9 @@ void CTEShowLine::Test( const Vector& current_origin, const QAngle& current_angl
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS( CTEShowLine, DT_TEShowLine, DT_TEParticleSystem)
-
-
+IMPLEMENT_SERVERCLASS(CTEShowLine, DT_TEShowLine, DT_TEParticleSystem)
+LINK_ENTITY_TO_CLASS(TEShowLine, CTEShowLine);
+PRECACHE_REGISTER(TEShowLine);
 
 // Singleton to fire TEShowLine objects
 static CTEShowLine g_TEShowLine( "Show Line" );

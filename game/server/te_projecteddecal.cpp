@@ -95,8 +95,8 @@ void CTEProjectedDecal::Test( const Vector& current_origin, const QAngle& curren
 }
 
 IMPLEMENT_SERVERCLASS(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEProjectedDecal, CTEProjectedDecal);
+PRECACHE_REGISTER(TEProjectedDecal);
 
 // Singleton to fire TEBSPDecal objects
 static CTEProjectedDecal g_TEProjectedDecal( "Projected Decal" );

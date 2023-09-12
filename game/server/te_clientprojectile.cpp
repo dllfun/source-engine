@@ -87,8 +87,8 @@ void CTEClientProjectile::Test( const Vector& current_origin, const QAngle& curr
 }
 
 IMPLEMENT_SERVERCLASS(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEClientProjectile, CTEClientProjectile);
+PRECACHE_REGISTER(TEClientProjectile);
 
 // Singleton to fire TEClientProjectile objects
 static CTEClientProjectile g_TEClientProjectile( "Client Projectile" );

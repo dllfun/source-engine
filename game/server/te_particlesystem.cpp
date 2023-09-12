@@ -15,8 +15,8 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_SERVERCLASS(CTEParticleSystem, DT_TEParticleSystem, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEParticleSystem, CTEParticleSystem);
+PRECACHE_REGISTER(TEParticleSystem);
 
 
 

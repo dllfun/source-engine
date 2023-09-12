@@ -69,4 +69,5 @@ void TE_KillPlayerAttachments( IRecipientFilter& filter, float delay,
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEKillPlayerAttachments, DT_TEKillPlayerAttachments, CTEKillPlayerAttachments)
-
+LINK_ENTITY_TO_CLASS(TEKillPlayerAttachments, C_TEKillPlayerAttachments);
+PRECACHE_REGISTER(TEKillPlayerAttachments);

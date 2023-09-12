@@ -76,26 +76,26 @@ void CTempEntTester::Spawn( void )
 	// Not a physical thing...
 	AddEffects( EF_NODRAW );
 
-	m_pCurrent = CBaseTempEntity::GetList();
-	while ( m_pCurrent )
-	{
-		char name[ 128 ];
-		Q_strncpy( name, m_pCurrent->GetName() ,sizeof(name));
-		strlwr( name );
-		if ( strstr( name, m_szClass ) )
-		{
-			break;
-		}
+	//m_pCurrent = CBaseTempEntity::GetList();
+	//while ( m_pCurrent )
+	//{
+	//	char name[ 128 ];
+	//	Q_strncpy( name, m_pCurrent->GetName() ,sizeof(name));
+	//	strlwr( name );
+	//	if ( strstr( name, m_szClass ) )
+	//	{
+	//		break;
+	//	}
 
-		m_pCurrent = m_pCurrent->GetNext();
-	}
+	//	m_pCurrent = m_pCurrent->GetNext();
+	//}
 
-	if ( !m_pCurrent )
-	{
-		DevMsg("Couldn't find temp entity '%s'\n", m_szClass );
-		UTIL_Remove( this );
-		return;
-	}
+	//if ( !m_pCurrent )
+	//{
+	//	DevMsg("Couldn't find temp entity '%s'\n", m_szClass );
+	//	UTIL_Remove( this );
+	//	return;
+	//}
 
 	// Think right away
 	SetNextThink( gpGlobals->GetCurTime() );

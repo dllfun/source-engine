@@ -106,8 +106,8 @@ void CTEBeamEntPoint::Test( const Vector& current_origin, const QAngle& current_
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamEntPoint, DT_TEBeamEntPoint, DT_BaseBeam)
-
-
+LINK_ENTITY_TO_CLASS(TEBeamEntPoint, CTEBeamEntPoint);
+PRECACHE_REGISTER(TEBeamEntPoint);
 
 // Singleton to fire TEBeamEntPoint objects
 static CTEBeamEntPoint g_TEBeamEntPoint( "BeamEntPoint" );

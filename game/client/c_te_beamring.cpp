@@ -78,4 +78,5 @@ void C_TEBeamRing::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamRing, DT_TEBeamRing, CTEBeamRing)
-
+LINK_ENTITY_TO_CLASS(TEBeamRing, C_TEBeamRing);
+PRECACHE_REGISTER(TEBeamRing);

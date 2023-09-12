@@ -45,8 +45,9 @@ CTEGaussExplosion::~CTEGaussExplosion( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS( CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
-
+IMPLEMENT_SERVERCLASS(CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
+LINK_ENTITY_TO_CLASS(TEGaussExplosion, CTEGaussExplosion);
+PRECACHE_REGISTER(TEGaussExplosion);
 
 static CTEGaussExplosion g_TEGaussExplosion( "GaussExplosion" );
 

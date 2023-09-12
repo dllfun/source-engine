@@ -111,4 +111,5 @@ void TE_Smoke( IRecipientFilter& filter, float delay,
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TESmoke, DT_TESmoke, CTESmoke)
-
+LINK_ENTITY_TO_CLASS(TESmoke, C_TESmoke);
+PRECACHE_REGISTER(TESmoke);

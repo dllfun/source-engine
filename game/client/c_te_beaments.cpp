@@ -75,7 +75,7 @@ void C_TEBeamEnts::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 // Expose the TE to the engine.
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEBeamEnts, DT_TEBeamEnts, CTEBeamEnts );
-
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamEnts, DT_TEBeamEnts, CTEBeamEnts );
+LINK_ENTITY_TO_CLASS(TEBeamEnts, C_TEBeamEnts);
+PRECACHE_REGISTER(TEBeamEnts);
 

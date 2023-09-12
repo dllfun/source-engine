@@ -150,7 +150,8 @@ void C_TELargeFunnel::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TELargeFunnel, DT_TELargeFunnel, CTELargeFunnel)
-
+LINK_ENTITY_TO_CLASS(TELargeFunnel, C_TELargeFunnel);
+PRECACHE_REGISTER(TELargeFunnel);
 
 void TE_LargeFunnel( IRecipientFilter& filter, float delay,
 	const Vector* pos, int modelindex, int reversed )

@@ -59,8 +59,8 @@ void CTERadioIcon::Precache( void )
 }
 
 IMPLEMENT_SERVERCLASS(CTERadioIcon, DT_TERadioIcon, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TERadioIcon, CTERadioIcon);
+PRECACHE_REGISTER(TERadioIcon);
 
 // Singleton to fire StickyBolt objects
 static CTERadioIcon g_TERadioIcon( "RadioIcon" );

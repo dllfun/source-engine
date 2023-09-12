@@ -52,8 +52,8 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEGlowSprite, DT_TEGlowSprite, CTEGlowSprite)
-
-
+LINK_ENTITY_TO_CLASS(TEGlowSprite, C_TEGlowSprite);
+PRECACHE_REGISTER(TEGlowSprite);
 
 //-----------------------------------------------------------------------------
 // Purpose: 

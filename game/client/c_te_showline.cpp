@@ -100,7 +100,8 @@ void C_TEShowLine::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEShowLine, DT_TEShowLine, CTEShowLine)
-
+LINK_ENTITY_TO_CLASS(TEShowLine, C_TEShowLine);
+PRECACHE_REGISTER(TEShowLine);
 
 void TE_ShowLine( IRecipientFilter& filter, float delay,
 	const Vector* start, const Vector* end )

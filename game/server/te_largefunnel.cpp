@@ -88,8 +88,8 @@ void CTELargeFunnel::Test( const Vector& current_origin, const QAngle& current_a
 }
 
 IMPLEMENT_SERVERCLASS(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
-
-
+LINK_ENTITY_TO_CLASS(TELargeFunnel, CTELargeFunnel);
+PRECACHE_REGISTER(TELargeFunnel);
 
 // Singleton to fire TELargeFunnel objects
 static CTELargeFunnel g_TELargeFunnel( "Large Funnel" );

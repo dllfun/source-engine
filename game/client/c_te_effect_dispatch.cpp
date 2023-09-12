@@ -161,8 +161,9 @@ void C_TEEffectDispatch::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEEffectDispatch, DT_TEEffectDispatch, CTEEffectDispatch )
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEEffectDispatch, DT_TEEffectDispatch, CTEEffectDispatch )
+LINK_ENTITY_TO_CLASS(TEEffectDispatch, C_TEEffectDispatch);
+PRECACHE_REGISTER(TEEffectDispatch);
 
 //-----------------------------------------------------------------------------
 // Purpose: Clientside version

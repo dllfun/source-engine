@@ -20,7 +20,7 @@
 
 // This is the base class for TEMP ENTITIES that use the 
 //  event system to propagate
-class CBaseTempEntity
+class CBaseTempEntity : public CBaseEntity
 {
 public:
 	DECLARE_CLASS_NOBASE( CBaseTempEntity );
@@ -28,6 +28,7 @@ public:
 						CBaseTempEntity() {};
 						CBaseTempEntity( const char *name );
 	virtual				~CBaseTempEntity( void );
+	//virtual CBaseTempEntity* NetworkProp() { return this; }
 
 	const char			*GetName( void );
 
@@ -38,28 +39,28 @@ public:
 
 	virtual void		Precache( void );
 
-	CBaseTempEntity		*GetNext( void );
+	//CBaseTempEntity		*GetNext( void );
 
 	// Get list of tempentities
-	static CBaseTempEntity *GetList( void );
+	//static CBaseTempEntity *GetList( void );
 
 	// Called at startup to allow temp entities to precache any models/sounds that they need
-	static void			PrecacheTempEnts( void );
+	//static void			PrecacheTempEnts( void );
 
-	void NetworkStateChanged() {}	// TE's are sent out right away so we don't track whether state changes or not,
+	//void NetworkStateChanged() {}	// TE's are sent out right away so we don't track whether state changes or not,
 									// but we want to allow CNetworkVars.
-	void NetworkStateChanged( void *pVar ) {}
+	//void NetworkStateChanged( void *pVar ) {}
 
 private:
 	// Descriptive name, for when running tests
 	const char			*m_pszName;
 
 	// Next in chain
-	CBaseTempEntity		*m_pNext;
+	//CBaseTempEntity		*m_pNext;
 
 	// ConVars add themselves to this list for the executable. Then ConVarMgr::Init() runs through 
 	// all the console variables and registers them.
-	static CBaseTempEntity	*s_pTempEntities;
+	//static CBaseTempEntity	*s_pTempEntities;
 
 	BEGIN_SEND_TABLE_NOBASE(CBaseTempEntity, DT_BaseTempEntity)
 

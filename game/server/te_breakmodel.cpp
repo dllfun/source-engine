@@ -125,7 +125,8 @@ void CTEBreakModel::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
-
+LINK_ENTITY_TO_CLASS(TEBreakModel, CTEBreakModel);
+PRECACHE_REGISTER(TEBreakModel);
 
 // Singleton to fire TEBreakModel objects
 static CTEBreakModel g_TEBreakModel( "breakmodel" );

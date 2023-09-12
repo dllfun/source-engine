@@ -55,7 +55,7 @@ public:
 	virtual void RadiusDamage( const CTakeDamageInfo &info, const Vector &vecSrc, float flRadius, int iClassIgnore, CBaseEntity *pEntityIgnore );
 
 	virtual ITempEntsSystem *GetTempEntsSystem( void );
-	virtual CBaseTempEntity *GetTempEntList( void );
+	//virtual CBaseTempEntity *GetTempEntList( void );
 	virtual CGlobalEntityList *GetEntityList( void );
 	virtual bool IsEntityPtr( void *pTest );
 	virtual CBaseEntity *FindEntityByClassname( CBaseEntity *pStartEntity, const char *szName );
@@ -368,10 +368,10 @@ ITempEntsSystem *CServerTools::GetTempEntsSystem( void )
 	return (ITempEntsSystem *)g_pTESystem;
 }
 
-CBaseTempEntity *CServerTools::GetTempEntList( void )
-{
-	return CBaseTempEntity::GetList();
-}
+//CBaseTempEntity *CServerTools::GetTempEntList( void )
+//{
+//	return CBaseTempEntity::GetList();
+//}
 
 CGlobalEntityList *CServerTools::GetEntityList( void )
 {

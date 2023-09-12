@@ -106,8 +106,8 @@ void CTEBubbles::Test( const Vector& current_origin, const QAngle& current_angle
 }
 
 IMPLEMENT_SERVERCLASS(CTEBubbles, DT_TEBubbles, DT_BaseTempEntity)
-
-
+LINK_ENTITY_TO_CLASS(TEBubbles, CTEBubbles);
+PRECACHE_REGISTER(TEBubbles);
 
 // Singleton to fire TEBubbles objects
 static CTEBubbles g_TEBubbles( "Bubbles" );

@@ -260,14 +260,15 @@ private:
 // Using IMPLEMENT_CLIENTCLASS_EVENT means the engine thinks the entity is an event so the entity
 // is responsible for freeing itself.
 #define IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\
-	static SingletonClientClass __g_##clientClassName##_ClassReg(\
+	static PrototypeClientClass __g_##clientClassName##_ClassReg(\
 		#clientClassName, \
 		#serverClassName, \
 		#dataTable);\
+	ClientClass*	clientClassName::GetClientClassStatic(){return &__g_##clientClassName##_ClassReg;}\
 	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##_ClassReg;}\
 	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
 	static clientClassName g_##clientClassName##_EntityReg;										\
-	static CClientEntitySingletonFactory<clientClassName> __g_##clientClassName##SingletonFactory(#clientClassName );
+	static CClientEntityFactory<clientClassName> __g_##clientClassName##Factory(#clientClassName );
 
 #define IMPLEMENT_CLIENTCLASS_EVENT_DT(clientClassName, dataTable, serverClassName)\
 	IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\

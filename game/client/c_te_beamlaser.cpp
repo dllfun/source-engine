@@ -73,4 +73,5 @@ void C_TEBeamLaser::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamLaser, DT_TEBeamLaser, CTEBeamLaser)
-
+LINK_ENTITY_TO_CLASS(TEBeamLaser, C_TEBeamLaser);
+PRECACHE_REGISTER(TEBeamLaser);

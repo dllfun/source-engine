@@ -51,8 +51,8 @@ public:
 };
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEFootprintDecal, DT_TEFootprintDecal, CTEFootprintDecal)
-
-
+LINK_ENTITY_TO_CLASS(TEFootprintDecal, C_TEFootprintDecal);
+PRECACHE_REGISTER(TEFootprintDecal);
 
 //-----------------------------------------------------------------------------
 // Constructor, destructor

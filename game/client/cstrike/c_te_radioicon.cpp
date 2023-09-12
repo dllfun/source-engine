@@ -74,4 +74,5 @@ void C_TERadioIcon::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TERadioIcon, DT_TERadioIcon, CTERadioIcon)
-
+LINK_ENTITY_TO_CLASS(TERadioIcon, C_TERadioIcon);
+PRECACHE_REGISTER(TERadioIcon);

@@ -102,8 +102,8 @@ void CTEBeamSpline::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamSpline, DT_TEBeamSpline)
-
-
+LINK_ENTITY_TO_CLASS(TEBeamSpline, CTEBeamSpline);
+PRECACHE_REGISTER(TEBeamSpline);
 
 // Singleton to fire TEBeamSpline objects
 static CTEBeamSpline g_TEBeamSpline( "BeamSpline" );

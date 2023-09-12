@@ -97,5 +97,6 @@ void C_TEImpact::PerformCustomEffects( trace_t &tr, Vector &shotDir )
 }
 
 //Receive data table
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEImpact, DT_TEImpact, CTEImpact)
-
+IMPLEMENT_CLIENTCLASS_EVENT(C_TEImpact, DT_TEImpact, CTEImpact)
+LINK_ENTITY_TO_CLASS(TEImpact, C_TEImpact);
+PRECACHE_REGISTER(TEImpact);

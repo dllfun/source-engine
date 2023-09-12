@@ -81,5 +81,5 @@ void C_TEBeamEntPoint::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEBeamEntPoint, DT_TEBeamEntPoint, CTEBeamEntPoint)
-
-
+LINK_ENTITY_TO_CLASS(TEBeamEntPoint, C_TEBeamEntPoint);
+PRECACHE_REGISTER(TEBeamEntPoint);

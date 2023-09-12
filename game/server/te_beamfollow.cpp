@@ -70,8 +70,8 @@ void CTEBeamFollow::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 IMPLEMENT_SERVERCLASS(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
-
-
+LINK_ENTITY_TO_CLASS(TEBeamFollow, CTEBeamFollow);
+PRECACHE_REGISTER(TEBeamFollow);
 
 // Singleton to fire TEBeamEntPoint objects
 static CTEBeamFollow g_TEBeamFollow( "BeamFollow" );
