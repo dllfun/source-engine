@@ -2981,7 +2981,7 @@ void CTeamplayRoundBasedRules::ResetScores( void )
 			if (pPlayer == NULL)
 				continue;
 
-			if (FNullEnt( pPlayer->NetworkProp()->edict()))
+			if (FNullEnt( pPlayer->NetworkProp()->GetEdict()))
 				continue;
 
 			pPlayer->ResetScores();

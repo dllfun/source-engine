@@ -26,8 +26,8 @@ public:
 
 	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pMapClassName);
 	virtual int RequiredEdictIndex(const char* pMapClassName);
-	virtual IServerNetworkable* Create(const char* pMapClassName, edict_t* edict);
-	virtual void Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable);
+	virtual IServerEntity* Create(const char* pMapClassName);//, edict_t* edict
+	virtual void Destroy(const char* pMapClassName, IServerEntity* pNetworkable);
 	virtual const char* GetCannonicalName(const char* pMapClassName);
 	virtual void ReportEntityNames();
 	void ReportEntitySizes();
@@ -85,7 +85,7 @@ int CServerEntityFactoryDictionary::RequiredEdictIndex(const char* pMapClassName
 //-----------------------------------------------------------------------------
 // Instantiate something using a factory
 //-----------------------------------------------------------------------------
-IServerNetworkable* CServerEntityFactoryDictionary::Create(const char* pMapClassName, edict_t* edict)
+IServerEntity* CServerEntityFactoryDictionary::Create(const char* pMapClassName)//, edict_t* edict
 {
 	IServerEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
@@ -96,7 +96,7 @@ IServerNetworkable* CServerEntityFactoryDictionary::Create(const char* pMapClass
 #if defined(TRACK_ENTITY_MEMORY) && defined(USE_MEM_DEBUG)
 	MEM_ALLOC_CREDIT_(m_Factories.GetElementName(m_Factories.Find(pClassName)));
 #endif
-	return pFactory->Create(edict);//pClassName, 
+	return pFactory->Create();//pClassName, edict
 }
 
 //-----------------------------------------------------------------------------
@@ -110,7 +110,7 @@ const char* CServerEntityFactoryDictionary::GetCannonicalName(const char* pMapCl
 //-----------------------------------------------------------------------------
 // Destroy a networkable
 //-----------------------------------------------------------------------------
-void CServerEntityFactoryDictionary::Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable)
+void CServerEntityFactoryDictionary::Destroy(const char* pMapClassName, IServerEntity* pNetworkable)
 {
 	IServerEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)

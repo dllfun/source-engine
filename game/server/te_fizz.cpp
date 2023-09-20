@@ -105,7 +105,7 @@ void TE_Fizz( IRecipientFilter& filter, float delay,
 {
 	Assert( entity );
 
-	g_TEFizz.m_nEntity		= ENTINDEX( (edict_t *)entity->NetworkProp()->edict());
+	g_TEFizz.m_nEntity		= ENTINDEX( (edict_t *)entity->NetworkProp()->GetEdict());
 	g_TEFizz.m_nModelIndex	= modelindex;	
 	g_TEFizz.m_nDensity		= density;
 	g_TEFizz.m_nCurrent		= current;

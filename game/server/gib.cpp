@@ -136,7 +136,7 @@ void CGib::SpawnHeadGib( CBaseEntity *pVictim )
 
 		pGib->SetLocalOrigin( pVictim->EyePosition() );
 		
-		edict_t *pentPlayer = UTIL_FindClientInPVS( pGib->NetworkProp()->edict());
+		edict_t *pentPlayer = UTIL_FindClientInPVS( pGib->NetworkProp()->GetEdict());
 		
 		if ( random->RandomInt ( 0, 100 ) <= 5 && pentPlayer )
 		{

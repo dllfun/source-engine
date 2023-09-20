@@ -1344,7 +1344,7 @@ void BulletWizz( Vector vecSrc, Vector vecEndPos, edict_t *pShooter, bool isTrac
 			continue;
 
 		// Don't hear one's own bullets
-		if( pPlayer->NetworkProp()->edict() == pShooter )
+		if( pPlayer->NetworkProp()->GetEdict() == pShooter )
 			continue;
 
 		vecPlayerPath = pPlayer->EarPosition() - vecSrc;
@@ -3141,7 +3141,7 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 
 	//---------------------------------
 
-	bool bInVisibilityPVS = ( bClientPVSExpanded && UTIL_FindClientInVisibilityPVS(NetworkProp()->edict()) != NULL );
+	bool bInVisibilityPVS = ( bClientPVSExpanded && UTIL_FindClientInVisibilityPVS(NetworkProp()->GetEdict()) != NULL );
 
 	//---------------------------------
 
@@ -3589,7 +3589,7 @@ void CAI_BaseNPC::RebalanceThinks()
 				else if ( pPlayer )
 				{
 					Vector vToCandidate = pCandidate->EyePosition() - vPlayerEyePosition;
-					rebalanceCandidates[iInfo].bInPVS = ( UTIL_FindClientInPVS( pCandidate->NetworkProp()->edict()) != NULL );
+					rebalanceCandidates[iInfo].bInPVS = ( UTIL_FindClientInPVS( pCandidate->NetworkProp()->GetEdict()) != NULL );
 					rebalanceCandidates[iInfo].distPlayer = VectorNormalize( vToCandidate );
 					rebalanceCandidates[iInfo].dotPlayer = vPlayerForward.Dot( vToCandidate );
 				}
@@ -3882,7 +3882,7 @@ void CAI_BaseNPC::PlayerPenetratingVPhysics( void )
 
 bool CAI_BaseNPC::CheckPVSCondition()
 {
-	bool bInPVS = ( UTIL_FindClientInPVS(NetworkProp()->edict()) != NULL ) || (UTIL_ClientPVSIsExpanded() && UTIL_FindClientInVisibilityPVS(NetworkProp()->edict()));
+	bool bInPVS = ( UTIL_FindClientInPVS(NetworkProp()->GetEdict()) != NULL ) || (UTIL_ClientPVSIsExpanded() && UTIL_FindClientInVisibilityPVS(NetworkProp()->GetEdict()));
 
 	if ( bInPVS )
 		SetCondition( COND_IN_PVS );
@@ -4655,7 +4655,7 @@ void CAI_BaseNPC::GatherConditions( void )
 
 		if ( m_pfnThink != (BASEPTR)&CAI_BaseNPC::CallNPCThink )
 		{
-			if ( UTIL_FindClientInPVS(NetworkProp()->edict()) != NULL )
+			if ( UTIL_FindClientInPVS(NetworkProp()->GetEdict()) != NULL )
 				SetCondition( COND_IN_PVS );
 			else
 				ClearCondition( COND_IN_PVS );
@@ -8162,7 +8162,7 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 			break;
 		// fall through...
 	case SCRIPT_EVENT_SENTENCE:			// Play a named sentence group
-		SENTENCEG_PlayRndSz(NetworkProp()->edict(), pEvent->options, 1.0, SNDLVL_TALKING, 0, 100 );
+		SENTENCEG_PlayRndSz(NetworkProp()->GetEdict(), pEvent->options, 1.0, SNDLVL_TALKING, 0, 100 );
 		break;
 
 	case SCRIPT_EVENT_FIREEVENT:
@@ -9874,7 +9874,7 @@ int CAI_BaseNPC::PlaySentence( const char *pszSentence, float delay, float volum
 		}
 		else
 		{
-			sentenceIndex = SENTENCEG_PlayRndSz(NetworkProp()->edict(), pszSentence, volume, soundlevel, 0, PITCH_NORM );
+			sentenceIndex = SENTENCEG_PlayRndSz(NetworkProp()->GetEdict(), pszSentence, volume, soundlevel, 0, PITCH_NORM );
 		}
 	}
 
@@ -10823,9 +10823,9 @@ END_DATADESC()
 
 //-------------------------------------
 
-void CAI_BaseNPC::PostConstructor( const char *szClassname, edict_t* edict)
+void CAI_BaseNPC::PostConstructor( const char *szClassname)//, edict_t* edict
 {
-	BaseClass::PostConstructor( szClassname, edict );
+	BaseClass::PostConstructor( szClassname);//, edict 
 	CreateComponents();
 }
 

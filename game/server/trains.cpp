@@ -335,7 +335,7 @@ void CFuncPlat::Precache( )
 	if ( IsTogglePlat() == false )
 	{
 		// Create the "start moving" trigger
-		PlatSpawnInsideTrigger(NetworkProp()->edict());
+		PlatSpawnInsideTrigger(NetworkProp()->GetEdict());
 	}
 }
 
@@ -372,7 +372,7 @@ static void PlatSpawnInsideTrigger(edict_t* pevPlatform)
 {
 	// old code: //GetClassPtr( (CPlatTrigger *)NULL)->SpawnInsideTrigger( GetClassPtr( (CFuncPlat *)pevPlatform ) );
 	CPlatTrigger *plattrig = CREATE_UNSAVED_ENTITY( CPlatTrigger, "plat_trigger" );
-	plattrig->SpawnInsideTrigger( (CFuncPlat *)GetContainingEntity( pevPlatform ) );
+	plattrig->SpawnInsideTrigger( (CFuncPlat *)CBaseEntity::GetContainingEntity( pevPlatform ) );
 }
 		
 

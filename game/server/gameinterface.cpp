@@ -2408,7 +2408,8 @@ class CServerGameEnts : public IServerGameEnts
 public:
 	virtual void			SetDebugEdictBase(edict_t *base);
 	virtual void			MarkEntitiesAsTouching( edict_t *e1, edict_t *e2 );
-	virtual void			FreeContainingEntity( edict_t * ); 
+	virtual void			BindContainingEntity(edict_t* ed);
+	virtual void			FreeContainingEntity( edict_t* ed );
 	virtual edict_t*		BaseEntityToEdict( CBaseEntity *pEnt );
 	virtual CBaseEntity*	EdictToBaseEntity( edict_t *pEdict );
 	virtual void			CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned short *pEdictIndices, int nEdicts );
@@ -2427,8 +2428,8 @@ void CServerGameEnts::SetDebugEdictBase(edict_t *base)
 //-----------------------------------------------------------------------------
 void CServerGameEnts::MarkEntitiesAsTouching( edict_t *e1, edict_t *e2 )
 {
-	CBaseEntity *entity = GetContainingEntity( e1 );
-	CBaseEntity *entityTouched = GetContainingEntity( e2 );
+	CBaseEntity *entity = CBaseEntity::GetContainingEntity( e1 );
+	CBaseEntity *entityTouched = CBaseEntity::GetContainingEntity( e2 );
 	if ( entity && entityTouched )
 	{
 		// HACKHACK: UNDONE: Pass in the trace here??!?!?
@@ -2439,15 +2440,20 @@ void CServerGameEnts::MarkEntitiesAsTouching( edict_t *e1, edict_t *e2 )
 	}
 }
 
+void CServerGameEnts::BindContainingEntity(edict_t* ed) 
+{
+	CBaseEntity::BindContainingEntity(ed);
+}
+
 void CServerGameEnts::FreeContainingEntity( edict_t *e )
 {
-	::FreeContainingEntity(e);
+	CBaseEntity::FreeContainingEntity(e);
 }
 
 edict_t* CServerGameEnts::BaseEntityToEdict( CBaseEntity *pEnt )
 {
 	if ( pEnt )
-		return pEnt->NetworkProp()->edict();
+		return pEnt->NetworkProp()->GetEdict();
 	else
 		return NULL;
 }
@@ -2536,7 +2542,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 				if (!pParent)
 					continue;
 
-				if (pInfo->m_pClientEnt != pParent->edict())
+				if (pInfo->m_pClientEnt != pParent->GetEdict())
 					continue;
 
 			}
@@ -2575,7 +2581,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 				if (pEnt->GetServerClass() == NULL) {
 					int aaa = 0;
 				}
-				pEdict = pParent->edict();
+				pEdict = pParent->GetEdict();
 				iEdict = pParent->entindex();
 			}
 			continue;
@@ -2656,7 +2662,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 				break;
 			}
 
-			edict_t *checkEdict = check->edict();
+			edict_t *checkEdict = check->GetEdict();
 			int checkFlags = checkEdict->GetStateFlags() & (FL_EDICT_DONTSEND | FL_EDICT_ALWAYS | FL_EDICT_PVSCHECK | FL_EDICT_FULLCHECK);
 			if ( checkFlags & FL_EDICT_DONTSEND )
 				break;
@@ -2861,7 +2867,7 @@ void CServerGameClients::ClientPutInServer( edict_t *pEntity, const char *player
 
 void CServerGameClients::ClientCommand( edict_t *pEntity, const CCommand &args )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetContainingEntity( pEntity ) );
+	CBasePlayer *pPlayer = ToBasePlayer(CBaseEntity::GetContainingEntity( pEntity ) );
 	::ClientCommand( pPlayer, args );
 }
 
@@ -3019,7 +3025,7 @@ void CServerGameClients::ClientSetupVisibility( edict_t *pViewEntity, edict_t *p
 	CBaseEntity *pVE = NULL;
 	if ( pViewEntity )
 	{
-		pVE = GetContainingEntity( pViewEntity );
+		pVE = CBaseEntity::GetContainingEntity( pViewEntity );
 		// If we have a viewentity, it overrides the player's origin
 		if ( pVE )
 		{
@@ -3030,7 +3036,7 @@ void CServerGameClients::ClientSetupVisibility( edict_t *pViewEntity, edict_t *p
 
 	float fovDistanceAdjustFactor = 1;
 
-	CBasePlayer *pPlayer = ( CBasePlayer * )GetContainingEntity( pClient );
+	CBasePlayer *pPlayer = ( CBasePlayer * )CBaseEntity::GetContainingEntity( pClient );
 	if ( pPlayer )
 	{
 		org = pPlayer->EyePosition();

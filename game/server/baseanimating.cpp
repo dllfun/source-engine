@@ -55,11 +55,11 @@ class CIKSaveRestoreOps : public CClassPtrSaveRestoreOps
 	}
 };
 
-class CTestEnntity {
+class CTestEnntity : public CBaseEntity{
 public:
 	CServerNetworkProperty m_Network;
 	DECLARE_SERVERCLASS();
-	void PostConstructor(const char* pName, edict_t* edict) {
+	void PostConstructor(const char* pName) {//, edict_t* edict
 
 	}
 

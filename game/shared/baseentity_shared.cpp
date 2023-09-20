@@ -1284,7 +1284,7 @@ bool CBaseEntity::VPhysicsInitSetup()
 {
 #ifndef CLIENT_DLL
 	// don't support logical ents
-	if ( !NetworkProp()->edict() || IsMarkedForDeletion() )
+	if ( !NetworkProp()->GetEdict() || IsMarkedForDeletion() )
 		return false;
 #endif
 
@@ -1439,7 +1439,9 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 		nDirtyFlags |= EFL_DIRTY_ABSTRANSFORM;
 
 #ifndef CLIENT_DLL
-		NetworkProp()->MarkPVSInformationDirty();
+		if(NetworkProp()->HasEdict()){
+			NetworkProp()->MarkPVSInformationDirty();
+		}
 #endif
 
 		// NOTE: This will also mark shadow projection + client leaf dirty

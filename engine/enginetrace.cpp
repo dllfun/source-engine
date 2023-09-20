@@ -28,6 +28,7 @@
 #include "mathlib/polyhedron.h"
 #include "sys_dll.h"
 #include "vphysics/virtualmesh.h"
+#include "pr_edict.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

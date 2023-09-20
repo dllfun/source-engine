@@ -247,7 +247,7 @@ public:
 	virtual int					GetIndex() = 0;
 	virtual short				GetNetworkSerialNumber() = 0;
 	virtual void				SetNetworkSerialNumber(short NetworkSerialNumber) = 0;
-	virtual const char* GetClassName() const = 0;
+	virtual const char*			GetClassName() const = 0;
 	virtual int&				GetStateFlags() = 0;
 
 	virtual bool				IsFree() const = 0;
@@ -267,10 +267,10 @@ public:
 
 	virtual void				SetDirtyPvsInformation() = 0;
 
-	virtual void SetChangeInfo(unsigned short info) = 0;
-	virtual void SetChangeInfoSerialNumber(unsigned short sn) = 0;
-	virtual unsigned short	 GetChangeInfo() const = 0;
-	virtual unsigned short	 GetChangeInfoSerialNumber() const = 0;
+	virtual void				SetChangeInfo(unsigned short info) = 0;
+	virtual void				SetChangeInfoSerialNumber(unsigned short sn) = 0;
+	virtual unsigned short		GetChangeInfo() const = 0;
+	virtual unsigned short		GetChangeInfoSerialNumber() const = 0;
 	virtual IChangeInfoAccessor* GetChangeAccessor() = 0; // The engine implements this and the game .dll implements as
 	virtual const IChangeInfoAccessor* GetChangeAccessor() const = 0; // The engine implements this and the game .dll implements as
 	// as callback through to the engine!!!
@@ -280,25 +280,5 @@ public:
 };
 
 
-
-void SV_AllocateEdicts();
-int SV_MAX_Edicts();
-int SV_NUM_Edicts();
-int SV_FREE_Edicts();
-IChangeInfoAccessor* SV_Edictchangeinfo(int n);
-// If iForceEdictIndex is not -1, then it will return the edict with that index. If that edict index
-// is already used, it'll return null.
-edict_t* ED_Alloc(int iForceEdictIndex = -1);
-void	ED_Free(edict_t* ed);
-
-// Clear the FL_EDICT_FREE flag and the g_FreeEdicts bit.
-void	ED_ClearFreeFlag(edict_t* pEdict);
-
-edict_t* EDICT_NUM(int n);
-int NUM_FOR_EDICT(const edict_t* e);
-
-void ED_AllowImmediateReuse();
-void ED_ClearFreeEdictList();
-void SV_DeallocateEdicts();
 
 #endif // EDICT_H

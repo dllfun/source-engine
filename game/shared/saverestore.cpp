@@ -1973,7 +1973,7 @@ int CRestore::ReadEdictPtr( edict_t **ppEdict, int count, int nBytesAvailable )
 	for ( int i = 0; i < nRead; i++ ) // nRead is never greater than count
 	{
 		pEntity = EntityFromIndex( entityArray[i] );
-		ppEdict[i] = (pEntity) ? pEntity->NetworkProp()->edict() : NULL;
+		ppEdict[i] = (pEntity) ? pEntity->NetworkProp()->GetEdict() : NULL;
 	}
 	
 	if ( nRead < count)
@@ -2512,7 +2512,7 @@ void CEntitySaveRestoreBlockHandler::Save( ISave *pSave )
 #if !defined( CLIENT_DLL )
 			pEntInfo->globalname = pEnt->m_iGlobalname; // remember global name
 			pEntInfo->landmarkModelSpace = ModelSpaceLandmark( pEnt->GetModelIndex() );
-			int nEntIndex = pEnt->NetworkProp()->edict() ? ENTINDEX(pEnt->NetworkProp()->edict()) : -1;
+			int nEntIndex = pEnt->NetworkProp()->GetEdict() ? ENTINDEX(pEnt->NetworkProp()->GetEdict()) : -1;
 			bool bIsPlayer = ( ( nEntIndex >= 1 ) && ( nEntIndex <= gpGlobals->GetMaxClients() ) ) ? true : false;
 			if ( bIsPlayer )
 			{
@@ -3446,7 +3446,7 @@ int CreateEntityTransitionList( CSaveRestoreData *pSaveData, int levelMask )
 			}
 			else 
 			{
-				DevMsg( 2, "Transferring %s (%d)\n", STRING(pEntInfo->classname), pent->NetworkProp()->edict() ? ENTINDEX(pent->NetworkProp()->edict()) : -1 );
+				DevMsg( 2, "Transferring %s (%d)\n", STRING(pEntInfo->classname), pent->NetworkProp()->GetEdict() ? ENTINDEX(pent->NetworkProp()->GetEdict()) : -1 );
 				CRestore restoreHelper( pSaveData );
 				if ( g_EntitySaveRestoreBlockHandler.RestoreEntity( pent, &restoreHelper, pEntInfo ) < 0 )
 				{

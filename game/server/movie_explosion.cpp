@@ -26,7 +26,7 @@ MovieExplosion* MovieExplosion::CreateMovieExplosion(const Vector &pos)
 	if(pEnt)
 	{
 		MovieExplosion *pEffect = dynamic_cast<MovieExplosion*>(pEnt);
-		if(pEffect && pEffect->NetworkProp()->edict())
+		if(pEffect && pEffect->NetworkProp()->GetEdict())
 		{
 			pEffect->SetLocalOrigin( pos );
 			pEffect->Activate();

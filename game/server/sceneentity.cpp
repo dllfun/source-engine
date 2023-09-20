@@ -4374,7 +4374,7 @@ int CSceneEntity::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 
 			CBasePlayer *player = static_cast< CBasePlayer * >( CBaseEntity::Instance( iRecipient ) );
 
-			if ( player && player->NetworkProp()->edict() == pInfo->m_pClientEnt )
+			if ( player && player->NetworkProp()->GetEdict() == pInfo->m_pClientEnt )
 			{
 				bFound = true;
 				break;

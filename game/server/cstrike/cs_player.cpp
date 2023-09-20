@@ -5207,7 +5207,7 @@ void CCSPlayer::State_Enter_WELCOME()
 	{
 		if ( CommandLine()->FindParm( "-makereslists" ) ) // don't show the MOTD when making reslists
 		{
-			engineServer->ClientCommand(NetworkProp()->edict(), "jointeam 3\n" );
+			engineServer->ClientCommand(NetworkProp()->GetEdict(), "jointeam 3\n" );
 		}
 		else
 		{
@@ -5393,7 +5393,7 @@ void CCSPlayer::State_Enter_OBSERVER_MODE()
 	int observerMode = m_iObserverLastMode;
 	if ( IsNetClient() )
 	{
-		const char *pIdealMode = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->edict()), "cl_spec_mode" );
+		const char *pIdealMode = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->GetEdict()), "cl_spec_mode" );
 		if ( pIdealMode )
 		{
 			int nIdealMode = atoi( pIdealMode );
@@ -5434,7 +5434,7 @@ void CCSPlayer::State_Enter_PICKINGCLASS()
 {
 	if ( CommandLine()->FindParm( "-makereslists" ) ) // don't show the menu when making reslists
 	{
-		engineServer->ClientCommand(NetworkProp()->edict(), "joinclass 0\n" );
+		engineServer->ClientCommand(NetworkProp()->GetEdict(), "joinclass 0\n" );
 		return;
 	}
 
@@ -5785,7 +5785,7 @@ void CCSPlayer::AutoBuy()
 		return;
 	}
 
-	const char *autobuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->edict()), "cl_autobuy" );
+	const char *autobuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->GetEdict()), "cl_autobuy" );
 	if ( !autobuyString || !*autobuyString )
 	{
 		EmitPrivateSound( "BuyPreset.AlreadyBought" );
@@ -6185,7 +6185,7 @@ void CCSPlayer::Rebuy( void )
 		return;
 	}
 
-	const char *rebuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->edict()), "cl_rebuy" );
+	const char *rebuyString = engineServer->GetClientConVarValue(engineServer->IndexOfEdict(NetworkProp()->GetEdict()), "cl_rebuy" );
 	if ( !rebuyString || !*rebuyString )
 	{
 		EmitPrivateSound( "BuyPreset.AlreadyBought" );
@@ -7295,7 +7295,7 @@ void CCSPlayer::ChangeName( const char *pszNewName )
 	SetPlayerName( trimmedName );
 
 	// tell engine to use new name
-	engineServer->ClientCommand(NetworkProp()->edict(), "name \"%s\"", trimmedName );
+	engineServer->ClientCommand(NetworkProp()->GetEdict(), "name \"%s\"", trimmedName );
 
 	// remember time of name change
 	for ( int i=NAME_CHANGE_HISTORY_SIZE-1; i>0; i-- )

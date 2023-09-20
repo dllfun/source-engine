@@ -237,7 +237,7 @@ void CMoveHelperServer::ProcessImpacts( void )
 			continue;
 
 		// Run the impact function as if we had run it during movement.
-		CBaseEntity *entity = GetContainingEntity( ent );
+		CBaseEntity *entity = CBaseEntity::GetContainingEntity( ent );
 		if ( !entity )
 			continue;
 
@@ -362,7 +362,7 @@ bool CMoveHelperServer::PlayerFallingDamage( void )
 	float flFallDamage = g_pGameRules->FlPlayerFallDamage( m_pHostPlayer );	
 	if ( flFallDamage > 0 )
 	{
-		m_pHostPlayer->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) ); 
+		m_pHostPlayer->TakeDamage( CTakeDamageInfo(CBaseEntity::GetContainingEntity(INDEXENT(0)), CBaseEntity::GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) );
 		StartSound( m_pHostPlayer->GetAbsOrigin(), "Player.FallDamage" );
 
         //=============================================================================

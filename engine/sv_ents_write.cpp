@@ -21,7 +21,7 @@
 #include "replayserver.h"
 #include "tier0/vcrmode.h"
 #include "framesnapshot.h"
-
+#include "pr_edict.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

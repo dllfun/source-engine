@@ -28,8 +28,6 @@
 CBaseEntity *FindPickerEntity( CBasePlayer *pPlayer );
 void SceneManager_ClientActive( CBasePlayer *player );
 
-static CUtlVector<IServerNetworkable*> g_DeleteList;
-
 CGlobalEntityList gEntList;
 CBaseEntityList *g_pEntityList = &gEntList;
 
@@ -303,12 +301,12 @@ static bool g_fInCleanupDelete;
 
 
 // mark an entity as deleted
-void CGlobalEntityList::AddToDeleteList( IServerNetworkable *ent )
+void CGlobalEntityList::AddToDeleteList( CBaseEntity *ent )
 {
-	if ( ent && ent->GetEntityHandle()->GetRefEHandle() != INVALID_EHANDLE_INDEX )
-	{
-		g_DeleteList.AddToTail( ent );
-	}
+	//if ( ent && ent->GetEntityHandle()->GetRefEHandle() != INVALID_EHANDLE_INDEX )
+	//{
+		m_DeleteList.AddToTail( ent );
+	//}
 }
 
 extern bool g_bDisableEhandleAccess;
@@ -321,20 +319,21 @@ void CGlobalEntityList::CleanupDeleteList( void )
 	PhysOnCleanupDeleteList();
 
 	g_bDisableEhandleAccess = true;
-	for ( int i = 0; i < g_DeleteList.Count(); i++ )
+	for ( int i = 0; i < m_DeleteList.Count(); i++ )
 	{
-		g_DeleteList[i]->Release();
+		CBaseEntity* pEntity= m_DeleteList[i];//->Release()
+		CBaseEntity::DestroyEntity(pEntity);
 	}
 	g_bDisableEhandleAccess = false;
-	g_DeleteList.RemoveAll();
+	m_DeleteList.RemoveAll();
 
 	g_fInCleanupDelete = false;
 }
 
 int CGlobalEntityList::ResetDeleteList( void )
 {
-	int result = g_DeleteList.Count();
-	g_DeleteList.RemoveAll();
+	int result = m_DeleteList.Count();
+	m_DeleteList.RemoveAll();
 	return result;
 }
 
@@ -363,7 +362,7 @@ void CGlobalEntityList::Clear( void )
 	CBaseHandle hCur = FirstHandle();
 	while ( hCur != InvalidHandle() )
 	{
-		IServerNetworkable *ent = GetServerNetworkable( hCur );
+		CBaseEntity *ent = GetBaseEntity( hCur );
 		if ( ent )
 		{
 			MDLCACHE_CRITICAL_SECTION();
@@ -375,7 +374,7 @@ void CGlobalEntityList::Clear( void )
 		
 	CleanupDeleteList();
 	// free the memory
-	g_DeleteList.Purge();
+	m_DeleteList.Purge();
 
 	CBaseEntity::m_nDebugPlayer = -1;
 	CBaseEntity::m_bInDebugSelect = false; 
@@ -527,12 +526,12 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 		{
 			if ( pSearchingEntity )
 			{
-				return CBaseEntity::Instance( UTIL_FindClientInPVS( pSearchingEntity->NetworkProp()->edict()) );
+				return CBaseEntity::Instance( UTIL_FindClientInPVS( pSearchingEntity->NetworkProp()->GetEdict()) );
 			}
 			else if ( pActivator )
 			{
 				// FIXME: error condition?
-				return CBaseEntity::Instance( UTIL_FindClientInPVS( pActivator->NetworkProp()->edict()) );
+				return CBaseEntity::Instance( UTIL_FindClientInPVS( pActivator->NetworkProp()->GetEdict()) );
 			}
 			else
 			{
@@ -635,7 +634,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByModel( CBaseEntity *pStartEntity, co
 			continue;
 		}
 
-		if ( !ent->NetworkProp()->edict() || !ent->GetModelName() )
+		if ( !ent->NetworkProp()->GetEdict() || !ent->GetModelName() )
 			continue;
 
 		if ( FStrEq( STRING(ent->GetModelName()), szModelName ) )
@@ -695,7 +694,7 @@ CBaseEntity *CGlobalEntityList::FindEntityInSphere( CBaseEntity *pStartEntity, c
 			continue;
 		}
 
-		if ( !ent->NetworkProp()->edict())
+		if ( !ent->NetworkProp()->GetEdict())
 			continue;
 
 		Vector vecRelativeCenter;
@@ -737,7 +736,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByNameNearest( const char *szName, con
 	CBaseEntity *pSearch = NULL;
 	while ((pSearch = gEntList.FindEntityByName( pSearch, szName, pSearchingEntity, pActivator, pCaller )) != NULL)
 	{
-		if ( !pSearch->NetworkProp()->edict())
+		if ( !pSearch->NetworkProp()->GetEdict())
 			continue;
 
 		float flDist2 = (pSearch->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -779,7 +778,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByNameWithin( CBaseEntity *pStartEntit
 
 	while ((pEntity = gEntList.FindEntityByName( pEntity, szName, pSearchingEntity, pActivator, pCaller )) != NULL)
 	{
-		if ( !pEntity->NetworkProp()->edict())
+		if ( !pEntity->NetworkProp()->GetEdict())
 			continue;
 
 		float flDist2 = (pEntity->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -818,7 +817,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByClassnameNearest( const char *szName
 	CBaseEntity *pSearch = NULL;
 	while ((pSearch = gEntList.FindEntityByClassname( pSearch, szName )) != NULL)
 	{
-		if ( !pSearch->NetworkProp()->edict())
+		if ( !pSearch->NetworkProp()->GetEdict())
 			continue;
 
 		float flDist2 = (pSearch->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -857,7 +856,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByClassnameWithin( CBaseEntity *pStart
 
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szName )) != NULL)
 	{
-		if ( !pEntity->NetworkProp()->edict())
+		if ( !pEntity->NetworkProp()->GetEdict())
 			continue;
 
 		float flDist2 = (pEntity->GetAbsOrigin() - vecSrc).LengthSqr();
@@ -889,7 +888,7 @@ CBaseEntity *CGlobalEntityList::FindEntityByClassnameWithin( CBaseEntity *pStart
 
 	while ((pEntity = gEntList.FindEntityByClassname( pEntity, szName )) != NULL)
 	{
-		if ( !pEntity->NetworkProp()->edict() && !pEntity->IsEFlagSet( EFL_SERVER_ONLY ) )
+		if ( !pEntity->NetworkProp()->GetEdict() && !pEntity->IsEFlagSet( EFL_SERVER_ONLY ) )
 			continue;
 
 		// check if the aabb intersects the search aabb.
@@ -1057,7 +1056,7 @@ CBaseEntity *CGlobalEntityList::FindEntityNearestFacing( const Vector &origin, c
 		}
 
 		// Ignore logical entities
-		if (!ent->NetworkProp()->edict())
+		if (!ent->NetworkProp()->GetEdict())
 			continue;
 
 		// Make vector to entity
@@ -1090,7 +1089,7 @@ void CGlobalEntityList::OnAddEntity( IHandleEntity *pEnt, CBaseHandle handle )
 
 	// If it's a CBaseEntity, notify the listeners.
 	CBaseEntity *pBaseEnt = static_cast<IServerUnknown*>(pEnt)->GetBaseEntity();
-	if ( pBaseEnt->NetworkProp()->edict())
+	if ( pBaseEnt->NetworkProp()->HasEdict())
 		m_iNumEdicts++;
 	
 	// NOTE: Must be a CBaseEntity on server
@@ -1109,12 +1108,12 @@ void CGlobalEntityList::OnRemoveEntity( IHandleEntity *pEnt, CBaseHandle handle 
 	if ( !g_fInCleanupDelete )
 	{
 		int i;
-		for ( i = 0; i < g_DeleteList.Count(); i++ )
+		for ( i = 0; i < m_DeleteList.Count(); i++ )
 		{
-			if ( g_DeleteList[i]->GetEntityHandle() == pEnt )
+			if (m_DeleteList[i]->GetEntityHandle() == pEnt )
 			{
-				g_DeleteList.FastRemove( i );
-				Msg( "ERROR: Entity being destroyed but previously threaded on g_DeleteList\n" );
+				m_DeleteList.FastRemove( i );
+				Msg( "ERROR: Entity being destroyed but previously threaded on m_DeleteList\n" );
 				break;
 			}
 		}
@@ -1122,7 +1121,7 @@ void CGlobalEntityList::OnRemoveEntity( IHandleEntity *pEnt, CBaseHandle handle 
 #endif
 
 	CBaseEntity *pBaseEnt = static_cast<IServerUnknown*>(pEnt)->GetBaseEntity();
-	if ( pBaseEnt->NetworkProp()->edict())
+	if ( pBaseEnt->NetworkProp()->GetEdict())
 		m_iNumEdicts--;
 
 	m_iNumEnts--;
@@ -1534,7 +1533,7 @@ public:
 			if ( !pEntity )
 				continue;
 
-			if ( pEntity->NetworkProp()->edict())
+			if ( pEntity->NetworkProp()->GetEdict())
 				edicts++;
 
 			const char *pClassname = pEntity->GetClassname();

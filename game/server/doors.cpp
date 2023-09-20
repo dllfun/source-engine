@@ -154,7 +154,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 			// play next 'door locked' sentence in group
 			int iprev = pls->iLockedSentence;
 			
-			pls->iLockedSentence = SENTENCEG_PlaySequentialSz(	pEdict->NetworkProp()->edict(),
+			pls->iLockedSentence = SENTENCEG_PlaySequentialSz(	pEdict->NetworkProp()->GetEdict(),
 																STRING(pls->sLockedSentence), 
 																0.85f, 
 																SNDLVL_NORM, 
@@ -201,7 +201,7 @@ void PlayLockSounds(CBaseEntity *pEdict, locksound_t *pls, int flocked, int fbut
 		{
 			int iprev = pls->iUnlockedSentence;
 			
-			pls->iUnlockedSentence = SENTENCEG_PlaySequentialSz(pEdict->NetworkProp()->edict(), STRING(pls->sUnlockedSentence),
+			pls->iUnlockedSentence = SENTENCEG_PlaySequentialSz(pEdict->NetworkProp()->GetEdict(), STRING(pls->sUnlockedSentence),
 					  0.85, SNDLVL_NORM, 0, 100, pls->iUnlockedSentence, FALSE);
 			pls->iLockedSentence = 0;
 
@@ -965,7 +965,7 @@ void CBaseDoor::DoorGoUp( void )
 
 		if ( m_hActivator != NULL )
 		{
-			pevActivator = m_hActivator->NetworkProp()->edict();
+			pevActivator = m_hActivator->NetworkProp()->GetEdict();
 			
 			if ( !HasSpawnFlags( SF_DOOR_ONEWAY ) && m_vecMoveAng.y ) 		// Y axis rotation, move away from the player
 			{

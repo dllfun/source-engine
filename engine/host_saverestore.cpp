@@ -69,6 +69,8 @@
 #endif
 
 #include "ixboxsystem.h"
+#include "pr_edict.h"
+
 extern IXboxSystem *g_pXboxSystem;
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -1670,7 +1672,7 @@ void CSaveRestore::ReapplyDecal( bool adjacent, RestoreLookupTable *table, decal
 				if ( hit != NULL )
 				{
 					// Looks like a good match for original splat plane, reapply the decal
-					int entityToHit = NUM_FOR_EDICT( hit );
+					int entityToHit = NUM_FOR_EDICT( (CBaseEdict*)hit );
 					if ( entityToHit >= 0 )
 					{
 						IClientEntity *clientEntity = entitylist->GetClientEntity( entityToHit );

@@ -1416,7 +1416,7 @@ void CCSBotManager::ExtractScenarioData( void )
 	if (m_zoneCount == 0 && m_gameScenario == SCENARIO_RESCUE_HOSTAGES)
 	{
 		for( entity = gEntList.FindEntityByClassname( NULL, "info_player_start" );
-			 entity && !FNullEnt( entity->NetworkProp()->edict());
+			 entity && !FNullEnt( entity->NetworkProp()->GetEdict());
 			 entity = gEntList.FindEntityByClassname( entity, "info_player_start" ) )
 		{
 			if (m_zoneCount < MAX_ZONES)

@@ -511,7 +511,7 @@ int CCollisionEvent::ShouldCollide_2( IPhysicsObject *pObj0, IPhysicsObject *pOb
 	if ( pEntity0->ForceVPhysicsCollide( pEntity1 ) || pEntity1->ForceVPhysicsCollide( pEntity0 ) )
 		return 1;
 
-	if ( pEntity0->NetworkProp()->edict() && pEntity1->NetworkProp()->edict())
+	if ( pEntity0->NetworkProp()->GetEdict() && pEntity1->NetworkProp()->GetEdict())
 	{
 		// don't collide with your owner
 		if ( pEntity0->GetOwnerEntity() == pEntity1 || pEntity1->GetOwnerEntity() == pEntity0 )
@@ -701,7 +701,7 @@ bool CCollisionEvent::ShouldFreezeObject( IPhysicsObject *pObject )
 				if ( PropIsGib(pEntity) )
 				{
 					// it's always safe to delete gibs, so kill this one to avoid simulation problems
-					PhysCallbackRemove( pEntity->NetworkProp() );
+					PhysCallbackRemove( pEntity );//->NetworkProp()
 				}
 				else
 				{
@@ -1388,7 +1388,7 @@ public:
 
 	bool IsWorldEntity( CBaseEntity *pEnt )
 	{
-		if ( pEnt->NetworkProp()->edict())
+		if ( pEnt->NetworkProp()->GetEdict())
 			return pEnt->NetworkProp()->entindex()==0;
 		return false;
 	}
@@ -2347,11 +2347,11 @@ void PostSimulation_SetVelocityEvent( IPhysicsObject *pPhysicsObject, const Vect
 	pPhysicsObject->SetVelocity( &vecVelocity, NULL );
 }
 
-void CCollisionEvent::AddRemoveObject(IServerNetworkable *pRemove)
+void CCollisionEvent::AddRemoveObject(CBaseEntity *pEntity)
 {
-	if ( pRemove && m_removeObjects.Find(pRemove) == -1 )
+	if (pEntity && m_removeObjects.Find(pEntity) == -1 )
 	{
-		m_removeObjects.AddToTail(pRemove);
+		m_removeObjects.AddToTail(pEntity);
 	}
 }
 int CCollisionEvent::FindDamageInflictor( IPhysicsObject *pInflictorPhysics )
@@ -2780,15 +2780,15 @@ void PhysCallbackDamage( CBaseEntity *pEntity, const CTakeDamageInfo &info )
 	}
 }
 
-void PhysCallbackRemove(IServerNetworkable *pRemove)
+void PhysCallbackRemove(CBaseEntity* pEntity)
 {
 	if ( PhysIsInCallback() )
 	{
-		g_Collisions.AddRemoveObject(pRemove);
+		g_Collisions.AddRemoveObject(pEntity);
 	}
 	else
 	{
-		UTIL_Remove(pRemove);
+		UTIL_Remove(pEntity);
 	}
 }
 

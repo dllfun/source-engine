@@ -519,7 +519,7 @@ void CLogicLineToEntity::Activate(void)
 		//
 		// If we were given a bad measure target, just measure sound where we are.
 		//
-		if ((m_EndEntity == NULL) || (m_EndEntity->NetworkProp()->edict() == NULL))
+		if ((m_EndEntity == NULL) || (m_EndEntity->NetworkProp()->GetEdict() == NULL))
 		{
 			Warning( "logic_lineto - Target not found or target with no origin!\n");
 			m_EndEntity = this;
@@ -537,7 +537,7 @@ void CLogicLineToEntity::Activate(void)
 		//
 		// If we were given a bad measure target, just measure sound where we are.
 		//
-		if ((m_StartEntity == NULL) || (m_StartEntity->NetworkProp()->edict() == NULL))
+		if ((m_StartEntity == NULL) || (m_StartEntity->NetworkProp()->GetEdict() == NULL))
 		{
 			Warning( "logic_lineto - Source not found or source with no origin!\n");
 			m_StartEntity = this;
@@ -566,7 +566,7 @@ void CLogicLineToEntity::Think(void)
 {
 	CBaseEntity* pDest = m_EndEntity.Get();
 	CBaseEntity* pSrc = m_StartEntity.Get();
-	if (!pDest || !pSrc || !pDest->NetworkProp()->edict() || !pSrc->NetworkProp()->edict())
+	if (!pDest || !pSrc || !pDest->NetworkProp()->GetEdict() || !pSrc->NetworkProp()->GetEdict())
 	{
 		// Can sleep for a long time, no more lines.
 		m_Line.Set( vec3_origin, this, this );
@@ -1203,7 +1203,7 @@ void CMultiSource::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	// if we didn't find it, report error and leave
 	if (i > m_iTotal)
 	{
-		Warning("MultiSrc: Used by non member %s.\n", pCaller->NetworkProp()->edict() ? pCaller->GetClassname() : "<logical entity>");
+		Warning("MultiSrc: Used by non member %s.\n", pCaller->NetworkProp()->GetEdict() ? pCaller->GetClassname() : "<logical entity>");
 		return;	
 	}
 

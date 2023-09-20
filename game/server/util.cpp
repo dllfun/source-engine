@@ -341,13 +341,21 @@ bool g_bReceivedChainedUpdateOnRemove = false;
 //			until the next frame, so there can be no pointer errors.
 // Input  : *oldObj - object to delete
 //-----------------------------------------------------------------------------
-void UTIL_Remove( IServerNetworkable *oldObj )
+//void UTIL_Remove( IServerNetworkable *oldObj )
+//{
+//	
+//}
+
+void UTIL_Remove( CBaseEntity *oldObj )
 {
-	CServerNetworkProperty* pProp = static_cast<CServerNetworkProperty*>( oldObj );
-	if ( !pProp || pProp->IsMarkedForDeletion() )
+	if ( !oldObj )
+		return;
+	//UTIL_Remove( oldObj->NetworkProp() );
+	CServerNetworkProperty* pProp = static_cast<CServerNetworkProperty*>(oldObj->NetworkProp());
+	if (!pProp || pProp->IsMarkedForDeletion())
 		return;
 
-	if ( PhysIsInCallback() )
+	if (PhysIsInCallback())
 	{
 		// This assert means that someone is deleting an entity inside a callback.  That isn't supported so
 		// this code will defer the deletion of that object until the end of the current physics simulation frame
@@ -356,40 +364,33 @@ void UTIL_Remove( IServerNetworkable *oldObj )
 		// obvious why the unwanted results are happening so the caller can handle them appropriately. (some callbacks can be masked 
 		// or the calling entity can be flagged to filter them in most cases)
 		Assert(0);
-		PhysCallbackRemove(oldObj);
+		PhysCallbackRemove(oldObj);//->NetworkProp()
 		return;
 	}
 
 	// mark it for deletion	
-	pProp->MarkForDeletion( );
+	pProp->MarkForDeletion();
 
-	CBaseEntity *pBaseEnt = oldObj->GetBaseEntity();
-	if ( pBaseEnt )
+	CBaseEntity* pBaseEnt = oldObj->GetBaseEntity();
+	if (pBaseEnt)
 	{
 #ifdef PORTAL //make sure entities are in the primary physics environment for the portal mod, this code should be safe even if the entity is in neither extra environment
-		CPortalSimulator::Pre_UTIL_Remove( pBaseEnt );
+		CPortalSimulator::Pre_UTIL_Remove(pBaseEnt);
 #endif
 		g_bReceivedChainedUpdateOnRemove = false;
 		pBaseEnt->UpdateOnRemove();
 
-		Assert( g_bReceivedChainedUpdateOnRemove );
+		Assert(g_bReceivedChainedUpdateOnRemove);
 
 		// clear oldObj targetname / other flags now
-		pBaseEnt->SetName( NULL_STRING );
+		pBaseEnt->SetName(NULL_STRING);
 
 #ifdef PORTAL
-		CPortalSimulator::Post_UTIL_Remove( pBaseEnt );
+		CPortalSimulator::Post_UTIL_Remove(pBaseEnt);
 #endif
 	}
 
-	gEntList.AddToDeleteList( oldObj );
-}
-
-void UTIL_Remove( CBaseEntity *oldObj )
-{
-	if ( !oldObj )
-		return;
-	UTIL_Remove( oldObj->NetworkProp() );
+	gEntList.AddToDeleteList(oldObj);
 }
 
 static int s_RemoveImmediateSemaphore = 0;
@@ -432,7 +433,8 @@ void UTIL_RemoveImmediate( CBaseEntity *oldObj )
 	// Entities shouldn't reference other entities in their destructors
 	//  that type of code should only occur in an UpdateOnRemove call
 	g_bDisableEhandleAccess = true;
-	delete oldObj;
+	//delete oldObj;
+	CBaseEntity::DestroyEntity(oldObj);
 	g_bDisableEhandleAccess = false;
 
 #ifdef PORTAL
@@ -453,7 +455,7 @@ CBasePlayer	*UTIL_PlayerByIndex( int playerIndex )
 		edict_t *pPlayerEdict = INDEXENT( playerIndex );
 		if ( pPlayerEdict && !pPlayerEdict->IsFree() )
 		{
-			pPlayer = (CBasePlayer*)GetContainingEntity( pPlayerEdict );
+			pPlayer = (CBasePlayer*)CBaseEntity::GetContainingEntity( pPlayerEdict );
 		}
 	}
 	
@@ -496,7 +498,7 @@ CBasePlayer* UTIL_PlayerByUserId( int userID )
 		if ( !pPlayer->IsConnected() )
 			continue;
 
-		if (engineServer->GetPlayerUserId(pPlayer->NetworkProp()->edict()) == userID )
+		if (engineServer->GetPlayerUserId(pPlayer->NetworkProp()->GetEdict()) == userID )
 		{
 			return pPlayer;
 		}
@@ -592,7 +594,7 @@ CBaseEntity	*UTIL_EntityByIndex( int entityIndex )
 		edict_t *edict = INDEXENT( entityIndex );
 		if ( edict && !edict->IsFree() )
 		{
-			entity = GetContainingEntity( edict );
+			entity = CBaseEntity::GetContainingEntity( edict );
 		}
 	}
 	
@@ -1589,7 +1591,7 @@ void UTIL_Beam( Vector &Start, Vector &End, int nModelIndex, int nHaloIndex, uns
 
 bool UTIL_IsValidEntity( CBaseEntity *pEnt )
 {
-	edict_t *pEdict = pEnt->NetworkProp()->edict();
+	edict_t *pEdict = pEnt->NetworkProp()->GetEdict();
 	if ( !pEdict || pEdict->IsFree() )
 		return false;
 	return true;
@@ -1657,7 +1659,7 @@ void UTIL_PrecacheOther( const char *szClassname, const char *modelName )
 		return;
 #endif
 
-	CBaseEntity	*pEntity = engineServer->CreateEntityByName( szClassname );
+	CBaseEntity	*pEntity = CBaseEntity::CreateEntityByName( szClassname );
 	if ( !pEntity )
 	{
 		Warning( "NULL Ent in UTIL_PrecacheOther\n" );
@@ -1897,7 +1899,7 @@ void EntityMatrix::InitFromEntity( CBaseEntity *pEntity, int iAttachment )
 
 void EntityMatrix::InitFromEntityLocal( CBaseEntity *entity )
 {
-	if ( !entity || !entity->NetworkProp()->edict())
+	if ( !entity || !entity->NetworkProp()->GetEdict())
 	{
 		Identity();
 		return;
@@ -2032,7 +2034,7 @@ static int UTIL_GetNewCheckClient( int check )
 		if ( !ent->GetUnknown() )
 			continue;
 
-		CBaseEntity *entity = GetContainingEntity( ent );
+		CBaseEntity *entity = CBaseEntity::GetContainingEntity( ent );
 		if ( !entity )
 			continue;
 
@@ -2052,7 +2054,7 @@ static int UTIL_GetNewCheckClient( int check )
 	if ( ent )
 	{
 		// get the PVS for the entity
-		CBaseEntity *pce = GetContainingEntity( ent );
+		CBaseEntity *pce = CBaseEntity::GetContainingEntity( ent );
 		if ( !pce )
 			return i;
 
@@ -2165,7 +2167,7 @@ CBaseEntity *UTIL_FindClientInPVS( const Vector &vecBoxMins, const Vector &vecBo
 	}
 
 	// might be able to see it
-	return GetContainingEntity( ent );
+	return CBaseEntity::GetContainingEntity( ent );
 }
 
 //-----------------------------------------------------------------------------
@@ -2187,7 +2189,7 @@ static edict_t *UTIL_FindClientInPVSGuts(edict_t *pEdict, unsigned char *pvs, un
 		return NULL;
 	}
 
-	CBaseEntity *pPlayerEntity = GetContainingEntity( ent );
+	CBaseEntity *pPlayerEntity = CBaseEntity::GetContainingEntity( ent );
 	if( (!pPlayerEntity || (pPlayerEntity->GetFlags() & FL_NOTARGET)) && sv_strict_notarget.GetBool() )
 	{
 		return NULL;
@@ -2195,7 +2197,7 @@ static edict_t *UTIL_FindClientInPVSGuts(edict_t *pEdict, unsigned char *pvs, un
 	// if current entity can't possibly see the check entity, return 0
 	// UNDONE: Build a box for this and do it over that box
 	// UNDONE: Use CM_BoxLeafnums()
-	CBaseEntity *pe = GetContainingEntity( pEdict );
+	CBaseEntity *pe = CBaseEntity::GetContainingEntity( pEdict );
 	if ( pe )
 	{
 		view = pe->EyePosition();
@@ -2264,7 +2266,7 @@ CBaseEntity *UTIL_EntitiesInPVS( CBaseEntity *pPVSEntity, CBaseEntity *pStarting
 	for ( CBaseEntity *pEntity = gEntList.NextEnt(pStartingEntity); pEntity; pEntity = gEntList.NextEnt(pEntity) )
 	{
 		// Only return attached ents.
-		if ( !pEntity->NetworkProp()->edict())
+		if ( !pEntity->NetworkProp()->GetEdict())
 			continue;
 
 		CBaseEntity *pParent = pEntity->GetRootMoveParent();

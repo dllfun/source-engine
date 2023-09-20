@@ -1845,7 +1845,7 @@ int CChangeLevel::BuildChangeLevelList( levellist_t *pLevelList, int maxList )
 			if ( pentLandmark )
 			{
 				// Build a list of unique transitions
-				if ( AddTransitionToList( pLevelList, nCount, pTrigger->m_szMapName, pTrigger->m_szLandmarkName, pentLandmark->NetworkProp()->edict()) )
+				if ( AddTransitionToList( pLevelList, nCount, pTrigger->m_szMapName, pTrigger->m_szLandmarkName, pentLandmark->NetworkProp()->GetEdict()) )
 				{
 					++nCount;
 					if ( nCount >= maxList )		// FULL!!
@@ -3562,7 +3562,7 @@ void CTriggerProximity::Activate(void)
 	//
 	// Disable our Touch function if we were given a bad measure target.
 	//
-	if ((m_hMeasureTarget == NULL) || (m_hMeasureTarget->NetworkProp()->edict() == NULL))
+	if ((m_hMeasureTarget == NULL) || (m_hMeasureTarget->NetworkProp()->GetEdict() == NULL))
 	{
 		Warning( "TriggerProximity - Missing measure target or measure target with no origin!\n");
 	}
@@ -3617,7 +3617,7 @@ void CTriggerProximity::EndTouch(CBaseEntity *pOther)
 //-----------------------------------------------------------------------------
 void CTriggerProximity::MeasureThink( void )
 {
-	if ( ( m_hMeasureTarget == NULL ) || ( m_hMeasureTarget->NetworkProp()->edict() == NULL ) )
+	if ( ( m_hMeasureTarget == NULL ) || ( m_hMeasureTarget->NetworkProp()->GetEdict() == NULL ) )
 	{
 		SetThink(NULL);
 		SetNextThink( TICK_NEVER_THINK );

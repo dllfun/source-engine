@@ -346,7 +346,7 @@ public:
 
 	virtual const CCheckTransmitInfo* GetPrevCheckTransmitInfo( edict_t *pPlayerEdict )
 	{
-		int entnum = NUM_FOR_EDICT( pPlayerEdict );
+		int entnum = NUM_FOR_EDICT( (CBaseEdict*)pPlayerEdict );
 		if ( entnum < 1 || entnum > sv.GetClientCount() )
 		{
 			Error( "Invalid client specified in GetPrevCheckTransmitInfo\n" );
@@ -665,7 +665,7 @@ public:
 			return 0;
 		}
 		
-		int index = (int) (NUM_FOR_EDICT(pEdict));
+		int index = (int) (NUM_FOR_EDICT((CBaseEdict*)pEdict));
 		if ( index < 0 || index > SV_MAX_Edicts())
 		{
 			Sys_Error( "Bad entity in IndexOfEdict() index %i pEdict %p sv.edicts %p\n",
@@ -726,13 +726,13 @@ public:
 		{
 			g_pServerPluginHandler->OnEdictFreed( ed );
 		}
-		ED_Free(ed);
+		ED_Free((CBaseEdict*)ed);
 	}
 	
 	// creates an entity by string name, but does not spawn it
 	CBaseEntity* CreateEntityByName(const char* className, int iForceEdictIndex)
 	{
-		edict_t* edict = NULL;
+		CBaseEdict* edict = NULL;
 		if (iForceEdictIndex == -1) {
 			iForceEdictIndex = serverGameDLL->EntityFactoryDictionary()->RequiredEdictIndex(className);
 			if (iForceEdictIndex != -1) {
@@ -747,32 +747,35 @@ public:
 					Error("CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex);
 			}
 			else {
-				edict = this->CreateEdict(iForceEdictIndex);
+				edict = (CBaseEdict*)this->CreateEdict(iForceEdictIndex);
 				if (!edict)
 					Error("CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex);
 			}
 		}
 		else {
-			edict = this->CreateEdict(-1);
+			edict = (CBaseEdict*)this->CreateEdict(-1);
 			if (!edict)
 				Error("CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex);
 		}
 
-		IServerNetworkable* pNetwork = serverGameDLL->EntityFactoryDictionary()->Create(className, edict);
+		IServerEntity* pEntity = serverGameDLL->EntityFactoryDictionary()->Create(className);//, edict
 		//g_pForceAttachEdict = NULL;
 
-		if (!pNetwork)
+		if (!pEntity)
 			return NULL;
 
-		CBaseEntity* pEntity = pNetwork->GetBaseEntity();
+		//CBaseEntity* pEntity = pNetwork->GetBaseEntity();
 
-		ServerClass* serverClass = pNetwork->GetServerClass();
+		ServerClass* serverClass = pEntity->GetNetworkable()->GetServerClass();
 		if (serverClass == NULL) {
 			Error("serverClass can not been NULL: %s\n", className);
 		}
 
+		//IServerUnknown* pNetUnknown = static_cast<IServerUnknown*>(pNetwork->GetEntityHandle());
+		edict->SetEdict(pEntity, true);
+		serverGameEnts->BindContainingEntity(edict);
 		Assert(pEntity);
-		return pEntity;
+		return (CBaseEntity*)pEntity;
 	}
 
 	//
@@ -910,7 +913,7 @@ public:
 	virtual void FadeClientVolume(const edict_t *clientent,
 		float fadePercent, float fadeOutSeconds, float holdTime, float fadeInSeconds)
 	{
-		int entnum = NUM_FOR_EDICT(clientent);
+		int entnum = NUM_FOR_EDICT((CBaseEdict*)clientent);
 		
 		if (entnum < 1 || entnum > sv.GetClientCount() )
 		{
@@ -1069,7 +1072,7 @@ public:
 			return;
 		}
 
-		int entnum = NUM_FOR_EDICT( pEdict );
+		int entnum = NUM_FOR_EDICT((CBaseEdict*)pEdict );
 		
 		if ( ( entnum < 1 ) || ( entnum >  sv.GetClientCount() ) )
 		{
@@ -1090,7 +1093,7 @@ public:
 		if ( !pCommand )
 			return;
 
-		int entnum = NUM_FOR_EDICT( pEdict );
+		int entnum = NUM_FOR_EDICT((CBaseEdict*)pEdict );
 
 		if ( ( entnum < 1 ) || ( entnum >  sv.GetClientCount() ) )
 		{
@@ -1300,7 +1303,7 @@ public:
 	/* single print to a specific client */
 	virtual void ClientPrintf( edict_t *pEdict, const char *szMsg )
 	{
-		int entnum = NUM_FOR_EDICT( pEdict );
+		int entnum = NUM_FOR_EDICT((CBaseEdict*)pEdict );
 		
 		if (entnum < 1 || entnum > sv.GetClientCount() )
 		{
@@ -1352,7 +1355,7 @@ public:
 
 	virtual void SetView(const edict_t *clientent, const edict_t *viewent)
 	{
-		int clientnum = NUM_FOR_EDICT( clientent );
+		int clientnum = NUM_FOR_EDICT((CBaseEdict*)clientent );
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
 			g_pHost->Host_Error ("DLL_SetView: not a client");
 		
@@ -1360,7 +1363,7 @@ public:
 
 		client->m_pViewEntity = viewent;
 		
-		SVC_SetView view( NUM_FOR_EDICT(viewent) );
+		SVC_SetView view( NUM_FOR_EDICT((CBaseEdict*)viewent) );
 		client->SendNetMsg( view );
 	}
 	
@@ -1371,7 +1374,7 @@ public:
 	
 	virtual void CrosshairAngle(const edict_t *clientent, float pitch, float yaw)
 	{
-		int clientnum = NUM_FOR_EDICT( clientent );
+		int clientnum = NUM_FOR_EDICT((CBaseEdict*)clientent );
 
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
 			g_pHost->Host_Error ("DLL_Crosshairangle: not a client");
@@ -1551,7 +1554,7 @@ public:
 
 	virtual void SetFakeClientConVarValue( edict_t *pEntity, const char *pCvarName, const char *value )
 	{
-		int clientnum = NUM_FOR_EDICT( pEntity );
+		int clientnum = NUM_FOR_EDICT((CBaseEdict*)pEntity );
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
 			g_pHost->Host_Error ("DLL_SetView: not a client");
 
@@ -1570,12 +1573,12 @@ public:
 
 	virtual IChangeInfoAccessor *GetChangeAccessor( const edict_t *pEdict )
 	{
-		return SV_Edictchangeinfo( NUM_FOR_EDICT( pEdict ) );
+		return SV_Edictchangeinfo( NUM_FOR_EDICT((CBaseEdict*)pEdict ) );
 	}
 
 	virtual QueryCvarCookie_t StartQueryCvarValue( edict_t *pPlayerEntity, const char *pCvarName )
 	{
-		int clientnum = NUM_FOR_EDICT( pPlayerEntity );
+		int clientnum = NUM_FOR_EDICT((CBaseEdict*)pPlayerEntity );
 		if (clientnum < 1 || clientnum > sv.GetClientCount() )
 			g_pHost->Host_Error( "StartQueryCvarValue: not a client" );
 
@@ -1673,7 +1676,7 @@ public:
 
 	bool IsClientFullyAuthenticated( edict_t *pEdict )
 	{
-		int entnum = NUM_FOR_EDICT( pEdict );
+		int entnum = NUM_FOR_EDICT((CBaseEdict*)pEdict );
 		if (entnum < 1 || entnum > sv.GetClientCount() )
 			return false;
 
@@ -1707,7 +1710,7 @@ public:
 	// Returns the SteamID of the specified player. It'll be NULL if the player hasn't authenticated yet.
 	const CSteamID	*GetClientSteamID( edict_t *pPlayerEdict )
 	{
-		int entnum = NUM_FOR_EDICT( pPlayerEdict );
+		int entnum = NUM_FOR_EDICT((CBaseEdict*)pPlayerEdict );
 		return GetClientSteamIDByPlayerIndex( entnum );
 	}
 	

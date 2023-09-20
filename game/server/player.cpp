@@ -690,7 +690,7 @@ int CBasePlayer::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 {
 	// Allow me to introduce myself to, err, myself.
 	// I.e., always update the recipient player data even if it's nodraw (first person mode)
-	if ( pInfo->m_pClientEnt == NetworkProp()->edict())
+	if ( pInfo->m_pClientEnt == NetworkProp()->GetEdict())
 	{
 		return FL_EDICT_ALWAYS;
 	}
@@ -837,7 +837,7 @@ void CBasePlayer::DeathSound( const CTakeDamageInfo &info )
 	// play one of the suit death alarms
 	if ( IsSuitEquipped() )
 	{
-		UTIL_EmitGroupnameSuit(NetworkProp()->edict(), "HEV_DEAD");
+		UTIL_EmitGroupnameSuit(NetworkProp()->GetEdict(), "HEV_DEAD");
 	}
 }
 
@@ -1215,7 +1215,7 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	// add to the damage total for clients, which will be sent as a single
 	// message at the end of the frame
 	// todo: remove after combining shotgun blasts?
-	if ( info.GetInflictor() && info.GetInflictor()->NetworkProp()->edict())
+	if ( info.GetInflictor() && info.GetInflictor()->NetworkProp()->GetEdict())
 		m_DmgOrigin = info.GetInflictor()->GetAbsOrigin();
 
 	m_DmgTake += (int)info.GetDamage();
@@ -1671,7 +1671,7 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 	ClearUseEntity();
 	
 	// this client isn't going to be thinking for a while, so reset the sound until they respawn
-	pSound = CSoundEnt::SoundPointerForIndex( CSoundEnt::ClientSoundIndex(NetworkProp()->edict()) );
+	pSound = CSoundEnt::SoundPointerForIndex( CSoundEnt::ClientSoundIndex(NetworkProp()->GetEdict()) );
 	{
 		if ( pSound )
 		{
@@ -4217,12 +4217,12 @@ void CBasePlayer::CheckSuitUpdate()
 
 				char sentence[512];
 				Q_snprintf( sentence, sizeof( sentence ), "!%s", engineServer->SentenceNameFromIndex( isentence ) );
-				UTIL_EmitSoundSuit(NetworkProp()->edict(), sentence );
+				UTIL_EmitSoundSuit(NetworkProp()->GetEdict(), sentence );
 			}
 			else
 			{
 				// play sentence group
-				UTIL_EmitGroupIDSuit(NetworkProp()->edict(), -isentence);
+				UTIL_EmitGroupIDSuit(NetworkProp()->GetEdict(), -isentence);
 			}
 		m_flSuitUpdate = gpGlobals->GetCurTime() + SUITUPDATETIME;
 		}
@@ -4341,7 +4341,7 @@ void CBasePlayer::UpdatePlayerSound ( void )
 	int iVolume;
 	CSound *pSound;
 
-	pSound = CSoundEnt::SoundPointerForIndex( CSoundEnt::ClientSoundIndex(NetworkProp()->edict()) );
+	pSound = CSoundEnt::SoundPointerForIndex( CSoundEnt::ClientSoundIndex(NetworkProp()->GetEdict()) );
 
 	if ( !pSound )
 	{
@@ -4785,7 +4785,7 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 	CBaseEntity *pSpot;
 	edict_t		*player;
 
-	player = NetworkProp()->edict();
+	player = NetworkProp()->GetEdict();
 
 // choose a info_player_deathmatch point
 	if (g_pGameRules->IsCoOp())
@@ -4836,7 +4836,7 @@ CBaseEntity *CBasePlayer::EntSelectSpawnPoint()
 			for ( CEntitySphereQuery sphere( pSpot->GetAbsOrigin(), 128 ); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
 			{
 				// if ent is a client, kill em (unless they are ourselves)
-				if ( ent->IsPlayer() && !(ent->NetworkProp()->edict() == player) )
+				if ( ent->IsPlayer() && !(ent->NetworkProp()->GetEdict() == player) )
 					ent->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC ) );
 			}
 			goto ReturnSpot;
@@ -6229,7 +6229,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			Vector end = start + forward * 1024;
 			UTIL_TraceLine( start, end, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
 			if ( tr.m_pEnt )
-				pWorld = tr.m_pEnt->NetworkProp()->edict();
+				pWorld = tr.m_pEnt->NetworkProp()->GetEdict();
 
 			const char *pTextureName = tr.surface.name;
 
@@ -6431,13 +6431,13 @@ bool CBasePlayer::ClientCommand( const CCommand &args )
 			if ( !SetObserverMode( mode ) )
 				ClientPrint( this, HUD_PRINTCONSOLE, "#Spectator_Mode_Unkown");
 			else
-				engineServer->ClientCommand(NetworkProp()->edict(), "cl_spec_mode %d", mode );
+				engineServer->ClientCommand(NetworkProp()->GetEdict(), "cl_spec_mode %d", mode );
 		}
 		else
 		{
 			// remember spectator mode for later use
 			m_iObserverLastMode = mode;
-			engineServer->ClientCommand(NetworkProp()->edict(), "cl_spec_mode %d", mode );
+			engineServer->ClientCommand(NetworkProp()->GetEdict(), "cl_spec_mode %d", mode );
 		}
 
 		return true;
@@ -7131,10 +7131,10 @@ QAngle CBasePlayer::AutoaimDeflection( Vector &vecSrc, autoaim_params_t &params 
 			if ( pEntity == this )
 				continue;
 
-			if ( (pEntity->IsNPC() && !pEntity->IsAlive()) || !pEntity->NetworkProp()->edict())
+			if ( (pEntity->IsNPC() && !pEntity->IsAlive()) || !pEntity->NetworkProp()->GetEdict())
 				continue;
 
-			if ( !g_pGameRules->ShouldAutoAim( this, pEntity->NetworkProp()->edict()) )
+			if ( !g_pGameRules->ShouldAutoAim( this, pEntity->NetworkProp()->GetEdict()) )
 				continue;
 
 			// don't look through water
@@ -7244,7 +7244,7 @@ void CBasePlayer::ResetAutoaim( void )
 	if (m_vecAutoAim.x != 0 || m_vecAutoAim.y != 0)
 	{
 		m_vecAutoAim = QAngle( 0, 0, 0 );
-		engineServer->CrosshairAngle(NetworkProp()->edict(), 0, 0 );
+		engineServer->CrosshairAngle(NetworkProp()->GetEdict(), 0, 0 );
 	}
 	m_fOnTarget = false;
 }
@@ -8625,11 +8625,11 @@ void CBasePlayer::SetViewEntity( CBaseEntity *pEntity )
 
 	if ( m_hViewEntity )
 	{
-		engineServer->SetView(NetworkProp()->edict(), m_hViewEntity->NetworkProp()->edict());
+		engineServer->SetView(NetworkProp()->GetEdict(), m_hViewEntity->NetworkProp()->GetEdict());
 	}
 	else
 	{
-		engineServer->SetView(NetworkProp()->edict(), NetworkProp()->edict());
+		engineServer->SetView(NetworkProp()->GetEdict(), NetworkProp()->GetEdict());
 	}
 }
 
@@ -8752,7 +8752,7 @@ bool CBasePlayer::HandleVoteCommands( const CCommand &args )
 //-----------------------------------------------------------------------------
 const char *CBasePlayer::GetNetworkIDString()
 {
-	const char *pStr = engineServer->GetPlayerNetworkIDString(NetworkProp()->edict());
+	const char *pStr = engineServer->GetPlayerNetworkIDString(NetworkProp()->GetEdict());
 	Q_strncpy( m_szNetworkIDString, pStr ? pStr : "", sizeof(m_szNetworkIDString) );
 	return m_szNetworkIDString; 
 }
@@ -8875,7 +8875,7 @@ const char *CPlayerInfo::GetName()
 int	CPlayerInfo::GetUserID() 
 { 
 	Assert( m_pParent );
-	return engineServer->GetPlayerUserId( m_pParent->NetworkProp()->edict());
+	return engineServer->GetPlayerUserId( m_pParent->NetworkProp()->GetEdict());
 }
 
 const char *CPlayerInfo::GetNetworkIDString() 

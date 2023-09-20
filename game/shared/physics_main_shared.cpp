@@ -1702,7 +1702,7 @@ void CBaseEntity::PhysicsToss( void )
 	}
 	
 #if !defined( CLIENT_DLL )
-	if (NetworkProp()->edict()->IsFree())
+	if (NetworkProp()->GetEdict()->IsFree())
 		return;
 #endif
 

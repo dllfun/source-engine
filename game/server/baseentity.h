@@ -337,9 +337,7 @@ struct rotatingpushmove_t;
 //#define CREATE_PREDICTED_ENTITY( className )	\
 //	CBaseEntity::CreatePredictedEntityByName( className, __FILE__, __LINE__ );
 
-CBaseEntity* GetContainingEntity(edict_t* pent);
 
-void FreeContainingEntity(edict_t* ed);
 
 class TestStatic {
 public:
@@ -392,7 +390,7 @@ public:
 public:
 	// If bServerOnly is true, then the ent never goes to the client. This is used
 	// by logical entities.
-	CBaseEntity( bool bServerOnly=false );
+	CBaseEntity(bool bServerOnly = false);//
 	virtual ~CBaseEntity();
 
 	// prediction system
@@ -400,6 +398,11 @@ public:
 	// network data
 	//DECLARE_SERVERCLASS();
 	static ServerClass* GetServerClassStatic() { return NULL; }
+	static CBaseEntity* CreateEntityByName(const char* className);
+	static void			DestroyEntity(CBaseEntity* pEntity);
+	static void			BindContainingEntity(edict_t* ed);
+	static CBaseEntity* GetContainingEntity(edict_t* pent);
+	static void			FreeContainingEntity(edict_t* ed);
 	virtual ServerClass* GetServerClass() { return NULL; }
 	// data description
 	DECLARE_DATADESC();
@@ -450,7 +453,7 @@ public:
 	virtual void			SetModelIndex( int index );
 	virtual int				GetModelIndex( void ) const;
  	virtual string_t		GetModelName( void ) const;
-
+	virtual const char*		GetMapClassName();
 	void					ClearModelIndexOverrides( void );
 	virtual void			SetModelIndexOverride( int index, int nValue );
 
@@ -602,7 +605,7 @@ protected:
 	virtual CStudioHdr *OnNewModel();
 
 public:
-	virtual void PostConstructor( const char *szClassname, edict_t* edict);
+	virtual void PostConstructor( const char *szClassname);//, edict_t* edict
 	virtual void PostClientActive( void );
 	virtual void ParseMapData( CEntityMapData *mapData );
 	virtual bool KeyValue( const char *szKeyName, const char *szValue );
@@ -1859,6 +1862,7 @@ private:
 	friend void UnlinkFromParent( CBaseEntity *pRemove );
 	friend void TransferChildren( CBaseEntity *pOldParent, CBaseEntity *pNewParent );
 	
+	bool indestruct = false;
 public:
 	// Accessors for above
 	static int						GetPredictionRandomSeed( void );
@@ -1866,7 +1870,7 @@ public:
 	static CBasePlayer				*GetPredictionPlayer( void );
 	static void						SetPredictionPlayer( CBasePlayer *player );
 
-
+	bool IsIndestruct() { return indestruct; }
 	// For debugging shared code
 	static bool						IsServer( void )
 	{
@@ -2626,7 +2630,9 @@ inline int CBaseEntity::GetModelIndex( void ) const
 	return m_nModelIndex;
 }
 
-
+inline const char* CBaseEntity::GetMapClassName() {
+	return NULL;
+};
 
 //-----------------------------------------------------------------------------
 // Methods relating to bounds
@@ -2790,6 +2796,7 @@ inline bool FClassnameIs(CBaseEntity *pEntity, const char *szClassname)
 	return pEntity->ClassMatches(szClassname); 
 }
 
+
 class CPointEntity : public CBaseEntity
 {
 public:
@@ -2811,7 +2818,9 @@ class CServerOnlyEntity : public CBaseEntity
 {
 	DECLARE_CLASS(CServerOnlyEntity, CBaseEntity);
 public:
-	CServerOnlyEntity() : CBaseEntity(true) {}
+	CServerOnlyEntity() : CBaseEntity(true) {
+		int aaa = 0;
+	}
 
 	virtual int ObjectCaps(void) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 };

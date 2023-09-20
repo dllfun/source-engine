@@ -25,6 +25,7 @@
 #include "utllinkedlist.h"
 #include "edict.h"
 #include "server.h"
+#include "pr_edict.h"
 
 
 class SendTable;

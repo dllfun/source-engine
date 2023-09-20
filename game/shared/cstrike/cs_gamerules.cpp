@@ -523,7 +523,7 @@ ConVar cl_autohelp(
 		{
 			CCSPlayer *entity = CCSPlayer::Instance( i );
 
-			if ( entity && !FNullEnt( entity->NetworkProp()->edict()) )
+			if ( entity && !FNullEnt( entity->NetworkProp()->GetEdict()) )
 			{
 				if ( FStrEq( entity->GetPlayerName(), "" ) )
 					continue;
@@ -1514,7 +1514,7 @@ ConVar cl_autohelp(
 		if ( pPlayer->GetActiveWeapon() && pPlayer->IsNetClient() && !bIsBeingGivenItem )
 		{
 			// Player has an active item, so let's check cl_autowepswitch.
-			const char *cl_autowepswitch = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( pPlayer->NetworkProp()->edict()), "cl_autowepswitch" );
+			const char *cl_autowepswitch = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( pPlayer->NetworkProp()->GetEdict()), "cl_autowepswitch" );
 			if ( cl_autowepswitch && atoi( cl_autowepswitch ) <= 0 )
 			{
 				return false;
@@ -1636,7 +1636,7 @@ ConVar cl_autohelp(
         // [tj] Clear domination data when a player disconnects
         //=============================================================================
          
-        CCSPlayer *pPlayer = ToCSPlayer( GetContainingEntity( pClient ) );
+        CCSPlayer *pPlayer = ToCSPlayer(CBaseEntity::GetContainingEntity( pClient ) );
         if ( pPlayer )
         {
             pPlayer->RemoveNemesisRelationships();
@@ -2355,7 +2355,7 @@ ConVar cl_autohelp(
 			{
 				CCSPlayer *pPlayer = CCSPlayer::Instance( i );
 
-				if ( pPlayer && !FNullEnt( pPlayer->NetworkProp()->edict()) )
+				if ( pPlayer && !FNullEnt( pPlayer->NetworkProp()->GetEdict()) )
 					pPlayer->Reset();
 			}
 		}
@@ -3171,7 +3171,7 @@ ConVar cl_autohelp(
 		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CCSPlayer *pPlayer = CCSPlayer::Instance( i );
-			if ( pPlayer && !FNullEnt( pPlayer->NetworkProp()->edict()) )
+			if ( pPlayer && !FNullEnt( pPlayer->NetworkProp()->GetEdict()) )
 			{
 				if ( pPlayer->State_Get() == STATE_ACTIVE )
 				{
@@ -3825,10 +3825,10 @@ ConVar cl_autohelp(
 				if ( pPlayer &&
 					 ( m_pVIP != pPlayer ) && 
 					 ( pPlayer->GetTeamNumber() == iTeamToSwap ) && 
-					 (engineServer->GetPlayerUserId( pPlayer->NetworkProp()->edict()) > iHighestUserID ) &&
+					 (engineServer->GetPlayerUserId( pPlayer->NetworkProp()->GetEdict()) > iHighestUserID ) &&
 					 ( pPlayer->State_Get() != STATE_PICKINGCLASS ) )
 					{
-						iHighestUserID = engineServer->GetPlayerUserId( pPlayer->NetworkProp()->edict());
+						iHighestUserID = engineServer->GetPlayerUserId( pPlayer->NetworkProp()->GetEdict());
 						pPlayerToSwap = pPlayer;
 					}
 			}
@@ -4652,7 +4652,7 @@ ConVar cl_autohelp(
 		{
 			CCSPlayer *pPlayer = CCSPlayer::Instance( i );
 
-			if ( pPlayer && !FNullEnt( pPlayer->NetworkProp()->edict()) )
+			if ( pPlayer && !FNullEnt( pPlayer->NetworkProp()->GetEdict()) )
 			{
 				if ( pPlayer->GetTeamNumber() == TEAM_CT )
 					continue;
@@ -5264,7 +5264,7 @@ void CCSGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 	pCSPlayer->m_bShowHints = true;
 	if ( pCSPlayer->IsNetClient() )
 	{
-		const char *pShowHints = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( pCSPlayer->NetworkProp()->edict()), "cl_autohelp" );
+		const char *pShowHints = engineServer->GetClientConVarValue(engineServer->IndexOfEdict( pCSPlayer->NetworkProp()->GetEdict()), "cl_autohelp" );
 		if ( pShowHints && atoi( pShowHints ) <= 0 )
 		{
 			pCSPlayer->m_bShowHints = false;

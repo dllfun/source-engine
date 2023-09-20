@@ -146,6 +146,10 @@ public:
 	DECLARE_CLASS( CTeamplayRoundBasedRulesProxy, CGameRulesProxy );
 	DECLARE_NETWORKCLASS();
 
+	CTeamplayRoundBasedRulesProxy() {
+		int aaa = 0;
+	}
+
 #ifdef GAME_DLL
 	DECLARE_DATADESC();
 	void	InputSetStalemateOnTimelimit( inputdata_t &inputdata );

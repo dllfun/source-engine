@@ -1557,6 +1557,11 @@ IClientRenderable *C_BaseEntity::NextShadowPeer()
 // Purpose: Returns index into entities list for this entity
 // Output : Index
 //-----------------------------------------------------------------------------
+
+bool C_BaseEntity::HasEdict(void) const {
+	return index > -1;
+}
+
 int	C_BaseEntity::entindex( void ) const
 {
 	return index;

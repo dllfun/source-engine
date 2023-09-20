@@ -205,6 +205,9 @@ void CBaseEntityList::RemoveEntity( CBaseHandle handle )
 
 CBaseHandle CBaseEntityList::AddEntityAtSlot( IHandleEntity *pEnt, int iSlot, int iForcedSerialNum )
 {
+	if (pEnt->GetRefEHandle().GetEntryIndex()!= INVALID_EHANDLE_INDEX) {
+		int aaa = 0;
+	}
 	// Init the CSerialEntity.
 	CEntInfo *pSlot = &m_EntPtrArray[iSlot];
 	Assert( pSlot->m_pEntity == NULL );
@@ -238,6 +241,9 @@ void CBaseEntityList::RemoveEntityAtSlot( int iSlot )
 {
 	Assert( iSlot >= 0 && iSlot < NUM_ENT_ENTRIES );
 
+	if (iSlot < 0) {
+		int aaa = 0;
+	}
 	CEntInfo *pInfo = &m_EntPtrArray[iSlot];
 
 	if ( pInfo->m_pEntity )

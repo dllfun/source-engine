@@ -74,6 +74,7 @@
 #include "voice.h"
 #include "cbenchmark.h"
 #include "modelloader.h"
+#include "pr_edict.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1110,7 +1111,7 @@ void SV_StartSound ( IRecipientFilter& filter, edict_t *pSoundEmittingEntity, in
 	SoundInfo_t sound; 
 	sound.SetDefault();
 
-	sound.nEntityIndex = pSoundEmittingEntity ? NUM_FOR_EDICT( pSoundEmittingEntity ) : 0;
+	sound.nEntityIndex = pSoundEmittingEntity ? NUM_FOR_EDICT( (CBaseEdict*)pSoundEmittingEntity ) : 0;
 	sound.nChannel = iChannel;
 	sound.fVolume = flVolume;
 	sound.Soundlevel = iSoundLevel;
@@ -1327,7 +1328,9 @@ void CGameServer::RemoveClientFromGame( CBaseClient *client )
 
 	g_pServerPluginHandler->ClientDisconnect( pClient->m_pEdict);
 	// release the DLL entity that's attached to this edict, if any
-	serverGameEnts->FreeContainingEntity( pClient->m_pEdict);
+	CBaseEntity* pEntity = pClient->m_pEdict->GetNetworkable()->GetBaseEntity();
+	//((CBaseEdict*)pClient->m_pEdict)->SetEdict(NULL, false);
+	serverGameEnts->FreeContainingEntity( pClient->m_pEdict );
 
 }
 
@@ -2558,7 +2561,7 @@ bool CGameServer::SpawnServer( const char *szMapName, const char *szMapFile, con
 		pClient->m_pEdict = EDICT_NUM(i + 1);
 	
 		// Setup up the edict
-		InitializeEntityDLLFields( pClient->m_pEdict);
+		InitializeEntityDLLFields( (CBaseEdict*)pClient->m_pEdict);
 	}
 
 	COM_TimestampedLog( "Set up players(done)" );

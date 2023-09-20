@@ -674,8 +674,11 @@ public:
 	// The engine wants to mark two entities as touching
 	virtual void			MarkEntitiesAsTouching( edict_t *e1, edict_t *e2 ) = 0;
 
+	// Bind the entity attached to this edict
+	virtual void			BindContainingEntity(edict_t* ed) = 0;
+
 	// Frees the entity attached to this edict
-	virtual void			FreeContainingEntity( edict_t * ) = 0; 
+	virtual void			FreeContainingEntity( edict_t* ed ) = 0;
 
 	// This allows the engine to get at edicts in a CGameTrace.
 	virtual edict_t*		BaseEntityToEdict( CBaseEntity *pEnt ) = 0;

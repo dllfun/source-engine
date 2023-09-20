@@ -59,7 +59,7 @@ void CTargetCDAudioRep::InputChangeCDTrack( inputdata_t &inputdata )
 		CBasePlayer *player = dynamic_cast< CBasePlayer * >( inputdata.pActivator );
 		if ( player )
 		{
-			pClient = player->NetworkProp()->edict();
+			pClient = player->NetworkProp()->GetEdict();
 		}
 	}
 	

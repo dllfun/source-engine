@@ -134,7 +134,7 @@ void CEnvMicrophone::Activate(void)
 		//
 		// If we were given a bad measure target, just measure sound where we are.
 		//
-		if ((m_hMeasureTarget == NULL) || (m_hMeasureTarget->NetworkProp()->edict() == NULL))
+		if ((m_hMeasureTarget == NULL) || (m_hMeasureTarget->NetworkProp()->GetEdict() == NULL))
 		{
 			// We've decided to disable this warning since this seems to be the 90% case.
 			//Warning( "EnvMicrophone - Measure target not found or measure target with no origin. Using Self.!\n");

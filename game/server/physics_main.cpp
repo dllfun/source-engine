@@ -1084,7 +1084,7 @@ int CBaseEntity::PhysicsTryMove( float flTime, trace_t *steptrace )
 		// run the impact function
 		PhysicsImpact( trace.m_pEnt, trace );
 		// Removed by the impact function
-		if ( IsMarkedForDeletion() || NetworkProp()->edict()->IsFree())
+		if ( IsMarkedForDeletion() || NetworkProp()->GetEdict()->IsFree())
 			break;		
 	
 		time_left -= time_left * trace.fraction;
@@ -1549,7 +1549,7 @@ void CBaseEntity::PhysicsCustom()
 		return;
 	}
 	
-	if (NetworkProp()->edict()->IsFree())
+	if (NetworkProp()->GetEdict()->IsFree())
 		return;
 
 	// check for in water
@@ -1945,7 +1945,7 @@ void Physics_SimulateEntity( CBaseEntity *pEntity )
 			"Physics_SimulateEntity" : 
 			ServerEntityFactoryDictionary()->GetCannonicalName( pEntity->GetClassname() ) );
 
-	if ( pEntity->NetworkProp()->edict())
+	if ( pEntity->NetworkProp()->GetEdict())
 	{
 //#if !defined( NO_ENTITY_PREDICTION )
 //		// Player drives simulation of this entity

@@ -118,11 +118,11 @@ void CPointDevShotCamera::DevShotThink_Setup( void )
 		return;
 
 	// Hide stuff
-	engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "developer 0" );
-	engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "cl_drawhud 0" );
-	engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "sv_cheats 1" );
-	engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "god" );
-	engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "notarget" );
+	engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "developer 0" );
+	engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "cl_drawhud 0" );
+	engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "sv_cheats 1" );
+	engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "god" );
+	engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "notarget" );
 
 	pPlayer->AddSolidFlags( FSOLID_NOT_SOLID );
 	pPlayer->EnableControl(FALSE);
@@ -152,7 +152,7 @@ void CPointDevShotCamera::DevShotThink_TakeShot( void )
 	if ( !pPlayer )
 		return;
 
-	engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "devshots_screenshot \"%s\"", STRING(m_iszCameraName) );
+	engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "devshots_screenshot \"%s\"", STRING(m_iszCameraName) );
 
 	// Now take the shot next frame
 	SetThink( &CPointDevShotCamera::DevShotThink_PostShot );
@@ -175,7 +175,7 @@ void CPointDevShotCamera::DevShotThink_PostShot( void )
 	g_iDevShotCameraCount--;
 	if ( !g_iDevShotCameraCount )
 	{
-		engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "devshots_nextmap" );
+		engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "devshots_nextmap" );
 	}
 }
 
@@ -258,7 +258,7 @@ public:
 				CBasePlayer *pPlayer = UTIL_GetLocalPlayerOrListenServerHost();
 				if ( pPlayer )
 				{
-					engineServer->ClientCommand( pPlayer->NetworkProp()->edict(), "devshots_nextmap" );
+					engineServer->ClientCommand( pPlayer->NetworkProp()->GetEdict(), "devshots_nextmap" );
 					m_bIssuedNextMapCommand = true;
 					return;
 				}

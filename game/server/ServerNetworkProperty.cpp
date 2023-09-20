@@ -52,6 +52,10 @@ CServerNetworkProperty::~CServerNetworkProperty()
 
 	engineServer->CleanUpEntityClusterList( &m_PVSInfo );
 
+	//if (m_pPev && m_pPev->GetUnknown())
+	//{
+	//	Error("Engine managed entity must been delete by engineServer->RemoveEdict!");
+	//}
 	// remove the attached edict if it exists
 	DetachEdict();
 }
@@ -86,14 +90,22 @@ void CServerNetworkProperty::AttachEdict( edict_t *pRequiredEdict )
 		Error("RequiredEdict");
 	}
 
+	if (!pRequiredEdict->GetUnknown()) {
+		Error("RequierdUnknown!");
+	}
+
 	m_pPev = pRequiredEdict;
-	m_pPev->SetEdict( GetBaseEntity(), true );
+	//m_pPev->SetEdict( GetBaseEntity(), true );
 }
 
 void CServerNetworkProperty::DetachEdict()
 {
 	if ( m_pPev )
 	{
+		if (m_pPev->GetUnknown())
+		{
+			//Error("can not happen");
+		}
 		m_pPev->SetEdict( NULL, false );
 		engineServer->RemoveEdict( m_pPev );
 		m_pPev = NULL;
@@ -109,10 +121,17 @@ IHandleEntity *CServerNetworkProperty::GetEntityHandle( )
 	return m_pOuter;
 }
 
-void CServerNetworkProperty::Release()
-{
-	delete m_pOuter;
-}
+//void CServerNetworkProperty::Release()
+//{
+//	//if (m_pPev && m_pPev->GetUnknown())
+//	//{
+//	//	engineServer->RemoveEdict(m_pPev);
+//	//}
+//	//else {
+//		//delete m_pOuter;
+//		CBaseEntity::DestroyEntity(m_pOuter);
+//	//}
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -147,7 +166,7 @@ void CServerNetworkProperty::RecomputePVSInformation()
 	if ( m_pPev && ( ( m_pPev->GetStateFlags() & FL_EDICT_DIRTY_PVS_INFORMATION) != 0))
 	{
 		m_pPev->GetStateFlags() &= ~FL_EDICT_DIRTY_PVS_INFORMATION;
-		engineServer->BuildEntityClusterList( edict(), &m_PVSInfo );
+		engineServer->BuildEntityClusterList(GetEdict(), &m_PVSInfo );
 	}
 }
 

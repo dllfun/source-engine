@@ -59,7 +59,7 @@ ConVar  *sv_cheats = NULL;
 
 void ClientKill( edict_t *pEdict, const Vector &vecForce, bool bExplode = false )
 {
-	CBasePlayer *pPlayer = static_cast<CBasePlayer*>( GetContainingEntity( pEdict ) );
+	CBasePlayer *pPlayer = static_cast<CBasePlayer*>(CBaseEntity::GetContainingEntity( pEdict ) );
 	pPlayer->CommitSuicide( vecForce, bExplode );
 }
 
@@ -213,10 +213,10 @@ void Host_Say( edict_t *pEdict, const CCommand &args, bool teamonly )
 	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		client = ToBaseMultiplayerPlayer( UTIL_PlayerByIndex( i ) );
-		if ( !client || !client->NetworkProp()->edict())
+		if ( !client || !client->NetworkProp()->GetEdict())
 			continue;
 		
-		if ( client->NetworkProp()->edict() == pEdict )
+		if ( client->NetworkProp()->GetEdict() == pEdict )
 			continue;
 
 		if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
@@ -527,7 +527,7 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 		CBasePlayer *player = dynamic_cast< CBasePlayer * >( inputdata.pActivator );
 		if ( player )
 		{
-			pClient = player->NetworkProp()->edict();
+			pClient = player->NetworkProp()->GetEdict();
 		}
 
 		if ( IsInCommentaryMode() && !pClient )
@@ -701,7 +701,7 @@ void killvector_helper( const CCommand &args, bool bExplode )
 					vecForce.y = atof( args[3] );
 					vecForce.z = atof( args[4] );
 
-					ClientKill( pPlayer->NetworkProp()->edict(), vecForce, bExplode );
+					ClientKill( pPlayer->NetworkProp()->GetEdict(), vecForce, bExplode );
 				}
 			}
 		}
@@ -754,7 +754,7 @@ CON_COMMAND( say, "Display player message" )
 	{
 		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->GetCurTime()) 
 		{
-			Host_Say( pPlayer->NetworkProp()->edict(), args, 0 );
+			Host_Say( pPlayer->NetworkProp()->GetEdict(), args, 0 );
 			pPlayer->NotePlayerTalked();
 		}
 	}
@@ -778,7 +778,7 @@ CON_COMMAND( say_team, "Display player message to team" )
 	{
 		if (( pPlayer->LastTimePlayerTalked() + TALK_INTERVAL ) < gpGlobals->GetCurTime()) 
 		{
-			Host_Say( pPlayer->NetworkProp()->edict(), args, 1 );
+			Host_Say( pPlayer->NetworkProp()->GetEdict(), args, 1 );
 			pPlayer->NotePlayerTalked();
 		}
 	}
@@ -993,7 +993,7 @@ void CC_Player_BugBaitSwap( void )
 		if ( pWeapon )
 		{
 			// Tell the client to stop selecting weapons
-			engineServer->ClientCommand( UTIL_GetCommandClient()->NetworkProp()->edict(), "cancelselect" );
+			engineServer->ClientCommand( UTIL_GetCommandClient()->NetworkProp()->GetEdict(), "cancelselect" );
 
 			const char *strWeaponName = pWeapon->GetName();
 

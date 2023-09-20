@@ -13,6 +13,7 @@
 #include "convar.h"
 #include "con_nprint.h"
 #include "utldict.h"
+#include "pr_edict.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -499,7 +500,7 @@ void LocalTransfer_TransferEntity(
 		if ( nChangeOffsets == 0 )
 			return;
 		
-		AddToPartialChangeEntsList(NUM_FOR_EDICT((edict_t*)pEdict), true );
+		AddToPartialChangeEntsList(NUM_FOR_EDICT((CBaseEdict*)pEdict), true );
 		FastSortList( propIndices, nChangeOffsets );
 
 		// Setup the structure to traverse the source tree.
@@ -553,7 +554,7 @@ void LocalTransfer_TransferEntity(
 		CClientDatatableStack clientStack( pDecoder, (unsigned char*)pDestEnt, objectID );
 		clientStack.Init();
 
-		AddToPartialChangeEntsList(NUM_FOR_EDICT((edict_t*)pEdict), false );
+		AddToPartialChangeEntsList(NUM_FOR_EDICT((CBaseEdict*)pEdict), false );
 
 		// Copy the properties that require proxies.
 		CFastLocalTransferPropInfo *pPropList = pPrecalc->m_FastLocalTransfer.m_OtherProps.Base();

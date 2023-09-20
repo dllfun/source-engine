@@ -2543,7 +2543,7 @@ void CBaseCombatCharacter::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways 
 
 	BaseClass::SetTransmit( pInfo, bAlways );
 
-	bool bLocalPlayer = ( pInfo->m_pClientEnt == NetworkProp()->edict());
+	bool bLocalPlayer = ( pInfo->m_pClientEnt == NetworkProp()->GetEdict());
 
 	if ( bLocalPlayer )
 	{

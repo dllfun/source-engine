@@ -363,6 +363,7 @@ public:
 	// checks to see if the entity is marked for deletion
 	bool							IsMarkedForDeletion( void );
 
+	virtual bool					HasEdict(void) const;
 	virtual int						entindex( void ) const;
 	
 	// This works for client-only entities and returns the GetEntryIndex() of the entity's handle,

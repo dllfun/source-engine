@@ -633,7 +633,7 @@ int CAI_Expresser::SpeakRawSentence( const char *pszSentence, float delay, float
 	}
 	else
 	{
-		sentenceIndex = SENTENCEG_PlayRndSz( GetOuter()->NetworkProp()->edict(), pszSentence, volume, soundlevel, 0, GetVoicePitch() );
+		sentenceIndex = SENTENCEG_PlayRndSz( GetOuter()->NetworkProp()->GetEdict(), pszSentence, volume, soundlevel, 0, GetVoicePitch() );
 	}
 
 	SpeechMsg( GetOuter(), "SpeakRawSentence( %s, %f) %f\n", pszSentence, delay, engineServer->SentenceLength( sentenceIndex ) );

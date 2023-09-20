@@ -135,6 +135,8 @@
 
 #include "ixboxsystem.h"
 #include "modelloader.h"
+#include "pr_edict.h"
+
 extern IXboxSystem *g_pXboxSystem;
 
 extern ConVar cl_cloud_settings;

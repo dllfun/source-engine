@@ -26,11 +26,12 @@
 #include "vphysics_interface.h"
 #include "materialsystem/imaterial.h"
 #include "tier2/renderutils.h"
+#include "pr_edict.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern edict_t *EDICT_NUM(int n);
+//extern edict_t *EDICT_NUM(int n);
 
 ConVar enable_debug_overlays( "enable_debug_overlays", "1", FCVAR_GAMEDLL | FCVAR_CHEAT, "Enable rendering of debug overlays" );
 

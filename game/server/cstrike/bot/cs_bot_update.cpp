@@ -1163,7 +1163,7 @@ void CCSBot::UpdateTravelDistanceToAllPlayers( void )
 			if (player == NULL)
 				continue;
 
-			if (FNullEnt( player->NetworkProp()->edict()))
+			if (FNullEnt( player->NetworkProp()->GetEdict()))
 				continue;
 
 			if (!player->IsPlayer())

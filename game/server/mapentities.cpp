@@ -175,7 +175,7 @@ void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t *pSpawnList )
 			{
 				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, STRING( pEntity->m_iParent ) );
 
-				if ((pParent != NULL) && (pParent->NetworkProp()->edict() != NULL))
+				if ((pParent != NULL) && (pParent->NetworkProp()->GetEdict() != NULL))
 				{
 					pEntity->SetParent( pParent ); 
 				}

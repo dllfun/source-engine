@@ -36,6 +36,7 @@ public:
  	virtual string_t		GetModelName( void ) const = 0;
 
 	virtual void			SetModelIndex( int index ) = 0;
+	virtual const char*		GetMapClassName() = 0;
 };
 
 

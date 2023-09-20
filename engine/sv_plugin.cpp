@@ -18,6 +18,7 @@
 #include "networkstringtable.h"
 #include "networkstringtableserver.h"
 #include "tier0/etwprof.h"
+#include "pr_edict.h"
 
 extern CreateInterfaceFn g_AppSystemFactory;
 extern CSysModule *g_GameDLL;
@@ -531,7 +532,7 @@ void CServerPlugin::ClientCommand( edict_t *pEntity, const CCommand &args )
 QueryCvarCookie_t CServerPlugin::StartQueryCvarValue( edict_t *pEntity, const char *pCvarName )
 {
 	// Figure out which client they're talking about.
-	int clientnum = NUM_FOR_EDICT( pEntity );
+	int clientnum = NUM_FOR_EDICT( (CBaseEdict*)pEntity );
 	if (clientnum < 1 || clientnum > sv.GetClientCount() )
 	{
 		Warning( "StartQueryCvarValue: Invalid entity\n" );
@@ -632,7 +633,7 @@ void  CServerPlugin::CreateMessage( edict_t *pEntity, DIALOG_TYPE type, KeyValue
 		return;
 	}
 
-	int clientnum = NUM_FOR_EDICT( pEntity );
+	int clientnum = NUM_FOR_EDICT( (CBaseEdict*)pEntity );
 	if (clientnum < 1 || clientnum > sv.GetClientCount() )
 	{
 		ConMsg( "Invalid entity\n" );
@@ -647,7 +648,7 @@ void  CServerPlugin::CreateMessage( edict_t *pEntity, DIALOG_TYPE type, KeyValue
 
 void CServerPlugin::ClientCommand( edict_t *pEntity, const char *cmd )
 {
-	int entnum = NUM_FOR_EDICT( pEntity );
+	int entnum = NUM_FOR_EDICT( (CBaseEdict*)pEntity );
 	
 	if ( ( entnum < 1 ) || ( entnum >  sv.GetClientCount() ) )
 	{

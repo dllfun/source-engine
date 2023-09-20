@@ -1190,7 +1190,7 @@ int SENTENCEG_PlayRndI(edict_t *entity, int isentenceg,
 	if (ipick > 0 && name)
 	{
 		int sentenceIndex = SENTENCEG_Lookup( name );
-		CPASAttenuationFilter filter( GetContainingEntity( entity ), soundlevel );
+		CPASAttenuationFilter filter(CBaseEntity::GetContainingEntity( entity ), soundlevel );
 		CBaseEntity::EmitSentenceByIndex( filter, ENTINDEX(entity), CHAN_VOICE, sentenceIndex, volume, soundlevel, flags, pitch );
 		return sentenceIndex;
 	}
@@ -1235,7 +1235,7 @@ void SENTENCEG_PlaySentenceIndex( edict_t *entity, int iSentenceIndex, float vol
 {
 	if ( iSentenceIndex >= 0 )
 	{
-		CPASAttenuationFilter filter( GetContainingEntity( entity ), soundlevel );
+		CPASAttenuationFilter filter(CBaseEntity::GetContainingEntity( entity ), soundlevel );
 		CBaseEntity::EmitSentenceByIndex( filter, ENTINDEX(entity), CHAN_VOICE, iSentenceIndex, volume, soundlevel, flags, pitch );
 	}
 }
@@ -1264,7 +1264,7 @@ int SENTENCEG_PlayRndSz(edict_t *entity, const char *szgroupname,
 	if (ipick >= 0 && name[0])
 	{
 		int sentenceIndex = SENTENCEG_Lookup( name );
-		CPASAttenuationFilter filter( GetContainingEntity( entity ), soundlevel );
+		CPASAttenuationFilter filter(CBaseEntity::GetContainingEntity( entity ), soundlevel );
 		CBaseEntity::EmitSentenceByIndex( filter, ENTINDEX(entity), CHAN_VOICE, sentenceIndex, volume, soundlevel, flags, pitch );
 		return sentenceIndex;
 	}
@@ -1294,7 +1294,7 @@ int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname,
 	if (ipicknext >= 0 && name[0])
 	{
 		int sentenceIndex = SENTENCEG_Lookup( name );
-		CPASAttenuationFilter filter( GetContainingEntity( entity ), soundlevel );
+		CPASAttenuationFilter filter(CBaseEntity::GetContainingEntity( entity ), soundlevel );
 		CBaseEntity::EmitSentenceByIndex( filter, ENTINDEX(entity), CHAN_VOICE, sentenceIndex, volume, soundlevel, flags, pitch );
 		return sentenceIndex;
 	}
@@ -1378,14 +1378,14 @@ void UTIL_EmitSoundSuit(edict_t *entity, const char *sample)
 		pitch = random->RandomInt(0,6) + 98;
 
 	// If friendlies are talking, reduce the volume of the suit
-	if ( !g_AIFriendliesTalkSemaphore.IsAvailable( GetContainingEntity( entity ) ) )
+	if ( !g_AIFriendliesTalkSemaphore.IsAvailable(CBaseEntity::GetContainingEntity( entity ) ) )
 	{
 		fvol *= 0.3;
 	}
 
 	if (fvol > 0.05)
 	{
-		CPASAttenuationFilter filter( GetContainingEntity( entity ) );
+		CPASAttenuationFilter filter(CBaseEntity::GetContainingEntity( entity ) );
 		filter.MakeReliable();
 
 		EmitSound_t ep;
@@ -1412,7 +1412,7 @@ int UTIL_EmitGroupIDSuit(edict_t *entity, int isentenceg)
 		pitch = random->RandomInt(0,6) + 98;
 
 	// If friendlies are talking, reduce the volume of the suit
-	if ( !g_AIFriendliesTalkSemaphore.IsAvailable( GetContainingEntity( entity ) ) )
+	if ( !g_AIFriendliesTalkSemaphore.IsAvailable(CBaseEntity::GetContainingEntity( entity ) ) )
 	{
 		fvol *= 0.3;
 	}
@@ -1436,7 +1436,7 @@ int UTIL_EmitGroupnameSuit(edict_t *entity, const char *groupname)
 		pitch = random->RandomInt(0,6) + 98;
 
 	// If friendlies are talking, reduce the volume of the suit
-	if ( !g_AIFriendliesTalkSemaphore.IsAvailable( GetContainingEntity( entity ) ) )
+	if ( !g_AIFriendliesTalkSemaphore.IsAvailable(CBaseEntity::GetContainingEntity( entity ) ) )
 	{
 		fvol *= 0.3;
 	}

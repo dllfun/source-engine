@@ -23,7 +23,7 @@ void UTIL_RemoveHierarchy( CBaseEntity *pDead )
 	if ( !pDead )
 		return;
 
-	if ( pDead->NetworkProp()->edict())
+	if ( pDead->NetworkProp()->GetEdict())
 	{
 		CBaseEntity *pChild = pDead->FirstMoveChild();
 		while ( pChild )

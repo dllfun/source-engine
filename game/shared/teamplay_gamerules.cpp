@@ -433,7 +433,7 @@ int CTeamplayRules::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled
 //=========================================================
 const char *CTeamplayRules::GetTeamID( CBaseEntity *pEntity )
 {
-	if ( pEntity == NULL || pEntity->NetworkProp()->edict() == NULL )
+	if ( pEntity == NULL || pEntity->NetworkProp()->GetEdict() == NULL )
 		return "";
 
 	// return their team name

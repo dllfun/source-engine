@@ -80,7 +80,7 @@ private:
 
 	bool m_bClearingEntities;
 	CUtlVector<IEntityListener *>	m_entityListeners;
-
+	CUtlVector<CBaseEntity*> m_DeleteList;
 public:
 	IServerNetworkable* GetServerNetworkable( CBaseHandle hEnt ) const;
 	CBaseNetworkable* GetBaseNetworkable( CBaseHandle hEnt ) const;
@@ -91,7 +91,7 @@ public:
 	int NumberOfEdicts( void );
 
 	// mark an entity as deleted
-	void AddToDeleteList( IServerNetworkable *ent );
+	void AddToDeleteList( CBaseEntity *ent );
 	// call this before and after each frame to delete all of the marked entities.
 	void CleanupDeleteList( void );
 	int ResetDeleteList( void );

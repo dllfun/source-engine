@@ -1199,7 +1199,9 @@ void CCollisionProperty::MarkSurroundingBoundsDirty()
 #ifdef CLIENT_DLL
 	g_pClientShadowMgr->MarkRenderToTextureShadowDirty( GetOuter()->GetShadowHandle() );
 #else
-	GetOuter()->NetworkProp()->MarkPVSInformationDirty();
+	if (GetOuter()->NetworkProp()->HasEdict()) {
+		GetOuter()->NetworkProp()->MarkPVSInformationDirty();
+	}
 #endif
 }
 
@@ -1293,7 +1295,7 @@ void CCollisionProperty::UpdateServerPartitionMask( )
 	partition->Remove( handle );
 
 	// Don't bother with deleted things
-	if ( !m_pOuter->NetworkProp()->edict())
+	if ( !m_pOuter->NetworkProp()->GetEdict())
 		return;
 
 	// don't add the world
@@ -1333,7 +1335,9 @@ void CCollisionProperty::UpdateServerPartitionMask( )
 void CCollisionProperty::MarkPartitionHandleDirty()
 {
 	// don't bother with the world
-	if ( m_pOuter->NetworkProp()->entindex() == 0 )
+	if ( !m_pOuter->NetworkProp()->HasEdict() )
+		return;
+	if (!m_pOuter->NetworkProp()->entindex())
 		return;
 	
 	if ( !m_pOuter->IsEFlagSet( EFL_DIRTY_SPATIAL_PARTITION ) )
@@ -1362,7 +1366,7 @@ void CCollisionProperty::UpdatePartition( )
 		Assert( m_pOuter->entindex() != 0 );
 
 		// Don't bother with deleted things
-		if ( !m_pOuter->NetworkProp()->edict())
+		if ( !m_pOuter->NetworkProp()->GetEdict())
 			return;
 
 		if ( GetPartitionHandle() == PARTITION_INVALID_HANDLE )

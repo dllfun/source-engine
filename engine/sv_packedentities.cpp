@@ -33,6 +33,7 @@
 #include "tier0/vcrmode.h"
 #include "vstdlib/jobthread.h"
 #include "enginethreads.h"
+#include "pr_edict.h"
 
 #ifdef SWDS
 IClientEntityList *entitylist = NULL;
@@ -52,7 +53,7 @@ static inline bool SV_EnsurePrivateData(edict_t *pEdict)
 	}
 	else
 	{
-		g_pHost->Host_Error("SV_EnsurePrivateData: pEdict->pvPrivateData==NULL (ent %d).\n", NUM_FOR_EDICT(pEdict));
+		g_pHost->Host_Error("SV_EnsurePrivateData: pEdict->pvPrivateData==NULL (ent %d).\n", NUM_FOR_EDICT((CBaseEdict*)pEdict));
 		return false;
 	}
 }

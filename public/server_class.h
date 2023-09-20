@@ -16,25 +16,27 @@
 #include "tier0/dbg.h"
 #include "dt_send.h"
 #include "networkstringtabledefs.h"
-#include "iservernetworkable.h"
+//#include "iservernetworkable.h"
+#include "iserverentity.h"
 
 // entity creation
 // creates an entity that has not been linked to a classname
 template< class T >
-T* _CreateEntityTemplate(T* newEnt, const char* className, edict_t* edict)
+T* _CreateEntityTemplate(T* newEnt, const char* className)//, edict_t* edict
 {
 	newEnt = new T; // this is the only place 'new' should be used!
-	newEnt->PostConstructor(className, edict );
+	newEnt->PostConstructor(className);//, edict 
 	return newEnt;
 }
 
-#define CREATE_UNSAVED_ENTITY( newClass, className ) _CreateEntityTemplate( (newClass*)NULL, className ,NULL)
+#define CREATE_UNSAVED_ENTITY( newClass, className ) _CreateEntityTemplate( (newClass*)NULL, className )//,NULL
 
 
 
 
 class ServerClass;
 class SendTable;
+class CBaseEntity;
 
 class ServerClassManager {
 public:
@@ -237,8 +239,8 @@ abstract_class IServerEntityFactoryDictionary
 public:
 	virtual void InstallFactory(IServerEntityFactory * pFactory, const char* pMapClassName) = 0;
 	virtual int RequiredEdictIndex(const char* pMapClassName) = 0;
-	virtual IServerNetworkable* Create(const char* pMapClassName, edict_t* edict) = 0;
-	virtual void Destroy(const char* pMapClassName, IServerNetworkable* pNetworkable) = 0;
+	virtual IServerEntity* Create(const char* pMapClassName) = 0;//, edict_t* edict
+	virtual void Destroy(const char* pMapClassName, IServerEntity* pNetworkable) = 0;
 	virtual IServerEntityFactory* FindFactory(const char* pMapClassName) = 0;
 	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
 	virtual void ReportEntityNames() = 0;
@@ -256,14 +258,36 @@ abstract_class IServerEntityFactory
 {
 public:
 	virtual int RequiredEdictIndex() = 0;
-	virtual IServerNetworkable* Create(edict_t* edict) = 0;//const char* pClassName, 
-	virtual void Destroy(IServerNetworkable* pNetworkable) = 0;
+	virtual IServerEntity* Create() = 0;//const char* pClassName, edict_t* edict
+	virtual void Destroy(IServerEntity* pNetworkable) = 0;
 	virtual size_t GetEntitySize() = 0;
 };
 
 template <class T>
 class CServerEntityFactory : public IServerEntityFactory
 {
+private:
+	class DelegateServerEntity : public T{
+		public:
+			~DelegateServerEntity() {
+				if (!m_InFactoryDestructing) {
+					Error("not destruct in factory!");
+				}
+			}
+			void SetDestructing() {
+				m_InFactoryDestructing = true;
+			}
+			void Release() {
+				delete this;
+			}
+			const char* GetMapClassName() {
+				return m_pFactory->m_pMapClassName;
+			}
+		private:
+			bool m_InFactoryDestructing = false;
+			CServerEntityFactory* m_pFactory = NULL;
+			friend class CServerEntityFactory;
+	};
 public:
 	CServerEntityFactory(const char* pMapClassName, int RequiredEdictIndex = -1)
 	{
@@ -272,17 +296,23 @@ public:
 		ServerEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
 	}
 
-	IServerNetworkable* Create(edict_t* edict)
+	IServerEntity* Create()//edict_t* edict
 	{
-		T* pEnt = _CreateEntityTemplate((T*)NULL, m_pMapClassName, edict);
-		return pEnt->NetworkProp();
+		DelegateServerEntity* pEnt = _CreateEntityTemplate((DelegateServerEntity*)NULL, m_pMapClassName);//, edict
+		pEnt->m_pFactory = this;
+		return pEnt;//->NetworkProp()
 	}
 
-	void Destroy(IServerNetworkable* pNetworkable)
+	void Destroy(IServerEntity* serverEntity)
 	{
-		if (pNetworkable)
+		if (serverEntity)
 		{
-			pNetworkable->Release();
+			DelegateServerEntity* pEnt = dynamic_cast<DelegateServerEntity*>(serverEntity);
+			if (!pEnt) {
+				Error("not created by factory!");
+			}
+			pEnt->SetDestructing();
+			pEnt->Release();
 		}
 	}
 

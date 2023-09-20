@@ -32,12 +32,13 @@ public:
 public:
 // IServerNetworkable implementation.
 	virtual IHandleEntity  *GetEntityHandle( );
+	virtual bool			HasEdict() const;
 	virtual edict_t			*GetEdict() const;
 	virtual CBaseNetworkable* GetBaseNetworkable();
 	virtual CBaseEntity*	GetBaseEntity();
 	virtual ServerClass*	GetServerClass();
 	virtual const char*		GetClassName() const;
-	virtual void			Release();
+	//virtual void			Release();
 	virtual int				AreaNum() const;
 	virtual PVSInfo_t*		GetPVSInfo();
 
@@ -49,8 +50,8 @@ public:
 	
 	// Methods to get the entindex + edict
 	int	entindex() const;
-	edict_t *edict();
-	const edict_t *edict() const;
+	//edict_t *edict();
+	//const edict_t *edict() const;
 
 	// Sets the edict pointer (for swapping edicts)
 	//void SetEdict( edict_t *pEdict );
@@ -157,6 +158,9 @@ inline PVSInfo_t *CServerNetworkProperty::GetPVSInfo()
 //-----------------------------------------------------------------------------
 inline void CServerNetworkProperty::MarkPVSInformationDirty()
 {
+	if (!m_pPev) {
+		Error("m_pPev not set yet!");
+	}
 	if ( m_pPev )
 	{
 		m_pPev->SetDirtyPvsInformation();
@@ -178,8 +182,12 @@ inline void CServerNetworkProperty::SetNetworkParent( EHANDLE hParent )
 //-----------------------------------------------------------------------------
 inline void CServerNetworkProperty::NetworkStateForceUpdate()
 { 
-	if ( m_pPev )
+	if (!m_pPev) {
+		Error("m_pPev not set yet!");
+	}
+	if (m_pPev) {
 		m_pPev->StateChanged();
+	}
 }
 
 inline void CServerNetworkProperty::NetworkStateChanged()
@@ -193,8 +201,12 @@ inline void CServerNetworkProperty::NetworkStateChanged()
 	}
 	else
 	{
-		if ( m_pPev )
+		if (!m_pPev) {
+			//Error("m_pPev not set yet!");
+		}
+		if (m_pPev) {
 			m_pPev->StateChanged();
+		}
 	}
 }
 
@@ -209,8 +221,12 @@ inline void CServerNetworkProperty::NetworkStateChanged( unsigned short varOffse
 	}
 	else
 	{
-		if ( m_pPev )
-			m_pPev->StateChanged( varOffset );
+		if (!m_pPev) {
+			//Error("m_pPev not set yet!");
+		}
+		if (m_pPev) {
+			m_pPev->StateChanged(varOffset);
+		}
 	}
 }
 
@@ -219,24 +235,33 @@ inline void CServerNetworkProperty::NetworkStateChanged( unsigned short varOffse
 //-----------------------------------------------------------------------------
 inline int CServerNetworkProperty::entindex() const
 {
+	if (!m_pPev) {
+		Error("m_pPev not set yet!");
+	}
 	return ENTINDEX( m_pPev );
 }
 
-inline edict_t* CServerNetworkProperty::GetEdict() const
+inline bool CServerNetworkProperty::HasEdict() const
 {
 	// This one's virtual, that's why we have to two other versions
+	return m_pPev!=NULL;
+}
+
+inline edict_t *CServerNetworkProperty::GetEdict() const
+{
+	if (!m_pPev) {
+		Error("m_pPev not set yet!");
+	}
 	return m_pPev;
 }
 
-inline edict_t *CServerNetworkProperty::edict()
-{
-	return m_pPev;
-}
-
-inline const edict_t *CServerNetworkProperty::edict() const
-{
-	return m_pPev;
-}
+//inline const edict_t *CServerNetworkProperty::edict() const
+//{
+//	if (!m_pPev) {
+//		Error("m_pPev not set yet!");
+//	}
+//	return m_pPev;
+//}
 
 
 //-----------------------------------------------------------------------------

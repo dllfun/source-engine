@@ -87,9 +87,9 @@ IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProject
 
 #else
 
-	void CBaseCSGrenadeProjectile::PostConstructor( const char *className, edict_t* edict)
+	void CBaseCSGrenadeProjectile::PostConstructor( const char *className)//, edict_t* edict
 	{
-		BaseClass::PostConstructor( className, edict );
+		BaseClass::PostConstructor( className );//, edict
 		TheBots->AddGrenade( this );
 	}
 

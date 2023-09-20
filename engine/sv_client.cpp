@@ -30,6 +30,7 @@
 #include "replay_internal.h"
 #endif
 #include "tier2/tier2.h"
+#include "pr_edict.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -994,8 +995,10 @@ void CGameClient::SpawnPlayer( void )
 	{
 		// set up the edict
 		Assert( serverGameEnts );
+		CBaseEntity* pEntity = m_pEdict->GetNetworkable()?m_pEdict->GetNetworkable()->GetBaseEntity():NULL;
+		//((CBaseEdict*)m_pEdict)->SetEdict(NULL, false);
 		serverGameEnts->FreeContainingEntity(m_pEdict);
-		InitializeEntityDLLFields(m_pEdict);
+		InitializeEntityDLLFields((CBaseEdict*)m_pEdict);
 		
 	}
 
