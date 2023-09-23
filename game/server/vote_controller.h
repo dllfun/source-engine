@@ -125,6 +125,7 @@ protected:
 
 	friend class CVoteControllerSystem;
 
+	BEGIN_INIT_SEND_TABLE(CVoteController)
 	BEGIN_SEND_TABLE(CVoteController, DT_VoteController, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_iActiveIssueIndex)),
 		SendPropInt(SENDINFO(m_iOnlyTeamToVote)),
@@ -132,6 +133,7 @@ protected:
 		SendPropInt(SENDINFO(m_nPotentialVotes)),
 		SendPropBool(SENDINFO(m_bIsYesNoVote))
 	END_SEND_TABLE(DT_VoteController)
+	END_INIT_SEND_TABLE()
 };
 
 extern CVoteController *g_voteController;

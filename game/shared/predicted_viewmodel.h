@@ -57,14 +57,21 @@ private:
 
 #endif
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CPredictedViewModel)
 	BEGIN_NETWORK_TABLE(CPredictedViewModel, DT_PredictedViewModel, DT_BaseViewModel)
+
 	END_NETWORK_TABLE(DT_PredictedViewModel)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CPredictedViewModel)
 	BEGIN_NETWORK_TABLE(CPredictedViewModel, DT_PredictedViewModel, DT_BaseViewModel)
+
 	END_NETWORK_TABLE(DT_PredictedViewModel)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

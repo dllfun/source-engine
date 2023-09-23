@@ -19,9 +19,11 @@ public:
 	DECLARE_SERVERCLASS();
 	int m_nViewMode;
 
+	BEGIN_INIT_SEND_TABLE(CInfoViewParameters)
 	BEGIN_SEND_TABLE(CInfoViewParameters, DT_InfoViewParameters, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_InfoViewParameters)
+	END_INIT_SEND_TABLE()
 };
 
 

@@ -31,9 +31,12 @@ public:
 public:
 	int				m_nPlayer;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEKillPlayerAttachments)
 	BEGIN_RECV_TABLE(C_TEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
 		RecvPropInt(RECVINFO(m_nPlayer)),
 	END_RECV_TABLE(DT_TEKillPlayerAttachments)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

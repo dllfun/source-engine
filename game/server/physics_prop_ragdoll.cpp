@@ -1235,12 +1235,14 @@ private:
 	bool		m_bShouldDetach;
 	IPhysicsConstraint	*m_pAttachConstraint;
 
+	BEGIN_INIT_SEND_TABLE(CRagdollPropAttached)
 	BEGIN_SEND_TABLE(CRagdollPropAttached, DT_Ragdoll_Attached, DT_Ragdoll)
 		SendPropInt(SENDINFO(m_boneIndexAttached), MAXSTUDIOBONEBITS, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_ragdollAttachedObjectIndex), RAGDOLL_INDEX_BITS, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_attachmentPointBoneSpace), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_attachmentPointRagdollSpace), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_Ragdoll_Attached)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( prop_ragdoll_attached, CRagdollPropAttached );

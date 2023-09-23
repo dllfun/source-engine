@@ -35,10 +35,13 @@ public:
 	char m_SoundName[64];
 	char m_iszSpriteName[256];
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Tesla)
 	BEGIN_RECV_TABLE(C_Tesla, DT_Tesla, DT_BaseEntity)
 		RecvPropString(RECVINFO(m_SoundName)),
 		RecvPropString(RECVINFO(m_iszSpriteName))
 	END_RECV_TABLE(DT_Tesla)
+	END_INIT_RECV_TABLE()
 };
 
 

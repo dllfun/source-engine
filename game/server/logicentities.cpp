@@ -2556,9 +2556,12 @@ private:
 
 	DECLARE_DATADESC();
 
+public:
+	BEGIN_INIT_SEND_TABLE(CLogicBranchList)
 	BEGIN_SEND_TABLE(CLogicBranchList, DT_LogicBranchList, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_LogicBranchList)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CLogicBranchList, DT_LogicBranchList)

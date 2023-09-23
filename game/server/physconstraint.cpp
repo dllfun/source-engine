@@ -1550,9 +1550,12 @@ private:
 	float		m_yfriction;
 	float		m_zfriction;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CRagdollConstraint)
 	BEGIN_SEND_TABLE(CRagdollConstraint, DT_RagdollConstraint, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_RagdollConstraint)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CRagdollConstraint )

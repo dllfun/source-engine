@@ -137,6 +137,7 @@ private:
 	CBaseGrenade( const CBaseGrenade & ); // not defined, not accessible
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CBaseGrenade)
 	BEGIN_NETWORK_TABLE(CBaseGrenade, DT_BaseGrenade, DT_BaseProjectile)
 		SendPropFloat(SENDINFO(m_flDamage), 10, SPROP_ROUNDDOWN, 0.0, 256.0f),
 		SendPropFloat(SENDINFO(m_DmgRadius), 10, SPROP_ROUNDDOWN, 0.0, 1024.0f),
@@ -148,9 +149,11 @@ private:
 		// HACK: Use same flag bits as player for now
 		SendPropInt(SENDINFO(m_fFlags), PLAYER_FLAG_BITS, SPROP_UNSIGNED, SendProxy_CropFlagsToPlayerFlagBitsLength),
 	END_NETWORK_TABLE(DT_BaseGrenade)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CBaseGrenade)
 	BEGIN_NETWORK_TABLE(CBaseGrenade, DT_BaseGrenade, DT_BaseProjectile)
 		RecvPropFloat(RECVINFO(m_flDamage)),
 		RecvPropFloat(RECVINFO(m_DmgRadius)),
@@ -163,6 +166,7 @@ private:
 
 		RecvPropInt(RECVINFO(m_fFlags)),
 	END_NETWORK_TABLE(DT_BaseGrenade)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

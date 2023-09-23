@@ -635,6 +635,8 @@ private:
 	mutable MDLHandle_t				m_hStudioHdr;
 	CThreadFastMutex				m_StudioHdrInitLock;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseAnimating)
 	BEGIN_RECV_TABLE_NOBASE(C_BaseAnimating, DT_ServerAnimationData)
 		RecvPropFloat(RECVINFO(m_flCycle)),
 	END_RECV_TABLE(DT_ServerAnimationData)
@@ -674,6 +676,7 @@ private:
 		RecvPropFloat(RECVINFO(m_flFadeScale)),
 
 	END_RECV_TABLE(DT_BaseAnimating)
+	END_INIT_RECV_TABLE()
 };
 
 enum 

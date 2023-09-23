@@ -1538,9 +1538,11 @@ class CAI_AssaultGoal : public CAI_GoalEntity
 
 	DECLARE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CAI_AssaultGoal)
 	BEGIN_SEND_TABLE(CAI_AssaultGoal, DT_AI_AssaultGoal, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_AssaultGoal)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CAI_AssaultGoal, DT_AI_AssaultGoal)

@@ -45,6 +45,7 @@ public:
 	CNetworkVar( float, m_OuterAngle );
 	CNetworkVar( float, m_SpotRadius );
 
+	BEGIN_INIT_SEND_TABLE(CDynamicLight)
 	BEGIN_SEND_TABLE(CDynamicLight, DT_DynamicLight, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_Flags), 4, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_LightStyle), 4, SPROP_UNSIGNED),
@@ -54,6 +55,7 @@ public:
 		SendPropFloat(SENDINFO(m_OuterAngle), 8, 0, 0.0, 360.0f),
 		SendPropFloat(SENDINFO(m_SpotRadius), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_DynamicLight)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS(light_dynamic, CDynamicLight);

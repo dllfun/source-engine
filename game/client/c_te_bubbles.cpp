@@ -36,6 +36,8 @@ public:
 	int				m_nCount;
 	float			m_fSpeed;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBubbles)
 	BEGIN_RECV_TABLE(C_TEBubbles, DT_TEBubbles, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecMins)),
 		RecvPropVector(RECVINFO(m_vecMaxs)),
@@ -44,6 +46,7 @@ public:
 		RecvPropInt(RECVINFO(m_nCount)),
 		RecvPropFloat(RECVINFO(m_fSpeed)),
 	END_RECV_TABLE(DT_TEBubbles)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

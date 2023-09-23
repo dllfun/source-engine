@@ -50,9 +50,13 @@ public:
 public:
 	CEffectData m_EffectData;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEEffectDispatch)
+	INIT_REFERENCE_RECV_TABLE(CEffectData)
 	BEGIN_RECV_TABLE(C_TEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
 		RecvPropDataTable(RECVINFO_DT(m_EffectData), 0, REFERENCE_RECV_TABLE(DT_EffectData))
 	END_RECV_TABLE(DT_TEEffectDispatch)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

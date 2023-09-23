@@ -45,6 +45,8 @@ public:
 	//-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBloodSprite)
 	BEGIN_RECV_TABLE_NOBASE(C_TEBloodSprite, DT_TEBloodSprite)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecDirection)),
@@ -56,6 +58,7 @@ public:
 		RecvPropInt(RECVINFO(m_nDropModel)),
 		RecvPropInt(RECVINFO(m_nSize)),
 	END_RECV_TABLE(DT_TEBloodSprite)
+	END_INIT_RECV_TABLE()
 };
 
 

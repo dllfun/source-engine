@@ -30,9 +30,12 @@ private:
 
 	EHANDLE m_hInfoCameraLink;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFuncMonitor)
 	BEGIN_SEND_TABLE(CFuncMonitor, DT_FuncMonitor, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncMonitor)
+	END_INIT_SEND_TABLE()
 };
 
 // automatically hooks in the system's callbacks

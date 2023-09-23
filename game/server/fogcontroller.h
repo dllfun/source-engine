@@ -67,6 +67,7 @@ public:
 	bool					m_bUseAngles;
 	int						m_iChangedVariables;
 
+	BEGIN_INIT_SEND_TABLE(CFogController)
 	BEGIN_SEND_TABLE_NOBASE(CFogController, DT_FogController)
 		// fog data
 		SendPropInt(SENDINFO_STRUCTELEM(m_fog.enable), 1, SPROP_UNSIGNED),
@@ -86,6 +87,7 @@ public:
 		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.lerptime), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO_STRUCTELEM(m_fog.duration), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_FogController)
+	END_INIT_SEND_TABLE()
 };
 
 //=============================================================================

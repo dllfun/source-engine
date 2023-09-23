@@ -41,6 +41,7 @@ public:
 	CNetworkVar( int, m_nCount );
 	CNetworkVar( float, m_fSpeed );
 
+	BEGIN_INIT_SEND_TABLE(CTEBubbles)
 	BEGIN_SEND_TABLE(CTEBubbles, DT_TEBubbles, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecMins), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecMaxs), -1, SPROP_COORD),
@@ -49,6 +50,7 @@ public:
 		SendPropInt(SENDINFO(m_nCount), 8, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_fSpeed), 17, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
 	END_SEND_TABLE(DT_TEBubbles)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

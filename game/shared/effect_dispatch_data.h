@@ -137,6 +137,7 @@ public:
 
 #ifndef CLIENT_DLL
 
+	BEGIN_INIT_SEND_TABLE(CEffectData)
 	BEGIN_SEND_TABLE_NOBASE(CEffectData, DT_EffectData)
 
 		// Everything uses _NOCHECK here since this is not an entity and we don't need
@@ -194,10 +195,12 @@ public:
 		SendPropFloat(SENDINFO_NOCHECK(m_ControlPoint1.m_vecOffset[2]), -1, SPROP_COORD),
 
 	END_SEND_TABLE(DT_EffectData)
+	END_INIT_SEND_TABLE()
 
 #endif // !CLIENT_DLL
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CEffectData)
 	BEGIN_RECV_TABLE_NOBASE(CEffectData, DT_EffectData)
 
 		RecvPropFloat(RECVINFO(m_vOrigin[0])),
@@ -240,6 +243,7 @@ public:
 		RecvPropFloat(RECVINFO(m_ControlPoint1.m_vecOffset[2])),
 
 	END_RECV_TABLE(DT_EffectData)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

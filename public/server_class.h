@@ -80,25 +80,26 @@ template <class T>
 class PrototypeServerClass : public ServerClass
 {
 public:
-				PrototypeServerClass( const char *pNetworkName, const char* pDataTableName )
-				{
-					if (!pDataTableName || !pDataTableName[0]) {
-						Error("pTableName can not been NULL: %s\n", pNetworkName);
-					}
-					m_pNetworkName = pNetworkName;
-					m_pDataTableName = pDataTableName;
-					m_InstanceBaselineIndex = INVALID_STRING_INDEX;
-					g_pServerClassManager->RegisteServerClass(this);
-				}
+	PrototypeServerClass( const char *pNetworkName, const char* pDataTableName )
+	{
+		if (!pDataTableName || !pDataTableName[0]) {
+			Error("pTableName can not been NULL: %s\n", pNetworkName);
+		}
+		T::InitSendTable();
+		m_pNetworkName = pNetworkName;
+		m_pDataTableName = pDataTableName;
+		m_InstanceBaselineIndex = INVALID_STRING_INDEX;
+		g_pServerClassManager->RegisteServerClass(this);
+	}
 
-				void InitRefSendTable(SendTableManager* pSendTableNanager) {
-					if (m_pDataTableName&& m_pDataTableName[0]) {
-						m_pDataTable = pSendTableNanager->FindSendTable(m_pDataTableName);
-						if (!m_pDataTable) {
-							Error("not found SendTable: %s\n", m_pDataTableName);	// dedicated servers exit
-						}
-					}
-				}
+	void InitRefSendTable(SendTableManager* pSendTableNanager) {
+		if (m_pDataTableName&& m_pDataTableName[0]) {
+			m_pDataTable = pSendTableNanager->FindSendTable(m_pDataTableName);
+			if (!m_pDataTable) {
+				Error("not found SendTable: %s\n", m_pDataTableName);	// dedicated servers exit
+			}
+		}
+	}
 
 	const char*	GetNetworkName()		{ return m_pNetworkName; }
 
@@ -212,10 +213,10 @@ class CBaseNetworkable;
 		#DLLClassName, \
 		#sendTable\
 	); \
-	ServerClass* DLLClassName::GetServerClassStatic() {return &g_##DLLClassName##_ClassReg;} \
-	ServerClass* DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
-	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}\
-	static DLLClassName g_##DLLClassName##_EntityReg;
+	ServerClass*	DLLClassName::GetServerClassStatic() {return &g_##DLLClassName##_ClassReg;} \
+	ServerClass*	DLLClassName::GetServerClass() {return &g_##DLLClassName##_ClassReg;} \
+	int DLLClassName::YouForgotToImplementOrDeclareServerClass() {return 0;}
+	//static DLLClassName g_##DLLClassName##_EntityReg;
 
 template <class T>
 class ServerClassAliasRegister

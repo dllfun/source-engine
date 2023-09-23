@@ -133,9 +133,12 @@ public:
 private:
 	C_BasePropDoor( const C_BasePropDoor & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BasePropDoor)
 	BEGIN_RECV_TABLE(C_BasePropDoor, DT_BasePropDoor, DT_DynamicProp)
 
 	END_RECV_TABLE(DT_BasePropDoor)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_BasePropDoor, DT_BasePropDoor, CBasePropDoor)
@@ -214,10 +217,13 @@ public:
 
 	DECLARE_CLIENTCLASS();
 
+public:
+	BEGIN_INIT_RECV_TABLE(CPhysBoxMultiplayer)
 	BEGIN_RECV_TABLE(CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, DT_PhysBox)
 		RecvPropInt(RECVINFO(m_iPhysicsMode)),
 		RecvPropFloat(RECVINFO(m_fMass)),
 	END_RECV_TABLE(DT_PhysBoxMultiplayer)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, CPhysBoxMultiplayer )
@@ -262,12 +268,15 @@ class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
 
 	DECLARE_CLIENTCLASS();
 
+public:
+	BEGIN_INIT_RECV_TABLE(CPhysicsPropMultiplayer)
 	BEGIN_RECV_TABLE(CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, DT_PhysicsProp)
 		RecvPropInt(RECVINFO(m_iPhysicsMode)),
 		RecvPropFloat(RECVINFO(m_fMass)),
 		RecvPropVector(RECVINFO(m_collisionMins)),
 		RecvPropVector(RECVINFO(m_collisionMaxs)),
 	END_RECV_TABLE(DT_PhysicsPropMultiplayer)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, CPhysicsPropMultiplayer )

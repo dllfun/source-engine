@@ -39,12 +39,14 @@ public:
 	CNetworkVar( int, m_nDensity );
 	CNetworkVar( int, m_nCurrent );
 
+	BEGIN_INIT_SEND_TABLE(CTEFizz)
 	BEGIN_SEND_TABLE(CTEFizz, DT_TEFizz, DT_BaseTempEntity)
 		SendPropInt(SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
 		SendPropInt(SENDINFO(m_nDensity), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nCurrent), 16),
 	END_SEND_TABLE(DT_TEFizz)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

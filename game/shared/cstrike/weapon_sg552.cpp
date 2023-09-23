@@ -49,14 +49,21 @@ private:
 
 	void SG552Fire( float flSpread, bool bZoomed );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponSG552)
 	BEGIN_NETWORK_TABLE(CWeaponSG552, DT_WeaponSG552, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponSG552)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponSG552)
 	BEGIN_NETWORK_TABLE(CWeaponSG552, DT_WeaponSG552, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponSG552)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

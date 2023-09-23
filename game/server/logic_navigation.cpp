@@ -53,9 +53,12 @@ private:
 	bool				m_isOn;
 	navproperties_t		m_navProperty;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CLogicNavigation)
 	BEGIN_SEND_TABLE(CLogicNavigation, DT_LogicNavigation, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_LogicNavigation)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CLogicNavigation, DT_LogicNavigation)

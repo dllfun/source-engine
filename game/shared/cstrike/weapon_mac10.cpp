@@ -42,14 +42,21 @@ public:
 private:
 	CWeaponMAC10( const CWeaponMAC10 & );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponMAC10)
 	BEGIN_NETWORK_TABLE(CWeaponMAC10, DT_WeaponMAC10, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponMAC10)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponMAC10)
 	BEGIN_NETWORK_TABLE(CWeaponMAC10, DT_WeaponMAC10, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponMAC10)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

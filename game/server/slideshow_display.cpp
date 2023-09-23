@@ -93,6 +93,7 @@ private:
 	typedef CHandle<CVGuiScreen>	ScreenHandle_t;
 	CUtlVector<ScreenHandle_t>	m_hScreens;
 
+	BEGIN_INIT_SEND_TABLE(CSlideshowDisplay)
 	BEGIN_SEND_TABLE(CSlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
 		SendPropBool(SENDINFO(m_bEnabled)),
 		SendPropString(SENDINFO(m_szDisplayText)),
@@ -103,6 +104,7 @@ private:
 		SendPropInt(SENDINFO(m_iCycleType), 2, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bNoListRepeats)),
 	END_SEND_TABLE(DT_SlideshowDisplay)
+	END_INIT_SEND_TABLE()
 };
 
 

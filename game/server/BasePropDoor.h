@@ -210,9 +210,12 @@ private:
 	COutputEvent m_OnOpen;					// Triggered when the door is told to open.
 	COutputEvent m_OnLockedUse;				// Triggered when the user tries to open a locked door.
 
+public:
+	BEGIN_INIT_SEND_TABLE(CBasePropDoor)
 	BEGIN_SEND_TABLE(CBasePropDoor, DT_BasePropDoor, DT_DynamicProp)
 
 	END_SEND_TABLE(DT_BasePropDoor)
+	END_INIT_SEND_TABLE()
 };
 
 

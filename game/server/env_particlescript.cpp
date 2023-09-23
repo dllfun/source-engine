@@ -42,9 +42,11 @@ private:
 
 	CNetworkVar( float, m_flSequenceScale );
 
+	BEGIN_INIT_SEND_TABLE(CEnvParticleScript)
 	BEGIN_SEND_TABLE(CEnvParticleScript, DT_EnvParticleScript, DT_BaseAnimating)
 		SendPropFloat(SENDINFO(m_flSequenceScale), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_EnvParticleScript)
+	END_INIT_SEND_TABLE()
 };
 
 

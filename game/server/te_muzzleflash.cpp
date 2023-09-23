@@ -33,12 +33,14 @@ public:
 	CNetworkVar( float, m_flScale );
 	CNetworkVar( int, m_nType );
 
+	BEGIN_INIT_SEND_TABLE(CTEMuzzleFlash)
 	BEGIN_SEND_TABLE(CTEMuzzleFlash, DT_TEMuzzleFlash, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecAngles), -1, SPROP_COORD),
 		SendPropFloat(SENDINFO(m_flScale), -1, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_nType), 32, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEMuzzleFlash)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

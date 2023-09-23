@@ -283,7 +283,9 @@ private:
     // HPE_END
     //=============================================================================
 
+public:
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CWeaponCSBase)
 	BEGIN_NETWORK_TABLE(CWeaponCSBase, DT_WeaponCSBase, DT_BaseCombatWeapon)
 		SendPropInt(SENDINFO(m_weaponMode), 1, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_fAccuracyPenalty)),
@@ -292,13 +294,16 @@ private:
 		SendPropExclude("DT_BaseAnimating", "m_nSequence"),
 		//	SendPropExclude( "DT_LocalActiveWeaponData", "m_flTimeWeaponIdle" ),
 	END_NETWORK_TABLE(DT_WeaponCSBase)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CWeaponCSBase)
 	BEGIN_NETWORK_TABLE(CWeaponCSBase, DT_WeaponCSBase, DT_BaseCombatWeapon)
 		RecvPropInt(RECVINFO(m_weaponMode)),
 		RecvPropFloat(RECVINFO(m_fAccuracyPenalty)),
 	END_NETWORK_TABLE(DT_WeaponCSBase)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

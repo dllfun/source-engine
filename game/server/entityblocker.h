@@ -24,9 +24,11 @@ public:
 	void Spawn( void );
 	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
 
+	BEGIN_INIT_SEND_TABLE(CEntityBlocker)
 	BEGIN_SEND_TABLE(CEntityBlocker, DT_EntityBlocker, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_EntityBlocker)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // ENTITYBLOCKER_H

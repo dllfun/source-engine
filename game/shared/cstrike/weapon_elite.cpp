@@ -64,14 +64,21 @@ private:
 	int m_droppedModelIndex;
 	bool m_inPrecache;
 
+public:
 #if !defined(CLIENT_DLL)
+	BEGIN_INIT_SEND_TABLE(CWeaponElite)
 	BEGIN_NETWORK_TABLE(CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponElite)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined(CLIENT_DLL)
+	BEGIN_INIT_RECV_TABLE(CWeaponElite)
 	BEGIN_NETWORK_TABLE(CWeaponElite, DT_WeaponElite, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponElite)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

@@ -31,9 +31,11 @@
 		C_##className() = default;											\
 	private:														\
 		C_##className( const C_##className & );						\
-		\
+	public:															\
+		BEGIN_INIT_RECV_TABLE(C_##className)\
 		BEGIN_RECV_TABLE(C_##className, DT_##className, baseTableName)	\
 		END_RECV_TABLE(DT_##className)\
+		END_INIT_RECV_TABLE() \
 	};																\
 	STUB_WEAPON_CLASS_IMPLEMENT( entityName, C_##className );		\
 	IMPLEMENT_CLIENTCLASS( C_##className, DT_##className, C##className )

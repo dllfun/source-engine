@@ -613,9 +613,11 @@ public:
 	IPhysicsMotionController *m_pController;
 	CMotorController m_motor;
 
+	BEGIN_INIT_SEND_TABLE(CPhysMotor)
 	BEGIN_SEND_TABLE(CPhysMotor, DT_PhysMotor, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PhysMotor)
+	END_INIT_SEND_TABLE()
 };
 
 

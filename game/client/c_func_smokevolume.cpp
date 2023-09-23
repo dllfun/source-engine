@@ -161,6 +161,8 @@ private:
 	QAngle m_vLastAngles;
 	bool m_bFirstUpdate;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncSmokeVolume)
 	BEGIN_RECV_TABLE(C_FuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
 		RecvPropInt(RECVINFO(m_Color1), 0, RecvProxy_IntToColor32),
 		RecvPropInt(RECVINFO(m_Color2), 0, RecvProxy_IntToColor32),
@@ -174,6 +176,7 @@ private:
 		RecvPropInt(RECVINFO(m_spawnflags)),
 		RecvPropDataTable(RECVINFO_DT(m_Collision), 0, REFERENCE_RECV_TABLE(DT_CollisionProperty)),
 	END_RECV_TABLE(DT_FuncSmokeVolume)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( C_FuncSmokeVolume, DT_FuncSmokeVolume, CFuncSmokeVolume )

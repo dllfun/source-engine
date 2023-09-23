@@ -48,14 +48,21 @@ private:
 
 	float m_flLastFire;
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponP228)
 	BEGIN_NETWORK_TABLE(CWeaponP228, DT_WeaponP228, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponP228)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponP228)
 	BEGIN_NETWORK_TABLE(CWeaponP228, DT_WeaponP228, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponP228)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

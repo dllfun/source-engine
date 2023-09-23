@@ -126,11 +126,14 @@ public:
 	Vector			m_vecOrigin;
 	int				m_nEntity;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEPlayerDecal)
 	BEGIN_RECV_TABLE(C_TEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropInt(RECVINFO(m_nEntity)),
 		RecvPropInt(RECVINFO(m_nPlayer)),
 	END_RECV_TABLE(DT_TEPlayerDecal)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

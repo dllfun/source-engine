@@ -36,11 +36,14 @@ public:
 	float			m_flStartRadius;
 	float			m_flEndRadius;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBeamRingPoint)
 	BEGIN_RECV_TABLE(C_TEBeamRingPoint, DT_TEBeamRingPoint, DT_BaseBeam)
 		RecvPropVector(RECVINFO(m_vecCenter)),
 		RecvPropFloat(RECVINFO(m_flStartRadius)),
 		RecvPropFloat(RECVINFO(m_flEndRadius)),
 	END_RECV_TABLE(DT_TEBeamRingPoint)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

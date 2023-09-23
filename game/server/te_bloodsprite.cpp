@@ -45,6 +45,7 @@ public:
 	CNetworkVar( int, a );
 	CNetworkVar( int, m_nSize );
 
+	BEGIN_INIT_SEND_TABLE(CTEBloodSprite)
 	BEGIN_SEND_TABLE_NOBASE(CTEBloodSprite, DT_TEBloodSprite)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecDirection), -1, SPROP_COORD),
@@ -56,6 +57,7 @@ public:
 		SendPropModelIndex(SENDINFO(m_nDropModel)),
 		SendPropInt(SENDINFO(m_nSize), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEBloodSprite)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

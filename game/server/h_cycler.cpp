@@ -234,9 +234,11 @@ public:
 	string_t m_iszModel;
 	int m_iModel;
 
+	BEGIN_INIT_SEND_TABLE(CWeaponCycler)
 	BEGIN_SEND_TABLE(CWeaponCycler, DT_WeaponCycler, DT_BaseCombatWeapon)
 
 	END_SEND_TABLE(DT_WeaponCycler)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CWeaponCycler, DT_WeaponCycler, DT_BaseCombatWeapon)

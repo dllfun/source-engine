@@ -71,14 +71,21 @@ private:
 
 	CWeaponAWP( const CWeaponAWP & );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponAWP)
 	BEGIN_NETWORK_TABLE(CWeaponAWP, DT_WeaponAWP, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponAWP)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponAWP)
 	BEGIN_NETWORK_TABLE(CWeaponAWP, DT_WeaponAWP, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponAWP)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

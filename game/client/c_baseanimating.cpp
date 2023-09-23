@@ -107,9 +107,12 @@ public:
 private:
 	EHANDLE			m_hLightingLandmark;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_InfoLightingRelative)
 	BEGIN_RECV_TABLE(C_InfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
 		RecvPropEHandle(RECVINFO(m_hLightingLandmark)),
 	END_RECV_TABLE(DT_InfoLightingRelative)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_InfoLightingRelative, DT_InfoLightingRelative, CInfoLightingRelative)
@@ -5906,10 +5909,13 @@ private:
 	int m_modelIndex;
 	int m_solidIndex;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BoneFollower)
 	BEGIN_RECV_TABLE(C_BoneFollower, DT_BoneFollower, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_modelIndex)),
 		RecvPropInt(RECVINFO(m_solidIndex)),
 	END_RECV_TABLE(DT_BoneFollower)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( C_BoneFollower, DT_BoneFollower, CBoneFollower )

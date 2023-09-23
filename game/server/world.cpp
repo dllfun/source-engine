@@ -72,9 +72,11 @@ private:
 	void	StaticDecal( void );
 
 public:
+	BEGIN_INIT_SEND_TABLE(CDecal)
 	BEGIN_SEND_TABLE(CDecal, DT_Decal, DT_PointEntity)
 
 	END_SEND_TABLE(DT_Decal)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CDecal )

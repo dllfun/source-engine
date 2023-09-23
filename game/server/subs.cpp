@@ -62,9 +62,11 @@ public:
 	DECLARE_SERVERCLASS();
 	void Spawn( void );
 
+	BEGIN_INIT_SEND_TABLE(CNullEntity)
 	BEGIN_SEND_TABLE(CNullEntity, DT_NullEntity, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_NullEntity)
+	END_INIT_SEND_TABLE()
 };
 
 

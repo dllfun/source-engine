@@ -37,12 +37,14 @@ public:
 	CNetworkVar( float, m_flDistance );
 	CNetworkQAngle( m_angRotation );
 
+	BEGIN_INIT_SEND_TABLE(CTEProjectedDecal)
 	BEGIN_SEND_TABLE(CTEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropQAngles(SENDINFO(m_angRotation), 10),
 		SendPropFloat(SENDINFO(m_flDistance), 10, SPROP_ROUNDUP, 0, 1024),
 		SendPropInt(SENDINFO(m_nIndex), 9, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEProjectedDecal)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

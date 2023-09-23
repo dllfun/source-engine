@@ -213,9 +213,12 @@ private:
 
 	bool		m_bDamageChild;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFuncTrackTrain)
 	BEGIN_SEND_TABLE(CFuncTrackTrain, DT_FuncTrackTrain, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncTrackTrain)
+	END_INIT_SEND_TABLE()
 };
 
 

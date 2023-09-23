@@ -46,13 +46,19 @@ public:
 	CHEGrenade( const CHEGrenade & ) {}
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CHEGrenade)
 	BEGIN_NETWORK_TABLE(CHEGrenade, DT_HEGrenade, DT_BaseCSGrenade)
+
 	END_NETWORK_TABLE(DT_HEGrenade)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CHEGrenade)
 	BEGIN_NETWORK_TABLE(CHEGrenade, DT_HEGrenade, DT_BaseCSGrenade)
+
 	END_NETWORK_TABLE(DT_HEGrenade)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

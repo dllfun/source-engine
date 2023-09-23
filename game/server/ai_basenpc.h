@@ -2124,6 +2124,7 @@ public:
 
 	void				StartPingEffect( void ) { m_flTimePingEffect = gpGlobals->GetCurTime() + 2.0f; DispatchUpdateTransmitState(); }
 
+	BEGIN_INIT_SEND_TABLE(CAI_BaseNPC)
 	BEGIN_SEND_TABLE(CAI_BaseNPC, DT_AI_BaseNPC, DT_BaseCombatCharacter)
 		SendPropInt(SENDINFO(m_lifeState), 3, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bPerformAvoidance)),
@@ -2137,6 +2138,7 @@ public:
 		SendPropBool(SENDINFO(m_bImportanRagdoll)),
 		SendPropFloat(SENDINFO(m_flTimePingEffect)),
 	END_SEND_TABLE(DT_AI_BaseNPC)
+	END_INIT_SEND_TABLE()
 };
 
 

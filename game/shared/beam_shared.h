@@ -270,6 +270,7 @@ public:
 //		//SendPropInt(SENDINFO(m_bIsPlayerSimulated), 1, SPROP_UNSIGNED),
 //	END_NETWORK_TABLE(DT_BeamPredictableId)
 //#endif
+	BEGIN_INIT_SEND_TABLE(CBeam)
 	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_Beam)
 		SendPropInt(SENDINFO(m_nBeamType), Q_log2(NUM_BEAM_TYPES) + 1, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nBeamFlags), NUM_BEAM_FLAGS, SPROP_UNSIGNED),
@@ -311,6 +312,7 @@ public:
 //		SendPropDataTable("beampredictable_id", 0, REFERENCE_SEND_TABLE(DT_BeamPredictableId), SendProxy_SendBeamPredictableId),
 //#endif
 	END_NETWORK_TABLE(DT_Beam)
+	END_INIT_SEND_TABLE()
 #endif
 
 
@@ -324,6 +326,7 @@ public:
 //#endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CBeam)
 	BEGIN_NETWORK_TABLE_NOBASE(CBeam, DT_Beam)
 		RecvPropInt(RECVINFO(m_nBeamType)),
 		RecvPropInt(RECVINFO(m_nBeamFlags)),
@@ -367,6 +370,7 @@ public:
 //#endif
 
 	END_NETWORK_TABLE(DT_Beam)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

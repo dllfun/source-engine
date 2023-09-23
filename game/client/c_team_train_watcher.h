@@ -71,6 +71,8 @@ private:
 	CGlowObject *m_pGlowEffect;
 #endif // GLOWS_ENABLE
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TeamTrainWatcher)
 	BEGIN_RECV_TABLE(C_TeamTrainWatcher, DT_TeamTrainWatcher, DT_BaseEntity)
 
 		RecvPropFloat(RECVINFO(m_flTotalProgress)),
@@ -82,6 +84,7 @@ private:
 #endif // GLOWS_ENABLE
 
 	END_RECV_TABLE(DT_TeamTrainWatcher)
+	END_INIT_RECV_TABLE()
 };
 
 extern CUtlVector< CHandle<C_TeamTrainWatcher> > g_hTrainWatchers;

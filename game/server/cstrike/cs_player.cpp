@@ -222,6 +222,7 @@ public:
 	CNetworkVar(int, m_iDeathPose );
 	CNetworkVar(int, m_iDeathFrame );
 
+	BEGIN_INIT_SEND_TABLE(CCSRagdoll)
 	BEGIN_SEND_TABLE_NOBASE(CCSRagdoll, DT_CSRagdoll)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
 		SendPropVector(SENDINFO(m_vecRagdollOrigin), -1, SPROP_COORD),
@@ -235,6 +236,7 @@ public:
 		SendPropInt(SENDINFO(m_iTeamNum), TEAMNUM_NUM_BITS, 0),
 		SendPropInt(SENDINFO(m_bClientSideAnimation), 1, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_CSRagdoll)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( cs_ragdoll, CCSRagdoll );
@@ -261,11 +263,13 @@ public:
 	CNetworkVar( int, m_iEvent );
 	CNetworkVar( int, m_nData );
 
+	BEGIN_INIT_SEND_TABLE(CTEPlayerAnimEvent)
 	BEGIN_SEND_TABLE_NOBASE(CTEPlayerAnimEvent, DT_TEPlayerAnimEvent)
 		SendPropEHandle(SENDINFO(m_hPlayer)),
 		SendPropInt(SENDINFO(m_iEvent), Q_log2(PLAYERANIMEVENT_COUNT) + 1, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nData), 32)
 	END_SEND_TABLE(DT_TEPlayerAnimEvent)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CTEPlayerAnimEvent, DT_TEPlayerAnimEvent )

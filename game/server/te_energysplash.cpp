@@ -37,11 +37,13 @@ public:
 	CNetworkVector( m_vecDir );
 	CNetworkVar( bool, m_bExplosive );
 
+	BEGIN_INIT_SEND_TABLE(CTEEnergySplash)
 	BEGIN_SEND_TABLE_NOBASE(CTEEnergySplash, DT_TEEnergySplash)
 		SendPropVector(SENDINFO(m_vecPos), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecDir), -1, SPROP_COORD),
 		SendPropInt(SENDINFO(m_bExplosive), 1, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEEnergySplash)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

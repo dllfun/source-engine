@@ -39,6 +39,7 @@ private:
 	CNetworkVar( float, m_MovementSpeed );
 	CNetworkVar( float, m_Density );
 
+	BEGIN_INIT_SEND_TABLE(CFuncSmokeVolume)
 	BEGIN_SEND_TABLE(CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
 		SendPropInt(SENDINFO(m_Color1), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
 		SendPropInt(SENDINFO(m_Color2), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
@@ -51,6 +52,7 @@ private:
 		SendPropFloat(SENDINFO(m_Density), 0, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED)
 	END_SEND_TABLE(DT_FuncSmokeVolume)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CFuncSmokeVolume )

@@ -60,6 +60,8 @@ private:
 
 	inline bool ShouldBeElight() { return (m_Flags & DLIGHT_NO_WORLD_ILLUMINATION); }
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_DynamicLight)
 	BEGIN_RECV_TABLE(C_DynamicLight, DT_DynamicLight, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_Flags)),
 		RecvPropInt(RECVINFO(m_LightStyle)),
@@ -69,6 +71,7 @@ private:
 		RecvPropFloat(RECVINFO(m_OuterAngle)),
 		RecvPropFloat(RECVINFO(m_SpotRadius)),
 	END_RECV_TABLE(DT_DynamicLight)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_DynamicLight, DT_DynamicLight, CDynamicLight)

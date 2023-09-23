@@ -31,10 +31,13 @@ public:
 	Vector			m_vecStartPoint;
 	Vector			m_vecEndPoint;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBeamPoints)
 	BEGIN_RECV_TABLE(C_TEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
 		RecvPropVector(RECVINFO(m_vecStartPoint)),
 		RecvPropVector(RECVINFO(m_vecEndPoint)),
 	END_RECV_TABLE(DT_TEBeamPoints)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

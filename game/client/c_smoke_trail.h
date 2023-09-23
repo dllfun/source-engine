@@ -99,6 +99,8 @@ private:
 	CParticleMgr	*m_pParticleMgr;
 	CSmartPtr<CSimpleEmitter> m_pSmokeEmitter;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SmokeTrail)
 	BEGIN_RECV_TABLE(C_SmokeTrail, DT_SmokeTrail, DT_BaseParticleEntity)
 		RecvPropFloat(RECVINFO(m_SpawnRate)),
 		RecvPropVector(RECVINFO(m_StartColor)),
@@ -116,6 +118,7 @@ private:
 		RecvPropInt(RECVINFO(m_nAttachment)),
 		RecvPropFloat(RECVINFO(m_Opacity)),
 	END_RECV_TABLE(DT_SmokeTrail)
+	END_INIT_RECV_TABLE()
 };
 
 //==================================================
@@ -196,6 +199,8 @@ private:
 	CParticleMgr	*m_pParticleMgr;
 	CSmartPtr<CSimpleEmitter> m_pRocketEmitter;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_RocketTrail)
 	BEGIN_RECV_TABLE(C_RocketTrail, DT_RocketTrail, DT_BaseParticleEntity)
 		RecvPropFloat(RECVINFO(m_SpawnRate)),
 		RecvPropVector(RECVINFO(m_StartColor)),
@@ -213,6 +218,7 @@ private:
 		RecvPropInt(RECVINFO(m_bDamaged)),
 		RecvPropFloat(RECVINFO(m_flFlareScale)),
 	END_RECV_TABLE(DT_RocketTrail)
+	END_INIT_RECV_TABLE()
 };
 
 class SporeSmokeEffect;
@@ -288,6 +294,8 @@ private:
 	SporeEffect			*m_pSporeEffect;
 	CParticleMgr		*m_pParticleMgr;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SporeExplosion)
 	BEGIN_RECV_TABLE(C_SporeExplosion, DT_SporeExplosion, DT_BaseParticleEntity)
 		RecvPropFloat(RECVINFO(m_flSpawnRate)),
 		RecvPropFloat(RECVINFO(m_flParticleLifetime)),
@@ -297,6 +305,7 @@ private:
 		RecvPropBool(RECVINFO(m_bEmit)),
 		RecvPropBool(RECVINFO(m_bDontRemove)),
 	END_RECV_TABLE(DT_SporeExplosion)
+	END_INIT_RECV_TABLE()
 };
 
 //
@@ -344,10 +353,13 @@ private:
 
 	C_FireTrail( const C_FireTrail & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FireTrail)
 	BEGIN_RECV_TABLE(C_FireTrail, DT_FireTrail, DT_BaseParticleEntity)
 		RecvPropInt(RECVINFO(m_nAttachment)),
 		RecvPropFloat(RECVINFO(m_flLifetime)),
 	END_RECV_TABLE(DT_FireTrail)
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -437,6 +449,8 @@ private:
 	CParticleMgr	*m_pParticleMgr;
 	CSmartPtr<CSimpleEmitter> m_pDustEmitter;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_DustTrail)
 	BEGIN_RECV_TABLE(C_DustTrail, DT_DustTrail, DT_BaseParticleEntity)
 		RecvPropFloat(RECVINFO(m_SpawnRate)),
 		RecvPropVector(RECVINFO(m_Color)),
@@ -452,6 +466,7 @@ private:
 		RecvPropInt(RECVINFO(m_bEmit)),
 		RecvPropFloat(RECVINFO(m_Opacity)),
 	END_RECV_TABLE(DT_DustTrail)
+	END_INIT_RECV_TABLE()
 };
 
 #endif

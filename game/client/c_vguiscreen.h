@@ -158,6 +158,8 @@ private:
 
 	CHandle<C_BasePlayer> m_hPlayerOwner;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_VGuiScreen)
 	BEGIN_RECV_TABLE(C_VGuiScreen, DT_VGuiScreen, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flWidth)),
 		RecvPropFloat(RECVINFO(m_flHeight)),
@@ -167,6 +169,7 @@ private:
 		RecvPropInt(RECVINFO(m_nOverlayMaterial)),
 		RecvPropEHandle(RECVINFO(m_hPlayerOwner)),
 	END_RECV_TABLE(DT_VGuiScreen)
+	END_INIT_RECV_TABLE()
 };
 
 

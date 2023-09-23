@@ -37,10 +37,13 @@ public:
 
 	const class IVModel *m_pModel;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEMetalSparks)
 	BEGIN_RECV_TABLE_NOBASE(C_TEMetalSparks, DT_TEMetalSparks)
 		RecvPropVector(RECVINFO(m_vecPos)),
 		RecvPropVector(RECVINFO(m_vecDir)),
 	END_RECV_TABLE(DT_TEMetalSparks)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------
@@ -123,8 +126,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEArmorRicochet)
 	BEGIN_RECV_TABLE(C_TEArmorRicochet, DT_TEArmorRicochet, DT_TEMetalSparks)
+
 	END_RECV_TABLE(DT_TEArmorRicochet)
+	END_INIT_RECV_TABLE()
 };
 
 

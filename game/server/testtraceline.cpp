@@ -29,6 +29,8 @@ public:
 private:
 	void	Spin( void );
 
+public:
+	BEGIN_INIT_SEND_TABLE(CTestTraceline)
 	BEGIN_SEND_TABLE_NOBASE(CTestTraceline, DT_TestTraceline)
 		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_vecOrigin), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
@@ -37,6 +39,7 @@ private:
 		SendPropFloat(SENDINFO_VECTORELEM(m_angRotation, 2), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
 		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
 	END_SEND_TABLE(DT_TestTraceline)
+	END_INIT_SEND_TABLE()
 };
 							  
 

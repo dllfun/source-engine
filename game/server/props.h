@@ -247,9 +247,12 @@ private:
 	string_t				m_iszPuntSound;
 	bool					m_bUsePuntSound;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CBreakableProp)
 	BEGIN_SEND_TABLE(CBreakableProp, DT_BreakableProp, DT_BaseAnimating)
 
 	END_SEND_TABLE(DT_BreakableProp)
+	END_INIT_SEND_TABLE()
 };
 
 // Spawnflags
@@ -328,9 +331,12 @@ protected:
 	// Contained Bone Follower manager
 	CBoneFollowerManager	m_BoneFollowerManager;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CDynamicProp)
 	BEGIN_SEND_TABLE(CDynamicProp, DT_DynamicProp, DT_BreakableProp)
 		SendPropBool(SENDINFO(m_bUseHitboxesForRenderBox)),
 	END_SEND_TABLE(DT_DynamicProp)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------
@@ -416,9 +422,11 @@ private:
 protected:
 	CNetworkVar( bool, m_bAwake );
 
+	BEGIN_INIT_SEND_TABLE(CPhysicsProp)
 	BEGIN_SEND_TABLE(CPhysicsProp, DT_PhysicsProp, DT_BreakableProp)
 		SendPropBool(SENDINFO(m_bAwake)),
 	END_SEND_TABLE(DT_PhysicsProp)
+	END_INIT_SEND_TABLE()
 };
 
 

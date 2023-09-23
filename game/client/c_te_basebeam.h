@@ -47,6 +47,8 @@ public:
 	int				m_nSpeed;
 	int				m_nFlags;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBaseBeam)
 	BEGIN_RECV_TABLE_NOBASE(C_TEBaseBeam, DT_BaseBeam)
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropInt(RECVINFO(m_nHaloIndex)),
@@ -64,6 +66,7 @@ public:
 		RecvPropInt(RECVINFO(a)),
 		RecvPropInt(RECVINFO(m_nFlags)),
 	END_RECV_TABLE(DT_BaseBeam)
+	END_INIT_RECV_TABLE()
 };
 
 EXTERN_RECV_TABLE(DT_BaseBeam);

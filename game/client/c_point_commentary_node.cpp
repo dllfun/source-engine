@@ -182,6 +182,8 @@ public:
 	EHANDLE		m_hViewPosition;
 	bool		m_bRestartAfterRestore;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PointCommentaryNode)
 	BEGIN_RECV_TABLE(C_PointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
 		RecvPropBool(RECVINFO(m_bActive)),
 		RecvPropTime(RECVINFO(m_flStartTime)),
@@ -192,6 +194,7 @@ public:
 		RecvPropInt(RECVINFO(m_iNodeNumberMax)),
 		RecvPropEHandle(RECVINFO(m_hViewPosition)),
 	END_RECV_TABLE(DT_PointCommentaryNode)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PointCommentaryNode, DT_PointCommentaryNode, CPointCommentaryNode)

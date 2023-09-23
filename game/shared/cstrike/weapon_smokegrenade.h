@@ -48,13 +48,19 @@ public:
 	CSmokeGrenade( const CSmokeGrenade & ) {}
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CSmokeGrenade)
 	BEGIN_NETWORK_TABLE(CSmokeGrenade, DT_SmokeGrenade, DT_BaseCSGrenade)
+
 	END_NETWORK_TABLE(DT_SmokeGrenade)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CSmokeGrenade)
 	BEGIN_NETWORK_TABLE(CSmokeGrenade, DT_SmokeGrenade, DT_BaseCSGrenade)
+
 	END_NETWORK_TABLE(DT_SmokeGrenade)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

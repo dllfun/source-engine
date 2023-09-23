@@ -75,6 +75,7 @@ private:
 
 	string_t	m_lookupFilename;
 
+	BEGIN_INIT_SEND_TABLE(CColorCorrection)
 	BEGIN_SEND_TABLE_NOBASE(CColorCorrection, DT_ColorCorrection)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
 		SendPropFloat(SENDINFO(m_MinFalloff)),
@@ -83,6 +84,7 @@ private:
 		SendPropString(SENDINFO(m_netlookupFilename)),
 		SendPropBool(SENDINFO(m_bEnabled)),
 	END_SEND_TABLE(DT_ColorCorrection)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS(color_correction, CColorCorrection);

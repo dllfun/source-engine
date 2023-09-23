@@ -102,6 +102,7 @@ private:
 	CNetworkVar( float, m_fFModRate );
 	CNetworkVar( float, m_fFModAmplitude );
 
+	BEGIN_INIT_SEND_TABLE(CPoseController)
 	BEGIN_SEND_TABLE(CPoseController, DT_PoseController, DT_BaseEntity)
 		SendPropArray3(SENDINFO_ARRAY3(m_hProps), SendPropEHandle(SENDINFO_ARRAY(m_hProps))),
 		SendPropArray3(SENDINFO_ARRAY3(m_chPoseIndex), SendPropInt(SENDINFO_ARRAY(m_chPoseIndex), 5, SPROP_UNSIGNED)),	// bits sent must be enough to represent MAXSTUDIOPOSEPARAM
@@ -115,6 +116,7 @@ private:
 		SendPropFloat(SENDINFO(m_fFModRate), 11, 0, -MAX_POSE_FMOD_RATE, MAX_POSE_FMOD_RATE),
 		SendPropFloat(SENDINFO(m_fFModAmplitude), 11, 0, 0.0f, MAX_POSE_FMOD_AMPLITUDE),
 	END_SEND_TABLE(DT_PoseController)
+	END_INIT_SEND_TABLE()
 };
 
 
@@ -164,6 +166,8 @@ private:
 
 	CInterpolatedValue	m_PoseTransitionValue;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PoseController)
 	BEGIN_RECV_TABLE(C_PoseController, DT_PoseController, DT_BaseEntity)
 		RecvPropArray3(RECVINFO_ARRAY(m_hProps), RecvPropEHandle(RECVINFO(m_hProps[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_chPoseIndex), RecvPropInt(RECVINFO(m_chPoseIndex[0]))),
@@ -177,6 +181,7 @@ private:
 		RecvPropFloat(RECVINFO(m_fFModRate)),
 		RecvPropFloat(RECVINFO(m_fFModAmplitude)),
 	END_RECV_TABLE(DT_PoseController)
+	END_INIT_RECV_TABLE()
 };
 
 

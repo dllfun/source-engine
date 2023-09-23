@@ -362,34 +362,73 @@ int TestRevFunction();
 //		return 1; \
 //	}
 
+//#define BEGIN_INIT_RECV_TABLE(className) 
+//
+//#define BEGIN_RECV_TABLE_NOBASE(className, tableName) \
+//	class RecvTable_##tableName : public RecvTable{\
+//	public:\
+//	\
+//		RecvTable_##tableName(){ \
+//			typedef className currentRecvDTClass; \
+//			static bool registed = false;\
+//			if( !registed ){\
+//				registed = true;\
+//				static const char *pTableName = #tableName; \
+//				static RecvProp g_RecvProps[] = { \
+//					RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
+//
+//
+//#define END_RECV_TABLE(tableName) \
+//				};\
+//				Construct(g_RecvProps+1, sizeof(g_RecvProps) / sizeof(RecvProp) - 1, pTableName);\
+//				g_pRecvTableManager->RegisteRecvTable(this);\
+//			}\
+//		}\
+//	\
+//	};\
+//	friend class RecvTable_##tableName;\
+//	RecvTable_##tableName g_RecvTable_##tableName;
+//
+//#define BEGIN_RECV_TABLE(className, tableName, baseTableName) \
+//	BEGIN_RECV_TABLE_NOBASE(className, tableName) \
+//		RecvPropDataTable("baseclass", 0, 0, #baseTableName, DataTableRecvProxy_StaticDataTable),
+//
+//#define INIT_REFERENCE_RECV_TABLE(className) 
+//
+//#define END_INIT_RECV_TABLE() 
+
+
+#define BEGIN_INIT_RECV_TABLE(className) \
+		static void InitRecvTable(){\
+			static bool inited = false; \
+			if( inited ){\
+				return;\
+			}\
+			inited = true;
+
 #define BEGIN_RECV_TABLE_NOBASE(className, tableName) \
-	class RecvTable_##tableName : public RecvTable{\
-	public:\
-	\
-		RecvTable_##tableName(){ \
-			typedef className currentRecvDTClass; \
-			static bool registed = false;\
-			if( !registed ){\
-				registed = true;\
+			{\
+				typedef className currentRecvDTClass;\
+				static RecvTable g_RecvTable;		\
 				static const char *pTableName = #tableName; \
 				static RecvProp g_RecvProps[] = { \
 					RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
 
-
 #define END_RECV_TABLE(tableName) \
-				};\
-				Construct(g_RecvProps+1, sizeof(g_RecvProps) / sizeof(RecvProp) - 1, pTableName);\
-				g_pRecvTableManager->RegisteRecvTable(this);\
-			}\
-		}\
-	\
-	};\
-	friend class RecvTable_##tableName;\
-	RecvTable_##tableName g_RecvTable_##tableName;
+											};\
+				g_RecvTable.Construct(g_RecvProps+1, sizeof(g_RecvProps) / sizeof(RecvProp) - 1, pTableName);\
+				g_pRecvTableManager->RegisteRecvTable(&g_RecvTable);\
+			};
 
 #define BEGIN_RECV_TABLE(className, tableName, baseTableName) \
 	BEGIN_RECV_TABLE_NOBASE(className, tableName) \
 		RecvPropDataTable("baseclass", 0, 0, #baseTableName, DataTableRecvProxy_StaticDataTable),
+
+#define END_INIT_RECV_TABLE() \
+		}
+
+#define INIT_REFERENCE_RECV_TABLE(className) \
+		className::InitRecvTable();
 
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the
 // legit offsetof from the C headers, so we'll use the old impl here to avoid exposing temptation to others

@@ -61,9 +61,11 @@ public:
 
 	virtual bool IsOn( void );
 public:
+	BEGIN_INIT_SEND_TABLE(CFuncBrush)
 	BEGIN_SEND_TABLE(CFuncBrush, DT_FuncBrush, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncBrush)
+	END_INIT_SEND_TABLE()
 };
 
 

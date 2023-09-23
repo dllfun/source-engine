@@ -41,6 +41,7 @@ public:
 
 	//Server-side
 
+	BEGIN_INIT_SEND_TABLE(CPlasma)
 	BEGIN_SEND_TABLE(CPlasma, DT_Plasma, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flScale), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flScaleTime), 0, SPROP_NOSCALE),
@@ -49,6 +50,7 @@ public:
 		SendPropModelIndex(SENDINFO(m_nPlasmaModelIndex2)),
 		SendPropModelIndex(SENDINFO(m_nGlowModelIndex)),
 	END_SEND_TABLE(DT_Plasma)
+	END_INIT_SEND_TABLE()
 };
 
 #endif	//__PLASMA__

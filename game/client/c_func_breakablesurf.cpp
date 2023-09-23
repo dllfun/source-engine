@@ -176,6 +176,8 @@ private:
 
 	void		UpdateEdgeType(int nWidth, int nHeight, int forceStyle = -1 );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BreakableSurface)
 	BEGIN_RECV_TABLE(C_BreakableSurface, DT_BreakableSurface, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_nNumWide)),
 		RecvPropInt(RECVINFO(m_nNumHigh)),
@@ -188,6 +190,7 @@ private:
 		RecvPropArray3(RECVINFO_ARRAY(m_RawPanelBitVec), RecvPropInt(RECVINFO(m_RawPanelBitVec[0]))),
 
 	END_RECV_TABLE(DT_BreakableSurface)
+	END_INIT_RECV_TABLE()
 };
 
 BEGIN_DATADESC( C_BreakableSurface )

@@ -37,10 +37,12 @@ public:
 	CNetworkVar( int, m_nStartEntity );
 	CNetworkVar( int, m_nEndEntity );
 
+	BEGIN_INIT_SEND_TABLE(CTEBeamRing)
 	BEGIN_SEND_TABLE(CTEBeamRing, DT_TEBeamRing, DT_BaseBeam)
 		SendPropInt(SENDINFO(m_nStartEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nEndEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEBeamRing)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

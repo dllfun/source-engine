@@ -397,6 +397,8 @@ private:
 
 	C_CSPlayer( const C_CSPlayer & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_CSPlayer)
 	BEGIN_RECV_TABLE_NOBASE(C_CSPlayer, DT_CSLocalPlayerExclusive)
 		RecvPropFloat(RECVINFO(m_flStamina)),
 		RecvPropInt(RECVINFO(m_iDirection)),
@@ -476,6 +478,7 @@ private:
 		RecvPropInt(RECVINFO(m_cycleLatch), 0, &C_CSPlayer::RecvProxy_CycleLatch),
 
 	END_RECV_TABLE(DT_CSPlayer)
+	END_INIT_RECV_TABLE()
 };
 
 C_CSPlayer* GetLocalOrInEyeCSPlayer( void );

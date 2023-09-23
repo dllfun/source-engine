@@ -62,17 +62,21 @@ private:
 	float	m_flLastFire;
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponGlock)
 	BEGIN_NETWORK_TABLE(CWeaponGlock, DT_WeaponGlock, DT_WeaponCSBase)
 		SendPropBool(SENDINFO(m_bBurstMode)),
 		SendPropInt(SENDINFO(m_iBurstShotsRemaining)),
 	END_NETWORK_TABLE(DT_WeaponGlock)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponGlock)
 	BEGIN_NETWORK_TABLE(CWeaponGlock, DT_WeaponGlock, DT_WeaponCSBase)
 		RecvPropBool(RECVINFO(m_bBurstMode)),
 		RecvPropInt(RECVINFO(m_iBurstShotsRemaining)),
 	END_NETWORK_TABLE(DT_WeaponGlock)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

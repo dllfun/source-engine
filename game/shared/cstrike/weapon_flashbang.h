@@ -45,13 +45,19 @@ public:
 	CFlashbang( const CFlashbang & ) {}
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CFlashbang)
 	BEGIN_NETWORK_TABLE(CFlashbang, DT_Flashbang, DT_BaseCSGrenade)
+
 	END_NETWORK_TABLE(DT_Flashbang)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CFlashbang)
 	BEGIN_NETWORK_TABLE(CFlashbang, DT_Flashbang, DT_BaseCSGrenade)
+
 	END_NETWORK_TABLE(DT_Flashbang)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

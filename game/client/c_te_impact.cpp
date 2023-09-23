@@ -36,12 +36,15 @@ public:
 	int				m_iType;
 	byte			m_ucFlags;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEImpact)
 	BEGIN_RECV_TABLE(C_TEImpact, DT_TEImpact, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecNormal)),
 		RecvPropInt(RECVINFO(m_iType)),
 		RecvPropInt(RECVINFO(m_ucFlags)),
 	END_RECV_TABLE(DT_TEImpact)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

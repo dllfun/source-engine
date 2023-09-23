@@ -57,10 +57,12 @@ public:
 
 	CNetworkVar( string_t, m_iszSpriteName );
 
+	BEGIN_INIT_SEND_TABLE(CTesla)
 	BEGIN_SEND_TABLE(CTesla, DT_Tesla, DT_BaseEntity)
 		SendPropStringT(SENDINFO(m_SoundName)),
 		SendPropStringT(SENDINFO(m_iszSpriteName))
 	END_SEND_TABLE(DT_Tesla)
+	END_INIT_SEND_TABLE()
 };
 
 

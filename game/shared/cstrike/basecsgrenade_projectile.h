@@ -83,7 +83,9 @@ private:
 	float m_flDetonateTime;
 #endif
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CBaseCSGrenadeProjectile)
 	BEGIN_NETWORK_TABLE(CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile, DT_BaseGrenade)
 		SendPropVector(SENDINFO(m_vInitialVelocity),
 			20,		// nbits
@@ -92,12 +94,15 @@ private:
 			3000	// high value
 		)
 	END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CBaseCSGrenadeProjectile)
 	BEGIN_NETWORK_TABLE(CBaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile, DT_BaseGrenade)
 		RecvPropVector(RECVINFO(m_vInitialVelocity))
 	END_NETWORK_TABLE(DT_BaseCSGrenadeProjectile)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

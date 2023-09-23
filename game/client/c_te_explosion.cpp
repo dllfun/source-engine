@@ -121,6 +121,8 @@ public:
 	PMaterialHandle		m_MaterialHandle;
 	bool			m_bShouldAffectRagdolls;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEExplosion)
 	BEGIN_RECV_TABLE(C_TEExplosion, DT_TEExplosion, DT_TEParticleSystem)
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropFloat(RECVINFO(m_fScale)),
@@ -131,6 +133,7 @@ public:
 		RecvPropInt(RECVINFO(m_nRadius)),
 		RecvPropInt(RECVINFO(m_nMagnitude)),
 	END_RECV_TABLE(DT_TEExplosion)
+	END_INIT_RECV_TABLE()
 };
 
 

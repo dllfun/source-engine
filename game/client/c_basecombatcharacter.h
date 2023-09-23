@@ -159,7 +159,9 @@ public:
 	int				m_iPrevPowerups;
 #endif
 
+public:
 	// Only send active weapon index to local player
+	BEGIN_INIT_RECV_TABLE(C_BaseCombatCharacter)
 	BEGIN_RECV_TABLE_NOBASE(C_BaseCombatCharacter, DT_BCCLocalPlayerExclusive)
 		RecvPropTime(RECVINFO(m_flNextAttack)),
 	END_RECV_TABLE(DT_BCCLocalPlayerExclusive);
@@ -177,6 +179,7 @@ public:
 #endif
 
 	END_RECV_TABLE(DT_BaseCombatCharacter)
+	END_INIT_RECV_TABLE()
 };
 
 inline C_BaseCombatCharacter *ToBaseCombatCharacter( C_BaseEntity *pEntity )

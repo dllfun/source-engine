@@ -39,6 +39,8 @@ private:
 private:
 	C_EnvTonemapController( const C_EnvTonemapController & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvTonemapController)
 	BEGIN_RECV_TABLE(C_EnvTonemapController, DT_EnvTonemapController, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_bUseCustomAutoExposureMin)),
 		RecvPropInt(RECVINFO(m_bUseCustomAutoExposureMax)),
@@ -48,6 +50,7 @@ private:
 		RecvPropFloat(RECVINFO(m_flCustomBloomScale)),
 		RecvPropFloat(RECVINFO(m_flCustomBloomScaleMinimum)),
 	END_RECV_TABLE(DT_EnvTonemapController)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( C_EnvTonemapController, DT_EnvTonemapController, CEnvTonemapController )

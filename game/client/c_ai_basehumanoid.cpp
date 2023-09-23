@@ -36,13 +36,14 @@ C_AI_BaseHumanoid::C_AI_BaseHumanoid()
 	memset(m_Layer, 0, sizeof(m_Layer));
 }
 
-
+BEGIN_INIT_RECV_TABLE(AnimationLayer_t)
 BEGIN_RECV_TABLE_NOBASE(AnimationLayer_t, DT_Animationlayer)
 	RecvPropInt(RECVINFO_NAME(nSequence,sequence)),
 	RecvPropFloat(RECVINFO_NAME(flCycle,cycle)),
 	RecvPropFloat(RECVINFO_NAME(flPlaybackrate,playbackrate)),
 	RecvPropFloat(RECVINFO_NAME(flWeight,weight))
 END_RECV_TABLE(DT_Animationlayer)
+END_INIT_RECV_TABLE()
 
 
 
@@ -70,6 +71,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_AI_BaseHumanoid, DT_BaseHumanoid, CAI_BaseHumanoid)
 	RecvPropFloat(RECVINFO_NAME(m_Layer[3][2].flPlaybackrate,playbackrate3)),
 	RecvPropFloat(RECVINFO_NAME(m_Layer[3][2].flWeight,weight3))
 END_RECV_TABLE()
+END_INIT_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 

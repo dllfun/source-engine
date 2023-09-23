@@ -47,9 +47,12 @@ private:
 	float m_flMagnitude;
 	int	m_nSuppressionCount;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CRagdollBoogie)
 	BEGIN_SEND_TABLE(CRagdollBoogie, DT_RagdollBoogie, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_RagdollBoogie)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // RAGDOLLBOOGIE_H

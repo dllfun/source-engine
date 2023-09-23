@@ -3248,9 +3248,11 @@ public:
 
 	DECLARE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CFuncTrackAuto)
 	BEGIN_SEND_TABLE(CFuncTrackAuto, DT_FuncTrackAuto, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncTrackAuto)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CFuncTrackAuto )

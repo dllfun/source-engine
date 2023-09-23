@@ -1222,6 +1222,9 @@ public:
 // This data only gets sent to clients that ARE this player entity.
 // -------------------------------------------------------------------------------- //
 
+	BEGIN_INIT_SEND_TABLE(CBasePlayer)
+	INIT_REFERENCE_SEND_TABLE(CPlayerState)
+	INIT_REFERENCE_SEND_TABLE(CPlayerLocalData)
 	BEGIN_SEND_TABLE_NOBASE(CBasePlayer, DT_LocalPlayerExclusive)
 
 		SendPropDataTable(SENDINFO_DT(m_Local), REFERENCE_SEND_TABLE(DT_Local)),
@@ -1302,6 +1305,7 @@ public:
 		SendPropDataTable("localdata", 0, REFERENCE_SEND_TABLE(DT_LocalPlayerExclusive), SendProxy_SendLocalDataTable),
 
 	END_SEND_TABLE(DT_BasePlayer)
+	END_INIT_SEND_TABLE()
 };
 
 typedef CHandle<CBasePlayer> CBasePlayerHandle;

@@ -233,6 +233,7 @@ private:
 	CNetworkArray( bool, m_bTrackAlarm, TEAM_TRAIN_MAX_TEAMS );
 	CNetworkArray( bool, m_bHillIsDownhill, TEAM_TRAIN_MAX_HILLS*TEAM_TRAIN_MAX_TEAMS );
 
+	BEGIN_INIT_SEND_TABLE(CBaseTeamObjectiveResource)
 	BEGIN_SEND_TABLE_NOBASE(CBaseTeamObjectiveResource, DT_BaseTeamObjectiveResource)
 
 		SendPropInt(SENDINFO(m_iTimerToShowInHUD), MAX_EDICT_BITS, SPROP_UNSIGNED),
@@ -280,6 +281,7 @@ private:
 		SendPropFloat(SENDINFO(m_flCustomPositionY)),
 
 	END_SEND_TABLE(DT_BaseTeamObjectiveResource)
+	END_INIT_SEND_TABLE()
 };
 
 extern CBaseTeamObjectiveResource *g_pObjectiveResource;

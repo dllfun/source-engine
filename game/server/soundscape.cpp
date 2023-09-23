@@ -502,9 +502,11 @@ private:
 	CUtlVector<CBasePlayerHandle> m_spectators; // spectators in our volume
 
 public:
+	BEGIN_INIT_SEND_TABLE(CTriggerSoundscape)
 	BEGIN_SEND_TABLE(CTriggerSoundscape, DT_TriggerSoundscape, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_TriggerSoundscape)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CTriggerSoundscape, DT_TriggerSoundscape)

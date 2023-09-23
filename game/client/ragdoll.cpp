@@ -414,6 +414,8 @@ private:
 	CNetworkVar( int, m_nOverlaySequence );
 	float m_flLastBoneChangeTime;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ServerRagdoll)
 	BEGIN_RECV_TABLE(C_ServerRagdoll, DT_Ragdoll, DT_BaseAnimating)
 		RecvPropArray(RecvPropQAngles(RECVINFO(m_ragAngles[0])), m_ragAngles),
 		RecvPropArray(RecvPropVector(RECVINFO(m_ragPos[0])), m_ragPos),
@@ -421,6 +423,7 @@ private:
 		RecvPropFloat(RECVINFO(m_flBlendWeight)),
 		RecvPropInt(RECVINFO(m_nOverlaySequence)),
 	END_RECV_TABLE(DT_Ragdoll)
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -782,12 +785,15 @@ public:
 private:
 	C_ServerRagdollAttached( const C_ServerRagdollAttached & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ServerRagdollAttached)
 	BEGIN_RECV_TABLE(C_ServerRagdollAttached, DT_Ragdoll_Attached, DT_Ragdoll)
 		RecvPropInt(RECVINFO(m_boneIndexAttached)),
 		RecvPropInt(RECVINFO(m_ragdollAttachedObjectIndex)),
 		RecvPropVector(RECVINFO(m_attachmentPointBoneSpace)),
 		RecvPropVector(RECVINFO(m_attachmentPointRagdollSpace)),
 	END_RECV_TABLE(DT_Ragdoll_Attached)
+	END_INIT_RECV_TABLE()
 };
 
 EXTERN_RECV_TABLE(DT_Ragdoll_Attached);

@@ -28,10 +28,12 @@ public:
 	CNetworkVector( m_vOrigin );
 	CNetworkVector( m_vDirection );
 
+	BEGIN_INIT_SEND_TABLE(CParticleFire)
 	BEGIN_SEND_TABLE_NOBASE(CParticleFire, DT_ParticleFire)
 		SendPropVector(SENDINFO(m_vOrigin), 0, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vDirection), 0, SPROP_NOSCALE)
 	END_SEND_TABLE(DT_ParticleFire)
+	END_INIT_SEND_TABLE()
 };
 
 

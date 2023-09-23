@@ -33,9 +33,12 @@ public:
 public:
 	Vector			m_vecEnd;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEShowLine)
 	BEGIN_RECV_TABLE(C_TEShowLine, DT_TEShowLine, DT_TEParticleSystem)
 		RecvPropVector(RECVINFO(m_vecEnd)),
 	END_RECV_TABLE(DT_TEShowLine)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

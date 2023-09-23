@@ -209,12 +209,15 @@ private:
 
 	C_SmokeTrail		m_SmokeTrail;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ParticleSmokeGrenade)
 	BEGIN_RECV_TABLE(C_ParticleSmokeGrenade, DT_ParticleSmokeGrenade, DT_BaseParticleEntity)
 		RecvPropTime(RECVINFO(m_flSpawnTime)),
 		RecvPropFloat(RECVINFO(m_FadeStartTime)),
 		RecvPropFloat(RECVINFO(m_FadeEndTime)),
 		RecvPropInt(RECVINFO(m_CurrentStage), 0, &C_ParticleSmokeGrenade::RecvProxy_CurrentStage),
 	END_RECV_TABLE(DT_ParticleSmokeGrenade)
+	END_INIT_RECV_TABLE()
 };
 
 

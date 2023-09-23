@@ -30,9 +30,12 @@ public:
 					C_CSTeam();
 	virtual			~C_CSTeam();
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_CSTeam)
 	BEGIN_RECV_TABLE(C_CSTeam, DT_CSTeam, DT_Team)
 
 	END_RECV_TABLE(DT_CSTeam)
+	END_INIT_RECV_TABLE()
 };
 
 

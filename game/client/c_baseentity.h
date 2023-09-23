@@ -1721,6 +1721,9 @@ protected:
 	color32 m_PreviousRenderColor;
 #endif
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseEntity)
+	INIT_REFERENCE_RECV_TABLE(CCollisionProperty)
 	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_AnimTimeMustBeFirst)
 		RecvPropInt(RECVINFO(m_flAnimTime), 0, RecvProxy_AnimTime),
 	END_RECV_TABLE(DT_AnimTimeMustBeFirst)
@@ -1781,6 +1784,7 @@ protected:
 #endif
 
 	END_RECV_TABLE(DT_BaseEntity)
+	END_INIT_RECV_TABLE()
 };
 
 EXTERN_RECV_TABLE(DT_BaseEntity);

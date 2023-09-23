@@ -163,15 +163,19 @@ public:
 #endif // CLIENT_DLL
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CTeamplayRoundBasedRulesProxy)
 	BEGIN_SEND_TABLE(CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy, DT_GameRulesProxy)
 		SendPropDataTable("teamplayroundbased_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_TeamplayRoundBasedRules), SendProxy_TeamplayRoundBasedRules)
 	END_SEND_TABLE(DT_TeamplayRoundBasedRulesProxy)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CTeamplayRoundBasedRulesProxy)
 	BEGIN_RECV_TABLE(CTeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy, DT_GameRulesProxy)
 		RecvPropDataTable("teamplayroundbased_gamerules_data", 0, 0, REFERENCE_RECV_TABLE(DT_TeamplayRoundBasedRules), RecvProxy_TeamplayRoundBasedRules)
 	END_RECV_TABLE( DT_TeamplayRoundBasedRulesProxy )
+	END_INIT_RECV_TABLE()
 #endif
 };
 
@@ -607,6 +611,7 @@ public:
 	int		m_iLastCapPointChanged;
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CTeamplayRoundBasedRules)
 	BEGIN_NETWORK_TABLE_NOBASE(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
 		SendPropInt(SENDINFO(m_iRoundState), 5),
 		SendPropBool(SENDINFO(m_bInWaitingForPlayers)),
@@ -624,9 +629,11 @@ public:
 		SendPropBool(SENDINFO(m_bMultipleTrains)),
 		SendPropArray3(SENDINFO_ARRAY3(m_bPlayerReady), SendPropBool(SENDINFO_ARRAY(m_bPlayerReady))),
 	END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CTeamplayRoundBasedRules)
 	BEGIN_NETWORK_TABLE_NOBASE(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
 		RecvPropInt(RECVINFO(m_iRoundState), 0, RecvProxy_TeamplayRoundState),
 		RecvPropBool(RECVINFO(m_bInWaitingForPlayers)),
@@ -644,6 +651,7 @@ public:
 		RecvPropBool(RECVINFO(m_bMultipleTrains)),
 		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerReady), RecvPropBool(RECVINFO(m_bPlayerReady[0]))),
 	END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

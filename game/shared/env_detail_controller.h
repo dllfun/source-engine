@@ -32,17 +32,21 @@ public:
 	virtual int UpdateTransmitState( void );
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CEnvDetailController)
 	BEGIN_NETWORK_TABLE_NOBASE(CEnvDetailController, DT_DetailController)
 		SendPropFloat(SENDINFO(m_flFadeStartDist)),
 		SendPropFloat(SENDINFO(m_flFadeEndDist)),
 	END_NETWORK_TABLE(DT_DetailController)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CEnvDetailController)
 	BEGIN_NETWORK_TABLE_NOBASE(CEnvDetailController, DT_DetailController)
 		RecvPropFloat(RECVINFO(m_flFadeStartDist)),
 		RecvPropFloat(RECVINFO(m_flFadeEndDist)),
 	END_NETWORK_TABLE(DT_DetailController)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

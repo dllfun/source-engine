@@ -5496,10 +5496,12 @@ public:
 		m_fMass = VPhysicsGetObject()->GetMass();
 	}
 
+	BEGIN_INIT_SEND_TABLE(CPhysBoxMultiplayer)
 	BEGIN_SEND_TABLE(CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, DT_PhysBox)
 		SendPropInt(SENDINFO(m_iPhysicsMode), 1, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_fMass), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_PhysBoxMultiplayer)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( func_physbox_multiplayer, CPhysBoxMultiplayer );
@@ -5658,12 +5660,14 @@ private:
 	CNetworkVector( m_collisionMins );
 	CNetworkVector( m_collisionMaxs );
 
+	BEGIN_INIT_SEND_TABLE(CPhysicsPropMultiplayer)
 	BEGIN_SEND_TABLE(CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, DT_PhysicsProp)
 		SendPropInt(SENDINFO(m_iPhysicsMode), 2, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_fMass), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_collisionMins), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_collisionMaxs), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_PhysicsPropMultiplayer)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( prop_physics_multiplayer, CPhysicsPropMultiplayer );

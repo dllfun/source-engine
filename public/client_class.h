@@ -94,11 +94,73 @@ public:
 	virtual int&		GetClassID() = 0;
 };
 
+class SimpleClientClass : public ClientClass {
+public:
+	SimpleClientClass(const char* pNetworkName, const char* pDataTableName, RecvTable* pRecvTable = NULL)
+	{
+		if (!pDataTableName || !pDataTableName[0]) {
+			Error("pTableName can not been NULL: %s\n", pNetworkName);
+		}
+		m_pNetworkName = pNetworkName;
+		m_pDataTableName = pDataTableName;
+		m_pDataTable = pRecvTable;
+		// Link it in
+		//m_pNext				= g_pClientClassHead;
+		//g_pClientClassHead	= this;
+		g_pClientClassManager->RegisteClientClass(this);
+	}
+
+	void InitRefRecvTable(RecvTableManager* pRecvTableNanager) {
+		m_pDataTable = pRecvTableNanager->FindRecvTable(m_pDataTableName);
+		if (!m_pDataTable) {
+			Error("not found RecvTable: %s\n", m_pDataTableName);	// dedicated servers exit
+		}
+	}
+
+	const char* GetNetworkName() const
+	{
+		return m_pNetworkName;
+	}
+
+	const char* GetClassName() const
+	{
+		Error("never call this");
+	}
+
+	virtual RecvTable* GetDataTable() const {
+		return m_pDataTable;
+	}
+
+	virtual RecvTable*& GetDataTable() {
+		return m_pDataTable;
+	}
+
+	virtual ClientClass*& GetNext() {
+		return m_pNext;
+	}
+
+	virtual int& GetClassID() {
+		return m_ClassID;
+	}
+
+private:
+	const char* m_pNetworkName;
+	const char* m_pDataTableName;
+	RecvTable* m_pDataTable = NULL;
+	ClientClass* m_pNext = NULL;
+	int						m_ClassID = 0;	// Managed by the engine.
+};
+
+template <class T>
 class PrototypeClientClass : public ClientClass
 {
 public:
 	PrototypeClientClass( const char* pDllClassName, const char *pNetworkName, const char *pDataTableName, RecvTable* pRecvTable=NULL)
 	{
+		if (!pDataTableName || !pDataTableName[0]) {
+			Error("pTableName can not been NULL: %s\n", pNetworkName);
+		}
+		T::InitRecvTable();
 		m_pDllClassName = pDllClassName;
 		m_pNetworkName	= pNetworkName;
 		m_pDataTableName= pDataTableName;
@@ -226,85 +288,88 @@ private:
 // the list can be given to the engine).
 // Use this macro to expose your client class to the engine.
 // networkName must match the network name of a class registered on the server.
-#define IMPLEMENT_CLIENTCLASS(clientClassName, dataTable, serverClassName) \
-	static PrototypeClientClass __g_##clientClassName##_ClassReg(\
-		#clientClassName, \
+#define IMPLEMENT_CLIENTCLASS(DLLClassName, recvTable, serverClassName) \
+	static PrototypeClientClass<DLLClassName> __g_##DLLClassName##_ClassReg(\
+		#DLLClassName, \
 		#serverClassName, \
-		#dataTable);\
-	ClientClass*	clientClassName::GetClientClassStatic(){return &__g_##clientClassName##_ClassReg;}\
-	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##_ClassReg;}\
-	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
-	static clientClassName g_##clientClassName##_EntityReg;											\
-	static CClientEntityFactory<clientClassName> __g_##clientClassName##Factory(#clientClassName );
+		#recvTable\
+	);\
+	ClientClass*	DLLClassName::GetClientClassStatic(){return &__g_##DLLClassName##_ClassReg;}\
+	ClientClass*	DLLClassName::GetClientClass() {return &__g_##DLLClassName##_ClassReg;}\
+	int				DLLClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
+	static CClientEntityFactory<DLLClassName> __g_##DLLClassName##Factory(#DLLClassName );\
+	//static DLLClassName g_##DLLClassName##_EntityReg;											
 
 // Implement a client class and provide a factory so you can allocate and delete it yourself
 // (or make it a singleton).
-//#define IMPLEMENT_CLIENTCLASS_FACTORY(clientClassName, dataTable, serverClassName, factory) \
-//	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
-//	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, \
+//#define IMPLEMENT_CLIENTCLASS_FACTORY(DLLClassName, recvTable, serverClassName, factory) \
+//	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(DLLClassName, recvTable, serverClassName) \
+//	ClientClass __g_##DLLClassName##ClientClass(#DLLClassName, #serverClassName, \
 //													factory, \
 //													NULL,\
-//													#dataTable);\
-//	static clientClassName g_##clientClassName##_EntityReg;
+//													#recvTable);\
+//	static DLLClassName g_##DLLClassName##_EntityReg;
 
 // The IMPLEMENT_CLIENTCLASS_DT macros do IMPLEMENT_CLIENT_CLASS and also do BEGIN_RECV_TABLE.
-#define IMPLEMENT_CLIENTCLASS_DT(clientClassName, dataTable, serverClassName)\
-	IMPLEMENT_CLIENTCLASS(clientClassName, dataTable, serverClassName)\
-	BEGIN_RECV_TABLE(clientClassName, dataTable)
+#define IMPLEMENT_CLIENTCLASS_DT(DLLClassName, recvTable, serverClassName)\
+	IMPLEMENT_CLIENTCLASS(DLLClassName, recvTable, serverClassName)\
+	BEGIN_RECV_TABLE(DLLClassName, recvTable)
 
-#define IMPLEMENT_CLIENTCLASS_DT_NOBASE(clientClassName, dataTable, serverClassName)\
-	IMPLEMENT_CLIENTCLASS(clientClassName, dataTable, serverClassName)\
-	BEGIN_RECV_TABLE_NOBASE(clientClassName, dataTable)
+#define IMPLEMENT_CLIENTCLASS_DT_NOBASE(DLLClassName, recvTable, serverClassName)\
+	IMPLEMENT_CLIENTCLASS(DLLClassName, recvTable, serverClassName)\
+	BEGIN_RECV_TABLE_NOBASE(DLLClassName, recvTable)
 	
 
 // Using IMPLEMENT_CLIENTCLASS_EVENT means the engine thinks the entity is an event so the entity
 // is responsible for freeing itself.
-#define IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\
-	static PrototypeClientClass __g_##clientClassName##_ClassReg(\
-		#clientClassName, \
+#define IMPLEMENT_CLIENTCLASS_EVENT(DLLClassName, recvTable, serverClassName)\
+	static PrototypeClientClass<DLLClassName> __g_##DLLClassName##_ClassReg(\
+		#DLLClassName, \
 		#serverClassName, \
-		#dataTable);\
-	ClientClass*	clientClassName::GetClientClassStatic(){return &__g_##clientClassName##_ClassReg;}\
-	ClientClass*	clientClassName::GetClientClass() {return &__g_##clientClassName##_ClassReg;}\
-	int				clientClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
-	static clientClassName g_##clientClassName##_EntityReg;										\
-	static CClientEntityFactory<clientClassName> __g_##clientClassName##Factory(#clientClassName );
+		#recvTable\
+	);\
+	ClientClass*	DLLClassName::GetClientClassStatic(){return &__g_##DLLClassName##_ClassReg;}\
+	ClientClass*	DLLClassName::GetClientClass() {return &__g_##DLLClassName##_ClassReg;}\
+	int				DLLClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
+	static CClientEntityFactory<DLLClassName> __g_##DLLClassName##Factory(#DLLClassName );\
+	//static DLLClassName g_##DLLClassName##_EntityReg;										
 
-#define IMPLEMENT_CLIENTCLASS_EVENT_DT(clientClassName, dataTable, serverClassName)\
-	IMPLEMENT_CLIENTCLASS_EVENT(clientClassName, dataTable, serverClassName)\
-	BEGIN_RECV_TABLE(clientClassName, dataTable)
+
+#define IMPLEMENT_CLIENTCLASS_EVENT_DT(DLLClassName, recvTable, serverClassName)\
+	IMPLEMENT_CLIENTCLASS_EVENT(DLLClassName, recvTable, serverClassName)\
+	BEGIN_RECV_TABLE(DLLClassName, recvTable)
 
 
 // Register a client event singleton but specify a pointer to give to the engine rather than
 // have a global instance. This is useful if you're using Initializers and your object's constructor
 // uses some other global object (so you must use Initializers so you're constructed afterwards).
-//#define IMPLEMENT_CLIENTCLASS_EVENT_POINTER(clientClassName, dataTable, serverClassName, ptr)\
-//	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName)\
-//	static IClientNetworkable* _##clientClassName##_CreateObject() {return ptr;}\
-//	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, \
+//#define IMPLEMENT_CLIENTCLASS_EVENT_POINTER(DLLClassName, recvTable, serverClassName, ptr)\
+//	INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(DLLClassName, recvTable, serverClassName)\
+//	static IClientNetworkable* _##DLLClassName##_CreateObject() {return ptr;}\
+//	ClientClass __g_##DLLClassName##ClientClass(#DLLClassName, #serverClassName, \
 //													NULL,\
-//													_##clientClassName##_CreateObject, \
-//													#dataTable);\
-//	static clientClassName g_##clientClassName##_EntityReg;
+//													_##DLLClassName##_CreateObject, \
+//													#recvTable);\
+//	static DLLClassName g_##DLLClassName##_EntityReg;
 
-//#define IMPLEMENT_CLIENTCLASS_EVENT_NONSINGLETON(clientClassName, dataTable, serverClassName)\
-//	static IClientNetworkable* _##clientClassName##_CreateObject() \
+//#define IMPLEMENT_CLIENTCLASS_EVENT_NONSINGLETON(DLLClassName, recvTable, serverClassName)\
+//	static IClientNetworkable* _##DLLClassName##_CreateObject() \
 //	{ \
-//		clientClassName *p = new clientClassName; \
+//		DLLClassName *p = new DLLClassName; \
 //		if ( p ) \
 //			p->Init( -1, 0 ); \
 //		return p; \
 //	} \
-//	ClientClass __g_##clientClassName##ClientClass(#clientClassName, #serverClassName, \
+//	ClientClass __g_##DLLClassName##ClientClass(#DLLClassName, #serverClassName, \
 //													NULL,\
-//													_##clientClassName##_CreateObject, \
-//													#dataTable);\
-//	static clientClassName g_##clientClassName##_EntityReg;
+//													_##DLLClassName##_CreateObject, \
+//													#recvTable);\
+//	static DLLClassName g_##DLLClassName##_EntityReg;
 
 
 // Used internally..
-#define INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(clientClassName, dataTable, serverClassName) \
-	extern PrototypeClientClass __g_##clientClassName##ClientClass;\
+//#define INTERNAL_IMPLEMENT_CLIENTCLASS_PROLOGUE(DLLClassName, recvTable, serverClassName) \
+//	extern PrototypeClientClass __g_##DLLClassName##ClientClass;\
 
 template <class T>
 class ClientClassAliasRegister

@@ -91,6 +91,8 @@ private:
 
 	vehicleview_t m_vehicleView;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PropVehicleChoreoGeneric)
 	BEGIN_RECV_TABLE(C_PropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric, DT_DynamicProp)
 		RecvPropEHandle(RECVINFO(m_hPlayer)),
 		RecvPropBool(RECVINFO(m_bEnterAnimOn)),
@@ -107,6 +109,7 @@ private:
 		RecvPropFloat(RECVINFO(m_vehicleView.flPitchMin)),
 		RecvPropFloat(RECVINFO(m_vehicleView.flPitchMax)),
 	END_RECV_TABLE(DT_PropVehicleChoreoGeneric)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric, CPropVehicleChoreoGeneric)

@@ -18,9 +18,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_Light() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Light)
 	BEGIN_RECV_TABLE(C_Light, DT_Light, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_Light)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_Light, DT_Light, CLight)
@@ -118,6 +121,8 @@ public:
 
 	float				m_flGlowProxySize;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_LightGlow)
 	BEGIN_RECV_TABLE_NOBASE(C_LightGlow, DT_LightGlow, CLightGlow)
 		RecvPropInt(RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32),
 		RecvPropInt(RECVINFO(m_nHorizontalSize)),
@@ -132,6 +137,7 @@ public:
 		RecvPropFloat(RECVINFO(m_flGlowProxySize)),
 		RecvPropFloat("HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_HDRColorScale),
 	END_RECV_TABLE(DT_LightGlow)
+	END_INIT_RECV_TABLE()
 };
 
 void RecvProxy_HDRColorScale( const CRecvProxyData *pData, void *pStruct, void *pOut )

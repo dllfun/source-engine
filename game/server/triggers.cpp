@@ -2831,9 +2831,11 @@ private:
 private:
 	COutputEvent m_OnEndFollow;
 public:
+	BEGIN_INIT_SEND_TABLE(CTriggerCamera)
 	BEGIN_SEND_TABLE(CTriggerCamera, DT_TriggerCamera, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_TriggerCamera)
+	END_INIT_SEND_TABLE()
 };
 
 #if HL2_EPISODIC
@@ -4789,9 +4791,11 @@ public:
 	virtual void EndTouch( CBaseEntity *pOther );
 	virtual void Spawn( void );
 
+	BEGIN_INIT_SEND_TABLE(CServerRagdollTrigger)
 	BEGIN_SEND_TABLE(CServerRagdollTrigger, DT_ServerRagdollTrigger, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_ServerRagdollTrigger)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CServerRagdollTrigger, DT_ServerRagdollTrigger)

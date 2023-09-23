@@ -255,9 +255,11 @@ public:
 
 	DECLARE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CTriggerBrush)
 	BEGIN_SEND_TABLE(CTriggerBrush, DT_TriggerBrush, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_TriggerBrush)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CTriggerBrush, DT_TriggerBrush)

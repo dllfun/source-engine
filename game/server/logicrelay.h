@@ -44,9 +44,12 @@ private:
 	bool m_bDisabled;
 	bool m_bWaitForRefire;			// Set to disallow a refire while we are waiting for our outputs to finish firing.
 
+public:
+	BEGIN_INIT_SEND_TABLE(CLogicRelay)
 	BEGIN_SEND_TABLE(CLogicRelay, DT_LogicRelay, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_LogicRelay)
+	END_INIT_SEND_TABLE()
 };
 
 #endif //LOGICRELAY_H

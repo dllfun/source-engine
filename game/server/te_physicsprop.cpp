@@ -38,6 +38,7 @@ public:
 	CNetworkVar( int, m_nFlags );
 	CNetworkVar( int, m_nEffects );
 
+	BEGIN_INIT_SEND_TABLE(CTEPhysicsProp)
 	BEGIN_SEND_TABLE(CTEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 0), 13),
@@ -49,6 +50,7 @@ public:
 		SendPropInt(SENDINFO(m_nFlags), 2, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nEffects), EF_MAX_BITS, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEPhysicsProp)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

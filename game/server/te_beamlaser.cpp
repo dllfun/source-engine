@@ -32,10 +32,12 @@ public:
 	CNetworkVar( int, m_nStartEntity );
 	CNetworkVar( int, m_nEndEntity );
 
+	BEGIN_INIT_SEND_TABLE(CTEBeamLaser)
 	BEGIN_SEND_TABLE(CTEBeamLaser, DT_TEBeamLaser, DT_BaseBeam)
 		SendPropInt(SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEBeamLaser)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

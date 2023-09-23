@@ -549,6 +549,7 @@ protected:
 	CAI_MoveMonitor m_NavAreaUpdateMonitor;
 	int m_registeredNavTeam;	// ugly, but needed to clean up player team counts in nav mesh
 
+	BEGIN_INIT_SEND_TABLE(CBaseCombatCharacter)
 	BEGIN_SEND_TABLE(CBaseCombatCharacter, DT_BaseCombatCharacter, DT_BaseFlex)
 #ifdef GLOWS_ENABLE
 		SendPropBool(SENDINFO(m_bGlowEnabled)),
@@ -568,7 +569,8 @@ protected:
 	// Only send active weapon index to local player
 	BEGIN_SEND_TABLE_NOBASE(CBaseCombatCharacter, DT_BCCLocalPlayerExclusive)
 		SendPropTime(SENDINFO(m_flNextAttack)),
-	END_SEND_TABLE(DT_BCCLocalPlayerExclusive);
+	END_SEND_TABLE(DT_BCCLocalPlayerExclusive)
+	END_INIT_SEND_TABLE()
 };
 
 

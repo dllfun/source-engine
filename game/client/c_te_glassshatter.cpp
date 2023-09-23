@@ -64,6 +64,8 @@ public:
 	byte					m_uchFrontColor[3];
 	byte					m_uchBackColor[3];
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEShatterSurface)
 	BEGIN_RECV_TABLE(C_TEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecAngles)),
@@ -80,6 +82,7 @@ public:
 		RecvPropInt(RECVINFO(m_uchBackColor[1])),
 		RecvPropInt(RECVINFO(m_uchBackColor[2])),
 	END_RECV_TABLE(DT_TEShatterSurface)
+	END_INIT_RECV_TABLE()
 };
 
 

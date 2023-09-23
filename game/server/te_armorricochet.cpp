@@ -36,10 +36,12 @@ public:
 	CNetworkVector( m_vecPos );
 	CNetworkVector( m_vecDir );
 
+	BEGIN_INIT_SEND_TABLE(CTEMetalSparks)
 	BEGIN_SEND_TABLE_NOBASE(CTEMetalSparks, DT_TEMetalSparks)
 		SendPropVector(SENDINFO(m_vecPos), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecDir), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_TEMetalSparks)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------
@@ -124,9 +126,11 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_SEND_TABLE_ACCESS(DT_TEArmorRicochet);
 
+	BEGIN_INIT_SEND_TABLE(CTEArmorRicochet)
 	BEGIN_SEND_TABLE(CTEArmorRicochet, DT_TEArmorRicochet, DT_TEMetalSparks)
 
 	END_SEND_TABLE(DT_TEArmorRicochet)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CTEArmorRicochet, DT_TEArmorRicochet, DT_TEMetalSparks)

@@ -223,9 +223,12 @@ private:
 	static CAI_AllySpeechManager *gm_pSpeechManager;
 
 	DECLARE_DATADESC();
+public:
+	BEGIN_INIT_SEND_TABLE(CAI_AllySpeechManager)
 	BEGIN_SEND_TABLE(CAI_AllySpeechManager, DT_AI_AllySpeechManager, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_AllySpeechManager)
+	END_INIT_SEND_TABLE()
 };
 
 //-------------------------------------

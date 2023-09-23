@@ -36,9 +36,12 @@ private:
 	CUtlVector<EHANDLE>	m_hConstrainedPlayers;
 	COutputEvent		m_OnConstraintBroken;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPointPlayerMoveConstraint)
 	BEGIN_SEND_TABLE(CPointPlayerMoveConstraint, DT_PointPlayerMoveConstraint, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PointPlayerMoveConstraint)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CPointPlayerMoveConstraint, DT_PointPlayerMoveConstraint)

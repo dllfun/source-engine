@@ -61,6 +61,7 @@ public:
 	void InputSetFadeStartDistance( inputdata_t &inputdata );
 	void InputSetFadeEndDistance( inputdata_t &inputdata );
 
+	BEGIN_INIT_SEND_TABLE(CFuncAreaPortalWindow)
 	BEGIN_SEND_TABLE(CFuncAreaPortalWindow, DT_FuncAreaPortalWindow, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flFadeDist), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flFadeStartDist), 0, SPROP_NOSCALE),
@@ -68,6 +69,7 @@ public:
 
 		SendPropModelIndex(SENDINFO(m_iBackgroundModelIndex)),
 	END_SEND_TABLE(DT_FuncAreaPortalWindow)
+	END_INIT_SEND_TABLE()
 };
 
 

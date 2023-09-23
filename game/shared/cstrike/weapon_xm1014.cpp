@@ -52,15 +52,19 @@ private:
 	CNetworkVar( int, m_reloadState );	// special reload state for shotgun
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponXM1014)
 	BEGIN_NETWORK_TABLE(CWeaponXM1014, DT_WeaponXM1014, DT_WeaponCSBase)
 		SendPropInt(SENDINFO(m_reloadState), 2, SPROP_UNSIGNED)
 	END_NETWORK_TABLE(DT_WeaponXM1014)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponXM1014)
 	BEGIN_NETWORK_TABLE(CWeaponXM1014, DT_WeaponXM1014, DT_WeaponCSBase)
 		RecvPropInt(RECVINFO(m_reloadState))
 	END_NETWORK_TABLE(DT_WeaponXM1014)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

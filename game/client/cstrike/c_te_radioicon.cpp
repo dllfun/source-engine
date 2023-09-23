@@ -35,9 +35,12 @@ public:
 public:
 	int m_iAttachToClient;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TERadioIcon)
 	BEGIN_RECV_TABLE(C_TERadioIcon, DT_TERadioIcon, DT_BaseTempEntity)
 		RecvPropInt(RECVINFO(m_iAttachToClient)),
 	END_RECV_TABLE(DT_TERadioIcon)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

@@ -333,9 +333,12 @@ private:
 	friend class CAI_HintManager;
 
 	DECLARE_DATADESC();
+public:
+	BEGIN_INIT_SEND_TABLE(CAI_Hint)
 	BEGIN_SEND_TABLE(CAI_Hint, DT_AI_Hint, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_Hint)
+	END_INIT_SEND_TABLE()
 };
 
 #define SF_ALLOW_JUMP_UP 65536

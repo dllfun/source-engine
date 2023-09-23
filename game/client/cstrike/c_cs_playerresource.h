@@ -71,6 +71,8 @@ protected:
 	int		m_iMVPs[ MAX_PLAYERS + 1 ];	 
 	bool	m_bHasDefuser[ MAX_PLAYERS + 1 ];
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_CS_PlayerResource)
 	BEGIN_RECV_TABLE(C_CS_PlayerResource, DT_CSPlayerResource, DT_PlayerResource)
 		RecvPropInt(RECVINFO(m_iPlayerC4)),
 		RecvPropInt(RECVINFO(m_iPlayerVIP)),
@@ -92,6 +94,7 @@ protected:
 		RecvPropArray3(RECVINFO_ARRAY(m_bHasDefuser), RecvPropInt(RECVINFO(m_bHasDefuser[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_szClan), RecvPropString(RECVINFO(m_szClan[0]))),
 	END_RECV_TABLE(DT_CSPlayerResource)
+	END_INIT_RECV_TABLE()
 };
 
 

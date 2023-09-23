@@ -370,14 +370,18 @@ void SendProxy_SolidFlags( const SendProp *pProp, const void *pStruct, const voi
 
 
 
-																							
+static int g_count = 1000;
 //-----------------------------------------------------------------------------
 // Constructor, destructor
 //-----------------------------------------------------------------------------
 CCollisionProperty::CCollisionProperty()
 {
 	m_Partition = PARTITION_INVALID_HANDLE;
+	count = g_count++;
 	Init( NULL );
+#ifdef CLIENT_DLL
+	int aaa = 0;
+#endif
 }
 
 CCollisionProperty::~CCollisionProperty()

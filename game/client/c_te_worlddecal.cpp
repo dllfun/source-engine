@@ -36,10 +36,13 @@ public:
 	Vector			m_vecOrigin;
 	int				m_nIndex;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEWorldDecal)
 	BEGIN_RECV_TABLE(C_TEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropInt(RECVINFO(m_nIndex)),
 	END_RECV_TABLE(DT_TEWorldDecal)
+	END_INIT_RECV_TABLE()
 };
 
 

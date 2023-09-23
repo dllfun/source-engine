@@ -121,6 +121,8 @@ private:
 	bool			m_bInView;
 	float			m_flRollSpeed;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SmokeStack)
 	BEGIN_RECV_TABLE(C_SmokeStack, DT_SmokeStack, DT_BaseParticleEntity)
 		RecvPropFloat(RECVINFO(m_SpreadSpeed), 0),
 		RecvPropFloat(RECVINFO(m_Speed), 0),
@@ -144,6 +146,7 @@ private:
 
 		RecvPropVector(RECVINFO(m_vWind))
 	END_RECV_TABLE(DT_SmokeStack)
+	END_INIT_RECV_TABLE()
 };
 
 

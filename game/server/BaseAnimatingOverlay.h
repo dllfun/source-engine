@@ -26,7 +26,7 @@ public:
 	DECLARE_CLASS_NOBASE( CAnimationLayer );
 
 	DECLARE_SEND_TABLE_ACCESS(DT_Animationlayer);
-	
+
 	CAnimationLayer( void );
 	void	Init( CBaseAnimatingOverlay *pOverlay );
 
@@ -99,6 +99,7 @@ public:
 	
 	DECLARE_SIMPLE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CAnimationLayer)
 	BEGIN_SEND_TABLE_NOBASE(CAnimationLayer, DT_Animationlayer)
 		SendPropInt(SENDINFO(m_nSequence), ANIMATION_SEQUENCE_BITS, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flCycle), ANIMATION_CYCLE_BITS, SPROP_ROUNDDOWN, 0.0f, 1.0f),
@@ -106,6 +107,7 @@ public:
 		SendPropFloat(SENDINFO(m_flWeight), WEIGHT_BITS, 0, 0.0f, 1.0f),
 		SendPropInt(SENDINFO(m_nOrder), ORDER_BITS, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_Animationlayer)
+	END_INIT_SEND_TABLE()
 };
 
 inline float CAnimationLayer::GetFadeout( float flCurTime )
@@ -215,6 +217,8 @@ private:
 	DECLARE_DATADESC();
 	DECLARE_PREDICTABLE();
 
+	BEGIN_INIT_SEND_TABLE(CBaseAnimatingOverlay)
+	INIT_REFERENCE_SEND_TABLE(CAnimationLayer)
 	BEGIN_SEND_TABLE_NOBASE(CBaseAnimatingOverlay, DT_OverlayVars)
 		SendPropUtlVector(
 		(char*)SENDINFO_UTLVECTOR(m_AnimOverlay),
@@ -226,6 +230,7 @@ private:
 		// These are in their own separate data table so CCSPlayer can exclude all of these.
 		SendPropDataTable("overlay_vars", 0, REFERENCE_SEND_TABLE(DT_OverlayVars))
 	END_SEND_TABLE(DT_BaseAnimatingOverlay)
+	END_INIT_SEND_TABLE()
 };
 
 EXTERN_SEND_TABLE(DT_BaseAnimatingOverlay);

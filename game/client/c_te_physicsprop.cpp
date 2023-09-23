@@ -40,6 +40,8 @@ public:
 	int				m_nFlags;
 	int				m_nEffects;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEPhysicsProp)
 	BEGIN_RECV_TABLE(C_TEPhysicsProp, DT_TEPhysicsProp, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropFloat(RECVINFO(m_angRotation[0])),
@@ -51,6 +53,7 @@ public:
 		RecvPropInt(RECVINFO(m_nSkin)),
 		RecvPropInt(RECVINFO(m_nEffects)),
 	END_RECV_TABLE(DT_TEPhysicsProp)
+	END_INIT_RECV_TABLE()
 };
 
 

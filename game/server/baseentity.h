@@ -396,14 +396,14 @@ public:
 	// prediction system
 	DECLARE_PREDICTABLE();
 	// network data
-	//DECLARE_SERVERCLASS();
-	static ServerClass* GetServerClassStatic() { return NULL; }
+	DECLARE_SERVERCLASS();
+	//static ServerClass* GetServerClassStatic() { return NULL; }
+	//virtual ServerClass* GetServerClass() { return NULL; }
 	static CBaseEntity* CreateEntityByName(const char* className);
 	static void			DestroyEntity(CBaseEntity* pEntity);
 	static void			BindContainingEntity(edict_t* ed);
 	static CBaseEntity* GetContainingEntity(edict_t* pent);
 	static void			FreeContainingEntity(edict_t* ed);
-	virtual ServerClass* GetServerClass() { return NULL; }
 	// data description
 	DECLARE_DATADESC();
 
@@ -1904,6 +1904,8 @@ public:
 		return s_bAbsQueriesValid;
 	}
 
+	BEGIN_INIT_SEND_TABLE(CBaseEntity)
+	INIT_REFERENCE_SEND_TABLE(CCollisionProperty)
 	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_AnimTimeMustBeFirst)
 		// NOTE:  Animtime must be sent before origin and angles ( from pev ) because it has a 
 		//  proxy on the client that stores off the old values before writing in the new values and
@@ -1969,6 +1971,7 @@ public:
 #endif
 
 	END_SEND_TABLE(DT_BaseEntity)
+	END_INIT_SEND_TABLE()
 };
 
 // Send tables exposed in this module.
@@ -2808,9 +2811,11 @@ public:
 private:
 
 public:
+	BEGIN_INIT_SEND_TABLE(CPointEntity)
 	BEGIN_SEND_TABLE(CPointEntity, DT_PointEntity, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PointEntity)
+	END_INIT_SEND_TABLE()
 };
 
 // Has a position + size

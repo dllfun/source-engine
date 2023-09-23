@@ -316,11 +316,14 @@ public:
 protected:
 	void		GetDustColor( Vector &color );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEDust)
 	BEGIN_RECV_TABLE(C_TEDust, DT_TEDust, DT_TEParticleSystem)
 		RecvPropFloat(RECVINFO(m_flSize)),
 		RecvPropFloat(RECVINFO(m_flSpeed)),
 		RecvPropVector(RECVINFO(m_vecDirection)),
 	END_RECV_TABLE(DT_TEDust)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEDust, DT_TEDust, CTEDust )

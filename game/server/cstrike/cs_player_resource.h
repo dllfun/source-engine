@@ -54,6 +54,8 @@ protected:
 private:
 	bool m_foundGoalPositions;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CCSPlayerResource)
 	BEGIN_SEND_TABLE(CCSPlayerResource, DT_CSPlayerResource, DT_PlayerResource)
 		SendPropInt(SENDINFO(m_iPlayerC4), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_iPlayerVIP), 8, SPROP_UNSIGNED),
@@ -75,6 +77,7 @@ private:
 		SendPropArray3(SENDINFO_ARRAY3(m_bHasDefuser), SendPropInt(SENDINFO_ARRAY(m_bHasDefuser), 1, SPROP_UNSIGNED)),
 		SendPropArray3(SENDINFO_ARRAY3(m_szClan), SendPropStringT(SENDINFO_ARRAY(m_szClan))),
 	END_SEND_TABLE(DT_CSPlayerResource)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // CS_PLAYER_RESOURCE_H

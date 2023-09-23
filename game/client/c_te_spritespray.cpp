@@ -37,6 +37,8 @@ public:
 	float			m_fNoise;
 	int				m_nCount;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TESpriteSpray)
 	BEGIN_RECV_TABLE(C_TESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecDirection)),
@@ -45,6 +47,7 @@ public:
 		RecvPropInt(RECVINFO(m_nCount)),
 		RecvPropInt(RECVINFO(m_nSpeed)),
 	END_RECV_TABLE(DT_TESpriteSpray)
+	END_INIT_RECV_TABLE()
 };
 
 

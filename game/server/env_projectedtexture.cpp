@@ -62,6 +62,7 @@ private:
 	CNetworkVar( float, m_flFarZ );
 	CNetworkVar( int, m_nShadowQuality );
 
+	BEGIN_INIT_SEND_TABLE(CEnvProjectedTexture)
 	BEGIN_SEND_TABLE(CEnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
 		SendPropEHandle(SENDINFO(m_hTargetEntity)),
 		SendPropBool(SENDINFO(m_bState)),
@@ -78,6 +79,7 @@ private:
 		SendPropFloat(SENDINFO(m_flFarZ), 18, SPROP_ROUNDDOWN, 0.0f, 1500.0f),
 		SendPropInt(SENDINFO(m_nShadowQuality), 1, SPROP_UNSIGNED),  // Just one bit for now
 	END_SEND_TABLE(DT_EnvProjectedTexture)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( env_projectedtexture, CEnvProjectedTexture );

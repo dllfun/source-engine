@@ -1154,6 +1154,8 @@ private:
 	VMatrix			m_mAttachmentMatrix;
 	CParticleMgr		*m_pParticleMgr;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SporeTrail)
 	BEGIN_RECV_TABLE(C_SporeTrail, DT_SporeTrail, DT_BaseParticleEntity)
 		RecvPropFloat(RECVINFO(m_flSpawnRate)),
 		RecvPropVector(RECVINFO(m_vecEndColor)),
@@ -1163,6 +1165,7 @@ private:
 		RecvPropFloat(RECVINFO(m_flSpawnRadius)),
 		RecvPropInt(RECVINFO(m_bEmit)),
 	END_RECV_TABLE(DT_SporeTrail)
+	END_INIT_RECV_TABLE()
 };
 
 

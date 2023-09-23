@@ -1490,9 +1490,11 @@ public:
 
 	CNetworkVar( PrecipitationType_t, m_nPrecipType );
 
+	BEGIN_INIT_SEND_TABLE(CPrecipitation)
 	BEGIN_SEND_TABLE(CPrecipitation, DT_Precipitation, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_nPrecipType), Q_log2(NUM_PRECIPITATION_TYPES) + 1, SPROP_UNSIGNED)
 	END_SEND_TABLE(DT_Precipitation)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( func_precipitation, CPrecipitation );
@@ -1555,9 +1557,13 @@ private:
 //	CNetworkVarEmbedded( CEnvWindShared, m_EnvWindShared );
 //#endif
 
+public:
+	BEGIN_INIT_SEND_TABLE(CEnvWind)
+	INIT_REFERENCE_SEND_TABLE(CEnvWindShared)
 	BEGIN_SEND_TABLE_NOBASE(CEnvWind, DT_EnvWind)
 		SendPropDataTable(SENDINFO_DT(m_EnvWindShared), REFERENCE_SEND_TABLE(DT_EnvWindShared)),
 	END_SEND_TABLE(DT_EnvWind)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( env_wind, CEnvWind );
@@ -1654,12 +1660,14 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
+	BEGIN_INIT_SEND_TABLE(CEmbers)
 	BEGIN_SEND_TABLE(CEmbers, DT_Embers, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_nDensity), 32, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nLifetime), 32, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nSpeed), 32, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_bEmit), 2, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_Embers)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( env_embers, CEmbers );
@@ -1765,9 +1773,12 @@ protected:
 
 	int		m_nDensity;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPhysicsWire)
 	BEGIN_SEND_TABLE(CPhysicsWire, DT_PhysicsWire, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PhysicsWire)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CPhysicsWire, DT_PhysicsWire)

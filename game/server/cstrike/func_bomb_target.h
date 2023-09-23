@@ -35,7 +35,9 @@ private:
 	bool		m_bIsHeistBombTarget;
 	string_t	m_szMountTarget;
 public:
+	BEGIN_INIT_SEND_TABLE(CBombTarget)
 	BEGIN_SEND_TABLE(CBombTarget, DT_BombTarget, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_BombTarget)
+	END_INIT_SEND_TABLE()
 };

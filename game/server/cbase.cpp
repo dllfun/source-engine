@@ -685,9 +685,11 @@ class CEventQueueSaveLoadProxy : public CLogicalEntity
 		return iReturn;
 	}
 
+	BEGIN_INIT_SEND_TABLE(CEventQueueSaveLoadProxy)
 	BEGIN_SEND_TABLE(CEventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_EventQueueSaveLoadProxy)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CEventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy)

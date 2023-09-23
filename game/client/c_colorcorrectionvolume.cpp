@@ -44,10 +44,13 @@ private:
 
 	ClientCCHandle_t m_CCHandle;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ColorCorrectionVolume)
 	BEGIN_RECV_TABLE(C_ColorCorrectionVolume, DT_ColorCorrectionVolume, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_Weight)),
 		RecvPropString(RECVINFO(m_lookupFilename)),
 	END_RECV_TABLE(DT_ColorCorrectionVolume)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_ColorCorrectionVolume, DT_ColorCorrectionVolume, CColorCorrectionVolume)

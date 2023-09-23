@@ -31,9 +31,12 @@ protected:
 	bool m_bAwake;
 	bool m_bAwakeLastTime;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PhysicsProp)
 	BEGIN_RECV_TABLE(C_PhysicsProp, DT_PhysicsProp, DT_BreakableProp)
 		RecvPropBool(RECVINFO(m_bAwake)),
 	END_RECV_TABLE(DT_PhysicsProp)
+	END_INIT_RECV_TABLE()
 };
 
 #endif // C_PHYSICSPROP_H 

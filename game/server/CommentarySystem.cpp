@@ -135,6 +135,7 @@ private:
 	CNetworkVar( int, m_iNodeNumber );
 	CNetworkVar( int, m_iNodeNumberMax );
 
+	BEGIN_INIT_SEND_TABLE(CPointCommentaryNode)
 	BEGIN_SEND_TABLE(CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
 		SendPropBool(SENDINFO(m_bActive)),
 		SendPropStringT(SENDINFO(m_iszCommentaryFile)),
@@ -145,6 +146,7 @@ private:
 		SendPropInt(SENDINFO(m_iNodeNumberMax), 8, SPROP_UNSIGNED),
 		SendPropEHandle(SENDINFO(m_hViewPosition)),
 	END_SEND_TABLE(DT_PointCommentaryNode)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CPointCommentaryNode )
@@ -1600,9 +1602,12 @@ private:
 	// fired when the player spawns in a multiplayer game
 	COutputEvent m_OnCommentaryMultiplayerSpawn;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CCommentaryAuto)
 	BEGIN_SEND_TABLE(CCommentaryAuto, DT_CommentaryAuto, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_CommentaryAuto)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CCommentaryAuto, DT_CommentaryAuto)

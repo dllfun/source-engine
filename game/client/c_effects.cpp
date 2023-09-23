@@ -200,9 +200,12 @@ private:
 private:
 	CClient_Precipitation( const CClient_Precipitation & ); // not defined, not accessible
 
+public:
+	BEGIN_INIT_RECV_TABLE(CClient_Precipitation)
 	BEGIN_RECV_TABLE(CClient_Precipitation, DT_Precipitation, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_nPrecipType))
 	END_RECV_TABLE(DT_Precipitation)
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -1193,9 +1196,13 @@ private:
 
 	CEnvWindShared m_EnvWindShared;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvWind)
+	INIT_REFERENCE_RECV_TABLE(CEnvWindShared)
 	BEGIN_RECV_TABLE(C_EnvWind, DT_EnvWind, DT_BaseEntity)
 		RecvPropDataTable(RECVINFO_DT(m_EnvWindShared), 0, REFERENCE_RECV_TABLE(DT_EnvWindShared)),
 	END_RECV_TABLE(DT_EnvWind)
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -1333,12 +1340,15 @@ protected:
 	TimedEvent			m_tParticleSpawn;
 	CSmartPtr<CEmberEmitter> m_pEmitter;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Embers)
 	BEGIN_RECV_TABLE(C_Embers, DT_Embers, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_nDensity)),
 		RecvPropInt(RECVINFO(m_nLifetime)),
 		RecvPropInt(RECVINFO(m_nSpeed)),
 		RecvPropInt(RECVINFO(m_bEmit)),
 	END_RECV_TABLE(DT_Embers)
+	END_INIT_RECV_TABLE()
 };
 
 //Receive datatable
@@ -1488,12 +1498,15 @@ protected:
 	float		m_scrollRate;
 	float		m_flWidth;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_QuadraticBeam)
 	BEGIN_RECV_TABLE(C_QuadraticBeam, DT_QuadraticBeam, DT_BaseEntity)
 		RecvPropVector(RECVINFO(m_targetPosition)),
 		RecvPropVector(RECVINFO(m_controlPosition)),
 		RecvPropFloat(RECVINFO(m_scrollRate)),
 		RecvPropFloat(RECVINFO(m_flWidth)),
 	END_RECV_TABLE(DT_QuadraticBeam)
+	END_INIT_RECV_TABLE()
 };
 
 //Receive datatable

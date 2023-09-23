@@ -35,10 +35,13 @@ public:
 	int				m_nStartEntity;
 	int				m_nEndEntity;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBeamRing)
 	BEGIN_RECV_TABLE(C_TEBeamRing, DT_TEBeamRing, DT_BaseBeam)
 		RecvPropInt(RECVINFO(m_nStartEntity)),
 		RecvPropInt(RECVINFO(m_nEndEntity)),
 	END_RECV_TABLE(DT_TEBeamRing)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

@@ -42,6 +42,8 @@ protected:
 		
 	int	m_nUpdateCounter;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPlayerResource)
 	BEGIN_SEND_TABLE_NOBASE(CPlayerResource, DT_PlayerResource)
 		//	SendPropArray( SendPropString( SENDINFO(m_szName[0]) ), SENDARRAYINFO(m_szName) ),
 		SendPropArray3(SENDINFO_ARRAY3(m_iPing), SendPropInt(SENDINFO_ARRAY(m_iPing), 10, SPROP_UNSIGNED)),
@@ -53,6 +55,7 @@ protected:
 		SendPropArray3(SENDINFO_ARRAY3(m_bAlive), SendPropInt(SENDINFO_ARRAY(m_bAlive), 1, SPROP_UNSIGNED)),
 		SendPropArray3(SENDINFO_ARRAY3(m_iHealth), SendPropInt(SENDINFO_ARRAY(m_iHealth), -1, SPROP_VARINT | SPROP_UNSIGNED)),
 	END_SEND_TABLE(DT_PlayerResource)
+	END_INIT_SEND_TABLE()
 };
 
 extern CPlayerResource *g_pPlayerResource;

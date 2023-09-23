@@ -19,9 +19,12 @@ public:
 public:
 	virtual bool	ShouldDraw();
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncMonitor)
 	BEGIN_RECV_TABLE(C_FuncMonitor, DT_FuncMonitor, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncMonitor)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( C_FuncMonitor, DT_FuncMonitor, CFuncMonitor )

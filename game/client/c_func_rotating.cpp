@@ -23,8 +23,8 @@ public:
 
 	C_FuncRotating();
 
-private:
-
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncRotating)
 	BEGIN_RECV_TABLE(C_FuncRotating, DT_FuncRotating, DT_BaseEntity)
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[0], m_angRotation[0])),
@@ -32,6 +32,7 @@ private:
 		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[2], m_angRotation[2])),
 		RecvPropInt(RECVINFO(m_flSimulationTime), 0, RecvProxy_SimulationTime),
 	END_RECV_TABLE(DT_FuncRotating)
+	END_INIT_RECV_TABLE()
 };
 
 

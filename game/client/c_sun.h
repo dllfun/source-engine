@@ -82,6 +82,8 @@ public:
 	int					m_nMaterial;
 	int					m_nOverlayMaterial;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Sun)
 	BEGIN_RECV_TABLE_NOBASE(C_Sun, DT_Sun, CSun)
 		RecvPropInt(RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32),
 		RecvPropInt(RECVINFO(m_clrOverlay), 0, RecvProxy_IntToColor32),
@@ -94,6 +96,7 @@ public:
 		RecvPropFloat("HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_SunHDRColorScale),
 
 	END_RECV_TABLE(DT_Sun)
+	END_INIT_RECV_TABLE()
 };
 
 

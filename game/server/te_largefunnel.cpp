@@ -36,10 +36,12 @@ public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( int, m_nReversed );
 
+	BEGIN_INIT_SEND_TABLE(CTELargeFunnel)
 	BEGIN_SEND_TABLE(CTELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
 		SendPropInt(SENDINFO(m_nReversed), 2, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TELargeFunnel)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

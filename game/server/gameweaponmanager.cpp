@@ -50,9 +50,11 @@ public:
 
 	CUtlVector<EHANDLE> m_ManagedNonWeapons;
 
+	BEGIN_INIT_SEND_TABLE(CGameWeaponManager)
 	BEGIN_SEND_TABLE(CGameWeaponManager, DT_GameWeaponManager, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_GameWeaponManager)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CGameWeaponManager )

@@ -40,12 +40,14 @@ public:
 	CNetworkVar( int, m_nEndEntity );
 	CNetworkVector( m_vecEndPoint );
 
+	BEGIN_INIT_SEND_TABLE(CTEBeamEntPoint)
 	BEGIN_SEND_TABLE(CTEBeamEntPoint, DT_TEBeamEntPoint, DT_BaseBeam)
 		SendPropInt(SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_vecStartPoint), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecEndPoint), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_TEBeamEntPoint)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

@@ -41,6 +41,7 @@ public:
 	CNetworkVar( float, m_fNoise );
 	CNetworkVar( int, m_nCount );
 
+	BEGIN_INIT_SEND_TABLE(CTESpriteSpray)
 	BEGIN_SEND_TABLE(CTESpriteSpray, DT_TESpriteSpray, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecDirection), -1, SPROP_COORD),
@@ -49,6 +50,7 @@ public:
 		SendPropInt(SENDINFO(m_nSpeed), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nCount), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TESpriteSpray)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

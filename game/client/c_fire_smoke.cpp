@@ -24,9 +24,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_Fire() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Fire)
 	BEGIN_RECV_TABLE(C_Fire, DT_Fire, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_Fire)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_Fire, DT_Fire, CFire)

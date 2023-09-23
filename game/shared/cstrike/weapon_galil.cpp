@@ -41,14 +41,21 @@ private:
 
 	void GalilFire( float flSpread );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponGalil)
 	BEGIN_NETWORK_TABLE(CWeaponGalil, DT_WeaponGalil, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponGalil)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponGalil)
 	BEGIN_NETWORK_TABLE(CWeaponGalil, DT_WeaponGalil, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponGalil)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

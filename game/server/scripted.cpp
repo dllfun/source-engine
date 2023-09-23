@@ -1614,9 +1614,12 @@ private:
 
 	DECLARE_DATADESC();
 
+public:
+	BEGIN_INIT_SEND_TABLE(CAI_ScriptedSchedule)
 	BEGIN_SEND_TABLE(CAI_ScriptedSchedule, DT_AI_ScriptedSchedule, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_ScriptedSchedule)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CAI_ScriptedSchedule )

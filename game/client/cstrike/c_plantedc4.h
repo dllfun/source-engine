@@ -67,6 +67,8 @@ public:
 	bool	m_bRadarFlash;			// is the flash on or off
 	CNewParticleEffect *m_pC4Explosion; // client side explosion particle effect for the bomb
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PlantedC4)
 	BEGIN_RECV_TABLE(C_PlantedC4, DT_PlantedC4, DT_BaseAnimating)
 		RecvPropBool(RECVINFO(m_bBombTicking)),
 		RecvPropFloat(RECVINFO(m_flC4Blow)),
@@ -74,6 +76,7 @@ public:
 		RecvPropFloat(RECVINFO(m_flDefuseLength)),
 		RecvPropFloat(RECVINFO(m_flDefuseCountDown)),
 	END_RECV_TABLE(DT_PlantedC4)
+	END_INIT_RECV_TABLE()
 };
 
 extern CUtlVector< C_PlantedC4* > g_PlantedC4s;

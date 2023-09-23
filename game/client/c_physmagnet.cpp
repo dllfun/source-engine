@@ -31,6 +31,8 @@ public:
 	// Private list of entities on the magnet
 	CUtlVector< EHANDLE > m_aAttachedObjects;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PhysMagnet)
 	BEGIN_RECV_TABLE(C_PhysMagnet, DT_PhysMagnet, DT_BaseAnimating)
 
 		// ROBIN: Disabled because we don't need it anymore
@@ -45,6 +47,7 @@ public:
 		*/
 
 	END_RECV_TABLE(DT_PhysMagnet)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

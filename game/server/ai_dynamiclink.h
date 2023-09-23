@@ -123,9 +123,11 @@ public:
 
 	DECLARE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CAI_RadialLinkController)
 	BEGIN_SEND_TABLE(CAI_RadialLinkController, DT_AI_RadialLinkController, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_RadialLinkController)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // AI_DYNAMICLINK_H

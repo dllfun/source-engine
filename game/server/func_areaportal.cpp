@@ -50,9 +50,11 @@ private:
 	int m_state;
 
 public:
+	BEGIN_INIT_SEND_TABLE(CAreaPortal)
 	BEGIN_SEND_TABLE(CAreaPortal, DT_AreaPortal, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AreaPortal)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CAreaPortal, DT_AreaPortal)

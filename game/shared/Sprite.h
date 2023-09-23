@@ -287,6 +287,7 @@ private:
 	float		m_flBrightnessTimeStart;//Real time for brightness
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CSprite)
 	BEGIN_NETWORK_TABLE(CSprite, DT_Sprite, DT_BaseEntity)
 		SendPropEHandle(SENDINFO(m_hAttachedToEntity)),
 		SendPropInt(SENDINFO(m_nAttachment), 8),
@@ -311,9 +312,11 @@ private:
 		SendPropInt(SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bWorldSpaceScale)),
 	END_NETWORK_TABLE(DT_Sprite)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CSprite)
 	BEGIN_NETWORK_TABLE(CSprite, DT_Sprite, DT_BaseEntity)
 		RecvPropEHandle(RECVINFO(m_hAttachedToEntity)),
 		RecvPropInt(RECVINFO(m_nAttachment)),
@@ -333,6 +336,7 @@ private:
 		RecvPropInt(RECVINFO(m_nBrightness)),
 		RecvPropBool(RECVINFO(m_bWorldSpaceScale)),
 	END_NETWORK_TABLE(DT_Sprite)
+	END_INIT_RECV_TABLE()
 #endif
 };
 
@@ -350,16 +354,20 @@ public:
 #endif
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CSpriteOriented)
 	BEGIN_SEND_TABLE(CSpriteOriented, DT_SpriteOriented, DT_Sprite)
 
 	END_SEND_TABLE(DT_SpriteOriented)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
 #undef CSpriteOriented
+	BEGIN_INIT_RECV_TABLE(C_SpriteOriented)
 	BEGIN_RECV_TABLE(C_SpriteOriented, DT_SpriteOriented, DT_Sprite)
 #define CSpriteOriented C_SpriteOriented
 	END_RECV_TABLE(DT_SpriteOriented)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

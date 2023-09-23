@@ -35,9 +35,12 @@ public:
 
 	int m_iEntIndex;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBeamFollow)
 	BEGIN_RECV_TABLE(C_TEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
 		RecvPropInt(RECVINFO(m_iEntIndex)),
 	END_RECV_TABLE(DT_TEBeamFollow)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

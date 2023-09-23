@@ -43,6 +43,7 @@ public:
 	CNetworkArray( byte, m_uchFrontColor, 3 );
 	CNetworkArray( byte, m_uchBackColor, 3 );
 
+	BEGIN_INIT_SEND_TABLE(CTEShatterSurface)
 	BEGIN_SEND_TABLE(CTEShatterSurface, DT_TEShatterSurface, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecAngles), -1, SPROP_COORD),
@@ -59,6 +60,7 @@ public:
 		SendPropInt(SENDINFO_ARRAYELEM(m_uchBackColor, 1), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO_ARRAYELEM(m_uchBackColor, 2), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEShatterSurface)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

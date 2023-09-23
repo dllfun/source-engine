@@ -23,9 +23,12 @@ public:
 private:
 	bool		Validate();
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFuncLadderEndPoint)
 	BEGIN_SEND_TABLE(CFuncLadderEndPoint, DT_FuncLadderEndPoint, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncLadderEndPoint)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CFuncLadderEndPoint, DT_FuncLadderEndPoint)

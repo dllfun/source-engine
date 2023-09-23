@@ -109,15 +109,22 @@ private:
 	
 	static CGameRulesProxy *s_pGameRulesProxy;
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CGameRulesProxy)
 	BEGIN_NETWORK_TABLE_NOBASE(CGameRulesProxy, DT_GameRulesProxy)
+
 	END_NETWORK_TABLE(DT_GameRulesProxy)
+	END_INIT_SEND_TABLE()
 #endif
 
 		// Don't send any of the CBaseEntity stuff..
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CGameRulesProxy)
 	BEGIN_NETWORK_TABLE_NOBASE(CGameRulesProxy, DT_GameRulesProxy)
+
 	END_NETWORK_TABLE(DT_GameRulesProxy)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

@@ -46,10 +46,12 @@ private:
 	COutputEvent m_OnMultiNewRound;
 
 	string_t m_globalstate;
-private:
+public:
+	BEGIN_INIT_SEND_TABLE(CLogicAuto)
 	BEGIN_SEND_TABLE(CLogicAuto, DT_LogicAuto, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_LogicAuto)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CLogicAuto, DT_LogicAuto)

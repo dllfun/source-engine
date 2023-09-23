@@ -340,7 +340,8 @@ protected:
 	bool	m_bTrackAlarm[TEAM_TRAIN_MAX_TEAMS];
 	bool	m_bHillIsDownhill[TEAM_TRAIN_MAX_HILLS*TEAM_TRAIN_MAX_TEAMS];
 
-
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseTeamObjectiveResource)
 	BEGIN_RECV_TABLE_NOBASE(C_BaseTeamObjectiveResource, DT_BaseTeamObjectiveResource, CBaseTeamObjectiveResource)
 		RecvPropInt(RECVINFO(m_iTimerToShowInHUD)),
 		RecvPropInt(RECVINFO(m_iStopWatchTimer)),
@@ -385,6 +386,7 @@ protected:
 		RecvPropFloat(RECVINFO(m_flCustomPositionX)),
 		RecvPropFloat(RECVINFO(m_flCustomPositionY)),
 	END_RECV_TABLE(DT_BaseTeamObjectiveResource)
+	END_INIT_RECV_TABLE()
 };
 
 extern C_BaseTeamObjectiveResource *g_pObjectiveResource;

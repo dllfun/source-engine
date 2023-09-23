@@ -40,9 +40,12 @@ private:
 	friend CBaseEntity *CreateInfoCameraLink( CBaseEntity *pTarget, CPointCamera *pCamera );
 	friend void PointCameraSetupVisibility( CBaseEntity *pPlayer, int area, unsigned char *pvs, int pvssize );
 
+public:
+	BEGIN_INIT_SEND_TABLE(CInfoCameraLink)
 	BEGIN_SEND_TABLE(CInfoCameraLink, DT_InfoCameraLink, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_InfoCameraLink)
+	END_INIT_SEND_TABLE()
 };
 
 

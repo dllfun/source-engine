@@ -36,11 +36,13 @@ public:
 	CNetworkVar( int, m_nEntity );
 	CNetworkVar( int, m_nIndex );
 
+	BEGIN_INIT_SEND_TABLE(CTEBSPDecal)
 	BEGIN_SEND_TABLE(CTEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropInt(SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nIndex), 9, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEBSPDecal)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

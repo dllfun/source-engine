@@ -29,6 +29,8 @@ public:
 	float	m_fInaccuracy;
 	float	m_fSpread;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEFireBullets)
 	BEGIN_RECV_TABLE_NOBASE(C_TEFireBullets, DT_TEFireBullets)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropFloat(RECVINFO(m_vecAngles[0])),
@@ -40,6 +42,7 @@ public:
 		RecvPropFloat(RECVINFO(m_fInaccuracy)),
 		RecvPropFloat(RECVINFO(m_fSpread)),
 	END_RECV_TABLE(DT_TEFireBullets)
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -81,11 +84,14 @@ public:
 	Vector	m_vecOrigin;
 	PlantBombOption_t	m_option;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEPlantBomb)
 	BEGIN_RECV_TABLE_NOBASE(C_TEPlantBomb, DT_TEPlantBomb)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropInt(RECVINFO(m_iPlayer)),
 		RecvPropInt(RECVINFO(m_option)),
 	END_RECV_TABLE(DT_TEPlantBomb)
+	END_INIT_RECV_TABLE()
 };
 
 

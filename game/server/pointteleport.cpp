@@ -35,9 +35,12 @@ private:
 
 	DECLARE_DATADESC();
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPointTeleport)
 	BEGIN_SEND_TABLE(CPointTeleport, DT_PointTeleport, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PointTeleport)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CPointTeleport, DT_PointTeleport)

@@ -32,10 +32,13 @@ private:
 	float m_flCheapWaterStartDistance;
 	float m_flCheapWaterEndDistance;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_WaterLODControl)
 	BEGIN_RECV_TABLE(C_WaterLODControl, DT_WaterLODControl, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flCheapWaterStartDistance)),
 		RecvPropFloat(RECVINFO(m_flCheapWaterEndDistance)),
 	END_RECV_TABLE(DT_WaterLODControl)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_WaterLODControl, DT_WaterLODControl, CWaterLODControl)

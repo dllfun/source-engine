@@ -56,6 +56,7 @@ public:
 
 	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
+	BEGIN_INIT_SEND_TABLE(CSteamJet)
 	BEGIN_SEND_TABLE(CSteamJet, DT_SteamJet, DT_BaseParticleEntity)
 		SendPropFloat(SENDINFO(m_SpreadSpeed), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_Speed), 0, SPROP_NOSCALE),
@@ -69,6 +70,7 @@ public:
 		SendPropInt(SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flRollSpeed), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_SteamJet)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // STEAMJET_H

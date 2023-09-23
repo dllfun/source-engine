@@ -39,12 +39,14 @@ public:
 	CNetworkVar( float, m_fScale );
 	CNetworkVar( int, m_nBrightness );
 
+	BEGIN_INIT_SEND_TABLE(CTESprite)
 	BEGIN_SEND_TABLE(CTESprite, DT_TESprite, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
 		SendPropFloat(SENDINFO(m_fScale), 8, SPROP_ROUNDDOWN, 0.0, 25.6),
 		SendPropInt(SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TESprite)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

@@ -70,9 +70,12 @@ private:
 private:
 	C_NextBotCombatCharacter( const C_NextBotCombatCharacter & );				// not defined, not accessible
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_NextBotCombatCharacter)
 	BEGIN_RECV_TABLE(C_NextBotCombatCharacter, DT_NextBot, DT_BaseCombatCharacter)
 
 	END_RECV_TABLE(DT_NextBot)
+	END_INIT_RECV_TABLE()
 };
 
 //--------------------------------------------------------------------------------------------------------

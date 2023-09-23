@@ -36,12 +36,15 @@ public:
 	float		m_flScale;
 	int			m_nType;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEMuzzleFlash)
 	BEGIN_RECV_TABLE(C_TEMuzzleFlash, DT_TEMuzzleFlash, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecAngles)),
 		RecvPropFloat(RECVINFO(m_flScale)),
 		RecvPropInt(RECVINFO(m_nType)),
 	END_RECV_TABLE(DT_TEMuzzleFlash)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

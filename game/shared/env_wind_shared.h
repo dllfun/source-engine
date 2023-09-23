@@ -229,7 +229,9 @@ private:
 private:
 	CEnvWindShared( const CEnvWindShared & ); // not defined, not accessible
 
+public:
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CEnvWindShared)
 	BEGIN_SEND_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
 		// These are parameters that are used to generate the entire motion
 		SendPropInt(SENDINFO(m_iMinWind), 10, SPROP_UNSIGNED),
@@ -250,10 +252,12 @@ private:
 		// Sound related
 	//	SendPropInt		(SENDINFO(m_iszGustSound),	10, SPROP_UNSIGNED ),
 	END_SEND_TABLE(DT_EnvWindShared)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
 		// Receive datatables
+	BEGIN_INIT_RECV_TABLE(CEnvWindShared)
 	BEGIN_RECV_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
 		RecvPropInt(RECVINFO(m_iMinWind)),
 		RecvPropInt(RECVINFO(m_iMaxWind)),
@@ -269,6 +273,7 @@ private:
 		RecvPropFloat(RECVINFO(m_flGustDuration)),
 		//	RecvPropInt		(RECVINFO(m_iszGustSound)),
 	END_RECV_TABLE(DT_EnvWindShared)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

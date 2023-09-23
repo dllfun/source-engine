@@ -45,9 +45,12 @@ protected:
 	bool		m_bNeverSayHello;	// If set, the NPC never says hello to the player
 	bool		m_bDisabled;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CAI_SpeechFilter)
 	BEGIN_SEND_TABLE(CAI_SpeechFilter, DT_AI_SpeechFilter, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_SpeechFilter)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // AI_SPEECHFILTER_H

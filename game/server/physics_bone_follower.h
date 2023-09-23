@@ -101,10 +101,12 @@ private:
 	int		m_physicsBone;
 	int		m_hitGroup;
 
+	BEGIN_INIT_SEND_TABLE(CBoneFollower)
 	BEGIN_SEND_TABLE(CBoneFollower, DT_BoneFollower, DT_BaseEntity)
 		SendPropModelIndex(SENDINFO(m_modelIndex)),
 		SendPropInt(SENDINFO(m_solidIndex), 6, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_BoneFollower)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // PHYSICS_BONE_FOLLOWER_H

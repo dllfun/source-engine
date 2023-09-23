@@ -136,11 +136,14 @@ public:
 	CNetworkVar( int, m_iEvent );
 	CNetworkVar( int, m_nData );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEPlayerAnimEvent)
 	BEGIN_RECV_TABLE_NOBASE(C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent)
 		RecvPropEHandle(RECVINFO(m_hPlayer)),
 		RecvPropInt(RECVINFO(m_iEvent)),
 		RecvPropInt(RECVINFO(m_nData))
 	END_RECV_TABLE(DT_TEPlayerAnimEvent)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS_EVENT(C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
@@ -239,6 +242,8 @@ private:
 	bool m_bInitialized;
 	bool m_bCreatedWhilePlaybackSkipping;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_CSRagdoll)
 	BEGIN_RECV_TABLE_NOBASE(C_CSRagdoll, DT_CSRagdoll, CCSRagdoll)
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecRagdollOrigin)),
@@ -252,6 +257,7 @@ private:
 		RecvPropInt(RECVINFO(m_iTeamNum)),
 		RecvPropInt(RECVINFO(m_bClientSideAnimation)),
 	END_RECV_TABLE(DT_CSRagdoll)
+	END_INIT_RECV_TABLE()
 };
 
 

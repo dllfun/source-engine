@@ -18,9 +18,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_BuyZone() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BuyZone)
 	BEGIN_RECV_TABLE(C_BuyZone, DT_BuyZone, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_BuyZone)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_BuyZone, DT_BuyZone, CBuyZone)

@@ -40,6 +40,7 @@ public:
 	CNetworkVar( float, m_fLife );
 	CNetworkVar( int, m_nBrightness );
 
+	BEGIN_INIT_SEND_TABLE(CTEGlowSprite)
 	BEGIN_SEND_TABLE(CTEGlowSprite, DT_TEGlowSprite, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
@@ -47,6 +48,7 @@ public:
 		SendPropFloat(SENDINFO(m_fLife), 8, SPROP_ROUNDDOWN, 0.0, 25.6),
 		SendPropInt(SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEGlowSprite)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

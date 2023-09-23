@@ -32,11 +32,14 @@ public:
 	int m_nTrailLength;
 	Vector m_vecDir;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TESparks)
 	BEGIN_RECV_TABLE(C_TESparks, DT_TESparks, DT_TEParticleSystem)
 		RecvPropInt(RECVINFO(m_nMagnitude)),
 		RecvPropInt(RECVINFO(m_nTrailLength)),
 		RecvPropVector(RECVINFO(m_vecDir)),
 	END_RECV_TABLE(DT_TESparks)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

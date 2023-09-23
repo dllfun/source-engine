@@ -32,9 +32,12 @@ public:
 	
 	}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Decal)
 	BEGIN_RECV_TABLE(C_Decal, DT_Decal, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_Decal)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_Decal, DT_Decal, CDecal)

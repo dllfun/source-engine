@@ -42,12 +42,14 @@ private:
 	CNetworkVar( float, m_flShadowMaxDist );
 	CNetworkVar( bool, m_bDisableShadows );
 
+	BEGIN_INIT_SEND_TABLE(CShadowControl)
 	BEGIN_SEND_TABLE_NOBASE(CShadowControl, DT_ShadowControl)
 		SendPropVector(SENDINFO(m_shadowDirection), -1, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_shadowColor), 32, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE),
 		SendPropBool(SENDINFO(m_bDisableShadows)),
 	END_SEND_TABLE(DT_ShadowControl)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS(shadow_control, CShadowControl);

@@ -72,6 +72,7 @@ private:
 	CNetworkVar( bool, m_bColdWorld );
 	bool m_bDisplayTitle;
 
+	BEGIN_INIT_SEND_TABLE(CWorld)
 	BEGIN_SEND_TABLE(CWorld, DT_WORLD, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flWaveHeight), 8, SPROP_ROUNDUP, 0.0f, 8.0f),
 		SendPropVector(SENDINFO(m_WorldMins), -1, SPROP_COORD),
@@ -84,6 +85,7 @@ private:
 		SendPropStringT(SENDINFO(m_iszDetailSpriteMaterial)),
 		SendPropInt(SENDINFO(m_bColdWorld), 1, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_WORLD)
+	END_INIT_SEND_TABLE()
 };
 
 

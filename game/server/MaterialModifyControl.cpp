@@ -65,6 +65,7 @@ private:
 	CNetworkVar( float, m_flFloatLerpTransitionTime );
 	CNetworkVar( int, m_nModifyMode );
 
+	BEGIN_INIT_SEND_TABLE(CMaterialModifyControl)
 	BEGIN_SEND_TABLE(CMaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
 		SendPropString(SENDINFO(m_szMaterialName)),
 		SendPropString(SENDINFO(m_szMaterialVar)),
@@ -79,6 +80,7 @@ private:
 		SendPropFloat(SENDINFO(m_flFloatLerpTransitionTime), 0, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_nModifyMode), 2, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_MaterialModifyControl)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS(material_modify_control, CMaterialModifyControl);

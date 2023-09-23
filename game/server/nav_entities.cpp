@@ -612,9 +612,12 @@ private:
 	void ObstructNavAreas( void );
 	bool m_bDisabled;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFuncNavObstruction)
 	BEGIN_SEND_TABLE(CFuncNavObstruction, DT_FuncNavObstruction, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncNavObstruction)
+	END_INIT_SEND_TABLE()
 };
 
 

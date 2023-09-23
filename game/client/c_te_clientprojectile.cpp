@@ -32,6 +32,8 @@ public:
 	int m_nLifeTime;
 	EHANDLE m_hOwner;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEClientProjectile)
 	BEGIN_RECV_TABLE(C_TEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecVelocity)),
@@ -39,6 +41,7 @@ public:
 		RecvPropInt(RECVINFO(m_nLifeTime)),
 		RecvPropEHandle(RECVINFO(m_hOwner)),
 	END_RECV_TABLE(DT_TEClientProjectile)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

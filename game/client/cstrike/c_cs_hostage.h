@@ -108,6 +108,8 @@ private:
 private:
 	C_CHostage( const C_CHostage & );				// not defined, not accessible
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_CHostage)
 	BEGIN_RECV_TABLE(C_CHostage, DT_CHostage, DT_BaseCombatCharacter)
 
 		RecvPropInt(RECVINFO(m_isRescued), 0, C_CHostage::RecvProxy_Rescued),
@@ -118,6 +120,7 @@ private:
 		RecvPropEHandle(RECVINFO(m_leader)),
 
 	END_RECV_TABLE(DT_CHostage)
+	END_INIT_RECV_TABLE()
 };
 
 

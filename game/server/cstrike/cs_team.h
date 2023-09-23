@@ -53,9 +53,12 @@ private:
 
 	int		m_iLastUpdateSentAt;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CCSTeam)
 	BEGIN_SEND_TABLE(CCSTeam, DT_CSTeam, DT_Team)
 
 	END_SEND_TABLE(DT_CSTeam)
+	END_INIT_SEND_TABLE()
 };
 
 

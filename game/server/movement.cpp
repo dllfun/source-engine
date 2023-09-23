@@ -302,9 +302,11 @@ public:
 
 	DECLARE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CBaseMoveBehavior)
 	BEGIN_SEND_TABLE(CBaseMoveBehavior, DT_BaseMoveBehavior, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_BaseMoveBehavior)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CBaseMoveBehavior, DT_BaseMoveBehavior)

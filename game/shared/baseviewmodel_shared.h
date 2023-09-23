@@ -217,6 +217,7 @@ private:
 	CUtlVector<ScreenHandle_t>	m_hScreens;
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CBaseViewModel)
 	BEGIN_NETWORK_TABLE_NOBASE(CBaseViewModel, DT_BaseViewModel)
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
 		SendPropInt(SENDINFO(m_nBody), 8),
@@ -238,9 +239,11 @@ private:
 #endif
 
 	END_NETWORK_TABLE(DT_BaseViewModel)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CBaseViewModel)
 	BEGIN_NETWORK_TABLE_NOBASE(CBaseViewModel, DT_BaseViewModel)
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropInt(RECVINFO(m_nSkin)),
@@ -261,6 +264,7 @@ private:
 		RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0])), m_flPoseParameter),
 #endif
 	END_NETWORK_TABLE(DT_BaseViewModel)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

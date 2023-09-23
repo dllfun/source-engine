@@ -41,6 +41,7 @@ public:
 	CNetworkVar( float, m_fInaccuracy );
 	CNetworkVar( float, m_fSpread );
 
+	BEGIN_INIT_SEND_TABLE(CTEFireBullets)
 	BEGIN_SEND_TABLE_NOBASE(CTEFireBullets, DT_TEFireBullets)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropAngle(SENDINFO_VECTORELEM(m_vecAngles, 0), 13, 0),
@@ -52,6 +53,7 @@ public:
 		SendPropFloat(SENDINFO(m_fInaccuracy), 10, 0, 0, 1),
 		SendPropFloat(SENDINFO(m_fSpread), 8, 0, 0, 0.1f),
 	END_SEND_TABLE(DT_TEFireBullets)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------
@@ -126,11 +128,13 @@ public:
 	CNetworkVector( m_vecOrigin );
 	CNetworkVar( PlantBombOption_t, m_option );
 
+	BEGIN_INIT_SEND_TABLE(CTEPlantBomb)
 	BEGIN_SEND_TABLE_NOBASE(CTEPlantBomb, DT_TEPlantBomb)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropInt(SENDINFO(m_iPlayer), 6, SPROP_UNSIGNED), 	// max 64 players, see MAX_PLAYERS
 		SendPropInt(SENDINFO(m_option), 1, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEPlantBomb)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

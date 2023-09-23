@@ -124,18 +124,22 @@ private:
 	friend class CBaseEntity;
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CParticleProperty)
 	BEGIN_NETWORK_TABLE_NOBASE(CParticleProperty, DT_ParticleProperty)
 		//SendPropVector( SENDINFO(m_vecMins), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE()
+	END_INIT_SEND_TABLE()
 #endif
 
 		//-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CParticleProperty)
 	BEGIN_NETWORK_TABLE_NOBASE(CParticleProperty, DT_ParticleProperty)
 //RecvPropVector( RECVINFO(m_vecMins), 0, RecvProxy_OBBMins ),
 	END_NETWORK_TABLE(DT_ParticleProperty)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

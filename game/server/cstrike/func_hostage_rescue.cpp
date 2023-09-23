@@ -18,9 +18,11 @@ public:
 
 	void HostageRescueTouch( CBaseEntity* pOther );
 
+	BEGIN_INIT_SEND_TABLE(CHostageRescueZone)
 	BEGIN_SEND_TABLE(CHostageRescueZone, DT_HostageRescueZone, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_HostageRescueZone)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CHostageRescueZone, DT_HostageRescueZone)

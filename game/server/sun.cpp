@@ -50,6 +50,7 @@ public:
 	CNetworkVar( int, m_nOverlayMaterial );
 	CNetworkVar( float, m_flHDRColorScale );
 
+	BEGIN_INIT_SEND_TABLE(CSun)
 	BEGIN_SEND_TABLE_NOBASE(CSun, DT_Sun)
 		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
 		SendPropInt(SENDINFO(m_clrOverlay), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
@@ -61,6 +62,7 @@ public:
 		SendPropInt(SENDINFO(m_nOverlayMaterial), 32, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO_NAME(m_flHDRColorScale, HDRColorScale), 0, SPROP_NOSCALE, 0.0f, 100.0f),
 	END_SEND_TABLE(DT_Sun)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS( CSun, DT_Sun )

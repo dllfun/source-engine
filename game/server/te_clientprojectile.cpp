@@ -32,6 +32,7 @@ public:
 	CNetworkVar( int, m_nLifeTime );
 	CNetworkHandle( CBaseEntity, m_hOwner );
 
+	BEGIN_INIT_SEND_TABLE(CTEClientProjectile)
 	BEGIN_SEND_TABLE(CTEClientProjectile, DT_TEClientProjectile, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecVelocity), -1, SPROP_COORD),
@@ -39,6 +40,7 @@ public:
 		SendPropInt(SENDINFO(m_nLifeTime), 6, SPROP_UNSIGNED),
 		SendPropEHandle(SENDINFO(m_hOwner)),
 	END_SEND_TABLE(DT_TEClientProjectile)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

@@ -36,9 +36,11 @@ public:
 	string_t		m_PSName;	// Name of the particle system entity this light affects.
 	bool			m_bDirectional;
 
+	BEGIN_INIT_SEND_TABLE(CParticleLight)
 	BEGIN_SEND_TABLE(CParticleLight, DT_ParticleLight, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_ParticleLight)
+	END_INIT_SEND_TABLE()
 };
 
 

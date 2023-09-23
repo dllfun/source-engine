@@ -34,9 +34,12 @@ public:
 public:
 	CEffectData m_EffectData;
 
+	BEGIN_INIT_SEND_TABLE(CTEEffectDispatch)
+	INIT_REFERENCE_SEND_TABLE(CEffectData)
 	BEGIN_SEND_TABLE(CTEEffectDispatch, DT_TEEffectDispatch, DT_BaseTempEntity)
 		SendPropDataTable(SENDINFO_DT(m_EffectData), REFERENCE_SEND_TABLE(DT_EffectData))
 	END_SEND_TABLE(DT_TEEffectDispatch)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

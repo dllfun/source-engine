@@ -77,6 +77,8 @@ private:
 	bool	m_bLinkedToServerEnt;
 	IPhysicsMotionController	*m_pController;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EntityDissolve)
 	BEGIN_RECV_TABLE(C_EntityDissolve, DT_EntityDissolve, DT_BaseEntity)
 		RecvPropTime(RECVINFO(m_flStartTime)),
 		RecvPropFloat(RECVINFO(m_flFadeOutStart)),
@@ -89,6 +91,7 @@ private:
 		RecvPropVector(RECVINFO(m_vDissolverOrigin)),
 		RecvPropInt(RECVINFO(m_nMagnitude)),
 	END_RECV_TABLE(DT_EntityDissolve)
+	END_INIT_RECV_TABLE()
 };
 
 #endif // C_ENTITY_DISSOLVE_H

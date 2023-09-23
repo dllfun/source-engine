@@ -36,11 +36,13 @@ public:
 	CNetworkVector( m_vecOrigin );
 	CNetworkVar( int, m_nEntity );
 
+	BEGIN_INIT_SEND_TABLE(CTEPlayerDecal)
 	BEGIN_SEND_TABLE(CTEPlayerDecal, DT_TEPlayerDecal, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropInt(SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nPlayer), Q_log2(MAX_PLAYERS), SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEPlayerDecal)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

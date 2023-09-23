@@ -117,6 +117,8 @@ private:
 
 	CUtlVector< QueuedEvents_t > m_QueuedEvents;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SceneEntity)
 	BEGIN_RECV_TABLE(C_SceneEntity, DT_SceneEntity, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_nSceneStringIndex)),
 		RecvPropBool(RECVINFO(m_bIsPlayingBack)),
@@ -128,6 +130,7 @@ private:
 			MAX_ACTORS_IN_SCENE,
 			RecvPropEHandle(NULL, 0, 0)),
 	END_RECV_TABLE(DT_SceneEntity)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

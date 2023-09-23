@@ -168,9 +168,12 @@ protected:
 
 	void UpdateThink( void );
 
+public:
+	BEGIN_INIT_SEND_TABLE(CMomentaryRotButton)
 	BEGIN_SEND_TABLE(CMomentaryRotButton, DT_MomentaryRotButton, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_MomentaryRotButton)
+	END_INIT_SEND_TABLE()
 };
 
 

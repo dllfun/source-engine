@@ -61,6 +61,8 @@ private:
 	void	RegisterSharedActivities( void );
 	char	m_iszDetailSpriteMaterial[MAX_DETAIL_SPRITE_MATERIAL_NAME_LENGTH];
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_World)
 	BEGIN_RECV_TABLE(C_World, DT_World, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flWaveHeight)),
 		RecvPropVector(RECVINFO(m_WorldMins)),
@@ -73,6 +75,7 @@ private:
 		RecvPropString(RECVINFO(m_iszDetailSpriteMaterial)),
 		RecvPropInt(RECVINFO(m_bColdWorld)),
 	END_RECV_TABLE(DT_World)
+	END_INIT_RECV_TABLE()
 };
 
 inline float C_World::GetWaveHeight() const

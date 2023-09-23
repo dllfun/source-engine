@@ -29,11 +29,13 @@ public:
 	CNetworkVar( int, m_nTrailLength );
 	CNetworkVector( m_vecDir );
 
+	BEGIN_INIT_SEND_TABLE(CTESparks)
 	BEGIN_SEND_TABLE(CTESparks, DT_TESparks, DT_TEParticleSystem)
 		SendPropInt(SENDINFO(m_nMagnitude), 4, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nTrailLength), 4, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_vecDir), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_TESparks)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

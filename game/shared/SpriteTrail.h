@@ -119,6 +119,7 @@ private:
 	bool	m_bDrawForMoveParent;
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CSpriteTrail)
 	BEGIN_NETWORK_TABLE(CSpriteTrail, DT_SpriteTrail, DT_Sprite)
 		SendPropFloat(SENDINFO(m_flLifeTime), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flStartWidth), 0, SPROP_NOSCALE),
@@ -129,9 +130,11 @@ private:
 		SendPropVector(SENDINFO(m_vecSkyboxOrigin), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flSkyboxScale), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE(DT_SpriteTrail)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CSpriteTrail)
 	BEGIN_NETWORK_TABLE(CSpriteTrail, DT_SpriteTrail, DT_Sprite)
 		RecvPropFloat(RECVINFO(m_flLifeTime)),
 		RecvPropFloat(RECVINFO(m_flStartWidth)),
@@ -142,6 +145,7 @@ private:
 		RecvPropVector(RECVINFO(m_vecSkyboxOrigin)),
 		RecvPropFloat(RECVINFO(m_flSkyboxScale)),
 	END_NETWORK_TABLE(DT_SpriteTrail)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

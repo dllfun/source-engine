@@ -1653,9 +1653,12 @@ private:
 
 	DECLARE_DATADESC();
 
+public:
+	BEGIN_INIT_SEND_TABLE(CAI_LeadGoal_Weapon)
 	BEGIN_SEND_TABLE(CAI_LeadGoal_Weapon, DT_AI_LeadGoal_Weapon, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_LeadGoal_Weapon)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

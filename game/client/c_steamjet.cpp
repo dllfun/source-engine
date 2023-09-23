@@ -107,6 +107,8 @@ private:
 private:
 					C_SteamJet( const C_SteamJet & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SteamJet)
 	BEGIN_RECV_TABLE(C_SteamJet, DT_SteamJet, DT_BaseParticleEntity)
 		RecvPropFloat(RECVINFO(m_SpreadSpeed), 0),
 		RecvPropFloat(RECVINFO(m_Speed), 0),
@@ -120,6 +122,7 @@ private:
 		RecvPropInt( RECVINFO( m_spawnflags ) ),
 		RecvPropFloat(RECVINFO(m_flRollSpeed), 0 ),
 	END_RECV_TABLE(DT_SteamJet)
+	END_INIT_RECV_TABLE()
 };
 
 

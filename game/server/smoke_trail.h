@@ -47,6 +47,7 @@ public:
 
 	CNetworkVar( int, m_nAttachment );
 
+	BEGIN_INIT_SEND_TABLE(SmokeTrail)
 	BEGIN_SEND_TABLE(SmokeTrail, DT_SmokeTrail, DT_BaseParticleEntity)
 		SendPropFloat(SENDINFO(m_SpawnRate), 8, 0, 1, 1024),
 		SendPropVector(SENDINFO(m_StartColor), 8, 0, 0, 1),
@@ -64,6 +65,7 @@ public:
 		SendPropInt(SENDINFO(m_nAttachment), 32),
 		SendPropFloat(SENDINFO(m_Opacity), -1, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_SmokeTrail)
+	END_INIT_SEND_TABLE()
 };
 
 //==================================================
@@ -105,6 +107,7 @@ public:
 
 	CNetworkVar( float, m_flFlareScale );			// Size of the flare
 
+	BEGIN_INIT_SEND_TABLE(RocketTrail)
 	BEGIN_SEND_TABLE(RocketTrail, DT_RocketTrail, DT_BaseParticleEntity)
 		SendPropFloat(SENDINFO(m_SpawnRate), 8, 0, 1, 1024),
 		SendPropVector(SENDINFO(m_StartColor), 8, 0, 0, 1),
@@ -122,6 +125,7 @@ public:
 		SendPropInt(SENDINFO(m_bDamaged), 1, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flFlareScale), -1, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_RocketTrail)
+	END_INIT_SEND_TABLE()
 };
 
 //==================================================
@@ -152,6 +156,7 @@ public:
 
 	CNetworkVar( bool, m_bEmit );
 
+	BEGIN_INIT_SEND_TABLE(SporeTrail)
 	BEGIN_SEND_TABLE(SporeTrail, DT_SporeTrail, DT_BaseParticleEntity)
 		SendPropFloat(SENDINFO(m_flSpawnRate), 8, 0, 1, 1024),
 		SendPropVector(SENDINFO(m_vecEndColor), 8, 0, 0, 1),
@@ -161,6 +166,7 @@ public:
 		SendPropFloat(SENDINFO(m_flSpawnRadius), -1, SPROP_NOSCALE),
 		SendPropBool(SENDINFO(m_bEmit)),
 	END_SEND_TABLE(DT_SporeTrail)
+	END_INIT_SEND_TABLE()
 };
 
 //==================================================
@@ -196,6 +202,7 @@ public:
 	CNetworkVar( bool, m_bEmit );
 	CNetworkVar( bool, m_bDontRemove );
 
+	BEGIN_INIT_SEND_TABLE(SporeExplosion)
 	BEGIN_SEND_TABLE(SporeExplosion, DT_SporeExplosion, DT_BaseParticleEntity)
 		SendPropFloat(SENDINFO(m_flSpawnRate), 8, 0, 1, 1024),
 		SendPropFloat(SENDINFO(m_flParticleLifetime), 16, SPROP_ROUNDUP, 0.1, 100),
@@ -205,6 +212,7 @@ public:
 		SendPropBool(SENDINFO(m_bEmit)),
 		SendPropBool(SENDINFO(m_bDontRemove)),
 	END_SEND_TABLE(DT_SporeExplosion)
+	END_INIT_SEND_TABLE()
 };
 
 //==================================================
@@ -225,10 +233,12 @@ public:
 	CNetworkVar( int, m_nAttachment );
 	CNetworkVar( float, m_flLifetime );
 
+	BEGIN_INIT_SEND_TABLE(CFireTrail)
 	BEGIN_SEND_TABLE(CFireTrail, DT_FireTrail, DT_BaseParticleEntity)
 		SendPropInt(SENDINFO(m_nAttachment), 32),
 		SendPropFloat(SENDINFO(m_flLifetime), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_FireTrail)
+	END_INIT_SEND_TABLE()
 };
 
 //==================================================
@@ -266,6 +276,7 @@ public:
 
 	CNetworkVar( int, m_nAttachment );
 
+	BEGIN_INIT_SEND_TABLE(DustTrail)
 	BEGIN_SEND_TABLE(DustTrail, DT_DustTrail, DT_BaseParticleEntity)
 		SendPropFloat(SENDINFO(m_SpawnRate), 8, 0, 1, 1024),
 		SendPropVector(SENDINFO(m_Color), 8, 0, 0, 1),
@@ -281,6 +292,7 @@ public:
 		SendPropBool(SENDINFO(m_bEmit)),
 		SendPropFloat(SENDINFO(m_Opacity), -1, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_DustTrail)
+	END_INIT_SEND_TABLE()
 };
 
 

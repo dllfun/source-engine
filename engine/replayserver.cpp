@@ -302,7 +302,7 @@ void CReplayServer::InitClientRecvTables()
 		Assert ( recvt );
 		
 		// register class, constructor addes clientClass to g_pClientClassHead list
-		ClientClass * clientclass = new ClientClass( pCur->m_pNetworkName, recvt );//NULL, NULL,
+		SimpleClientClass* clientclass = new SimpleClientClass( pCur->m_pNetworkName, recvt );//NULL, NULL,
 
 		if ( !clientclass	)
 		{

@@ -641,7 +641,9 @@ protected:
 
 #endif // End Client .dll only
 
+public:
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CBaseCombatWeapon)
 	BEGIN_NETWORK_TABLE_NOBASE(CBaseCombatWeapon, DT_LocalActiveWeaponData)
 		SendPropTime(SENDINFO(m_flNextPrimaryAttack)),
 		SendPropTime(SENDINFO(m_flNextSecondaryAttack)),
@@ -681,24 +683,24 @@ protected:
 		SendPropInt(SENDINFO(m_iState), 8, SPROP_UNSIGNED),
 		SendPropEHandle(SENDINFO(m_hOwner)),
 	END_NETWORK_TABLE(DT_BaseCombatWeapon)
+	END_INIT_SEND_TABLE()
 #endif
 
 		//-----------------------------------------------------------------------------
 	// Purpose: Propagation data for weapons. Only sent when a player's holding it.
 	//-----------------------------------------------------------------------------
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CBaseCombatWeapon)
 	BEGIN_NETWORK_TABLE_NOBASE(CBaseCombatWeapon, DT_LocalActiveWeaponData)
 		RecvPropTime(RECVINFO(m_flNextPrimaryAttack)),
 		RecvPropTime(RECVINFO(m_flNextSecondaryAttack)),
 		RecvPropInt(RECVINFO(m_nNextThinkTick)),
 		RecvPropTime(RECVINFO(m_flTimeWeaponIdle)),
 	END_NETWORK_TABLE(DT_LocalActiveWeaponData)
-#endif
 
 		//-----------------------------------------------------------------------------
 		// Purpose: Propagation data for weapons. Only sent when a player's holding it.
 		//-----------------------------------------------------------------------------
-#if defined( CLIENT_DLL )
 	BEGIN_NETWORK_TABLE_NOBASE(CBaseCombatWeapon, DT_LocalWeaponData)
 		RecvPropIntWithMinusOneFlag(RECVINFO(m_iClip1)),
 		RecvPropIntWithMinusOneFlag(RECVINFO(m_iClip2)),
@@ -709,9 +711,7 @@ protected:
 
 		RecvPropBool(RECVINFO(m_bFlipViewModel)),
 	END_NETWORK_TABLE(DT_LocalWeaponData)
-#endif
 
-#if defined( CLIENT_DLL )
 	BEGIN_NETWORK_TABLE(CBaseCombatWeapon, DT_BaseCombatWeapon, DT_BaseAnimating)
 		RecvPropDataTable("LocalWeaponData", 0, 0, REFERENCE_RECV_TABLE(DT_LocalWeaponData)),
 		RecvPropDataTable("LocalActiveWeaponData", 0, 0, REFERENCE_RECV_TABLE(DT_LocalActiveWeaponData)),
@@ -720,6 +720,7 @@ protected:
 		RecvPropInt(RECVINFO(m_iState)),
 		RecvPropEHandle(RECVINFO(m_hOwner)),
 	END_NETWORK_TABLE(DT_BaseCombatWeapon)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

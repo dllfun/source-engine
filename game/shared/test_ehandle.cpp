@@ -53,10 +53,12 @@
 		CNetworkHandle( CBaseEntity, m_Handle );
 		CNetworkVar( bool, m_bSendHandle );
 
+		BEGIN_INIT_SEND_TABLE(CHandleTest)
 		BEGIN_SEND_TABLE(CHandleTest, DT_HandleTest, DT_BaseEntity)
 			SendPropEHandle(SENDINFO(m_Handle)),
 			SendPropInt(SENDINFO(m_bSendHandle))
 		END_SEND_TABLE(DT_HandleTest)
+		END_INIT_SEND_TABLE()
 	};
 
 	IMPLEMENT_SERVERCLASS( CHandleTest, DT_HandleTest, DT_BaseEntity)
@@ -74,9 +76,11 @@
 	public:
 		DECLARE_SERVERCLASS();
 
+		BEGIN_INIT_SEND_TABLE(CHandleDummy)
 		BEGIN_SEND_TABLE(CHandleDummy, DT_HandleDummy, DT_BaseEntity)
 
 		END_SEND_TABLE(DT_HandleDummy)
+		END_INIT_SEND_TABLE()
 	};
 
 	IMPLEMENT_SERVERCLASS(CHandleDummy, DT_HandleDummy)
@@ -124,15 +128,30 @@
 		EHANDLE m_Handle;
 		bool m_bSendHandle;
 
+		BEGIN_INIT_RECV_TABLE(C_HandleTest)
 		BEGIN_RECV_TABLE(C_HandleTest, DT_HandleTest, DT_BaseEntity)
 			RecvPropEHandle(RECVINFO(m_Handle)),
 			RecvPropInt(RECVINFO(m_bSendHandle))
 		END_RECV_TABLE(DT_HandleTest)
+		END_INIT_RECV_TABLE()
 	};
 
 	IMPLEMENT_CLIENTCLASS( C_HandleTest, DT_HandleTest, CHandleTest )
 	
+	class C_HandleDummy : public C_BaseEntity {
+	public:
+		DECLARE_CLASS(C_HandleDummy, C_BaseEntity);
+		DECLARE_CLIENTCLASS();
+		C_HandleDummy() {}
 
+		BEGIN_INIT_RECV_TABLE(C_HandleDummy)
+		BEGIN_RECV_TABLE(C_HandleDummy, DT_HandleDummy, DT_BaseEntity)
+
+		END_RECV_TABLE(DT_HandleDummy)
+		END_INIT_RECV_TABLE()
+	};
+
+	IMPLEMENT_CLIENTCLASS(C_HandleDummy, DT_HandleDummy, CHandleDummy)
 
 #endif
 

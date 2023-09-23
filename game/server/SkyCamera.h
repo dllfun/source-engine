@@ -35,9 +35,11 @@ public:
 	bool			m_bUseAngles;
 	CSkyCamera		*m_pNext;
 public:
+	BEGIN_INIT_SEND_TABLE(CSkyCamera)
 	BEGIN_SEND_TABLE(CSkyCamera, DT_SkyCamera, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_SkyCamera)
+	END_INIT_SEND_TABLE()
 };
 
 

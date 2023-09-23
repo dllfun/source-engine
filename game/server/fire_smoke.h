@@ -74,6 +74,7 @@ public:
 
 	//Server-side
 
+	BEGIN_INIT_SEND_TABLE(CFireSmoke)
 	BEGIN_SEND_TABLE(CFireSmoke, DT_FireSmoke, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flStartScale), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flScale), 0, SPROP_NOSCALE),
@@ -82,6 +83,7 @@ public:
 		SendPropModelIndex(SENDINFO(m_nFlameModelIndex)),
 		SendPropModelIndex(SENDINFO(m_nFlameFromAboveModelIndex)),
 	END_SEND_TABLE(DT_FireSmoke)
+	END_INIT_SEND_TABLE()
 };
 
 #endif	//FIRE_SMOKE_H

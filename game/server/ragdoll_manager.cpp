@@ -43,9 +43,11 @@ public:
 
 	bool m_bSaveImportant;
 
+	BEGIN_INIT_SEND_TABLE(CRagdollManager)
 	BEGIN_SEND_TABLE_NOBASE(CRagdollManager, DT_RagdollManager)
 		SendPropInt(SENDINFO(m_iCurrentMaxRagdollCount), 6),
 	END_SEND_TABLE(DT_RagdollManager)
+	END_INIT_SEND_TABLE()
 };
 
 

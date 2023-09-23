@@ -235,6 +235,8 @@ private:
 
 	friend class CRopeManager;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_RopeKeyframe)
 	BEGIN_RECV_TABLE_NOBASE(C_RopeKeyframe, DT_RopeKeyframe, CRopeKeyframe)
 		RecvPropInt(RECVINFO(m_iRopeMaterialModelIndex)),
 		RecvPropEHandle(RECVINFO(m_hStartPoint)),
@@ -258,6 +260,7 @@ private:
 
 		RecvPropInt(RECVINFO(m_iParentAttachment)),
 	END_RECV_TABLE(DT_RopeKeyframe)
+	END_INIT_RECV_TABLE()
 };
 
 

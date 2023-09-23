@@ -43,9 +43,12 @@ private:
 	Vector	m_vecCachedRenderMins;
 	Vector	m_vecCachedRenderMaxs;
 
+public:
+	BEGIN_INIT_RECV_TABLE(CDynamicProp)
 	BEGIN_RECV_TABLE(CDynamicProp, DT_DynamicProp, DT_BreakableProp)
 		RecvPropBool(RECVINFO(m_bUseHitboxesForRenderBox)),
 	END_RECV_TABLE(DT_DynamicProp)
+	END_INIT_RECV_TABLE()
 };
 
 #endif // C_PROPS_H

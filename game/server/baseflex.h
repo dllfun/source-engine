@@ -259,6 +259,7 @@ public:
 	CNetworkVector( m_vecShift );
 #endif
 
+	BEGIN_INIT_SEND_TABLE(CBaseFlex)
 	BEGIN_SEND_TABLE(CBaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
 		// Note we can't totally disabled flexweights transmission since some things like blink and eye tracking are still done by the server
 		SendPropArray3(SENDINFO_ARRAY3(m_flexWeight), SendPropFloat(SENDINFO_ARRAY(m_flexWeight), 12, SPROP_ROUNDDOWN, 0.0f, 1.0f) /*, SendProxy_FlexWeights*/),
@@ -274,6 +275,7 @@ public:
 #endif
 
 	END_SEND_TABLE(DT_BaseFlex)
+	END_INIT_SEND_TABLE()
 };
 
 

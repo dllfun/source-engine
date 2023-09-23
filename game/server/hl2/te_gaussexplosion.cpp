@@ -28,10 +28,12 @@ public:
 	CNetworkVar( int, m_nType );
 	CNetworkVector( m_vecDirection );
 
+	BEGIN_INIT_SEND_TABLE(CTEGaussExplosion)
 	BEGIN_SEND_TABLE(CTEGaussExplosion, DT_TEGaussExplosion, DT_TEParticleSystem)
 		SendPropInt(SENDINFO(m_nType), 2, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_vecDirection), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_TEGaussExplosion)
+	END_INIT_SEND_TABLE()
 };
 
 

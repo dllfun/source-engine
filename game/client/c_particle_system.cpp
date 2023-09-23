@@ -44,6 +44,8 @@ protected:
 
 	bool		m_bWeatherEffect;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ParticleSystem)
 	BEGIN_RECV_TABLE_NOBASE(C_ParticleSystem, DT_ParticleSystem)
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropEHandle(RECVINFO(m_hOwnerEntity)),
@@ -58,7 +60,8 @@ protected:
 		RecvPropArray3(RECVINFO_ARRAY(m_hControlPointEnts), RecvPropEHandle(RECVINFO(m_hControlPointEnts[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iControlPointParents), RecvPropInt(RECVINFO(m_iControlPointParents[0]))),
 		RecvPropBool(RECVINFO(m_bWeatherEffect)),
-	END_RECV_TABLE(DT_ParticleSystem);
+	END_RECV_TABLE(DT_ParticleSystem)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_ParticleSystem, DT_ParticleSystem, CParticleSystem);

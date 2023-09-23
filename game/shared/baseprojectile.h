@@ -49,14 +49,21 @@ protected:
 	int m_iDestroyableHitCount;
 #endif // GAME_DLL
 
+public:
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CBaseProjectile)
 	BEGIN_NETWORK_TABLE(CBaseProjectile, DT_BaseProjectile, DT_BaseAnimating)
+
 	END_NETWORK_TABLE(DT_BaseProjectile)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CBaseProjectile)
 	BEGIN_NETWORK_TABLE(CBaseProjectile, DT_BaseProjectile, DT_BaseAnimating)
+
 	END_NETWORK_TABLE(DT_BaseProjectile)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

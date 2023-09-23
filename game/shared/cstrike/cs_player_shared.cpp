@@ -862,10 +862,12 @@ public:
 	CNetworkVar( string_t, m_source );
 	CNetworkVar( string_t, m_destination );
 
+	BEGIN_INIT_SEND_TABLE(CFootstepControl)
 	BEGIN_SEND_TABLE(CFootstepControl, DT_FootstepControl, DT_BaseEntity)
 		SendPropStringT(SENDINFO(m_source)),
 		SendPropStringT(SENDINFO(m_destination)),
 	END_SEND_TABLE(DT_FootstepControl)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( func_footstep_control, CFootstepControl );
@@ -905,10 +907,13 @@ public:
 	char m_source[MATERIAL_NAME_LENGTH];
 	char m_destination[MATERIAL_NAME_LENGTH];
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FootstepControl)
 	BEGIN_RECV_TABLE(C_FootstepControl, DT_FootstepControl, DT_BaseEntity)
 		RecvPropString(RECVINFO(m_source)),
 		RecvPropString(RECVINFO(m_destination)),
 	END_RECV_TABLE(DT_FootstepControl)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FootstepControl, DT_FootstepControl, CFootstepControl)

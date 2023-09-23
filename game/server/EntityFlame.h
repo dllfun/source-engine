@@ -63,9 +63,11 @@ protected:
 	CNetworkVar( float, m_flLifetime );
 	bool	m_bPlayingSound;
 
+	BEGIN_INIT_SEND_TABLE(CEntityFlame)
 	BEGIN_SEND_TABLE(CEntityFlame, DT_EntityFlame, DT_BaseEntity)
 		SendPropEHandle(SENDINFO(m_hEntAttached)),
 	END_SEND_TABLE(DT_EntityFlame)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // ENTITYFLAME_H

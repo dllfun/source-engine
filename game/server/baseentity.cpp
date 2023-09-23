@@ -246,8 +246,8 @@ void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *p
 }
 
 // This table encodes the CBaseEntity data.
-//IMPLEMENT_SERVERCLASS(CBaseEntity, DT_BaseEntity)
-static CBaseEntity g_CBaseEntity_EntityReg;
+IMPLEMENT_SERVERCLASS(CBaseEntity, DT_BaseEntity)
+//static CBaseEntity g_CBaseEntity_EntityReg;
 
 
 // dynamic models

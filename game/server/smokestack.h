@@ -80,6 +80,7 @@ public:
 
 	bool			m_InitialState;
 
+	BEGIN_INIT_SEND_TABLE(CSmokeStack)
 	BEGIN_SEND_TABLE(CSmokeStack, DT_SmokeStack, DT_BaseParticleEntity)
 		SendPropFloat(SENDINFO(m_SpreadSpeed), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_Speed), 0, SPROP_NOSCALE),
@@ -106,7 +107,7 @@ public:
 		SendPropIntWithMinusOneFlag(SENDINFO(m_iMaterialModel), 16)
 
 	END_SEND_TABLE(DT_SmokeStack)
-
+	END_INIT_SEND_TABLE()
 };
 
 #endif // SMOKESTACK_H

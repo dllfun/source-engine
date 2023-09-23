@@ -24,13 +24,19 @@ public:
 	virtual void DrawDebugGeometryOverlays();
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CInfoLadderDismount)
 	BEGIN_NETWORK_TABLE(CInfoLadderDismount, DT_InfoLadderDismount, DT_BaseEntity)
+
 	END_NETWORK_TABLE(DT_InfoLadderDismount)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CInfoLadderDismount)
 	BEGIN_NETWORK_TABLE(CInfoLadderDismount, DT_InfoLadderDismount, DT_BaseEntity)
+
 	END_NETWORK_TABLE(DT_InfoLadderDismount)
+	END_INIT_RECV_TABLE()
 #endif
 };
 
@@ -119,6 +125,7 @@ private:
 #endif
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CFuncLadder)
 	BEGIN_NETWORK_TABLE(CFuncLadder, DT_FuncLadder, DT_BaseEntity)
 		SendPropVector(SENDINFO(m_vecPlayerMountPositionTop), SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecPlayerMountPositionBottom), SPROP_COORD),
@@ -126,15 +133,18 @@ private:
 		SendPropBool(SENDINFO(m_bFakeLadder)),
 		//	SendPropStringT( SENDINFO(m_surfacePropName) ),
 	END_NETWORK_TABLE(DT_FuncLadder)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CFuncLadder)
 	BEGIN_NETWORK_TABLE(CFuncLadder, DT_FuncLadder, DT_BaseEntity)
 		RecvPropVector(RECVINFO(m_vecPlayerMountPositionTop)),
 		RecvPropVector(RECVINFO(m_vecPlayerMountPositionBottom)),
 		RecvPropVector(RECVINFO(m_vecLadderDir)),
 		RecvPropBool(RECVINFO(m_bFakeLadder)),
 	END_NETWORK_TABLE(DT_FuncLadder)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

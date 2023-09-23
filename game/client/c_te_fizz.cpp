@@ -38,12 +38,15 @@ public:
 	int				m_nDensity;
 	int				m_nCurrent;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEFizz)
 	BEGIN_RECV_TABLE(C_TEFizz, DT_TEFizz, DT_BaseTempEntity)
 		RecvPropInt(RECVINFO(m_nEntity)),
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropInt(RECVINFO(m_nDensity)),
 		RecvPropInt(RECVINFO(m_nCurrent)),
 	END_RECV_TABLE(DT_TEFizz)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

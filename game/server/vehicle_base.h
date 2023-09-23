@@ -303,6 +303,7 @@ protected:
 	float		m_flTurnOffKeepUpright;
 	float		m_flNoImpactDamageTime;
 
+	BEGIN_INIT_SEND_TABLE(CPropVehicleDriveable)
 	BEGIN_SEND_TABLE(CPropVehicleDriveable, DT_PropVehicleDriveable, DT_BaseAnimating)
 
 		SendPropEHandle(SENDINFO(m_hPlayer)),
@@ -320,7 +321,8 @@ protected:
 		SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
 		SendPropBool(SENDINFO(m_bHasGun)),
 		SendPropVector(SENDINFO(m_vecGunCrosshair), -1, SPROP_COORD),
-	END_SEND_TABLE(DT_PropVehicleDriveable);
+	END_SEND_TABLE(DT_PropVehicleDriveable)
+	END_INIT_SEND_TABLE()
 };
 
 

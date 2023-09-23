@@ -106,6 +106,9 @@ public:
 private:
 	C_Func_Dust( const C_Func_Dust & ); // not defined, not accessible
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Func_Dust)
+	INIT_REFERENCE_RECV_TABLE(CCollisionProperty)
 	BEGIN_RECV_TABLE_NOBASE(C_Func_Dust, DT_Func_Dust, CFunc_Dust)
 
 		RecvPropInt(RECVINFO(m_Color)),
@@ -121,6 +124,7 @@ private:
 		RecvPropFloat(RECVINFO(m_FallSpeed)),
 		RecvPropDataTable(RECVINFO_DT(m_Collision), 0, REFERENCE_RECV_TABLE(DT_CollisionProperty)),
 	END_RECV_TABLE(DT_Func_Dust)
+	END_INIT_RECV_TABLE()
 };
 
 

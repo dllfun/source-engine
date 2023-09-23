@@ -648,6 +648,10 @@ public:
 // This data only gets sent to clients that ARE this player entity.
 // -------------------------------------------------------------------------------- //
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BasePlayer)
+	INIT_REFERENCE_RECV_TABLE(CPlayerState)
+	INIT_REFERENCE_RECV_TABLE(CPlayerLocalData)
 	BEGIN_RECV_TABLE_NOBASE(C_BasePlayer, DT_LocalPlayerExclusive)
 
 		RecvPropDataTable(RECVINFO_DT(m_Local), 0, REFERENCE_RECV_TABLE(DT_Local)),
@@ -728,6 +732,7 @@ public:
 #endif
 
 	END_RECV_TABLE(DT_BasePlayer)
+	END_INIT_RECV_TABLE()
 };
 
 EXTERN_RECV_TABLE(DT_BasePlayer);

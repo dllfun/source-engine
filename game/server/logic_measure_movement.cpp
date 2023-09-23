@@ -59,9 +59,12 @@ private:
 	float m_flScale;
 	int m_nMeasureType;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CLogicMeasureMovement)
 	BEGIN_SEND_TABLE(CLogicMeasureMovement, DT_LogicMeasureMovement, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_LogicMeasureMovement)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CLogicMeasureMovement, DT_LogicMeasureMovement)

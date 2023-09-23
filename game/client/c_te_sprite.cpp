@@ -37,12 +37,15 @@ public:
 	float			m_fScale;
 	int				m_nBrightness;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TESprite)
 	BEGIN_RECV_TABLE(C_TESprite, DT_TESprite, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropFloat(RECVINFO(m_fScale)),
 		RecvPropInt(RECVINFO(m_nBrightness)),
 	END_RECV_TABLE(DT_TESprite)
+	END_INIT_RECV_TABLE()
 };
 
 

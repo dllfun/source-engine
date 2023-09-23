@@ -72,6 +72,8 @@ private:
 	int m_errorHistoryCount;
 	float m_averageError;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Fish)
 	BEGIN_RECV_TABLE_NOBASE(C_Fish, DT_CFish, CFish)
 
 		RecvPropVector(RECVINFO(m_poolOrigin)),
@@ -88,6 +90,7 @@ private:
 		RecvPropFloat(RECVINFO(m_waterLevel)),		///< get this from the server in case we die when slightly out of the water due to error correction
 
 	END_RECV_TABLE(DT_CFish)
+	END_INIT_RECV_TABLE()
 };
 
 

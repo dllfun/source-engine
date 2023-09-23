@@ -33,6 +33,8 @@ public:
 	int				r, g, b, a;
 	int				m_nAmount;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBloodStream)
 	BEGIN_RECV_TABLE(C_TEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
 		RecvPropVector(RECVINFO(m_vecDirection)),
 		RecvPropInt(RECVINFO(r)),
@@ -41,6 +43,7 @@ public:
 		RecvPropInt(RECVINFO(a)),
 		RecvPropInt(RECVINFO(m_nAmount)),
 	END_RECV_TABLE(DT_TEBloodStream)
+	END_INIT_RECV_TABLE()
 };
 
 

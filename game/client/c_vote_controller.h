@@ -42,6 +42,8 @@ protected:
 	bool			m_bTypeDirty;	// Vote type changed, so show or hide the Hud
 	bool			m_bIsYesNoVote;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_VoteController)
 	BEGIN_RECV_TABLE(C_VoteController, DT_VoteController, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_iActiveIssueIndex), 0, C_VoteController::RecvProxy_VoteType),
 		RecvPropInt(RECVINFO(m_iOnlyTeamToVote)),
@@ -49,6 +51,7 @@ protected:
 		RecvPropInt(RECVINFO(m_nPotentialVotes)),
 		RecvPropBool(RECVINFO(m_bIsYesNoVote))
 	END_RECV_TABLE(DT_VoteController)
+	END_INIT_RECV_TABLE()
 };
 
 #endif // C_VoteController_H

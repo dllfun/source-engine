@@ -417,9 +417,12 @@ private:
 	int		m_nMaxSquadmatesPerEnemy;	// Maximum number of squadmates who may share the same enemy
 	string_t	m_iszPlayerName;			// "!player"
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFilterEnemy)
 	BEGIN_SEND_TABLE(CFilterEnemy, DT_FilterEnemy, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FilterEnemy)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

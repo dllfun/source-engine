@@ -26,9 +26,12 @@ public:
 	// Copy fade from another breakable prop
 	void CopyFadeFrom( C_BreakableProp *pSource );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BreakableProp)
 	BEGIN_RECV_TABLE(C_BreakableProp, DT_BreakableProp, DT_BaseAnimating)
 
 	END_RECV_TABLE(DT_BreakableProp)
+	END_INIT_RECV_TABLE()
 };
 
 #endif // C_BREAKABLEPROP_H

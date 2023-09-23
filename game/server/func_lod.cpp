@@ -38,9 +38,11 @@ public:
 	virtual void	Activate();
 	virtual bool	KeyValue( const char *szKeyName, const char *szValue );
 
+	BEGIN_INIT_SEND_TABLE(CFunc_LOD)
 	BEGIN_SEND_TABLE(CFunc_LOD, DT_Func_LOD, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_fDisappearDist), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_Func_LOD)
+	END_INIT_SEND_TABLE()
 };
 
 

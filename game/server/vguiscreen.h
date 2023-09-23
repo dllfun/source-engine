@@ -79,6 +79,7 @@ private:
 
 	friend CVGuiScreen *CreateVGuiScreen( const char *pScreenClassname, const char *pScreenType, CBaseEntity *pAttachedTo, CBaseEntity *pOwner, int nAttachmentIndex );
 
+	BEGIN_INIT_SEND_TABLE(CVGuiScreen)
 	BEGIN_SEND_TABLE(CVGuiScreen, DT_VGuiScreen, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flWidth), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flHeight), 0, SPROP_NOSCALE),
@@ -87,7 +88,8 @@ private:
 		SendPropInt(SENDINFO(m_fScreenFlags), VGUI_SCREEN_MAX_BITS, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nOverlayMaterial), MAX_MATERIAL_STRING_BITS, SPROP_UNSIGNED),
 		SendPropEHandle(SENDINFO(m_hPlayerOwner)),
-	END_SEND_TABLE(DT_VGuiScreen);
+	END_SEND_TABLE(DT_VGuiScreen)
+	END_INIT_SEND_TABLE()
 };
 
 

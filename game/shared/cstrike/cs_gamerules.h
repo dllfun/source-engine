@@ -91,15 +91,19 @@ public:
 	}
 
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CCSGameRulesProxy)
 	BEGIN_SEND_TABLE(CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
 		SendPropDataTable("cs_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_CSGameRules), SendProxy_CSGameRules)
 	END_SEND_TABLE(DT_CSGameRulesProxy)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CCSGameRulesProxy)
 	BEGIN_RECV_TABLE(CCSGameRulesProxy, DT_CSGameRulesProxy, DT_GameRulesProxy)
 		RecvPropDataTable("cs_gamerules_data", 0, 0, REFERENCE_RECV_TABLE(DT_CSGameRules), RecvProxy_CSGameRules)
 	END_RECV_TABLE(DT_CSGameRulesProxy)
+	END_INIT_RECV_TABLE()
 #endif
 };
 
@@ -531,6 +535,7 @@ public:
 	const weeklyprice_t *m_pPrices;
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CCSGameRules)
 	BEGIN_NETWORK_TABLE_NOBASE(CCSGameRules, DT_CSGameRules)
 		SendPropBool(SENDINFO(m_bFreezePeriod)),
 		SendPropInt(SENDINFO(m_iRoundTime), 16),
@@ -542,9 +547,11 @@ public:
 		SendPropBool(SENDINFO(m_bLogoMap)),
 		SendPropBool(SENDINFO(m_bBlackMarket))
 	END_NETWORK_TABLE(DT_CSGameRules)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CCSGameRules)
 	BEGIN_NETWORK_TABLE_NOBASE(CCSGameRules, DT_CSGameRules)
 		RecvPropBool(RECVINFO(m_bFreezePeriod)),
 		RecvPropInt(RECVINFO(m_iRoundTime)),
@@ -556,6 +563,7 @@ public:
 		RecvPropBool(RECVINFO(m_bLogoMap)),
 		RecvPropBool(RECVINFO(m_bBlackMarket))
 	END_NETWORK_TABLE(DT_CSGameRules)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

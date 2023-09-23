@@ -70,6 +70,8 @@ private:
 	int		m_iCurrentSlideList;
 	int		m_iCurrentSlide;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SlideshowDisplay)
 	BEGIN_RECV_TABLE(C_SlideshowDisplay, DT_SlideshowDisplay, DT_BaseEntity)
 		RecvPropBool(RECVINFO(m_bEnabled)),
 		RecvPropString(RECVINFO(m_szDisplayText)),
@@ -80,6 +82,7 @@ private:
 		RecvPropInt(RECVINFO(m_iCycleType)),
 		RecvPropBool(RECVINFO(m_bNoListRepeats)),
 	END_RECV_TABLE(DT_SlideshowDisplay)
+	END_INIT_RECV_TABLE()
 };
 
 extern CUtlVector< C_SlideshowDisplay* > g_SlideshowDisplays;

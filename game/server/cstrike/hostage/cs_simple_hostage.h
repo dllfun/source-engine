@@ -165,7 +165,8 @@ private:
 	void PushawayThink( void );								// pushes physics objects away from the hostage
 	void AvoidPhysicsProps( void );							// guides the hostage away from physics props
 
-	BEGIN_SEND_TABLE(CHostage, DT_CHostage, DT_BaseCombatCharacter)
+	BEGIN_INIT_SEND_TABLE(CHostage)
+		BEGIN_SEND_TABLE(CHostage, DT_CHostage, DT_BaseCombatCharacter)
 		SendPropExclude("DT_BaseAnimating", "m_flPoseParameter"),
 		SendPropExclude("DT_BaseAnimating", "m_flPlaybackRate"),
 		SendPropExclude("DT_BaseAnimating", "m_nSequence"),
@@ -185,6 +186,7 @@ private:
 		SendPropEHandle(SENDINFO(m_leader)),
 
 	END_SEND_TABLE(DT_CHostage)
+	END_INIT_SEND_TABLE()
 };
 
 

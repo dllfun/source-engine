@@ -56,11 +56,14 @@ public:
 	// particle effect sort origin
 	Vector			m_vecOrigin;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEParticleSystem)
 	BEGIN_RECV_TABLE(C_TEParticleSystem, DT_TEParticleSystem, DT_BaseTempEntity)
 		RecvPropFloat(RECVINFO(m_vecOrigin[0])),
 		RecvPropFloat(RECVINFO(m_vecOrigin[1])),
 		RecvPropFloat(RECVINFO(m_vecOrigin[2])),
 	END_RECV_TABLE(DT_TEParticleSystem)
+	END_INIT_RECV_TABLE()
 };
 
 

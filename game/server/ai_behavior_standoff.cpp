@@ -1310,9 +1310,12 @@ private:
 	bool					m_bAbandonIfEnemyHides;
 	AI_StandoffParams_t		m_customParams;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CAI_StandoffGoal)
 	BEGIN_SEND_TABLE(CAI_StandoffGoal, DT_AI_StandoffGoal, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_StandoffGoal)
+	END_INIT_SEND_TABLE()
 };
 
 //-------------------------------------

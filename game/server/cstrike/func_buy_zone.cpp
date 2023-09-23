@@ -27,9 +27,11 @@ public:
 public:
 	int m_LegacyTeamNum;
 public:
+	BEGIN_INIT_SEND_TABLE(CBuyZone)
 	BEGIN_SEND_TABLE(CBuyZone, DT_BuyZone, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_BuyZone)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CBuyZone, DT_BuyZone)

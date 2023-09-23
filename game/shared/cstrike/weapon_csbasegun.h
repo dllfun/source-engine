@@ -53,14 +53,21 @@ private:
 
 	CWeaponCSBaseGun( const CWeaponCSBaseGun & );
 
+public:
 #if !defined(CLIENT_DLL)
+	BEGIN_INIT_SEND_TABLE(CWeaponCSBaseGun)
 	BEGIN_NETWORK_TABLE(CWeaponCSBaseGun, DT_WeaponCSBaseGun, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponCSBaseGun)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined(CLIENT_DLL)
+	BEGIN_INIT_RECV_TABLE(CWeaponCSBaseGun)
 	BEGIN_NETWORK_TABLE(CWeaponCSBaseGun, DT_WeaponCSBaseGun, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponCSBaseGun)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

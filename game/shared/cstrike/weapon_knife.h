@@ -78,29 +78,29 @@ public:
 private:
 	CKnife( const CKnife & ) {}
 
+public:
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CKnife)
 	BEGIN_NETWORK_TABLE_NOBASE(CKnife, DT_LocalActiveWeaponKnifeData)
 		SendPropTime(SENDINFO(m_flSmackTime)),
 	END_NETWORK_TABLE(DT_LocalActiveWeaponKnifeData)
-#endif
 
-#if !defined( CLIENT_DLL )
 	BEGIN_NETWORK_TABLE(CKnife, DT_WeaponKnife, DT_WeaponCSBase)
 		SendPropDataTable("LocalActiveWeaponKnifeData", 0, REFERENCE_SEND_TABLE(DT_LocalActiveWeaponKnifeData), SendProxy_SendActiveLocalKnifeDataTable),
 	END_NETWORK_TABLE(DT_WeaponKnife)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CKnife)
 	BEGIN_NETWORK_TABLE_NOBASE(CKnife, DT_LocalActiveWeaponKnifeData)
 		RecvPropTime(RECVINFO(m_flSmackTime)),
 	END_NETWORK_TABLE(DT_LocalActiveWeaponKnifeData)
-#endif
 
-
-#if defined( CLIENT_DLL )
 	BEGIN_NETWORK_TABLE(CKnife, DT_WeaponKnife, DT_WeaponCSBase)
 		RecvPropDataTable("LocalActiveWeaponKnifeData", 0, 0, REFERENCE_RECV_TABLE(DT_LocalActiveWeaponKnifeData)),
 	END_NETWORK_TABLE(DT_WeaponKnife)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

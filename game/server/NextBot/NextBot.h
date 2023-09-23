@@ -80,9 +80,12 @@ private:
 	
 	bool m_didModelChange;
 
+public:
+	BEGIN_INIT_SEND_TABLE(NextBotCombatCharacter)
 	BEGIN_SEND_TABLE(NextBotCombatCharacter, DT_NextBot, DT_BaseCombatCharacter)
 
 	END_SEND_TABLE(DT_NextBot)
+	END_INIT_SEND_TABLE()
 };
 
 

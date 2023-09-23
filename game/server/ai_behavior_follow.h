@@ -70,9 +70,11 @@ public:
 
 	DECLARE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CAI_FollowGoal)
 	BEGIN_SEND_TABLE(CAI_FollowGoal, DT_AI_FollowGoal, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_FollowGoal)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

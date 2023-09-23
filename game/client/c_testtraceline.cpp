@@ -32,6 +32,8 @@ private:
 	void DrawCube( Vector& center, unsigned char* pColor );
 	IMaterial* m_pWireframe;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TestTraceline)
 	BEGIN_RECV_TABLE_NOBASE(C_TestTraceline, DT_TestTraceline)
 		RecvPropInt(RECVINFO(m_clrRender)),
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
@@ -40,6 +42,7 @@ private:
 		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[2], m_angRotation[2])),
 		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
 	END_RECV_TABLE(DT_TestTraceline)
+	END_INIT_RECV_TABLE()
 };
 
 // Expose it to the engine.

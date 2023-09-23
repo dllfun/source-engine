@@ -39,6 +39,7 @@ public:
 	CNetworkVar( int, a );
 	CNetworkVar( int, m_nAmount );
 
+	BEGIN_INIT_SEND_TABLE(CTEBloodStream)
 	BEGIN_SEND_TABLE(CTEBloodStream, DT_TEBloodStream, DT_TEParticleSystem)
 		SendPropVector(SENDINFO(m_vecDirection), 11, 0, -10.0, 10.0),
 		SendPropInt(SENDINFO(r), 8, SPROP_UNSIGNED),
@@ -47,6 +48,7 @@ public:
 		SendPropInt(SENDINFO(a), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nAmount), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEBloodStream)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

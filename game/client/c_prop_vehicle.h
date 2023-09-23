@@ -129,6 +129,8 @@ protected:
 
 	ViewSmoothingData_t			m_ViewSmoothingData;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PropVehicleDriveable)
 	BEGIN_RECV_TABLE(C_PropVehicleDriveable, DT_PropVehicleDriveable, DT_BaseAnimating)
 		RecvPropEHandle(RECVINFO(m_hPlayer)),
 		RecvPropInt(RECVINFO(m_nSpeed)),
@@ -145,6 +147,7 @@ protected:
 		RecvPropBool(RECVINFO(m_bHasGun)),
 		RecvPropVector(RECVINFO(m_vecGunCrosshair)),
 	END_RECV_TABLE(DT_PropVehicleDriveable)
+	END_INIT_RECV_TABLE()
 };
 
 

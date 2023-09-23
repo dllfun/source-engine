@@ -274,6 +274,7 @@ private:
 	CNetworkVector( m_vecSpecifiedSurroundingMaxsPreScaled );
 	CNetworkVector( m_vecSpecifiedSurroundingMins );
 	CNetworkVector( m_vecSpecifiedSurroundingMaxs );
+	int count = 0;
 
 	// Cached off world-aligned surrounding bounds
 #if 0
@@ -290,6 +291,7 @@ private:
 	friend class CBaseEntity;
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CCollisionProperty)
 	BEGIN_NETWORK_TABLE_NOBASE(CCollisionProperty, DT_CollisionProperty)
 		SendPropVector(SENDINFO(m_vecMinsPreScaled), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vecMaxsPreScaled), 0, SPROP_NOSCALE),
@@ -304,9 +306,11 @@ private:
 		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMins), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMaxs), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE(DT_CollisionProperty)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CCollisionProperty)
 	BEGIN_NETWORK_TABLE_NOBASE(CCollisionProperty, DT_CollisionProperty)
 		RecvPropVector(RECVINFO(m_vecMinsPreScaled), 0, RecvProxy_OBBMinsPreScaled),
 		RecvPropVector(RECVINFO(m_vecMaxsPreScaled), 0, RecvProxy_OBBMaxsPreScaled),
@@ -321,6 +325,7 @@ private:
 		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMins), 0, RecvProxy_VectorDirtySurround),
 		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMaxs), 0, RecvProxy_VectorDirtySurround),
 	END_NETWORK_TABLE(DT_CollisionProperty)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

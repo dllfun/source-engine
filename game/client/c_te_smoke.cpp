@@ -36,12 +36,15 @@ public:
 	float			m_fScale;
 	int				m_nFrameRate;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TESmoke)
 	BEGIN_RECV_TABLE(C_TESmoke, DT_TESmoke, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropFloat(RECVINFO(m_fScale)),
 		RecvPropInt(RECVINFO(m_nFrameRate)),
 	END_RECV_TABLE(DT_TESmoke)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

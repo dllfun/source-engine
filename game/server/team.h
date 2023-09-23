@@ -96,6 +96,7 @@ public:
 
 	CNetworkVar( int, m_iTeamNum );			// Which team is this?
 
+	BEGIN_INIT_SEND_TABLE(CTeam)
 	BEGIN_SEND_TABLE_NOBASE(CTeam, DT_Team)
 		SendPropInt(SENDINFO(m_iTeamNum), 5),
 		SendPropInt(SENDINFO(m_iScore), 0),
@@ -110,6 +111,7 @@ public:
 			"player_array"
 		)
 	END_SEND_TABLE(DT_Team)
+	END_INIT_SEND_TABLE()
 };
 
 extern CUtlVector< CTeam * > g_Teams;

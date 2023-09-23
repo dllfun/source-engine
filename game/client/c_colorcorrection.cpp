@@ -48,6 +48,8 @@ private:
 
 	ClientCCHandle_t m_CCHandle;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ColorCorrection)
 	BEGIN_RECV_TABLE(C_ColorCorrection, DT_ColorCorrection, DT_BaseEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropFloat(RECVINFO(m_minFalloff)),
@@ -57,6 +59,7 @@ private:
 		RecvPropBool(RECVINFO(m_bEnabled)),
 
 	END_RECV_TABLE(DT_ColorCorrection)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_ColorCorrection, DT_ColorCorrection, CColorCorrection)

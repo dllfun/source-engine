@@ -48,14 +48,21 @@ private:
 	
 	CWeaponAug( const CWeaponAug & );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponAug)
 	BEGIN_NETWORK_TABLE(CWeaponAug, DT_WeaponAug, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponAug)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponAug)
 	BEGIN_NETWORK_TABLE(CWeaponAug, DT_WeaponAug, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponAug)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

@@ -54,6 +54,8 @@ private:
 public:
 	C_PointCamera	*m_pNext;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PointCamera)
 	BEGIN_RECV_TABLE(C_PointCamera, DT_PointCamera, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_FOV)),
 		RecvPropFloat(RECVINFO(m_Resolution)),
@@ -65,6 +67,7 @@ public:
 		RecvPropInt(RECVINFO(m_bActive)),
 		RecvPropInt(RECVINFO(m_bUseScreenAspectRatio)),
 	END_RECV_TABLE(DT_PointCamera)
+	END_INIT_RECV_TABLE()
 };
 
 C_PointCamera *GetPointCameraList();

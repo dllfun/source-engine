@@ -41,6 +41,7 @@ public:
 	CNetworkVar( float, m_fTime );
 	CNetworkVar( float, m_fDecay );
 
+	BEGIN_INIT_SEND_TABLE(CTEDynamicLight)
 	BEGIN_SEND_TABLE(CTEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropInt(SENDINFO(r), 8, SPROP_UNSIGNED),
@@ -51,6 +52,7 @@ public:
 		SendPropFloat(SENDINFO(m_fTime), 8, SPROP_ROUNDDOWN, 0, 25.6),
 		SendPropFloat(SENDINFO(m_fDecay), 8, SPROP_ROUNDDOWN, 0, 2560.0),
 	END_SEND_TABLE(DT_TEDynamicLight)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

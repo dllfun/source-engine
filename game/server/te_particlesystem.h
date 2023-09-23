@@ -28,6 +28,7 @@ public:
 
 	CNetworkVector( m_vecOrigin );
 
+	BEGIN_INIT_SEND_TABLE(CTEParticleSystem)
 	BEGIN_SEND_TABLE(CTEParticleSystem, DT_TEParticleSystem, DT_BaseTempEntity)
 #if defined( TF_DLL )
 		SendPropFloat(SENDINFO_VECTORELEM(m_vecOrigin, 0), -1, SPROP_COORD_MP_INTEGRAL),
@@ -39,6 +40,7 @@ public:
 		SendPropFloat(SENDINFO_VECTORELEM(m_vecOrigin, 2), -1, SPROP_COORD),
 #endif
 	END_SEND_TABLE(DT_TEParticleSystem)
+	END_INIT_SEND_TABLE()
 };
 
 

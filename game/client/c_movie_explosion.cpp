@@ -71,10 +71,12 @@ public:
 private:
 					C_MovieExplosion( const C_MovieExplosion & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_MovieExplosion)
 	BEGIN_RECV_TABLE(C_MovieExplosion, DT_MovieExplosion, DT_BaseParticleEntity)
 
 	END_RECV_TABLE(DT_MovieExplosion)
-
+	END_INIT_RECV_TABLE()
 };
 
 // Expose to the particle app.

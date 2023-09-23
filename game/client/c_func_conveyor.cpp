@@ -32,9 +32,12 @@ public:
 private:
 	float m_flConveyorSpeed;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncConveyor)
 	BEGIN_RECV_TABLE(C_FuncConveyor, DT_FuncConveyor, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flConveyorSpeed)),
 	END_RECV_TABLE(DT_FuncConveyor)
+	END_INIT_RECV_TABLE()
 };
 
 

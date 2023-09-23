@@ -41,14 +41,21 @@ private:
 
 	void DoFireEffects( void );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponTMP)
 	BEGIN_NETWORK_TABLE(CWeaponTMP, DT_WeaponTMP, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponTMP)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponTMP)
 	BEGIN_NETWORK_TABLE(CWeaponTMP, DT_WeaponTMP, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponTMP)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

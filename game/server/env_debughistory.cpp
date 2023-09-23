@@ -38,9 +38,12 @@ private:
 	char m_DebugLines[MAX_HISTORY_CATEGORIES][MAX_DEBUG_HISTORY_LENGTH];
 	char *m_DebugLineEnd[MAX_HISTORY_CATEGORIES];
 
+public:
+	BEGIN_INIT_SEND_TABLE(CDebugHistory)
 	BEGIN_SEND_TABLE(CDebugHistory, DT_DebugHistory, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_DebugHistory)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CDebugHistory )

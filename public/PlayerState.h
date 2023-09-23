@@ -65,15 +65,19 @@ public:
 // -------------------------------------------------------------------------------- //
 
 #if defined( GAME_DLL )
+	BEGIN_INIT_SEND_TABLE(CPlayerState)
 	BEGIN_SEND_TABLE_NOBASE(CPlayerState, DT_PlayerState)
 		SendPropInt(SENDINFO(deadflag), 1, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_PlayerState)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CPlayerState)
 	BEGIN_RECV_TABLE_NOBASE(CPlayerState, DT_PlayerState)
 		RecvPropInt(RECVINFO(deadflag)),
 	END_RECV_TABLE(DT_PlayerState)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

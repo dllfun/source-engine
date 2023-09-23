@@ -38,6 +38,7 @@ public:
 	CNetworkVar( int, m_nHitbox );
 	CNetworkVar( int, m_nIndex );
 
+	BEGIN_INIT_SEND_TABLE(CTEDecal)
 	BEGIN_SEND_TABLE(CTEDecal, DT_TEDecal, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecStart), -1, SPROP_COORD),
@@ -45,6 +46,7 @@ public:
 		SendPropInt(SENDINFO(m_nHitbox), 12, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nIndex), 9, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEDecal)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

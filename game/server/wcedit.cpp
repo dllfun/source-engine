@@ -708,9 +708,11 @@ protected:
 public:
 	DECLARE_DATADESC();
 
+	BEGIN_INIT_SEND_TABLE(CWC_UpdateIgnoreList)
 	BEGIN_SEND_TABLE(CWC_UpdateIgnoreList, DT_WC_UpdateIgnoreList, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_WC_UpdateIgnoreList)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CWC_UpdateIgnoreList, DT_WC_UpdateIgnoreList)

@@ -28,9 +28,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_BombTarget() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BombTarget)
 	BEGIN_RECV_TABLE(C_BombTarget, DT_BombTarget, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_BombTarget)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_BombTarget, DT_BombTarget, CBombTarget)

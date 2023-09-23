@@ -101,6 +101,8 @@ protected:
 private:
 	C_Plasma( const C_Plasma & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Plasma)
 	BEGIN_RECV_TABLE(C_Plasma, DT_Plasma, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flStartScale)),
 		RecvPropFloat(RECVINFO(m_flScale), 0, RecvProxy_PlasmaScale),
@@ -110,6 +112,7 @@ private:
 		RecvPropInt(RECVINFO(m_nPlasmaModelIndex2)),
 		RecvPropInt(RECVINFO(m_nGlowModelIndex)),
 	END_RECV_TABLE(DT_Plasma)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

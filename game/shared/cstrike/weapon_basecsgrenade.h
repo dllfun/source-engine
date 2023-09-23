@@ -72,20 +72,25 @@ protected:
 private:
 	CBaseCSGrenade( const CBaseCSGrenade & ) {}
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CBaseCSGrenade)
 	BEGIN_NETWORK_TABLE(CBaseCSGrenade, DT_BaseCSGrenade, DT_WeaponCSBase)
 		SendPropBool(SENDINFO(m_bRedraw)),
 		SendPropBool(SENDINFO(m_bPinPulled)),
 		SendPropFloat(SENDINFO(m_fThrowTime), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE(DT_BaseCSGrenade)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CBaseCSGrenade)
 	BEGIN_NETWORK_TABLE(CBaseCSGrenade, DT_BaseCSGrenade, DT_WeaponCSBase)
 		RecvPropBool(RECVINFO(m_bRedraw)),
 		RecvPropBool(RECVINFO(m_bPinPulled)),
 		RecvPropFloat(RECVINFO(m_fThrowTime)),
 	END_NETWORK_TABLE(DT_BaseCSGrenade)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

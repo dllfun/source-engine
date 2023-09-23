@@ -666,36 +666,63 @@ extern SendTableManager* g_pSendTableManager;
 
 
 
+//#define BEGIN_SEND_TABLE_NOBASE(className, tableName) \
+//	class SendTable_##tableName : public SendTable{\
+//	public:\
+//	\
+//		SendTable_##tableName(){ \
+//			typedef className currentSendDTClass; \
+//			static bool registed = false;\
+//			if( !registed ){\
+//				registed = true;\
+//				static const char *pTableName = #tableName; \
+//				static SendProp g_SendProps[] = { \
+//						SendPropInt("should_never_see_this", 0, sizeof(int)),
+//
+//
+//#define END_SEND_TABLE(tableName) \
+//				};\
+//				Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
+//				g_pSendTableManager->RegisteSendTable(this);\
+//			}\
+//		}\
+//	\
+//	};\
+//	friend class SendTable_##tableName;\
+//	SendTable_##tableName g_SendTable_##tableName;
+	//SendTable* g_pSendTable_##tableName = &g_SendTable_##tableName;
+
+#define BEGIN_INIT_SEND_TABLE(className) \
+		static void InitSendTable(){\
+			static bool inited = false; \
+			if( inited ){\
+				return;\
+			}\
+			inited = true;
+
 #define BEGIN_SEND_TABLE_NOBASE(className, tableName) \
-	class SendTable_##tableName : public SendTable{\
-	public:\
-	\
-		SendTable_##tableName(){ \
-			typedef className currentSendDTClass; \
-			static bool registed = false;\
-			if( !registed ){\
-				registed = true;\
+			{\
+				typedef className currentSendDTClass;\
+				static SendTable g_SendTable;		\
 				static const char *pTableName = #tableName; \
 				static SendProp g_SendProps[] = { \
-						SendPropInt("should_never_see_this", 0, sizeof(int)),
-
-
+								SendPropInt("should_never_see_this", 0, sizeof(int)),
+		
 #define END_SEND_TABLE(tableName) \
-				};\
-				Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
-				g_pSendTableManager->RegisteSendTable(this);\
-			}\
-		}\
-	\
-	};\
-	friend class SendTable_##tableName;\
-	SendTable_##tableName g_SendTable_##tableName;
-	//SendTable* g_pSendTable_##tableName = &g_SendTable_##tableName;
+												};\
+				g_SendTable.Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
+				g_pSendTableManager->RegisteSendTable(&g_SendTable);\
+			}
 
 #define BEGIN_SEND_TABLE(className, tableName, baseTableName) \
 	BEGIN_SEND_TABLE_NOBASE(className, tableName) \
-		SendPropDataTable("baseclass", 0, #baseTableName, SendProxy_DataTableToDataTable),
+							SendPropDataTable("baseclass", 0, #baseTableName, SendProxy_DataTableToDataTable),
 
+#define END_INIT_SEND_TABLE() \
+		}
+
+#define INIT_REFERENCE_SEND_TABLE(className) \
+		className::InitSendTable();
 
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the
 // legit offsetof from the C headers, so we'll use the old impl here to avoid exposing temptation to others

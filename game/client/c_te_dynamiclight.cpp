@@ -41,6 +41,8 @@ public:
 	float			m_fTime;
 	float			m_fDecay;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEDynamicLight)
 	BEGIN_RECV_TABLE(C_TEDynamicLight, DT_TEDynamicLight, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropInt(RECVINFO(r)),
@@ -51,6 +53,7 @@ public:
 		RecvPropFloat(RECVINFO(m_fTime)),
 		RecvPropFloat(RECVINFO(m_fDecay)),
 	END_RECV_TABLE(DT_TEDynamicLight)
+	END_INIT_RECV_TABLE()
 };
 
 

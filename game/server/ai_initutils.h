@@ -75,9 +75,11 @@ public:
 public:
 	HintNodeData		m_NodeData;
 
+	BEGIN_INIT_SEND_TABLE(CNodeEnt)
 	BEGIN_SEND_TABLE(CNodeEnt, DT_NodeEnt, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_NodeEnt)
+	END_INIT_SEND_TABLE()
 };
 
 //###########################################################

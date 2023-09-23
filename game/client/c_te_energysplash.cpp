@@ -36,12 +36,14 @@ public:
 
 	const class IVModel *m_pModel;
 
-
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEEnergySplash)
 	BEGIN_RECV_TABLE_NOBASE(C_TEEnergySplash, DT_TEEnergySplash)
 		RecvPropVector(RECVINFO(m_vecPos)),
 		RecvPropVector(RECVINFO(m_vecDir)),
 		RecvPropInt(RECVINFO(m_bExplosive)),
 	END_RECV_TABLE(DT_TEEnergySplash)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

@@ -34,9 +34,11 @@ public:
 public:
 	CNetworkVector( m_vecEnd );
 
+	BEGIN_INIT_SEND_TABLE(CTEShowLine)
 	BEGIN_SEND_TABLE(CTEShowLine, DT_TEShowLine, DT_TEParticleSystem)
 		SendPropVector(SENDINFO(m_vecEnd), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_TEShowLine)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

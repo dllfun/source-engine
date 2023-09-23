@@ -768,9 +768,12 @@ private:
 	int			m_iMaxPiecesDX8;
 	int			m_iLastFrame;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CGameGibManager)
 	BEGIN_SEND_TABLE(CGameGibManager, DT_GameGibManager, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_GameGibManager)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CGameGibManager )
@@ -903,6 +906,23 @@ CGameGibManager *GetGibManager( void )
 
 	return (CGameGibManager *)g_hGameGibManager.Get();
 }
+
+#else
+
+class C_GameGibManager : public C_BaseEntity {
+public:
+	DECLARE_CLASS(C_GameGibManager, CBaseEntity);
+	DECLARE_CLIENTCLASS();
+	C_GameGibManager() {}
+
+	BEGIN_INIT_RECV_TABLE(C_GameGibManager)
+	BEGIN_RECV_TABLE(C_GameGibManager, DT_GameGibManager, DT_BaseEntity)
+
+	END_RECV_TABLE(DT_GameGibManager)
+	END_INIT_RECV_TABLE()
+};
+
+IMPLEMENT_CLIENTCLASS(C_GameGibManager, DT_GameGibManager, CGameGibManager)
 
 #endif
 

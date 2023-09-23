@@ -35,6 +35,7 @@ public:
 	CNetworkVector( m_vecOrigin );
 	CNetworkVar( int, m_nIndex );
 
+	BEGIN_INIT_SEND_TABLE(CTEWorldDecal)
 	BEGIN_SEND_TABLE(CTEWorldDecal, DT_TEWorldDecal, DT_BaseTempEntity)
 #if defined( TF_DLL )
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD_MP_INTEGRAL),
@@ -43,6 +44,7 @@ public:
 #endif
 		SendPropInt(SENDINFO(m_nIndex), 9, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEWorldDecal)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

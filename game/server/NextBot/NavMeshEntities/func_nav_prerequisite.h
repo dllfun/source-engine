@@ -46,9 +46,12 @@ protected:
 	bool m_isDisabled;
 	EHANDLE m_hTaskEntity;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFuncNavPrerequisite)
 	BEGIN_SEND_TABLE(CFuncNavPrerequisite, DT_FuncNavPrerequisite, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncNavPrerequisite)
+	END_INIT_SEND_TABLE()
 };
 
 inline float CFuncNavPrerequisite::GetTaskValue( void ) const

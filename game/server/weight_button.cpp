@@ -26,9 +26,11 @@ public:
 
 	void TriggerThink ( void );
 
+	BEGIN_INIT_SEND_TABLE(CWeightButton)
 	BEGIN_SEND_TABLE(CWeightButton, DT_WeightButton, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_WeightButton)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CWeightButton, DT_WeightButton)

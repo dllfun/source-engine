@@ -33,9 +33,12 @@ private:
 	float m_flRadius;
 	float m_flLineLength;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncTrackTrain)
 	BEGIN_RECV_TABLE(C_FuncTrackTrain, DT_FuncTrackTrain, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncTrackTrain)
+	END_INIT_RECV_TABLE()
 };
 
 

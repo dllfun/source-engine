@@ -174,6 +174,7 @@ private:
 	CNetworkVar( short, m_iStartAttachment );	// StartAttachment/EndAttachment are attachment points.
 	CNetworkVar( short, m_iEndAttachment );
 
+	BEGIN_INIT_SEND_TABLE(CRopeKeyframe)
 	BEGIN_SEND_TABLE_NOBASE(CRopeKeyframe, DT_RopeKeyframe)
 		SendPropEHandle(SENDINFO(m_hStartPoint)),
 		SendPropEHandle(SENDINFO(m_hEndPoint)),
@@ -198,6 +199,7 @@ private:
 
 		SendPropInt(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_RopeKeyframe)
+	END_INIT_SEND_TABLE()
 };
 
 

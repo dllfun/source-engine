@@ -1227,9 +1227,11 @@ public:
 	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
 	unsigned int PhysicsSolidMaskForEntity( void ) const { return MASK_PLAYERSOLID; }
 
+	BEGIN_INIT_SEND_TABLE(CPushable)
 	BEGIN_SEND_TABLE(CPushable, DT_Pushable, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_Pushable)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CPushable, DT_Pushable)

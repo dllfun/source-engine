@@ -116,9 +116,12 @@ private:
 
 	Vector		m_vecLastOrigin;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_WaterBullet)
 	BEGIN_RECV_TABLE(C_WaterBullet, DT_WaterBullet, DT_BaseAnimating)
 
 	END_RECV_TABLE(DT_WaterBullet)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( C_WaterBullet, DT_WaterBullet, CWaterBullet )

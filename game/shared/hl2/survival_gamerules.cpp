@@ -105,8 +105,10 @@ inline CHalfLife2Survival* HL2SurvivalGameRules()
 
 REGISTER_GAMERULES_CLASS( CHalfLife2Survival );
 
+BEGIN_INIT_SEND_TABLE(CHalfLife2Survival)
 BEGIN_NETWORK_TABLE_NOBASE( CHalfLife2Survival, DT_HL2SurvivalGameRules )
 END_NETWORK_TABLE()
+END_INIT_SEND_TABLE()
 
 
 LINK_ENTITY_TO_CLASS( hl2_survival_gamerules, CHalfLife2SurvivalProxy );
@@ -120,9 +122,11 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2SurvivalProxy, DT_HalfLife2SurvivalProx
 		*pOut = pRules;
 	}
 
+	BEGIN_INIT_RECV_TABLE(CHalfLife2SurvivalProxy)
 	BEGIN_RECV_TABLE( CHalfLife2SurvivalProxy, DT_HalfLife2SurvivalProxy )
 	RecvPropDataTable( "hl2_survival_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_HL2SurvivalGameRules ), RecvProxy_HL2SurvivalGameRules )
 	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 	#else
 	void* SendProxy_HL2SurvivalGameRules( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
 	{
@@ -132,9 +136,11 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2SurvivalProxy, DT_HalfLife2SurvivalProx
 		return pRules;
 	}
 
+	BEGIN_INIT_SEND_TABLE(CHalfLife2SurvivalProxy)
 	BEGIN_SEND_TABLE( CHalfLife2SurvivalProxy, DT_HalfLife2SurvivalProxy )
 	SendPropDataTable( "hl2_survival_gamerules_data", 0, REFERENCE_SEND_TABLE( DT_HL2SurvivalGameRules ), SendProxy_HL2SurvivalGameRules )
 	END_SEND_TABLE(DT_HalfLife2SurvivalProxy)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifndef CLIENT_DLL

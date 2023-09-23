@@ -56,6 +56,7 @@ protected:
 	CNetworkArray( unsigned char, m_iControlPointParents, kMAXCONTROLPOINTS );
 	CNetworkVar( bool,	m_bWeatherEffect );
 
+	BEGIN_INIT_SEND_TABLE(CParticleSystem)
 	BEGIN_SEND_TABLE_NOBASE(CParticleSystem, DT_ParticleSystem)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
 		SendPropEHandle(SENDINFO(m_hOwnerEntity)),
@@ -71,6 +72,7 @@ protected:
 		SendPropArray3(SENDINFO_ARRAY3(m_iControlPointParents), SendPropInt(SENDINFO_ARRAY(m_iControlPointParents), 3, SPROP_UNSIGNED)),
 		SendPropBool(SENDINFO(m_bWeatherEffect)),
 	END_SEND_TABLE(DT_ParticleSystem)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // PARTICLE_SYSTEM_H

@@ -32,10 +32,13 @@ public:
 	int				m_nModelIndex;
 	int				m_nReversed;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TELargeFunnel)
 	BEGIN_RECV_TABLE(C_TELargeFunnel, DT_TELargeFunnel, DT_TEParticleSystem)
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropInt(RECVINFO(m_nReversed)),
 	END_RECV_TABLE(DT_TELargeFunnel)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

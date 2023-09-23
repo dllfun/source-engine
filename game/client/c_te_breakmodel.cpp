@@ -41,6 +41,8 @@ public:
 	float			m_fTime;
 	int				m_nFlags;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBreakModel)
 	BEGIN_RECV_TABLE(C_TEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropFloat(RECVINFO(m_angRotation[0])),
@@ -54,6 +56,7 @@ public:
 		RecvPropFloat(RECVINFO(m_fTime)),
 		RecvPropInt(RECVINFO(m_nFlags)),
 	END_RECV_TABLE(DT_TEBreakModel)
+	END_INIT_RECV_TABLE()
 };
 
 

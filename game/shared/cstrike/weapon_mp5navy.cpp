@@ -42,14 +42,21 @@ public:
 private:
 	CWeaponMP5Navy( const CWeaponMP5Navy & );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponMP5Navy)
 	BEGIN_NETWORK_TABLE(CWeaponMP5Navy, DT_WeaponMP5Navy, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponMP5Navy)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponMP5Navy)
 	BEGIN_NETWORK_TABLE(CWeaponMP5Navy, DT_WeaponMP5Navy, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponMP5Navy)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

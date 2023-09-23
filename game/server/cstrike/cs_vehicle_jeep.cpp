@@ -207,9 +207,11 @@ private:
 
 	CNetworkVar( bool, m_bHeadlightIsOn );
 
+	BEGIN_INIT_SEND_TABLE(CPropJeep)
 	BEGIN_SEND_TABLE(CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
 		SendPropBool(SENDINFO(m_bHeadlightIsOn)),
-	END_SEND_TABLE(DT_PropJeep);
+	END_SEND_TABLE(DT_PropJeep)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CPropJeep )

@@ -282,9 +282,11 @@ private:
 	Vector m_vecMoveDir;
 	CNetworkVar( float, m_flConveyorSpeed );
 
+	BEGIN_INIT_SEND_TABLE(CFuncConveyor)
 	BEGIN_SEND_TABLE(CFuncConveyor, DT_FuncConveyor, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flConveyorSpeed), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_FuncConveyor)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( func_conveyor, CFuncConveyor );
@@ -467,6 +469,7 @@ public:
 	Vector m_vecClientOrigin;
 	QAngle m_vecClientAngles;
 
+	BEGIN_INIT_SEND_TABLE(CFuncRotating)
 	BEGIN_SEND_TABLE(CFuncRotating, DT_FuncRotating, DT_BaseEntity)
 		SendPropExclude("DT_BaseEntity", "m_angRotation"),
 		SendPropExclude("DT_BaseEntity", "m_vecOrigin"),
@@ -479,6 +482,7 @@ public:
 
 		SendPropInt(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_FuncRotatingSimulationTime),
 	END_SEND_TABLE(DT_FuncRotating)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( func_rotating, CFuncRotating );
@@ -1401,9 +1405,12 @@ private:
 	CHandle<CBaseFilter>			m_hFilter;
 	bool							m_bDisabled;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFuncVPhysicsClip)
 	BEGIN_SEND_TABLE(CFuncVPhysicsClip, DT_FuncVPhysicsClip, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncVPhysicsClip)
+	END_INIT_SEND_TABLE()
 };
 
 // Global Savedata for base trigger

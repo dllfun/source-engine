@@ -54,6 +54,7 @@ public:
 	CNetworkVar( int, m_nSpeed );
 	CNetworkVar( int, m_nFlags );
 
+	BEGIN_INIT_SEND_TABLE(CTEBaseBeam)
 	BEGIN_SEND_TABLE_NOBASE(CTEBaseBeam, DT_BaseBeam)
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
 		SendPropModelIndex(SENDINFO(m_nHaloIndex)),
@@ -71,6 +72,7 @@ public:
 		SendPropInt(SENDINFO(a), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nFlags), 32, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_BaseBeam)
+	END_INIT_SEND_TABLE()
 };
 
 EXTERN_SEND_TABLE(DT_BaseBeam);

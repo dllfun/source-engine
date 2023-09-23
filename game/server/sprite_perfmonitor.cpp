@@ -36,10 +36,12 @@ private:
 	CNetworkVar( bool, m_bDisplayPerf );
 	CNetworkVar( bool, m_bMeasurePerf );
 
+	BEGIN_INIT_SEND_TABLE(CParticlePerformanceMonitor)
 	BEGIN_SEND_TABLE(CParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_bDisplayPerf), 1, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_bMeasurePerf), 1, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_ParticlePerformanceMonitor)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( env_particle_performance_monitor, CParticlePerformanceMonitor );

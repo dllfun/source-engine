@@ -38,9 +38,11 @@ public:
 	// Inputs
 	void InputFade( inputdata_t &inputdata );
 
+	BEGIN_INIT_SEND_TABLE(CEnvFade)
 	BEGIN_SEND_TABLE(CEnvFade, DT_EnvFade, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_EnvFade)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CEnvFade, DT_EnvFade)

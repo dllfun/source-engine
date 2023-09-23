@@ -158,9 +158,12 @@ private:
 
 	void CloseAreaPortalsThink( void );	///< Delays turning off area portals when closing doors to prevent visual artifacts
 
+public:
+	BEGIN_INIT_SEND_TABLE(CBaseDoor)
 	BEGIN_SEND_TABLE(CBaseDoor, DT_BaseDoor, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flWaveHeight), 8, SPROP_ROUNDUP, 0.0f, 8.0f),
 	END_SEND_TABLE(DT_BaseDoor)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // DOORS_H

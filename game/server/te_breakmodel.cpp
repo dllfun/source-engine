@@ -41,6 +41,7 @@ public:
 	CNetworkVar( float, m_fTime );
 	CNetworkVar( int, m_nFlags );
 
+	BEGIN_INIT_SEND_TABLE(CTEBreakModel)
 	BEGIN_SEND_TABLE(CTEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 0), 13),
@@ -54,6 +55,7 @@ public:
 		SendPropFloat(SENDINFO(m_fTime), 10, 0, 0, 102.4),
 		SendPropInt(SENDINFO(m_nFlags), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEBreakModel)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

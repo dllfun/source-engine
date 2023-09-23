@@ -39,11 +39,14 @@ public:
 	int				m_nEntity;
 	int				m_nIndex;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEBSPDecal)
 	BEGIN_RECV_TABLE(C_TEBSPDecal, DT_TEBSPDecal, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropInt(RECVINFO(m_nEntity)),
 		RecvPropInt(RECVINFO(m_nIndex)),
 	END_RECV_TABLE(DT_TEBSPDecal)
+	END_INIT_RECV_TABLE()
 };
 
 //-----------------------------------------------------------------------------

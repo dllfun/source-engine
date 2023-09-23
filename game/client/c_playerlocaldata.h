@@ -75,6 +75,8 @@ public:
 
 	bool					m_bSlowMovement;
 
+public:
+	BEGIN_INIT_RECV_TABLE(CPlayerLocalData)
 	BEGIN_RECV_TABLE_NOBASE(CPlayerLocalData, DT_Local)
 		RecvPropArray3(RECVINFO_ARRAY(m_chAreaBits), RecvPropInt(RECVINFO(m_chAreaBits[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_chAreaPortalBits), RecvPropInt(RECVINFO(m_chAreaPortalBits[0]))),
@@ -141,6 +143,7 @@ public:
 		RecvPropInt(RECVINFO(m_audio.localBits)),
 		RecvPropEHandle(RECVINFO(m_audio.ent)),
 	END_RECV_TABLE(DT_Local)
+	END_INIT_RECV_TABLE()
 };
 
 #endif // C_PLAYERLOCALDATA_H

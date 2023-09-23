@@ -1048,6 +1048,8 @@ private:
 // HPE_END
 //=============================================================================
 
+public:
+	BEGIN_INIT_SEND_TABLE(CCSPlayer)
 	BEGIN_SEND_TABLE_NOBASE(CCSPlayer, DT_CSLocalPlayerExclusive)
 		SendPropFloat(SENDINFO(m_flStamina), 14, 0, 0, 1400),
 		SendPropInt(SENDINFO(m_iDirection), 1, SPROP_UNSIGNED),
@@ -1074,9 +1076,9 @@ private:
 	BEGIN_SEND_TABLE_NOBASE(CCSPlayer, DT_CSNonLocalPlayerExclusive)
 		// send a lo-res origin to other players
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
-		END_SEND_TABLE(DT_CSNonLocalPlayerExclusive)
+	END_SEND_TABLE(DT_CSNonLocalPlayerExclusive)
 
-		BEGIN_SEND_TABLE(CCSPlayer, DT_CSPlayer, DT_BasePlayer)
+	BEGIN_SEND_TABLE(CCSPlayer, DT_CSPlayer, DT_BasePlayer)
 		SendPropExclude("DT_BaseAnimating", "m_flPoseParameter"),
 		SendPropExclude("DT_BaseAnimating", "m_flPlaybackRate"),
 		SendPropExclude("DT_BaseAnimating", "m_nSequence"),
@@ -1142,9 +1144,8 @@ private:
 		SendPropFloat(SENDINFO(m_flProgressBarStartTime), 0, SPROP_NOSCALE),
 		SendPropEHandle(SENDINFO(m_hRagdoll)),
 		SendPropInt(SENDINFO(m_cycleLatch), 4, SPROP_UNSIGNED),
-
-
 	END_SEND_TABLE(DT_CSPlayer)
+	END_INIT_SEND_TABLE()
 };
 
 

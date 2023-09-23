@@ -101,9 +101,12 @@ protected:
 
 	CHandle<CBasePlayer>	m_hCarryingPlayer;	// Player who's carrying us
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPhysBox)
 	BEGIN_SEND_TABLE(CPhysBox, DT_PhysBox, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PhysBox)
+	END_INIT_SEND_TABLE()
 };
 
 // ---------------------------------------------------------------------
@@ -239,6 +242,8 @@ protected:
 	float			m_flNextSuckTime;
 	int				m_iMaxObjectsAttached;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPhysMagnet)
 	BEGIN_SEND_TABLE(CPhysMagnet, DT_PhysMagnet, DT_BaseAnimating)
 
 		// ROBIN: Disabled because we don't need it anymore
@@ -253,6 +258,7 @@ protected:
 		*/
 
 	END_SEND_TABLE(DT_PhysMagnet)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // PHYSOBJ_H

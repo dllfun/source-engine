@@ -62,9 +62,12 @@ private:
 	// all the console variables and registers them.
 	//static CBaseTempEntity	*s_pTempEntities;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CBaseTempEntity)
 	BEGIN_SEND_TABLE_NOBASE(CBaseTempEntity, DT_BaseTempEntity)
 
 	END_SEND_TABLE(DT_BaseTempEntity)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // BASETEMPENTITY_H

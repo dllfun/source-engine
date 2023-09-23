@@ -64,9 +64,12 @@ private:
 	// Outputs
 	COutputEvent	m_OnDeath;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CGunTarget)
 	BEGIN_SEND_TABLE(CGunTarget, DT_GunTarget, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_GunTarget)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CGunTarget, DT_GunTarget)

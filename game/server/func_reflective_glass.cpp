@@ -17,9 +17,11 @@ class CFuncReflectiveGlass : public CFuncBrush
 	DECLARE_SERVERCLASS();
 	DECLARE_SEND_TABLE_ACCESS(DT_FuncReflectiveGlass);
 
+	BEGIN_INIT_SEND_TABLE(CFuncReflectiveGlass)
 	BEGIN_SEND_TABLE(CFuncReflectiveGlass, DT_FuncReflectiveGlass, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncReflectiveGlass)
+	END_INIT_SEND_TABLE()
 };
 
 // automatically hooks in the system's callbacks

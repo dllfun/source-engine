@@ -29,11 +29,13 @@ private:
 private:
 	C_ParticlePerformanceMonitor( const C_ParticlePerformanceMonitor & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ParticlePerformanceMonitor)
 	BEGIN_RECV_TABLE(C_ParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_bMeasurePerf)),
 		RecvPropInt(RECVINFO(m_bDisplayPerf)),
 	END_RECV_TABLE(DT_ParticlePerformanceMonitor)
-
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( C_ParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, CParticlePerformanceMonitor )

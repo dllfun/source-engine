@@ -72,9 +72,11 @@ public:
 
 	CHandle<CBasePlayer>	m_player;
 
+	BEGIN_INIT_SEND_TABLE(CGameUI)
 	BEGIN_SEND_TABLE(CGameUI, DT_GameUI, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_GameUI)
+	END_INIT_SEND_TABLE()
 };
 
 

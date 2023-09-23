@@ -249,9 +249,12 @@ private:
 	//---------------------------------
 
 	DECLARE_DATADESC();
+public:
+	BEGIN_INIT_SEND_TABLE(CAI_ScriptConditions)
 	BEGIN_SEND_TABLE(CAI_ScriptConditions, DT_AI_ScriptConditions, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_AI_ScriptConditions)
+	END_INIT_SEND_TABLE()
 };
 
 //=============================================================================

@@ -31,9 +31,12 @@ public:
 public:
 	float			m_fDisappearDist;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Func_LOD)
 	BEGIN_RECV_TABLE(C_Func_LOD, DT_Func_LOD, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_fDisappearDist)),
 	END_RECV_TABLE(DT_Func_LOD)
+	END_INIT_RECV_TABLE()
 };
 
 

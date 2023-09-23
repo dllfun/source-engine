@@ -37,10 +37,12 @@ public:
 	CNetworkVector( m_vecStartPoint );
 	CNetworkVector( m_vecEndPoint );
 
+	BEGIN_INIT_SEND_TABLE(CTEBeamPoints)
 	BEGIN_SEND_TABLE(CTEBeamPoints, DT_TEBeamPoints, DT_BaseBeam)
 		SendPropVector(SENDINFO(m_vecStartPoint), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecEndPoint), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_TEBeamPoints)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

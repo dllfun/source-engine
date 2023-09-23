@@ -34,9 +34,11 @@ public:
 public:
 	CNetworkVar( int, m_nPlayer );
 
+	BEGIN_INIT_SEND_TABLE(CTEKillPlayerAttachments)
 	BEGIN_SEND_TABLE(CTEKillPlayerAttachments, DT_TEKillPlayerAttachments, DT_BaseTempEntity)
 		SendPropInt(SENDINFO(m_nPlayer), 5, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEKillPlayerAttachments)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

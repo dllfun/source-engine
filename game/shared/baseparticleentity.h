@@ -90,14 +90,21 @@ private:
 
 	CBaseParticleEntity( const CBaseParticleEntity & ); // not defined, not accessible
 
+public:
 #if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CBaseParticleEntity)
 	BEGIN_NETWORK_TABLE(CBaseParticleEntity, DT_BaseParticleEntity, DT_BaseEntity)
+
 	END_NETWORK_TABLE(DT_BaseParticleEntity)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined( CLIENT_DLL )
+	BEGIN_INIT_RECV_TABLE(CBaseParticleEntity)
 	BEGIN_NETWORK_TABLE(CBaseParticleEntity, DT_BaseParticleEntity, DT_BaseEntity)
+
 	END_NETWORK_TABLE(DT_BaseParticleEntity)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

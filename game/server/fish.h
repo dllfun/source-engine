@@ -86,6 +86,7 @@ private:
 
 	CUtlVector< CFish * > m_visible;					///< vector of fish that we can see
 
+	BEGIN_INIT_SEND_TABLE(CFish)
 	BEGIN_SEND_TABLE_NOBASE(CFish, DT_CFish)
 
 		SendPropVector(SENDINFO(m_poolOrigin), -1, SPROP_COORD, 0.0f, HIGH_DEFAULT),	// only sent once
@@ -102,6 +103,7 @@ private:
 		SendPropFloat(SENDINFO(m_waterLevel)),										// only sent once
 
 	END_SEND_TABLE(DT_CFish)
+	END_INIT_SEND_TABLE()
 };
 
 
@@ -141,9 +143,12 @@ private:
 
 	CountdownTimer m_visTimer;				///< for throttling line of sight checks between all fish
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFishPool)
 	BEGIN_SEND_TABLE(CFishPool, DT_FishPool, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FishPool)
+	END_INIT_SEND_TABLE()
 };
 
 

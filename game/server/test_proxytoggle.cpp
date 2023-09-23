@@ -56,6 +56,7 @@ public:
 
 	CNetworkVar( int, m_WithProxy );
 
+	BEGIN_INIT_SEND_TABLE(CTest_ProxyToggle_Networkable)
 	BEGIN_SEND_TABLE_NOBASE(CTest_ProxyToggle_Networkable, DT_ProxyToggle_ProxiedData)
 		SendPropInt(SENDINFO(m_WithProxy))
 	END_SEND_TABLE(DT_ProxyToggle_ProxiedData)
@@ -63,6 +64,7 @@ public:
 	BEGIN_SEND_TABLE(CTest_ProxyToggle_Networkable, DT_ProxyToggle, DT_BaseEntity)
 		SendPropDataTable("blah", 0, REFERENCE_SEND_TABLE(DT_ProxyToggle_ProxiedData), SendProxy_TestProxyToggle)
 	END_SEND_TABLE(DT_ProxyToggle)
+	END_INIT_SEND_TABLE()
 };
 
 

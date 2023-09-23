@@ -393,9 +393,12 @@ private:
 	float						m_cancelTime;
 	int							m_savedCollisionGroup;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPhysicsEntitySolver)
 	BEGIN_SEND_TABLE(CPhysicsEntitySolver, DT_PhysicsEntitySolver, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PhysicsEntitySolver)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CPhysicsEntitySolver, DT_PhysicsEntitySolver)

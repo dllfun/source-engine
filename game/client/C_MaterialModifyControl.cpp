@@ -120,6 +120,8 @@ private:
 
 	int		m_nModifyMode;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_MaterialModifyControl)
 	BEGIN_RECV_TABLE(C_MaterialModifyControl, DT_MaterialModifyControl, DT_BaseEntity)
 		RecvPropString(RECVINFO(m_szMaterialName)),
 		RecvPropString(RECVINFO(m_szMaterialVar)),
@@ -135,6 +137,7 @@ private:
 		RecvPropInt(RECVINFO(m_bFloatLerpWrap)),
 		RecvPropInt(RECVINFO(m_nModifyMode)),
 	END_RECV_TABLE(DT_MaterialModifyControl)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_MaterialModifyControl, DT_MaterialModifyControl, CMaterialModifyControl)

@@ -59,6 +59,8 @@ private:
 	int		m_nSpotlightTextureFrame;
 	int		m_nShadowQuality;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvProjectedTexture)
 	BEGIN_RECV_TABLE(C_EnvProjectedTexture, DT_EnvProjectedTexture, DT_BaseEntity)
 		RecvPropEHandle(RECVINFO(m_hTargetEntity)),
 		RecvPropBool(RECVINFO(m_bState)),
@@ -75,7 +77,7 @@ private:
 		RecvPropFloat(RECVINFO(m_flFarZ)),
 		RecvPropInt(RECVINFO(m_nShadowQuality)),
 	END_RECV_TABLE(DT_EnvProjectedTexture)
-
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS( C_EnvProjectedTexture, DT_EnvProjectedTexture, CEnvProjectedTexture )

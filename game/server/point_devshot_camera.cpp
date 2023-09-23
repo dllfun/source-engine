@@ -41,9 +41,12 @@ private:
 	string_t	m_iszCameraName;
 	int			m_iFOV;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPointDevShotCamera)
 	BEGIN_SEND_TABLE(CPointDevShotCamera, DT_PointDevShotCamera, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PointDevShotCamera)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CPointDevShotCamera )

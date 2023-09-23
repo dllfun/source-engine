@@ -98,6 +98,8 @@ private:
 	// One bit per pane
 	CNetworkArray( bool, m_RawPanelBitVec, MAX_NUM_PANELS * MAX_NUM_PANELS );
 
+public:
+	BEGIN_INIT_SEND_TABLE(CBreakableSurface)
 	BEGIN_SEND_TABLE(CBreakableSurface, DT_BreakableSurface, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_nNumWide), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nNumHigh), 8, SPROP_UNSIGNED),
@@ -109,6 +111,7 @@ private:
 		SendPropInt(SENDINFO(m_nSurfaceType), 2, SPROP_UNSIGNED),
 		SendPropArray3(SENDINFO_ARRAY3(m_RawPanelBitVec), SendPropInt(SENDINFO_ARRAY(m_RawPanelBitVec), 1, SPROP_UNSIGNED)),
 	END_SEND_TABLE(DT_BreakableSurface)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // FUNC_BREAKABLESURF_H

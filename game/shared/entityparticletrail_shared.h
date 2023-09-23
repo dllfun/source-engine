@@ -39,22 +39,26 @@ struct EntityParticleTrailInfo_t
 	CNetworkVar( float, m_flEndSize );
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(EntityParticleTrailInfo_t)
 	BEGIN_NETWORK_TABLE_NOBASE(EntityParticleTrailInfo_t, DT_EntityParticleTrailInfo)
 		SendPropFloat(SENDINFO(m_flLifetime), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flStartSize), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flEndSize), 0, SPROP_NOSCALE),
 	END_NETWORK_TABLE(DT_EntityParticleTrailInfo)
+	END_INIT_SEND_TABLE()
 #endif
 
 		//-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(EntityParticleTrailInfo_t)
 	BEGIN_NETWORK_TABLE_NOBASE(EntityParticleTrailInfo_t, DT_EntityParticleTrailInfo)
 		RecvPropFloat(RECVINFO(m_flLifetime)),
 		RecvPropFloat(RECVINFO(m_flStartSize)),
 		RecvPropFloat(RECVINFO(m_flEndSize)),
 	END_NETWORK_TABLE(DT_EntityParticleTrailInfo)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

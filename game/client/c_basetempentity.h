@@ -116,8 +116,12 @@ private:
 	//static C_BaseTempEntity	*s_pTempEntities;
 	//static C_BaseTempEntity *s_pDynamicEntities;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseTempEntity)
 	BEGIN_RECV_TABLE_NOBASE(C_BaseTempEntity, DT_BaseTempEntity)
+
 	END_RECV_TABLE(DT_BaseTempEntity)
+	END_INIT_RECV_TABLE()
 };
 
 

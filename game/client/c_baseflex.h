@@ -294,6 +294,8 @@ public:
 	CInterpolatedVar< Vector >	m_iv_vecShift;
 #endif
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseFlex)
 	BEGIN_RECV_TABLE(C_BaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
 		RecvPropArray3(RECVINFO_ARRAY(m_flexWeight), RecvPropFloat(RECVINFO(m_flexWeight[0]))),
 		RecvPropInt(RECVINFO(m_blinktoggle)),
@@ -309,6 +311,7 @@ public:
 #endif
 
 	END_RECV_TABLE(DT_BaseFlex)
+	END_INIT_RECV_TABLE()
 };
 
 

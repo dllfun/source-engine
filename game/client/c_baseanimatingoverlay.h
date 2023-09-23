@@ -57,6 +57,9 @@ public:
 private:
 	C_BaseAnimatingOverlay( const C_BaseAnimatingOverlay & ); // not defined, not accessible
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseAnimatingOverlay)
+	INIT_REFERENCE_RECV_TABLE(C_AnimationLayer)
 	BEGIN_RECV_TABLE_NOBASE(C_BaseAnimatingOverlay, DT_OverlayVars)
 		RecvPropUtlVector(
 			RECVINFO_UTLVECTOR_SIZEFN(m_AnimOverlay, ResizeAnimationLayerCallback),
@@ -67,6 +70,7 @@ private:
 	BEGIN_RECV_TABLE(C_BaseAnimatingOverlay, DT_BaseAnimatingOverlay, DT_BaseAnimating)
 		RecvPropDataTable("overlay_vars", 0, 0, REFERENCE_RECV_TABLE(DT_OverlayVars))
 	END_RECV_TABLE(DT_BaseAnimatingOverlay)
+	END_INIT_RECV_TABLE()
 };
 
 

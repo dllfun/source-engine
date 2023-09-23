@@ -68,9 +68,12 @@ private:
 	float m_flSequenceScale;
 	bool m_bSimulate;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvParticleScript)
 	BEGIN_RECV_TABLE(C_EnvParticleScript, DT_EnvParticleScript, DT_BaseAnimating)
 		RecvPropFloat(RECVINFO(m_flSequenceScale)),
 	END_RECV_TABLE(DT_EnvParticleScript)
+	END_INIT_RECV_TABLE()
 };
 
 REGISTER_EFFECT( C_EnvParticleScript );

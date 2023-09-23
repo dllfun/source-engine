@@ -56,6 +56,8 @@ public:
 
 	bool    m_bClientBlend;
 
+public:
+	BEGIN_INIT_RECV_TABLE(CAnimationLayer)
 	BEGIN_RECV_TABLE_NOBASE(CAnimationLayer, DT_Animationlayer)
 		RecvPropInt(RECVINFO_NAME(m_nSequence, m_nSequence)),
 		RecvPropFloat(RECVINFO_NAME(m_flCycle, m_flCycle)),
@@ -63,6 +65,7 @@ public:
 		RecvPropFloat(RECVINFO_NAME(m_flWeight, m_flWeight)),
 		RecvPropInt(RECVINFO_NAME(m_nOrder, m_nOrder))
 	END_RECV_TABLE(DT_Animationlayer)
+	END_INIT_RECV_TABLE()
 };
 
 

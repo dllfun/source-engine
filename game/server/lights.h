@@ -51,9 +51,11 @@ private:
 	char	m_iTargetFade;
 
 public:
+	BEGIN_INIT_SEND_TABLE(CLight)
 	BEGIN_SEND_TABLE(CLight, DT_Light, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_Light)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // LIGHTS_H

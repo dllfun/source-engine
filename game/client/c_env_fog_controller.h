@@ -31,6 +31,8 @@ public:
 	//-----------------------------------------------------------------------------
 // Datatable
 //-----------------------------------------------------------------------------
+public:
+	BEGIN_INIT_RECV_TABLE(CFogController)
 	BEGIN_NETWORK_TABLE_NOBASE(CFogController, DT_FogController)
 		// fog data
 		RecvPropInt(RECVINFO(m_fog.enable)),
@@ -50,6 +52,7 @@ public:
 		RecvPropFloat(RECVINFO(m_fog.lerptime)),
 		RecvPropFloat(RECVINFO(m_fog.duration)),
 	END_NETWORK_TABLE(DT_FogController)
+	END_INIT_RECV_TABLE()
 };
 
 

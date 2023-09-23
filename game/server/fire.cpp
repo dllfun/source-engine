@@ -198,9 +198,12 @@ protected:
 
 	DECLARE_DATADESC();
 
+public:
+	BEGIN_INIT_SEND_TABLE(CFire)
 	BEGIN_SEND_TABLE(CFire, DT_Fire, DT_BaseEntity)
 		
 	END_SEND_TABLE(DT_Fire)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CFire, DT_Fire)
@@ -1341,9 +1344,12 @@ private:
 	COutputEvent	m_OnHeatLevelStart;
 	COutputEvent	m_OnHeatLevelEnd;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CEnvFireSensor)
 	BEGIN_SEND_TABLE(CEnvFireSensor, DT_EnvFireSensor, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_EnvFireSensor)
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CEnvFireSensor )

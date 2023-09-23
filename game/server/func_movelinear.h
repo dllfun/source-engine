@@ -60,8 +60,10 @@ public:
 	COutputEvent m_OnFullyOpen;
 	COutputEvent m_OnFullyClosed;
 
+	BEGIN_INIT_SEND_TABLE(CFuncMoveLinear)
 	BEGIN_SEND_TABLE(CFuncMoveLinear, DT_FuncMoveLinear, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_FuncMoveLinear)
+	END_INIT_SEND_TABLE()
 };
 #endif // FUNC_MOVELINEAR_H

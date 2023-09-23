@@ -42,12 +42,15 @@ public:
 	float			m_flDistance;
 	int				m_nIndex;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEProjectedDecal)
 	BEGIN_RECV_TABLE(C_TEProjectedDecal, DT_TEProjectedDecal, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropQAngles(RECVINFO(m_angRotation)),
 		RecvPropFloat(RECVINFO(m_flDistance)),
 		RecvPropInt(RECVINFO(m_nIndex)),
 	END_RECV_TABLE(DT_TEProjectedDecal)
+	END_INIT_RECV_TABLE()
 };
 
 

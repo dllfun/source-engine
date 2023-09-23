@@ -40,6 +40,8 @@ public:
 	int				m_nHitbox;
 	int				m_nIndex;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEDecal)
 	BEGIN_RECV_TABLE(C_TEDecal, DT_TEDecal, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecStart)),
@@ -47,6 +49,7 @@ public:
 		RecvPropInt(RECVINFO(m_nHitbox)),
 		RecvPropInt(RECVINFO(m_nIndex)),
 	END_RECV_TABLE(DT_TEDecal)
+	END_INIT_RECV_TABLE()
 };
 
 

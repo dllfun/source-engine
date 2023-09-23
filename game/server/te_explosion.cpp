@@ -43,6 +43,7 @@ public:
 	CNetworkVar( int, m_nRadius );
 	CNetworkVar( int, m_nMagnitude );
 
+	BEGIN_INIT_SEND_TABLE(CTEExplosion)
 	BEGIN_SEND_TABLE(CTEExplosion, DT_TEExplosion, DT_TEParticleSystem)
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
 		SendPropFloat(SENDINFO(m_fScale), 9, 0, 0.0, 51.2),
@@ -53,6 +54,7 @@ public:
 		SendPropInt(SENDINFO(m_nRadius), 32, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nMagnitude), 32, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEExplosion)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

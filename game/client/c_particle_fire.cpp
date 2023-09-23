@@ -133,10 +133,13 @@ public:
 private:
 					C_ParticleFire( const C_ParticleFire & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ParticleFire)
 	BEGIN_RECV_TABLE_NOBASE(C_ParticleFire, DT_ParticleFire, CParticleFire)
 		RecvPropVector(RECVINFO(m_vOrigin)),
 		RecvPropVector(RECVINFO(m_vDirection)),
 	END_RECV_TABLE(DT_ParticleFire)
+	END_INIT_RECV_TABLE()
 };
 
 

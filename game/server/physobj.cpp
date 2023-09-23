@@ -1364,9 +1364,12 @@ private:
 	string_t		m_swapModel;
 	float			m_flMassOverride;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPhysConvert)
 	BEGIN_SEND_TABLE(CPhysConvert, DT_PhysConvert, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PhysConvert)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CPhysConvert, DT_PhysConvert)

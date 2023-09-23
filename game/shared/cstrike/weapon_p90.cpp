@@ -39,14 +39,21 @@ public:
 private:
 	CWeaponP90( const CWeaponP90 & );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponP90)
 	BEGIN_NETWORK_TABLE(CWeaponP90, DT_WeaponP90, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponP90)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponP90)
 	BEGIN_NETWORK_TABLE(CWeaponP90, DT_WeaponP90, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponP90)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

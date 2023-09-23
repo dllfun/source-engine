@@ -191,6 +191,8 @@ protected:
 private:
 	C_FireSmoke( const C_FireSmoke & );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FireSmoke)
 	BEGIN_RECV_TABLE(C_FireSmoke, DT_FireSmoke, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flStartScale)),
 		RecvPropFloat(RECVINFO(m_flScale), 0, RecvProxy_Scale),
@@ -199,6 +201,7 @@ private:
 		RecvPropInt(RECVINFO(m_nFlameModelIndex)),
 		RecvPropInt(RECVINFO(m_nFlameFromAboveModelIndex)),
 	END_RECV_TABLE(DT_FireSmoke)
+	END_INIT_RECV_TABLE()
 };
 
 //Fire overlay
@@ -310,9 +313,12 @@ protected:
 	void	CreateEffect( void );
 	void	StopEffect( void );
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EntityFlame)
 	BEGIN_RECV_TABLE(C_EntityFlame, DT_EntityFlame, DT_BaseEntity)
 		RecvPropEHandle(RECVINFO(m_hEntAttached)),
 	END_RECV_TABLE(DT_EntityFlame)
+	END_INIT_RECV_TABLE()
 };
 
 #endif //C_FIRE_SMOKE_H

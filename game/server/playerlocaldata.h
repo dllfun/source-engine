@@ -86,6 +86,7 @@ public:
 
 	CNetworkVar( bool, m_bSlowMovement );
 
+	BEGIN_INIT_SEND_TABLE(CPlayerLocalData)
 	BEGIN_SEND_TABLE_NOBASE(CPlayerLocalData, DT_Local)
 
 		SendPropArray3(SENDINFO_ARRAY3(m_chAreaBits), SendPropInt(SENDINFO_ARRAY(m_chAreaBits), 8, SPROP_UNSIGNED)),
@@ -150,7 +151,7 @@ public:
 		SendPropInt(SENDINFO_STRUCTELEM(m_audio.localBits), NUM_AUDIO_LOCAL_SOUNDS, SPROP_UNSIGNED),
 		SendPropEHandle(SENDINFO_STRUCTELEM(m_audio.ent)),
 	END_SEND_TABLE(DT_Local)
-
+	END_INIT_SEND_TABLE()
 };
 
 EXTERN_SEND_TABLE(DT_Local);

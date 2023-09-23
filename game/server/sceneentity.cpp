@@ -99,9 +99,12 @@ private:
 	string_t				m_iszScenes[SCENE_LIST_MANAGER_MAX_SCENES];
 	EHANDLE					m_hScenes[SCENE_LIST_MANAGER_MAX_SCENES];
 
+public:
+	BEGIN_INIT_SEND_TABLE(CSceneListManager)
 	BEGIN_SEND_TABLE(CSceneListManager, DT_SceneListManager, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_SceneListManager)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------
@@ -167,9 +170,11 @@ private:
 	CUtlVector< CRestoreSceneSound >		m_QueuedSceneSounds;
 
 public:
+	BEGIN_INIT_SEND_TABLE(CSceneManager)
 	BEGIN_SEND_TABLE(CSceneManager, DT_SceneManager, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_SceneManager)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CSceneManager, DT_SceneManager)
@@ -619,6 +624,7 @@ public:
 	void					SetBackground( bool bIsBackground );
 	bool					IsBackground( void );
 
+	BEGIN_INIT_SEND_TABLE(CSceneEntity)
 	BEGIN_SEND_TABLE_NOBASE(CSceneEntity, DT_SceneEntity)
 		SendPropInt(SENDINFO(m_nSceneStringIndex), MAX_CHOREO_SCENES_STRING_BITS, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bIsPlayingBack)),
@@ -630,6 +636,7 @@ public:
 			MAX_ACTORS_IN_SCENE, // max elements
 			SendPropEHandle(NULL, 0)),
 	END_SEND_TABLE(DT_SceneEntity)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( logic_choreographed_scene, CSceneEntity );

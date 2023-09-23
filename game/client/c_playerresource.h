@@ -72,6 +72,8 @@ protected:
 	Color	m_Colors[MAX_TEAMS];
 	string_t m_szUnconnectedName;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PlayerResource)
 	BEGIN_RECV_TABLE_NOBASE(C_PlayerResource, DT_PlayerResource, CPlayerResource)
 		RecvPropArray3(RECVINFO_ARRAY(m_iPing), RecvPropInt(RECVINFO(m_iPing[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iScore), RecvPropInt(RECVINFO(m_iScore[0]))),
@@ -81,6 +83,7 @@ protected:
 		RecvPropArray3(RECVINFO_ARRAY(m_bAlive), RecvPropInt(RECVINFO(m_bAlive[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iHealth), RecvPropInt(RECVINFO(m_iHealth[0]))),
 	END_RECV_TABLE(DT_PlayerResource)
+	END_INIT_RECV_TABLE()
 };
 
 extern C_PlayerResource *g_PR;

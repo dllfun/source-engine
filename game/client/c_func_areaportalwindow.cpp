@@ -22,9 +22,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AreaPortal() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AreaPortal)
 	BEGIN_RECV_TABLE(C_AreaPortal, DT_AreaPortal, DT_BaseEntity)
 		
 	END_RECV_TABLE(DT_AreaPortal)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AreaPortal, DT_AreaPortal, CAreaPortal)
@@ -59,12 +62,15 @@ public:
 
 	int				m_iBackgroundModelIndex;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncAreaPortalWindow)
 	BEGIN_RECV_TABLE(C_FuncAreaPortalWindow, DT_FuncAreaPortalWindow, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flFadeStartDist)),
 		RecvPropFloat(RECVINFO(m_flFadeDist)),
 		RecvPropFloat(RECVINFO(m_flTranslucencyLimit)),
 		RecvPropInt(RECVINFO(m_iBackgroundModelIndex))
 	END_RECV_TABLE(DT_FuncAreaPortalWindow)
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -165,9 +171,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FuncBrush() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncBrush)
 	BEGIN_RECV_TABLE(C_FuncBrush, DT_FuncBrush, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncBrush)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FuncBrush, DT_FuncBrush, CFuncBrush)

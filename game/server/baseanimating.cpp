@@ -67,10 +67,11 @@ public:
 	{
 		return &m_Network;
 	}
-
+	BEGIN_INIT_SEND_TABLE(CTestEnntity)
 	BEGIN_SEND_TABLE_NOBASE(CTestEnntity, DT_TestEnntity)
 
 	END_SEND_TABLE(DT_TestEnntity)
+	END_INIT_SEND_TABLE()
 };
 IMPLEMENT_SERVERCLASS(CTestEnntity, DT_TestEnntity)
 
@@ -95,9 +96,11 @@ private:
 	CNetworkHandle( CBaseEntity, m_hLightingLandmark );
 	string_t		m_strLightingLandmark;
 
+	BEGIN_INIT_SEND_TABLE(CInfoLightingRelative)
 	BEGIN_SEND_TABLE(CInfoLightingRelative, DT_InfoLightingRelative, DT_BaseEntity)
 		SendPropEHandle(SENDINFO(m_hLightingLandmark)),
 	END_SEND_TABLE(DT_InfoLightingRelative)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( info_lighting_relative, CInfoLightingRelative );

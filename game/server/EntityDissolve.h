@@ -60,6 +60,7 @@ protected:
 	CNetworkVector( m_vDissolverOrigin );
 	CNetworkVar( int, m_nMagnitude );
 
+	BEGIN_INIT_SEND_TABLE(CEntityDissolve)
 	BEGIN_SEND_TABLE(CEntityDissolve, DT_EntityDissolve, DT_BaseEntity)
 		SendPropTime(SENDINFO(m_flStartTime)),
 		SendPropFloat(SENDINFO(m_flFadeInStart), 0, SPROP_NOSCALE),
@@ -72,6 +73,7 @@ protected:
 		SendPropVector(SENDINFO(m_vDissolverOrigin), 0, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_nMagnitude), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_EntityDissolve)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // ENTITYDISSOLVE_H

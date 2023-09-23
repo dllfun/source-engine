@@ -48,14 +48,21 @@ private:
 	
 	CWeaponScout( const CWeaponScout & );
 
+public:
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponScout)
 	BEGIN_NETWORK_TABLE(CWeaponScout, DT_WeaponScout, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponScout)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponScout)
 	BEGIN_NETWORK_TABLE(CWeaponScout, DT_WeaponScout, DT_WeaponCSBaseGun)
+
 	END_NETWORK_TABLE(DT_WeaponScout)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

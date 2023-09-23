@@ -68,14 +68,21 @@ public:
 private:
 	CDEagle( const CDEagle & );
 
+public:
 #if !defined(CLIENT_DLL)
+	BEGIN_INIT_SEND_TABLE(CDEagle)
 	BEGIN_NETWORK_TABLE(CDEagle, DT_WeaponDEagle, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponDEagle)
+	END_INIT_SEND_TABLE()
 #endif
 
 #if defined(CLIENT_DLL)
+	BEGIN_INIT_RECV_TABLE(CDEagle)
 	BEGIN_NETWORK_TABLE(CDEagle, DT_WeaponDEagle, DT_WeaponCSBase)
+
 	END_NETWORK_TABLE(DT_WeaponDEagle)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

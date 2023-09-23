@@ -56,6 +56,8 @@ private:
 	bool m_bSpeedModActive;
 	bool m_bImportanRagdoll;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_BaseNPC)
 	BEGIN_RECV_TABLE(C_AI_BaseNPC, DT_AI_BaseNPC, DT_BaseCombatCharacter)
 		RecvPropInt(RECVINFO(m_lifeState)),
 		RecvPropBool(RECVINFO(m_bPerformAvoidance)),
@@ -69,6 +71,7 @@ private:
 		RecvPropBool(RECVINFO(m_bImportanRagdoll)),
 		RecvPropFloat(RECVINFO(m_flTimePingEffect)),
 	END_RECV_TABLE(DT_AI_BaseNPC)
+	END_INIT_RECV_TABLE()
 };
 
 

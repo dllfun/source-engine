@@ -37,9 +37,11 @@ public:
 
 	CNetworkVar( int, m_iEntIndex );
 
+	BEGIN_INIT_SEND_TABLE(CTEBeamFollow)
 	BEGIN_SEND_TABLE(CTEBeamFollow, DT_TEBeamFollow, DT_BaseBeam)
 		SendPropInt(SENDINFO(m_iEntIndex), 24, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEBeamFollow)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

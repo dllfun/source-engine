@@ -33,12 +33,15 @@ private:
 	float m_flShadowMaxDist;
 	bool m_bDisableShadows;
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ShadowControl)
 	BEGIN_RECV_TABLE(C_ShadowControl, DT_ShadowControl, DT_BaseEntity)
 		RecvPropVector(RECVINFO(m_shadowDirection)),
 		RecvPropInt(RECVINFO(m_shadowColor)),
 		RecvPropFloat(RECVINFO(m_flShadowMaxDist)),
 		RecvPropBool(RECVINFO(m_bDisableShadows)),
 	END_RECV_TABLE(DT_ShadowControl)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_ShadowControl, DT_ShadowControl, CShadowControl)

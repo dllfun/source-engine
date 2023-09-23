@@ -695,9 +695,12 @@ private:
 	
 	const char *TargetTeamName( const char *pszTargetName, CBaseEntity *pActivator );
 
+public:
+	BEGIN_INIT_SEND_TABLE(CGamePlayerTeam)
 	BEGIN_SEND_TABLE(CGamePlayerTeam, DT_GamePlayerTeam, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_GamePlayerTeam)
+	END_INIT_SEND_TABLE()
 };
 
 IMPLEMENT_SERVERCLASS(CGamePlayerTeam, DT_GamePlayerTeam)

@@ -400,15 +400,16 @@ void RecvProxy_MoveCollide( const CRecvProxyData *pData, void *pStruct, void *pO
 	((C_BaseEntity*)pStruct)->SetMoveCollide( (MoveCollide_t)(pData->m_Value.m_Int) );
 }
 
-static void RecvProxy_Solid( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	((C_BaseEntity*)pStruct)->SetSolid( (SolidType_t)pData->m_Value.m_Int );
-}
-
-static void RecvProxy_SolidFlags( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	((C_BaseEntity*)pStruct)->SetSolidFlags( pData->m_Value.m_Int );
-}
+//static void RecvProxy_Solid( const CRecvProxyData *pData, void *pStruct, void *pOut )
+//{
+//	C_BaseEntity* pEntity = ((C_BaseEntity*)((unsigned char*)pStruct));
+//	pEntity->SetSolid( (SolidType_t)pData->m_Value.m_Int );
+//}
+//
+//static void RecvProxy_SolidFlags( const CRecvProxyData *pData, void *pStruct, void *pOut )
+//{
+//	((C_BaseEntity*)pStruct)->SetSolidFlags( pData->m_Value.m_Int );
+//}
 
 void RecvProxy_EffectFlags( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
@@ -1807,7 +1808,7 @@ bool C_BaseEntity::GetSoundSpatialization( SpatializationInfo_t& info )
 	// pModel might be NULL, but modelinfo can handle that
 	const IVModel *pModel = GetModel();
 	
-	if ( info.pflRadius )
+	if ( info.pflRadius && pModel)//aaa
 	{
 		*info.pflRadius = GetModel()->GetRadius();//pModel
 	}
@@ -6445,9 +6446,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_LogicAuto() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_LogicAuto)
 	BEGIN_RECV_TABLE(C_LogicAuto, DT_LogicAuto, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_LogicAuto)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_LogicAuto, DT_LogicAuto, CLogicAuto)
@@ -6457,9 +6461,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PointEntity() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PointEntity)
 	BEGIN_RECV_TABLE(C_PointEntity, DT_PointEntity, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PointEntity)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PointEntity, DT_PointEntity, CPointEntity)
@@ -6469,9 +6476,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_SkyCamera() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SkyCamera)
 	BEGIN_RECV_TABLE(C_SkyCamera, DT_SkyCamera, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_SkyCamera)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_SkyCamera, DT_SkyCamera, CSkyCamera)
@@ -6481,9 +6491,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_TriggerCamera() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TriggerCamera)
 	BEGIN_RECV_TABLE(C_TriggerCamera, DT_TriggerCamera, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_TriggerCamera)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_TriggerCamera, DT_TriggerCamera, CTriggerCamera)
@@ -6493,9 +6506,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_TriggerSoundscape() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TriggerSoundscape)
 	BEGIN_RECV_TABLE(C_TriggerSoundscape, DT_TriggerSoundscape, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_TriggerSoundscape)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_TriggerSoundscape, DT_TriggerSoundscape, CTriggerSoundscape)
@@ -6505,9 +6521,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_SceneManager() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SceneManager)
 	BEGIN_RECV_TABLE(C_SceneManager, DT_SceneManager, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_SceneManager)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_SceneManager, DT_SceneManager, CSceneManager)
@@ -6518,9 +6537,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_AllySpeechManager() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_AllySpeechManager)
 	BEGIN_RECV_TABLE(C_AI_AllySpeechManager, DT_AI_AllySpeechManager, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_AllySpeechManager)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_AllySpeechManager, DT_AI_AllySpeechManager, CAI_AllySpeechManager)
@@ -6530,9 +6552,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_AssaultGoal() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_AssaultGoal)
 	BEGIN_RECV_TABLE(C_AI_AssaultGoal, DT_AI_AssaultGoal, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_AssaultGoal)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_AssaultGoal, DT_AI_AssaultGoal, CAI_AssaultGoal)
@@ -6542,9 +6567,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_FollowGoal() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_FollowGoal)
 	BEGIN_RECV_TABLE(C_AI_FollowGoal, DT_AI_FollowGoal, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_FollowGoal)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_FollowGoal, DT_AI_FollowGoal, CAI_FollowGoal)
@@ -6554,9 +6582,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_Hint() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_Hint)
 	BEGIN_RECV_TABLE(C_AI_Hint, DT_AI_Hint, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_Hint)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_Hint, DT_AI_Hint, CAI_Hint)
@@ -6566,9 +6597,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_LeadGoal_Weapon() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_LeadGoal_Weapon)
 	BEGIN_RECV_TABLE(C_AI_LeadGoal_Weapon, DT_AI_LeadGoal_Weapon, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_LeadGoal_Weapon)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_LeadGoal_Weapon, DT_AI_LeadGoal_Weapon, CAI_LeadGoal_Weapon)
@@ -6578,9 +6612,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_RadialLinkController() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_RadialLinkController)
 	BEGIN_RECV_TABLE(C_AI_RadialLinkController, DT_AI_RadialLinkController, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_RadialLinkController)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_RadialLinkController, DT_AI_RadialLinkController, CAI_RadialLinkController)
@@ -6590,9 +6627,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_ScriptConditions() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_ScriptConditions)
 	BEGIN_RECV_TABLE(C_AI_ScriptConditions, DT_AI_ScriptConditions, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_ScriptConditions)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_ScriptConditions, DT_AI_ScriptConditions, CAI_ScriptConditions)
@@ -6602,9 +6642,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_ScriptedSchedule() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_ScriptedSchedule)
 	BEGIN_RECV_TABLE(C_AI_ScriptedSchedule, DT_AI_ScriptedSchedule, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_ScriptedSchedule)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_ScriptedSchedule, DT_AI_ScriptedSchedule, CAI_ScriptedSchedule)
@@ -6614,9 +6657,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_SpeechFilter() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_SpeechFilter)
 	BEGIN_RECV_TABLE(C_AI_SpeechFilter, DT_AI_SpeechFilter, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_SpeechFilter)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_SpeechFilter, DT_AI_SpeechFilter, CAI_SpeechFilter)
@@ -6626,9 +6672,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_AI_StandoffGoal() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_AI_StandoffGoal)
 	BEGIN_RECV_TABLE(C_AI_StandoffGoal, DT_AI_StandoffGoal, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_AI_StandoffGoal)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_AI_StandoffGoal, DT_AI_StandoffGoal, CAI_StandoffGoal)
@@ -6638,9 +6687,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_BaseMoveBehavior() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseMoveBehavior)
 	BEGIN_RECV_TABLE(C_BaseMoveBehavior, DT_BaseMoveBehavior, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_BaseMoveBehavior)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_BaseMoveBehavior, DT_BaseMoveBehavior, CBaseMoveBehavior)
@@ -6650,9 +6702,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_CommentaryAuto() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_CommentaryAuto)
 	BEGIN_RECV_TABLE(C_CommentaryAuto, DT_CommentaryAuto, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_CommentaryAuto)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_CommentaryAuto, DT_CommentaryAuto, CCommentaryAuto)
@@ -6662,9 +6717,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_DebugHistory() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_DebugHistory)
 	BEGIN_RECV_TABLE(C_DebugHistory, DT_DebugHistory, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_DebugHistory)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_DebugHistory, DT_DebugHistory, CDebugHistory)
@@ -6674,9 +6732,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_EntityBlocker() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EntityBlocker)
 	BEGIN_RECV_TABLE(C_EntityBlocker, DT_EntityBlocker, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_EntityBlocker)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_EntityBlocker, DT_EntityBlocker, CEntityBlocker)
@@ -6686,9 +6747,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_EnvFade() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvFade)
 	BEGIN_RECV_TABLE(C_EnvFade, DT_EnvFade, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_EnvFade)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_EnvFade, DT_EnvFade, CEnvFade)
@@ -6698,9 +6762,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_EnvFireSensor() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvFireSensor)
 	BEGIN_RECV_TABLE(C_EnvFireSensor, DT_EnvFireSensor, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_EnvFireSensor)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_EnvFireSensor, DT_EnvFireSensor, CEnvFireSensor)
@@ -6710,9 +6777,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_EventQueueSaveLoadProxy() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_EventQueueSaveLoadProxy)
 	BEGIN_RECV_TABLE(C_EventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_EventQueueSaveLoadProxy)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_EventQueueSaveLoadProxy, DT_EventQueueSaveLoadProxy, CEventQueueSaveLoadProxy)
@@ -6722,9 +6792,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FilterEnemy() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FilterEnemy)
 	BEGIN_RECV_TABLE(C_FilterEnemy, DT_FilterEnemy, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FilterEnemy)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FilterEnemy, DT_FilterEnemy, CFilterEnemy)
@@ -6734,9 +6807,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FishPool() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FishPool)
 	BEGIN_RECV_TABLE(C_FishPool, DT_FishPool, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FishPool)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FishPool, DT_FishPool, CFishPool)
@@ -6746,9 +6822,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FuncLadderEndPoint() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncLadderEndPoint)
 	BEGIN_RECV_TABLE(C_FuncLadderEndPoint, DT_FuncLadderEndPoint, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncLadderEndPoint)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FuncLadderEndPoint, DT_FuncLadderEndPoint, CFuncLadderEndPoint)
@@ -6758,9 +6837,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FuncMoveLinear() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncMoveLinear)
 	BEGIN_RECV_TABLE(C_FuncMoveLinear, DT_FuncMoveLinear, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncMoveLinear)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FuncMoveLinear, DT_FuncMoveLinear, CFuncMoveLinear)
@@ -6770,9 +6852,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FuncNavObstruction() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncNavObstruction)
 	BEGIN_RECV_TABLE(C_FuncNavObstruction, DT_FuncNavObstruction, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncNavObstruction)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FuncNavObstruction, DT_FuncNavObstruction, CFuncNavObstruction)
@@ -6782,9 +6867,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FuncNavPrerequisite() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncNavPrerequisite)
 	BEGIN_RECV_TABLE(C_FuncNavPrerequisite, DT_FuncNavPrerequisite, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncNavPrerequisite)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FuncNavPrerequisite, DT_FuncNavPrerequisite, CFuncNavPrerequisite)
@@ -6794,9 +6882,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FuncTrackAuto() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncTrackAuto)
 	BEGIN_RECV_TABLE(C_FuncTrackAuto, DT_FuncTrackAuto, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncTrackAuto)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FuncTrackAuto, DT_FuncTrackAuto, CFuncTrackAuto)
@@ -6806,33 +6897,29 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_FuncVPhysicsClip() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_FuncVPhysicsClip)
 	BEGIN_RECV_TABLE(C_FuncVPhysicsClip, DT_FuncVPhysicsClip, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_FuncVPhysicsClip)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_FuncVPhysicsClip, DT_FuncVPhysicsClip, CFuncVPhysicsClip)
 
-class C_GameGibManager : public C_BaseEntity {
-public:
-	DECLARE_CLIENTCLASS();
-	C_GameGibManager() {}
 
-	BEGIN_RECV_TABLE(C_GameGibManager, DT_GameGibManager, DT_BaseEntity)
-
-	END_RECV_TABLE(DT_GameGibManager)
-};
-
-IMPLEMENT_CLIENTCLASS(C_GameGibManager, DT_GameGibManager, CGameGibManager)
 
 class C_GamePlayerTeam : public C_BaseEntity {
 public:
 	DECLARE_CLIENTCLASS();
 	C_GamePlayerTeam() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_GamePlayerTeam)
 	BEGIN_RECV_TABLE(C_GamePlayerTeam, DT_GamePlayerTeam, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_GamePlayerTeam)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_GamePlayerTeam, DT_GamePlayerTeam, CGamePlayerTeam)
@@ -6842,9 +6929,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_GameUI() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_GameUI)
 	BEGIN_RECV_TABLE(C_GameUI, DT_GameUI, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_GameUI)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_GameUI, DT_GameUI, CGameUI)
@@ -6854,9 +6944,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_GameWeaponManager() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_GameWeaponManager)
 	BEGIN_RECV_TABLE(C_GameWeaponManager, DT_GameWeaponManager, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_GameWeaponManager)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_GameWeaponManager, DT_GameWeaponManager, CGameWeaponManager)
@@ -6866,33 +6959,29 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_GunTarget() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_GunTarget)
 	BEGIN_RECV_TABLE(C_GunTarget, DT_GunTarget, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_GunTarget)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_GunTarget, DT_GunTarget, CGunTarget)
 
-class C_HandleDummy : public C_BaseEntity {
-public:
-	DECLARE_CLIENTCLASS();
-	C_HandleDummy() {}
 
-	BEGIN_RECV_TABLE(C_HandleDummy, DT_HandleDummy, DT_BaseEntity)
-
-	END_RECV_TABLE(DT_HandleDummy)
-};
-
-IMPLEMENT_CLIENTCLASS(C_HandleDummy, DT_HandleDummy, CHandleDummy)
 
 class C_HostageRescueZone : public C_BaseEntity {
 public:
 	DECLARE_CLIENTCLASS();
 	C_HostageRescueZone() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_HostageRescueZone)
 	BEGIN_RECV_TABLE(C_HostageRescueZone, DT_HostageRescueZone, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_HostageRescueZone)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_HostageRescueZone, DT_HostageRescueZone, CHostageRescueZone)
@@ -6902,9 +6991,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_InfoCameraLink() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_InfoCameraLink)
 	BEGIN_RECV_TABLE(C_InfoCameraLink, DT_InfoCameraLink, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_InfoCameraLink)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_InfoCameraLink, DT_InfoCameraLink, CInfoCameraLink)
@@ -6914,9 +7006,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_InfoViewParameters() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_InfoViewParameters)
 	BEGIN_RECV_TABLE(C_InfoViewParameters, DT_InfoViewParameters, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_InfoViewParameters)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_InfoViewParameters, DT_InfoViewParameters, CInfoViewParameters)
@@ -6926,9 +7021,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_LogicBranchList() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_LogicBranchList)
 	BEGIN_RECV_TABLE(C_LogicBranchList, DT_LogicBranchList, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_LogicBranchList)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_LogicBranchList, DT_LogicBranchList, CLogicBranchList)
@@ -6938,9 +7036,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_LogicMeasureMovement() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_LogicMeasureMovement)
 	BEGIN_RECV_TABLE(C_LogicMeasureMovement, DT_LogicMeasureMovement, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_LogicMeasureMovement)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_LogicMeasureMovement, DT_LogicMeasureMovement, CLogicMeasureMovement)
@@ -6950,9 +7051,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_LogicNavigation() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_LogicNavigation)
 	BEGIN_RECV_TABLE(C_LogicNavigation, DT_LogicNavigation, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_LogicNavigation)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_LogicNavigation, DT_LogicNavigation, CLogicNavigation)
@@ -6962,9 +7066,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_LogicRelay() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_LogicRelay)
 	BEGIN_RECV_TABLE(C_LogicRelay, DT_LogicRelay, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_LogicRelay)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_LogicRelay, DT_LogicRelay, CLogicRelay)
@@ -6974,9 +7081,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_MomentaryRotButton() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_MomentaryRotButton)
 	BEGIN_RECV_TABLE(C_MomentaryRotButton, DT_MomentaryRotButton, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_MomentaryRotButton)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_MomentaryRotButton, DT_MomentaryRotButton, CMomentaryRotButton)
@@ -6986,9 +7096,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_NodeEnt() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_NodeEnt)
 	BEGIN_RECV_TABLE(C_NodeEnt, DT_NodeEnt, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_NodeEnt)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_NodeEnt, DT_NodeEnt, CNodeEnt)
@@ -6998,9 +7111,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_NullEntity() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_NullEntity)
 	BEGIN_RECV_TABLE(C_NullEntity, DT_NullEntity, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_NullEntity)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_NullEntity, DT_NullEntity, CNullEntity)
@@ -7010,9 +7126,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_ParticleLight() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ParticleLight)
 	BEGIN_RECV_TABLE(C_ParticleLight, DT_ParticleLight, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_ParticleLight)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_ParticleLight, DT_ParticleLight, CParticleLight)
@@ -7022,9 +7141,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PhysConvert() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PhysConvert)
 	BEGIN_RECV_TABLE(C_PhysConvert, DT_PhysConvert, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PhysConvert)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PhysConvert, DT_PhysConvert, CPhysConvert)
@@ -7034,9 +7156,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PhysicsEntitySolver() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PhysicsEntitySolver)
 	BEGIN_RECV_TABLE(C_PhysicsEntitySolver, DT_PhysicsEntitySolver, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PhysicsEntitySolver)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PhysicsEntitySolver, DT_PhysicsEntitySolver, CPhysicsEntitySolver)
@@ -7046,9 +7171,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PhysicsWire() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PhysicsWire)
 	BEGIN_RECV_TABLE(C_PhysicsWire, DT_PhysicsWire, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PhysicsWire)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PhysicsWire, DT_PhysicsWire, CPhysicsWire)
@@ -7058,9 +7186,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PhysMotor() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PhysMotor)
 	BEGIN_RECV_TABLE(C_PhysMotor, DT_PhysMotor, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PhysMotor)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PhysMotor, DT_PhysMotor, CPhysMotor)
@@ -7070,9 +7201,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PointDevShotCamera() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PointDevShotCamera)
 	BEGIN_RECV_TABLE(C_PointDevShotCamera, DT_PointDevShotCamera, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PointDevShotCamera)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PointDevShotCamera, DT_PointDevShotCamera, CPointDevShotCamera)
@@ -7082,9 +7216,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PointPlayerMoveConstraint() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PointPlayerMoveConstraint)
 	BEGIN_RECV_TABLE(C_PointPlayerMoveConstraint, DT_PointPlayerMoveConstraint, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PointPlayerMoveConstraint)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PointPlayerMoveConstraint, DT_PointPlayerMoveConstraint, CPointPlayerMoveConstraint)
@@ -7094,9 +7231,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PointTeleport() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PointTeleport)
 	BEGIN_RECV_TABLE(C_PointTeleport, DT_PointTeleport, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PointTeleport)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PointTeleport, DT_PointTeleport, CPointTeleport)
@@ -7106,9 +7246,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_PointTemplate() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_PointTemplate)
 	BEGIN_RECV_TABLE(C_PointTemplate, DT_PointTemplate, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_PointTemplate)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_PointTemplate, DT_PointTemplate, CPointTemplate)
@@ -7118,9 +7261,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_Pushable() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_Pushable)
 	BEGIN_RECV_TABLE(C_Pushable, DT_Pushable, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_Pushable)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_Pushable, DT_Pushable, CPushable)
@@ -7130,9 +7276,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_RagdollBoogie() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_RagdollBoogie)
 	BEGIN_RECV_TABLE(C_RagdollBoogie, DT_RagdollBoogie, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_RagdollBoogie)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_RagdollBoogie, DT_RagdollBoogie, CRagdollBoogie)
@@ -7142,9 +7291,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_RagdollConstraint() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_RagdollConstraint)
 	BEGIN_RECV_TABLE(C_RagdollConstraint, DT_RagdollConstraint, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_RagdollConstraint)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_RagdollConstraint, DT_RagdollConstraint, CRagdollConstraint)
@@ -7154,9 +7306,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_SceneListManager() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_SceneListManager)
 	BEGIN_RECV_TABLE(C_SceneListManager, DT_SceneListManager, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_SceneListManager)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_SceneListManager, DT_SceneListManager, CSceneListManager)
@@ -7166,9 +7321,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_ServerRagdollTrigger() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_ServerRagdollTrigger)
 	BEGIN_RECV_TABLE(C_ServerRagdollTrigger, DT_ServerRagdollTrigger, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_ServerRagdollTrigger)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_ServerRagdollTrigger, DT_ServerRagdollTrigger, CServerRagdollTrigger)
@@ -7178,9 +7336,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_TriggerBrush() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TriggerBrush)
 	BEGIN_RECV_TABLE(C_TriggerBrush, DT_TriggerBrush, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_TriggerBrush)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_TriggerBrush, DT_TriggerBrush, CTriggerBrush)
@@ -7190,9 +7351,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_WC_UpdateIgnoreList() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_WC_UpdateIgnoreList)
 	BEGIN_RECV_TABLE(C_WC_UpdateIgnoreList, DT_WC_UpdateIgnoreList, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_WC_UpdateIgnoreList)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_WC_UpdateIgnoreList, DT_WC_UpdateIgnoreList, CWC_UpdateIgnoreList)
@@ -7202,9 +7366,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_WeightButton() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_WeightButton)
 	BEGIN_RECV_TABLE(C_WeightButton, DT_WeightButton, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_WeightButton)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_WeightButton, DT_WeightButton, CWeightButton)
@@ -7214,9 +7381,12 @@ public:
 	DECLARE_CLIENTCLASS();
 	C_TestEnntity() {}
 
+public:
+	BEGIN_INIT_RECV_TABLE(C_TestEnntity)
 	BEGIN_RECV_TABLE(C_TestEnntity, DT_TestEnntity, DT_BaseEntity)
 
 	END_RECV_TABLE(DT_TestEnntity)
+	END_INIT_RECV_TABLE()
 };
 
 IMPLEMENT_CLIENTCLASS(C_TestEnntity, DT_TestEnntity, CTestEnntity)

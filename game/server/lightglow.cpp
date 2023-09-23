@@ -45,6 +45,7 @@ public:
 	CNetworkVar( float, m_flGlowProxySize );
 	CNetworkVar( float, m_flHDRColorScale );
 
+	BEGIN_INIT_SEND_TABLE(CLightGlow)
 	BEGIN_SEND_TABLE_NOBASE(CLightGlow, DT_LightGlow)
 		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
 		SendPropInt(SENDINFO(m_nHorizontalSize), 16, SPROP_UNSIGNED),
@@ -59,6 +60,7 @@ public:
 		SendPropFloat(SENDINFO(m_flGlowProxySize), 6, SPROP_ROUNDUP, 0.0f, 64.0f),
 		SendPropFloat(SENDINFO_NAME(m_flHDRColorScale, HDRColorScale), 0, SPROP_NOSCALE, 0.0f, 100.0f),
 	END_SEND_TABLE(DT_LightGlow)
+	END_INIT_SEND_TABLE()
 };
 
 extern void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );

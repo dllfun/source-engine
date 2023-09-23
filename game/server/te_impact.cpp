@@ -38,11 +38,13 @@ public:
 	CNetworkVector( m_vecNormal );	//NOTENOTE: In a multi-play setup we'll probably want non-oriented effects for bandwidth
 	CNetworkVar( int, m_iType );
 
+	BEGIN_INIT_SEND_TABLE(CTEImpact)
 	BEGIN_SEND_TABLE(CTEImpact, DT_TEImpact, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecNormal), -1, SPROP_COORD),
 		SendPropInt(SENDINFO(m_iType), 32, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TEImpact)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

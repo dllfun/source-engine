@@ -68,9 +68,12 @@ private:
 
 	COutputEvent					m_pOutputOnSpawned;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPointTemplate)
 	BEGIN_SEND_TABLE(CPointTemplate, DT_PointTemplate, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_PointTemplate)
+	END_INIT_SEND_TABLE()
 };
 
 #endif // POINT_TEMPLATE_H

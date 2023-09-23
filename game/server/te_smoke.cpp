@@ -39,12 +39,14 @@ public:
 	CNetworkVar( float, m_fScale );
 	CNetworkVar( int, m_nFrameRate );
 
+	BEGIN_INIT_SEND_TABLE(CTESmoke)
 	BEGIN_SEND_TABLE(CTESmoke, DT_TESmoke, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),
 		SendPropFloat(SENDINFO(m_fScale), 8, SPROP_ROUNDDOWN, 0.0, 25.6),
 		SendPropInt(SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_TESmoke)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

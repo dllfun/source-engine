@@ -71,17 +71,21 @@ private:
 	bool m_inPrecache;
 
 #ifndef CLIENT_DLL
+	BEGIN_INIT_SEND_TABLE(CWeaponM4A1)
 	BEGIN_NETWORK_TABLE(CWeaponM4A1, DT_WeaponM4A1, DT_WeaponCSBaseGun)
 		SendPropBool(SENDINFO(m_bSilencerOn)),
 		SendPropTime(SENDINFO(m_flDoneSwitchingSilencer)),
 	END_NETWORK_TABLE(DT_WeaponM4A1)
+	END_INIT_SEND_TABLE()
 #endif
 
 #ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CWeaponM4A1)
 	BEGIN_NETWORK_TABLE(CWeaponM4A1, DT_WeaponM4A1, DT_WeaponCSBaseGun)
 		RecvPropBool(RECVINFO(m_bSilencerOn)),
 		RecvPropTime(RECVINFO(m_flDoneSwitchingSilencer)),
 	END_NETWORK_TABLE(DT_WeaponM4A1)
+	END_INIT_RECV_TABLE()
 #endif
 };
 

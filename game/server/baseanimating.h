@@ -442,6 +442,8 @@ private:
 	friend class CCycler;
 	friend class CBlendingCycler;
 
+public:
+	BEGIN_INIT_SEND_TABLE(CBaseAnimating)
 	// Sendtable for fields we don't want to send to clientside animating entities
 	BEGIN_SEND_TABLE_NOBASE(CBaseAnimating, DT_ServerAnimationData)
 		// ANIMATION_CYCLE_BITS is defined in shareddefs.h
@@ -484,6 +486,7 @@ private:
 		SendPropFloat(SENDINFO(m_flFadeScale), 0, SPROP_NOSCALE),
 
 	END_SEND_TABLE(DT_BaseAnimating)
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

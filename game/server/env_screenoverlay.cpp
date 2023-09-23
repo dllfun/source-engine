@@ -46,6 +46,7 @@ protected:
 	CNetworkVar( int, m_iDesiredOverlay );
 	CNetworkVar( bool, m_bIsActive );
 
+	BEGIN_INIT_SEND_TABLE(CEnvScreenOverlay)
 	BEGIN_SEND_TABLE(CEnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
 		SendPropArray(SendPropString(SENDINFO_ARRAY(m_iszOverlayNames), 0, SendProxy_String_tToString), m_iszOverlayNames),
 		SendPropArray(SendPropFloat(SENDINFO_ARRAY(m_flOverlayTimes), 11, SPROP_ROUNDDOWN, -1.0f, 63.0f), m_flOverlayTimes),
@@ -53,6 +54,7 @@ protected:
 		SendPropInt(SENDINFO(m_iDesiredOverlay), 5),
 		SendPropBool(SENDINFO(m_bIsActive)),
 	END_SEND_TABLE(DT_EnvScreenOverlay)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( env_screenoverlay, CEnvScreenOverlay );
@@ -220,10 +222,12 @@ private:
 	CNetworkVar( float, m_flDuration );
 	CNetworkVar( int, m_nType );
 
+	BEGIN_INIT_SEND_TABLE(CEnvScreenEffect)
 	BEGIN_SEND_TABLE(CEnvScreenEffect, DT_EnvScreenEffect, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flDuration), 0, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_nType), 32, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_EnvScreenEffect)
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( env_screeneffect, CEnvScreenEffect );
