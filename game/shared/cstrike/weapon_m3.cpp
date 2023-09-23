@@ -67,9 +67,15 @@ private:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponM3
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM3, DT_WeaponM3 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponM3 C_WeaponM3
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponM3 )

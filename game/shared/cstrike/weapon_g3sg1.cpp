@@ -64,9 +64,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponG3SG1
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponG3SG1, DT_WeaponG3SG1 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponG3SG1 C_WeaponG3SG1
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponG3SG1 )

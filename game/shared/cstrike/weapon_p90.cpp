@@ -57,9 +57,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponP90
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponP90, DT_WeaponP90 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponP90 C_WeaponP90
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponP90 )
 END_PREDICTION_DATA()

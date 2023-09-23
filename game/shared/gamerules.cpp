@@ -65,9 +65,15 @@ static CViewVectors g_DefaultViewVectors(
 
 CGameRulesProxy *CGameRulesProxy::s_pGameRulesProxy = NULL;
 
+#if defined( CLIENT_DLL )
+#undef CGameRulesProxy
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( GameRulesProxy, DT_GameRulesProxy )
 
-
+#if defined( CLIENT_DLL )
+#define CGameRulesProxy C_GameRulesProxy
+#endif
 
 
 CGameRulesProxy::CGameRulesProxy()

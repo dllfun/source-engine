@@ -30,10 +30,15 @@
 
 #define GRENADE_TIMER	1.5f //Seconds
 
+#if defined( CLIENT_DLL )
+#undef CBaseCSGrenade
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenade, DT_BaseCSGrenade )
 
-
+#if defined( CLIENT_DLL )
+#define CBaseCSGrenade C_BaseCSGrenade
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CBaseCSGrenade )

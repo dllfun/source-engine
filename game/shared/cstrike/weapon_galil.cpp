@@ -59,9 +59,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponGalil
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponGalil, DT_WeaponGalil )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponGalil C_WeaponGalil
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponGalil )
 END_PREDICTION_DATA()

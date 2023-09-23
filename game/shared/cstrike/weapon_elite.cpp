@@ -82,9 +82,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponElite
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponElite, DT_WeaponElite )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponElite C_WeaponElite
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponElite )

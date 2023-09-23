@@ -108,17 +108,23 @@ LINK_ENTITY_TO_CLASS(info_player_logo,CPointEntity);
 
 REGISTER_GAMERULES_CLASS( CCSGameRules );
 
-
-
-
-
 LINK_ENTITY_TO_CLASS( cs_gamerules, CCSGameRulesProxy );
+
+#ifdef CLIENT_DLL
+#undef CCSGameRulesProxy
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED(CSGameRulesProxy, DT_CSGameRulesProxy)
+
+#ifdef CLIENT_DLL
+#define CCSGameRulesProxy C_CSGameRulesProxy
+#endif
+
 #if !defined( CLIENT_DLL )
 IMPLEMENT_SERVERCLASS(CCSGameRules, DT_CSGameRules)
 #endif
 #if defined( CLIENT_DLL )
-IMPLEMENT_CLIENTCLASS(C_CSGameRules, DT_CSGameRules, CCSGameRules)
+IMPLEMENT_CLIENTCLASS_NO_FACTORY(C_CSGameRules, DT_CSGameRules, CCSGameRules)
 //static CCSGameRules g_C_CSGameRules_EntityReg;
 #endif
 

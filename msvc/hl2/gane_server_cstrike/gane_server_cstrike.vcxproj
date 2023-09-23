@@ -731,6 +731,7 @@
     <ClInclude Include="..\..\..\public\dt_shared.h" />
     <ClInclude Include="..\..\..\public\dt_utlvector_common.h" />
     <ClInclude Include="..\..\..\public\dt_utlvector_send.h" />
+    <ClInclude Include="..\..\..\public\iserverentity.h" />
     <ClInclude Include="..\..\..\public\server_class.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

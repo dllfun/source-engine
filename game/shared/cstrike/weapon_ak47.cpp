@@ -55,9 +55,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CAK47
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( AK47, DT_WeaponAK47 )
 
-
+#if defined( CLIENT_DLL )
+#define CAK47 C_AK47
+#endif
 
 BEGIN_PREDICTION_DATA( CAK47 )
 END_PREDICTION_DATA()

@@ -22,8 +22,8 @@ class CClientEntityFactoryDictionary : public IClientEntityFactoryDictionary
 public:
 	CClientEntityFactoryDictionary();
 	virtual void InstallFactory(IClientEntityFactory* pFactory, const char* pMapClassName);
-	virtual IClientNetworkable* Create(const char* pMapClassName, int entnum, int serialNum);
-	virtual void Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable);
+	virtual IClientEntity* Create(const char* pMapClassName, int entnum, int serialNum);
+	virtual void Destroy(const char* pMapClassName, IClientEntity* pNetworkable);
 	virtual const char* GetCannonicalName(const char* pMapClassName);
 	virtual void RegisteMapClassName(const char* pDllClassName, const char* pMapClassName);
 	virtual const char* GetMapClassName(const char* pDllClassName);
@@ -80,7 +80,7 @@ void CClientEntityFactoryDictionary::InstallFactory(IClientEntityFactory* pFacto
 //-----------------------------------------------------------------------------
 // Instantiate something using a factory
 //-----------------------------------------------------------------------------
-IClientNetworkable* CClientEntityFactoryDictionary::Create(const char* pMapClassName, int entnum, int serialNum)
+IClientEntity* CClientEntityFactoryDictionary::Create(const char* pMapClassName, int entnum, int serialNum)
 {
 	IClientEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
@@ -105,7 +105,7 @@ const char* CClientEntityFactoryDictionary::GetCannonicalName(const char* pMapCl
 //-----------------------------------------------------------------------------
 // Destroy a networkable
 //-----------------------------------------------------------------------------
-void CClientEntityFactoryDictionary::Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable)
+void CClientEntityFactoryDictionary::Destroy(const char* pMapClassName, IClientEntity* pNetworkable)
 {
 	IClientEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)

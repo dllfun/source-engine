@@ -58,7 +58,15 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 
 #endif
 
+#ifdef CLIENT_DLL
+#undef CBaseGrenade
+#endif // CLIENT_DLL
+
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseGrenade, DT_BaseGrenade )
+
+#ifdef CLIENT_DLL
+#define CBaseGrenade C_BaseGrenade
+#endif // CLIENT_DLL
 
 
 

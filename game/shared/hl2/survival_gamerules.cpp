@@ -112,7 +112,16 @@ END_INIT_SEND_TABLE()
 
 
 LINK_ENTITY_TO_CLASS( hl2_survival_gamerules, CHalfLife2SurvivalProxy );
+
+#if defined( CLIENT_DLL )
+#undef CHalfLife2SurvivalProxy
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2SurvivalProxy, DT_HalfLife2SurvivalProxy )
+
+#if defined( CLIENT_DLL )
+#define CHalfLife2SurvivalProxy C_HalfLife2SurvivalProxy
+#endif
 
 #ifdef CLIENT_DLL
 	void RecvProxy_HL2SurvivalGameRules( const RecvProp *pProp, void **pOut, void *pData, int objectID )

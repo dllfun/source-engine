@@ -80,9 +80,15 @@ private:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponGlock
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponGlock, DT_WeaponGlock )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponGlock C_WeaponGlock
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponGlock )

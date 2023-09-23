@@ -60,9 +60,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponMP5Navy
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponMP5Navy, DT_WeaponMP5Navy )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponMP5Navy C_WeaponMP5Navy
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponMP5Navy )
 END_PREDICTION_DATA()

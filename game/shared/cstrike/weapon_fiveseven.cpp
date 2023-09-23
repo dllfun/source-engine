@@ -67,9 +67,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponFiveSeven
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFiveSeven, DT_WeaponFiveSeven )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponFiveSeven C_WeaponFiveSeven
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponFiveSeven )

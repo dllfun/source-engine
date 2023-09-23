@@ -2571,7 +2571,15 @@ END_PREDICTION_DATA()
 #endif	// ! CLIENT_DLL
 
 // Special hack since we're aliasing the name C_BaseCombatWeapon with a macro on the client
+#ifdef CLIENT_DLL
+#undef CBaseCombatWeapon
+#endif // CLIENT_DLL
+
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseCombatWeapon, DT_BaseCombatWeapon )
+
+#if defined( CLIENT_DLL )
+#define CBaseCombatWeapon C_BaseCombatWeapon
+#endif
 
 #if !defined( CLIENT_DLL )
 //-----------------------------------------------------------------------------

@@ -28,10 +28,15 @@ float GetCurrentGravity( void );
 
 #endif
 
+#ifdef CLIENT_DLL
+#undef CBaseCSGrenadeProjectile
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseCSGrenadeProjectile, DT_BaseCSGrenadeProjectile )
 
-
+#ifdef CLIENT_DLL
+#define CBaseCSGrenadeProjectile C_BaseCSGrenadeProjectile
+#endif
 
 
 #ifdef CLIENT_DLL

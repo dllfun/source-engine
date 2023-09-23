@@ -57,9 +57,15 @@ Vector head_hull_maxs( 16, 16, 18 );
 // CKnife tables.
 // ----------------------------------------------------------------------------- //
 
+#if defined( CLIENT_DLL )
+#undef CKnife
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( Knife, DT_WeaponKnife )
 
-
+#if defined( CLIENT_DLL )
+#define CKnife C_Knife
+#endif
 
 
 #if defined CLIENT_DLL

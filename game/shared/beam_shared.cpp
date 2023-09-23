@@ -129,10 +129,15 @@ void RecvProxy_Beam_ScrollSpeed( const CRecvProxyData *pData, void *pStruct, voi
 
 LINK_ENTITY_TO_CLASS( beam, CBeam );
 
+#if defined( CLIENT_DLL )
+#undef CBeam
+#endif
 // This table encodes the CBeam data.
 IMPLEMENT_NETWORKCLASS_ALIASED( Beam, DT_Beam )
 
-
+#if defined( CLIENT_DLL )
+#define CBeam C_Beam
+#endif
 
 #if !defined( CLIENT_DLL )
 BEGIN_DATADESC( CBeam )

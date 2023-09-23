@@ -14,9 +14,15 @@
 
 LINK_ENTITY_TO_CLASS(env_detail_controller,	CEnvDetailController);
 
+#if defined( CLIENT_DLL )
+#undef CEnvDetailController
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( EnvDetailController, DT_DetailController )
 
-
+#if defined( CLIENT_DLL )
+#define CEnvDetailController C_EnvDetailController
+#endif
 
 static CEnvDetailController *s_detailController = NULL;
 CEnvDetailController * GetDetailController()

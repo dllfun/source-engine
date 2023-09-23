@@ -65,9 +65,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponSG550
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponSG550, DT_WeaponSG550 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponSG550 C_WeaponSG550
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponSG550 )

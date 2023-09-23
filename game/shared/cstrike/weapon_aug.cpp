@@ -66,9 +66,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponAug
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponAug, DT_WeaponAug )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponAug C_WeaponAug
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponAug )
 END_PREDICTION_DATA()

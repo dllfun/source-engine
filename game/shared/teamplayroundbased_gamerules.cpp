@@ -74,13 +74,21 @@ void RecvProxy_TeamplayRoundState( const CRecvProxyData *pData, void *pStruct, v
 #endif 
 
 
+#if defined( CLIENT_DLL )
+#undef CTeamplayRoundBasedRulesProxy
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( TeamplayRoundBasedRulesProxy, DT_TeamplayRoundBasedRulesProxy )
+
+#if defined( CLIENT_DLL )
+#define CTeamplayRoundBasedRulesProxy C_TeamplayRoundBasedRulesProxy
+#endif
+
 #ifndef CLIENT_DLL
 IMPLEMENT_SERVERCLASS(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
 #endif
 #ifdef CLIENT_DLL
-IMPLEMENT_CLIENTCLASS(C_TeamplayRoundBasedRules, DT_TeamplayRoundBasedRules, CTeamplayRoundBasedRules)
+IMPLEMENT_CLIENTCLASS_NO_FACTORY(C_TeamplayRoundBasedRules, DT_TeamplayRoundBasedRules, CTeamplayRoundBasedRules)
 //static CTeamplayRoundBasedRules g_C_TeamplayRoundBasedRules_EntityReg;
 #endif
 

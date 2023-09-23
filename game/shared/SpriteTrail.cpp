@@ -83,9 +83,16 @@ LINK_ENTITY_TO_CLASS( env_spritetrail, CSpriteTrail );
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
+
+#if defined( CLIENT_DLL )
+#undef CSpriteTrail
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( SpriteTrail, DT_SpriteTrail );
 
-
+#if defined( CLIENT_DLL )
+#define CSpriteTrail C_SpriteTrail
+#endif
 
 //-----------------------------------------------------------------------------
 // Prediction

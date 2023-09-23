@@ -98,9 +98,15 @@ bool CWeaponP228::Deploy( )
 	return BaseClass::Deploy();
 }
 
+#if defined( CLIENT_DLL )
+#undef CWeaponP228
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponP228, DT_WeaponP228 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponP228 C_WeaponP228
+#endif
 
 
 float CWeaponP228::GetInaccuracy() const

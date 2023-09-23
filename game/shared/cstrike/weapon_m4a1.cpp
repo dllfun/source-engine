@@ -89,9 +89,15 @@ private:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponM4A1
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM4A1, DT_WeaponM4A1 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponM4A1 C_WeaponM4A1
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponM4A1 )
 END_PREDICTION_DATA()

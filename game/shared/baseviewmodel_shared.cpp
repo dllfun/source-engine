@@ -547,8 +547,15 @@ void RecvProxy_Weapon( const CRecvProxyData *pData, void *pStruct, void *pOut )
 
 LINK_ENTITY_TO_CLASS( viewmodel, CBaseViewModel );
 
+#if defined( CLIENT_DLL )
+#undef CBaseViewModel
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseViewModel, DT_BaseViewModel )
 
+#if defined( CLIENT_DLL )
+#define CBaseViewModel C_BaseViewModel
+#endif
 
 
 #ifdef CLIENT_DLL

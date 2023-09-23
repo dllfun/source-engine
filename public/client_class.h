@@ -33,6 +33,7 @@ class CMouthInfo;
 
 #include "iclientrenderable.h"
 #include "iclientnetworkable.h"
+#include "icliententity.h"
 
 // entity creation
 // creates an entity that has not been linked to a classname
@@ -76,8 +77,8 @@ extern ClientClassManager* g_pClientClassManager;
 //extern ClientClass *g_pClientClassHead;
 
 // The serial number that gets passed in is used for ehandles.
-typedef IClientNetworkable*	(*CreateClientClassFn)( int entnum, int serialNum );
-typedef IClientNetworkable*	(*CreateEventFn)();
+//typedef IClientNetworkable*	(*CreateClientClassFn)( int entnum, int serialNum );
+//typedef IClientNetworkable*	(*CreateEventFn)();
 
 //-----------------------------------------------------------------------------
 // Purpose: Client side class definition
@@ -159,6 +160,9 @@ public:
 	{
 		if (!pDataTableName || !pDataTableName[0]) {
 			Error("pTableName can not been NULL: %s\n", pNetworkName);
+		}
+		if (!strcmp(pDllClassName, pNetworkName)) {
+			Error("ClientClassName:%s can not been same as ServerClassName: %s\n", pDllClassName, pNetworkName);
 		}
 		T::InitRecvTable();
 		m_pDllClassName = pDllClassName;
@@ -288,7 +292,7 @@ private:
 // the list can be given to the engine).
 // Use this macro to expose your client class to the engine.
 // networkName must match the network name of a class registered on the server.
-#define IMPLEMENT_CLIENTCLASS(DLLClassName, recvTable, serverClassName) \
+#define IMPLEMENT_CLIENTCLASS_NO_FACTORY(DLLClassName, recvTable, serverClassName) \
 	static PrototypeClientClass<DLLClassName> __g_##DLLClassName##_ClassReg(\
 		#DLLClassName, \
 		#serverClassName, \
@@ -297,6 +301,9 @@ private:
 	ClientClass*	DLLClassName::GetClientClassStatic(){return &__g_##DLLClassName##_ClassReg;}\
 	ClientClass*	DLLClassName::GetClientClass() {return &__g_##DLLClassName##_ClassReg;}\
 	int				DLLClassName::YouForgotToImplementOrDeclareClientClass() {return 0;}\
+
+#define IMPLEMENT_CLIENTCLASS(DLLClassName, recvTable, serverClassName) \
+	IMPLEMENT_CLIENTCLASS_NO_FACTORY(DLLClassName, recvTable, serverClassName)\
 	static CClientEntityFactory<DLLClassName> __g_##DLLClassName##Factory(#DLLClassName );\
 	//static DLLClassName g_##DLLClassName##_EntityReg;											
 
@@ -391,8 +398,8 @@ abstract_class IClientEntityFactoryDictionary
 {
 public:
 	virtual void InstallFactory(IClientEntityFactory * pFactory, const char* pMapClassName) = 0;
-	virtual IClientNetworkable* Create(const char* pMapClassName, int entnum, int serialNum) = 0;
-	virtual void Destroy(const char* pMapClassName, IClientNetworkable* pNetworkable) = 0;
+	virtual IClientEntity* Create(const char* pMapClassName, int entnum, int serialNum) = 0;
+	virtual void Destroy(const char* pMapClassName, IClientEntity* pNetworkable) = 0;
 	virtual IClientEntityFactory* FindFactory(const char* pMapClassName) = 0;
 	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
 	virtual void RegisteMapClassName(const char* pDllClassName, const char* pMapClassName) = 0;
@@ -412,8 +419,8 @@ inline bool CanCreateClientEntity(const char* pszClassname)
 abstract_class IClientEntityFactory
 {
 public:
-	virtual IClientNetworkable * Create(int entnum, int serialNum) = 0;//const char* pClassName, 
-	virtual void Destroy(IClientNetworkable* pNetworkable) = 0;
+	virtual IClientEntity* Create(int entnum, int serialNum) = 0;//const char* pClassName, 
+	virtual void Destroy(IClientEntity* pNetworkable) = 0;
 	virtual size_t GetEntitySize() = 0;
 };
 
@@ -433,13 +440,13 @@ public:
 		}
 	}
 
-	IClientNetworkable* Create(int entnum, int serialNum)
+	IClientEntity* Create(int entnum, int serialNum)
 	{
 		T* pEnt = _CreateEntityTemplate((T*)NULL, entnum, serialNum);
-		return pEnt->NetworkProp();
+		return pEnt;//->NetworkProp()
 	}
 
-	void Destroy(IClientNetworkable* pNetworkable)
+	void Destroy(IClientEntity* pNetworkable)
 	{
 		if (pNetworkable)
 		{
@@ -470,12 +477,12 @@ public:
 		}
 	}
 
-	IClientNetworkable* Create(int entnum, int serialNum)
+	IClientEntity* Create(int entnum, int serialNum)
 	{
-		return pEnt.GetClientNetworkable();
+		return pEnt;
 	}
 
-	void Destroy(IClientNetworkable* pNetworkable)
+	void Destroy(IClientEntity* pNetworkable)
 	{
 
 	}

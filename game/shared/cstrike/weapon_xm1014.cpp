@@ -68,9 +68,15 @@ private:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponXM1014
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponXM1014, DT_WeaponXM1014 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponXM1014 C_WeaponXM1014
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponXM1014 )

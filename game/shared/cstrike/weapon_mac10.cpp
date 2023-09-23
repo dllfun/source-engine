@@ -60,9 +60,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponMAC10
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponMAC10, DT_WeaponMAC10 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponMAC10 C_WeaponMAC10
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponMAC10 )
 END_PREDICTION_DATA()

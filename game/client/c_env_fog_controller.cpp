@@ -10,6 +10,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#undef CFogController
+
 IMPLEMENT_NETWORKCLASS_ALIASED( FogController, DT_FogController )
 
 

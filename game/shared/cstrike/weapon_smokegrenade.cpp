@@ -22,10 +22,15 @@
 
 #endif
 
+#if defined( CLIENT_DLL )
+#undef CSmokeGrenade
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( SmokeGrenade, DT_SmokeGrenade )
 
-
+#if defined( CLIENT_DLL )
+#define CSmokeGrenade C_SmokeGrenade
+#endif
 
 BEGIN_PREDICTION_DATA( CSmokeGrenade )
 END_PREDICTION_DATA()

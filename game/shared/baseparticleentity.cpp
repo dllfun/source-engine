@@ -17,9 +17,15 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#if defined( CLIENT_DLL )
+#undef CBaseParticleEntity
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseParticleEntity, DT_BaseParticleEntity )
 
-
+#if defined( CLIENT_DLL )
+#define CBaseParticleEntity C_BaseParticleEntity
+#endif
 
 BEGIN_PREDICTION_DATA(	CBaseParticleEntity )
 END_PREDICTION_DATA()

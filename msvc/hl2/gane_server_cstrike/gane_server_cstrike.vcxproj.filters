@@ -1760,5 +1760,8 @@
     <ClInclude Include="..\..\..\public\dt_utlvector_send.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\public\iserverentity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

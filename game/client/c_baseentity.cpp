@@ -50,6 +50,7 @@
 	bool g_bRestoreInterpolatedVarValues = false;
 #endif
 
+#undef CBaseEntity
 
 static bool g_bWasSkipping = (bool)-1;
 static bool g_bWasThreaded =(bool)-1;
@@ -367,7 +368,7 @@ void RecvProxy_SimulationTime( const CRecvProxyData *pData, void *pStruct, void 
 
 void RecvProxy_LocalVelocity( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
-	CBaseEntity *pEnt = (CBaseEntity *)pStruct;
+	C_BaseEntity *pEnt = (C_BaseEntity *)pStruct;
 
 	Vector vecVelocity;
 	
@@ -383,7 +384,7 @@ void RecvProxy_ToolRecording( const CRecvProxyData *pData, void *pStruct, void *
 	if ( !ToolsEnabled() )
 		return;
 
-	CBaseEntity *pEnt = (CBaseEntity *)pStruct;
+	C_BaseEntity *pEnt = (C_BaseEntity *)pStruct;
 	pEnt->SetToolRecording( pData->m_Value.m_Int != 0 );
 }
 
@@ -2748,7 +2749,7 @@ void C_BaseEntity::OnLatchInterpolatedVariables( int flags )
 	}
 }
 
-int CBaseEntity::BaseInterpolatePart1( float &currentTime, Vector &oldOrigin, QAngle &oldAngles, Vector &oldVel, int &bNoMoreChanges )
+int C_BaseEntity::BaseInterpolatePart1( float &currentTime, Vector &oldOrigin, QAngle &oldAngles, Vector &oldVel, int &bNoMoreChanges )
 {
 	// Don't mess with the world!!!
 	bNoMoreChanges = 1;
@@ -3091,7 +3092,7 @@ bool C_BaseEntity::IsFollowingEntity()
 	return IsEffectActive(EF_BONEMERGE) && (GetMoveType() == MOVETYPE_NONE) && GetMoveParent();
 }
 
-C_BaseEntity *CBaseEntity::GetFollowedEntity()
+C_BaseEntity *C_BaseEntity::GetFollowedEntity()
 {
 	if (!IsFollowingEntity())
 		return NULL;
@@ -4233,7 +4234,7 @@ void C_BaseEntity::BoneMergeFastCullBloat( Vector &localMins, Vector &localMaxs,
 
 matrix3x4_t& C_BaseEntity::GetParentToWorldTransform( matrix3x4_t &tempMatrix )
 {
-	CBaseEntity *pMoveParent = GetMoveParent();
+	C_BaseEntity *pMoveParent = GetMoveParent();
 	if ( !pMoveParent )
 	{
 		Assert( false );
@@ -4354,7 +4355,7 @@ void C_BaseEntity::CalcAbsoluteVelocity()
 
 	m_iEFlags &= ~EFL_DIRTY_ABSVELOCITY;
 
-	CBaseEntity *pMoveParent = GetMoveParent();
+	C_BaseEntity *pMoveParent = GetMoveParent();
 	if ( !pMoveParent )
 	{
 		m_vecAbsVelocity = m_vecVelocity;
@@ -4388,7 +4389,7 @@ void C_BaseEntity::CalcAbsoluteAngularVelocity()
 
 	m_iEFlags &= ~EFL_DIRTY_ABSANGVELOCITY;
 
-	CBaseEntity *pMoveParent = GetMoveParent();
+	C_BaseEntity *pMoveParent = GetMoveParent();
 	if ( !pMoveParent )
 	{
 		m_vecAbsAngVelocity = m_vecAngVelocity;
@@ -5424,7 +5425,7 @@ void C_BaseEntity::SUB_Remove( void )
 	Remove( );
 }
 
-CBaseEntity *FindEntityInFrontOfLocalPlayer()
+C_BaseEntity *FindEntityInFrontOfLocalPlayer()
 {
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	if ( pPlayer )
@@ -5447,7 +5448,7 @@ CBaseEntity *FindEntityInFrontOfLocalPlayer()
 //-----------------------------------------------------------------------------
 static void RemoveDecals_f( void )
 {
-	CBaseEntity *pHit = FindEntityInFrontOfLocalPlayer();
+	C_BaseEntity *pHit = FindEntityInFrontOfLocalPlayer();
 	if ( pHit )
 	{
 		pHit->RemoveAllDecals();
@@ -5477,7 +5478,7 @@ void C_BaseEntity::ToggleBBoxVisualization( int fVisFlags )
 //-----------------------------------------------------------------------------
 static void ToggleBBoxVisualization( int fVisFlags, const CCommand &args )
 {
-	CBaseEntity *pHit;
+	C_BaseEntity *pHit;
 
 	int iEntity = -1;
 	if ( args.ArgC() >= 2 )
@@ -5505,7 +5506,7 @@ static void ToggleBBoxVisualization( int fVisFlags, const CCommand &args )
 //-----------------------------------------------------------------------------
 CON_COMMAND_F( cl_ent_bbox, "Displays the client's bounding box for the entity under the crosshair.", FCVAR_CHEAT )
 {
-	ToggleBBoxVisualization( CBaseEntity::VISUALIZE_COLLISION_BOUNDS, args );
+	ToggleBBoxVisualization( C_BaseEntity::VISUALIZE_COLLISION_BOUNDS, args );
 }
 
 
@@ -5514,7 +5515,7 @@ CON_COMMAND_F( cl_ent_bbox, "Displays the client's bounding box for the entity u
 //-----------------------------------------------------------------------------
 CON_COMMAND_F( cl_ent_absbox, "Displays the client's absbox for the entity under the crosshair.", FCVAR_CHEAT )
 {
-	ToggleBBoxVisualization( CBaseEntity::VISUALIZE_SURROUNDING_BOUNDS, args );
+	ToggleBBoxVisualization( C_BaseEntity::VISUALIZE_SURROUNDING_BOUNDS, args );
 }
 
 
@@ -5523,7 +5524,7 @@ CON_COMMAND_F( cl_ent_absbox, "Displays the client's absbox for the entity under
 //-----------------------------------------------------------------------------
 CON_COMMAND_F( cl_ent_rbox, "Displays the client's render box for the entity under the crosshair.", FCVAR_CHEAT )
 {
-	ToggleBBoxVisualization( CBaseEntity::VISUALIZE_RENDER_BOUNDS, args );
+	ToggleBBoxVisualization( C_BaseEntity::VISUALIZE_RENDER_BOUNDS, args );
 }
 
 //-----------------------------------------------------------------------------
@@ -5933,7 +5934,7 @@ BEGIN_DATADESC_NO_BASE( C_BaseEntity )
 	DEFINE_FIELD( m_ModelName, FIELD_STRING ),
 	DEFINE_FIELD( m_vecAbsOrigin, FIELD_POSITION_VECTOR ),
 	DEFINE_FIELD( m_angAbsRotation, FIELD_VECTOR ),
-	DEFINE_ARRAY( m_rgflCoordinateFrame, FIELD_FLOAT, 12 ), // NOTE: MUST BE IN LOCAL SPACE, NOT POSITION_VECTOR!!! (see CBaseEntity::Restore)
+	DEFINE_ARRAY( m_rgflCoordinateFrame, FIELD_FLOAT, 12 ), // NOTE: MUST BE IN LOCAL SPACE, NOT POSITION_VECTOR!!! (see C_BaseEntity::Restore)
 	DEFINE_FIELD( m_fFlags, FIELD_INTEGER ),
 END_DATADESC()
 

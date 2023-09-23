@@ -269,9 +269,15 @@ int GetShellForAmmoType( const char *ammoname )
 // CWeaponCSBase tables.
 // ----------------------------------------------------------------------------- //
 
+#if defined( CLIENT_DLL )
+#undef CWeaponCSBase
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCSBase, DT_WeaponCSBase )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponCSBase C_WeaponCSBase
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponCSBase )

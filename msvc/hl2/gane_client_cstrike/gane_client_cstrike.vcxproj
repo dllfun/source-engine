@@ -751,6 +751,7 @@
     <ClInclude Include="..\..\..\public\dt_shared.h" />
     <ClInclude Include="..\..\..\public\dt_utlvector_common.h" />
     <ClInclude Include="..\..\..\public\dt_utlvector_recv.h" />
+    <ClInclude Include="..\..\..\public\icliententity.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

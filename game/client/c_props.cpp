@@ -14,6 +14,7 @@
 #define CPhysBox C_PhysBox
 #define CPhysicsProp C_PhysicsProp
 
+#undef CDynamicProp
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -191,10 +192,10 @@ bool C_BasePropDoor::TestCollision( const Ray_t &ray, unsigned int mask, trace_t
 // Special version of func_physbox.
 // ------------------------------------------------------------------------------------------ //
 #ifndef _XBOX
-class CPhysBoxMultiplayer : public CPhysBox, public IMultiplayerPhysics
+class C_PhysBoxMultiplayer : public CPhysBox, public IMultiplayerPhysics
 {
 public:
-	DECLARE_CLASS( CPhysBoxMultiplayer, CPhysBox );
+	DECLARE_CLASS(C_PhysBoxMultiplayer, CPhysBox );
 
 	virtual int GetMultiplayerPhysicsMode()
 	{
@@ -218,21 +219,21 @@ public:
 	DECLARE_CLIENTCLASS();
 
 public:
-	BEGIN_INIT_RECV_TABLE(CPhysBoxMultiplayer)
-	BEGIN_RECV_TABLE(CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, DT_PhysBox)
+	BEGIN_INIT_RECV_TABLE(C_PhysBoxMultiplayer)
+	BEGIN_RECV_TABLE(C_PhysBoxMultiplayer, DT_PhysBoxMultiplayer, DT_PhysBox)
 		RecvPropInt(RECVINFO(m_iPhysicsMode)),
 		RecvPropFloat(RECVINFO(m_fMass)),
 	END_RECV_TABLE(DT_PhysBoxMultiplayer)
 	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS( CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, CPhysBoxMultiplayer )
+IMPLEMENT_CLIENTCLASS(C_PhysBoxMultiplayer, DT_PhysBoxMultiplayer, CPhysBoxMultiplayer )
 
 
 
-class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
+class C_PhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
 {
-	DECLARE_CLASS( CPhysicsPropMultiplayer, CPhysicsProp );
+	DECLARE_CLASS(C_PhysicsPropMultiplayer, CPhysicsProp );
 
 	virtual int GetMultiplayerPhysicsMode()
 	{
@@ -269,8 +270,8 @@ class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
 	DECLARE_CLIENTCLASS();
 
 public:
-	BEGIN_INIT_RECV_TABLE(CPhysicsPropMultiplayer)
-	BEGIN_RECV_TABLE(CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, DT_PhysicsProp)
+	BEGIN_INIT_RECV_TABLE(C_PhysicsPropMultiplayer)
+	BEGIN_RECV_TABLE(C_PhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, DT_PhysicsProp)
 		RecvPropInt(RECVINFO(m_iPhysicsMode)),
 		RecvPropFloat(RECVINFO(m_fMass)),
 		RecvPropVector(RECVINFO(m_collisionMins)),
@@ -279,6 +280,6 @@ public:
 	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS( CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, CPhysicsPropMultiplayer )
+IMPLEMENT_CLIENTCLASS(C_PhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, CPhysicsPropMultiplayer )
 
 #endif

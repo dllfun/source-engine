@@ -61,9 +61,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponUMP45
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponUMP45, DT_WeaponUMP45 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponUMP45 C_WeaponUMP45
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponUMP45 )
 END_PREDICTION_DATA()

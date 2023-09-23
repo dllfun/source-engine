@@ -66,9 +66,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponScout
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponScout, DT_WeaponScout )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponScout C_WeaponScout
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponScout )
 END_PREDICTION_DATA()

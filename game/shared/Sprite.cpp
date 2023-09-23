@@ -117,7 +117,15 @@ END_PREDICTION_DATA()
 
 #endif
 
+#if defined( CLIENT_DLL )
+#undef CSprite
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( Sprite, DT_Sprite );
+
+#if defined( CLIENT_DLL )
+#define CSprite C_Sprite
+#endif
 
 #if defined( CLIENT_DLL )
 

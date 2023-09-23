@@ -728,9 +728,15 @@ END_PREDICTION_DATA()
 // Tables.
 // -------------------------------------------------------------------------------- //
 
+#if defined( CLIENT_DLL )
+#undef CC4
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( C4, DT_WeaponC4 )
 
-
+#if defined( CLIENT_DLL )
+#define CC4 C_C4
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CC4 )

@@ -87,10 +87,15 @@ public:
 };
 
 
+#if defined( CLIENT_DLL )
+#undef CDEagle
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( DEagle, DT_WeaponDEagle )
 
-
+#if defined( CLIENT_DLL )
+#define CDEagle C_DEagle
+#endif
 
 #if defined CLIENT_DLL
 BEGIN_PREDICTION_DATA( CDEagle )

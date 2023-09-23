@@ -426,9 +426,15 @@ const char *CFuncLadder::GetSurfacePropName()
 }
 #endif
 
+#if defined( CLIENT_DLL )
+#undef CFuncLadder
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( FuncLadder, DT_FuncLadder );
 
-
+#if defined( CLIENT_DLL )
+#define CFuncLadder C_FuncLadder
+#endif
 
 LINK_ENTITY_TO_CLASS( func_useableladder, CFuncLadder );
 
@@ -479,9 +485,15 @@ int CFuncLadder::UpdateTransmitState()
 }
 #endif
 
+#if defined( CLIENT_DLL )
+#undef CInfoLadderDismount
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( InfoLadderDismount, DT_InfoLadderDismount );
 
-
+#if defined( CLIENT_DLL )
+#define CInfoLadderDismount C_InfoLadderDismount
+#endif
 
 LINK_ENTITY_TO_CLASS( info_ladder_dismount, CInfoLadderDismount );
 

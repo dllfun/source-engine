@@ -57,9 +57,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponM249
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponM249, DT_WeaponM249 )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponM249 C_WeaponM249
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponM249 )
 END_PREDICTION_DATA()

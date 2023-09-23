@@ -274,7 +274,6 @@ private:
 	CNetworkVector( m_vecSpecifiedSurroundingMaxsPreScaled );
 	CNetworkVector( m_vecSpecifiedSurroundingMins );
 	CNetworkVector( m_vecSpecifiedSurroundingMaxs );
-	int count = 0;
 
 	// Cached off world-aligned surrounding bounds
 #if 0

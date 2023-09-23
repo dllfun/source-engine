@@ -26,10 +26,15 @@
 #define GRENADE_TIMER	3.0f //Seconds
 
 
+#if defined( CLIENT_DLL )
+#undef CHEGrenade
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( HEGrenade, DT_HEGrenade )
 
-
+#if defined( CLIENT_DLL )
+#define CHEGrenade C_HEGrenade
+#endif
 
 BEGIN_PREDICTION_DATA( CHEGrenade )
 END_PREDICTION_DATA()

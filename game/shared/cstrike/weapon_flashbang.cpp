@@ -27,10 +27,15 @@
 #define GRENADE_TIMER	3.0f //Seconds
 
 
+#if defined( CLIENT_DLL )
+#undef CFlashbang
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( Flashbang, DT_Flashbang )
 
-
+#if defined( CLIENT_DLL )
+#define CFlashbang C_Flashbang
+#endif
 
 BEGIN_PREDICTION_DATA( CFlashbang )
 END_PREDICTION_DATA()

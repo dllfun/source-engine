@@ -14,10 +14,15 @@
 	#include "cs_player.h"
 #endif
 
+#if defined( CLIENT_DLL )
+#undef CWeaponCSBaseGun
+#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCSBaseGun, DT_WeaponCSBaseGun )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponCSBaseGun C_WeaponCSBaseGun
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponCSBaseGun )
 END_PREDICTION_DATA()

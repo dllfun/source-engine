@@ -89,9 +89,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponAWP
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponAWP, DT_WeaponAWP )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponAWP C_WeaponAWP
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponAWP )
 END_PREDICTION_DATA()

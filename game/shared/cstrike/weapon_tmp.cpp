@@ -59,9 +59,15 @@ public:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponTMP
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponTMP, DT_WeaponTMP )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponTMP C_WeaponTMP
+#endif
 
 BEGIN_PREDICTION_DATA( CWeaponTMP )
 END_PREDICTION_DATA()

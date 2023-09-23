@@ -93,9 +93,15 @@ private:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponUSP
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponUSP, DT_WeaponUSP )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponUSP C_WeaponUSP
+#endif
 
 #ifdef CLIENT_DLL
 BEGIN_PREDICTION_DATA( CWeaponUSP )

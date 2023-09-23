@@ -11,9 +11,15 @@
 
 LINK_ENTITY_TO_CLASS( predicted_viewmodel, CPredictedViewModel );
 
+#if defined( CLIENT_DLL )
+#undef CPredictedViewModel
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( PredictedViewModel, DT_PredictedViewModel )
 
-
+#if defined( CLIENT_DLL )
+#define CPredictedViewModel C_PredictedViewModel
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 

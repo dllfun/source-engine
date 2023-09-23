@@ -72,9 +72,15 @@ private:
 #endif
 };
 
+#if defined( CLIENT_DLL )
+#undef CWeaponFamas
+#endif
+
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFamas, DT_WeaponFamas )
 
-
+#if defined( CLIENT_DLL )
+#define CWeaponFamas C_WeaponFamas
+#endif
 
 #if defined(CLIENT_DLL)
 BEGIN_PREDICTION_DATA( CWeaponFamas )
