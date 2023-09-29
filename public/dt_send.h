@@ -18,7 +18,8 @@
 #include "const.h"
 #include "bitvec.h"
 #include "tier1/UtlStringMap.h"
-
+#include "bitbuf.h"
+#include "utlmemory.h"
 
 // ------------------------------------------------------------------------ //
 // Send proxies can be used to convert a variable into a networkable type 
@@ -40,6 +41,7 @@
 // the clients for this property (regardless of whether it actually changed or not).
 // ------------------------------------------------------------------------ //
 typedef void (*SendVarProxyFn)( const SendProp *pProp, const void *pStructBase, const void *pData, DVariant *pOut, int iElement, int objectID );
+typedef unsigned int CRC32_t;
 
 // Return the pointer to the data for the datatable.
 // If the proxy returns null, it's the same as if pRecipients->ClearAllRecipients() was called.
@@ -51,7 +53,7 @@ typedef void* (*SendTableProxyFn)(
 	const void *pData, 
 	CSendProxyRecipients *pRecipients, 
 	int objectID );
-
+extern char* COM_StringCopy(const char* in);
 
 class CNonModifiedPointerProxy
 {
@@ -109,6 +111,12 @@ extern CStandardSendProxies g_StandardSendProxies;
 
 // Max # of datatable send proxies you can have in a tree.
 #define MAX_DATATABLE_PROXIES	32
+
+
+class CStandardSendProxies;
+
+
+#define MAX_DELTABITS_SIZE 2048
 
 // ------------------------------------------------------------------------ //
 // Datatable send proxies are used to tell the engine where the datatable's 
@@ -190,6 +198,8 @@ public:
 						SendProp();
 	virtual				~SendProp();
 
+	SendProp& operator=(const SendProp& srcSendProp);
+
 	void				Clear();
 
 	int					GetOffset() const;
@@ -201,7 +211,7 @@ public:
 	SendTableProxyFn	GetDataTableProxyFn() const;
 	void				SetDataTableProxyFn( SendTableProxyFn f );
 	
-	const char*			GetDataTableName();
+	const char*			GetDataTableName() const;
 	void				SetDataTableName(const char* pTableName);
 
 	SendTable*			GetDataTable() const;
@@ -250,29 +260,29 @@ public:
 
 public:
 
-	RecvProp		*m_pMatchingRecvProp;	// This is temporary and only used while precalculating
+	RecvProp		*m_pMatchingRecvProp = NULL;	// This is temporary and only used while precalculating
 												// data for the decoders.
 
-	SendPropType	m_Type;
-	int				m_nBits;
-	float			m_fLowValue;
-	float			m_fHighValue;
+	SendPropType	m_Type = DPT_Int;
+	int				m_nBits = 0;
+	float			m_fLowValue = 0;
+	float			m_fHighValue = 0;
 	
 	SendProp		*m_pArrayProp = NULL;					// If this is an array, this is the property that defines each array element.
-	ArrayLengthSendProxyFn	m_ArrayLengthProxy;	// This callback returns the array length.
+	ArrayLengthSendProxyFn	m_ArrayLengthProxy = NULL;	// This callback returns the array length.
 	
-	int				m_nElements;		// Number of elements in the array (or 1 if it's not an array).
-	int				m_ElementStride;	// Pointer distance between array elements.
+	int				m_nElements = 0;		// Number of elements in the array (or 1 if it's not an array).
+	int				m_ElementStride = 0;	// Pointer distance between array elements.
 
-	const char *m_pExcludeDTName = NULL;			// If this is an exclude prop, then this is the name of the datatable to exclude a prop from.
-	const char *m_pParentArrayPropName = NULL;
+	const char		*m_pExcludeDTName = NULL;			// If this is an exclude prop, then this is the name of the datatable to exclude a prop from.
+	const char		*m_pParentArrayPropName = NULL;
 
 	const char		*m_pVarName = NULL;
-	float			m_fHighLowMul;
+	float			m_fHighLowMul = 0;
 	
 private:
 
-	int					m_Flags;				// SPROP_ flags.
+	int					m_Flags = 0;				// SPROP_ flags.
 
 	SendVarProxyFn		m_ProxyFn = NULL;				// NULL for DPT_DataTable.
 	SendTableProxyFn	m_DataTableProxyFn = NULL;		// Valid for DPT_DataTable.
@@ -282,7 +292,7 @@ private:
 	
 	// SENDPROP_VECTORELEM makes this negative to start with so we can detect that and
 	// set the SPROP_IS_VECTOR_ELEM flag.
-	int					m_Offset;
+	int					m_Offset = 0;
 
 	// Extra data bound to this property.
 	const void			*m_pExtraData = NULL;
@@ -321,7 +331,7 @@ inline void SendProp::SetDataTableProxyFn( SendTableProxyFn f )
 	m_DataTableProxyFn = f; 
 }
 
-inline const char* SendProp::GetDataTableName() {
+inline const char* SendProp::GetDataTableName() const{
 	return m_pDataTableName;
 }
 
@@ -333,11 +343,6 @@ inline void SendProp::SetDataTableName(const char* pTableName)
 inline SendTable* SendProp::GetDataTable() const
 {
 	return m_pDataTable;
-}
-
-inline void SendProp::SetDataTable( SendTable *pTable )
-{
-	m_pDataTable = pTable; 
 }
 
 inline char const* SendProp::GetExcludeDTName() const
@@ -463,6 +468,8 @@ public:
 
 	void		Construct( SendProp *pProps, int nProps, const char *pNetTableName );
 
+	SendTable& operator=(const SendTable& srcSendTable);
+
 	virtual void Init() {};
 
 	const char*	GetName() const;
@@ -481,24 +488,111 @@ public:
 	bool		HasPropsEncodedAgainstTickCount() const;
 	void		SetHasPropsEncodedAgainstTickcount( bool bState );
 
+	bool		IsLeaf() {
+		return m_bIsLeaf;
+	}
+
 	void		InitRefSendTable(SendTableManager* pSendTableNanager);
+
+	bool		SendTable_InitTable();
+
+	void		SendTable_TermTable();
+
+	// Return the number of unique properties in the table.
+	int			SendTable_GetNumFlatProps();
+
+	// compares properties and writes delta properties
+	int SendTable_WriteAllDeltaProps(
+		const void* pFromData,
+		const int	nFromDataBits,
+		const void* pToData,
+		const int nToDataBits,
+		const int nObjectID,
+		bf_write* pBufOut);
+
+	// Write the properties listed in pCheckProps and nCheckProps.
+	void SendTable_WritePropList(
+		const void* pState,
+		const int nBits,
+		bf_write* pOut,
+		const int objectID,
+		const int* pCheckProps,
+		const int nCheckProps
+	);
+
+	//
+	// Writes the property indices that must be written to move from pFromState to pToState into pDeltaProps.
+	// Returns the number of indices written to pDeltaProps.
+	//
+	int	SendTable_CalcDelta(
+		const void* pFromState,
+		const int nFromBits,
+
+		const void* pToState,
+		const int nToBits,
+
+		int* pDeltaProps,
+		int nMaxDeltaProps,
+
+		const int objectID);
+
+
+	// This function takes the list of property indices in startProps and the values from
+	// SendProxies in pProxyResults, and fills in a new array in outProps with the properties
+	// that the proxies want to allow for iClient's client.
+	//
+	// If pOldStateProxies is non-null, this function adds new properties into the output list
+	// if a proxy has turned on from the previous state.
+	int SendTable_CullPropsFromProxies(
+		const int* pStartProps,
+		int nStartProps,
+
+		const int iClient,
+
+		const CSendProxyRecipients* pOldStateProxies,
+		const int nOldStateProxies,
+
+		const CSendProxyRecipients* pNewStateProxies,
+		const int nNewStateProxies,
+
+		int* pOutProps,
+		int nMaxOutProps
+	);
+
+
+	// Encode the properties that are referenced in the delta bits.
+	// If pDeltaBits is NULL, then all the properties are encoded.
+	bool SendTable_Encode(
+		const void* pStruct,
+		bf_write* pOut,
+		int objectID = -1,
+		CUtlMemory<CSendProxyRecipients>* pRecipients = NULL,	// If non-null, this is an array of CSendProxyRecipients.
+		// The array must have room for pTable->GetNumDataTableProxies().
+		bool bNonZeroOnly = false								// If this is true, then it will write all properties that have
+		// nonzero values.
+	);
+
+	// do all kinds of checks on a packed entity bitbuffer
+	bool SendTable_CheckIntegrity(const void* pData, const int nDataBits);
 public:
 
-	SendProp	*m_pProps;
-	int			m_nProps;
+	SendProp	*m_pProps = NULL;
+	int			m_nProps = 0;
 
-	const char	*m_pNetTableName;	// The name matched between client and server.
+	const char	*m_pNetTableName = NULL;	// The name matched between client and server.
 
 	// The engine hooks the SendTable here.
-	CSendTablePrecalc	*m_pPrecalc;
+	CSendTablePrecalc	*m_pPrecalc = NULL;
 
 
-protected:		
+protected:
+	bool		m_bIsLeaf = true;
+	bool        m_RefTableInited = false;
 	bool		m_bInitialized : 1;	
 	bool		m_bHasBeenWritten : 1;		
 	bool		m_bHasPropsEncodedAgainstCurrentTickCount : 1; // m_flSimulationTime and m_flAnimTime, e.g.
 public:
-	SendTable* m_pNext;
+	SendTable* m_pNext = NULL;
 };
 
 
@@ -556,14 +650,19 @@ inline void SendTable::SetHasPropsEncodedAgainstTickcount( bool bState )
 
 class SendTableManager {
 public:
-
+	SendTableManager() {
+		
+	}
+	~SendTableManager() {
+		m_SendTableMap.Clear();
+	}
 	int		GetSendTablesCount() {
-		return GetSendTableMap().GetNumStrings();
+		return m_SendTableMap.GetNumStrings();
 	}
 
 	SendTable* FindSendTable(const char* pName) {
-		if(GetSendTableMap().Defined(pName)){
-			return GetSendTableMap()[pName];
+		if(m_SendTableMap.Defined(pName)){
+			return m_SendTableMap[pName];
 		}
 		return NULL;
 	}
@@ -572,54 +671,36 @@ public:
 		return m_pSendTableHead;
 	}
 
-	void	RegisteSendTable(SendTable* pSendTable) {
+	void	RegisteSendTable(SendTable* pSendTable);
 
-		if (GetSendTableMap().Defined(pSendTable->GetName())) {
-			Error("duplicate SendTable: %s\n", pSendTable->GetName());	// dedicated servers exit
-		}
-		else {
-			GetSendTableMap()[pSendTable->GetName()] = pSendTable;
-		}
-		if (!m_pSendTableHead)
-		{
-			m_pSendTableHead = pSendTable;
-			pSendTable->m_pNext = NULL;
-		}
-		else
-		{
-			SendTable* p1 = m_pSendTableHead;
-			SendTable* p2 = p1->m_pNext;
-
-			// use _stricmp because Q_stricmp isn't hooked up properly yet
-			if (_stricmp(p1->GetName(), pSendTable->GetName()) > 0)
-			{
-				pSendTable->m_pNext = m_pSendTableHead;
-				m_pSendTableHead = pSendTable;
-				p1 = NULL;
-			}
-
-			while (p1)
-			{
-				if (p2 == NULL || _stricmp(p2->GetName(), pSendTable->GetName()) > 0)
-				{
-					pSendTable->m_pNext = p2;
-					p1->m_pNext = pSendTable;
-					break;
-				}
-				p1 = p2;
-				p2 = p2->m_pNext;
-			}
-		}
+	void	ClearAllSendTables() {
+		m_Inited = false;
+		m_SendTableCRC = 0;
+		m_pSendTableHead = NULL;
+		m_SendTableMap.PurgeAndDeleteElements();
 	}
+	// ------------------------------------------------------------------------ //
+// SendTable functions.
+// ------------------------------------------------------------------------ //
+
+// Precalculate data that enables the SendTable to be used to encode data.
+	bool		SendTable_Init();//SendTable** pTables, int nTables
+	void		SendTable_PrintStats(void);
+	void		SendTable_Term();
+	CRC32_t SendTable_ComputeCRC();
+	CRC32_t		SendTable_GetCRC();
+	int			SendTable_GetNum();
+	SendTable* SendTabe_GetTable(int index);
+	
 private:
-	SendTable* m_pSendTableHead = NULL;
-	CUtlStringMap< SendTable* >& GetSendTableMap() {
-		static CUtlStringMap< SendTable* >	s_SendTableMap;
-		return s_SendTableMap;
-	}
+	bool		m_Inited = false;
+	CRC32_t		m_SendTableCRC = 0;
+	SendTable*	m_pSendTableHead = NULL;
+	//CUtlVector< SendTable* > g_SendTables;
+	CUtlStringMap< SendTable* >	m_SendTableMap;
 };
 
-extern SendTableManager* g_pSendTableManager;
+SendTableManager* GetSendTableManager();
 // ------------------------------------------------------------------------------------------------------ //
 // Use BEGIN_SEND_TABLE if you want to declare a SendTable and have it inherit all the properties from
 // its base class. There are two requirements for this to work:
@@ -683,7 +764,7 @@ extern SendTableManager* g_pSendTableManager;
 //#define END_SEND_TABLE(tableName) \
 //				};\
 //				Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
-//				g_pSendTableManager->RegisteSendTable(this);\
+//				GetSendTableManager()->RegisteSendTable(this);\
 //			}\
 //		}\
 //	\
@@ -703,15 +784,15 @@ extern SendTableManager* g_pSendTableManager;
 #define BEGIN_SEND_TABLE_NOBASE(className, tableName) \
 			{\
 				typedef className currentSendDTClass;\
-				static SendTable g_SendTable;		\
-				static const char *pTableName = #tableName; \
-				static SendProp g_SendProps[] = { \
+				const char *pTableName = #tableName; \
+				SendProp pSendProps[] = { \
 								SendPropInt("should_never_see_this", 0, sizeof(int)),
 		
 #define END_SEND_TABLE(tableName) \
-												};\
-				g_SendTable.Construct(g_SendProps+1, sizeof(g_SendProps) / sizeof(SendProp) - 1, pTableName);\
-				g_pSendTableManager->RegisteSendTable(&g_SendTable);\
+										};\
+				SendTable pSendTable;		\
+				pSendTable.Construct(pSendProps+1, sizeof(pSendProps) / sizeof(SendProp) - 1, pTableName);\
+				GetSendTableManager()->RegisteSendTable(&pSendTable);\
 			}
 
 #define BEGIN_SEND_TABLE(className, tableName, baseTableName) \

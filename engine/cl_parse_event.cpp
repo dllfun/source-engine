@@ -59,10 +59,10 @@ void CL_ParseEventDelta( void *RawData, void *pToData, RecvTable *pRecvTable, un
 	bf_read fromBuf( "CL_ParseEventDelta->fromBuf", RawData, uReadBufferSize );
 
 	// First, decode all properties as zeros since temp ents are delta'd from zeros.
-	RecvTable_DecodeZeros( pRecvTable, pToData, -1 );
+	pRecvTable->RecvTable_DecodeZeros(  pToData, -1 );
 
 	// Now decode the data from the network on top of that.
-	RecvTable_Decode( pRecvTable, pToData, &fromBuf, -1 );
+	pRecvTable->RecvTable_Decode(  pToData, &fromBuf, -1 );
 
 	// Make sure the server, etc. didn't try to send too much
 	assert(!fromBuf.IsOverflowed());

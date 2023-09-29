@@ -197,7 +197,7 @@ void BuyPresetManager::VerifyLoadedTeam( void )
 	KeyValues *data;
 	KeyValues *presetKey;
 	data = new KeyValues( "Presets" );
-	bool fileExists = data->LoadFromFile( filesystem, filename, NULL );
+	bool fileExists = data->LoadFromFile(g_pFileSystem, filename, NULL );
 
 	presetKey = data->GetFirstSubKey();
 	while ( presetKey )
@@ -220,7 +220,7 @@ void BuyPresetManager::VerifyLoadedTeam( void )
 		KeyValues *data;
 		KeyValues *presetKey;
 		data = new KeyValues( "Presets" );
-		data->LoadFromFile( filesystem, filename, NULL );
+		data->LoadFromFile(g_pFileSystem, filename, NULL );
 
 		presetKey = data->GetFirstSubKey();
 		while ( presetKey )
@@ -280,7 +280,7 @@ void BuyPresetManager::ResetEditToDefaults( void )
 	KeyValues *data;
 	KeyValues *presetKey;
 	data = new KeyValues( "Presets" );
-	data->LoadFromFile( filesystem, filename, NULL );
+	data->LoadFromFile(g_pFileSystem, filename, NULL );
 
 	presetKey = data->GetFirstSubKey();
 	while ( presetKey )
@@ -326,7 +326,7 @@ void BuyPresetManager::Save()
 	{
 		m_presets[i].Save( data );
 	}
-	data->SaveToFile( filesystem, filename, NULL );
+	data->SaveToFile(g_pFileSystem, filename, NULL );
 	data->deleteThis();
 #endif // USE_BUY_PRESETS
 }

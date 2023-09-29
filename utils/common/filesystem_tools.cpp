@@ -34,7 +34,7 @@
 // Module interface.
 // ---------------------------------------------------------------------------------------------------- //
 
-IBaseFileSystem *g_pFileSystem = NULL;
+IFileSystem *g_pFileSystem = NULL;
 
 // These are only used for tools that need the search paths that the engine's file system provides.
 CSysModule			*g_pFullFileSystemModule = NULL;

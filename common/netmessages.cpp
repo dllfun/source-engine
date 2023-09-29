@@ -11,7 +11,7 @@
 #include "mathlib/mathlib.h"
 #include "networkstringtabledefs.h"
 #include "../engine/event_system.h"
-#include "../engine/dt.h"
+#include "dt.h"
 #include "tier0/vprof.h"
 #include "convar.h"
 

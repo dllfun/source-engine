@@ -29,6 +29,7 @@
 //-----------------------------------------------------------------------------
 class ClientClass;
 class ClientClassManager;
+class RecvTableManager;
 class IClientEntityFactoryDictionary;
 class IVModel;
 class CSentence;
@@ -616,6 +617,8 @@ public:
 
 	// Request a pointer to the list of client datatable classes
 	virtual ClientClassManager		*GetClientClassManager( void ) = 0;
+
+	virtual RecvTableManager* GetRecvTableManager() = 0;
 
 	virtual IClientEntityFactoryDictionary* EntityFactoryDictionary() = 0;
 

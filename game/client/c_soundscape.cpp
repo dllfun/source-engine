@@ -272,9 +272,9 @@ void C_SoundscapeSystem::AddSoundScapeFile( const char *filename )
 {
 	KeyValues *script = new KeyValues( filename );
 #ifndef _XBOX
-	if ( script->LoadFromFile( filesystem, filename ) )
+	if ( script->LoadFromFile(g_pFileSystem, filename ) )
 #else
-	if ( filesystem->LoadKeyValues( *script, IFileSystem::TYPE_SOUNDSCAPE, filename, "GAME" ) )
+	if (g_pFileSystem->LoadKeyValues( *script, IFileSystem::TYPE_SOUNDSCAPE, filename, "GAME" ) )
 #endif
 	{
 		// parse out all of the top level sections and save their names
@@ -312,7 +312,7 @@ bool C_SoundscapeSystem::Init()
 	}
 
 	KeyValues *manifest = new KeyValues( SOUNDSCAPE_MANIFEST_FILE );
-	if ( filesystem->LoadKeyValues( *manifest, IFileSystem::TYPE_SOUNDSCAPE, SOUNDSCAPE_MANIFEST_FILE, "GAME" ) )
+	if (g_pFileSystem->LoadKeyValues( *manifest, IFileSystem::TYPE_SOUNDSCAPE, SOUNDSCAPE_MANIFEST_FILE, "GAME" ) )
 	{
 		for ( KeyValues *sub = manifest->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey() )
 		{
@@ -331,7 +331,7 @@ bool C_SoundscapeSystem::Init()
 				SOUNDSCAPE_MANIFEST_FILE, sub->GetName() );
 		}
 
-		if ( mapSoundscapeFilename && filesystem->FileExists( mapSoundscapeFilename ) )
+		if ( mapSoundscapeFilename && g_pFileSystem->FileExists( mapSoundscapeFilename ) )
 		{
 			AddSoundScapeFile( mapSoundscapeFilename );
 		}
@@ -809,7 +809,7 @@ void C_SoundscapeSystem::ProcessPlayLooping( KeyValues *pAmbient, const subsound
 
 void C_SoundscapeSystem::TouchSoundFile( char const *wavefile )
 {
-	filesystem->GetFileTime( VarArgs( "sound/%s", PSkipSoundChars( wavefile ) ), "GAME" );
+	g_pFileSystem->GetFileTime( VarArgs( "sound/%s", PSkipSoundChars( wavefile ) ), "GAME" );
 }
 
 // start a new looping sound

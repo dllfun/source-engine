@@ -2468,7 +2468,7 @@ byte *UTIL_LoadFileForMe( const char *filename, int *pLength )
 {
 	void *buffer = NULL;
 
-	int length = filesystem->ReadFileEx( filename, "GAME", &buffer, true, true );
+	int length = g_pFileSystem->ReadFileEx( filename, "GAME", &buffer, true, true );
 
 	if ( pLength )
 	{
@@ -2484,7 +2484,7 @@ byte *UTIL_LoadFileForMe( const char *filename, int *pLength )
 //-----------------------------------------------------------------------------
 void UTIL_FreeFile( byte *buffer )
 {
-	filesystem->FreeOptimalReadBuffer( buffer );
+	g_pFileSystem->FreeOptimalReadBuffer( buffer );
 }
 
 //-----------------------------------------------------------------------------
@@ -2607,7 +2607,7 @@ bool UTIL_LoadAndSpawnEntitiesFromScript( CUtlVector <CBaseEntity*> &entities, c
 {
 	KeyValues *pkvFile = new KeyValues( pBlock );
 
-	if ( pkvFile->LoadFromFile( filesystem, pScriptFile, "MOD" ) )
+	if ( pkvFile->LoadFromFile(g_pFileSystem, pScriptFile, "MOD" ) )
 	{	
 		// Load each block, and spawn the entities
 		KeyValues *pkvNode = pkvFile->GetFirstSubKey();

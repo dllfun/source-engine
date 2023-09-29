@@ -51,7 +51,7 @@ void				FileSystem_SetupStandardDirectories( const char *pFilename, const char *
 CreateInterfaceFn	FileSystem_GetFactory( void );
 
 
-extern IBaseFileSystem	*g_pFileSystem;
+extern IFileSystem		*g_pFileSystem;
 extern IFileSystem		*g_pFullFileSystem;	// NOTE: this is here when VMPI is being used, but a VMPI app can
 											// ONLY use LoadModule/UnloadModule.
 

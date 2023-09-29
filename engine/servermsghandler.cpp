@@ -443,7 +443,7 @@ bool CClientState::ProcessClassInfo( SVC_ClassInfo *msg )
 	bool bAllowMismatches = ( demoplayer && demoplayer->IsPlayingBack() );
 #endif // DEDICATED
 
-	if ( !RecvTable_CreateDecoders( serverGameDLL->GetStandardSendProxies(), bAllowMismatches ) ) // create receive table decoders
+	if ( !g_ClientDLL->GetRecvTableManager()->RecvTable_CreateDecoders( serverGameDLL->GetStandardSendProxies(), bAllowMismatches ) ) // create receive table decoders
 	{
 		g_pHost->Host_EndGame( true, "CL_ParseClassInfo_EndClasses: CreateDecoders failed.\n" );
 		return false;
@@ -969,7 +969,7 @@ bool CClientState::ProcessTempEntities( SVC_TempEntities *msg )
 				return false;
 			}
 
-			RecvTable_MergeDeltas( pClientClass->GetDataTable(), NULL, &buffer, &toBuf);
+			pClientClass->GetDataTable()->RecvTable_MergeDeltas(  NULL, &buffer, &toBuf);
 		}
 		else
 		{
@@ -978,7 +978,7 @@ bool CClientState::ProcessTempEntities( SVC_TempEntities *msg )
 			unsigned int buffer_size = PAD_NUMBER( Bits2Bytes( ei->bits ), 4 );
 			bf_read fromBuf( ei->pData, buffer_size );
 		
-			RecvTable_MergeDeltas( pClientClass->GetDataTable(), &fromBuf, &buffer, &toBuf);
+			pClientClass->GetDataTable()->RecvTable_MergeDeltas(  &fromBuf, &buffer, &toBuf);
 		}
 
 		// Add a slot

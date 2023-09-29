@@ -247,7 +247,7 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 	}
 	
 	// Make sure the directories we need exist.
-	filesystem->CreateDirHierarchy( tempFilename, "DEFAULT_WRITE_PATH" );
+	g_pFileSystem->CreateDirHierarchy( tempFilename, "DEFAULT_WRITE_PATH" );
 
 	// Now add the real map filename.
 	Q_strncat( szNrpFilename, "/", sizeof( szNrpFilename ), COPY_ALL_CHARACTERS  );
@@ -348,15 +348,15 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 	// Write the file out
 	// -------------------------------
 
-	FileHandle_t fh = filesystem->Open( szNrpFilename, "wb" );
+	FileHandle_t fh = g_pFileSystem->Open( szNrpFilename, "wb" );
 	if ( !fh )
 	{
 		DevWarning( 2, "Couldn't create %s!\n", szNrpFilename );
 		return;
 	}
 
-	filesystem->Write( buf.Base(), buf.TellPut(), fh );
-	filesystem->Close(fh);
+	g_pFileSystem->Write( buf.Base(), buf.TellPut(), fh );
+	g_pFileSystem->Close(fh);
 }
 
 /* Keep this around for debugging
@@ -373,15 +373,15 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 	// -----------------------------
 	char	szNrpFilename [MAX_PATH];// text node report filename
 	Q_strncpy( szNrpFilename, "maps" ,sizeof(szNrpFilename));
-	filesystem->CreateDirHierarchy( szNrpFilename );
+	g_pFileSystem->CreateDirHierarchy( szNrpFilename );
 	Q_strncat( szNrpFilename, "/graphs", COPY_ALL_CHARACTERS );
-	filesystem->CreateDirHierarchy( szNrpFilename );
+	g_pFileSystem->CreateDirHierarchy( szNrpFilename );
 
 	Q_strncat( szNrpFilename, "/", COPY_ALL_CHARACTERS );
 	Q_strncat( szNrpFilename, STRING( gpGlobals->mapname ), COPY_ALL_CHARACTERS );
 	Q_strncat( szNrpFilename, ".ain", COPY_ALL_CHARACTERS );
 
-	FileHandle_t file = filesystem->Open ( szNrpFilename, "w+" );
+	FileHandle_t file = g_pFileSystem->Open ( szNrpFilename, "w+" );
 
 	// -----------------------------
 	// Make sure the file opened ok
@@ -395,32 +395,32 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 	// ---------------------------
 	// Save the version number
 	// ---------------------------
-	filesystem->FPrintf(file,"Version	%4d\n",AINET_VERSION_NUMBER);
+	g_pFileSystem->FPrintf(file,"Version	%4d\n",AINET_VERSION_NUMBER);
 
 	// -------------------------------
 	// Dump all the nodes to the file
 	// -------------------------------
-	filesystem->FPrintf ( file, "NumNodes:         %d\n", m_iNumNodes);
+	g_pFileSystem->FPrintf ( file, "NumNodes:         %d\n", m_iNumNodes);
 	int totalNumLinks = 0;
 	for (int node = 0; node < m_iNumNodes; node++)
 	{
-		filesystem->FPrintf ( file, "Location      %4f,%4f,%4f\n",m_pAInode[node]->GetOrigin().x, m_pAInode[node]->GetOrigin().y, m_pAInode[node]->GetOrigin().z );
+		g_pFileSystem->FPrintf ( file, "Location      %4f,%4f,%4f\n",m_pAInode[node]->GetOrigin().x, m_pAInode[node]->GetOrigin().y, m_pAInode[node]->GetOrigin().z );
 		for (int hull =0;hull<NUM_HULLS;hull++)
 		{
-			filesystem->FPrintf ( file, "Voffset	     %4f\n", m_pAInode[node]->m_flVOffset[hull]);
+			g_pFileSystem->FPrintf ( file, "Voffset	     %4f\n", m_pAInode[node]->m_flVOffset[hull]);
 		}
-		filesystem->FPrintf ( file, "HintType:     %4d\n", m_pAInode[node]->m_eHintType );
-		filesystem->FPrintf ( file, "HintYaw:      %4f\n", m_pAInode[node]->GetYaw() );
-		filesystem->FPrintf ( file, "NodeType      %4d\n",m_pAInode[node]->GetType());
-		filesystem->FPrintf ( file, "NodeInfo      %4d\n",m_pAInode[node]->m_eNodeInfo);
-		filesystem->FPrintf ( file, "Neighbors     ");
+		g_pFileSystem->FPrintf ( file, "HintType:     %4d\n", m_pAInode[node]->m_eHintType );
+		g_pFileSystem->FPrintf ( file, "HintYaw:      %4f\n", m_pAInode[node]->GetYaw() );
+		g_pFileSystem->FPrintf ( file, "NodeType      %4d\n",m_pAInode[node]->GetType());
+		g_pFileSystem->FPrintf ( file, "NodeInfo      %4d\n",m_pAInode[node]->m_eNodeInfo);
+		g_pFileSystem->FPrintf ( file, "Neighbors     ");
 		m_pAInode[node]->m_pNeighborBS->SaveBitString(file);
-		filesystem->FPrintf ( file, "Visible	   ");
+		g_pFileSystem->FPrintf ( file, "Visible	   ");
 		m_pAInode[node]->m_pVisibleBS->SaveBitString(file);
-		filesystem->FPrintf ( file, "Connected     ");
+		g_pFileSystem->FPrintf ( file, "Connected     ");
 		m_pAInode[node]->m_pConnectedBS->SaveBitString(file);
 
-		filesystem->FPrintf ( file, "NumLinks      %4d\n",m_pAInode[node]->NumLinks());
+		g_pFileSystem->FPrintf ( file, "NumLinks      %4d\n",m_pAInode[node]->NumLinks());
 
 		for (int link = 0; link < m_pAInode[node]->NumLinks(); link++)
 		{
@@ -435,7 +435,7 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 	// -------------------------------
 	// Dump all the links to the file
 	// -------------------------------
-	filesystem->FPrintf ( file, "TotalNumLinks      %4d\n",totalNumLinks);
+	g_pFileSystem->FPrintf ( file, "TotalNumLinks      %4d\n",totalNumLinks);
 
 	for (node = 0; node < m_iNumNodes; node++)
 	{
@@ -444,12 +444,12 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 			// Only dump if link source
 			if (node == m_pAInode[node]->GetLinkByIndex(link)->m_iSrcID)
 			{
-				filesystem->FPrintf ( file, "LinkSrcID       %4d\n", m_pAInode[node]->GetLinkByIndex(link)->m_iSrcID);
-				filesystem->FPrintf ( file, "LinkDestID      %4d\n", m_pAInode[node]->GetLinkByIndex(link)->m_iDestID);
+				g_pFileSystem->FPrintf ( file, "LinkSrcID       %4d\n", m_pAInode[node]->GetLinkByIndex(link)->m_iSrcID);
+				g_pFileSystem->FPrintf ( file, "LinkDestID      %4d\n", m_pAInode[node]->GetLinkByIndex(link)->m_iDestID);
 
 				for (int hull =0;hull<NUM_HULLS;hull++)
 				{
-					filesystem->FPrintf ( file, "Hulls		     %4d\n", m_pAInode[node]->GetLinkByIndex(link)->m_iAcceptedMoveTypes[hull]);
+					g_pFileSystem->FPrintf ( file, "Hulls		     %4d\n", m_pAInode[node]->GetLinkByIndex(link)->m_iAcceptedMoveTypes[hull]);
 				}
 			}
 		}
@@ -460,10 +460,10 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 	// -------------------------------
 	for (node = 0; node < m_iNumNodes; node++)
 	{
-		filesystem->FPrintf( file, "%4d\n",m_pNodeIndexTable[node]);
+		g_pFileSystem->FPrintf( file, "%4d\n",m_pNodeIndexTable[node]);
 	}
 
-	filesystem->Close(file);
+	g_pFileSystem->Close(file);
 }
 */
 
@@ -497,9 +497,9 @@ void CAI_NetworkManager::LoadNetworkGraph( void )
 	// -----------------------------
 	char szNrpFilename[MAX_PATH];// text node report filename
 	Q_strncpy( szNrpFilename, "maps" ,sizeof(szNrpFilename));
-	filesystem->CreateDirHierarchy( szNrpFilename, "DEFAULT_WRITE_PATH" );
+	g_pFileSystem->CreateDirHierarchy( szNrpFilename, "DEFAULT_WRITE_PATH" );
 	Q_strncat( szNrpFilename, "/graphs", sizeof( szNrpFilename ), COPY_ALL_CHARACTERS );
-	filesystem->CreateDirHierarchy( szNrpFilename, "DEFAULT_WRITE_PATH" );
+	g_pFileSystem->CreateDirHierarchy( szNrpFilename, "DEFAULT_WRITE_PATH" );
 
 	Q_strncat( szNrpFilename, "/", sizeof( szNrpFilename ), COPY_ALL_CHARACTERS );
 	Q_strncat( szNrpFilename, STRING( gpGlobals->mapname ), sizeof( szNrpFilename ), COPY_ALL_CHARACTERS );
@@ -522,13 +522,13 @@ void CAI_NetworkManager::LoadNetworkGraph( void )
 				buf.Put( pData, nDataSize );
 				bHaveAIN = true;
 			}
-			filesystem->FreeOptimalReadBuffer( pData );
+			g_pFileSystem->FreeOptimalReadBuffer( pData );
 		}
 	}
 	
 
 
-	if ( !bHaveAIN && !filesystem->ReadFile( szNrpFilename, "game", buf ) )
+	if ( !bHaveAIN && !g_pFileSystem->ReadFile( szNrpFilename, "game", buf ) )
 	{
 		DevWarning( 2, "Couldn't read %s!\n", szNrpFilename );
 		return;
@@ -736,15 +736,15 @@ void CAI_NetworkManager::LoadNetworkGraph( void )
 	// -----------------------------
 	char	szNrpFilename [MAX_PATH];// text node report filename
 	Q_strncpy( szNrpFilename, "maps" ,sizeof(szNrpFilename));
-	filesystem->CreateDirHierarchy( szNrpFilename );
+	g_pFileSystem->CreateDirHierarchy( szNrpFilename );
 	Q_strncat( szNrpFilename, "/graphs", COPY_ALL_CHARACTERS );
-	filesystem->CreateDirHierarchy( szNrpFilename );
+	g_pFileSystem->CreateDirHierarchy( szNrpFilename );
 
 	Q_strncat( szNrpFilename, "/", COPY_ALL_CHARACTERS );
 	Q_strncat( szNrpFilename, STRING( gpGlobals->mapname ), COPY_ALL_CHARACTERS );
 	Q_strncat( szNrpFilename, ".ain", COPY_ALL_CHARACTERS );
 
-	FileHandle_t file = filesystem->Open ( szNrpFilename, "r" );
+	FileHandle_t file = g_pFileSystem->Open ( szNrpFilename, "r" );
 
 	// -----------------------------
 	// Make sure the file opened ok
@@ -971,7 +971,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 		return false;
 	}
 
-	if ( IsX360() && ( filesystem->GetDVDMode() == DVDMODE_STRICT ) )
+	if ( IsX360() && ( g_pFileSystem->GetDVDMode() == DVDMODE_STRICT ) )
 	{
 		// dvd build process validates and guarantees correctness, timestamps are allowed to be wrong
 		return true;
@@ -1003,7 +1003,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 			{
 				// The user has specified that they wish to override the 
 				// rebuilding of outdated nodegraphs (see top of this file)
-				if ( filesystem->FileExists( szGraphFilename ) )
+				if ( g_pFileSystem->FileExists( szGraphFilename ) )
 				{
 					// Display these messages only if the graph exists, and the 
 					// user is asking to override the rebuilding. If the graph does

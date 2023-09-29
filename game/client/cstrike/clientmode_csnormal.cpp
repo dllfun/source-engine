@@ -113,7 +113,7 @@ void SetBuyData( const ConVar &buyVar, const char *filename )
 	char szResolvedName[ 256 ];
 	V_sprintf_safe( szRecommendedName, "cfg/%s", filename );
 	V_strcpy_safe( szResolvedName, szRecommendedName );
-	if ( filesystem->FileExists( szResolvedName, "GAME" ) )
+	if (g_pFileSystem->FileExists( szResolvedName, "GAME" ) )
 	{
 		Msg( "Loading '%s'.\n", szResolvedName );
 	}
@@ -121,7 +121,7 @@ void SetBuyData( const ConVar &buyVar, const char *filename )
 	{
 		// Check the root
 		V_strcpy_safe( szResolvedName, filename );
-		if ( filesystem->FileExists( szResolvedName, "GAME" ) )
+		if (g_pFileSystem->FileExists( szResolvedName, "GAME" ) )
 		{
 			Msg( "Loading '%s'  ('%s' was not found.)\n", szResolvedName, szRecommendedName );
 		}
@@ -136,7 +136,7 @@ void SetBuyData( const ConVar &buyVar, const char *filename )
 			{
 				V_strcpy( dotTxt, "_default.txt" );
 			}
-			if ( !filesystem->FileExists( szResolvedName, "GAME" ) )
+			if ( !g_pFileSystem->FileExists( szResolvedName, "GAME" ) )
 			{
 				Warning( "Not loading buy data.  Neither '%s' nor %s were found.\n", szResolvedName, szRecommendedName );
 				return;
@@ -146,7 +146,7 @@ void SetBuyData( const ConVar &buyVar, const char *filename )
 	}
 
 	CUtlBuffer buf;
-	if ( !filesystem->ReadFile( szResolvedName, "GAME", buf ) )
+	if ( !g_pFileSystem->ReadFile( szResolvedName, "GAME", buf ) )
 	{
 		// WAT
 		Warning( "Failed to load '%s'.\n", szResolvedName );

@@ -259,7 +259,7 @@ void CHalfLife2Survival::ReadSurvivalScriptFile( void )
 	Q_snprintf( szFullName, sizeof( szFullName ), "maps/%s_survival.txt", STRING(gpGlobals->mapname) );
 
 	KeyValues *pkvFile = new KeyValues( "Survival" );
-	if ( pkvFile->LoadFromFile( filesystem, szFullName, "MOD" ) )
+	if ( pkvFile->LoadFromFile(g_pFileSystem, szFullName, "MOD" ) )
 	{
 		ParseSurvivalSettings( pkvFile->FindKey( "settings" ) );
 		ParseSurvivalAmmo( pkvFile->FindKey( "ammo" ) );

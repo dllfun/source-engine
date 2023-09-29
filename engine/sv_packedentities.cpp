@@ -145,7 +145,7 @@ static inline void SV_PackEntity(
 	unsigned char tempData[ sizeof( CSendProxyRecipients ) * MAX_DATATABLE_PROXIES ];
 	CUtlMemory< CSendProxyRecipients > recip( (CSendProxyRecipients*)tempData, pSendTable->m_pPrecalc->GetNumDataTableProxies() );
 
-	if( !SendTable_Encode( pSendTable, edict->GetUnknown(), &writeBuf, edictIdx, &recip, false ) )
+	if( !pSendTable->SendTable_Encode(  edict->GetUnknown(), &writeBuf, edictIdx, &recip, false ) )
 	{							 
 		g_pHost->Host_Error( "SV_PackEntity: SendTable_Encode returned false (ent %d).\n", edictIdx );
 	}
@@ -158,7 +158,7 @@ static inline void SV_PackEntity(
 
 	SV_EnsureInstanceBaseline( pServerClass, edictIdx, packedData, writeBuf.GetNumBytesWritten() );
 		
-	int nFlatProps = SendTable_GetNumFlatProps( pSendTable );
+	int nFlatProps = pSendTable->SendTable_GetNumFlatProps(  );
 	IChangeFrameList *pChangeFrame = NULL;
 
 	// If this entity was previously in there, then it should have a valid IChangeFrameList 
@@ -174,8 +174,7 @@ static inline void SV_PackEntity(
 		
 		int deltaProps[MAX_DATATABLE_PROPS];
 
-		int nChanges = SendTable_CalcDelta(
-			pSendTable, 
+		int nChanges = pSendTable->SendTable_CalcDelta(
 			pPrevFrame->GetData(), pPrevFrame->GetNumBits(),
 			packedData,	writeBuf.GetNumBitsWritten(),
 			

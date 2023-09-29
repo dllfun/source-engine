@@ -318,7 +318,7 @@ void CTouchControls::ResetToDefaults()
 	RemoveButtons();
 
 	Q_snprintf(buf, sizeof buf, "cfg/%s", TOUCH_DEFAULT_CFG);
-	if( !filesystem->FileExists(buf) )
+	if( !g_pFileSystem->FileExists(buf) )
 	{
 		AddButton( "look", "", "_look", 0.5, 0, 1, 1, color, 0, 0, 0 );
 		AddButton( "move", "", "_move", 0, 0, 0.5, 1, color, 0, 0, 0 );
@@ -403,7 +403,7 @@ void CTouchControls::Init()
 	char buf[256];
 
 	Q_snprintf(buf, sizeof buf, "cfg/%s", touch_config_file.GetString());
-	if( filesystem->FileExists(buf, "MOD") )
+	if( g_pFileSystem->FileExists(buf, "MOD") )
 	{
 		Q_snprintf(buf, sizeof buf, "exec %s\n", touch_config_file.GetString());
 		engineClient->ExecuteClientCmd(buf);
@@ -456,7 +456,7 @@ void CTouchControls::CreateAtlasTexture()
 		Q_snprintf(fullFileName, MAX_PATH, "materials/%s.vtf", t->szName);
 
 		FileHandle_t fp;
-		fp = ::filesystem->Open( fullFileName, "rb" );
+		fp = ::g_pFileSystem->Open( fullFileName, "rb" );
 		if( !fp )
 		{
 			t->textureID = vgui::surface()->CreateNewTextureID();
@@ -464,14 +464,14 @@ void CTouchControls::CreateAtlasTexture()
 			continue;
 		}
 
-		::filesystem->Seek( fp, 0, FILESYSTEM_SEEK_TAIL );
-		int srcVTFLength = ::filesystem->Tell( fp );
-		::filesystem->Seek( fp, 0, FILESYSTEM_SEEK_HEAD );
+		::g_pFileSystem->Seek( fp, 0, FILESYSTEM_SEEK_TAIL );
+		int srcVTFLength = ::g_pFileSystem->Tell( fp );
+		::g_pFileSystem->Seek( fp, 0, FILESYSTEM_SEEK_HEAD );
 
 		CUtlBuffer buf;
 		buf.EnsureCapacity( srcVTFLength );
-		int bytesRead = ::filesystem->Read( buf.Base(), srcVTFLength, fp );
-		::filesystem->Close( fp );
+		int bytesRead = ::g_pFileSystem->Read( buf.Base(), srcVTFLength, fp );
+		::g_pFileSystem->Close( fp );
 
 		buf.SeekGet( CUtlBuffer::SEEK_HEAD, 0 ); // Need to set these explicitly since ->Read goes straight to memory and skips them.
 		buf.SeekPut( CUtlBuffer::SEEK_HEAD, bytesRead );
@@ -1144,51 +1144,51 @@ void CTouchControls::WriteConfig()
 	Q_snprintf( oldconfigfile, 64, "cfg/%s.bak", touch_config_file.GetString() );
 	Q_snprintf( configfile, 64, "cfg/%s", touch_config_file.GetString() );
 
-	f = filesystem->Open( newconfigfile , "w+");
+	f = g_pFileSystem->Open( newconfigfile , "w+");
 
 	if( f )
 	{
-		filesystem->FPrintf( f, "//=======================================================================\n");
-		filesystem->FPrintf( f, "//\t\t\ttouchscreen config\n" );
-		filesystem->FPrintf( f, "//=======================================================================\n" );
-		filesystem->FPrintf( f, "\ntouch_config_file \"%s\"\n", touch_config_file.GetString() );
-		filesystem->FPrintf( f, "\n// touch cvars\n" );
-		filesystem->FPrintf( f, "\n// sensitivity settings\n" );
-		filesystem->FPrintf( f, "touch_pitch \"%f\"\n", touch_pitch.GetFloat() );
-		filesystem->FPrintf( f, "touch_yaw \"%f\"\n", touch_yaw.GetFloat() );
-		filesystem->FPrintf( f, "touch_forwardzone \"%f\"\n", touch_forwardzone.GetFloat() );
-		filesystem->FPrintf( f, "touch_sidezone \"%f\"\n", touch_sidezone.GetFloat() );
-/*		filesystem->FPrintf( f, "touch_nonlinear_look \"%d\"\n",touch_nonlinear_look.GetBool() );
-		filesystem->FPrintf( f, "touch_pow_factor \"%f\"\n", touch_pow_factor->value );
-		filesystem->FPrintf( f, "touch_pow_mult \"%f\"\n", touch_pow_mult->value );
-		filesystem->FPrintf( f, "touch_exp_mult \"%f\"\n", touch_exp_mult->value );*/
-		filesystem->FPrintf( f, "\n// grid settings\n" );
-		filesystem->FPrintf( f, "touch_grid_count \"%d\"\n", touch_grid_count.GetInt() );
-		filesystem->FPrintf( f, "touch_grid_enable \"%d\"\n", touch_grid_enable.GetInt() );
+		g_pFileSystem->FPrintf( f, "//=======================================================================\n");
+		g_pFileSystem->FPrintf( f, "//\t\t\ttouchscreen config\n" );
+		g_pFileSystem->FPrintf( f, "//=======================================================================\n" );
+		g_pFileSystem->FPrintf( f, "\ntouch_config_file \"%s\"\n", touch_config_file.GetString() );
+		g_pFileSystem->FPrintf( f, "\n// touch cvars\n" );
+		g_pFileSystem->FPrintf( f, "\n// sensitivity settings\n" );
+		g_pFileSystem->FPrintf( f, "touch_pitch \"%f\"\n", touch_pitch.GetFloat() );
+		g_pFileSystem->FPrintf( f, "touch_yaw \"%f\"\n", touch_yaw.GetFloat() );
+		g_pFileSystem->FPrintf( f, "touch_forwardzone \"%f\"\n", touch_forwardzone.GetFloat() );
+		g_pFileSystem->FPrintf( f, "touch_sidezone \"%f\"\n", touch_sidezone.GetFloat() );
+/*		g_pFileSystem->FPrintf( f, "touch_nonlinear_look \"%d\"\n",touch_nonlinear_look.GetBool() );
+		g_pFileSystem->FPrintf( f, "touch_pow_factor \"%f\"\n", touch_pow_factor->value );
+		g_pFileSystem->FPrintf( f, "touch_pow_mult \"%f\"\n", touch_pow_mult->value );
+		g_pFileSystem->FPrintf( f, "touch_exp_mult \"%f\"\n", touch_exp_mult->value );*/
+		g_pFileSystem->FPrintf( f, "\n// grid settings\n" );
+		g_pFileSystem->FPrintf( f, "touch_grid_count \"%d\"\n", touch_grid_count.GetInt() );
+		g_pFileSystem->FPrintf( f, "touch_grid_enable \"%d\"\n", touch_grid_enable.GetInt() );
 
-		filesystem->FPrintf( f, "touch_setgridcolor \"%d\" \"%d\" \"%d\" \"%d\"\n", gridcolor.r, gridcolor.g, gridcolor.b, gridcolor.a );
-		filesystem->FPrintf( f, "touch_button_info \"%d\"\n", touch_button_info.GetInt() );
+		g_pFileSystem->FPrintf( f, "touch_setgridcolor \"%d\" \"%d\" \"%d\" \"%d\"\n", gridcolor.r, gridcolor.g, gridcolor.b, gridcolor.a );
+		g_pFileSystem->FPrintf( f, "touch_button_info \"%d\"\n", touch_button_info.GetInt() );
 /*
-		filesystem->FPrintf( f, "\n// global overstroke (width, r, g, b, a)\n" );
-		filesystem->FPrintf( f, "touch_set_stroke %d %d %d %d %d\n", touch.swidth, touch.scolor[0], touch.scolor[1], touch.scolor[2], touch.scolor[3] );
-		filesystem->FPrintf( f, "\n// highlight when pressed\n" );
-		filesystem->FPrintf( f, "touch_highlight_r \"%f\"\n", touch_highlight_r->value );
-		filesystem->FPrintf( f, "touch_highlight_g \"%f\"\n", touch_highlight_g->value );
-		filesystem->FPrintf( f, "touch_highlight_b \"%f\"\n", touch_highlight_b->value );
-		filesystem->FPrintf( f, "touch_highlight_a \"%f\"\n", touch_highlight_a->value );
-		filesystem->FPrintf( f, "\n// _joy and _dpad options\n" );
-		filesystem->FPrintf( f, "touch_dpad_radius \"%f\"\n", touch_dpad_radius->value );
-		filesystem->FPrintf( f, "touch_joy_radius \"%f\"\n", touch_joy_radius->value );
+		g_pFileSystem->FPrintf( f, "\n// global overstroke (width, r, g, b, a)\n" );
+		g_pFileSystem->FPrintf( f, "touch_set_stroke %d %d %d %d %d\n", touch.swidth, touch.scolor[0], touch.scolor[1], touch.scolor[2], touch.scolor[3] );
+		g_pFileSystem->FPrintf( f, "\n// highlight when pressed\n" );
+		g_pFileSystem->FPrintf( f, "touch_highlight_r \"%f\"\n", touch_highlight_r->value );
+		g_pFileSystem->FPrintf( f, "touch_highlight_g \"%f\"\n", touch_highlight_g->value );
+		g_pFileSystem->FPrintf( f, "touch_highlight_b \"%f\"\n", touch_highlight_b->value );
+		g_pFileSystem->FPrintf( f, "touch_highlight_a \"%f\"\n", touch_highlight_a->value );
+		g_pFileSystem->FPrintf( f, "\n// _joy and _dpad options\n" );
+		g_pFileSystem->FPrintf( f, "touch_dpad_radius \"%f\"\n", touch_dpad_radius->value );
+		g_pFileSystem->FPrintf( f, "touch_joy_radius \"%f\"\n", touch_joy_radius->value );
 */
-		filesystem->FPrintf( f, "\n// how much slowdown when Precise Look button pressed\n" );
-		filesystem->FPrintf( f, "touch_precise_amount \"%f\"\n", touch_precise_amount.GetFloat() );
-//		filesystem->FPrintf( f, "\n// enable/disable move indicator\n" );
-//		filesystem->FPrintf( f, "touch_move_indicator \"%f\"\n", touch_move_indicator );
+		g_pFileSystem->FPrintf( f, "\n// how much slowdown when Precise Look button pressed\n" );
+		g_pFileSystem->FPrintf( f, "touch_precise_amount \"%f\"\n", touch_precise_amount.GetFloat() );
+//		g_pFileSystem->FPrintf( f, "\n// enable/disable move indicator\n" );
+//		g_pFileSystem->FPrintf( f, "touch_move_indicator \"%f\"\n", touch_move_indicator );
 
-		filesystem->FPrintf( f, "\n// reset menu state when execing config\n" );
-		//filesystem->FPrintf( f, "touch_setclientonly 0\n" );
-		filesystem->FPrintf( f, "\n// touch buttons\n" );
-		filesystem->FPrintf( f, "touch_removeall\n" );
+		g_pFileSystem->FPrintf( f, "\n// reset menu state when execing config\n" );
+		//g_pFileSystem->FPrintf( f, "touch_setclientonly 0\n" );
+		g_pFileSystem->FPrintf( f, "\n// touch buttons\n" );
+		g_pFileSystem->FPrintf( f, "touch_removeall\n" );
 
 		CUtlLinkedList<CTouchButton*>::iterator it;
 		for( it = btns.begin(); it != btns.end(); it++ )
@@ -1206,17 +1206,17 @@ void CTouchControls::WriteConfig()
 			
 			float aspect = ( b->y2 - b->y1 ) / ( ( b->x2 - b->x1 )/(screen_h/screen_w) );
 	
-			filesystem->FPrintf( f, "touch_addbutton \"%s\" \"%s\" \"%s\" %f %f %f %f %d %d %d %d %d %f\n",
+			g_pFileSystem->FPrintf( f, "touch_addbutton \"%s\" \"%s\" \"%s\" %f %f %f %f %d %d %d %d %d %f\n",
 				b->name, b->texturefile, b->command,
 				b->x1, b->y1, b->x2, b->y2,
 				b->color.r, b->color.g, b->color.b, b->color.a, b->flags, aspect );
 		}
 
-		filesystem->Close(f);
+		g_pFileSystem->Close(f);
 
-		filesystem->RemoveFile(oldconfigfile);
-		filesystem->RenameFile(configfile, oldconfigfile );
-		filesystem->RenameFile(newconfigfile, configfile);
+		g_pFileSystem->RemoveFile(oldconfigfile);
+		g_pFileSystem->RenameFile(configfile, oldconfigfile );
+		g_pFileSystem->RenameFile(newconfigfile, configfile);
 	}
 	else DevMsg( "Couldn't write %s.\n", configfile );
 }

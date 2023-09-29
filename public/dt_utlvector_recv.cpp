@@ -92,7 +92,9 @@ RecvProp RecvPropUtlVector(
 	Assert( nMaxElements <= MAX_ARRAY_ELEMENTS );
 
 	ret.m_RecvType = DPT_DataTable;
-	ret.m_pVarName = pVarName;
+	if (pVarName) {
+		ret.m_pVarName = COM_StringCopy(pVarName);
+	}
 	ret.SetOffset( 0 );
 	ret.SetDataTableProxyFn( DataTableRecvProxy_StaticDataTable );
 	
@@ -122,7 +124,7 @@ RecvProp RecvPropUtlVector(
 
 	char *pLengthProxyTableName = AllocateUniqueDataTableName( false, "_LPT_%s_%d", pVarName, nMaxElements );
 	RecvTable *pLengthTable = new RecvTable( pLengthProp, 1, pLengthProxyTableName );
-	g_pRecvTableManager->RegisteRecvTable(pLengthTable);
+	GetRecvTableManager()->RegisteRecvTable(pLengthTable);
 	pProps[0] = RecvPropDataTable( "lengthproxy", 0, 0, pLengthProxyTableName, DataTableRecvProxy_LengthProxy );
 	pProps[0].SetExtraData( pExtraData );
 
@@ -147,12 +149,14 @@ RecvProp RecvPropUtlVector(
 		}
 	}
 
+	const char* pTableName = AllocateUniqueDataTableName(false, "_ST_%s_%d", pVarName, nMaxElements);
 	RecvTable *pTable = new RecvTable( 
 		pProps, 
 		nMaxElements+1, 
-		AllocateUniqueDataTableName( false, "_ST_%s_%d", pVarName, nMaxElements )
+		pTableName
 		); // TODO free that again
-	g_pRecvTableManager->RegisteRecvTable(pTable);
+	GetRecvTableManager()->RegisteRecvTable(pTable);
+	ret.SetDataTableName(pTableName);
 	ret.SetDataTable( pTable );
 	return ret;
 }

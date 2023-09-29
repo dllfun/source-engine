@@ -367,8 +367,7 @@ static inline void SV_WritePropsFromPackedEntity(
 	{
 		sendProps = pSendProps;
 
-		nSendProps = SendTable_CullPropsFromProxies( 
-		pSendTable, 
+		nSendProps = pSendTable->SendTable_CullPropsFromProxies(
 		pCheckProps, 
 		nCheckProps, 
 		u.m_nClientEntity-1,
@@ -389,8 +388,7 @@ static inline void SV_WritePropsFromPackedEntity(
 		bufStart = *u.m_pBuf;
 	}
 		
-	SendTable_WritePropList(
-		pSendTable, 
+	pSendTable->SendTable_WritePropList(
 		pToData,
 		nToBits,
 		u.m_pBuf, 
@@ -564,8 +562,7 @@ static inline void SV_DetermineUpdateType( CEntityWriteInfo &u )
 			nNewBits = u.m_pNewPack->GetNumBits();
 		}
 
-		nCheckProps = SendTable_CalcDelta(
-			u.m_pOldPack->m_pServerClass->GetDataTable(),
+		nCheckProps = u.m_pOldPack->m_pServerClass->GetDataTable()->SendTable_CalcDelta(
 			pOldData,
 			nOldBits,
 			pNewData,
@@ -713,7 +710,7 @@ static inline void SV_WriteEnterPVS( CEntityWriteInfo &u )
 	/*if ( server->IsHLTV() || server->IsReplay() )
 	{*/
 	// send all changed properties when entering PVS (no SendProxy culling since we may use it as baseline
-	u.m_nFullProps +=  SendTable_WriteAllDeltaProps( pClass->GetDataTable(), pFromData, nFromBits,
+	u.m_nFullProps += pClass->GetDataTable()->SendTable_WriteAllDeltaProps(  pFromData, nFromBits,
 		pToData, nToBits, u.m_pNewPack->m_nEntityIndex, u.m_pBuf );
 	/*}
 	else

@@ -5,7 +5,7 @@
 // $NoKeywords: $
 //=============================================================================//
 
-#include "quakedef.h"
+//#include "quakedef.h"
 #include "dt.h"
 #include "dt_encode.h"
 #include "coordsize.h"

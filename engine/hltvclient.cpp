@@ -17,6 +17,8 @@
 #include "cmd.h"
 #include "ihltvdirector.h"
 #include "host.h"
+#include "server.h"
+#include "eiface.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -63,7 +65,7 @@ CHLTVClient::~CHLTVClient()
 bool CHLTVClient::SendSignonData( void )
 {
 	// check class table CRCs
-	if ( m_nSendtableCRC != SendTable_GetCRC() )
+	if ( m_nSendtableCRC != serverGameDLL->GetSendTableManager()->SendTable_GetCRC() )
 	{
 		Disconnect( "Server uses different class tables" );
 		return false;

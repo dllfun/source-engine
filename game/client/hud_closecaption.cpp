@@ -481,9 +481,9 @@ struct AsyncCaptionData_t
 	{
 		if ( m_bLoadPending && !m_bLoadCompleted )
 		{
-			filesystem->AsyncFinish( m_hAsyncControl, true );
+			g_pFileSystem->AsyncFinish( m_hAsyncControl, true );
 		}
-		filesystem->AsyncRelease( m_hAsyncControl );
+		g_pFileSystem->AsyncRelease( m_hAsyncControl );
 
 		WipeData();
 		delete this;
@@ -491,7 +491,7 @@ struct AsyncCaptionData_t
 
 	void ReleaseData()
 	{
-		filesystem->AsyncRelease( m_hAsyncControl );
+		g_pFileSystem->AsyncRelease( m_hAsyncControl );
 		m_hAsyncControl = 0;
 		WipeData();
 		m_bLoadCompleted = false;
@@ -532,7 +532,7 @@ struct AsyncCaptionData_t
 		
 		// queue for async load
 		MEM_ALLOC_CREDIT();
-		filesystem->AsyncRead( fileRequest, &m_hAsyncControl );
+		g_pFileSystem->AsyncRead( fileRequest, &m_hAsyncControl );
 	}
 
 	// you must implement these static functions for the ResourceManager
@@ -2567,11 +2567,11 @@ void CHudCloseCaption::InitCaptionDictionary( const char *dbfile )
 	g_AsyncCaptionResourceManager.Clear();
 
 	char searchPaths[4096];
-	filesystem->GetSearchPath( "GAME", true, searchPaths, sizeof( searchPaths ) );
+	g_pFileSystem->GetSearchPath( "GAME", true, searchPaths, sizeof( searchPaths ) );
 
 	for ( char *path = strtok( searchPaths, ";" ); path; path = strtok( NULL, ";" ) )
 	{
-		if ( IsX360() && ( filesystem->GetDVDMode() == DVDMODE_STRICT ) && !V_stristr( path, ".zip" ) )
+		if ( IsX360() && (g_pFileSystem->GetDVDMode() == DVDMODE_STRICT ) && !V_stristr( path, ".zip" ) )
 		{
 			// only want zip paths
 			continue;
@@ -2588,7 +2588,7 @@ void CHudCloseCaption::InitCaptionDictionary( const char *dbfile )
 			Q_strncpy( fullpath, fullpath360, sizeof( fullpath ) );
 		}
 
-        FileHandle_t fh = filesystem->Open( fullpath, "rb" );
+        FileHandle_t fh = g_pFileSystem->Open( fullpath, "rb" );
 		if ( FILESYSTEM_INVALID_HANDLE != fh )
 		{
 			MEM_ALLOC_CREDIT();
@@ -2598,7 +2598,7 @@ void CHudCloseCaption::InitCaptionDictionary( const char *dbfile )
 			AsyncCaption_t& entry = m_AsyncCaptions[ m_AsyncCaptions.AddToTail() ];
 
 			// Read the header
-			filesystem->Read( &entry.m_Header, sizeof( entry.m_Header ), fh );
+			g_pFileSystem->Read( &entry.m_Header, sizeof( entry.m_Header ), fh );
 			if ( entry.m_Header.magic != COMPILED_CAPTION_FILEID )
 				Error( "Invalid file id for %s\n", fullpath );
 			if ( entry.m_Header.version != COMPILED_CAPTION_VERSION )
@@ -2612,8 +2612,8 @@ void CHudCloseCaption::InitCaptionDictionary( const char *dbfile )
 			entry.m_CaptionDirectory.EnsureCapacity( entry.m_Header.directorysize );
 			dirbuffer.EnsureCapacity( directoryBytes );
 			
-			filesystem->Read( dirbuffer.Base(), directoryBytes, fh );
-			filesystem->Close( fh );
+			g_pFileSystem->Read( dirbuffer.Base(), directoryBytes, fh );
+			g_pFileSystem->Close( fh );
 
 			entry.m_CaptionDirectory.CopyArray( (const CaptionLookup_t *)dirbuffer.PeekGet(), entry.m_Header.directorysize );
 			entry.m_CaptionDirectory.RedoSort( true );
@@ -2856,10 +2856,10 @@ void CHudCloseCaption::FindSound( char const *pchANSI )
 			{
 				nLoadedBlock = blockNum;
 
-				FileHandle_t fh = filesystem->Open( fn, "rb" );
-				filesystem->Seek( fh, params.blockoffset, FILESYSTEM_SEEK_CURRENT );
-				filesystem->Read( block, data.m_Header.blocksize, fh );
-				filesystem->Close( fh );
+				FileHandle_t fh = g_pFileSystem->Open( fn, "rb" );
+				g_pFileSystem->Seek( fh, params.blockoffset, FILESYSTEM_SEEK_CURRENT );
+				g_pFileSystem->Read( block, data.m_Header.blocksize, fh );
+				g_pFileSystem->Close( fh );
 			}
 
 			// Now we have the data

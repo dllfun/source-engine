@@ -383,23 +383,23 @@ void CL_CopyNewEntity(
 		ALIGN4 char packedData[MAX_PACKEDENTITY_DATA] ALIGN4_POST;
 		bf_write writeBuf( "CL_CopyNewEntity->newBuf", packedData, sizeof(packedData) );
 
-		RecvTable_MergeDeltas( pRecvTable, &fromBuf, u.m_pBuf, &writeBuf, -1, NULL, true );
+		pRecvTable->RecvTable_MergeDeltas(  &fromBuf, u.m_pBuf, &writeBuf, -1, NULL, true );
 
 		// set the other baseline
 		cl.SetEntityBaseline( (u.m_nBaseline==0)?1:0, pClass, u.m_nNewEntity, packedData, writeBuf.GetNumBytesWritten() );
 
 		fromBuf.StartReading( packedData, writeBuf.GetNumBytesWritten() );
 
-		RecvTable_Decode( pRecvTable, ent->GetDataTableBasePtr(), &fromBuf, u.m_nNewEntity, false );
+		pRecvTable->RecvTable_Decode(  ent->GetDataTableBasePtr(), &fromBuf, u.m_nNewEntity, false );
 
 	}
 	else
 	{
 		// write data from baseline into entity
-		RecvTable_Decode( pRecvTable, ent->GetDataTableBasePtr(), &fromBuf, u.m_nNewEntity, false );
+		pRecvTable->RecvTable_Decode(  ent->GetDataTableBasePtr(), &fromBuf, u.m_nNewEntity, false );
 
 		// Now parse in the contents of the network stream.
-		RecvTable_Decode( pRecvTable, ent->GetDataTableBasePtr(), u.m_pBuf, u.m_nNewEntity, true );
+		pRecvTable->RecvTable_Decode(  ent->GetDataTableBasePtr(), u.m_pBuf, u.m_nNewEntity, true );
 	}
 
 	CL_AddPostDataUpdateCall( u, u.m_nNewEntity, updateType );
@@ -478,7 +478,7 @@ void CL_CopyExistingEntity( CEntityReadInfo &u )
 		return;
 	}
 
-	RecvTable_Decode( pRecvTable, pEnt->GetDataTableBasePtr(), u.m_pBuf, u.m_nNewEntity );
+	pRecvTable->RecvTable_Decode(  pEnt->GetDataTableBasePtr(), u.m_pBuf, u.m_nNewEntity );
 
 	CL_AddPostDataUpdateCall( u, u.m_nNewEntity, DATA_UPDATE_DATATABLE_CHANGED );
 

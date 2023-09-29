@@ -282,9 +282,20 @@ IMPLEMENT_SERVERCLASS(CBaseEntity, DT_BaseEntity)
 //	//sg_DynamicLoadHandlers.Remove( m_pEntity ); // NOTE: destroys *this!
 //}
 
+class CServerEntityCallBack : public IServerEntityCallBack {
+public:
+	virtual void AfterConstruct(IServerEntity* pEntity) {
+		int aaa = 0;
+	};
+	virtual void BeforeDestruct(IServerEntity* pEntity) {
+		int aaa = 0;
+	};
+};
+CServerEntityCallBack s_callBack;
+
 CBaseEntity* CBaseEntity::CreateEntityByName(const char* className)
 {
-	CBaseEntity* ent = ServerEntityFactoryDictionary()->Create(className)->GetBaseEntity();//, NULL
+	CBaseEntity* ent = ServerEntityFactoryDictionary()->Create(className, &s_callBack)->GetBaseEntity();//, NULL
 	if (ent)
 	{
 		return ent;
@@ -4716,13 +4727,13 @@ class CWatchForModelAccess: public CAutoGameSystem
 public:
 	virtual bool Init()
 	{
-		filesystem->AddLoggingFunc(&ModelLogFunc);
+		g_pFileSystem->AddLoggingFunc(&ModelLogFunc);
 		return true;
 	}
 
 	virtual void Shutdown()
 	{
-		filesystem->RemoveLoggingFunc(&ModelLogFunc);
+		g_pFileSystem->RemoveLoggingFunc(&ModelLogFunc);
 	}
 
 };

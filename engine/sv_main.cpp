@@ -789,16 +789,15 @@ int SV_BuildSendTablesArray( ServerClass *pClasses, SendTable **pTables, int nMa
 // Builds an alternate copy of the datatable for any classes that have datatables with props excluded.
 void SV_InitSendTables( ServerClass *pClasses )
 {
-	SendTable *pTables[MAX_DATATABLES];
-	int nTables = SV_BuildSendTablesArray( pClasses, pTables, ARRAYSIZE( pTables ) );
-
-	SendTable_Init( pTables, nTables );
+	//SendTable *pTables[MAX_DATATABLES];
+	//int nTables = SV_BuildSendTablesArray( pClasses, pTables, ARRAYSIZE( pTables ) );
+	serverGameDLL->GetSendTableManager()->SendTable_Init();// pTables, nTables 
 }
 
 
 void SV_TermSendTables( ServerClass *pClasses )
 {
-	SendTable_Term();
+	serverGameDLL->GetSendTableManager()->SendTable_Term();
 }
 
 
@@ -2118,8 +2117,7 @@ void SV_CreateBaseline (void)
 
 
 			// create basline from zero values
-			if ( !SendTable_Encode(
-				pSendTable, 
+			if ( !pSendTable->SendTable_Encode(
 				edict->GetUnknown(), 
 				&writeBuf, 
 				entnum,

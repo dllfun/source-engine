@@ -522,7 +522,7 @@ public:
 	virtual ServerClassManager* GetServerClassManager( void ) = 0;
 
 	// Give the list of datatable to the engine for networking
-	virtual SendTableManager*		GetSengTableManager(void) = 0;
+	virtual SendTableManager*		GetSendTableManager(void) = 0;
 
 	virtual IServerEntityFactoryDictionary* EntityFactoryDictionary() = 0;
 

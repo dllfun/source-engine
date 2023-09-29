@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\common\netmessages.h" />
     <ClInclude Include="..\..\..\engine\cmodel_private.h" />
+    <ClInclude Include="..\..\..\engine\dt_common_eng.h" />
     <ClInclude Include="..\..\..\engine\net.h" />
     <ClInclude Include="..\..\..\public\inetmessage.h" />
     <ClInclude Include="..\..\..\public\inetmsghandler.h" />
@@ -253,16 +254,8 @@
     <ClCompile Include="..\..\..\engine\download.cpp" />
     <ClCompile Include="..\..\..\engine\DownloadListGenerator.cpp" />
     <ClCompile Include="..\..\..\engine\downloadthread.cpp" />
-    <ClCompile Include="..\..\..\engine\dt.cpp" />
     <ClCompile Include="..\..\..\engine\dt_common_eng.cpp" />
-    <ClCompile Include="..\..\..\engine\dt_encode.cpp" />
-    <ClCompile Include="..\..\..\engine\dt_instrumentation.cpp" />
-    <ClCompile Include="..\..\..\engine\dt_instrumentation_server.cpp" />
     <ClCompile Include="..\..\..\engine\dt_localtransfer.cpp" />
-    <ClCompile Include="..\..\..\engine\dt_recv_decoder.cpp" />
-    <ClCompile Include="..\..\..\engine\dt_recv_eng.cpp" />
-    <ClCompile Include="..\..\..\engine\dt_send_eng.cpp" />
-    <ClCompile Include="..\..\..\engine\dt_stack.cpp" />
     <ClCompile Include="..\..\..\engine\dt_test.cpp" />
     <ClCompile Include="..\..\..\engine\enginesingleuserfilter.cpp" />
     <ClCompile Include="..\..\..\engine\EngineSoundClient.cpp" />
@@ -406,8 +399,16 @@
     <ClCompile Include="..\..\..\public\dispcoll_common.cpp" />
     <ClCompile Include="..\..\..\public\disp_common.cpp" />
     <ClCompile Include="..\..\..\public\disp_powerinfo.cpp" />
+    <ClCompile Include="..\..\..\public\dt.cpp" />
+    <ClCompile Include="..\..\..\public\dt_encode.cpp" />
+    <ClCompile Include="..\..\..\public\dt_instrumentation.cpp" />
+    <ClCompile Include="..\..\..\public\dt_instrumentation_server.cpp" />
     <ClCompile Include="..\..\..\public\dt_recv.cpp" />
+    <ClCompile Include="..\..\..\public\dt_recv_decoder.cpp" />
+    <ClCompile Include="..\..\..\public\dt_recv_eng.cpp" />
     <ClCompile Include="..\..\..\public\dt_send.cpp" />
+    <ClCompile Include="..\..\..\public\dt_send_eng.cpp" />
+    <ClCompile Include="..\..\..\public\dt_stack.cpp" />
     <ClCompile Include="..\..\..\public\dt_utlvector_common.cpp" />
     <ClCompile Include="..\..\..\public\dt_utlvector_recv.cpp" />
     <ClCompile Include="..\..\..\public\dt_utlvector_send.cpp" />

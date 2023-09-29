@@ -178,7 +178,7 @@ void CViewAngleAnimation::LoadViewAnimFile( const char *pKeyFrameFileName )
 	// load keyvalues from this file and stuff them in as keyframes
 	KeyValues *pData = new KeyValues( pKeyFrameFileName );
 
-	if ( false == pData->LoadFromFile( filesystem, pKeyFrameFileName, "GAME" ) )
+	if ( false == pData->LoadFromFile(g_pFileSystem, pKeyFrameFileName, "GAME" ) )
 	{
 		Warning( "CViewAngleAnimation::LoadViewAnimFile failed to load script %s\n", pKeyFrameFileName );
 		pData->deleteThis();
@@ -236,7 +236,7 @@ void CViewAngleAnimation::SaveAsAnimFile( const char *pKeyFrameFileName )
 		pKey->SetInt( "flags", m_KeyFrames[i]->m_iFlags );
 	}
 
-	pData->SaveToFile( filesystem, pKeyFrameFileName, NULL );
+	pData->SaveToFile(g_pFileSystem, pKeyFrameFileName, NULL );
 	pData->deleteThis();
 }
 

@@ -224,7 +224,7 @@ void C_SteamJet::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs)
 //-----------------------------------------------------------------------------
 bool C_SteamJet::GetPropEditInfo( RecvTable **ppTable, void **ppObj )
 {
-	*ppTable = g_pRecvTableManager->FindRecvTable(REFERENCE_RECV_TABLE(DT_SteamJet));
+	*ppTable = GetRecvTableManager()->FindRecvTable(REFERENCE_RECV_TABLE(DT_SteamJet));
 	*ppObj = this;
 	return true;
 }

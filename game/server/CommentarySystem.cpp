@@ -280,7 +280,7 @@ public:
 		// Set the available cvar if we can find commentary data for this level
 		char szFullName[512];
 		Q_snprintf(szFullName,sizeof(szFullName), "maps/%s_commentary.txt", STRING( gpGlobals->mapname) );
-		if ( filesystem->FileExists( szFullName ) )
+		if (g_pFileSystem->FileExists( szFullName ) )
 		{
 			commentary_available.SetValue( true );
 
@@ -606,7 +606,7 @@ public:
 		char szFullName[512];
 		Q_snprintf(szFullName,sizeof(szFullName), "maps/%s_commentary.txt", STRING( gpGlobals->mapname ));
 		KeyValues *pkvFile = new KeyValues( "Commentary" );
-		if ( pkvFile->LoadFromFile( filesystem, szFullName, "MOD" ) )
+		if ( pkvFile->LoadFromFile(g_pFileSystem, szFullName, "MOD" ) )
 		{
 			Msg( "Commentary: Loading commentary data from %s. \n", szFullName );
 

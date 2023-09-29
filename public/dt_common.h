@@ -104,6 +104,7 @@
 
 
 class SendProp;
+class CRecvProxyData;
 
 // The day we do this, we break all mods until they recompile.
 //#define SUPPORTS_INT64

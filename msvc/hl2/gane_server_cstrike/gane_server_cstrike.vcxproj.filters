@@ -1740,6 +1740,18 @@
     <ClCompile Include="..\..\..\game\server\nav_simplify.cpp">
       <Filter>源文件\Navigation Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\public\dt.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_instrumentation_server.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_stack.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_encode.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\public\server_class.h">
@@ -1761,6 +1773,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\public\iserverentity.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\public\dt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\public\dt_instrumentation.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\public\dt_instrumentation_server.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\public\dt_stack.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

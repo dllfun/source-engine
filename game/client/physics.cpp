@@ -27,7 +27,7 @@
 #include "tier0/memdbgon.h"
 
 // file system interface
-extern IFileSystem *filesystem;
+extern IFileSystem * g_pFileSystem;
 
 ConVar	cl_phys_timescale( "cl_phys_timescale", "1.0", FCVAR_CHEAT, "Sets the scale of time for client-side physics (ragdolls)" );
 
@@ -155,7 +155,7 @@ bool PhysicsDLLInit( CreateInterfaceFn physicsFactory )
 		// Reduce timescale to save perf on 360
 		cl_phys_timescale.SetValue(0.9f);
 	}
-	PhysParseSurfaceData( physprops, filesystem );
+	PhysParseSurfaceData( physprops, g_pFileSystem);
 	return true;
 }
 

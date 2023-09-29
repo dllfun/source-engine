@@ -1010,23 +1010,23 @@ byte *UTIL_LoadFileForMe( const char *filename, int *pLength )
 	byte *buffer;
 
 	FileHandle_t file;
-	file = filesystem->Open( filename, "rb", "GAME" );
+	file = g_pFileSystem->Open( filename, "rb", "GAME" );
 	if ( FILESYSTEM_INVALID_HANDLE == file )
 	{
 		if ( pLength ) *pLength = 0;
 		return NULL;
 	}
 
-	int size = filesystem->Size( file );
+	int size = g_pFileSystem->Size( file );
 	buffer = new byte[ size + 1 ];
 	if ( !buffer )
 	{
 		Warning( "UTIL_LoadFileForMe:  Couldn't allocate buffer of size %i for file %s\n", size + 1, filename );
-		filesystem->Close( file );
+		g_pFileSystem->Close( file );
 		return NULL;
 	}
-	filesystem->Read( buffer, size, file );
-	filesystem->Close( file );
+	g_pFileSystem->Read( buffer, size, file );
+	g_pFileSystem->Close( file );
 
 	// Ensure null terminator
 	buffer[ size ] =0;
@@ -1252,7 +1252,7 @@ void UTIL_IncrementMapKey( const char *pszCustomKey )
 		// Write it out
 
 		// force create this directory incase it doesn't exist
-		filesystem->CreateDirHierarchy( MAP_KEY_FILE_DIR, "MOD");
+		g_pFileSystem->CreateDirHierarchy( MAP_KEY_FILE_DIR, "MOD");
 
 		CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
 		kvMapLoadFile->RecursiveSaveToFile( buf, 0 );
@@ -1287,7 +1287,7 @@ int UTIL_GetMapKeyCount( const char *pszCustomKey )
 		if ( !g_pFullFileSystem->FileExists( szFilename, "MOD" ) )
 		{
 			// force create this directory incase it doesn't exist
-			filesystem->CreateDirHierarchy( MAP_KEY_FILE_DIR, "MOD");
+			g_pFileSystem->CreateDirHierarchy( MAP_KEY_FILE_DIR, "MOD");
 
 			CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
 			g_pFullFileSystem->WriteFile( szFilename, "MOD", buf );

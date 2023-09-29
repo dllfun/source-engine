@@ -109,7 +109,7 @@ static void WriteAchievementGlobalState( KeyValues *pKV, bool bPersistToSteamClo
 	// Save to a buffer instead.
 	CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
 	pKV->RecursiveSaveToFile( buf, 0 );
-	filesystem->WriteFile( szFilename, NULL, buf );
+	g_pFileSystem->WriteFile( szFilename, NULL, buf );
 	pKV->deleteThis();
 
     //=============================================================================
@@ -140,7 +140,7 @@ static void WriteAchievementGlobalState( KeyValues *pKV, bool bPersistToSteamClo
             {
                 if ( totalBytes > 0 )
                 {
-                    int32   filesize = (int32)filesystem->Size(szFilename);
+                    int32   filesize = (int32)g_pFileSystem->Size(szFilename);
 
                     if (filesize > 0)
                     {
@@ -149,13 +149,13 @@ static void WriteAchievementGlobalState( KeyValues *pKV, bool bPersistToSteamClo
                         if (pData)
                         {
                             // Read in the data from the file system GameState.txt file
-                            FileHandle_t    handle = filesystem->Open(szFilename, "r");
+                            FileHandle_t    handle = g_pFileSystem->Open(szFilename, "r");
 
                             if (handle)
                             {
-                                int32 nRead = filesystem->Read(pData, filesize, handle);
+                                int32 nRead = g_pFileSystem->Read(pData, filesize, handle);
 
-                                filesystem->Close(handle);
+								g_pFileSystem->Close(handle);
 
                                 if (nRead == filesize)
                                 {
@@ -793,13 +793,13 @@ void CAchievementMgr::LoadGlobalState()
                         if (sizeRead == fileSize)
                         {
                             // Write out data to a filesystem GameState file that can be read by the original code below
-                            FileHandle_t    handle = filesystem->Open(szFilename, "w");
+                            FileHandle_t    handle = g_pFileSystem->Open(szFilename, "w");
 
                             if (handle)
                             {
-                                filesystem->Write(pData, fileSize, handle);
+								g_pFileSystem->Write(pData, fileSize, handle);
 
-                                filesystem->Close(handle);
+								g_pFileSystem->Close(handle);
                             }
                         }
 
@@ -817,7 +817,7 @@ void CAchievementMgr::LoadGlobalState()
     //=============================================================================
 
 	KeyValues *pKV = new KeyValues("GameState" );
-	if ( pKV->LoadFromFile( filesystem, szFilename, "MOD" ) )
+	if ( pKV->LoadFromFile(g_pFileSystem, szFilename, "MOD" ) )
 	{
 		KeyValues *pNode = pKV->GetFirstSubKey();
 		while ( pNode )

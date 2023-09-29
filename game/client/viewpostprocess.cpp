@@ -1510,9 +1510,9 @@ void DumpTGAofRenderTarget( const int width, const int height, const char *pFile
 	char szPathedFileName[_MAX_PATH];
 	Q_snprintf( szPathedFileName, sizeof(szPathedFileName), "//MOD/%d_%s_%s.tga", s_nRTIndex++, pFilename, IsOSX() ? "OSX" : "PC" );
 
-	FileHandle_t fileTGA = filesystem->Open( szPathedFileName, "wb" );
-	filesystem->Write( buffer.Base(), buffer.TellPut(), fileTGA );
-	filesystem->Close( fileTGA );
+	FileHandle_t fileTGA = g_pFileSystem->Open( szPathedFileName, "wb" );
+	g_pFileSystem->Write( buffer.Base(), buffer.TellPut(), fileTGA );
+	g_pFileSystem->Close( fileTGA );
 
 	free( pTGA );
 }

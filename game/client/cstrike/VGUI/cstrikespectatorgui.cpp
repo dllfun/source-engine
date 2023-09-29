@@ -1666,19 +1666,19 @@ bool CCSMapOverview::CreateRadarImage(const char *mapName, const char * radarFil
 
 	// Not found, so try to make one
 	FileHandle_t fp;
-	fp = ::filesystem->Open( fullFileName, "rb" );
+	fp = ::g_pFileSystem->Open( fullFileName, "rb" );
 	if( !fp )
 	{
 		return false;
 	}
-	::filesystem->Seek( fp, 0, FILESYSTEM_SEEK_TAIL );
-	int srcVTFLength = ::filesystem->Tell( fp );
-	::filesystem->Seek( fp, 0, FILESYSTEM_SEEK_HEAD );
+	::g_pFileSystem->Seek( fp, 0, FILESYSTEM_SEEK_TAIL );
+	int srcVTFLength = ::g_pFileSystem->Tell( fp );
+	::g_pFileSystem->Seek( fp, 0, FILESYSTEM_SEEK_HEAD );
 
 	CUtlBuffer buf;
 	buf.EnsureCapacity( srcVTFLength );
-	int overviewMapBytesRead = ::filesystem->Read( buf.Base(), srcVTFLength, fp );
-	::filesystem->Close( fp );
+	int overviewMapBytesRead = ::g_pFileSystem->Read( buf.Base(), srcVTFLength, fp );
+	::g_pFileSystem->Close( fp );
 
 	buf.SeekGet( CUtlBuffer::SEEK_HEAD, 0 );// Need to set these explicitly since ->Read goes straight to memory and skips them.
 	buf.SeekPut( CUtlBuffer::SEEK_HEAD, overviewMapBytesRead );
@@ -1703,9 +1703,9 @@ bool CCSMapOverview::CreateRadarImage(const char *mapName, const char * radarFil
 		buf.Clear();
 		radarTexture->Serialize(buf);
 
-		fp = ::filesystem->Open(fullRadarFileName, "wb");
-		::filesystem->Write(buf.Base(), buf.TellPut(), fp);
-		::filesystem->Close(fp);
+		fp = ::g_pFileSystem->Open(fullRadarFileName, "wb");
+		::g_pFileSystem->Write(buf.Base(), buf.TellPut(), fp);
+		::g_pFileSystem->Close(fp);
 		DestroyVTFTexture(radarTexture);
 		buf.Purge();
 
@@ -1717,19 +1717,19 @@ bool CCSMapOverview::CreateRadarImage(const char *mapName, const char * radarFil
 		*extension++ = 'm';
 		*extension++ = 't';
 		*extension++ = '\0';
-		fp = ::filesystem->Open(vmtFilename, "wt");
-		::filesystem->Write("\"UnlitGeneric\"\n", 15, fp);
-		::filesystem->Write("{\n", 2, fp);
-		::filesystem->Write("\t\"$translucent\" \"1\"\n", 20, fp);
-		::filesystem->Write("\t\"$basetexture\" \"", 17, fp);
-		::filesystem->Write(radarFileName, Q_strlen(radarFileName), fp);
-		::filesystem->Write("\"\n", 2, fp);
-		::filesystem->Write("\t\"$vertexalpha\" \"1\"\n", 20, fp);
-		::filesystem->Write("\t\"$vertexcolor\" \"1\"\n", 20, fp);
-		::filesystem->Write("\t\"$no_fullbright\" \"1\"\n", 22, fp);
-		::filesystem->Write("\t\"$ignorez\" \"1\"\n", 16, fp);
-		::filesystem->Write("}\n", 2, fp);
-		::filesystem->Close(fp);
+		fp = ::g_pFileSystem->Open(vmtFilename, "wt");
+		::g_pFileSystem->Write("\"UnlitGeneric\"\n", 15, fp);
+		::g_pFileSystem->Write("{\n", 2, fp);
+		::g_pFileSystem->Write("\t\"$translucent\" \"1\"\n", 20, fp);
+		::g_pFileSystem->Write("\t\"$basetexture\" \"", 17, fp);
+		::g_pFileSystem->Write(radarFileName, Q_strlen(radarFileName), fp);
+		::g_pFileSystem->Write("\"\n", 2, fp);
+		::g_pFileSystem->Write("\t\"$vertexalpha\" \"1\"\n", 20, fp);
+		::g_pFileSystem->Write("\t\"$vertexcolor\" \"1\"\n", 20, fp);
+		::g_pFileSystem->Write("\t\"$no_fullbright\" \"1\"\n", 22, fp);
+		::g_pFileSystem->Write("\t\"$ignorez\" \"1\"\n", 16, fp);
+		::g_pFileSystem->Write("}\n", 2, fp);
+		::g_pFileSystem->Close(fp);
 
 		m_nRadarMapTextureID = surface()->CreateNewTextureID();
 		surface()->DrawSetTextureFile( m_nRadarMapTextureID, radarFileName, true, true);

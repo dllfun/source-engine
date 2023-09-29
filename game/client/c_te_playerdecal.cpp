@@ -181,12 +181,12 @@ IMaterial *CreateTempMaterialForPlayerLogo( int iPlayerIndex, player_info_t *inf
 	char fulltexname[ 512 ];
 	Q_snprintf( fulltexname, sizeof( fulltexname ), "materials/temp/%s.vtf", logohex );
 
-	if ( !filesystem->FileExists( fulltexname ) )
+	if ( !g_pFileSystem->FileExists( fulltexname ) )
 	{
 		char custname[ 512 ];
 		Q_snprintf( custname, sizeof( custname ), "download/user_custom/%c%c/%s.dat", logohex[0], logohex[1], logohex );
 		// it may have been downloaded but not copied under materials folder
-		if ( !filesystem->FileExists( custname ) )
+		if ( !g_pFileSystem->FileExists( custname ) )
 			return NULL; // not downloaded yet
 
 		// copy from download folder to materials/temp folder

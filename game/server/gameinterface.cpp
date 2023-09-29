@@ -162,9 +162,9 @@ CUtlLinkedList<CMapEntityRef, unsigned short> g_MapEntityRefs;
 IVEngineServer	*engineServer = NULL;
 IVoiceServer	*g_pVoiceServer = NULL;
 #if !defined(_STATIC_LINKED)
-IFileSystem		*filesystem = NULL;
+IFileSystem		* g_pFileSystem = NULL;
 #else
-extern IFileSystem *filesystem;
+extern IFileSystem * g_pFileSystem;
 #endif
 INetworkStringTableContainer *networkstringtable = NULL;
 IStaticPropMgrServer *staticpropmgr = NULL;
@@ -601,7 +601,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	//	return false;
 	if ( (enginetrace = (IEngineTrace *)appSystemFactory(INTERFACEVERSION_ENGINETRACE_SERVER,NULL)) == NULL )
 		return false;
-	if ( (filesystem = (IFileSystem *)fileSystemFactory(FILESYSTEM_INTERFACE_VERSION,NULL)) == NULL )
+	if ( (g_pFileSystem = (IFileSystem *)fileSystemFactory(FILESYSTEM_INTERFACE_VERSION,NULL)) == NULL )
 		return false;
 	if ( (gameeventmanager = (IGameEventManager2 *)appSystemFactory(INTERFACEVERSION_GAMEEVENTSMANAGER2,NULL)) == NULL )
 		return false;
@@ -770,7 +770,7 @@ void CServerGameDLL::DLLShutdown( void )
 	{
 		g_TextStatsMgr.SetStatsFilename((char*)"stats.txt" );
 	}
-	g_TextStatsMgr.WriteFile( filesystem );
+	g_TextStatsMgr.WriteFile(g_pFileSystem);
 
 	IGameSystem::ShutdownAllSystems();
 
@@ -1424,18 +1424,18 @@ ServerClassManager* CServerGameDLL::GetServerClassManager()
 {
 	for (ServerClass* pCur = g_pServerClassManager->GetServerClassHead(); pCur; pCur = pCur->GetNext())
 	{
-		pCur->InitRefSendTable(GetSengTableManager());
+		pCur->InitRefSendTable(::GetSendTableManager());
 	}
 	return g_pServerClassManager;
 }
 
-SendTableManager* CServerGameDLL::GetSengTableManager() 
+SendTableManager* CServerGameDLL::GetSendTableManager() 
 {
-	for (SendTable* pCur = g_pSendTableManager->GetSendTableHead(); pCur; pCur = pCur->m_pNext)
+	for (SendTable* pCur = ::GetSendTableManager()->GetSendTableHead(); pCur; pCur = pCur->m_pNext)
 	{
-		pCur->InitRefSendTable(g_pSendTableManager);
+		pCur->InitRefSendTable(::GetSendTableManager());
 	}
-	return g_pSendTableManager;
+	return ::GetSendTableManager();
 }
 
 IServerEntityFactoryDictionary* CServerGameDLL::EntityFactoryDictionary() {
@@ -2074,14 +2074,14 @@ void CServerGameDLL::LoadSpecificMOTDMsg( const ConVar &convar, const char *pszS
 	// Check the preferred filename first
 	char szResolvedFilename[ MAX_PATH ];
 	V_strcpy_safe( szResolvedFilename, szPreferredFilename );
-	bool bFound = filesystem->ReadFile( szResolvedFilename, "GAME", buf );
+	bool bFound = g_pFileSystem->ReadFile( szResolvedFilename, "GAME", buf );
 
 	// Not found?  Try in the root, which is the old place it used to go.
 	if ( !bFound )
 	{
 
 		V_strcpy_safe( szResolvedFilename, convar.GetString() );
-		bFound = filesystem->ReadFile( szResolvedFilename, "GAME", buf );
+		bFound = g_pFileSystem->ReadFile( szResolvedFilename, "GAME", buf );
 	}
 
 	// Still not found?  See if we can try the default.
@@ -2091,7 +2091,7 @@ void CServerGameDLL::LoadSpecificMOTDMsg( const ConVar &convar, const char *pszS
 		char *dotTxt = V_stristr( szResolvedFilename, ".txt" );
 		Assert ( dotTxt != NULL );
 		if ( dotTxt ) V_strcpy( dotTxt, "_default.txt" );
-		bFound = filesystem->ReadFile( szResolvedFilename, "GAME", buf );
+		bFound = g_pFileSystem->ReadFile( szResolvedFilename, "GAME", buf );
 	}
 
 	if ( !bFound )

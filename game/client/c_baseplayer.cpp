@@ -2052,12 +2052,12 @@ void C_BasePlayer::PlayPlayerJingle()
 	char fullsoundname[ 512 ];
 	Q_snprintf( fullsoundname, sizeof( fullsoundname ), "sound/temp/%s.wav", soundhex );
 
-	if ( !filesystem->FileExists( fullsoundname ) )
+	if ( !g_pFileSystem->FileExists( fullsoundname ) )
 	{
 		char custname[ 512 ];
 		Q_snprintf( custname, sizeof( custname ), "download/user_custom/%c%c/%s.dat", soundhex[0], soundhex[1], soundhex );
 		// it may have been downloaded but not copied under materials folder
-		if ( !filesystem->FileExists( custname ) )
+		if ( !g_pFileSystem->FileExists( custname ) )
 			return; // not downloaded yet
 
 		// copy from download folder to materials/temp folder

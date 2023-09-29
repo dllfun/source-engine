@@ -1013,6 +1013,7 @@ inline unsigned IFileSystem::GetOptimalReadSize( FileHandle_t hFile, unsigned nL
 #define AsyncReadMutiple( a, b, c ) AsyncReadMultipleCreditAlloc( a, b, __FILE__, __LINE__, c )
 #endif
 
+extern IFileSystem* g_pFileSystem;
 extern IFileSystem *g_pFullFileSystem;
 
 #endif // FILESYSTEM_H

@@ -479,7 +479,7 @@ bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
 		}
 
 		// Write the file
-		filesystem->WriteFile( pFilename, "MOD", buf );
+		g_pFileSystem->WriteFile( pFilename, "MOD", buf );
 	}
 
 	CleanupDMX( pSimulations );

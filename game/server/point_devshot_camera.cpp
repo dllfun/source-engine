@@ -228,7 +228,7 @@ public:
 			char szFullName[512];
 			Q_snprintf(szFullName,sizeof(szFullName), "maps/%s.txt", STRING( gpGlobals->mapname ));
 			KeyValues *pkvMapCameras = new KeyValues( "MapCameras" );
-			if ( pkvMapCameras->LoadFromFile( filesystem, szFullName, "MOD" ) )
+			if ( pkvMapCameras->LoadFromFile(g_pFileSystem, szFullName, "MOD" ) )
 			{
 				Warning( "Devshots: Loading point_devshot_camera positions from %s. \n", szFullName );
 

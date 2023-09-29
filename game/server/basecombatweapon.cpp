@@ -58,7 +58,7 @@ extern ConVar ai_debug_shoot_positions;
 //-----------------------------------------------------------------------------
 void W_Precache(void)
 {
-	PrecacheFileWeaponInfoDatabase( filesystem, g_pGameRules->GetEncryptionKey() );
+	PrecacheFileWeaponInfoDatabase(g_pFileSystem, g_pGameRules->GetEncryptionKey() );
 
 
 

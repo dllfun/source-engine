@@ -259,7 +259,7 @@ void C_SmokeStack::Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs)
 
 	Q_snprintf( szNames, sizeof( szNames ), "%s%d.vmt", str, iCount );
 
-	while ( filesystem->FileExists( VarArgs( "materials/%s", szNames ) ) && iCount < SMOKESTACK_MAX_MATERIALS )
+	while (g_pFileSystem->FileExists( VarArgs( "materials/%s", szNames ) ) && iCount < SMOKESTACK_MAX_MATERIALS )
 	{
 		char *pExt = Q_stristr( szNames, ".vmt" );
 		if ( pExt )
@@ -310,7 +310,7 @@ void C_SmokeStack::ClientThink()
 //-----------------------------------------------------------------------------
 bool C_SmokeStack::GetPropEditInfo( RecvTable **ppTable, void **ppObj )
 {
-	*ppTable = g_pRecvTableManager->FindRecvTable(REFERENCE_RECV_TABLE(DT_SmokeStack));
+	*ppTable = GetRecvTableManager()->FindRecvTable(REFERENCE_RECV_TABLE(DT_SmokeStack));
 	*ppObj = this;
 	return true;
 }

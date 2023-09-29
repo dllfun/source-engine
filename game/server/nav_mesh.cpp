@@ -1087,7 +1087,7 @@ void CNavMesh::LoadPlaceDatabase( void )
 	// Population.txt holds all the info we need for place names in Left4Dead, so let's not
 	// make Phil edit yet another text file.
 	KeyValues *populationData = new KeyValues( "population" );
-	if ( populationData->LoadFromFile( filesystem, "scripts/population.txt" ) )
+	if ( populationData->LoadFromFile(g_pFileSystem, "scripts/population.txt" ) )
 	{
 		CUtlVector< char * > placeNames;
 
@@ -1116,7 +1116,7 @@ void CNavMesh::LoadPlaceDatabase( void )
 #endif
 
 	CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
-	filesystem->ReadFile("NavPlace.db", "GAME", buf);
+	g_pFileSystem->ReadFile("NavPlace.db", "GAME", buf);
 
 	if (!buf.Size())
 		return;
@@ -1716,7 +1716,7 @@ CON_COMMAND_F( nav_dump_selected_set_positions, "Write the (x,y,z) coordinates o
 	char filename[256];
 	Q_snprintf( filename, sizeof( filename ), "%s\\maps\\%s_xyz.txt", gamePath, STRING( gpGlobals->mapname ) );
 
-	if ( !filesystem->WriteFile( filename, "MOD", fileBuffer ) )
+	if ( !g_pFileSystem->WriteFile( filename, "MOD", fileBuffer ) )
 	{
 		Warning( "Unable to save %d bytes to %s\n", fileBuffer.Size(), filename );
 	}
@@ -1739,7 +1739,7 @@ CON_COMMAND_F( nav_show_dumped_positions, "Show the (x,y,z) coordinate positions
 	char filename[256];
 	Q_snprintf( filename, sizeof( filename ), "%s\\maps\\%s_xyz.txt", gamePath, STRING( gpGlobals->mapname ) );
 
-	if ( !filesystem->ReadFile( filename, "MOD", fileBuffer ) )
+	if ( !g_pFileSystem->ReadFile( filename, "MOD", fileBuffer ) )
 	{
 		Warning( "Unable to read %s\n", filename );
 	}

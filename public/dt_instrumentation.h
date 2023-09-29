@@ -18,7 +18,7 @@
 // Is instrumentation enabled?
 extern bool g_bDTIEnabled;
 
-
+char* COM_StringCopy(const char* in);
 // ------------------------------------------------------------------------------------------ // 
 // Instrumentation functions.
 // ------------------------------------------------------------------------------------------ // 

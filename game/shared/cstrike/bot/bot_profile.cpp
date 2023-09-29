@@ -128,7 +128,7 @@ BotProfileManager::BotProfileManager( void )
  */
 void BotProfileManager::Init( const char *filename, unsigned int *checksum )
 {
-	FileHandle_t file = filesystem->Open( filename, "r" );
+	FileHandle_t file = g_pFileSystem->Open( filename, "r" );
 
 	if (!file)
 	{
@@ -139,10 +139,10 @@ void BotProfileManager::Init( const char *filename, unsigned int *checksum )
 		return;
 	}
 
-	int dataLength = filesystem->Size( filename );
+	int dataLength = g_pFileSystem->Size( filename );
 	char *dataPointer = new char[ dataLength ];
-	int dataReadLength = filesystem->Read( dataPointer, dataLength, file );
-	filesystem->Close( file );
+	int dataReadLength = g_pFileSystem->Read( dataPointer, dataLength, file );
+	g_pFileSystem->Close( file );
 	if ( dataReadLength > 0 )
 	{
 		// NULL-terminate based on the length read in, since Read() can transform \r\n to \n and

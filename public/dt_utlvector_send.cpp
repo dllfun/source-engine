@@ -148,7 +148,9 @@ SendProp SendPropUtlVector(
 	Assert( nMaxElements <= MAX_ARRAY_ELEMENTS );
 
 	ret.m_Type = DPT_DataTable;
-	ret.m_pVarName = pVarName;
+	if (pVarName) {
+		ret.m_pVarName = COM_StringCopy(pVarName);
+	}
 	ret.SetOffset( 0 );
 	ret.SetDataTableProxyFn( varProxy );
 	
@@ -183,7 +185,7 @@ SendProp SendPropUtlVector(
 
 	char *pLengthProxyTableName = AllocateUniqueDataTableName( true, "_LPT_%s_%d", pVarName, nMaxElements );
 	SendTable *pLengthTable = new SendTable( pLengthProp, 1, pLengthProxyTableName );
-	g_pSendTableManager->RegisteSendTable(pLengthTable);
+	GetSendTableManager()->RegisteSendTable(pLengthTable);
 	pProps[0] = SendPropDataTable( "lengthproxy", 0, pLengthProxyTableName, SendProxy_LengthTable );//pLengthTable
 	pProps[0].SetExtraData( pExtraData );
 
@@ -214,13 +216,14 @@ SendProp SendPropUtlVector(
 		}
 	}
 
+	const char* pTableName = AllocateUniqueDataTableName(true, "_ST_%s_%d", pVarName, nMaxElements);
 	SendTable *pTable = new SendTable( 
 		pProps, 
 		nMaxElements+1, 
-		AllocateUniqueDataTableName( true, "_ST_%s_%d", pVarName, nMaxElements )
+		pTableName
 		);
-	g_pSendTableManager->RegisteSendTable(pTable);
-
+	GetSendTableManager()->RegisteSendTable(pTable);
+	ret.SetDataTableName(pTableName);
 	ret.SetDataTable( pTable );
 	return ret;
 }

@@ -1196,7 +1196,7 @@ void CViewRender::WriteSaveGameScreenshotOfSize(const char* pFilename, int width
 	char szPathedFileName[_MAX_PATH];
 	Q_snprintf(szPathedFileName, sizeof(szPathedFileName), "//MOD/%s", pFilename);
 
-	filesystem->AsyncWrite(szPathedFileName, buffer.Base(), buffer.TellPut(), true);
+	g_pFileSystem->AsyncWrite(szPathedFileName, buffer.Base(), buffer.TellPut(), true);
 
 	// restore our previous state
 	pRenderContext->PopRenderTargetAndViewport();

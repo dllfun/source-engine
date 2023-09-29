@@ -26,7 +26,7 @@ public:
 
 	virtual void InstallFactory(IServerEntityFactory* pFactory, const char* pMapClassName);
 	virtual int RequiredEdictIndex(const char* pMapClassName);
-	virtual IServerEntity* Create(const char* pMapClassName);//, edict_t* edict
+	virtual IServerEntity* Create(const char* pMapClassName, IServerEntityCallBack* pCallBack);//, edict_t* edict
 	virtual void Destroy(const char* pMapClassName, IServerEntity* pNetworkable);
 	virtual const char* GetCannonicalName(const char* pMapClassName);
 	virtual void ReportEntityNames();
@@ -85,7 +85,7 @@ int CServerEntityFactoryDictionary::RequiredEdictIndex(const char* pMapClassName
 //-----------------------------------------------------------------------------
 // Instantiate something using a factory
 //-----------------------------------------------------------------------------
-IServerEntity* CServerEntityFactoryDictionary::Create(const char* pMapClassName)//, edict_t* edict
+IServerEntity* CServerEntityFactoryDictionary::Create(const char* pMapClassName, IServerEntityCallBack* pCallBack)//, edict_t* edict
 {
 	IServerEntityFactory* pFactory = FindFactory(pMapClassName);
 	if (!pFactory)
@@ -96,7 +96,7 @@ IServerEntity* CServerEntityFactoryDictionary::Create(const char* pMapClassName)
 #if defined(TRACK_ENTITY_MEMORY) && defined(USE_MEM_DEBUG)
 	MEM_ALLOC_CREDIT_(m_Factories.GetElementName(m_Factories.Find(pClassName)));
 #endif
-	return pFactory->Create();//pClassName, edict
+	return pFactory->Create(pCallBack);//pClassName, edict
 }
 
 //-----------------------------------------------------------------------------

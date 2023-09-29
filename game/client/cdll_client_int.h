@@ -87,7 +87,7 @@ extern IMDLCache *mdlcache;
 extern IEngineVGui *enginevgui;
 extern ISpatialPartition* partition;
 extern IBaseClientDLL *clientdll;
-extern IFileSystem *filesystem;
+extern IFileSystem * g_pFileSystem;
 extern IStaticPropMgrClient *staticpropmgr;
 extern IShadowMgr *shadowmgr;
 extern IEngineSound *enginesound;

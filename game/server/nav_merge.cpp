@@ -136,7 +136,7 @@ void CNavMesh::CommandNavSaveSelected( const CCommand &args )
 	for ( i=0; i<1000; ++i )
 	{
 		V_snprintf( path, sizeof( path ), "maps/%s_selected_%4.4d.txt", fname, i );
-		if ( !filesystem->FileExists( path ) )
+		if ( !g_pFileSystem->FileExists( path ) )
 		{
 			break;
 		}
@@ -149,7 +149,7 @@ void CNavMesh::CommandNavSaveSelected( const CCommand &args )
 		return;
 	}
 
-	if ( !data->SaveToFile( filesystem, path ) )
+	if ( !data->SaveToFile(g_pFileSystem, path ) )
 	{
 		Msg( "Unable to save the selected set to disk.\n" );
 	}
@@ -234,7 +234,7 @@ void CNavMesh::CommandNavMergeMesh( const CCommand &args )
 	V_snprintf( path, sizeof( path ), "maps/%s.txt", fname );
 
 	KeyValues *data = new KeyValues( "Nav Selected Set" );
-	if ( !data->LoadFromFile( filesystem, path ) )
+	if ( !data->LoadFromFile(g_pFileSystem, path ) )
 	{
 		Msg( "Unable to load %s.\n", path );
 	}
@@ -310,7 +310,7 @@ int NavMeshMergeAutocomplete( char const *partial, char commands[ COMMAND_COMPLE
 
 	FileFindHandle_t findHandle;
 	char txtFilenameNoExtension[ MAX_PATH ];
-	const char *txtFilename = filesystem->FindFirstEx( "maps/*_selected_*.txt", "MOD", &findHandle );
+	const char *txtFilename = g_pFileSystem->FindFirstEx( "maps/*_selected_*.txt", "MOD", &findHandle );
 	while ( txtFilename )
 	{
 		Q_FileBase( txtFilename, txtFilenameNoExtension, sizeof( txtFilenameNoExtension ) );
@@ -324,9 +324,9 @@ int NavMeshMergeAutocomplete( char const *partial, char commands[ COMMAND_COMPLE
 				return numMatches;
 		}
 
-		txtFilename = filesystem->FindNext( findHandle );
+		txtFilename = g_pFileSystem->FindNext( findHandle );
 	}
-	filesystem->FindClose( findHandle );
+	g_pFileSystem->FindClose( findHandle );
 
 	return numMatches;
 }

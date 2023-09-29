@@ -519,7 +519,7 @@ bool BotPhraseManager::Initialize( const char *filename, int bankIndex )
 {
 	bool isDefault = (bankIndex == 0);
 
-	FileHandle_t file = filesystem->Open( filename, "r" );
+	FileHandle_t file = g_pFileSystem->Open( filename, "r" );
 	if (!file)
 	{
 		CONSOLE_ECHO( "WARNING: Cannot access bot phrase database '%s'\n", filename );
@@ -527,12 +527,12 @@ bool BotPhraseManager::Initialize( const char *filename, int bankIndex )
 	}
 
 	// BOTPORT: Redo file reading to avoid loading whole file into memory at once
-	int phraseDataLength = filesystem->Size( filename );
+	int phraseDataLength = g_pFileSystem->Size( filename );
 	char *phraseDataFile = new char[ phraseDataLength ];
 		
-	int dataReadLength = filesystem->Read( phraseDataFile, phraseDataLength, file );	
+	int dataReadLength = g_pFileSystem->Read( phraseDataFile, phraseDataLength, file );
 
-	filesystem->Close( file );
+	g_pFileSystem->Close( file );
 
 	if ( dataReadLength > 0 )
 	{

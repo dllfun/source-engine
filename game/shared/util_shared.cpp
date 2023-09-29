@@ -1033,6 +1033,12 @@ float CountdownTimer::Now( void ) const
 
 
 #ifdef CLIENT_DLL
+	
+	CBaseEntity* UTIL_EntityByIndex(int entindex)
+	{
+		return ClientEntityList().GetEnt(entindex);
+	}
+
 	CBasePlayer *UTIL_PlayerByIndex( int entindex )
 	{
 		return ToBasePlayer( ClientEntityList().GetEnt( entindex ) );
@@ -1067,6 +1073,19 @@ float CountdownTimer::Now( void ) const
 
 #endif
 
+// This is implemented for the datatable code so its warnings can include an object's classname.
+const char* GetObjectClassName(int objectID)
+{
+	CBaseEntity* pEntity = UTIL_EntityByIndex(objectID);
+	if (pEntity)
+	{
+		return pEntity->GetClassname();
+	}
+	else
+	{
+		return "[unknown]";
+	}
+}
 
 const char* ReadAndAllocStringValue( KeyValues *pSub, const char *pName, const char *pFilename )
 {
@@ -1177,4 +1196,12 @@ const char* UTIL_GetActiveHolidayString()
 #else
 	return NULL;
 #endif
+}
+
+char* COM_StringCopy(const char* in)
+{
+	int len = Q_strlen(in) + 1;
+	char* out = (char*)new char[len];
+	Q_strncpy(out, in, len);
+	return out;
 }

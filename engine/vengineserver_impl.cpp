@@ -267,6 +267,17 @@ static bool ValidCmd( const char *pCmd )
 	return false;
 }
 
+class CServerEntityCallBack : public IServerEntityCallBack {
+public:
+	virtual void AfterConstruct(IServerEntity* pEntity) {
+		int aaa = 0;
+	};
+	virtual void BeforeDestruct(IServerEntity* pEntity) {
+		int aaa = 0;
+	};
+};
+CServerEntityCallBack s_callBack;
+
 // ---------------------------------------------------------------------- //
 // CVEngineServer
 // ---------------------------------------------------------------------- //
@@ -758,7 +769,7 @@ public:
 				Error("CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex);
 		}
 
-		IServerEntity* pEntity = serverGameDLL->EntityFactoryDictionary()->Create(className);//, edict
+		IServerEntity* pEntity = serverGameDLL->EntityFactoryDictionary()->Create(className, &s_callBack);//, edict
 		//g_pForceAttachEdict = NULL;
 
 		if (!pEntity)
@@ -1903,7 +1914,7 @@ void CVEngineServer::PlaybackTempEntity( IRecipientFilter& filter, float delay, 
 	bf_write buffer( "PlaybackTempEntity", data, sizeof(data) );
 
 	// write all properties, if init or reliable message delta against zero values
-	if( !SendTable_Encode( pST, pSender, &buffer, classID, NULL, false ) )
+	if( !((SendTable*)pST)->SendTable_Encode(  pSender, &buffer, classID, NULL, false ) )
 	{
 		g_pHost->Host_Error( "PlaybackTempEntity: SendTable_Encode returned false (ent %d), overflow? %i\n", classID, buffer.IsOverflowed() ? 1 : 0 );
 		return;

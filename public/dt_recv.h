@@ -16,6 +16,10 @@
 #include "dt_common.h"
 #include "tier0/dbg.h"
 #include "tier1/UtlStringMap.h"
+#include "bitbuf.h"
+//#include "dt.h"
+#include "renamed_recvtable_compat.h"
+#include "dt_send.h"
 
 
 #define ADDRESSPROXY_NONE	-1
@@ -90,6 +94,9 @@ class RecvProp
 // This info comes from the receive data table.
 public:
 							RecvProp();
+	virtual					~RecvProp();
+
+	RecvProp&				operator=(const RecvProp& srcRecvProp);
 
 	void					InitArray( int nElements, int elementStride );
 
@@ -141,36 +148,36 @@ public:
 
 public:
 
-	const char              *m_pVarName;
-	SendPropType			m_RecvType;
-	int						m_Flags;
-	int						m_StringBufferSize;
+	const char              *m_pVarName = NULL;
+	SendPropType			m_RecvType = DPT_Int;
+	int						m_Flags = 0;
+	int						m_StringBufferSize = 0;
 
 
 private:
 
-	bool					m_bInsideArray;		// Set to true by the engine if this property sits inside an array.
+	bool					m_bInsideArray = false;		// Set to true by the engine if this property sits inside an array.
 
 	// Extra data that certain special property types bind to the property here.
-	const void *m_pExtraData;
+	const void				*m_pExtraData = NULL;
 
 	// If this is an array (DPT_Array).
-	RecvProp				*m_pArrayProp;
-	ArrayLengthRecvProxyFn	m_ArrayLengthProxy;
+	RecvProp				*m_pArrayProp = NULL;
+	ArrayLengthRecvProxyFn	m_ArrayLengthProxy = NULL;
 	
-	RecvVarProxyFn			m_ProxyFn;
-	DataTableRecvVarProxyFn	m_DataTableProxyFn;	// For RDT_DataTable.
+	RecvVarProxyFn			m_ProxyFn = NULL;
+	DataTableRecvVarProxyFn	m_DataTableProxyFn = NULL;	// For RDT_DataTable.
 
 	const char*				m_pDataTableName = NULL;
-	RecvTable				*m_pDataTable;		// For RDT_DataTable.
-	int						m_Offset;
+	RecvTable				*m_pDataTable = NULL;		// For RDT_DataTable.
+	int						m_Offset = 0;
 	
-	int						m_ElementStride;
-	int						m_nElements;
+	int						m_ElementStride = 0;
+	int						m_nElements = 0;
 
 	// If it's one of the numbered "000", "001", etc properties in an array, then
 	// these can be used to get its array property name for debugging.
-	const char				*m_pParentArrayPropName;
+	const char				*m_pParentArrayPropName = NULL;
 };
 
 class RecvTableManager;
@@ -187,6 +194,8 @@ public:
 
 	void		Construct( RecvProp *pProps, int nProps, const char *pNetTableName );
 
+	RecvTable& operator=(const RecvTable& srcRecvTable);
+
 	int			GetNumProps();
 	RecvProp*	GetProp( int i );
 
@@ -200,26 +209,75 @@ public:
 	void		SetInMainList( bool bInList );
 	bool		IsInMainList() const;
 
+	bool		IsLeaf() {
+		return m_bIsLeaf;
+	}
+
 	void		InitRefRecvTable(RecvTableManager* pRecvTableNanager);
+
+	void		RecvTable_InitTable(RecvTableManager* pRecvTableNanager);
+
+	void		RecvTable_TermTable(RecvTableManager* pRecvTableNanager);
+
+	// objectID gets passed into proxies and can be used to track data on particular objects.
+// NOTE: this function can ONLY decode a buffer outputted from RecvTable_MergeDeltas
+//       or RecvTable_CopyEncoding because if the way it follows the exclude prop bits.
+	bool		RecvTable_Decode(
+		void* pStruct,
+		bf_read* pIn,
+		int objectID,
+		bool updateDTI = true
+	);
+
+	// This acts like a RecvTable_Decode() call where all properties are written and all their values are zero.
+	void RecvTable_DecodeZeros(void* pStruct, int objectID);
+
+	// This writes all pNewState properties into pOut.
+	//
+	// If pOldState is non-null and contains any properties that aren't in pNewState, then
+	// those properties are written to the output as well. Returns # of changed props
+	int RecvTable_MergeDeltas(
+		bf_read* pOldState,		// this can be null
+		bf_read* pNewState,
+
+		bf_write* pOut,
+
+		int objectID = -1,
+
+		int* pChangedProps = NULL,
+
+		bool updateDTI = false // enclude merge from newState in the DTI reports
+	);
+
+
+	// Just copies the bits from the bf_read into the bf_write (this function is used
+	// when you don't know the length of the encoded data).
+	void RecvTable_CopyEncoding(
+		bf_read* pIn,
+		bf_write* pOut,
+		int objectID
+	);
+
 public:
 
 	// Properties described in a table.
-	RecvProp		*m_pProps;
-	int				m_nProps;
+	RecvProp		*m_pProps = NULL;
+	int				m_nProps = 0;
 
 	// The decoder. NOTE: this covers each RecvTable AND all its children (ie: its children
 	// will have their own decoders that include props for all their children).
-	CRecvDecoder	*m_pDecoder;
+	CRecvDecoder	*m_pDecoder = NULL;
 
-	const char		*m_pNetTableName;	// The name matched between client and server.
+	const char		*m_pNetTableName = NULL;	// The name matched between client and server.
 
 
 private:
-
+	bool			m_bIsLeaf = true;
+	bool			m_RefTableInited = false;
 	bool			m_bInitialized;
 	bool			m_bInMainList;
 public:
-	RecvTable* m_pNext;
+	RecvTable* m_pNext = NULL;
 };
 
 
@@ -259,16 +317,29 @@ inline bool RecvTable::IsInMainList() const
 	return m_bInMainList;
 }
 
+class CStandardSendProxies;
+class CClientSendTable;
+struct MatchingProp_t
+{
+	SendProp* m_pProp;
+	RecvProp* m_pMatchingRecvProp;
+
+	static bool LessFunc(const MatchingProp_t& lhs, const MatchingProp_t& rhs)
+	{
+		return lhs.m_pProp < rhs.m_pProp;
+	}
+};
+
 class RecvTableManager {
 public:
 
 	int		GetRecvTablesCount() {
-		return GetRecvTableMap().GetNumStrings();
+		return m_RecvTableMap.GetNumStrings();
 	}
 
 	RecvTable* FindRecvTable(const char* pName) {
-		if (GetRecvTableMap().Defined(pName)) {
-			return GetRecvTableMap()[pName];
+		if (m_RecvTableMap.Defined(pName)) {
+			return m_RecvTableMap[pName];
 		}
 		return NULL;
 	}
@@ -277,54 +348,49 @@ public:
 		return m_pRecvTableHead;
 	}
 
-	void	RegisteRecvTable(RecvTable* pRecvTable) {
+	void	RegisteRecvTable(RecvTable* pRecvTable);
 
-		if (GetRecvTableMap().Defined(pRecvTable->GetName())) {
-			Error("duplicate RecvTable: %s\n", pRecvTable->GetName());	// dedicated servers exit
-		}
-		else {
-			GetRecvTableMap()[pRecvTable->GetName()] = pRecvTable;
-		}
-		if (!m_pRecvTableHead)
-		{
-			m_pRecvTableHead = pRecvTable;
-			pRecvTable->m_pNext = NULL;
-		}
-		else
-		{
-			RecvTable* p1 = m_pRecvTableHead;
-			RecvTable* p2 = p1->m_pNext;
+	// ------------------------------------------------------------------------------------------ //
+// RecvTable functions.
+// ------------------------------------------------------------------------------------------ //
 
-			// use _stricmp because Q_stricmp isn't hooked up properly yet
-			if (_stricmp(p1->GetName(), pRecvTable->GetName()) > 0)
-			{
-				pRecvTable->m_pNext = m_pRecvTableHead;
-				m_pRecvTableHead = pRecvTable;
-				p1 = NULL;
-			}
+// These are the module startup and shutdown routines.
+	bool		RecvTable_Init();
+	void		RecvTable_Term(bool clearall = true);
 
-			while (p1)
-			{
-				if (p2 == NULL || _stricmp(p2->GetName(), pRecvTable->GetName()) > 0)
-				{
-					pRecvTable->m_pNext = p2;
-					p1->m_pNext = pRecvTable;
-					break;
-				}
-				p1 = p2;
-				p2 = p2->m_pNext;
-			}
-		}
-	}
+	//RecvTable* FindRecvTable(const char* pName);
+
+	RecvTable* DataTable_FindRenamedTable(const char* pOldTableName);
+
+	// After ALL the SendTables have been received, call this and it will create CRecvDecoders
+	// for all the SendTable->RecvTable matches it finds.
+	// Returns false if there is an unrecoverable error.
+	//
+	// bAllowMismatches is true when playing demos back so we can change datatables without breaking demos.
+	// If pAnyMisMatches is non-null, it will be set to true if the client's recv tables mismatched the server's ones.
+	bool		RecvTable_CreateDecoders(const CStandardSendProxies* pSendProxies, bool bAllowMismatches, bool* pAnyMismatches = NULL);
+
+	bool DataTable_SetupReceiveTableFromSendTable(SendTable* sendTable, bool bNeedsDecoder);
+
+	//CUtlLinkedList< RecvTable*, unsigned short >& GetRecvTables() {
+	//	return g_RecvTables;
+	//}
 private:
+	bool MatchRecvPropsToSendProps_R(CUtlRBTree< MatchingProp_t, unsigned short >& lookup, char const* sendTableName, SendTable* pSendTable, RecvTable* pRecvTable, bool bAllowMismatches, bool* pAnyMismatches);
+
+	//CClientSendTable* FindClientSendTable(const char* pName);
+
+	bool SetupClientSendTableHierarchy();
+
+	SendTableManager m_SendTableManager;
+	//CUtlLinkedList< RecvTable*, unsigned short > g_RecvTables;
+	CUtlLinkedList< CRecvDecoder*, unsigned short > g_RecvDecoders;
+	//CUtlLinkedList< CClientSendTable*, unsigned short > g_ClientSendTables;
 	RecvTable* m_pRecvTableHead = NULL;
-	CUtlStringMap< RecvTable* >& GetRecvTableMap() {
-		static CUtlStringMap< RecvTable* >	s_RecvTableMap;
-		return s_RecvTableMap;
-	}
+	CUtlStringMap< RecvTable* >	m_RecvTableMap;
 };
 
-extern RecvTableManager* g_pRecvTableManager;
+RecvTableManager* GetRecvTableManager();
 
 int TestRevFunction();
 
@@ -381,7 +447,7 @@ int TestRevFunction();
 //#define END_RECV_TABLE(tableName) \
 //				};\
 //				Construct(g_RecvProps+1, sizeof(g_RecvProps) / sizeof(RecvProp) - 1, pTableName);\
-//				g_pRecvTableManager->RegisteRecvTable(this);\
+//				GetRecvTableManager()->RegisteRecvTable(this);\
 //			}\
 //		}\
 //	\
@@ -409,15 +475,15 @@ int TestRevFunction();
 #define BEGIN_RECV_TABLE_NOBASE(className, tableName) \
 			{\
 				typedef className currentRecvDTClass;\
-				static RecvTable g_RecvTable;		\
-				static const char *pTableName = #tableName; \
-				static RecvProp g_RecvProps[] = { \
+				const char *pTableName = #tableName; \
+				RecvProp pRecvProps[] = { \
 					RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
 
 #define END_RECV_TABLE(tableName) \
-											};\
-				g_RecvTable.Construct(g_RecvProps+1, sizeof(g_RecvProps) / sizeof(RecvProp) - 1, pTableName);\
-				g_pRecvTableManager->RegisteRecvTable(&g_RecvTable);\
+										};\
+				RecvTable pRecvTable;		\
+				pRecvTable.Construct(pRecvProps+1, sizeof(pRecvProps) / sizeof(RecvProp) - 1, pTableName);\
+				GetRecvTableManager()->RegisteRecvTable(&pRecvTable);\
 			};
 
 #define BEGIN_RECV_TABLE(className, tableName, baseTableName) \
@@ -641,11 +707,6 @@ inline void RecvProp::SetDataTableName(const char* pTableName)
 inline RecvTable* RecvProp::GetDataTable() const 
 {
 	return m_pDataTable; 
-}
-
-inline void RecvProp::SetDataTable( RecvTable *pTable )
-{
-	m_pDataTable = pTable; 
 }
 
 inline RecvVarProxyFn RecvProp::GetProxyFn() const 

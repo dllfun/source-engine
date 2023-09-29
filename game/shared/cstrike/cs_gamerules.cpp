@@ -668,7 +668,7 @@ ConVar cl_autohelp(
 			g_Teams.AddToTail( pTeam );
 		}
 
-		if ( filesystem->FileExists( UTIL_VarArgs( "maps/cfg/%s.cfg", STRING(gpGlobals->mapname) ) ) )
+		if (g_pFileSystem->FileExists( UTIL_VarArgs( "maps/cfg/%s.cfg", STRING(gpGlobals->mapname) ) ) )
 		{
 			// Execute a map specific cfg file - as in Day of Defeat
 			// Map names cannot contain quotes or control characters so this is safe but silly that we have to do it.

@@ -28,7 +28,7 @@
 #include "filesystem.h"
 #include <stdarg.h>
 
-extern IFileSystem *filesystem;
+extern IFileSystem * g_pFileSystem;
 
 #ifndef CLIENT_DLL
 	#include "env_player_surface_trigger.h"
@@ -537,11 +537,11 @@ void COM_Log( char *pszFile, const char *fmt, ...)
 	Q_vsnprintf(string, sizeof( string ), fmt,argptr);
 	va_end (argptr);
 
-	fp = filesystem->Open( pfilename, "a+t");
+	fp = g_pFileSystem->Open( pfilename, "a+t");
 	if (fp)
 	{
-		filesystem->FPrintf(fp, "%s", string);
-		filesystem->Close(fp);
+		g_pFileSystem->FPrintf(fp, "%s", string);
+		g_pFileSystem->Close(fp);
 	}
 }
 #endif

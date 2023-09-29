@@ -233,7 +233,7 @@ void SixenseGestureBindings::WriteBindings( CUtlString filename_str )
 	}
 
 	Msg("writing bindings to %s\n", filename );
-	hFile = filesystem->Open( filename, "wt" );	
+	hFile = g_pFileSystem->Open( filename, "wt" );
 
 	if( !hFile )
 	{
@@ -252,13 +252,13 @@ void SixenseGestureBindings::WriteBindings( CUtlString filename_str )
 		if( HandTokenToStr( binding.m_iHand, strbuf, strbuflen ) )
 		{
 			Q_snprintf( writebuf, strbuflen, "sixense_bind \"%s\"", strbuf);
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
+			g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 		}
 
 		if( ActionTokenToStr( (sixenseUtils::IButtonStates::ActionType)binding.m_Action, strbuf, strbuflen ) )
 		{
 			Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf);
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
+			g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 		}
 
 		if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS ) {
@@ -266,7 +266,7 @@ void SixenseGestureBindings::WriteBindings( CUtlString filename_str )
 			if( ButtonTokenToStr( binding.m_iArgument, strbuf, strbuflen ) )
 			{
 				Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf);
-				filesystem->Write( writebuf, strlen(writebuf), hFile );
+				g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 			}
 
 		}
@@ -281,28 +281,28 @@ void SixenseGestureBindings::WriteBindings( CUtlString filename_str )
 			if( DirectionTokenToStr( binding.m_iArgument, strbuf, strbuflen ) )
 			{
 				Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf);
-				filesystem->Write( writebuf, strlen(writebuf), hFile );
+				g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 			}
 
 		} else if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS ) 
 		{
 			Q_snprintf( writebuf, strbuflen, " \"\""); // no argument
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
+			g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 		}
 
 		Q_snprintf( writebuf, strbuflen, " \"%s\"", binding.m_pActivateCommand);
-		filesystem->Write( writebuf, strlen(writebuf), hFile );
+		g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 		if( binding.m_pDeactivateCommand && !binding.m_bAutoMirrored ) // only print deactivated command if we didn't generate it.
 		{
 			Q_snprintf( writebuf, strbuflen, " \"%s\"", binding.m_pDeactivateCommand);
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
+			g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 		} 
 
 		Q_snprintf( writebuf, strbuflen, "\n");
-		filesystem->Write( writebuf, strlen(writebuf), hFile );
+		g_pFileSystem->Write( writebuf, strlen(writebuf), hFile );
 	}
 
-	filesystem->Close( hFile );
+	g_pFileSystem->Close( hFile );
 }
 
 // Erase all the bindings. Right now this will cause code in in_sixense.cpp to detect the lack of bindings and immediately

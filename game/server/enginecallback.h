@@ -31,7 +31,7 @@ class CSteamGameServerAPIContext;
 
 extern IVEngineServer			*engineServer;
 extern IVoiceServer				*g_pVoiceServer;
-extern IFileSystem				*filesystem;
+extern IFileSystem				* g_pFileSystem;
 extern IStaticPropMgrServer		*staticpropmgr;
 extern ISpatialPartition		*partition;
 extern IEngineSound				*enginesound;

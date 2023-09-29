@@ -114,7 +114,7 @@ void CHLTVClientState::CopyNewEntity(
 	}
 
 	// create new ChangeFrameList containing all properties set as changed
-	int nFlatProps = SendTable_GetNumFlatProps( pServerClass->GetDataTable() );
+	int nFlatProps = pServerClass->GetDataTable()->SendTable_GetNumFlatProps(  );
 	IChangeFrameList *pChangeFrame = NULL;
 	
 	if ( !m_bSaveMemory )
@@ -135,7 +135,7 @@ void CHLTVClientState::CopyNewEntity(
 	int changedProps[MAX_DATATABLE_PROPS];
 	
 	// decode basline, is compressed against zero values 
-	int nChangedProps = RecvTable_MergeDeltas( pClientClass->GetDataTable(), &fromBuf,
+	int nChangedProps = pClientClass->GetDataTable()->RecvTable_MergeDeltas(  &fromBuf,
 		u.m_pBuf, &writeBuf, -1, changedProps );
 
 	// update change tick in ChangeFrameList
@@ -264,7 +264,7 @@ void CHLTVClientState::SendClientInfo( void )
 {
 	CLC_ClientInfo info;
 	
-	info.m_nSendTableCRC = SendTable_GetCRC();
+	info.m_nSendTableCRC = serverGameDLL->GetSendTableManager()->SendTable_GetCRC();
 	info.m_nServerCount = m_nServerCount;
 	info.m_bIsHLTV = true;
 #if defined( REPLAY_ENABLED )
@@ -414,7 +414,7 @@ bool CHLTVClientState::ProcessClassInfo( SVC_ClassInfo *msg )
 	bool bAllowMismatches = ( demoplayer && demoplayer->IsPlayingBack() );
 #endif // DEDICATED
 
-	if ( !RecvTable_CreateDecoders( serverGameDLL->GetStandardSendProxies(), bAllowMismatches ) ) // create receive table decoders
+	if ( !g_ClientDLL->GetRecvTableManager()->RecvTable_CreateDecoders( serverGameDLL->GetStandardSendProxies(), bAllowMismatches ) ) // create receive table decoders
 	{
 		g_pHost->Host_EndGame( true, "CL_ParseClassInfo_EndClasses: CreateDecoders failed.\n" );
 		return false;
@@ -748,7 +748,7 @@ void CHLTVClientState::ReadDeltaEnt( CEntityReadInfo &u )
 	int changedProps[MAX_DATATABLE_PROPS];
 	
 	// decode baseline, is compressed against zero values 
-	int nChangedProps = RecvTable_MergeDeltas( pToPackedEntity->m_pClientClass->GetDataTable(),
+	int nChangedProps = pToPackedEntity->m_pClientClass->GetDataTable()->RecvTable_MergeDeltas(
 		&fromBuf, u.m_pBuf, &writeBuf, -1, changedProps, false );
 
 	// update change tick in ChangeFrameList

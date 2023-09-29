@@ -1122,7 +1122,7 @@ bool CNavMesh::Save( void ) const
 	
 	// store the size of source bsp file in the nav file
 	// so we can test if the bsp changed since the nav file was made
-	unsigned int bspSize = filesystem->Size( bspFilename );
+	unsigned int bspSize = g_pFileSystem->Size( bspFilename );
 	DevMsg( "Size of bsp file '%s' is %u bytes.\n", bspFilename, bspSize );
 
 	fileBuffer.PutUnsignedInt( bspSize );
@@ -1185,13 +1185,13 @@ bool CNavMesh::Save( void ) const
 	//
 	SaveCustomData( fileBuffer );
 
-	if ( !filesystem->WriteFile( filename, "MOD", fileBuffer ) )
+	if ( !g_pFileSystem->WriteFile( filename, "MOD", fileBuffer ) )
 	{
 		Warning( "Unable to save %d bytes to %s\n", fileBuffer.Size(), filename );
 		return false;
 	}
 
-	unsigned int navSize = filesystem->Size( filename );
+	unsigned int navSize = g_pFileSystem->Size( filename );
 	DevMsg( "Size of nav file '%s' is %u bytes.\n", filename, navSize );
 
 	return true;
@@ -1212,11 +1212,11 @@ static NavErrorType CheckNavFile( const char *bspFilename )
 	Q_snprintf(filename,sizeof(filename), FORMAT_NAVFILE, baseName);
 
 	bool navIsInBsp = false;
-	FileHandle_t file = filesystem->Open( filename, "rb", "MOD" );	// this ignores .nav files embedded in the .bsp ...
+	FileHandle_t file = g_pFileSystem->Open( filename, "rb", "MOD" );	// this ignores .nav files embedded in the .bsp ...
 	if ( !file )
 	{
 		navIsInBsp = true;
-		file = filesystem->Open( filename, "rb", "GAME" );	// ... and this looks for one if it's the only one around.
+		file = g_pFileSystem->Open( filename, "rb", "GAME" );	// ... and this looks for one if it's the only one around.
 	}
 
 	if (!file)
@@ -1227,28 +1227,28 @@ static NavErrorType CheckNavFile( const char *bspFilename )
 	// check magic number
 	int result;
 	unsigned int magic;
-	result = filesystem->Read( &magic, sizeof(unsigned int), file );
+	result = g_pFileSystem->Read( &magic, sizeof(unsigned int), file );
 	if (!result || magic != NAV_MAGIC_NUMBER)
 	{
-		filesystem->Close( file );
+		g_pFileSystem->Close( file );
 		return NAV_INVALID_FILE;
 	}
 
 	// read file version number
 	unsigned int version;
-	result = filesystem->Read( &version, sizeof(unsigned int), file );
+	result = g_pFileSystem->Read( &version, sizeof(unsigned int), file );
 	if (!result || version > NavCurrentVersion || version < 4)
 	{
-		filesystem->Close( file );
+		g_pFileSystem->Close( file );
 		return NAV_BAD_FILE_VERSION;
 	}
 
 	// get size of source bsp file and verify that the bsp hasn't changed
 	unsigned int saveBspSize;
-	filesystem->Read( &saveBspSize, sizeof(unsigned int), file );
+	g_pFileSystem->Read( &saveBspSize, sizeof(unsigned int), file );
 
 	// verify size
-	unsigned int bspSize = filesystem->Size( bspPathname );
+	unsigned int bspSize = g_pFileSystem->Size( bspPathname );
 
 	if (bspSize != saveBspSize && !navIsInBsp)
 	{
@@ -1266,7 +1266,7 @@ void CommandNavCheckFileConsistency( void )
 		return;
 
 	FileFindHandle_t findHandle;
-	const char *bspFilename = filesystem->FindFirstEx( "maps/*.bsp", "MOD", &findHandle );
+	const char *bspFilename = g_pFileSystem->FindFirstEx( "maps/*.bsp", "MOD", &findHandle );
 	while ( bspFilename )
 	{
 		switch ( CheckNavFile( bspFilename ) )
@@ -1288,9 +1288,9 @@ void CommandNavCheckFileConsistency( void )
 			break;
 		}
 
-		bspFilename = filesystem->FindNext( findHandle );
+		bspFilename = g_pFileSystem->FindNext( findHandle );
 	}
-	filesystem->FindClose( findHandle );
+	g_pFileSystem->FindClose( findHandle );
 }
 static ConCommand nav_check_file_consistency( "nav_check_file_consistency", CommandNavCheckFileConsistency, "Scans the maps directory and reports any missing/out-of-date navigation files.", FCVAR_GAMEDLL | FCVAR_CHEAT );
 
@@ -1307,9 +1307,9 @@ const CUtlVector< Place > *CNavMesh::GetPlacesFromNavFile( bool *hasUnnamedPlace
 	Q_snprintf( filename, sizeof( filename ), FORMAT_NAVFILE, STRING( gpGlobals->mapname ) );
 
 	CUtlBuffer fileBuffer( 4096, 1024*1024, CUtlBuffer::READ_ONLY );
-	if ( !filesystem->ReadFile( filename, "GAME", fileBuffer ) )	// this ignores .nav files embedded in the .bsp ...
+	if ( !g_pFileSystem->ReadFile( filename, "GAME", fileBuffer ) )	// this ignores .nav files embedded in the .bsp ...
 	{
-		if ( !filesystem->ReadFile( filename, "BSP", fileBuffer ) )	// ... and this looks for one if it's the only one around.
+		if ( !g_pFileSystem->ReadFile( filename, "BSP", fileBuffer ) )	// ... and this looks for one if it's the only one around.
 		{
 			return NULL;
 		}
@@ -1399,10 +1399,10 @@ NavErrorType CNavMesh::Load( void )
 
 	bool navIsInBsp = false;
 	CUtlBuffer fileBuffer( 4096, 1024*1024, CUtlBuffer::READ_ONLY );
-	if ( !filesystem->ReadFile( filename, "MOD", fileBuffer ) )	// this ignores .nav files embedded in the .bsp ...
+	if ( !g_pFileSystem->ReadFile( filename, "MOD", fileBuffer ) )	// this ignores .nav files embedded in the .bsp ...
 	{
 		navIsInBsp = true;
-		if ( !filesystem->ReadFile( filename, "BSP", fileBuffer ) )	// ... and this looks for one if it's the only one around.
+		if ( !g_pFileSystem->ReadFile( filename, "BSP", fileBuffer ) )	// ... and this looks for one if it's the only one around.
 		{
 			return NAV_CANT_ACCESS_FILE;
 		}
@@ -1460,7 +1460,7 @@ NavErrorType CNavMesh::Load( void )
 			return NAV_INVALID_FILE;
 		}
 
-		unsigned int bspSize = filesystem->Size( bspFilename );
+		unsigned int bspSize = g_pFileSystem->Size( bspFilename );
 
 		if ( bspSize != saveBspSize && !navIsInBsp )
 		{

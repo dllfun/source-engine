@@ -1178,7 +1178,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		DetermineMapCycleFilename( mapcfile, sizeof(mapcfile), false );
 
 		// Check the time of the mapcycle file and re-populate the list of level names if the file has been modified
-		const int nMapCycleTimeStamp = filesystem->GetPathTime( mapcfile, "GAME" );
+		const int nMapCycleTimeStamp = g_pFileSystem->GetPathTime( mapcfile, "GAME" );
 
 		if ( 0 == nMapCycleTimeStamp )
 		{
@@ -1238,7 +1238,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 
 		// First, look for a mapcycle file in the cfg directory, which is preferred
 		V_strncpy( pszResult, szRecommendedName, nSizeResult );
-		if ( filesystem->FileExists( pszResult, "GAME" ) )
+		if ( g_pFileSystem->FileExists( pszResult, "GAME" ) )
 		{
 			if ( bForceSpew || V_stricmp( szLastResult, pszResult) )
 			{
@@ -1250,7 +1250,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 
 		// Nope?  Try the root.
 		V_strncpy( pszResult, pszVar, nSizeResult );
-		if ( filesystem->FileExists( pszResult, "GAME" ) )
+		if ( g_pFileSystem->FileExists( pszResult, "GAME" ) )
 		{
 			if ( bForceSpew || V_stricmp( szLastResult, pszResult) )
 			{
@@ -1264,7 +1264,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		if ( !V_stricmp( pszVar, "mapcycle.txt" ) )
 		{
 			V_strncpy( pszResult, "cfg/mapcycle_default.txt", nSizeResult );
-			if ( filesystem->FileExists( pszResult, "GAME" ) )
+			if ( g_pFileSystem->FileExists( pszResult, "GAME" ) )
 			{
 				if ( bForceSpew || V_stricmp( szLastResult, pszResult) )
 				{
@@ -1287,7 +1287,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	void CMultiplayRules::LoapMapCycleFileIntoVector( const char *pszMapCycleFile, CUtlVector<char *> &mapList )
 	{
 		CUtlBuffer buf;
-		if ( !filesystem->ReadFile( pszMapCycleFile, "GAME", buf ) )
+		if ( !g_pFileSystem->ReadFile( pszMapCycleFile, "GAME", buf ) )
 			return;
 		buf.PutChar( 0 );
 		V_SplitString( (char*)buf.Base(), "\n", mapList );
@@ -1395,14 +1395,14 @@ ConVarRef suitcharger( "sk_suitcharger" );
 			V_snprintf( szBaseName, sizeof( szBaseName ), "scripts/population/%s*.pop", STRING(gpGlobals->mapname) );
 
 			FileFindHandle_t popHandle;
-			const char *pPopFileName = filesystem->FindFirst( szBaseName, &popHandle );
+			const char *pPopFileName = g_pFileSystem->FindFirst( szBaseName, &popHandle );
 
 			while ( pPopFileName && pPopFileName[ 0 ] != '\0' )
 			{
 				// Skip it if it's a directory or is the folder info
-				if ( filesystem->FindIsDirectory( popHandle ) )
+				if ( g_pFileSystem->FindIsDirectory( popHandle ) )
 				{
-					pPopFileName = filesystem->FindNext( popHandle );
+					pPopFileName = g_pFileSystem->FindNext( popHandle );
 					continue;
 				}
 
@@ -1417,10 +1417,10 @@ ConVarRef suitcharger( "sk_suitcharger" );
 					sFileList += '\n';
 				}
 
-				pPopFileName = filesystem->FindNext( popHandle );
+				pPopFileName = g_pFileSystem->FindNext( popHandle );
 			}
 
-			filesystem->FindClose( popHandle );
+			g_pFileSystem->FindClose( popHandle );
 
 			if ( sFileList.Length() > 0 )
 			{
@@ -1508,7 +1508,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	{
 		KeyValues *pKV = new KeyValues( "VoiceCommands" );
 
-		if ( pKV->LoadFromFile( filesystem, "scripts/voicecommands.txt", "GAME" ) )
+		if ( pKV->LoadFromFile( g_pFileSystem, "scripts/voicecommands.txt", "GAME" ) )
 		{
 			for ( KeyValues *menu = pKV->GetFirstSubKey(); menu != NULL; menu = menu->GetNextKey() )
 			{

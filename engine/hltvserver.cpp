@@ -354,7 +354,7 @@ void CHLTVServer::InitClientRecvTables()
 		}
 	}
 
-	RecvTable_Init( m_pRecvTables, m_nRecvTables );
+	g_ClientDLL->GetRecvTableManager()->RecvTable_Init();// m_pRecvTables, m_nRecvTables 
 }
 
 
@@ -481,7 +481,7 @@ CHLTVServer::~CHLTVServer()
 {
 	if ( m_nRecvTables > 0 )
 	{
-		RecvTable_Term();
+		g_ClientDLL->GetRecvTableManager()->RecvTable_Term();
 		FreeClientRecvTables();
 	}
 

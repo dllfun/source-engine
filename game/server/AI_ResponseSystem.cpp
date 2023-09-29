@@ -780,7 +780,7 @@ void CResponseSystem::GetCurrentScript( char *buf, size_t buflen )
 	if ( m_ScriptStack.Count() <= 0 )
 		return;
 	
-	if ( filesystem->String( m_ScriptStack[ 0 ].name, buf, buflen ) )
+	if (g_pFileSystem->String( m_ScriptStack[ 0 ].name, buf, buflen ) )
 	{
 		return;
 	}
@@ -790,7 +790,7 @@ void CResponseSystem::GetCurrentScript( char *buf, size_t buflen )
 void CResponseSystem::PushScript( const char *scriptfile, unsigned char *buffer )
 {
 	ScriptEntry e;
-	e.name = filesystem->FindOrAddFileName( scriptfile );
+	e.name = g_pFileSystem->FindOrAddFileName( scriptfile );
 	e.buffer = buffer;
 	e.currenttoken = (char *)e.buffer;
 	e.tokencount = 0;
@@ -1820,7 +1820,7 @@ void CResponseSystem::GetAllResponses( CUtlVector<AI_Response *> *pResponses )
 
 static void TouchFile( char const *pchFileName )
 {
-	filesystem->Size( pchFileName );
+	g_pFileSystem->Size( pchFileName );
 }
 
 //-----------------------------------------------------------------------------
@@ -1908,7 +1908,7 @@ void CResponseSystem::ParseInclude( CStringPool &includedFiles )
 
 	// Try and load it
 	CUtlBuffer buf;
-	if ( !filesystem->ReadFile( includefile, "GAME", buf ) )
+	if ( !g_pFileSystem->ReadFile( includefile, "GAME", buf ) )
 	{
 		DevMsg( "Unable to load #included script %s\n", includefile );
 		return;

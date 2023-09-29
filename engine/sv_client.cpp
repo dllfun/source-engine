@@ -939,9 +939,9 @@ bool CGameClient::SendSignonData( void )
 		return false;
 	}
 
-	if ( SendTable_GetCRC() != (CRC32_t)0 )
+	if (serverGameDLL->GetSendTableManager()->SendTable_GetCRC() != (CRC32_t)0 )
 	{
-		bClientHasdifferentTables =  m_nSendtableCRC != SendTable_GetCRC();
+		bClientHasdifferentTables =  m_nSendtableCRC != serverGameDLL->GetSendTableManager()->SendTable_GetCRC();
 	}
 
 #ifdef _DEBUG

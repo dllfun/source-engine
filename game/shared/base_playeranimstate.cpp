@@ -956,9 +956,9 @@ void CBasePlayerAnimState::AnimStateLog( const char *pMsg, ... )
 #else
 		const char *fname = "AnimStateServer.log";
 #endif
-		static FileHandle_t hFile = filesystem->Open( fname, "wt" );
-		filesystem->FPrintf( hFile, "%s", str );
-		filesystem->Flush( hFile );
+		static FileHandle_t hFile = g_pFileSystem->Open( fname, "wt" );
+		g_pFileSystem->FPrintf( hFile, "%s", str );
+		g_pFileSystem->Flush( hFile );
 	}
 }
 

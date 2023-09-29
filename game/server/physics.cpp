@@ -178,7 +178,7 @@ bool CPhysicsHook::Init( void )
 		)
 		return false;
 
-	PhysParseSurfaceData( physprops, filesystem );
+	PhysParseSurfaceData( physprops, g_pFileSystem);
 
 	m_isFinalTick = true;
 	m_impactSoundTime = 0;
@@ -2910,7 +2910,7 @@ void DumpCollideToGlView( CPhysCollide *pCollide, const Vector &origin, const QA
 	printf("Writing %s...\n", pFilename );
 	Vector *outVerts;
 	int vertCount = physcollision->CreateDebugMesh( pCollide, &outVerts );
-	FileHandle_t fp = filesystem->Open( pFilename, "ab" );
+	FileHandle_t fp = g_pFileSystem->Open( pFilename, "ab" );
 	int triCount = vertCount / 3;
 	int vert = 0;
 	VMatrix tmp = SetupMatrixOrgAngles( origin, angles );
@@ -2921,15 +2921,15 @@ void DumpCollideToGlView( CPhysCollide *pCollide, const Vector &origin, const QA
 	}
 	for ( i = 0; i < triCount; i++ )
 	{
-		filesystem->FPrintf( fp, "3\n" );
-		filesystem->FPrintf( fp, "%6.3f %6.3f %6.3f 1 0 0\n", outVerts[vert].x, outVerts[vert].y, outVerts[vert].z );
+		g_pFileSystem->FPrintf( fp, "3\n" );
+		g_pFileSystem->FPrintf( fp, "%6.3f %6.3f %6.3f 1 0 0\n", outVerts[vert].x, outVerts[vert].y, outVerts[vert].z );
 		vert++;
-		filesystem->FPrintf( fp, "%6.3f %6.3f %6.3f 0 1 0\n", outVerts[vert].x, outVerts[vert].y, outVerts[vert].z );
+		g_pFileSystem->FPrintf( fp, "%6.3f %6.3f %6.3f 0 1 0\n", outVerts[vert].x, outVerts[vert].y, outVerts[vert].z );
 		vert++;
-		filesystem->FPrintf( fp, "%6.3f %6.3f %6.3f 0 0 1\n", outVerts[vert].x, outVerts[vert].y, outVerts[vert].z );
+		g_pFileSystem->FPrintf( fp, "%6.3f %6.3f %6.3f 0 0 1\n", outVerts[vert].x, outVerts[vert].y, outVerts[vert].z );
 		vert++;
 	}
-	filesystem->Close( fp );
+	g_pFileSystem->Close( fp );
 	physcollision->DestroyDebugMesh( vertCount, outVerts );
 }
 #endif

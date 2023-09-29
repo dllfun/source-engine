@@ -1333,8 +1333,7 @@ const char *CBaseServer::CompressPackedEntity(ServerClass *pServerClass, const c
 
 	Assert( pBaselineData != NULL );
 
-	SendTable_WriteAllDeltaProps(
-		pServerClass->GetDataTable(),
+	pServerClass->GetDataTable()->SendTable_WriteAllDeltaProps(
 		pBaselineData,
 		nBaselineBits,
 		data,
@@ -1376,8 +1375,7 @@ const char* CBaseServer::UncompressPackedEntity(PackedEntity *pPackedEntity, int
 
 	Assert( pPackedEntity->m_pClientClass );
 
-	RecvTable_MergeDeltas( 
-		pPackedEntity->m_pClientClass->GetDataTable(),
+	pPackedEntity->m_pClientClass->GetDataTable()->RecvTable_MergeDeltas(	
 		&oldBuf,
 		&newBuf,
 		&outBuf );
@@ -2332,7 +2330,7 @@ void CBaseServer::WriteTempEntities( CBaseClient *client, CFrameSnapshot *pCurre
 
 			int startBit = bDebug ? buffer.GetNumBitsWritten() : 0;
 
-			SendTable_WriteAllDeltaProps( event->pSendTable, 
+			((SendTable*)event->pSendTable)->SendTable_WriteAllDeltaProps(
 				pLastEvent->pData,
 				pLastEvent->bits,
 				event->pData,
@@ -2358,7 +2356,7 @@ void CBaseServer::WriteTempEntities( CBaseClient *client, CFrameSnapshot *pCurre
 
 			if ( IsMultiplayer() )
 			{
-				SendTable_WriteAllDeltaProps( event->pSendTable, 
+				((SendTable*)event->pSendTable)->SendTable_WriteAllDeltaProps(
 					NULL,	// will write only non-zero elements
 					0,
 					event->pData,

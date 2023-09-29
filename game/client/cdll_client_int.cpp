@@ -188,7 +188,7 @@ IDataCache *datacache = NULL;
 IEngineVGui *enginevgui = NULL;
 INetworkStringTableContainer *networkstringtable = NULL;
 ISpatialPartition* partition = NULL;
-IFileSystem *filesystem = NULL;
+IFileSystem * g_pFileSystem = NULL;
 IShadowMgr *shadowmgr = NULL;
 IStaticPropMgrClient *staticpropmgr = NULL;
 IEngineSound *enginesound = NULL;
@@ -612,6 +612,8 @@ public:
 
 	virtual ClientClassManager*		GetClientClassManager( void );
 
+	virtual RecvTableManager* GetRecvTableManager();
+
 	virtual IClientEntityFactoryDictionary* EntityFactoryDictionary();
 
 	virtual int						HudVidInit( void );
@@ -911,7 +913,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 	if ( (enginesound = (IEngineSound *)appSystemFactory(IENGINESOUND_CLIENT_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
-	if ( (filesystem = (IFileSystem *)appSystemFactory(FILESYSTEM_INTERFACE_VERSION, NULL)) == NULL )
+	if ( (g_pFileSystem = (IFileSystem *)appSystemFactory(FILESYSTEM_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
 	if ( (random = (IUniformRandomStream *)appSystemFactory(VENGINE_CLIENT_RANDOM_INTERFACE_VERSION, NULL)) == NULL )
 		return false;
@@ -1340,15 +1342,23 @@ bool CHLClient::ShouldDrawDropdownConsole()
 //-----------------------------------------------------------------------------
 ClientClassManager* CHLClient::GetClientClassManager( void )
 {
-	for (RecvTable* pCur = g_pRecvTableManager->GetRecvTableHead(); pCur; pCur = pCur->m_pNext)
+	for (RecvTable* pCur = ::GetRecvTableManager()->GetRecvTableHead(); pCur; pCur = pCur->m_pNext)
 	{
-		pCur->InitRefRecvTable(g_pRecvTableManager);
+		pCur->InitRefRecvTable(::GetRecvTableManager());
 	}
 	for (ClientClass* pCur = g_pClientClassManager->GetClientClassHead(); pCur; pCur = pCur->GetNext())
 	{
-		pCur->InitRefRecvTable(g_pRecvTableManager);
+		pCur->InitRefRecvTable(::GetRecvTableManager());
 	}
 	return g_pClientClassManager;
+}
+
+RecvTableManager* CHLClient::GetRecvTableManager() {
+	for (RecvTable* pCur = ::GetRecvTableManager()->GetRecvTableHead(); pCur; pCur = pCur->m_pNext)
+	{
+		pCur->InitRefRecvTable(::GetRecvTableManager());
+	}
+	return ::GetRecvTableManager();
 }
 
 IClientEntityFactoryDictionary* CHLClient::EntityFactoryDictionary() {

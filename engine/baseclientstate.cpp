@@ -15,6 +15,7 @@
 #include "cl_main.h"
 #include "net.h"
 #include "dt_recv_eng.h"
+#include "dt_common_eng.h";
 #include "ents_shared.h"
 #include "net_synctags.h"
 #include "filesystem_engine.h"
@@ -352,7 +353,7 @@ void CBaseClientState::Clear( void )
 
 	FreeEntityBaselines();
 
-	RecvTable_Term( false );
+	g_ClientDLL->GetRecvTableManager()->RecvTable_Term( false );
 
 	if ( m_NetChannel ) 
 		m_NetChannel->Reset();

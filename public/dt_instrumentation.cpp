@@ -19,17 +19,16 @@
 #include "tier1/utlstring.h"
 #include "dt_recv_decoder.h"
 #include "filesystem.h"
-#include "filesystem_engine.h"
+//#include "filesystem_engine.h"
 #include "cdll_int.h"
-#include "client.h"
-#include "common.h"
+//#include "client.h"
+//#include "common.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 bool g_bDTIEnabled = false;
 const char *g_pDTIFilename;
-
 
 class CDTIProp
 {

@@ -50,7 +50,7 @@ char* CmdLib_FGets( char *pOut, int outSize, FileHandle_t hFile );
 // but doesn't actually printf the output.
 extern bool g_bSuppressPrintfOutput;
 
-extern IBaseFileSystem *g_pFileSystem;
+extern IFileSystem *g_pFileSystem;
 
 // These call right into the functions in filesystem_tools.h
 void				CmdLib_InitFileSystem( const char *pFilename, int maxMemoryUsage = 0 );

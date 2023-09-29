@@ -114,7 +114,7 @@ void ConnectHaptics(CreateInterfaceFn appFactory)
 					gpGlobals,
 					appFactory,
 					g_pVGuiInput->GetIMEWindow(),
-					filesystem,
+					g_pFileSystem,
 					enginevgui,
 					ActivityList_IndexForName,
 					ActivityList_NameForIndex))

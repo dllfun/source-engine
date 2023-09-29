@@ -92,7 +92,7 @@ public:
 public:
 	
 	RecvTable			*m_pTable;
-	CClientSendTable	*m_pClientSendTable;
+	SendTable			*m_pSendTable;
 
 	// This is from the data that we've received from the server.
 	CSendTablePrecalc	m_Precalc;

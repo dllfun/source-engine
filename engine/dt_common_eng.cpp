@@ -15,6 +15,8 @@
 #include "eiface.h"
 #include "demo.h"
 #include "sv_packedentities.h"
+#include "cdll_engine_int.h"
+#include "dt_common_eng.h";
 
 #ifndef DEDICATED
 #include "renamed_recvtable_compat.h"
@@ -23,136 +25,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern CUtlLinkedList< CClientSendTable*, unsigned short > g_ClientSendTables;
-extern CUtlLinkedList< CRecvDecoder *, unsigned short > g_RecvDecoders;
-
-RecvTable* FindRecvTable( const char *pName );
-
-RecvTable *DataTable_FindRenamedTable( const char *pOldTableName )
-{
-#ifdef DEDICATED
-	return NULL;
-#else
-	extern IBaseClientDLL *g_ClientDLL;
-	if ( !g_ClientDLL )
-		return NULL;
-
-	// Get the renamed receive table list from the client DLL and see if we can find
-	// a new name (assuming it was renamed at all).
-	const CRenamedRecvTableInfo *pCur = g_ClientDLL->GetRenamedRecvTableInfos();
-
-	// This should be a very short list, so we'll do string compares until 2020 when
-	// someone finds this code and the list has grown to 10,000.
-	while ( pCur && pCur->m_pOldName && pCur->m_pNewName )
-	{
-		if ( !V_stricmp( pCur->m_pOldName, pOldTableName ) )
-		{
-			return FindRecvTable( pCur->m_pNewName );
-		}
-
-		pCur = pCur->m_pNext;
-	}
-
-	return NULL;
-#endif
-}
-
-bool DataTable_SetupReceiveTableFromSendTable( SendTable *sendTable, bool bNeedsDecoder )
-{
-	CClientSendTable *pClientSendTable = new CClientSendTable;
-	SendTable *pTable = &pClientSendTable->m_SendTable;
-	g_ClientSendTables.AddToTail( pClientSendTable );
-
-	// Read the name.
-	pTable->m_pNetTableName = COM_StringCopy( sendTable->m_pNetTableName );
-
-	// Create a decoder for it if necessary.
-	if ( bNeedsDecoder )
-	{
-		// Make a decoder for it.
-		CRecvDecoder *pDecoder = new CRecvDecoder;
-		g_RecvDecoders.AddToTail( pDecoder );
-		
-		RecvTable *pRecvTable = FindRecvTable( pTable->m_pNetTableName );
-		if ( !pRecvTable )
-		{
-			// Attempt to find a renamed version of the table.
-			pRecvTable = DataTable_FindRenamedTable( pTable->m_pNetTableName );
-			if ( !pRecvTable )
-			{
-				DataTable_Warning( "No matching RecvTable for SendTable '%s'.\n", pTable->m_pNetTableName );
-				return false;
-			}
-		}
-
-		pRecvTable->m_pDecoder = pDecoder;
-		pDecoder->m_pTable = pRecvTable;
-
-		pDecoder->m_pClientSendTable = pClientSendTable;
-		pDecoder->m_Precalc.m_pSendTable = pClientSendTable->GetSendTable();
-		pClientSendTable->GetSendTable()->m_pPrecalc = &pDecoder->m_Precalc;
-
-		// Initialize array properties.
-		SetupArrayProps_R<RecvTable, RecvTable::PropType>( pRecvTable );
-	}
-
-	// Read the property list.
-	pTable->m_nProps = sendTable->m_nProps;
-	pTable->m_pProps = pTable->m_nProps ? new SendProp[ pTable->m_nProps ] : 0;
-	pClientSendTable->m_Props.SetSize( pTable->m_nProps );
-
-	for ( int iProp=0; iProp < pTable->m_nProps; iProp++ )
-	{
-		CClientSendProp *pClientProp = &pClientSendTable->m_Props[iProp];
-		SendProp *pProp = &pTable->m_pProps[iProp];
-		const SendProp *pSendTableProp = &sendTable->m_pProps[ iProp ];
-
-		pProp->m_Type = (SendPropType)pSendTableProp->m_Type;
-		pProp->m_pVarName = COM_StringCopy( pSendTableProp->GetName() );
-		pProp->SetFlags( pSendTableProp->GetFlags() );
-
-		if ( CommandLine()->FindParm("-dti" ) && pSendTableProp->GetParentArrayPropName() )
-		{
-			pProp->m_pParentArrayPropName = COM_StringCopy( pSendTableProp->GetParentArrayPropName() );
-		}
-
-		if ( pProp->m_Type == DPT_DataTable )
-		{
-			const char *pDTName = pSendTableProp->m_pExcludeDTName; // HACK
-
-			if ( pSendTableProp->GetDataTable() )
-				pDTName = pSendTableProp->GetDataTable()->m_pNetTableName;
-
-			Assert( pDTName && Q_strlen(pDTName) > 0 );
-
-			pClientProp->SetTableName( COM_StringCopy( pDTName ) );
-			
-			// Normally we wouldn't care about this but we need to compare it against 
-			// proxies in the server DLL in SendTable_BuildHierarchy.
-			pProp->SetDataTableProxyFn( pSendTableProp->GetDataTableProxyFn() );
-			pProp->SetOffset( pSendTableProp->GetOffset() );
-		}
-		else
-		{
-			if ( pProp->IsExcludeProp() )
-			{
-				pProp->m_pExcludeDTName = COM_StringCopy( pSendTableProp->GetExcludeDTName() );
-			}
-			else if ( pProp->GetType() == DPT_Array )
-			{
-				pProp->SetNumElements( pSendTableProp->GetNumElements() );
-			}
-			else
-			{
-				pProp->m_fLowValue = pSendTableProp->m_fLowValue;
-				pProp->m_fHighValue = pSendTableProp->m_fHighValue;
-				pProp->m_nBits = pSendTableProp->m_nBits;
-			}
-		}
-	}
-
-	return true;
-}
+//extern CUtlLinkedList< CClientSendTable*, unsigned short > g_ClientSendTables;
+//extern CUtlLinkedList< CRecvDecoder *, unsigned short > g_RecvDecoders;
 
 // If the table's ID is -1, writes its info into the buffer and increments curID.
 void DataTable_MaybeCreateReceiveTable( CUtlVector< SendTable * >& visited, SendTable *pTable, bool bNeedDecoder )
@@ -163,7 +37,7 @@ void DataTable_MaybeCreateReceiveTable( CUtlVector< SendTable * >& visited, Send
 
 	visited.AddToTail( pTable );
 
-	DataTable_SetupReceiveTableFromSendTable( pTable, bNeedDecoder );
+	g_ClientDLL->GetRecvTableManager()->DataTable_SetupReceiveTableFromSendTable( pTable, bNeedDecoder );
 }
 
 
@@ -190,30 +64,44 @@ void DataTable_CreateClientTablesFromServerTables()
 		Sys_Error( "DataTable_CreateClientTablesFromServerTables:  No serverGameDLL loaded!" );
 	}
 
-	ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
-	ServerClass *pCur;
-
-	CUtlVector< SendTable * > visited;
-
-	// First, we send all the leaf classes. These are the ones that will need decoders
-	// on the client.
-	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
+	CUtlVector< SendTable* > visited;
+	SendTable* pSendTable = serverGameDLL->GetSendTableManager()->GetSendTableHead();
+	SendTable* pCur;
+	for (pCur = pSendTable; pCur; pCur = pCur->m_pNext)
 	{
-		if (!pCur->GetDataTable()) {
-			continue;
+		if (pCur->IsLeaf()) {
+			DataTable_MaybeCreateReceiveTable(visited, pCur, true);
 		}
-		DataTable_MaybeCreateReceiveTable( visited, pCur->GetDataTable(), true);
+		else {
+			DataTable_MaybeCreateReceiveTable(visited, pCur, true);
+		}
 	}
 
-	// Now, we send their base classes. These don't need decoders on the client
-	// because we will never send these SendTables by themselves.
-	for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
-	{
-		if (!pCur->GetDataTable()) {
-			continue;
-		}
-		DataTable_MaybeCreateReceiveTable_R( visited, pCur->GetDataTable() );
-	}
+
+	//ServerClass *pClasses = serverGameDLL->GetServerClassManager()->GetServerClassHead();
+	//ServerClass *pCur;
+
+	//CUtlVector< SendTable * > visited;
+
+	//// First, we send all the leaf classes. These are the ones that will need decoders
+	//// on the client.
+	//for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
+	//{
+	//	if (!pCur->GetDataTable()) {
+	//		continue;
+	//	}
+	//	DataTable_MaybeCreateReceiveTable( visited, pCur->GetDataTable(), true);
+	//}
+
+	//// Now, we send their base classes. These don't need decoders on the client
+	//// because we will never send these SendTables by themselves.
+	//for ( pCur=pClasses; pCur; pCur=pCur->GetNext() )
+	//{
+	//	if (!pCur->GetDataTable()) {
+	//		continue;
+	//	}
+	//	DataTable_MaybeCreateReceiveTable_R( visited, pCur->GetDataTable() );
+	//}
 }
 
 void DataTable_CreateClientClassInfosFromServerClasses( CBaseClientState *pState )
@@ -279,7 +167,7 @@ void DataTable_MaybeWriteSendTableBuffer( SendTable *pTable, bf_write *pBuf, boo
 	pBuf->WriteOneBit( 1 ); // next SendTable follows
 	pBuf->WriteOneBit( bNeedDecoder?1:0 );
 
-	SendTable_WriteInfos( pTable, pBuf );
+	SendTable_WriteInfos(pTable, pBuf );
 }
 
 // Calls DataTable_MaybeWriteSendTable recursively.
@@ -420,6 +308,135 @@ bool DataTable_ParseClassInfosFromBuffer( CClientState *pState, bf_read *pBuf )
 	}
 
 	return true;
+}
+
+bool SendTable_WriteInfos(SendTable* pSendTable, bf_write* pBuf)
+{
+	pBuf->WriteString(pSendTable->GetName());
+	pBuf->WriteUBitLong(pSendTable->GetNumProps(), PROPINFOBITS_NUMPROPS);
+
+	// Send each property.
+	for (int iProp = 0; iProp < pSendTable->m_nProps; iProp++)
+	{
+		const SendProp* pProp = &pSendTable->m_pProps[iProp];
+
+		pBuf->WriteUBitLong((unsigned int)pProp->m_Type, PROPINFOBITS_TYPE);
+		pBuf->WriteString(pProp->GetName());
+		// we now have some flags that aren't networked so strip them off
+		unsigned int networkFlags = pProp->GetFlags() & ((1 << PROPINFOBITS_FLAGS) - 1);
+		pBuf->WriteUBitLong(networkFlags, PROPINFOBITS_FLAGS);
+
+		if (pProp->m_Type == DPT_DataTable)
+		{
+			// Just write the name and it will be able to reuse the table with a matching name.
+			pBuf->WriteString(pProp->GetDataTable()->m_pNetTableName);
+		}
+		else
+		{
+			if (pProp->IsExcludeProp())
+			{
+				pBuf->WriteString(pProp->GetExcludeDTName());
+			}
+			else if (pProp->GetType() == DPT_Array)
+			{
+				pBuf->WriteUBitLong(pProp->GetNumElements(), PROPINFOBITS_NUMELEMENTS);
+			}
+			else
+			{
+				pBuf->WriteBitFloat(pProp->m_fLowValue);
+				pBuf->WriteBitFloat(pProp->m_fHighValue);
+				pBuf->WriteUBitLong(pProp->m_nBits, PROPINFOBITS_NUMBITS);
+			}
+		}
+	}
+
+	return !pBuf->IsOverflowed();
+}
+
+SendTable* RecvTable_ReadInfos(bf_read* pBuf, int nDemoProtocol)
+{
+	SendTable* pTable = new SendTable;
+
+	pTable->m_pNetTableName = pBuf->ReadAndAllocateString();
+
+	// Read the property list.
+	pTable->m_nProps = pBuf->ReadUBitLong(PROPINFOBITS_NUMPROPS);
+	pTable->m_pProps = pTable->m_nProps ? new SendProp[pTable->m_nProps] : NULL;
+
+	for (int iProp = 0; iProp < pTable->m_nProps; iProp++)
+	{
+		SendProp* pProp = &pTable->m_pProps[iProp];
+
+		pProp->m_Type = (SendPropType)pBuf->ReadUBitLong(PROPINFOBITS_TYPE);
+		pProp->m_pVarName = pBuf->ReadAndAllocateString();
+
+		int nFlagsBits = PROPINFOBITS_FLAGS;
+
+		// HACK to playback old demos. SPROP_NUMFLAGBITS was 11, now 13
+		// old nDemoProtocol was 2 
+		if (nDemoProtocol == 2)
+		{
+			nFlagsBits = 11;
+		}
+
+		pProp->SetFlags(pBuf->ReadUBitLong(nFlagsBits));
+
+		if (pProp->m_Type == DPT_DataTable)
+		{
+			pProp->m_pExcludeDTName = pBuf->ReadAndAllocateString();
+		}
+		else
+		{
+			if (pProp->IsExcludeProp())
+			{
+				pProp->m_pExcludeDTName = pBuf->ReadAndAllocateString();
+			}
+			else if (pProp->GetType() == DPT_Array)
+			{
+				pProp->SetNumElements(pBuf->ReadUBitLong(PROPINFOBITS_NUMELEMENTS));
+			}
+			else
+			{
+				pProp->m_fLowValue = pBuf->ReadBitFloat();
+				pProp->m_fHighValue = pBuf->ReadBitFloat();
+				pProp->m_nBits = pBuf->ReadUBitLong(PROPINFOBITS_NUMBITS);
+			}
+		}
+	}
+
+	return pTable;
+}
+
+void RecvTable_FreeSendTable(SendTable* pTable)
+{
+	for (int iProp = 0; iProp < pTable->m_nProps; iProp++)
+	{
+		SendProp* pProp = &pTable->m_pProps[iProp];
+
+		delete[] pProp->m_pVarName;
+
+		if (pProp->m_pExcludeDTName)
+			delete[] pProp->m_pExcludeDTName;
+	}
+
+	if (pTable->m_pProps)
+		delete[] pTable->m_pProps;
+
+	delete pTable;
+}
+
+bool RecvTable_RecvClassInfos(bf_read* pBuf, bool bNeedsDecoder, int nDemoProtocol)
+{
+	SendTable* pSendTable = RecvTable_ReadInfos(pBuf, nDemoProtocol);
+
+	if (!pSendTable)
+		return false;
+
+	bool ret = g_ClientDLL->GetRecvTableManager()->DataTable_SetupReceiveTableFromSendTable(pSendTable, bNeedsDecoder);
+
+	RecvTable_FreeSendTable(pSendTable);
+
+	return ret;
 }
 
 bool DataTable_LoadDataTablesFromBuffer( bf_read *pBuf, int nDemoProtocol )

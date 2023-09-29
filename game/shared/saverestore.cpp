@@ -225,7 +225,7 @@ inline int CSave::DataEmpty( const char *pdata, int size )
 //-----------------------------------------------------------------------------
 void CSave::StartLogging( const char *pszLogName )
 {
-	m_hLogFile = filesystem->Open( pszLogName, "w" );
+	m_hLogFile = g_pFileSystem->Open( pszLogName, "w" );
 }
 
 //-----------------------------------------------------------------------------
@@ -235,7 +235,7 @@ void CSave::EndLogging( void )
 {
 	if ( m_hLogFile )
 	{
-		filesystem->Close( m_hLogFile );
+		g_pFileSystem->Close( m_hLogFile );
 	}
 	m_hLogFile = NULL;
 }
@@ -358,7 +358,7 @@ void CSave::Log( const char *pName, fieldtype_t fieldType, void *value, int coun
 	}
 
 	int nLength = strlen( szBuf ) + 1;
-	filesystem->Write( szBuf, nLength, m_hLogFile );
+	g_pFileSystem->Write( szBuf, nLength, m_hLogFile );
 }
 
 //-------------------------------------

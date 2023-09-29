@@ -167,9 +167,9 @@ public:
 
 		if (m_hPrecacheLogFile != FILESYSTEM_INVALID_HANDLE)
 		{
-			filesystem->Write("\"", 1, m_hPrecacheLogFile);
-			filesystem->Write(soundname, Q_strlen(soundname), m_hPrecacheLogFile);
-			filesystem->Write("\"\n", 2, m_hPrecacheLogFile);
+			g_pFileSystem->Write("\"", 1, m_hPrecacheLogFile);
+			g_pFileSystem->Write(soundname, Q_strlen(soundname), m_hPrecacheLogFile);
+			g_pFileSystem->Write("\"\n", 2, m_hPrecacheLogFile);
 		}
 		else
 		{
@@ -190,19 +190,19 @@ public:
 			return;
 		}
 
-		filesystem->CreateDirHierarchy("reslists", "DEFAULT_WRITE_PATH");
+		g_pFileSystem->CreateDirHierarchy("reslists", "DEFAULT_WRITE_PATH");
 
 		// open the new level reslist
 		char path[_MAX_PATH];
 		Q_snprintf(path, sizeof(path), "reslists\\%s.snd", STRING( gpGlobals->mapname ) );
-		m_hPrecacheLogFile = filesystem->Open(path, "wt", "GAME");
+		m_hPrecacheLogFile = g_pFileSystem->Open(path, "wt", "GAME");
 	}
 
 	void FinishLog()
 	{
 		if ( FILESYSTEM_INVALID_HANDLE != m_hPrecacheLogFile )
 		{
-			filesystem->Close( m_hPrecacheLogFile );
+			g_pFileSystem->Close( m_hPrecacheLogFile );
 			m_hPrecacheLogFile = FILESYSTEM_INVALID_HANDLE;
 		}
 
@@ -276,19 +276,19 @@ public:
 		if( V_stristr( mapname, "mvm" ) )
 		{
 			V_strncpy( scriptfile, "scripts/mvm_level_sounds.txt", sizeof( scriptfile ) );
-			if ( filesystem->FileExists( "scripts/mvm_level_sounds.txt", "GAME" ) )
+			if ( g_pFileSystem->FileExists( "scripts/mvm_level_sounds.txt", "GAME" ) )
 			{
 				soundemitterbase->AddSoundOverrides( "scripts/mvm_level_sounds.txt" );
 			}
-			if ( filesystem->FileExists( "scripts/mvm_level_sound_tweaks.txt", "GAME" ) )
+			if ( g_pFileSystem->FileExists( "scripts/mvm_level_sound_tweaks.txt", "GAME" ) )
 			{
 				soundemitterbase->AddSoundOverrides( "scripts/mvm_level_sound_tweaks.txt" );
  			}
-			if ( filesystem->FileExists( "scripts/game_sounds_vo_mvm.txt", "GAME" ) )
+			if ( g_pFileSystem->FileExists( "scripts/game_sounds_vo_mvm.txt", "GAME" ) )
 			{
 				soundemitterbase->AddSoundOverrides( "scripts/game_sounds_vo_mvm.txt", true );
 			}
-			if ( filesystem->FileExists( "scripts/game_sounds_vo_mvm_mighty.txt", "GAME" ) )
+			if ( g_pFileSystem->FileExists( "scripts/game_sounds_vo_mvm_mighty.txt", "GAME" ) )
 			{
 				soundemitterbase->AddSoundOverrides( "scripts/game_sounds_vo_mvm_mighty.txt", true );
 			}
@@ -298,7 +298,7 @@ public:
 		{
 			Q_StripExtension( mapname, scriptfile, sizeof( scriptfile ) );
 			Q_strncat( scriptfile, "_level_sounds.txt", sizeof( scriptfile ), COPY_ALL_CHARACTERS );
-			if ( filesystem->FileExists( scriptfile, "GAME" ) )
+			if ( g_pFileSystem->FileExists( scriptfile, "GAME" ) )
 			{
 				soundemitterbase->AddSoundOverrides( scriptfile );
 			}
@@ -307,7 +307,7 @@ public:
 		Q_StripExtension( mapname, scriptfile, sizeof( scriptfile ) );
 		Q_strncat( scriptfile, "_level_sounds.txt", sizeof( scriptfile ), COPY_ALL_CHARACTERS );
 
-		if ( filesystem->FileExists( scriptfile, "GAME" ) )
+		if ( g_pFileSystem->FileExists( scriptfile, "GAME" ) )
 		{
 			soundemitterbase->AddSoundOverrides( scriptfile );
 		}

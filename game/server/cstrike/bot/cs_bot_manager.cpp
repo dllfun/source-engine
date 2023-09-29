@@ -379,7 +379,7 @@ void CCSBotManager::ServerActivate( void )
 	}
 
 	// read in the list of bot profile DBs
-	FileHandle_t file = filesystem->Open( filename, "r" );
+	FileHandle_t file = g_pFileSystem->Open( filename, "r" );
 
 	if ( !file )
 	{
@@ -387,11 +387,11 @@ void CCSBotManager::ServerActivate( void )
 	}
 	else
 	{
-		int dataLength = filesystem->Size( filename );
+		int dataLength = g_pFileSystem->Size( filename );
 		char *dataPointer = new char[ dataLength ];
 
-		filesystem->Read( dataPointer, dataLength, file );
-		filesystem->Close( file );
+		g_pFileSystem->Read( dataPointer, dataLength, file );
+		g_pFileSystem->Close( file );
 
 		const char *dataFile = SharedParse( dataPointer );
 		const char *token;
@@ -1644,7 +1644,7 @@ void CCSBotManager::OnServerShutdown( IGameEvent *event )
 		// load the config data
 		if (data)
 		{
-			data->LoadFromFile( filesystem, "ServerConfig.vdf", "GAME" );
+			data->LoadFromFile(g_pFileSystem, "ServerConfig.vdf", "GAME" );
 			for ( int i=0; i<sizeof(botVars)/sizeof(botVars[0]); ++i )
 			{
 				const char *varName = botVars[i];
@@ -1657,7 +1657,7 @@ void CCSBotManager::OnServerShutdown( IGameEvent *event )
 					}
 				}
 			}
-			data->SaveToFile( filesystem, "ServerConfig.vdf", "GAME" );
+			data->SaveToFile(g_pFileSystem, "ServerConfig.vdf", "GAME" );
 			data->deleteThis();
 		}
 		return;

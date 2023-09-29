@@ -231,7 +231,11 @@ public:
 	}
 };
 
-
+class IServerEntityCallBack {
+public:
+	virtual void AfterConstruct(IServerEntity* pEntity) = 0;
+	virtual void BeforeDestruct(IServerEntity* pEntity) = 0;
+};
 
 class IServerEntityFactory;
 // This is the glue that hooks .MAP entity class names to our CPP classes
@@ -240,7 +244,7 @@ abstract_class IServerEntityFactoryDictionary
 public:
 	virtual void InstallFactory(IServerEntityFactory * pFactory, const char* pMapClassName) = 0;
 	virtual int RequiredEdictIndex(const char* pMapClassName) = 0;
-	virtual IServerEntity* Create(const char* pMapClassName) = 0;//, edict_t* edict
+	virtual IServerEntity* Create(const char* pMapClassName, IServerEntityCallBack* pCallBack) = 0;//, edict_t* edict
 	virtual void Destroy(const char* pMapClassName, IServerEntity* pNetworkable) = 0;
 	virtual IServerEntityFactory* FindFactory(const char* pMapClassName) = 0;
 	virtual const char* GetCannonicalName(const char* pMapClassName) = 0;
@@ -259,7 +263,7 @@ abstract_class IServerEntityFactory
 {
 public:
 	virtual int RequiredEdictIndex() = 0;
-	virtual IServerEntity* Create() = 0;//const char* pClassName, edict_t* edict
+	virtual IServerEntity* Create(IServerEntityCallBack* pCallBack) = 0;//const char* pClassName, edict_t* edict
 	virtual void Destroy(IServerEntity* pNetworkable) = 0;
 	virtual size_t GetEntitySize() = 0;
 };
@@ -287,6 +291,7 @@ private:
 		private:
 			bool m_InFactoryDestructing = false;
 			CServerEntityFactory* m_pFactory = NULL;
+			IServerEntityCallBack* m_pCallBack = NULL;
 			friend class CServerEntityFactory;
 	};
 public:
@@ -297,10 +302,14 @@ public:
 		ServerEntityFactoryDictionary()->InstallFactory(this, pMapClassName);
 	}
 
-	IServerEntity* Create()//edict_t* edict
+	IServerEntity* Create(IServerEntityCallBack* pCallBack)//edict_t* edict
 	{
 		DelegateServerEntity* pEnt = _CreateEntityTemplate((DelegateServerEntity*)NULL, m_pMapClassName);//, edict
 		pEnt->m_pFactory = this;
+		pEnt->m_pCallBack = pCallBack;
+		if (pCallBack) {
+			pCallBack->AfterConstruct(pEnt);
+		}
 		return pEnt;//->NetworkProp()
 	}
 
@@ -311,6 +320,9 @@ public:
 			DelegateServerEntity* pEnt = dynamic_cast<DelegateServerEntity*>(serverEntity);
 			if (!pEnt) {
 				Error("not created by factory!");
+			}
+			if (pEnt->m_pCallBack) {
+				pEnt->m_pCallBack->BeforeDestruct(pEnt);
 			}
 			pEnt->SetDestructing();
 			pEnt->Release();

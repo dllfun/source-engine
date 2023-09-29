@@ -1794,6 +1794,27 @@
     <ClCompile Include="..\..\..\game\client\game_controls\classmenu.cpp">
       <Filter>源文件\game_controls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\public\dt.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_instrumentation.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_recv_decoder.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_stack.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_send.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_encode.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\public\dt_instrumentation_server.cpp">
+      <Filter>源文件\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\game\client\view.h">
