@@ -13,27 +13,7 @@
 
 extern const char *s_ElementNames[MAX_ARRAY_ELEMENTS];
 
-// This gets associated with SendProps inside a utlvector and stores extra data needed to make it work.
-class CSendPropExtra_UtlVector
-{
-public:
-	CSendPropExtra_UtlVector() :
-		m_DataTableProxyFn( NULL ),
-		m_ProxyFn( NULL ),
-		m_EnsureCapacityFn( NULL ),
-		m_ElementStride( 0 ),
-		m_Offset( 0 ),
-		m_nMaxElements( 0 )	
-	{
-	}
 
-	SendTableProxyFn m_DataTableProxyFn;	// If it's a datatable, then this is the proxy they specified.
-	SendVarProxyFn m_ProxyFn;				// If it's a non-datatable, then this is the proxy they specified.
-	EnsureCapacityFn m_EnsureCapacityFn;
-	int m_ElementStride;					// Distance between each element in the array.
-	int m_Offset;							// # bytes from the parent structure to its utlvector.
-	int m_nMaxElements;						// For debugging...
-};
 
 
 void SendProxy_UtlVectorElement( 
@@ -162,35 +142,42 @@ SendProp SendPropUtlVector(
 
 	
 	// Extra data bound to each of the properties.
-	CSendPropExtra_UtlVector *pExtraData = new CSendPropExtra_UtlVector;
+	CSendPropExtra_UtlVector pExtraData;
 	
-	pExtraData->m_nMaxElements = nMaxElements;
-	pExtraData->m_ElementStride = sizeofVar;
-	pExtraData->m_EnsureCapacityFn = ensureFn;
-	pExtraData->m_Offset = offset;
+	pExtraData.m_nMaxElements = nMaxElements;
+	pExtraData.m_ElementStride = sizeofVar;
+	pExtraData.m_EnsureCapacityFn = ensureFn;
+	pExtraData.m_Offset = offset;
 
 	if ( pArrayProp.m_Type == DPT_DataTable )
-		pExtraData->m_DataTableProxyFn = pArrayProp.GetDataTableProxyFn();
+		pExtraData.m_DataTableProxyFn = pArrayProp.GetDataTableProxyFn();
 	else
-		pExtraData->m_ProxyFn = pArrayProp.GetProxyFn();
+		pExtraData.m_ProxyFn = pArrayProp.GetProxyFn();
 
 
 	SendProp *pProps = new SendProp[nMaxElements+1]; // TODO free that again
 
+	char buf[255];
 	// The first property is datatable with an int that tells the length of the array.
 	// It has to go in a datatable, otherwise if this array holds datatable properties, it will be received last.
 	SendProp *pLengthProp = new SendProp;
-	*pLengthProp = SendPropInt( AllocateStringHelper( "lengthprop%d", nMaxElements ), 0, 0, NumBitsForCount( nMaxElements ), SPROP_UNSIGNED, SendProxy_UtlVectorLength );
-	pLengthProp->SetExtraData( pExtraData );
+	Q_snprintf(buf, sizeof(buf), "lengthprop%d", nMaxElements);
+	*pLengthProp = SendPropInt(buf, 0, 0, NumBitsForCount( nMaxElements ), SPROP_UNSIGNED, SendProxy_UtlVectorLength );
+	CSendPropExtra_UtlVector* pExtraData2 = new CSendPropExtra_UtlVector;
+	*pExtraData2 = pExtraData;
+	pLengthProp->SetExtraData(pExtraData2);
 
-	char *pLengthProxyTableName = AllocateUniqueDataTableName( true, "_LPT_%s_%d", pVarName, nMaxElements );
-	SendTable *pLengthTable = new SendTable( pLengthProp, 1, pLengthProxyTableName );
-	GetSendTableManager()->RegisteSendTable(pLengthTable);
-	pProps[0] = SendPropDataTable( "lengthproxy", 0, pLengthProxyTableName, SendProxy_LengthTable );//pLengthTable
-	pProps[0].SetExtraData( pExtraData );
+	//char *pLengthProxyTableName = AllocateUniqueDataTableName( true, "_LPT_%s_%d", pVarName, nMaxElements );
+	Q_snprintf(buf, sizeof(buf), "_LPT_%s_%d", pVarName, nMaxElements);
+	SendTable pLengthTable = SendTable( pLengthProp, 1, buf);
+	GetSendTableManager()->RegisteSendTable(&pLengthTable);
+	pProps[0] = SendPropDataTable( "lengthproxy", 0, buf, SendProxy_LengthTable );//pLengthTable
+	CSendPropExtra_UtlVector* pExtraData3 = new CSendPropExtra_UtlVector;
+	*pExtraData3 = pExtraData;
+	pProps[0].SetExtraData( pExtraData3 );
 
 	// TERROR:
-	char *pParentArrayPropName = AllocateStringHelper( "%s", pVarName );
+	//char *pParentArrayPropName = AllocateStringHelper( "%s", pVarName );
 	Assert( pParentArrayPropName && *pParentArrayPropName ); // TERROR
 
 	// The first element is a sub-datatable.
@@ -198,9 +185,13 @@ SendProp SendPropUtlVector(
 	{
 		pProps[i] = pArrayProp;	// copy array element property setting
 		pProps[i].SetOffset( 0 ); // leave offset at 0 so pStructBase is always a pointer to the CUtlVector
-		pProps[i].m_pVarName = s_ElementNames[i-1];	// give unique name
-		pProps[i].m_pParentArrayPropName = pParentArrayPropName; // TERROR: For debugging...
-		pProps[i].SetExtraData( pExtraData );
+		pProps[i].m_pVarName = COM_StringCopy(s_ElementNames[i-1]);	// give unique name
+		if (pVarName) {
+			pProps[i].m_pParentArrayPropName = COM_StringCopy(pVarName); // TERROR: For debugging...
+		}
+		CSendPropExtra_UtlVector* pExtraData4 = new CSendPropExtra_UtlVector;
+		*pExtraData4 = pExtraData;
+		pProps[i].SetExtraData( pExtraData4 );
 		pProps[i].m_ElementStride = i-1;	// Kind of lame overloading element stride to hold the element index,
 											// but we can easily move it into its SetExtraData stuff if we need to.
 		
@@ -216,14 +207,15 @@ SendProp SendPropUtlVector(
 		}
 	}
 
-	const char* pTableName = AllocateUniqueDataTableName(true, "_ST_%s_%d", pVarName, nMaxElements);
-	SendTable *pTable = new SendTable( 
+	//const char* pTableName = AllocateUniqueDataTableName(true, "_ST_%s_%d", pVarName, nMaxElements);
+	Q_snprintf(buf, sizeof(buf), "_ST_%s_%d", pVarName, nMaxElements);
+	SendTable pTable = SendTable( 
 		pProps, 
 		nMaxElements+1, 
-		pTableName
+		buf
 		);
-	GetSendTableManager()->RegisteSendTable(pTable);
-	ret.SetDataTableName(pTableName);
-	ret.SetDataTable( pTable );
+	GetSendTableManager()->RegisteSendTable(&pTable);
+	ret.SetDataTableName(COM_StringCopy(buf));
+	//ret.SetDataTable( pTable );
 	return ret;
 }

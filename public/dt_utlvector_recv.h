@@ -56,5 +56,16 @@ RecvProp RecvPropUtlVector(
 						// You can leave all of its parameters at 0 (name, offset, size, etc).
 	);
 
+class CRecvPropExtra_UtlVector
+{
+public:
+	DataTableRecvVarProxyFn m_DataTableProxyFn;	// If it's a datatable, then this is the proxy they specified.
+	RecvVarProxyFn m_ProxyFn;				// If it's a non-datatable, then this is the proxy they specified.
+	ResizeUtlVectorFn m_ResizeFn;			// The function used to resize the CUtlVector.
+	EnsureCapacityFn m_EnsureCapacityFn;
+	int m_ElementStride;					// Distance between each element in the array.
+	int m_Offset;							// Offset of the CUtlVector from its parent structure.
+	int m_nMaxElements;						// For debugging...
+};
 
 #endif // DT_UTLVECTOR_RECV_H

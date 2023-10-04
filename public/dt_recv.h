@@ -348,7 +348,7 @@ public:
 		return m_pRecvTableHead;
 	}
 
-	void	RegisteRecvTable(RecvTable* pRecvTable);
+	RecvTable* RegisteRecvTable(RecvTable* pRecvTable);
 
 	// ------------------------------------------------------------------------------------------ //
 // RecvTable functions.
@@ -772,11 +772,6 @@ inline void RecvProp::SetInsideArray()
 inline const void* RecvProp::GetExtraData() const
 {
 	return m_pExtraData;
-}
-
-inline void RecvProp::SetExtraData( const void *pData )
-{
-	m_pExtraData = pData;
 }
 
 inline const char* RecvProp::GetParentArrayPropName()

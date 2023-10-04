@@ -22,6 +22,7 @@
 #ifndef DEDICATED
 #include "renamed_recvtable_compat.h"
 #endif
+#include "dt_utlvector_recv.h";
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -380,22 +381,24 @@ RecvProp RecvPropArray3(
 
 	RecvProp* pProps = new RecvProp[elements]; // TODO free that again
 
-	const char* pParentArrayPropName = ("%s", pVarName);//AllocateStringHelper()
+	//const char* pParentArrayPropName = ("%s", pVarName);//AllocateStringHelper()
 
 	for (int i = 0; i < elements; i++)
 	{
 		pProps[i] = pArrayProp; // copy basic property settings 
 		pProps[i].SetOffset(i * sizeofVar); // adjust offset
 		pProps[i].m_pVarName = COM_StringCopy(s_ClientElementNames[i]); // give unique name
-		pProps[i].SetParentArrayPropName(COM_StringCopy(pParentArrayPropName)); // For debugging...
+		if (pVarName) {
+			pProps[i].SetParentArrayPropName(COM_StringCopy(pVarName)); // For debugging...
+		}
 	}
 
-	RecvTable* pTable = new RecvTable(pProps, elements, pVarName); // TODO free that again
-	GetRecvTableManager()->RegisteRecvTable(pTable);
+	RecvTable pTable = RecvTable(pProps, elements, pVarName); // TODO free that again
+	GetRecvTableManager()->RegisteRecvTable(&pTable);
 	if (pVarName) {
 		ret.SetDataTableName(COM_StringCopy(pVarName));
 	}
-	ret.SetDataTable(pTable);
+	//ret.SetDataTable(pTable);
 
 	return ret;
 }
@@ -549,7 +552,11 @@ RecvProp::~RecvProp()
 		delete this->m_pVarName;
 		this->m_pVarName = NULL;
 	}
-	if (this->m_pArrayProp) {
+	if (this->m_pExtraData) {
+		delete this->m_pExtraData;
+		this->m_pExtraData = NULL;
+	}
+	if (this->m_pArrayProp && !this->m_pArrayProp->IsInsideArray()) {
 		delete this->m_pArrayProp;
 		this->m_pArrayProp = NULL;
 	}
@@ -580,8 +587,15 @@ RecvProp& RecvProp::operator=(const RecvProp& srcRecvProp) {
 		this->m_Flags = srcRecvProp.m_Flags;
 		this->m_StringBufferSize = srcRecvProp.m_StringBufferSize;
 		this->m_bInsideArray = srcRecvProp.m_bInsideArray;
-		this->m_pExtraData = NULL;
-		if (this->m_pArrayProp) {
+		if (this->m_pExtraData) {
+			delete this->m_pExtraData;
+			this->m_pExtraData = NULL;
+		}
+		if (srcRecvProp.m_pExtraData) {
+			this->m_pExtraData = new CRecvPropExtra_UtlVector();
+			*(CRecvPropExtra_UtlVector*)this->m_pExtraData = *(CRecvPropExtra_UtlVector*)srcRecvProp.m_pExtraData;
+		}
+		if (this->m_pArrayProp && !this->m_pArrayProp->IsInsideArray()) {
 			delete this->m_pArrayProp;
 			this->m_pArrayProp = NULL;
 		}
@@ -628,6 +642,17 @@ void RecvProp::SetDataTable(RecvTable* pTable)
 		this->m_pDataTable = NULL;
 	}
 	m_pDataTable = pTable;
+}
+
+void RecvProp::SetExtraData(const void* pData)
+{
+	if (this->m_pExtraData != pData) {
+		if (this->m_pExtraData) {
+			delete this->m_pExtraData;
+			this->m_pExtraData = NULL;
+		}
+		m_pExtraData = pData;
+	}
 }
 
 // ---------------------------------------------------------------------- //
@@ -1013,7 +1038,7 @@ class CClientSendTable;
 
 int g_nPropsDecoded = 0;
 
-void RecvTableManager::RegisteRecvTable(RecvTable* pSrcRecvTable) {
+RecvTable* RecvTableManager::RegisteRecvTable(RecvTable* pSrcRecvTable) {
 
 	RecvTable* pRecvTable = new RecvTable();
 	*pRecvTable = *pSrcRecvTable;
@@ -1054,6 +1079,7 @@ void RecvTableManager::RegisteRecvTable(RecvTable* pSrcRecvTable) {
 			p2 = p2->m_pNext;
 		}
 	}
+	return pRecvTable;
 }
 // ------------------------------------------------------------------------------------ //
 // Static helper functions.
@@ -1299,9 +1325,7 @@ RecvTable* RecvTableManager::DataTable_FindRenamedTable(const char* pOldTableNam
 
 bool RecvTableManager::DataTable_SetupReceiveTableFromSendTable(SendTable* sendTable, bool bNeedsDecoder)
 {
-	SendTable* pSendTable = new SendTable();
-	*pSendTable = *sendTable;
-	m_SendTableManager.RegisteSendTable(pSendTable);
+	SendTable* pSendTable = m_SendTableManager.RegisteSendTable(sendTable);
 
 	//CClientSendTable* pClientSendTable = new CClientSendTable;
 	//SendTable* pTable = &pClientSendTable->m_SendTable;
@@ -1435,8 +1459,8 @@ bool RecvTableManager::RecvTable_CreateDecoders(const CStandardSendProxies* pSen
 
 	// First, now that we've supposedly received all the SendTables that we need,
 	// set their datatable child pointers.
-	if (!SetupClientSendTableHierarchy())
-		return false;
+	//if (!SetupClientSendTableHierarchy())
+	//	return false;
 
 	FOR_EACH_LL(g_RecvDecoders, i)
 	{

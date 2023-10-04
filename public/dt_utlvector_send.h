@@ -53,5 +53,26 @@ SendProp SendPropUtlVector(
 	SendTableProxyFn varProxy=SendProxy_DataTableToDataTable	// This can be overridden to control who the array is sent to.
 	);
 
+// This gets associated with SendProps inside a utlvector and stores extra data needed to make it work.
+class CSendPropExtra_UtlVector
+{
+public:
+	CSendPropExtra_UtlVector() :
+		m_DataTableProxyFn(NULL),
+		m_ProxyFn(NULL),
+		m_EnsureCapacityFn(NULL),
+		m_ElementStride(0),
+		m_Offset(0),
+		m_nMaxElements(0)
+	{
+	}
+
+	SendTableProxyFn m_DataTableProxyFn;	// If it's a datatable, then this is the proxy they specified.
+	SendVarProxyFn m_ProxyFn;				// If it's a non-datatable, then this is the proxy they specified.
+	EnsureCapacityFn m_EnsureCapacityFn;
+	int m_ElementStride;					// Distance between each element in the array.
+	int m_Offset;							// # bytes from the parent structure to its utlvector.
+	int m_nMaxElements;						// For debugging...
+};
 
 #endif	// DT_UTLVECTOR_SEND_H

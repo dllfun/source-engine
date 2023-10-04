@@ -444,12 +444,6 @@ inline const void* SendProp::GetExtraData() const
 	return m_pExtraData;
 }
 
-inline void SendProp::SetExtraData( const void *pData )
-{
-	m_pExtraData = pData;
-}
-
-
 // -------------------------------------------------------------------------------------------------------------- //
 // SendTable.
 // -------------------------------------------------------------------------------------------------------------- //
@@ -671,7 +665,7 @@ public:
 		return m_pSendTableHead;
 	}
 
-	void	RegisteSendTable(SendTable* pSendTable);
+	SendTable* RegisteSendTable(SendTable* pSendTable);
 
 	void	ClearAllSendTables() {
 		m_Inited = false;

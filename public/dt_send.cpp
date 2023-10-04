@@ -17,6 +17,7 @@
 #include "dt_stack.h"
 #include "dt_instrumentation_server.h"
 #include <checksum_crc.h>
+#include "dt_utlvector_send.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -950,12 +951,12 @@ SendProp SendPropArray3(
 		}
 	}
 
-	SendTable *pTable = new SendTable( pProps, elements, pVarName ); // TODO free that again
-	GetSendTableManager()->RegisteSendTable(pTable);
+	SendTable pTable = SendTable( pProps, elements, pVarName ); // TODO free that again
+	GetSendTableManager()->RegisteSendTable(&pTable);
 	if (pVarName) {
 		ret.SetDataTableName(COM_StringCopy(pVarName));
 	}
-	ret.SetDataTable( pTable );
+	//ret.SetDataTable( pTable );
 
 	return ret;
 }
@@ -1062,12 +1063,13 @@ SendProp::SendProp()
 	m_ArrayLengthProxy = 0;
 	m_nElements = 1;
 	m_ElementStride = -1;
+	m_pExtraData = NULL;
 }
 
 
 SendProp::~SendProp()
 {
-	if (this->m_pArrayProp) {
+	if (this->m_pArrayProp && !this->m_pArrayProp->IsInsideArray()) {
 		delete this->m_pArrayProp;
 		this->m_pArrayProp = NULL;
 	}
@@ -1095,6 +1097,10 @@ SendProp::~SendProp()
 		delete this->m_pDataTable;
 		this->m_pDataTable = NULL;
 	}
+	if (this->m_pExtraData) {
+		delete this->m_pExtraData;
+		this->m_pExtraData = NULL;
+	}
 }
 
 SendProp& SendProp::operator=(const SendProp& srcSendProp) {
@@ -1103,7 +1109,7 @@ SendProp& SendProp::operator=(const SendProp& srcSendProp) {
 		this->m_nBits = srcSendProp.m_nBits;
 		this->m_fLowValue = srcSendProp.m_fLowValue;
 		this->m_fHighValue = srcSendProp.m_fHighValue;
-		if (this->m_pArrayProp) {
+		if (this->m_pArrayProp && !this->m_pArrayProp->IsInsideArray()) {
 			delete this->m_pArrayProp;
 			this->m_pArrayProp = NULL;
 		}
@@ -1155,7 +1161,14 @@ SendProp& SendProp::operator=(const SendProp& srcSendProp) {
 			*this->m_pDataTable = *srcSendProp.m_pDataTable;
 		}
 		this->m_Offset = srcSendProp.m_Offset;
-		this->m_pExtraData = NULL;
+		if (this->m_pExtraData) {
+			delete this->m_pExtraData;
+			this->m_pExtraData = NULL;
+		}
+		if (srcSendProp.m_pExtraData) {
+			this->m_pExtraData = new CSendPropExtra_UtlVector();
+			*(CSendPropExtra_UtlVector*)this->m_pExtraData = *(CSendPropExtra_UtlVector*)srcSendProp.m_pExtraData;
+		}
 	}
 	return *this;
 }
@@ -1167,6 +1180,17 @@ void SendProp::SetDataTable(SendTable* pTable)
 		this->m_pDataTable = NULL;
 	}
 	m_pDataTable = pTable;
+}
+
+void SendProp::SetExtraData(const void* pData)
+{
+	if (this->m_pExtraData != pData) {
+		if (this->m_pExtraData) {
+			delete this->m_pExtraData;
+			this->m_pExtraData = NULL;
+		}
+		m_pExtraData = pData;
+	}
 }
 
 int SendProp::GetNumArrayLengthBits() const
@@ -1835,7 +1859,7 @@ bool SendTable::SendTable_CheckIntegrity(const void* pData, const int nDataBits)
 	return true;
 }
 
-void SendTableManager::RegisteSendTable(SendTable* pSrcSendTable) {
+SendTable* SendTableManager::RegisteSendTable(SendTable* pSrcSendTable) {
 
 	SendTable* pSendTable = new SendTable;
 	*pSendTable = *pSrcSendTable;
@@ -1918,6 +1942,7 @@ void SendTableManager::RegisteSendTable(SendTable* pSrcSendTable) {
 			p2 = p2->m_pNext;
 		}
 	}
+	return pSendTable;
 }
 
 bool SendTableManager::SendTable_Init()//SendTable** pTables, int nTables

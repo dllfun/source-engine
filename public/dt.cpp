@@ -340,14 +340,14 @@ void SendTable_SortByPriority(CBuildHierarchyStruct *bhs)
 }
 
 
-void CalcPathLengths_R( CSendNode *pNode, CUtlVector<int> &pathLengths, int curPathLength, int &totalPathLengths )
+void CalcPathLengths_R( CSendNode *pNode, int curPathLength, int &totalPathLengths )//CUtlVector<int> &pathLengths, 
 {
-	pathLengths[pNode->GetRecursiveProxyIndex()] = curPathLength;
+	//pathLengths[pNode->GetRecursiveProxyIndex()] = curPathLength;
 	totalPathLengths += curPathLength;
 	
 	for ( int i=0; i < pNode->GetNumChildren(); i++ )
 	{
-		CalcPathLengths_R( pNode->GetChild( i ), pathLengths, curPathLength+1, totalPathLengths );
+		CalcPathLengths_R( pNode->GetChild( i ), curPathLength+1, totalPathLengths );//pathLengths, 
 	}
 }
 
@@ -393,10 +393,10 @@ void SendTable_GenerateProxyPaths( CSendTablePrecalc *pPrecalc, int nProxyIndice
 	
 	// Figure out how long the path down the tree is to each node.
 	int totalPathLengths = 0;
-	CUtlVector<int> pathLengths;
-	pathLengths.SetSize( nProxyIndices );
-	memset( pathLengths.Base(), 0, sizeof( pathLengths[0] ) * nProxyIndices );
-	CalcPathLengths_R( pPrecalc->GetRootNode(), pathLengths, 0, totalPathLengths );
+	//CUtlVector<int> pathLengths;
+	//pathLengths.SetSize( nProxyIndices );
+	//memset( pathLengths.Base(), 0, sizeof( pathLengths[0] ) * nProxyIndices );
+	CalcPathLengths_R( pPrecalc->GetRootNode(), 0, totalPathLengths );
 	
 	// 
 	int iCurEntry = 0;
