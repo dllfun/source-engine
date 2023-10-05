@@ -143,7 +143,7 @@ static inline void SV_PackEntity(
 	
 	// (avoid constructor overhead).
 	unsigned char tempData[ sizeof( CSendProxyRecipients ) * MAX_DATATABLE_PROXIES ];
-	CUtlMemory< CSendProxyRecipients > recip( (CSendProxyRecipients*)tempData, pSendTable->m_pPrecalc->GetNumDataTableProxies() );
+	CUtlMemory< CSendProxyRecipients > recip( (CSendProxyRecipients*)tempData, pSendTable->GetNumDataTableProxies() );//->m_pPrecalc
 
 	if( !pSendTable->SendTable_Encode(  edict->GetUnknown(), &writeBuf, edictIdx, &recip, false ) )
 	{							 
@@ -213,7 +213,7 @@ static inline void SV_PackEntity(
 					Assert( pSendTable->m_pPrecalc );
 					Assert( deltaProps[iDeltaProp] < pSendTable->m_pPrecalc->GetNumProps() );
 
-					const SendProp *pProp = pSendTable->m_pPrecalc->GetProp( deltaProps[iDeltaProp] );
+					const SendProp *pProp = pSendTable->GetFlatProp( deltaProps[iDeltaProp] );//->m_pPrecalc
 					// If a field changed, but it changed because it encoded against tickcount, 
 					//   then it's just like the entity changed the underlying field, not an error, that is.
 					if ( pProp->GetFlags() & SPROP_ENCODED_AGAINST_TICKCOUNT )

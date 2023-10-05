@@ -290,7 +290,7 @@ CDTISendTable* ServerDTI_HookTable( SendTable *pTable )
 
 void ServerDTI_AddEntityEncodeEvent( SendTable *pSendTable, float distToPlayer )
 {
-	CSendTablePrecalc *pPrecalc = pSendTable->m_pPrecalc;
+	SendTable* pPrecalc = pSendTable;// ->m_pPrecalc;
 	if ( !pPrecalc || !pPrecalc->m_pDTITable )
 		return;
 
@@ -305,7 +305,7 @@ void ServerDTI_AddEntityEncodeEvent( SendTable *pSendTable, float distToPlayer )
 
 void _ServerDTI_HookTimer( const SendTable *pSendTable, ServerDTITimerType timerType, CCycleCount const &count )
 {
-	CSendTablePrecalc *pPrecalc = pSendTable->m_pPrecalc;
+	SendTable* pPrecalc = (SendTable*)pSendTable;// ->m_pPrecalc;
 	if ( !pPrecalc || !pPrecalc->m_pDTITable )
 		return;
 
@@ -343,7 +343,7 @@ void _ServerDTI_HookTimer( const SendTable *pSendTable, ServerDTITimerType timer
 
 void _ServerDTI_RegisterNetworkStateChange( SendTable *pSendTable, bool bStateChanged )
 {
-	CSendTablePrecalc *pPrecalc = pSendTable->m_pPrecalc;
+	SendTable* pPrecalc = pSendTable;// ->m_pPrecalc;
 	if ( !pPrecalc || !pPrecalc->m_pDTITable )
 		return;
 

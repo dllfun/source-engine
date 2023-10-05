@@ -18,6 +18,8 @@
 #include "dt_instrumentation_server.h"
 #include <checksum_crc.h>
 #include "dt_utlvector_send.h"
+#include "utlmap.h"
+#include "convar.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -194,7 +196,7 @@ class CPropCullStack : public CDatatableStack
 {
 public:
 	CPropCullStack(
-		CSendTablePrecalc* pPrecalc,
+		SendTable* pPrecalc,
 		int iClient,
 		const CSendProxyRecipients* pOldStateProxies,
 		const int nOldStateProxies,
@@ -212,7 +214,7 @@ public:
 		m_iClient = iClient;
 	}
 
-	inline unsigned char* CallPropProxy(CSendNode* pNode, int iProp, unsigned char* pStructBase)
+	inline unsigned char* CallPropProxy(SendTable* pNode, int iProp, unsigned char* pStructBase)
 	{
 		if (pNode->GetDataTableProxyIndex() == DATATABLE_PROXY_INDEX_NOPROXY)
 		{
@@ -262,19 +264,19 @@ public:
 		}
 	}
 
-	virtual void RecurseAndCallProxies(CSendNode* pNode, unsigned char* pStructBase)
+	virtual void RecurseAndCallProxies(SendTable* pNode, unsigned char* pStructBase)
 	{
 		// Remember where the game code pointed us for this datatable's data so 
 		m_pProxies[pNode->GetRecursiveProxyIndex()] = pStructBase;
 
 		for (int iChild = 0; iChild < pNode->GetNumChildren(); iChild++)
 		{
-			CSendNode* pCurChild = pNode->GetChild(iChild);
+			SendTable* pCurChild = pNode->GetChild(iChild);
 
 			unsigned char* pNewStructBase = NULL;
 			if (pStructBase)
 			{
-				pNewStructBase = CallPropProxy(pCurChild, pCurChild->m_iDatatableProp, pStructBase);
+				pNewStructBase = CallPropProxy(pCurChild, pCurChild->m_iFlatDatatableProp, pStructBase);
 			}
 
 			RecurseAndCallProxies(pCurChild, pNewStructBase);
@@ -346,7 +348,7 @@ public:
 
 
 private:
-	CSendTablePrecalc* m_pPrecalc;
+	SendTable* m_pPrecalc;
 	int						m_iClient;	// Which client it's encoding out for.
 	const CSendProxyRecipients* m_pOldStateProxies;
 	const int					m_nOldStateProxies;
@@ -370,7 +372,7 @@ private:
 class CEncodeInfo : public CServerDatatableStack
 {
 public:
-	CEncodeInfo(CSendTablePrecalc* pPrecalc, unsigned char* pStructBase, int objectID, bf_write* pOut) :
+	CEncodeInfo(SendTable* pPrecalc, unsigned char* pStructBase, int objectID, bf_write* pOut) :
 		CServerDatatableStack(pPrecalc, pStructBase, objectID),
 		m_DeltaBitsWriter(pOut)
 	{
@@ -951,7 +953,7 @@ SendProp SendPropArray3(
 		}
 	}
 
-	SendTable pTable = SendTable( pProps, elements, pVarName ); // TODO free that again
+	SendTable pTable( pProps, elements, pVarName ); // TODO free that again
 	GetSendTableManager()->RegisteSendTable(&pTable);
 	if (pVarName) {
 		ret.SetDataTableName(COM_StringCopy(pVarName));
@@ -1206,11 +1208,14 @@ int SendProp::GetNumArrayLengthBits() const
 #endif
 }
 
-
+bool PropOffsetLT(const unsigned short& a, const unsigned short& b)
+{
+	return a < b;
+}
 // ---------------------------------------------------------------------- //
 // SendTable
 // ---------------------------------------------------------------------- //
-SendTable::SendTable()
+SendTable::SendTable()// : m_PropOffsetToIndexMap(0, 0, PropOffsetLT)
 {
 	Construct( NULL, 0, NULL );
 	Init();
@@ -1235,6 +1240,40 @@ SendTable::~SendTable()
 	if (this->m_pProps) {
 		delete[] this->m_pProps;
 		this->m_pProps = NULL;
+	}
+	if (m_Children) {
+		m_Children->Purge();
+	}
+
+	//if (m_pSendTable)
+	//	m_pSendTable->m_pPrecalc = 0;
+	if (m_Children) {
+		delete m_Children;
+		m_Children = NULL;
+	}
+	if (m_FlatProps) {
+		delete m_FlatProps;
+		m_FlatProps = NULL;
+	}
+	if (m_FlatDatatableProps) {
+		delete m_FlatDatatableProps;
+		m_FlatDatatableProps = NULL;
+	}
+	if (m_FlatPropProxyIndices) {
+		delete m_FlatPropProxyIndices;
+		m_FlatPropProxyIndices = NULL;
+	}
+	if (m_ProxyPaths) {
+		delete m_ProxyPaths;
+		m_ProxyPaths = NULL;
+	}
+	if (m_ProxyPathEntries) {
+		delete m_ProxyPathEntries;
+		m_ProxyPathEntries = NULL;
+	}
+	if (m_PropOffsetToIndexMap) {
+		delete m_PropOffsetToIndexMap;
+		m_PropOffsetToIndexMap = NULL;
 	}
 }
 
@@ -1263,10 +1302,21 @@ void SendTable::Construct( SendProp *pProps, int nProps, const char *pNetTableNa
 		const SendProp* pSendTableProp = &pProps[iProp];
 		*pProp = *pSendTableProp;
 	}
-	m_pPrecalc = 0;
-	m_bInitialized = false;
+	//m_pPrecalc = 0;
+	//m_bInitialized = false;
 	m_bHasBeenWritten = false;
 	m_bHasPropsEncodedAgainstCurrentTickCount = false;
+
+	m_iFlatDatatableProp = -1;
+	//m_pTable = NULL;
+
+	m_iFirstRecursiveProp = m_nRecursiveProps = 0;
+
+	m_DataTableProxyIndex = DATATABLE_PROXY_INDEX_INVALID; // set it to a questionable value.
+
+	m_pDTITable = NULL;
+	//m_pSendTable = 0;
+	m_nDataTableProxies = 0;
 }
 
 SendTable& SendTable::operator=(const SendTable& srcSendTable) {
@@ -1340,9 +1390,9 @@ static void SendTable_CalcNextVectorElems(SendTable* pTable)
 
 // Spits out warnings for invalid properties and forces property values to
 // be in valid ranges for the encoders and decoders.
-static void SendTable_Validate(CSendTablePrecalc* pPrecalc)
+static void SendTable_Validate(SendTable* pPrecalc)
 {
-	SendTable* pTable = pPrecalc->m_pSendTable;
+	SendTable* pTable = pPrecalc;// ->m_pSendTable;
 	for (int i = 0; i < pTable->m_nProps; i++)
 	{
 		SendProp* pProp = &pTable->m_pProps[i];
@@ -1366,9 +1416,9 @@ static void SendTable_Validate(CSendTablePrecalc* pPrecalc)
 		}
 	}
 
-	for (int i = 0; i < pPrecalc->GetNumProps(); ++i)
+	for (int i = 0; i < pPrecalc->GetNumFlatProps(); ++i)
 	{
-		const SendProp* pProp = pPrecalc->GetProp(i);
+		const SendProp* pProp = pPrecalc->GetFlatProp(i);
 		if (pProp->GetFlags() & SPROP_ENCODED_AGAINST_TICKCOUNT)
 		{
 			pTable->SetHasPropsEncodedAgainstTickcount(true);
@@ -1379,45 +1429,48 @@ static void SendTable_Validate(CSendTablePrecalc* pPrecalc)
 
 bool SendTable::SendTable_InitTable()
 {
-	if (this->m_pPrecalc)
+	if (m_bInited)
 		return true;
+	m_bInited = true;
+	//// Create the CSendTablePrecalc.	
+	//CSendTablePrecalc* pPrecalc = new CSendTablePrecalc;
+	//this->m_pPrecalc = pPrecalc;
 
-	// Create the CSendTablePrecalc.	
-	CSendTablePrecalc* pPrecalc = new CSendTablePrecalc;
-	this->m_pPrecalc = pPrecalc;
-
-	pPrecalc->m_pSendTable = this;
-	this->m_pPrecalc = pPrecalc;
+	//pPrecalc->m_pSendTable = this;
+	//this->m_pPrecalc = pPrecalc;
 
 	SendTable_CalcNextVectorElems(this);
 
 	// Bind the instrumentation if -dti was specified.
-	pPrecalc->m_pDTITable = ServerDTI_HookTable(this);
+	this->m_pDTITable = ServerDTI_HookTable(this);
 
 	// Setup its flat property array.
-	if (!pPrecalc->SetupFlatPropertyArray())
+	if (!this->SetupFlatPropertyArray())
 		return false;
 
-	SendTable_Validate(pPrecalc);
+	this->SetupFlatPropertyArray();
+	this->SetupFlatPropertyArray();
+
+	SendTable_Validate(this);
 	return true;
 }
 
 void SendTable::SendTable_TermTable()
 {
-	if (!this->m_pPrecalc)
+	if (!m_bInited)
 		return;
 
-	delete this->m_pPrecalc;
-	Assert(!this->m_pPrecalc); // Make sure it unbound itself.
+	//delete this->m_pPrecalc;
+	//Assert(!this->m_pPrecalc); // Make sure it unbound itself.
 }
 
 int SendTable::SendTable_GetNumFlatProps()
 {
-	CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
-	ErrorIfNot(pPrecalc,
-		("SendTable_GetNumFlatProps: missing pPrecalc.")
-	);
-	return pPrecalc->GetNumProps();
+	//CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
+	//ErrorIfNot(pPrecalc,
+	//	("SendTable_GetNumFlatProps: missing pPrecalc.")
+	//);
+	return this->GetNumFlatProps();
 }
 
 // compares properties and writes delta properties, it ignores reciepients
@@ -1520,7 +1573,7 @@ void SendTable::SendTable_WritePropList(
 	s_debug_info_shown = false;
 	s_debug_bits_start = pOut->GetNumBitsWritten();
 
-	CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
+	//CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
 	CDeltaBitsWriter deltaBitsWriter(pOut);
 
 	bf_read inputBuffer("SendTable_WritePropList->inputBuffer", pState, BitByte(nBits), nBits);
@@ -1534,7 +1587,7 @@ void SendTable::SendTable_WritePropList(
 		// Seek the 'to' state to the current property we want to check.
 		while (iToProp < (unsigned int)pCheckProps[i])
 		{
-			inputBitsReader.SkipPropData(pPrecalc->GetProp(iToProp));
+			inputBitsReader.SkipPropData(this->GetFlatProp(iToProp));
 			iToProp = inputBitsReader.ReadNextPropIndex();
 		}
 
@@ -1545,7 +1598,7 @@ void SendTable::SendTable_WritePropList(
 
 		if (iToProp == (unsigned int)pCheckProps[i])
 		{
-			const SendProp* pProp = pPrecalc->GetProp(iToProp);
+			const SendProp* pProp = this->GetFlatProp(iToProp);
 
 			// Show debug stuff.
 			if (bDebugWatch)
@@ -1607,7 +1660,7 @@ int SendTable::SendTable_CalcDelta(
 	//	return 0;
 	//}
 
-	CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
+	//CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
 
 	bf_read toBits("SendTable_CalcDelta/toBits", pToState, BitByte(nToBits), nToBits);
 	CDeltaBitsReader toBitsReader(&toBits);
@@ -1626,7 +1679,7 @@ int SendTable::SendTable_CalcDelta(
 			// Skip any properties in the from state that aren't in the to state.
 			while (iFromProp < iToProp)
 			{
-				fromBitsReader.SkipPropData(pPrecalc->GetProp(iFromProp));
+				fromBitsReader.SkipPropData(this->GetFlatProp(iFromProp));
 				iFromProp = fromBitsReader.ReadNextPropIndex();
 			}
 
@@ -1634,7 +1687,7 @@ int SendTable::SendTable_CalcDelta(
 			{
 				// The property is in both states, so compare them and write the index 
 				// if the states are different.
-				if (fromBitsReader.ComparePropData(&toBitsReader, pPrecalc->GetProp(iToProp)))
+				if (fromBitsReader.ComparePropData(&toBitsReader, this->GetFlatProp(iToProp)))
 				{
 					*pDeltaProps++ = iToProp;
 					if (pDeltaProps >= pDeltaPropsEnd)
@@ -1649,7 +1702,7 @@ int SendTable::SendTable_CalcDelta(
 			else
 			{
 				// Only the 'to' state has this property, so just skip its data and register a change.
-				toBitsReader.SkipPropData(pPrecalc->GetProp(iToProp));
+				toBitsReader.SkipPropData(this->GetFlatProp(iToProp));
 				*pDeltaProps++ = iToProp;
 				if (pDeltaProps >= pDeltaPropsEnd)
 				{
@@ -1668,7 +1721,7 @@ int SendTable::SendTable_CalcDelta(
 		{
 			Assert((int)iToProp >= 0 && iToProp < MAX_DATATABLE_PROPS);
 
-			const SendProp* pProp = pPrecalc->GetProp(iToProp);
+			const SendProp* pProp = this->GetFlatProp(iToProp);
 			if (!g_PropTypeFns[pProp->m_Type].IsEncodedZero(pProp, &toBits))
 			{
 				*pDeltaProps++ = iToProp;
@@ -1701,7 +1754,7 @@ int SendTable::SendTable_CullPropsFromProxies(
 	)
 {
 	Assert( !( nNewStateProxies && !pNewStateProxies ) );
-	CPropCullStack stack( this->m_pPrecalc, iClient, pOldStateProxies, nOldStateProxies, pNewStateProxies, nNewStateProxies );
+	CPropCullStack stack( this, iClient, pOldStateProxies, nOldStateProxies, pNewStateProxies, nNewStateProxies );
 	
 	stack.CullPropsFromProxies( pStartProps, nStartProps, pOutProps, nMaxOutProps );
 
@@ -1766,11 +1819,11 @@ bool SendTable::SendTable_Encode(
 	bool bNonZeroOnly
 )
 {
-	CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
-	ErrorIfNot(pPrecalc, ("SendTable_Encode: Missing m_pPrecalc for SendTable %s.", this->m_pNetTableName));
+	//CSendTablePrecalc* pPrecalc = this->m_pPrecalc;
+	//ErrorIfNot(pPrecalc, ("SendTable_Encode: Missing m_pPrecalc for SendTable %s.", this->m_pNetTableName));
 	if (pRecipients)
 	{
-		ErrorIfNot(pRecipients->NumAllocated() >= pPrecalc->GetNumDataTableProxies(), ("SendTable_Encode: pRecipients array too small."));
+		ErrorIfNot(pRecipients->NumAllocated() >= this->GetNumDataTableProxies(), ("SendTable_Encode: pRecipients array too small."));
 	}
 
 	VPROF("SendTable_Encode");
@@ -1778,12 +1831,12 @@ bool SendTable::SendTable_Encode(
 	CServerDTITimer timer(this, SERVERDTI_ENCODE);
 
 	// Setup all the info we'll be walking the tree with.
-	CEncodeInfo info(pPrecalc, (unsigned char*)pStruct, objectID, pOut);
+	CEncodeInfo info(this, (unsigned char*)pStruct, objectID, pOut);
 	info.m_pRecipients = pRecipients;	// optional buffer to store the bits for which clients get what data.
 
 	info.Init();
 
-	int iNumProps = pPrecalc->GetNumProps();
+	int iNumProps = this->GetNumFlatProps();
 
 	for (int iProp = 0; iProp < iNumProps; iProp++)
 	{
@@ -1857,6 +1910,548 @@ bool SendTable::SendTable_CheckIntegrity(const void* pData, const int nDataBits)
 #endif
 
 	return true;
+}
+
+#define PROPINDEX_NUMBITS 12
+#define MAX_TOTAL_SENDTABLE_PROPS	(1 << PROPINDEX_NUMBITS)
+
+
+ConVar g_CV_DTWatchEnt("dtwatchent", "-1", 0, "Watch this entities data table encoding.");
+ConVar g_CV_DTWatchVar("dtwatchvar", "", 0, "Watch the named variable.");
+ConVar g_CV_DTWarning("dtwarning", "0", 0, "Print data table warnings?");
+ConVar g_CV_DTWatchClass("dtwatchclass", "", 0, "Watch all fields encoded with this table.");
+
+
+
+// ----------------------------------------------------------------------------- //
+//
+// CBuildHierarchyStruct
+//
+// Used while building a CSendNode hierarchy.
+//
+// ----------------------------------------------------------------------------- //
+class CBuildHierarchyStruct
+{
+public:
+	const ExcludeProp* m_pExcludeProps;
+	int					m_nExcludeProps;
+
+	const SendProp* m_pDatatableProps[MAX_TOTAL_SENDTABLE_PROPS];
+	int					m_nDatatableProps;
+
+	const SendProp* m_pProps[MAX_TOTAL_SENDTABLE_PROPS];
+	unsigned char		m_PropProxyIndices[MAX_TOTAL_SENDTABLE_PROPS];
+	int					m_nProps;
+
+	unsigned char m_nPropProxies;
+	int m_nDataTableProxies;
+};
+
+
+const ExcludeProp* FindExcludeProp(
+	char const* pTableName,
+	char const* pPropName,
+	const ExcludeProp* pExcludeProps,
+	int nExcludeProps)
+{
+	for (int i = 0; i < nExcludeProps; i++)
+	{
+		if (stricmp(pExcludeProps[i].m_pTableName, pTableName) == 0 && stricmp(pExcludeProps[i].m_pPropName, pPropName) == 0)
+			return &pExcludeProps[i];
+	}
+
+	return NULL;
+}
+
+
+// Fill in a list of all the excluded props.
+static bool SendTable_GetPropsExcluded(const SendTable* pTable, ExcludeProp* pExcludeProps, int& nExcludeProps, int nMaxExcludeProps)
+{
+	for (int i = 0; i < pTable->m_nProps; i++)
+	{
+		SendProp* pProp = &pTable->m_pProps[i];
+
+		if (pProp->IsExcludeProp())
+		{
+			char const* pName = pProp->GetExcludeDTName();
+
+			ErrorIfNot(pName,
+				("Found an exclude prop missing a name.")
+			);
+
+			ErrorIfNot(nExcludeProps < nMaxExcludeProps,
+				("SendTable_GetPropsExcluded: Overflowed max exclude props with %s.", pName)
+			);
+
+			pExcludeProps[nExcludeProps].m_pTableName = pName;
+			pExcludeProps[nExcludeProps].m_pPropName = pProp->GetName();
+			nExcludeProps++;
+		}
+		else if (pProp->GetDataTable())
+		{
+			if (!SendTable_GetPropsExcluded(pProp->GetDataTable(), pExcludeProps, nExcludeProps, nMaxExcludeProps))
+				return false;
+		}
+	}
+
+	return true;
+}
+
+
+// Set the datatable proxy indices in all datatable SendProps.
+static void SetDataTableProxyIndices_R(
+	SendTable* pRoot,
+	CBuildHierarchyStruct* bhs)
+{
+	for (int i = 0; i < pRoot->GetNumChildren(); i++)
+	{
+		SendTable* pNode = pRoot->GetChild(i);
+		const SendProp* pProp = bhs->m_pDatatableProps[pNode->m_iFlatDatatableProp];
+
+		if (pProp->GetFlags() & SPROP_PROXY_ALWAYS_YES)
+		{
+			pNode->SetDataTableProxyIndex(DATATABLE_PROXY_INDEX_NOPROXY);
+		}
+		else
+		{
+			pNode->SetDataTableProxyIndex(bhs->m_nDataTableProxies);
+			bhs->m_nDataTableProxies++;
+		}
+
+		SetDataTableProxyIndices_R(pNode, bhs);
+	}
+}
+
+// Set the datatable proxy indices in all datatable SendProps.
+static void SetRecursiveProxyIndices_R(
+	SendTable* pBaseTable,
+	int& iCurProxyIndex)
+{
+	if (iCurProxyIndex >= CDatatableStack::MAX_PROXY_RESULTS)
+		Error("Too many proxies for datatable %s.", pBaseTable->GetName());
+
+	pBaseTable->SetRecursiveProxyIndex(iCurProxyIndex);
+	iCurProxyIndex++;
+
+	for (int i = 0; i < pBaseTable->GetNumChildren(); i++)
+	{
+		SendTable* pNode = pBaseTable->GetChild(i);
+		SetRecursiveProxyIndices_R(pNode, iCurProxyIndex);
+	}
+}
+
+
+void SendTable_BuildHierarchy(
+	SendTable* pTable,
+	CBuildHierarchyStruct* bhs
+);
+
+
+void SendTable_BuildHierarchy_IterateProps(
+	SendTable* pTable,
+	SendTable* pRoot,
+	CBuildHierarchyStruct* bhs,
+	const SendProp* pNonDatatableProps[MAX_TOTAL_SENDTABLE_PROPS],
+	int& nNonDatatableProps)
+{
+	int i;
+	for (i = 0; i < pRoot->m_nProps; i++)
+	{
+		const SendProp* pProp = &pRoot->m_pProps[i];
+
+		if (pProp->IsExcludeProp() ||
+			pProp->IsInsideArray() ||
+			FindExcludeProp(pRoot->GetName(), pProp->GetName(), bhs->m_pExcludeProps, bhs->m_nExcludeProps))
+		{
+			continue;
+		}
+
+		if (pProp->GetType() == DPT_DataTable)
+		{
+			if (pProp->GetFlags() & SPROP_COLLAPSIBLE)
+			{
+				// This is a base class.. no need to make a new CSendNode (and trigger a bunch of
+				// unnecessary send proxy calls in the datatable stacks).
+				SendTable_BuildHierarchy_IterateProps(
+					pTable,
+					pProp->GetDataTable(),
+					bhs,
+					pNonDatatableProps,
+					nNonDatatableProps);
+			}
+			else
+			{
+				// Setup a child datatable reference.
+				SendTable* pChild = pProp->GetDataTable();
+				if (pChild->m_Children == NULL) {
+					pChild->m_Children = new CUtlVector<SendTable*>;
+				}
+				else {
+					pChild->m_Children->Purge();
+				}
+
+				// Setup a datatable prop for this node to reference (so the recursion
+				// routines can get at the proxy).
+				if (bhs->m_nDatatableProps >= ARRAYSIZE(bhs->m_pDatatableProps))
+					Error("Overflowed datatable prop list in SendTable '%s'.", pTable->GetName());
+
+				bhs->m_pDatatableProps[bhs->m_nDatatableProps] = pProp;
+				pChild->m_iFlatDatatableProp = bhs->m_nDatatableProps;
+				++bhs->m_nDatatableProps;
+
+				pTable->m_Children->AddToTail(pChild);
+
+				// Recurse into the new child datatable.
+				SendTable_BuildHierarchy(pChild, bhs);
+			}
+		}
+		else
+		{
+			if (nNonDatatableProps >= MAX_TOTAL_SENDTABLE_PROPS)
+				Error("SendTable_BuildHierarchy: overflowed non-datatable props with '%s'.", pProp->GetName());
+
+			pNonDatatableProps[nNonDatatableProps] = pProp;
+			++nNonDatatableProps;
+		}
+	}
+}
+
+
+void SendTable_BuildHierarchy(
+	SendTable* pTable,
+	CBuildHierarchyStruct* bhs
+)
+{
+	pTable->m_iFirstRecursiveProp = bhs->m_nProps;
+
+	Assert(bhs->m_nPropProxies < 255);
+	unsigned char curPropProxy = bhs->m_nPropProxies;
+	++bhs->m_nPropProxies;
+
+	const SendProp* pNonDatatableProps[MAX_TOTAL_SENDTABLE_PROPS];
+	int nNonDatatableProps = 0;
+
+	// First add all the child datatables.
+	SendTable_BuildHierarchy_IterateProps(
+		pTable,
+		pTable,
+		bhs,
+		pNonDatatableProps,
+		nNonDatatableProps);
+
+
+	// Now add the properties.
+
+	// Make sure there's room, then just copy the pointers from the loop above.
+	ErrorIfNot(bhs->m_nProps + nNonDatatableProps < ARRAYSIZE(bhs->m_pProps),
+		("SendTable_BuildHierarchy: overflowed prop buffer.")
+	);
+
+	for (int i = 0; i < nNonDatatableProps; i++)
+	{
+		bhs->m_pProps[bhs->m_nProps] = pNonDatatableProps[i];
+		bhs->m_PropProxyIndices[bhs->m_nProps] = curPropProxy;
+		++bhs->m_nProps;
+	}
+
+	pTable->m_nRecursiveProps = bhs->m_nProps - pTable->m_iFirstRecursiveProp;
+}
+
+void SendTable_SortByPriority(CBuildHierarchyStruct* bhs)
+{
+	int i, start = 0;
+
+	while (true)
+	{
+		for (i = start; i < bhs->m_nProps; i++)
+		{
+			const SendProp* p = bhs->m_pProps[i];
+			unsigned char c = bhs->m_PropProxyIndices[i];
+
+			if (p->GetFlags() & SPROP_CHANGES_OFTEN)
+			{
+				bhs->m_pProps[i] = bhs->m_pProps[start];
+				bhs->m_PropProxyIndices[i] = bhs->m_PropProxyIndices[start];
+				bhs->m_pProps[start] = p;
+				bhs->m_PropProxyIndices[start] = c;
+				start++;
+				break;
+			}
+		}
+
+		if (i == bhs->m_nProps)
+			return;
+	}
+}
+
+
+void CalcPathLengths_R(SendTable* pNode, int curPathLength, int& totalPathLengths)//CUtlVector<int> &pathLengths, 
+{
+	//pathLengths[pNode->GetRecursiveProxyIndex()] = curPathLength;
+	totalPathLengths += curPathLength;
+
+	for (int i = 0; i < pNode->GetNumChildren(); i++)
+	{
+		CalcPathLengths_R(pNode->GetChild(i), curPathLength + 1, totalPathLengths);//pathLengths, 
+	}
+}
+
+
+void FillPathEntries_R(SendTable* pPrecalc, SendTable* pNode, SendTable* pParent, int& iCurEntry)
+{
+	// Fill in this node's path.
+	SendTable::CProxyPath& outProxyPath = (*pPrecalc->m_ProxyPaths)[pNode->GetRecursiveProxyIndex()];
+	outProxyPath.m_iFirstEntry = (unsigned short)iCurEntry;
+
+	// Copy all the proxies leading to the parent.
+	if (pParent)
+	{
+		SendTable::CProxyPath& parentProxyPath = (*pPrecalc->m_ProxyPaths)[pParent->GetRecursiveProxyIndex()];
+		outProxyPath.m_nEntries = parentProxyPath.m_nEntries + 1;
+
+		for (int i = 0; i < parentProxyPath.m_nEntries; i++)
+			(*pPrecalc->m_ProxyPathEntries)[iCurEntry++] = (*pPrecalc->m_ProxyPathEntries)[parentProxyPath.m_iFirstEntry + i];
+
+		// Now add this node's own proxy.
+		(*pPrecalc->m_ProxyPathEntries)[iCurEntry].m_iProxy = pNode->GetRecursiveProxyIndex();
+		(*pPrecalc->m_ProxyPathEntries)[iCurEntry].m_iDatatableProp = pNode->m_iFlatDatatableProp;
+		++iCurEntry;
+	}
+	else
+	{
+		outProxyPath.m_nEntries = 0;
+	}
+
+	for (int i = 0; i < pNode->GetNumChildren(); i++)
+	{
+		FillPathEntries_R(pPrecalc, pNode->GetChild(i), pNode, iCurEntry);
+	}
+}
+
+
+void SendTable_GenerateProxyPaths(SendTable* pPrecalc, int nProxyIndices)
+{
+	// Initialize the array.
+	pPrecalc->m_ProxyPaths->SetSize(nProxyIndices);
+	for (int i = 0; i < nProxyIndices; i++)
+		(*pPrecalc->m_ProxyPaths)[i].m_iFirstEntry = (*pPrecalc->m_ProxyPaths)[i].m_nEntries = 0xFFFF;
+
+	// Figure out how long the path down the tree is to each node.
+	int totalPathLengths = 0;
+	//CUtlVector<int> pathLengths;
+	//pathLengths.SetSize( nProxyIndices );
+	//memset( pathLengths.Base(), 0, sizeof( pathLengths[0] ) * nProxyIndices );
+	CalcPathLengths_R(pPrecalc, 0, totalPathLengths);
+
+	// 
+	int iCurEntry = 0;
+	pPrecalc->m_ProxyPathEntries->SetSize(totalPathLengths);
+	FillPathEntries_R(pPrecalc, pPrecalc, NULL, iCurEntry);
+}
+
+
+bool SendTable::SetupFlatPropertyArray()
+{
+	if (m_bFlatPropInited) {
+		//Error("m_bFlatPropInited inited");
+	}
+	m_bFlatPropInited = true;
+	if (m_Children == NULL) {
+		m_Children = new CUtlVector<SendTable*>;
+	}
+	else {
+		m_Children->Purge();
+	}
+	if (m_FlatProps == NULL) {
+		m_FlatProps = new CUtlVector<const SendProp*>;
+	}
+	else {
+		m_FlatProps->Purge();
+	}
+	if (m_FlatDatatableProps == NULL) {
+		m_FlatDatatableProps = new CUtlVector<const SendProp*>;
+	}
+	else {
+		m_FlatDatatableProps->Purge();
+	}
+	if (m_FlatPropProxyIndices == NULL) {
+		m_FlatPropProxyIndices = new CUtlVector<unsigned char>;
+	}
+	else {
+		m_FlatPropProxyIndices->Purge();
+	}
+	m_nDataTableProxies = 0;
+	if (m_ProxyPaths == NULL) {
+		m_ProxyPaths = new CUtlVector<CProxyPath>;
+	}
+	else {
+		m_ProxyPaths->Purge();
+	}
+	if (m_ProxyPathEntries == NULL) {
+		m_ProxyPathEntries = new CUtlVector<CProxyPathEntry>;
+	}
+	else {
+		m_ProxyPathEntries->Purge();
+	}
+	if (m_PropOffsetToIndexMap == NULL) {
+		m_PropOffsetToIndexMap = new CUtlMap<unsigned short, unsigned short>(0, 0, PropOffsetLT);
+	}
+	else {
+		m_PropOffsetToIndexMap->Purge();
+	}
+	
+
+	// First go through and set SPROP_INSIDEARRAY when appropriate, and set array prop pointers.
+	SetupArrayProps_R<SendTable, SendTable::PropType>(this);
+
+	// Make a list of which properties are excluded.
+	ExcludeProp excludeProps[MAX_EXCLUDE_PROPS];
+	int nExcludeProps = 0;
+	if (!SendTable_GetPropsExcluded(this, excludeProps, nExcludeProps, MAX_EXCLUDE_PROPS))
+		return false;
+
+	// Now build the hierarchy.
+	CBuildHierarchyStruct bhs;
+	bhs.m_pExcludeProps = excludeProps;
+	bhs.m_nExcludeProps = nExcludeProps;
+	bhs.m_nProps = 0;
+	bhs.m_nDatatableProps = 0;
+	bhs.m_nPropProxies = 0;
+	bhs.m_nDataTableProxies = 0;
+	SendTable_BuildHierarchy(this, &bhs);
+
+	//SendTable_SortByPriority(&bhs);
+
+	// Copy the SendProp pointers into the precalc.	
+	MEM_ALLOC_CREDIT();
+	m_FlatProps->CopyArray(bhs.m_pProps, bhs.m_nProps);
+	m_FlatDatatableProps->CopyArray(bhs.m_pDatatableProps, bhs.m_nDatatableProps);
+	m_FlatPropProxyIndices->CopyArray(bhs.m_PropProxyIndices, bhs.m_nProps);
+
+	// Assign the datatable proxy indices.
+	SetNumDataTableProxies(0);
+	SetDataTableProxyIndices_R(this, &bhs);
+	m_nDataTableProxies = bhs.m_nDataTableProxies;
+
+	int nProxyIndices = 0;
+	SetRecursiveProxyIndices_R(this, nProxyIndices);
+	SendTable_GenerateProxyPaths(this, nProxyIndices);
+
+	return true;
+}
+
+
+// ---------------------------------------------------------------------------------------- //
+// Helpers.
+// ---------------------------------------------------------------------------------------- //
+
+// Compares two arrays of bits.
+// Returns true if they are equal.
+bool AreBitArraysEqual(
+	void const* pvBits1,
+	void const* pvBits2,
+	int nBits)
+{
+	unsigned int const* pBits1 = (unsigned int const*)pvBits1;
+	unsigned int const* pBits2 = (unsigned int const*)pvBits2;
+
+	// Compare words.
+	int nWords = nBits >> 5;
+	for (int i = 0; i < nWords; ++i)
+	{
+		if (pBits1[i] != pBits2[i])
+			return false;
+	}
+
+	if (nBits & 31)
+	{
+		// Compare remaining bits.
+		unsigned int mask = (1 << (nBits & 31)) - 1;
+		return ((pBits1[nWords] ^ pBits2[nWords]) & mask) == 0;
+	}
+
+	return true;
+}
+
+
+// Does a fast memcmp-based test to determine if the two bit arrays are different.
+// Returns true if they are equal.
+bool CompareBitArrays(
+	void const* pPacked1,
+	void const* pPacked2,
+	int nBits1,
+	int nBits2
+)
+{
+	if (nBits1 >= 0 && nBits1 == nBits2)
+	{
+		if (pPacked1 == pPacked2)
+		{
+			return true;
+		}
+		else
+		{
+			return AreBitArraysEqual(pPacked1, pPacked2, nBits1);
+		}
+	}
+	else
+		return false;
+}
+
+// Looks at the DTWatchEnt and DTWatchProp console variables and returns true
+// if the user wants to watch this property.
+bool ShouldWatchThisProp(const SendTable* pTable, int objectID, const char* pPropName)
+{
+	if (g_CV_DTWatchEnt.GetInt() != -1 &&
+		g_CV_DTWatchEnt.GetInt() == objectID)
+	{
+		const char* pStr = g_CV_DTWatchVar.GetString();
+		if (pStr && pStr[0] != 0)
+		{
+			return stricmp(pStr, pPropName) == 0;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	if (g_CV_DTWatchClass.GetString()[0] && Q_stristr(pTable->GetName(), g_CV_DTWatchClass.GetString()))
+		return true;
+
+	return false;
+}
+
+bool Sendprop_UsingDebugWatch()
+{
+	if (g_CV_DTWatchEnt.GetInt() != -1)
+		return true;
+
+	if (g_CV_DTWatchClass.GetString()[0])
+		return true;
+
+	return false;
+}
+
+
+// Prints a datatable warning into the console.
+void DataTable_Warning(const char* pInMessage, ...)
+{
+	char msg[4096];
+	va_list marker;
+
+#if 0
+#if !defined(_DEBUG)
+	if (!g_CV_DTWarning.GetInt())
+		return;
+#endif
+#endif
+
+	va_start(marker, pInMessage);
+	Q_vsnprintf(msg, sizeof(msg), pInMessage, marker);
+	va_end(marker);
+
+	Warning("DataTable warning: %s", msg);
 }
 
 SendTable* SendTableManager::RegisteSendTable(SendTable* pSrcSendTable) {
@@ -1994,7 +2589,7 @@ void SendTableManager::SendTable_PrintStats(void)
 
 		numTables++;
 		numSendProps += st->GetNumProps();
-		numFlatProps += st->m_pPrecalc->GetNumProps();
+		numFlatProps += st->GetNumFlatProps();
 
 		for (int j = 0; j < st->GetNumProps(); j++)
 		{

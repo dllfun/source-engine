@@ -95,7 +95,7 @@ public:
 	SendTable			*m_pSendTable;
 
 	// This is from the data that we've received from the server.
-	CSendTablePrecalc	m_Precalc;
+	//CSendTablePrecalc	m_Precalc;
 
 	// This mirrors m_Precalc.m_Props. 
 	CUtlVector<const RecvProp*>	m_Props;
@@ -116,7 +116,7 @@ inline const char* CRecvDecoder::GetName() const
 
 inline SendTable* CRecvDecoder::GetSendTable() const
 {
-	return m_Precalc.GetSendTable(); 
+	return m_pSendTable; 
 }
 
 inline RecvTable* CRecvDecoder::GetRecvTable() const
@@ -148,7 +148,7 @@ inline const RecvProp* CRecvDecoder::GetProp( int i ) const
 
 inline const SendProp* CRecvDecoder::GetSendProp( int i ) const
 {
-	return m_Precalc.GetProp( i );
+	return m_pSendTable->GetFlatProp( i );
 }
 
 inline int CRecvDecoder::GetNumDatatableProps() const

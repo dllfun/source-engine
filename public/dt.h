@@ -217,242 +217,242 @@ inline CDeltaBitsWriter::~CDeltaBitsWriter()
 //
 // ----------------------------------------------------------------------------- //
 
-class CSendNode
-{
-public:
-
-					CSendNode();
-					~CSendNode();
-
-	int				GetNumChildren() const;
-	CSendNode*		GetChild( int i ) const;
-	
-	
-	// Returns true if the specified prop is in this node or any of its children.
-	bool			IsPropInRecursiveProps( int i ) const;
-
-	// Each datatable property (without SPROP_PROXY_ALWAYS_YES set) gets a unique index here.
-	// The engine stores arrays of CSendProxyRecipients with the results of the proxies and indexes the results
-	// with this index.
-	//
-	// Returns DATATABLE_PROXY_INDEX_NOPROXY if the property has SPROP_PROXY_ALWAYS_YES set.
-	unsigned short	GetDataTableProxyIndex() const;
-	void			SetDataTableProxyIndex( unsigned short val );
-
-	// Similar to m_DataTableProxyIndex, but doesn't use DATATABLE_PROXY_INDEX_INVALID,
-	// so this can be used to index CDataTableStack::m_pProxies. 
-	unsigned short	GetRecursiveProxyIndex() const;
-	void			SetRecursiveProxyIndex( unsigned short val );
-
-
-public:
-
-	// Child datatables.
-	CUtlVector<CSendNode*>	m_Children;
-
-	// The datatable property that leads us to this CSendNode.
-	// This indexes the CSendTablePrecalc or CRecvDecoder's m_DatatableProps list.
-	// The root CSendNode sets this to -1.
-	short					m_iDatatableProp;
-
-	// The SendTable that this node represents.
-	// ALL CSendNodes have this.
-	const SendTable	*m_pTable;
-
-	//
-	// Properties in this table.
-	//
-
-	// m_iFirstRecursiveProp to m_nRecursiveProps defines the list of propertise
-	// of this node and all its children.
-	unsigned short	m_iFirstRecursiveProp;
-	unsigned short	m_nRecursiveProps;
-
-
-	// See GetDataTableProxyIndex().
-	unsigned short	m_DataTableProxyIndex;
-	
-	// See GetRecursiveProxyIndex().
-	unsigned short	m_RecursiveProxyIndex;
-};
-
-
-inline int CSendNode::GetNumChildren() const
-{
-	return m_Children.Count(); 
-}
-
-inline CSendNode* CSendNode::GetChild( int i ) const
-{
-	return m_Children[i];
-}
+//class CSendNode
+//{
+//public:
+//
+//					CSendNode();
+//					~CSendNode();
+//
+//	int				GetNumChildren() const;
+//	CSendNode*		GetChild( int i ) const;
+//	
+//	
+//	// Returns true if the specified prop is in this node or any of its children.
+//	bool			IsPropInRecursiveProps( int i ) const;
+//
+//	// Each datatable property (without SPROP_PROXY_ALWAYS_YES set) gets a unique index here.
+//	// The engine stores arrays of CSendProxyRecipients with the results of the proxies and indexes the results
+//	// with this index.
+//	//
+//	// Returns DATATABLE_PROXY_INDEX_NOPROXY if the property has SPROP_PROXY_ALWAYS_YES set.
+//	unsigned short	GetDataTableProxyIndex() const;
+//	void			SetDataTableProxyIndex( unsigned short val );
+//
+//	// Similar to m_DataTableProxyIndex, but doesn't use DATATABLE_PROXY_INDEX_INVALID,
+//	// so this can be used to index CDataTableStack::m_pProxies. 
+//	unsigned short	GetRecursiveProxyIndex() const;
+//	void			SetRecursiveProxyIndex( unsigned short val );
+//
+//
+//public:
+//
+//	// Child datatables.
+//	CUtlVector<CSendNode*>	m_Children;
+//
+//	// The datatable property that leads us to this CSendNode.
+//	// This indexes the CSendTablePrecalc or CRecvDecoder's m_DatatableProps list.
+//	// The root CSendNode sets this to -1.
+//	short					m_iFlatDatatableProp;
+//
+//	// The SendTable that this node represents.
+//	// ALL CSendNodes have this.
+//	const SendTable	*m_pTable;
+//
+//	//
+//	// Properties in this table.
+//	//
+//
+//	// m_iFirstRecursiveProp to m_nRecursiveProps defines the list of propertise
+//	// of this node and all its children.
+//	unsigned short	m_iFirstRecursiveProp;
+//	unsigned short	m_nRecursiveProps;
+//
+//
+//	// See GetDataTableProxyIndex().
+//	unsigned short	m_DataTableProxyIndex;
+//	
+//	// See GetRecursiveProxyIndex().
+//	unsigned short	m_RecursiveProxyIndex;
+//};
 
 
-inline bool CSendNode::IsPropInRecursiveProps( int i ) const
-{
-	int index = i - (int)m_iFirstRecursiveProp;
-	return index >= 0 && index < m_nRecursiveProps;
-}
+//inline int CSendNode::GetNumChildren() const
+//{
+//	return m_Children.Count(); 
+//}
+//
+//inline CSendNode* CSendNode::GetChild( int i ) const
+//{
+//	return m_Children[i];
+//}
+//
+//
+//inline bool CSendNode::IsPropInRecursiveProps( int i ) const
+//{
+//	int index = i - (int)m_iFirstRecursiveProp;
+//	return index >= 0 && index < m_nRecursiveProps;
+//}
+//
+//inline unsigned short CSendNode::GetDataTableProxyIndex() const
+//{
+//	Assert( m_DataTableProxyIndex != DATATABLE_PROXY_INDEX_INVALID );	// Make sure it's been set before.
+//	return m_DataTableProxyIndex;
+//}
+//
+//inline void CSendNode::SetDataTableProxyIndex( unsigned short val )
+//{
+//	m_DataTableProxyIndex = val;
+//}
+//
+//inline unsigned short CSendNode::GetRecursiveProxyIndex() const
+//{
+//	return m_RecursiveProxyIndex;
+//}
+//
+//inline void CSendNode::SetRecursiveProxyIndex( unsigned short val )
+//{
+//	m_RecursiveProxyIndex = val;
+//}
 
-inline unsigned short CSendNode::GetDataTableProxyIndex() const
-{
-	Assert( m_DataTableProxyIndex != DATATABLE_PROXY_INDEX_INVALID );	// Make sure it's been set before.
-	return m_DataTableProxyIndex;
-}
-
-inline void CSendNode::SetDataTableProxyIndex( unsigned short val )
-{
-	m_DataTableProxyIndex = val;
-}
-
-inline unsigned short CSendNode::GetRecursiveProxyIndex() const
-{
-	return m_RecursiveProxyIndex;
-}
-
-inline void CSendNode::SetRecursiveProxyIndex( unsigned short val )
-{
-	m_RecursiveProxyIndex = val;
-}
 
 
-
-class CFastLocalTransferPropInfo
-{
-public:
-	unsigned short	m_iRecvOffset;
-	unsigned short	m_iSendOffset;
-	unsigned short	m_iProp;
-};
-
-
-class CFastLocalTransferInfo
-{
-public:
-	CUtlVector<CFastLocalTransferPropInfo> m_FastInt32;
-	CUtlVector<CFastLocalTransferPropInfo> m_FastInt16;
-	CUtlVector<CFastLocalTransferPropInfo> m_FastInt8;
-	CUtlVector<CFastLocalTransferPropInfo> m_FastVector;
-	CUtlVector<CFastLocalTransferPropInfo> m_OtherProps;	// Props that must be copied slowly (proxies and all).
-};
+//class CFastLocalTransferPropInfo
+//{
+//public:
+//	unsigned short	m_iRecvOffset;
+//	unsigned short	m_iSendOffset;
+//	unsigned short	m_iProp;
+//};
+//
+//
+//class CFastLocalTransferInfo
+//{
+//public:
+//	CUtlVector<CFastLocalTransferPropInfo> m_FastInt32;
+//	CUtlVector<CFastLocalTransferPropInfo> m_FastInt16;
+//	CUtlVector<CFastLocalTransferPropInfo> m_FastInt8;
+//	CUtlVector<CFastLocalTransferPropInfo> m_FastVector;
+//	CUtlVector<CFastLocalTransferPropInfo> m_OtherProps;	// Props that must be copied slowly (proxies and all).
+//};
 
 
 // ----------------------------------------------------------------------------- //
 // CSendTablePrecalc
 // ----------------------------------------------------------------------------- //
-class CSendTablePrecalc
-{
-public:
-						CSendTablePrecalc();
-	virtual				~CSendTablePrecalc();
-
-	// This function builds the flat property array given a SendTable.
-	bool				SetupFlatPropertyArray();
-
-	int					GetNumProps() const;
-	const SendProp*		GetProp( int i ) const;
-
-	int					GetNumDatatableProps() const;
-	const SendProp*		GetDatatableProp( int i ) const;
-
-	SendTable*			GetSendTable() const;
-	CSendNode*			GetRootNode();
-
-	int			GetNumDataTableProxies() const;
-	void		SetNumDataTableProxies( int count );
-
-
-public:
-
-	class CProxyPathEntry
-	{
-	public:
-		unsigned short m_iDatatableProp;	// Lookup into CSendTablePrecalc or CRecvDecoder::m_DatatableProps.
-		unsigned short m_iProxy;
-	};
-	class CProxyPath
-	{
-	public:
-		unsigned short m_iFirstEntry;	// Index into m_ProxyPathEntries.
-		unsigned short m_nEntries;
-	};
-	
-	CUtlVector<CProxyPathEntry> m_ProxyPathEntries;	// For each proxy index, this is all the DT proxies that generate it.
-	CUtlVector<CProxyPath> m_ProxyPaths;			// CProxyPathEntries lookup into this.
-	
-	// These are what CSendNodes reference.
-	// These are actual data properties (ints, floats, etc).
-	CUtlVector<const SendProp*>	m_Props;
-
-	// Each datatable in a SendTable's tree gets a proxy index, and its properties reference that.
-	CUtlVector<unsigned char> m_PropProxyIndices;
-	
-	// CSendNode::m_iDatatableProp indexes this.
-	// These are the datatable properties (SendPropDataTable).
-	CUtlVector<const SendProp*>	m_DatatableProps;
-
-	// This is the property hierarchy, with the nodes indexing m_Props.
-	CSendNode				m_Root;
-
-	// From whence we came.
-	SendTable				*m_pSendTable;
-
-	// For instrumentation.
-	CDTISendTable			*m_pDTITable;
-
-	// This is precalculated in single player to allow faster direct copying of the entity data
-	// from the server entity to the client entity.
-	CFastLocalTransferInfo	m_FastLocalTransfer;
-
-	// This tells how many data table properties there are without SPROP_PROXY_ALWAYS_YES.
-	// Arrays allocated with this size can be indexed by CSendNode::GetDataTableProxyIndex().
-	int						m_nDataTableProxies;
-	
-	// Map prop offsets to indices for properties that can use it.
-	CUtlMap<unsigned short, unsigned short> m_PropOffsetToIndexMap;
-};
-
-
-inline int CSendTablePrecalc::GetNumProps() const
-{
-	return m_Props.Count(); 
-}
-
-inline const SendProp* CSendTablePrecalc::GetProp( int i ) const
-{
-	return m_Props[i]; 
-}
-
-inline int CSendTablePrecalc::GetNumDatatableProps() const
-{
-	return m_DatatableProps.Count();
-}
-
-inline const SendProp* CSendTablePrecalc::GetDatatableProp( int i ) const
-{
-	return m_DatatableProps[i];
-}
-
-inline SendTable* CSendTablePrecalc::GetSendTable() const
-{
-	return m_pSendTable; 
-}
-
-inline CSendNode* CSendTablePrecalc::GetRootNode()
-{
-	return &m_Root; 
-}
-
-inline int CSendTablePrecalc::GetNumDataTableProxies() const
-{
-	return m_nDataTableProxies;
-}
+//class CSendTablePrecalc
+//{
+//public:
+//						CSendTablePrecalc();
+//	virtual				~CSendTablePrecalc();
+//
+//	// This function builds the flat property array given a SendTable.
+//	bool				SetupFlatPropertyArray();
+//
+//	int					GetNumFlatProps() const;
+//	const SendProp*		GetFlatProp( int i ) const;
+//
+//	int					GetNumFlatDatatableProps() const;
+//	const SendProp*		GetFlatDatatableProp( int i ) const;
+//
+//	SendTable*			GetSendTable() const;
+//	CSendNode*			GetRootNode();
+//
+//	int			GetNumDataTableProxies() const;
+//	void		SetNumDataTableProxies( int count );
+//
+//
+//public:
+//
+//	class CProxyPathEntry
+//	{
+//	public:
+//		unsigned short m_iDatatableProp;	// Lookup into CSendTablePrecalc or CRecvDecoder::m_DatatableProps.
+//		unsigned short m_iProxy;
+//	};
+//	class CProxyPath
+//	{
+//	public:
+//		unsigned short m_iFirstEntry;	// Index into m_ProxyPathEntries.
+//		unsigned short m_nEntries;
+//	};
+//	
+//	CUtlVector<CProxyPathEntry> m_ProxyPathEntries;	// For each proxy index, this is all the DT proxies that generate it.
+//	CUtlVector<CProxyPath> m_ProxyPaths;			// CProxyPathEntries lookup into this.
+//	
+//	// These are what CSendNodes reference.
+//	// These are actual data properties (ints, floats, etc).
+//	CUtlVector<const SendProp*>	m_FlatProps;
+//
+//	// Each datatable in a SendTable's tree gets a proxy index, and its properties reference that.
+//	CUtlVector<unsigned char> m_FlatPropProxyIndices;
+//	
+//	// CSendNode::m_iDatatableProp indexes this.
+//	// These are the datatable properties (SendPropDataTable).
+//	CUtlVector<const SendProp*>	m_FlatDatatableProps;
+//
+//	// This is the property hierarchy, with the nodes indexing m_Props.
+//	CSendNode				m_Root;
+//
+//	// From whence we came.
+//	SendTable				*m_pSendTable;
+//
+//	// For instrumentation.
+//	CDTISendTable			*m_pDTITable;
+//
+//	// This is precalculated in single player to allow faster direct copying of the entity data
+//	// from the server entity to the client entity.
+//	CFastLocalTransferInfo	m_FastLocalTransfer;
+//
+//	// This tells how many data table properties there are without SPROP_PROXY_ALWAYS_YES.
+//	// Arrays allocated with this size can be indexed by CSendNode::GetDataTableProxyIndex().
+//	int						m_nDataTableProxies;
+//	
+//	// Map prop offsets to indices for properties that can use it.
+//	CUtlMap<unsigned short, unsigned short> m_PropOffsetToIndexMap;
+//};
 
 
-inline void CSendTablePrecalc::SetNumDataTableProxies( int count )
-{
-	m_nDataTableProxies = count;
-}					   
+//inline int CSendTablePrecalc::GetNumFlatProps() const
+//{
+//	return m_FlatProps.Count(); 
+//}
+//
+//inline const SendProp* CSendTablePrecalc::GetFlatProp( int i ) const
+//{
+//	return m_FlatProps[i]; 
+//}
+//
+//inline int CSendTablePrecalc::GetNumFlatDatatableProps() const
+//{
+//	return m_FlatDatatableProps.Count();
+//}
+//
+//inline const SendProp* CSendTablePrecalc::GetFlatDatatableProp( int i ) const
+//{
+//	return m_FlatDatatableProps[i];
+//}
+//
+//inline SendTable* CSendTablePrecalc::GetSendTable() const
+//{
+//	return m_pSendTable; 
+//}
+//
+//inline CSendNode* CSendTablePrecalc::GetRootNode()
+//{
+//	return &m_Root; 
+//}
+//
+//inline int CSendTablePrecalc::GetNumDataTableProxies() const
+//{
+//	return m_nDataTableProxies;
+//}
+//
+//
+//inline void CSendTablePrecalc::SetNumDataTableProxies( int count )
+//{
+//	m_nDataTableProxies = count;
+//}					   
 
 
 // ------------------------------------------------------------------------ //
@@ -489,10 +489,10 @@ template< class TableType, class PropType >
 void SetupArrayProps_R( TableType *pTable )
 {
 	// If this table has already been initialized in here, then jump out.
-	if ( pTable->IsInitialized() )
-		return;
+	//if ( pTable->IsInitialized() )
+	//	return;
 
-	pTable->SetInitialized( true );
+	//pTable->SetInitialized( true );
 
 	for ( int i=0; i < pTable->GetNumProps(); i++ )
 	{
@@ -506,8 +506,10 @@ void SetupArrayProps_R( TableType *pTable )
 
 			// Get the property defining the elements in the array.
 			PropType *pArrayProp = pTable->GetProp( i-1 );
-			pArrayProp->SetInsideArray();
-			pProp->SetArrayProp( pArrayProp );
+			if (!pArrayProp->IsInsideArray()) {
+				pArrayProp->SetInsideArray();
+				pProp->SetArrayProp(pArrayProp);
+			}
 		}
 		else if ( pProp->GetType() == DPT_DataTable )
 		{

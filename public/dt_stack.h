@@ -33,7 +33,7 @@ abstract_class CDatatableStack
 {
 public:
 	
-							CDatatableStack( CSendTablePrecalc *pPrecalc, unsigned char *pStructBase, int objectID );
+							CDatatableStack( SendTable *pPrecalc, unsigned char *pStructBase, int objectID );
 
 	// This must be called before accessing properties.
 	void Init( bool bExplicitRoutes=false );
@@ -52,11 +52,11 @@ public:
 
 	// Derived classes must implement this. The server gets one and the client gets one.
 	// It calls the proxy to move to the next datatable's data.
-	virtual void RecurseAndCallProxies( CSendNode *pNode, unsigned char *pStructBase ) = 0;
+	virtual void RecurseAndCallProxies( SendTable *pNode, unsigned char *pStructBase ) = 0;
 
 
 public:
-	CSendTablePrecalc *m_pPrecalc;
+	SendTable *m_pPrecalc;
 	
 	enum
 	{
@@ -80,12 +80,12 @@ protected:
 
 inline bool CDatatableStack::IsPropProxyValid(int iProp ) const
 {
-	return m_pProxies[m_pPrecalc->m_PropProxyIndices[iProp]] != 0;
+	return m_pProxies[(*m_pPrecalc->m_FlatPropProxyIndices)[iProp]] != 0;
 }
 
 inline bool CDatatableStack::IsCurProxyValid() const
 {
-	return m_pProxies[m_pPrecalc->m_PropProxyIndices[m_iCurProp]] != 0;
+	return m_pProxies[(*m_pPrecalc->m_FlatPropProxyIndices)[m_iCurProp]] != 0;
 }
 
 inline int CDatatableStack::GetCurPropIndex() const
@@ -95,7 +95,7 @@ inline int CDatatableStack::GetCurPropIndex() const
 
 inline unsigned char* CDatatableStack::GetCurStructBase() const
 {
-	return m_pProxies[m_pPrecalc->m_PropProxyIndices[m_iCurProp]]; 
+	return m_pProxies[(*m_pPrecalc->m_FlatPropProxyIndices)[m_iCurProp]];
 }
 
 inline void CDatatableStack::SeekToProp( int iProp )
@@ -103,7 +103,7 @@ inline void CDatatableStack::SeekToProp( int iProp )
 	Assert( m_bInitted );
 	
 	m_iCurProp = iProp;
-	m_pCurProp = m_pPrecalc->GetProp( iProp );
+	m_pCurProp = m_pPrecalc->GetFlatProp( iProp );
 }
 
 inline int CDatatableStack::GetObjectID() const
@@ -119,7 +119,7 @@ template< class DTStack, class ProxyCaller >
 inline unsigned char* UpdateRoutesExplicit_Template( DTStack *pStack, ProxyCaller *caller )
 {
 	// Early out.
-	unsigned short iPropProxyIndex = pStack->m_pPrecalc->m_PropProxyIndices[pStack->m_iCurProp];
+	unsigned short iPropProxyIndex = (*pStack->m_pPrecalc->m_FlatPropProxyIndices)[pStack->m_iCurProp];
 	unsigned char **pTest = &pStack->m_pProxies[iPropProxyIndex];
 	if ( *pTest != (unsigned char*)-1 )
 		return *pTest;
@@ -127,10 +127,10 @@ inline unsigned char* UpdateRoutesExplicit_Template( DTStack *pStack, ProxyCalle
 	// Ok.. setup this proxy.
 	unsigned char *pStructBase = pStack->m_pStructBase;
 	
-	CSendTablePrecalc::CProxyPath &proxyPath = pStack->m_pPrecalc->m_ProxyPaths[iPropProxyIndex];
+	SendTable::CProxyPath &proxyPath = (*pStack->m_pPrecalc->m_ProxyPaths)[iPropProxyIndex];
 	for ( unsigned short i=0; i < proxyPath.m_nEntries; i++ )
 	{
-		CSendTablePrecalc::CProxyPathEntry *pEntry = &pStack->m_pPrecalc->m_ProxyPathEntries[proxyPath.m_iFirstEntry + i];
+		SendTable::CProxyPathEntry *pEntry = &(*pStack->m_pPrecalc->m_ProxyPathEntries)[proxyPath.m_iFirstEntry + i];
 		int iProxy = pEntry->m_iProxy;
 		
 		if ( pStack->m_pProxies[iProxy] == (unsigned char*)-1 )
@@ -157,12 +157,12 @@ class CClientDatatableStack : public CDatatableStack
 {
 public:
 						CClientDatatableStack( CRecvDecoder *pDecoder, unsigned char *pStructBase, int objectID ) :
-							CDatatableStack( &pDecoder->m_Precalc, pStructBase, objectID )
+							CDatatableStack( pDecoder->m_pSendTable, pStructBase, objectID )
 						{
 							m_pDecoder = pDecoder;
 						}
 
-	inline unsigned char*	CallPropProxy( CSendNode *pNode, int iProp, unsigned char *pStructBase )
+	inline unsigned char*	CallPropProxy( SendTable *pNode, int iProp, unsigned char *pStructBase )
 	{
 		const RecvProp *pProp = m_pDecoder->GetDatatableProp( iProp );
 
@@ -184,19 +184,19 @@ public:
 		return (unsigned char*)pVal;
 	}
 
-	virtual void RecurseAndCallProxies( CSendNode *pNode, unsigned char *pStructBase )
+	virtual void RecurseAndCallProxies( SendTable *pNode, unsigned char *pStructBase )
 	{
 		// Remember where the game code pointed us for this datatable's data so 
 		m_pProxies[pNode->GetRecursiveProxyIndex()] = pStructBase;
 
 		for ( int iChild=0; iChild < pNode->GetNumChildren(); iChild++ )
 		{
-			CSendNode *pCurChild = pNode->GetChild( iChild );
+			SendTable *pCurChild = pNode->GetChild( iChild );
 			
 			unsigned char *pNewStructBase = NULL;
 			if ( pStructBase )
 			{
-				pNewStructBase = CallPropProxy( pCurChild, pCurChild->m_iDatatableProp, pStructBase );
+				pNewStructBase = CallPropProxy( pCurChild, pCurChild->m_iFlatDatatableProp, pStructBase );
 			}
 
 			RecurseAndCallProxies( pCurChild, pNewStructBase );
@@ -237,16 +237,16 @@ public:
 class CServerDatatableStack : public CDatatableStack
 {
 public:
-						CServerDatatableStack( CSendTablePrecalc *pPrecalc, unsigned char *pStructBase, int objectID ) :
+						CServerDatatableStack( SendTable *pPrecalc, unsigned char *pStructBase, int objectID ) :
 							CDatatableStack( pPrecalc, pStructBase, objectID )
 						{
 							m_pPrecalc = pPrecalc;
 							m_pRecipients = NULL;
 						}
 
-	inline unsigned char*	CallPropProxy( CSendNode *pNode, int iProp, unsigned char *pStructBase )
+	inline unsigned char*	CallPropProxy( SendTable *pNode, int iProp, unsigned char *pStructBase )
 	{
-		const SendProp *pProp = m_pPrecalc->GetDatatableProp( iProp );
+		const SendProp *pProp = m_pPrecalc->GetFlatDatatableProp( iProp );
 
 		CSendProxyRecipients *pRecipients;
 
@@ -273,19 +273,19 @@ public:
 		return pRet;
 	}
 
-	virtual void RecurseAndCallProxies( CSendNode *pNode, unsigned char *pStructBase )
+	virtual void RecurseAndCallProxies( SendTable *pNode, unsigned char *pStructBase )
 	{
 		// Remember where the game code pointed us for this datatable's data so 
 		m_pProxies[pNode->GetRecursiveProxyIndex()] = pStructBase;
 
 		for ( int iChild=0; iChild < pNode->GetNumChildren(); iChild++ )
 		{
-			CSendNode *pCurChild = pNode->GetChild( iChild );
+			SendTable *pCurChild = pNode->GetChild( iChild );
 			
 			unsigned char *pNewStructBase = NULL;
 			if ( pStructBase )
 			{
-				pNewStructBase = CallPropProxy( pCurChild, pCurChild->m_iDatatableProp, pStructBase );
+				pNewStructBase = CallPropProxy( pCurChild, pCurChild->m_iFlatDatatableProp, pStructBase );
 			}
 
 			if (pNewStructBase != pStructBase) {
@@ -304,7 +304,7 @@ public:
 	public:
 		static inline unsigned char* CallProxy( CServerDatatableStack *pStack, unsigned char *pStructBase, unsigned short iDatatableProp )
 		{
-			const SendProp *pProp = pStack->m_pPrecalc->GetDatatableProp( iDatatableProp );
+			const SendProp *pProp = pStack->m_pPrecalc->GetFlatDatatableProp( iDatatableProp );
 			
 			return (unsigned char*)pProp->GetDataTableProxyFn()( 
 				pProp,
@@ -327,14 +327,14 @@ public:
 
 public:
 	
-	CSendTablePrecalc					*m_pPrecalc;
+	SendTable					*m_pPrecalc;
 	CUtlMemory<CSendProxyRecipients>	*m_pRecipients;
 };
 
 
 inline const SendProp* CServerDatatableStack::GetCurProp() const
 {
-	return m_pPrecalc->GetProp( GetCurPropIndex() );
+	return m_pPrecalc->GetFlatProp( GetCurPropIndex() );
 }
 
 

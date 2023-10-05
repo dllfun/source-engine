@@ -1357,8 +1357,8 @@ bool RecvTableManager::DataTable_SetupReceiveTableFromSendTable(SendTable* sendT
 		pDecoder->m_pTable = pRecvTable;
 
 		pDecoder->m_pSendTable = pSendTable;
-		pDecoder->m_Precalc.m_pSendTable = pSendTable;
-		pSendTable->m_pPrecalc = &pDecoder->m_Precalc;
+		//pDecoder->m_Precalc.m_pSendTable = pSendTable;
+		//pSendTable->m_pPrecalc = &pDecoder->m_Precalc;
 
 		// Initialize array properties.
 		SetupArrayProps_R<RecvTable, RecvTable::PropType>(pRecvTable);
@@ -1474,7 +1474,7 @@ bool RecvTableManager::RecvTable_CreateDecoders(const CStandardSendProxies* pSen
 
 
 		// For each decoder, precalculate the SendTable's flat property list.
-		if (!pDecoder->m_Precalc.SetupFlatPropertyArray())
+		if (!pDecoder->m_pSendTable->SetupFlatPropertyArray())
 			return false;
 
 		CUtlRBTree< MatchingProp_t, unsigned short >	PropLookup(0, 0, MatchingProp_t::LessFunc);
@@ -1484,9 +1484,9 @@ bool RecvTableManager::RecvTable_CreateDecoders(const CStandardSendProxies* pSen
 			return false;
 
 		// Now fill out the matching RecvProp array.
-		CSendTablePrecalc* pPrecalc = &pDecoder->m_Precalc;
-		CopySendPropsToRecvProps(PropLookup, pPrecalc->m_Props, pDecoder->m_Props);
-		CopySendPropsToRecvProps(PropLookup, pPrecalc->m_DatatableProps, pDecoder->m_DatatableProps);
+		SendTable* pPrecalc = pDecoder->m_pSendTable;
+		CopySendPropsToRecvProps(PropLookup, *pPrecalc->m_FlatProps, pDecoder->m_Props);
+		CopySendPropsToRecvProps(PropLookup, *pPrecalc->m_FlatDatatableProps, pDecoder->m_DatatableProps);
 
 		DTI_HookRecvDecoder(pDecoder);
 	}

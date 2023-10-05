@@ -169,7 +169,7 @@ SendProp SendPropUtlVector(
 
 	//char *pLengthProxyTableName = AllocateUniqueDataTableName( true, "_LPT_%s_%d", pVarName, nMaxElements );
 	Q_snprintf(buf, sizeof(buf), "_LPT_%s_%d", pVarName, nMaxElements);
-	SendTable pLengthTable = SendTable( pLengthProp, 1, buf);
+	SendTable pLengthTable( pLengthProp, 1, buf);
 	GetSendTableManager()->RegisteSendTable(&pLengthTable);
 	pProps[0] = SendPropDataTable( "lengthproxy", 0, buf, SendProxy_LengthTable );//pLengthTable
 	CSendPropExtra_UtlVector* pExtraData3 = new CSendPropExtra_UtlVector;
@@ -209,7 +209,7 @@ SendProp SendPropUtlVector(
 
 	//const char* pTableName = AllocateUniqueDataTableName(true, "_ST_%s_%d", pVarName, nMaxElements);
 	Q_snprintf(buf, sizeof(buf), "_ST_%s_%d", pVarName, nMaxElements);
-	SendTable pTable = SendTable( 
+	SendTable pTable( 
 		pProps, 
 		nMaxElements+1, 
 		buf

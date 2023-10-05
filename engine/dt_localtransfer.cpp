@@ -69,20 +69,20 @@ inline void LocalTransfer_FastType(
 	}
 }
 
-void AddPropOffsetToMap( CSendTablePrecalc *pPrecalc, int iInProp, int iInOffset )
+void AddPropOffsetToMap( SendTable *pPrecalc, int iInProp, int iInOffset )
 {
 	Assert( iInProp < 0xFFFF && iInOffset < 0xFFFF );	
 	unsigned short iProp = (unsigned short)iInProp;
 	unsigned short iOffset = (unsigned short)iInOffset;
 	
-	unsigned short iOldIndex = pPrecalc->m_PropOffsetToIndexMap.Find( iOffset );
+	unsigned short iOldIndex = pPrecalc->m_PropOffsetToIndexMap->Find( iOffset );
 
-	if ( iOldIndex != pPrecalc->m_PropOffsetToIndexMap.InvalidIndex() )
+	if ( iOldIndex != pPrecalc->m_PropOffsetToIndexMap->InvalidIndex() )
 	{
 		return;
 	}
 		
-	pPrecalc->m_PropOffsetToIndexMap.Insert( iOffset, iProp );
+	pPrecalc->m_PropOffsetToIndexMap->Insert( iOffset, iProp );
 }
 
 // This helps us figure out which properties can use the super-optimized mode
@@ -92,7 +92,7 @@ void AddPropOffsetToMap( CSendTablePrecalc *pPrecalc, int iInProp, int iInOffset
 class CPropMapStack : public CDatatableStack
 {
 public:
-						CPropMapStack( CSendTablePrecalc *pPrecalc, const CStandardSendProxies *pSendProxies ) :
+						CPropMapStack( SendTable *pPrecalc, const CStandardSendProxies *pSendProxies ) :
 							CDatatableStack( pPrecalc, (unsigned char*)1, -1 )
 						{
 							m_pPropMapStackPrecalc = pPrecalc;
@@ -121,12 +121,12 @@ public:
 		return false;
 	}
 
-	inline unsigned char*	CallPropProxy( CSendNode *pNode, int iProp, unsigned char *pStructBase )
+	inline unsigned char*	CallPropProxy( SendTable *pNode, int iProp, unsigned char *pStructBase )
 	{
 		if ( !pStructBase )
 			return 0;
 		
-		const SendProp *pProp = m_pPropMapStackPrecalc->GetDatatableProp( iProp );
+		const SendProp *pProp = m_pPropMapStackPrecalc->GetFlatDatatableProp( iProp );
 		if ( IsNonPointerModifyingProxy( pProp->GetDataTableProxyFn(), m_pSendProxies ) )
 		{
 			// Note: these are offset by 1 (see the constructor), otherwise it won't recurse
@@ -139,19 +139,19 @@ public:
 		}
 	}
 
-	virtual void RecurseAndCallProxies( CSendNode *pNode, unsigned char *pStructBase )
+	virtual void RecurseAndCallProxies( SendTable *pNode, unsigned char *pStructBase )
 	{
 		// Remember where the game code pointed us for this datatable's data so 
 		m_pProxies[ pNode->GetRecursiveProxyIndex() ] = pStructBase;
 
 		for ( int iChild=0; iChild < pNode->GetNumChildren(); iChild++ )
 		{
-			CSendNode *pCurChild = pNode->GetChild( iChild );
+			SendTable *pCurChild = pNode->GetChild( iChild );
 			
 			unsigned char *pNewStructBase = NULL;
 			if ( pStructBase )
 			{
-				pNewStructBase = CallPropProxy( pCurChild, pCurChild->m_iDatatableProp, pStructBase );
+				pNewStructBase = CallPropProxy( pCurChild, pCurChild->m_iFlatDatatableProp, pStructBase );
 			}
 
 			RecurseAndCallProxies( pCurChild, pNewStructBase );
@@ -159,22 +159,22 @@ public:
 	}
 
 public:
-	CSendTablePrecalc *m_pPropMapStackPrecalc;
+	SendTable *m_pPropMapStackPrecalc;
 	const CStandardSendProxies *m_pSendProxies;
 };
 
 
-void BuildPropOffsetToIndexMap( CSendTablePrecalc *pPrecalc, const CStandardSendProxies *pSendProxies )
+void BuildPropOffsetToIndexMap( SendTable *pPrecalc, const CStandardSendProxies *pSendProxies )
 {
 	CPropMapStack pmStack( pPrecalc, pSendProxies );
 	pmStack.Init();
 	
-	for ( int i=0; i < pPrecalc->m_Props.Count(); i++ )
+	for ( int i=0; i < pPrecalc->m_FlatProps->Count(); i++ )
 	{
 		pmStack.SeekToProp( i );
 		if ( pmStack.GetCurStructBase() != 0 )
 		{
-			const SendProp *pProp = pPrecalc->m_Props[i];
+			const SendProp *pProp = (*pPrecalc->m_FlatProps)[i];
 			
 			intp offset = pProp->GetOffset() + (intp)pmStack.GetCurStructBase() - 1;
 			int elementCount = 1;
@@ -215,10 +215,10 @@ void LocalTransfer_InitFastCopy(
 	int &nFastCopyProps
 	)
 {
-	CSendTablePrecalc *pPrecalc = pSendTable->m_pPrecalc;
+	SendTable* pPrecalc = (SendTable*)pSendTable;// ->m_pPrecalc;
 
 	// Setup the offset-to-index map.
-	pPrecalc->m_PropOffsetToIndexMap.RemoveAll();
+	pPrecalc->m_PropOffsetToIndexMap->RemoveAll();
 	BuildPropOffsetToIndexMap( pPrecalc, pSendProxies );
 
 	// Clear the old lists.
@@ -229,10 +229,10 @@ void LocalTransfer_InitFastCopy(
 	pPrecalc->m_FastLocalTransfer.m_OtherProps.Purge();
 	
 	CRecvDecoder *pDecoder = pRecvTable->m_pDecoder;
-	int iNumProp = pPrecalc->GetNumProps();
+	int iNumProp = pPrecalc->GetNumFlatProps();
 	for ( int iProp=0; iProp < iNumProp; iProp++ )
 	{
-		const SendProp *pSendProp = pPrecalc->GetProp( iProp );
+		const SendProp *pSendProp = pPrecalc->GetFlatProp( iProp );
 		const RecvProp *pRecvProp = pDecoder->GetProp( iProp );
 
 		if ( pRecvProp )
@@ -294,7 +294,7 @@ void LocalTransfer_InitFastCopy(
 
 inline int MapPropOffsetsToIndices( 
 	const edict_t *pEdict,
-	CSendTablePrecalc *pPrecalc, 
+	SendTable *pPrecalc, 
 	const unsigned short *pOffsets,
 	unsigned short nOffsets,
 	unsigned short *pOut )
@@ -303,8 +303,8 @@ inline int MapPropOffsetsToIndices(
 	
 	for ( unsigned short i=0; i < nOffsets; i++ )
 	{
-		unsigned short index = pPrecalc->m_PropOffsetToIndexMap.Find( pOffsets[i] );
-		if ( index == pPrecalc->m_PropOffsetToIndexMap.InvalidIndex() )
+		unsigned short index = pPrecalc->m_PropOffsetToIndexMap->Find( pOffsets[i] );
+		if ( index == pPrecalc->m_PropOffsetToIndexMap->InvalidIndex() )
 		{
 			// Note: this SHOULD be fine. In all known cases, when NetworkStateChanged is called with
 			// an offset, there should be a corresponding SendProp in order for that NetworkStateChanged
@@ -323,7 +323,7 @@ inline int MapPropOffsetsToIndices(
 			{
 				static CUtlDict<int,int> testDict;
 				char str[512];
-				Q_snprintf( str, sizeof( str ), "LocalTransfer offset miss - class: %s, DT: %s, offset: %d", pEdict->GetClassName(), pPrecalc->m_pSendTable->m_pNetTableName, pOffsets[i] );
+				Q_snprintf( str, sizeof( str ), "LocalTransfer offset miss - class: %s, DT: %s, offset: %d", pEdict->GetClassName(), pPrecalc->m_pNetTableName, pOffsets[i] );//m_pSendTable->
 				if ( testDict.Find( str ) == testDict.InvalidIndex() )
 				{
 					testDict.Insert( str );
@@ -333,7 +333,7 @@ inline int MapPropOffsetsToIndices(
 		}
 		else
 		{
-			unsigned short propIndex = pPrecalc->m_PropOffsetToIndexMap[index];
+			unsigned short propIndex = (*pPrecalc->m_PropOffsetToIndexMap)[index];
 	
 			if ( propIndex & PROP_INDEX_VECTOR_ELEM_MARKER )
 			{
@@ -341,14 +341,14 @@ inline int MapPropOffsetsToIndices(
 				unsigned short curOffset = pOffsets[i];
 				for ( int iVectorElem=0; iVectorElem < 3; iVectorElem++ )
 				{
-					index = pPrecalc->m_PropOffsetToIndexMap.Find( curOffset );
+					index = pPrecalc->m_PropOffsetToIndexMap->Find( curOffset );
 					if ( index == 0xFFFF )
 					{
 						break;
 					}
 					else
 					{
-						propIndex = pPrecalc->m_PropOffsetToIndexMap[index];
+						propIndex = (*pPrecalc->m_PropOffsetToIndexMap)[index];
 						if ( propIndex & PROP_INDEX_VECTOR_ELEM_MARKER )
 							pOut[iOut++] = (propIndex & ~PROP_INDEX_VECTOR_ELEM_MARKER);
 					}
@@ -494,7 +494,7 @@ void LocalTransfer_TransferEntity(
 		 dt_UsePartialChangeEnts.GetInt()
 		 )
 	{
-		CSendTablePrecalc *pPrecalc = pSendTable->m_pPrecalc;
+		SendTable* pPrecalc = (SendTable*)pSendTable;// ->m_pPrecalc;
 
 		int nChangeOffsets = MapPropOffsetsToIndices( pEdict, pPrecalc, pCI->m_ChangeOffsets, pCI->m_nChangeOffsets, propIndices );
 		if ( nChangeOffsets == 0 )
@@ -543,7 +543,7 @@ void LocalTransfer_TransferEntity(
 	else
 	{
 		// Setup the structure to traverse the source tree.
-		CSendTablePrecalc *pPrecalc = pSendTable->m_pPrecalc;
+		SendTable* pPrecalc = (SendTable*)pSendTable;// ->m_pPrecalc;
 		ErrorIfNot( pPrecalc, ("SendTable_Encode: Missing m_pPrecalc for SendTable %s.", pSendTable->m_pNetTableName) );
 		CServerDatatableStack serverStack( pPrecalc, (unsigned char*)pSrcEnt, objectID );
 		serverStack.Init();
