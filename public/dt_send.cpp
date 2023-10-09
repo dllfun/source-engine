@@ -931,9 +931,9 @@ SendProp SendPropArray3(
 	ret.SetOffset( offset );
 	ret.SetDataTableProxyFn( varProxy );
 	
-	SendProp *pArrayPropAllocated = new SendProp;
-	*pArrayPropAllocated = pArrayProp;
-	ret.SetArrayProp( pArrayPropAllocated );
+	//SendProp *pArrayPropAllocated = new SendProp;
+	//*pArrayPropAllocated = pArrayProp;
+	//ret.SetArrayProp( pArrayPropAllocated );
 	
 	// Handle special proxy types where they always let all clients get the results.
 	if ( varProxy == SendProxy_DataTableToDataTable || varProxy == SendProxy_DataTablePtrToDataTable )

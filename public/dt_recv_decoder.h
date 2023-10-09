@@ -25,21 +25,21 @@ class RecvProp;
 // data we need to store.
 // ------------------------------------------------------------------------------------ //
 
-class CClientSendProp
-{
-public:
-
-				CClientSendProp();
-				~CClientSendProp();
-
-	const char*	GetTableName()				{ return m_pTableName; }
-	void		SetTableName( char *pName )	{ m_pTableName = pName; }
-		
-
-private:
-
-	char	*m_pTableName;	// For DPT_DataTable properties.. this tells the table name.
-};
+//class CClientSendProp
+//{
+//public:
+//
+//				CClientSendProp();
+//				~CClientSendProp();
+//
+//	const char*	GetTableName()				{ return m_pTableName; }
+//	void		SetTableName( char *pName )	{ m_pTableName = pName; }
+//		
+//
+//private:
+//
+//	char	*m_pTableName;	// For DPT_DataTable properties.. this tells the table name.
+//};
 
 
 //
@@ -47,24 +47,24 @@ private:
 // from the server. It stores these, then builds CRecvDecoders that allow it to
 // decode packets of data.
 //
-class CClientSendTable
-{
-public:
-								CClientSendTable() = default;
-								~CClientSendTable();
-	
-	int							GetNumProps() const		{ return m_SendTable.m_nProps; }
-	CClientSendProp*			GetClientProp( int i )	{ return &m_Props[i]; }
-	
-	const char*					GetName()				{ return m_SendTable.GetName(); }
-	SendTable*					GetSendTable()			{ return &m_SendTable; }
-
-
-public:
-
-	SendTable					m_SendTable;
-	CUtlVector<CClientSendProp>	m_Props;	// Extra data for the properties.
-};
+//class CClientSendTable
+//{
+//public:
+//								CClientSendTable() = default;
+//								~CClientSendTable();
+//	
+//	int							GetNumProps() const		{ return m_SendTable.m_nProps; }
+//	CClientSendProp*			GetClientProp( int i )	{ return &m_Props[i]; }
+//	
+//	const char*					GetName()				{ return m_SendTable.GetName(); }
+//	SendTable*					GetSendTable()			{ return &m_SendTable; }
+//
+//
+//public:
+//
+//	SendTable					m_SendTable;
+//	CUtlVector<CClientSendProp>	m_Props;	// Extra data for the properties.
+//};
 
 
 // ------------------------------------------------------------------------------------ //
