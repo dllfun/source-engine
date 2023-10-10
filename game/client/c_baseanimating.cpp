@@ -1215,7 +1215,7 @@ void C_BaseAnimating::DelayedInitModelEffects( void )
 
 	// Parse the keyvalues and see if they want to make ropes on this model.
 	KeyValues * modelKeyValues = new KeyValues("");
-	if ( modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//  modelinfo modelinfo  GetModelIndex()  GetModelIndex() 
+	if (GetModel() && modelKeyValues->LoadFromBuffer(GetModel()->GetModelName(), GetModel()->GetModelKeyValueText() ) )//  modelinfo modelinfo  GetModelIndex()  GetModelIndex() 
 	{
 		// Do we have a cables section?
 		KeyValues *pkvAllCables = modelKeyValues->FindKey("Cables");

@@ -116,10 +116,10 @@ void CServerNetworkProperty::DetachEdict()
 //-----------------------------------------------------------------------------
 // Entity handles
 //-----------------------------------------------------------------------------
-IHandleEntity *CServerNetworkProperty::GetEntityHandle( )
-{
-	return m_pOuter;
-}
+//IHandleEntity *CServerNetworkProperty::GetEntityHandle( )
+//{
+//	return m_pOuter;
+//}
 
 //void CServerNetworkProperty::Release()
 //{

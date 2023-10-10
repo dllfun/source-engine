@@ -31,7 +31,7 @@ public:
 
 public:
 // IServerNetworkable implementation.
-	virtual IHandleEntity  *GetEntityHandle( );
+	//virtual IHandleEntity  *GetEntityHandle( );
 	virtual bool			HasEdict() const;
 	virtual edict_t			*GetEdict() const;
 	virtual CBaseNetworkable* GetBaseNetworkable();

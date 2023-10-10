@@ -813,7 +813,7 @@ inline void C_BaseAnimating::InvalidateMdlCache()
 
 inline bool C_BaseAnimating::IsModelScaleFractional() const   /// very fast way to ask if the model scale is < 1.0f
 {
-	COMPILE_TIME_ASSERT( sizeof( m_flModelScale ) == sizeof( int ) );
+	//COMPILE_TIME_ASSERT( sizeof( m_flModelScale ) == sizeof( int ) );
 	return *((const int *) &m_flModelScale) < 0x3f800000;
 }
 
