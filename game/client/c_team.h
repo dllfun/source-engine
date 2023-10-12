@@ -82,13 +82,13 @@ public:
 		RecvPropInt(RECVINFO(m_iRoundsWon)),
 		RecvPropString(RECVINFO(m_szTeamname)),
 
-		RecvPropArray2(
-			RecvProxyArrayLength_PlayerArray,
-			RecvPropInt("player_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_PlayerList),
+		RecvPropInternalArray(
 			MAX_PLAYERS,
 			0,
-			"player_array"
-		)
+			"player_array",
+			RecvPropInt("player_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_PlayerList),
+			RecvProxyArrayLength_PlayerArray
+			)
 	END_RECV_TABLE(DT_Team)
 	END_INIT_RECV_TABLE()
 };

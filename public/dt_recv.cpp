@@ -144,7 +144,7 @@ CRenamedRecvTableInfo* g_pRenamedRecvTableInfoHead = 0;
 // Prop setup functions (for building tables).
 // ---------------------------------------------------------------------- //
 
-RecvProp RecvPropFloat(
+RecvPropFloat::RecvPropFloat(
 	const char* pVarName,
 	int offset,
 	int sizeofVar,
@@ -152,7 +152,7 @@ RecvProp RecvPropFloat(
 	RecvVarProxyFn varProxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 #ifdef _DEBUG
 	if (varProxy == RecvProxy_FloatToFloat)
@@ -162,17 +162,22 @@ RecvProp RecvPropFloat(
 #endif
 
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset(offset);
-	ret.m_RecvType = DPT_Float;
-	ret.m_Flags = flags;
-	ret.SetProxyFn(varProxy);
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_Float;
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
 
-	return ret;
+	//return ret;
 }
 
-RecvProp RecvPropVector(
+RecvPropFloat& RecvPropFloat::operator=(const RecvPropFloat& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
+
+RecvPropVector::RecvPropVector(
 	const char* pVarName,
 	int offset,
 	int sizeofVar,
@@ -180,7 +185,7 @@ RecvProp RecvPropVector(
 	RecvVarProxyFn varProxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 #ifdef _DEBUG
 	if (varProxy == RecvProxy_VectorToVector)
@@ -190,17 +195,22 @@ RecvProp RecvPropVector(
 #endif
 
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset(offset);
-	ret.m_RecvType = DPT_Vector;
-	ret.m_Flags = flags;
-	ret.SetProxyFn(varProxy);
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_Vector;
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
 
-	return ret;
+	//return ret;
 }
 
-RecvProp RecvPropVectorXY(
+RecvPropVector& RecvPropVector::operator=(const RecvPropVector& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
+
+RecvPropVectorXY::RecvPropVectorXY(
 	const char* pVarName,
 	int offset,
 	int sizeofVar,
@@ -208,7 +218,7 @@ RecvProp RecvPropVectorXY(
 	RecvVarProxyFn varProxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 #ifdef _DEBUG
 	if (varProxy == RecvProxy_VectorToVector)
@@ -218,14 +228,19 @@ RecvProp RecvPropVectorXY(
 #endif
 
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset(offset);
-	ret.m_RecvType = DPT_VectorXY;
-	ret.m_Flags = flags;
-	ret.SetProxyFn(varProxy);
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_VectorXY;
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
 
-	return ret;
+	//return ret;
+}
+
+RecvPropVectorXY& RecvPropVectorXY::operator=(const RecvPropVectorXY& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
 }
 
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
@@ -259,7 +274,7 @@ RecvProp RecvPropQuaternion(
 }
 #endif
 
-RecvProp RecvPropInt(
+RecvPropInt::RecvPropInt(
 	const char* pVarName,
 	int offset,
 	int sizeofVar,
@@ -267,7 +282,7 @@ RecvProp RecvPropInt(
 	RecvVarProxyFn varProxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 	// If they didn't specify a proxy, then figure out what type we're writing to.
 	if (varProxy == NULL)
@@ -298,21 +313,26 @@ RecvProp RecvPropInt(
 	}
 
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset(offset);
+	this->SetOffset(offset);
 #ifdef SUPPORTS_INT64
-	ret.m_RecvType = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
+	this->m_RecvType = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
 #else
-	ret.m_RecvType = DPT_Int;
+	this->m_RecvType = DPT_Int;
 #endif
-	ret.m_Flags = flags;
-	ret.SetProxyFn(varProxy);
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
 
-	return ret;
+	//return ret;
 }
 
-RecvProp RecvPropString(
+RecvPropInt& RecvPropInt::operator=(const RecvPropInt& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
+
+RecvPropString::RecvPropString(
 	const char* pVarName,
 	int offset,
 	int bufferSize,
@@ -320,21 +340,26 @@ RecvProp RecvPropString(
 	RecvVarProxyFn varProxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset(offset);
-	ret.m_RecvType = DPT_String;
-	ret.m_Flags = flags;
-	ret.m_StringBufferSize = bufferSize;
-	ret.SetProxyFn(varProxy);
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_String;
+	this->m_Flags = flags;
+	this->m_StringBufferSize = bufferSize;
+	this->SetProxyFn(varProxy);
 
-	return ret;
+	//return ret;
 }
 
-RecvProp RecvPropDataTable(
+RecvPropString& RecvPropString::operator=(const RecvPropString& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
+
+RecvPropDataTable::RecvPropDataTable(
 	const char* pVarName,
 	int offset,
 	int flags,
@@ -342,85 +367,105 @@ RecvProp RecvPropDataTable(
 	DataTableRecvVarProxyFn varProxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset(offset);
-	ret.m_RecvType = DPT_DataTable;
-	ret.m_Flags = flags;
-	ret.SetDataTableProxyFn(varProxy);
-	ret.SetDataTable(NULL);
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_DataTable;
+	this->m_Flags = flags;
+	this->SetDataTableProxyFn(varProxy);
+	this->SetDataTable(NULL);
 	if (pTableName) {
-		ret.SetDataTableName(COM_StringCopy(pTableName));
+		this->SetDataTableName(COM_StringCopy(pTableName));
 	}
 
-	return ret;
+	//return ret;
 }
 
-RecvProp RecvPropArray3(
+RecvPropDataTable& RecvPropDataTable::operator=(const RecvPropDataTable& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
+
+RecvPropArray3::RecvPropArray3(
 	const char* pVarName,
 	int offset,
 	int sizeofVar,
 	int elements,
-	RecvProp pArrayProp,
+	RecvProp&& pArrayProp,
 	DataTableRecvVarProxyFn varProxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 	Assert(elements <= MAX_ARRAY_ELEMENTS);
 
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset(offset);
-	ret.m_RecvType = DPT_DataTable;
-	ret.SetDataTableProxyFn(varProxy);
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_DataTable;
+	this->SetDataTableProxyFn(varProxy);
 
-	RecvProp* pProps = new RecvProp[elements]; // TODO free that again
+	RecvProp **pProps = new RecvProp*[elements]; // TODO free that again
 
 	//const char* pParentArrayPropName = ("%s", pVarName);//AllocateStringHelper()
 
 	for (int i = 0; i < elements; i++)
 	{
-		pProps[i] = pArrayProp; // copy basic property settings 
-		pProps[i].SetOffset(i * sizeofVar); // adjust offset
-		pProps[i].m_pVarName = COM_StringCopy(s_ClientElementNames[i]); // give unique name
+		pProps[i] = new RecvProp;
+		*pProps[i] = pArrayProp; // copy basic property settings 
+		pProps[i]->SetOffset(i * sizeofVar); // adjust offset
+		pProps[i]->m_pVarName = COM_StringCopy(s_ClientElementNames[i]); // give unique name
 		if (pVarName) {
-			pProps[i].SetParentArrayPropName(COM_StringCopy(pVarName)); // For debugging...
+			pProps[i]->SetParentArrayPropName(COM_StringCopy(pVarName)); // For debugging...
 		}
 	}
 
 	RecvTable pTable = RecvTable(pProps, elements, pVarName); // TODO free that again
 	GetRecvTableManager()->RegisteRecvTable(&pTable);
 	if (pVarName) {
-		ret.SetDataTableName(COM_StringCopy(pVarName));
+		this->SetDataTableName(COM_StringCopy(pVarName));
 	}
-	//ret.SetDataTable(pTable);
+	//this->SetDataTable(pTable);
+	for (int i = 0; i < elements; i++) {
+		delete pProps[i];
+	}
 
-	return ret;
+	//return ret;
 }
 
-RecvProp InternalRecvPropArray(
+RecvPropArray3& RecvPropArray3::operator=(const RecvPropArray3& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
+
+RecvPropInternalArray::RecvPropInternalArray(
 	const int elementCount,
 	const int elementStride,
 	const char* pName,
+	RecvProp&& pArrayProp,
 	ArrayLengthRecvProxyFn proxy
 )
 {
-	RecvProp ret;
+	//RecvProp ret;
 
-	ret.InitArray(elementCount, elementStride);
+	this->InitArray(elementCount, elementStride);
 	if (pName) {
-		ret.m_pVarName = COM_StringCopy(pName);
+		this->m_pVarName = COM_StringCopy(pName);
 	}
-	ret.SetArrayLengthProxy(proxy);
-
-	return ret;
+	this->SetArrayLengthProxy(proxy);
+	this->m_pArrayProp = new RecvProp();
+	*this->m_pArrayProp = pArrayProp;
+	//return ret;
 }
 
+RecvPropInternalArray& RecvPropInternalArray::operator=(const RecvPropInternalArray& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
 
 // ---------------------------------------------------------------------- //
 // Proxies.
@@ -574,6 +619,64 @@ RecvProp::~RecvProp()
 	}
 }
 
+RecvProp::RecvProp(const RecvProp& srcRecvProp) {
+	if (this->m_pVarName) {
+		delete this->m_pVarName;
+		this->m_pVarName = NULL;
+	}
+	if (srcRecvProp.m_pVarName) {
+		this->m_pVarName = COM_StringCopy(srcRecvProp.m_pVarName);
+	}
+	this->m_RecvType = (SendPropType)srcRecvProp.m_RecvType;
+	this->m_Flags = srcRecvProp.m_Flags;
+	this->m_StringBufferSize = srcRecvProp.m_StringBufferSize;
+	this->m_bInsideArray = srcRecvProp.m_bInsideArray;
+	if (this->m_pExtraData) {
+		delete this->m_pExtraData;
+		this->m_pExtraData = NULL;
+	}
+	if (srcRecvProp.m_pExtraData) {
+		this->m_pExtraData = new CRecvPropExtra_UtlVector();
+		*(CRecvPropExtra_UtlVector*)this->m_pExtraData = *(CRecvPropExtra_UtlVector*)srcRecvProp.m_pExtraData;
+	}
+	if (this->m_pArrayProp && !this->m_pArrayProp->IsInsideArray()) {
+		delete this->m_pArrayProp;
+		this->m_pArrayProp = NULL;
+	}
+	if (srcRecvProp.m_pArrayProp) {
+		this->m_pArrayProp = new RecvProp;
+		*this->m_pArrayProp = *srcRecvProp.m_pArrayProp;
+	}
+	this->m_ArrayLengthProxy = srcRecvProp.m_ArrayLengthProxy;
+	this->m_ProxyFn = srcRecvProp.m_ProxyFn;
+	this->m_DataTableProxyFn = srcRecvProp.m_DataTableProxyFn;
+	if (this->m_pDataTableName) {
+		delete this->m_pDataTableName;
+		this->m_pDataTableName = NULL;
+	}
+	if (srcRecvProp.m_pDataTableName) {
+		this->m_pDataTableName = COM_StringCopy(srcRecvProp.m_pDataTableName);
+	}
+	if (this->m_pDataTable) {
+		delete this->m_pDataTable;
+		this->m_pDataTable = NULL;
+	}
+	if (srcRecvProp.m_pDataTable) {
+		this->m_pDataTable = new RecvTable();
+		*this->m_pDataTable = *srcRecvProp.m_pDataTable;
+	}
+	this->m_Offset = srcRecvProp.m_Offset;
+	this->m_ElementStride = srcRecvProp.m_ElementStride;
+	this->m_nElements = srcRecvProp.m_nElements;
+	if (this->m_pParentArrayPropName) {
+		delete this->m_pParentArrayPropName;
+		this->m_pParentArrayPropName = NULL;
+	}
+	if (srcRecvProp.m_pParentArrayPropName) {
+		this->m_pParentArrayPropName = COM_StringCopy(srcRecvProp.m_pParentArrayPropName);
+	}
+}
+
 RecvProp& RecvProp::operator=(const RecvProp& srcRecvProp) {
 	if (this != &srcRecvProp) {
 		if (this->m_pVarName) {
@@ -663,7 +766,7 @@ RecvTable::RecvTable()
 	Construct( NULL, 0, NULL );
 }
 
-RecvTable::RecvTable(RecvProp *pProps, int nProps, const char *pNetTableName)
+RecvTable::RecvTable(RecvProp **pProps, int nProps, const char *pNetTableName)
 {
 	Construct( pProps, nProps, pNetTableName );
 }
@@ -680,7 +783,7 @@ RecvTable::~RecvTable()
 	}
 }
 
-void RecvTable::Construct( RecvProp *pProps, int nProps, const char *pNetTableName )
+void RecvTable::Construct( RecvProp **pProps, int nProps, const char *pNetTableName )
 {
 	//m_pProps = pProps;
 	//m_nProps = nProps;
@@ -694,7 +797,7 @@ void RecvTable::Construct( RecvProp *pProps, int nProps, const char *pNetTableNa
 	for (int iProp = 0; iProp < this->m_nProps; iProp++)
 	{
 		RecvProp* pProp = &this->m_pProps[iProp];
-		const RecvProp* pRecvTableProp = &pProps[iProp];
+		const RecvProp* pRecvTableProp = pProps[iProp];
 		*pProp = *pRecvTableProp;
 	}
 	if (this->m_pNetTableName) {
@@ -1180,23 +1283,23 @@ bool CompareRecvPropToSendProp(const RecvProp* pRecvProp, const SendProp* pSendP
 			("CompareRecvPropToSendProp: missing a property.")
 		);
 
-		if (pRecvProp->GetType() != pSendProp->GetType() || pRecvProp->IsInsideArray() != pSendProp->IsInsideArray())
+		if (pRecvProp->GetType() != pSendProp->GetType())// || pRecvProp->IsInsideArray() != pSendProp->IsInsideArray()
 		{
 			return false;
 		}
 
-		if (pRecvProp->GetType() == DPT_Array)
-		{
-			if (pRecvProp->GetNumElements() != pSendProp->GetNumElements())
-				return false;
+		//if (pRecvProp->GetType() == DPT_Array)
+		//{
+		//	if (pRecvProp->GetNumElements() != pSendProp->GetNumElements())
+		//		return false;
 
-			pRecvProp = pRecvProp->GetArrayProp();
-			pSendProp = pSendProp->GetArrayProp();
-		}
-		else
-		{
+		//	pRecvProp = pRecvProp->GetArrayProp();
+		//	pSendProp = pSendProp->GetArrayProp();
+		//}
+		//else
+		//{
 			return true;
-		}
+		//}
 	}
 }
 
@@ -1210,6 +1313,10 @@ bool RecvTableManager::MatchRecvPropsToSendProps_R(CUtlRBTree< MatchingProp_t, u
 
 		if (pSendProp->IsExcludeProp() || pSendProp->IsInsideArray())
 			continue;
+
+		if (!Q_strcmp("player_array", pSendProp->GetName())) {
+			int aaa = 0;
+		}
 
 		// Find a RecvProp by the same name and type.
 		RecvProp* pRecvProp = 0;
@@ -1361,7 +1468,7 @@ bool RecvTableManager::DataTable_SetupReceiveTableFromSendTable(SendTable* sendT
 		//pSendTable->m_pPrecalc = &pDecoder->m_Precalc;
 
 		// Initialize array properties.
-		SetupArrayProps_R<RecvTable, RecvTable::PropType>(pRecvTable);
+		//SetupArrayProps_R<RecvTable, RecvTable::PropType>(pRecvTable);
 	}
 
 	// Read the property list.

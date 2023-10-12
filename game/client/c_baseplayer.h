@@ -722,7 +722,7 @@ public:
 
 		RecvPropInt(RECVINFO(m_iObserverMode), 0, RecvProxy_ObserverMode),
 		RecvPropEHandle(RECVINFO(m_hObserverTarget), RecvProxy_ObserverTarget),
-		RecvPropArray(RecvPropEHandle(RECVINFO(m_hViewModel[0])), m_hViewModel),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_hViewModel), RecvPropEHandle(RECVINFO(m_hViewModel[0]))),
 
 
 		RecvPropString(RECVINFO(m_szLastPlaceName)),

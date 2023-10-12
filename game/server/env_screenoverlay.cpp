@@ -48,8 +48,8 @@ protected:
 
 	BEGIN_INIT_SEND_TABLE(CEnvScreenOverlay)
 	BEGIN_SEND_TABLE(CEnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
-		SendPropArray(SendPropString(SENDINFO_ARRAY(m_iszOverlayNames), 0, SendProxy_String_tToString), m_iszOverlayNames),
-		SendPropArray(SendPropFloat(SENDINFO_ARRAY(m_flOverlayTimes), 11, SPROP_ROUNDDOWN, -1.0f, 63.0f), m_flOverlayTimes),
+		SendPropInternalArray(SENDINFO_INTERNALARRAY(m_iszOverlayNames), SendPropString(SENDINFO_ARRAY(m_iszOverlayNames), 0, SendProxy_String_tToString)),
+		SendPropInternalArray(SENDINFO_INTERNALARRAY(m_flOverlayTimes), SendPropFloat(SENDINFO_ARRAY(m_flOverlayTimes), 11, SPROP_ROUNDDOWN, -1.0f, 63.0f)),
 		SendPropFloat(SENDINFO(m_flStartTime), 32, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_iDesiredOverlay), 5),
 		SendPropBool(SENDINFO(m_bIsActive)),

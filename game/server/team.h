@@ -103,13 +103,13 @@ public:
 		SendPropInt(SENDINFO(m_iRoundsWon), 8),
 		SendPropString(SENDINFO(m_szTeamname)),
 
-		SendPropArray2(
-			SendProxyArrayLength_PlayerArray,
-			SendPropInt("player_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_PlayerList),
+		SendPropInternalArray(
 			MAX_PLAYERS,
 			0,
-			"player_array"
-		)
+			"player_array",
+			SendPropInt("player_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_PlayerList),
+			SendProxyArrayLength_PlayerArray
+			)
 	END_SEND_TABLE(DT_Team)
 	END_INIT_SEND_TABLE()
 };

@@ -1294,7 +1294,7 @@ public:
 		SendPropFloat(SENDINFO(m_flFOVTime)),
 		SendPropInt(SENDINFO(m_iDefaultFOV), 8, SPROP_UNSIGNED),
 		SendPropEHandle(SENDINFO(m_hZoomOwner)),
-		SendPropArray(SendPropEHandle(SENDINFO_ARRAY(m_hViewModel)), m_hViewModel),
+		SendPropInternalArray(SENDINFO_INTERNALARRAY(m_hViewModel), SendPropEHandle(SENDINFO_ARRAY(m_hViewModel))),
 		SendPropString(SENDINFO(m_szLastPlaceName)),
 
 #if defined USES_ECON_ITEMS

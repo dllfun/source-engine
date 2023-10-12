@@ -113,31 +113,31 @@ void* SendProxy_LengthTable( const SendProp *pProp, const void *pStructBase, con
 //
 // Note: you have to be DILIGENT about calling NetworkStateChanged whenever an element in your CUtlVector changes
 // since CUtlVector doesn't do this automatically.
-SendProp SendPropUtlVector(
+SendPropUtlVector::SendPropUtlVector(
 	char *pVarName,		// Use SENDINFO_UTLVECTOR to generate these 4.
 	int offset,			// Used to generate pData in the function specified in varProxy.
 	int sizeofVar,		// The size of each element in the utlvector.
 	EnsureCapacityFn ensureFn,	// This is the value returned for elements out of the array's current range.
 	int nMaxElements,			// Max # of elements in the array. Keep this as low as possible.
-	SendProp pArrayProp,		// Describe the data inside of each element in the array.
+	SendProp&& pArrayProp,		// Describe the data inside of each element in the array.
 	SendTableProxyFn varProxy	// This can be overridden to control who the array is sent to.
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	Assert( nMaxElements <= MAX_ARRAY_ELEMENTS );
 
-	ret.m_Type = DPT_DataTable;
+	this->m_Type = DPT_DataTable;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( 0 );
-	ret.SetDataTableProxyFn( varProxy );
+	this->SetOffset( 0 );
+	this->SetDataTableProxyFn( varProxy );
 	
 	// Handle special proxy types where they always let all clients get the results.
 	if ( varProxy == SendProxy_DataTableToDataTable || varProxy == SendProxy_DataTablePtrToDataTable )
 	{
-		ret.SetFlags( SPROP_PROXY_ALWAYS_YES );
+		this->SetFlags( SPROP_PROXY_ALWAYS_YES );
 	}
 
 	
@@ -155,7 +155,7 @@ SendProp SendPropUtlVector(
 		pExtraData.m_ProxyFn = pArrayProp.GetProxyFn();
 
 
-	SendProp *pProps = new SendProp[nMaxElements+1]; // TODO free that again
+	SendProp **pProps = new SendProp*[nMaxElements+1]; // TODO free that again
 
 	char buf[255];
 	// The first property is datatable with an int that tells the length of the array.
@@ -169,12 +169,12 @@ SendProp SendPropUtlVector(
 
 	//char *pLengthProxyTableName = AllocateUniqueDataTableName( true, "_LPT_%s_%d", pVarName, nMaxElements );
 	Q_snprintf(buf, sizeof(buf), "_LPT_%s_%d", pVarName, nMaxElements);
-	SendTable pLengthTable( pLengthProp, 1, buf);
+	SendTable pLengthTable( &pLengthProp, 1, buf);
 	GetSendTableManager()->RegisteSendTable(&pLengthTable);
-	pProps[0] = SendPropDataTable( "lengthproxy", 0, buf, SendProxy_LengthTable );//pLengthTable
+	pProps[0] = new SendPropDataTable( "lengthproxy", 0, buf, SendProxy_LengthTable );//pLengthTable
 	CSendPropExtra_UtlVector* pExtraData3 = new CSendPropExtra_UtlVector;
 	*pExtraData3 = pExtraData;
-	pProps[0].SetExtraData( pExtraData3 );
+	pProps[0]->SetExtraData( pExtraData3 );
 
 	// TERROR:
 	//char *pParentArrayPropName = AllocateStringHelper( "%s", pVarName );
@@ -183,27 +183,28 @@ SendProp SendPropUtlVector(
 	// The first element is a sub-datatable.
 	for ( int i = 1; i < nMaxElements+1; i++ )
 	{
-		pProps[i] = pArrayProp;	// copy array element property setting
-		pProps[i].SetOffset( 0 ); // leave offset at 0 so pStructBase is always a pointer to the CUtlVector
-		pProps[i].m_pVarName = COM_StringCopy(s_ElementNames[i-1]);	// give unique name
+		pProps[i] = new SendProp;
+		*pProps[i] = pArrayProp;	// copy array element property setting
+		pProps[i]->SetOffset( 0 ); // leave offset at 0 so pStructBase is always a pointer to the CUtlVector
+		pProps[i]->m_pVarName = COM_StringCopy(s_ElementNames[i-1]);	// give unique name
 		if (pVarName) {
-			pProps[i].m_pParentArrayPropName = COM_StringCopy(pVarName); // TERROR: For debugging...
+			pProps[i]->m_pParentArrayPropName = COM_StringCopy(pVarName); // TERROR: For debugging...
 		}
 		CSendPropExtra_UtlVector* pExtraData4 = new CSendPropExtra_UtlVector;
 		*pExtraData4 = pExtraData;
-		pProps[i].SetExtraData( pExtraData4 );
-		pProps[i].m_ElementStride = i-1;	// Kind of lame overloading element stride to hold the element index,
+		pProps[i]->SetExtraData( pExtraData4 );
+		pProps[i]->m_ElementStride = i-1;	// Kind of lame overloading element stride to hold the element index,
 											// but we can easily move it into its SetExtraData stuff if we need to.
 		
 		// We provide our own proxy here.
 		if ( pArrayProp.m_Type == DPT_DataTable )
 		{
-			pProps[i].SetDataTableProxyFn( SendProxy_UtlVectorElement_DataTable );
-			pProps[i].SetFlags( SPROP_PROXY_ALWAYS_YES );
+			pProps[i]->SetDataTableProxyFn( SendProxy_UtlVectorElement_DataTable );
+			pProps[i]->SetFlags( SPROP_PROXY_ALWAYS_YES );
 		}
 		else
 		{
-			pProps[i].SetProxyFn( SendProxy_UtlVectorElement );
+			pProps[i]->SetProxyFn( SendProxy_UtlVectorElement );
 		}
 	}
 
@@ -215,7 +216,15 @@ SendProp SendPropUtlVector(
 		buf
 		);
 	GetSendTableManager()->RegisteSendTable(&pTable);
-	ret.SetDataTableName(COM_StringCopy(buf));
+	this->SetDataTableName(COM_StringCopy(buf));
+	for (int i = 0; i < nMaxElements + 1; i++) {
+		delete pProps[i];
+	}
 	//ret.SetDataTable( pTable );
-	return ret;
+	//return ret;
+}
+
+SendPropUtlVector& SendPropUtlVector::operator=(const SendPropUtlVector& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
 }

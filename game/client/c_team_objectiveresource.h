@@ -351,7 +351,7 @@ public:
 		RecvPropBool(RECVINFO(m_bControlPointsReset)),
 		RecvPropInt(RECVINFO(m_iUpdateCapHudParity)),
 
-		RecvPropArray(RecvPropVector(RECVINFO(m_vCPPositions[0])), m_vCPPositions),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_vCPPositions), RecvPropVector(RECVINFO(m_vCPPositions[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_bCPIsVisible), RecvPropInt(RECVINFO(m_bCPIsVisible[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_flLazyCapPerc), RecvPropFloat(RECVINFO(m_flLazyCapPerc[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iTeamIcons), RecvPropInt(RECVINFO(m_iTeamIcons[0]))),
@@ -364,7 +364,7 @@ public:
 		RecvPropArray3(RECVINFO_ARRAY(m_iBaseControlPoints), RecvPropInt(RECVINFO(m_iBaseControlPoints[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_bInMiniRound), RecvPropBool(RECVINFO(m_bInMiniRound[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iWarnOnCap), RecvPropInt(RECVINFO(m_iWarnOnCap[0]))),
-		RecvPropArray(RecvPropString(RECVINFO(m_iszWarnSound[0])), m_iszWarnSound),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_iszWarnSound), RecvPropString(RECVINFO(m_iszWarnSound[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_flPathDistance), RecvPropFloat(RECVINFO(m_flPathDistance[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iCPGroup), RecvPropInt(RECVINFO(m_iCPGroup[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_bCPLocked), RecvPropBool(RECVINFO(m_bCPLocked[0]))),

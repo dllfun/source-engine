@@ -730,8 +730,10 @@
     <ClCompile Include="..\..\..\public\tier0\memoverride.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\game\server\sendproxy.h" />
     <ClInclude Include="..\..\..\public\dt.h" />
     <ClInclude Include="..\..\..\public\dt_common.h" />
+    <ClInclude Include="..\..\..\public\dt_encode.h" />
     <ClInclude Include="..\..\..\public\dt_instrumentation.h" />
     <ClInclude Include="..\..\..\public\dt_instrumentation_server.h" />
     <ClInclude Include="..\..\..\public\dt_send.h" />

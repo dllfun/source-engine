@@ -566,9 +566,7 @@ float AssignRangeMultiplier( int nBits, double range )
 	return fHighLowMul;
 }
 
-
-
-SendProp SendPropFloat(
+SendPropFloat::SendPropFloat(
 	const char *pVarName,		
 	// Variable name.
 	int offset,			// Offset into container structure.
@@ -580,7 +578,7 @@ SendProp SendPropFloat(
 	SendVarProxyFn varProxy
 	)
 {
-	SendProp ret;
+//	SendProp ret;
 
 	if ( varProxy == SendProxy_FloatToFloat )
 	{
@@ -604,24 +602,29 @@ SendProp SendPropFloat(
 			fLowValue = fLowValue + ((fHighValue - fLowValue) / (1 << nBits));
 	}
 
-	ret.m_Type = DPT_Float;
+	this->m_Type = DPT_Float;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.m_nBits = nBits;
-	ret.SetFlags( flags );
-	ret.m_fLowValue = fLowValue;
-	ret.m_fHighValue = fHighValue;
-	ret.m_fHighLowMul = AssignRangeMultiplier( ret.m_nBits, ret.m_fHighValue - ret.m_fLowValue );
-	ret.SetProxyFn( varProxy );
-	if( ret.GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL ) )
-		ret.m_nBits = 0;
+	this->SetOffset( offset );
+	this->m_nBits = nBits;
+	this->SetFlags( flags );
+	this->m_fLowValue = fLowValue;
+	this->m_fHighValue = fHighValue;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
+	this->SetProxyFn( varProxy );
+	if(this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL ) )
+		this->m_nBits = 0;
 
-	return ret;
+//	return ret;
 }
 
-SendProp SendPropVector(
+SendPropFloat& SendPropFloat::operator=(const SendPropFloat& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropVector::SendPropVector(
 	const char *pVarName,
 	int offset,
 	int sizeofVar,
@@ -632,7 +635,7 @@ SendProp SendPropVector(
 	SendVarProxyFn varProxy
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	if(varProxy == SendProxy_VectorToVector)
 	{
@@ -642,24 +645,29 @@ SendProp SendPropVector(
 	if ( nBits == 32 )
 		flags |= SPROP_NOSCALE;
 
-	ret.m_Type = DPT_Vector;
+	this->m_Type = DPT_Vector;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.m_nBits = nBits;
-	ret.SetFlags( flags );
-	ret.m_fLowValue = fLowValue;
-	ret.m_fHighValue = fHighValue;
-	ret.m_fHighLowMul = AssignRangeMultiplier( ret.m_nBits, ret.m_fHighValue - ret.m_fLowValue );
-	ret.SetProxyFn( varProxy );
-	if( ret.GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL) )
-		ret.m_nBits = 0;
+	this->SetOffset( offset );
+	this->m_nBits = nBits;
+	this->SetFlags( flags );
+	this->m_fLowValue = fLowValue;
+	this->m_fHighValue = fHighValue;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
+	this->SetProxyFn( varProxy );
+	if(this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL) )
+		this->m_nBits = 0;
 
-	return ret;
+	//return ret;
 }
 
-SendProp SendPropVectorXY(
+SendPropVector& SendPropVector::operator=(const SendPropVector& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropVectorXY::SendPropVectorXY(
 	const char *pVarName,
 	int offset,
 	int sizeofVar,
@@ -670,7 +678,7 @@ SendProp SendPropVectorXY(
 	SendVarProxyFn varProxy
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	if(varProxy == SendProxy_VectorXYToVectorXY)
 	{
@@ -680,21 +688,26 @@ SendProp SendPropVectorXY(
 	if ( nBits == 32 )
 		flags |= SPROP_NOSCALE;
 
-	ret.m_Type = DPT_VectorXY;
+	this->m_Type = DPT_VectorXY;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.m_nBits = nBits;
-	ret.SetFlags( flags );
-	ret.m_fLowValue = fLowValue;
-	ret.m_fHighValue = fHighValue;
-	ret.m_fHighLowMul = AssignRangeMultiplier( ret.m_nBits, ret.m_fHighValue - ret.m_fLowValue );
-	ret.SetProxyFn( varProxy );
-	if( ret.GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL) )
-		ret.m_nBits = 0;
+	this->SetOffset( offset );
+	this->m_nBits = nBits;
+	this->SetFlags( flags );
+	this->m_fLowValue = fLowValue;
+	this->m_fHighValue = fHighValue;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
+	this->SetProxyFn( varProxy );
+	if(this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL) )
+		this->m_nBits = 0;
 
-	return ret;
+	//return ret;
+}
+
+SendPropVectorXY& SendPropVectorXY::operator=(const SendPropVectorXY& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
 }
 
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
@@ -737,7 +750,7 @@ SendProp SendPropQuaternion(
 }
 #endif
 
-SendProp SendPropAngle(
+SendPropAngle::SendPropAngle(
 	const char *pVarName,
 	int offset,
 	int sizeofVar,
@@ -746,7 +759,7 @@ SendProp SendPropAngle(
 	SendVarProxyFn varProxy
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	if(varProxy == SendProxy_AngleToFloat)
 	{
@@ -756,23 +769,27 @@ SendProp SendPropAngle(
 	if ( nBits == 32 )
 		flags |= SPROP_NOSCALE;
 
-	ret.m_Type = DPT_Float;
+	this->m_Type = DPT_Float;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.m_nBits = nBits;
-	ret.SetFlags( flags );
-	ret.m_fLowValue = 0.0f;
-	ret.m_fHighValue = 360.0f;
-	ret.m_fHighLowMul = AssignRangeMultiplier( ret.m_nBits, ret.m_fHighValue - ret.m_fLowValue );
-	ret.SetProxyFn( varProxy );
+	this->SetOffset( offset );
+	this->m_nBits = nBits;
+	this->SetFlags( flags );
+	this->m_fLowValue = 0.0f;
+	this->m_fHighValue = 360.0f;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
+	this->SetProxyFn( varProxy );
 
-	return ret;
+	//return ret;
 }
 
+SendPropAngle& SendPropAngle::operator=(const SendPropAngle& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
 
-SendProp SendPropQAngles(
+SendPropQAngles::SendPropQAngles(
 	const char *pVarName,
 	int offset,
 	int sizeofVar,
@@ -781,7 +798,7 @@ SendProp SendPropQAngles(
 	SendVarProxyFn varProxy
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	if(varProxy == SendProxy_AngleToFloat)
 	{
@@ -791,23 +808,28 @@ SendProp SendPropQAngles(
 	if ( nBits == 32 )
 		flags |= SPROP_NOSCALE;
 
-	ret.m_Type = DPT_Vector;
+	this->m_Type = DPT_Vector;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.m_nBits = nBits;
-	ret.SetFlags( flags );
-	ret.m_fLowValue = 0.0f;
-	ret.m_fHighValue = 360.0f;
-	ret.m_fHighLowMul = AssignRangeMultiplier( ret.m_nBits, ret.m_fHighValue - ret.m_fLowValue );
+	this->SetOffset( offset );
+	this->m_nBits = nBits;
+	this->SetFlags( flags );
+	this->m_fLowValue = 0.0f;
+	this->m_fHighValue = 360.0f;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
 
-	ret.SetProxyFn( varProxy );
+	this->SetProxyFn( varProxy );
 
-	return ret;
+	//return ret;
+}
+
+SendPropQAngles& SendPropQAngles::operator=(const SendPropQAngles& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
 }
   
-SendProp SendPropInt(
+SendPropInt::SendPropInt(
 	const char *pVarName,
 	int offset,
 	int sizeofVar,
@@ -816,7 +838,7 @@ SendProp SendPropInt(
 	SendVarProxyFn varProxy
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	if ( !varProxy )
 	{
@@ -853,83 +875,132 @@ SendProp SendPropInt(
 	}
 
 #ifdef SUPPORTS_INT64
-	ret.m_Type = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
+	this->m_Type = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
 #else
-	ret.m_Type = DPT_Int;
+	this->m_Type = DPT_Int;
 #endif
 	
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.m_nBits = nBits;
-	ret.SetFlags( flags );
+	this->SetOffset( offset );
+	this->m_nBits = nBits;
+	this->SetFlags( flags );
 
 	// Use UInt proxies if they want unsigned data. This isn't necessary to encode
 	// the values correctly, but it lets us check the ranges of the data to make sure
 	// they're valid.
-	ret.SetProxyFn( varProxy );
-	if( ret.GetFlags() & SPROP_UNSIGNED )
+	this->SetProxyFn( varProxy );
+	if(this->GetFlags() & SPROP_UNSIGNED )
 	{
 		if( varProxy == SendProxy_Int8ToInt32 )
-			ret.SetProxyFn( SendProxy_UInt8ToInt32 );
+			this->SetProxyFn( SendProxy_UInt8ToInt32 );
 		
 		else if( varProxy == SendProxy_Int16ToInt32 )
-			ret.SetProxyFn( SendProxy_UInt16ToInt32 );
+			this->SetProxyFn( SendProxy_UInt16ToInt32 );
 
 		else if( varProxy == SendProxy_Int32ToInt32 )
-			ret.SetProxyFn( SendProxy_UInt32ToInt32 );
+			this->SetProxyFn( SendProxy_UInt32ToInt32 );
 			
 #ifdef SUPPORTS_INT64
 		else if( varProxy == SendProxy_Int64ToInt64 )
-			ret.SetProxyFn( SendProxy_UInt64ToInt64 );
+			this->SetProxyFn( SendProxy_UInt64ToInt64 );
 #endif
 	}
 
-	return ret;
+	//return ret;
 }
 
-SendProp SendPropString(
+SendPropInt& SendPropInt::operator=(const SendPropInt& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropString::SendPropString(
 	const char *pVarName,
 	int offset,
 	int bufferLen,
 	int flags,
 	SendVarProxyFn varProxy)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	Assert( bufferLen <= DT_MAX_STRING_BUFFERSIZE ); // You can only have strings with 8-bits worth of length.
 	
-	ret.m_Type = DPT_String;
+	this->m_Type = DPT_String;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.SetFlags( flags );
-	ret.SetProxyFn( varProxy );
+	this->SetOffset( offset );
+	this->SetFlags( flags );
+	this->SetProxyFn( varProxy );
 
-	return ret;
+	//return ret;
 }
 
-SendProp SendPropArray3(
+SendPropString& SendPropString::operator=(const SendPropString& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropDataTable::SendPropDataTable(
+	const char* pVarName,
+	int offset,
+	const char* pTableName,
+	SendTableProxyFn varProxy
+)
+{
+	//SendProp ret;
+
+	this->m_Type = DPT_DataTable;
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	if (pTableName) {
+		this->SetDataTableName(COM_StringCopy(pTableName));
+	}
+	this->SetDataTable(NULL);
+	this->SetDataTableProxyFn(varProxy);
+
+	// Handle special proxy types where they always let all clients get the results.
+	if (varProxy == SendProxy_DataTableToDataTable || varProxy == SendProxy_DataTablePtrToDataTable)
+	{
+		this->SetFlags(SPROP_PROXY_ALWAYS_YES);
+	}
+
+	if (varProxy == SendProxy_DataTableToDataTable && offset == 0)
+	{
+		this->SetFlags(SPROP_COLLAPSIBLE);
+	}
+
+	//return ret;
+}
+
+SendPropDataTable& SendPropDataTable::operator=(const SendPropDataTable& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropArray3::SendPropArray3(
 	const char *pVarName,
 	int offset,
 	int sizeofVar,
 	int elements,
-	SendProp pArrayProp,
+	SendProp&& pArrayProp,
 	SendTableProxyFn varProxy
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
 	Assert( elements <= MAX_ARRAY_ELEMENTS );
 
-	ret.m_Type = DPT_DataTable;
+	this->m_Type = DPT_DataTable;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( offset );
-	ret.SetDataTableProxyFn( varProxy );
+	this->SetOffset( offset );
+	this->SetDataTableProxyFn( varProxy );
 	
 	//SendProp *pArrayPropAllocated = new SendProp;
 	//*pArrayPropAllocated = pArrayProp;
@@ -938,109 +1009,91 @@ SendProp SendPropArray3(
 	// Handle special proxy types where they always let all clients get the results.
 	if ( varProxy == SendProxy_DataTableToDataTable || varProxy == SendProxy_DataTablePtrToDataTable )
 	{
-		ret.SetFlags( SPROP_PROXY_ALWAYS_YES );
+		this->SetFlags( SPROP_PROXY_ALWAYS_YES );
 	}
 
-	SendProp *pProps = new SendProp[elements]; // TODO free that again
+	SendProp **pProps = new SendProp*[elements]; // TODO free that again
 	
 	for ( int i = 0; i < elements; i++ )
 	{
-		pProps[i] = pArrayProp;	// copy array element property setting
-		pProps[i].SetOffset( i*sizeofVar ); // adjust offset
-		pProps[i].m_pVarName = COM_StringCopy(s_ElementNames[i]);	// give unique name
+		pProps[i] = new SendProp;
+		*pProps[i] = pArrayProp;	// copy array element property setting
+		pProps[i]->SetOffset( i*sizeofVar ); // adjust offset
+		pProps[i]->m_pVarName = COM_StringCopy(s_ElementNames[i]);	// give unique name
 		if (pVarName) {
-			pProps[i].m_pParentArrayPropName = COM_StringCopy(pVarName); // For debugging...
+			pProps[i]->m_pParentArrayPropName = COM_StringCopy(pVarName); // For debugging...
 		}
 	}
 
 	SendTable pTable( pProps, elements, pVarName ); // TODO free that again
 	GetSendTableManager()->RegisteSendTable(&pTable);
 	if (pVarName) {
-		ret.SetDataTableName(COM_StringCopy(pVarName));
+		this->SetDataTableName(COM_StringCopy(pVarName));
 	}
 	//ret.SetDataTable( pTable );
+	for (int i = 0; i < elements; i++) {
+		delete pProps[i];
+	}
 
-	return ret;
+	//return ret;
 }
 
-SendProp SendPropDataTable(
-	const char *pVarName,
-	int offset,
-	const char *pTableName,
-	SendTableProxyFn varProxy
-	)
-{
-	SendProp ret;
-
-	ret.m_Type = DPT_DataTable;
-	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
-	}
-	ret.SetOffset( offset );
-	if (pTableName) {
-		ret.SetDataTableName(COM_StringCopy(pTableName));
-	}
-	ret.SetDataTable( NULL );
-	ret.SetDataTableProxyFn( varProxy );
-	
-	// Handle special proxy types where they always let all clients get the results.
-	if ( varProxy == SendProxy_DataTableToDataTable || varProxy == SendProxy_DataTablePtrToDataTable )
-	{
-		ret.SetFlags( SPROP_PROXY_ALWAYS_YES );
-	}
-	
-	if ( varProxy == SendProxy_DataTableToDataTable && offset == 0 )
-	{
-		ret.SetFlags( SPROP_COLLAPSIBLE );
-	}
-
-	return ret;
+SendPropArray3& SendPropArray3::operator=(const SendPropArray3& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
 }
 
-
-SendProp InternalSendPropArray(
+SendPropInternalArray::SendPropInternalArray(
 	const int elementCount,
 	const int elementStride,
 	const char *pName,
+	SendProp&& pArrayProp,
 	ArrayLengthSendProxyFn arrayLengthFn
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
-	ret.m_Type = DPT_Array;
-	ret.m_nElements = elementCount;
-	ret.m_ElementStride = elementStride;
+	this->m_Type = DPT_Array;
+	this->m_nElements = elementCount;
+	this->m_ElementStride = elementStride;
 	if (pName) {
-		ret.m_pVarName = COM_StringCopy(pName);
+		this->m_pVarName = COM_StringCopy(pName);
 	}
-	ret.SetProxyFn( SendProxy_Empty );
-	ret.m_pArrayProp = NULL;	// This gets set in SendTable_InitTable. It always points at the property that precedes
-								// this one in the datatable's list.
-	ret.SetArrayLengthProxy( arrayLengthFn );
+	this->SetProxyFn( SendProxy_Empty );
+	this->m_pArrayProp = new SendProp;	// This gets set in SendTable_InitTable. It always points at the property that precedes
+	*this->m_pArrayProp = pArrayProp;		// this one in the datatable's list.
+	this->SetArrayLengthProxy( arrayLengthFn );
 		
-	return ret;
+	//return ret;
 }
 
+SendPropInternalArray& SendPropInternalArray::operator=(const SendPropInternalArray& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
 
-SendProp SendPropExclude(
+SendPropExclude::SendPropExclude(
 	const char *pDataTableName,	// Data table name (given to BEGIN_SEND_TABLE and BEGIN_RECV_TABLE).
 	const char *pPropName		// Name of the property to exclude.
 	)
 {
-	SendProp ret;
+	//SendProp ret;
 
-	ret.SetFlags( SPROP_EXCLUDE );
+	this->SetFlags( SPROP_EXCLUDE );
 	if (pDataTableName) {
-		ret.m_pExcludeDTName = COM_StringCopy(pDataTableName);
+		this->m_pExcludeDTName = COM_StringCopy(pDataTableName);
 	}
 	if (pPropName) {
-		ret.m_pVarName = COM_StringCopy(pPropName);
+		this->m_pVarName = COM_StringCopy(pPropName);
 	}
 
-	return ret;
+	//return ret;
 }
 
-
+SendPropExclude& SendPropExclude::operator=(const SendPropExclude& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
 
 // ---------------------------------------------------------------------- //
 // SendProp
@@ -1102,6 +1155,73 @@ SendProp::~SendProp()
 	if (this->m_pExtraData) {
 		delete this->m_pExtraData;
 		this->m_pExtraData = NULL;
+	}
+}
+
+SendProp::SendProp(const SendProp& srcSendProp) {
+	this->m_Type = (SendPropType)srcSendProp.m_Type;
+	this->m_nBits = srcSendProp.m_nBits;
+	this->m_fLowValue = srcSendProp.m_fLowValue;
+	this->m_fHighValue = srcSendProp.m_fHighValue;
+	if (this->m_pArrayProp && !this->m_pArrayProp->IsInsideArray()) {
+		delete this->m_pArrayProp;
+		this->m_pArrayProp = NULL;
+	}
+	if (srcSendProp.m_pArrayProp) {
+		this->m_pArrayProp = new SendProp;
+		*this->m_pArrayProp = *srcSendProp.m_pArrayProp;
+	}
+	this->m_ArrayLengthProxy = srcSendProp.m_ArrayLengthProxy;
+	this->m_nElements = srcSendProp.m_nElements;
+	this->m_ElementStride = srcSendProp.m_ElementStride;
+	if (this->m_pExcludeDTName) {
+		delete this->m_pExcludeDTName;
+		this->m_pExcludeDTName = NULL;
+	}
+	if (srcSendProp.m_pExcludeDTName) {
+		this->m_pExcludeDTName = COM_StringCopy(srcSendProp.m_pExcludeDTName);
+	}
+	if (this->m_pParentArrayPropName) {
+		delete this->m_pParentArrayPropName;
+		this->m_pParentArrayPropName = NULL;
+	}
+	if (srcSendProp.m_pParentArrayPropName) {
+		this->m_pParentArrayPropName = COM_StringCopy(srcSendProp.m_pParentArrayPropName);
+	}
+	if (this->m_pVarName) {
+		delete this->m_pVarName;
+		this->m_pVarName = NULL;
+	}
+	if (srcSendProp.m_pVarName) {
+		this->m_pVarName = COM_StringCopy(srcSendProp.m_pVarName);
+	}
+	this->m_fHighLowMul = srcSendProp.m_fHighLowMul;
+	this->m_Flags = srcSendProp.m_Flags;
+	this->m_ProxyFn = srcSendProp.m_ProxyFn;
+	this->m_DataTableProxyFn = srcSendProp.m_DataTableProxyFn;
+	if (this->m_pDataTableName) {
+		delete this->m_pDataTableName;
+		this->m_pDataTableName = NULL;
+	}
+	if (srcSendProp.m_pDataTableName) {
+		this->m_pDataTableName = COM_StringCopy(srcSendProp.m_pDataTableName);
+	}
+	if (this->m_pDataTable) {
+		delete this->m_pDataTable;
+		this->m_pDataTable = NULL;
+	}
+	if (srcSendProp.m_pDataTable) {
+		this->m_pDataTable = new SendTable();
+		*this->m_pDataTable = *srcSendProp.m_pDataTable;
+	}
+	this->m_Offset = srcSendProp.m_Offset;
+	if (this->m_pExtraData) {
+		delete this->m_pExtraData;
+		this->m_pExtraData = NULL;
+	}
+	if (srcSendProp.m_pExtraData) {
+		this->m_pExtraData = new CSendPropExtra_UtlVector();
+		*(CSendPropExtra_UtlVector*)this->m_pExtraData = *(CSendPropExtra_UtlVector*)srcSendProp.m_pExtraData;
 	}
 }
 
@@ -1224,7 +1344,7 @@ SendTable::SendTable()// : m_PropOffsetToIndexMap(0, 0, PropOffsetLT)
 }
 
 
-SendTable::SendTable(SendProp *pProps, int nProps, const char *pNetTableName)
+SendTable::SendTable(SendProp **pProps, int nProps, const char *pNetTableName)
 {
 	Construct( pProps, nProps, pNetTableName );
 }
@@ -1278,7 +1398,7 @@ SendTable::~SendTable()
 }
 
 
-void SendTable::Construct( SendProp *pProps, int nProps, const char *pNetTableName )
+void SendTable::Construct( SendProp **pProps, int nProps, const char *pNetTableName )
 {
 	//m_pProps = pProps;
 	//m_nProps = nProps;
@@ -1299,7 +1419,7 @@ void SendTable::Construct( SendProp *pProps, int nProps, const char *pNetTableNa
 	for (int iProp = 0; iProp < this->m_nProps; iProp++)
 	{
 		SendProp* pProp = &this->m_pProps[iProp];
-		const SendProp* pSendTableProp = &pProps[iProp];
+		const SendProp* pSendTableProp = pProps[iProp];
 		*pProp = *pSendTableProp;
 	}
 	//m_pPrecalc = 0;
@@ -2302,7 +2422,7 @@ bool SendTable::SetupFlatPropertyArray()
 	
 
 	// First go through and set SPROP_INSIDEARRAY when appropriate, and set array prop pointers.
-	SetupArrayProps_R<SendTable, SendTable::PropType>(this);
+	//SetupArrayProps_R<SendTable, SendTable::PropType>(this);
 
 	// Make a list of which properties are excluded.
 	ExcludeProp excludeProps[MAX_EXCLUDE_PROPS];

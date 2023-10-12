@@ -233,14 +233,15 @@ static RecvTable* AddRecvTableR( SendTable *sendt, RecvTable **pRecvTables, int 
 
 	if ( sendt->m_nProps > 0 )
 	{
-		RecvProp *receiveProps = new RecvProp[sendt->m_nProps];
+		RecvProp **receiveProps = new RecvProp*[sendt->m_nProps];
 
 		for ( int i=0; i < sendt->m_nProps; i++ )
 		{
 			// copy property data
+			receiveProps[i] = new RecvProp;
 
 			SendProp * sp = sendt->GetProp( i );
-			RecvProp * rp = &receiveProps[i];
+			RecvProp * rp = receiveProps[i];
 
 			rp->m_pVarName	= sp->m_pVarName;
 			rp->m_RecvType	= sp->m_Type;
@@ -262,7 +263,7 @@ static RecvTable* AddRecvTableR( SendTable *sendt, RecvTable **pRecvTables, int 
 				Assert ( sp->GetArrayProp() == sendt->GetProp( i-1 ) );
 				Assert( receiveProps[i-1].IsInsideArray() );
 				
-				rp->SetArrayProp( &receiveProps[i-1] );
+				rp->SetArrayProp( receiveProps[i-1] );
 				rp->InitArray( sp->m_nElements, sp->m_ElementStride );
 			}
 
@@ -276,6 +277,10 @@ static RecvTable* AddRecvTableR( SendTable *sendt, RecvTable **pRecvTables, int 
 		}
 
 		recvt = new RecvTable( receiveProps, sendt->m_nProps, sendt->m_pNetTableName );
+
+		for (int i = 0; i < sendt->m_nProps; i++) {
+			delete receiveProps[i];
+		}
 	}
 	else
 	{

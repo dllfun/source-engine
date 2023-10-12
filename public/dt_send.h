@@ -198,7 +198,7 @@ class SendProp
 public:
 	SendProp();
 	virtual				~SendProp();
-
+	SendProp(const SendProp& srcSendProp);
 	SendProp& operator=(const SendProp& srcSendProp);
 
 	void				Clear();
@@ -478,10 +478,10 @@ public:
 	typedef SendProp PropType;
 
 	SendTable();
-	SendTable(SendProp* pProps, int nProps, const char* pNetTableName);
+	SendTable(SendProp** pProps, int nProps, const char* pNetTableName);
 	~SendTable();
 
-	void		Construct(SendProp* pProps, int nProps, const char* pNetTableName);
+	void		Construct(SendProp** pProps, int nProps, const char* pNetTableName);
 
 	SendTable& operator=(const SendTable& srcSendTable);
 
@@ -999,14 +999,17 @@ SendTableManager* GetSendTableManager();
 			{\
 				typedef className currentSendDTClass;\
 				const char *pTableName = #tableName; \
-				SendProp pSendProps[] = { \
+				SendProp* pSendProps[] = { \
 								SendPropInt("should_never_see_this", 0, sizeof(int)),
 
 #define END_SEND_TABLE(tableName) \
 										};\
 				SendTable pSendTable;		\
-				pSendTable.Construct(pSendProps+1, sizeof(pSendProps) / sizeof(SendProp) - 1, pTableName);\
+				pSendTable.Construct(pSendProps+1, sizeof(pSendProps) / sizeof(SendProp*) - 1, pTableName);\
 				GetSendTableManager()->RegisteSendTable(&pSendTable);\
+				for(int i=0;i<sizeof(pSendProps) / sizeof(SendProp*);i++){\
+					delete pSendProps[i];\
+				}\
 			}
 
 #define BEGIN_SEND_TABLE(className, tableName, baseTableName) \
@@ -1028,6 +1031,7 @@ SendTableManager* GetSendTableManager();
 // there as a check to make sure all networked variables use the CNetworkXXXX macros in network_var.h.
 #define SENDINFO(varName)					#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
 #define SENDINFO_ARRAY(varName)				#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0])
+#define SENDINFO_INTERNALARRAY(varName)		sizeof(((currentSendDTClass*)0)->varName)/sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName[0]), #varName
 #define SENDINFO_ARRAY3(varName)			#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName)/sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_ARRAYELEM(varName, i)		#varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName[i]), sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_NETWORKARRAYELEM(varName, i)#varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
@@ -1082,38 +1086,71 @@ void* SendProxy_SendLocalDataTable(const SendProp* pProp, const void* pStruct, c
 // ------------------------------------------------------------------------ //
 // Use these functions to setup your data tables.
 // ------------------------------------------------------------------------ //
-SendProp SendPropFloat(
-	const char* pVarName,		// Variable name.
-	int offset,					// Offset into container structure.
-	int sizeofVar = SIZEOF_IGNORE,
-	int nBits = 32,				// Number of bits to use when encoding.
-	int flags = 0,
-	float fLowValue = 0.0f,			// For floating point, low and high values.
-	float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	SendVarProxyFn varProxy = SendProxy_FloatToFloat
-);
+class SendPropFloat : public SendProp {
+public:
+	SendPropFloat() {}
+	SendPropFloat(
+		const char* pVarName,		// Variable name.
+		int offset,					// Offset into container structure.
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,				// Number of bits to use when encoding.
+		int flags = 0,
+		float fLowValue = 0.0f,			// For floating point, low and high values.
+		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
+		SendVarProxyFn varProxy = SendProxy_FloatToFloat
+	);
+	virtual ~SendPropFloat() {}
+	SendPropFloat& operator=(const SendPropFloat& srcSendProp);
+	operator SendProp* () {
+		SendPropFloat* pSendProp = new SendPropFloat;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-SendProp SendPropVector(
-	const char* pVarName,
-	int offset,
-	int sizeofVar = SIZEOF_IGNORE,
-	int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
-	int flags = SPROP_NOSCALE,
-	float fLowValue = 0.0f,			// For floating point, low and high values.
-	float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	SendVarProxyFn varProxy = SendProxy_VectorToVector
-);
+class SendPropVector : public SendProp {
+public:
+	SendPropVector() {}
+	SendPropVector(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
+		int flags = SPROP_NOSCALE,
+		float fLowValue = 0.0f,			// For floating point, low and high values.
+		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
+		SendVarProxyFn varProxy = SendProxy_VectorToVector
+	);
+	virtual ~SendPropVector() {}
+	SendPropVector& operator=(const SendPropVector& srcSendProp);
+	operator SendProp* () {
+		SendPropVector* pSendProp = new SendPropVector;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-SendProp SendPropVectorXY(
-	const char* pVarName,
-	int offset,
-	int sizeofVar = SIZEOF_IGNORE,
-	int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
-	int flags = SPROP_NOSCALE,
-	float fLowValue = 0.0f,			// For floating point, low and high values.
-	float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	SendVarProxyFn varProxy = SendProxy_VectorXYToVectorXY
-);
+class  SendPropVectorXY : public SendProp {
+public:
+	SendPropVectorXY() {}
+	SendPropVectorXY(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
+		int flags = SPROP_NOSCALE,
+		float fLowValue = 0.0f,			// For floating point, low and high values.
+		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
+		SendVarProxyFn varProxy = SendProxy_VectorXYToVectorXY
+	);
+	virtual ~SendPropVectorXY() {}
+	SendPropVectorXY& operator=(const SendPropVectorXY& srcSendProp);
+	operator SendProp* () {
+		SendPropVectorXY* pSendProp = new SendPropVectorXY;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
 SendProp SendPropQuaternion(
@@ -1128,74 +1165,164 @@ SendProp SendPropQuaternion(
 );
 #endif
 
-SendProp SendPropAngle(
-	const char* pVarName,
-	int offset,
-	int sizeofVar = SIZEOF_IGNORE,
-	int nBits = 32,
-	int flags = 0,
-	SendVarProxyFn varProxy = SendProxy_AngleToFloat
-);
+class SendPropAngle : public SendProp {
+public:
+	SendPropAngle() {}
+	SendPropAngle(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_AngleToFloat
+	);
+	virtual ~SendPropAngle() {}
+	SendPropAngle& operator=(const SendPropAngle& srcSendProp);
+	operator SendProp* () {
+		SendPropAngle* pSendProp = new SendPropAngle;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-SendProp SendPropQAngles(
-	const char* pVarName,
-	int offset,
-	int sizeofVar = SIZEOF_IGNORE,
-	int nBits = 32,
-	int flags = 0,
-	SendVarProxyFn varProxy = SendProxy_QAngles
-);
+class SendPropQAngles : public SendProp {
+public:
+	SendPropQAngles() {}
+	SendPropQAngles(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_QAngles
+	);
+	virtual ~SendPropQAngles() {}
+	SendPropQAngles& operator=(const SendPropQAngles& srcSendProp);
+	operator SendProp* () {
+		SendPropQAngles* pSendProp = new SendPropQAngles;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-SendProp SendPropInt(
-	const char* pVarName,
-	int offset,
-	int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
-	int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
-	int flags = 0,
-	SendVarProxyFn varProxy = 0
-);
+class SendPropInt : public SendProp {
+public:
+	SendPropInt() {}
+	SendPropInt(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = 0
+	);
+	virtual ~SendPropInt() {}
+	SendPropInt& operator=(const SendPropInt& srcSendProp);
+	operator SendProp* () {
+		SendPropInt* pSendProp = new SendPropInt;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-inline SendProp SendPropModelIndex(const char* pVarName, int offset, int sizeofVar = SIZEOF_IGNORE)
-{
-	return SendPropInt(pVarName, offset, sizeofVar, SP_MODEL_INDEX_BITS, 0);
-}
+class SendPropModelIndex : public SendPropInt {
+public:
+	SendPropModelIndex() {}
+	SendPropModelIndex(const char* pVarName, int offset, int sizeofVar = SIZEOF_IGNORE)
+		:SendPropInt(pVarName, offset, sizeofVar, SP_MODEL_INDEX_BITS, 0)
+	{
+		
+	}
+	virtual ~SendPropModelIndex() {}
+	SendPropModelIndex& operator=(const SendPropModelIndex& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropModelIndex* pSendProp = new SendPropModelIndex;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-SendProp SendPropString(
-	const char* pVarName,
-	int offset,
-	int bufferLen,
-	int flags = 0,
-	SendVarProxyFn varProxy = SendProxy_StringToString);
+class SendPropString : public SendProp {
+public:
+	SendPropString() {}
+	SendPropString(
+		const char* pVarName,
+		int offset,
+		int bufferLen,
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_StringToString);
+	virtual ~SendPropString() {}
+	SendPropString& operator=(const SendPropString& srcSendProp);
+	operator SendProp* () {
+		SendPropString* pSendProp = new SendPropString;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-// The data table encoder looks at DVariant::m_pData.
-SendProp SendPropDataTable(
-	const char* pVarName,
-	int offset,
-	const char* pTableName,
-	SendTableProxyFn varProxy = SendProxy_DataTableToDataTable
-);
+class SendPropDataTable : public SendProp {
+public:
+	SendPropDataTable() {}
+	// The data table encoder looks at DVariant::m_pData.
+	SendPropDataTable(
+		const char* pVarName,
+		int offset,
+		const char* pTableName,
+		SendTableProxyFn varProxy = SendProxy_DataTableToDataTable
+	);
+	virtual ~SendPropDataTable() {}
+	SendPropDataTable& operator=(const SendPropDataTable& srcSendProp);
+	operator SendProp* () {
+		SendPropDataTable* pSendProp = new SendPropDataTable;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-SendProp SendPropArray3(
-	const char* pVarName,
-	int offset,
-	int sizeofVar,
-	int elements,
-	SendProp pArrayProp,
-	SendTableProxyFn varProxy = SendProxy_DataTableToDataTable
-);
+class SendPropArray3 : public SendProp {
+public:
+	SendPropArray3() {}
+	SendPropArray3(
+		const char* pVarName,
+		int offset,
+		int sizeofVar,
+		int elements,
+		SendProp&& pArrayProp,
+		SendTableProxyFn varProxy = SendProxy_DataTableToDataTable
+	);
+	virtual ~SendPropArray3() {}
+	SendPropArray3& operator=(const SendPropArray3& srcSendProp);
+	operator SendProp* () {
+		SendPropArray3* pSendProp = new SendPropArray3;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
-
-
-// Use the macro to let it automatically generate a table name. You shouldn't 
+class SendPropInternalArray : public SendProp {
+public:
+	// Use the macro to let it automatically generate a table name. You shouldn't 
 // ever need to reference the table name. If you want to exclude this array, then
 // reference the name of the variable in varTemplate.
-SendProp InternalSendPropArray(
-	const int elementCount,
-	const int elementStride,
-	const char* pName,
-	ArrayLengthSendProxyFn proxy
-);
-
+	SendPropInternalArray() {}
+	SendPropInternalArray(
+		const int elementCount,
+		const int elementStride,
+		const char* pName,
+		SendProp&& pArrayProp,
+		ArrayLengthSendProxyFn proxy = 0
+	);
+	virtual ~SendPropInternalArray() {}
+	SendPropInternalArray& operator=(const SendPropInternalArray& srcSendProp);
+	operator SendProp* () {
+		SendPropInternalArray* pSendProp = new SendPropInternalArray;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
 // Use this and pass the array name and it will figure out the count and stride automatically.
 #define SendPropArray( varTemplate, arrayName )			\
@@ -1214,38 +1341,45 @@ SendProp InternalSendPropArray(
 // 4. A property name that matches the definition on the client.
 //
 #define SendPropVirtualArray( arrayLengthSendProxy, maxArrayLength, varTemplate, propertyName )	\
-	varTemplate,										\
-	InternalSendPropArray(								\
+	SendPropInternalArray(								\
 		maxArrayLength,									\
 		0,												\
 		#propertyName,									\
+		varTemplate,										\
 		arrayLengthSendProxy							\
 		)
 
 
 #define SendPropVariableLengthArray( arrayLengthSendProxy, varTemplate, arrayName )	\
-	varTemplate,										\
-	InternalSendPropArray(								\
+	SendPropInternalArray(								\
 		sizeof(((currentSendDTClass*)0)->arrayName) / PROPSIZEOF(currentSendDTClass, arrayName[0]), \
 		PROPSIZEOF(currentSendDTClass, arrayName[0]),	\
 		#arrayName,										\
+		varTemplate,										\
 		arrayLengthSendProxy							\
 		)
 
 // Use this one to specify the element count and stride manually.
 #define SendPropArray2( arrayLengthSendProxy, varTemplate, elementCount, elementStride, arrayName )		\
-	varTemplate,																	\
-	InternalSendPropArray( elementCount, elementStride, #arrayName, arrayLengthSendProxy )
+	SendPropInternalArray( elementCount, elementStride, #arrayName, varTemplate, arrayLengthSendProxy )
 
 
-
-
-// Use these to create properties that exclude other properties. This is useful if you want to use most of 
+class SendPropExclude : public SendProp {
+public:
+	// Use these to create properties that exclude other properties. This is useful if you want to use most of 
 // a base class's datatable data, but you want to override some of its variables.
-SendProp SendPropExclude(
-	const char* pDataTableName,	// Data table name (given to BEGIN_SEND_TABLE and BEGIN_RECV_TABLE).
-	const char* pPropName		// Name of the property to exclude.
-);
-
+	SendPropExclude() {}
+	SendPropExclude(
+		const char* pDataTableName,	// Data table name (given to BEGIN_SEND_TABLE and BEGIN_RECV_TABLE).
+		const char* pPropName		// Name of the property to exclude.
+	);
+	virtual ~SendPropExclude() {}
+	SendPropExclude& operator=(const SendPropExclude& srcSendProp);
+	operator SendProp* () {
+		SendPropExclude* pSendProp = new SendPropExclude;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
 #endif // DATATABLE_SEND_H

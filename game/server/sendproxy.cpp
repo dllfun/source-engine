@@ -50,29 +50,46 @@ void SendProxy_ShortAddOne( const SendProp *pProp, const void *pStruct, const vo
 	pOut->m_Int = (*pInt) + 1;
 }
 
-SendProp SendPropBool(
+SendPropBool::SendPropBool(
 	const char *pVarName,
 	int offset,
 	int sizeofVar )
+	: SendPropInt(pVarName, offset, sizeofVar, 1, SPROP_UNSIGNED)
 {
 	Assert( sizeofVar == sizeof( bool ) );
-	return SendPropInt( pVarName, offset, sizeofVar, 1, SPROP_UNSIGNED );
+
 }
 
+SendPropBool& SendPropBool::operator=(const SendPropBool& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
 
-SendProp SendPropEHandle(
+SendPropEHandle::SendPropEHandle(
 	const char *pVarName,
 	int offset,
 	int sizeofVar,
 	int flags,
 	SendVarProxyFn proxyFn )
+	:SendPropInt(pVarName, offset, sizeofVar, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED | flags, proxyFn)
 {
-	return SendPropInt( pVarName, offset, sizeofVar, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED|flags, proxyFn );
+
 }
 
-SendProp SendPropIntWithMinusOneFlag( const char *pVarName, int offset, int sizeofVar, int nBits, SendVarProxyFn proxyFn )
+SendPropEHandle& SendPropEHandle::operator=(const SendPropEHandle& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropIntWithMinusOneFlag::SendPropIntWithMinusOneFlag( const char *pVarName, int offset, int sizeofVar, int nBits, SendVarProxyFn proxyFn )
+:SendPropInt(pVarName, offset, sizeofVar, nBits, SPROP_UNSIGNED, proxyFn)
 {
-	return SendPropInt( pVarName, offset, sizeofVar, nBits, SPROP_UNSIGNED, proxyFn );
+
+}
+
+SendPropIntWithMinusOneFlag& SendPropIntWithMinusOneFlag::operator=(const SendPropIntWithMinusOneFlag& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
 }
 
 //-----------------------------------------------------------------------------
@@ -128,14 +145,20 @@ static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const vo
 //			pId - 
 // Output : SendProp
 //-----------------------------------------------------------------------------
-SendProp SendPropTime(
+SendPropTime::SendPropTime(
 	const char *pVarName,
 	int offset,
 	int sizeofVar )
+:SendPropFloat(pVarName, offset, sizeofVar, -1, SPROP_NOSCALE)
 {
 //	return SendPropInt( pVarName, offset, sizeofVar, TIME_BITS, 0, SendProxy_Time );
 	// FIXME:  Re-enable above when it doesn't cause lots of deltas
-	return SendPropFloat( pVarName, offset, sizeofVar, -1, SPROP_NOSCALE );
+
+}
+
+SendPropTime& SendPropTime::operator=(const SendPropTime& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
 }
 
 //#if !defined( NO_ENTITY_PREDICTION )
@@ -188,10 +211,15 @@ void SendProxy_StringT_To_String( const SendProp *pProp, const void *pStruct, co
 }
 
 
-SendProp SendPropStringT( const char *pVarName, int offset, int sizeofVar )
+SendPropStringT::SendPropStringT( const char *pVarName, int offset, int sizeofVar )
+:SendPropString(pVarName, offset, DT_MAX_STRING_BUFFERSIZE, 0, SendProxy_StringT_To_String)
 {
 	// Make sure it's the right type.
 	Assert( sizeofVar == sizeof( string_t ) );
 
-	return SendPropString( pVarName, offset, DT_MAX_STRING_BUFFERSIZE, 0, SendProxy_StringT_To_String );
+}
+
+SendPropStringT& SendPropStringT::operator=(const SendPropStringT& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
 }

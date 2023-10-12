@@ -67,28 +67,28 @@ void DataTableRecvProxy_LengthProxy( const RecvProp *pProp, void **pOut, void *p
 }
 
 
-RecvProp RecvPropUtlVector(
+RecvPropUtlVector::RecvPropUtlVector(
 	const char *pVarName,		// Use RECVINFO_UTLVECTOR to generate these 4.
 	int offset,			// Used to generate pData in the function specified in varProxy.
 	int sizeofVar,		// The size of each element in the utlvector.
 	ResizeUtlVectorFn fn,
 	EnsureCapacityFn ensureFn,
 	int nMaxElements,											// Max # of elements in the array. Keep this as low as possible.
-	RecvProp pArrayProp
+	RecvProp&& pArrayProp
 	)
 {
-	RecvProp ret;
+	//RecvProp ret;
 
 	Assert( nMaxElements <= MAX_ARRAY_ELEMENTS );
 
-	ret.m_RecvType = DPT_DataTable;
+	this->m_RecvType = DPT_DataTable;
 	if (pVarName) {
-		ret.m_pVarName = COM_StringCopy(pVarName);
+		this->m_pVarName = COM_StringCopy(pVarName);
 	}
-	ret.SetOffset( 0 );
-	ret.SetDataTableProxyFn( DataTableRecvProxy_StaticDataTable );
+	this->SetOffset( 0 );
+	this->SetDataTableProxyFn( DataTableRecvProxy_StaticDataTable );
 	
-	RecvProp *pProps = new RecvProp[nMaxElements+1]; // TODO free that again
+	RecvProp **pProps = new RecvProp*[nMaxElements+1]; // TODO free that again
 
 	
 	// Extra data bound to each of the properties.
@@ -117,33 +117,34 @@ RecvProp RecvPropUtlVector(
 
 	//char *pLengthProxyTableName = AllocateUniqueDataTableName( false, "_LPT_%s_%d", pVarName, nMaxElements );
 	Q_snprintf(buf, sizeof(buf), "_LPT_%s_%d", pVarName, nMaxElements);
-	RecvTable pLengthTable = RecvTable( pLengthProp, 1, buf);
+	RecvTable pLengthTable = RecvTable( &pLengthProp, 1, buf);
 	GetRecvTableManager()->RegisteRecvTable(&pLengthTable);
-	pProps[0] = RecvPropDataTable( "lengthproxy", 0, 0, buf, DataTableRecvProxy_LengthProxy );
+	pProps[0] = new RecvPropDataTable( "lengthproxy", 0, 0, buf, DataTableRecvProxy_LengthProxy );
 	CRecvPropExtra_UtlVector* pExtraData3 = new CRecvPropExtra_UtlVector;
 	*pExtraData3 = pExtraData;
-	pProps[0].SetExtraData( pExtraData3 );
+	pProps[0]->SetExtraData( pExtraData3 );
 
 	// The first element is a sub-datatable.
 	for ( int i = 1; i < nMaxElements+1; i++ )
 	{
-		pProps[i] = pArrayProp;	// copy array element property setting
-		pProps[i].SetOffset( 0 ); // leave offset at 0 so pStructBase is always a pointer to the CUtlVector
-		pProps[i].m_pVarName = COM_StringCopy(s_ClientElementNames[i-1]);	// give unique name
+		pProps[i] = new RecvProp;
+		*pProps[i] = pArrayProp;	// copy array element property setting
+		pProps[i]->SetOffset( 0 ); // leave offset at 0 so pStructBase is always a pointer to the CUtlVector
+		pProps[i]->m_pVarName = COM_StringCopy(s_ClientElementNames[i-1]);	// give unique name
 		CRecvPropExtra_UtlVector* pExtraData4 = new CRecvPropExtra_UtlVector;
 		*pExtraData4 = pExtraData;
-		pProps[i].SetExtraData( pExtraData4 );
-		pProps[i].SetElementStride( i-1 );	// Kind of lame overloading element stride to hold the element index,
+		pProps[i]->SetExtraData( pExtraData4 );
+		pProps[i]->SetElementStride( i-1 );	// Kind of lame overloading element stride to hold the element index,
 											// but we can easily move it into its SetExtraData stuff if we need to.
 		
 		// We provide our own proxy here.
 		if ( pArrayProp.m_RecvType == DPT_DataTable )
 		{
-			pProps[i].SetDataTableProxyFn( RecvProxy_UtlVectorElement_DataTable );
+			pProps[i]->SetDataTableProxyFn( RecvProxy_UtlVectorElement_DataTable );
 		}
 		else
 		{
-			pProps[i].SetProxyFn( RecvProxy_UtlVectorElement );
+			pProps[i]->SetProxyFn( RecvProxy_UtlVectorElement );
 		}
 	}
 
@@ -155,7 +156,15 @@ RecvProp RecvPropUtlVector(
 		buf
 		); // TODO free that again
 	GetRecvTableManager()->RegisteRecvTable(&pTable);
-	ret.SetDataTableName(COM_StringCopy(buf));
+	this->SetDataTableName(COM_StringCopy(buf));
 	//ret.SetDataTable( pTable );
-	return ret;
+	for (int i = 0; i < nMaxElements + 1; i++) {
+		delete pProps[i];
+	}
+	//return ret;
+}
+
+RecvPropUtlVector& RecvPropUtlVector::operator=(const RecvPropUtlVector& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
 }

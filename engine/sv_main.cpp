@@ -1327,7 +1327,7 @@ void CGameServer::RemoveClientFromGame( CBaseClient *client )
 
 	g_pServerPluginHandler->ClientDisconnect( pClient->m_pEdict);
 	// release the DLL entity that's attached to this edict, if any
-	CBaseEntity* pEntity = pClient->m_pEdict->GetNetworkable()->GetBaseEntity();
+	CBaseEntity* pEntity = pClient->m_pEdict->GetNetworkable()?pClient->m_pEdict->GetNetworkable()->GetBaseEntity():NULL;
 	//((CBaseEdict*)pClient->m_pEdict)->SetEdict(NULL, false);
 	serverGameEnts->FreeContainingEntity( pClient->m_pEdict );
 

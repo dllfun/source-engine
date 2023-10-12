@@ -417,8 +417,8 @@ private:
 public:
 	BEGIN_INIT_RECV_TABLE(C_ServerRagdoll)
 	BEGIN_RECV_TABLE(C_ServerRagdoll, DT_Ragdoll, DT_BaseAnimating)
-		RecvPropArray(RecvPropQAngles(RECVINFO(m_ragAngles[0])), m_ragAngles),
-		RecvPropArray(RecvPropVector(RECVINFO(m_ragPos[0])), m_ragPos),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_ragAngles), RecvPropQAngles(RECVINFO(m_ragAngles[0]))),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_ragPos), RecvPropVector(RECVINFO(m_ragPos[0]))),
 		RecvPropEHandle(RECVINFO(m_hUnragdoll)),
 		RecvPropFloat(RECVINFO(m_flBlendWeight)),
 		RecvPropInt(RECVINFO(m_nOverlaySequence)),

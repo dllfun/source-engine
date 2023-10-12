@@ -62,7 +62,7 @@ protected:
 
 	CNetworkVar( float, m_flLifetime );
 	bool	m_bPlayingSound;
-
+public:
 	BEGIN_INIT_SEND_TABLE(CEntityFlame)
 	BEGIN_SEND_TABLE(CEntityFlame, DT_EntityFlame, DT_BaseEntity)
 		SendPropEHandle(SENDINFO(m_hEntAttached)),

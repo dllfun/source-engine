@@ -42,16 +42,27 @@
 //		SendPropFloat( NULL, 0, 0, 0, SPROP_NOSCALE )
 //		)
 //
-SendProp SendPropUtlVector(
-	char *pVarName,		// Use SENDINFO_UTLVECTOR to generate these first 4 parameters.
-	int offset,
-	int sizeofVar,
-	EnsureCapacityFn ensureFn,
+class SendPropUtlVector : public SendProp {
+public:
+	SendPropUtlVector(){}
+	SendPropUtlVector(
+		char* pVarName,		// Use SENDINFO_UTLVECTOR to generate these first 4 parameters.
+		int offset,
+		int sizeofVar,
+		EnsureCapacityFn ensureFn,
 
-	int nMaxElements,			// Max # of elements in the array. Keep this as low as possible.
-	SendProp pArrayProp,		// Describe the data inside of each element in the array.
-	SendTableProxyFn varProxy=SendProxy_DataTableToDataTable	// This can be overridden to control who the array is sent to.
+		int nMaxElements,			// Max # of elements in the array. Keep this as low as possible.
+		SendProp&& pArrayProp,		// Describe the data inside of each element in the array.
+		SendTableProxyFn varProxy = SendProxy_DataTableToDataTable	// This can be overridden to control who the array is sent to.
 	);
+	virtual ~SendPropUtlVector() {}
+	SendPropUtlVector& operator=(const SendPropUtlVector& srcSendProp);
+	operator SendProp* () {
+		SendPropUtlVector* pSendProp = new SendPropUtlVector;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
 
 // This gets associated with SendProps inside a utlvector and stores extra data needed to make it work.
 class CSendPropExtra_UtlVector

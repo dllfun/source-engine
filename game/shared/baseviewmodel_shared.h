@@ -235,7 +235,7 @@ private:
 		SendPropInt(SENDINFO(m_nMuzzleFlashParity), EF_MUZZLEFLASH_BITS, SPROP_UNSIGNED),
 
 #if !defined( INVASION_DLL ) && !defined( INVASION_CLIENT_DLL )
-		SendPropArray(SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter), 8, 0, 0.0f, 1.0f), m_flPoseParameter),
+		SendPropInternalArray(SENDINFO_INTERNALARRAY(m_flPoseParameter), SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter), 8, 0, 0.0f, 1.0f)),
 #endif
 
 	END_NETWORK_TABLE(DT_BaseViewModel)
@@ -261,7 +261,7 @@ private:
 		RecvPropInt(RECVINFO(m_nMuzzleFlashParity)),
 
 #if !defined( INVASION_DLL ) && !defined( INVASION_CLIENT_DLL )
-		RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0])), m_flPoseParameter),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO(m_flPoseParameter[0]))),
 #endif
 	END_NETWORK_TABLE(DT_BaseViewModel)
 	END_INIT_RECV_TABLE()

@@ -39,10 +39,9 @@ public:
 	BEGIN_INIT_SEND_TABLE(CTEBeamSpline)
 	BEGIN_SEND_TABLE_NOBASE(CTEBeamSpline, DT_TEBeamSpline)
 		SendPropInt(SENDINFO(m_nPoints), 5, SPROP_UNSIGNED),
-
-		SendPropArray(
-			SendPropVector(SENDINFO_ARRAY(m_vecPoints), -1, SPROP_COORD),
-			m_vecPoints)
+		SendPropInternalArray(
+			SENDINFO_INTERNALARRAY(m_vecPoints),
+			SendPropVector(SENDINFO_ARRAY(m_vecPoints), -1, SPROP_COORD))
 	END_SEND_TABLE(DT_TEBeamSpline)
 	END_INIT_SEND_TABLE()
 };

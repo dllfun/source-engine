@@ -245,7 +245,7 @@ private:
 		SendPropInt(SENDINFO(m_iUpdateCapHudParity), CAPHUD_PARITY_BITS, SPROP_UNSIGNED),
 
 		// data variables
-		SendPropArray(SendPropVector(SENDINFO_ARRAY(m_vCPPositions), -1, SPROP_COORD), m_vCPPositions),
+		SendPropInternalArray(SENDINFO_INTERNALARRAY(m_vCPPositions), SendPropVector(SENDINFO_ARRAY(m_vCPPositions), -1, SPROP_COORD)),
 		SendPropArray3(SENDINFO_ARRAY3(m_bCPIsVisible), SendPropInt(SENDINFO_ARRAY(m_bCPIsVisible), 1, SPROP_UNSIGNED)),
 		SendPropArray3(SENDINFO_ARRAY3(m_flLazyCapPerc), SendPropFloat(SENDINFO_ARRAY(m_flLazyCapPerc))),
 		SendPropArray3(SENDINFO_ARRAY3(m_iTeamIcons), SendPropInt(SENDINFO_ARRAY(m_iTeamIcons), 8, SPROP_UNSIGNED)),
@@ -258,7 +258,7 @@ private:
 		SendPropArray3(SENDINFO_ARRAY3(m_iBaseControlPoints), SendPropInt(SENDINFO_ARRAY(m_iBaseControlPoints), 8)),
 		SendPropArray3(SENDINFO_ARRAY3(m_bInMiniRound), SendPropBool(SENDINFO_ARRAY(m_bInMiniRound))),
 		SendPropArray3(SENDINFO_ARRAY3(m_iWarnOnCap), SendPropInt(SENDINFO_ARRAY(m_iWarnOnCap), 4, SPROP_UNSIGNED)),
-		SendPropArray(SendPropStringT(SENDINFO_ARRAY(m_iszWarnSound)), m_iszWarnSound),
+		SendPropInternalArray(SENDINFO_INTERNALARRAY(m_iszWarnSound), SendPropStringT(SENDINFO_ARRAY(m_iszWarnSound))),
 		SendPropArray3(SENDINFO_ARRAY3(m_flPathDistance), SendPropFloat(SENDINFO_ARRAY(m_flPathDistance), 8, 0, 0.0f, 1.0f)),
 		SendPropArray3(SENDINFO_ARRAY3(m_iCPGroup), SendPropInt(SENDINFO_ARRAY(m_iCPGroup), 5)),
 		SendPropArray3(SENDINFO_ARRAY3(m_bCPLocked), SendPropBool(SENDINFO_ARRAY(m_bCPLocked))),

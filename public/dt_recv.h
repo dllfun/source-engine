@@ -95,7 +95,7 @@ class RecvProp
 public:
 							RecvProp();
 	virtual					~RecvProp();
-
+	RecvProp(const RecvProp& srcRecvProp);
 	RecvProp&				operator=(const RecvProp& srcRecvProp);
 
 	void					InitArray( int nElements, int elementStride );
@@ -154,7 +154,7 @@ public:
 	int						m_StringBufferSize = 0;
 
 
-private:
+protected:
 
 	bool					m_bInsideArray = false;		// Set to true by the engine if this property sits inside an array.
 
@@ -189,10 +189,10 @@ public:
 	typedef RecvProp	PropType;
 
 				RecvTable();
-				RecvTable( RecvProp *pProps, int nProps, const char *pNetTableName );
+				RecvTable( RecvProp **pProps, int nProps, const char *pNetTableName );
 				~RecvTable();
 
-	void		Construct( RecvProp *pProps, int nProps, const char *pNetTableName );
+	void		Construct( RecvProp **pProps, int nProps, const char *pNetTableName );
 
 	RecvTable& operator=(const RecvTable& srcRecvTable);
 
@@ -476,14 +476,17 @@ int TestRevFunction();
 			{\
 				typedef className currentRecvDTClass;\
 				const char *pTableName = #tableName; \
-				RecvProp pRecvProps[] = { \
+				RecvProp* pRecvProps[] = { \
 					RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
 
 #define END_RECV_TABLE(tableName) \
 										};\
 				RecvTable pRecvTable;		\
-				pRecvTable.Construct(pRecvProps+1, sizeof(pRecvProps) / sizeof(RecvProp) - 1, pTableName);\
+				pRecvTable.Construct(pRecvProps+1, sizeof(pRecvProps) / sizeof(RecvProp*) - 1, pTableName);\
 				GetRecvTableManager()->RegisteRecvTable(&pRecvTable);\
+				for(int i=0;i<sizeof(pRecvProps) / sizeof(RecvProp*);i++){\
+					delete pRecvProps[i];\
+				}\
 			};
 
 #define BEGIN_RECV_TABLE(className, tableName, baseTableName) \
@@ -504,6 +507,7 @@ int TestRevFunction();
 #define RECVINFO_NAME(varName, remoteVarName)	#remoteVarName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName)
 #define RECVINFO_STRING(varName)				#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), STRINGBUFSIZE(currentRecvDTClass, varName)
 #define RECVINFO_BASECLASS(tableName)			RecvPropDataTable("this", 0, 0, &REFERENCE_RECV_TABLE(tableName))
+#define RECVINFO_INTERNALARRAY(varName)			sizeof(((currentRecvDTClass*)0)->varName)/sizeof(((currentRecvDTClass*)0)->varName[0]), sizeof(((currentRecvDTClass*)0)->varName[0]), #varName
 #define RECVINFO_ARRAY(varName)					#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName[0]), sizeof(((currentRecvDTClass*)0)->varName)/sizeof(((currentRecvDTClass*)0)->varName[0])
 
 // Just specify the name and offset. Used for strings and data tables.
@@ -529,30 +533,62 @@ void DataTableRecvProxy_StaticDataTable(const RecvProp *pProp, void **pOut, void
 // PointerDataTable does *pOut = *((void**)pData)   (ie: pData is a pointer to the object to decode into).
 void DataTableRecvProxy_PointerDataTable(const RecvProp *pProp, void **pOut, void *pData, int objectID);
 
-	
-RecvProp RecvPropFloat(
-	const char *pVarName, 
-	int offset,
-	int sizeofVar=SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
-	int flags=0, 
-	RecvVarProxyFn varProxy=RecvProxy_FloatToFloat
+class RecvPropFloat : public RecvProp {
+public:
+	RecvPropFloat() {}
+	RecvPropFloat(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_FloatToFloat
 	);
+	virtual	~RecvPropFloat() {}
+	RecvPropFloat& operator=(const RecvPropFloat& srcSendProp);
+	operator RecvProp* () {
+		RecvPropFloat* pRecvProp = new RecvPropFloat;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
-RecvProp RecvPropVector(
-	const char *pVarName, 
-	int offset, 
-	int sizeofVar=SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
-	int flags=0, 
-	RecvVarProxyFn varProxy=RecvProxy_VectorToVector
+class RecvPropVector : public RecvProp {
+public:
+	RecvPropVector() {}
+	RecvPropVector(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_VectorToVector
 	);
+	virtual	~RecvPropVector() {}
+	RecvPropVector& operator=(const RecvPropVector& srcSendProp);
+	operator RecvProp* () {
+		RecvPropVector* pRecvProp = new RecvPropVector;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
-RecvProp RecvPropVectorXY(
-	const char *pVarName, 
-	int offset, 
-	int sizeofVar=SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
-	int flags=0, 
-	RecvVarProxyFn varProxy=RecvProxy_VectorXYToVectorXY
+class RecvPropVectorXY : public RecvProp {
+public:
+	RecvPropVectorXY() {}
+	RecvPropVectorXY(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_VectorXYToVectorXY
 	);
+	virtual	~RecvPropVectorXY() {}
+	RecvPropVectorXY& operator=(const RecvPropVectorXY& srcSendProp);
+	operator RecvProp* () {
+		RecvPropVectorXY* pRecvProp = new RecvPropVectorXY;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
 // This is here so the RecvTable can look more like the SendTable.
 #define RecvPropQAngles RecvPropVector
@@ -568,49 +604,104 @@ RecvProp RecvPropQuaternion(
 	);
 #endif
 
-RecvProp RecvPropInt(
-	const char *pVarName, 
-	int offset, 
-	int sizeofVar=SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
-	int flags=0, 
-	RecvVarProxyFn varProxy=0
+class RecvPropInt : public RecvProp {
+public:
+	RecvPropInt() {}
+	RecvPropInt(
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = 0
 	);
+	virtual	~RecvPropInt() {}
+	RecvPropInt& operator=(const RecvPropInt& srcSendProp);
+	operator RecvProp* () {
+		RecvPropInt* pRecvProp = new RecvPropInt;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
-RecvProp RecvPropString(
-	const char *pVarName,
-	int offset,
-	int bufferSize,
-	int flags=0,
-	RecvVarProxyFn varProxy=RecvProxy_StringToString
+class RecvPropString : public RecvProp {
+public:
+	RecvPropString(){}
+	RecvPropString(
+		const char* pVarName,
+		int offset,
+		int bufferSize,
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_StringToString
 	);
+	virtual	~RecvPropString() {}
+	RecvPropString& operator=(const RecvPropString& srcSendProp);
+	operator RecvProp* () {
+		RecvPropString* pRecvProp = new RecvPropString;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
-RecvProp RecvPropDataTable(
-	const char *pVarName,
-	int offset,
-	int flags,
-	const char *pTableName,
-	DataTableRecvVarProxyFn varProxy=DataTableRecvProxy_StaticDataTable
+class RecvPropDataTable : public RecvProp {
+public:
+	RecvPropDataTable() {}
+	RecvPropDataTable(
+		const char* pVarName,
+		int offset,
+		int flags,
+		const char* pTableName,
+		DataTableRecvVarProxyFn varProxy = DataTableRecvProxy_StaticDataTable
 	);
+	virtual	~RecvPropDataTable() {}
+	RecvPropDataTable& operator=(const RecvPropDataTable& srcSendProp);
+	operator RecvProp* () {
+		RecvPropDataTable* pRecvProp = new RecvPropDataTable;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
-RecvProp RecvPropArray3(
-	const char *pVarName,
-	int offset,
-	int sizeofVar,
-	int elements,
-	RecvProp pArrayProp,
-	DataTableRecvVarProxyFn varProxy=DataTableRecvProxy_StaticDataTable
+class RecvPropArray3 : public RecvProp {
+public:
+	RecvPropArray3() {}
+	RecvPropArray3(
+		const char* pVarName,
+		int offset,
+		int sizeofVar,
+		int elements,
+		RecvProp&& pArrayProp,
+		DataTableRecvVarProxyFn varProxy = DataTableRecvProxy_StaticDataTable
 	);
+	virtual	~RecvPropArray3() {}
+	RecvPropArray3& operator=(const RecvPropArray3& srcSendProp);
+	operator RecvProp* () {
+		RecvPropArray3* pRecvProp = new RecvPropArray3;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
-// Use the macro to let it automatically generate a table name. You shouldn't 
+class RecvPropInternalArray : public RecvProp {
+public:
+	// Use the macro to let it automatically generate a table name. You shouldn't 
 // ever need to reference the table name. If you want to exclude this array, then
 // reference the name of the variable in varTemplate.
-RecvProp InternalRecvPropArray(
-	const int elementCount,
-	const int elementStride,
-	const char *pName,
-	ArrayLengthRecvProxyFn proxy
+	RecvPropInternalArray() {}
+	RecvPropInternalArray(
+		const int elementCount,
+		const int elementStride,
+		const char* pName,
+		RecvProp&& pArrayProp,
+		ArrayLengthRecvProxyFn proxy = 0
 	);
-
+	virtual	~RecvPropInternalArray() {}
+	RecvPropInternalArray& operator=(const RecvPropInternalArray& srcSendProp);
+	operator RecvProp* () {
+		RecvPropInternalArray* pRecvProp = new RecvPropInternalArray;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
 //
 // Use this if you want to completely manage the way the array data is stored.
@@ -618,22 +709,22 @@ RecvProp InternalRecvPropArray(
 // to figure out where to store the specified element.
 //
 #define RecvPropVirtualArray( arrayLengthProxy, maxArrayLength, varTemplate, propertyName ) \
-	varTemplate, \
-	InternalRecvPropArray( \
+	RecvPropInternalArray( \
 		maxArrayLength, \
 		0, \
 		#propertyName, \
+		varTemplate, \
 		arrayLengthProxy \
 		)
 
 
 // Use this and pass the array name and it will figure out the count and stride automatically.
 #define RecvPropVariableLengthArray( arrayLengthProxy, varTemplate, arrayName )			\
-	varTemplate,										\
-	InternalRecvPropArray(								\
+	RecvPropInternalArray(								\
 		sizeof(((currentRecvDTClass*)0)->arrayName) / PROPSIZEOF(currentRecvDTClass, arrayName[0]), \
 		PROPSIZEOF(currentRecvDTClass, arrayName[0]),	\
 		#arrayName,										\
+		varTemplate,									\
 		arrayLengthProxy								\
 		)
 
@@ -645,8 +736,8 @@ RecvProp InternalRecvPropArray(
 
 // Use this one to specify the element count and stride manually.
 #define RecvPropArray2( arrayLengthProxy, varTemplate, elementCount, elementStride, arrayName )		\
-	varTemplate,																	\
-	InternalRecvPropArray( elementCount, elementStride, #arrayName, arrayLengthProxy )
+																		\
+	RecvPropInternalArray( elementCount, elementStride, #arrayName, varTemplate, arrayLengthProxy )
 
 
 // ---------------------------------------------------------------------------------------- //

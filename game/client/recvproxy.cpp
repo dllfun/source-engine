@@ -37,9 +37,15 @@ void RecvProxy_ShortSubOne( const CRecvProxyData *pData, void *pStruct, void *pO
 	*pInt = pData->m_Value.m_Int - 1;
 }
 
-RecvProp RecvPropIntWithMinusOneFlag( const char *pVarName, int offset, int sizeofVar, RecvVarProxyFn proxyFn )
+RecvPropIntWithMinusOneFlag::RecvPropIntWithMinusOneFlag( const char *pVarName, int offset, int sizeofVar, RecvVarProxyFn proxyFn )
+:RecvPropInt(pVarName, offset, sizeofVar, 0, proxyFn)
 {
-	return RecvPropInt( pVarName, offset, sizeofVar, 0, proxyFn );
+
+}
+
+RecvPropIntWithMinusOneFlag& RecvPropIntWithMinusOneFlag::operator=(const RecvPropIntWithMinusOneFlag& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
 }
 
 void RecvProxy_IntToModelIndex16_BackCompatible( const CRecvProxyData *pData, void *pStruct, void *pOut )
@@ -94,25 +100,34 @@ void RecvProxy_IntToEHandle( const CRecvProxyData *pData, void *pStruct, void *p
 	}
 }
 
-RecvProp RecvPropEHandle(
+RecvPropEHandle::RecvPropEHandle(
 	const char *pVarName, 
 	int offset, 
 	int sizeofVar,
 	RecvVarProxyFn proxyFn )
+:RecvPropInt(pVarName, offset, sizeofVar, 0, proxyFn)
 {
-	return RecvPropInt( pVarName, offset, sizeofVar, 0, proxyFn );
+
 }
 
+RecvPropEHandle& RecvPropEHandle::operator=(const RecvPropEHandle& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
 
-RecvProp RecvPropBool(
+RecvPropBool::RecvPropBool(
 	const char *pVarName, 
 	int offset, 
 	int sizeofVar )
+:RecvPropInt(pVarName, offset, sizeofVar)
 {
 	Assert( sizeofVar == sizeof( bool ) );
-	return RecvPropInt( pVarName, offset, sizeofVar );
 }
 
+RecvPropBool& RecvPropBool::operator=(const RecvPropBool& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
 
 //-----------------------------------------------------------------------------
 // Moveparent receive proxies
@@ -170,14 +185,20 @@ static void RecvProxy_Time( const CRecvProxyData *pData, void *pStruct, void *pO
 //			sizeofVar - 
 // Output : RecvProp
 //-----------------------------------------------------------------------------
-RecvProp RecvPropTime(
+RecvPropTime::RecvPropTime(
 	const char *pVarName, 
 	int offset, 
 	int sizeofVar/*=SIZEOF_IGNORE*/ )
+:RecvPropFloat(pVarName, offset, sizeofVar)
 {
 //	return RecvPropInt( pVarName, offset, sizeofVar, 0, RecvProxy_Time );
-	return RecvPropFloat( pVarName, offset, sizeofVar );
+
 };
+
+RecvPropTime& RecvPropTime::operator=(const RecvPropTime& srcSendProp) {
+	RecvProp::operator=(srcSendProp);
+	return *this;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Okay, so we have to queue up the actual ehandle to entity lookup for the following reason:

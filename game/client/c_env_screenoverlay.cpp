@@ -52,8 +52,8 @@ protected:
 public:
 	BEGIN_INIT_RECV_TABLE(C_EnvScreenOverlay)
 	BEGIN_RECV_TABLE(C_EnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
-		RecvPropArray(RecvPropString(RECVINFO(m_iszOverlayNames[0])), m_iszOverlayNames),
-		RecvPropArray(RecvPropFloat(RECVINFO(m_flOverlayTimes[0])), m_flOverlayTimes),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_iszOverlayNames), RecvPropString(RECVINFO(m_iszOverlayNames[0]))),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_flOverlayTimes), RecvPropFloat(RECVINFO(m_flOverlayTimes[0]))),
 		RecvPropFloat(RECVINFO(m_flStartTime)),
 		RecvPropInt(RECVINFO(m_iDesiredOverlay)),
 		RecvPropBool(RECVINFO(m_bIsActive)),

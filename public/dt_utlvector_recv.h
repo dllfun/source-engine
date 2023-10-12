@@ -44,17 +44,28 @@
 //
 //	RecvPropUtlVector( RECVINFO_UTLVECTOR( m_FloatArray ), 16, RecvPropFloat(NULL,0,0) )
 //
-RecvProp RecvPropUtlVector(
-	const char *pVarName,		// Use RECVINFO_UTLVECTOR to generate these first 5 parameters.
-	int offset,
-	int sizeofVar,
-	ResizeUtlVectorFn fn,
-	EnsureCapacityFn ensureFn,
 
-	int nMaxElements,	// Max # of elements in the array. Keep this as low as possible.
-	RecvProp pArrayProp	// The definition of the property you're receiving into.
-						// You can leave all of its parameters at 0 (name, offset, size, etc).
+class RecvPropUtlVector : RecvProp {
+public:
+	RecvPropUtlVector() {}
+	RecvPropUtlVector(
+		const char* pVarName,		// Use RECVINFO_UTLVECTOR to generate these first 5 parameters.
+		int offset,
+		int sizeofVar,
+		ResizeUtlVectorFn fn,
+		EnsureCapacityFn ensureFn,
+		int nMaxElements,	// Max # of elements in the array. Keep this as low as possible.
+		RecvProp&& pArrayProp	// The definition of the property you're receiving into.
+		// You can leave all of its parameters at 0 (name, offset, size, etc).
 	);
+	virtual	~RecvPropUtlVector() {}
+	RecvPropUtlVector& operator=(const RecvPropUtlVector& srcSendProp);
+	operator RecvProp* () {
+		RecvPropUtlVector* pRecvProp = new RecvPropUtlVector;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
 
 class CRecvPropExtra_UtlVector
 {
