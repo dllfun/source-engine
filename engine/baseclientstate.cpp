@@ -989,16 +989,14 @@ void CBaseClientState::CheckForResend (void)
 	m_nRetryNumber++;
 
 	// Request another challenge value.
-	if(GetNetSocket()){
-		ALIGN4 char		msg_buffer[MAX_ROUTABLE_PAYLOAD] ALIGN4_POST;
-		bf_write	msg( msg_buffer, sizeof(msg_buffer) );
+	ALIGN4 char		msg_buffer[MAX_ROUTABLE_PAYLOAD] ALIGN4_POST;
+	bf_write	msg( msg_buffer, sizeof(msg_buffer) );
 
-		msg.WriteLong( CONNECTIONLESS_HEADER );
-		msg.WriteByte( A2S_GETCHALLENGE );
-		msg.WriteLong( m_retryChallenge );
-		msg.WriteString( "0000000000" ); // pad out
-		GetNetSocket()->NET_SendPacket( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
-	}
+	msg.WriteLong( CONNECTIONLESS_HEADER );
+	msg.WriteByte( A2S_GETCHALLENGE );
+	msg.WriteLong( m_retryChallenge );
+	msg.WriteString( "0000000000" ); // pad out
+	GetNetSocket()->NET_SendPacket( NULL, adr, msg.GetData(), msg.GetNumBytesWritten() );
 }
 
 bool CBaseClientState::ProcessConnectionlessPacket( netpacket_t *packet )

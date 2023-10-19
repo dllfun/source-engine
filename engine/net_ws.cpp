@@ -2527,10 +2527,12 @@ void CNetworkSystem::NET_CloseAllSockets (void)
 		}
 
 		net_sockets[i]->NET_ClosePending();
-		delete net_sockets[i];
+		//if (i >= m_DefaultSocketCount) {
+		//	delete net_sockets[i];
+		//}
 	}
 
-	m_DefaultSocketCount = 0;
+	
 }
 
 /*
@@ -2624,17 +2626,24 @@ void CNetworkSystem::NET_OpenSockets (void)
 	if (m_pClientSocket) {
 		m_pClientSocket->OpenSocketInternal(clientport.GetInt(), PORT_SERVER, "client", nProtocol, true);
 	}
-
+	
 	if (m_pServerSocket) {
 		m_pServerSocket->OpenSocketInternal(hostport.GetInt(), PORT_SERVER, "server", nProtocol, false);
 	}
-
-	if (m_pHLTVSocket)
-	{
-		m_pHLTVSocket->OpenSocketInternal( hltvport.GetInt(), PORT_HLTV, "hltv", nProtocol, false );
+	
+	if (m_pServerSocket && m_pClientSocket) {
+		m_pServerSocket->SetLoopBackSocket(m_pClientSocket);
+		m_pClientSocket->SetLoopBackSocket(m_pServerSocket);
 	}
 
-	if ( IsX360() )
+	if (!net_nohltv)
+	{
+		if (m_pHLTVSocket) {
+			m_pHLTVSocket->OpenSocketInternal(hltvport.GetInt(), PORT_HLTV, "hltv", nProtocol, false);
+		}
+	}
+
+	if (IsX360())
 	{
 		if (m_pMatchMakingSocket) {
 			m_pMatchMakingSocket->OpenSocketInternal(matchmakingport.GetInt(), PORT_MATCHMAKING, "matchmaking", nProtocol, false);
@@ -3222,33 +3231,43 @@ void CNetworkSystem::NET_Init( bool bIsDedicated )
 		ipname.SetValue( ip );  // update the cvar right now, this will get overwritten by "stuffcmds" later
 	}
 
-	m_pClientSocket = new CNetSocket("ClientSocket");
-	net_sockets.AddToTail(m_pClientSocket);
-	m_DefaultSocketCount++;
+	if (!m_pClientSocket) {
+		m_pClientSocket = new CNetSocket("ClientSocket");
+		net_sockets.AddToTail(m_pClientSocket);
+		m_DefaultSocketCount++;
+	}
 
-	m_pServerSocket = new CNetSocket("ServerSocket");
-	net_sockets.AddToTail(m_pServerSocket);
-	m_DefaultSocketCount++;
+	if (!m_pServerSocket) {
+		m_pServerSocket = new CNetSocket("ServerSocket");
+		net_sockets.AddToTail(m_pServerSocket);
+		m_DefaultSocketCount++;
+	}
 
 	m_pServerSocket->SetLoopBackSocket(m_pClientSocket);
 	m_pClientSocket->SetLoopBackSocket(m_pServerSocket);
 
 	if (!net_nohltv)
 	{
-		m_pHLTVSocket = new CNetSocket("HLTVSocket");
-		net_sockets.AddToTail(m_pHLTVSocket);
-		m_DefaultSocketCount++;
+		if (!m_pHLTVSocket) {
+			m_pHLTVSocket = new CNetSocket("HLTVSocket");
+			net_sockets.AddToTail(m_pHLTVSocket);
+			m_DefaultSocketCount++;
+		}
 	}
 
 	if (IsX360())
 	{
-		m_pMatchMakingSocket = new CNetSocket("MatchMakingSocket");
-		net_sockets.AddToTail(m_pMatchMakingSocket);
-		m_DefaultSocketCount++;
+		if (!m_pMatchMakingSocket) {
+			m_pMatchMakingSocket = new CNetSocket("MatchMakingSocket");
+			net_sockets.AddToTail(m_pMatchMakingSocket);
+			m_DefaultSocketCount++;
+		}
 
-		m_pSystemLinkSocket = new CNetSocket("SystemLinkSocket");
-		net_sockets.AddToTail(m_pSystemLinkSocket);
-		m_DefaultSocketCount++;
+		if (!m_pSystemLinkSocket) {
+			m_pSystemLinkSocket = new CNetSocket("SystemLinkSocket");
+			net_sockets.AddToTail(m_pSystemLinkSocket);
+			m_DefaultSocketCount++;
+		}
 	}
 
 	if ( bIsDedicated )
@@ -3286,6 +3305,13 @@ void CNetworkSystem::NET_Shutdown (void)
 	NET_ConfigLoopbackBuffers(false);
 	NET_CloseAllSockets();
 
+	for (int i = 0; i < net_sockets.Count(); i++)
+	{
+		delete net_sockets[i];
+	}
+	net_sockets.Purge();
+
+	m_DefaultSocketCount = 0;
 	m_pClientSocket = NULL;
 	m_pServerSocket = NULL;
 	m_pHLTVSocket = NULL;
