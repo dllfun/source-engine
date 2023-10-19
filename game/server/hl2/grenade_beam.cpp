@@ -41,7 +41,7 @@ void CGrenadeBeamChaser::Spawn( void )
 	SetSolid( SOLID_NONE );
 	SetMoveType( MOVETYPE_FLY );
 	SetThink(&CGrenadeBeamChaser::ChaserThink);
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 //------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ void CGrenadeBeamChaser::ChaserThink( void )
 	// If so get the next target
 	// -------------------------------------------------
 	float flTargetDist = vTargetDir.Length();
-	if ((gpGlobals->frametime * m_pTarget->m_flBeamSpeed) > flTargetDist)
+	if ((gpGlobals->GetFrameTime() * m_pTarget->m_flBeamSpeed) > flTargetDist)
 	{
 		m_pTarget->GetNextTargetPos(&vTargetPos);
 		vTargetDir = (vTargetPos - GetLocalOrigin());
@@ -75,7 +75,7 @@ void CGrenadeBeamChaser::ChaserThink( void )
 		VectorNormalize(vTargetDir);
 		SetAbsVelocity( vTargetDir * m_pTarget->m_flBeamSpeed );
 	}
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 //------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ void CGrenadeBeamChaser::ChaserThink( void )
 //------------------------------------------------------------------------------
 CGrenadeBeamChaser* CGrenadeBeamChaser::ChaserCreate( CGrenadeBeam *pTarget )
 {
-	CGrenadeBeamChaser *pChaser = (CGrenadeBeamChaser *)CreateEntityByName( "grenade_beam_chaser" );
+	CGrenadeBeamChaser *pChaser = (CGrenadeBeamChaser *)engineServer->CreateEntityByName( "grenade_beam_chaser" );
 	pChaser->SetLocalOrigin( pTarget->GetLocalOrigin() );
 	pChaser->m_pTarget		= pTarget;
 	pChaser->Spawn();
@@ -133,7 +133,7 @@ void CGrenadeBeam::Spawn( void )
 	AddEffects( EF_NODRAW );
 
 	SetTouch( &CGrenadeBeam::GrenadeBeamTouch );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	m_takedamage	= DAMAGE_NO;
 	m_iHealth		= 1;
@@ -150,7 +150,7 @@ void CGrenadeBeam::Spawn( void )
 //------------------------------------------------------------------------------
 CGrenadeBeam* CGrenadeBeam::Create( CBaseEntity* pOwner, const Vector &vStart)
 {
-	CGrenadeBeam *pEnergy = (CGrenadeBeam *)CreateEntityByName( "grenade_beam" );
+	CGrenadeBeam *pEnergy = (CGrenadeBeam *)engineServer->CreateEntityByName( "grenade_beam" );
 	pEnergy->Spawn();
 	pEnergy->SetOwnerEntity( pOwner );
 	pEnergy->SetRenderColor( 255, 0, 0, 0 );
@@ -179,13 +179,13 @@ void CGrenadeBeam::Format(color32 clrColor, float flWidth)
 void CGrenadeBeam::Shoot(Vector vDirection, float flSpeed, float flLifetime, float flLag, float flDamage )
 {
 	SetThink ( &CGrenadeBeam::KillBeam );
-	SetNextThink( gpGlobals->curtime + flLifetime );
+	SetNextThink( gpGlobals->GetCurTime() + flLifetime );
 	m_hBeamChaser		= CGrenadeBeamChaser::ChaserCreate(this);
 	m_flBeamSpeed		= flSpeed;
 	SetAbsVelocity( vDirection * flSpeed );
 	m_flBeamLag			= flLag;
 	m_flDamage			= flDamage;
-	m_flLaunchTime		= gpGlobals->curtime;
+	m_flLaunchTime		= gpGlobals->GetCurTime();
 	m_vLaunchPos		= GetAbsOrigin();
 	m_flLastTouchTime  = 0;
 	CreateBeams();
@@ -223,12 +223,12 @@ void CGrenadeBeam::GrenadeBeamTouch( CBaseEntity *pOther )
 	//---------------------------------------------------------
 	// Make sure I'm not caught in a corner, if so remove me
 	//---------------------------------------------------------
-	if (gpGlobals->curtime - m_flLastTouchTime < 0.01)
+	if (gpGlobals->GetCurTime() - m_flLastTouchTime < 0.01)
 	{
 		KillBeam();
 		return;
 	}
-	m_flLastTouchTime = gpGlobals->curtime;
+	m_flLastTouchTime = gpGlobals->GetCurTime();
 
 	// ---------------------------------------
 	// If I have room for another hit, add it
@@ -290,7 +290,7 @@ void CGrenadeBeam::GrenadeBeamTouch( CBaseEntity *pOther )
 void CGrenadeBeam::GetNextTargetPos(Vector *vPosition)
 {
 	// Only advance if tail launch time has passed
-	if (gpGlobals->curtime - m_flLaunchTime > m_flBeamLag)
+	if (gpGlobals->GetCurTime() - m_flLaunchTime > m_flBeamLag)
 	{
 		if (m_nNumHits > 0)
 		{
@@ -316,7 +316,7 @@ void CGrenadeBeam::GetChaserTargetPos(Vector *vPosition)
 	// -----------------------------
 	//  Launch chaser after a delay
 	// -----------------------------
-	if (gpGlobals->curtime - m_flLaunchTime < m_flBeamLag) 
+	if (gpGlobals->GetCurTime() - m_flLaunchTime < m_flBeamLag) 
 	{
 		*vPosition = m_vLaunchPos;
 	}

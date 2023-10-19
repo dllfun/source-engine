@@ -61,31 +61,37 @@ private:
 	float	m_flFadeDuration;			// Time it should take to reach the server's new fade alpha
 	float	m_flFadeTimeStartedAt;		// Time at which we last recieved a new desired fade alpha
 	float	m_flFadeAlphaStartedAt;		// Alpha at which we last received a new desired fade alpha
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_ScriptIntro)
+	BEGIN_RECV_TABLE(C_ScriptIntro, DT_ScriptIntro, DT_BaseEntity)
+		RecvPropVector(RECVINFO(m_vecCameraView)),
+		RecvPropVector(RECVINFO(m_vecCameraViewAngles)),
+		RecvPropInt(RECVINFO(m_iBlendMode)),
+		RecvPropInt(RECVINFO(m_iNextBlendMode)),
+		RecvPropFloat(RECVINFO(m_flNextBlendTime)),
+		RecvPropFloat(RECVINFO(m_flBlendStartTime)),
+		RecvPropBool(RECVINFO(m_bActive)),
+
+		// Fov & fov blends 
+		RecvPropInt(RECVINFO(m_iFOV)),
+		RecvPropInt(RECVINFO(m_iNextFOV)),
+		RecvPropInt(RECVINFO(m_iStartFOV)),
+		RecvPropFloat(RECVINFO(m_flNextFOVBlendTime)),
+		RecvPropFloat(RECVINFO(m_flFOVBlendStartTime)),
+		RecvPropBool(RECVINFO(m_bAlternateFOV)),
+
+		// Fades
+		RecvPropFloat(RECVINFO(m_flFadeAlpha)),
+		RecvPropArray(RecvPropFloat(RECVINFO(m_flFadeColor[0])), m_flFadeColor),
+		RecvPropFloat(RECVINFO(m_flFadeDuration)),
+		RecvPropEHandle(RECVINFO(m_hCameraEntity)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_ScriptIntro, DT_ScriptIntro, CScriptIntro )
-	RecvPropVector( RECVINFO( m_vecCameraView ) ),
-	RecvPropVector( RECVINFO( m_vecCameraViewAngles ) ),
-	RecvPropInt( RECVINFO( m_iBlendMode ) ),
-	RecvPropInt( RECVINFO( m_iNextBlendMode ) ),
-	RecvPropFloat( RECVINFO( m_flNextBlendTime ) ),
-	RecvPropFloat( RECVINFO( m_flBlendStartTime ) ),
-	RecvPropBool( RECVINFO( m_bActive ) ),
-	
-	// Fov & fov blends 
-	RecvPropInt( RECVINFO( m_iFOV ) ),
-	RecvPropInt( RECVINFO( m_iNextFOV ) ),
-	RecvPropInt( RECVINFO( m_iStartFOV ) ),
-	RecvPropFloat( RECVINFO( m_flNextFOVBlendTime ) ),
-	RecvPropFloat( RECVINFO( m_flFOVBlendStartTime ) ),
-	RecvPropBool( RECVINFO( m_bAlternateFOV ) ),
+IMPLEMENT_CLIENTCLASS( C_ScriptIntro, DT_ScriptIntro, CScriptIntro )
 
-	// Fades
-	RecvPropFloat( RECVINFO( m_flFadeAlpha ) ),
-	RecvPropArray( RecvPropFloat( RECVINFO( m_flFadeColor[0] ) ), m_flFadeColor ),
-	RecvPropFloat( RECVINFO( m_flFadeDuration ) ),
-	RecvPropEHandle(RECVINFO(m_hCameraEntity)),
-END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -164,7 +170,7 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 	}
 
 	// If we're currently blending to a new mode, set the second pass
-	if ( m_flNextBlendTime > gpGlobals->curtime )
+	if ( m_flNextBlendTime > gpGlobals->GetCurTime() )
 	{
 		IntroDataBlendPass_t *pass2;
 		if ( m_IntroData.m_Passes.Count() < 2 )
@@ -211,7 +217,7 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 	// Started fading?
 	if ( m_flFadeAlpha != m_flPrevServerFadeAlpha )
 	{
-		m_flFadeTimeStartedAt = gpGlobals->curtime;
+		m_flFadeTimeStartedAt = gpGlobals->GetCurTime();
 		m_flFadeAlphaStartedAt = m_IntroData.m_flCurrentFadeColor[3];
 		m_flPrevServerFadeAlpha = m_flFadeAlpha;
 
@@ -250,7 +256,7 @@ void C_ScriptIntro::ClientThink( void )
 	float flPerc = 1.0;
 	if ( (m_flNextBlendTime - m_flBlendStartTime) != 0 )
 	{
-		flPerc = clamp( (gpGlobals->curtime - m_flBlendStartTime) / (m_flNextBlendTime - m_flBlendStartTime), 0, 1 );
+		flPerc = clamp( (gpGlobals->GetCurTime() - m_flBlendStartTime) / (m_flNextBlendTime - m_flBlendStartTime), 0, 1 );
 	}
 
 	// Detect when we're finished blending
@@ -273,10 +279,10 @@ void C_ScriptIntro::ClientThink( void )
 	}
 
 	/*
-	if ( m_flNextBlendTime >= gpGlobals->curtime )
+	if ( m_flNextBlendTime >= gpGlobals->GetCurTime() )
 	{
 		Msg("INTRO BLENDING: Blending from mode %d to %d.\n", m_IntroData.m_Passes[0].m_BlendMode, m_IntroData.m_Passes[1].m_BlendMode );
-		Msg("				 curtime %.2f    StartedAt %.2f    FinishAt: %.2f\n", gpGlobals->curtime, m_flBlendStartTime, m_flNextBlendTime );
+		Msg("				 curtime %.2f    StartedAt %.2f    FinishAt: %.2f\n", gpGlobals->GetCurTime(), m_flBlendStartTime, m_flNextBlendTime );
 		Msg("				 Perc:   %.2f\n", flPerc );
 	}
 	*/
@@ -300,7 +306,7 @@ extern float ScriptInfo_CalculateFOV( float flFOVBlendStartTime, float flNextFOV
 void C_ScriptIntro::CalculateFOV( void )
 {
 	// We're past our blending time so we're at our target
-	if ( m_flNextFOVBlendTime >= gpGlobals->curtime )
+	if ( m_flNextFOVBlendTime >= gpGlobals->GetCurTime() )
 	{
 		// Calculate where we're at
 		m_IntroData.m_playerViewFOV = ScriptInfo_CalculateFOV( m_flFOVBlendStartTime, m_flNextFOVBlendTime, m_iStartFOV, m_iNextFOV, m_bAlternateFOV );
@@ -313,12 +319,12 @@ void C_ScriptIntro::CalculateFOV( void )
 void C_ScriptIntro::CalculateAlpha( void )
 {
 	// Fill out the fade alpha
-	float flNewAlpha = RemapValClamped( gpGlobals->curtime, m_flFadeTimeStartedAt, m_flFadeTimeStartedAt + m_flFadeDuration, m_flFadeAlphaStartedAt, m_flFadeAlpha );
+	float flNewAlpha = RemapValClamped( gpGlobals->GetCurTime(), m_flFadeTimeStartedAt, m_flFadeTimeStartedAt + m_flFadeDuration, m_flFadeAlphaStartedAt, m_flFadeAlpha );
 	/*
 	if ( m_IntroData.m_flCurrentFadeColor[3] != flNewAlpha )
 	{
-		Msg("INTRO FADING: curtime %.2f    StartedAt %.2f    Duration: %.2f\n", gpGlobals->curtime, m_flFadeTimeStartedAt, m_flFadeDuration );
-		Msg("           TimePassed %.2f    Alpha:    %.2f\n", RemapValClamped( gpGlobals->curtime, m_flFadeTimeStartedAt, m_flFadeTimeStartedAt + m_flFadeDuration, 0.0, 1.0 ), m_IntroData.m_flCurrentFadeColor[3] );
+		Msg("INTRO FADING: curtime %.2f    StartedAt %.2f    Duration: %.2f\n", gpGlobals->GetCurTime(), m_flFadeTimeStartedAt, m_flFadeDuration );
+		Msg("           TimePassed %.2f    Alpha:    %.2f\n", RemapValClamped( gpGlobals->GetCurTime(), m_flFadeTimeStartedAt, m_flFadeTimeStartedAt + m_flFadeDuration, 0.0, 1.0 ), m_IntroData.m_flCurrentFadeColor[3] );
 	}
 	*/
 

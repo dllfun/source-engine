@@ -52,6 +52,11 @@ private:
 	void			Swing( int bIsSecondary );
 	void			Hit( trace_t &traceHit, Activity nHitActivity, bool bIsSecondary );
 	Activity		ChooseIntersectionPointAndActivity( trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner );
+public:
+	BEGIN_INIT_SEND_TABLE(CBaseHLBludgeonWeapon)
+		BEGIN_SEND_TABLE(CBaseHLBludgeonWeapon, DT_BaseHLBludgeonWeapon, DT_BaseHLCombatWeapon)
+		END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif

@@ -385,7 +385,7 @@ void CNPC_PlayerCompanion::GatherConditions()
 		m_flBoostSpeed = 0;
 
 		if ( m_AnnounceAttackTimer.Expired() &&
-			 ( GetLastEnemyTime() == 0.0 || gpGlobals->curtime - GetLastEnemyTime() > 20 ) )
+			 ( GetLastEnemyTime() == 0.0 || gpGlobals->GetCurTime() - GetLastEnemyTime() > 20 ) )
 		{
 			// Always delay when an encounter begins
 			m_AnnounceAttackTimer.Set( 4, 8 );
@@ -1370,7 +1370,7 @@ Activity CNPC_PlayerCompanion::NPC_TranslateActivity( Activity activity )
 
 	if ( activity == ACT_IDLE  )
 	{
-		if ( (m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT) && gpGlobals->curtime - m_flLastAttackTime < 3)
+		if ( (m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT) && gpGlobals->GetCurTime() - m_flLastAttackTime < 3)
 		{
 			activity = ACT_IDLE_ANGRY;
 		}
@@ -1388,7 +1388,7 @@ void CNPC_PlayerCompanion::HandleAnimEvent( animevent_t *pEvent )
 	// Create a flare and parent to our hand
 	if ( pEvent->event == AE_COMPANION_PRODUCE_FLARE )
 	{
-		m_hFlare = static_cast<CPhysicsProp *>(CreateEntityByName( "prop_physics" ));
+		m_hFlare = static_cast<CPhysicsProp *>(engineServer->CreateEntityByName( "prop_physics" ));
 		if ( m_hFlare != NULL )
 		{
 			// Set the model
@@ -2213,7 +2213,7 @@ bool CNPC_PlayerCompanion::IsValidEnemy( CBaseEntity *pEnemy )
 		AI_EnemyInfo_t *pInfo = GetEnemies()->Find( pEnemy );
 		if ( pInfo )
 		{
-			if ( gpGlobals->curtime - pInfo->timeLastSeen > 10 )
+			if ( gpGlobals->GetCurTime() - pInfo->timeLastSeen > 10 )
 			{
 				if ( !((CAI_BaseNPC*)pEnemy)->HasCondition( COND_IN_PVS ) )
 					return false;
@@ -2478,7 +2478,7 @@ void CNPC_PlayerCompanion::SetupCoverSearch( CBaseEntity *pEntity )
 					{
 						if ( pEnemy != GetEnemy() )
 						{
-							if ( pEnemyInfo->timeAtFirstHand == AI_INVALID_TIME || gpGlobals->curtime - pEnemyInfo->timeLastSeen > 10.0 )
+							if ( pEnemyInfo->timeAtFirstHand == AI_INVALID_TIME || gpGlobals->GetCurTime() - pEnemyInfo->timeLastSeen > 10.0 )
 								continue;
 							gm_bFindingCoverFromAllEnemies = true;
 						}
@@ -2779,7 +2779,7 @@ void CNPC_PlayerCompanion::OnFriendDamaged( CBaseCombatCharacter *pSquadmate, CB
 			if ( FVisible( pSquadmate ) )
 			{
 				AI_EnemyInfo_t *pInfo = GetEnemies()->Find( pAttacker );
-				if ( !pInfo || ( gpGlobals->curtime - pInfo->timeLastSeen ) > 15.0 )
+				if ( !pInfo || ( gpGlobals->GetCurTime() - pInfo->timeLastSeen ) > 15.0 )
 					UpdateEnemyMemory( pAttacker, pSquadmate->GetAbsOrigin(), pSquadmate );
 			}
 		}
@@ -3246,7 +3246,7 @@ void CNPC_PlayerCompanion::LockReadiness( float duration )
 	}
 	else
 	{
-		m_flReadinessLockedUntil = gpGlobals->curtime + duration;
+		m_flReadinessLockedUntil = gpGlobals->GetCurTime() + duration;
 	}
 }
 
@@ -3256,7 +3256,7 @@ void CNPC_PlayerCompanion::LockReadiness( float duration )
 void CNPC_PlayerCompanion::UnlockReadiness( void )
 {
 	// Set to the past
-	m_flReadinessLockedUntil = gpGlobals->curtime - 0.1f;
+	m_flReadinessLockedUntil = gpGlobals->GetCurTime() - 0.1f;
 }
 
 //------------------------------------------------------------------------------
@@ -3583,12 +3583,12 @@ void CNPC_PlayerCompanion::OnPlayerKilledOther( CBaseEntity *pVictim, const CTak
 	{
 		// if a barrel explodes that was initiated by the player within a few seconds of the previous one,
 		// increment a counter to keep track of how many have exploded in a row.
-		if ( gpGlobals->curtime - m_fLastBarrelExploded >= MAX_TIME_BETWEEN_BARRELS_EXPLODING )
+		if ( gpGlobals->GetCurTime() - m_fLastBarrelExploded >= MAX_TIME_BETWEEN_BARRELS_EXPLODING )
 		{
 			m_iNumConsecutiveBarrelsExploded = 0;
 		}
 		m_iNumConsecutiveBarrelsExploded++;
-		m_fLastBarrelExploded = gpGlobals->curtime;
+		m_fLastBarrelExploded = gpGlobals->GetCurTime();
 
 		iNumBarrels = m_iNumConsecutiveBarrelsExploded;
 	}
@@ -3596,12 +3596,12 @@ void CNPC_PlayerCompanion::OnPlayerKilledOther( CBaseEntity *pVictim, const CTak
 	{
 		// if player kills an NPC within a few seconds of the previous kill,
 		// increment a counter to keep track of how many he's killed in a row.
-		if ( gpGlobals->curtime - m_fLastPlayerKill >= MAX_TIME_BETWEEN_CONSECUTIVE_PLAYER_KILLS )
+		if ( gpGlobals->GetCurTime() - m_fLastPlayerKill >= MAX_TIME_BETWEEN_CONSECUTIVE_PLAYER_KILLS )
 		{
 			m_iNumConsecutivePlayerKills = 0;
 		}
 		m_iNumConsecutivePlayerKills++;
-		m_fLastPlayerKill = gpGlobals->curtime;
+		m_fLastPlayerKill = gpGlobals->GetCurTime();
 		iConsecutivePlayerKills = m_iNumConsecutivePlayerKills;
 	}
 

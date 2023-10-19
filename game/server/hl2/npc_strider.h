@@ -301,7 +301,7 @@ public:
 	void			ShootMinigun( const Vector *pTarget, float aimError, const Vector &vecSpread = vec3_origin );
 	void			UpdateMinigunControls( float &yaw, float &pitch );
 	void			GetViewCone( StriderMinigunViewcone_t &cone );
-	void			NewTarget() { m_flTargetAcquiredTime = gpGlobals->curtime; }
+	void			NewTarget() { m_flTargetAcquiredTime = gpGlobals->GetCurTime(); }
 	void			OnMinigunStartShooting( CBaseEntity *pTarget ) {};
 	void			OnMinigunStopShooting( CBaseEntity *pTarget );
 	float			GetMinigunRateOfFire();
@@ -517,6 +517,19 @@ private:
 	DEFINE_CUSTOM_AI;
 
 	DECLARE_DATADESC();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_Strider)
+	BEGIN_SEND_TABLE(CNPC_Strider, DT_NPC_Strider, DT_AI_BaseNPC)
+		SendPropVector(SENDINFO(m_vecHitPos), -1, SPROP_COORD),
+		SendPropVector(SENDINFO_NETWORKARRAYELEM(m_vecIKTarget, 0), -1, SPROP_COORD),
+		SendPropVector(SENDINFO_NETWORKARRAYELEM(m_vecIKTarget, 1), -1, SPROP_COORD),
+		SendPropVector(SENDINFO_NETWORKARRAYELEM(m_vecIKTarget, 2), -1, SPROP_COORD),
+		SendPropVector(SENDINFO_NETWORKARRAYELEM(m_vecIKTarget, 3), -1, SPROP_COORD),
+		SendPropVector(SENDINFO_NETWORKARRAYELEM(m_vecIKTarget, 4), -1, SPROP_COORD),
+		SendPropVector(SENDINFO_NETWORKARRAYELEM(m_vecIKTarget, 5), -1, SPROP_COORD),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------
@@ -590,7 +603,7 @@ public:
 	void 		StopShootingForSeconds( IStriderMinigunHost *pHost, CBaseEntity *pTarget, float duration );
 	bool 		IsPegged( int dir = MINIGUN_PEGGED_DONT_CARE );
 	bool 		CanStartShooting( IStriderMinigunHost *pHost, CBaseEntity *pTargetEnt );
-	float 		GetBurstTimeRemaining() { return m_burstTime - gpGlobals->curtime; }
+	float 		GetBurstTimeRemaining() { return m_burstTime - gpGlobals->GetCurTime(); }
 
 	void 		RecordShotOnTarget()			{ m_iOnTargetShots++; }
 	void 		ClearOnTarget()					{ m_iOnTargetShots = 0; }

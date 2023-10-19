@@ -135,7 +135,7 @@ private:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_ParticleFire)
-	BEGIN_RECV_TABLE_NOBASE(C_ParticleFire, DT_ParticleFire, CParticleFire)
+	BEGIN_RECV_TABLE(C_ParticleFire, DT_ParticleFire, DT_BaseParticleEntity)
 		RecvPropVector(RECVINFO(m_vOrigin)),
 		RecvPropVector(RECVINFO(m_vDirection)),
 	END_RECV_TABLE(DT_ParticleFire)

@@ -38,7 +38,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBeamSpline)
-	BEGIN_RECV_TABLE_NOBASE(C_TEBeamSpline, DT_TEBeamSpline)
+	BEGIN_RECV_TABLE(C_TEBeamSpline, DT_TEBeamSpline, DT_BaseTempEntity)
 		RecvPropInt(RECVINFO(m_nPoints)),
 		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_vecPoints), RecvPropVector(RECVINFO(m_vecPoints[0])))
 	END_RECV_TABLE(DT_TEBeamSpline)

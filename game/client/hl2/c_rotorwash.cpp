@@ -96,11 +96,17 @@ protected:
 	void InitSpawner( void );
 	CSmartPtr<WashEmitter>	m_pSimple;
 #endif // !XBOX
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_RotorWashEmitter)
+	BEGIN_RECV_TABLE(C_RotorWashEmitter, DT_RotorWashEmitter, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flAltitude)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_RotorWashEmitter, DT_RotorWashEmitter, CRotorWashEmitter)
-	RecvPropFloat(RECVINFO(m_flAltitude)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_RotorWashEmitter, DT_RotorWashEmitter, CRotorWashEmitter)
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -138,7 +144,7 @@ void C_RotorWashEmitter::OnDataChanged( DataUpdateType_t updateType )
 
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
-		SetNextClientThink( gpGlobals->curtime + ROTORWASH_THINK_INTERVAL );
+		SetNextClientThink( gpGlobals->GetCurTime() + ROTORWASH_THINK_INTERVAL );
 
 #ifndef _XBOX
 		InitSpawner();
@@ -151,7 +157,7 @@ void C_RotorWashEmitter::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void C_RotorWashEmitter::ClientThink( void )
 {
-	SetNextClientThink( gpGlobals->curtime + ROTORWASH_THINK_INTERVAL );
+	SetNextClientThink( gpGlobals->GetCurTime() + ROTORWASH_THINK_INTERVAL );
 
 	trace_t	tr;
 	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin()+(Vector(0, 0, -1024)), (MASK_SOLID_BRUSHONLY|CONTENTS_WATER|CONTENTS_SLIME), NULL, COLLISION_GROUP_NONE, &tr );

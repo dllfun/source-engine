@@ -16,13 +16,8 @@
 
 int ScreenTransform( const Vector& point, Vector& screen );
 
-IMPLEMENT_CLIENTCLASS_DT(C_PropCrane, DT_PropCrane, CPropCrane)
-	RecvPropEHandle( RECVINFO(m_hPlayer) ),
-	RecvPropBool( RECVINFO(m_bMagnetOn) ),
-	RecvPropBool( RECVINFO( m_bEnterAnimOn ) ),
-	RecvPropBool( RECVINFO( m_bExitAnimOn ) ),
-	RecvPropVector( RECVINFO( m_vecEyeExitEndpoint ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PropCrane, DT_PropCrane, CPropCrane)
+
 
 
 BEGIN_DATADESC( C_PropCrane )

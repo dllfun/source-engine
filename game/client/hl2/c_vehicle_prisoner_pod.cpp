@@ -92,15 +92,21 @@ private:
 	float					m_flFOV;				// The current FOV (changes during entry/exit anims).
 
 	ViewSmoothingData_t		m_ViewSmoothingData;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_PropVehiclePrisonerPod)
+	BEGIN_RECV_TABLE(C_PropVehiclePrisonerPod, DT_PropVehiclePrisonerPod, DT_PhysicsProp)
+		RecvPropEHandle(RECVINFO(m_hPlayer)),
+		RecvPropBool(RECVINFO(m_bEnterAnimOn)),
+		RecvPropBool(RECVINFO(m_bExitAnimOn)),
+		RecvPropVector(RECVINFO(m_vecEyeExitEndpoint)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_PropVehiclePrisonerPod, DT_PropVehiclePrisonerPod, CPropVehiclePrisonerPod)
-	RecvPropEHandle( RECVINFO(m_hPlayer) ),
-	RecvPropBool( RECVINFO( m_bEnterAnimOn ) ),
-	RecvPropBool( RECVINFO( m_bExitAnimOn ) ),
-	RecvPropVector( RECVINFO( m_vecEyeExitEndpoint ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PropVehiclePrisonerPod, DT_PropVehiclePrisonerPod, CPropVehiclePrisonerPod)
+
 
 
 BEGIN_DATADESC( C_PropVehiclePrisonerPod )

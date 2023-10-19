@@ -69,7 +69,7 @@ private:
 public:
 	BEGIN_INIT_SEND_TABLE(CFunc_Dust)
 	INIT_REFERENCE_SEND_TABLE(CCollisionProperty)
-	BEGIN_SEND_TABLE_NOBASE(CFunc_Dust, DT_Func_Dust)
+	BEGIN_SEND_TABLE(CFunc_Dust, DT_Func_Dust, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_Color), 32, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_SpawnRate), 12, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_SpeedMax), 12, SPROP_UNSIGNED),

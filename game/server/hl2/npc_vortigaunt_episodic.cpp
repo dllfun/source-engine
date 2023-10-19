@@ -203,11 +203,8 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( npc_vortigaunt, CNPC_Vortigaunt );
 
-IMPLEMENT_SERVERCLASS_ST( CNPC_Vortigaunt, DT_NPC_Vortigaunt )
-	SendPropTime( SENDINFO (m_flBlueEndFadeTime ) ),
-	SendPropBool( SENDINFO( m_bIsBlue )),
-	SendPropBool( SENDINFO ( m_bIsBlack ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CNPC_Vortigaunt, DT_NPC_Vortigaunt )
+
 
 // for special behavior with rollermines
 static bool IsRoller( CBaseEntity *pRoller )
@@ -397,7 +394,7 @@ void CNPC_Vortigaunt::RunTask( const Task_t *pTask )
 			if ( ( HasCondition( COND_ENEMY_OCCLUDED ) ||
 				 GetEnemy() == NULL ||
 				 GetEnemy()->IsAlive() == false ) &&
-				 m_flAimDelay < gpGlobals->curtime )
+				 m_flAimDelay < gpGlobals->GetCurTime() )
 			{
 				CBaseEntity *pNewEnemy = BestEnemy();
 				if ( pNewEnemy != NULL )
@@ -603,7 +600,7 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 	if ( GetEnemy() == NULL )
 		return COND_NONE;
 
-	if ( gpGlobals->curtime < m_flNextAttack )
+	if ( gpGlobals->GetCurTime() < m_flNextAttack )
 		return COND_NONE;
 
 	// Don't do shooting while playing a scene
@@ -660,16 +657,16 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 //-----------------------------------------------------------------------------
 int CNPC_Vortigaunt::MeleeAttack1Conditions( float flDot, float flDist )
 {
-	if ( m_flDispelTestTime > gpGlobals->curtime )
+	if ( m_flDispelTestTime > gpGlobals->GetCurTime() )
 		return COND_NONE;
 
-	m_flDispelTestTime = gpGlobals->curtime + 1.0f;
+	m_flDispelTestTime = gpGlobals->GetCurTime() + 1.0f;
 
 	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_ANTLION )
 	{
 		if ( NumAntlionsInRadius(128) > 3 )
 		{
-			m_flDispelTestTime = gpGlobals->curtime + 15.0f;
+			m_flDispelTestTime = gpGlobals->GetCurTime() + 15.0f;
 			return COND_VORTIGAUNT_DISPEL_ANTLIONS;
 		}
 	}
@@ -754,7 +751,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 			CPASAttenuationFilter filter( this );
 			EmitSound_t ep( params );
 			ep.m_nChannel = CHAN_BODY;
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, this->NetworkProp()->entindex(), ep );
 		}
 		return;
 	}
@@ -781,7 +778,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 
 	if ( pEvent->event == AE_VORTIGAUNT_ZAP_POWERUP )
 	{
-		if ( m_fGlowChangeTime > gpGlobals->curtime )
+		if ( m_fGlowChangeTime > gpGlobals->GetCurTime() )
 			return;
 
 		int nHand = 0;
@@ -824,7 +821,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 			//ep.m_nPitch = 100 + m_iBeams * 10;
 			ep.m_nPitch = 150;
 	
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, this->NetworkProp()->entindex(), ep );
 
 			m_bStopLoopingSounds = true;
 		}
@@ -860,7 +857,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 		ApplyMultiDamage();
 
 		// Suppress our aiming until we're done with the animation
-		m_flAimDelay = gpGlobals->curtime + 0.75f;
+		m_flAimDelay = gpGlobals->GetCurTime() + 0.75f;
 
 		if ( m_bExtractingBugbait )
 		{
@@ -922,7 +919,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 		}
 
 		// Stagger the next time we can attack
-		m_flNextAttack = gpGlobals->curtime + random->RandomFloat( 2.0f, 3.0f );
+		m_flNextAttack = gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 3.0f );
 		return;
 	}
 	
@@ -951,7 +948,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 			//ep.m_nPitch = 100 + m_iBeams * 10;
 			ep.m_nPitch = 150;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, this->NetworkProp()->entindex(), ep );
 			m_bStopLoopingSounds = true;
 		}
 		return;
@@ -965,7 +962,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 
 	if ( pEvent->event == AE_VORTIGAUNT_SHOOT_SOUNDSTART )
 	{
-		if ( m_fGlowChangeTime > gpGlobals->curtime )
+		if ( m_fGlowChangeTime > gpGlobals->GetCurTime() )
 			return;
 
 		CPASAttenuationFilter filter( this );
@@ -976,7 +973,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 			//ep.m_nPitch = 100 + m_iBeams * 10;
 			ep.m_nPitch = 150;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, this->NetworkProp()->entindex(), ep );
 			m_bStopLoopingSounds = true;
 		}
 		return;
@@ -1007,7 +1004,7 @@ void CNPC_Vortigaunt::InputTurnBlue( inputdata_t &data )
 	if (goBlue != m_bIsBlue)
 	{
 		m_bIsBlue = goBlue;
-		m_flBlueEndFadeTime = gpGlobals->curtime + VORTIGAUNT_BLUE_FADE_TIME;
+		m_flBlueEndFadeTime = gpGlobals->GetCurTime() + VORTIGAUNT_BLUE_FADE_TIME;
 	}
 }
 
@@ -1225,10 +1222,10 @@ void CNPC_Vortigaunt::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 //=========================================================
 void CNPC_Vortigaunt::PainSound( const CTakeDamageInfo &info )
 {
-	if ( gpGlobals->curtime < m_flPainTime )
+	if ( gpGlobals->GetCurTime() < m_flPainTime )
 		return;
 	
-	m_flPainTime = gpGlobals->curtime + random->RandomFloat(0.5, 0.75);
+	m_flPainTime = gpGlobals->GetCurTime() + random->RandomFloat(0.5, 0.75);
 
 	Speak( VORT_PAIN );
 }
@@ -1325,7 +1322,7 @@ int CNPC_Vortigaunt::TranslateSchedule( int scheduleType )
 		// Don't go running off after an enemy just because we're in an attack delay!  This has to do with
 		// the base systems assuming that held weapons are driving certain decisions when this creature
 		// uses an innate ability.
-		if ( ( GetNextAttack() > gpGlobals->curtime ) && HasCondition( COND_ENEMY_TOO_FAR ) == false )
+		if ( ( GetNextAttack() > gpGlobals->GetCurTime() ) && HasCondition( COND_ENEMY_TOO_FAR ) == false )
 			return SCHED_COMBAT_FACE;
 
 		break;
@@ -1534,7 +1531,7 @@ void CNPC_Vortigaunt::OnScheduleChange( void )
 
 	// If we're changing sequences, always clear
 	EndHandGlow( VORTIGAUNT_BEAM_ALL );
-	m_fGlowChangeTime = gpGlobals->curtime + 0.1f;	// No more glows for this amount of time!
+	m_fGlowChangeTime = gpGlobals->GetCurTime() + 0.1f;	// No more glows for this amount of time!
 }
 
 //------------------------------------------------------------------------------
@@ -1660,7 +1657,7 @@ void CNPC_Vortigaunt::StopHealing( bool bInterrupt )
 	if ( bInterrupt )
 	{
 		RemoveGesture( (Activity) ACT_VORTIGAUNT_HEAL );
-		m_flNextHealTime = gpGlobals->curtime + 2.0f;
+		m_flNextHealTime = gpGlobals->GetCurTime() + 2.0f;
 	}
 	else
 	{
@@ -1668,12 +1665,12 @@ void CNPC_Vortigaunt::StopHealing( bool bInterrupt )
 		int nLayer = FindGestureLayer( (Activity) ACT_VORTIGAUNT_HEAL );
 		SetLayerPlaybackRate( nLayer, 1.0f );
 
-		m_flNextHealTime = gpGlobals->curtime + VORTIGAUNT_HEAL_RECHARGE;
+		m_flNextHealTime = gpGlobals->GetCurTime() + VORTIGAUNT_HEAL_RECHARGE;
 		m_OnFinishedChargingTarget.FireOutput( this, this );
 	}
 
 	// Give us time to stop our animation before we start attacking (otherwise we get weird collisions)
-	SetNextAttack( gpGlobals->curtime + 2.0f );
+	SetNextAttack( gpGlobals->GetCurTime() + 2.0f );
 }
 
 //-----------------------------------------------------------------------------
@@ -1702,7 +1699,7 @@ void CNPC_Vortigaunt::MaintainHealSchedule( void )
 	}
 
 	// Don't let us shoot while we're healing
-	GetShotRegulator()->FireNoEarlierThan( gpGlobals->curtime + 0.5f );
+	GetShotRegulator()->FireNoEarlierThan( gpGlobals->GetCurTime() + 0.5f );
 
 	// If we're in the healing phase, heal our target (if able)
 	if ( m_eHealState == HEAL_STATE_HEALING )
@@ -1710,7 +1707,7 @@ void CNPC_Vortigaunt::MaintainHealSchedule( void )
 		// FIXME: We need to have better logic controlling this
 		if ( HasCondition( COND_VORTIGAUNT_HEAL_VALID ) )
 		{
-			if ( m_flNextHealTokenTime < gpGlobals->curtime )
+			if ( m_flNextHealTokenTime < gpGlobals->GetCurTime() )
 			{
 				CBasePlayer *pPlayer = ToBasePlayer( m_hHealTarget );
 
@@ -1729,14 +1726,14 @@ void CNPC_Vortigaunt::MaintainHealSchedule( void )
 				QAngle vecHandAngles;
 				GetAttachment( m_iRightHandAttachment, vecHandPos, vecHandAngles );
 				CVortigauntChargeToken::CreateChargeToken( vecHandPos, this, m_hHealTarget );
-				m_flNextHealTokenTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+				m_flNextHealTokenTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 1.0f );
 				m_nNumTokensToSpawn--;
 
 				// If we're stopping, delay our animation a bit so it's not so robotic
 				if ( m_nNumTokensToSpawn <= 0 )
 				{
 					m_nNumTokensToSpawn = 0;
-					m_flNextHealTokenTime = gpGlobals->curtime + 1.0f;
+					m_flNextHealTokenTime = gpGlobals->GetCurTime() + 1.0f;
 				}
 			}
 		}
@@ -1746,7 +1743,7 @@ void CNPC_Vortigaunt::MaintainHealSchedule( void )
 			// NOTENOTE: It's better if the vort give up than ignore things around him to try and continue -- jdw
 
 			// Increment a counter to let us know how long we've failed
-			m_flHealHinderedTime += gpGlobals->curtime - GetLastThink();
+			m_flHealHinderedTime += gpGlobals->GetCurTime() - GetLastThink();
 			
 			if ( m_flHealHinderedTime > 2.0f )
 			{
@@ -1925,7 +1922,7 @@ void CNPC_Vortigaunt::ArmBeam( int beamType, int nHand )
 	unsigned char uchAttachment = (nHand==HAND_LEFT) ? m_iLeftHandAttachment : m_iRightHandAttachment;
 	EntityMessageBegin( this, true );
 		WRITE_BYTE( VORTFX_ARMBEAM );
-		WRITE_LONG( entindex() );
+		WRITE_LONG( this->NetworkProp()->entindex() );
 		WRITE_BYTE( uchAttachment );
 		WRITE_VEC3COORD( tr.endpos );
 		WRITE_VEC3NORMAL( tr.plane.normal );
@@ -1939,7 +1936,7 @@ void CNPC_Vortigaunt::StartHandGlow( int beamType, int nHand )
 {
 	// We need this because there's a rare case where a scene can interrupt and turn off our hand glows, but are then
 	// turned back on in the same frame due to how animations are applied and anim events are executed after the AI frame.
-	if ( m_fGlowChangeTime > gpGlobals->curtime )
+	if ( m_fGlowChangeTime > gpGlobals->GetCurTime() )
 		return;
 
 	switch( beamType )
@@ -2017,7 +2014,7 @@ bool CNPC_Vortigaunt::IsValidEnemy( CBaseEntity *pEnemy )
 	}
 
 	// Wait until our animation is finished
-	if ( GetEnemy() == NULL && m_flAimDelay > gpGlobals->curtime )
+	if ( GetEnemy() == NULL && m_flAimDelay > gpGlobals->GetCurTime() )
 		return false;
 
 	return BaseClass::IsValidEnemy( pEnemy );
@@ -2040,7 +2037,7 @@ void CNPC_Vortigaunt::CreateBeamBlast( const Vector &vecOrigin )
 	}
 
 	CPVSFilter filter( vecOrigin );
-	te->GaussExplosion( filter, 0.0f, vecOrigin, Vector( 0, 0, 1 ), 0 );
+	g_pTESystem->GaussExplosion( filter, 0.0f, vecOrigin, Vector( 0, 0, 1 ), 0 );
 }
 
 #define COS_30	0.866025404f // sqrt(3) / 2
@@ -2098,7 +2095,7 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 				AI_TraceLine( vecSrc, vOrigin, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
 			}
 
-			CRagdollBoogie::Create( pTest, 200, gpGlobals->curtime, 1.0f );
+			CRagdollBoogie::Create( pTest, 200, gpGlobals->GetCurTime(), 1.0f );
 		}
 	}
 	else
@@ -2437,7 +2434,7 @@ void CNPC_Vortigaunt::GatherConditions( void )
 	BaseClass::GatherConditions();
 
 	// See if we're able to heal now
-	if ( HealBehaviorAvailable() && ( m_flNextHealTime < gpGlobals->curtime ) )
+	if ( HealBehaviorAvailable() && ( m_flNextHealTime < gpGlobals->GetCurTime() ) )
 	{
 		// See if we should heal the player
 		CBaseEntity *pHealTarget = FindHealTarget();
@@ -2447,7 +2444,7 @@ void CNPC_Vortigaunt::GatherConditions( void )
 		}
 
 		// Don't try again for a period of time
-		m_flNextHealTime = gpGlobals->curtime + 2.0f;
+		m_flNextHealTime = gpGlobals->GetCurTime() + 2.0f;
 	}
 
 	// Get our state for healing
@@ -2466,7 +2463,7 @@ void CNPC_Vortigaunt::DispelAntlions( const Vector &vecOrigin, float flRadius, b
 		UTIL_ScreenShake( vecOrigin, 20.0f, 150.0, 1.0, 1250.0f, SHAKE_START );
 
 		CBroadcastRecipientFilter filter2;
-		te->BeamRingPoint( filter2, 0, vecOrigin,	//origin
+		g_pTESystem->BeamRingPoint( filter2, 0, vecOrigin,	//origin
 			64,			//start radius
 			800,		//end radius
 			m_nLightningSprite, //texture
@@ -2486,7 +2483,7 @@ void CNPC_Vortigaunt::DispelAntlions( const Vector &vecOrigin, float flRadius, b
 			);
 
 		//Shockring
-		te->BeamRingPoint( filter2, 0, vecOrigin + Vector( 0, 0, 16 ),	//origin
+		g_pTESystem->BeamRingPoint( filter2, 0, vecOrigin + Vector( 0, 0, 16 ),	//origin
 			64,			//start radius
 			800,		//end radius
 			m_nLightningSprite, //texture
@@ -2560,7 +2557,7 @@ void CNPC_Vortigaunt::DispelAntlions( const Vector &vecOrigin, float flRadius, b
 				unsigned char uchAttachment = pAntlion->LookupAttachment( "mouth" );
 				EntityMessageBegin( this, true );
 					WRITE_BYTE( VORTFX_ARMBEAM );
-					WRITE_LONG( pAntlion->entindex() );
+					WRITE_LONG( pAntlion->this->NetworkProp()->entindex() );
 					WRITE_BYTE( uchAttachment );
 					WRITE_VEC3COORD( vecOrigin );
 					WRITE_VEC3NORMAL( Vector( 0, 0, 1 ) );
@@ -2694,7 +2691,7 @@ void CNPC_Vortigaunt::OnSquishedGrub( const CBaseEntity *pGrub )
 void CNPC_Vortigaunt::AimGun( void )
 {
 	// If our aim lock is on, don't bother
-	if ( m_flAimDelay >= gpGlobals->curtime )
+	if ( m_flAimDelay >= gpGlobals->GetCurTime() )
 		return;
 
 	// Aim at our target
@@ -2728,7 +2725,7 @@ void CNPC_Vortigaunt::OnStartScene( void )
 {
 	// Watch our hand state
 	EndHandGlow( VORTIGAUNT_BEAM_ALL );
-	m_fGlowChangeTime = gpGlobals->curtime + 0.1f;	// No more glows for this amount of time!
+	m_fGlowChangeTime = gpGlobals->GetCurTime() + 0.1f;	// No more glows for this amount of time!
 
 	BaseClass::OnStartScene();
 }
@@ -3061,9 +3058,8 @@ BEGIN_DATADESC( CVortigauntChargeToken )
 	DEFINE_ENTITYFUNC( SeekTouch ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CVortigauntChargeToken, DT_VortigauntChargeToken )
-	SendPropBool( SENDINFO(m_bFadeOut) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CVortigauntChargeToken, DT_VortigauntChargeToken )
+
 
 CVortigauntChargeToken::CVortigauntChargeToken( void ) :
 m_hTarget( NULL )
@@ -3079,7 +3075,7 @@ m_hTarget( NULL )
 //-----------------------------------------------------------------------------
 CVortigauntChargeToken *CVortigauntChargeToken::CreateChargeToken( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget )
 {
-	CVortigauntChargeToken *pToken = (CVortigauntChargeToken *) CreateEntityByName( "vort_charge_token" );
+	CVortigauntChargeToken *pToken = (CVortigauntChargeToken *)engineServer->CreateEntityByName( "vort_charge_token" );
 	if ( pToken == NULL )
 		return NULL;
 
@@ -3143,9 +3139,9 @@ void CVortigauntChargeToken::Spawn( void )
 	// No model but we still need to force this!
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
-	m_flLifetime = gpGlobals->curtime + VORTIGAUNT_CURE_LIFESPAN;
+	m_flLifetime = gpGlobals->GetCurTime() + VORTIGAUNT_CURE_LIFESPAN;
 
 	BaseClass::Spawn();
 }
@@ -3196,7 +3192,7 @@ Vector CVortigauntChargeToken::GetSteerVector( const Vector &vecForward )
 void CVortigauntChargeToken::SeekThink( void )
 {
 	// Move away from the creator and towards the target
-	if ( m_hTarget == NULL || m_flLifetime < gpGlobals->curtime )
+	if ( m_hTarget == NULL || m_flLifetime < gpGlobals->GetCurTime() )
 	{
 		// TODO: Play an extinguish sound and fade out
 		FadeAndDie();
@@ -3208,7 +3204,7 @@ void CVortigauntChargeToken::SeekThink( void )
 	VectorNormalize( vecDir );
 
 	float flSpeed = GetAbsVelocity().Length();
-	float flDelta = gpGlobals->curtime - GetLastThink();
+	float flDelta = gpGlobals->GetCurTime() - GetLastThink();
 
 	if ( flSpeed < VTOKEN_MAX_SPEED )
 	{
@@ -3224,13 +3220,13 @@ void CVortigauntChargeToken::SeekThink( void )
 	Vector vecRight, vecUp;
 	VectorVectors( vecDir, vecRight, vecUp );
 	Vector vecOffset = vec3_origin;
-	vecOffset += vecUp * cos( gpGlobals->curtime * 20.0f ) * 200.0f * gpGlobals->frametime;
-	vecOffset += vecRight * sin( gpGlobals->curtime * 15.0f ) * 200.0f * gpGlobals->frametime;
+	vecOffset += vecUp * cos( gpGlobals->GetCurTime() * 20.0f ) * 200.0f * gpGlobals->GetFrameTime();
+	vecOffset += vecRight * sin( gpGlobals->GetCurTime() * 15.0f ) * 200.0f * gpGlobals->GetFrameTime();
 	
 	vecOffset += GetSteerVector( vecDir );
 
 	SetAbsVelocity( ( vecDir * flSpeed ) + vecOffset );
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 //-----------------------------------------------------------------------------
@@ -3277,7 +3273,7 @@ void CVortigauntChargeToken::FadeAndDie( void )
 
 	m_bFadeOut = true;
 	SetThink( &CBaseEntity::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 2.0f );
+	SetNextThink( gpGlobals->GetCurTime() + 2.0f );
 }
 
 //=============================================================================
@@ -3292,9 +3288,8 @@ BEGIN_DATADESC( CVortigauntEffectDispel )
 	DEFINE_FIELD( m_bFadeOut, FIELD_BOOLEAN ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CVortigauntEffectDispel, DT_VortigauntEffectDispel )
-	SendPropBool( SENDINFO(m_bFadeOut) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CVortigauntEffectDispel, DT_VortigauntEffectDispel )
+
 
 CVortigauntEffectDispel::CVortigauntEffectDispel( void )
 {
@@ -3309,7 +3304,7 @@ CVortigauntEffectDispel::CVortigauntEffectDispel( void )
 //-----------------------------------------------------------------------------
 CVortigauntEffectDispel *CVortigauntEffectDispel::CreateEffectDispel( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget )
 {
-	CVortigauntEffectDispel *pToken = (CVortigauntEffectDispel *) CreateEntityByName( "vort_effect_dispel" );
+	CVortigauntEffectDispel *pToken = (CVortigauntEffectDispel *)engineServer->CreateEntityByName( "vort_effect_dispel" );
 	if ( pToken == NULL )
 		return NULL;
 
@@ -3347,7 +3342,7 @@ void CVortigauntEffectDispel::FadeAndDie( void )
 {
 	m_bFadeOut = true;
 	SetThink( &CBaseEntity::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 2.0f );
+	SetNextThink( gpGlobals->GetCurTime() + 2.0f );
 }
 
 

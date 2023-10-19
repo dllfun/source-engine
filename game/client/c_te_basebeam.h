@@ -49,7 +49,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBaseBeam)
-	BEGIN_RECV_TABLE_NOBASE(C_TEBaseBeam, DT_BaseBeam)
+	BEGIN_RECV_TABLE(C_TEBaseBeam, DT_BaseBeam, DT_BaseTempEntity)
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropInt(RECVINFO(m_nHaloIndex)),
 		RecvPropInt(RECVINFO(m_nStartFrame)),

@@ -31,18 +31,24 @@ public:
 	float	m_flScale;
 	int		m_nRadius;
 	int		m_nMagnitude;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEConcussiveExplosion)
+	BEGIN_RECV_TABLE(C_TEConcussiveExplosion, DT_TEConcussiveExplosion, DT_TEParticleSystem)
+		RecvPropVector(RECVINFO(m_vecNormal)),
+		RecvPropFloat(RECVINFO(m_flScale)),
+		RecvPropInt(RECVINFO(m_nRadius)),
+		RecvPropInt(RECVINFO(m_nMagnitude)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEConcussiveExplosion, DT_TEConcussiveExplosion, CTEConcussiveExplosion )
-	RecvPropVector( RECVINFO(m_vecNormal)),
-	RecvPropFloat( RECVINFO(m_flScale)),
-	RecvPropInt( RECVINFO(m_nRadius)),	
-	RecvPropInt( RECVINFO(m_nMagnitude)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT( C_TEConcussiveExplosion, DT_TEConcussiveExplosion, CTEConcussiveExplosion )
+
 
 
 //-----------------------------------------------------------------------------
@@ -72,7 +78,7 @@ static inline void RecordConcussiveExplosion( const Vector& start, const Vector 
 
  		msg->SetInt( "te", TE_CONCUSSIVE_EXPLOSION );
  		msg->SetString( "name", "TE_ConcussiveExplosion" );
-		msg->SetFloat( "time", gpGlobals->curtime );
+		msg->SetFloat( "time", gpGlobals->GetCurTime() );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );

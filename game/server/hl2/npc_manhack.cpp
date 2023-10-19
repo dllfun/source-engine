@@ -197,11 +197,8 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( npc_manhack, CNPC_Manhack );
 
-IMPLEMENT_SERVERCLASS_ST(CNPC_Manhack, DT_NPC_Manhack)
-	SendPropIntWithMinusOneFlag	(SENDINFO(m_nEnginePitch1), 8 ),
-	SendPropFloat(SENDINFO(m_flEnginePitch1Time), 0, SPROP_NOSCALE),
-	SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch2), 8 )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CNPC_Manhack, DT_NPC_Manhack)
+
 
 
 
@@ -279,7 +276,7 @@ void CNPC_Manhack::PrescheduleThink( void )
 
 	UpdatePanels();
 
-	if( m_flWaterSuspendTime > gpGlobals->curtime )
+	if( m_flWaterSuspendTime > gpGlobals->GetCurTime() )
 	{
 		// Stuck in water!
 
@@ -300,9 +297,9 @@ void CNPC_Manhack::PrescheduleThink( void )
 		if( IsAlive() )
 		{
 			// If I've been out of water for 2 seconds or more, I'm eligible to be stuck in water again.
-			if( gpGlobals->curtime - m_flWaterSuspendTime > 2.0 )
+			if( gpGlobals->GetCurTime() - m_flWaterSuspendTime > 2.0 )
 			{
-				m_flWaterSuspendTime = gpGlobals->curtime + 1.0;
+				m_flWaterSuspendTime = gpGlobals->GetCurTime() + 1.0;
 			}
 		}
 	}
@@ -349,7 +346,7 @@ void CNPC_Manhack::DeathSound( const CTakeDamageInfo &info )
 {
 	StopSound("NPC_Manhack.Stunned");
 	CPASAttenuationFilter filter2( this, "NPC_Manhack.Die" );
-	EmitSound( filter2, entindex(), "NPC_Manhack.Die" );
+	EmitSound( filter2, this->NetworkProp()->entindex(), "NPC_Manhack.Die" );
 }
 
 //-----------------------------------------------------------------------------
@@ -383,7 +380,7 @@ void CNPC_Manhack::Event_Killed( const CTakeDamageInfo &info )
 
 	// Light
 	CBroadcastRecipientFilter filter;
-	te->DynamicLight( filter, 0.0, &GetAbsOrigin(), 255, 180, 100, 0, 100, 0.1, 0 );
+	g_pTESystem->DynamicLight( filter, 0.0, &GetAbsOrigin(), 255, 180, 100, 0, 100, 0.1, 0 );
 
 	if ( m_nEnginePitch1 < 0 )
 	{
@@ -768,7 +765,7 @@ int	CNPC_Manhack::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 		// tdInfo.SetDamage( 1.0 );
 
-		m_flEngineStallTime = gpGlobals->curtime + 0.5f;
+		m_flEngineStallTime = gpGlobals->GetCurTime() + 0.5f;
 		StopBurst( true );
 	}
 	else
@@ -778,7 +775,7 @@ int	CNPC_Manhack::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		Vector vecDamageDir = tdInfo.GetDamageForce();
 		VectorNormalize( vecDamageDir );
 
-		m_flEngineStallTime = gpGlobals->curtime + 0.25f;
+		m_flEngineStallTime = gpGlobals->GetCurTime() + 0.25f;
 		m_vForceVelocity = vecDamageDir * info.GetDamage() * 20.0f;
 
 		tdInfo.SetDamageForce( tdInfo.GetDamageForce() * 20 );
@@ -899,11 +896,11 @@ void CNPC_Manhack::HandleAnimEvent( animevent_t *pEvent )
 		m_spawnflags &= ~SF_MANHACK_PACKED_UP;
 
 		// No bursts until fully unpacked!
-		m_flNextBurstTime = gpGlobals->curtime + FLT_MAX;
+		m_flNextBurstTime = gpGlobals->GetCurTime() + FLT_MAX;
 		break;
 
 	case MANHACK_AE_DONE_UNPACKING:
-		m_flNextBurstTime = gpGlobals->curtime + 2.0;
+		m_flNextBurstTime = gpGlobals->GetCurTime() + 2.0;
 		break;
 
 	case MANHACK_AE_OPEN_BLADE:
@@ -968,7 +965,7 @@ int CNPC_Manhack::TranslateSchedule( int scheduleType )
 	case SCHED_CHASE_ENEMY:
 		{
 			// If we're waiting for our next attack opportunity, just swarm
-			if ( m_flNextBurstTime > gpGlobals->curtime )
+			if ( m_flNextBurstTime > gpGlobals->GetCurTime() )
 			{
 				return SCHED_MANHACK_SWARM;
 			}
@@ -1042,7 +1039,7 @@ void CNPC_Manhack::Loiter()
 			VectorNormalize( vecDir );
 
 			// Move back to our loiter position.
-			if( gpGlobals->curtime > m_fTimeNextLoiterPulse )
+			if( gpGlobals->GetCurTime() > m_fTimeNextLoiterPulse )
 			{
 				// Apply a pulse of force if allowed right now.
 				if( distSqr > MAX_LOITER_DIST_SQR * 4.0f )
@@ -1056,7 +1053,7 @@ void CNPC_Manhack::Loiter()
 					m_vForceVelocity = vecDir * 6.0f;
 				}
 
-				m_fTimeNextLoiterPulse = gpGlobals->curtime + 1.0f;
+				m_fTimeNextLoiterPulse = gpGlobals->GetCurTime() + 1.0f;
 			}
 			else
 			{
@@ -1132,7 +1129,7 @@ bool CNPC_Manhack::OverrideMove( float flInterval )
 	// -----------------------------------------------------------------
 	//  If I'm being forced to move somewhere
 	// ------------------------------------------------------------------
-	if (m_fForceMoveTime > gpGlobals->curtime)
+	if (m_fForceMoveTime > gpGlobals->GetCurTime())
 	{
 		MoveToTarget(flInterval, m_vForceMoveTarget);
 	}
@@ -1150,7 +1147,7 @@ bool CNPC_Manhack::OverrideMove( float flInterval )
 	// -----------------------------------------------------------------
 	// If I'm supposed to swarm somewhere, try to go there
 	// ------------------------------------------------------------------
-	else if (m_fSwarmMoveTime > gpGlobals->curtime)
+	else if (m_fSwarmMoveTime > gpGlobals->GetCurTime())
 	{
 		MoveToTarget(flInterval, m_vSwarmMoveTarget);
 	}
@@ -1222,7 +1219,7 @@ void CNPC_Manhack::MoveToTarget(float flInterval, const Vector &vMoveTarget)
 	// -----------------------------------------
 	// Don't steer if engine's have stalled
 	// -----------------------------------------
-	if ( gpGlobals->curtime < m_flEngineStallTime || m_iHealth <= 0 )
+	if ( gpGlobals->GetCurTime() < m_flEngineStallTime || m_iHealth <= 0 )
 		return;
 
 	if ( GetEnemy() != NULL )
@@ -1245,7 +1242,7 @@ void CNPC_Manhack::MoveToTarget(float flInterval, const Vector &vMoveTarget)
 	float flDist;
 
 	// If we're bursting, just head straight
-	if ( m_flBurstDuration > gpGlobals->curtime )
+	if ( m_flBurstDuration > gpGlobals->GetCurTime() )
 	{
 		float zDist = 500;
 
@@ -1547,7 +1544,7 @@ void CNPC_Manhack::Slice( CBaseEntity *pHitEntity, float flInterval, trace_t &tr
 	ComputeSliceBounceVelocity( pHitEntity, tr );
 
 	// Save off when we last hit something
-	m_flLastDamageTime = gpGlobals->curtime;
+	m_flLastDamageTime = gpGlobals->GetCurTime();
 
 	// Reset our state and give the player time to react
 	StopBurst( true );
@@ -1564,7 +1561,7 @@ void CNPC_Manhack::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 		return;
 
 	// Surpressing this behavior
-	if ( m_flBumpSuppressTime > gpGlobals->curtime )
+	if ( m_flBumpSuppressTime > gpGlobals->GetCurTime() )
 		return;
 
 	if ( pHitEntity->GetMoveType() == MOVETYPE_VPHYSICS && pHitEntity->Classify()!=CLASS_MANHACK )
@@ -1616,7 +1613,7 @@ void CNPC_Manhack::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 
 			CBroadcastRecipientFilter filter;
 
-			te->DynamicLight( filter, 0.0, &GetAbsOrigin(), 255, 180, 100, 0, 50, 0.3, 150 );
+			g_pTESystem->DynamicLight( filter, 0.0, &GetAbsOrigin(), 255, 180, 100, 0, 50, 0.3, 150 );
 			
 			// add some spin, but only if we're not already going fast..
 			Vector vecVelocity;
@@ -1658,7 +1655,7 @@ void CNPC_Manhack::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 
 			Vector vecRandomDir = RandomVector( -1.0f, 1.0f );
 			SetCurrentVelocity( vecRandomDir * 50.0f );
-			m_flBumpSuppressTime = gpGlobals->curtime + 0.5f;
+			m_flBumpSuppressTime = gpGlobals->GetCurTime() + 0.5f;
 		}
 		else
 		{
@@ -1750,7 +1747,7 @@ void CNPC_Manhack::CheckCollisions(float flInterval)
 		if ( pHitEntity != NULL && 
 			 pHitEntity->m_takedamage == DAMAGE_YES && 
 			 pHitEntity->Classify() != CLASS_MANHACK && 
-			 gpGlobals->curtime > m_flWaterSuspendTime )
+			 gpGlobals->GetCurTime() > m_flWaterSuspendTime )
 		{
 			// Slice this thing
 			Slice( pHitEntity, flInterval, tr );
@@ -1790,15 +1787,15 @@ void CNPC_Manhack::PlayFlySound(void)
 		return;
 	}
 
-	if( m_flWaterSuspendTime > gpGlobals->curtime )
+	if( m_flWaterSuspendTime > gpGlobals->GetCurTime() )
 	{
 		// Just went in water. Slow the motor!!
 		if( m_bDirtyPitch )
 		{
 			m_nEnginePitch1 = MANHACK_WATER_PITCH1;
-			m_flEnginePitch1Time = gpGlobals->curtime + 0.5f;
+			m_flEnginePitch1Time = gpGlobals->GetCurTime() + 0.5f;
 			m_nEnginePitch2 = MANHACK_WATER_PITCH2;
-			m_flEnginePitch2Time = gpGlobals->curtime + 0.5f;
+			m_flEnginePitch2Time = gpGlobals->GetCurTime() + 0.5f;
 			m_bDirtyPitch = false;
 		}
 	}
@@ -1819,18 +1816,18 @@ void CNPC_Manhack::PlayFlySound(void)
 			iPitch2 = MANHACK_MIN_PITCH2 + ( ( MANHACK_MAX_PITCH2 - MANHACK_MIN_PITCH2 ) * flDistFactor); 
 
 			m_nEnginePitch1 = iPitch1;
-			m_flEnginePitch1Time = gpGlobals->curtime + 0.1f;
+			m_flEnginePitch1Time = gpGlobals->GetCurTime() + 0.1f;
 			m_nEnginePitch2 = iPitch2;
-			m_flEnginePitch2Time = gpGlobals->curtime + 0.1f;
+			m_flEnginePitch2Time = gpGlobals->GetCurTime() + 0.1f;
 
 			m_bDirtyPitch = true;
 		}
 		else if( m_bDirtyPitch )
 		{
 			m_nEnginePitch1 = MANHACK_MIN_PITCH1;
-			m_flEnginePitch1Time = gpGlobals->curtime + 0.1f;
+			m_flEnginePitch1Time = gpGlobals->GetCurTime() + 0.1f;
 			m_nEnginePitch2 = MANHACK_MIN_PITCH2;
-			m_flEnginePitch2Time = gpGlobals->curtime + 0.2f;
+			m_flEnginePitch2Time = gpGlobals->GetCurTime() + 0.2f;
 			m_bDirtyPitch = false;
 		}
 	}
@@ -1838,17 +1835,17 @@ void CNPC_Manhack::PlayFlySound(void)
 	else if( IsAlive() && m_bDirtyPitch )
 	{
 		m_nEnginePitch1 = MANHACK_MIN_PITCH1;
-		m_flEnginePitch1Time = gpGlobals->curtime + 0.1f;
+		m_flEnginePitch1Time = gpGlobals->GetCurTime() + 0.1f;
 		m_nEnginePitch2 = MANHACK_MIN_PITCH2;
-		m_flEnginePitch2Time = gpGlobals->curtime + 0.2f;
+		m_flEnginePitch2Time = gpGlobals->GetCurTime() + 0.2f;
 
 		m_bDirtyPitch = false;
 	}
 
 	// Play special engine every once in a while
-	if (gpGlobals->curtime > m_flNextEngineSoundTime && flEnemyDist < 48)
+	if (gpGlobals->GetCurTime() > m_flNextEngineSoundTime && flEnemyDist < 48)
 	{
-		m_flNextEngineSoundTime	= gpGlobals->curtime + random->RandomFloat( 3.0, 10.0 );
+		m_flNextEngineSoundTime	= gpGlobals->GetCurTime() + random->RandomFloat( 3.0, 10.0 );
 
 		EmitSound( "NPC_Manhack.EngineNoise" );
 	}
@@ -1868,7 +1865,7 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 	// FIXME: move this
 	VPhysicsGetObject()->Wake();
 
-	if( m_fEnginePowerScale < GetMaxEnginePower() && gpGlobals->curtime > m_flWaterSuspendTime )
+	if( m_fEnginePowerScale < GetMaxEnginePower() && gpGlobals->GetCurTime() > m_flWaterSuspendTime )
 	{
 		// Power is low, and we're no longer stuck in water, so bring power up.
 		m_fEnginePowerScale += 0.05;
@@ -1889,7 +1886,7 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 			noiseScale = 2.0;
 		}
 
-		if ( IsInEffectiveTargetZone( GetEnemy() ) && flDist < MANHACK_CHARGE_MIN_DIST && gpGlobals->curtime > m_flNextBurstTime )
+		if ( IsInEffectiveTargetZone( GetEnemy() ) && flDist < MANHACK_CHARGE_MIN_DIST && gpGlobals->GetCurTime() > m_flNextBurstTime )
 		{
 			Vector vecCurrentDir = GetCurrentVelocity();
 			VectorNormalize( vecCurrentDir );
@@ -1917,7 +1914,7 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 			}
 		}
 		
-		if ( gpGlobals->curtime > m_flBurstDuration )
+		if ( gpGlobals->GetCurTime() > m_flBurstDuration )
 		{
 			ShowHostile( false );
 		}
@@ -1937,7 +1934,7 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 
 	LimitSpeed( 200, ManhackMaxSpeed() );
 
-	if( m_flWaterSuspendTime > gpGlobals->curtime )
+	if( m_flWaterSuspendTime > gpGlobals->GetCurTime() )
 	{ 
 		if( UTIL_PointContents( GetAbsOrigin() ) & (CONTENTS_WATER|CONTENTS_SLIME) )
 		{
@@ -1963,7 +1960,7 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 	{
 		Vector vecCurrentVelocity;
 		VPhysicsGetObject()->GetVelocity( &vecCurrentVelocity, NULL );
-		float flLerpFactor = (gpGlobals->curtime - m_flLastPhysicsInfluenceTime) / MANHACK_SMASH_TIME;
+		float flLerpFactor = (gpGlobals->GetCurTime() - m_flLastPhysicsInfluenceTime) / MANHACK_SMASH_TIME;
 		flLerpFactor = clamp( flLerpFactor, 0.0f, 1.0f );
 		flLerpFactor = SimpleSplineRemapVal( flLerpFactor, 0.0f, 1.0f, 0.0f, 1.0f );
 		VectorLerp( vecCurrentVelocity, m_vCurrentVelocity, flLerpFactor, m_vCurrentVelocity );
@@ -1974,7 +1971,7 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 	// ------------------------------------------
 	//  Stalling
 	// ------------------------------------------
-	if (gpGlobals->curtime < m_flEngineStallTime)
+	if (gpGlobals->GetCurTime() < m_flEngineStallTime)
 	{
 		/*
 		// If I'm stalled add random noise
@@ -2001,7 +1998,7 @@ void CNPC_Manhack::MoveExecute_Alive(float flInterval)
 
 #if 0
 		// Using our steering if we're not otherwise affecting our panels
-		if ( m_flEngineStallTime < gpGlobals->curtime && m_flBurstDuration < gpGlobals->curtime )
+		if ( m_flEngineStallTime < gpGlobals->GetCurTime() && m_flBurstDuration < gpGlobals->GetCurTime() )
 		{
 			Vector delta( 10 * AngleDiff( m_vTargetBanking.x, m_vCurrentBanking.x ), -10 * AngleDiff( m_vTargetBanking.z, m_vCurrentBanking.z ), 0 );
 			//Vector delta( 3 * AngleNormalize( m_vCurrentBanking.x ), -4 * AngleNormalize( m_vCurrentBanking.z ), 0 );
@@ -2054,7 +2051,7 @@ void CNPC_Manhack::SpinBlades(float flInterval)
 	if ( IsFlyingActivity( GetActivity() ) )
 	{
 		// Blades may only ramp up while the engine is running
-		if ( m_flEngineStallTime < gpGlobals->curtime )
+		if ( m_flEngineStallTime < gpGlobals->GetCurTime() )
 		{
 			if (m_flBladeSpeed < 10)
 			{
@@ -2110,17 +2107,17 @@ void CNPC_Manhack::MoveExecute_Dead(float flInterval)
 	}
 
 	// Periodically emit smoke.
-	if (gpGlobals->curtime > m_fSmokeTime && GetWaterLevel() == 0)
+	if (gpGlobals->GetCurTime() > m_fSmokeTime && GetWaterLevel() == 0)
 	{
 //		UTIL_Smoke(GetAbsOrigin(), random->RandomInt(10, 15), 10);
-		m_fSmokeTime = gpGlobals->curtime + random->RandomFloat( 0.1, 0.3);
+		m_fSmokeTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.1, 0.3);
 	}
 
 	// Periodically emit sparks.
-	if (gpGlobals->curtime > m_fSparkTime)
+	if (gpGlobals->GetCurTime() > m_fSparkTime)
 	{
 		g_pEffects->Sparks( GetAbsOrigin() );
-		m_fSparkTime = gpGlobals->curtime + random->RandomFloat(0.1, 0.3);
+		m_fSparkTime = gpGlobals->GetCurTime() + random->RandomFloat(0.1, 0.3);
 	}
 
 	Vector newVelocity = GetCurrentVelocity();
@@ -2243,7 +2240,7 @@ int CNPC_Manhack::MeleeAttack1Conditions( float flDot, float flDist )
 		return COND_NONE;
 
 	//TODO: We could also decide if we want to back up here
-	if ( m_flNextBurstTime > gpGlobals->curtime )
+	if ( m_flNextBurstTime > gpGlobals->GetCurTime() )
 		return COND_NONE;
 
 	float flMaxDist = 45;
@@ -2326,7 +2323,7 @@ void CNPC_Manhack::RunTask( const Task_t *pTask )
 
 			Vector dir = (m_vSavePosition - GetAbsOrigin());
 			float dist = VectorNormalize( dir );
-			float t = m_fSwarmMoveTime - gpGlobals->curtime;
+			float t = m_fSwarmMoveTime - gpGlobals->GetCurTime();
 
 			if (t < 0.1)
 			{
@@ -2409,16 +2406,16 @@ void CNPC_Manhack::Spawn(void)
 	m_vCurrentBanking.Init();
 	m_vTargetBanking.Init();
 
-	m_flNextBurstTime	= gpGlobals->curtime;
+	m_flNextBurstTime	= gpGlobals->GetCurTime();
 
 	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_MOVE_FLY | bits_CAP_SQUAD );
 
-	m_flNextEngineSoundTime		= gpGlobals->curtime;
-	m_flWaterSuspendTime		= gpGlobals->curtime;
-	m_flEngineStallTime			= gpGlobals->curtime;
-	m_fForceMoveTime			= gpGlobals->curtime;
+	m_flNextEngineSoundTime		= gpGlobals->GetCurTime();
+	m_flWaterSuspendTime		= gpGlobals->GetCurTime();
+	m_flEngineStallTime			= gpGlobals->GetCurTime();
+	m_fForceMoveTime			= gpGlobals->GetCurTime();
 	m_vForceMoveTarget			= vec3_origin;
-	m_fSwarmMoveTime			= gpGlobals->curtime;
+	m_fSwarmMoveTime			= gpGlobals->GetCurTime();
 	m_vSwarmMoveTarget			= vec3_origin;
 	m_nLastSpinSound			= -1;
 
@@ -2584,9 +2581,9 @@ void CNPC_Manhack::StartEngine( bool fStartSound )
 void CNPC_Manhack::SoundInit( void )
 {
 	m_nEnginePitch1 = MANHACK_MIN_PITCH1;
-	m_flEnginePitch1Time = gpGlobals->curtime;
+	m_flEnginePitch1Time = gpGlobals->GetCurTime();
 	m_nEnginePitch2 = MANHACK_MIN_PITCH2;
-	m_flEnginePitch2Time = gpGlobals->curtime;
+	m_flEnginePitch2Time = gpGlobals->GetCurTime();
 }
 
 
@@ -2597,9 +2594,9 @@ void CNPC_Manhack::StopLoopingSounds(void)
 {
 	BaseClass::StopLoopingSounds();
 	m_nEnginePitch1 = -1;
-	m_flEnginePitch1Time = gpGlobals->curtime;
+	m_flEnginePitch1Time = gpGlobals->GetCurTime();
 	m_nEnginePitch2 = -1;
-	m_flEnginePitch2Time = gpGlobals->curtime;
+	m_flEnginePitch2Time = gpGlobals->GetCurTime();
 }
 
 
@@ -2770,7 +2767,7 @@ void CNPC_Manhack::StartTask( const Task_t *pTask )
 			}
 			else
 			{
-				m_fSwarmMoveTime = gpGlobals->curtime + RandomFloat( pTask->flTaskData * 0.8, pTask->flTaskData * 1.2 );
+				m_fSwarmMoveTime = gpGlobals->GetCurTime() + RandomFloat( pTask->flTaskData * 0.8, pTask->flTaskData * 1.2 );
 			}
 		}
 		break;
@@ -2810,7 +2807,7 @@ bool CNPC_Manhack::HandleInteraction(int interactionType, void* data, CBaseComba
 		m_vForceMoveTarget.x = ((Vector *)data)->x;
 		m_vForceMoveTarget.y = ((Vector *)data)->y;
 		m_vForceMoveTarget.z = ((Vector *)data)->z;
-		m_fForceMoveTime   = gpGlobals->curtime + 2.0;
+		m_fForceMoveTime   = gpGlobals->GetCurTime() + 2.0;
 		return false;
 	}
 
@@ -2823,7 +2820,7 @@ bool CNPC_Manhack::HandleInteraction(int interactionType, void* data, CBaseComba
 //-----------------------------------------------------------------------------
 float CNPC_Manhack::ManhackMaxSpeed( void )
 {
-	if( m_flWaterSuspendTime > gpGlobals->curtime )
+	if( m_flWaterSuspendTime > gpGlobals->GetCurTime() )
 	{
 		// Slower in water!
 		return MANHACK_MAX_SPEED * 0.1;
@@ -2851,7 +2848,7 @@ void CNPC_Manhack::ClampMotorForces( Vector &linear, AngularImpulse &angular )
 
 	float fscale = 3000 * scale;
 
-	if ( m_flEngineStallTime > gpGlobals->curtime )
+	if ( m_flEngineStallTime > gpGlobals->GetCurTime() )
 	{
 		linear.x = 0.0f;
 		linear.y = 0.0f;
@@ -2989,7 +2986,7 @@ void CNPC_Manhack::InputUnpack( inputdata_t &inputdata )
 void CNPC_Manhack::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	if ( reason == PUNTED_BY_CANNON )
 	{
@@ -2999,10 +2996,10 @@ void CNPC_Manhack::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 
 		// There's about to be a massive change in velocity. 
 		// Think immediately so we can do our slice traces, etc.
-		SetNextThink( gpGlobals->curtime + 0.01f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 
 		// Stall our engine for awhile
-		m_flEngineStallTime = gpGlobals->curtime + 2.0f;
+		m_flEngineStallTime = gpGlobals->GetCurTime() + 2.0f;
 		SetEyeState( MANHACK_EYE_STATE_STUNNED );
 	}
 	else
@@ -3034,14 +3031,14 @@ void CNPC_Manhack::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reaso
 	if ( Reason == LAUNCHED_BY_CANNON )
 	{
 		m_hPhysicsAttacker = pPhysGunUser;
-		m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+		m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 		// There's about to be a massive change in velocity. 
 		// Think immediately so we can do our slice traces, etc.
-		SetNextThink( gpGlobals->curtime + 0.01f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 
 		// Stall our engine for awhile
-		m_flEngineStallTime = gpGlobals->curtime + 2.0f;
+		m_flEngineStallTime = gpGlobals->GetCurTime() + 2.0f;
 		SetEyeState( MANHACK_EYE_STATE_STUNNED );
 	}
 	else
@@ -3072,7 +3069,7 @@ CBasePlayer *CNPC_Manhack::HasPhysicsAttacker( float dt )
 {
 	// If the player is holding me now, or I've been recently thrown
 	// then return a pointer to that player
-	if ( IsHeldByPhyscannon() || (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime) )
+	if ( IsHeldByPhyscannon() || (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime) )
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -3098,7 +3095,7 @@ float CNPC_Manhack::GetMaxEnginePower()
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::UpdatePanels( void )
 {
-	if ( m_flEngineStallTime > gpGlobals->curtime )
+	if ( m_flEngineStallTime > gpGlobals->GetCurTime() )
 	{
 		SetPoseParameter( m_iPanel1, random->RandomFloat( 0.0f, 90.0f ) );
 		SetPoseParameter( m_iPanel2, random->RandomFloat( 0.0f, 90.0f ) );
@@ -3154,14 +3151,14 @@ void CNPC_Manhack::ShowHostile( bool hostile /*= true*/)
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::StartBurst( const Vector &vecDirection )
 {
-	if ( m_flBurstDuration > gpGlobals->curtime )
+	if ( m_flBurstDuration > gpGlobals->GetCurTime() )
 		return;
 
 	ShowHostile();
 
 	// Don't burst attack again for a couple seconds
-	m_flNextBurstTime = gpGlobals->curtime + 2.0;
-	m_flBurstDuration = gpGlobals->curtime + 1.0;
+	m_flNextBurstTime = gpGlobals->GetCurTime() + 2.0;
+	m_flBurstDuration = gpGlobals->GetCurTime() + 1.0;
 	
 	// Save off where we were going towards and for how long
 	m_vecBurstDirection = vecDirection;
@@ -3172,14 +3169,14 @@ void CNPC_Manhack::StartBurst( const Vector &vecDirection )
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::StopBurst( bool bInterruptSchedule /*= false*/ )
 {
-	if ( m_flBurstDuration < gpGlobals->curtime )
+	if ( m_flBurstDuration < gpGlobals->GetCurTime() )
 		return;
 
 	ShowHostile( false );
 
 	// Stop our burst timers
-	m_flNextBurstTime = gpGlobals->curtime + 2.0f; //FIXME: Skill level based
-	m_flBurstDuration = gpGlobals->curtime - 0.1f;
+	m_flNextBurstTime = gpGlobals->GetCurTime() + 2.0f; //FIXME: Skill level based
+	m_flBurstDuration = gpGlobals->GetCurTime() - 0.1f;
 
 	if ( bInterruptSchedule )
 	{

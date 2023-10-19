@@ -632,7 +632,7 @@ void CProtoSniper::LaserOff( void )
 		m_pBeam = NULL;
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 
@@ -685,7 +685,7 @@ void CProtoSniper::LaserOn( const Vector &vecTarget, const Vector &vecDeviance )
 
 	// Think faster whilst painting. Higher resolution on the 
 	// beam movement.
-	SetNextThink( gpGlobals->curtime + 0.02 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.02 );
 }
 
 //-----------------------------------------------------------------------------
@@ -696,7 +696,7 @@ float CProtoSniper::GetPositionParameter( float flTime, bool fLinear )
 	float flElapsedTime;
 	float flTimeParameter;
 
-	flElapsedTime = flTime - (GetWaitFinishTime() - gpGlobals->curtime);
+	flElapsedTime = flTime - (GetWaitFinishTime() - gpGlobals->GetCurTime());
 
 	flTimeParameter = ( flElapsedTime / flTime );
 
@@ -818,9 +818,9 @@ void CProtoSniper::PaintTarget( const Vector &vecTarget, float flPaintTime )
 	}
 
 	// mult by P
-	vecCurrentDir.x += flNoiseScale * ( sin( 3 * M_PI * gpGlobals->curtime ) * 0.0006 );
-	vecCurrentDir.y += flNoiseScale * ( sin( 2 * M_PI * gpGlobals->curtime + 0.5 * M_PI ) * 0.0006 );
-	vecCurrentDir.z += flNoiseScale * ( sin( 1.5 * M_PI * gpGlobals->curtime + M_PI ) * 0.0006 );
+	vecCurrentDir.x += flNoiseScale * ( sin( 3 * M_PI * gpGlobals->GetCurTime() ) * 0.0006 );
+	vecCurrentDir.y += flNoiseScale * ( sin( 2 * M_PI * gpGlobals->GetCurTime() + 0.5 * M_PI ) * 0.0006 );
+	vecCurrentDir.z += flNoiseScale * ( sin( 1.5 * M_PI * gpGlobals->GetCurTime() + M_PI ) * 0.0006 );
 #endif
 
 	trace_t tr;
@@ -1769,7 +1769,7 @@ bool CProtoSniper::VerifyShot( CBaseEntity *pTarget )
 int CProtoSniper::RangeAttack1Conditions ( float flDot, float flDist )
 {
 	float fFrustration;
-	fFrustration = gpGlobals->curtime - m_flFrustration;
+	fFrustration = gpGlobals->GetCurTime() - m_flFrustration;
 
 	//Msg( "Frustration: %f\n", fFrustration );
 
@@ -1906,10 +1906,10 @@ bool CProtoSniper::FireBullet( const Vector &vecTarget, bool bDirectShot )
 	pBullet->SetOwnerEntity( this );
 
 	CPASAttenuationFilter filternoatten( this, ATTN_NONE );
-	EmitSound( filternoatten, entindex(), "NPC_Sniper.FireBullet" );
+	EmitSound( filternoatten, this->NetworkProp()->entindex(), "NPC_Sniper.FireBullet" );
 
 	CPVSFilter filter( vecBulletOrigin );
-	te->Sprite( filter, 0.0, &vecBulletOrigin, sFlashSprite, 0.3, 255 );
+	g_pTESystem->Sprite( filter, 0.0, &vecBulletOrigin, sFlashSprite, 0.3, 255 );
 	
 	// force a reload when we're done
 	 m_fWeaponLoaded = false;
@@ -1918,7 +1918,7 @@ bool CProtoSniper::FireBullet( const Vector &vecTarget, bool bDirectShot )
 	m_fIsPatient = false;
 
 	// Alleviate frustration, too!
-	m_flFrustration = gpGlobals->curtime;
+	m_flFrustration = gpGlobals->GetCurTime();
 
 	// This may have been a snap shot.
 	// Don't allow subsequent snap shots.
@@ -2030,7 +2030,7 @@ void CProtoSniper::StartTask( const Task_t *pTask )
 				delay += sniper_xbox_delay.GetFloat();
 #endif
 
-				if( gpGlobals->curtime - m_flTimeLastAttackedPlayer <= SNIPER_FASTER_ATTACK_PERIOD )
+				if( gpGlobals->GetCurTime() - m_flTimeLastAttackedPlayer <= SNIPER_FASTER_ATTACK_PERIOD )
 				{
 					SetWait( SNIPER_SUBSEQUENT_PAINT_TIME + delay );
 					m_flPaintTime = SNIPER_SUBSEQUENT_PAINT_TIME + delay;
@@ -2117,7 +2117,7 @@ void CProtoSniper::StartTask( const Task_t *pTask )
 	case TASK_RELOAD:
 		{
 			CPASAttenuationFilter filter( this );
-			EmitSound( filter, entindex(), "NPC_Sniper.Reload" );
+			EmitSound( filter, this->NetworkProp()->entindex(), "NPC_Sniper.Reload" );
 			m_fWeaponLoaded = true;
 			TaskComplete();
 		}
@@ -2167,7 +2167,7 @@ void CProtoSniper::RunTask( const Task_t *pTask )
 
 			if( GetEnemy() && GetEnemy()->IsPlayer() )
 			{
-				m_flTimeLastAttackedPlayer = gpGlobals->curtime;
+				m_flTimeLastAttackedPlayer = gpGlobals->GetCurTime();
 			}
 
 			TaskComplete();
@@ -2364,11 +2364,11 @@ void CProtoSniper::PrescheduleThink( void )
 	// Think faster if the beam is on, this gives the beam higher resolution.
 	if( m_pBeam )
 	{
-		SetNextThink( gpGlobals->curtime + 0.03 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.03 );
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 
 	// If the enemy has just stepped into view, or we've acquired a new enemy,
@@ -2377,7 +2377,7 @@ void CProtoSniper::PrescheduleThink( void )
 	// If the enemy has been out of sight for a full second, mark him eluded.
 	if( GetEnemy() != NULL )
 	{
-		if( gpGlobals->curtime - GetEnemies()->LastTimeSeen( GetEnemy() ) > 30 )
+		if( gpGlobals->GetCurTime() - GetEnemies()->LastTimeSeen( GetEnemy() ) > 30 )
 		{
 			// Stop pestering enemies after 30 seconds of frustration.
 			GetEnemies()->ClearMemory( GetEnemy() );
@@ -2414,7 +2414,7 @@ Vector CProtoSniper::DesiredBodyTarget( CBaseEntity *pTarget )
 	// By default, aim for the center
 	Vector vecTarget = pTarget->WorldSpaceCenter();
 
-	float flTimeSinceLastMiss = gpGlobals->curtime - m_flTimeLastShotMissed;
+	float flTimeSinceLastMiss = gpGlobals->GetCurTime() - m_flTimeLastShotMissed;
 
 	if( pTarget->GetFlags() & FL_CLIENT )
 	{
@@ -2574,7 +2574,7 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 		Vector vecBulletOrigin;
 		vecBulletOrigin = GetBulletOrigin();
 		CPVSFilter filter( GetLocalOrigin() );
-		te->ShowLine( filter, 0.0, &vecBulletOrigin, &vecAdjustedShot );
+		g_pTESystem->ShowLine( filter, 0.0, &vecBulletOrigin, &vecAdjustedShot );
 	}
 
 
@@ -2819,7 +2819,7 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 
 	pPlayer = ToBasePlayer( pEntity );
 
-	if( (pPlayer->GetFlags() & FL_DUCKING) && pPlayer->MuzzleFlashTime() > gpGlobals->curtime )
+	if( (pPlayer->GetFlags() & FL_DUCKING) && pPlayer->MuzzleFlashTime() > gpGlobals->GetCurTime() )
 	{
 		vecEye = pPlayer->EyePosition() + Vector( 0, 0, 32 );
 		UTIL_TraceLine( EyePosition(), vecEye, MASK_BLOCKLOS, this, COLLISION_GROUP_NONE, &tr );
@@ -2894,7 +2894,7 @@ int CProtoSniper::DrawDebugTextOverlays()
 //-----------------------------------------------------------------------------
 void CProtoSniper::NotifyShotMissedTarget()
 {
-	m_flTimeLastShotMissed = gpGlobals->curtime;
+	m_flTimeLastShotMissed = gpGlobals->GetCurTime();
 	// In episodic, aim at the (easier to hit at distance or high speed) centers
 	// of the bodies of NPC targets. This change makes Alyx sniper less likely to
 	// miss zombie and zombines over and over because of the large amount of head movement
@@ -3172,7 +3172,7 @@ void CSniperBullet::Precache()
 void CSniperBullet::BulletThink( void )
 {
 	// Set the bullet up to think again.
-	SetNextThink( gpGlobals->curtime + 0.05 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05 );
 
 	if( !GetOwnerEntity() )
 	{
@@ -3181,11 +3181,11 @@ void CSniperBullet::BulletThink( void )
 		return;
 	}
 
-	if( gpGlobals->curtime >= m_SoundTime )
+	if( gpGlobals->GetCurTime() >= m_SoundTime )
 	{
 		// See if it's time to make the sonic boom.
 		CPASAttenuationFilter filter( this, ATTN_NONE );
-		EmitSound( filter, entindex(), "NPC_Sniper.SonicBoom" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "NPC_Sniper.SonicBoom" );
 
 		if( GetOwnerEntity() )
 		{
@@ -3214,7 +3214,7 @@ void CSniperBullet::BulletThink( void )
 	Vector vecEnd;
 	float flInterval;
 
-	flInterval = gpGlobals->curtime - GetLastThink();
+	flInterval = gpGlobals->GetCurTime() - GetLastThink();
 	vecStart = GetAbsOrigin();
 	vecEnd = vecStart + ( m_vecDir * (m_Speed * flInterval) );
 	float flDist = (vecStart - vecEnd).Length();
@@ -3299,7 +3299,7 @@ void CSniperBullet::BulletThink( void )
 //=========================================================
 bool CSniperBullet::Start( const Vector &vecOrigin, const Vector &vecTarget, CBaseEntity *pOwner, bool bDirectShot )
 {
-	m_flLastThink = gpGlobals->curtime;
+	m_flLastThink = gpGlobals->GetCurTime();
 
 	if( m_AmmoType == -1 )
 	{
@@ -3344,10 +3344,10 @@ bool CSniperBullet::Start( const Vector &vecOrigin, const Vector &vecTarget, CBa
 	UTIL_Tracer( vecOrigin, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, m_Speed, true, "StriderTracer" );
 
 	float flElapsedTime = ( (tr.startpos - tr.endpos).Length() / m_Speed );
-	m_SoundTime = gpGlobals->curtime + flElapsedTime * 0.5;
+	m_SoundTime = gpGlobals->GetCurTime() + flElapsedTime * 0.5;
 	
 	SetThink( &CSniperBullet::BulletThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	m_fActive = true;
 	m_bDirectShot = bDirectShot;
 	return true;
@@ -3384,8 +3384,8 @@ bool CSniperBullet::Start( const Vector &vecOrigin, const Vector &vecTarget, CBa
 		// to travel through this segment.
 		flElapsedTime += ( flShotDist / GetBulletSpeed() );
 
-		// Never let gpGlobals->curtime get added to the elapsed time!
-		m_ImpactTime[ i ] += gpGlobals->curtime;
+		// Never let gpGlobals->GetCurTime() get added to the elapsed time!
+		m_ImpactTime[ i ] += gpGlobals->GetCurTime();
 
 		CBaseEntity *pEnt;
 
@@ -3472,7 +3472,7 @@ void CSniperBullet::Stop( void )
 	// in the world that is relying on the bullet's position as a react origin.
 	// So stick around for another second or so.
 	SetThink( &CBaseEntity::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 1.0 );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0 );
 }
 
 

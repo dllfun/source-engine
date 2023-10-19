@@ -47,7 +47,7 @@ public:
 //-----------------------------------------------------------------------------
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBloodSprite)
-	BEGIN_RECV_TABLE_NOBASE(C_TEBloodSprite, DT_TEBloodSprite)
+	BEGIN_RECV_TABLE(C_TEBloodSprite, DT_TEBloodSprite, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
 		RecvPropVector(RECVINFO(m_vecDirection)),
 		RecvPropInt(RECVINFO(r)),

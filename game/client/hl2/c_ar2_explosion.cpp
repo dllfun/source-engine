@@ -83,14 +83,20 @@ private:
 	char m_szMaterialName[255];
 
 	C_AR2Explosion( const C_AR2Explosion & );
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_AR2Explosion)
+	BEGIN_RECV_TABLE(C_AR2Explosion, DT_AR2Explosion, DT_BaseParticleEntity)
+		RecvPropString(RECVINFO(m_szMaterialName)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 // Expose to the particle app.
 EXPOSE_PROTOTYPE_EFFECT(AR2Explosion, C_AR2Explosion);
 
-IMPLEMENT_CLIENTCLASS_DT(C_AR2Explosion, DT_AR2Explosion, AR2Explosion)
-	RecvPropString( RECVINFO( m_szMaterialName ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_AR2Explosion, DT_AR2Explosion, AR2Explosion)
+
 
 
 

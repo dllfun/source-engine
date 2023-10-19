@@ -32,6 +32,16 @@ private:
 	CNetworkVar( bool, m_bDisabled );
 	CNetworkVar( float, m_flStartTime );
 	CNetworkVar( float, m_flTimeRemaining );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CInfoTeleporterCountdown)
+	BEGIN_SEND_TABLE(CInfoTeleporterCountdown, DT_InfoTeleporterCountdown, DT_PointEntity)
+		SendPropInt(SENDINFO(m_bCountdownStarted), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bDisabled), 1, SPROP_UNSIGNED),
+		SendPropTime(SENDINFO(m_flStartTime)),
+		SendPropFloat(SENDINFO(m_flTimeRemaining), 0, SPROP_NOSCALE),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 
@@ -60,12 +70,8 @@ LINK_ENTITY_TO_CLASS( info_teleporter_countdown, CInfoTeleporterCountdown );
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST( CInfoTeleporterCountdown, DT_InfoTeleporterCountdown )
-	SendPropInt( SENDINFO( m_bCountdownStarted ), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_bDisabled ), 1, SPROP_UNSIGNED ),
-	SendPropTime( SENDINFO( m_flStartTime ) ),
-	SendPropFloat( SENDINFO( m_flTimeRemaining ), 0, SPROP_NOSCALE ),	
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CInfoTeleporterCountdown, DT_InfoTeleporterCountdown )
+
 
 
 //-----------------------------------------------------------------------------
@@ -77,7 +83,7 @@ void CInfoTeleporterCountdown::InputStartCountdown(inputdata_t &inputdata)
 	{
 		m_bCountdownStarted = true;
 		m_bDisabled = false;
-		m_flStartTime = gpGlobals->curtime;
+		m_flStartTime = gpGlobals->GetCurTime();
 		m_flTimeRemaining = inputdata.value.Float();
 	}
 }
@@ -98,7 +104,7 @@ void CInfoTeleporterCountdown::InputDisable(inputdata_t &inputdata)
 		m_bDisabled = true;
 		if ( m_bCountdownStarted )
 		{
-			m_flTimeRemaining -= gpGlobals->curtime - m_flStartTime;
+			m_flTimeRemaining -= gpGlobals->GetCurTime() - m_flStartTime;
 		}
 	}
 }
@@ -110,7 +116,7 @@ void CInfoTeleporterCountdown::InputEnable(inputdata_t &inputdata)
 		m_bDisabled = false;
 		if ( m_bCountdownStarted )
 		{
-			m_flStartTime = gpGlobals->curtime;
+			m_flStartTime = gpGlobals->GetCurTime();
 		}
 	}
 }

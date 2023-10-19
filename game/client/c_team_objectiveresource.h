@@ -342,7 +342,7 @@ protected:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_BaseTeamObjectiveResource)
-	BEGIN_RECV_TABLE_NOBASE(C_BaseTeamObjectiveResource, DT_BaseTeamObjectiveResource, CBaseTeamObjectiveResource)
+	BEGIN_RECV_TABLE(C_BaseTeamObjectiveResource, DT_BaseTeamObjectiveResource, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_iTimerToShowInHUD)),
 		RecvPropInt(RECVINFO(m_iStopWatchTimer)),
 

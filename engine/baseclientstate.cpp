@@ -989,7 +989,7 @@ void CBaseClientState::CheckForResend (void)
 	m_nRetryNumber++;
 
 	// Request another challenge value.
-	{
+	if(GetNetSocket()){
 		ALIGN4 char		msg_buffer[MAX_ROUTABLE_PAYLOAD] ALIGN4_POST;
 		bf_write	msg( msg_buffer, sizeof(msg_buffer) );
 

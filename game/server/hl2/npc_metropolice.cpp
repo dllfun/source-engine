@@ -498,14 +498,14 @@ void CNPC_MetroPolice::PrescheduleThink( void )
 			
 			if ( ( m_PolicingBehavior.IsEnabled() == false ) && ( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS ) )
 			{
-				m_flBatonDebounceTime = gpGlobals->curtime + random->RandomFloat( 2.5f, 4.0f );
+				m_flBatonDebounceTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.5f, 4.0f );
 				SetTarget( pPlayer );
 				SetBatonState( true );
 			}
 		}
 		else 
 		{
-			if ( m_PolicingBehavior.IsEnabled() == false && gpGlobals->curtime > m_flBatonDebounceTime )
+			if ( m_PolicingBehavior.IsEnabled() == false && gpGlobals->GetCurTime() > m_flBatonDebounceTime )
 			{
 				SetBatonState( false );
 			}
@@ -523,7 +523,7 @@ void CNPC_MetroPolice::PrescheduleThink( void )
 		ClearCondition( COND_METROPOLICE_ON_FIRE );
 	}
 
-	if (gpGlobals->curtime > m_flRecentDamageTime + RECENT_DAMAGE_INTERVAL)
+	if (gpGlobals->GetCurTime() > m_flRecentDamageTime + RECENT_DAMAGE_INTERVAL)
 	{
 		m_nRecentDamage = 0;
 		m_flRecentDamageTime = 0;
@@ -787,10 +787,10 @@ void CNPC_MetroPolice::SpeakStandoffSentence( int nSentenceType )
 		break;
 
 	case STANDOFF_SENTENCE_STAND_CHECK_TARGET:
-		if ( gm_flTimeLastSpokePeek != 0 && gpGlobals->curtime - gm_flTimeLastSpokePeek > 20 )
+		if ( gm_flTimeLastSpokePeek != 0 && gpGlobals->GetCurTime() - gm_flTimeLastSpokePeek > 20 )
 		{
 			m_Sentences.Speak( "METROPOLICE_SO_PEEK" );
-			gm_flTimeLastSpokePeek = gpGlobals->curtime;
+			gm_flTimeLastSpokePeek = gpGlobals->GetCurTime();
 		}
 		break;
 	}
@@ -1230,7 +1230,7 @@ void CNPC_MetroPolice::SetBurstMode( bool bEnable )
 {
 	int nOldBurstMode = m_nBurstMode;
 	m_nBurstSteerMode = BURST_STEER_NONE;
-	m_flBurstPredictTime = gpGlobals->curtime - 1.0f;
+	m_flBurstPredictTime = gpGlobals->GetCurTime() - 1.0f;
 	if ( GetActiveWeapon() )
 	{
 		m_nBurstMode = bEnable ? BURST_ACTIVE : BURST_NOT_ACTIVE;
@@ -2147,10 +2147,10 @@ void CNPC_MetroPolice::SteerBurstTowardTarget( )
 	case BURST_STEER_ADJUST_FOR_SPEED_CHANGES:
 		{
 			// Predict the airboat position at the point where we were expecting to hit them
-			if ( m_flBurstPredictTime <= gpGlobals->curtime )
+			if ( m_flBurstPredictTime <= gpGlobals->GetCurTime() )
 				return;
 
-			float flPredictTime = m_flBurstPredictTime - gpGlobals->curtime;
+			float flPredictTime = m_flBurstPredictTime - gpGlobals->GetCurTime();
 			int nShotsTillPredict = CountShotsInTime( flPredictTime );
 			if ( nShotsTillPredict <= 1 )
 				return;
@@ -2163,7 +2163,7 @@ void CNPC_MetroPolice::SteerBurstTowardTarget( )
 
 	case BURST_STEER_TOWARD_PREDICTED_POINT:
 		// Don't course-correct until the predicted time
-		if ( m_flBurstPredictTime >= gpGlobals->curtime )
+		if ( m_flBurstPredictTime >= gpGlobals->GetCurTime() )
 			return;
 
 		// fall through!
@@ -2506,11 +2506,11 @@ void CNPC_MetroPolice::LostEnemySound( void)
 	if ( !PlayerIsCriminal() )
 		return;
 
-	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
+	if ( gpGlobals->GetCurTime() <= m_flNextLostSoundTime )
 		return;
 
 	const char *pSentence;
-	if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
+	if (!(CBaseEntity*)GetEnemy() || gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() > 10)
 	{
 		pSentence = "METROPOLICE_LOST_LONG"; 
 	}
@@ -2521,7 +2521,7 @@ void CNPC_MetroPolice::LostEnemySound( void)
 
 	if ( m_Sentences.Speak( pSentence ) >= 0 )
 	{
-		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+		m_flNextLostSoundTime = gpGlobals->GetCurTime() + random->RandomFloat(5.0,15.0);
 	}
 }
 
@@ -2636,7 +2636,7 @@ void CNPC_MetroPolice::IdleSound( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::PainSound( const CTakeDamageInfo &info )
 {
-	if ( gpGlobals->curtime < m_flNextPainSoundTime )
+	if ( gpGlobals->GetCurTime() < m_flNextPainSoundTime )
 		return;
 
 	// Don't make pain sounds if I'm on fire. The looping sound will take care of that for us.
@@ -2660,7 +2660,7 @@ void CNPC_MetroPolice::PainSound( const CTakeDamageInfo &info )
 		
 		// This causes it to speak it no matter what; doesn't bother with setting sounds.
 		m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
-		m_flNextPainSoundTime = gpGlobals->curtime + 1;
+		m_flNextPainSoundTime = gpGlobals->GetCurTime() + 1;
 	}
 }
 
@@ -2742,7 +2742,7 @@ Disposition_t CNPC_MetroPolice::IRelationType(CBaseEntity *pTarget)
 		if ( !PlayerIsCriminal() && (disp == D_HT) )
 		{
 			// If we're pissed at the player, we're allowed to hate them.
-			if ( m_flChasePlayerTime && m_flChasePlayerTime > gpGlobals->curtime )
+			if ( m_flChasePlayerTime && m_flChasePlayerTime > gpGlobals->GetCurTime() )
 				return D_HT;
 			return D_NU;
 		}
@@ -2774,7 +2774,7 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 	}
 
 	// Create the manhack to throw
-	CNPC_Manhack *pManhack = (CNPC_Manhack *)CreateEntityByName( "npc_manhack" );
+	CNPC_Manhack *pManhack = (CNPC_Manhack *)engineServer->CreateEntityByName( "npc_manhack" );
 	
 	Vector	vecOrigin;
 	QAngle	vecAngles;
@@ -2969,7 +2969,7 @@ bool CNPC_MetroPolice::HandleInteraction(int interactionType, void *data, CBaseC
 	if ( interactionType == g_interactionMetrocopStartedStitch )
 	{
 		// If anybody in our squad started a stitch, we can't for a little while
-		m_flValidStitchTime = gpGlobals->curtime + random->RandomFloat( METROPOLICE_SQUAD_STITCH_MIN_INTERVAL, METROPOLICE_SQUAD_STITCH_MAX_INTERVAL );
+		m_flValidStitchTime = gpGlobals->GetCurTime() + random->RandomFloat( METROPOLICE_SQUAD_STITCH_MIN_INTERVAL, METROPOLICE_SQUAD_STITCH_MAX_INTERVAL );
 		return true;
 	}
 
@@ -3214,7 +3214,7 @@ int CNPC_MetroPolice::SelectScheduleNewEnemy()
 
 	if ( HasCondition( COND_NEW_ENEMY ) )
 	{
-		m_flNextLedgeCheckTime = gpGlobals->curtime;
+		m_flNextLedgeCheckTime = gpGlobals->GetCurTime();
 
 		if( CanDeployManhack() && OccupyStrategySlot( SQUAD_SLOT_POLICE_DEPLOY_MANHACK ) )
 			return SCHED_METROPOLICE_DEPLOY_MANHACK;
@@ -3228,7 +3228,7 @@ int CNPC_MetroPolice::SelectScheduleNewEnemy()
 	{
 		SetTarget( GetEnemy() );
 		SetBatonState( true );
-		m_flBatonDebounceTime = gpGlobals->curtime + random->RandomFloat( 2.5f, 4.0f );
+		m_flBatonDebounceTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.5f, 4.0f );
 		return SCHED_METROPOLICE_ACTIVATE_BATON;
 	}
 
@@ -3442,7 +3442,7 @@ bool CNPC_MetroPolice::CanEnemySeeMe( )
 float CNPC_MetroPolice::StitchAtWeight( float flDist, float flSpeed, float flDot, float flReactionTime, const Vector &vecTargetToGun )
 {
 	// Can't do an 'attacking' stitch if it's too soon
-	if ( m_flValidStitchTime > gpGlobals->curtime )
+	if ( m_flValidStitchTime > gpGlobals->GetCurTime() )
 		return 0.0f;
 
 	// No squad slots? no way.
@@ -3491,7 +3491,7 @@ float CNPC_MetroPolice::StitchAcrossWeight( float flDist, float flSpeed, float f
 	return 0.0f;
 
 	// Can't do an 'attacking' stitch if it's too soon
-	if ( m_flValidStitchTime > gpGlobals->curtime )
+	if ( m_flValidStitchTime > gpGlobals->GetCurTime() )
 		return 0.0f;
 
 	// No squad slots? no way.
@@ -3696,14 +3696,14 @@ int CNPC_MetroPolice::SelectStitchSchedule()
 int CNPC_MetroPolice::SelectMoveToLedgeSchedule()
 {
 	// Prevent a bunch of unnecessary raycasts.
-	if ( m_flNextLedgeCheckTime > gpGlobals->curtime )
+	if ( m_flNextLedgeCheckTime > gpGlobals->GetCurTime() )
 		return SCHED_NONE;
 
 	// If the NPC is above the airboat (say, on a bridge), make sure he
 	// goes to the closest ledge. (may need a spawnflag for this)
 	if ( (GetAbsOrigin().z - GetShootTarget()->GetAbsOrigin().z) >= 150.0f )
 	{
-		m_flNextLedgeCheckTime = gpGlobals->curtime + 3.0f;
+		m_flNextLedgeCheckTime = gpGlobals->GetCurTime() + 3.0f;
 
 		// We need to be able to shoot downward at a 60 degree angle.
 		Vector vecDelta;
@@ -3868,7 +3868,7 @@ void CNPC_MetroPolice::PlayFlinchGesture( void )
 	BaseClass::PlayFlinchGesture();
 
 	// To ensure old playtested difficulty stays the same, stop cops shooting for a bit after gesture flinches
-	GetShotRegulator()->FireNoEarlierThan( gpGlobals->curtime + 0.5 );
+	GetShotRegulator()->FireNoEarlierThan( gpGlobals->GetCurTime() + 0.5 );
 }
 
 //-----------------------------------------------------------------------------
@@ -3909,7 +3909,7 @@ void CNPC_MetroPolice::IncrementPlayerCriminalStatus( void )
 		}
 	}
 
-	m_flBatonDebounceTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f );
+	m_flBatonDebounceTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 4.0f );
 
 	AnnounceHarrassment();
 
@@ -3954,7 +3954,7 @@ void CNPC_MetroPolice::AdministerJustice( void )
 			m_vecPreChaseOrigin = GetAbsOrigin();
 			m_flPreChaseYaw = GetAbsAngles().y;
 		}
-		m_flChasePlayerTime = gpGlobals->curtime + RandomFloat( 3, 7 );
+		m_flChasePlayerTime = gpGlobals->GetCurTime() + RandomFloat( 3, 7 );
 
 		// Attack the target
 		CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
@@ -4072,7 +4072,7 @@ int CNPC_MetroPolice::SelectSchedule( void )
 			// If we're not in combat, and we've got a pre-chase origin, move back to it
 			if ( ( m_NPCState != NPC_STATE_COMBAT ) && 
 				 ( m_vecPreChaseOrigin != vec3_origin ) && 
-				 ( m_flChasePlayerTime < gpGlobals->curtime ) )
+				 ( m_flChasePlayerTime < gpGlobals->GetCurTime() ) )
 			{
 				return SCHED_METROPOLICE_RETURN_TO_PRECHASE;
 			}
@@ -4082,9 +4082,9 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	// Cower when physics objects are thrown at me
 	if ( HasCondition( COND_HEAR_PHYSICS_DANGER ) )
 	{
-		if ( m_flLastPhysicsFlinchTime + 4.0f <= gpGlobals->curtime )
+		if ( m_flLastPhysicsFlinchTime + 4.0f <= gpGlobals->GetCurTime() )
 		{
-			m_flLastPhysicsFlinchTime = gpGlobals->curtime;
+			m_flLastPhysicsFlinchTime = gpGlobals->GetCurTime();
 			return SCHED_FLINCH_PHYSICS;
 		}
 	}
@@ -4132,7 +4132,7 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	}
 
 	// If we're clubbing someone who threw something at us. chase them
-	if ( m_NPCState == NPC_STATE_COMBAT && m_flChasePlayerTime > gpGlobals->curtime )
+	if ( m_NPCState == NPC_STATE_COMBAT && m_flChasePlayerTime > gpGlobals->GetCurTime() )
 		return SCHED_CHASE_ENEMY;
 
 	if ( !BehaviorSelectSchedule() )
@@ -4179,7 +4179,7 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	// If we're not in combat, and we've got a pre-chase origin, move back to it
 	if ( ( m_NPCState != NPC_STATE_COMBAT ) && 
 		 ( m_vecPreChaseOrigin != vec3_origin ) && 
-		 ( m_flChasePlayerTime < gpGlobals->curtime ) )
+		 ( m_flChasePlayerTime < gpGlobals->GetCurTime() ) )
 	{
 		return SCHED_METROPOLICE_RETURN_TO_PRECHASE;
 	}
@@ -4443,13 +4443,13 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_METROPOLICE_RESET_LEDGE_CHECK_TIME:
-		m_flNextLedgeCheckTime = gpGlobals->curtime;
+		m_flNextLedgeCheckTime = gpGlobals->GetCurTime();
 		TaskComplete();
 		break;
 
 	case TASK_METROPOLICE_LEAD_ARREST_ENEMY:
 	case TASK_METROPOLICE_ARREST_ENEMY:
-		m_flTaskCompletionTime = gpGlobals->curtime + pTask->flTaskData;
+		m_flTaskCompletionTime = gpGlobals->GetCurTime() + pTask->flTaskData;
 		break;
 
 	case TASK_METROPOLICE_SIGNAL_FIRING_TIME:
@@ -4727,7 +4727,7 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 				break;
 			}
 
-			if ( gpGlobals->curtime >= m_flTaskCompletionTime )
+			if ( gpGlobals->GetCurTime() >= m_flTaskCompletionTime )
 			{
 				TaskComplete();
 				break;
@@ -4858,7 +4858,7 @@ int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 		// Keep track of recent damage by my attacker. If it seems like we're
 		// being killed, consider running off and hiding.
 		m_nRecentDamage += info.GetDamage();
-		m_flRecentDamageTime = gpGlobals->curtime;
+		m_flRecentDamageTime = gpGlobals->GetCurTime();
 	}
 
 	return BaseClass::OnTakeDamage_Alive( info ); 
@@ -4929,7 +4929,7 @@ void CNPC_MetroPolice::BuildScheduleTestBits( void )
 
 	if ( IsCurSchedule( SCHED_MELEE_ATTACK1 ) )
 	{
-		if ( gpGlobals->curtime - m_flLastDamageFlinchTime < 10.0 )
+		if ( gpGlobals->GetCurTime() - m_flLastDamageFlinchTime < 10.0 )
 		{
 			ClearCustomInterruptCondition( COND_LIGHT_DAMAGE );
 			ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
@@ -4999,7 +4999,7 @@ void CNPC_MetroPolice::GatherConditions( void )
 
 		// Don't clear out the player hit count for a few seconds after we last hit him
 		// This avoids states where two metropolice have the player pinned between them.
-		if ( (gpGlobals->curtime - GetLastAttackTime()) > 3 )
+		if ( (gpGlobals->GetCurTime() - GetLastAttackTime()) > 3 )
 		{
 			m_iNumPlayerHits = 0;
 		}
@@ -5125,7 +5125,7 @@ void CNPC_MetroPolice::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::StunnedTarget( CBaseEntity *pTarget )
 {
-	SetLastAttackTime( gpGlobals->curtime );
+	SetLastAttackTime( gpGlobals->GetCurTime() );
 
 	if ( pTarget && pTarget->IsPlayer() )
 	{

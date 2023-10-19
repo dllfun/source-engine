@@ -10,13 +10,13 @@ float ScriptInfo_CalculateFOV( float flFOVBlendStartTime, float flNextFOVBlendTi
 	if ( bSplineRamp )
 	{
 		//If we're past the zoom time, just take the new value and stop transitioning
-		float deltaTime = (float)( gpGlobals->curtime - flFOVBlendStartTime ) / ( flNextFOVBlendTime - flFOVBlendStartTime );
+		float deltaTime = (float)( gpGlobals->GetCurTime() - flFOVBlendStartTime ) / ( flNextFOVBlendTime - flFOVBlendStartTime );
 		if ( deltaTime >= 1.0f )
 			return nNextFOV;
 
 		float flResult = SimpleSplineRemapVal( deltaTime, 0.0f, 1.0f, (float) nFOV, (float) nNextFOV );
 		
-		// Msg("FOV BLENDING: curtime %.2f    StartedAt %.2f    FinishAt: %.2f\n", gpGlobals->curtime, flFOVBlendStartTime, flNextFOVBlendTime );
+		// Msg("FOV BLENDING: curtime %.2f    StartedAt %.2f    FinishAt: %.2f\n", gpGlobals->GetCurTime(), flFOVBlendStartTime, flNextFOVBlendTime );
 		// Msg("			   Perc:   %.2f    Start: %d	End: %d		FOV: %.2f\n", SimpleSplineRemapVal( deltaTime, 0.0f, 1.0f, nFOV, nNextFOV ), nFOV, nNextFOV, flResult );
 		
 		return flResult;
@@ -25,10 +25,10 @@ float ScriptInfo_CalculateFOV( float flFOVBlendStartTime, float flNextFOVBlendTi
 	// Common, linear blend
 	if ( (flNextFOVBlendTime - flFOVBlendStartTime) != 0 )
 	{
-		float flResult = RemapValClamped( gpGlobals->curtime, flFOVBlendStartTime, flNextFOVBlendTime, (float) nFOV, (float) nNextFOV );
+		float flResult = RemapValClamped( gpGlobals->GetCurTime(), flFOVBlendStartTime, flNextFOVBlendTime, (float) nFOV, (float) nNextFOV );
 		
-		// Msg("FOV BLENDING: curtime %.2f    StartedAt %.2f    FinishAt: %.2f\n", gpGlobals->curtime, flFOVBlendStartTime, flNextFOVBlendTime );
-		// Msg("			   Perc:   %.2f    Start: %d	End: %d		FOV: %.2f\n", RemapValClamped( gpGlobals->curtime, flFOVBlendStartTime, flNextFOVBlendTime, 0.0, 1.0 ), nFOV, nNextFOV, flResult );
+		// Msg("FOV BLENDING: curtime %.2f    StartedAt %.2f    FinishAt: %.2f\n", gpGlobals->GetCurTime(), flFOVBlendStartTime, flNextFOVBlendTime );
+		// Msg("			   Perc:   %.2f    Start: %d	End: %d		FOV: %.2f\n", RemapValClamped( gpGlobals->GetCurTime(), flFOVBlendStartTime, flNextFOVBlendTime, 0.0, 1.0 ), nFOV, nNextFOV, flResult );
 		
 		return flResult;
 	}

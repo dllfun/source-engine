@@ -237,7 +237,7 @@ private:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_RopeKeyframe)
-	BEGIN_RECV_TABLE_NOBASE(C_RopeKeyframe, DT_RopeKeyframe, CRopeKeyframe)
+	BEGIN_RECV_TABLE(C_RopeKeyframe, DT_RopeKeyframe, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_iRopeMaterialModelIndex)),
 		RecvPropEHandle(RECVINFO(m_hStartPoint)),
 		RecvPropEHandle(RECVINFO(m_hEndPoint)),

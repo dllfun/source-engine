@@ -76,7 +76,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_Team)
-	BEGIN_RECV_TABLE_NOBASE(C_Team, DT_Team, CTeam)
+	BEGIN_RECV_TABLE(C_Team, DT_Team, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_iTeamNum)),
 		RecvPropInt(RECVINFO(m_iScore)),
 		RecvPropInt(RECVINFO(m_iRoundsWon)),

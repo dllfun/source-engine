@@ -188,7 +188,7 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 
 	//Make a splat sound
 	CPASAttenuationFilter filter( this );
-	EmitSound( filter, entindex(), "GrenadeBugBait.Splat" );
+	EmitSound( filter, this->NetworkProp()->entindex(), "GrenadeBugBait.Splat" );
 
 	//Make sure we want to call antlions
 	if ( ActivateBugbaitTargets( GetThrower(), GetAbsOrigin(), false ) == false )
@@ -295,7 +295,7 @@ void CGrenadeBugBait::ThinkBecomeSolid( void )
 void CGrenadeBugBait::SetGracePeriod( float duration )
 {
 	SetThink( &CGrenadeBugBait::ThinkBecomeSolid );
-	SetNextThink( gpGlobals->curtime + duration );
+	SetNextThink( gpGlobals->GetCurTime() + duration );
 
 	// Become unsolid	
 	AddSolidFlags( FSOLID_NOT_SOLID );

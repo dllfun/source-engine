@@ -28,7 +28,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_RagdollManager)
-	BEGIN_RECV_TABLE_NOBASE(C_RagdollManager, DT_RagdollManager, CRagdollManager)
+	BEGIN_RECV_TABLE(C_RagdollManager, DT_RagdollManager, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_iCurrentMaxRagdollCount)),
 	END_RECV_TABLE(DT_RagdollManager)
 	END_INIT_RECV_TABLE()

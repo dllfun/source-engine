@@ -158,7 +158,7 @@ Activity CAI_FuncTankBehavior::NPC_TranslateActivity( Activity activity )
 //-----------------------------------------------------------------------------
 void CAI_FuncTankBehavior::Dismount( void )
 {
-	SetBusy( gpGlobals->curtime + AI_FUNCTANK_BEHAVIOR_BUSYTIME );
+	SetBusy( gpGlobals->GetCurTime() + AI_FUNCTANK_BEHAVIOR_BUSYTIME);
 
 	Assert( m_hFuncTank );
 
@@ -252,7 +252,7 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 				TaskFail("NO PATH");
 
 				// Don't try and use me again for a while
-				SetBusy( gpGlobals->curtime + AI_FUNCTANK_BEHAVIOR_BUSYTIME );
+				SetBusy( gpGlobals->GetCurTime() + AI_FUNCTANK_BEHAVIOR_BUSYTIME);
 			}
 			break;
 		}		
@@ -316,7 +316,7 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 				TaskFail( FAIL_NO_TARGET );
 				return;
 			}
-			GetOuter()->m_flWaitFinished = gpGlobals->curtime + FUNCTANK_FIRE_TIME;
+			GetOuter()->m_flWaitFinished = gpGlobals->GetCurTime() + FUNCTANK_FIRE_TIME;
 			break;
 		}
 	case TASK_SCAN_LEFT_FUNCTANK:
@@ -440,14 +440,14 @@ void CAI_FuncTankBehavior::RunTask( const Task_t *pTask )
 		{
 			Assert( m_hFuncTank );
 
-			if( GetOuter()->m_flWaitFinished < gpGlobals->curtime )
+			if( GetOuter()->m_flWaitFinished < gpGlobals->GetCurTime() )
 			{
 				TaskComplete();
 			}
 
 			if ( m_hFuncTank->NPC_HasEnemy() )
 			{
-				GetOuter()->SetLastAttackTime( gpGlobals->curtime );
+				GetOuter()->SetLastAttackTime( gpGlobals->GetCurTime() );
 				m_hFuncTank->NPC_Fire();
 
 				// The NPC may have decided to stop using the func_tank, because it's out of ammo.
@@ -483,7 +483,7 @@ void CAI_FuncTankBehavior::RunTask( const Task_t *pTask )
 	case TASK_FORGET_ABOUT_FUNCTANK:
 		{
 			m_hFuncTank->NPC_InterruptRoute();
-			SetBusy( gpGlobals->curtime + AI_FUNCTANK_BEHAVIOR_BUSYTIME );
+			SetBusy( gpGlobals->GetCurTime() + AI_FUNCTANK_BEHAVIOR_BUSYTIME);
 			TaskComplete();
 			break;
 		}
@@ -530,7 +530,7 @@ void CAI_FuncTankBehavior::SetFuncTank( CHandle<CFuncTank> hFuncTank )
 { 
 	if ( m_hFuncTank && !hFuncTank )
 	{
-		SetBusy( gpGlobals->curtime + AI_FUNCTANK_BEHAVIOR_BUSYTIME );
+		SetBusy( gpGlobals->GetCurTime() + AI_FUNCTANK_BEHAVIOR_BUSYTIME);
 		SetCondition( COND_FUNCTANK_DISMOUNT );
 	}
 
@@ -565,7 +565,7 @@ void CAI_FuncTankBehavior::GatherConditions()
 	// So we deliberately ignore unreachability 
 	if ( GetEnemy() && !HasCondition(COND_SEE_ENEMY) )
 	{
-		if ( gpGlobals->curtime - GetOuter()->GetEnemyLastTimeSeen() >= 3.0f )
+		if ( gpGlobals->GetCurTime() - GetOuter()->GetEnemyLastTimeSeen() >= 3.0f)
 		{
 			GetOuter()->MarkEnemyAsEluded();
 		}
@@ -618,7 +618,7 @@ CBaseEntity *CAI_FuncTankBehavior::BestEnemy( void )
 		if ( pEMemory->timeLastSeen < pNPC->GetAcceptableTimeSeenEnemy() )
 			continue;
 
-		if ( pEMemory->timeValidEnemy > gpGlobals->curtime )
+		if ( pEMemory->timeValidEnemy > gpGlobals->GetCurTime() )
 			continue;
 
 		// Skip enemies that have eluded me to prevent infinite loops

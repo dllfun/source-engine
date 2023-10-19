@@ -178,6 +178,16 @@ private:
 	COutputEvent		m_playerOff;
 	COutputEvent		m_OnOpen;
 	COutputEvent		m_OnClose;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CPropVehiclePrisonerPod)
+	BEGIN_SEND_TABLE(CPropVehiclePrisonerPod, DT_PropVehiclePrisonerPod, DT_PhysicsProp)
+		SendPropEHandle(SENDINFO(m_hPlayer)),
+		SendPropBool(SENDINFO(m_bEnterAnimOn)),
+		SendPropBool(SENDINFO(m_bExitAnimOn)),
+		SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
+	END_SEND_TABLE();
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( prop_vehicle_prisoner_pod, CPropVehiclePrisonerPod );
@@ -213,12 +223,8 @@ BEGIN_DATADESC( CPropVehiclePrisonerPod )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CPropVehiclePrisonerPod, DT_PropVehiclePrisonerPod)
-	SendPropEHandle(SENDINFO(m_hPlayer)),
-	SendPropBool(SENDINFO(m_bEnterAnimOn)),
-	SendPropBool(SENDINFO(m_bExitAnimOn)),
-	SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
-END_SEND_TABLE();
+IMPLEMENT_SERVERCLASS(CPropVehiclePrisonerPod, DT_PropVehiclePrisonerPod)
+
 
 
 //------------------------------------------------
@@ -248,7 +254,7 @@ void CPropVehiclePrisonerPod::Spawn( void )
 
 	m_takedamage = DAMAGE_EVENTS_ONLY;
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -322,7 +328,7 @@ Vector CPropVehiclePrisonerPod::BodyTarget( const Vector &posSrc, bool bNoisy )
 //-----------------------------------------------------------------------------
 void CPropVehiclePrisonerPod::Think(void)
 {
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 	if ( GetDriver() )
 	{
@@ -351,7 +357,7 @@ void CPropVehiclePrisonerPod::InputOpen( inputdata_t &inputdata )
 	if ( nSequence > ACTIVITY_NOT_AVAILABLE )
 	{
 		SetCycle( 0 );
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		ResetSequence( nSequence );
 		ResetClientsideFrame();
 		EmitSound( "d3_citadel.pod_open" );
@@ -380,7 +386,7 @@ void CPropVehiclePrisonerPod::InputClose( inputdata_t &inputdata )
 	if ( nSequence > ACTIVITY_NOT_AVAILABLE )
 	{
 		SetCycle( 0 );
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		ResetSequence( nSequence );
 		ResetClientsideFrame();
 		EmitSound( "d3_citadel.pod_close" );

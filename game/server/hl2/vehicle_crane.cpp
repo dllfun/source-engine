@@ -101,13 +101,8 @@ BEGIN_DATADESC( CPropCrane )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CPropCrane, DT_PropCrane)
-	SendPropEHandle(SENDINFO(m_hPlayer)),
-	SendPropBool(SENDINFO(m_bMagnetOn)),
-	SendPropBool(SENDINFO(m_bEnterAnimOn)),
-	SendPropBool(SENDINFO(m_bExitAnimOn)),
-	SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
-END_SEND_TABLE();
+IMPLEMENT_SERVERCLASS(CPropCrane, DT_PropCrane)
+
 
 
 //------------------------------------------------
@@ -150,7 +145,7 @@ void CPropCrane::Spawn( void )
 	SetPoseParameter( "armextensionpose", m_flExtension );
 
 	CreateVPhysics();
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -317,7 +312,7 @@ Vector CPropCrane::BodyTarget( const Vector &posSrc, bool bNoisy )
 //-----------------------------------------------------------------------------
 void CPropCrane::Think(void)
 {
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 	if ( GetDriver() )
 	{
@@ -500,7 +495,7 @@ void CPropCrane::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pH
 	}
 
 	// Run the crane's movement
-	RunCraneMovement( gpGlobals->frametime );
+	RunCraneMovement( gpGlobals->GetFrameTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -529,7 +524,7 @@ void CPropCrane::DriveCrane( int iDriverButtons, int iButtonsPressed, float flNP
 				flTurnAdd = MAX( flTurnAdd, m_flTurnDecel );
 			}
 
-			m_flTurn = UTIL_Approach( m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->frametime );
+			m_flTurn = UTIL_Approach( m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->GetFrameTime() );
 		}
 		m_iTurning = TURNING_LEFT;
 	}
@@ -549,13 +544,13 @@ void CPropCrane::DriveCrane( int iDriverButtons, int iButtonsPressed, float flNP
 			{
 				flTurnAdd = MAX( flTurnAdd, m_flTurnDecel );
 			}
-			m_flTurn = UTIL_Approach( -m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->frametime );
+			m_flTurn = UTIL_Approach( -m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->GetFrameTime() );
 		}
 		m_iTurning = TURNING_RIGHT;
 	}
 	else
 	{
-		m_flTurn = UTIL_Approach( 0, m_flTurn, m_flTurnDecel * gpGlobals->frametime );
+		m_flTurn = UTIL_Approach( 0, m_flTurn, m_flTurnDecel * gpGlobals->GetFrameTime() );
 		m_iTurning = TURNING_NOT;
 	}
 
@@ -579,17 +574,17 @@ void CPropCrane::DriveCrane( int iDriverButtons, int iButtonsPressed, float flNP
 	// Handle extension / retraction of the arm
 	if ( iDriverButtons & IN_FORWARD )
 	{
-		m_flExtensionRate = UTIL_Approach( m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->frametime );
+		m_flExtensionRate = UTIL_Approach( m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->GetFrameTime() );
 		m_bExtending = true;
 	}
 	else if ( iDriverButtons & IN_BACK )
 	{
-		m_flExtensionRate = UTIL_Approach( -m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->frametime );
+		m_flExtensionRate = UTIL_Approach( -m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->GetFrameTime() );
 		m_bExtending = true;
 	}
 	else
 	{
-		m_flExtensionRate = UTIL_Approach( 0, m_flExtensionRate, m_flExtensionDecel * gpGlobals->frametime );
+		m_flExtensionRate = UTIL_Approach( 0, m_flExtensionRate, m_flExtensionDecel * gpGlobals->GetFrameTime() );
 		m_bExtending = false;
 	}
 
@@ -603,7 +598,7 @@ void CPropCrane::DriveCrane( int iDriverButtons, int iButtonsPressed, float flNP
 		{
 			TurnMagnetOff();
 		}
-		else if ( !m_bDropping && m_flNextDropAllowedTime < gpGlobals->curtime )
+		else if ( !m_bDropping && m_flNextDropAllowedTime < gpGlobals->GetCurTime() )
 		{
 			TurnMagnetOn();
 
@@ -679,15 +674,15 @@ void CPropCrane::RunCraneMovement( float flTime )
 			// We hit the ground, stop dropping
 			m_hCraneTip->m_pSpring->SetSpringConstant( CRANE_SPRING_CONSTANT_INITIAL_RAISING );
 			m_bDropping = false;
-			m_flNextDropAllowedTime = gpGlobals->curtime + 3.0;
-			m_flSlowRaiseTime = gpGlobals->curtime;
+			m_flNextDropAllowedTime = gpGlobals->GetCurTime() + 3.0;
+			m_flSlowRaiseTime = gpGlobals->GetCurTime();
 
 			m_ServerVehicle.PlaySound( VS_MISC2 );
 		}
 	}
-	else if ( (m_flSlowRaiseTime + CRANE_SLOWRAISE_TIME) > gpGlobals->curtime )
+	else if ( (m_flSlowRaiseTime + CRANE_SLOWRAISE_TIME) > gpGlobals->GetCurTime() )
 	{
-		float flDelta = (gpGlobals->curtime - m_flSlowRaiseTime);
+		float flDelta = (gpGlobals->GetCurTime() - m_flSlowRaiseTime);
 
 		flDelta = clamp( flDelta, 0, CRANE_SLOWRAISE_TIME );
 		float flCurrentSpringConstant = RemapVal( flDelta, 0, CRANE_SLOWRAISE_TIME, CRANE_SPRING_CONSTANT_INITIAL_RAISING, CRANE_SPRING_CONSTANT_HANGING );
@@ -702,7 +697,7 @@ void CPropCrane::RunCraneMovement( float flTime )
 
 	// Make danger sounds underneath the magnet if we have something attached to it
 	/*
-	if ( (m_flNextDangerSoundTime < gpGlobals->curtime) && (m_hCraneMagnet->GetTotalMassAttachedObjects() > 0) )
+	if ( (m_flNextDangerSoundTime < gpGlobals->GetCurTime()) && (m_hCraneMagnet->GetTotalMassAttachedObjects() > 0) )
 	{
 		// Trace down from the magnet and make a danger sound on the ground
 		trace_t tr;
@@ -721,12 +716,12 @@ void CPropCrane::RunCraneMovement( float flTime )
 			//NDebugOverlay::Cross3D( tr.endpos, -Vector(10,10,10), Vector(10,10,10), 255,0,0, false, 0.3 );
 		}
 
-		m_flNextDangerSoundTime = gpGlobals->curtime + 0.3;
+		m_flNextDangerSoundTime = gpGlobals->GetCurTime() + 0.3;
 	}
 	*/
 
 	// Play creak sounds on the magnet if there's heavy weight on it
-	if ( (m_flNextCreakSound < gpGlobals->curtime) && (m_hCraneMagnet->GetTotalMassAttachedObjects() > 100) )
+	if ( (m_flNextCreakSound < gpGlobals->GetCurTime()) && (m_hCraneMagnet->GetTotalMassAttachedObjects() > 100) )
 	{
 		// Randomly play creaks from the magnet, and increase the chance based on the turning speed
 		float flSpeedPercentage = clamp( fabs(m_flTurn) / m_flMaxTurnSpeed, 0, 1 );
@@ -742,9 +737,9 @@ void CPropCrane::RunCraneMovement( float flTime )
 				ep.m_flVolume = 1.0f;
 				ep.m_SoundLevel = SNDLVL_NORM;
 
-				CBaseEntity::EmitSound( filter, m_hCraneMagnet->entindex(), ep );
+				CBaseEntity::EmitSound( filter, m_hCraneMagnet->NetworkProp()->entindex(), ep );
 			}
-			m_flNextCreakSound = gpGlobals->curtime + 5.0;
+			m_flNextCreakSound = gpGlobals->GetCurTime() + 5.0;
 		}
 	}
 }

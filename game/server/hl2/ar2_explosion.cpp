@@ -13,9 +13,8 @@
 #define AR2EXPLOSION_ENTITYNAME	"ar2explosion"
 
 
-IMPLEMENT_SERVERCLASS_ST(AR2Explosion, DT_AR2Explosion)
-	SendPropString( SENDINFO( m_szMaterialName ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(AR2Explosion, DT_AR2Explosion)
+
 
 LINK_ENTITY_TO_CLASS(ar2explosion, AR2Explosion);
 
@@ -32,11 +31,11 @@ END_DATADESC()
 
 AR2Explosion* AR2Explosion::CreateAR2Explosion(const Vector &pos)
 {
-	CBaseEntity *pEnt = CreateEntityByName(AR2EXPLOSION_ENTITYNAME);
+	CBaseEntity *pEnt = engineServer->CreateEntityByName(AR2EXPLOSION_ENTITYNAME);
 	if(pEnt)
 	{
 		AR2Explosion *pEffect = dynamic_cast<AR2Explosion*>(pEnt);
-		if(pEffect && pEffect->edict())
+		if(pEffect && pEffect->NetworkProp()->HasEdict())
 		{
 			pEffect->SetLocalOrigin( pos );
 			pEffect->Activate();

@@ -33,7 +33,7 @@ public:
 //-----------------------------------------------------------------------------
 public:
 	BEGIN_INIT_RECV_TABLE(CFogController)
-	BEGIN_NETWORK_TABLE_NOBASE(CFogController, DT_FogController)
+	BEGIN_RECV_TABLE(CFogController, DT_FogController, DT_BaseEntity)
 		// fog data
 		RecvPropInt(RECVINFO(m_fog.enable)),
 		RecvPropInt(RECVINFO(m_fog.blend)),
@@ -51,7 +51,7 @@ public:
 		RecvPropFloat(RECVINFO(m_fog.endLerpTo)),
 		RecvPropFloat(RECVINFO(m_fog.lerptime)),
 		RecvPropFloat(RECVINFO(m_fog.duration)),
-	END_NETWORK_TABLE(DT_FogController)
+	END_RECV_TABLE(DT_FogController)
 	END_INIT_RECV_TABLE()
 };
 

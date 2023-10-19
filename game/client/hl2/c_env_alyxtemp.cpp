@@ -37,13 +37,19 @@ private:
 	
 	CSmartPtr<CSimpleEmitter>		m_pSimpleEmitter;
 	CSmartPtr<CParticleAttractor>	m_pAttractorEmitter;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_AlyxEmpEffect)
+	BEGIN_RECV_TABLE(C_AlyxEmpEffect, DT_AlyxEmpEffect, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_nState)),
+		RecvPropFloat(RECVINFO(m_flDuration)),
+		RecvPropFloat(RECVINFO(m_flStartTime)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_AlyxEmpEffect, DT_AlyxEmpEffect, CAlyxEmpEffect )
-	RecvPropInt( RECVINFO(m_nState) ),
-	RecvPropFloat( RECVINFO(m_flDuration) ),
-	RecvPropFloat( RECVINFO(m_flStartTime) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_AlyxEmpEffect, DT_AlyxEmpEffect, CAlyxEmpEffect )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -132,7 +138,7 @@ void C_AlyxEmpEffect::UpdateIdle( float percentage )
 
 	int numParticles = floor( 4.0f * percentage );
 
-	float dTime = gpGlobals->frametime;
+	float dTime = gpGlobals->GetFrameTime();
 	
 	while ( m_tParticleSpawn.NextEvent( dTime ) )
 	{
@@ -197,7 +203,7 @@ void C_AlyxEmpEffect::UpdateCharging( float percentage )
 
 	SimpleParticle *sParticle;
 
-	float dTime = gpGlobals->frametime;
+	float dTime = gpGlobals->GetFrameTime();
 	
 	while ( m_tParticleSpawn.NextEvent( dTime ) )
 	{
@@ -299,7 +305,7 @@ void C_AlyxEmpEffect::UpdateDischarging( void )
 
 	SimpleParticle *sParticle;
 
-	float dTime = gpGlobals->frametime;
+	float dTime = gpGlobals->GetFrameTime();
 	
 	while ( m_tParticleSpawn.NextEvent( dTime ) )
 	{
@@ -436,7 +442,7 @@ inline float C_AlyxEmpEffect::GetStateDurationPercentage( void )
 	if ( m_flDuration == 0 )
 		return 0.0f;
 
-	return RemapValClamped( ( gpGlobals->curtime - m_flStartTime ), 0, m_flDuration, 0, 1.0f );;
+	return RemapValClamped( ( gpGlobals->GetCurTime() - m_flStartTime ), 0, m_flDuration, 0, 1.0f );;
 }
 
 //-----------------------------------------------------------------------------
@@ -464,7 +470,7 @@ void C_AlyxEmpEffect::NotifyShouldTransmit( ShouldTransmitState_t state )
 //-----------------------------------------------------------------------------
 void C_AlyxEmpEffect::ClientThink( void )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if ( gpGlobals->GetFrameTime() <= 0.0f )
 		return;
 
 	float flDuration = GetStateDurationPercentage();

@@ -16,7 +16,7 @@ public:
 	DECLARE_CLIENTCLASS();
 
 	void OnDataChanged( DataUpdateType_t updateType );
-	int DrawModel( int flags );
+	int DrawModel(IVModel* pWorld, int flags );
 	
 	RenderGroup_t	GetRenderGroup( void )	{ return RENDER_GROUP_TRANSLUCENT_ENTITY; }
 
@@ -35,13 +35,19 @@ private:
 	float	m_flRadius;
 	float	m_flStarttime;
 	Vector	m_vecSurfaceNormal;
+
+public:
+	BEGIN_INIT_RECV_TABLE()
+	BEGIN_RECV_TABLE(C_MortarShell, DT_MortarShell, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flLifespan)),
+		RecvPropFloat(RECVINFO(m_flRadius)),
+		RecvPropVector(RECVINFO(m_vecSurfaceNormal)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_MortarShell, DT_MortarShell, CMortarShell )
-	RecvPropFloat( RECVINFO( m_flLifespan ) ),
-	RecvPropFloat( RECVINFO( m_flRadius ) ),
-	RecvPropVector( RECVINFO( m_vecSurfaceNormal ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_MortarShell, DT_MortarShell, CMortarShell )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -53,7 +59,7 @@ void C_MortarShell::OnDataChanged( DataUpdateType_t updateType )
 
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
-		m_flStarttime = gpGlobals->curtime;
+		m_flStarttime = gpGlobals->GetCurTime();
 		AddToLeafSystem( RENDER_GROUP_TRANSLUCENT_ENTITY );
 
 		m_pEmitter = CSimpleEmitter::Create( "C_EntityDissolve" );
@@ -74,9 +80,9 @@ void C_MortarShell::AddRisingParticles( float flPerc )
 	Vector offset;
 	float radius = m_flRadius * 0.25f * flPerc;
 
-	float val = RemapValClamped( gpGlobals->curtime, m_flStarttime, m_flStarttime + m_flLifespan, 0.0f, 1.0f );
+	float val = RemapValClamped( gpGlobals->GetCurTime(), m_flStarttime, m_flStarttime + m_flLifespan, 0.0f, 1.0f );
 
-	float flCur = gpGlobals->frametime;
+	float flCur = gpGlobals->GetFrameTime();
 
 	// Anime ground effects
 	while ( m_ParticleEvent.NextEvent( flCur ) )
@@ -125,7 +131,7 @@ void C_MortarShell::AddExplodingParticles( float flPerc )
 	Vector offset;
 	float radius = 48.0f * flPerc;
 
-	float flCur = gpGlobals->frametime;
+	float flCur = gpGlobals->GetFrameTime();
 
 	// Anime ground effects
 	while ( m_ParticleEvent.NextEvent( flCur ) )
@@ -170,7 +176,7 @@ void C_MortarShell::AddExplodingParticles( float flPerc )
 //-----------------------------------------------------------------------------
 inline float C_MortarShell::GetStartPerc( void )
 {
-	float val = RemapValClamped( gpGlobals->curtime, m_flStarttime, m_flStarttime + m_flLifespan, 0.0f, 1.0f );
+	float val = RemapValClamped( gpGlobals->GetCurTime(), m_flStarttime, m_flStarttime + m_flLifespan, 0.0f, 1.0f );
 
 	return ( Gain( val, 0.2f ) );
 }
@@ -181,7 +187,7 @@ inline float C_MortarShell::GetStartPerc( void )
 //-----------------------------------------------------------------------------
 inline float C_MortarShell::GetEndPerc( void )
 {
-	float val = RemapValClamped( gpGlobals->curtime, m_flStarttime + m_flLifespan, m_flStarttime + m_flLifespan + 1.0f, 1.0f, 0.0f );
+	float val = RemapValClamped( gpGlobals->GetCurTime(), m_flStarttime + m_flLifespan, m_flStarttime + m_flLifespan + 1.0f, 1.0f, 0.0f );
 
 	return ( Gain( val, 0.75f ) );
 }
@@ -195,16 +201,16 @@ inline float C_MortarShell::GetEndPerc( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int C_MortarShell::DrawModel( int flags )
+int C_MortarShell::DrawModel(IVModel* pWorld, int flags )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if ( gpGlobals->GetFrameTime() <= 0.0f )
 		return 0;
 
 	float flPerc;
 	bool ending;
 
 	// See if we're in the beginning phase
-	if ( gpGlobals->curtime < ( m_flStarttime + m_flLifespan ) )
+	if ( gpGlobals->GetCurTime() < ( m_flStarttime + m_flLifespan ) )
 	{
 		flPerc = GetStartPerc();
 		ending = false;

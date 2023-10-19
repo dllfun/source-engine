@@ -19,7 +19,6 @@
 #include "tier0/memdbgon.h"
 
 
-#define SUBINCH_PRECISION	3
 
 #ifdef CLIENT_DLL
 

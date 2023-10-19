@@ -65,10 +65,16 @@ protected:
 	bool		m_bRedraw;
 	bool		m_bEmitSpores;
 	EHANDLE		m_hSporeTrail;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponBugBait)
+	BEGIN_SEND_TABLE(CWeaponBugBait, DT_WeaponBugBait, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponBugBait, DT_WeaponBugBait)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponBugBait, DT_WeaponBugBait)
+
 
 LINK_ENTITY_TO_CLASS( weapon_bugbait, CWeaponBugBait );
 #ifndef HL2MP
@@ -127,7 +133,7 @@ void CWeaponBugBait::FallInit( void )
 	
 	SetThink( &CBaseCombatWeapon::FallThink );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -151,7 +157,7 @@ void CWeaponBugBait::Drop( const Vector &vecVelocity )
 	BaseClass::Drop( vecVelocity );
 
 	// On touch, stick & stop moving. Increase our thinktime a bit so we don't stomp the touch for a bit
-	SetNextThink( gpGlobals->curtime + 3.0 );
+	SetNextThink( gpGlobals->GetCurTime() + 3.0 );
 	SetTouch( &CWeaponBugBait::BugbaitStickyTouch );
 
 	m_hSporeTrail = SporeExplosion::CreateSporeExplosion();
@@ -183,7 +189,7 @@ void CWeaponBugBait::Drop( const Vector &vecVelocity )
 //-----------------------------------------------------------------------------
 void CWeaponBugBait::BugbaitStickyTouch( CBaseEntity *pOther )
 {
-	if ( !pOther->IsWorld() )
+	if ( pOther->NetworkProp()->entindex()!=0)
 		return;
 
 	// Stop moving, wait for pickup
@@ -241,7 +247,7 @@ void CWeaponBugBait::SecondaryAttack( void )
 	// Squeeze!
 	CPASAttenuationFilter filter( this );
 
-	EmitSound( filter, entindex(), "Weapon_Bugbait.Splat" );
+	EmitSound( filter, this->NetworkProp()->entindex(), "Weapon_Bugbait.Splat" );
 
 	if ( CGrenadeBugBait::ActivateBugbaitTargets( GetOwner(), GetAbsOrigin(), true ) == false )
 	{
@@ -249,7 +255,7 @@ void CWeaponBugBait::SecondaryAttack( void )
 	}
 
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
-	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 	if ( pOwner )
@@ -324,13 +330,13 @@ void CWeaponBugBait::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 //-----------------------------------------------------------------------------
 bool CWeaponBugBait::Reload( void )
 {
-	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->GetCurTime() ) )
 	{
 		//Redraw the weapon
 		SendWeaponAnim( ACT_VM_DRAW );
 
 		//Update our times
-		m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 		//Mark this as done
 		m_bRedraw = false;
@@ -355,18 +361,18 @@ void CWeaponBugBait::ItemPostFrame( void )
 		if ( ( pOwner->m_nButtons & IN_ATTACK ) == false )
 		{
 			SendWeaponAnim( ACT_VM_THROW );
-			m_flNextPrimaryAttack  = gpGlobals->curtime + SequenceDuration();
+			m_flNextPrimaryAttack  = gpGlobals->GetCurTime() + SequenceDuration();
 			m_bDrawBackFinished = false;
 		}
 	}
 	else
 	{
 		//See if we're attacking
-		if ( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->curtime ) )
+		if ( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->GetCurTime() ) )
 		{
 			PrimaryAttack();
 		}
-		else if ( ( pOwner->m_nButtons & IN_ATTACK2 ) && ( m_flNextSecondaryAttack < gpGlobals->curtime ) )
+		else if ( ( pOwner->m_nButtons & IN_ATTACK2 ) && ( m_flNextSecondaryAttack < gpGlobals->GetCurTime() ) )
 		{
 			SecondaryAttack();
 		}

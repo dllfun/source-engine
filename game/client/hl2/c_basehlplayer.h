@@ -75,6 +75,15 @@ private:
 
 
 friend class CHL2GameMovement;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseHLPlayer)
+	INIT_REFERENCE_RECV_TABLE(C_HL2PlayerLocalData)
+	BEGIN_RECV_TABLE(C_BaseHLPlayer, DT_HL2_Player, DT_BasePlayer)
+		RecvPropDataTable(RECVINFO_DT(m_HL2Local), 0, REFERENCE_RECV_TABLE(DT_HL2Local)),
+		RecvPropBool(RECVINFO(m_fIsSprinting)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 

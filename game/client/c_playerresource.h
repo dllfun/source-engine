@@ -74,7 +74,7 @@ protected:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_PlayerResource)
-	BEGIN_RECV_TABLE_NOBASE(C_PlayerResource, DT_PlayerResource, CPlayerResource)
+	BEGIN_RECV_TABLE(C_PlayerResource, DT_PlayerResource, DT_BaseEntity)
 		RecvPropArray3(RECVINFO_ARRAY(m_iPing), RecvPropInt(RECVINFO(m_iPing[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iScore), RecvPropInt(RECVINFO(m_iScore[0]))),
 		RecvPropArray3(RECVINFO_ARRAY(m_iDeaths), RecvPropInt(RECVINFO(m_iDeaths[0]))),

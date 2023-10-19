@@ -11,6 +11,7 @@
 #endif
 
 #include "cbase.h"
+#include "networkstringtable_gamedll.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: An entity that spawns and controls a particle system
@@ -57,7 +58,7 @@ protected:
 	CNetworkVar( bool,	m_bWeatherEffect );
 
 	BEGIN_INIT_SEND_TABLE(CParticleSystem)
-	BEGIN_SEND_TABLE_NOBASE(CParticleSystem, DT_ParticleSystem)
+	BEGIN_SEND_TABLE(CParticleSystem, DT_ParticleSystem, DT_BaseEntity)
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
 		SendPropEHandle(SENDINFO(m_hOwnerEntity)),
 		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),

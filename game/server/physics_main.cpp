@@ -2003,6 +2003,9 @@ void Physics_SimulateEntity( CBaseEntity *pEntity )
 //		}
 //		else
 //#endif
+		if (pEntity->NetworkProp()->entindex() == 1) {
+			int aaa = 0;
+		}
 		{
 			// Run entity physics
 			pEntity->PhysicsSimulate();

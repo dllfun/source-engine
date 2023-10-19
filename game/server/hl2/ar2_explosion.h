@@ -28,6 +28,13 @@ public:
 private:
 
 	CNetworkString( m_szMaterialName, 255 );
+
+public:
+	BEGIN_INIT_SEND_TABLE(AR2Explosion)
+	BEGIN_SEND_TABLE(AR2Explosion, DT_AR2Explosion, DT_BaseParticleEntity)
+		SendPropString(SENDINFO(m_szMaterialName)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 

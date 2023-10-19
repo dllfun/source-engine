@@ -10,9 +10,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_Corpse, DT_Corpse, CCorpse)
-	RecvPropInt(RECVINFO(m_nReferencePlayer))
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_Corpse, DT_Corpse, CCorpse)
+
 
 
 
@@ -23,11 +22,11 @@ C_Corpse::C_Corpse()
 }
 
 
-int C_Corpse::DrawModel( int flags )
+int C_Corpse::DrawModel(IVModel* pWorld, int flags )
 {
 	int drawn = 0;
 	if ( m_nReferencePlayer <= 0 || 
-		 m_nReferencePlayer > gpGlobals->maxClients )
+		 m_nReferencePlayer > gpGlobals->GetMaxClients() )
 	{
 		return drawn;
 	};
@@ -49,6 +48,7 @@ int C_Corpse::DrawModel( int flags )
 		zero.Init();
 
 		drawn = modelrender->DrawModel( 
+			pWorld,
 			flags, 
 			this,
 			MODEL_INSTANCE_INVALID,

@@ -74,14 +74,14 @@ LINK_ENTITY_TO_CLASS( grenade_homer, CGrenadeHomer );
 //------------------------------------------------------------------------------
 CGrenadeHomer* CGrenadeHomer::CreateGrenadeHomer( string_t sModelName, string_t sFlySound, const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner )
 {
-	CGrenadeHomer *pGrenade = (CGrenadeHomer*)CreateEntityByName( "grenade_homer" );
+	CGrenadeHomer *pGrenade = (CGrenadeHomer*)engineServer->CreateEntityByName( "grenade_homer" );
 	if ( !pGrenade )
 	{
 		Warning( "NULL Ent in Create!\n" );
 		return NULL;
 	}
 
-	if ( pGrenade->edict() )
+	if ( pGrenade->NetworkProp()->HasEdict() )
 	{
 		pGrenade->m_sFlySound	= sFlySound;
 		pGrenade->SetOwnerEntity( Instance( pentOwner ) );
@@ -309,7 +309,7 @@ void CGrenadeHomer::Launch( CBaseEntity*		pOwner,
 	// ----------------------------
 	// Initialize homing parameters
 	// ----------------------------
-	m_flHomingLaunchTime	= gpGlobals->curtime;
+	m_flHomingLaunchTime	= gpGlobals->GetCurTime();
 
 	// -------------
 	// Smoke trail.
@@ -323,7 +323,7 @@ void CGrenadeHomer::Launch( CBaseEntity*		pOwner,
 	SetTouch( &CGrenadeHomer::GrenadeHomerTouch );
 	SetThink( &CGrenadeHomer::AimThink );
 	AimThink();
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	// Issue danger!
 	if ( pTarget )
@@ -378,13 +378,13 @@ void CGrenadeHomer::Detonate(void)
 {
 	StopRocketTrail();
 
-	StopSound(entindex(), CHAN_BODY, STRING(m_sFlySound));
+	StopSound(this->NetworkProp()->entindex(), CHAN_BODY, STRING(m_sFlySound));
 
 	m_takedamage	= DAMAGE_NO;	
 
 	CPASFilter filter( GetAbsOrigin() );
 
-	te->Explosion( filter, 0.0,
+	g_pTESystem->Explosion( filter, 0.0,
 		&GetAbsOrigin(), 
 		g_sModelIndexFireball,
 		2.0, 
@@ -401,7 +401,7 @@ void CGrenadeHomer::Detonate(void)
 	{
 		// Add a shockring
 		CBroadcastRecipientFilter filter3;
-		te->BeamRingPoint( filter3, 0, 
+		g_pTESystem->BeamRingPoint( filter3, 0,
 			GetAbsOrigin(),	//origin
 			16,			//start radius
 			1000,		//end radius
@@ -423,7 +423,7 @@ void CGrenadeHomer::Detonate(void)
 
 		// Add a shockring
 		CBroadcastRecipientFilter filter4;
-		te->BeamRingPoint( filter4, 0, 
+		g_pTESystem->BeamRingPoint( filter4, 0,
 			GetAbsOrigin(),	//origin
 			16,			//start radius
 			500,		//end radius
@@ -458,7 +458,7 @@ void CGrenadeHomer::Detonate(void)
 
 	RadiusDamage ( CTakeDamageInfo( this, GetOwnerEntity(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 	CPASAttenuationFilter filter2( this, "GrenadeHomer.StopSounds" );
-	EmitSound( filter2, entindex(), "GrenadeHomer.StopSounds" );
+	EmitSound( filter2, this->NetworkProp()->entindex(), "GrenadeHomer.StopSounds" );
 	UTIL_Remove( this );
 }
 
@@ -469,7 +469,7 @@ void CGrenadeHomer::Detonate(void)
 //-----------------------------------------------------------------------------
 void CGrenadeHomer::PlayFlySound(void)
 {
-	if (gpGlobals->curtime > m_flNextFlySoundTime)
+	if (gpGlobals->GetCurTime() > m_flNextFlySoundTime)
 	{
 		CPASAttenuationFilter filter( this, 0.8 );
 
@@ -480,9 +480,9 @@ void CGrenadeHomer::PlayFlySound(void)
 		ep.m_SoundLevel = SNDLVL_NORM;
 		ep.m_nPitch = 100;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 
-		m_flNextFlySoundTime	= gpGlobals->curtime + 1.0;
+		m_flNextFlySoundTime	= gpGlobals->GetCurTime() + 1.0;
 	}
 }
 
@@ -496,7 +496,7 @@ void CGrenadeHomer::AimThink( void )
 	// Blow up the missile if we have an explicit detonate time that
 	// has been reached
 	if (m_flDetonateTime != 0 &&
-		gpGlobals->curtime > m_flDetonateTime)
+		gpGlobals->GetCurTime() > m_flDetonateTime)
 	{
 		Detonate();
 		return;
@@ -553,7 +553,7 @@ void CGrenadeHomer::AimThink( void )
 		// ---------
 		// Delay
 		// ---------
-		if		(gpGlobals->curtime < flHomingRampUpStartTime)
+		if		(gpGlobals->GetCurTime() < flHomingRampUpStartTime)
 		{
 			flCurHomingStrength = 0;
 			flTargetSpeed		= 0;
@@ -561,16 +561,16 @@ void CGrenadeHomer::AimThink( void )
 		// ----------
 		//  Ramp Up
 		// ----------
-		else if (gpGlobals->curtime < flHomingSustainStartTime)
+		else if (gpGlobals->GetCurTime() < flHomingSustainStartTime)
 		{
-			float flAge			= gpGlobals->curtime - flHomingRampUpStartTime;
+			float flAge			= gpGlobals->GetCurTime() - flHomingRampUpStartTime;
 			flCurHomingStrength = m_flHomingStrength * (flAge/m_flHomingRampUp);
 			flTargetSpeed		= flCurHomingStrength * m_flHomingSpeed;
 		}
 		// ----------
 		//  Sustain
 		// ----------
-		else if (gpGlobals->curtime < flHomingRampDownStartTime)
+		else if (gpGlobals->GetCurTime() < flHomingRampDownStartTime)
 		{
 			flCurHomingStrength = m_flHomingStrength;
 			flTargetSpeed		= m_flHomingSpeed;
@@ -578,9 +578,9 @@ void CGrenadeHomer::AimThink( void )
 		// -----------
 		//  Ramp Down
 		// -----------
-		else if (gpGlobals->curtime < flHomingEndHomingTime)
+		else if (gpGlobals->GetCurTime() < flHomingEndHomingTime)
 		{
-			float flAge			= gpGlobals->curtime - flHomingRampDownStartTime;
+			float flAge			= gpGlobals->GetCurTime() - flHomingRampDownStartTime;
 			flCurHomingStrength = m_flHomingStrength * (1-(flAge/m_flHomingRampDown));
 			flTargetSpeed		= m_flHomingSpeed;
 		}
@@ -604,7 +604,7 @@ void CGrenadeHomer::AimThink( void )
 
 			// Add in homing direction
 			Vector vecNewVelocity = GetAbsVelocity();
-			float flTimeToUse = gpGlobals->frametime;
+			float flTimeToUse = gpGlobals->GetFrameTime();
 			while (flTimeToUse > 0)
 			{
 				vecNewVelocity = (flCurHomingStrength * vTargetDir) + ((1 - flCurHomingStrength) * vCurDir);
@@ -622,13 +622,13 @@ void CGrenadeHomer::AimThink( void )
 	Vector vecImpulse( 0, 0, 0 );
 	if (m_flSpinMagnitude > 0)
 	{
-		vecImpulse.x += m_flSpinMagnitude*sin(m_flSpinSpeed * gpGlobals->curtime + m_flSpinOffset);
-		vecImpulse.y += m_flSpinMagnitude*cos(m_flSpinSpeed * gpGlobals->curtime + m_flSpinOffset);
-		vecImpulse.z -= m_flSpinMagnitude*cos(m_flSpinSpeed * gpGlobals->curtime + m_flSpinOffset);
+		vecImpulse.x += m_flSpinMagnitude*sin(m_flSpinSpeed * gpGlobals->GetCurTime() + m_flSpinOffset);
+		vecImpulse.y += m_flSpinMagnitude*cos(m_flSpinSpeed * gpGlobals->GetCurTime() + m_flSpinOffset);
+		vecImpulse.z -= m_flSpinMagnitude*cos(m_flSpinSpeed * gpGlobals->GetCurTime() + m_flSpinOffset);
 	}
 
 	// Add in gravity
-	vecImpulse.z -= GetGravity() * GetCurrentGravity() * gpGlobals->frametime;
+	vecImpulse.z -= GetGravity() * GetCurrentGravity() * gpGlobals->GetFrameTime();
 	ApplyAbsVelocityImpulse( vecImpulse );
 
 	QAngle angles;
@@ -636,7 +636,7 @@ void CGrenadeHomer::AimThink( void )
 	SetLocalAngles( angles );
 
 #if 0 // BUBBLE
-	if( gpGlobals->curtime > m_flNextWarnTime )
+	if( gpGlobals->GetCurTime() > m_flNextWarnTime )
 	{
 		// Make a bubble of warning sound in front of me.
 		const float WARN_INTERVAL = 0.25f;
@@ -660,11 +660,11 @@ void CGrenadeHomer::AimThink( void )
 		NDebugOverlay::Line( vecWarnLocation, vecWarnLocation + vecRight * flSpeed * WARN_INTERVAL * 0.5, 255,255,0, true, 10);
 		NDebugOverlay::Line( vecWarnLocation, vecWarnLocation - vecRight * flSpeed * WARN_INTERVAL * 0.5, 255,255,0, true, 10);
 #endif
-		m_flNextWarnTime = gpGlobals->curtime + WARN_INTERVAL;
+		m_flNextWarnTime = gpGlobals->GetCurTime() + WARN_INTERVAL;
 	}
 #endif // BUBBLE
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //------------------------------------------------------------------------------

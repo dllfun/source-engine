@@ -204,7 +204,7 @@ void CItem_DynamicResupply::Spawn( void )
 	if ( !HasSpawnFlags( SF_DYNAMICRESUPPLY_IS_MASTER | SF_DYNAMICRESUPPLY_ALTERNATE_MASTER ) )
 	{
 		// Stagger the thinks a bit so they don't all think at the same time
-		SetNextThink( gpGlobals->curtime + RandomFloat(0.2f, 0.4f) );
+		SetNextThink( gpGlobals->GetCurTime() + RandomFloat(0.2f, 0.4f) );
 		SetThink( &CItem_DynamicResupply::CheckPVSThink );
 	}
 }
@@ -228,7 +228,7 @@ void CItem_DynamicResupply::Activate( void )
 			m_bIsMaster = false;
 		}
 	}
-	if ( !HasSpawnFlags( SF_DYNAMICRESUPPLY_ALTERNATE_MASTER ) && HasSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER ) && gpGlobals->curtime < 1.0 )
+	if ( !HasSpawnFlags( SF_DYNAMICRESUPPLY_ALTERNATE_MASTER ) && HasSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER ) && gpGlobals->GetCurTime() < 1.0 )
 	{
 		if ( !g_MasterResupply )
 		{
@@ -262,7 +262,7 @@ void CItem_DynamicResupply::Precache( void )
 //-----------------------------------------------------------------------------
 void CItem_DynamicResupply::CheckPVSThink( void )
 {
-	edict_t *pentPlayer = UTIL_FindClientInPVS( edict() );
+	edict_t *pentPlayer = UTIL_FindClientInPVS(this->NetworkProp()->GetEdict() );
 	if ( pentPlayer )
 	{
 		CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance( pentPlayer );
@@ -273,7 +273,7 @@ void CItem_DynamicResupply::CheckPVSThink( void )
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + DYNAMIC_ITEM_THINK );
+	SetNextThink( gpGlobals->GetCurTime() + DYNAMIC_ITEM_THINK );
 }
 
 //-----------------------------------------------------------------------------

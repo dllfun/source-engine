@@ -129,7 +129,7 @@ void CNPC_EnemyFinder::InitCustomSchedules( void )
 void CNPC_EnemyFinder::InputTurnOn( inputdata_t &inputdata )
 {
 	SetThink( &CNPC_EnemyFinder::CallNPCThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -373,7 +373,7 @@ void CNPC_EnemyFinder::PrescheduleThink()
 	if ( GetEnemies()->NumEnemies() > 0 )
 	{
 		//If I haven't seen my enemy in half a second then we'll assume he's gone.
-		if ( gpGlobals->curtime - GetEnemyLastTimeSeen() >= 0.5f )
+		if ( gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() >= 0.5f )
 		{
 			bHasEnemies = false;
 		}
@@ -508,7 +508,7 @@ public:
 
 	CNPC_EnemyFinderCombineCannon()
 	{
-		m_flTimeNextHateNPC = gpGlobals->curtime;
+		m_flTimeNextHateNPC = gpGlobals->GetCurTime();
 		m_flTimeStopHateNPC = EF_COMBINE_CANNON_HATE_TIME_INVALID;
 	};
 
@@ -526,7 +526,7 @@ public:
 	float		m_flTimeNextHateNPC;
 	float		m_flTimeStopHateNPC;
 	float		m_flOriginalFOV;
-	float		m_flTimeWideFOV; // If this is > gpGlobals->curtime, we have 180 degree viewcone.
+	float		m_flTimeWideFOV; // If this is > gpGlobals->GetCurTime(), we have 180 degree viewcone.
 	string_t	m_iszSnapToEnt;
 };
 LINK_ENTITY_TO_CLASS( npc_enemyfinder_combinecannon, CNPC_EnemyFinderCombineCannon );
@@ -645,7 +645,7 @@ bool CNPC_EnemyFinderCombineCannon::FVisible( CBaseEntity *pEntity, int traceMas
 //-----------------------------------------------------------------------------
 bool CNPC_EnemyFinderCombineCannon::IsValidEnemy( CBaseEntity *pTarget )
 {
-	if( m_flTimeWideFOV > gpGlobals->curtime && !pTarget->IsPlayer() )
+	if( m_flTimeWideFOV > gpGlobals->GetCurTime() && !pTarget->IsPlayer() )
 	{
 		// ONLY allowed to hate the player when I'm in hyper-vigilant wide FOV mode.
 		// This forces all guns in outland_09 to shoot at the player once any
@@ -696,20 +696,20 @@ bool CNPC_EnemyFinderCombineCannon::IsValidEnemy( CBaseEntity *pTarget )
 		if( m_flTimeStopHateNPC != EF_COMBINE_CANNON_HATE_TIME_INVALID )
 		{
 			// We currently hate NPC's. But is it time to stop?
-			if( gpGlobals->curtime > m_flTimeStopHateNPC )
+			if( gpGlobals->GetCurTime() > m_flTimeStopHateNPC )
 			{
 				// Don't interfere with the result
 				m_flTimeStopHateNPC = EF_COMBINE_CANNON_HATE_TIME_INVALID;
-				m_flTimeNextHateNPC = gpGlobals->curtime + ai_ef_hate_npc_frequency.GetFloat();
+				m_flTimeNextHateNPC = gpGlobals->GetCurTime() + ai_ef_hate_npc_frequency.GetFloat();
 				return bResult;
 			}
 		}
 		else
 		{
 			// We do not hate NPCs at the moment. Is it time to turn it on?
-			if( gpGlobals->curtime > m_flTimeNextHateNPC )
+			if( gpGlobals->GetCurTime() > m_flTimeNextHateNPC )
 			{
-				m_flTimeStopHateNPC = gpGlobals->curtime + ai_ef_hate_npc_duration.GetFloat();
+				m_flTimeStopHateNPC = gpGlobals->GetCurTime() + ai_ef_hate_npc_duration.GetFloat();
 			}
 			else
 			{
@@ -732,7 +732,7 @@ bool CNPC_EnemyFinderCombineCannon::IsValidEnemy( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 void CNPC_EnemyFinderCombineCannon::GatherConditions()
 {
-	if( m_flTimeWideFOV > gpGlobals->curtime )
+	if( m_flTimeWideFOV > gpGlobals->GetCurTime() )
 	{
 		// I'm in a hyper-vigilant period of time where I get a 270 degree viewcone
 		m_flFieldOfView = -0.5f;
@@ -749,7 +749,7 @@ void CNPC_EnemyFinderCombineCannon::GatherConditions()
 //-----------------------------------------------------------------------------
 void CNPC_EnemyFinderCombineCannon::InputSetWideFOVForSeconds( inputdata_t &inputdata )
 {
-	m_flTimeWideFOV	= gpGlobals->curtime + inputdata.value.Float();
+	m_flTimeWideFOV	= gpGlobals->GetCurTime() + inputdata.value.Float();
 }
 
 

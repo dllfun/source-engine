@@ -84,7 +84,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_Sun)
-	BEGIN_RECV_TABLE_NOBASE(C_Sun, DT_Sun, CSun)
+	BEGIN_RECV_TABLE(C_Sun, DT_Sun, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32),
 		RecvPropInt(RECVINFO(m_clrOverlay), 0, RecvProxy_IntToColor32),
 		RecvPropVector(RECVINFO(m_vDirection)),

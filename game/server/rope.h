@@ -175,7 +175,7 @@ private:
 	CNetworkVar( short, m_iEndAttachment );
 
 	BEGIN_INIT_SEND_TABLE(CRopeKeyframe)
-	BEGIN_SEND_TABLE_NOBASE(CRopeKeyframe, DT_RopeKeyframe)
+	BEGIN_SEND_TABLE(CRopeKeyframe, DT_RopeKeyframe, DT_BaseEntity)
 		SendPropEHandle(SENDINFO(m_hStartPoint)),
 		SendPropEHandle(SENDINFO(m_hEndPoint)),
 		SendPropInt(SENDINFO(m_iStartAttachment), 5, 0),

@@ -97,7 +97,7 @@ public:
 	CNetworkVar( int, m_iTeamNum );			// Which team is this?
 
 	BEGIN_INIT_SEND_TABLE(CTeam)
-	BEGIN_SEND_TABLE_NOBASE(CTeam, DT_Team)
+	BEGIN_SEND_TABLE(CTeam, DT_Team, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_iTeamNum), 5),
 		SendPropInt(SENDINFO(m_iScore), 0),
 		SendPropInt(SENDINFO(m_iRoundsWon), 8),

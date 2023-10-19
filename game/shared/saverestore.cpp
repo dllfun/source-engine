@@ -2934,7 +2934,7 @@ Vector CEntitySaveRestoreBlockHandler::ModelSpaceLandmark( int modelIndex )
 #ifdef GAME_DLL
 	pModel = engineServer->GetModel(modelIndex);
 #endif
-	if (pModel->GetModelType() != mod_brush )//pModel
+	if (!pModel||pModel->GetModelType() != mod_brush )//pModel
 		return vec3_origin;
 
 	Vector mins, maxs;

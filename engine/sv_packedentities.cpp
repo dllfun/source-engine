@@ -134,7 +134,7 @@ static inline void SV_PackEntity(
 		edict->ClearStateChanged();
 		return;
 	}
-	
+
 	// First encode the entity's data.
 	ALIGN4 char packedData[MAX_PACKEDENTITY_DATA] ALIGN4_POST;
 	bf_write writeBuf( "SV_PackEntity->writeBuf", packedData, sizeof( packedData ) );

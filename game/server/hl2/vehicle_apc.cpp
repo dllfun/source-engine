@@ -150,7 +150,7 @@ void CPropAPC::Spawn( void )
 	m_lifeState = LIFE_ALIVE;
 	m_bInFiringCone = false;
 
-	m_flHandbrakeTime = gpGlobals->curtime + 0.1;
+	m_flHandbrakeTime = gpGlobals->GetCurTime() + 0.1;
 	m_bInitialHandbrake = false;
 
 	// Reset the gun to a default pose.
@@ -431,7 +431,7 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 	for (int i = 0; i < 5; i++)
 	{
 		CollisionProp()->RandomPointInBounds( vecNormalizedMins, vecNormalizedMaxs, &vecAbsPoint );
-		te->Explosion( filter, random->RandomFloat( 0.0, 1.0 ),	&vecAbsPoint, 
+		g_pTESystem->Explosion( filter, random->RandomFloat( 0.0, 1.0 ),	&vecAbsPoint,
 			g_sModelIndexFireball, random->RandomInt( 4, 10 ), 
 			random->RandomInt( 8, 15 ), 
 			( i < 2 ) ? TE_EXPLFLAG_NODLIGHTS : TE_EXPLFLAG_NOPARTICLES | TE_EXPLFLAG_NOFIREBALLSMOKE | TE_EXPLFLAG_NODLIGHTS,
@@ -504,7 +504,7 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 
 	// Spawn a lesser amount if the player is close
 	m_iRocketSalvoLeft = DEATH_VOLLEY_ROCKET_COUNT;
-	m_flRocketTime = gpGlobals->curtime;
+	m_flRocketTime = gpGlobals->GetCurTime();
 }
 
 
@@ -595,7 +595,7 @@ void CPropAPC::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData )
 {
 	BaseClass::ProcessMovement( pPlayer, pMoveData );
 
-	if ( m_flDangerSoundTime > gpGlobals->curtime )
+	if ( m_flDangerSoundTime > gpGlobals->GetCurTime() )
 		return;
 
 	QAngle vehicleAngles = GetLocalAngles();
@@ -628,7 +628,7 @@ void CPropAPC::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData )
 	UTIL_TraceLine( vecStart, vecSpot, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 	CSoundEnt::InsertSound( SOUND_DANGER, vecSpot, 400, 0.1, this);
 
-	m_flDangerSoundTime = gpGlobals->curtime + 0.3;
+	m_flDangerSoundTime = gpGlobals->GetCurTime() + 0.3;
 }
 
 
@@ -639,7 +639,7 @@ void CPropAPC::Think( void )
 {
 	BaseClass::Think();
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	if ( !m_bInitialHandbrake )	// after initial timer expires, set the handbrake
 	{
@@ -656,7 +656,7 @@ void CPropAPC::Think( void )
 		if ( iSequence > ACTIVITY_NOT_AVAILABLE )
 		{
 			SetCycle( 0 );
-			m_flAnimTime = gpGlobals->curtime;
+			m_flAnimTime = gpGlobals->GetCurTime();
 			ResetSequence( iSequence );
 			ResetClientsideFrame();
 		}
@@ -807,7 +807,7 @@ void CPropAPC::DoImpactEffect( trace_t &tr, int nDamageType )
 void CPropAPC::DoMuzzleFlash( void )
 {
 	CEffectData data;
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	data.m_nAttachmentIndex = m_nMachineGunMuzzleAttachment;
 	data.m_flScale = 1.0f;
 	DispatchEffect( "ChopperMuzzleFlash", data );
@@ -821,20 +821,20 @@ void CPropAPC::DoMuzzleFlash( void )
 //-----------------------------------------------------------------------------
 void CPropAPC::FireMachineGun( void )
 {
-	if ( m_flMachineGunTime > gpGlobals->curtime )
+	if ( m_flMachineGunTime > gpGlobals->GetCurTime() )
 		return;
 
 	// If we're still firing the salvo, fire quickly
 	m_iMachineGunBurstLeft--;
 	if ( m_iMachineGunBurstLeft > 0 )
 	{
-		m_flMachineGunTime = gpGlobals->curtime + MACHINE_GUN_BURST_TIME;
+		m_flMachineGunTime = gpGlobals->GetCurTime() + MACHINE_GUN_BURST_TIME;
 	}
 	else
 	{
 		// Reload the salvo
 		m_iMachineGunBurstLeft = MACHINE_GUN_BURST_SIZE;
-		m_flMachineGunTime = gpGlobals->curtime + MACHINE_GUN_BURST_PAUSE_TIME;
+		m_flMachineGunTime = gpGlobals->GetCurTime() + MACHINE_GUN_BURST_PAUSE_TIME;
 	}
 
 	Vector vecMachineGunShootPos;
@@ -868,7 +868,7 @@ void CPropAPC::CreateCorpse( )
 
 	for ( int i = 0; i < APC_MAX_GIBS; ++i )
 	{
-		CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName( "prop_physics" ));
+		CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(engineServer->CreateEntityByName( "prop_physics" ));
 		pGib->SetAbsOrigin( GetAbsOrigin() );
 		pGib->SetAbsAngles( GetAbsAngles() );
 		pGib->SetAbsVelocity( GetAbsVelocity() );
@@ -920,7 +920,7 @@ void CPropAPC::CreateCorpse( )
 //-----------------------------------------------------------------------------
 void CPropAPC::FireDying( )
 {
-	if ( m_flRocketTime > gpGlobals->curtime )
+	if ( m_flRocketTime > gpGlobals->GetCurTime() )
 		return;
 
 	Vector vecRocketOrigin;
@@ -953,7 +953,7 @@ void CPropAPC::FireDying( )
 	}
 
 	// Make erratic firing
-	m_flRocketTime = gpGlobals->curtime + random->RandomFloat( DEATH_VOLLEY_MIN_FIRE_TIME, DEATH_VOLLEY_MAX_FIRE_TIME );
+	m_flRocketTime = gpGlobals->GetCurTime() + random->RandomFloat( DEATH_VOLLEY_MIN_FIRE_TIME, DEATH_VOLLEY_MAX_FIRE_TIME );
 	if ( --m_iRocketSalvoLeft <= 0 )
 	{
 		CreateCorpse();
@@ -966,20 +966,20 @@ void CPropAPC::FireDying( )
 //-----------------------------------------------------------------------------
 void CPropAPC::FireRocket( void )
 {
-	if ( m_flRocketTime > gpGlobals->curtime )
+	if ( m_flRocketTime > gpGlobals->GetCurTime() )
 		return;
 
 	// If we're still firing the salvo, fire quickly
 	m_iRocketSalvoLeft--;
 	if ( m_iRocketSalvoLeft > 0 )
 	{
-		m_flRocketTime = gpGlobals->curtime + ROCKET_DELAY_TIME;
+		m_flRocketTime = gpGlobals->GetCurTime() + ROCKET_DELAY_TIME;
 	}
 	else
 	{
 		// Reload the salvo
 		m_iRocketSalvoLeft = ROCKET_SALVO_SIZE;
-		m_flRocketTime = gpGlobals->curtime + random->RandomFloat( ROCKET_MIN_BURST_PAUSE_TIME, ROCKET_MAX_BURST_PAUSE_TIME );
+		m_flRocketTime = gpGlobals->GetCurTime() + random->RandomFloat( ROCKET_MIN_BURST_PAUSE_TIME, ROCKET_MAX_BURST_PAUSE_TIME );
 	}
 
 	Vector vecRocketOrigin;

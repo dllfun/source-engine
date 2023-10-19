@@ -67,7 +67,7 @@ static const char *s_pRemoveContext = "RemoveContext";
 //-----------------------------------------------------------------------------
 CBaseEntity *CreateCombineBall( const Vector &origin, const Vector &velocity, float radius, float mass, float lifetime, CBaseEntity *pOwner )
 {
-	CPropCombineBall *pBall = static_cast<CPropCombineBall*>( CreateEntityByName( "prop_combine_ball" ) );
+	CPropCombineBall *pBall = static_cast<CPropCombineBall*>(engineServer->CreateEntityByName( "prop_combine_ball" ) );
 	pBall->SetRadius( radius );
 
 	pBall->SetAbsOrigin( origin );
@@ -230,12 +230,8 @@ BEGIN_DATADESC( CPropCombineBall )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPropCombineBall, DT_PropCombineBall )
-	SendPropBool( SENDINFO( m_bEmit ) ),
-	SendPropFloat( SENDINFO( m_flRadius ), 0, SPROP_NOSCALE ),
-	SendPropBool( SENDINFO( m_bHeld ) ),
-	SendPropBool( SENDINFO( m_bLaunched ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CPropCombineBall, DT_PropCombineBall )
+
 
 //-----------------------------------------------------------------------------
 // Gets at the spawner
@@ -296,7 +292,7 @@ void CPropCombineBall::SetState( int state )
 	{
 		if ( m_nState == STATE_NOT_THROWN )
 		{
-			m_flLastCaptureTime = gpGlobals->curtime;
+			m_flLastCaptureTime = gpGlobals->GetCurTime();
 		}
 
 		m_nState = state;
@@ -413,7 +409,7 @@ void CPropCombineBall::Spawn( void )
 	m_bStruckEntity = false;
 	m_bWeaponLaunched = false;
 
-	m_flNextDamageTime = gpGlobals->curtime;
+	m_flNextDamageTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -422,12 +418,12 @@ void CPropCombineBall::Spawn( void )
 void CPropCombineBall::StartAnimating( void )
 {
 	// Start our animation cycle. Use the random to avoid everything thinking the same frame
-	SetContextThink( &CPropCombineBall::AnimThink, gpGlobals->curtime + random->RandomFloat( 0.0f, 0.1f), s_pAnimThinkContext );
+	SetContextThink( &CPropCombineBall::AnimThink, gpGlobals->GetCurTime() + random->RandomFloat( 0.0f, 0.1f), s_pAnimThinkContext );
 
 	int nSequence = LookupSequence( "idle" );
 
 	SetCycle( 0 );
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	ResetSequence( nSequence );
 	ResetClientsideFrame();
 }
@@ -437,7 +433,7 @@ void CPropCombineBall::StartAnimating( void )
 //-----------------------------------------------------------------------------
 void CPropCombineBall::StopAnimating( void )
 {
-	SetContextThink( NULL, gpGlobals->curtime, s_pAnimThinkContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pAnimThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -458,12 +454,12 @@ void CPropCombineBall::CaptureBySpawner( )
 		VPhysicsGetObject()->SetVelocity( &vecVelocity, NULL );
 
 		// Slow it down until we can set its velocity ok
-		SetContextThink( &CPropCombineBall::CaptureBySpawner, gpGlobals->curtime + 0.01f,	s_pCaptureContext );
+		SetContextThink( &CPropCombineBall::CaptureBySpawner, gpGlobals->GetCurTime() + 0.01f,	s_pCaptureContext );
 		return;
 	}
 
 	// Ok, we're captured
-	SetContextThink( NULL, gpGlobals->curtime,	s_pCaptureContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(),	s_pCaptureContext );
 	ReplaceInSpawner( GetSpawner()->GetBallSpeed() );
 	m_bCaptureInProgress = false;
 }
@@ -480,7 +476,7 @@ void CPropCombineBall::ReplaceInSpawner( float flSpeed )
 	ClearLifetime( );
 
 	// Stop whiz noises
-	SetContextThink( NULL, gpGlobals->curtime, s_pWhizThinkContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pWhizThinkContext );
 
 	// Slam velocity to what the field wants
 	Vector vecTarget, vecVelocity;
@@ -499,7 +495,7 @@ void CPropCombineBall::ReplaceInSpawner( float flSpeed )
 float CPropCombineBall::LastCaptureTime() const
 {
 	if ( IsInField() || IsBeingCaptured() )
-		return gpGlobals->curtime;
+		return gpGlobals->GetCurTime();
 
 	return m_flLastCaptureTime;
 }
@@ -510,7 +506,7 @@ float CPropCombineBall::LastCaptureTime() const
 //-----------------------------------------------------------------------------
 void CPropCombineBall::StartLifetime( float flDuration )
 {
-	SetContextThink( &CPropCombineBall::ExplodeThink, gpGlobals->curtime + flDuration, s_pExplodeTimerContext );
+	SetContextThink( &CPropCombineBall::ExplodeThink, gpGlobals->GetCurTime() + flDuration, s_pExplodeTimerContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -519,7 +515,7 @@ void CPropCombineBall::StartLifetime( float flDuration )
 void CPropCombineBall::ClearLifetime( void )
 {
 	// Prevent it from exploding
-	SetContextThink( NULL, gpGlobals->curtime, s_pExplodeTimerContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pExplodeTimerContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -676,7 +672,7 @@ void CPropCombineBall::FadeOut( float flDuration )
 	}
 
 	SetThink( &CPropCombineBall::DieThink );
-	SetNextThink( gpGlobals->curtime + flDuration );
+	SetNextThink( gpGlobals->GetCurTime() + flDuration );
 }
 
 //-----------------------------------------------------------------------------
@@ -684,7 +680,7 @@ void CPropCombineBall::FadeOut( float flDuration )
 //-----------------------------------------------------------------------------
 void CPropCombineBall::StartWhizSoundThink( void )
 {
-	SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->curtime + 2.0f * TICK_INTERVAL, s_pWhizThinkContext );
+	SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->GetCurTime() + 2.0f * TICK_INTERVAL, s_pWhizThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -699,14 +695,14 @@ void CPropCombineBall::WhizSoundThink()
 	{
 		//NOTENOTE: We should always have been created at this point
 		Assert( 0 );
-		SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->curtime + 2.0f * TICK_INTERVAL, s_pWhizThinkContext );
+		SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->GetCurTime() + 2.0f * TICK_INTERVAL, s_pWhizThinkContext );
 		return;
 	}
 
 	pPhysicsObject->GetPosition( &vecPosition, NULL );
 	pPhysicsObject->GetVelocity( &vecVelocity, NULL );
 	
-	if ( gpGlobals->maxClients == 1 )
+	if ( gpGlobals->GetMaxClients() == 1)
 	{
 		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 		if ( pPlayer )
@@ -736,16 +732,16 @@ void CPropCombineBall::WhizSoundThink()
 					ep.m_flVolume = 1.0f;
 					ep.m_SoundLevel = SNDLVL_NORM;
 
-					EmitSound( filter, entindex(), ep );
+					EmitSound( filter, this->NetworkProp()->entindex(), ep );
 
-					SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->curtime + 0.5f, s_pWhizThinkContext );
+					SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->GetCurTime() + 0.5f, s_pWhizThinkContext );
 					return;
 				}
 			}
 		}
 	}
 
-	SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->curtime + 2.0f * TICK_INTERVAL, s_pWhizThinkContext );
+	SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->GetCurTime() + 2.0f * TICK_INTERVAL, s_pWhizThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -822,7 +818,7 @@ void CPropCombineBall::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup
 		SetPlayerLaunched( pPhysGunUser );
 
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
-		m_pHoldingSound = controller.SoundCreate( filter, entindex(), ep );
+		m_pHoldingSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), ep );
 		controller.Play( m_pHoldingSound, 1.0f, 100 ); 
 
 		// Don't collide with anything we may have to pull the ball through
@@ -842,7 +838,7 @@ void CPropCombineBall::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup
 		m_bCaptureInProgress = false;
 
 
-		SetContextThink( &CPropCombineBall::DissolveRampSoundThink, gpGlobals->curtime + GetBallHoldSoundRampTime(), s_pHoldDissolveContext );
+		SetContextThink( &CPropCombineBall::DissolveRampSoundThink, gpGlobals->GetCurTime() + GetBallHoldSoundRampTime(), s_pHoldDissolveContext );
 
 		StartAnimating();
 	}
@@ -892,7 +888,7 @@ void CPropCombineBall::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t R
 	m_bLaunched = true;
 
 	// Stop with the dissolving
-	SetContextThink( NULL, gpGlobals->curtime, s_pHoldDissolveContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pHoldDissolveContext );
 
 	// We're ready to start colliding again.
 	SetCollisionGroup( HL2COLLISION_GROUP_COMBINE_BALL );
@@ -963,7 +959,7 @@ void CPropCombineBall::DissolveRampSoundThink( )
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 		controller.SoundChangePitch( m_pHoldingSound, 150, dt );
 	}
-	SetContextThink( &CPropCombineBall::DissolveThink, gpGlobals->curtime + dt, s_pHoldDissolveContext );
+	SetContextThink( &CPropCombineBall::DissolveThink, gpGlobals->GetCurTime() + dt, s_pHoldDissolveContext );
 }
 
 
@@ -1039,7 +1035,7 @@ void CPropCombineBall::DoExplosion( )
 
 		DispatchEffect( "cball_explode", data );
 
-		te->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
+		g_pTESystem->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
 			m_flRadius,	//start radius
 			1024,		//end radius
 			s_nExplosionTexture, //texture
@@ -1059,7 +1055,7 @@ void CPropCombineBall::DoExplosion( )
 			);
 
 		//Shockring
-		te->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
+		g_pTESystem->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
 			m_flRadius,	//start radius
 			1024,		//end radius
 			s_nExplosionTexture, //texture
@@ -1081,7 +1077,7 @@ void CPropCombineBall::DoExplosion( )
 	else
 	{
 		//Shockring
-		te->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
+		g_pTESystem->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
 			128,	//start radius
 			384,		//end radius
 			s_nExplosionTexture, //texture
@@ -1124,7 +1120,7 @@ void CPropCombineBall::DoExplosion( )
 		}
 	}
 
-	SetContextThink( &CPropCombineBall::SUB_Remove, gpGlobals->curtime + 0.5f, s_pRemoveContext );
+	SetContextThink( &CPropCombineBall::SUB_Remove, gpGlobals->GetCurTime() + 0.5f, s_pRemoveContext );
 	StopLoopingSounds();
 }
 
@@ -1176,7 +1172,7 @@ bool CPropCombineBall::DissolveEntity( CBaseEntity *pEntity )
 	if( !pEntity->IsNPC() && !(dynamic_cast<CRagdollProp*>(pEntity)) )
 		return false;
 
-	pEntity->GetBaseAnimating()->Dissolve( "", gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
+	pEntity->GetBaseAnimating()->Dissolve( "", gpGlobals->GetCurTime(), false, ENTITY_DISSOLVE_NORMAL );
 	
 	// Note that we've struck an entity
 	m_bStruckEntity = true;
@@ -1227,7 +1223,7 @@ void CPropCombineBall::OnHitEntity( CBaseEntity *pHitEntity, float flSpeed, int 
 				// Since Combine balls fired by NPCs do a metered dose of damage per impact, we have to ignore touches
 				// for a little while after we hit someone, or the ball will immediately touch them again and do more
 				// damage. 
-				if( gpGlobals->curtime >= m_flNextDamageTime )
+				if( gpGlobals->GetCurTime() >= m_flNextDamageTime )
 				{
 					EmitSound( "NPC_CombineBall.KillImpact" );
 
@@ -1242,7 +1238,7 @@ void CPropCombineBall::OnHitEntity( CBaseEntity *pHitEntity, float flSpeed, int 
 					else
 					{
 						// Ignore touches briefly.
-						m_flNextDamageTime = gpGlobals->curtime + 0.1f;
+						m_flNextDamageTime = gpGlobals->GetCurTime() + 0.1f;
 					}
 
 					pHitEntity->TakeDamage( info );
@@ -1537,7 +1533,7 @@ void CPropCombineBall::BounceInSpawner( float flSpeed, int index, gamevcollision
 //-----------------------------------------------------------------------------
 bool CPropCombineBall::IsHittableEntity( CBaseEntity *pHitEntity )
 {
-	if ( pHitEntity->IsWorld() )
+	if ( pHitEntity->NetworkProp()->entindex()==0)
 		return false;
 
 	if ( pHitEntity->GetMoveType() == MOVETYPE_PUSH )
@@ -1581,7 +1577,7 @@ void CPropCombineBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 
 			// Remove self without affecting the object that was hit. (Unless it was flesh)
 			NotifySpawnerOfRemoval();
-			PhysCallbackRemove( this->NetworkProp() );
+			PhysCallbackRemove( this );//->NetworkProp()
 
 			// disable dissolve damage so we don't kill off the player when he's the one we hit
 			PhysClearGameFlags( VPhysicsGetObject(), FVPHYSICS_DMG_DISSOLVE );
@@ -1641,14 +1637,14 @@ void CPropCombineBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 	DoImpactEffect( preVelocity, index, pEvent );
 
 	// Only do the bounce so often
-	if ( gpGlobals->curtime - m_flLastBounceTime < 0.25f )
+	if ( gpGlobals->GetCurTime() - m_flLastBounceTime < 0.25f )
 		return;
 
 	// Save off our last bounce time
-	m_flLastBounceTime = gpGlobals->curtime;
+	m_flLastBounceTime = gpGlobals->GetCurTime();
 
 	// Reset the sound timer
-	SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->curtime + 0.01, s_pWhizThinkContext );
+	SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->GetCurTime() + 0.01, s_pWhizThinkContext );
 
 	// Deflect towards nearby enemies
 	DeflectTowardEnemy( flSpeed, index, pEvent );
@@ -1671,7 +1667,7 @@ void CPropCombineBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 void CPropCombineBall::AnimThink( void )
 {
 	StudioFrameAdvance();
-	SetContextThink( &CPropCombineBall::AnimThink, gpGlobals->curtime + 0.1f, s_pAnimThinkContext );
+	SetContextThink( &CPropCombineBall::AnimThink, gpGlobals->GetCurTime() + 0.1f, s_pAnimThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -1730,7 +1726,7 @@ CFuncCombineBallSpawner::CFuncCombineBallSpawner()
 //-----------------------------------------------------------------------------
 void CFuncCombineBallSpawner::SpawnBall()
 {
-	CPropCombineBall *pBall = static_cast<CPropCombineBall*>( CreateEntityByName( "prop_combine_ball" ) );
+	CPropCombineBall *pBall = static_cast<CPropCombineBall*>(engineServer->CreateEntityByName( "prop_combine_ball" ) );
 
 	float flRadius = m_flBallRadius;
 	pBall->SetRadius( flRadius );
@@ -1811,7 +1807,7 @@ void CFuncCombineBallSpawner::Spawn()
 	else
 	{
 		SetThink( &CFuncCombineBallSpawner::BallThink );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 
@@ -1829,11 +1825,11 @@ void CFuncCombineBallSpawner::InputEnable( inputdata_t &inputdata )
 
 	for ( int i = m_BallRespawnTime.Count(); --i >= 0; )
 	{
-		m_BallRespawnTime[i] += gpGlobals->curtime;
+		m_BallRespawnTime[i] += gpGlobals->GetCurTime();
 	}
 
 	SetThink( &CFuncCombineBallSpawner::BallThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 void CFuncCombineBallSpawner::InputDisable( inputdata_t &inputdata )
@@ -1841,12 +1837,12 @@ void CFuncCombineBallSpawner::InputDisable( inputdata_t &inputdata )
 	if ( !m_bEnabled )
 		return;
 
-	m_flDisableTime = gpGlobals->curtime;
+	m_flDisableTime = gpGlobals->GetCurTime();
 	m_bEnabled = false;
 
 	for ( int i = m_BallRespawnTime.Count(); --i >= 0; )
 	{
-		m_BallRespawnTime[i] -= gpGlobals->curtime;
+		m_BallRespawnTime[i] -= gpGlobals->GetCurTime();
 	}
 
 	SetThink( NULL );
@@ -1951,7 +1947,7 @@ void CFuncCombineBallSpawner::BallGrabbed( CBaseEntity *pCombineBall )
 	// Stop the ball thinking in case it was in the middle of being captured (which could re-add incorrectly)
 	if ( pCombineBall != NULL )
 	{
-		pCombineBall->SetContextThink( NULL, gpGlobals->curtime, s_pCaptureContext );
+		pCombineBall->SetContextThink( NULL, gpGlobals->GetCurTime(), s_pCaptureContext );
 	}
 }
 
@@ -1984,7 +1980,7 @@ void CFuncCombineBallSpawner::GrabBallTouch( CBaseEntity *pOther )
 		return;
 
 	// Don't capture balls that were very recently in the field (breaks punting)
-	if ( gpGlobals->curtime - pBall->LastCaptureTime() < 0.5f )
+	if ( gpGlobals->GetCurTime() - pBall->LastCaptureTime() < 0.5f )
 		return;
 
 	// Now we're bouncing in this spawner
@@ -2029,7 +2025,7 @@ void CFuncCombineBallSpawner::RespawnBall( float flRespawnTime )
 {
 	// Insert the time in sorted order, 
 	// which by definition means to always insert at the start
-	m_BallRespawnTime.AddToTail( gpGlobals->curtime + flRespawnTime - m_flDisableTime );
+	m_BallRespawnTime.AddToTail( gpGlobals->GetCurTime() + flRespawnTime - m_flDisableTime );
 }
 
 //-----------------------------------------------------------------------------
@@ -2042,11 +2038,11 @@ void CFuncCombineBallSpawner::RespawnBallPostExplosion( void )
 
 	if ( m_flBallRespawnTime == 0.0f )
 	{
-		m_BallRespawnTime.AddToTail( gpGlobals->curtime + 4.0f - m_flDisableTime );
+		m_BallRespawnTime.AddToTail( gpGlobals->GetCurTime() + 4.0f - m_flDisableTime );
 	}
 	else
 	{
-		m_BallRespawnTime.AddToTail( gpGlobals->curtime + m_flBallRespawnTime - m_flDisableTime );
+		m_BallRespawnTime.AddToTail( gpGlobals->GetCurTime() + m_flBallRespawnTime - m_flDisableTime );
 	}
 }
 	
@@ -2057,7 +2053,7 @@ void CFuncCombineBallSpawner::BallThink()
 {
 	for ( int i = m_BallRespawnTime.Count(); --i >= 0; )
 	{
-		if ( m_BallRespawnTime[i] < gpGlobals->curtime )
+		if ( m_BallRespawnTime[i] < gpGlobals->GetCurTime() )
 		{
 			SpawnBall();
 			m_BallRespawnTime.FastRemove( i );
@@ -2065,7 +2061,7 @@ void CFuncCombineBallSpawner::BallThink()
 	}
 
 	// There are no more to respawn
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 BEGIN_DATADESC( CPointCombineBallLauncher )
@@ -2104,7 +2100,7 @@ void CPointCombineBallLauncher::InputLaunchBall ( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CPointCombineBallLauncher::SpawnBall()
 {
-	CPropCombineBall *pBall = static_cast<CPropCombineBall*>( CreateEntityByName( "prop_combine_ball" ) );
+	CPropCombineBall *pBall = static_cast<CPropCombineBall*>(engineServer->CreateEntityByName( "prop_combine_ball" ) );
 
 	if ( pBall == NULL )
 		 return;
@@ -2142,7 +2138,7 @@ void CPointCombineBallLauncher::SpawnBall()
 
 	if( GetSpawnFlags() & SF_COMBINE_BALL_LAUNCHER_ATTACH_BULLSEYE )
 	{
-		CNPC_Bullseye *pBullseye = static_cast<CNPC_Bullseye*>( CreateEntityByName( "npc_bullseye" ) );
+		CNPC_Bullseye *pBullseye = static_cast<CNPC_Bullseye*>(engineServer->CreateEntityByName( "npc_bullseye" ) );
 
 		if( pBullseye )
 		{

@@ -212,6 +212,9 @@ public:
 
 	void EntityChanged( CBaseEntity *pEntity )
 	{
+		if (pEntity->NetworkProp()->HasEdict()&& pEntity->NetworkProp()->entindex() == 1) {
+			int aaa = 0;
+		}
 		// might change after deletion, don't put back into the list
 		if ( pEntity->IsMarkedForDeletion() )
 			return;

@@ -123,7 +123,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_LightGlow)
-	BEGIN_RECV_TABLE_NOBASE(C_LightGlow, DT_LightGlow, CLightGlow)
+	BEGIN_RECV_TABLE(C_LightGlow, DT_LightGlow, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32),
 		RecvPropInt(RECVINFO(m_nHorizontalSize)),
 		RecvPropInt(RECVINFO(m_nVerticalSize)),

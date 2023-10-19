@@ -499,7 +499,7 @@ void CCombineDropshipContainer::CreateCorpse()
 	Vector vecAbsPoint;
 	CPASFilter filter( GetAbsOrigin() );
 	CollisionProp()->RandomPointInBounds( vecNormalizedMins, vecNormalizedMaxs, &vecAbsPoint);
-	te->Explosion( filter, 0.0f, &vecAbsPoint, g_sModelIndexFireball, 
+	g_pTESystem->Explosion( filter, 0.0f, &vecAbsPoint, g_sModelIndexFireball,
 		random->RandomInt( 4, 10 ), random->RandomInt( 8, 15 ), TE_EXPLFLAG_NOPARTICLES, 100, 0 );
 
 	// Break into chunks
@@ -637,11 +637,11 @@ int CCombineDropshipContainer::OnTakeDamage( const CTakeDamageInfo &info )
 	{
 		// This check is necessary to prevent double-counting of rocket damage
 		// from the blast hitting both the dropship + the container
-		if ( (info.GetInflictor() != m_hLastInflictor) || (gpGlobals->curtime != m_flLastHitTime) )
+		if ( (info.GetInflictor() != m_hLastInflictor) || (gpGlobals->GetCurTime() != m_flLastHitTime) )
 		{
 			m_iHealth -= (m_iMaxHealth / DROPSHIP_CRATE_ROCKET_HITS) + 1;
 			m_hLastInflictor = info.GetInflictor();
-			m_flLastHitTime = gpGlobals->curtime; 
+			m_flLastHitTime = gpGlobals->GetCurTime(); 
 		}
 	}
 	else
@@ -874,7 +874,7 @@ void CNPC_CombineDropship::Spawn( void )
 		break;
 
 	case CRATE_SOLDIER:
-		m_hContainer = (CBaseAnimating*)CreateEntityByName( "prop_dropship_container" );
+		m_hContainer = (CBaseAnimating*)engineServer->CreateEntityByName( "prop_dropship_container" );
 		if ( m_hContainer )
 		{
 			m_hContainer->SetName( AllocPooledString("dropship_container") );
@@ -908,7 +908,7 @@ void CNPC_CombineDropship::Spawn( void )
 		break;
 
 	case CRATE_STRIDER:
-		m_hContainer = (CBaseAnimating*)CreateEntityByName( "npc_strider" );
+		m_hContainer = (CBaseAnimating*)engineServer->CreateEntityByName( "npc_strider" );
 		m_hContainer->SetAbsOrigin( GetAbsOrigin() - Vector( 0, 0 , 100 ) );
 		m_hContainer->SetAbsAngles( GetAbsAngles() );
 		m_hContainer->SetParent(this, 0);
@@ -954,7 +954,7 @@ void CNPC_CombineDropship::Spawn( void )
 		break;
 
 	case CRATE_JEEP:
-		m_hContainer = (CBaseAnimating*)CreateEntityByName( "prop_dynamic_override" );
+		m_hContainer = (CBaseAnimating*)engineServer->CreateEntityByName( "prop_dynamic_override" );
 		if ( m_hContainer )
 		{
 			m_hContainer->SetModel( "models/buggy.mdl" );
@@ -1080,7 +1080,7 @@ void CNPC_CombineDropship::Precache( void )
 				if ( m_sNPCTemplateData[i] != NULL_STRING )
 				{
 					CBaseEntity *pEntity = NULL;
-					MapEntity_ParseEntity( pEntity, STRING(m_sNPCTemplateData[i]), NULL );
+					MapEntity_ParseEntity("", pEntity, STRING(m_sNPCTemplateData[i]), NULL);
 					if ( pEntity != NULL )
 					{
 						pEntity->Precache();
@@ -1424,7 +1424,7 @@ void CNPC_CombineDropship::UpdateFacingDirection( void )
 {
 	if ( GetEnemy() )
 	{
-		if ( !IsCrashing() && m_flLastSeen + 5 > gpGlobals->curtime )
+		if ( !IsCrashing() && m_flLastSeen + 5 > gpGlobals->GetCurTime() )
 		{
 			// If we've seen the target recently, face the target.
 			//Msg( "Facing Target \n" );
@@ -1460,11 +1460,11 @@ void CNPC_CombineDropship::InitializeRotorSound( void )
 	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 
 	CPASAttenuationFilter filter( this );
-	m_pRotorSound = controller.SoundCreate( filter, entindex(), "NPC_CombineDropship.RotorLoop" );
-	m_pNearRotorSound = controller.SoundCreate( filter, entindex(), "NPC_CombineDropship.NearRotorLoop" );
-	m_pRotorOnGroundSound = controller.SoundCreate( filter, entindex(), "NPC_CombineDropship.OnGroundRotorLoop" );
-	m_pDescendingWarningSound = controller.SoundCreate( filter, entindex(), "NPC_CombineDropship.DescendingWarningLoop" );
-	m_pCannonSound = controller.SoundCreate( filter, entindex(), "NPC_CombineDropship.FireLoop"  );
+	m_pRotorSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineDropship.RotorLoop" );
+	m_pNearRotorSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineDropship.NearRotorLoop" );
+	m_pRotorOnGroundSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineDropship.OnGroundRotorLoop" );
+	m_pDescendingWarningSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineDropship.DescendingWarningLoop" );
+	m_pCannonSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineDropship.FireLoop"  );
 
 	// NOTE: m_pRotorSound is started up by the base class
 	if ( m_pCannonSound )
@@ -1950,8 +1950,8 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 	UpdateGroundRotorWashSound( flAltitude );
 
 	// keep track of think time deltas for burn calc below
-	float dt = gpGlobals->curtime - m_flLastTime;
-	m_flLastTime = gpGlobals->curtime;
+	float dt = gpGlobals->GetCurTime() - m_flLastTime;
+	m_flLastTime = gpGlobals->GetCurTime();
 
 	switch( GetLandingState() )
 	{
@@ -2080,8 +2080,8 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 				m_existRoll = UTIL_Approach( 0.0, m_existRoll, 1 );
 
 				QAngle angles = GetLocalAngles();
-				angles.x = m_existPitch + ( sin( gpGlobals->curtime * 3.5f ) * DROPSHIP_MAX_LAND_TILT );
-				angles.z = m_existRoll + ( sin( gpGlobals->curtime * 3.75f ) * DROPSHIP_MAX_LAND_TILT );
+				angles.x = m_existPitch + ( sin( gpGlobals->GetCurTime() * 3.5f ) * DROPSHIP_MAX_LAND_TILT );
+				angles.z = m_existRoll + ( sin( gpGlobals->GetCurTime() * 3.75f ) * DROPSHIP_MAX_LAND_TILT );
 				SetLocalAngles( angles );
 			}
 
@@ -2176,7 +2176,7 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 			else
 			{
 				float flHoverTime = ( m_iCrateType >= 0 ) ? DROPSHIP_LANDING_HOVER_TIME : 0.5f;
-				m_flTimeTakeOff = gpGlobals->curtime + flHoverTime;
+				m_flTimeTakeOff = gpGlobals->GetCurTime() + flHoverTime;
 			}
 		}
 		break;
@@ -2205,13 +2205,13 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 					else
 					{
 						// We're out of troops, time to leave
-						m_flTimeTakeOff = gpGlobals->curtime + 0.5;
+						m_flTimeTakeOff = gpGlobals->GetCurTime() + 0.5;
 					}
 				}
 			}
 			else
 			{
-				if( gpGlobals->curtime > m_flTimeTakeOff )
+				if( gpGlobals->GetCurTime() > m_flTimeTakeOff )
 				{
 					SetLandingState( LANDING_LIFTOFF );
 					SetActivity( (Activity)ACT_DROPSHIP_LIFTOFF );
@@ -2247,7 +2247,7 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 						UTIL_SetSize( this, DROPSHIP_BBOX_MIN, DROPSHIP_BBOX_MAX );
 					}
 				}
-				else if ( (m_flTimeTakeOff - gpGlobals->curtime) < 0.5f )
+				else if ( (m_flTimeTakeOff - gpGlobals->GetCurTime()) < 0.5f )
 				{
 					// Manage engine wash and volume
 					m_engineThrust = UTIL_Approach( 1.0f, m_engineThrust, 0.1f );
@@ -2372,7 +2372,7 @@ void CNPC_CombineDropship::SpawnTroop( void )
 	if ( !m_hContainer )
 	{
 		// We're done, take off.
-		m_flTimeTakeOff = gpGlobals->curtime + 0.5;
+		m_flTimeTakeOff = gpGlobals->GetCurTime() + 0.5;
 		return;
 	}
 
@@ -2380,14 +2380,14 @@ void CNPC_CombineDropship::SpawnTroop( void )
 	if ( m_iCurrentTroopExiting >= m_soldiersToDrop || m_sNPCTemplateData[m_iCurrentTroopExiting] == NULL_STRING )
 	{
 		// We're done, take off.
-		m_flTimeTakeOff = gpGlobals->curtime + 0.5;
+		m_flTimeTakeOff = gpGlobals->GetCurTime() + 0.5;
 		return;
 	}
 
 	m_hLastTroopToLeave = NULL;
 
 	// Not time to try again yet?
-	if ( m_flNextTroopSpawnAttempt > gpGlobals->curtime )
+	if ( m_flNextTroopSpawnAttempt > gpGlobals->GetCurTime() )
 		return;
 
 	// HACK: This is a nasty piece of work. We want to make sure the deploy end is clear, and has enough
@@ -2416,7 +2416,7 @@ void CNPC_CombineDropship::SpawnTroop( void )
 			NDebugOverlay::Box( vecDeployEndPoint, vecNPCMins, vecNPCMaxs, 255,0,0, 64, 0.5 );
 		}
 
-		m_flNextTroopSpawnAttempt = gpGlobals->curtime + 1;
+		m_flNextTroopSpawnAttempt = gpGlobals->GetCurTime() + 1;
 		return;
 	}
 
@@ -2432,7 +2432,7 @@ void CNPC_CombineDropship::SpawnTroop( void )
 
 	// Spawn the templated NPC
 	CBaseEntity *pEntity = NULL;
-	MapEntity_ParseEntity( pEntity, STRING(m_sNPCTemplateData[m_iCurrentTroopExiting]), NULL );
+	MapEntity_ParseEntity("", pEntity, STRING(m_sNPCTemplateData[m_iCurrentTroopExiting]), NULL);
 
 	// Increment troop count
 	m_iCurrentTroopExiting++;
@@ -2464,7 +2464,7 @@ void CNPC_CombineDropship::SpawnTroop( void )
 	pNPC->Activate();
 
 	// Spawn a scripted sequence entity to make the NPC run out of the dropship
-	CAI_ScriptedSequence *pSequence = (CAI_ScriptedSequence*)CreateEntityByName( "scripted_sequence" );
+	CAI_ScriptedSequence *pSequence = (CAI_ScriptedSequence*)engineServer->CreateEntityByName( "scripted_sequence" );
 	pSequence->KeyValue( "m_iszEntity", STRING(pNPC->GetEntityName()) );
 	pSequence->KeyValue( "m_iszPlay", "Dropship_Deploy" );
 	pSequence->KeyValue( "m_fMoveTo", "4" );	// CINE_MOVETO_TELEPORT
@@ -2727,7 +2727,7 @@ void CNPC_CombineDropship::GatherEnemyConditions( CBaseEntity *pEnemy )
 	// If we can't see the enemy for a few seconds, consider him unreachable
 	if ( !HasCondition(COND_SEE_ENEMY) )
 	{
-		if ( gpGlobals->curtime - GetEnemyLastTimeSeen() >= 3.0f )
+		if ( gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() >= 3.0f )
 		{
 			MarkEnemyAsEluded();
 		}
@@ -2750,7 +2750,7 @@ void CNPC_CombineDropship::DoCombatStuff( void )
 
 				DropMine();
 				// setup next individual drop time
-				m_flDropDelay = gpGlobals->curtime + DROPSHIP_TIME_BETWEEN_MINES;
+				m_flDropDelay = gpGlobals->GetCurTime() + DROPSHIP_TIME_BETWEEN_MINES;
 				// get ready to drop next mine, unless we're only supposed to drop 1
 				if ( m_iMineCount )
 				{
@@ -2764,10 +2764,10 @@ void CNPC_CombineDropship::DoCombatStuff( void )
 			}
 		case DROP_NEXT:
 			{
-				if ( gpGlobals->curtime > m_flDropDelay )		// time to drop next mine?
+				if ( gpGlobals->GetCurTime() > m_flDropDelay )		// time to drop next mine?
 				{
 					DropMine();
-					m_flDropDelay = gpGlobals->curtime + DROPSHIP_TIME_BETWEEN_MINES;
+					m_flDropDelay = gpGlobals->GetCurTime() + DROPSHIP_TIME_BETWEEN_MINES;
 
 					m_iMineCount--;
 					if ( !m_iMineCount )
@@ -2882,7 +2882,7 @@ bool CNPC_CombineDropship::FireCannonRound( void )
 	float flCosAngle = DotProduct( vecToEnemy, vecAimDir );
 	if ( flCosAngle < DOT_15DEGREE )
 	{
-		m_flTimeNextAttack = gpGlobals->curtime + 0.1;
+		m_flTimeNextAttack = gpGlobals->GetCurTime() + 0.1;
 		return false;
 	}
 
@@ -2890,12 +2890,12 @@ bool CNPC_CombineDropship::FireCannonRound( void )
 	if ( m_iBurstRounds <= 0 )
 	{
 		m_iBurstRounds = RandomInt( 10, 20 );
-		m_flTimeNextAttack = gpGlobals->curtime + (m_iBurstRounds * 0.1);
+		m_flTimeNextAttack = gpGlobals->GetCurTime() + (m_iBurstRounds * 0.1);
 		return false;
 	}
 
 	// HACK: Return true so the fire sound isn't stopped
-	if ( m_flTimeNextAttack > gpGlobals->curtime )
+	if ( m_flTimeNextAttack > gpGlobals->GetCurTime() )
 		return true;
 
 	m_iBurstRounds--;
@@ -2910,7 +2910,7 @@ bool CNPC_CombineDropship::FireCannonRound( void )
 	QAngle vecAimAngles;
 	VectorAngles( vecAimDir, vecAimAngles );
 	g_pEffects->MuzzleFlash( vecMuzzle, vecAimAngles, random->RandomFloat( 5.0f, 7.0f ), MUZZLEFLASH_TYPE_GUNSHIP );
-	m_flTimeNextAttack = gpGlobals->curtime + 0.05;
+	m_flTimeNextAttack = gpGlobals->GetCurTime() + 0.05;
 
 	// Clamp to account for inaccuracy in aiming w/ pose parameters
 	vecAimDir = vecToEnemy;

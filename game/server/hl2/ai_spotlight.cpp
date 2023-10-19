@@ -151,7 +151,7 @@ void CAI_Spotlight::CreateSpotlightEntities( void )
 	Vector vecEndPoint;
 	ComputeEndpoint( vecStartPoint, &vecEndPoint );
 
-	m_hSpotlightTarget = (CSpotlightEnd*)CreateEntityByName( "spotlight_end" );
+	m_hSpotlightTarget = (CSpotlightEnd*)engineServer->CreateEntityByName( "spotlight_end" );
 	m_hSpotlightTarget->Spawn();
 	m_hSpotlightTarget->SetAbsOrigin( vecEndPoint );
 	m_hSpotlightTarget->SetOwnerEntity( GetOuter() );
@@ -292,9 +292,9 @@ void CAI_Spotlight::UpdateSpotlightDirection( void )
 	float flAngle = AngleNormalize( RAD2DEG( acos( flDot ) ) );
 	float flClampedAngle = clamp( flAngle, 0.0f, 45.0f );
 	float flBeamTurnRate = SimpleSplineRemapVal( flClampedAngle, 0.0f, 45.0f, 10.0f, 45.0f );
-	if ( fabs(flAngle) > flBeamTurnRate * gpGlobals->frametime )
+	if ( fabs(flAngle) > flBeamTurnRate * gpGlobals->GetFrameTime() )
 	{
-		flAngle = flBeamTurnRate * gpGlobals->frametime;
+		flAngle = flBeamTurnRate * gpGlobals->GetFrameTime();
 	}
 
 	// Compute the rotation axis

@@ -151,16 +151,16 @@ void CHudZoom::Paint( void )
 	if ( pPlayer->m_HL2Local.m_bZooming && m_bZoomOn == false )
 	{
 		m_bZoomOn = true;
-		m_flZoomStartTime = gpGlobals->curtime;
+		m_flZoomStartTime = gpGlobals->GetCurTime();
 	}
 	else if ( pPlayer->m_HL2Local.m_bZooming == false && m_bZoomOn )
 	{
 		m_bZoomOn = false;
-		m_flZoomStartTime = gpGlobals->curtime;
+		m_flZoomStartTime = gpGlobals->GetCurTime();
 	}
 
 	// draw the appropriately scaled zoom animation
-	float deltaTime = ( gpGlobals->curtime - m_flZoomStartTime );
+	float deltaTime = ( gpGlobals->GetCurTime() - m_flZoomStartTime );
 	float scale = clamp( deltaTime / ZOOM_FADE_TIME, 0.0f, 1.0f );
 	
 	float alpha;

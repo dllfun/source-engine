@@ -139,9 +139,8 @@ BEGIN_DATADESC( CPropJeep )
 	DEFINE_THINKFUNC( JeepSeagullThink ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPropJeep, DT_PropJeep )
-	SendPropBool( SENDINFO( m_bHeadlightIsOn ) ),
-END_SEND_TABLE();
+IMPLEMENT_SERVERCLASS( CPropJeep, DT_PropJeep )
+
 
 // This is overriden for the episodic jeep
 #ifndef HL2_EPISODIC
@@ -208,7 +207,7 @@ void CPropJeep::Spawn( void )
 	SetVehicleType( VEHICLE_TYPE_CAR_WHEELS );
 
 	BaseClass::Spawn();
-	m_flHandbrakeTime = gpGlobals->curtime + 0.1;
+	m_flHandbrakeTime = gpGlobals->GetCurTime() + 0.1;
 	m_bInitialHandbrake = false;
 
 	m_flMinimumSpeedToEnterExit = LOCK_SPEED;
@@ -268,7 +267,7 @@ void CPropJeep::DoImpactEffect( trace_t &tr, int nDamageType )
 	if ( (tr.surface.flags & SURF_SKY) == false )
 	{
 		CPVSFilter filter( tr.endpos );
-		te->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
+		g_pTESystem->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
 
 		UTIL_ImpactTrace( &tr, m_nBulletType );
 	}
@@ -329,7 +328,7 @@ int CPropJeep::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		{
 			// take 10% damage and make the engine stall
 			info.ScaleDamage( 0.1 );
-			m_throttleDisableTime = gpGlobals->curtime + 2;
+			m_throttleDisableTime = gpGlobals->GetCurTime() + 2;
 		}
 	}
 
@@ -500,10 +499,10 @@ void CPropJeep::HandleWater( void )
 			// Create ripples.
 			if ( m_WaterData.m_bWheelInWater[iWheel] && m_WaterData.m_bWheelWasInWater[iWheel] )
 			{
-				if ( m_WaterData.m_flNextRippleTime[iWheel] < gpGlobals->curtime )
+				if ( m_WaterData.m_flNextRippleTime[iWheel] < gpGlobals->GetCurTime() )
 				{
 					// Stagger ripple times
-					m_WaterData.m_flNextRippleTime[iWheel] = gpGlobals->curtime + RandomFloat( 0.1, 0.3 );
+					m_WaterData.m_flNextRippleTime[iWheel] = gpGlobals->GetCurTime() + RandomFloat( 0.1, 0.3 );
 					CreateRipple( m_WaterData.m_vecWheelContactPoints[iWheel] );
 				}
 			}
@@ -702,9 +701,9 @@ void CPropJeep::Think( void )
 	// Water!?
 	HandleWater();
 
-	SetSimulationTime( gpGlobals->curtime );
+	SetSimulationTime( gpGlobals->GetCurTime() );
 	
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	SetAnimatedEveryTick( true );
 
     if ( !m_bInitialHandbrake )	// after initial timer expires, set the handbrake
@@ -721,7 +720,7 @@ void CPropJeep::Think( void )
 	}
 	else
 	{
-		m_flOverturnedTime += gpGlobals->frametime;
+		m_flOverturnedTime += gpGlobals->GetFrameTime();
 	}
 
 	// spin gun if charging cannon
@@ -802,7 +801,7 @@ void CPropJeep::Think( void )
 				if ( nSequence > ACTIVITY_NOT_AVAILABLE )
 				{
 					SetCycle( 0 );
-					m_flAnimTime = gpGlobals->curtime;
+					m_flAnimTime = gpGlobals->GetCurTime();
 					ResetSequence( nSequence );
 					ResetClientsideFrame();					
 				}
@@ -822,16 +821,16 @@ void CPropJeep::Think( void )
 	}
 
 	// See if the ammo crate needs to close
-	if ( ( m_flAmmoCrateCloseTime < gpGlobals->curtime ) && ( GetSequence() == LookupSequence( "ammo_open" ) ) )
+	if ( ( m_flAmmoCrateCloseTime < gpGlobals->GetCurTime() ) && ( GetSequence() == LookupSequence( "ammo_open" ) ) )
 	{
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		m_flPlaybackRate = 0.0;
 		SetCycle( 0 );
 		ResetSequence( LookupSequence( "ammo_close" ) );
 	}
 	else if ( ( GetSequence() == LookupSequence( "ammo_close" ) ) && IsSequenceFinished() )
 	{
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		m_flPlaybackRate = 0.0;
 		SetCycle( 0 );
 		
@@ -839,7 +838,7 @@ void CPropJeep::Think( void )
 		ResetSequence( nSequence );
 
 		CPASAttenuationFilter sndFilter( this, "PropJeep.AmmoClose" );
-		EmitSound( sndFilter, entindex(), "PropJeep.AmmoClose" );
+		EmitSound( sndFilter, this->NetworkProp()->entindex(), "PropJeep.AmmoClose" );
 	}
 }
 
@@ -892,13 +891,13 @@ ConVar hap_jeep_cannon_mag("hap_jeep_cannon_mag", "10", 0);
 void CPropJeep::FireCannon( void )
 {
 	//Don't fire again if it's been too soon
-	if ( m_flCannonTime > gpGlobals->curtime )
+	if ( m_flCannonTime > gpGlobals->GetCurTime() )
 		return;
 
 	if ( m_bUnableToFire )
 		return;
 
-	m_flCannonTime = gpGlobals->curtime + 0.2f;
+	m_flCannonTime = gpGlobals->GetCurTime() + 0.2f;
 	m_bCannonCharging = false;
 
 	//Find the direction the gun is pointing in
@@ -919,12 +918,12 @@ void CPropJeep::FireCannon( void )
 	// Register a muzzleflash for the AI
 	if ( m_hPlayer )
 	{
-		m_hPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+		m_hPlayer->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 0.5 );
 		m_hPlayer->RumbleEffect( RUMBLE_PISTOL, 0, RUMBLE_FLAG_RESTART	);
 	}
 
 	CPASAttenuationFilter sndFilter( this, "PropJeep.FireCannon" );
-	EmitSound( sndFilter, entindex(), "PropJeep.FireCannon" );
+	EmitSound( sndFilter, this->NetworkProp()->entindex(), "PropJeep.FireCannon" );
 	
 	// make cylinders of gun spin a bit
 	m_nSpinPos += JEEP_GUN_SPIN_RATE;
@@ -939,12 +938,12 @@ void CPropJeep::FireChargedCannon( void )
 	bool penetrated = false;
 
 	m_bCannonCharging	= false;
-	m_flCannonTime		= gpGlobals->curtime + 0.5f;
+	m_flCannonTime		= gpGlobals->GetCurTime() + 0.5f;
 
 	StopChargeSound();
 
 	CPASAttenuationFilter sndFilter( this, "PropJeep.FireChargedCannon" );
-	EmitSound( sndFilter, entindex(), "PropJeep.FireChargedCannon" );
+	EmitSound( sndFilter, this->NetworkProp()->entindex(), "PropJeep.FireChargedCannon" );
 
 	if( m_hPlayer )
 	{
@@ -964,7 +963,7 @@ void CPropJeep::FireChargedCannon( void )
 	ClearMultiDamage();
 
 	//Find how much damage to do
-	float flChargeAmount = ( gpGlobals->curtime - m_flCannonChargeStartTime ) / MAX_GAUSS_CHARGE_TIME;
+	float flChargeAmount = ( gpGlobals->GetCurTime() - m_flCannonChargeStartTime ) / MAX_GAUSS_CHARGE_TIME;
 
 	//Clamp this
 	if ( flChargeAmount > 1.0f )
@@ -986,7 +985,7 @@ void CPropJeep::FireChargedCannon( void )
 		UTIL_DecalTrace( &tr, "RedGlowFade" );
 
 		CPVSFilter filter( tr.endpos );
-		te->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
+		g_pTESystem->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
 		
 		Vector	testPos = tr.endpos + ( aimDir * 48.0f );
 
@@ -1017,7 +1016,7 @@ void CPropJeep::FireChargedCannon( void )
 
 		//Do a gauss explosion
 		CPVSFilter filter( tr.endpos );
-		te->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
+		g_pTESystem->GaussExplosion( filter, 0.0f, tr.endpos, tr.plane.normal, 0 );
 	}
 
 	//Show the effect
@@ -1026,7 +1025,7 @@ void CPropJeep::FireChargedCannon( void )
 	// Register a muzzleflash for the AI
 	if ( m_hPlayer )
 	{
-		m_hPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5f );
+		m_hPlayer->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 0.5f );
 	}
 
 	//Rock the car
@@ -1052,18 +1051,18 @@ void CPropJeep::FireChargedCannon( void )
 void CPropJeep::ChargeCannon( void )
 {
 	//Don't fire again if it's been too soon
-	if ( m_flCannonTime > gpGlobals->curtime )
+	if ( m_flCannonTime > gpGlobals->GetCurTime() )
 		return;
 
 	//See if we're starting a charge
 	if ( m_bCannonCharging == false )
 	{
-		m_flCannonChargeStartTime = gpGlobals->curtime;
+		m_flCannonChargeStartTime = gpGlobals->GetCurTime();
 		m_bCannonCharging = true;
 
 		//Start charging sound
 		CPASAttenuationFilter filter( this );
-		m_sndCannonCharge = (CSoundEnvelopeController::GetController()).SoundCreate( filter, entindex(), CHAN_STATIC, "Jeep.GaussCharge", ATTN_NORM );
+		m_sndCannonCharge = (CSoundEnvelopeController::GetController()).SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, "Jeep.GaussCharge", ATTN_NORM );
 
 		if ( m_hPlayer )
 		{
@@ -1081,7 +1080,7 @@ void CPropJeep::ChargeCannon( void )
 	}
 	else
 	{
-		float flChargeAmount = ( gpGlobals->curtime - m_flCannonChargeStartTime ) / MAX_GAUSS_CHARGE_TIME;
+		float flChargeAmount = ( gpGlobals->GetCurTime() - m_flCannonChargeStartTime ) / MAX_GAUSS_CHARGE_TIME;
 		if ( flChargeAmount > 1.0f )
 		{
 			flChargeAmount = 1.0f;
@@ -1158,16 +1157,16 @@ void CPropJeep::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		if ( ( GetSequence() != LookupSequence( "ammo_open" ) ) && ( GetSequence() != LookupSequence( "ammo_close" ) ) )
 		{
 			// Open the crate
-			m_flAnimTime = gpGlobals->curtime;
+			m_flAnimTime = gpGlobals->GetCurTime();
 			m_flPlaybackRate = 0.0;
 			SetCycle( 0 );
 			ResetSequence( LookupSequence( "ammo_open" ) );
 			
 			CPASAttenuationFilter sndFilter( this, "PropJeep.AmmoOpen" );
-			EmitSound( sndFilter, entindex(), "PropJeep.AmmoOpen" );
+			EmitSound( sndFilter, this->NetworkProp()->entindex(), "PropJeep.AmmoOpen" );
 		}
 
-		m_flAmmoCrateCloseTime = gpGlobals->curtime + JEEP_AMMO_CRATE_CLOSE_DELAY;
+		m_flAmmoCrateCloseTime = gpGlobals->GetCurTime() + JEEP_AMMO_CRATE_CLOSE_DELAY;
 		return;
 	}
 
@@ -1189,7 +1188,7 @@ bool CPropJeep::CanExitVehicle( CBaseEntity *pEntity )
 void CPropJeep::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles )
 {
 	// Get the frametime. (Check to see if enough time has passed to warrent dampening).
-	float flFrameTime = gpGlobals->frametime;
+	float flFrameTime = gpGlobals->GetFrameTime();
 	if ( flFrameTime < JEEP_FRAMETIME_MIN )
 	{
 		vecVehicleEyePos = m_vecLastEyePos;
@@ -1305,7 +1304,7 @@ void CPropJeep::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHe
 
 	// If the throttle is disabled or we're upside-down, don't allow throttling (including turbo)
 	CUserCmd tmp;
-	if ( ( m_throttleDisableTime > gpGlobals->curtime ) || ( IsOverturned() ) )
+	if ( ( m_throttleDisableTime > gpGlobals->GetCurTime() ) || ( IsOverturned() ) )
 	{
 		m_bUnableToFire = true;
 		
@@ -1391,7 +1390,7 @@ void CPropJeep::CreateDangerSounds( void )
 	QAngle dummy;
 	GetAttachment( "Muzzle", m_vecGunOrigin, dummy );
 
-	if ( m_flDangerSoundTime > gpGlobals->curtime )
+	if ( m_flDangerSoundTime > gpGlobals->GetCurTime() )
 		return;
 
 	QAngle vehicleAngles = GetLocalAngles();
@@ -1446,7 +1445,7 @@ void CPropJeep::CreateDangerSounds( void )
 	// Make engine sounds even when we're not going fast.
 	CSoundEnt::InsertSound( SOUND_PLAYER | SOUND_CONTEXT_PLAYER_VEHICLE, GetAbsOrigin(), 800, soundDuration, this, 0 );
 
-	m_flDangerSoundTime = gpGlobals->curtime + 0.1;
+	m_flDangerSoundTime = gpGlobals->GetCurTime() + 0.1;
 }
 
 //-----------------------------------------------------------------------------
@@ -1480,8 +1479,8 @@ void CPropJeep::ExitVehicle( int nRole )
 	m_bCannonCharging = false;
 
 	// Remember when we last saw the player
-	m_flPlayerExitedTime = gpGlobals->curtime;
-	m_flLastSawPlayerAt = gpGlobals->curtime;
+	m_flPlayerExitedTime = gpGlobals->GetCurTime();
+	m_flLastSawPlayerAt = gpGlobals->GetCurTime();
 
 	if ( GlobalEntity_GetState( "no_seagulls_on_jeep" ) == GLOBAL_OFF )
 	{
@@ -1493,7 +1492,7 @@ void CPropJeep::ExitVehicle( int nRole )
 		if ( pHint )
 		{
 			// Start looking for seagulls to perch on me
-			SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->curtime + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
+			SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->GetCurTime() + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
 		}
 	}
 }
@@ -1524,13 +1523,13 @@ void CPropJeep::JeepSeagullThink( void )
 					AddSeagullPoop( pSeagull->GetAbsOrigin() );
 				}
 
-				SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->curtime + JEEP_SEAGULL_POOP_INTERVAL, g_pJeepThinkContext );
+				SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->GetCurTime() + JEEP_SEAGULL_POOP_INTERVAL, g_pJeepThinkContext );
 			}
 			else
 			{
 				// Our seagull's moved off us. 
 				m_hSeagull = NULL;
-				SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->curtime + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
+				SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->GetCurTime() + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
 			}
 		}
 		
@@ -1540,23 +1539,23 @@ void CPropJeep::JeepSeagullThink( void )
 	// Only spawn seagulls if we're upright and out of water
 	if ( m_WaterData.m_bBodyInWater || IsOverturned() )
 	{
-		SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->curtime + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
+		SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->GetCurTime() + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
 		return;
 	}
 
 	// Is the player visible?
 	if ( FVisible( m_hLastPlayerInVehicle, MASK_SOLID_BRUSHONLY, &pBlocker ) )
 	{
-		m_flLastSawPlayerAt = gpGlobals->curtime;
-		SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->curtime + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
+		m_flLastSawPlayerAt = gpGlobals->GetCurTime();
+		SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->GetCurTime() + JEEP_SEAGULL_THINK_INTERVAL, g_pJeepThinkContext );
 		return;
 	}
 
 	// Start checking quickly
-	SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->curtime + 0.2, g_pJeepThinkContext );
+	SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->GetCurTime() + 0.2, g_pJeepThinkContext );
 
 	// Not taken enough time yet?
-	float flHiddenTime = (gpGlobals->curtime - m_flLastSawPlayerAt);
+	float flHiddenTime = (gpGlobals->GetCurTime() - m_flLastSawPlayerAt);
 	if ( flHiddenTime < JEEP_SEAGULL_HIDDEN_TIME )
 		return;
 
@@ -1567,7 +1566,7 @@ void CPropJeep::JeepSeagullThink( void )
 		SpawnPerchedSeagull();
 
 		// Don't think for a while
-		SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->curtime + JEEP_SEAGULL_POOP_INTERVAL, g_pJeepThinkContext );
+		SetContextThink( &CPropJeep::JeepSeagullThink, gpGlobals->GetCurTime() + JEEP_SEAGULL_POOP_INTERVAL, g_pJeepThinkContext );
 	}
 }
 
@@ -1656,7 +1655,7 @@ void CPropJeep::InputShowHudHint( inputdata_t &inputdata )
 void CPropJeep::InputStartRemoveTauCannon( inputdata_t &inputdata )
 {
 	// Start the gun removal animation
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 	m_flPlaybackRate = 0.0;
 	SetCycle( 0 );
 	ResetSequence( LookupSequence( "tau_levitate" ) );

@@ -38,7 +38,7 @@ private:
 	CNetworkVar( int, m_nOccluderIndex );
 
 	BEGIN_INIT_SEND_TABLE(CFuncOccluder)
-	BEGIN_SEND_TABLE_NOBASE(CFuncOccluder, DT_FuncOccluder)
+	BEGIN_SEND_TABLE(CFuncOccluder, DT_FuncOccluder, DT_BaseEntity)
 		SendPropBool(SENDINFO(m_bActive)),
 		SendPropInt(SENDINFO(m_nOccluderIndex), 10, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_FuncOccluder)

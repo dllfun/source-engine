@@ -208,6 +208,16 @@ private:
 #endif
 
 	DEFINE_CUSTOM_AI;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_Barnacle)
+	BEGIN_SEND_TABLE(CNPC_Barnacle, DT_Barnacle, DT_AI_BaseNPC)
+		SendPropFloat(SENDINFO(m_flAltitude), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecRoot), 0, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecTip), 0, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecTipDrawOffset), 0, SPROP_NOSCALE),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 

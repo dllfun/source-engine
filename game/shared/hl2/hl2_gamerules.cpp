@@ -30,18 +30,20 @@
 
 REGISTER_GAMERULES_CLASS( CHalfLife2 );
 
-BEGIN_NETWORK_TABLE_NOBASE( CHalfLife2, DT_HL2GameRules )
-	#ifdef CLIENT_DLL
-		RecvPropBool( RECVINFO( m_bMegaPhysgun ) ),
-	#else
-		SendPropBool( SENDINFO( m_bMegaPhysgun ) ),
-	#endif
-END_NETWORK_TABLE()
+
 
 
 LINK_ENTITY_TO_CLASS( hl2_gamerules, CHalfLife2Proxy );
+
+#ifdef CLIENT_DLL
+#undef CHalfLife2Proxy
+#endif // CLIENT_DLL
+
 IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2Proxy, DT_HalfLife2Proxy )
 
+#ifdef CLIENT_DLL
+#define CHalfLife2Proxy C_HalfLife2Proxy
+#endif // CLIENT_DLL
 
 #ifdef CLIENT_DLL
 	void RecvProxy_HL2GameRules( const RecvProp *pProp, void **pOut, void *pData, int objectID )
@@ -51,9 +53,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2Proxy, DT_HalfLife2Proxy )
 		*pOut = pRules;
 	}
 
-	BEGIN_RECV_TABLE( CHalfLife2Proxy, DT_HalfLife2Proxy )
-		RecvPropDataTable( "hl2_gamerules_data", 0, 0, &REFERENCE_RECV_TABLE( DT_HL2GameRules ), RecvProxy_HL2GameRules )
-	END_RECV_TABLE()
+	
 #else
 	void* SendProxy_HL2GameRules( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
 	{
@@ -63,9 +63,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2Proxy, DT_HalfLife2Proxy )
 		return pRules;
 	}
 
-	BEGIN_SEND_TABLE( CHalfLife2Proxy, DT_HalfLife2Proxy )
-		SendPropDataTable( "hl2_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_HL2GameRules ), SendProxy_HL2GameRules )
-	END_SEND_TABLE()
+	
 #endif
 
 ConVar  physcannon_mega_enabled( "physcannon_mega_enabled", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
@@ -181,6 +179,13 @@ ConVar	sk_max_gauss_round		( "sk_max_gauss_round", "0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_gunship			( "sk_npc_dmg_gunship", "0", FCVAR_REPLICATED );
 ConVar	sk_npc_dmg_gunship_to_plr	( "sk_npc_dmg_gunship_to_plr", "0", FCVAR_REPLICATED );
 
+#if !defined( CLIENT_DLL )
+IMPLEMENT_SERVERCLASS(CHalfLife2, DT_HL2GameRules)
+#endif
+#if defined( CLIENT_DLL )
+IMPLEMENT_CLIENTCLASS_NO_FACTORY(C_HalfLife2, DT_HL2GameRules, CHalfLife2)
+//static CCSGameRules g_C_CSGameRules_EntityReg;
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : iDmgType - 
@@ -294,11 +299,17 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 
 	public:
 		CNetworkVar( int, m_nReferencePlayer );
+
+	public:
+		BEGIN_INIT_SEND_TABLE(CCorpse)
+		BEGIN_SEND_TABLE(CCorpse, DT_Corpse, DT_BaseAnimating)
+			SendPropInt(SENDINFO(m_nReferencePlayer), 10, SPROP_UNSIGNED)
+		END_SEND_TABLE()
+		END_INIT_SEND_TABLE()
 	};
 
-	IMPLEMENT_SERVERCLASS_ST(CCorpse, DT_Corpse)
-		SendPropInt( SENDINFO(m_nReferencePlayer), 10, SPROP_UNSIGNED )
-	END_SEND_TABLE()
+	IMPLEMENT_SERVERCLASS(CCorpse, DT_Corpse)
+	
 
 	LINK_ENTITY_TO_CLASS( bodyque, CCorpse );
 
@@ -307,7 +318,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 
 	void InitBodyQue(void)
 	{
-		CCorpse *pEntity = ( CCorpse * )CreateEntityByName( "bodyque" );
+		CCorpse *pEntity = ( CCorpse * )engineServer->CreateEntityByName( "bodyque" );
 		pEntity->AddEFlags( EFL_KEEP_ON_RECREATE_ENTITIES );
 		g_pBodyQueueHead = pEntity;
 		CCorpse *p = g_pBodyQueueHead;
@@ -315,7 +326,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		// Reserve 3 more slots for dead bodies
 		for ( int i = 0; i < 3; i++ )
 		{
-			CCorpse *next = ( CCorpse * )CreateEntityByName( "bodyque" );
+			CCorpse *next = ( CCorpse * )engineServer->CreateEntityByName( "bodyque" );
 			next->AddEFlags( EFL_KEEP_ON_RECREATE_ENTITIES );
 			p->SetOwnerEntity( next );
 			p = next;
@@ -1433,7 +1444,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 	bool CHalfLife2::NPC_ShouldDropHealth( CBasePlayer *pRecipient )
 	{
 		// Can only do this every so often
-		if ( m_flLastHealthDropTime > gpGlobals->curtime )
+		if ( m_flLastHealthDropTime > gpGlobals->GetCurTime() )
 			return false;
 
 		//Try to throw dynamic health
@@ -1452,7 +1463,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 	bool CHalfLife2::NPC_ShouldDropGrenade( CBasePlayer *pRecipient )
 	{
 		// Can only do this every so often
-		if ( m_flLastGrenadeDropTime > gpGlobals->curtime )
+		if ( m_flLastGrenadeDropTime > gpGlobals->GetCurTime() )
 			return false;
 		
 		int grenadeIndex = GetAmmoDef()->Index( "grenade" );
@@ -1470,7 +1481,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 	//-----------------------------------------------------------------------------
 	void CHalfLife2::NPC_DroppedHealth( void )
 	{
-		m_flLastHealthDropTime = gpGlobals->curtime + sk_plr_health_drop_time.GetFloat();
+		m_flLastHealthDropTime = gpGlobals->GetCurTime() + sk_plr_health_drop_time.GetFloat();
 	}
 
 	//-----------------------------------------------------------------------------
@@ -1478,7 +1489,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 	//-----------------------------------------------------------------------------
 	void CHalfLife2::NPC_DroppedGrenade( void )
 	{
-		m_flLastGrenadeDropTime = gpGlobals->curtime + sk_plr_grenade_drop_time.GetFloat();
+		m_flLastGrenadeDropTime = gpGlobals->GetCurTime() + sk_plr_grenade_drop_time.GetFloat();
 	}
 
 #endif //} !CLIENT_DLL

@@ -31,7 +31,7 @@ private:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_InfoOverlayAccessor)
-	BEGIN_RECV_TABLE_NOBASE(C_InfoOverlayAccessor, DT_InfoOverlayAccessor)
+	BEGIN_RECV_TABLE(C_InfoOverlayAccessor, DT_InfoOverlayAccessor, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_iTextureFrameIndex)),
 		RecvPropInt(RECVINFO(m_iOverlayID)),
 	END_RECV_TABLE(DT_InfoOverlayAccessor)

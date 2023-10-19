@@ -328,7 +328,7 @@ void CNPC_CombineS::Event_Killed( const CTakeDamageInfo &info )
 
 						if( pAnimating )
 						{
-							pAnimating->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
+							pAnimating->Dissolve( NULL, gpGlobals->GetCurTime(), false, ENTITY_DISSOLVE_NORMAL );
 						}
 					}
 					else

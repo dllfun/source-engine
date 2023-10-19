@@ -91,7 +91,7 @@ public:
 	virtual int GetPrimaryAmmoCount() const;
 	virtual int GetJoystickResponseCurve() const;
 
-	int		DrawModel( int flags );
+	int		DrawModel(IVModel* pWorld, int flags );
 
 	// Draws crosshair in the forward direction of the boat
 	void DrawHudElements( );
@@ -142,15 +142,21 @@ private:
 	CMeshBuilder	m_Mesh;
 
 	Vector			m_vecPhysVelocity;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_PropAirboat)
+	BEGIN_RECV_TABLE(C_PropAirboat, DT_PropAirboat, DT_PropVehicleDriveable)
+		RecvPropBool(RECVINFO(m_bHeadlightIsOn)),
+		RecvPropInt(RECVINFO(m_nAmmoCount)),
+		RecvPropInt(RECVINFO(m_nExactWaterLevel)),
+		RecvPropInt(RECVINFO(m_nWaterLevel)),
+		RecvPropVector(RECVINFO(m_vecPhysVelocity)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_PropAirboat, DT_PropAirboat, CPropAirboat )
-	RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
-	RecvPropInt( RECVINFO( m_nAmmoCount ) ),
-	RecvPropInt( RECVINFO( m_nExactWaterLevel ) ),
-	RecvPropInt( RECVINFO( m_nWaterLevel ) ),
-	RecvPropVector( RECVINFO( m_vecPhysVelocity ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_PropAirboat, DT_PropAirboat, CPropAirboat )
+
 
 
 BEGIN_DATADESC( C_PropAirboat )
@@ -321,7 +327,7 @@ void C_PropAirboat::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd
 		}
 		else
 		{
-			m_flViewAngleDeltaTime += gpGlobals->frametime;
+			m_flViewAngleDeltaTime += gpGlobals->GetFrameTime();
 		}
 
 		if ( m_flViewAngleDeltaTime > r_AirboatViewBlendToTime.GetFloat() )
@@ -348,7 +354,7 @@ void C_PropAirboat::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd
 void C_PropAirboat::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles )
 {
 	// Get the frametime. (Check to see if enough time has passed to warrent dampening).
-	float flFrameTime = gpGlobals->frametime;
+	float flFrameTime = gpGlobals->GetFrameTime();
 	if ( flFrameTime < AIRBOAT_FRAMETIME_MIN )
 	{
 		vecVehicleEyePos = m_vecLastEyePos;
@@ -546,11 +552,11 @@ void C_PropAirboat::UpdateHeadlight()
 //-----------------------------------------------------------------------------
 void C_PropAirboat::UpdateWake( void )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if ( gpGlobals->GetFrameTime() <= 0.0f )
 		return;
 
 	// Can't update too quickly
-	if ( m_flUpdateTime > gpGlobals->curtime )
+	if ( m_flUpdateTime > gpGlobals->GetCurTime() )
 		return;
 
 	Vector	screenPos = GetRenderOrigin();
@@ -569,7 +575,7 @@ void C_PropAirboat::UpdateWake( void )
 		// Save off its screen position, not its world position
 		TrailPoint_t *pNewPoint = GetTrailPoint( m_nStepCount );
 		pNewPoint->m_vecScreenPos = screenPos + Vector( 0, 0, 2 );
-		pNewPoint->m_flDieTime	= gpGlobals->curtime + WAKE_LIFETIME;
+		pNewPoint->m_flDieTime	= gpGlobals->GetCurTime() + WAKE_LIFETIME;
 		pNewPoint->m_flWidthVariance = random->RandomFloat( -16, 16 );
 		
 		if ( pLast )
@@ -586,7 +592,7 @@ void C_PropAirboat::UpdateWake( void )
 	}
 
 	// Don't update again for a bit
-	m_flUpdateTime = gpGlobals->curtime + ( 0.5f / (float) MAX_WAKE_POINTS );
+	m_flUpdateTime = gpGlobals->GetCurTime() + ( 0.5f / (float) MAX_WAKE_POINTS );
 }
 
 //-----------------------------------------------------------------------------
@@ -634,7 +640,7 @@ void C_PropAirboat::DrawPontoonSplash( Vector origin, Vector direction, float sp
 
 	PMaterialHandle	hMaterial;
 	
-	float tempDelta = gpGlobals->frametime;
+	float tempDelta = gpGlobals->GetFrameTime();
 
 	while( m_SplashTime.NextEvent( tempDelta ) )
 	{
@@ -712,7 +718,7 @@ void C_PropAirboat::DrawPontoonWake( Vector	startPos, Vector wakeDir, float wake
 		origin[2] = m_nExactWaterLevel + 2.0f;
 
 		float scaleRange = RemapVal( i, 0, WAKE_STEPS-1, 32, 64 );
-		scale = scaleRange + ( 8.0f * sin( gpGlobals->curtime * 5 * i ) );
+		scale = scaleRange + ( 8.0f * sin( gpGlobals->GetCurTime() * 5 * i ) );
 		
 		float alpha = RemapValClamped( speed, 128, 600, 0.05f, 0.25f );
 		float color[4] = { 1.0f, 1.0f, 1.0f, alpha };
@@ -854,7 +860,7 @@ int C_PropAirboat::DrawWake( void )
 	TrailPoint_t *pLast = GetTrailPoint( m_nStepCount - 1 );
 	
 	TrailPoint_t currentPoint;
-	currentPoint.m_flDieTime = gpGlobals->curtime + 0.5f;
+	currentPoint.m_flDieTime = gpGlobals->GetCurTime() + 0.5f;
 	currentPoint.m_vecScreenPos = GetAbsOrigin();
 	currentPoint.m_vecScreenPos[2] = m_nExactWaterLevel + 16;
 	currentPoint.m_flTexCoord = pLast->m_flTexCoord + currentPoint.m_vecScreenPos.DistTo(pLast->m_vecScreenPos);
@@ -870,7 +876,7 @@ int C_PropAirboat::DrawWake( void )
 		// This makes it so that we're always drawing to the current location
 		TrailPoint_t *pPoint = (i != m_nStepCount) ? GetTrailPoint(i) : &currentPoint;
 
-		float flLifePerc = RemapValClamped( ( pPoint->m_flDieTime - gpGlobals->curtime ), 0, WAKE_LIFETIME, 0.0f, 1.0f );
+		float flLifePerc = RemapValClamped( ( pPoint->m_flDieTime - gpGlobals->GetCurTime() ), 0, WAKE_LIFETIME, 0.0f, 1.0f );
 
 		BeamSeg_t curSeg;
 		curSeg.m_vColor.x = curSeg.m_vColor.y = curSeg.m_vColor.z = 1.0f;
@@ -919,9 +925,9 @@ int C_PropAirboat::DrawWake( void )
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_PropAirboat::DrawModel( int flags )
+int C_PropAirboat::DrawModel(IVModel* pWorld, int flags )
 {
-	if ( BaseClass::DrawModel( flags ) == false )
+	if ( BaseClass::DrawModel(pWorld, flags ) == false )
 		return 0;
 	
 	if ( !m_bReadyToDraw )

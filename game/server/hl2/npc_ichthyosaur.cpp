@@ -283,10 +283,10 @@ void CNPC_Ichthyosaur::Spawn( void )
 	m_flTailYaw				= 0.0f;
 	m_flTailPitch			= 0.0f;
 
-	m_flNextBiteTime		= gpGlobals->curtime;
-	m_flHoldTime			= gpGlobals->curtime;
-	m_flNextPingTime		= gpGlobals->curtime;
-	m_flNextGrowlTime		= gpGlobals->curtime;
+	m_flNextBiteTime		= gpGlobals->GetCurTime();
+	m_flHoldTime			= gpGlobals->GetCurTime();
+	m_flNextPingTime		= gpGlobals->GetCurTime();
+	m_flNextGrowlTime		= gpGlobals->GetCurTime();
 
 #if FEELER_COLLISION
 
@@ -331,10 +331,10 @@ int CNPC_Ichthyosaur::SelectSchedule( void )
 {
 	if ( m_NPCState == NPC_STATE_COMBAT )
 	{
-		if ( m_flHoldTime > gpGlobals->curtime )
+		if ( m_flHoldTime > gpGlobals->GetCurTime() )
 			return SCHED_ICH_DROWN_VICTIM;
 
-		if ( m_flNextBiteTime > gpGlobals->curtime )
+		if ( m_flNextBiteTime > gpGlobals->GetCurTime() )
 			return	SCHED_PATROL_RUN;
 
 		if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
@@ -593,8 +593,8 @@ void CNPC_Ichthyosaur::AddSwimNoise( Vector *velocity )
 
 	float	lNoise, vNoise;
 
-	lNoise = LATERAL_NOISE_MAX * sin( gpGlobals->curtime * LATERAL_NOISE_FREQ );
-	vNoise = VERTICAL_NOISE_MAX * sin( gpGlobals->curtime * VERTICAL_NOISE_FREQ );
+	lNoise = LATERAL_NOISE_MAX * sin( gpGlobals->GetCurTime() * LATERAL_NOISE_FREQ );
+	vNoise = VERTICAL_NOISE_MAX * sin( gpGlobals->GetCurTime() * VERTICAL_NOISE_FREQ );
 
 	(*velocity) += ( right * lNoise ) + ( up * vNoise );
 }
@@ -1030,7 +1030,7 @@ void CNPC_Ichthyosaur::HandleAnimEvent( animevent_t *pEvent )
 void CNPC_Ichthyosaur::Bite( void )
 {
 	//Don't allow another bite too soon
-	if ( m_flNextBiteTime > gpGlobals->curtime )
+	if ( m_flNextBiteTime > gpGlobals->GetCurTime() )
 		return;
 
 	CBaseEntity *pHurt;
@@ -1056,7 +1056,7 @@ void CNPC_Ichthyosaur::Bite( void )
 
 			if ( pPlayer )
 			{
-				if ( ( ( m_flHoldTime < gpGlobals->curtime ) && ( pPlayer->m_iHealth < (pPlayer->m_iMaxHealth*0.5f)) ) || ( pPlayer->GetWaterLevel() < 1 ) )
+				if ( ( ( m_flHoldTime < gpGlobals->GetCurTime() ) && ( pPlayer->m_iHealth < (pPlayer->m_iMaxHealth*0.5f)) ) || ( pPlayer->GetWaterLevel() < 1 ) )
 				{
 					//EnsnareVictim( pHurt );
 				}
@@ -1088,7 +1088,7 @@ void CNPC_Ichthyosaur::Bite( void )
 			pHurt->TakeDamage( info );
 		}
 
-		m_flNextBiteTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f );
+		m_flNextBiteTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 4.0f );
 
 		//Bubbles!
 		UTIL_Bubbles( pHurt->GetAbsOrigin()+Vector(-32.0f,-32.0f,-32.0f), pHurt->GetAbsOrigin()+Vector(32.0f,32.0f,0.0f), random->RandomInt( 16, 32 ) );
@@ -1153,15 +1153,15 @@ void CNPC_Ichthyosaur::PrescheduleThink( void )
 	*/
 
 	//Pings
-	if ( m_flNextPingTime < gpGlobals->curtime )
+	if ( m_flNextPingTime < gpGlobals->GetCurTime() )
 	{
-		m_flNextPingTime = gpGlobals->curtime + random->RandomFloat( 3.0f, 8.0f );
+		m_flNextPingTime = gpGlobals->GetCurTime() + random->RandomFloat( 3.0f, 8.0f );
 	}
 	
 	//Growls
-	if ( ( m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT ) && ( m_flNextGrowlTime < gpGlobals->curtime ) )
+	if ( ( m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT ) && ( m_flNextGrowlTime < gpGlobals->GetCurTime() ) )
 	{
-		m_flNextGrowlTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 6.0f );
+		m_flNextGrowlTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 6.0f );
 	}
 
 	//Randomly emit bubbles
@@ -1196,7 +1196,7 @@ void CNPC_Ichthyosaur::PrescheduleThink( void )
 	if ( m_pVictim != NULL )
 	{
 		//See if it's time to release the victim
-		if ( m_flHoldTime < gpGlobals->curtime )
+		if ( m_flHoldTime < gpGlobals->GetCurTime() )
 		{
 			ReleaseVictim();
 			return;
@@ -1216,12 +1216,12 @@ void CNPC_Ichthyosaur::PrescheduleThink( void )
 int	CNPC_Ichthyosaur::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	//Release the player if he's struck us while being held
-	if ( m_flHoldTime > gpGlobals->curtime )
+	if ( m_flHoldTime > gpGlobals->GetCurTime() )
 	{
 		ReleaseVictim();
 		
 		//Don't give them as much time to flee
-		m_flNextBiteTime = gpGlobals->curtime + 2.0f;
+		m_flNextBiteTime = gpGlobals->GetCurTime() + 2.0f;
 
 		SetSchedule( SCHED_ICH_THRASH );
 	}
@@ -1244,12 +1244,12 @@ void CNPC_Ichthyosaur::EnsnareVictim( CBaseEntity *pVictim )
 
 			if ( pPlayer )
 			{
-				m_flHoldTime = MAX( gpGlobals->curtime+3.0f, pPlayer->PlayerDrownTime() - 2.0f );
+				m_flHoldTime = MAX( gpGlobals->GetCurTime()+3.0f, pPlayer->PlayerDrownTime() - 2.0f );
 			}
 		}
 		else
 		{
-			m_flHoldTime	= gpGlobals->curtime + 4.0f;
+			m_flHoldTime	= gpGlobals->GetCurTime() + 4.0f;
 		}
 	
 		m_pVictim = pVictim;
@@ -1271,8 +1271,8 @@ void CNPC_Ichthyosaur::ReleaseVictim( void )
 	m_pVictim->RemoveSolidFlags( FSOLID_NOT_SOLID );
 
 	m_pVictim			= NULL;
-	m_flNextBiteTime	= gpGlobals->curtime + 8.0f;
-	m_flHoldTime		= gpGlobals->curtime - 0.1f;
+	m_flNextBiteTime	= gpGlobals->GetCurTime() + 8.0f;
+	m_flHoldTime		= gpGlobals->GetCurTime() - 0.1f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1281,7 +1281,7 @@ void CNPC_Ichthyosaur::ReleaseVictim( void )
 //-----------------------------------------------------------------------------
 float CNPC_Ichthyosaur::GetGroundSpeed( void )
 {
-	if ( m_flHoldTime > gpGlobals->curtime )
+	if ( m_flHoldTime > gpGlobals->GetCurTime() )
 		return	ICH_SWIM_SPEED_WALK/2.0f;
 
 	if ( GetIdealActivity() == ACT_WALK )

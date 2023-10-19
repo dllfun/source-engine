@@ -90,7 +90,7 @@ END_DATADESC()
 void CAI_AllyManager::Spawn()
 {
 	SetThink( &CAI_AllyManager::WatchCounts );
-	SetNextThink( gpGlobals->curtime + 1.0 );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0);
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +112,7 @@ void CAI_AllyManager::WatchCounts()
 	m_iAlliesLast = iCurrentAllies;
 	m_iMedicsLast = iCurrentMedics;
 
-	SetNextThink( gpGlobals->curtime + 1.0 );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0);
 
 	if ( ai_ally_manager_debug.GetBool() )
 		DevMsg( "Ally manager counts %d allies, %d of which are medics\n", iCurrentAllies, iCurrentMedics );
@@ -152,7 +152,7 @@ void CAI_AllyManager::CountAllies( int *pTotal, int *pMedics )
 
 			// Skip distant NPCs
 			if ( !ppAIs[i]->IsInPlayerSquad() && 
-				!UTIL_FindClientInPVS( ppAIs[i]->edict() ) && 
+				!UTIL_FindClientInPVS( ppAIs[i]->NetworkProp()->GetEdict() ) && 
 				( ( ppAIs[i]->GetAbsOrigin() - vPlayerPos ).LengthSqr() > 150*12 ||
 				  fabsf( ppAIs[i]->GetAbsOrigin().z - vPlayerPos.z ) > 192 ) )
 				continue;

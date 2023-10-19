@@ -318,7 +318,7 @@ void CBaseHeadcrab::CrawlFromCanister()
 	// while the crawling animation is occuring
 	AddFlag( FL_FLY );
 	m_bCrawlFromCanister = true;
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -468,7 +468,7 @@ void CBaseHeadcrab::Leap( const Vector &vecVel )
 	SetCondition( COND_FLOATING_OFF_GROUND );
 	SetGroundEntity( NULL );
 
-	m_flIgnoreWorldCollisionTime = gpGlobals->curtime + HEADCRAB_IGNORE_WORLD_COLLISION_TIME;
+	m_flIgnoreWorldCollisionTime = gpGlobals->GetCurTime() + HEADCRAB_IGNORE_WORLD_COLLISION_TIME;
 
 	if( HasHeadroom() )
 	{
@@ -481,7 +481,7 @@ void CBaseHeadcrab::Leap( const Vector &vecVel )
 	// Think every frame so the player sees the headcrab where he actually is...
 	m_bMidJump = true;
 	SetThink( &CBaseHeadcrab::ThrowThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -490,20 +490,20 @@ void CBaseHeadcrab::Leap( const Vector &vecVel )
 //-----------------------------------------------------------------------------
 void CBaseHeadcrab::ThrowThink( void )
 {
-	if (gpGlobals->curtime > m_flNextNPCThink)
+	if (gpGlobals->GetCurTime() > m_flNextNPCThink)
 	{
 		NPCThink();
-		m_flNextNPCThink = gpGlobals->curtime + 0.1;
+		m_flNextNPCThink = gpGlobals->GetCurTime() + 0.1;
 	}
 
 	if( GetFlags() & FL_ONGROUND )
 	{
 		SetThink( &CBaseHeadcrab::CallNPCThink );
-		SetNextThink( gpGlobals->curtime + 0.1 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 		return;
 	}
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -748,9 +748,9 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 			break;
 
 		case TASK_HEADCRAB_WAIT_FOR_BARNACLE_KILL:
-			if ( m_flNextFlinchTime < gpGlobals->curtime )
+			if ( m_flNextFlinchTime < gpGlobals->GetCurTime() )
 			{
-				m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );
+				m_flNextFlinchTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.0f, 2.0f );
 				CTakeDamageInfo info;
 				PainSound( info );
 			}
@@ -769,7 +769,7 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 			break;
 
 		case TASK_HEADCRAB_DROWN:
-			if( gpGlobals->curtime > m_flTimeDrown )
+			if( gpGlobals->GetCurTime() > m_flTimeDrown )
 			{
 				OnTakeDamage( CTakeDamageInfo( this, this, m_iHealth * 2, DMG_DROWN ) );
 			}
@@ -793,7 +793,7 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 					// delay attacking for a while so we don't just repeatedly leap
 					// at the enemy from a bad location.
 					m_bAttackFailed = false;
-					m_flNextAttack = gpGlobals->curtime + 1.2f;
+					m_flNextAttack = gpGlobals->GetCurTime() + 1.2f;
 				}
 			}
 			break;
@@ -802,7 +802,7 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 		case TASK_HEADCRAB_CHECK_FOR_UNBURROW:
 		{			
 			// Must wait for our next check time
-			if ( m_flBurrowTime > gpGlobals->curtime )
+			if ( m_flBurrowTime > gpGlobals->GetCurTime() )
 				return;
 
 			// See if we can pop up
@@ -816,7 +816,7 @@ void CBaseHeadcrab::RunTask( const Task_t *pTask )
 			}
 
 			// Try again in a couple of seconds
-			m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+			m_flBurrowTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 1.0f );
 
 			break;
 		}
@@ -963,7 +963,7 @@ void CBaseHeadcrab::LeapTouch( CBaseEntity *pOther )
 		// just repeatedly leap at the enemy from a bad location.
 		m_bAttackFailed = true;
 
-		if( gpGlobals->curtime < m_flIgnoreWorldCollisionTime )
+		if( gpGlobals->GetCurTime() < m_flIgnoreWorldCollisionTime )
 		{
 			// Headcrabs try to ignore the world, static props, and friends for a 
 			// fraction of a second after they jump. This is because they often brush
@@ -1041,7 +1041,7 @@ void CBaseHeadcrab::GatherConditions( void )
 	// See if I've landed on an NPC or player or something else illegal
 	ClearCondition( COND_HEADCRAB_ILLEGAL_GROUNDENT );
 	CBaseEntity *ground = GetGroundEntity();
-	if( (GetFlags() & FL_ONGROUND) && ground && !ground->IsWorld() )
+	if( (GetFlags() & FL_ONGROUND) && ground && ground->NetworkProp()->entindex()!=0)
 	{
 		if ( IsHangingFromCeiling() == false )
 		{
@@ -1145,7 +1145,7 @@ void CBaseHeadcrab::EliminateRollAndPitch()
 
 	SetAbsAngles( angles );
 
-	SetContextThink( &CBaseHeadcrab::EliminateRollAndPitch, gpGlobals->curtime + TICK_INTERVAL, s_pPitchContext );
+	SetContextThink( &CBaseHeadcrab::EliminateRollAndPitch, gpGlobals->GetCurTime() + TICK_INTERVAL, s_pPitchContext );
 }
 
 
@@ -1311,11 +1311,11 @@ void CBaseHeadcrab::DropFromCeiling( void )
 		{
 			if ( m_flIlluminatedTime == -1 )
 			{
-				m_flIlluminatedTime = gpGlobals->curtime + HEADCRAB_ILLUMINATED_TIME;
+				m_flIlluminatedTime = gpGlobals->GetCurTime() + HEADCRAB_ILLUMINATED_TIME;
 				return;
 			}
 
-			if ( m_flIlluminatedTime <= gpGlobals->curtime )
+			if ( m_flIlluminatedTime <= gpGlobals->GetCurTime() )
 			{
 				if ( IsCurSchedule( SCHED_HEADCRAB_CEILING_DROP ) == false )
 				{
@@ -1498,7 +1498,7 @@ void CBaseHeadcrab::StartTask( const Task_t *pTask )
 		{
 			// Set the gravity really low here! Sink slowly
 			SetGravity( UTIL_ScaleForGravity( 80 ) );
-			m_flTimeDrown = gpGlobals->curtime + 4;
+			m_flTimeDrown = gpGlobals->GetCurTime() + 4;
 			break;
 		}
 
@@ -1585,7 +1585,7 @@ float CBaseHeadcrab::InnateRange1MaxRange( void )
 
 int CBaseHeadcrab::RangeAttack1Conditions( float flDot, float flDist )
 {
-	if ( gpGlobals->curtime < m_flNextAttack )
+	if ( gpGlobals->GetCurTime() < m_flNextAttack )
 		return 0;
 
 	if ( ( GetFlags() & FL_ONGROUND ) == false )
@@ -1738,7 +1738,7 @@ int CBaseHeadcrab::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 		{
 			Scorch( HEADCRAB_SCORCH_RATE, HEADCRAB_SCORCH_FLOOR );
 
-			if( m_iHealth <= 1 && (entindex() % 2) )
+			if( m_iHealth <= 1 && (this->NetworkProp()->entindex() % 2) )
 			{
 				// Some headcrabs leap at you with their dying breath
 				if( !IsCurSchedule( SCHED_HEADCRAB_RANGE_ATTACK1 ) && !IsRunningDynamicInteraction() )
@@ -1933,7 +1933,7 @@ int CBaseHeadcrab::SelectSchedule( void )
 				}
 				else if ( SelectWeightedSequence( ACT_SMALL_FLINCH ) != -1 )
 				{
-					m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+					m_flNextFlinchTime = gpGlobals->GetCurTime() + random->RandomFloat( 1, 3 );
 					return SCHED_SMALL_FLINCH;
 				}
 			}
@@ -1976,7 +1976,7 @@ int CBaseHeadcrab::SelectSchedule( void )
 	int nSchedule = BaseClass::SelectSchedule();
 	if ( nSchedule == SCHED_SMALL_FLINCH )
 	{
-		 m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+		 m_flNextFlinchTime = gpGlobals->GetCurTime() + random->RandomFloat( 1, 3 );
 	}
 
 	return nSchedule;
@@ -2109,7 +2109,7 @@ bool CBaseHeadcrab::HandleInteraction(int interactionType, void *data, CBaseComb
 		OnTakeDamage ( CTakeDamageInfo( sourceEnt, sourceEnt, m_iHealth, DMG_CRUSH|DMG_ALWAYSGIB ) );
 		
 		// Create dead headcrab in its place
-		CBaseHeadcrab *pEntity = (CBaseHeadcrab*) CreateEntityByName( "npc_headcrab" );
+		CBaseHeadcrab *pEntity = (CBaseHeadcrab*)engineServer->CreateEntityByName( "npc_headcrab" );
 		pEntity->Spawn();
 		pEntity->SetLocalOrigin( GetLocalOrigin() );
 		pEntity->SetLocalAngles( GetLocalAngles() );
@@ -2631,7 +2631,7 @@ void CFastHeadcrab::PrescheduleThink( void )
 			break;
 
 		case HEADCRAB_RUNMODE_FULLSPEED:
-			if( gpGlobals->curtime > m_flSlowRunTime )
+			if( gpGlobals->GetCurTime() > m_flSlowRunTime )
 			{
 				m_iRunMode = HEADCRAB_RUNMODE_DECELERATE;
 			}
@@ -2648,7 +2648,7 @@ void CFastHeadcrab::PrescheduleThink( void )
 				m_flPlaybackRate = HEADCRAB_RUN_MAXSPEED;
 				m_iRunMode = HEADCRAB_RUNMODE_FULLSPEED;
 
-				m_flSlowRunTime = gpGlobals->curtime + random->RandomFloat( 0.1, 1.0 );
+				m_flSlowRunTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.1, 1.0 );
 			}
 			break;
 
@@ -2663,19 +2663,19 @@ void CFastHeadcrab::PrescheduleThink( void )
 				m_iRunMode = HEADCRAB_RUNMODE_PAUSE;
 				SetActivity( ACT_IDLE );
 				GetNavigator()->SetMovementActivity(ACT_IDLE);
-				m_flPauseTime = gpGlobals->curtime + random->RandomFloat( 0.2, 0.5 );
+				m_flPauseTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.2, 0.5 );
 				m_flRealGroundSpeed = 0.0;
 			}
 			break;
 
 		case HEADCRAB_RUNMODE_PAUSE:
 			{
-				if( gpGlobals->curtime > m_flPauseTime )
+				if( gpGlobals->GetCurTime() > m_flPauseTime )
 				{
 					m_iRunMode = HEADCRAB_RUNMODE_IDLE;
 					SetActivity( ACT_RUN );
 					GetNavigator()->SetMovementActivity(ACT_RUN);
-					m_flPauseTime = gpGlobals->curtime - 1;
+					m_flPauseTime = gpGlobals->GetCurTime() - 1;
 					m_flRealGroundSpeed = m_flGroundSpeed;
 				}
 			}
@@ -2690,7 +2690,7 @@ void CFastHeadcrab::PrescheduleThink( void )
 	}
 	else
 	{
-		m_flPauseTime = gpGlobals->curtime - 1;
+		m_flPauseTime = gpGlobals->GetCurTime() - 1;
 	}
 #endif
 
@@ -3173,7 +3173,7 @@ int CBlackHeadcrab::TranslateSchedule( int scheduleType )
 		// Keep trying to take cover for at least a few seconds.
 		case SCHED_FAIL_TAKE_COVER:
 		{
-			if ( ( m_bPanicState ) && ( gpGlobals->curtime > m_flPanicStopTime ) )
+			if ( ( m_bPanicState ) && ( gpGlobals->GetCurTime() > m_flPanicStopTime ) )
 			{
 				//DevMsg( "I'm sick of panicking\n" );
 				m_bPanicState = false;
@@ -3230,9 +3230,9 @@ int CBlackHeadcrab::SelectSchedule( void )
 
 		if ( HasCondition( COND_LIGHT_DAMAGE ) || HasCondition( COND_HEAVY_DAMAGE ) )
 		{
-			if ( ( gpGlobals->curtime >= m_flNextHopTime ) && SelectWeightedSequence( ACT_SMALL_FLINCH ) != -1 )
+			if ( ( gpGlobals->GetCurTime() >= m_flNextHopTime ) && SelectWeightedSequence( ACT_SMALL_FLINCH ) != -1 )
 			{
-				m_flNextHopTime = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+				m_flNextHopTime = gpGlobals->GetCurTime() + random->RandomFloat( 1, 3 );
 				return SCHED_SMALL_FLINCH;
 			}
 		}
@@ -3243,7 +3243,7 @@ int CBlackHeadcrab::SelectSchedule( void )
 			if ( HasMemory( bits_MEMORY_INCOVER ) )
 			{
 				m_bPanicState = false;
-				m_flPanicStopTime = gpGlobals->curtime;
+				m_flPanicStopTime = gpGlobals->GetCurTime();
 
 				return SCHED_HEADCRAB_AMBUSH;
 			}
@@ -3316,7 +3316,7 @@ void CBlackHeadcrab::Eject( const QAngle &vecAngles, float flVelocityScale, CBas
 
 	SetActivity( ACT_RANGE_ATTACK1 );
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	PhysicsSimulate();
 
 	GetMotor()->SetIdealYaw( vecAngles.y );
@@ -3350,7 +3350,7 @@ void CBlackHeadcrab::EjectTouch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 void CBlackHeadcrab::Panic( float flDuration )
 {
-	m_flPanicStopTime = gpGlobals->curtime + flDuration;
+	m_flPanicStopTime = gpGlobals->GetCurTime() + flDuration;
 	m_bPanicState = true;
 }
 

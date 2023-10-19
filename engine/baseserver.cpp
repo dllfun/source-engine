@@ -1924,7 +1924,9 @@ void CBaseServer::RunFrame( void )
 	VPROF_BUDGET( "CBaseServer::RunFrame", VPROF_BUDGETGROUP_OTHER_NETWORKING );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "CBaseServer::RunFrame" );
 
-	GetNetSocket()->NET_ProcessSocket( this );
+	if (GetNetSocket()) {
+		GetNetSocket()->NET_ProcessSocket(this);
+	}
 
 #ifdef LINUX
 	// Process the linux sv lan port if it's open.

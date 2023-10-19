@@ -193,6 +193,16 @@ private:
 	CNetworkVar( bool, m_bHeld );
 	CNetworkVar( bool, m_bLaunched );
 	CNetworkVar( float, m_flRadius );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CPropCombineBall)
+	BEGIN_SEND_TABLE(CPropCombineBall, DT_PropCombineBall, DT_BaseAnimating)
+		SendPropBool(SENDINFO(m_bEmit)),
+		SendPropFloat(SENDINFO(m_flRadius), 0, SPROP_NOSCALE),
+		SendPropBool(SENDINFO(m_bHeld)),
+		SendPropBool(SENDINFO(m_bLaunched)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 class CFuncCombineBallSpawner : public CBaseEntity

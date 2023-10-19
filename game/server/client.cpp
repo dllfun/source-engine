@@ -960,7 +960,7 @@ void CC_Player_PhysSwap( void )
 		if ( pWeapon )
 		{
 			// Tell the client to stop selecting weapons
-			engineServer->ClientCommand( UTIL_GetCommandClient()->NetworkProp()->edict(), "cancelselect" );
+			engineServer->ClientCommand( UTIL_GetCommandClient()->NetworkProp()->GetEdict(), "cancelselect" );
 
 			const char *strWeaponName = pWeapon->GetName();
 

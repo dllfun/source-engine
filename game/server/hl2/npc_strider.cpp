@@ -277,15 +277,8 @@ enum
 //
 //-----------------------------------------------------------------------------
 
-IMPLEMENT_SERVERCLASS_ST(CNPC_Strider, DT_NPC_Strider)
-	SendPropVector(SENDINFO(m_vecHitPos), -1, SPROP_COORD),
-	SendPropVector( SENDINFO_NETWORKARRAYELEM( m_vecIKTarget, 0 ), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO_NETWORKARRAYELEM( m_vecIKTarget, 1 ), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO_NETWORKARRAYELEM( m_vecIKTarget, 2 ), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO_NETWORKARRAYELEM( m_vecIKTarget, 3 ), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO_NETWORKARRAYELEM( m_vecIKTarget, 4 ), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO_NETWORKARRAYELEM( m_vecIKTarget, 5 ), -1, SPROP_COORD ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CNPC_Strider, DT_NPC_Strider)
+
 
 //-------------------------------------
 
@@ -560,7 +553,7 @@ void CNPC_Strider::Spawn()
 	GetEnemies()->SetFreeKnowledgeDuration( strider_free_knowledge.GetFloat() );
 
 	m_hPlayersMissile.Set( NULL );
-	m_flTimeNextHuntSound = gpGlobals->curtime - 1.0f;
+	m_flTimeNextHuntSound = gpGlobals->GetCurTime() - 1.0f;
 }
 
 void CNPC_Strider::SetupGlobalModelData()
@@ -693,7 +686,7 @@ void CNPC_Strider::Activate()
 	if ( gm_zCannonDist == 0 )
 	{
 		// Have to create a virgin strider to ensure proper pose
-		CNPC_Strider *pStrider = (CNPC_Strider *)CreateEntityByName( "npc_strider" );
+		CNPC_Strider *pStrider = (CNPC_Strider *)engineServer->CreateEntityByName( "npc_strider" );
 		Assert(pStrider);
 		pStrider->m_bDisableBoneFollowers = true; // don't create these since we're just going to destroy him
 		DispatchSpawn( pStrider );
@@ -873,7 +866,7 @@ void CNPC_Strider::NPCThink(void)
 {
 	if ( m_hRagdoll.Get() )
 	{
-		m_nextStompTime = gpGlobals->curtime + 5;
+		m_nextStompTime = gpGlobals->GetCurTime() + 5;
 	}
 
 	if ( m_flTargetSpeedScale > 0.01 )
@@ -928,7 +921,7 @@ void CNPC_Strider::PrescheduleThink()
 	// Next missile will kill me!
 	if( GetHealth() <= 50 && random->RandomInt( 0, 20 ) == 0 )
 	{
-		CBaseEntity *pTrail = CreateEntityByName( "sparktrail" );
+		CBaseEntity *pTrail = engineServer->CreateEntityByName( "sparktrail" );
 		pTrail->SetOwnerEntity( this );
 		pTrail->Spawn();
 	}
@@ -950,7 +943,7 @@ void CNPC_Strider::PrescheduleThink()
 	{
 		QAngle angles;
 
-		angles.x = gpGlobals->curtime * 20.0f;
+		angles.x = gpGlobals->GetCurTime() * 20.0f;
 		angles.y = angles.x * 0.5f;
 		angles.z = 0.0f;
 
@@ -993,11 +986,11 @@ void CNPC_Strider::GatherConditions()
 			if( HasCondition( COND_SEE_ENEMY ) )
 			{
 				// Keep setting up to play my hunt sound at some random time after losing sight of my enemy.
-				m_flTimeNextHuntSound = gpGlobals->curtime + 1.0f;
+				m_flTimeNextHuntSound = gpGlobals->GetCurTime() + 1.0f;
 			}
 			else
 			{
-				if( gpGlobals->curtime >= m_flTimeNextHuntSound && !m_pMinigun->IsShooting() )
+				if( gpGlobals->GetCurTime() >= m_flTimeNextHuntSound && !m_pMinigun->IsShooting() )
 				{
 					HuntSound();
 				}
@@ -1019,7 +1012,7 @@ void CNPC_Strider::GatherConditions()
 				float flDiff = flPlayerMissileDist - flPlayerStriderDist;
 
 				// Figure out how long it's been since I've fired my cannon because of a player's missile.
-				float flTimeSuppressed = gpGlobals->curtime - m_flTimePlayerMissileDetected;
+				float flTimeSuppressed = gpGlobals->GetCurTime() - m_flTimePlayerMissileDetected;
 
 				if( flDiff < strider_missile_suppress_dist.GetFloat() && flTimeSuppressed < strider_missile_suppress_time.GetFloat() )
 				{
@@ -1090,7 +1083,7 @@ void CNPC_Strider::GatherConditions()
 				{
 					if( IRelationType( pEMemory->hEnemy ) != D_NU && IRelationType( pEMemory->hEnemy ) != D_LI )
 					{
-						if( pEMemory->timeLastSeen == gpGlobals->curtime )
+						if( pEMemory->timeLastSeen == gpGlobals->GetCurTime() )
 						{
 							m_iVisibleEnemies++;
 						}
@@ -1103,14 +1096,14 @@ void CNPC_Strider::GatherConditions()
 				// think when a new enemy is chosen.
 				//
 				// Don't switch targets if shooting at a bullseye! Level designers depend on bullseyes.
-				if( GetEnemy() && m_pMinigun->IsShooting() && GetTimeEnemyAcquired() != gpGlobals->curtime )
+				if( GetEnemy() && m_pMinigun->IsShooting() && GetTimeEnemyAcquired() != gpGlobals->GetCurTime() )
 				{
 					if( m_pMinigun->IsOnTarget( 3 ) && !FClassnameIs( GetEnemy(), "npc_bullseye" ) )
 					{
 						if( m_iVisibleEnemies > 1 )
 						{
 							// Time to ignore this guy for a little while and switch targets.
-							GetEnemies()->SetTimeValidEnemy( GetEnemy(), gpGlobals->curtime + ( STRIDER_IGNORE_TARGET_DURATION * m_iVisibleEnemies ) );
+							GetEnemies()->SetTimeValidEnemy( GetEnemy(), gpGlobals->GetCurTime() + ( STRIDER_IGNORE_TARGET_DURATION * m_iVisibleEnemies ) );
 							SetEnemy( NULL, false );
 							ChooseEnemy();
 						}
@@ -1374,7 +1367,7 @@ int CNPC_Strider::SelectSchedule()
 	{
 		if ( !HasCondition( COND_NEW_ENEMY ) )
 		{
-			if ( m_hRagdoll.Get() && (gpGlobals->curtime > m_ragdollTime  || HasCondition( COND_STRIDER_DO_FLICK ) ) )
+			if ( m_hRagdoll.Get() && (gpGlobals->GetCurTime() > m_ragdollTime  || HasCondition( COND_STRIDER_DO_FLICK ) ) )
 			{
 				return SCHED_STRIDER_FLICKL;
 			}
@@ -1472,7 +1465,7 @@ int CNPC_Strider::TranslateSchedule( int scheduleType )
 		}
 		if ( scheduleType == SCHED_ESTABLISH_LINE_OF_FIRE_FALLBACK )
 		{
-			if ( gpGlobals->curtime - GetEnemyLastTimeSeen() < TIME_CARE_ENEMY )
+			if ( gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() < TIME_CARE_ENEMY )
 				return SCHED_STRIDER_COMBAT_FACE;
 			else if ( GetGoalEnt() )
 				return SCHED_STRIDER_HUNT;
@@ -1544,7 +1537,7 @@ void CNPC_Strider::StartTask( const Task_t *pTask )
 				WRITE_VEC3COORD( vecShootPos );
 			MessageEnd();
 			CPASAttenuationFilter filter2( this, "NPC_Strider.Charge" );
-			EmitSound( filter2, entindex(), "NPC_Strider.Charge" );
+			EmitSound( filter2, this->NetworkProp()->entindex(), "NPC_Strider.Charge" );
 
 			//	CPVSFilter filter( vecShootPos );
 			//te->StreakSphere( filter, 0, 0, 150, 100, entindex(), gm_CannonAttachment );
@@ -1556,7 +1549,7 @@ void CNPC_Strider::StartTask( const Task_t *pTask )
 
 	case TASK_STRIDER_STOMP:
 		{
-			m_nextStompTime = gpGlobals->curtime + 5;
+			m_nextStompTime = gpGlobals->GetCurTime() + 5;
 			Activity stompAct = (Activity) ( pTask->flTaskData > 0 ? ACT_STRIDER_STOMPR : ACT_STRIDER_STOMPL );
 			ResetIdealActivity( stompAct );
 		}
@@ -1826,7 +1819,7 @@ void CNPC_Strider::Explode( void )
 	m_lifeState = LIFE_DEAD;
 
 	SetThink( &CNPC_Strider::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	AddEffects( EF_NODRAW );
 	
@@ -1841,7 +1834,7 @@ bool CNPC_Strider::HandleInteraction( int interactionType, void *data, CBaseComb
 {
 	if ( interactionType == g_interactionPlayerLaunchedRPG )
 	{
-		m_flTimePlayerMissileDetected = gpGlobals->curtime;
+		m_flTimePlayerMissileDetected = gpGlobals->GetCurTime();
 		m_hPlayersMissile = sourceEnt;
 		return true;
 	}
@@ -1889,7 +1882,7 @@ void CNPC_Strider::HandleAnimEvent( animevent_t *pEvent )
 				WRITE_VEC3COORD( vecShootPos );
 			MessageEnd();
 			CPASAttenuationFilter filter2( this, "NPC_Strider.Charge" );
-			EmitSound( filter2, entindex(), "NPC_Strider.Charge" );
+			EmitSound( filter2, this->NetworkProp()->entindex(), "NPC_Strider.Charge" );
 		}
 		break;
 	case STRIDER_AE_CANNONHIT:
@@ -1920,7 +1913,7 @@ void CNPC_Strider::HandleAnimEvent( animevent_t *pEvent )
 			if ( pRagdoll )
 			{
 				CPASAttenuationFilter filter( pRagdoll, "NPC_Strider.RagdollDetach" );
-				EmitSound( filter, pRagdoll->entindex(), "NPC_Strider.RagdollDetach" );
+				EmitSound( filter, pRagdoll->NetworkProp()->entindex(), "NPC_Strider.RagdollDetach" );
 				DetachAttachedRagdoll( pRagdoll );
 			}
 			m_hRagdoll = NULL;
@@ -2534,7 +2527,7 @@ int CNPC_Strider::MeleeAttack1Conditions( float flDot, float flDist )
 		return COND_NONE;
 	}
 
-	if (gpGlobals->curtime < m_nextStompTime)
+	if (gpGlobals->GetCurTime() < m_nextStompTime)
 	{
 		return COND_NONE;
 	}
@@ -2756,7 +2749,7 @@ void CNPC_Strider::DoImpactEffect( trace_t &tr, int nDamageType )
 
 	// Add a halo
 	CBroadcastRecipientFilter filter;
-	te->BeamRingPoint( filter, 0.0, 
+	g_pTESystem->BeamRingPoint( filter, 0.0,
 		tr.endpos,							//origin
 		0,									//start radius
 		64,									//end radius
@@ -2839,7 +2832,7 @@ bool CNPC_Strider::CanShootThrough( const trace_t &tr, const Vector &vecTarget )
 //---------------------------------------------------------
 void CNPC_Strider::CreateFocus()
 {
-	m_hFocus = CreateEntityByName( "bullseye_strider_focus" );
+	m_hFocus = engineServer->CreateEntityByName( "bullseye_strider_focus" );
 
 	ASSERT( m_hFocus != NULL );
 	m_hFocus->AddSpawnFlags( SF_BULLSEYE_NONSOLID | SF_BULLSEYE_NODAMAGE );
@@ -2951,10 +2944,10 @@ bool CNPC_Strider::GetWeaponLosZ( const Vector &vOrigin, float minZ, float maxZ,
 //---------------------------------------------------------
 void CNPC_Strider::AlertSound()
 {
-	if( ( gpGlobals->curtime - m_flTimeLastAlertSound ) > 2.0f )
+	if( ( gpGlobals->GetCurTime() - m_flTimeLastAlertSound ) > 2.0f )
 	{
 		EmitSound( "NPC_Strider.Alert" );
-		m_flTimeLastAlertSound = gpGlobals->curtime;
+		m_flTimeLastAlertSound = gpGlobals->GetCurTime();
 	}
 }
 
@@ -2991,7 +2984,7 @@ void CNPC_Strider::HuntSound()
 	if( m_PlayerFreePass.HasPass() )
 	{
 		EmitSound( "NPC_Strider.Hunt" );
-		m_flTimeNextHuntSound = gpGlobals->curtime + random->RandomFloat( 8.0f, 12.0f );
+		m_flTimeNextHuntSound = gpGlobals->GetCurTime() + random->RandomFloat( 8.0f, 12.0f );
 	}
 }
 
@@ -3522,7 +3515,7 @@ bool CNPC_Strider::OverrideMove( float flInterval )
 	else if ( GetEnemy() )
 	{
 		bool bPlayer = GetEnemy()->IsPlayer();
-		float timeSinceSeenEnemy = gpGlobals->curtime - GetEnemyLastTimeSeen();
+		float timeSinceSeenEnemy = gpGlobals->GetCurTime() - GetEnemyLastTimeSeen();
 		if ( ( !bPlayer && timeSinceSeenEnemy < STRIDER_TIME_STOP_FACING_ENEMY ) ||
 			 ( bPlayer && !m_PlayerFreePass.HasPass() ) )
 		{
@@ -3606,7 +3599,7 @@ void CNPC_Strider::MaintainTurnActivity( void )
 	}
 	// accumulate turn angle, delay response for short turns
 	m_doTurn += m_doRight + m_doLeft;
-	if (!IsMoving() && m_doTurn > 180.0f && m_flNextTurnAct < gpGlobals->curtime )
+	if (!IsMoving() && m_doTurn > 180.0f && m_flNextTurnAct < gpGlobals->GetCurTime() )
 	{
 		int iSeq = ACT_INVALID;
 		if (m_doLeft > m_doRight)
@@ -3628,12 +3621,12 @@ void CNPC_Strider::MaintainTurnActivity( void )
 				{
 					SetLayerPlaybackRate( iLayer, 1.5 );
 				}
-				m_flNextTurnAct = gpGlobals->curtime + GetLayerDuration( iLayer );
+				m_flNextTurnAct = gpGlobals->GetCurTime() + GetLayerDuration( iLayer );
 			}
 			else
 			{
 				// too busy, try again in half a second
-				m_flNextTurnAct = gpGlobals->curtime + 0.5;
+				m_flNextTurnAct = gpGlobals->GetCurTime() + 0.5;
 			}
 		}
 		m_doTurn = m_doLeft = m_doRight = 0.0;
@@ -3792,7 +3785,7 @@ void CNPC_Strider::DoMuzzleFlash( void )
 	CEffectData data;
 
 	data.m_nAttachmentIndex = LookupAttachment( "MiniGun" );
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	DispatchEffect( "StriderMuzzleFlash", data );
 }
 
@@ -4054,13 +4047,13 @@ void CNPC_Strider::FireCannon()
 		return;
 	}
 
-	if ( GetNextThink( "CANNON_HIT" ) > gpGlobals->curtime )
+	if ( GetNextThink( "CANNON_HIT" ) > gpGlobals->GetCurTime() )
 	{
 		DevMsg( "Strider refiring cannon?\n" );
 		return;
 	}
 
-	m_nextShootTime = gpGlobals->curtime + 5;
+	m_nextShootTime = gpGlobals->GetCurTime() + 5;
 	trace_t tr;
 	Vector vecShootPos;
 	GetAttachment( gm_CannonAttachment, vecShootPos );
@@ -4081,8 +4074,8 @@ void CNPC_Strider::FireCannon()
 	MessageEnd();
 
 	CPASAttenuationFilter filter2( this, "NPC_Strider.Shoot" );
-	EmitSound( filter2, entindex(), "NPC_Strider.Shoot");
-	SetContextThink( &CNPC_Strider::CannonHitThink, gpGlobals->curtime + 0.2f, "CANNON_HIT" );
+	EmitSound( filter2, this->NetworkProp()->entindex(), "NPC_Strider.Shoot");
+	SetContextThink( &CNPC_Strider::CannonHitThink, gpGlobals->GetCurTime() + 0.2f, "CANNON_HIT" );
 }
 
 void CNPC_Strider::CannonHitThink()
@@ -4194,7 +4187,7 @@ bool CNPC_Strider::CarriedByDropship()
 //---------------------------------------------------------
 void CNPC_Strider::CarriedThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.05 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05 );
 	StudioFrameAdvance();
 
 	Vector vecGround = GetAbsOrigin();
@@ -4373,7 +4366,7 @@ void CNPC_Strider::StompHit( int followerBoneIndex )
 		pRagdoll->AddSolidFlags( FSOLID_NOT_SOLID );
 
 		m_hRagdoll = pRagdoll;
-		m_ragdollTime = gpGlobals->curtime + 10;
+		m_ragdollTime = gpGlobals->GetCurTime() + 10;
 		UTIL_Remove( pNPC );
 	}
 }
@@ -4465,7 +4458,7 @@ void AdjustStriderNodePosition( CAI_Network *pNetwork, CAI_Node *pNode )
 		{
 			bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
 			CBaseEntity::SetAllowPrecache( true );
-			pStrider = (CNPC_Strider *)CreateEntityByName( "npc_strider" );
+			pStrider = (CNPC_Strider *)engineServer->CreateEntityByName( "npc_strider" );
 			pStrider->m_bDisableBoneFollowers = true; // don't create these since we're just going to destroy him
 			DispatchSpawn( pStrider );
 			CBaseEntity::SetAllowPrecache( allowPrecache );
@@ -4834,7 +4827,7 @@ END_DATADESC()
 void CStriderMinigun::Init()
 {
 	m_enable = true;
-	m_nextTwitchTime = gpGlobals->curtime;
+	m_nextTwitchTime = gpGlobals->GetCurTime();
 	m_randomState = 0;
 	m_yaw.current = m_yaw.target = 0;
 	m_pitch.current = m_pitch.target = 0;
@@ -4842,7 +4835,7 @@ void CStriderMinigun::Init()
 	m_pitch.rate = 180;
 
 	SetState( MINIGUN_OFF );
-	m_burstTime = gpGlobals->curtime;
+	m_burstTime = gpGlobals->GetCurTime();
 	m_nextBulletTime = FLT_MAX;
 	m_vecAnchor = vec3_invalid;
 	m_shootDuration = STRIDER_DEFAULT_SHOOT_DURATION;
@@ -4955,8 +4948,8 @@ void CStriderMinigun::StartShooting( IStriderMinigunHost *pHost, CBaseEntity *pT
 
 	SetState( MINIGUN_SHOOTING );
 	
-	m_nextBulletTime = gpGlobals->curtime;
-	m_burstTime = gpGlobals->curtime + duration;
+	m_nextBulletTime = gpGlobals->GetCurTime();
+	m_burstTime = gpGlobals->GetCurTime() + duration;
 
 	m_shootDuration = duration;
 
@@ -5040,7 +5033,7 @@ void CStriderMinigun::StartShooting( IStriderMinigunHost *pHost, CBaseEntity *pT
 //---------------------------------------------------------
 void CStriderMinigun::ExtendShooting( float timeExtend )
 {
-	m_burstTime = gpGlobals->curtime + timeExtend;
+	m_burstTime = gpGlobals->GetCurTime() + timeExtend;
 	m_shootDuration = timeExtend;
 	m_bWarnedAI = false;
 }
@@ -5100,11 +5093,11 @@ void CStriderMinigun::StopShootingForSeconds( IStriderMinigunHost *pHost, CBaseE
 		SetState( MINIGUN_OFF );
 	}
 
-	m_burstTime = gpGlobals->curtime + duration;
+	m_burstTime = gpGlobals->GetCurTime() + duration;
 	m_nextBulletTime = FLT_MAX;
 
 	ClearOnTarget();
-	m_nextTwitchTime = gpGlobals->curtime + random->RandomFloat( 2.0, 4.0 );
+	m_nextTwitchTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.0, 4.0 );
 	pHost->OnMinigunStopShooting( pTarget );
 }
 
@@ -5158,7 +5151,7 @@ bool CStriderMinigun::CanStartShooting( IStriderMinigunHost *pHost, CBaseEntity 
 	if( !pTargetEnt )
 		return false;
 	
-	if( gpGlobals->curtime < m_burstTime )
+	if( gpGlobals->GetCurTime() < m_burstTime )
 		return false;
 
 	CNPC_Strider *pStrider = dynamic_cast<CNPC_Strider *>(pHost->GetEntity() );
@@ -5183,7 +5176,7 @@ bool CStriderMinigun::CanStartShooting( IStriderMinigunHost *pHost, CBaseEntity 
 				if( pStrider->IsUsingAggressiveBehavior() && pTargetEnt->IsPlayer() && !pStrider->HasPass() )
 				{
 					// I can shoot the player's cover until he hides long enough to earn a free pass.
-					float flTimeSinceLastSeen = gpGlobals->curtime - pStrider->GetEnemies()->LastTimeSeen(pTargetEnt);
+					float flTimeSinceLastSeen = gpGlobals->GetCurTime() - pStrider->GetEnemies()->LastTimeSeen(pTargetEnt);
 
 					if( flTimeSinceLastSeen <= 2.0f )
 						return true;
@@ -5257,7 +5250,7 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 		pHost->NewTarget();
 	}
 
-	if ( !GetTarget() && m_nextTwitchTime <= gpGlobals->curtime )
+	if ( !GetTarget() && m_nextTwitchTime <= gpGlobals->GetCurTime() )
 	{
 		// invert one and randomize the other.
 		// This has the effect of making the gun cross the field of
@@ -5273,7 +5266,7 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 			m_pitch.Random( MINIGUN_MIN_PITCH, MINIGUN_MAX_PITCH, 270, 360 );
 			m_yaw.target = -m_yaw.target;
 		}
-		m_nextTwitchTime = gpGlobals->curtime + random->RandomFloat( 0.3, 2 );
+		m_nextTwitchTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.3, 2 );
 	}
 
 	CBaseEntity *pTargetEnt = m_hTarget.Get();
@@ -5293,7 +5286,7 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 	// Start or stop shooting.
 	if( IsShooting() )
 	{
-		if( gpGlobals->curtime > m_burstTime || !pTargetEnt )
+		if( gpGlobals->GetCurTime() > m_burstTime || !pTargetEnt )
 		{
 			// Time to stop firing.
 			if( m_bOverrideEnemy )
@@ -5314,12 +5307,12 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 	}
 
 	// Fire the next bullet!
-	if ( m_nextBulletTime <= gpGlobals->curtime && !IsPegged() )
+	if ( m_nextBulletTime <= gpGlobals->GetCurTime() && !IsPegged() )
 	{
 		if( pTargetEnt && pTargetEnt == pHost->GetEntity()->GetEnemy() )
 		{
 			// Shooting at the Strider's enemy. Strafe to target!
-			float flRemainingShootTime = m_burstTime - gpGlobals->curtime;
+			float flRemainingShootTime = m_burstTime - gpGlobals->GetCurTime();
 
 			// Skim a little time off of the factor, leave a moment of on-target
 			// time. This guarantees that the minigun will strike the target a few times.
@@ -5359,7 +5352,7 @@ void CStriderMinigun::Think( IStriderMinigunHost *pHost, float dt )
 			pHost->ShootMinigun( pTargetPoint, GetAimError() );
 		}
 
-		m_nextBulletTime = gpGlobals->curtime + (1.0f / pHost->GetMinigunRateOfFire() );
+		m_nextBulletTime = gpGlobals->GetCurTime() + (1.0f / pHost->GetMinigunRateOfFire() );
 	}
 }
 
@@ -5407,12 +5400,12 @@ void CSparkTrail::Spawn()
 	SetAbsVelocity( vecVelocity );
 
 	SetThink( &CSparkTrail::SparkThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CSparkTrail::SparkThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.05 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05 );
 
 	g_pEffects->Sparks( GetAbsOrigin() );
 

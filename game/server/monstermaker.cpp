@@ -46,14 +46,14 @@ END_DATADESC()
 CNPCSpawnDestination::CNPCSpawnDestination()
 {
 	// Available right away, the first time.
-	m_TimeNextAvailable = gpGlobals->curtime;
+	m_TimeNextAvailable = gpGlobals->GetCurTime();
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
 bool CNPCSpawnDestination::IsAvailable()
 {
-	if( m_TimeNextAvailable > gpGlobals->curtime )
+	if( m_TimeNextAvailable > gpGlobals->GetCurTime() )
 	{
 		return false;
 	}
@@ -72,7 +72,7 @@ void CNPCSpawnDestination::OnSpawnedNPC( CAI_BaseNPC *pNPC )
 	}
 
 	m_OnSpawnNPC.FireOutput( pNPC, this );
-	m_TimeNextAvailable = gpGlobals->curtime + m_ReuseDelay;
+	m_TimeNextAvailable = gpGlobals->GetCurTime() + m_ReuseDelay;
 }
 
 //-------------------------------------
@@ -128,7 +128,7 @@ void CBaseNPCMaker::Spawn( void )
 	if ( m_bDisabled == false )
 	{
 		SetThink ( &CBaseNPCMaker::MakerThink );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 	else
 	{
@@ -223,7 +223,7 @@ bool CBaseNPCMaker::CanMakeNPC( bool bIgnoreSolidEntities )
 	// Do we need to check to see if the player's looking?
 	if ( HasSpawnFlags( SF_NPCMAKER_HIDEFROMPLAYER ) )
 	{
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
 			if ( pPlayer )
@@ -283,7 +283,7 @@ void CBaseNPCMaker::Enable( void )
 
 	m_bDisabled = false;
 	SetThink ( &CBaseNPCMaker::MakerThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 
@@ -419,7 +419,7 @@ void CNPCMaker::MakeNPC( void )
 	if (!CanMakeNPC())
 		return;
 
-	CAI_BaseNPC	*pent = (CAI_BaseNPC*)CreateEntityByName( STRING(m_iszNPCClassname) );
+	CAI_BaseNPC	*pent = (CAI_BaseNPC*)engineServer->CreateEntityByName( STRING(m_iszNPCClassname) );
 
 	if ( !pent )
 	{
@@ -521,7 +521,7 @@ void CBaseNPCMaker::ChildPostSpawn( CAI_BaseNPC *pChild )
 //-----------------------------------------------------------------------------
 void CBaseNPCMaker::MakerThink ( void )
 {
-	SetNextThink( gpGlobals->curtime + m_flSpawnFrequency );
+	SetNextThink( gpGlobals->GetCurTime() + m_flSpawnFrequency );
 
 	MakeNPC();
 }
@@ -623,7 +623,7 @@ void CTemplateNPCMaker::Precache()
 	if ( m_iszTemplateData != NULL_STRING )
 	{
 		CBaseEntity *pEntity = NULL;
-		MapEntity_ParseEntity( pEntity, STRING(m_iszTemplateData), NULL );
+		MapEntity_ParseEntity("", pEntity, STRING(m_iszTemplateData), NULL);
 		if ( pEntity != NULL )
 		{
 			PrecacheTemplateEntity( pEntity );
@@ -800,7 +800,7 @@ void CTemplateNPCMaker::MakeNPC( void )
 
 	CAI_BaseNPC	*pent = NULL;
 	CBaseEntity *pEntity = NULL;
-	MapEntity_ParseEntity( pEntity, STRING(m_iszTemplateData), NULL );
+	MapEntity_ParseEntity("", pEntity, STRING(m_iszTemplateData), NULL);
 	if ( pEntity != NULL )
 	{
 		pent = (CAI_BaseNPC *)pEntity;
@@ -883,7 +883,7 @@ void CTemplateNPCMaker::MakeNPCInLine( void )
 
 	CAI_BaseNPC	*pent = NULL;
 	CBaseEntity *pEntity = NULL;
-	MapEntity_ParseEntity( pEntity, STRING(m_iszTemplateData), NULL );
+	MapEntity_ParseEntity("", pEntity, STRING(m_iszTemplateData), NULL);
 	if ( pEntity != NULL )
 	{
 		pent = (CAI_BaseNPC *)pEntity;
@@ -978,7 +978,7 @@ void CTemplateNPCMaker::MakeNPCInRadius( void )
 
 	CAI_BaseNPC	*pent = NULL;
 	CBaseEntity *pEntity = NULL;
-	MapEntity_ParseEntity( pEntity, STRING(m_iszTemplateData), NULL );
+	MapEntity_ParseEntity("", pEntity, STRING(m_iszTemplateData), NULL);
 	if ( pEntity != NULL )
 	{
 		pent = (CAI_BaseNPC *)pEntity;

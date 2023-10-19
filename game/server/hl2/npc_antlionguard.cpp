@@ -405,6 +405,18 @@ protected:
 public:	
 	inline bool IsCavernBreed( void ) const { return m_bCavernBreed; }
 	inline bool IsInCavern( void ) const { return m_bInCavern; }
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_AntlionGuard)
+	BEGIN_SEND_TABLE(CNPC_AntlionGuard, DT_NPC_AntlionGuard, DT_AI_BaseNPC)
+		SendPropBool(SENDINFO(m_bCavernBreed)),
+		SendPropBool(SENDINFO(m_bInCavern)),
+
+#if ANTLIONGUARD_BLOOD_EFFECTS
+		SendPropInt(SENDINFO(m_iBleedingLevel), 2, SPROP_UNSIGNED),
+#endif
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 //==================================================
@@ -641,14 +653,8 @@ CNPC_AntlionGuard::CNPC_AntlionGuard( void )
 
 LINK_ENTITY_TO_CLASS( npc_antlionguard, CNPC_AntlionGuard );
 
-IMPLEMENT_SERVERCLASS_ST(CNPC_AntlionGuard, DT_NPC_AntlionGuard)
-	SendPropBool( SENDINFO( m_bCavernBreed ) ),
-	SendPropBool( SENDINFO( m_bInCavern ) ),
+IMPLEMENT_SERVERCLASS(CNPC_AntlionGuard, DT_NPC_AntlionGuard)
 
-#if ANTLIONGUARD_BLOOD_EFFECTS
-	SendPropInt(  SENDINFO( m_iBleedingLevel ), 2, SPROP_UNSIGNED ),
-#endif
-END_SEND_TABLE()
 
 
 //-----------------------------------------------------------------------------
@@ -906,7 +912,7 @@ bool CNPC_AntlionGuard::CanSummon( bool bIgnoreTime )
 	if ( !m_bBarkEnabled )
 		return false;
 
-	if ( !bIgnoreTime && m_flNextSummonTime > gpGlobals->curtime )
+	if ( !bIgnoreTime && m_flNextSummonTime > gpGlobals->GetCurTime() )
 		return false;
 
 	// Hit the max number of them allowed? Only summon when we're 2 down.
@@ -965,9 +971,9 @@ int CNPC_AntlionGuard::SelectUnreachableSchedule( void )
 	if ( HasCondition( COND_SEE_ENEMY ) )
 	{
 		// Roar at the player as show of frustration
-		if ( m_flNextRoarTime < gpGlobals->curtime )
+		if ( m_flNextRoarTime < gpGlobals->GetCurTime() )
 		{
-			m_flNextRoarTime = gpGlobals->curtime + RandomFloat( 20,40 );
+			m_flNextRoarTime = gpGlobals->GetCurTime() + RandomFloat( 20,40 );
 			return SCHED_ANTLIONGUARD_ROAR;
 		}
 
@@ -1078,7 +1084,7 @@ bool CNPC_AntlionGuard::ShouldCharge( const Vector &startPos, const Vector &endP
 	if ( !bCheckForCancel )
 	{
 		// Don't allow use to charge again if it's been too soon
-		if ( useTime && ( m_flChargeTime > gpGlobals->curtime ) )
+		if ( useTime && ( m_flChargeTime > gpGlobals->GetCurTime() ) )
 			return false;
 
 		float distance = UTIL_DistApprox2D( startPos, endPos );
@@ -1161,7 +1167,7 @@ bool CNPC_AntlionGuard::ShouldCharge( const Vector &startPos, const Vector &endP
 	// Only update this if we've requested it
 	if ( useTime )
 	{
-		m_flChargeTime = gpGlobals->curtime + 4.0f;
+		m_flChargeTime = gpGlobals->GetCurTime() + 4.0f;
 	}
 
 	return true;
@@ -1188,9 +1194,9 @@ int CNPC_AntlionGuard::SelectSchedule( void )
 
 	// Flinch on heavy damage, but not if we've flinched too recently.
 	// This is done to prevent stun-locks from grenades.
-	if ( !m_bInCavern && HasCondition( COND_HEAVY_DAMAGE ) && m_flNextHeavyFlinchTime < gpGlobals->curtime )
+	if ( !m_bInCavern && HasCondition( COND_HEAVY_DAMAGE ) && m_flNextHeavyFlinchTime < gpGlobals->GetCurTime() )
 	{
-		m_flNextHeavyFlinchTime = gpGlobals->curtime + 8.0f;
+		m_flNextHeavyFlinchTime = gpGlobals->GetCurTime() + 8.0f;
 		return SCHED_ANTLIONGUARD_PHYSICS_DAMAGE_HEAVY;
 	}
 
@@ -1258,7 +1264,7 @@ int CNPC_AntlionGuard::SelectSchedule( void )
 int CNPC_AntlionGuard::MeleeAttack1Conditions( float flDot, float flDist )
 {
 	// Don't attack again too soon
-	if ( GetNextAttack() > gpGlobals->curtime )
+	if ( GetNextAttack() > gpGlobals->GetCurTime() )
 		return 0;
 
 	// While charging, we can't melee attack
@@ -1398,7 +1404,7 @@ bool CNPC_AntlionGuard::OverrideMove( float flInterval )
 //-----------------------------------------------------------------------------
 void CNPC_AntlionGuard::Shove( void )
 {
-	if ( GetNextAttack() > gpGlobals->curtime )
+	if ( GetNextAttack() > gpGlobals->GetCurTime() )
 		return;
 
 	CBaseEntity *pHurt = NULL;
@@ -1622,7 +1628,7 @@ void CNPC_AntlionGuard::Footstep( bool bHeavy )
 			soundParams.m_pSoundName = "NPC_AntlionGuard.NearStepHeavy";
 			soundParams.m_flVolume = flNearVolume;
 			soundParams.m_nFlags = SND_CHANGE_VOL;
-			EmitSound( filter, entindex(), soundParams );
+			EmitSound( filter, this->NetworkProp()->entindex(), soundParams );
 		}
 
 		EmitSound( "NPC_AntlionGuard.FarStepHeavy" );
@@ -1634,7 +1640,7 @@ void CNPC_AntlionGuard::Footstep( bool bHeavy )
 			soundParams.m_pSoundName = "NPC_AntlionGuard.NearStepLight";
 			soundParams.m_flVolume = flNearVolume;
 			soundParams.m_nFlags = SND_CHANGE_VOL;
-			EmitSound( filter, entindex(), soundParams );
+			EmitSound( filter, this->NetworkProp()->entindex(), soundParams );
 		}
 
 		EmitSound( "NPC_AntlionGuard.FarStepLight" );
@@ -1942,12 +1948,12 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 			ENVELOPE_CONTROLLER.SoundFadeOut( m_pGrowlHighSound, 0.5f, false );
 		}
 		
-		m_flAngerNoiseTime = gpGlobals->curtime + duration + random->RandomFloat( 2.0f, 4.0f );
+		m_flAngerNoiseTime = gpGlobals->GetCurTime() + duration + random->RandomFloat( 2.0f, 4.0f );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 
-		m_flBreathTime = gpGlobals->curtime + duration - 0.2f;
+		m_flBreathTime = gpGlobals->GetCurTime() + duration - 0.2f;
 
 		EmitSound( "NPC_AntlionGuard.Anger" );
 		return;
@@ -1961,12 +1967,12 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 		float duration = ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pGrowlHighSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardBark1, ARRAYSIZE(envAntlionGuardBark1) );
 		ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pConfusedSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardBark2, ARRAYSIZE(envAntlionGuardBark2) );
 		
-		m_flAngerNoiseTime = gpGlobals->curtime + duration + random->RandomFloat( 2.0f, 4.0f );
+		m_flAngerNoiseTime = gpGlobals->GetCurTime() + duration + random->RandomFloat( 2.0f, 4.0f );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 		
-		m_flBreathTime = gpGlobals->curtime + duration - 0.2f;
+		m_flBreathTime = gpGlobals->GetCurTime() + duration - 0.2f;
 		return;
 	}
 	
@@ -1976,12 +1982,12 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 
 		float duration = ENVELOPE_CONTROLLER.SoundPlayEnvelope( m_pGrowlHighSound, SOUNDCTRL_CHANGE_VOLUME, envAntlionGuardFastGrowl, ARRAYSIZE(envAntlionGuardFastGrowl) );
 		
-		m_flAngerNoiseTime = gpGlobals->curtime + duration + random->RandomFloat( 2.0f, 4.0f );
+		m_flAngerNoiseTime = gpGlobals->GetCurTime() + duration + random->RandomFloat( 2.0f, 4.0f );
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 
-		m_flBreathTime = gpGlobals->curtime + duration - 0.2f;
+		m_flBreathTime = gpGlobals->GetCurTime() + duration - 0.2f;
 
 		EmitSound( "NPC_AntlionGuard.Roar" );
 		return;
@@ -1997,7 +2003,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 		
-		m_flBreathTime = gpGlobals->curtime + duration - 0.2f;
+		m_flBreathTime = gpGlobals->GetCurTime() + duration - 0.2f;
 		return;
 	}
 
@@ -2012,7 +2018,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 
-		m_flBreathTime = gpGlobals->curtime + ( duration * 0.5f );
+		m_flBreathTime = gpGlobals->GetCurTime() + ( duration * 0.5f );
 
 		EmitSound( "NPC_AntlionGuard.Anger" );
 		return;
@@ -2029,7 +2035,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 
-		m_flBreathTime = gpGlobals->curtime + duration;
+		m_flBreathTime = gpGlobals->GetCurTime() + duration;
 
 		EmitSound( "NPC_AntlionGuard.Anger" );
 		return;
@@ -2045,7 +2051,7 @@ void CNPC_AntlionGuard::HandleAnimEvent( animevent_t *pEvent )
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pBreathSound, 0.0f, 0.1f );
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, 0.1f );
 
-		m_flBreathTime = gpGlobals->curtime + duration;
+		m_flBreathTime = gpGlobals->GetCurTime() + duration;
 		return;
 	}
 
@@ -2210,11 +2216,11 @@ int CNPC_AntlionGuard::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 				pParticle->SetParentAttachment( "SetParentAttachment", "attach_glow2", true );
 				pParticle->SetLocalOrigin( Vector( -16, 24, 0 ) );
 				DispatchSpawn( pParticle );
-				if ( gpGlobals->curtime > 0.5f )
+				if ( gpGlobals->GetCurTime() > 0.5f )
 					pParticle->Activate();
 				
 				pParticle->SetThink( &CBaseEntity::SUB_Remove );
-				pParticle->SetNextThink( gpGlobals->curtime + random->RandomFloat( 2.0f, 3.0f ) );
+				pParticle->SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 3.0f ) );
 			}
 		}
 		*/
@@ -2429,7 +2435,7 @@ void CNPC_AntlionGuard::StartTask( const Task_t *pTask )
 			// if 30 seconds have passed (it should never take this long for the guard to get to an object and hit it).
 			// It's too scary to figure out why this particular antlion guard can't get to its object, but we're shipping
 			// like, tomorrow. (sjb) 8/22/2007
-			m_flWaitFinished = gpGlobals->curtime + 30.0f;
+			m_flWaitFinished = gpGlobals->GetCurTime() + 30.0f;
 		}
 		break;
 
@@ -2711,7 +2717,7 @@ bool CNPC_AntlionGuard::HandleChargeImpact( Vector vecImpact, CBaseEntity *pEnti
 	ImpactShock( vecImpact, 128, 350 );
 
 	// Did we hit anything interesting?
-	if ( !pEntity || pEntity->IsWorld() )
+	if ( !pEntity || pEntity->NetworkProp()->entindex()==0)
 	{
 		// Robin: Due to some of the finicky details in the motor, the guard will hit
 		//		  the world when it is blocked by our enemy when trying to step up 
@@ -2721,7 +2727,7 @@ bool CNPC_AntlionGuard::HandleChargeImpact( Vector vecImpact, CBaseEntity *pEnti
 		EnemyIsRightInFrontOfMe( &pEntity );
 
 		// Did we manage to find him? If not, increment our charge miss count and abort.
-		if ( pEntity->IsWorld() )
+		if ( pEntity->NetworkProp()->entindex()==0)
 		{
 			m_iChargeMisses++;
 			return true;
@@ -2729,7 +2735,7 @@ bool CNPC_AntlionGuard::HandleChargeImpact( Vector vecImpact, CBaseEntity *pEnti
 	}
 
 	// Hit anything we don't like
-	if ( IRelationType( pEntity ) == D_HT && ( GetNextAttack() < gpGlobals->curtime ) )
+	if ( IRelationType( pEntity ) == D_HT && ( GetNextAttack() < gpGlobals->GetCurTime() ) )
 	{
 		EmitSound( "NPC_AntlionGuard.Shove" );
 
@@ -2747,7 +2753,7 @@ bool CNPC_AntlionGuard::HandleChargeImpact( Vector vecImpact, CBaseEntity *pEnti
 			SetEnemy( NULL );
 		}
 
-		SetNextAttack( gpGlobals->curtime + 2.0f );
+		SetNextAttack( gpGlobals->GetCurTime() + 2.0f );
 		SetActivity( ACT_ANTLIONGUARD_CHARGE_STOP );
 
 		// We've hit something, so clear our miss count
@@ -3097,7 +3103,7 @@ void CNPC_AntlionGuard::RunTask( const Task_t *pTask )
 						SetEnemy( NULL );
 					}
 
-					SetNextAttack( gpGlobals->curtime + 2.0f );
+					SetNextAttack( gpGlobals->GetCurTime() + 2.0f );
 					SetActivity( ACT_ANTLIONGUARD_CHARGE_STOP );
 
 					// We've hit something, so clear our miss count
@@ -3196,7 +3202,7 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 			continue;
 		}
 
-		CAI_BaseNPC	*pent = (CAI_BaseNPC*)CreateEntityByName( "npc_antlion" );
+		CAI_BaseNPC	*pent = (CAI_BaseNPC*)engineServer->CreateEntityByName( "npc_antlion" );
 		if ( !pent )
 			break;
 
@@ -3258,11 +3264,11 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 
 	if ( m_iNumLiveAntlions > 2 )
 	{
-		m_flNextSummonTime = gpGlobals->curtime + RandomFloat( 15,20 );
+		m_flNextSummonTime = gpGlobals->GetCurTime() + RandomFloat( 15,20 );
 	}
 	else
 	{
-		m_flNextSummonTime = gpGlobals->curtime + RandomFloat( 10,15 );
+		m_flNextSummonTime = gpGlobals->GetCurTime() + RandomFloat( 10,15 );
 	}
 }
 
@@ -3271,7 +3277,7 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 //-----------------------------------------------------------------------------
 void CNPC_AntlionGuard::FoundEnemy( void )
 {
-	m_flAngerNoiseTime = gpGlobals->curtime + 2.0f;
+	m_flAngerNoiseTime = gpGlobals->GetCurTime() + 2.0f;
 	SetState( NPC_STATE_COMBAT );
 }
 
@@ -3280,7 +3286,7 @@ void CNPC_AntlionGuard::FoundEnemy( void )
 //-----------------------------------------------------------------------------
 void CNPC_AntlionGuard::LostEnemy( void )
 {
-	m_flSearchNoiseTime = gpGlobals->curtime + 2.0f;
+	m_flSearchNoiseTime = gpGlobals->GetCurTime() + 2.0f;
 	SetState( NPC_STATE_ALERT );
 
 	m_OnLostPlayer.FireOutput( this, this );
@@ -3488,7 +3494,7 @@ void CNPC_AntlionGuard::UpdatePhysicsTarget( bool bPreferObjectsAlongTargetVecto
 		return;
 
 	// Too soon to check again
-	if ( m_flPhysicsCheckTime > gpGlobals->curtime )
+	if ( m_flPhysicsCheckTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Attempt to find a valid shove target
@@ -3510,7 +3516,7 @@ void CNPC_AntlionGuard::UpdatePhysicsTarget( bool bPreferObjectsAlongTargetVecto
 	}
 
 	// Don't search again for another second
-	m_flPhysicsCheckTime = gpGlobals->curtime + 1.0f;
+	m_flPhysicsCheckTime = gpGlobals->GetCurTime() + 1.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -3583,19 +3589,19 @@ void CNPC_AntlionGuard::PrescheduleThink( void )
 			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, 0.0f, duration );
 			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, random->RandomInt( 120, 140 ), duration );
 
-			m_flBreathTime = gpGlobals->curtime + duration - (duration*0.75f);
+			m_flBreathTime = gpGlobals->GetCurTime() + duration - (duration*0.75f);
 		}
 		
 		m_bStopped = true;
 
-		if ( m_flBreathTime < gpGlobals->curtime )
+		if ( m_flBreathTime < gpGlobals->GetCurTime() )
 		{
 			StartSounds();
 
 			ENVELOPE_CONTROLLER.SoundChangeVolume( m_pGrowlIdleSound, random->RandomFloat( 0.2f, 0.3f ), random->RandomFloat( 0.5f, 1.0f ) );
 			ENVELOPE_CONTROLLER.SoundChangePitch( m_pGrowlIdleSound, random->RandomInt( 80, 120 ), random->RandomFloat( 0.5f, 1.0f ) );
 
-			m_flBreathTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 8.0f );
+			m_flBreathTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.0f, 8.0f );
 		}
 	}
 	else
@@ -3648,7 +3654,7 @@ void CNPC_AntlionGuard::GatherConditions( void )
 
 	if( IsCurSchedule(SCHED_ANTLIONGUARD_PHYSICS_ATTACK) )
 	{
-		if( gpGlobals->curtime > m_flWaitFinished )
+		if( gpGlobals->GetCurTime() > m_flWaitFinished )
 		{
 			ClearCondition( COND_ANTLIONGUARD_PHYSICS_TARGET );
 			SetCondition( COND_ANTLIONGUARD_PHYSICS_TARGET_INVALID );
@@ -3736,7 +3742,7 @@ bool CNPC_AntlionGuard::IsUnreachable(CBaseEntity *pEntity)
 		else if (pEntity == m_UnreachableEnts[i].hUnreachableEnt)
 		{
 			// Test for reachability on any elements that have timed out
-			if ( gpGlobals->curtime > m_UnreachableEnts[i].fExpireTime ||
+			if ( gpGlobals->GetCurTime() > m_UnreachableEnts[i].fExpireTime ||
 				pEntity->GetAbsOrigin().DistToSqr(m_UnreachableEnts[i].vLocationWhenUnreachable) > UNREACHABLE_DIST_TOLERANCE_SQ)
 			{
 				m_UnreachableEnts.FastRemove(i);
@@ -4248,7 +4254,7 @@ void CNPC_AntlionGuard::StartSounds( void )
 
 	if ( m_pGrowlHighSound == NULL )
 	{
-		m_pGrowlHighSound = ENVELOPE_CONTROLLER.SoundCreate( filter, entindex(), CHAN_VOICE, "NPC_AntlionGuard.GrowlHigh",	ATTN_NORM );
+		m_pGrowlHighSound = ENVELOPE_CONTROLLER.SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_VOICE, "NPC_AntlionGuard.GrowlHigh",	ATTN_NORM );
 		
 		if ( m_pGrowlHighSound )
 		{
@@ -4258,7 +4264,7 @@ void CNPC_AntlionGuard::StartSounds( void )
 
 	if ( m_pGrowlIdleSound == NULL )
 	{
-		m_pGrowlIdleSound = ENVELOPE_CONTROLLER.SoundCreate( filter, entindex(), CHAN_STATIC, "NPC_AntlionGuard.GrowlIdle",	ATTN_NORM );
+		m_pGrowlIdleSound = ENVELOPE_CONTROLLER.SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, "NPC_AntlionGuard.GrowlIdle",	ATTN_NORM );
 
 		if ( m_pGrowlIdleSound )
 		{
@@ -4268,7 +4274,7 @@ void CNPC_AntlionGuard::StartSounds( void )
 
 	if ( m_pBreathSound == NULL )
 	{
-		m_pBreathSound	= ENVELOPE_CONTROLLER.SoundCreate( filter, entindex(), CHAN_ITEM, "NPC_AntlionGuard.BreathSound",		ATTN_NORM );
+		m_pBreathSound	= ENVELOPE_CONTROLLER.SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_ITEM, "NPC_AntlionGuard.BreathSound",		ATTN_NORM );
 		
 		if ( m_pBreathSound )
 		{
@@ -4278,7 +4284,7 @@ void CNPC_AntlionGuard::StartSounds( void )
 
 	if ( m_pConfusedSound == NULL )
 	{
-		m_pConfusedSound = ENVELOPE_CONTROLLER.SoundCreate( filter, entindex(), CHAN_WEAPON,"NPC_AntlionGuard.Confused",	ATTN_NORM );
+		m_pConfusedSound = ENVELOPE_CONTROLLER.SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_WEAPON,"NPC_AntlionGuard.Confused",	ATTN_NORM );
 
 		if ( m_pConfusedSound )
 		{

@@ -31,7 +31,7 @@ private:
 	CNetworkVar( int, m_iOverlayID );
 
 	BEGIN_INIT_SEND_TABLE(CInfoOverlayAccessor)
-	BEGIN_SEND_TABLE_NOBASE(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
+	BEGIN_SEND_TABLE(CInfoOverlayAccessor, DT_InfoOverlayAccessor, DT_PointEntity)
 		SendPropInt(SENDINFO(m_iTextureFrameIndex), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_iOverlayID), 32, SPROP_UNSIGNED),
 	END_SEND_TABLE(DT_InfoOverlayAccessor)

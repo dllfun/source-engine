@@ -51,7 +51,7 @@ public:
 	CNetworkVar( float, m_flHDRColorScale );
 
 	BEGIN_INIT_SEND_TABLE(CSun)
-	BEGIN_SEND_TABLE_NOBASE(CSun, DT_Sun)
+	BEGIN_SEND_TABLE(CSun, DT_Sun, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
 		SendPropInt(SENDINFO(m_clrOverlay), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
 		SendPropVector(SENDINFO(m_vDirection), 0, SPROP_NORMAL),

@@ -129,7 +129,7 @@ void CActBusyAnimData::LevelShutdownPostEntity( void )
 void CActBusyAnimData::ParseAnimDataFile( void )
 {
 	KeyValues *pKVAnimData = new KeyValues( "ActBusyAnimDatafile" );
-	if ( pKVAnimData->LoadFromFile( filesystem, "scripts/actbusy.txt" ) )
+	if ( pKVAnimData->LoadFromFile( g_pFileSystem, "scripts/actbusy.txt" ) )
 	{
 		// Now try and parse out each act busy anim
 		KeyValues *pKVAnim = pKVAnimData->GetFirstSubKey();
@@ -271,7 +271,7 @@ void CAI_ActBusyBehavior::Enable( CAI_ActBusyGoal *pGoal, float flRange, bool bV
 	m_bMovingToBusy = false;
 	m_bNeedsToPlayExitAnim = false;
 	m_bLeaving = false;
-	m_flNextBusySearchTime = gpGlobals->curtime + ai_actbusy_search_time.GetFloat();
+	m_flNextBusySearchTime = gpGlobals->GetCurTime() + ai_actbusy_search_time.GetFloat();
 	m_flEndBusyAt = 0;
 	m_bVisibleOnly = bVisibleOnly;
 	m_bInQueue = dynamic_cast<CAI_ActBusyQueueGoal*>(m_hActBusyGoal.Get()) != NULL;
@@ -301,7 +301,7 @@ void CAI_ActBusyBehavior::Enable( CAI_ActBusyGoal *pGoal, float flRange, bool bV
 	if ( IsCurScheduleOverridable() )
 	{
 		// Force search time to be now.
-		m_flNextBusySearchTime = gpGlobals->curtime;
+		m_flNextBusySearchTime = gpGlobals->GetCurTime();
 		GetOuter()->ClearSchedule( "Enabling act busy" );
 	}
 
@@ -443,7 +443,7 @@ void CAI_ActBusyBehavior::StopBusying( void )
 		SetCondition( COND_PROVOKED );
 	}
 
-	m_flEndBusyAt = gpGlobals->curtime;
+	m_flEndBusyAt = gpGlobals->GetCurTime();
 	m_bForceActBusy = false;
 	m_bTeleportToBusy = false;
 	m_bUseNearestBusy = false;
@@ -622,7 +622,7 @@ bool CAI_ActBusyBehavior::CanSelectSchedule( void )
 	if ( !m_bEnabled )
 		return false;
 
-	if ( m_flDeferUntil > gpGlobals->curtime )
+	if ( m_flDeferUntil > gpGlobals->GetCurTime() )
 		return false;
 
 	if ( CountEnemiesInSafeZone() > 0 )
@@ -636,7 +636,7 @@ bool CAI_ActBusyBehavior::CanSelectSchedule( void )
 		return false;
 
 	// Don't select actbusy if we're not going to search for a node anyway
-	return (m_flNextBusySearchTime < gpGlobals->curtime);
+	return (m_flNextBusySearchTime < gpGlobals->GetCurTime());
 }
 
 //-----------------------------------------------------------------------------
@@ -706,7 +706,7 @@ void CAI_ActBusyBehavior::OnFriendDamaged( CBaseCombatCharacter *pSquadmate, CBa
 	if( IsCombatActBusy() && pSquadmate->IsPlayer() && IsInSafeZone( pAttacker ) )
 	{
 		SetCondition( COND_ACTBUSY_AWARE_OF_ENEMY_IN_SAFE_ZONE ); // Break the actbusy, if we're running it.
-		m_flDeferUntil = gpGlobals->curtime + 4.0f;	// Stop actbusying and go deal with that enemy!!
+		m_flDeferUntil = gpGlobals->GetCurTime() + 4.0f;	// Stop actbusying and go deal with that enemy!!
 	}
 
 	BaseClass::OnFriendDamaged( pSquadmate, pAttacker );
@@ -758,7 +758,7 @@ int	CAI_ActBusyBehavior::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if( IsCombatActBusy() && info.GetAttacker() && IsInSafeZone( info.GetAttacker() ) )
 	{
 		SetCondition( COND_ACTBUSY_AWARE_OF_ENEMY_IN_SAFE_ZONE ); // Break the actbusy, if we're running it.
-		m_flDeferUntil = gpGlobals->curtime + 4.0f;	// Stop actbusying and go deal with that enemy!!
+		m_flDeferUntil = gpGlobals->GetCurTime() + 4.0f;	// Stop actbusying and go deal with that enemy!!
 	}
 
 	return BaseClass::OnTakeDamage_Alive( info );
@@ -793,12 +793,12 @@ void CAI_ActBusyBehavior::GatherConditions( void )
 	{
 		if ( (!bCheckFOV||GetOuter()->FInViewCone(m_hSeeEntity)) && GetOuter()->QuerySeeEntity(m_hSeeEntity) && (!bCheckLOS||GetOuter()->FVisible(m_hSeeEntity)) )
 		{
-			m_fTimeLastSawSeeEntity = gpGlobals->curtime;
+			m_fTimeLastSawSeeEntity = gpGlobals->GetCurTime();
 			ClearCondition( COND_ACTBUSY_LOST_SEE_ENTITY );
 		}
 		else if( m_hActBusyGoal )
 		{
-			float fDelta = gpGlobals->curtime - m_fTimeLastSawSeeEntity;
+			float fDelta = gpGlobals->GetCurTime() - m_fTimeLastSawSeeEntity;
 			if( fDelta >= m_hActBusyGoal->m_flSeeEntityTimeout )
 			{
 				SetCondition( COND_ACTBUSY_LOST_SEE_ENTITY );
@@ -809,7 +809,7 @@ void CAI_ActBusyBehavior::GatherConditions( void )
 					// Defer any actbusying for several seconds. This serves as a heuristic for waiting
 					// for the player to settle after moving out of the room. This helps Alyx pick a more
 					// pertinent Actbusy near the player's new location.
-					m_flDeferUntil = gpGlobals->curtime + 4.0f;
+					m_flDeferUntil = gpGlobals->GetCurTime() + 4.0f;
 				}
 			}
 		}
@@ -1106,7 +1106,7 @@ int	CAI_ActBusyBehavior::SelectScheduleForLeaving( void )
 						GetOuter()->SetOwnerEntity( NULL );
 					}
 					GetOuter()->SetThink( &CBaseEntity::SUB_Remove); //SUB_Remove) ; //GetOuter()->SUB_Remove );
-					GetOuter()->SetNextThink( gpGlobals->curtime + 0.1 );
+					GetOuter()->SetNextThink( gpGlobals->GetCurTime() + 0.1);
 
 					if ( m_hActBusyGoal )
 					{
@@ -1149,16 +1149,16 @@ int	CAI_ActBusyBehavior::SelectScheduleForLeaving( void )
 int CAI_ActBusyBehavior::SelectScheduleWhileNotBusy( int iBase )
 {
 	// Randomly act busy (unless we're being forced, in which case we should search immediately)
-	if ( m_bForceActBusy || m_flNextBusySearchTime < gpGlobals->curtime )
+	if ( m_bForceActBusy || m_flNextBusySearchTime < gpGlobals->GetCurTime() )
 	{
 		// If we're being forced, think again quickly
 		if ( m_bForceActBusy || IsCombatActBusy() )
 		{
-			m_flNextBusySearchTime = gpGlobals->curtime + 2.0;
+			m_flNextBusySearchTime = gpGlobals->GetCurTime() + 2.0;
 		}
 		else
 		{
-			m_flNextBusySearchTime = gpGlobals->curtime + RandomFloat(ai_actbusy_search_time.GetFloat(), ai_actbusy_search_time.GetFloat()*2);
+			m_flNextBusySearchTime = gpGlobals->GetCurTime() + RandomFloat(ai_actbusy_search_time.GetFloat(), ai_actbusy_search_time.GetFloat() * 2);
 		}
 
 		// We may already have a node
@@ -1294,7 +1294,7 @@ int CAI_ActBusyBehavior::SelectScheduleWhileNotBusy( int iBase )
 			{
 				// Don't try again right away, not enough state will have changed.
 				// Just go do something useful for a few seconds.
-				m_flNextBusySearchTime = gpGlobals->curtime + 10.0;
+				m_flNextBusySearchTime = gpGlobals->GetCurTime() + 10.0;
 			}
 		}
 	}
@@ -1308,7 +1308,7 @@ int CAI_ActBusyBehavior::SelectScheduleWhileNotBusy( int iBase )
 int	CAI_ActBusyBehavior::SelectScheduleWhileBusy( void )
 {
 	// Are we supposed to stop on our current actbusy, but stay in the actbusy state?
-	if ( !ActBusyNodeStillActive() || (m_flEndBusyAt && gpGlobals->curtime >= m_flEndBusyAt) )
+	if ( !ActBusyNodeStillActive() || (m_flEndBusyAt && gpGlobals->GetCurTime() >= m_flEndBusyAt))
 	{
 		if ( ai_debug_actbusy.GetInt() == 4 )
 		{
@@ -1637,7 +1637,7 @@ void CAI_ActBusyBehavior::PlaySoundForActBusy( busyanimparts_t AnimPart )
 		if ( GetOuter()->GetParametersForSound( STRING(pBusyAnim->iszSounds[AnimPart]), params, STRING(GetOuter()->GetModelName()) ) )
 		{
 			CPASAttenuationFilter filter( GetOuter() );
-			GetOuter()->EmitSound( filter, GetOuter()->entindex(), params );
+			GetOuter()->EmitSound( filter, GetOuter()->NetworkProp()->entindex(), params );
 		}
 		else
 		{
@@ -1730,7 +1730,7 @@ void CAI_ActBusyBehavior::StartTask( const Task_t *pTask )
 				if ( UTIL_DistApprox( GetHintNode()->GetAbsOrigin(), GetAbsOrigin() ) > 16 || !GetOuter()->FacingIdeal() )
 				{
 					TaskFail( "Not correctly on hintnode" );
-					m_flEndBusyAt = gpGlobals->curtime;
+					m_flEndBusyAt = gpGlobals->GetCurTime();
 					return;
 				}
 			}
@@ -1780,7 +1780,7 @@ void CAI_ActBusyBehavior::StartTask( const Task_t *pTask )
 					else
 					{
 						float flTime = RandomFloat(flMinTime, flMaxTime);
-						m_flEndBusyAt = gpGlobals->curtime + flTime;
+						m_flEndBusyAt = gpGlobals->GetCurTime() + flTime;
 						GetOuter()->SetWait( flTime );
 					}
 				}
@@ -2047,7 +2047,7 @@ void CAI_ActBusyBehavior::RunTask( const Task_t *pTask )
 					if( flDistSqr < Square(12.0f * 15.0f) )
 					{
 						// End now.
-						m_flEndBusyAt = gpGlobals->curtime;
+						m_flEndBusyAt = gpGlobals->GetCurTime();
 						TaskComplete();
 						return;
 					}
@@ -2192,11 +2192,11 @@ void CAI_ActBusyBehavior::NotifyBusyEnding( void )
 	if( IsCombatActBusy() )
 	{
 		// Actbusy again soon. Real soon.
-		m_flNextBusySearchTime = gpGlobals->curtime;
+		m_flNextBusySearchTime = gpGlobals->GetCurTime();
 	}
 	else
 	{
-		m_flNextBusySearchTime = gpGlobals->curtime + (RandomFloat(ai_actbusy_search_time.GetFloat(), ai_actbusy_search_time.GetFloat()*2));
+		m_flNextBusySearchTime = gpGlobals->GetCurTime() + (RandomFloat(ai_actbusy_search_time.GetFloat(), ai_actbusy_search_time.GetFloat() * 2));
 	}
 }
 
@@ -2793,7 +2793,7 @@ void CAI_ActBusyQueueGoal::InputActivate( inputdata_t &inputdata )
 
 		RecalculateQueueCount();
 
-		SetContextThink( &CAI_ActBusyQueueGoal::QueueThink, gpGlobals->curtime + 5, QUEUE_THINK_CONTEXT );
+		SetContextThink( &CAI_ActBusyQueueGoal::QueueThink, gpGlobals->GetCurTime() + 5, QUEUE_THINK_CONTEXT);
 	}
 
 	BaseClass::InputActivate( inputdata );
@@ -3008,9 +3008,9 @@ void CAI_ActBusyQueueGoal::NPCStartedBusy( CAI_BaseNPC *pNPC )
 void CAI_ActBusyQueueGoal::MoveQueueUp( void )
 {
 	// Find the node the NPC has arrived at, and tell the guy behind him to move forward
-	if ( GetNextThink( QUEUE_MOVEUP_THINK_CONTEXT ) < gpGlobals->curtime )
+	if ( GetNextThink( QUEUE_MOVEUP_THINK_CONTEXT ) < gpGlobals->GetCurTime() )
 	{
-		float flTime = gpGlobals->curtime + RandomFloat( 0.3, 0.5 );
+		float flTime = gpGlobals->GetCurTime() + RandomFloat(0.3, 0.5);
 		SetContextThink( &CAI_ActBusyQueueGoal::MoveQueueUpThink, flTime, QUEUE_MOVEUP_THINK_CONTEXT );
 	}
 }
@@ -3112,7 +3112,7 @@ void CAI_ActBusyQueueGoal::QueueThink( void )
 		MoveQueueUp();
 	}
 
-	SetContextThink( &CAI_ActBusyQueueGoal::QueueThink, gpGlobals->curtime + 5, QUEUE_THINK_CONTEXT );
+	SetContextThink( &CAI_ActBusyQueueGoal::QueueThink, gpGlobals->GetCurTime() + 5, QUEUE_THINK_CONTEXT);
 }
 
 //-----------------------------------------------------------------------------

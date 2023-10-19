@@ -64,10 +64,16 @@ public:
 	DECLARE_ACTTABLE();
 
 	CWeaponAnnabelle(void);
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponAnnabelle)
+	BEGIN_SEND_TABLE(CWeaponAnnabelle, DT_WeaponAnnabelle, DT_HLMachineGun)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponAnnabelle, DT_WeaponAnnabelle)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponAnnabelle, DT_WeaponAnnabelle)
+
 
 LINK_ENTITY_TO_CLASS( weapon_annabelle, CWeaponAnnabelle );
 #ifndef HL2MP
@@ -169,8 +175,8 @@ bool CWeaponAnnabelle::StartReload( void )
 	// Make shotgun shell visible
 	SetBodygroup(1,0);
 
-	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 	m_bInReload = true;
 	return true;
@@ -210,8 +216,8 @@ bool CWeaponAnnabelle::Reload( void )
 	WeaponSound(RELOAD);
 	SendWeaponAnim( ACT_VM_RELOAD );
 
-	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 	return true;
 }
@@ -236,8 +242,8 @@ void CWeaponAnnabelle::FinishReload( void )
 	// Finish reload animation
 	SendWeaponAnim( ACT_SHOTGUN_RELOAD_FINISH );
 
-	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -282,8 +288,8 @@ void CWeaponAnnabelle::Pump( void )
 	// Finish reload animation
 	SendWeaponAnim( ACT_SHOTGUN_PUMP );
 
-	pOwner->m_flNextAttack	= gpGlobals->curtime + SequenceDuration();
-	m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack	= gpGlobals->GetCurTime() + SequenceDuration();
+	m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -296,7 +302,7 @@ void CWeaponAnnabelle::DryFire( void )
 	WeaponSound(EMPTY);
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -313,10 +319,10 @@ void CWeaponAnnabelle::ItemHolsterFrame( void )
 		return;
 
 	// If it's been longer than three seconds, reload
-	if ( ( gpGlobals->curtime - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
+	if ( ( gpGlobals->GetCurTime() - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
 	{
 		// Reset the timer
-		m_flHolsterTime = gpGlobals->curtime;
+		m_flHolsterTime = gpGlobals->GetCurTime();
 	
 		if ( GetOwner() == NULL )
 			return;

@@ -41,14 +41,20 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeapon357)
+	BEGIN_SEND_TABLE(CWeapon357, DT_Weapon357, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( weapon_357, CWeapon357 );
 
 PRECACHE_WEAPON_REGISTER( weapon_357 );
 
-IMPLEMENT_SERVERCLASS_ST( CWeapon357, DT_Weapon357 )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CWeapon357, DT_Weapon357 )
+
 
 BEGIN_DATADESC( CWeapon357 )
 END_DATADESC()
@@ -80,7 +86,7 @@ void CWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 				{
 					data.m_vOrigin = pOwner->WorldSpaceCenter() + RandomVector( -4, 4 );
 					data.m_vAngles = QAngle( 90, random->RandomInt( 0, 360 ), 0 );
-					data.m_nEntIndex = entindex();
+					data.m_nEntIndex = this->NetworkProp()->entindex();
 
 					DispatchEffect( "ShellEject", data );
 				}
@@ -127,8 +133,8 @@ void CWeapon357::PrimaryAttack( void )
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.75;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.75;
 
 	m_iClip1--;
 
@@ -137,7 +143,7 @@ void CWeapon357::PrimaryAttack( void )
 
 	pPlayer->FireBullets( 1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0 );
 
-	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+	pPlayer->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 0.5 );
 
 	//Disorient the player
 	QAngle angles = pPlayer->GetLocalAngles();

@@ -39,7 +39,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEMetalSparks)
-	BEGIN_RECV_TABLE_NOBASE(C_TEMetalSparks, DT_TEMetalSparks)
+	BEGIN_RECV_TABLE(C_TEMetalSparks, DT_TEMetalSparks, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecPos)),
 		RecvPropVector(RECVINFO(m_vecDir)),
 	END_RECV_TABLE(DT_TEMetalSparks)

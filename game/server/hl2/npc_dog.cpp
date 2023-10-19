@@ -485,8 +485,8 @@ void CNPC_Dog::Spawn( void )
 
 	m_flThrowArcModifier = 1.0f;
 
-	m_flNextSwat = gpGlobals->curtime;
-	m_flNextRouteTime = gpGlobals->curtime;
+	m_flNextSwat = gpGlobals->GetCurTime();
+	m_flNextRouteTime = gpGlobals->GetCurTime();
 }
 
 
@@ -504,7 +504,7 @@ void CNPC_Dog::PrescheduleThink( void )
 		}
 	}
 
-	if ( m_flTimeToCatch < gpGlobals->curtime ) 
+	if ( m_flTimeToCatch < gpGlobals->GetCurTime() ) 
 		 m_flTimeToCatch = 0.0f;
 
 	
@@ -535,12 +535,12 @@ int CNPC_Dog::SelectSchedule ( void )
 	
 	if ( m_bDoCatchThrowBehavior == true )
 	{
-		if ( m_flTimeToCatch < 0.1 && m_flNextSwat <= gpGlobals->curtime )
+		if ( m_flTimeToCatch < 0.1 && m_flNextSwat <= gpGlobals->GetCurTime() )
 		{
 			 return SCHED_DOG_FIND_OBJECT;
 		}
 
-		if ( m_flTimeToCatch > gpGlobals->curtime && m_hPhysicsEnt )
+		if ( m_flTimeToCatch > gpGlobals->GetCurTime() && m_hPhysicsEnt )
 			 return SCHED_DOG_CATCH_OBJECT;
 	}
 	else
@@ -872,11 +872,11 @@ void CNPC_Dog::ThrowObject( const char *pAttachmentName )
 			
 				pPhysObj->SetVelocity( &vThrowDirection, &angVelocity );
 				
-				m_flTimeToCatch = gpGlobals->curtime + dog_max_wait_time.GetFloat();
+				m_flTimeToCatch = gpGlobals->GetCurTime() + dog_max_wait_time.GetFloat();
 
 				//Don't start pulling until the object is away from me.
 				//We base the time on the throw velocity.
-				m_flTimeToPull = gpGlobals->curtime + ( 1000 / vThrowDirection.Length() );
+				m_flTimeToPull = gpGlobals->GetCurTime() + ( 1000 / vThrowDirection.Length() );
 			}
 
 			//Fire Output!
@@ -907,7 +907,7 @@ void CNPC_Dog::ThrowObject( const char *pAttachmentName )
 				VectorNormalize( shotDir );
 
 				CPVSFilter filter( m_hPhysicsEnt->WorldSpaceCenter() );
-				te->GaussExplosion( filter, 0.0f, m_hPhysicsEnt->WorldSpaceCenter() - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
+				g_pTESystem->GaussExplosion( filter, 0.0f, m_hPhysicsEnt->WorldSpaceCenter() - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
 			}
 		}
 	}
@@ -1110,7 +1110,7 @@ bool CNPC_Dog::FindPhysicsObject( const char *pPickupName, CBaseEntity *pIgnore 
 		Vector center = pEnt->WorldSpaceCenter();
 		flDist = UTIL_DistApprox2D( GetAbsOrigin(), center );
 
-		vcollide_t *pCollide = modelinfo->GetVCollide( pEnt->GetModelIndex() );
+		vcollide_t *pCollide = pEnt->GetModel()->GetVCollide(  );//pEnt->GetModelIndex()
 
 		if ( pCollide == NULL )
 			 continue;
@@ -1247,9 +1247,9 @@ void CNPC_Dog::RunTask( const Task_t *pTask )
 				 TaskComplete();
 			else
 			{
-				m_flTimeToCatch = gpGlobals->curtime + 0.1;
-				m_flNextRouteTime = gpGlobals->curtime + 0.3;
-				m_flNextSwat = gpGlobals->curtime + 0.1;
+				m_flTimeToCatch = gpGlobals->GetCurTime() + 0.1;
+				m_flNextRouteTime = gpGlobals->GetCurTime() + 0.3;
+				m_flNextSwat = gpGlobals->GetCurTime() + 0.1;
 
 				if ( m_hUnreachableObjects.Find( m_hPhysicsEnt ) == -1 )
 					 m_hUnreachableObjects.AddToTail( m_hPhysicsEnt );
@@ -1402,7 +1402,7 @@ void CNPC_Dog::RunTask( const Task_t *pTask )
 					
 				if ( pPhysObj && !( pPhysObj->GetGameFlags() & FVPHYSICS_PLAYER_HELD ) && flDistanceToPlayer > ( flDistance * 2 ) )
 				{
-					if ( m_flTimeToPull <= gpGlobals->curtime )
+					if ( m_flTimeToPull <= gpGlobals->GetCurTime() )
 					{
 						Vector vCurrentVel;
 						float flCurrentVel;
@@ -1470,7 +1470,7 @@ void CNPC_Dog::RunTask( const Task_t *pTask )
 					GetMotor()->UpdateYaw();
 				}
 
-				if ( m_flTimeToCatch < gpGlobals->curtime && m_bDoWaitforObjectBehavior == false ) 
+				if ( m_flTimeToCatch < gpGlobals->GetCurTime() && m_bDoWaitforObjectBehavior == false ) 
 				{
 					m_hPhysicsEnt->SetOwnerEntity( NULL );
 					m_flTimeToCatch = 0.0f;
@@ -1578,9 +1578,9 @@ void CNPC_Dog::StartTask( const Task_t *pTask )
 					
 				 FindPhysicsObject( NULL, m_hPhysicsEnt );
 
-				 m_flTimeToCatch = gpGlobals->curtime + 0.1;
-				 m_flNextRouteTime = gpGlobals->curtime + 0.3;
-				 m_flNextSwat = gpGlobals->curtime + 0.1;
+				 m_flTimeToCatch = gpGlobals->GetCurTime() + 0.1;
+				 m_flNextRouteTime = gpGlobals->GetCurTime() + 0.3;
+				 m_flNextSwat = gpGlobals->GetCurTime() + 0.1;
 
 				 GetNavigator()->ClearGoal();
 			}
@@ -1671,7 +1671,7 @@ void CNPC_Dog::StartTask( const Task_t *pTask )
 	break;
 			
 	case TASK_DOG_DELAY_SWAT:
-		m_flNextSwat = gpGlobals->curtime + pTask->flTaskData;
+		m_flNextSwat = gpGlobals->GetCurTime() + pTask->flTaskData;
 
 		if ( m_hThrowTarget == NULL )
 			m_hThrowTarget = AI_GetSinglePlayer();

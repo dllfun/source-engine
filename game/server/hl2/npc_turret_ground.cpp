@@ -134,8 +134,8 @@ void CNPC_GroundTurret::Spawn( void )
 		return;
 	}
 
-	m_flTimeNextShoot = gpGlobals->curtime;
-	m_flTimeNextPing = gpGlobals->curtime;
+	m_flTimeNextShoot = gpGlobals->GetCurTime();
+	m_flTimeNextPing = gpGlobals->GetCurTime();
 
 	m_vecClosedPos = GetAbsOrigin();
 
@@ -167,13 +167,13 @@ bool CNPC_GroundTurret::CreateVPhysics( void )
 //-----------------------------------------------------------------------------
 void CNPC_GroundTurret::PrescheduleThink()
 {
-	if( UTIL_FindClientInPVS(edict()) )
+	if( UTIL_FindClientInPVS(this->NetworkProp()->GetEdict()) )
 	{
-		SetNextThink( gpGlobals->curtime + 0.03f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.03f );
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 
@@ -259,7 +259,7 @@ void CNPC_GroundTurret::Event_Killed( const CTakeDamageInfo &info )
 	m_iDeathSparks = random->RandomInt( 6, 12 );
 
 	SetThink( &CNPC_GroundTurret::DeathEffects );
-	SetNextThink( gpGlobals->curtime + 1.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 1.5f );
 }
 
 //---------------------------------------------------------
@@ -272,7 +272,7 @@ void CNPC_GroundTurret::DeathEffects()
 		CTakeDamageInfo info;
 		DeathSound( info );
 		m_bHasExploded = true;
-		SetNextThink( gpGlobals->curtime + 0.5 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5 );
 	}
 	else
 	{
@@ -286,7 +286,7 @@ void CNPC_GroundTurret::DeathEffects()
 			return;
 		}
 
-		SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.5, 2.5 ) );
+		SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.5, 2.5 ) );
 	}
 }
 
@@ -333,7 +333,7 @@ void CNPC_GroundTurret::GatherConditions()
 		return;
 	}
 
-	if( !IsOpen() && !UTIL_FindClientInPVS( edict() ) )
+	if( !IsOpen() && !UTIL_FindClientInPVS( this->NetworkProp()->GetEdict() ) )
 	{
 		return;
 	}
@@ -343,7 +343,7 @@ void CNPC_GroundTurret::GatherConditions()
 
 	for( AI_EnemyInfo_t *pEMemory = GetEnemies()->GetFirst(&iter); pEMemory != NULL; pEMemory = GetEnemies()->GetNext(&iter) )
 	{
-		if( pEMemory->timeLastSeen < gpGlobals->curtime - GROUNDTURRET_RETIRE_TIME )
+		if( pEMemory->timeLastSeen < gpGlobals->GetCurTime() - GROUNDTURRET_RETIRE_TIME )
 		{
 			pEMemory->hEnemy = NULL;
 		}
@@ -353,11 +353,11 @@ void CNPC_GroundTurret::GatherConditions()
 
 	if( GetEnemy() && HasCondition(COND_SEE_ENEMY) )
 	{
-		m_flTimeLastSawEnemy = gpGlobals->curtime;
+		m_flTimeLastSawEnemy = gpGlobals->GetCurTime();
 	}
 	else
 	{
-		if( gpGlobals->curtime - m_flTimeLastSawEnemy >= GROUNDTURRET_RETIRE_TIME )
+		if( gpGlobals->GetCurTime() - m_flTimeLastSawEnemy >= GROUNDTURRET_RETIRE_TIME )
 		{
 			m_OnAreaClear.FireOutput(this, this);
 			m_flTimeLastSawEnemy = FLT_MAX;
@@ -376,7 +376,7 @@ void CNPC_GroundTurret::GatherConditions()
 
 	if( GetEnemy() && m_bSeeEnemy && IsEnabled() )
 	{
-		if( m_flTimeNextShoot < gpGlobals->curtime )
+		if( m_flTimeNextShoot < gpGlobals->GetCurTime() )
 		{
 			Shoot();
 		}
@@ -547,7 +547,7 @@ void CNPC_GroundTurret::Shoot()
 
 	// Do the AR2 muzzle flash
 	CEffectData data;
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	data.m_nAttachmentIndex = LookupAttachment( "eyes" );
 	data.m_flScale = 1.0f;
 	data.m_fFlags = MUZZLEFLASH_COMBINE;
@@ -557,11 +557,11 @@ void CNPC_GroundTurret::Shoot()
 
 	if( IsX360() )
 	{
-		m_flTimeNextShoot = gpGlobals->curtime + 0.2;
+		m_flTimeNextShoot = gpGlobals->GetCurTime() + 0.2;
 	}
 	else
 	{
-		m_flTimeNextShoot = gpGlobals->curtime + 0.09;
+		m_flTimeNextShoot = gpGlobals->GetCurTime() + 0.09;
 	}
 }
 
@@ -611,15 +611,15 @@ void CNPC_GroundTurret::Scan()
 		return;
 	}
 
-	if( !UTIL_FindClientInPVS(edict()) )
+	if( !UTIL_FindClientInPVS(this->NetworkProp()->GetEdict()) )
 	{
 		return;
 	}
 
-	if( gpGlobals->curtime >= m_flTimeNextPing )
+	if( gpGlobals->GetCurTime() >= m_flTimeNextPing )
 	{
 		EmitSound( "NPC_FloorTurret.Ping" );
-		m_flTimeNextPing = gpGlobals->curtime + 1.0f;
+		m_flTimeNextPing = gpGlobals->GetCurTime() + 1.0f;
 	}
 
 	QAngle	scanAngle;
@@ -639,7 +639,7 @@ void CNPC_GroundTurret::Scan()
 
 	// Draw a sweeping beam
 	scanAngle = GetAbsAngles();
-	scanAngle.y += (GROUNDTURRET_VIEWCONE / 2.0f) * sin( gpGlobals->curtime * 3.0f );
+	scanAngle.y += (GROUNDTURRET_VIEWCONE / 2.0f) * sin( gpGlobals->GetCurTime() * 3.0f );
 	
 	AngleVectors( scanAngle, &forward, NULL, NULL );
 	ProjectBeam( vecEye, forward, 1, 30, 0.3 );
@@ -653,7 +653,7 @@ void CNPC_GroundTurret::InputEnable( inputdata_t &inputdata )
 
 	// Because the turret might not ever ACQUIRE an enemy, we need to arrange to 
 	// retire after a few seconds.
-	m_flTimeLastSawEnemy = gpGlobals->curtime;
+	m_flTimeLastSawEnemy = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------

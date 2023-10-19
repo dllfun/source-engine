@@ -372,7 +372,7 @@ void CNPC_Antlion::Activate( void )
 	if ( IsAllied() )
 	{
 		// Handle all clients
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -627,11 +627,11 @@ void CNPC_Antlion::Event_Killed( const CTakeDamageInfo &info )
 		SpawnBlood( GetAbsOrigin(), g_vecAttackDir, BloodColor(), info.GetDamage() );
 
 		CPASAttenuationFilter filter( this );
-		EmitSound( filter, entindex(), "NPC_Antlion.RunOverByVehicle" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "NPC_Antlion.RunOverByVehicle" );
 	}
 
 	// Stop our zap effect!
-	SetContextThink( NULL, gpGlobals->curtime, "ZapThink" );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), "ZapThink" );
 }
 
 //-----------------------------------------------------------------------------
@@ -896,7 +896,7 @@ bool CNPC_Antlion::GetPathToSoundFleePoint( int soundType )
 bool CNPC_Antlion::SeenEnemyWithinTime( float flTime )
 {
 	float flLastSeenTime = GetEnemies()->LastTimeSeen( GetEnemy() );
-	return ( flLastSeenTime != 0.0f && ( gpGlobals->curtime - flLastSeenTime ) < flTime );
+	return ( flLastSeenTime != 0.0f && ( gpGlobals->GetCurTime() - flLastSeenTime ) < flTime );
 }
 
 //-----------------------------------------------------------------------------
@@ -904,7 +904,7 @@ bool CNPC_Antlion::SeenEnemyWithinTime( float flTime )
 //-----------------------------------------------------------------------------
 bool CNPC_Antlion::InnateWeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions )
 {
-	if ( GetNextAttack() > gpGlobals->curtime )
+	if ( GetNextAttack() > gpGlobals->GetCurTime() )
 		return false;
 
 	// If we can see the enemy, or we've seen them in the last few seconds just try to lob in there
@@ -1101,7 +1101,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 				CSoundEnt::InsertSound( SOUND_DANGER, vTarget, (15*12), flTime, this );
 
 				// Don't fire again until this volley would have hit the ground (with some lag behind it)
-				SetNextAttack( gpGlobals->curtime + flTime + random->RandomFloat( 0.5f, 2.0f ) );
+				SetNextAttack( gpGlobals->GetCurTime() + flTime + random->RandomFloat( 0.5f, 2.0f ) );
 
 				// Tell any squadmates not to fire for some portion of the time this volley will be in the air (except on hard)
 				if ( g_pGameRules->IsSkillLevel( SKILL_HARD ) == false )
@@ -1109,7 +1109,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 
 				for ( int i = 0; i < 6; i++ )
 				{
-					CGrenadeSpit *pGrenade = (CGrenadeSpit*) CreateEntityByName( "grenade_spit" );
+					CGrenadeSpit *pGrenade = (CGrenadeSpit*)engineServer->CreateEntityByName( "grenade_spit" );
 					pGrenade->SetAbsOrigin( vSpitPos );
 					pGrenade->SetAbsAngles( vec3_angle );
 					DispatchSpawn( pGrenade );
@@ -1381,7 +1381,7 @@ bool CNPC_Antlion::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, float di
 				//NDebugOverlay::Box( pAntlion->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 0, 255, 0, 0, 2 );
 				pAntlion->GetMotor()->SetIdealYawToTarget( WorldSpaceCenter() );
 				pAntlion->SetSchedule( SCHED_MOVE_AWAY );
-				pAntlion->m_flNextJumpPushTime = gpGlobals->curtime + 2.0f;
+				pAntlion->m_flNextJumpPushTime = gpGlobals->GetCurTime() + 2.0f;
 			}
 		}
 	}
@@ -1438,7 +1438,7 @@ void CNPC_Antlion::StartTask( const Task_t *pTask )
 				AI_NavGoal_t goal(coverPos, ACT_RUN, AIN_HULL_TOLERANCE);
 				GetNavigator()->SetGoal( goal );
 
-				m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
+				m_flMoveWaitFinished = gpGlobals->GetCurTime() + pTask->flTaskData;
 			}
 			else
 			{
@@ -1463,8 +1463,8 @@ void CNPC_Antlion::StartTask( const Task_t *pTask )
 		// Set the gravity really low here! Sink slowly
 		SetGravity( 0 );
 		SetAbsVelocity( vec3_origin );
-		m_flTimeDrownSplash = gpGlobals->curtime + random->RandomFloat( 0, 0.5 );
-		m_flTimeDrown = gpGlobals->curtime + 4;
+		m_flTimeDrownSplash = gpGlobals->GetCurTime() + random->RandomFloat( 0, 0.5 );
+		m_flTimeDrown = gpGlobals->GetCurTime() + 4;
 		break;
 	}
 
@@ -1582,7 +1582,7 @@ void CNPC_Antlion::StartTask( const Task_t *pTask )
 		}
 
 	case TASK_ANTLION_WAIT_FOR_TRIGGER:
-		m_flIdleDelay = gpGlobals->curtime + 1.0f;
+		m_flIdleDelay = gpGlobals->GetCurTime() + 1.0f;
 
 		break;
 
@@ -1613,7 +1613,7 @@ void CNPC_Antlion::StartTask( const Task_t *pTask )
 		if ( pTask->flTaskData == 1.0f )
 		{
 			//Set our next burrow time
-			m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 1, 6 );
+			m_flBurrowTime = gpGlobals->GetCurTime() + random->RandomFloat( 1, 6 );
 		}
 
 		break;
@@ -1675,7 +1675,7 @@ void CNPC_Antlion::StartTask( const Task_t *pTask )
 			// NOTE: We can't UTIL_Remove here, because we're in the middle of running our AI, and
 			//		 we'll crash later in the bowels of the AI. Remove ourselves next frame.
 			SetThink( &CNPC_Antlion::SUB_Remove );
-			SetNextThink( gpGlobals->curtime + 0.1 );
+			SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 		}
 
 		TaskComplete();
@@ -1754,7 +1754,7 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 
 	case TASK_ANTLION_DROWN:
 	{
-		if ( gpGlobals->curtime > m_flTimeDrownSplash )
+		if ( gpGlobals->GetCurTime() > m_flTimeDrownSplash )
 		{
 			float flWaterZ = UTIL_FindWaterSurface( GetAbsOrigin(), GetAbsOrigin().z, GetAbsOrigin().z + NAI_Hull::Maxs( GetHullType() ).z );
 
@@ -1767,10 +1767,10 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 
 			DispatchEffect( "watersplash", data );
 			
-			m_flTimeDrownSplash = gpGlobals->curtime + random->RandomFloat( 0.5, 2.5 );
+			m_flTimeDrownSplash = gpGlobals->GetCurTime() + random->RandomFloat( 0.5, 2.5 );
 		}
 	
-		if ( gpGlobals->curtime > m_flTimeDrown )
+		if ( gpGlobals->GetCurTime() > m_flTimeDrown )
 		{
 			m_bDontExplode = true;
 			OnTakeDamage( CTakeDamageInfo( this, this, m_iHealth+1, DMG_DROWN ) );
@@ -1837,7 +1837,7 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 
 	case TASK_ANTLION_WAIT_FOR_TRIGGER:
 		
-		if ( ( m_flIdleDelay > gpGlobals->curtime ) || GetEntityName() != NULL_STRING )
+		if ( ( m_flIdleDelay > gpGlobals->GetCurTime() ) || GetEntityName() != NULL_STRING )
 			return;
 
 		TaskComplete();
@@ -1856,7 +1856,7 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 	case TASK_ANTLION_CHECK_FOR_UNBORROW:
 		
 		//Must wait for our next check time
-		if ( m_flBurrowTime > gpGlobals->curtime )
+		if ( m_flBurrowTime > gpGlobals->GetCurTime() )
 			return;
 
 		//See if we can pop up
@@ -1870,7 +1870,7 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 		}
 
 		//Try again in a couple of seconds
-		m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+		m_flBurrowTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 1.0f );
 		m_iUnBurrowAttempts++;
 
 		// Robin: If we fail 10 times, kill ourself.
@@ -1890,7 +1890,7 @@ void CNPC_Antlion::RunTask( const Task_t *pTask )
 	case TASK_ANTLION_BURROW_WAIT:
 		
 		//See if enough time has passed
-		if ( m_flBurrowTime < gpGlobals->curtime )
+		if ( m_flBurrowTime < gpGlobals->GetCurTime() )
 		{
 			TaskComplete();
 		}
@@ -1916,7 +1916,7 @@ bool CNPC_Antlion::AllowedToBePushed( void )
 		return false;
 
 	if ( IsMoving() == false && IsCurSchedule( SCHED_ANTLION_FLIP ) == false
-		 && GetNavType() != NAV_JUMP && m_flNextJumpPushTime <= gpGlobals->curtime )
+		 && GetNavType() != NAV_JUMP && m_flNextJumpPushTime <= gpGlobals->GetCurTime() )
 	{
 		return true;
 	}
@@ -1965,7 +1965,7 @@ bool CNPC_Antlion::IsJumpLegal( const Vector &startPos, const Vector &apex, cons
 					//	NDebugOverlay::Box( pAntlion->GetAbsOrigin(), GetHullMins(), GetHullMaxs(), 0, 0, 255, 0, 2 );
 						pAntlion->GetMotor()->SetIdealYawToTarget( endPos );
 						pAntlion->SetSchedule( SCHED_MOVE_AWAY );
-						pAntlion->m_flNextJumpPushTime = gpGlobals->curtime + 2.0f;
+						pAntlion->m_flNextJumpPushTime = gpGlobals->GetCurTime() + 2.0f;
 					}
 				}
 			}
@@ -2064,7 +2064,7 @@ bool CNPC_Antlion::ShouldJump( void )
 		return false;
 
 	//Too soon to try to jump
-	if ( m_flJumpTime > gpGlobals->curtime )
+	if ( m_flJumpTime > gpGlobals->GetCurTime() )
 		return false;
 
 	// only jump if you're on the ground
@@ -2098,7 +2098,7 @@ bool CNPC_Antlion::ShouldJump( void )
 	//FIXME: Check your own distance from last attempt as well
 	if ( ( ( m_vecLastJumpAttempt - vecPredictedPos ).LengthSqr() ) < (128*128) )
 	{
-		m_flJumpTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );		
+		m_flJumpTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.0f, 2.0f );		
 		return false;
 	}
 
@@ -2128,7 +2128,7 @@ bool CNPC_Antlion::ShouldJump( void )
 			NDebugOverlay::Line( GetAbsOrigin(), targetPos, 255, 0, 0, 0, 5 );
 		}
 
-		m_flJumpTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );
+		m_flJumpTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.0f, 2.0f );
 		return false;
 	}
 
@@ -2247,19 +2247,19 @@ int CNPC_Antlion::ChooseMoveSchedule( void )
 void CNPC_Antlion::ZapThink( void )
 {
 	CEffectData	data;
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	data.m_flMagnitude = 4;
 	data.m_flScale = random->RandomFloat( 0.25f, 1.0f );
 
 	DispatchEffect( "TeslaHitboxes", data );
 	
-	if ( m_flZapDuration > gpGlobals->curtime )
+	if ( m_flZapDuration > gpGlobals->GetCurTime() )
 	{
-		SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->curtime + random->RandomFloat( 0.05f, 0.25f ), "ZapThink" );
+		SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->GetCurTime() + random->RandomFloat( 0.05f, 0.25f ), "ZapThink" );
 	}
 	else
 	{
-		SetContextThink( NULL, gpGlobals->curtime, "ZapThink" );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), "ZapThink" );
 	}
 }
 
@@ -2289,9 +2289,9 @@ int CNPC_Antlion::SelectSchedule( void )
 		ClearCondition( COND_ANTLION_FLIPPED );
 		
 		// See if it's a forced, electrical flip
-		if ( m_flZapDuration > gpGlobals->curtime )
+		if ( m_flZapDuration > gpGlobals->GetCurTime() )
 		{
-			SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->curtime, "ZapThink" );
+			SetContextThink( &CNPC_Antlion::ZapThink, gpGlobals->GetCurTime(), "ZapThink" );
 			return SCHED_ANTLION_ZAP_FLIP;
 		}
 
@@ -2352,13 +2352,13 @@ int CNPC_Antlion::SelectSchedule( void )
 	if ( HasCondition( COND_HEAR_BUGBAIT ) && ( m_bIgnoreBugbait == false ) )
 	{
 		//Play a special sound
-		if ( m_flNextAcknowledgeTime < gpGlobals->curtime )
+		if ( m_flNextAcknowledgeTime < gpGlobals->GetCurTime() )
 		{
 			EmitSound( "NPC_Antlion.Distracted" );
-			m_flNextAcknowledgeTime = gpGlobals->curtime + 1.0f;
+			m_flNextAcknowledgeTime = gpGlobals->GetCurTime() + 1.0f;
 		}
 		
-		m_flIdleDelay = gpGlobals->curtime + 4.0f;
+		m_flIdleDelay = gpGlobals->GetCurTime() + 4.0f;
 
 		//If the sound is valid, act upon it
 		if ( m_bHasHeardSound )
@@ -2427,7 +2427,7 @@ int CNPC_Antlion::SelectSchedule( void )
 				// Pounce if they're too near us
 				if ( HasCondition( COND_CAN_MELEE_ATTACK2 ) )
 				{
-					m_flPounceTime = gpGlobals->curtime + 1.5f;
+					m_flPounceTime = gpGlobals->GetCurTime() + 1.5f;
 
 					if ( m_bLeapAttack == true )
 						return SCHED_ANTLION_POUNCE_MOVING;
@@ -2438,7 +2438,7 @@ int CNPC_Antlion::SelectSchedule( void )
 				// A squadmate died, so run away!
 				if ( HasCondition( COND_ANTLION_SQUADMATE_KILLED ) )
 				{
-					SetNextAttack( gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f ) );
+					SetNextAttack( gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 4.0f ) );
 					ClearCondition( COND_ANTLION_SQUADMATE_KILLED );
 					return SCHED_ANTLION_TAKE_COVER_FROM_ENEMY;
 				}
@@ -2446,7 +2446,7 @@ int CNPC_Antlion::SelectSchedule( void )
 				// Flee on heavy damage
 				if ( HasCondition( COND_HEAVY_DAMAGE ) )
 				{
-					SetNextAttack( gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f ) );
+					SetNextAttack( gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 4.0f ) );
 					return SCHED_ANTLION_TAKE_COVER_FROM_ENEMY;
 				}
 
@@ -2456,7 +2456,7 @@ int CNPC_Antlion::SelectSchedule( void )
 					if ( OccupyStrategySlot( SQUAD_SLOT_ANTLION_WORKER_FIRE ) )
 					{
 						EmitSound( "NPC_Antlion.PoisonBurstScream" );
-						SetNextAttack( gpGlobals->curtime + random->RandomFloat( 0.5f, 2.5f ) );
+						SetNextAttack( gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 2.5f ) );
 						if ( GetEnemy() )
 						{
 							m_vSavePosition = GetEnemy()->BodyTarget( GetAbsOrigin() );
@@ -2486,7 +2486,7 @@ int CNPC_Antlion::SelectSchedule( void )
 				// Lunge at the enemy
 				if ( HasCondition( COND_CAN_MELEE_ATTACK2 ) )
 				{
-					m_flPounceTime = gpGlobals->curtime + 1.5f;
+					m_flPounceTime = gpGlobals->GetCurTime() + 1.5f;
 
 					if ( m_bLeapAttack == true )
 						return SCHED_ANTLION_POUNCE_MOVING;
@@ -2587,7 +2587,7 @@ int CNPC_Antlion::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// Find out how much damage we're about to take
 	int nDamageTaken = BaseClass::OnTakeDamage_Alive( newInfo );
-	if ( gpGlobals->curtime - m_flLastDamageTime < 0.5f )
+	if ( gpGlobals->GetCurTime() - m_flLastDamageTime < 0.5f )
 	{
 		// Accumulate it
 		m_nSustainedDamage += nDamageTaken;
@@ -2598,7 +2598,7 @@ int CNPC_Antlion::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		m_nSustainedDamage = nDamageTaken;
 	}
 
-	m_flLastDamageTime = gpGlobals->curtime;
+	m_flLastDamageTime = gpGlobals->GetCurTime();
 
 	return nDamageTaken;
 }
@@ -2743,7 +2743,7 @@ void CNPC_Antlion::StopLoopingSounds( void )
 void CNPC_Antlion::IdleSound( void )
 {
 	EmitSound( "NPC_Antlion.Idle" );
-	m_flIdleDelay = gpGlobals->curtime + 4.0f;
+	m_flIdleDelay = gpGlobals->GetCurTime() + 4.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -2803,7 +2803,7 @@ bool CNPC_Antlion::ShouldPlayIdleSound( void )
 		return false;
 
 	//Don't cut off another sound or play again too soon
-	if ( m_flIdleDelay > gpGlobals->curtime )
+	if ( m_flIdleDelay > gpGlobals->GetCurTime() )
 		return false;
 
 	//Randomize it a bit
@@ -2844,7 +2844,7 @@ bool CNPC_Antlion::FCanCheckAttacks( void )
 //-----------------------------------------------------------------------------
 int CNPC_Antlion::RangeAttack1Conditions( float flDot, float flDist )
 {
-	if ( GetNextAttack() > gpGlobals->curtime )
+	if ( GetNextAttack() > gpGlobals->GetCurTime() )
 		return COND_NOT_FACING_ATTACK;
 
 	if ( flDot < DOT_10DEGREE )
@@ -2930,7 +2930,7 @@ int CNPC_Antlion::MeleeAttack1Conditions( float flDot, float flDist )
 int CNPC_Antlion::MeleeAttack2Conditions( float flDot, float flDist )
 {
 	// See if it's too soon to pounce again
-	if ( m_flPounceTime > gpGlobals->curtime )
+	if ( m_flPounceTime > gpGlobals->GetCurTime() )
 		return 0;
 
 	float		flPrDist, flPrDot;
@@ -2952,12 +2952,12 @@ int CNPC_Antlion::MeleeAttack2Conditions( float flDot, float flDist )
 
 	if ( ( flPrDist > ANTLION_MELEE2_RANGE_MAX ) )
 	{
-		m_flPounceTime = gpGlobals->curtime + 0.2f;
+		m_flPounceTime = gpGlobals->GetCurTime() + 0.2f;
 		return COND_TOO_FAR_TO_ATTACK;
 	}
 	else if ( ( flPrDist < ANTLION_MELEE2_RANGE_MIN ) )
 	{
-		m_flPounceTime = gpGlobals->curtime + 0.2f;
+		m_flPounceTime = gpGlobals->GetCurTime() + 0.2f;
 		return COND_TOO_CLOSE_TO_ATTACK;
 	}
 
@@ -2990,7 +2990,7 @@ bool CNPC_Antlion::HandleInteraction( int interactionType, void *data, CBaseComb
 		CBaseEntity	*pOther = (CBaseEntity *) data;
 		
 		//Randomly delay
-		m_flBurrowTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+		m_flBurrowTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 1.0f );
 		BurrowUse( pOther, pOther, USE_ON, 0.0f );
 
 		return true;
@@ -3006,7 +3006,7 @@ bool CNPC_Antlion::HandleInteraction( int interactionType, void *data, CBaseComb
 		if ( IsWorker() )
 		{
 			float flDuration = *((float *)data);
-			SetNextAttack( gpGlobals->curtime + flDuration );
+			SetNextAttack( gpGlobals->GetCurTime() + flDuration );
 		}
 	}
 
@@ -3058,7 +3058,7 @@ void CNPC_Antlion::StartJump( void )
 #endif
 
 	//Setup our jump time so that we don't try it again too soon
-	m_flJumpTime = gpGlobals->curtime + random->RandomInt( 2, 6 );
+	m_flJumpTime = gpGlobals->GetCurTime() + random->RandomInt( 2, 6 );
 }
 
 //-----------------------------------------------------------------------------
@@ -3401,7 +3401,7 @@ void CNPC_Antlion::SetWings( bool state )
 		CPASAttenuationFilter filter( this, "NPC_Antlion.WingsOpen" );
 		filter.MakeReliable();
 
-		EmitSound( filter, entindex(), "NPC_Antlion.WingsOpen" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "NPC_Antlion.WingsOpen" );
 		SetBodygroup( 1, 1 );
 		m_bLoopingStarted = true;
 	}
@@ -3637,7 +3637,7 @@ bool CNPC_Antlion::IsValidEnemy( CBaseEntity *pEnemy )
 	if ( IsAllied() && pEnemy->IsPlayer() )
 		return false;
 
-	if ( pEnemy->IsWorld() )
+	if ( pEnemy->NetworkProp()->entindex()==0)
 		return false;
 
 	//If we're chasing bugbait, close to within a certain radius before picking up enemies
@@ -3653,7 +3653,7 @@ bool CNPC_Antlion::IsValidEnemy( CBaseEntity *pEnemy )
 	{
 		float enemyDist = ( pEnemy->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
 
-		if ( m_flObeyFollowTime > gpGlobals->curtime )
+		if ( m_flObeyFollowTime > gpGlobals->GetCurTime() )
 		{
 			// Unless we're right next to the enemy, follow our target
 			if ( enemyDist > (128*128) )
@@ -3738,7 +3738,7 @@ void CNPC_Antlion::PrescheduleThink( void )
 		CPASAttenuationFilter filter( this, "NPC_Antlion.LoopingAgitated" );
 		filter.MakeReliable();
 
-		EmitSound( filter, entindex(), "NPC_Antlion.LoopingAgitated" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "NPC_Antlion.LoopingAgitated" );
 		m_bAgitatedSound = true;
 	}
 	else if ( ( eActivity != ACT_ANTLION_RUN_AGITATED ) && ( m_bAgitatedSound == true ) )
@@ -3828,12 +3828,12 @@ bool CNPC_Antlion::ShouldResumeFollow( void )
 	if ( m_MoveState == ANTLION_MOVE_FOLLOW || m_hFollowTarget == NULL )
 		return false;
 
-	if ( m_flSuppressFollowTime > gpGlobals->curtime )
+	if ( m_flSuppressFollowTime > gpGlobals->GetCurTime() )
 		return false;
 
 	if ( GetEnemy() != NULL )
 	{
-		m_flSuppressFollowTime = gpGlobals->curtime + random->RandomInt( 5, 10 );
+		m_flSuppressFollowTime = gpGlobals->GetCurTime() + random->RandomInt( 5, 10 );
 		return false;
 	}
 
@@ -4212,15 +4212,15 @@ void CNPC_Antlion::SetFollowTarget( CBaseEntity *pTarget )
 {
 	m_FollowBehavior.SetFollowTarget( pTarget );
 	m_hFollowTarget = pTarget;
-	m_flObeyFollowTime = gpGlobals->curtime + ANTLION_OBEY_FOLLOW_TIME;
+	m_flObeyFollowTime = gpGlobals->GetCurTime() + ANTLION_OBEY_FOLLOW_TIME;
 
 	SetCondition( COND_ANTLION_RECEIVED_ORDERS );
 
 	// Play an acknowledgement noise
-	if ( m_flNextAcknowledgeTime < gpGlobals->curtime )
+	if ( m_flNextAcknowledgeTime < gpGlobals->GetCurTime() )
 	{
 		EmitSound( "NPC_Antlion.Distracted" );
-		m_flNextAcknowledgeTime = gpGlobals->curtime + 1.0f;
+		m_flNextAcknowledgeTime = gpGlobals->GetCurTime() + 1.0f;
 	}
 }
 
@@ -4278,7 +4278,7 @@ void CNPC_Antlion::SetMoveState( AntlionMoveState_e state )
 		m_FollowBehavior.SetFollowTarget( NULL );
 
 		// Keep the time we started this
-		m_flSuppressFollowTime = gpGlobals->curtime + random->RandomInt( 10, 15 );
+		m_flSuppressFollowTime = gpGlobals->GetCurTime() + random->RandomInt( 10, 15 );
 		break;
 
 	default:
@@ -4330,7 +4330,7 @@ void CNPC_Antlion::Flip( bool bZapped /*= false*/ )
 
 	if ( bZapped )
 	{
-		m_flZapDuration = gpGlobals->curtime + SequenceDuration( SelectWeightedSequence( (Activity) ACT_ANTLION_ZAP_FLIP) ) + 0.1f;
+		m_flZapDuration = gpGlobals->GetCurTime() + SequenceDuration( SelectWeightedSequence( (Activity) ACT_ANTLION_ZAP_FLIP) ) + 0.1f;
 
 		EmitSound( "NPC_Antlion.ZappedFlip"  );
 	}

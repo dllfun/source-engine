@@ -273,6 +273,15 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_Vortigaunt)
+	BEGIN_SEND_TABLE(CNPC_Vortigaunt, DT_NPC_Vortigaunt, DT_AI_BaseNPC)
+		SendPropTime(SENDINFO(m_flBlueEndFadeTime)),
+		SendPropBool(SENDINFO(m_bIsBlue)),
+		SendPropBool(SENDINFO(m_bIsBlack)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 //=============================================================================
@@ -311,6 +320,13 @@ private:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CVortigauntChargeToken)
+	BEGIN_SEND_TABLE(CVortigauntChargeToken, DT_VortigauntChargeToken, DT_BaseEntity)
+		SendPropBool(SENDINFO(m_bFadeOut)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 //=============================================================================
@@ -339,6 +355,13 @@ private:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CVortigauntEffectDispel)
+	BEGIN_SEND_TABLE(CVortigauntEffectDispel, DT_VortigauntEffectDispel, DT_BaseEntity)
+		SendPropBool(SENDINFO(m_bFadeOut)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif // NPC_VORTIGAUNT_H

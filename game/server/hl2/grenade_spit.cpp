@@ -58,7 +58,7 @@ void CGrenadeSpit::Spawn( void )
 
 	SetUse( &CBaseGrenade::DetonateUse );
 	SetTouch( &CGrenadeSpit::GrenadeSpitTouch );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	m_flDamage		= sk_antlion_worker_spit_grenade_dmg.GetFloat();
 	m_DmgRadius		= sk_antlion_worker_spit_grenade_radius.GetFloat();
@@ -76,7 +76,7 @@ void CGrenadeSpit::Spawn( void )
 	AddEffects( EF_NOSHADOW|EF_NORECEIVESHADOW );
 
 	// Create the dust effect in place
-	m_hSpitEffect = (CParticleSystem *) CreateEntityByName( "info_particle_system" );
+	m_hSpitEffect = (CParticleSystem *)engineServer->CreateEntityByName( "info_particle_system" );
 	if ( m_hSpitEffect != NULL )
 	{
 		// Setup our basic parameters
@@ -85,7 +85,7 @@ void CGrenadeSpit::Spawn( void )
 		m_hSpitEffect->SetParent( this );
 		m_hSpitEffect->SetLocalOrigin( vec3_origin );
 		DispatchSpawn( m_hSpitEffect );
-		if ( gpGlobals->curtime > 0.5f )
+		if ( gpGlobals->GetCurTime() > 0.5f )
 			m_hSpitEffect->Activate();
 	}
 }
@@ -226,7 +226,7 @@ void CGrenadeSpit::InitHissSound( void )
 	if ( m_pHissSound == NULL )
 	{
 		CPASAttenuationFilter filter( this );
-		m_pHissSound = controller.SoundCreate( filter, entindex(), "NPC_Antlion.PoisonBall" );
+		m_pHissSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_Antlion.PoisonBall" );
 		controller.Play( m_pHissSound, 1.0f, 100 );
 	}
 }
@@ -266,7 +266,7 @@ void CGrenadeSpit::Think( void )
 	}
 
 	// Set us up to think again shortly
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 void CGrenadeSpit::Precache( void )

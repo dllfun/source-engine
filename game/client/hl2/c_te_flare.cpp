@@ -54,15 +54,21 @@ private:
 	int		m_iAttachment;
 	
 	SimpleParticle	*m_pParticle[2];
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_Flare)
+	BEGIN_RECV_TABLE(C_Flare, DT_Flare, DT_BaseCombatCharacter)
+		RecvPropFloat(RECVINFO(m_flTimeBurnOut)),
+		RecvPropFloat(RECVINFO(m_flScale)),
+		RecvPropInt(RECVINFO(m_bLight)),
+		RecvPropInt(RECVINFO(m_bSmoke)),
+		RecvPropInt(RECVINFO(m_bPropFlare)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_Flare, DT_Flare, CFlare )
-	RecvPropFloat( RECVINFO( m_flTimeBurnOut ) ),
-	RecvPropFloat( RECVINFO( m_flScale ) ),
-	RecvPropInt( RECVINFO( m_bLight ) ),
-	RecvPropInt( RECVINFO( m_bSmoke ) ),
-	RecvPropInt( RECVINFO( m_bPropFlare ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_Flare, DT_Flare, CFlare )
+
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -215,9 +221,9 @@ void C_Flare::Update( float timeDelta )
 #endif
 
 	//Account for fading out
-	if ( ( m_flTimeBurnOut != -1.0f ) && ( ( m_flTimeBurnOut - gpGlobals->curtime ) <= 10.0f ) )
+	if ( ( m_flTimeBurnOut != -1.0f ) && ( ( m_flTimeBurnOut - gpGlobals->GetCurTime() ) <= 10.0f ) )
 	{
-		baseScale *= ( ( m_flTimeBurnOut - gpGlobals->curtime ) / 10.0f );
+		baseScale *= ( ( m_flTimeBurnOut - gpGlobals->GetCurTime() ) / 10.0f );
 	}
 
 	bool bVisible = (baseScale < 0.01f || visible == 0.0f) ? false : true;
@@ -226,7 +232,7 @@ void C_Flare::Update( float timeDelta )
 	{
 		if ( m_pParticle[0] != NULL )
 		{	
-			m_pParticle[0]->m_flDieTime		= gpGlobals->curtime;
+			m_pParticle[0]->m_flDieTime		= gpGlobals->GetCurTime();
 			m_pParticle[0]->m_uchStartSize	= m_pParticle[0]->m_uchEndSize = 0;
 			m_pParticle[0]->m_uchColor[0]	= 0;
 			m_pParticle[0]->m_uchColor[1]	= 0;
@@ -235,7 +241,7 @@ void C_Flare::Update( float timeDelta )
 
 		if ( m_pParticle[1] != NULL )
 		{	
-			m_pParticle[1]->m_flDieTime		= gpGlobals->curtime;
+			m_pParticle[1]->m_flDieTime		= gpGlobals->GetCurTime();
 			m_pParticle[1]->m_uchStartSize	= m_pParticle[1]->m_uchEndSize = 0;
 			m_pParticle[1]->m_uchColor[0]	= 0;
 			m_pParticle[1]->m_uchColor[1]	= 0;
@@ -259,7 +265,7 @@ void C_Flare::Update( float timeDelta )
 		{
 			dl->origin	= GetAbsOrigin();
 			dl->color.r = 255;
-			dl->die		= gpGlobals->curtime + 0.1f;
+			dl->die		= gpGlobals->GetCurTime() + 0.1f;
 
 			dl->radius	= baseScale * random->RandomFloat( 110.0f, 128.0f );
 			dl->color.g = dl->color.b = random->RandomInt( 32, 64 );
@@ -281,7 +287,7 @@ void C_Flare::Update( float timeDelta )
 				//Raise the light a little bit away from the flare so it lights it up better.
 				dl->origin	= effect_origin + Vector( 0, 0, 4 );
 				dl->color.r = 255;
-				dl->die		= gpGlobals->curtime + 0.1f;
+				dl->die		= gpGlobals->GetCurTime() + 0.1f;
 
 				dl->radius	= baseScale * random->RandomFloat( 245.0f, 256.0f );
 				dl->color.g = dl->color.b = random->RandomInt( 95, 128 );
@@ -292,7 +298,7 @@ void C_Flare::Update( float timeDelta )
 				el->color.r = 255;
 				el->color.g = dl->color.b = random->RandomInt( 95, 128 );
 				el->radius	= baseScale * random->RandomFloat( 260.0f, 290.0f );
-				el->die		= gpGlobals->curtime + 0.1f;
+				el->die		= gpGlobals->GetCurTime() + 0.1f;
 			}
 		}
 	}

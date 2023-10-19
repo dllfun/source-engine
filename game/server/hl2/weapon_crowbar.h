@@ -49,6 +49,12 @@ public:
 private:
 	// Animation event handlers
 	void HandleAnimEventMeleeHit( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponCrowbar)
+	BEGIN_SEND_TABLE(CWeaponCrowbar, DT_WeaponCrowbar, DT_BaseHLBludgeonWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif // WEAPON_CROWBAR_H

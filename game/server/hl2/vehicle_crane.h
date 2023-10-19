@@ -245,6 +245,17 @@ private:
 
 	// Vehicle script filename
 	string_t		m_vehicleScript;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CPropCrane)
+	BEGIN_SEND_TABLE(CPropCrane, DT_PropCrane, DT_BaseAnimating)
+		SendPropEHandle(SENDINFO(m_hPlayer)),
+		SendPropBool(SENDINFO(m_bMagnetOn)),
+		SendPropBool(SENDINFO(m_bEnterAnimOn)),
+		SendPropBool(SENDINFO(m_bExitAnimOn)),
+		SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
+	END_SEND_TABLE();
+	END_INIT_SEND_TABLE()
 };
 
 #endif // VEHICLE_CRANE_H

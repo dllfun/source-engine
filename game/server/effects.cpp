@@ -1560,7 +1560,7 @@ private:
 public:
 	BEGIN_INIT_SEND_TABLE(CEnvWind)
 	INIT_REFERENCE_SEND_TABLE(CEnvWindShared)
-	BEGIN_SEND_TABLE_NOBASE(CEnvWind, DT_EnvWind)
+	BEGIN_SEND_TABLE(CEnvWind, DT_EnvWind, DT_BaseEntity)
 		SendPropDataTable(SENDINFO_DT(m_EnvWindShared), REFERENCE_SEND_TABLE(DT_EnvWindShared)),
 	END_SEND_TABLE(DT_EnvWind)
 	END_INIT_SEND_TABLE()

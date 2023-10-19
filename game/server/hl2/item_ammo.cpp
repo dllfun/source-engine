@@ -758,8 +758,8 @@ void CItem_AmmoCrate::Spawn( void )
 	ResetSequence( LookupSequence( "Idle" ) );
 	SetBodygroup( 1, true );
 
-	m_flCloseTime = gpGlobals->curtime;
-	m_flAnimTime = gpGlobals->curtime;
+	m_flCloseTime = gpGlobals->GetCurTime();
+	m_flAnimTime = gpGlobals->GetCurTime();
 	m_flPlaybackRate = 0.0;
 	SetCycle( 0 );
 
@@ -852,15 +852,15 @@ void CItem_AmmoCrate::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 
 		// Make sound
 		CPASAttenuationFilter sndFilter( this, "AmmoCrate.Open" );
-		EmitSound( sndFilter, entindex(), "AmmoCrate.Open" );
+		EmitSound( sndFilter, this->NetworkProp()->entindex(), "AmmoCrate.Open" );
 
 		// Start thinking to make it return
 		SetThink( &CItem_AmmoCrate::CrateThink );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 
 	// Don't close again for two seconds
-	m_flCloseTime = gpGlobals->curtime + AMMO_CRATE_CLOSE_DELAY;
+	m_flCloseTime = gpGlobals->GetCurTime() + AMMO_CRATE_CLOSE_DELAY;
 }
 
 //-----------------------------------------------------------------------------
@@ -901,7 +901,7 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 		{
 			if ( m_pGiveWeapon[m_nAmmoType] && !m_hActivator->Weapon_OwnsThisType( m_pGiveWeapon[m_nAmmoType] ) )
 			{
-				CBaseEntity *pEntity = CreateEntityByName( m_pGiveWeapon[m_nAmmoType] );
+				CBaseEntity *pEntity = engineServer->CreateEntityByName( m_pGiveWeapon[m_nAmmoType] );
 				CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>(pEntity);
 				if ( pWeapon )
 				{
@@ -941,13 +941,13 @@ void CItem_AmmoCrate::CrateThink( void )
 	StudioFrameAdvance();
 	DispatchAnimEvents( this );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// Start closing if we're not already
 	if ( GetSequence() != LookupSequence( "Close" ) )
 	{
 		// Not ready to close?
-		if ( m_flCloseTime <= gpGlobals->curtime )
+		if ( m_flCloseTime <= gpGlobals->GetCurTime() )
 		{
 			m_hActivator = NULL;
 
@@ -962,7 +962,7 @@ void CItem_AmmoCrate::CrateThink( void )
 			// Stop thinking
 			SetThink( NULL );
 			CPASAttenuationFilter sndFilter( this, "AmmoCrate.Close" );
-			EmitSound( sndFilter, entindex(), "AmmoCrate.Close" );
+			EmitSound( sndFilter, this->NetworkProp()->entindex(), "AmmoCrate.Close" );
 
 			// FIXME: We're resetting the sequence here
 			// but setting Think to NULL will cause this to never have

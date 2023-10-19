@@ -31,6 +31,7 @@ ConVar sk_fraggrenade_radius	( "sk_fraggrenade_radius", "0");
 
 class CGrenadeFrag : public CBaseGrenade
 {
+public:
 	DECLARE_CLASS( CGrenadeFrag, CBaseGrenade );
 
 #if !defined( CLIENT_DLL )
@@ -127,7 +128,7 @@ void CGrenadeFrag::Spawn( void )
 	CreateVPhysics();
 
 	BlipSound();
-	m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FREQUENCY;
+	m_flNextBlipTime = gpGlobals->GetCurTime() + FRAG_GRENADE_BLIP_FREQUENCY;
 
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 
@@ -240,9 +241,9 @@ void CGrenadeFrag::VPhysicsUpdate( IPhysicsObject *pPhysics )
 
 	// UNDONE: Hull won't work with hitboxes - hits outer hull.  But the whole point of this test is to hit hitboxes.
 #if 0
-	UTIL_TraceHull( start, start + vel * gpGlobals->frametime, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs(), CONTENTS_HITBOX|CONTENTS_MONSTER|CONTENTS_SOLID, &filter, &tr );
+	UTIL_TraceHull( start, start + vel * gpGlobals->GetFrameTime(), CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs(), CONTENTS_HITBOX|CONTENTS_MONSTER|CONTENTS_SOLID, &filter, &tr );
 #else
-	UTIL_TraceLine( start, start + vel * gpGlobals->frametime, CONTENTS_HITBOX|CONTENTS_MONSTER|CONTENTS_SOLID, &filter, &tr );
+	UTIL_TraceLine( start, start + vel * gpGlobals->GetFrameTime(), CONTENTS_HITBOX|CONTENTS_MONSTER|CONTENTS_SOLID, &filter, &tr );
 #endif
 	if ( tr.startsolid )
 	{
@@ -289,10 +290,10 @@ void CGrenadeFrag::Precache( void )
 
 void CGrenadeFrag::SetTimer( float detonateDelay, float warnDelay )
 {
-	m_flDetonateTime = gpGlobals->curtime + detonateDelay;
-	m_flWarnAITime = gpGlobals->curtime + warnDelay;
+	m_flDetonateTime = gpGlobals->GetCurTime() + detonateDelay;
+	m_flWarnAITime = gpGlobals->GetCurTime() + warnDelay;
 	SetThink( &CGrenadeFrag::DelayThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	CreateEffects();
 }
@@ -305,7 +306,7 @@ void CGrenadeFrag::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 	SetTimer( FRAG_GRENADE_GRACE_TIME_AFTER_PICKUP, FRAG_GRENADE_GRACE_TIME_AFTER_PICKUP / 2);
 
 	BlipSound();
-	m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
+	m_flNextBlipTime = gpGlobals->GetCurTime() + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
 	m_bHasWarnedAI = true;
 #else
 	if( IsX360() )
@@ -313,7 +314,7 @@ void CGrenadeFrag::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 		// Give 'em a couple of seconds to aim and throw. 
 		SetTimer( 2.0f, 1.0f);
 		BlipSound();
-		m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
+		m_flNextBlipTime = gpGlobals->GetCurTime() + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
 	}
 #endif
 
@@ -326,13 +327,13 @@ void CGrenadeFrag::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 
 void CGrenadeFrag::DelayThink() 
 {
-	if( gpGlobals->curtime > m_flDetonateTime )
+	if( gpGlobals->GetCurTime() > m_flDetonateTime )
 	{
 		Detonate();
 		return;
 	}
 
-	if( !m_bHasWarnedAI && gpGlobals->curtime >= m_flWarnAITime )
+	if( !m_bHasWarnedAI && gpGlobals->GetCurTime() >= m_flWarnAITime )
 	{
 #if !defined( CLIENT_DLL )
 		CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin(), 400, 1.5, this );
@@ -340,21 +341,21 @@ void CGrenadeFrag::DelayThink()
 		m_bHasWarnedAI = true;
 	}
 	
-	if( gpGlobals->curtime > m_flNextBlipTime )
+	if( gpGlobals->GetCurTime() > m_flNextBlipTime )
 	{
 		BlipSound();
 		
 		if( m_bHasWarnedAI )
 		{
-			m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
+			m_flNextBlipTime = gpGlobals->GetCurTime() + FRAG_GRENADE_BLIP_FAST_FREQUENCY;
 		}
 		else
 		{
-			m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FREQUENCY;
+			m_flNextBlipTime = gpGlobals->GetCurTime() + FRAG_GRENADE_BLIP_FREQUENCY;
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 }
 
 void CGrenadeFrag::SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity )
@@ -388,7 +389,7 @@ bool CGrenadeFrag::HandleInteraction(int interactionType, void *data, CBaseComba
 	if ( interactionType == g_interactionBarnacleVictimGrab )
 	{
 		// give the grenade another five seconds seconds so the player can have the satisfaction of blowing up the barnacle with it
-		float timer = m_flDetonateTime - gpGlobals->curtime + 5.0f;
+		float timer = m_flDetonateTime - gpGlobals->GetCurTime() + 5.0f;
 		SetTimer( timer, timer - FRAG_GRENADE_WARN_TIME );
 
 		return true;
@@ -402,7 +403,7 @@ bool CGrenadeFrag::HandleInteraction(int interactionType, void *data, CBaseComba
 	else if ( interactionType == g_interactionBarnacleVictimReleased )
 	{
 		// take the five seconds back off the timer.
-		float timer = MAX(m_flDetonateTime - gpGlobals->curtime - 5.0f,0.0f);
+		float timer = MAX(m_flDetonateTime - gpGlobals->GetCurTime() - 5.0f,0.0f);
 		SetTimer( timer, timer - FRAG_GRENADE_WARN_TIME );
 		return true;
 	}

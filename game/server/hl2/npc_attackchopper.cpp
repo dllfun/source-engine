@@ -1094,11 +1094,11 @@ void CNPC_AttackHelicopter::Spawn( void )
 	m_flPathOffset = 0.0f;
 	m_flCurrPathOffset = 0.0f;
 	m_nAttackMode = ATTACK_MODE_DEFAULT;
-	m_flInputDropBombTime = gpGlobals->curtime;
+	m_flInputDropBombTime = gpGlobals->GetCurTime();
 	SetActivity( ACT_IDLE );
 
 	int nBombAttachment = LookupAttachment("bomb");
-	m_hSensor = static_cast<CBombDropSensor*>(CreateEntityByName( "npc_helicoptersensor" ));
+	m_hSensor = static_cast<CBombDropSensor*>(engineServer->CreateEntityByName( "npc_helicoptersensor" ));
 	m_hSensor->Spawn();
 	m_hSensor->SetParent( this, nBombAttachment );
 	m_hSensor->SetLocalOrigin( vec3_origin );
@@ -1155,7 +1155,7 @@ void CNPC_AttackHelicopter::Startup()
 			m_hLights[i]->TurnOn();
 		}
 
-		SetContextThink( &CNPC_AttackHelicopter::BlinkLightsThink, gpGlobals->curtime + CHOPPER_LIGHT_BLINK_TIME_SHORT, s_pBlinkLightThinkContext );
+		SetContextThink( &CNPC_AttackHelicopter::BlinkLightsThink, gpGlobals->GetCurTime() + CHOPPER_LIGHT_BLINK_TIME_SHORT, s_pBlinkLightThinkContext );
 	}
 }
 
@@ -1193,7 +1193,7 @@ void CNPC_AttackHelicopter::BlinkLightsThink()
 		m_bShortBlink = !m_bShortBlink;
 	}
 
-	SetContextThink( &CNPC_AttackHelicopter::BlinkLightsThink, gpGlobals->curtime + flTime, s_pBlinkLightThinkContext );
+	SetContextThink( &CNPC_AttackHelicopter::BlinkLightsThink, gpGlobals->GetCurTime() + flTime, s_pBlinkLightThinkContext );
 }
 
 
@@ -1219,7 +1219,7 @@ void CNPC_AttackHelicopter::SpotlightStartup()
 void CNPC_AttackHelicopter::SpotlightShutdown()
 {
 	m_Spotlight.SpotlightDestroy();
-	SetContextThink( NULL, gpGlobals->curtime, s_pSpotlightThinkContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pSpotlightThinkContext );
 }
 
 
@@ -1270,7 +1270,7 @@ void CNPC_AttackHelicopter::SpotlightThink()
 	}
 
 	m_Spotlight.Update();
-	SetContextThink( &CNPC_AttackHelicopter::SpotlightThink, gpGlobals->curtime + TICK_INTERVAL, s_pSpotlightThinkContext );
+	SetContextThink( &CNPC_AttackHelicopter::SpotlightThink, gpGlobals->GetCurTime() + TICK_INTERVAL, s_pSpotlightThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -1361,15 +1361,15 @@ void CNPC_AttackHelicopter::InitializeRotorSound( void )
 
 		if ( HasSpawnFlags( SF_HELICOPTER_LOUD_ROTOR_SOUND ) )
 		{
-			m_pRotorSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopter.RotorsLoud" );
+			m_pRotorSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_AttackHelicopter.RotorsLoud" );
 		}
 		else
 		{
-			m_pRotorSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopter.Rotors" );
+			m_pRotorSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_AttackHelicopter.Rotors" );
 		}
 
-		m_pRotorBlast = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopter.RotorBlast" );
-		m_pGunFiringSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopter.FireGun" );
+		m_pRotorBlast = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_AttackHelicopter.RotorBlast" );
+		m_pGunFiringSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_AttackHelicopter.FireGun" );
 		controller.Play( m_pGunFiringSound, 0.0, 100 );
 	}
 	else
@@ -1632,7 +1632,7 @@ void CNPC_AttackHelicopter::InputResetIdleTime( inputdata_t &inputdata )
 {
 	if ( m_nGunState == GUN_STATE_IDLE )
 	{
-		m_flNextAttack = gpGlobals->curtime;
+		m_flNextAttack = gpGlobals->GetCurTime();
 	}
 }
 
@@ -2030,7 +2030,7 @@ void CNPC_AttackHelicopter::DoMuzzleFlash( void )
 	CEffectData data;
 
 	data.m_nAttachmentIndex = LookupAttachment( "muzzle" );
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	DispatchEffect( "ChopperMuzzleFlash", data );
 }
 
@@ -2256,14 +2256,14 @@ bool CNPC_AttackHelicopter::DoGunIdle( const Vector &vGunDir, const Vector &vTar
 		( IsInSecondaryMode( BULLRUSH_MODE_SHOOT_GUN ) || IsInSecondaryMode(BULLRUSH_MODE_SHOOT_IDLE_PLAYER) ) )
 	{
 		EmitSound( "NPC_AttackHelicopter.ChargeGun" );
-		m_flChargeTime = gpGlobals->curtime + CHOPPER_GUN_CHARGE_TIME;
+		m_flChargeTime = gpGlobals->GetCurTime() + CHOPPER_GUN_CHARGE_TIME;
 		m_nGunState = GUN_STATE_CHARGING;
 		m_flCircleOfDeathRadius = CHOPPER_MAX_CIRCLE_OF_DEATH_RADIUS;
 		return true;
 	}
 
 	// Can't continually fire....
-	if (m_flNextAttack > gpGlobals->curtime)
+	if (m_flNextAttack > gpGlobals->GetCurTime())
 		return false;
 
 	// Don't fire if we're too far away, or if the enemy isn't in front of us
@@ -2292,7 +2292,7 @@ bool CNPC_AttackHelicopter::DoGunIdle( const Vector &vGunDir, const Vector &vTar
 	// Fast shooting doesn't charge up
 	if( m_nShootingMode == SHOOT_MODE_FAST )
 	{
-		m_flChargeTime = gpGlobals->curtime;
+		m_flChargeTime = gpGlobals->GetCurTime();
 		m_nGunState = GUN_STATE_CHARGING;
 		m_flAvoidMetric = 0.0f;
 		m_vecLastAngVelocity.Init( 0, 0, 0 );
@@ -2302,7 +2302,7 @@ bool CNPC_AttackHelicopter::DoGunIdle( const Vector &vGunDir, const Vector &vTar
 		EmitSound( "NPC_AttackHelicopter.ChargeGun" );
 		float flChargeTime = CHOPPER_GUN_CHARGE_TIME;
 		float flVariance = flChargeTime * 0.1f;
-		m_flChargeTime = gpGlobals->curtime + random->RandomFloat(flChargeTime - flVariance, flChargeTime + flVariance);
+		m_flChargeTime = gpGlobals->GetCurTime() + random->RandomFloat(flChargeTime - flVariance, flChargeTime + flVariance);
 		m_nGunState = GUN_STATE_CHARGING;
 		m_flAvoidMetric = 0.0f;
 		m_vecLastAngVelocity.Init( 0, 0, 0 );
@@ -2340,7 +2340,7 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 	// Update the target hittability, which will indicate how many hits we'll accept.
 	UpdateTargetHittability();
 
-	if ( m_flChargeTime > gpGlobals->curtime )
+	if ( m_flChargeTime > gpGlobals->GetCurTime() )
 		return false;
 
 	m_nGunState = GUN_STATE_FIRING;
@@ -2526,7 +2526,7 @@ bool CNPC_AttackHelicopter::IsValidZapTarget( CBaseEntity *pTarget )
 void CNPC_AttackHelicopter::CreateZapBeam( const Vector &vecTargetPos )
 {
 	CEffectData	data;
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	data.m_nAttachmentIndex = 0; // m_nGunTipAttachment;
 	data.m_vOrigin = vecTargetPos;
 	data.m_flScale = 5;
@@ -2536,7 +2536,7 @@ void CNPC_AttackHelicopter::CreateZapBeam( const Vector &vecTargetPos )
 void CNPC_AttackHelicopter::CreateEntityZapEffect( CBaseEntity *pEnt )
 {
 	CEffectData	data;
-	data.m_nEntIndex = pEnt->entindex();
+	data.m_nEntIndex = pEnt->NetworkProp()->entindex();
 	data.m_flMagnitude = 10;
 	data.m_flScale = 1.0f;
 	DispatchEffect( "TeslaHitboxes", data );
@@ -2548,7 +2548,7 @@ void CNPC_AttackHelicopter::CreateEntityZapEffect( CBaseEntity *pEnt )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::FireElectricityGun( )
 {
-	if ( m_flNextAttack > gpGlobals->curtime )
+	if ( m_flNextAttack > gpGlobals->GetCurTime() )
 		return;
 
 	EmitSound( "ReallyLoudSpark" );
@@ -2650,7 +2650,7 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 		}
 	}
 
-	m_flNextAttack = gpGlobals->curtime + random->RandomFloat( 0.3f, 1.0f );
+	m_flNextAttack = gpGlobals->GetCurTime() + random->RandomFloat( 0.3f, 1.0f );
 }
 
 
@@ -2708,7 +2708,7 @@ bool CNPC_AttackHelicopter::DoGunFiring( const Vector &vBasePos, const Vector &v
 	controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.01f );
 	float flIdleTime = CHOPPER_GUN_IDLE_TIME;
 	float flVariance = flIdleTime * 0.1f;
-	m_flNextAttack = gpGlobals->curtime + m_flIdleTimeDelay + random->RandomFloat(flIdleTime - flVariance, flIdleTime + flVariance);
+	m_flNextAttack = gpGlobals->GetCurTime() + m_flIdleTimeDelay + random->RandomFloat(flIdleTime - flVariance, flIdleTime + flVariance);
 	m_nGunState = GUN_STATE_IDLE;
 	SetPauseState( PAUSE_NO_PAUSE );
 	return true;
@@ -2771,7 +2771,7 @@ bool CNPC_AttackHelicopter::IsBombDropFair( const Vector &vecBombStartPos, const
 CGrenadeHelicopter *CNPC_AttackHelicopter::SpawnBombEntity( const Vector &vecPos, const Vector &vecVelocity )
 {
 	// Create the grenade and set it up
-	CGrenadeHelicopter *pGrenade = static_cast<CGrenadeHelicopter*>(CreateEntityByName( "grenade_helicopter" ));
+	CGrenadeHelicopter *pGrenade = static_cast<CGrenadeHelicopter*>(engineServer->CreateEntityByName( "grenade_helicopter" ));
 	pGrenade->SetAbsOrigin( vecPos );
 	pGrenade->SetOwnerEntity( this );
 	pGrenade->SetThrower( this );
@@ -2854,18 +2854,18 @@ void CNPC_AttackHelicopter::CreateBomb( bool bCheckForFairness, Vector *pVecVelo
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::InputDropBomb( inputdata_t &inputdata )
 {
-	if ( m_flInputDropBombTime > gpGlobals->curtime )
+	if ( m_flInputDropBombTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Prevent two triggers from being hit the same frame
-	m_flInputDropBombTime = gpGlobals->curtime + 0.01f;
+	m_flInputDropBombTime = gpGlobals->GetCurTime() + 0.01f;
 
 	CreateBomb(	);
 
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
 	if ( ShouldDropBombs() )
 	{
-		m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
+		m_flNextAttack = gpGlobals->GetCurTime() + 0.5f + random->RandomFloat( 0.3f, 0.6f );
 	}
 }
 
@@ -2875,11 +2875,11 @@ void CNPC_AttackHelicopter::InputDropBomb( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t &inputdata )
 {
-	if ( m_flInputDropBombTime > gpGlobals->curtime )
+	if ( m_flInputDropBombTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Prevent two triggers from being hit the same frame
-	m_flInputDropBombTime = gpGlobals->curtime + 0.01f;
+	m_flInputDropBombTime = gpGlobals->GetCurTime() + 0.01f;
 
 	Vector vTipPos;
 	GetAttachment( m_nBombAttachment, vTipPos );
@@ -2890,7 +2890,7 @@ void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t &inputdata )
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
 	if ( ShouldDropBombs() )
 	{
-		m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
+		m_flNextAttack = gpGlobals->GetCurTime() + 0.5f + random->RandomFloat( 0.3f, 0.6f );
 	}
 }
 
@@ -2900,11 +2900,11 @@ void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdata, bool bCheckFairness )
 {
-	if ( m_flInputDropBombTime > gpGlobals->curtime )
+	if ( m_flInputDropBombTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Prevent two triggers from being hit the same frame
-	m_flInputDropBombTime = gpGlobals->curtime + 0.01f;
+	m_flInputDropBombTime = gpGlobals->GetCurTime() + 0.01f;
 
 	// Find our specified target
 	string_t strBombTarget = MAKE_STRING( inputdata.value.String() );
@@ -2946,7 +2946,7 @@ void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdat
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
 	if ( ShouldDropBombs() )
 	{
-		m_flNextAttack = gpGlobals->curtime + 1.5f + random->RandomFloat( 0.1f, 0.2f );
+		m_flNextAttack = gpGlobals->GetCurTime() + 1.5f + random->RandomFloat( 0.1f, 0.2f );
 	}
 }
 
@@ -2974,7 +2974,7 @@ void CNPC_AttackHelicopter::InputDropBombAtTarget( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::InputDropBombDelay( inputdata_t &inputdata )
 {
-	m_flInputDropBombTime = gpGlobals->curtime + inputdata.value.Float();
+	m_flInputDropBombTime = gpGlobals->GetCurTime() + inputdata.value.Float();
 
 	if ( ShouldDropBombs() )
 	{
@@ -2991,7 +2991,7 @@ void CNPC_AttackHelicopter::InputDropBombDelay( inputdata_t &inputdata )
 void CNPC_AttackHelicopter::DropBombs( )
 {
 	// Can't continually fire....
-	if (m_flNextAttack > gpGlobals->curtime)
+	if (m_flNextAttack > gpGlobals->GetCurTime())
 		return;
 
 	// Otherwise, behave as normal.
@@ -3024,7 +3024,7 @@ void CNPC_AttackHelicopter::DropBombs( )
 
 	CreateBomb( );
 
-	m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
+	m_flNextAttack = gpGlobals->GetCurTime() + 0.5f + random->RandomFloat( 0.3f, 0.6f );
 
 	if ( (m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE) )
 	{
@@ -3070,11 +3070,11 @@ bool CNPC_AttackHelicopter::ShouldDropBombs( void )
 	float flSpeedSqr = GetEnemy()->GetSmoothedVelocity().LengthSqr();
 	if ( flSpeedSqr >= BOMB_MIN_SPEED * BOMB_MIN_SPEED )
 	{
-		m_flLastFastTime = gpGlobals->curtime;
+		m_flLastFastTime = gpGlobals->GetCurTime();
 	}
 	else
 	{
-		if ( ( gpGlobals->curtime - m_flLastFastTime ) < BOMB_GRACE_PERIOD )
+		if ( ( gpGlobals->GetCurTime() - m_flLastFastTime ) < BOMB_GRACE_PERIOD )
 			return false;
 	}
 
@@ -3104,7 +3104,7 @@ bool CNPC_AttackHelicopter::ShouldDropBombs( void )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::BullrushBombs( )
 {
-	if ( gpGlobals->curtime < m_flNextBullrushBombTime )
+	if ( gpGlobals->GetCurTime() < m_flNextBullrushBombTime )
 		return;
 
 	if ( m_nBullrushBombMode & 0x1 )
@@ -3132,7 +3132,7 @@ void CNPC_AttackHelicopter::BullrushBombs( )
 	}
 
 	m_nBullrushBombMode = !m_nBullrushBombMode;
-	m_flNextBullrushBombTime = gpGlobals->curtime + 0.2f;
+	m_flNextBullrushBombTime = gpGlobals->GetCurTime() + 0.2f;
 }
 
 
@@ -3166,7 +3166,7 @@ bool CNPC_AttackHelicopter::FireGun( void )
 	// HACK: CBaseHelicopter ignores this, and fire forever at the last place it saw the player. Why?
 	if (( m_nGunState == GUN_STATE_IDLE ) && ( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE ) && !IsCarpetBombing() )
 	{
-		if ( (m_flLastSeen + 1 <= gpGlobals->curtime) || (m_flPrevSeen + m_flGracePeriod > gpGlobals->curtime) )
+		if ( (m_flLastSeen + 1 <= gpGlobals->GetCurTime()) || (m_flPrevSeen + m_flGracePeriod > gpGlobals->GetCurTime()) )
 			return false;
 	}
 
@@ -3444,14 +3444,14 @@ void CNPC_AttackHelicopter::ExplodeAndThrowChunk( const Vector &vecExplosionPos 
 void CNPC_AttackHelicopter::DropCorpse( int nDamage )
 {
 	// Don't drop another corpse if the next guy's not out on the gun yet
-	if ( m_flLastCorpseFall > gpGlobals->curtime )
+	if ( m_flLastCorpseFall > gpGlobals->GetCurTime() )
 		return;
 
 	// Clamp damage to prevent ridiculous ragdoll velocity
 	if( nDamage > 250.0f )
 		nDamage = 250.0f;
 
-	m_flLastCorpseFall = gpGlobals->curtime + 3.0;
+	m_flLastCorpseFall = gpGlobals->GetCurTime() + 3.0;
 
 	// Spawn a ragdoll combine guard
 	float forceScale = nDamage * 75 * 4;
@@ -3734,7 +3734,7 @@ void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
 			controller.SoundDestroy( m_pRotorSound );
 
 			CPASAttenuationFilter filter( this );
-			m_pRotorSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopter.EngineFailure" );
+			m_pRotorSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_AttackHelicopter.EngineFailure" );
 			controller.Play( m_pRotorSound, 1.0, 100 );
 
 			// Tailspin!!
@@ -3753,12 +3753,12 @@ void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
 	EmitSound( "NPC_CombineGunship.Explode" );
 
 	SetThink( &CNPC_AttackHelicopter::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	AddEffects( EF_NODRAW );
 
 	// Makes the slower rotors fade back in
-	SetStartupTime( gpGlobals->curtime + 99.0f );
+	SetStartupTime( gpGlobals->GetCurTime() + 99.0f );
 
 	m_iHealth = 0;
 	m_takedamage = DAMAGE_NO;
@@ -3772,7 +3772,7 @@ void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
 void CNPC_AttackHelicopter::CreateChopperHusk()
 {
 	// We're embedded into the ground
-	CBaseEntity *pCorpse = CreateEntityByName( "prop_physics" );
+	CBaseEntity *pCorpse = engineServer->CreateEntityByName( "prop_physics" );
 	pCorpse->SetAbsOrigin( GetAbsOrigin() );
 	pCorpse->SetAbsAngles( GetAbsAngles() );
 	pCorpse->SetModel( CHOPPER_MODEL_CORPSE_NAME );
@@ -3843,7 +3843,7 @@ float CNPC_AttackHelicopter::UpdatePerpPathDistance( float flMaxPathOffset )
 
 		flSpeedAlongPath = clamp( flSpeedAlongPath, 100.0f, 500.0f );
 		float flSinHeight = SimpleSplineRemapVal( flSpeedAlongPath, 100.0f, 500.0f, 0.0f, 200.0f );
-		flNewPathOffset += flSinHeight * sin( 2.0f * M_PI * (gpGlobals->curtime / 6.0f) );
+		flNewPathOffset += flSinHeight * sin( 2.0f * M_PI * (gpGlobals->GetCurTime() / 6.0f) );
 	}
 
 	if ( (flMaxPathOffset != 0.0f) && (flNewPathOffset > flMaxPathOffset) )
@@ -3851,7 +3851,7 @@ float CNPC_AttackHelicopter::UpdatePerpPathDistance( float flMaxPathOffset )
 		flNewPathOffset = flMaxPathOffset;
 	}
 
-	float flMaxChange = 1000.0f * (gpGlobals->curtime - GetLastThink());
+	float flMaxChange = 1000.0f * (gpGlobals->GetCurTime() - GetLastThink());
 	if ( fabs( flNewPathOffset - m_flCurrPathOffset ) < flMaxChange )
 	{
 		m_flCurrPathOffset = flNewPathOffset;
@@ -4220,7 +4220,7 @@ void CNPC_AttackHelicopter::UpdateFacingDirection( const Vector &vecActualDesire
 {
 	bool bIsBullrushing = ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE );
 
-	bool bSeenTargetRecently = HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) || ( m_flLastSeen + 5 > gpGlobals->curtime ); 
+	bool bSeenTargetRecently = HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) || ( m_flLastSeen + 5 > gpGlobals->GetCurTime() ); 
 	if ( GetEnemy() && !bIsBullrushing )
 	{
 		if ( !IsLeading() )
@@ -4282,7 +4282,7 @@ void CNPC_AttackHelicopter::UpdateFacingDirection( const Vector &vecActualDesire
 #define ENEMY_CREEP_RATE	400
 float CNPC_AttackHelicopter::CreepTowardEnemy( float flSpeed, float flMinSpeed, float flMaxSpeed, float flMinDist, float flMaxDist )
 {
-	float dt = gpGlobals->curtime - GetLastThink();
+	float dt = gpGlobals->GetCurTime() - GetLastThink();
 	float flEnemyCreepDist = ENEMY_CREEP_RATE * dt;
 
 	// When the player is slow, creep toward him within a second or two
@@ -4361,7 +4361,7 @@ inline void CNPC_AttackHelicopter::SetSecondaryMode( int nMode, bool bRetainTime
 	m_nSecondaryMode = nMode;
 	if (!bRetainTime)
 	{
-		m_flSecondaryModeStartTime = gpGlobals->curtime;
+		m_flSecondaryModeStartTime = gpGlobals->GetCurTime();
 	}
 }
 
@@ -4372,7 +4372,7 @@ inline bool CNPC_AttackHelicopter::IsInSecondaryMode( int nMode )
 
 inline float CNPC_AttackHelicopter::SecondaryModeTime( ) const
 {
-	return gpGlobals->curtime - m_flSecondaryModeStartTime;
+	return gpGlobals->GetCurTime() - m_flSecondaryModeStartTime;
 }
 
 
@@ -4382,7 +4382,7 @@ inline float CNPC_AttackHelicopter::SecondaryModeTime( ) const
 void CNPC_AttackHelicopter::SwitchToBullrushIdle( void )
 {
 	// Put us directly into idle gun state (we're in firing state)
-	m_flNextAttack = gpGlobals->curtime;
+	m_flNextAttack = gpGlobals->GetCurTime();
 	m_nGunState = GUN_STATE_IDLE;
 	m_nRemainingBursts = 0;
 	m_flBullrushAdditionalHeight = 0.0f;
@@ -4410,7 +4410,7 @@ bool CNPC_AttackHelicopter::ShouldShootIdlePlayerInBullrush()
 void CNPC_AttackHelicopter::ShutdownGunDuringBullrush( )
 {
 	// Put us directly into idle gun state (we're in firing state)
-	m_flNextAttack = gpGlobals->curtime;
+	m_flNextAttack = gpGlobals->GetCurTime();
 	m_nGunState = GUN_STATE_IDLE;
 	m_nRemainingBursts = 0;
 	SetPauseState( PAUSE_NO_PAUSE );
@@ -4489,7 +4489,7 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 			}
 			else
 			{
-				m_flSecondaryModeStartTime = gpGlobals->curtime;
+				m_flSecondaryModeStartTime = gpGlobals->GetCurTime();
 			}
 		}
 		break;
@@ -4513,7 +4513,7 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 			if ( GetHealth() <= m_flNextMegaBombHealth )
 			{
 				m_flNextMegaBombHealth -= GetMaxHealth() * g_helicopter_bullrush_mega_bomb_health.GetFloat();
-				m_flNextBullrushBombTime = gpGlobals->curtime;
+				m_flNextBullrushBombTime = gpGlobals->GetCurTime();
 				SetSecondaryMode( BULLRUSH_MODE_MEGA_BOMB );
 				EmitSound( "NPC_AttackHelicopter.MegabombAlert" );
 			}
@@ -4727,7 +4727,7 @@ void CNPC_AttackHelicopter::UpdateEnemyLeading( void )
 void CNPC_AttackHelicopter::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get( this->NetworkProp()->entindex() ) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );
@@ -5060,7 +5060,7 @@ void CGrenadeHelicopter::Spawn( void )
 
 	if( hl2_episodic.GetBool() )
 	{
-		SetContextThink( &CGrenadeHelicopter::AnimateThink, gpGlobals->curtime, s_pAnimateThinkContext );
+		SetContextThink( &CGrenadeHelicopter::AnimateThink, gpGlobals->GetCurTime(), s_pAnimateThinkContext );
 	}
 }
 
@@ -5121,7 +5121,7 @@ void CGrenadeHelicopter::BecomeActive()
 	{
 		if ( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) == false )
 		{
-			SetNextThink( gpGlobals->curtime + GetBombLifetime() );
+			SetNextThink( gpGlobals->GetCurTime() + GetBombLifetime() );
 		}
 		else
 		{
@@ -5132,23 +5132,23 @@ void CGrenadeHelicopter::BecomeActive()
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + GetBombLifetime() );
+		SetNextThink( gpGlobals->GetCurTime() + GetBombLifetime() );
 	}
 
 	if ( !bMegaBomb )
 	{
-		SetContextThink( &CGrenadeHelicopter::RampSoundThink, gpGlobals->curtime + GetBombLifetime() - BOMB_RAMP_SOUND_TIME, s_pRampSoundContext );
+		SetContextThink( &CGrenadeHelicopter::RampSoundThink, gpGlobals->GetCurTime() + GetBombLifetime() - BOMB_RAMP_SOUND_TIME, s_pRampSoundContext );
 
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 		CReliableBroadcastRecipientFilter filter;
-		m_pWarnSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopterGrenade.Ping" );
+		m_pWarnSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_AttackHelicopterGrenade.Ping" );
 		controller.Play( m_pWarnSound, 1.0, PITCH_NORM );
 	}
 
-	SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->curtime + (GetBombLifetime() - 2.0f), s_pWarningBlinkerContext );
+	SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->GetCurTime() + (GetBombLifetime() - 2.0f), s_pWarningBlinkerContext );
 
 #ifdef HL2_EPISODIC
-	m_flBlinkFastTime = gpGlobals->curtime + GetBombLifetime() - 1.0f;
+	m_flBlinkFastTime = gpGlobals->GetCurTime() + GetBombLifetime() - 1.0f;
 #endif//HL2_EPISODIC
 }
 
@@ -5164,7 +5164,7 @@ void CGrenadeHelicopter::RampSoundThink( )
 		controller.SoundChangePitch( m_pWarnSound, 140, BOMB_RAMP_SOUND_TIME );
 	}
 
-	SetContextThink( NULL, gpGlobals->curtime, s_pRampSoundContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pRampSoundContext );
 }
 
 
@@ -5219,13 +5219,13 @@ void CGrenadeHelicopter::WarningBlinkerThink()
 	CSoundEnt::InsertSound ( SOUND_DANGER, WorldSpaceCenter(), g_helicopter_bomb_danger_radius.GetFloat(), 0.2f, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
 
 #ifdef HL2_EPISODIC
-	if( gpGlobals->curtime >= m_flBlinkFastTime )
+	if( gpGlobals->GetCurTime() >= m_flBlinkFastTime )
 	{
-		SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->curtime + 0.1f, s_pWarningBlinkerContext );
+		SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->GetCurTime() + 0.1f, s_pWarningBlinkerContext );
 	}
 	else
 	{
-		SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->curtime + 0.2f, s_pWarningBlinkerContext );
+		SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->GetCurTime() + 0.2f, s_pWarningBlinkerContext );
 	}
 #endif//HL2_EPISODIC
 }
@@ -5246,7 +5246,7 @@ void CGrenadeHelicopter::StopWarningBlinker()
 void CGrenadeHelicopter::AnimateThink()
 {
 	StudioFrameAdvance();
-	SetContextThink( &CGrenadeHelicopter::AnimateThink, gpGlobals->curtime + 0.1f, s_pAnimateThinkContext );
+	SetContextThink( &CGrenadeHelicopter::AnimateThink, gpGlobals->GetCurTime() + 0.1f, s_pAnimateThinkContext );
 }
 
 //------------------------------------------------------------------------------
@@ -5313,7 +5313,7 @@ void CGrenadeHelicopter::VPhysicsCollision( int index, gamevcollisionevent_t *pE
 	if( hl2_episodic.GetBool() )
 	{
 		float flImpactSpeed = pEvent->preVelocity->Length();
-		if( flImpactSpeed > 400.0f && pEvent->pEntities[ 1 ]->IsWorld() )
+		if( flImpactSpeed > 400.0f && pEvent->pEntities[ 1 ]->NetworkProp()->entindex()==0)
 		{
 			EmitSound( "NPC_AttackHelicopterGrenade.HardImpact" );
 		}
@@ -5451,7 +5451,7 @@ void CGrenadeHelicopter::ExplodeConcussion( CBaseEntity *pOther )
 
 	if ( !m_bExplodeOnContact )
 	{
-		if ( pOther->IsWorld() )
+		if ( pOther->NetworkProp()->entindex()==0)
 			return;
 
 		if ( hl2_episodic.GetBool() )
@@ -5504,24 +5504,24 @@ void CGrenadeHelicopter::OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPicku
 			BecomeActive();
 
 			// Change the warning sound to a captured sound.
-			SetContextThink( &CGrenadeHelicopter::RampSoundThink, gpGlobals->curtime + GetBombLifetime() - BOMB_RAMP_SOUND_TIME, s_pRampSoundContext );
+			SetContextThink( &CGrenadeHelicopter::RampSoundThink, gpGlobals->GetCurTime() + GetBombLifetime() - BOMB_RAMP_SOUND_TIME, s_pRampSoundContext );
 
 			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 			controller.SoundDestroy( m_pWarnSound );
 
 			CReliableBroadcastRecipientFilter filter;
-			m_pWarnSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopterGrenade.PingCaptured" );
+			m_pWarnSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_AttackHelicopterGrenade.PingCaptured" );
 			controller.Play( m_pWarnSound, 1.0, PITCH_NORM );
 
 			// Reset our counter so the player has more time
 			SetThink( &CGrenadeHelicopter::ExplodeThink );
-			SetNextThink( gpGlobals->curtime + GetBombLifetime() );
+			SetNextThink( gpGlobals->GetCurTime() + GetBombLifetime() );
 
-			SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->curtime + GetBombLifetime() - 2.0f, s_pWarningBlinkerContext );
+			SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->GetCurTime() + GetBombLifetime() - 2.0f, s_pWarningBlinkerContext );
 
 #ifdef HL2_EPISODIC
 			m_nSkin = (int)SKIN_REGULAR;
-			m_flBlinkFastTime = gpGlobals->curtime + GetBombLifetime() - 1.0f;
+			m_flBlinkFastTime = gpGlobals->GetCurTime() + GetBombLifetime() - 1.0f;
 #endif//HL2_EPISODIC
 			
 			// Stop us from sparing damage to the helicopter that dropped us
@@ -5605,7 +5605,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 CBaseEntity *CreateHelicopterAvoidanceSphere( CBaseEntity *pParent, int nAttachment, float flRadius, bool bAvoidBelow )
 {
-	CAvoidSphere *pSphere = static_cast<CAvoidSphere*>(CreateEntityByName( "npc_heli_avoidsphere" ));
+	CAvoidSphere *pSphere = static_cast<CAvoidSphere*>(engineServer->CreateEntityByName( "npc_heli_avoidsphere" ));
 	pSphere->Init( flRadius );
 	if ( bAvoidBelow )
 	{
@@ -5968,7 +5968,7 @@ void CHelicopterChunk::FallThink( void )
 		EmitSound( "BaseExplosionEffect.Sound" );
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -5987,7 +5987,7 @@ void CHelicopterChunk::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 		if ( !pOther )
 			return;
 		
-		if ( pOther->IsWorld() )
+		if ( pOther->NetworkProp()->entindex()==0)
 		{		
 			CollisionCallback( this );
 
@@ -6082,7 +6082,7 @@ CHelicopterChunk *CHelicopterChunk::CreateHelicopterChunk( const Vector &vecPos,
 	}
 	
 	pChunk->SetThink( &CHelicopterChunk::FallThink );
-	pChunk->SetNextThink( gpGlobals->curtime + 0.1f );
+	pChunk->SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	pChunk->m_bLanded = false;
 

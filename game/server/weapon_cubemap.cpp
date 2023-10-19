@@ -22,12 +22,18 @@ public:
 	void	Spawn( void );
 
 	DECLARE_SERVERCLASS();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponCubemap)
+	BEGIN_SEND_TABLE(CWeaponCubemap, DT_WeaponCubemap, DT_BaseCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( weapon_cubemap, CWeaponCubemap );
 
-IMPLEMENT_SERVERCLASS_ST( CWeaponCubemap, DT_WeaponCubemap )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CWeaponCubemap, DT_WeaponCubemap )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

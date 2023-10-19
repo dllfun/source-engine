@@ -195,7 +195,7 @@ Activity CNPC_Monk::NPC_TranslateActivity( Activity eNewActivity )
 	{
 		bool bGunUp = false;
 
-		bGunUp = (gpGlobals->curtime - m_flLastAttackTime < 4);
+		bGunUp = (gpGlobals->GetCurTime() - m_flLastAttackTime < 4);
 		bGunUp = bGunUp || (GetEnemy() && !HasCondition( COND_TOO_FAR_TO_ATTACK ));
 
 		if (bGunUp)

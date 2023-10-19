@@ -77,6 +77,12 @@ protected:
 
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CCrossbowBolt)
+	BEGIN_SEND_TABLE(CCrossbowBolt, DT_CrossbowBolt, DT_BaseCombatCharacter)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
 
@@ -91,13 +97,13 @@ BEGIN_DATADESC( CCrossbowBolt )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CCrossbowBolt, DT_CrossbowBolt )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CCrossbowBolt, DT_CrossbowBolt )
+
 
 CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner )
 {
 	// Create a new entity with CCrossbowBolt private data
-	CCrossbowBolt *pBolt = (CCrossbowBolt *)CreateEntityByName( "crossbow_bolt" );
+	CCrossbowBolt *pBolt = (CCrossbowBolt *)engineServer->CreateEntityByName( "crossbow_bolt" );
 	UTIL_SetOrigin( pBolt, vecOrigin );
 	pBolt->SetAbsAngles( angAngles );
 	pBolt->Spawn();
@@ -175,7 +181,7 @@ void CCrossbowBolt::Spawn( void )
 	SetTouch( &CCrossbowBolt::BoltTouch );
 
 	SetThink( &CCrossbowBolt::BubbleThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	
 	CreateSprites();
 
@@ -337,7 +343,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			else
 			{
 				SetThink( &CCrossbowBolt::SUB_Remove );
-				SetNextThink( gpGlobals->curtime + 2.0f );
+				SetNextThink( gpGlobals->GetCurTime() + 2.0f );
 				
 				//FIXME: We actually want to stick (with hierarchy) to what we've hit
 				SetMoveType( MOVETYPE_NONE );
@@ -360,7 +366,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				AddEffects( EF_NODRAW );
 				SetTouch( NULL );
 				SetThink( &CCrossbowBolt::SUB_Remove );
-				SetNextThink( gpGlobals->curtime + 2.0f );
+				SetNextThink( gpGlobals->GetCurTime() + 2.0f );
 
 				if ( m_pGlowSprite != NULL )
 				{
@@ -390,7 +396,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 	if ( g_pGameRules->IsMultiplayer() )
 	{
 //		SetThink( &CCrossbowBolt::ExplodeThink );
-//		SetNextThink( gpGlobals->curtime + 0.1f );
+//		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 
@@ -404,7 +410,7 @@ void CCrossbowBolt::BubbleThink( void )
 	VectorAngles( GetAbsVelocity(), angNewAngles );
 	SetAbsAngles( angNewAngles );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// Make danger sounds out in front of me, to scare snipers back into their hole
 	CSoundEnt::InsertSound( SOUND_DANGER_SNIPERONLY, GetAbsOrigin() + GetAbsVelocity() * 0.2, 120.0f, 0.5f, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
@@ -476,14 +482,20 @@ private:
 
 	bool				m_bInZoom;
 	bool				m_bMustReload;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponCrossbow)
+	BEGIN_SEND_TABLE(CWeaponCrossbow, DT_WeaponCrossbow, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( weapon_crossbow, CWeaponCrossbow );
 
 PRECACHE_WEAPON_REGISTER( weapon_crossbow );
 
-IMPLEMENT_SERVERCLASS_ST( CWeaponCrossbow, DT_WeaponCrossbow )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CWeaponCrossbow, DT_WeaponCrossbow )
+
 
 BEGIN_DATADESC( CWeaponCrossbow )
 
@@ -544,7 +556,7 @@ void CWeaponCrossbow::PrimaryAttack( void )
 	// Signal a reload
 	m_bMustReload = true;
 
-	SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration( ACT_VM_PRIMARYATTACK ) );
+	SetWeaponIdleTime( gpGlobals->GetCurTime() + SequenceDuration( ACT_VM_PRIMARYATTACK ) );
 
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 	if ( pPlayer )
@@ -693,7 +705,7 @@ void CWeaponCrossbow::FireBolt( void )
 		pOwner->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 	}
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack	= gpGlobals->curtime + 0.75;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack	= gpGlobals->GetCurTime() + 0.75;
 
 	DoLoadEffect();
 	SetChargerState( CHARGER_STATE_DISCHARGE );
@@ -814,7 +826,7 @@ void CWeaponCrossbow::DoLoadEffect( void )
 
 	CEffectData	data;
 
-	data.m_nEntIndex = pViewModel->entindex();
+	data.m_nEntIndex = pViewModel->NetworkProp()->entindex();
 	data.m_nAttachmentIndex = 1;
 
 	DispatchEffect( "CrossbowLoad", data );

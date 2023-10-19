@@ -406,13 +406,19 @@ private:
 	// If true, playing patrol loop.
 	// Else, playing angry.
 	bool			m_fPatrolLoopPlaying;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_CombineGunship)
+	BEGIN_SEND_TABLE(CNPC_CombineGunship, DT_CombineGunship, DT_BaseHelicopter)
+		SendPropVector(SENDINFO(m_vecHitPos), -1, SPROP_COORD),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( npc_combinegunship, CNPC_CombineGunship );
 
-IMPLEMENT_SERVERCLASS_ST( CNPC_CombineGunship, DT_CombineGunship )
-	SendPropVector(SENDINFO(m_vecHitPos), -1, SPROP_COORD),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CNPC_CombineGunship, DT_CombineGunship )
+
 
 BEGIN_DATADESC( CNPC_CombineGunship )
 
@@ -499,7 +505,7 @@ CNPC_CombineGunship::CNPC_CombineGunship( void )
 
 void CNPC_CombineGunship::CreateBellyBlastEnergyCore( void )
 {
-	CCitadelEnergyCore *pCore = static_cast<CCitadelEnergyCore*>( CreateEntityByName( "env_citadel_energy_core" ) );
+	CCitadelEnergyCore *pCore = static_cast<CCitadelEnergyCore*>(engineServer->CreateEntityByName( "env_citadel_energy_core" ) );
 
 	if ( pCore == NULL )
 		return;
@@ -566,8 +572,8 @@ void CNPC_CombineGunship::Spawn( void )
 	m_flMaxSpeed = GUNSHIP_MAX_SPEED;
 	m_flMaxSpeedFiring = GUNSHIP_MAX_SPEED;
 
-	m_flTimeNextAttack = gpGlobals->curtime;
-	m_flNextSeeEnemySound = gpGlobals->curtime;
+	m_flTimeNextAttack = gpGlobals->GetCurTime();
+	m_flNextSeeEnemySound = gpGlobals->GetCurTime();
 
 	// Init the pose parameters
 	SetPoseParameter( "flex_horz", 0 );
@@ -589,7 +595,7 @@ void CNPC_CombineGunship::Spawn( void )
 	AddRelationship( "env_flare D_LI 9",	NULL );
 	AddRelationship( "rpg_missile D_HT 99", NULL );
 
-	m_flTimeNextPing = gpGlobals->curtime + 2;
+	m_flTimeNextPing = gpGlobals->GetCurTime() + 2;
 
 	m_flPenetrationDepth = 24;
 	m_flBurstDelay = 2.0f;
@@ -748,18 +754,18 @@ void CNPC_CombineGunship::Ping( void )
 
 	if( GetEnemy() != NULL )
 	{
-		if( !HasCondition(COND_SEE_ENEMY) && gpGlobals->curtime > m_flTimeNextPing )
+		if( !HasCondition(COND_SEE_ENEMY) && gpGlobals->GetCurTime() > m_flTimeNextPing )
 		{
 			EmitSound( "NPC_CombineGunship.SearchPing" );
-			m_flTimeNextPing = gpGlobals->curtime + 3;
+			m_flTimeNextPing = gpGlobals->GetCurTime() + 3;
 		}
 	}
 	else
 	{
-		if( gpGlobals->curtime > m_flTimeNextPing )
+		if( gpGlobals->GetCurTime() > m_flTimeNextPing )
 		{
 			EmitSound( "NPC_CombineGunship.PatrolPing" );
-			m_flTimeNextPing = gpGlobals->curtime + 3;
+			m_flTimeNextPing = gpGlobals->GetCurTime() + 3;
 		}
 	}
 }
@@ -864,7 +870,7 @@ bool CNPC_CombineGunship::CheckGroundAttack( void )
 		return false;
 
 	// Must not have done it too recently
-	if ( m_flNextGroundAttack > gpGlobals->curtime )
+	if ( m_flNextGroundAttack > gpGlobals->GetCurTime() )
 		return false;
 
 	Vector	predPos, predDest;
@@ -904,7 +910,7 @@ void CNPC_CombineGunship::StartGroundAttack( void )
 {
 	// Mark us as attacking
 	m_bIsGroundAttacking = true;
-	m_flGroundAttackTime = gpGlobals->curtime + 3.0f;
+	m_flGroundAttackTime = gpGlobals->GetCurTime() + 3.0f;
 
 	// Setup the attack effects
 	Vector	vecShootPos;
@@ -917,7 +923,7 @@ void CNPC_CombineGunship::StartGroundAttack( void )
 	MessageEnd();
 
 	CPASAttenuationFilter filter2( this, "NPC_Strider.Charge" );
-	EmitSound( filter2, entindex(), "NPC_Strider.Charge" );
+	EmitSound( filter2, this->NetworkProp()->entindex(), "NPC_Strider.Charge" );
 
 	Vector	endpos = GetGroundAttackHitPosition();
 	
@@ -998,12 +1004,12 @@ void CNPC_CombineGunship::ManageWarningBeam( void )
 				trace_t tr2;
 				UTIL_TraceLine( vEndPunch, vEndPunch - vDir * 2, MASK_SOLID, &filter, &tr2 );
 
-				if ( (m_flGroundAttackTime - gpGlobals->curtime) <= 2.0f )
+				if ( (m_flGroundAttackTime - gpGlobals->GetCurTime()) <= 2.0f )
 				{
 					g_pEffects->EnergySplash( tr2.endpos + vDir * 8, tr2.plane.normal, true );
 				}
 
-				g_pEffects->Sparks( tr2.endpos, 3.0f - (m_flGroundAttackTime-gpGlobals->curtime), 3.5f - (m_flGroundAttackTime-gpGlobals->curtime), &tr2.plane.normal );
+				g_pEffects->Sparks( tr2.endpos, 3.0f - (m_flGroundAttackTime-gpGlobals->GetCurTime()), 3.5f - (m_flGroundAttackTime-gpGlobals->GetCurTime()), &tr2.plane.normal );
 
 			}
 		}
@@ -1074,7 +1080,7 @@ void CNPC_CombineGunship::DoBellyBlastDamage( trace_t &tr, Vector vMins, Vector 
 		{
 			if ( pEntity->GetBaseAnimating() != NULL && !pEntity->IsEFlagSet( EFL_NO_DISSOLVE ) )
 			{
-				pEntity->GetBaseAnimating()->Dissolve( NULL, gpGlobals->curtime );
+				pEntity->GetBaseAnimating()->Dissolve( NULL, gpGlobals->GetCurTime() );
 			}
 		}
 	}
@@ -1108,7 +1114,7 @@ void CNPC_CombineGunship::DoGroundAttackExplosion( void )
 		g_pEffects->EnergySplash( tr.endpos, tr.plane.normal );
 
 		CBroadcastRecipientFilter filter;
-		te->BeamRingPoint( filter, 0.0, 
+		g_pTESystem->BeamRingPoint( filter, 0.0,
 			tr.endpos,							//origin
 			0,									//start radius
 			GUNSHIP_BELLY_BLAST_RADIUS,			//end radius
@@ -1133,7 +1139,7 @@ void CNPC_CombineGunship::DoGroundAttackExplosion( void )
 	CEffectData	data;
 
 	// Do an extra effect if we struck the world
-	if ( tr.m_pEnt && tr.m_pEnt->IsWorld() )
+	if ( tr.m_pEnt && tr.m_pEnt->NetworkProp()->entindex()==0)
 	{
 		data.m_flRadius = GUNSHIP_BELLY_BLAST_RADIUS;
 		data.m_vNormal	= tr.plane.normal;
@@ -1165,8 +1171,8 @@ void CNPC_CombineGunship::StopGroundAttack( bool bDoAttack )
 
 	// Mark us as no longer attacking
 	m_bIsGroundAttacking = false;
-	m_flNextGroundAttack = gpGlobals->curtime + 4.0f;
-	m_flTimeNextAttack	 = gpGlobals->curtime + 2.0f;
+	m_flNextGroundAttack = gpGlobals->GetCurTime() + 4.0f;
+	m_flTimeNextAttack	 = gpGlobals->GetCurTime() + 2.0f;
 
 	Vector	hitPos = GetGroundAttackHitPosition();
 
@@ -1191,7 +1197,7 @@ void CNPC_CombineGunship::StopGroundAttack( bool bDoAttack )
 	if ( bDoAttack )
 	{
 		CPASAttenuationFilter filter2( this, "NPC_Strider.Shoot" );
-		EmitSound( filter2, entindex(), "NPC_Strider.Shoot");
+		EmitSound( filter2, this->NetworkProp()->entindex(), "NPC_Strider.Shoot");
 
 		ApplyAbsVelocityImpulse( Vector( 0, 0, 200.0f ) );
 
@@ -1251,9 +1257,9 @@ void CNPC_CombineGunship::DoCombat( void )
 	{
 		if ( HasCondition( COND_NEW_ENEMY ) )
 		{
-			if ( GetEnemy() && GetEnemy()->IsPlayer() && m_flNextSeeEnemySound < gpGlobals->curtime )
+			if ( GetEnemy() && GetEnemy()->IsPlayer() && m_flNextSeeEnemySound < gpGlobals->GetCurTime() )
 			{
-				m_flNextSeeEnemySound = gpGlobals->curtime + 5.0;
+				m_flNextSeeEnemySound = gpGlobals->GetCurTime() + 5.0;
 
 				if ( !HasSpawnFlags( SF_GUNSHIP_USE_CHOPPER_MODEL ) )
 				{
@@ -1267,9 +1273,9 @@ void CNPC_CombineGunship::DoCombat( void )
 				EmitSound( "NPC_CombineGunship.SeeMissile" );
 
 				// Allow the gunship to attack again immediately
-				if ( ( m_flTimeNextAttack > gpGlobals->curtime ) && ( ( m_flTimeNextAttack - gpGlobals->curtime ) > GUNSHIP_MISSILE_MAX_RESPONSE_TIME ) )
+				if ( ( m_flTimeNextAttack > gpGlobals->GetCurTime() ) && ( ( m_flTimeNextAttack - gpGlobals->GetCurTime() ) > GUNSHIP_MISSILE_MAX_RESPONSE_TIME ) )
 				{
-					m_flTimeNextAttack = gpGlobals->curtime + GUNSHIP_MISSILE_MAX_RESPONSE_TIME;
+					m_flTimeNextAttack = gpGlobals->GetCurTime() + GUNSHIP_MISSILE_MAX_RESPONSE_TIME;
 					m_iBurstSize = sk_gunship_burst_size.GetInt();
 				}
 			}
@@ -1302,7 +1308,7 @@ void CNPC_CombineGunship::DoCombat( void )
 	if ( m_bIsFiring )
 	{
 		// Fire if we have rounds remaining in this burst
-		if ( ( m_iBurstSize > 0 ) && ( gpGlobals->curtime > m_flTimeNextAttack ) )
+		if ( ( m_iBurstSize > 0 ) && ( gpGlobals->GetCurTime() > m_flTimeNextAttack ) )
 		{
 			UpdateEnemyTarget();
 			FireCannonRound();
@@ -1314,7 +1320,7 @@ void CNPC_CombineGunship::DoCombat( void )
 			
 			if ( IsTargettingMissile() )
 			{
-				m_flTimeNextAttack = gpGlobals->curtime + 0.5f;
+				m_flTimeNextAttack = gpGlobals->GetCurTime() + 0.5f;
 			}
 		}
 	}
@@ -1342,7 +1348,7 @@ void CNPC_CombineGunship::DoCombat( void )
 			ManageWarningBeam();
 
 			// If our time is up, fire the blast and be done
-			if ( m_flGroundAttackTime < gpGlobals->curtime )
+			if ( m_flGroundAttackTime < gpGlobals->GetCurTime() )
 			{
 				// Fire!
 				StopGroundAttack( true );
@@ -1462,10 +1468,10 @@ void CNPC_CombineGunship::MoveHead( void )
 //-----------------------------------------------------------------------------
 void CNPC_CombineGunship::PrescheduleThink( void )
 {
-	m_flDeltaT = gpGlobals->curtime - GetLastThink();
+	m_flDeltaT = gpGlobals->GetCurTime() - GetLastThink();
 
 	// Are we crashing?
-	if ( m_flEndDestructTime && gpGlobals->curtime > m_flEndDestructTime )
+	if ( m_flEndDestructTime && gpGlobals->GetCurTime() > m_flEndDestructTime )
 	{
 		// We're dead, remove ourselves
 		SelfDestruct();
@@ -1487,7 +1493,7 @@ void CNPC_CombineGunship::PrescheduleThink( void )
 	{
 		// Increase the number of explosions as he gets closer to death
 		bool bCreateExplosion = false;
-		float flTimeLeft = m_flEndDestructTime - gpGlobals->curtime;
+		float flTimeLeft = m_flEndDestructTime - gpGlobals->GetCurTime();
 		if ( flTimeLeft > 1.5 )
 		{
 			bCreateExplosion = (random->RandomInt( 0, 3 ) == 0);
@@ -1525,7 +1531,7 @@ void CNPC_CombineGunship::PrescheduleThink( void )
 		{
 			// Update nearest crash point. The RPG that killed us may have knocked us
 			// closer to a different point than the one we were near when we first died.
-			if ( m_flNextGunshipCrashFind < gpGlobals->curtime )
+			if ( m_flNextGunshipCrashFind < gpGlobals->GetCurTime() )
 			{
 				FindNearestGunshipCrash();
 			}
@@ -1572,7 +1578,7 @@ bool CNPC_CombineGunship::FireGun( void )
 	if ( m_bIsGroundAttacking )
 		return false;
 
-	if ( GetEnemy() && !m_bIsFiring && gpGlobals->curtime > m_flTimeNextAttack )
+	if ( GetEnemy() && !m_bIsFiring && gpGlobals->GetCurTime() > m_flTimeNextAttack )
 	{
 		// We want to decelerate to attack
 		if (m_flGoalSpeed > GetMaxSpeedFiring() )
@@ -1584,7 +1590,7 @@ bool CNPC_CombineGunship::FireGun( void )
 		if ( !bTargetingMissile && !m_bPreFire )
 		{
 			m_bPreFire = true;
-			m_flTimeNextAttack = gpGlobals->curtime + 0.5f;
+			m_flTimeNextAttack = gpGlobals->GetCurTime() + 0.5f;
 			
 			EmitSound( "NPC_CombineGunship.CannonStartSound" );
 			return false;
@@ -1682,7 +1688,7 @@ void CNPC_CombineGunship::FireCannonRound( void )
 
 	m_OnFireCannon.FireOutput( this, this, 0 );
 
-	m_flTimeNextAttack = gpGlobals->curtime + 0.05f;
+	m_flTimeNextAttack = gpGlobals->GetCurTime() + 0.05f;
 
 	float flPrevHealth = 0;
 	if ( GetEnemy() )
@@ -1756,7 +1762,7 @@ void CNPC_CombineGunship::DoMuzzleFlash( void )
 	CEffectData data;
 
 	data.m_nAttachmentIndex = LookupAttachment( "muzzle" );
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	DispatchEffect( "GunshipMuzzleFlash", data );
 }
 
@@ -1862,7 +1868,7 @@ void CNPC_CombineGunship::Event_Killed( const CTakeDamageInfo &info )
 
 	// BUGBUG: Isn't this sound just going to get stomped when the base class calls StopLoopingSounds() ??
 	CPASAttenuationFilter filter2( this );
-	m_pRotorSound = controller.SoundCreate( filter2, entindex(), "NPC_CombineGunship.DyingSound" );
+	m_pRotorSound = controller.SoundCreate( filter2, this->NetworkProp()->entindex(), "NPC_CombineGunship.DyingSound" );
 	controller.Play( m_pRotorSound, 1.0, 100 );
 
 	m_OnDeath.FireOutput( info.GetAttacker(), this );
@@ -1941,8 +1947,8 @@ bool CNPC_CombineGunship::FindNearestGunshipCrash( void )
 		// don't blow up yet. This will give us 3 seconds to attempt to find one before dying.
 		if ( !m_hCrashTarget && bFoundAnyCrashTargets )
 		{
-			m_flNextGunshipCrashFind = gpGlobals->curtime + 0.5;
-			m_flEndDestructTime = gpGlobals->curtime + 3.0;
+			m_flNextGunshipCrashFind = gpGlobals->GetCurTime() + 0.5;
+			m_flEndDestructTime = gpGlobals->GetCurTime() + 3.0;
 			return true;
 		}
 
@@ -1951,7 +1957,7 @@ bool CNPC_CombineGunship::FindNearestGunshipCrash( void )
 
 	// Fly to the crash point and destruct there
   	m_hCrashTarget = pNearest;
-	m_flNextGunshipCrashFind = gpGlobals->curtime + 0.5;
+	m_flNextGunshipCrashFind = gpGlobals->GetCurTime() + 0.5;
 	m_flEndDestructTime = 0;
 
 	if ( g_debug_gunship.GetInt() )
@@ -1968,7 +1974,7 @@ bool CNPC_CombineGunship::FindNearestGunshipCrash( void )
 //-----------------------------------------------------------------------------
 void CNPC_CombineGunship::BeginDestruct( void )
 {
-	m_flEndDestructTime = gpGlobals->curtime + 3.0;
+	m_flEndDestructTime = gpGlobals->GetCurTime() + 3.0;
 
 	// Clamp velocity
 	if( hl2_episodic.GetBool() && GetAbsVelocity().Length() > 700.0f )
@@ -1993,7 +1999,7 @@ void CNPC_CombineGunship::BeginDestruct( void )
 	{
 		Chopper_BecomeChunks( this );
 		SetThink( &CNPC_CombineGunship::SUB_Remove );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		AddEffects( EF_NODRAW );
 		return;
 	}
@@ -2310,7 +2316,7 @@ void CNPC_CombineGunship::UpdateFacingDirection( void )
 {
 	if ( GetEnemy() )
 	{
-		if ( !IsCrashing() && m_flLastSeen + 5 > gpGlobals->curtime )
+		if ( !IsCrashing() && m_flLastSeen + 5 > gpGlobals->GetCurTime() )
 		{
 			// If we've seen the target recently, face the target.
 			//Msg( "Facing Target \n" );
@@ -2347,10 +2353,10 @@ void CNPC_CombineGunship::InitializeRotorSound( void )
 	
 	CPASAttenuationFilter filter( this );
 
-	m_pCannonSound		= controller.SoundCreate( filter, entindex(), "NPC_CombineGunship.CannonSound" );
-	m_pRotorSound		= controller.SoundCreate( filter, entindex(), "NPC_CombineGunship.RotorSound" );
-	m_pAirExhaustSound	= controller.SoundCreate( filter, entindex(), "NPC_CombineGunship.ExhaustSound" );
-	m_pAirBlastSound	= controller.SoundCreate( filter, entindex(), "NPC_CombineGunship.RotorBlastSound" );
+	m_pCannonSound		= controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineGunship.CannonSound" );
+	m_pRotorSound		= controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineGunship.RotorSound" );
+	m_pAirExhaustSound	= controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineGunship.ExhaustSound" );
+	m_pAirBlastSound	= controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineGunship.RotorBlastSound" );
 	
 	controller.Play( m_pCannonSound, 0.0, 100 );
 	controller.Play( m_pAirExhaustSound, 0.0, 100 );
@@ -2474,8 +2480,8 @@ void CNPC_CombineGunship::SelfDestruct( void )
 	 	for ( int i = 0; i < 20; i++ )
 		{
 			Vector gibVelocity = RandomVector(-100,100) * 10;
-			int iModelIndex = modelinfo->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ) );	
-			te->BreakModel( filter, 0.0, GetAbsOrigin(), vec3_angle, Vector(40,40,40), gibVelocity, iModelIndex, 400, 1, 2.5, BREAK_METAL );
+			int iModelIndex = engineServer->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ) );	
+			g_pTESystem->BreakModel( filter, 0.0, GetAbsOrigin(), vec3_angle, Vector(40,40,40), gibVelocity, iModelIndex, 400, 1, 2.5, BREAK_METAL );
 		}
 
 		if ( m_hRagdoll )
@@ -2844,7 +2850,7 @@ void CNPC_CombineGunship::TraceAttack( const CTakeDamageInfo &info, const Vector
 			VectorNormalize( vecRicochetDir );
 
 			Vector end = ptr->endpos + vecRicochetDir * 1024;
-			UTIL_Tracer( ptr->endpos, end, entindex(), TRACER_DONT_USE_ATTACHMENT, 3500 );
+			UTIL_Tracer( ptr->endpos, end, this->NetworkProp()->entindex(), TRACER_DONT_USE_ATTACHMENT, 3500 );
 		}
 
 		// If this is from a player, record it so a nearby citizen can respond.
@@ -2999,8 +3005,8 @@ int	CNPC_CombineGunship::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 		CPVSFilter filter( GetAbsOrigin() );
 	 	for ( int i = 0; i < 10; i++ )
 		{
-			int iModelIndex = modelinfo->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ) );	
-			te->BreakModel( filter, 0.0, GetAbsOrigin(), vec3_angle, Vector(40,40,40), gibVelocity, iModelIndex, 400, 1, 2.5, BREAK_METAL );
+			int iModelIndex = engineServer->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ) );	
+			g_pTESystem->BreakModel( filter, 0.0, GetAbsOrigin(), vec3_angle, Vector(40,40,40), gibVelocity, iModelIndex, 400, 1, 2.5, BREAK_METAL );
 		}
 	}
 
@@ -3017,7 +3023,7 @@ void CNPC_CombineGunship::StartCannonBurst( int iBurstSize )
 	m_iBurstSize = iBurstSize;
 	m_iBurstHits = 0;
 
-	m_flTimeNextAttack = gpGlobals->curtime;
+	m_flTimeNextAttack = gpGlobals->GetCurTime();
 
 	// Start up the cannon sound.
 	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
@@ -3088,7 +3094,7 @@ void CNPC_CombineGunship::StopCannonBurst( void )
 	flPerc = 1.0 - (m_iBurstSize / sk_gunship_burst_size.GetFloat());
 	flDelay *= flPerc;
 
-	m_flTimeNextAttack = gpGlobals->curtime + flDelay;
+	m_flTimeNextAttack = gpGlobals->GetCurTime() + flDelay;
 	m_iBurstSize = 0;
 
 	// Stop the cannon sound.
@@ -3164,7 +3170,7 @@ void CNPC_CombineGunship::GatherEnemyConditions( CBaseEntity *pEnemy )
 	// If we can't see the enemy for a few seconds, consider him unreachable
 	if ( !HasCondition(COND_SEE_ENEMY) )
 	{
-		if ( gpGlobals->curtime - GetEnemyLastTimeSeen() >= 3.0f )
+		if ( gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() >= 3.0f )
 		{
 			MarkEnemyAsEluded();
 		}

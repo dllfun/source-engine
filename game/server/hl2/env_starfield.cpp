@@ -34,6 +34,14 @@ public:
 private:
 	CNetworkVar( bool, m_bOn );
 	CNetworkVar( float, m_flDensity );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CEnvStarfield)
+	BEGIN_SEND_TABLE(CEnvStarfield, DT_EnvStarfield, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_bOn), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flDensity), 0, SPROP_NOSCALE),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 BEGIN_DATADESC( CEnvStarfield )
@@ -45,10 +53,8 @@ BEGIN_DATADESC( CEnvStarfield )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDensity", InputSetDensity ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvStarfield, DT_EnvStarfield )
-	SendPropInt( SENDINFO(m_bOn), 1, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_flDensity), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CEnvStarfield, DT_EnvStarfield )
+
 
 LINK_ENTITY_TO_CLASS( env_starfield, CEnvStarfield );
 

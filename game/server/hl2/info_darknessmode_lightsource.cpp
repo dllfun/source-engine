@@ -62,7 +62,7 @@ public:
 			if ( g_debug_darkness.GetBool() )
 			{
 				SetThink( &CInfoDarknessLightSource::DebugThink );
-				SetNextThink( gpGlobals->curtime );
+				SetNextThink( gpGlobals->GetCurTime() );
 			}
 		}
 
@@ -95,7 +95,7 @@ public:
 		Vector vecRadius( m_flLightRadius, m_flLightRadius, m_flLightRadius );
 		NDebugOverlay::Box( GetAbsOrigin(), -vecRadius, vecRadius, 255,255,255, 8, 0.1 );
 		NDebugOverlay::Box( GetAbsOrigin(), -Vector(5,5,5), Vector(5,5,5), 255,0,0, 8, 0.1 );
-		SetNextThink( gpGlobals->curtime + 0.1 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 		int textoffset = 0;
 		EntityText( textoffset, UTIL_VarArgs("Org: %.2f %.2f %.2f", GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z ), 0.1 );
@@ -365,7 +365,7 @@ void CDarknessLightSourcesSystem::SetDebug( bool bDebug )
 			if ( bDebug )
 			{
 				pLightSource->SetThink( &CInfoDarknessLightSource::DebugThink );
-				pLightSource->SetNextThink( gpGlobals->curtime );
+				pLightSource->SetNextThink( gpGlobals->GetCurTime() );
 			}
 			else
 			{
@@ -391,7 +391,7 @@ void CV_Debug_Darkness( IConVar *pConVar, const char *pOldString, float flOldVal
 void AddEntityToDarknessCheck( CBaseEntity *pEntity, float flLightRadius /*=DARKNESS_LIGHTSOURCE_SIZE*/ )
 {
 	// Create a light source, and attach it to the entity
-	CInfoDarknessLightSource *pLightSource = (CInfoDarknessLightSource *) CreateEntityByName( "info_darknessmode_lightsource" );
+	CInfoDarknessLightSource *pLightSource = (CInfoDarknessLightSource *)engineServer->CreateEntityByName( "info_darknessmode_lightsource" );
 	if ( pLightSource )	
 	{
 		pLightSource->SetLightRadius( flLightRadius );

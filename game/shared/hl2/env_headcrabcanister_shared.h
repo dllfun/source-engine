@@ -84,6 +84,63 @@ private:
 
 	friend class CEnvHeadcrabCanister;
 	friend class C_EnvHeadcrabCanister;
+
+public:
+	//BEGIN_NETWORK_TABLE_NOBASE(CEnvHeadcrabCanisterShared, DT_EnvHeadcrabCanisterShared)
+
+#if !defined( CLIENT_DLL )
+	BEGIN_INIT_SEND_TABLE(CEnvHeadcrabCanisterShared)
+	BEGIN_SEND_TABLE_NOBASE(CEnvHeadcrabCanisterShared, DT_EnvHeadcrabCanisterShared)
+		SendPropFloat(SENDINFO(m_flFlightSpeed), 0, SPROP_NOSCALE),
+		SendPropTime(SENDINFO(m_flLaunchTime)),
+		SendPropVector(SENDINFO(m_vecParabolaDirection), 0, SPROP_NOSCALE),
+
+		SendPropFloat(SENDINFO(m_flFlightTime), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flWorldEnterTime), 0, SPROP_NOSCALE),
+
+		SendPropFloat(SENDINFO(m_flInitialZSpeed), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flZAcceleration), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flHorizSpeed), 0, SPROP_NOSCALE),
+		SendPropBool(SENDINFO(m_bLaunchedFromWithinWorld)),
+
+		SendPropVector(SENDINFO(m_vecStartPosition), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecEnterWorldPosition), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecDirection), 0, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecStartAngles), 0, SPROP_NOSCALE),
+
+		SendPropVector(SENDINFO(m_vecSkyboxOrigin), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flSkyboxScale), 0, SPROP_NOSCALE),
+		SendPropBool(SENDINFO(m_bInSkybox)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
+#else
+	BEGIN_INIT_RECV_TABLE(CEnvHeadcrabCanisterShared)
+	BEGIN_RECV_TABLE_NOBASE(CEnvHeadcrabCanisterShared, DT_EnvHeadcrabCanisterShared)
+		RecvPropFloat(RECVINFO(m_flFlightSpeed)),
+		RecvPropTime(RECVINFO(m_flLaunchTime)),
+		RecvPropVector(RECVINFO(m_vecParabolaDirection)),
+
+		RecvPropFloat(RECVINFO(m_flFlightTime)),
+		RecvPropFloat(RECVINFO(m_flWorldEnterTime)),
+
+		RecvPropFloat(RECVINFO(m_flInitialZSpeed)),
+		RecvPropFloat(RECVINFO(m_flZAcceleration)),
+		RecvPropFloat(RECVINFO(m_flHorizSpeed)),
+		RecvPropBool(RECVINFO(m_bLaunchedFromWithinWorld)),
+
+		RecvPropVector(RECVINFO(m_vecStartPosition)),
+		RecvPropVector(RECVINFO(m_vecEnterWorldPosition)),
+		RecvPropVector(RECVINFO(m_vecDirection)),
+		RecvPropVector(RECVINFO(m_vecStartAngles)),
+
+		RecvPropVector(RECVINFO(m_vecSkyboxOrigin)),
+		RecvPropFloat(RECVINFO(m_flSkyboxScale)),
+		RecvPropBool(RECVINFO(m_bInSkybox)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
+#endif
+
+		//END_NETWORK_TABLE()
 };
 
 /*

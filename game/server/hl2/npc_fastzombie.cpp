@@ -429,10 +429,10 @@ void CFastZombie::Precache( void )
 //---------------------------------------------------------
 void CFastZombie::OnScheduleChange( void )
 {
-	if ( m_flNextMeleeAttack > gpGlobals->curtime + 1 )
+	if ( m_flNextMeleeAttack > gpGlobals->GetCurTime() + 1 )
 	{
 		// Allow melee attacks again.
-		m_flNextMeleeAttack = gpGlobals->curtime + 0.5;
+		m_flNextMeleeAttack = gpGlobals->GetCurTime() + 0.5;
 	}
 
 	BaseClass::OnScheduleChange();
@@ -517,7 +517,7 @@ void CFastZombie::PrescheduleThink( void )
 		GetGroundEntity()->TakeDamage( info );
 	}
 
- 	if( m_pMoanSound && gpGlobals->curtime > m_flTimeUpdateSound )
+ 	if( m_pMoanSound && gpGlobals->GetCurTime() > m_flTimeUpdateSound )
 	{
 		// Manage the snorting sound, pitch up for closer.
 		float flDistNoBBox;
@@ -551,7 +551,7 @@ void CFastZombie::PrescheduleThink( void )
 			ENVELOPE_CONTROLLER.SoundChangePitch( m_pMoanSound, iPitch, FASTZOMBIE_SOUND_UPDATE_FREQ );
 		}
 
-		m_flTimeUpdateSound = gpGlobals->curtime + FASTZOMBIE_SOUND_UPDATE_FREQ;
+		m_flTimeUpdateSound = gpGlobals->GetCurTime() + FASTZOMBIE_SOUND_UPDATE_FREQ;
 	}
 
 	// Crudely detect the apex of our jump
@@ -564,7 +564,7 @@ void CFastZombie::PrescheduleThink( void )
 	{
 		// Think more frequently when flying quickly through the 
 		// air, to update the server's location more often.
-		SetNextThink(gpGlobals->curtime);
+		SetNextThink(gpGlobals->GetCurTime());
 	}
 }
 
@@ -590,7 +590,7 @@ void CFastZombie::SoundInit( void )
 	if( !m_pLayer2 )
 	{
 		// Set up layer2
-		m_pLayer2 = ENVELOPE_CONTROLLER.SoundCreate( filter, entindex(), CHAN_VOICE, "NPC_FastZombie.Gurgle", ATTN_NORM );
+		m_pLayer2 = ENVELOPE_CONTROLLER.SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_VOICE, "NPC_FastZombie.Gurgle", ATTN_NORM );
 
 		// Start silent.
 		ENVELOPE_CONTROLLER.Play( m_pLayer2, 0.0, 100 );
@@ -681,7 +681,7 @@ void CFastZombie::Spawn( void )
 		CapabilitiesRemove( bits_CAP_MOVE_JUMP | bits_CAP_INNATE_RANGE_ATTACK1 );
 	}
 
-	m_flNextAttack = gpGlobals->curtime;
+	m_flNextAttack = gpGlobals->GetCurTime();
 
 	m_pLayer2 = NULL;
 	m_iClimbCount = 0;
@@ -699,7 +699,7 @@ void CFastZombie::PostNPCInit( void )
 {
 	SoundInit();
 
-	m_flTimeUpdateSound = gpGlobals->curtime;
+	m_flTimeUpdateSound = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -814,7 +814,7 @@ int CFastZombie::MeleeAttack1Conditions( float flDot, float flDist )
 		return COND_NONE;
 	}
 
-	if( gpGlobals->curtime < m_flNextMeleeAttack )
+	if( gpGlobals->GetCurTime() < m_flNextMeleeAttack )
 	{
 		return COND_NONE;
 	}
@@ -970,7 +970,7 @@ int CFastZombie::RangeAttack1Conditions( float flDot, float flDist )
 		return COND_NONE;
 	}
 
-	if( gpGlobals->curtime < m_flNextAttack )
+	if( gpGlobals->GetCurTime() < m_flNextAttack )
 	{
 		return( COND_NONE );
 	}
@@ -1214,7 +1214,7 @@ void CFastZombie::LeapAttack( void )
 
 		// try speeding up a bit.
 		SetAbsVelocity( vecJumpDir );
-		m_flNextAttack = gpGlobals->curtime + 2;
+		m_flNextAttack = gpGlobals->GetCurTime() + 2;
 	}
 }
 
@@ -1341,7 +1341,7 @@ void CFastZombie::StartTask( const Task_t *pTask )
 	case TASK_RANGE_ATTACK1:
 
 		// Make melee attacks impossible until we land!
-		m_flNextMeleeAttack = gpGlobals->curtime + 60;
+		m_flNextMeleeAttack = gpGlobals->GetCurTime() + 60;
 
 		SetTouch( &CFastZombie::LeapAttackTouch );
 		break;
@@ -1378,7 +1378,7 @@ void CFastZombie::RunTask( const Task_t *pTask )
 			TaskComplete();
 
 			// Allow melee attacks again.
-			m_flNextMeleeAttack = gpGlobals->curtime + 0.5;
+			m_flNextMeleeAttack = gpGlobals->GetCurTime() + 0.5;
 			return;
 		}
 		break;
@@ -1657,7 +1657,7 @@ void CFastZombie::OnChangeActivity( Activity NewActivity )
 
 	if ( NewActivity == ACT_LAND )
 	{
-		m_flNextAttack = gpGlobals->curtime + 1.0;
+		m_flNextAttack = gpGlobals->GetCurTime() + 1.0;
 	}
 
 	if ( NewActivity == ACT_GLIDE )
@@ -1808,7 +1808,7 @@ void CFastZombie::Event_Killed( const CTakeDamageInfo &info )
 {
 	// Shut up my screaming sounds.
 	CPASAttenuationFilter filter( this );
-	EmitSound( filter, entindex(), "NPC_FastZombie.NoSound" );
+	EmitSound( filter, this->NetworkProp()->entindex(), "NPC_FastZombie.NoSound" );
 
 	CTakeDamageInfo dInfo = info;
 
@@ -1958,7 +1958,7 @@ void CFastZombie::VehicleLeapAttack( void )
 	Vector vecJumpDir = VecCheckToss( this, GetAbsOrigin(), vecEnemyPos, 0.1f, 1.0f, false, &vecMins, &vecMaxs );
 
 	SetAbsVelocity( vecJumpDir );
-	m_flNextAttack = gpGlobals->curtime + 2.0f;
+	m_flNextAttack = gpGlobals->GetCurTime() + 2.0f;
 	SetTouch( &CFastZombie::VehicleLeapAttackTouch );
 }
 

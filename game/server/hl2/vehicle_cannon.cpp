@@ -172,6 +172,16 @@ protected:
 
 	// Contained Bone Follower manager
 	CBoneFollowerManager		m_BoneFollowerManager;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CPropCannon)
+	BEGIN_SEND_TABLE(CPropCannon, DT_PropCannon, DT_BaseAnimating)
+		SendPropEHandle(SENDINFO(m_hPlayer)),
+		SendPropBool(SENDINFO(m_bEnterAnimOn)),
+		SendPropBool(SENDINFO(m_bExitAnimOn)),
+		SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
+	END_SEND_TABLE();
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( prop_vehicle_cannon, CPropCannon );
@@ -206,12 +216,8 @@ BEGIN_DATADESC( CPropCannon )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CPropCannon, DT_PropCannon)
-	SendPropEHandle(SENDINFO(m_hPlayer)),
-	SendPropBool(SENDINFO(m_bEnterAnimOn)),
-	SendPropBool(SENDINFO(m_bExitAnimOn)),
-	SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
-END_SEND_TABLE();
+IMPLEMENT_SERVERCLASS(CPropCannon, DT_PropCannon)
+
 
 //------------------------------------------------
 // Precache
@@ -251,14 +257,14 @@ void CPropCannon::Spawn( void )
 	m_flExtension = 0;
 
 	m_flFlyTime = 0.0f;
-	m_flNextAttackTime = gpGlobals->curtime;
+	m_flNextAttackTime = gpGlobals->GetCurTime();
 
 	InitCannonSpeeds();
 	
 	SetPoseParameter( "armextensionpose", m_flExtension );
 
 	CreateVPhysics();
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -371,7 +377,7 @@ void CPropCannon::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *p
 	}
 
 	// Run the crane's movement
-	RunCraneMovement( gpGlobals->frametime );
+	RunCraneMovement( gpGlobals->GetFrameTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -393,7 +399,7 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 			flTurnAdd = MAX( flTurnAdd, m_flTurnDecel );
 		}
 
-		m_flTurn = UTIL_Approach( m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->frametime );
+		m_flTurn = UTIL_Approach( m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->GetFrameTime() );
 
 		m_iTurning = CANNON_TURNING_LEFT;
 	}
@@ -406,13 +412,13 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 		{
 			flTurnAdd = MAX( flTurnAdd, m_flTurnDecel );
 		}
-		m_flTurn = UTIL_Approach( -m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->frametime );
+		m_flTurn = UTIL_Approach( -m_flMaxTurnSpeed, m_flTurn, flTurnAdd * gpGlobals->GetFrameTime() );
 
 		m_iTurning = CANNON_TURNING_RIGHT;
 	}
 	else
 	{
-		m_flTurn = UTIL_Approach( 0, m_flTurn, m_flTurnDecel * gpGlobals->frametime );
+		m_flTurn = UTIL_Approach( 0, m_flTurn, m_flTurnDecel * gpGlobals->GetFrameTime() );
 		m_iTurning = CANNON_TURNING_NOT;
 	}
 
@@ -421,17 +427,17 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 	// Handle extension / retraction of the arm
 	if ( iDriverButtons & IN_FORWARD )
 	{
-		m_flExtensionRate = UTIL_Approach( m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->frametime );
+		m_flExtensionRate = UTIL_Approach( m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->GetFrameTime() );
 		m_bExtending = true;
 	}
 	else if ( iDriverButtons & IN_BACK )
 	{
-		m_flExtensionRate = UTIL_Approach( -m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->frametime );
+		m_flExtensionRate = UTIL_Approach( -m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->GetFrameTime() );
 		m_bExtending = true;
 	}
 	else
 	{
-		m_flExtensionRate = UTIL_Approach( 0, m_flExtensionRate, m_flExtensionDecel * gpGlobals->frametime );
+		m_flExtensionRate = UTIL_Approach( 0, m_flExtensionRate, m_flExtensionDecel * gpGlobals->GetFrameTime() );
 		m_bExtending = false;
 	}
 
@@ -440,7 +446,7 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 	//If we're holding down an attack button, update our state
 	if ( iButtonsPressed & (IN_ATTACK | IN_ATTACK2) )
 	{
-		if ( m_flNextAttackTime <= gpGlobals->curtime )
+		if ( m_flNextAttackTime <= gpGlobals->GetCurTime() )
 		{
 			LaunchProjectile();
 		}
@@ -509,7 +515,7 @@ void CPropCannon::ProjectileExplosion( void )
 //-----------------------------------------------------------------------------
 void CPropCannon::Think( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 	if ( GetDriver() )
 	{
@@ -546,7 +552,7 @@ void CPropCannon::Think( void )
 
 	if ( m_flFlyTime > 0.0f )
 	{
-		if ( m_flFlyTime - 1.0f <= gpGlobals->curtime && m_flFlyTime - 0.8f > gpGlobals->curtime)
+		if ( m_flFlyTime - 1.0f <= gpGlobals->GetCurTime() && m_flFlyTime - 0.8f > gpGlobals->GetCurTime())
 		{
 			CPASAttenuationFilter filter( this );
 				
@@ -556,10 +562,10 @@ void CPropCannon::Think( void )
 			ep.m_flVolume = 255;
 			ep.m_SoundLevel = SNDLVL_180dB;
 	
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, this->NetworkProp()->entindex(), ep );
 		}
 
-		if ( m_flFlyTime <= gpGlobals->curtime )
+		if ( m_flFlyTime <= gpGlobals->GetCurTime() )
 		{
 			if ( m_vCrashPoint != vec3_origin )
 			{
@@ -602,7 +608,7 @@ void CPropCannon::LaunchProjectile( void )
 
 	bool bCollided = false;
 	bool bInSky = false;
-	float gravity = -gpGlobals->frametime * 600;
+	float gravity = -gpGlobals->GetFrameTime() * 600;
 	Vector vOrigin = vTipPos;
 	Vector vVelocity = vTipRight * 2500;
 
@@ -613,7 +619,7 @@ void CPropCannon::LaunchProjectile( void )
 	while ( bCollided == false && iFailSafe < 100000 )
 	{
 		Vector vOldOrigin = vOrigin;
-		vOrigin = vOrigin + vVelocity * gpGlobals->frametime;
+		vOrigin = vOrigin + vVelocity * gpGlobals->GetFrameTime();
 
 		flDistance += (vOrigin - vOldOrigin).Length();
 
@@ -665,10 +671,10 @@ void CPropCannon::LaunchProjectile( void )
 		}
 	}
 
-	m_flFlyTime = gpGlobals->curtime + flTravelTime;
+	m_flFlyTime = gpGlobals->GetCurTime() + flTravelTime;
 	m_vCrashPoint = vOrigin;
 
-	m_flNextAttackTime = gpGlobals->curtime + g_cannon_reloadtime.GetFloat();
+	m_flNextAttackTime = gpGlobals->GetCurTime() + g_cannon_reloadtime.GetFloat();
 	
 	EmitSound( "HeadcrabCanister.LaunchSound" );
 

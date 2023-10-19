@@ -20,6 +20,7 @@
 
 #define BARNACLE_TONGUE_POINTS		7
 
+void RecvProxy_VecTip(const CRecvProxyData* pData, void* pStruct, void* pOut);
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -90,6 +91,16 @@ private:
 
 private:
 	C_NPC_Barnacle( const C_NPC_Barnacle & ); // not defined, not accessible
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_NPC_Barnacle)
+	BEGIN_RECV_TABLE(C_NPC_Barnacle, DT_Barnacle, DT_AI_BaseNPC)
+		RecvPropFloat(RECVINFO(m_flAltitude)),
+		RecvPropVector(RECVINFO(m_vecRoot)),
+		RecvPropVector(RECVINFO(m_vecTip), 0, RecvProxy_VecTip),
+		RecvPropVector(RECVINFO(m_vecTipDrawOffset)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 static void RecvProxy_VecTip( const CRecvProxyData *pData, void *pStruct, void *pOut )
@@ -97,12 +108,8 @@ static void RecvProxy_VecTip( const CRecvProxyData *pData, void *pStruct, void *
 	((C_NPC_Barnacle*)pStruct)->SetVecTip( pData->m_Value.m_Vector );
 }
 
-IMPLEMENT_CLIENTCLASS_DT( C_NPC_Barnacle, DT_Barnacle, CNPC_Barnacle )
-	RecvPropFloat( RECVINFO( m_flAltitude ) ),
-	RecvPropVector( RECVINFO( m_vecRoot ) ),
-	RecvPropVector( RECVINFO( m_vecTip ), 0, RecvProxy_VecTip ),
-	RecvPropVector( RECVINFO( m_vecTipDrawOffset ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_NPC_Barnacle, DT_Barnacle, CNPC_Barnacle )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -185,7 +192,7 @@ void C_NPC_Barnacle::InitTonguePhysics( void )
 //-----------------------------------------------------------------------------
 void C_NPC_Barnacle::ClientThink( void )
 {
-	m_TonguePhysics.Simulate( gpGlobals->frametime );
+	m_TonguePhysics.Simulate( gpGlobals->GetFrameTime() );
 
 	// Set the spring's length to that of the tongue's extension
 	m_TonguePhysics.ResetSpringLength( m_flAltitude / (BARNACLE_TONGUE_POINTS-1) );
@@ -282,7 +289,7 @@ void C_NPC_Barnacle::CBarnaclePhysicsDelegate::GetNodeForces( CSimplePhysics::CN
 // Todo: this really ought to be SIMD.
 void C_NPC_Barnacle::ComputeVisualTipPoint( Vector *pTip )
 {
-	float flTipMove = TIP_SNAP_FACTOR * gpGlobals->frametime;
+	float flTipMove = TIP_SNAP_FACTOR * gpGlobals->GetFrameTime();
 	Vector tipIdeal;
 	VectorAdd(m_vecTip, m_vecTipDrawOffset, tipIdeal);
 	if ( tipIdeal.DistToSqr( m_vecTipPrevious ) > (flTipMove * flTipMove) )

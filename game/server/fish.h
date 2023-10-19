@@ -87,7 +87,7 @@ private:
 	CUtlVector< CFish * > m_visible;					///< vector of fish that we can see
 
 	BEGIN_INIT_SEND_TABLE(CFish)
-	BEGIN_SEND_TABLE_NOBASE(CFish, DT_CFish)
+	BEGIN_SEND_TABLE(CFish, DT_CFish, DT_BaseAnimating)
 
 		SendPropVector(SENDINFO(m_poolOrigin), -1, SPROP_COORD, 0.0f, HIGH_DEFAULT),	// only sent once
 

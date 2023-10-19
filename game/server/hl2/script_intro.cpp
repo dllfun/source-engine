@@ -63,33 +63,8 @@ BEGIN_DATADESC(CScriptIntro)
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CScriptIntro, DT_ScriptIntro )
-	SendPropVector(SENDINFO(m_vecCameraView), -1, SPROP_COORD),
-	SendPropVector(SENDINFO(m_vecCameraViewAngles), -1, SPROP_COORD),
-	SendPropInt( SENDINFO( m_iBlendMode ), 5 ),
-	SendPropInt( SENDINFO( m_iNextBlendMode ), 5 ),
-	SendPropFloat( SENDINFO( m_flNextBlendTime ), 10 ),
-	SendPropFloat( SENDINFO( m_flBlendStartTime ), 10 ),
-	SendPropBool( SENDINFO( m_bActive ) ),
+IMPLEMENT_SERVERCLASS( CScriptIntro, DT_ScriptIntro )
 
-
-	// Fov & fov blends
-	SendPropInt( SENDINFO( m_iFOV ), 9 ),
-	SendPropInt( SENDINFO( m_iNextFOV ), 9 ),
-	SendPropInt( SENDINFO( m_iStartFOV ), 9 ),
-	SendPropFloat( SENDINFO( m_flNextFOVBlendTime ), 10 ),
-	SendPropFloat( SENDINFO( m_flFOVBlendStartTime ), 10 ),
-
-	SendPropBool( SENDINFO( m_bAlternateFOV ) ),
-
-	// Fades
-	SendPropFloat( SENDINFO( m_flFadeAlpha ), 10 ),
-	SendPropArray(
-		SendPropFloat( SENDINFO_ARRAY(m_flFadeColor), 32, SPROP_NOSCALE),
-		m_flFadeColor),
-	SendPropFloat( SENDINFO( m_flFadeDuration ), 10, SPROP_ROUNDDOWN, 0.0f, 255.0 ),
-	SendPropEHandle(SENDINFO( m_hCameraEntity ) ),
-END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -186,13 +161,13 @@ static ConVar cl_spewscriptintro( "cl_spewscriptintro", "0" );
 void CScriptIntro::InputSetBlendMode( inputdata_t &inputdata )
 {
 	m_iBlendMode = m_iNextBlendMode = inputdata.value.Int();
-	m_flBlendStartTime = m_flNextBlendTime = gpGlobals->curtime;
+	m_flBlendStartTime = m_flNextBlendTime = gpGlobals->GetCurTime();
 	m_iQueuedBlendMode = -1;
-	SetContextThink( NULL, gpGlobals->curtime, "BlendComplete" );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), "BlendComplete" );
 
 	if ( cl_spewscriptintro.GetInt() )
 	{
-		DevMsg( 1, "%.2f INPUT: Blend mode set to %d\n", gpGlobals->curtime, m_iBlendMode.Get() );
+		DevMsg( 1, "%.2f INPUT: Blend mode set to %d\n", gpGlobals->GetCurTime(), m_iBlendMode.Get() );
 	}
 }
 
@@ -205,7 +180,7 @@ void CScriptIntro::InputSetNextBlendMode( inputdata_t &inputdata )
 
 	if ( cl_spewscriptintro.GetInt() )
 	{
-		DevMsg( 1, "%.2f INPUT: Next Blend mode set to %d\n", gpGlobals->curtime, m_iQueuedNextBlendMode );
+		DevMsg( 1, "%.2f INPUT: Next Blend mode set to %d\n", gpGlobals->GetCurTime(), m_iQueuedNextBlendMode );
 	}
 }
 
@@ -225,7 +200,7 @@ void CScriptIntro::InputSetNextFOV( inputdata_t &inputdata )
 void CScriptIntro::InputSetFOVBlendTime( inputdata_t &inputdata )
 {
 	// Cache our FOV starting point before we update our data here
-	if ( m_flNextFOVBlendTime >= gpGlobals->curtime )
+	if ( m_flNextFOVBlendTime >= gpGlobals->GetCurTime() )
 	{
 		// We're already in a blend, so capture where we are at this point in time
 		m_iStartFOV = ScriptInfo_CalculateFOV( m_flFOVBlendStartTime, m_flNextFOVBlendTime, m_iStartFOV, m_iNextFOV, m_bAlternateFOV );
@@ -244,8 +219,8 @@ void CScriptIntro::InputSetFOVBlendTime( inputdata_t &inputdata )
 		}
 	}
 
-	m_flNextFOVBlendTime = gpGlobals->curtime + inputdata.value.Float();
-	m_flFOVBlendStartTime = gpGlobals->curtime;
+	m_flNextFOVBlendTime = gpGlobals->GetCurTime() + inputdata.value.Float();
+	m_flFOVBlendStartTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -262,8 +237,8 @@ void CScriptIntro::InputSetFOV( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CScriptIntro::InputSetNextBlendTime( inputdata_t &inputdata )
 {
-	m_flNextBlendTime = gpGlobals->curtime + inputdata.value.Float();
-	m_flBlendStartTime = gpGlobals->curtime;
+	m_flNextBlendTime = gpGlobals->GetCurTime() + inputdata.value.Float();
+	m_flBlendStartTime = gpGlobals->GetCurTime();
 
 	// This logic is used to support continued calls to SetNextBlendMode
 	// without intervening calls to SetBlendMode
@@ -284,7 +259,7 @@ void CScriptIntro::InputSetNextBlendTime( inputdata_t &inputdata )
 
 	if ( cl_spewscriptintro.GetInt() )
 	{
-		DevMsg( 1, "%.2f BLEND STARTED: %d to %d, end at %.2f\n", gpGlobals->curtime, m_iBlendMode.Get(), m_iNextBlendMode.Get(), m_flNextBlendTime.Get() );
+		DevMsg( 1, "%.2f BLEND STARTED: %d to %d, end at %.2f\n", gpGlobals->GetCurTime(), m_iBlendMode.Get(), m_iNextBlendMode.Get(), m_flNextBlendTime.Get() );
 	}
 
 	SetContextThink( &CScriptIntro::BlendComplete, m_flNextBlendTime, "BlendComplete" );
@@ -297,9 +272,9 @@ void CScriptIntro::InputSetNextBlendTime( inputdata_t &inputdata )
 void CScriptIntro::BlendComplete( )
 {
 	m_iBlendMode = m_iNextBlendMode;
-	m_flBlendStartTime = m_flNextBlendTime = gpGlobals->curtime;
+	m_flBlendStartTime = m_flNextBlendTime = gpGlobals->GetCurTime();
 	m_iQueuedBlendMode = -1;
-	SetContextThink( NULL, gpGlobals->curtime, "BlendComplete" );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), "BlendComplete" );
 }
 
 
@@ -352,7 +327,7 @@ void CScriptIntro::InputFadeTo( inputdata_t &inputdata )
 	m_flFadeAlpha = flAlpha;
 	m_flFadeDuration = atof( pszParam );
 
-	//Msg("%.2f INPUT FADE: Fade to %.2f. End at %.2f\n", gpGlobals->curtime, m_flFadeAlpha.Get(), gpGlobals->curtime + m_flFadeDuration.Get() );
+	//Msg("%.2f INPUT FADE: Fade to %.2f. End at %.2f\n", gpGlobals->GetCurTime(), m_flFadeAlpha.Get(), gpGlobals->GetCurTime() + m_flFadeDuration.Get() );
 }
 
 //-----------------------------------------------------------------------------

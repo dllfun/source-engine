@@ -109,7 +109,7 @@ private:
 public:
 	BEGIN_INIT_RECV_TABLE(C_Func_Dust)
 	INIT_REFERENCE_RECV_TABLE(CCollisionProperty)
-	BEGIN_RECV_TABLE_NOBASE(C_Func_Dust, DT_Func_Dust, CFunc_Dust)
+	BEGIN_RECV_TABLE(C_Func_Dust, DT_Func_Dust, DT_BaseEntity)
 
 		RecvPropInt(RECVINFO(m_Color)),
 		RecvPropInt(RECVINFO(m_SpawnRate)),

@@ -36,7 +36,7 @@ public:
 	virtual void	ClientThink( void );
 
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
-	virtual int		DrawModel( int flags );
+	virtual int		DrawModel(IVModel* pWorld, int flags );
 
 private:
 
@@ -44,10 +44,16 @@ private:
 
 	Vector	m_vecLastOrigin;
 	bool	m_bUpdated;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_CrossbowBolt)
+	BEGIN_RECV_TABLE(C_CrossbowBolt, DT_CrossbowBolt, DT_BaseCombatCharacter)
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_CrossbowBolt, DT_CrossbowBolt, CCrossbowBolt )
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_CrossbowBolt, DT_CrossbowBolt, CCrossbowBolt )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -77,7 +83,7 @@ void C_CrossbowBolt::OnDataChanged( DataUpdateType_t updateType )
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_CrossbowBolt::DrawModel( int flags )
+int C_CrossbowBolt::DrawModel(IVModel* pWorld, int flags )
 {
 	// See if we're drawing the motion blur
 	if ( flags & STUDIO_TRANSPARENCY )
@@ -115,7 +121,7 @@ int C_CrossbowBolt::DrawModel( int flags )
 			}
 		}
 
-		if ( gpGlobals->frametime > 0.0f && !m_bUpdated)
+		if ( gpGlobals->GetFrameTime() > 0.0f && !m_bUpdated)
 		{
 			m_bUpdated = true;
 			m_vecLastOrigin = GetAbsOrigin();
@@ -125,7 +131,7 @@ int C_CrossbowBolt::DrawModel( int flags )
 	}
 
 	// Draw the normal portion
-	return BaseClass::DrawModel( flags );
+	return BaseClass::DrawModel(pWorld, flags );
 }
 
 //-----------------------------------------------------------------------------

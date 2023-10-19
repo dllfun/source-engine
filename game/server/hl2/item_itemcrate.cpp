@@ -122,7 +122,7 @@ void CItem_ItemCrate::Spawn( void )
 
 	if ( NULL_STRING == m_strItemClass )
 	{
-		Warning( "CItem_ItemCrate(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass string (deleted)!!!\n", entindex() );
+		Warning( "CItem_ItemCrate(%i):  CRATE_SPECIFIC_ITEM with NULL ItemClass string (deleted)!!!\n", this->NetworkProp()->entindex() );
 		UTIL_Remove( this );
 		return;
 	}
@@ -195,7 +195,7 @@ void CItem_ItemCrate::OnBreak( const Vector &vecVelocity, const AngularImpulse &
 		switch( m_CrateType )
 		{
 		case CRATE_SPECIFIC_ITEM:
-			pSpawn = CreateEntityByName( STRING(m_strItemClass) );
+			pSpawn = engineServer->CreateEntityByName( STRING(m_strItemClass) );
 			break;
 
 		default:
@@ -246,7 +246,7 @@ void CItem_ItemCrate::OnBreak( const Vector &vecVelocity, const AngularImpulse &
 			{
 				pSpawn->AddSpawnFlags( SF_DYNAMICRESUPPLY_ALWAYS_SPAWN );
 			}
-			pSpawn->SetNextThink( gpGlobals->curtime );
+			pSpawn->SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 }

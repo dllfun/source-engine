@@ -208,9 +208,9 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	// Only usable if you have the HEV suit on
 	if ( !((CBasePlayer *)pActivator)->IsSuitEquipped() )
 	{
-		if (m_flSoundTime <= gpGlobals->curtime)
+		if (m_flSoundTime <= gpGlobals->GetCurTime())
 		{
-			m_flSoundTime = gpGlobals->curtime + 0.62;
+			m_flSoundTime = gpGlobals->GetCurTime() + 0.62;
 			EmitSound( "SuitRecharge.Deny" );
 		}
 		return;
@@ -226,19 +226,19 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	// if the player doesn't have the suit, or there is no juice left, make the deny noise
 	if ( m_iJuice <= 0 )
 	{
-		if (m_flSoundTime <= gpGlobals->curtime)
+		if (m_flSoundTime <= gpGlobals->GetCurTime())
 		{
-			m_flSoundTime = gpGlobals->curtime + 0.62;
+			m_flSoundTime = gpGlobals->GetCurTime() + 0.62;
 			EmitSound( "SuitRecharge.Deny" );
 		}
 		return;
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.25 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.25 );
 	SetThink(&CRecharge::Off);
 
 	// Time to recharge yet?
-	if (m_flNextCharge >= gpGlobals->curtime)
+	if (m_flNextCharge >= gpGlobals->GetCurTime())
 		return;
 
 	// Make sure that we have a caller
@@ -257,17 +257,17 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	{
 		m_iOn++;
 		EmitSound( "SuitRecharge.Start" );
-		m_flSoundTime = 0.56 + gpGlobals->curtime;
+		m_flSoundTime = 0.56 + gpGlobals->GetCurTime();
 
 		m_OnPlayerUse.FireOutput( pActivator, this );
 	}
 
-	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->curtime))
+	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->GetCurTime()))
 	{
 		m_iOn++;
 		CPASAttenuationFilter filter( this, "SuitRecharge.ChargingLoop" );
 		filter.MakeReliable();
-		EmitSound( filter, entindex(), "SuitRecharge.ChargingLoop" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "SuitRecharge.ChargingLoop" );
 	}
 
 	CBasePlayer *pl = (CBasePlayer *) m_hActivator.Get();
@@ -298,7 +298,7 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	m_OutRemainingCharge.Set(flRemaining, pActivator, this);
 
 	// govern the rate of charge
-	m_flNextCharge = gpGlobals->curtime + 0.1;
+	m_flNextCharge = gpGlobals->GetCurTime() + 0.1;
 }
 
 void CRecharge::Recharge(void)
@@ -320,7 +320,7 @@ void CRecharge::Off(void)
 
 	if ((!m_iJuice) &&  ( ( m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime() ) > 0) )
 	{
-		SetNextThink( gpGlobals->curtime + m_iReactivate );
+		SetNextThink( gpGlobals->GetCurTime() + m_iReactivate );
 		SetThink(&CRecharge::Recharge);
 	}
 	else
@@ -523,13 +523,13 @@ void CNewRecharge::StudioFrameAdvance( void )
 
 	if ( !m_flPrevAnimTime )
 	{
-		m_flPrevAnimTime = gpGlobals->curtime;
+		m_flPrevAnimTime = gpGlobals->GetCurTime();
 	}
 
 	// Latch prev
 	m_flPrevAnimTime = m_flAnimTime;
 	// Set current
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 }
 
 
@@ -613,9 +613,9 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	// Only usable if you have the HEV suit on
 	if ( !pPlayer->IsSuitEquipped() )
 	{
-		if (m_flSoundTime <= gpGlobals->curtime)
+		if (m_flSoundTime <= gpGlobals->GetCurTime())
 		{
-			m_flSoundTime = gpGlobals->curtime + 0.62;
+			m_flSoundTime = gpGlobals->GetCurTime() + 0.62;
 			EmitSound( "SuitRecharge.Deny" );
 		}
 		return;
@@ -633,9 +633,9 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 		Off();
 		
 		// Play a deny sound
-		if ( m_flSoundTime <= gpGlobals->curtime )
+		if ( m_flSoundTime <= gpGlobals->GetCurTime() )
 		{
-			m_flSoundTime = gpGlobals->curtime + 0.62;
+			m_flSoundTime = gpGlobals->GetCurTime() + 0.62;
 			EmitSound( "SuitRecharge.Deny" );
 		}
 
@@ -661,7 +661,7 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 #endif
 
 		// Also give health for the citadel version.
-		if ( pActivator->GetHealth() < pActivator->GetMaxHealth() && m_flNextCharge < gpGlobals->curtime )
+		if ( pActivator->GetHealth() < pActivator->GetMaxHealth() && m_flNextCharge < gpGlobals->GetCurTime() )
 		{
 			pActivator->TakeHealth( 5, DMG_GENERIC );
 		}
@@ -683,11 +683,11 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	}
 
 	// This is bumped out if used within the time period
-	SetNextThink( gpGlobals->curtime + CHARGE_RATE );
+	SetNextThink( gpGlobals->GetCurTime() + CHARGE_RATE );
 	SetThink( &CNewRecharge::Off );
 
 	// Time to recharge yet?
-	if ( m_flNextCharge >= gpGlobals->curtime )
+	if ( m_flNextCharge >= gpGlobals->GetCurTime() )
 		return;
 	
 	// Play the on sound or the looping charging sound
@@ -695,17 +695,17 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	{
 		m_iOn++;
 		EmitSound( "SuitRecharge.Start" );
-		m_flSoundTime = 0.56 + gpGlobals->curtime;
+		m_flSoundTime = 0.56 + gpGlobals->GetCurTime();
 
 		m_OnPlayerUse.FireOutput( pActivator, this );
 	}
 
-	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->curtime))
+	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->GetCurTime()))
 	{
 		m_iOn++;
 		CPASAttenuationFilter filter( this, "SuitRecharge.ChargingLoop" );
 		filter.MakeReliable();
-		EmitSound( filter, entindex(), "SuitRecharge.ChargingLoop" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "SuitRecharge.ChargingLoop" );
 	}
 
 	// Give armor if we need it
@@ -720,7 +720,7 @@ void CNewRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	m_OutRemainingCharge.Set(flRemaining, pActivator, this);
 
 	// govern the rate of charge
-	m_flNextCharge = gpGlobals->curtime + 0.1;
+	m_flNextCharge = gpGlobals->GetCurTime() + 0.1;
 }
 
 void CNewRecharge::Recharge(void)
@@ -766,7 +766,7 @@ void CNewRecharge::Off(void)
 			{
 				m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime();
 			}
-			SetNextThink( gpGlobals->curtime + m_iReactivate );
+			SetNextThink( gpGlobals->GetCurTime() + m_iReactivate );
 			SetThink(&CNewRecharge::Recharge);
 		}
 		else

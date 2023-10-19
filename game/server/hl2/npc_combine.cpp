@@ -312,7 +312,7 @@ void CNPC_Combine::Spawn( void )
 	SetBloodColor( BLOOD_COLOR_RED );
 	m_flFieldOfView			= -0.2;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState				= NPC_STATE_NONE;
-	m_flNextGrenadeCheck	= gpGlobals->curtime + 1;
+	m_flNextGrenadeCheck	= gpGlobals->GetCurTime() + 1;
 	m_flNextPainSoundTime	= 0;
 	m_flNextAlertSoundTime	= 0;
 	m_bShouldPatrol			= false;
@@ -347,7 +347,7 @@ void CNPC_Combine::Spawn( void )
 	m_flNextLostSoundTime		= 0;
 	m_flAlertPatrolTime			= 0;
 
-	m_flNextAltFireTime = gpGlobals->curtime;
+	m_flNextAltFireTime = gpGlobals->GetCurTime();
 
 	NPCInit();
 }
@@ -443,7 +443,7 @@ void CNPC_Combine::PrescheduleThink()
 	if ( ai_debug_shoot_positions.GetBool() )
 		NDebugOverlay::Cross3D( EyePosition(), 16, 0, 255, 0, false, 0.1 );
 
-	if( gpGlobals->curtime >= m_flStopMoveShootTime )
+	if( gpGlobals->GetCurTime() >= m_flStopMoveShootTime )
 	{
 		// Time to stop move and shoot and start facing the way I'm running.
 		// This makes the combine look attentive when disengaging, but prevents
@@ -472,7 +472,7 @@ void CNPC_Combine::PrescheduleThink()
 //-----------------------------------------------------------------------------
 void CNPC_Combine::DelayAltFireAttack( float flDelay )
 {
-	float flNextAltFire = gpGlobals->curtime + flDelay;
+	float flNextAltFire = gpGlobals->GetCurTime() + flDelay;
 
 	if( flNextAltFire > m_flNextAltFireTime )
 	{
@@ -538,16 +538,16 @@ float CNPC_Combine::MaxYawSpeed( void )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::ShouldMoveAndShoot()
 {
-	// Set this timer so that gpGlobals->curtime can't catch up to it. 
+	// Set this timer so that gpGlobals->GetCurTime() can't catch up to it. 
 	// Essentially, we're saying that we're not going to interfere with 
 	// what the AI wants to do with move and shoot. 
 	//
 	// If any code below changes this timer, the code is saying 
-	// "It's OK to move and shoot until gpGlobals->curtime == m_flStopMoveShootTime"
+	// "It's OK to move and shoot until gpGlobals->GetCurTime() == m_flStopMoveShootTime"
 	m_flStopMoveShootTime = FLT_MAX;
 
 	if( IsCurSchedule( SCHED_COMBINE_HIDE_AND_RELOAD, false ) )
-		m_flStopMoveShootTime = gpGlobals->curtime + random->RandomFloat( 0.4f, 0.6f );
+		m_flStopMoveShootTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.4f, 0.6f );
 
 	if( IsCurSchedule( SCHED_TAKE_COVER_FROM_BEST_SOUND, false ) )
 		return false;
@@ -559,10 +559,10 @@ bool CNPC_Combine::ShouldMoveAndShoot()
 		return false;
 
 	if( HasCondition( COND_NO_PRIMARY_AMMO, false ) )
-		m_flStopMoveShootTime = gpGlobals->curtime + random->RandomFloat( 0.4f, 0.6f );
+		m_flStopMoveShootTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.4f, 0.6f );
 
 	if( m_pSquad && IsCurSchedule( SCHED_COMBINE_TAKE_COVER1, false ) )
-		m_flStopMoveShootTime = gpGlobals->curtime + random->RandomFloat( 0.4f, 0.6f );
+		m_flStopMoveShootTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.4f, 0.6f );
 
 	return BaseClass::ShouldMoveAndShoot();
 }
@@ -809,9 +809,9 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				CBaseCombatCharacter *pBCC = GetEnemyCombatCharacterPointer();
 
 				if	(pBCC && pBCC->IsPlayer() && (!pBCC->FInViewCone ( this )) &&
-					(gpGlobals->curtime - m_flLastAttackTime > 3.0) )
+					(gpGlobals->GetCurTime() - m_flLastAttackTime > 3.0) )
 				{
-					m_flLastAttackTime = gpGlobals->curtime;
+					m_flLastAttackTime = gpGlobals->GetCurTime();
 
 					m_Sentences.Speak( "COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH );
 
@@ -904,7 +904,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			// the enemy must be far enough away
 			if (GetEnemy() && (GetEnemy()->WorldSpaceCenter() - WorldSpaceCenter()).Length() > 512.0 )
 			{
-				m_flNextAttack	= gpGlobals->curtime + pTask->flTaskData;
+				m_flNextAttack	= gpGlobals->GetCurTime() + pTask->flTaskData;
 			}
 		}
 		TaskComplete( );
@@ -924,7 +924,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 
 					if( pCombine )
 					{
-						pCombine->m_flNextGrenadeCheck = gpGlobals->curtime + 5;
+						pCombine->m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 5;
 					}
 
 					pSquadmate = m_pSquad->GetNextMember( &iter );
@@ -995,9 +995,9 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			m_nShots = GetActiveWeapon()->GetRandomBurst();
 			m_flShotDelay = GetActiveWeapon()->GetFireRate();
 
-			m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+			m_flNextAttack = gpGlobals->GetCurTime() + m_flShotDelay - 0.1;
 			ResetIdealActivity( ACT_RANGE_ATTACK1 );
-			m_flLastAttackTime = gpGlobals->curtime;
+			m_flLastAttackTime = gpGlobals->GetCurTime();
 		}
 		break;
 
@@ -1139,7 +1139,7 @@ void CNPC_Combine::RunTask( const Task_t *pTask )
 				GetMotor()->SetIdealYawAndUpdate( GetMotor()->GetIdealYaw(), AI_KEEP_YAW_SPEED );
 			}
 
-			if ( gpGlobals->curtime >= m_flNextAttack )
+			if ( gpGlobals->GetCurTime() >= m_flNextAttack )
 			{
 				if ( IsActivityFinished() )
 				{
@@ -1147,8 +1147,8 @@ void CNPC_Combine::RunTask( const Task_t *pTask )
 					{
 						// DevMsg("ACT_RANGE_ATTACK1\n");
 						ResetIdealActivity( ACT_RANGE_ATTACK1 );
-						m_flLastAttackTime = gpGlobals->curtime;
-						m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
+						m_flLastAttackTime = gpGlobals->GetCurTime();
+						m_flNextAttack = gpGlobals->GetCurTime() + m_flShotDelay - 0.1;
 					}
 					else
 					{
@@ -1243,7 +1243,7 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 				{
 					CBaseCombatWeapon *pWeapon = static_cast<CBaseCombatWeapon *>(pItem);
 
-					pWeapon->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
+					pWeapon->Dissolve( NULL, gpGlobals->GetCurTime(), false, ENTITY_DISSOLVE_NORMAL );
 				}
 			}
 		}
@@ -1276,7 +1276,7 @@ void CNPC_Combine::BuildScheduleTestBits( void )
 {
 	BaseClass::BuildScheduleTestBits();
 
-	if (gpGlobals->curtime < m_flNextAttack)
+	if (gpGlobals->GetCurTime() < m_flNextAttack)
 	{
 		ClearCustomInterruptCondition( COND_CAN_RANGE_ATTACK1 );
 		ClearCustomInterruptCondition( COND_CAN_RANGE_ATTACK2 );
@@ -1498,7 +1498,7 @@ int CNPC_Combine::SelectCombatSchedule()
 	{
 		CBaseEntity *pEnemy = GetEnemy();
 		bool bFirstContact = false;
-		float flTimeSinceFirstSeen = gpGlobals->curtime - GetEnemies()->FirstTimeSeen( pEnemy );
+		float flTimeSinceFirstSeen = gpGlobals->GetCurTime() - GetEnemies()->FirstTimeSeen( pEnemy );
 
 		if( flTimeSinceFirstSeen < 3.0f )
 			bFirstContact = true;
@@ -1625,7 +1625,7 @@ int CNPC_Combine::SelectCombatSchedule()
 
 		// If I've seen the enemy recently, cower. Ignore the time for unforgettable enemies.
 		AI_EnemyInfo_t *pMemory = GetEnemies()->Find( GetEnemy() );
-		if ( (pMemory && pMemory->bUnforgettable) || (GetEnemyLastTimeSeen() > (gpGlobals->curtime - 5.0)) )
+		if ( (pMemory && pMemory->bUnforgettable) || (GetEnemyLastTimeSeen() > (gpGlobals->GetCurTime() - 5.0)) )
 		{
 			// If we're facing him, just look ready. Otherwise, face him.
 			if ( FInAimCone( GetEnemy()->EyePosition() ) )
@@ -1701,7 +1701,7 @@ int CNPC_Combine::SelectSchedule( void )
 
 	if ( m_hForcedGrenadeTarget )
 	{
-		if ( m_flNextGrenadeCheck < gpGlobals->curtime )
+		if ( m_flNextGrenadeCheck < gpGlobals->GetCurTime() )
 		{
 			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
 
@@ -1930,7 +1930,7 @@ int CNPC_Combine::SelectScheduleAttack()
 		float flTimeAtFirstHand = GetEnemies()->TimeAtFirstHand(GetEnemy());
 		if ( flTimeAtFirstHand != AI_INVALID_TIME )
 		{
-			float flTimeEnemySeen = gpGlobals->curtime - flTimeAtFirstHand;
+			float flTimeEnemySeen = gpGlobals->GetCurTime() - flTimeAtFirstHand;
 			if ( flTimeEnemySeen > 4.0 )
 			{
 				if ( CanGrenadeEnemy() && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
@@ -2017,7 +2017,7 @@ int CNPC_Combine::SelectScheduleAttack()
 		float flTime;
 		float flDist;
 
-		flTime = gpGlobals->curtime - GetEnemies()->LastTimeSeen( GetEnemy() );
+		flTime = gpGlobals->GetCurTime() - GetEnemies()->LastTimeSeen( GetEnemy() );
 		flDist = ( GetEnemy()->GetAbsOrigin() - GetEnemies()->LastSeenPosition( GetEnemy() ) ).Length();
 
 		//Msg("Time: %f   Dist: %f\n", flTime, flDist );
@@ -2416,7 +2416,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				}
 
 				// wait six seconds before even looking again to see if a grenade can be thrown.
-				m_flNextGrenadeCheck = gpGlobals->curtime + 6;
+				m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 6;
 			}
 			handledEvent = true;
 			break;
@@ -2430,9 +2430,9 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				pGrenade->Spawn( );
 
 				if ( g_pGameRules->IsSkillLevel(SKILL_HARD) )
-					m_flNextGrenadeCheck = gpGlobals->curtime + random->RandomFloat( 2, 5 );// wait a random amount of time before shooting again
+					m_flNextGrenadeCheck = gpGlobals->GetCurTime() + random->RandomFloat( 2, 5 );// wait a random amount of time before shooting again
 				else
-					m_flNextGrenadeCheck = gpGlobals->curtime + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
+					m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
 			}
 			handledEvent = true;
 			break;
@@ -2582,7 +2582,7 @@ void CNPC_Combine::PainSound ( const CTakeDamageInfo &damageinfo )
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
-	if ( gpGlobals->curtime > m_flNextPainSoundTime )
+	if ( gpGlobals->GetCurTime() > m_flNextPainSoundTime )
 	{
 		const char *pSentenceName = "COMBINE_PAIN";
 		float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
@@ -2598,7 +2598,7 @@ void CNPC_Combine::PainSound ( const CTakeDamageInfo &damageinfo )
 		}
 
 		m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
-		m_flNextPainSoundTime = gpGlobals->curtime + 1;
+		m_flNextPainSoundTime = gpGlobals->GetCurTime() + 1;
 	}
 }
 
@@ -2610,11 +2610,11 @@ void CNPC_Combine::PainSound ( const CTakeDamageInfo &damageinfo )
 //-----------------------------------------------------------------------------
 void CNPC_Combine::LostEnemySound( void)
 {
-	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
+	if ( gpGlobals->GetCurTime() <= m_flNextLostSoundTime )
 		return;
 
 	const char *pSentence;
-	if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
+	if (!(CBaseEntity*)GetEnemy() || gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() > 10)
 	{
 		pSentence = "COMBINE_LOST_LONG"; 
 	}
@@ -2625,7 +2625,7 @@ void CNPC_Combine::LostEnemySound( void)
 
 	if ( m_Sentences.Speak( pSentence ) >= 0 )
 	{
-		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+		m_flNextLostSoundTime = gpGlobals->GetCurTime() + random->RandomFloat(5.0,15.0);
 	}
 }
 
@@ -2650,10 +2650,10 @@ void CNPC_Combine::FoundEnemySound( void)
 // BUGBUG: It looks like this is never played because combine don't do SCHED_WAKE_ANGRY or anything else that does a TASK_SOUND_WAKE
 void CNPC_Combine::AlertSound( void)
 {
-	if ( gpGlobals->curtime > m_flNextAlertSoundTime )
+	if ( gpGlobals->GetCurTime() > m_flNextAlertSoundTime )
 	{
 		m_Sentences.Speak( "COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH );
-		m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
+		m_flNextAlertSoundTime = gpGlobals->GetCurTime() + 10.0f;
 	}
 }
 
@@ -2769,7 +2769,7 @@ bool CNPC_Combine::CanThrowGrenade( const Vector &vecTarget )
 		return false;
 	}
 
-	if (gpGlobals->curtime < m_flNextGrenadeCheck )
+	if (gpGlobals->GetCurTime() < m_flNextGrenadeCheck )
 	{
 		// Not allowed to throw another grenade right now.
 		return false;
@@ -2781,7 +2781,7 @@ bool CNPC_Combine::CanThrowGrenade( const Vector &vecTarget )
 	if( flDist > 1024 || flDist < 128 )
 	{
 		// Too close or too far!
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
+		m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1; // one full second.
 		return false;
 	}
 
@@ -2810,7 +2810,7 @@ bool CNPC_Combine::CanThrowGrenade( const Vector &vecTarget )
 		if (m_pSquad->SquadMemberInRange( vecTarget, COMBINE_MIN_GRENADE_CLEAR_DIST ))
 		{
 			// crap, I might blow my own guy up. Don't throw a grenade and don't check again for a while.
-			m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
+			m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1; // one full second.
 
 			// Tell my squad members to clear out so I can get a grenade in
 			CSoundEnt::InsertSound( SOUND_MOVE_AWAY | SOUND_CONTEXT_COMBINE_ONLY, vecTarget, COMBINE_MIN_GRENADE_CLEAR_DIST, 0.1 );
@@ -2859,13 +2859,13 @@ bool CNPC_Combine::CheckCanThrowGrenade( const Vector &vecTarget )
 		m_vecTossVelocity = vecToss;
 
 		// don't check again for a while.
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // 1/3 second.
+		m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1; // 1/3 second.
 		return true;
 	}
 	else
 	{
 		// don't check again for a while.
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
+		m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1; // one full second.
 		return false;
 	}
 }
@@ -2880,13 +2880,13 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 	if (IsCrouching())
 		return false;
 
-	if( gpGlobals->curtime < m_flNextAltFireTime )
+	if( gpGlobals->GetCurTime() < m_flNextAltFireTime )
 		return false;
 
 	if( !GetEnemy() )
 		return false;
 
-	if (gpGlobals->curtime < m_flNextGrenadeCheck )
+	if (gpGlobals->GetCurTime() < m_flNextGrenadeCheck )
 		return false;
 
 	// See Steve Bond if you plan on changing this next piece of code!! (SJB) EP2_OUTLAND_10
@@ -2941,7 +2941,7 @@ bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
 
 	// Check again later
 	m_vecAltFireTarget = vec3_origin;
-	m_flNextGrenadeCheck = gpGlobals->curtime + 1.0f;
+	m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1.0f;
 	return false;
 }
 

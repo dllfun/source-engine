@@ -23,7 +23,7 @@ public:
 	DECLARE_PREDICTABLE();
 
 	virtual void OnDataChanged( DataUpdateType_t updateType );
-	virtual int DrawModel( int flags );
+	virtual int DrawModel(IVModel* pWorld, int flags );
 	virtual void ClientThink( void );
 
 	virtual bool ShouldUseLargeViewModelVROverride() OVERRIDE { return true; }
@@ -40,14 +40,20 @@ private:
 	CSmartPtr<CLocalSpaceEmitter>	m_pLocalEmitter;
 	CSmartPtr<CSimpleEmitter>		m_pEmitter;
 	CSmartPtr<CParticleAttractor>	m_pAttractor;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_WeaponPhysCannon)
+	BEGIN_RECV_TABLE(C_WeaponPhysCannon, DT_WeaponPhysCannon, DT_BaseHLCombatWeapon)
+		RecvPropBool(RECVINFO(m_bIsCurrentlyUpgrading)),
+		RecvPropFloat(RECVINFO(m_flTimeForceView)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 STUB_WEAPON_CLASS_IMPLEMENT( weapon_physcannon, C_WeaponPhysCannon );
 
-IMPLEMENT_CLIENTCLASS_DT( C_WeaponPhysCannon, DT_WeaponPhysCannon, CWeaponPhysCannon )
-	RecvPropBool( RECVINFO( m_bIsCurrentlyUpgrading ) ),
-	RecvPropFloat( RECVINFO( m_flTimeForceView) ), 
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_WeaponPhysCannon, DT_WeaponPhysCannon, CWeaponPhysCannon )
+
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -209,14 +215,14 @@ void ComputeRenderInfo( mstudiobbox_t *pHitBox, const matrix3x4_t &hitboxToWorld
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_WeaponPhysCannon::DrawModel( int flags )
+int C_WeaponPhysCannon::DrawModel(IVModel* pWorld, int flags )
 {
 	// If we're not ugrading, don't do anything special
 	if ( m_bIsCurrentlyUpgrading == false && m_bWasUpgraded == false )
-		return BaseClass::DrawModel( flags );
+		return BaseClass::DrawModel(pWorld, flags );
 
-	if ( gpGlobals->frametime == 0 )
-		return BaseClass::DrawModel( flags );
+	if ( gpGlobals->GetFrameTime() == 0 )
+		return BaseClass::DrawModel(pWorld, flags );
 
 	if ( !m_bReadyToDraw )
 		return 0;
@@ -240,7 +246,7 @@ int C_WeaponPhysCannon::DrawModel( int flags )
 		if ( !pAnimating->HitboxToWorldTransforms( hitboxbones ) )
 			return 0;
 
-		studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModel() );
+		studiohdr_t *pStudioHdr = pAnimating->GetModel()->GetStudiomodel(  );//pAnimating->GetModel()
 		if (!pStudioHdr)
 			return false;
 
@@ -400,7 +406,7 @@ int C_WeaponPhysCannon::DrawModel( int flags )
 		}
 	}
 
-	return BaseClass::DrawModel( flags );
+	return BaseClass::DrawModel(pWorld, flags );
 }
 
 //---------------------------------------------------------
@@ -410,10 +416,10 @@ int C_WeaponPhysCannon::DrawModel( int flags )
 #define PHYSCANNON_RAISE_VIEW_GOAL	0.0f
 void C_WeaponPhysCannon::ClientThink( void )
 {
-	if( m_flTimeIgnoreForceView > gpGlobals->curtime )
+	if( m_flTimeIgnoreForceView > gpGlobals->GetCurTime() )
 		return;
 
-	float flTime = (m_flTimeForceView - gpGlobals->curtime);
+	float flTime = (m_flTimeForceView - gpGlobals->GetCurTime());
 	
 	if( flTime < 0.0f )
 		return;

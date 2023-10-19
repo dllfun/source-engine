@@ -55,6 +55,17 @@ private:
 	CNetworkVar( int, m_nState );
 	CNetworkVar( float, m_flDuration );
 	CNetworkVar( float, m_flStartTime );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CCitadelEnergyCore)
+	BEGIN_SEND_TABLE(CCitadelEnergyCore, DT_CitadelEnergyCore, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flScale), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nState), 8, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flDuration), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flStartTime), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_spawnflags), 0, SPROP_UNSIGNED),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif

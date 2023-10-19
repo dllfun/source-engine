@@ -27,6 +27,13 @@ public:
 private:
 	C_BaseHelicopter( const C_BaseHelicopter &other ) {}
 	float m_flStartupTime;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_BaseHelicopter)
+	BEGIN_RECV_TABLE(C_BaseHelicopter, DT_BaseHelicopter, DT_AI_BaseNPC)
+		RecvPropTime(RECVINFO(m_flStartupTime)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 

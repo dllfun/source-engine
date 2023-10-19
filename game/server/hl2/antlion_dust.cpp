@@ -11,11 +11,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_SERVERCLASS_ST( CTEAntlionDust, DT_TEAntlionDust )
-	SendPropVector( SENDINFO( m_vecOrigin ) ),
-	SendPropVector( SENDINFO( m_vecAngles ) ),	
-	SendPropBool( SENDINFO( m_bBlockedSpawner ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CTEAntlionDust, DT_TEAntlionDust )
+
 
 CTEAntlionDust::CTEAntlionDust( const char *name ) : BaseClass( name )
 {

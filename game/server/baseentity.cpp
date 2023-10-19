@@ -324,6 +324,8 @@ void CBaseEntity::BindContainingEntity(edict_t* ed) {
 			}
 			else {
 				gEntList.AddNetworkableEntity(ent, ent->NetworkProp()->entindex());
+				ent->CheckHasThinkFunction(false);
+				ent->CheckHasGamePhysicsSimulation();
 			}
 		}
 	}
@@ -510,6 +512,8 @@ void CBaseEntity::PostConstructor( const char *szClassname)//, edict_t* edict
 	if ( IsEFlagSet( EFL_SERVER_ONLY ) )
 	{
 		gEntList.AddNonNetworkableEntity( this );
+		CheckHasThinkFunction(false);
+		CheckHasGamePhysicsSimulation();
 	}
 	else
 	{
@@ -530,8 +534,7 @@ void CBaseEntity::PostConstructor( const char *szClassname)//, edict_t* edict
 		//}
 	}
 
-	CheckHasThinkFunction( false );
-	CheckHasGamePhysicsSimulation();
+	
 }
 
 //-----------------------------------------------------------------------------

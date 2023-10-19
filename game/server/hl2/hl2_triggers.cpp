@@ -113,7 +113,7 @@ void CTriggerWeaponDissolve::Activate( void )
 		m_pConduitPoints.AddToTail( pEntity );
 	}
 
-	SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->curtime + 0.1f, s_pDissolveThinkContext );
+	SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->GetCurTime() + 0.1f, s_pDissolveThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -170,10 +170,10 @@ void CTriggerWeaponDissolve::CreateBeam( const Vector &vecSource, CBaseEntity *p
 {
 	CBroadcastRecipientFilter filter;
 
-	te->BeamEntPoint( filter, 0.0,
+	g_pTESystem->BeamEntPoint( filter, 0.0,
 		0,
 		&vecSource,
-		pDest->entindex(), 
+		pDest->NetworkProp()->entindex(), 
 		&(pDest->WorldSpaceCenter()),
 		m_spriteTexture,
 		0,				// No halo
@@ -260,22 +260,22 @@ void CTriggerWeaponDissolve::DissolveThink( void )
 		// Randomly dissolve them all
 		float flLifetime = random->RandomFloat( 2.5f, 4.0f );
 		CreateBeam( vecConduit, pWeapon, flLifetime );
-		pWeapon->Dissolve( NULL, gpGlobals->curtime + ( 3.0f - flLifetime ), false );
+		pWeapon->Dissolve( NULL, gpGlobals->GetCurTime() + ( 3.0f - flLifetime ), false );
 
 		m_OnDissolveWeapon.FireOutput( this, this );
 
 		CPASAttenuationFilter filter( pWeapon );
-		EmitSound( filter, pWeapon->entindex(), "WeaponDissolve.Dissolve" );
+		EmitSound( filter, pWeapon->NetworkProp()->entindex(), "WeaponDissolve.Dissolve" );
 		
 		// Beam looping sound
 		EmitSound( "WeaponDissolve.Beam" );
 
 		m_pWeapons.Remove( i );
-		SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->curtime + random->RandomFloat( 0.5f, 1.5f ), s_pDissolveThinkContext );
+		SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 1.5f ), s_pDissolveThinkContext );
 		return;
 	}
 
-	SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->curtime + 0.1f, s_pDissolveThinkContext );
+	SetContextThink( &CTriggerWeaponDissolve::DissolveThink, gpGlobals->GetCurTime() + 0.1f, s_pDissolveThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -465,7 +465,7 @@ void CTriggerPhysicsTrap::Touch( CBaseEntity *pOther )
 	}
 #endif
 
-	pAnim->Dissolve( NULL, gpGlobals->curtime, false, m_nDissolveType );
+	pAnim->Dissolve( NULL, gpGlobals->GetCurTime(), false, m_nDissolveType );
 }
 
 //-----------------------------------------------------------------------------
@@ -517,7 +517,7 @@ void CWateryDeathLeech::Spawn( void )
 	SetModel( "models/leech.mdl" );
 
 	SetThink( &CWateryDeathLeech::LeechThink );
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 	m_flPlaybackRate = random->RandomFloat( 0.5, 1.5 );
 	SetCycle( random->RandomFloat( 0.0f, 0.9f ) );
@@ -536,11 +536,11 @@ void CWateryDeathLeech::LeechThink( void )
 		 return;
 
 	StudioFrameAdvance();
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 	if ( m_iFadeState != 0 )
 	{
-		float dt = gpGlobals->frametime;
+		float dt = gpGlobals->GetFrameTime();
 		if ( dt > 0.1f )
 		{
 			dt = 0.1f;
@@ -563,7 +563,7 @@ void CWateryDeathLeech::LeechThink( void )
 		}
 		else
 		{
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 
@@ -666,7 +666,7 @@ void CTriggerWateryDeath::SpawnLeeches( CBaseEntity *pOther )
 	
 	for ( int i = 0; i < iMaxLeeches; i++ )
 	{
-		CWateryDeathLeech *pLeech = (CWateryDeathLeech*)CreateEntityByName( "ent_watery_leech" );
+		CWateryDeathLeech *pLeech = (CWateryDeathLeech*)engineServer->CreateEntityByName( "ent_watery_leech" );
 
 		if ( pLeech )
 		{
@@ -703,7 +703,7 @@ void CTriggerWateryDeath::Touch( CBaseEntity *pOther )
 	float flKillTime = m_flEntityKillTimes[iIndex];
 	
 	// Time to kill it?
-	if ( gpGlobals->curtime > flKillTime )
+	if ( gpGlobals->GetCurTime() > flKillTime )
 	{
 		//EmitSound( filter, entindex(), "WateryDeath.Bite", &pOther->GetAbsOrigin() );
 		// Kill it
@@ -723,7 +723,7 @@ void CTriggerWateryDeath::Touch( CBaseEntity *pOther )
 		GuessDamageForce( &info, (pOther->GetAbsOrigin() - GetAbsOrigin()), pOther->GetAbsOrigin() );
 		pOther->TakeDamage( info );
 
-		m_flEntityKillTimes[iIndex] = gpGlobals->curtime + WD_KILLTIME_NEXT_BITE;
+		m_flEntityKillTimes[iIndex] = gpGlobals->GetCurTime() + WD_KILLTIME_NEXT_BITE;
 	}
 }
 
@@ -746,11 +746,11 @@ void CTriggerWateryDeath::StartTouch(CBaseEntity *pOther)
 		// Players get warned, everything else gets et quick.
 		if ( pOther->IsPlayer() )
 		{
-			m_flEntityKillTimes.AddToTail( gpGlobals->curtime + WD_KILLTIME_NEXT_BITE );
+			m_flEntityKillTimes.AddToTail( gpGlobals->GetCurTime() + WD_KILLTIME_NEXT_BITE );
 		}
 		else
 		{
-			m_flEntityKillTimes.AddToTail( gpGlobals->curtime + WD_KILLTIME_NEXT_BITE );
+			m_flEntityKillTimes.AddToTail( gpGlobals->GetCurTime() + WD_KILLTIME_NEXT_BITE );
 		}
 	}
 

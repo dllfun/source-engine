@@ -85,6 +85,12 @@ public:
 	COutputEvent				m_OnPlayerUse;
 
 	DEFINE_CUSTOM_AI;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_Barney)
+	BEGIN_SEND_TABLE(CNPC_Barney, DT_NPC_Barney, DT_AI_BaseNPC)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 
@@ -93,8 +99,8 @@ LINK_ENTITY_TO_CLASS( npc_barney, CNPC_Barney );
 //---------------------------------------------------------
 // 
 //---------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST(CNPC_Barney, DT_NPC_Barney)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CNPC_Barney, DT_NPC_Barney)
+
 
 
 //---------------------------------------------------------

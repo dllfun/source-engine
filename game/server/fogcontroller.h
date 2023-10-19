@@ -68,7 +68,7 @@ public:
 	int						m_iChangedVariables;
 
 	BEGIN_INIT_SEND_TABLE(CFogController)
-	BEGIN_SEND_TABLE_NOBASE(CFogController, DT_FogController)
+	BEGIN_SEND_TABLE(CFogController, DT_FogController, DT_BaseEntity)
 		// fog data
 		SendPropInt(SENDINFO_STRUCTELEM(m_fog.enable), 1, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO_STRUCTELEM(m_fog.blend), 1, SPROP_UNSIGNED),

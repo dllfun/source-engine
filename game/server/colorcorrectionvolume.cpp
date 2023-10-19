@@ -65,7 +65,7 @@ private:
 	float		m_FadeDuration;
 
 	BEGIN_INIT_SEND_TABLE(CColorCorrectionVolume)
-	BEGIN_SEND_TABLE_NOBASE(CColorCorrectionVolume, DT_ColorCorrectionVolume)
+	BEGIN_SEND_TABLE(CColorCorrectionVolume, DT_ColorCorrectionVolume, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_Weight)),
 		SendPropString(SENDINFO(m_lookupFilename)),
 	END_SEND_TABLE(DT_ColorCorrectionVolume)

@@ -142,10 +142,10 @@ void CHUDQuickInfo::VidInit( void )
 
 void CHUDQuickInfo::DrawWarning( int x, int y, CHudTexture *icon, float &time )
 {
-	float scale	= (int)( fabs(sin(gpGlobals->curtime*8.0f)) * 128.0);
+	float scale	= (int)( fabs(sin(gpGlobals->GetCurTime()*8.0f)) * 128.0);
 
 	// Only fade out at the low point of our blink
-	if ( time <= (gpGlobals->frametime * 200.0f) )
+	if ( time <= (gpGlobals->GetFrameTime() * 200.0f) )
 	{
 		if ( scale < 40 )
 		{
@@ -155,12 +155,12 @@ void CHUDQuickInfo::DrawWarning( int x, int y, CHudTexture *icon, float &time )
 		else
 		{
 			// Counteract the offset below to survive another frame
-			time += (gpGlobals->frametime * 200.0f);
+			time += (gpGlobals->GetFrameTime() * 200.0f);
 		}
 	}
 	
 	// Update our time
-	time -= (gpGlobals->frametime * 200.0f);
+	time -= (gpGlobals->GetFrameTime() * 200.0f);
 	Color caution = gHUD.m_clrCaution;
 	caution[3] = scale * 255;
 
@@ -326,7 +326,7 @@ void CHUDQuickInfo::Paint()
 	if ( !hud_quickinfo.GetInt() )
 		return;
 
-	int	sinScale = (int)( fabs(sin(gpGlobals->curtime*8.0f)) * 128.0f );
+	int	sinScale = (int)( fabs(sin(gpGlobals->GetCurTime()*8.0f)) * 128.0f );
 
 	// Update our health
 	if ( m_healthFade > 0.0f )
@@ -391,7 +391,7 @@ void CHUDQuickInfo::Paint()
 //-----------------------------------------------------------------------------
 void CHUDQuickInfo::UpdateEventTime( void )
 {
-	m_flLastEventTime = gpGlobals->curtime;
+	m_flLastEventTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -400,7 +400,7 @@ void CHUDQuickInfo::UpdateEventTime( void )
 //-----------------------------------------------------------------------------
 bool CHUDQuickInfo::EventTimeElapsed( void )
 {
-	if (( gpGlobals->curtime - m_flLastEventTime ) > QUICKINFO_EVENT_DURATION )
+	if (( gpGlobals->GetCurTime() - m_flLastEventTime ) > QUICKINFO_EVENT_DURATION )
 		return true;
 
 	return false;

@@ -53,6 +53,13 @@ public:
 private:
 
 	CNetworkVar( bool, m_bActive );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponStunStick)
+	BEGIN_SEND_TABLE(CWeaponStunStick, DT_WeaponStunStick, DT_BaseHLBludgeonWeapon)
+		SendPropInt(SENDINFO(m_bActive), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif // WEAPON_STUNSTICK_H

@@ -625,7 +625,7 @@ public:
 	bool					IsBackground( void );
 
 	BEGIN_INIT_SEND_TABLE(CSceneEntity)
-	BEGIN_SEND_TABLE_NOBASE(CSceneEntity, DT_SceneEntity)
+	BEGIN_SEND_TABLE(CSceneEntity, DT_SceneEntity, DT_PointEntity)
 		SendPropInt(SENDINFO(m_nSceneStringIndex), MAX_CHOREO_SCENES_STRING_BITS, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bIsPlayingBack)),
 		SendPropBool(SENDINFO(m_bPaused)),

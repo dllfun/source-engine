@@ -68,6 +68,14 @@ public:
 	bool			ShouldDraw();
 	bool			m_bSprayOn;
 	CSmartPtr<CPlasmaSpray>	m_pFirePlasmaSpray;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_PlasmaBeamNode)
+	BEGIN_RECV_TABLE(C_PlasmaBeamNode, DT_PlasmaBeamNode, DT_AI_BaseNPC)
+		RecvPropVector(RECVINFO(m_vecVelocity), 0, RecvProxy_LocalVelocity),
+		RecvPropInt(RECVINFO(m_bSprayOn)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 //##################################################################
@@ -96,7 +104,7 @@ CSmartPtr<CPlasmaSpray> CPlasmaSpray::Create( const char *pDebugName )
 void CPlasmaSpray::UpdateVelocity( SimpleParticle *pParticle, float timeDelta )
 {
 	Vector		vGravity = Vector(0,0,-1000);
-	float		flFrametime = gpGlobals->frametime;
+	float		flFrametime = gpGlobals->GetFrameTime();
 	vGravity	= flFrametime * vGravity;
 	pParticle->m_vecVelocity += vGravity;
 }
@@ -206,7 +214,7 @@ void C_PlasmaBeamNode::OnDataChanged(DataUpdateType_t updateType)
 		float  flVel = VectorNormalize(vMoveDir);
 		m_pFirePlasmaSpray->m_ParticleCollision.Setup( GetAbsOrigin(), &vMoveDir, 0.3, 
 											flVel-50, flVel+50, 800, 0.5 );
-		SetNextClientThink(gpGlobals->curtime + 0.01);
+		SetNextClientThink(gpGlobals->GetCurTime() + 0.01);
 	}
 	C_BaseEntity::OnDataChanged(updateType);
 }
@@ -271,10 +279,8 @@ void C_PlasmaBeamNode::ClientThink(void)
 		}
 	}
 
-	SetNextClientThink(gpGlobals->curtime + 0.05);
+	SetNextClientThink(gpGlobals->GetCurTime() + 0.05);
 }
 
-IMPLEMENT_CLIENTCLASS_DT(C_PlasmaBeamNode, DT_PlasmaBeamNode, CPlasmaBeamNode )
-	RecvPropVector	(RECVINFO(m_vecVelocity), 0, RecvProxy_LocalVelocity),
-	RecvPropInt		(RECVINFO(m_bSprayOn)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PlasmaBeamNode, DT_PlasmaBeamNode, CPlasmaBeamNode )
+

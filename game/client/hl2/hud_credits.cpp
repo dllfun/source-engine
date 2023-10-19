@@ -141,7 +141,7 @@ void CHudCredits::PrepareCredits( const char *pKeyName )
 	Clear();
 
 	KeyValues *pKV= new KeyValues( "CreditsFile" );
-	if ( !pKV->LoadFromFile( filesystem, CREDITS_FILE, "MOD" ) )
+	if ( !pKV->LoadFromFile( g_pFileSystem, CREDITS_FILE, "MOD" ) )
 	{
 		pKV->deleteThis();
 
@@ -302,23 +302,23 @@ void CHudCredits::DrawOutroCreditsName( void )
 		{
 			if ( m_bLastOneInPlace == false )
 			{
-				pCredit->flYPos -= gpGlobals->frametime * ( (float)g_iCreditsPixelHeight / m_flScrollTime );
+				pCredit->flYPos -= gpGlobals->GetFrameTime() * ( (float)g_iCreditsPixelHeight / m_flScrollTime );
 		
 				if ( (int)pCredit->flYPos + ( iFontTall / 2 ) <= iTall / 2 )
 				{
 					m_bLastOneInPlace = true;
 					
 					// 360 certification requires that we not hold a static image too long.
-					m_flFadeTime = gpGlobals->curtime + ( IsConsole() ? 2.0f : 10.0f );
+					m_flFadeTime = gpGlobals->GetCurTime() + ( IsConsole() ? 2.0f : 10.0f );
 				}
 			}
 			else
 			{
-				if ( m_flFadeTime <= gpGlobals->curtime )
+				if ( m_flFadeTime <= gpGlobals->GetCurTime() )
 				{
 					if ( m_Alpha > 0 )
 					{
-						m_Alpha -= gpGlobals->frametime * ( m_flScrollTime * 2 );
+						m_Alpha -= gpGlobals->GetFrameTime() * ( m_flScrollTime * 2 );
 
 						if ( m_Alpha <= 0 )
 						{
@@ -333,7 +333,7 @@ void CHudCredits::DrawOutroCreditsName( void )
 		}
 		else
 		{
-			pCredit->flYPos -= gpGlobals->frametime * ( (float)g_iCreditsPixelHeight / m_flScrollTime );
+			pCredit->flYPos -= gpGlobals->GetFrameTime() * ( (float)g_iCreditsPixelHeight / m_flScrollTime );
 		}
 		
 		if ( pCredit->bActive == false )
@@ -372,14 +372,14 @@ void CHudCredits::DrawLogo( void )
 	{
 		case LOGO_FADEIN:
 		{
-			float flDeltaTime = ( m_flFadeTime - gpGlobals->curtime );
+			float flDeltaTime = ( m_flFadeTime - gpGlobals->GetCurTime() );
 
 			m_Alpha = MAX( 0, RemapValClamped( flDeltaTime, 5.0f, 0, -128, 255 ) );
 
 			if ( flDeltaTime <= 0.0f )
 			{
 				m_iLogoState = LOGO_FADEHOLD;
-				m_flFadeTime = gpGlobals->curtime + m_flLogoDesiredLength;
+				m_flFadeTime = gpGlobals->GetCurTime() + m_flLogoDesiredLength;
 			}
 
 			break;
@@ -387,17 +387,17 @@ void CHudCredits::DrawLogo( void )
 
 		case LOGO_FADEHOLD:
 		{
-			if ( m_flFadeTime <= gpGlobals->curtime )
+			if ( m_flFadeTime <= gpGlobals->GetCurTime() )
 			{
 				m_iLogoState = LOGO_FADEOUT;
-				m_flFadeTime = gpGlobals->curtime + 2.0f;
+				m_flFadeTime = gpGlobals->GetCurTime() + 2.0f;
 			}
 			break;
 		}
 
 		case LOGO_FADEOUT:
 		{
-			float flDeltaTime = ( m_flFadeTime - gpGlobals->curtime );
+			float flDeltaTime = ( m_flFadeTime - gpGlobals->GetCurTime() );
 
 			m_Alpha = RemapValClamped( flDeltaTime, 0.0f, 2.0f, 0, 255 );
 
@@ -515,7 +515,7 @@ void CHudCredits::DrawIntroCreditsName( void )
 		vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
 		vgui::HFont m_hTFont = vgui::scheme()->GetIScheme(scheme)->GetFont( pCredit->szFontName, true );
 
-		float localTime = gpGlobals->curtime - pCredit->flTimeStart;
+		float localTime = gpGlobals->GetCurTime() - pCredit->flTimeStart;
 
 		surface()->DrawSetTextFont( m_hTFont );
 		surface()->DrawSetTextColor( m_cColor[0], m_cColor[1], m_cColor[2], FadeBlend( m_flFadeInTime, m_flFadeOutTime, m_flFadeHoldTime + pCredit->flTimeAdd, localTime ) * m_cColor[3] );
@@ -526,10 +526,10 @@ void CHudCredits::DrawIntroCreditsName( void )
 		surface()->DrawSetTextPos( XRES( pCredit->flXPos ), YRES( pCredit->flYPos ) );
 		surface()->DrawUnicodeString( unicode );
 		
-		if ( m_flLogoTime > gpGlobals->curtime )
+		if ( m_flLogoTime > gpGlobals->GetCurTime() )
 			 continue;
 		
-		if ( pCredit->flTime - m_flNextStartTime <= gpGlobals->curtime )
+		if ( pCredit->flTime - m_flNextStartTime <= gpGlobals->GetCurTime() )
 		{
 			if ( m_CreditsList.IsValidIndex( i + 3 ) )
 			{
@@ -542,22 +542,22 @@ void CHudCredits::DrawIntroCreditsName( void )
 					if ( i < 3 )
 					{
 						pNextCredits->flTimeAdd = ( i + 1.0f );
-						pNextCredits->flTime = gpGlobals->curtime + m_flFadeInTime + m_flFadeOutTime + m_flFadeHoldTime + pNextCredits->flTimeAdd;
+						pNextCredits->flTime = gpGlobals->GetCurTime() + m_flFadeInTime + m_flFadeOutTime + m_flFadeHoldTime + pNextCredits->flTimeAdd;
 					}
 					else
 					{
 						pNextCredits->flTimeAdd = m_flPauseBetweenWaves;
-						pNextCredits->flTime = gpGlobals->curtime + m_flFadeInTime + m_flFadeOutTime + m_flFadeHoldTime + pNextCredits->flTimeAdd;
+						pNextCredits->flTime = gpGlobals->GetCurTime() + m_flFadeInTime + m_flFadeOutTime + m_flFadeHoldTime + pNextCredits->flTimeAdd;
 					}
 
-					pNextCredits->flTimeStart = gpGlobals->curtime;
+					pNextCredits->flTimeStart = gpGlobals->GetCurTime();
 
 					pNextCredits->iSlot = pCredit->iSlot;
 				}
 			}
 		}
 
-		if ( pCredit->flTime <= gpGlobals->curtime )
+		if ( pCredit->flTime <= gpGlobals->GetCurTime() )
 		{
 			pCredit->bActive = false;
 
@@ -601,7 +601,7 @@ void CHudCredits::PrepareLogo( float flTime )
 
 	m_Alpha = 0;
 	m_flLogoDesiredLength = flTime;
-	m_flFadeTime = gpGlobals->curtime + 5.0f;
+	m_flFadeTime = gpGlobals->GetCurTime() + 5.0f;
 	m_iLogoState = LOGO_FADEIN;
 	SetActive( true );
 }
@@ -684,8 +684,8 @@ void CHudCredits::PrepareIntroCredits( void )
 		{
 			pCredit->bActive = true;
 			pCredit->iSlot = iSlot;
-			pCredit->flTime = gpGlobals->curtime + m_flFadeInTime + m_flFadeOutTime + m_flFadeHoldTime;
-			pCredit->flTimeStart = gpGlobals->curtime;
+			pCredit->flTime = gpGlobals->GetCurTime() + m_flFadeInTime + m_flFadeOutTime + m_flFadeHoldTime;
+			pCredit->flTimeStart = gpGlobals->GetCurTime();
 			m_flLogoTime = pCredit->flTime + m_flLogoTimeMod;
 		}
 		else

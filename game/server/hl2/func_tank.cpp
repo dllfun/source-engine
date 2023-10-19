@@ -187,7 +187,7 @@ CFuncTank::~CFuncTank( void )
 {
 	if ( m_soundLoopRotate != NULL_STRING && ( m_spawnflags & SF_TANK_SOUNDON ) )
 	{
-		StopSound( entindex(), CHAN_STATIC, STRING(m_soundLoopRotate) );
+		StopSound( this->NetworkProp()->entindex(), CHAN_STATIC, STRING(m_soundLoopRotate) );
 	}
 }
 
@@ -197,7 +197,7 @@ CFuncTank::~CFuncTank( void )
 //------------------------------------------------------------------------------
 inline bool CFuncTank::CanFire( void )
 { 
-	float flTimeDelay = gpGlobals->curtime - m_lastSightTime;
+	float flTimeDelay = gpGlobals->GetCurTime() - m_lastSightTime;
 
 	// Fire when can't see enemy if time is less that persistence time
 	if ( flTimeDelay <= m_persist )
@@ -234,8 +234,8 @@ void CFuncTank::InputActivate( inputdata_t &inputdata )
 void CFuncTank::TankActivate( void )
 {
 	m_spawnflags |= SF_TANK_ACTIVE; 
-	SetNextThink( gpGlobals->curtime + 0.1f ); 
-	m_fireLast = gpGlobals->curtime;
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f ); 
+	m_fireLast = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -809,8 +809,8 @@ void CFuncTank::Spawn( void )
 	// For smoothing out leading
 	m_flStartLeadFactor = 1.0f;
 	m_flNextLeadFactor = 1.0f;
-	m_flStartLeadFactorTime = gpGlobals->curtime;
-	m_flNextLeadFactorTime = gpGlobals->curtime + 1.0f;
+	m_flStartLeadFactorTime = gpGlobals->GetCurTime();
+	m_flNextLeadFactorTime = gpGlobals->GetCurTime() + 1.0f;
 
 	m_yawCenter			= GetLocalAngles().y;
 	m_yawCenterWorld	= GetAbsAngles().y;
@@ -821,8 +821,8 @@ void CFuncTank::Spawn( void )
 	if ( IsActive() || (IsControllable() && !HasController()) )
 	{
 		// Think to find controllers.
-		SetNextThink( gpGlobals->curtime + 1.0f );
-		m_flNextControllerSearch = gpGlobals->curtime + 1.0f;
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
+		m_flNextControllerSearch = gpGlobals->GetCurTime() + 1.0f;
 	}
 
 	UpdateMatrix();
@@ -1043,7 +1043,7 @@ bool CFuncTank::StartControl( CBaseCombatCharacter *pController )
 
 	EmitSound( "Func_Tank.BeginUse" );
 	
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	
 	// Let the map maker know a controller has been found
 	if ( m_hController->IsPlayer() )
@@ -1113,9 +1113,9 @@ void CFuncTank::StopControl()
 	{
 		// Delay the think to find controllers a bit
 #ifdef FUNCTANK_AUTOUSE
-		m_flNextControllerSearch = gpGlobals->curtime + 1.0f;
+		m_flNextControllerSearch = gpGlobals->GetCurTime() + 1.0f;
 #else
-		m_flNextControllerSearch = gpGlobals->curtime + 5.0f;
+		m_flNextControllerSearch = gpGlobals->GetCurTime() + 5.0f;
 #endif//FUNCTANK_AUTOUSE
 
 		SetNextThink( m_flNextControllerSearch );
@@ -1138,7 +1138,7 @@ void CFuncTank::ControllerPostFrame( void )
 	Assert( m_hController != NULL );
 
 	// Control the firing rate.
-	if ( gpGlobals->curtime < m_flNextAttack )
+	if ( gpGlobals->GetCurTime() < m_flNextAttack )
 		return;
 
 	if ( !IsPlayerManned() )
@@ -1150,9 +1150,9 @@ void CFuncTank::ControllerPostFrame( void )
 
 	Vector forward;
 	AngleVectors( GetAbsAngles(), &forward );
-	m_fireLast = gpGlobals->curtime - (1/m_fireRate) - 0.01;  // to make sure the gun doesn't fire too many bullets
+	m_fireLast = gpGlobals->GetCurTime() - (1/m_fireRate) - 0.01;  // to make sure the gun doesn't fire too many bullets
 	
-	int bulletCount = (gpGlobals->curtime - m_fireLast) * m_fireRate;
+	int bulletCount = (gpGlobals->GetCurTime() - m_fireLast) * m_fireRate;
 	
 	if( HasSpawnFlags( SF_TANK_AIM_ASSISTANCE ) )
 	{
@@ -1195,7 +1195,7 @@ void CFuncTank::ControllerPostFrame( void )
 		}
 	}
 	
-	SetNextAttack( gpGlobals->curtime + (1/m_fireRate) );
+	SetNextAttack( gpGlobals->GetCurTime() + (1/m_fireRate) );
 }
 
 
@@ -1240,7 +1240,7 @@ bool CFuncTank::NPC_FindManPoint( Vector &vecPos )
 //-----------------------------------------------------------------------------
 void CFuncTank::NPC_JustSawPlayer( CBaseEntity *pTarget )
 {
-	SetNextAttack( gpGlobals->curtime + m_flPlayerLockTimeBeforeFire );
+	SetNextAttack( gpGlobals->GetCurTime() + m_flPlayerLockTimeBeforeFire );
 }
 
 //-----------------------------------------------------------------------------
@@ -1249,7 +1249,7 @@ void CFuncTank::NPC_JustSawPlayer( CBaseEntity *pTarget )
 void CFuncTank::NPC_Fire( void )
 {
 	// Control the firing rate.
-	if ( gpGlobals->curtime < m_flNextAttack )
+	if ( gpGlobals->GetCurTime() < m_flNextAttack )
 		return;
 
 	// Check for a valid npc controller.
@@ -1268,7 +1268,7 @@ void CFuncTank::NPC_Fire( void )
 	}
 
 	// m_fireLast looks like it is only needed for Active non-controlled func_tank.
-//		m_fireLast = gpGlobals->curtime - (1/m_fireRate) - 0.01;  // to make sure the gun doesn't fire too many bullets		
+//		m_fireLast = gpGlobals->GetCurTime() - (1/m_fireRate) - 0.01;  // to make sure the gun doesn't fire too many bullets		
 
 	Vector vecBarrelEnd = WorldBarrelPosition();		
 	Vector vecForward;
@@ -1329,11 +1329,11 @@ void CFuncTank::NPC_Fire( void )
 	if ( m_nBulletCount != 0 )
 	{	
 		m_fireTime -= flFireTime;
-		SetNextAttack( gpGlobals->curtime + flFireTime );
+		SetNextAttack( gpGlobals->GetCurTime() + flFireTime );
 	}
 	else
 	{
-		SetNextAttack( gpGlobals->curtime + m_fireTime );
+		SetNextAttack( gpGlobals->GetCurTime() + m_fireTime );
 	}
 }
 
@@ -1378,7 +1378,7 @@ void CFuncTank::NPC_InterruptRoute( void )
 	NPC_SetInRoute( false );
 
 	// Delay the think to find controllers a bit
-	m_flNextControllerSearch = gpGlobals->curtime + 5.0f;
+	m_flNextControllerSearch = gpGlobals->GetCurTime() + 5.0f;
 
 	if ( !HasController() )
 	{
@@ -1538,9 +1538,9 @@ void CFuncTank::Think( void )
 	m_hFuncTankTarget = NULL;
 
 	// Look for a new controller?
-	if ( IsControllable() && !HasController() && (m_flNextControllerSearch <= gpGlobals->curtime) )
+	if ( IsControllable() && !HasController() && (m_flNextControllerSearch <= gpGlobals->GetCurTime()) )
 	{
-		if ( m_bShouldFindNPCs && gpGlobals->curtime > 5.0f )
+		if ( m_bShouldFindNPCs && gpGlobals->GetCurTime() > 5.0f )
 		{
 			// Check for in route and timer.
 			if ( !NPC_InRoute() )
@@ -1598,30 +1598,30 @@ void CFuncTank::Think( void )
 		{
 			if( bThinkFast )
 			{
-				SetNextThink( gpGlobals->curtime + 0.1f );
+				SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 			}
 			else
 			{
-				SetNextThink( gpGlobals->curtime + 2.0f );
+				SetNextThink( gpGlobals->GetCurTime() + 2.0f );
 			}
 		}
 
 		if( bThinkFast )
 		{
-			m_flNextControllerSearch = gpGlobals->curtime + 0.1f;
+			m_flNextControllerSearch = gpGlobals->GetCurTime() + 0.1f;
 		}
 		else
 		{
-			m_flNextControllerSearch = gpGlobals->curtime + 2.0f;
+			m_flNextControllerSearch = gpGlobals->GetCurTime() + 2.0f;
 		}
 #else
 		// Keep thinking, in case they turn NPC finding back on
 		if ( !HasController() )
 		{
-			SetNextThink( gpGlobals->curtime + 2.0f );
+			SetNextThink( gpGlobals->GetCurTime() + 2.0f );
 		}
 
-		m_flNextControllerSearch = gpGlobals->curtime + 2.0f;
+		m_flNextControllerSearch = gpGlobals->GetCurTime() + 2.0f;
 #endif//FUNCTANK_AUTOUSE
 	}
 
@@ -1850,15 +1850,15 @@ void CFuncTank::ComputeLeadingPosition( const Vector &vecShootPosition, CBaseEnt
 	float flTargetSpeed = VectorNormalize( vecVelocity );
 
 	// Guesstimate...
-	if ( m_flNextLeadFactorTime < gpGlobals->curtime )
+	if ( m_flNextLeadFactorTime < gpGlobals->GetCurTime() )
 	{
 		m_flStartLeadFactor = m_flNextLeadFactor;
-		m_flStartLeadFactorTime = gpGlobals->curtime;
+		m_flStartLeadFactorTime = gpGlobals->GetCurTime();
 		m_flNextLeadFactor = random->RandomFloat( 0.8f, 1.3f );
-		m_flNextLeadFactorTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 4.0f );
+		m_flNextLeadFactorTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 4.0f );
 	}
 
-	float flFactor = (gpGlobals->curtime - m_flStartLeadFactorTime) / (m_flNextLeadFactorTime - m_flStartLeadFactorTime);
+	float flFactor = (gpGlobals->GetCurTime() - m_flStartLeadFactorTime) / (m_flNextLeadFactorTime - m_flStartLeadFactorTime);
 	float flLeadFactor = SimpleSplineRemapVal( flFactor, 0.0f, 1.0f, m_flStartLeadFactor, m_flNextLeadFactor );
 	flTargetSpeed *= flLeadFactor;
 
@@ -2016,13 +2016,13 @@ void CFuncTank::AimFuncTankAtTarget( void )
 
 	if ( bUpdateTime )
 	{
-		if( (gpGlobals->curtime - m_lastSightTime >= 1.0) && (gpGlobals->curtime > m_flNextAttack) )
+		if( (gpGlobals->GetCurTime() - m_lastSightTime >= 1.0) && (gpGlobals->GetCurTime() > m_flNextAttack) )
 		{
 			// Enemy was hidden for a while, and I COULD fire right now. Instead, tack a delay on.
-			m_flNextAttack = gpGlobals->curtime + 0.5;
+			m_flNextAttack = gpGlobals->GetCurTime() + 0.5;
 		}
 
-		m_lastSightTime = gpGlobals->curtime;
+		m_lastSightTime = gpGlobals->GetCurTime();
 		m_persist2burst = 0;
 	}
 
@@ -2076,7 +2076,7 @@ void CFuncTank::TrackTarget( void )
 {
 	QAngle angles;
 
-	if( !m_bReadyToFire && m_flNextAttack <= gpGlobals->curtime )
+	if( !m_bReadyToFire && m_flNextAttack <= gpGlobals->GetCurTime() )
 	{
 		m_OnReadyToFire.FireOutput( this, this );
 		m_bReadyToFire = true;
@@ -2086,7 +2086,7 @@ void CFuncTank::TrackTarget( void )
 	{
 		AimBarrelAtPlayerCrosshair( &angles );
 		RotateTankToAngles( angles );
-		SetNextThink( gpGlobals->curtime + 0.05f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 		SetMoveDoneTime( 0.1 );
 		return;
 	}
@@ -2095,7 +2095,7 @@ void CFuncTank::TrackTarget( void )
 	{
 		AimBarrelAtNPCEnemy( &angles );
 		RotateTankToAngles( angles );
-		SetNextThink( gpGlobals->curtime + 0.05f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 		SetMoveDoneTime( 0.1 );
 		return;
 	}
@@ -2112,7 +2112,7 @@ void CFuncTank::TrackTarget( void )
 	}
 
 	// Clean room for unnecessarily complicated old code
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	AimFuncTankAtTarget();
 }
 
@@ -2127,18 +2127,18 @@ void CFuncTank::FiringSequence( const Vector &barrelEnd, const Vector &forward, 
 {
 	if ( m_fireLast != 0 )
 	{
-		int bulletCount = (gpGlobals->curtime - m_fireLast) * m_fireRate;
+		int bulletCount = (gpGlobals->GetCurTime() - m_fireLast) * m_fireRate;
 		
 		if ( bulletCount > 0 )
 		{
 			// NOTE: Set m_fireLast first so that Fire can adjust it
-			m_fireLast = gpGlobals->curtime;
+			m_fireLast = gpGlobals->GetCurTime();
 			Fire( bulletCount, barrelEnd, forward, pAttacker, false );
 		}
 	}
 	else
 	{
-		m_fireLast = gpGlobals->curtime;
+		m_fireLast = gpGlobals->GetCurTime();
 	}
 }
 
@@ -2158,7 +2158,7 @@ void CFuncTank::DoMuzzleFlash( void )
 		{
 			CEffectData data;
 			data.m_nAttachmentIndex = m_nBarrelAttachment;
-			data.m_nEntIndex = pAnim->entindex();
+			data.m_nEntIndex = pAnim->NetworkProp()->entindex();
 			
 			// FIXME: Create a custom entry here!
 			DispatchEffect( "ChopperMuzzleFlash", data );
@@ -2166,7 +2166,7 @@ void CFuncTank::DoMuzzleFlash( void )
 		else
 		{
 			CEffectData data;
-			data.m_nEntIndex = pAnim->entindex();
+			data.m_nEntIndex = pAnim->NetworkProp()->entindex();
 			data.m_nAttachmentIndex = m_nBarrelAttachment;
 			data.m_flScale = 1.0f;
 			data.m_fFlags = MUZZLEFLASH_COMBINE;
@@ -2296,7 +2296,7 @@ void CFuncTank::StartRotSound( void )
 		ep.m_flVolume = 0.85;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	}
 	
 	if ( m_soundStartRotate != NULL_STRING )
@@ -2309,7 +2309,7 @@ void CFuncTank::StartRotSound( void )
 		ep.m_flVolume = 1.0f;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	}
 }
 
@@ -2320,7 +2320,7 @@ void CFuncTank::StopRotSound( void )
 	{
 		if ( m_soundLoopRotate != NULL_STRING )
 		{
-			StopSound( entindex(), CHAN_STATIC, (char*)STRING(m_soundLoopRotate) );
+			StopSound( this->NetworkProp()->entindex(), CHAN_STATIC, (char*)STRING(m_soundLoopRotate) );
 		}
 		if ( m_soundStopRotate != NULL_STRING )
 		{
@@ -2332,7 +2332,7 @@ void CFuncTank::StopRotSound( void )
 			ep.m_flVolume = 1.0f;
 			ep.m_SoundLevel = SNDLVL_NORM;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, this->NetworkProp()->entindex(), ep );
 		}
 	}
 	m_spawnflags &= ~SF_TANK_SOUNDON;
@@ -2354,7 +2354,7 @@ bool CFuncTank::IsEntityInViewCone( CBaseEntity *pEntity )
 	}
 
 	// If we're trying to shoot at a player, and we've seen a non-player recently, check the grace period
-	if ( m_flPlayerGracePeriod && pEntity->IsPlayer() && (gpGlobals->curtime - m_flLastSawNonPlayer) < m_flPlayerGracePeriod )
+	if ( m_flPlayerGracePeriod && pEntity->IsPlayer() && (gpGlobals->GetCurTime() - m_flLastSawNonPlayer) < m_flPlayerGracePeriod )
 	{
 		// Grace period is ignored under a certain distance
 		if ( flRange2 > m_flIgnoreGraceUpto )
@@ -2378,7 +2378,7 @@ bool CFuncTank::IsEntityInViewCone( CBaseEntity *pEntity )
 	// Remember the last time we saw a non-player
 	if ( !pEntity->IsPlayer() )
 	{
-		m_flLastSawNonPlayer = gpGlobals->curtime;
+		m_flLastSawNonPlayer = gpGlobals->GetCurTime();
 	}
 
 	return true;
@@ -2586,7 +2586,7 @@ void CFuncTankPulseLaser::Fire( int bulletCount, const Vector &barrelEnd, const 
 			ep.m_flVolume = 1.0f;
 			ep.m_SoundLevel = SNDLVL_85dB;
 
-			EmitSound( filter, entindex(), ep );
+			EmitSound( filter, this->NetworkProp()->entindex(), ep );
 		}
 
 	}
@@ -2666,7 +2666,7 @@ CEnvLaser *CFuncTankLaser::GetLaser( void )
 
 void CFuncTankLaser::Think( void )
 {
-	if ( m_pLaser && (gpGlobals->curtime > m_laserTime) )
+	if ( m_pLaser && (gpGlobals->GetCurTime() > m_laserTime) )
 		m_pLaser->TurnOff();
 
 	CFuncTank::Think();
@@ -2685,9 +2685,9 @@ void CFuncTankLaser::Fire( int bulletCount, const Vector &barrelEnd, const Vecto
 			m_pLaser->SetLocalOrigin( barrelEnd );
 			TankTrace( barrelEnd, forward, gTankSpread[m_spread], tr );
 			
-			m_laserTime = gpGlobals->curtime;
+			m_laserTime = gpGlobals->GetCurTime();
 			m_pLaser->TurnOn();
-			m_pLaser->SetFireTime( gpGlobals->curtime - 1.0 );
+			m_pLaser->SetFireTime( gpGlobals->GetCurTime() - 1.0 );
 			m_pLaser->FireAtPoint( tr );
 			m_pLaser->SetNextThink( TICK_NEVER_THINK );
 		}
@@ -2729,7 +2729,7 @@ void CFuncTankRocket::Fire( int bulletCount, const Vector &barrelEnd, const Vect
 	CMissile *pRocket = (CMissile *) CBaseEntity::Create( "rpg_missile", barrelEnd, GetAbsAngles(), this );
 	
 	pRocket->DumbFire();
-	pRocket->SetNextThink( gpGlobals->curtime + 0.1f );
+	pRocket->SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	pRocket->SetAbsVelocity( forward * m_flRocketSpeed );
 	if ( GetController() && GetController()->IsPlayer() )
 	{
@@ -2851,7 +2851,7 @@ void CFuncTankAirboatGun::CreateSounds()
 	CPASAttenuationFilter filter( this );
 	if (!m_pGunFiringSound)
 	{
-		m_pGunFiringSound = controller.SoundCreate( filter, entindex(), "Airboat.FireGunLoop" );
+		m_pGunFiringSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "Airboat.FireGunLoop" );
 		controller.Play( m_pGunFiringSound, 0, 100 );
 	}
 }
@@ -2945,7 +2945,7 @@ Vector CFuncTankAirboatGun::WorldBarrelPosition( void )
 //-----------------------------------------------------------------------------
 const char *CFuncTankAirboatGun::GetTracerType( void ) 
 {
-	if ( gpGlobals->curtime >= m_flNextHeavyShotTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextHeavyShotTime )
 		return "AirboatGunHeavyTracer";
 
 	return "AirboatGunTracer"; 
@@ -2960,7 +2960,7 @@ void CFuncTankAirboatGun::DoMuzzleFlash( void )
 	if ( m_hAirboatGunModel && (m_nGunBarrelAttachment != 0) )
 	{
 		CEffectData data;
-		data.m_nEntIndex = m_hAirboatGunModel->entindex();
+		data.m_nEntIndex = m_hAirboatGunModel->NetworkProp()->entindex();
 		data.m_nAttachmentIndex = m_nGunBarrelAttachment;
 		data.m_flScale = 1.0f;
 		DispatchEffect( "AirboatMuzzleFlash", data );
@@ -2975,10 +2975,10 @@ void CFuncTankAirboatGun::DoImpactEffect( trace_t &tr, int nDamageType )
 {
 	// The airboat spits out so much crap that we need to do cheaper versions
 	// of the impact effects. Also, we need to do less of them.
-	if ( m_flLastImpactEffectTime == gpGlobals->curtime )
+	if ( m_flLastImpactEffectTime == gpGlobals->GetCurTime() )
 		return;
 
-	m_flLastImpactEffectTime = gpGlobals->curtime;
+	m_flLastImpactEffectTime = gpGlobals->GetCurTime();
 	UTIL_ImpactTrace( &tr, nDamageType, "AirboatGunImpact" );
 } 
 
@@ -2999,7 +2999,7 @@ void CFuncTankAirboatGun::Fire( int bulletCount, const Vector &barrelEnd, const 
 	info.m_flDistance = 4096;
 	info.m_iAmmoType = ammoType;
 
-	if ( gpGlobals->curtime >= m_flNextHeavyShotTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextHeavyShotTime )
 	{
 		info.m_iShots = 1;
 		info.m_vecSpread = VECTOR_CONE_PRECALCULATED;
@@ -3016,9 +3016,9 @@ void CFuncTankAirboatGun::Fire( int bulletCount, const Vector &barrelEnd, const 
 	DoMuzzleFlash();
 
 	// NOTE: This must occur after FireBullets
-	if ( gpGlobals->curtime >= m_flNextHeavyShotTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextHeavyShotTime )
 	{
-		m_flNextHeavyShotTime = gpGlobals->curtime + AIRBOAT_GUN_HEAVY_SHOT_INTERVAL; 
+		m_flNextHeavyShotTime = gpGlobals->GetCurTime() + AIRBOAT_GUN_HEAVY_SHOT_INTERVAL; 
 	}
 }
 
@@ -3179,7 +3179,7 @@ void CFuncTankAPCRocket::Think()
 	// Inert if we're carried...
 	if ( GetMoveParent() && GetMoveParent()->GetMoveParent() )
 	{
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 		return;
 	}
 
@@ -3201,7 +3201,7 @@ void CFuncTankAPCRocket::InputDeathVolley( inputdata_t &inputdata )
 	if ( !m_bDying )
 	{
 		m_fireRate = random->RandomFloat( DEATH_VOLLEY_MIN_FIRE_RATE, DEATH_VOLLEY_MAX_FIRE_RATE );
-		SetNextAttack( gpGlobals->curtime + (1.0f / m_fireRate ) );
+		SetNextAttack( gpGlobals->GetCurTime() + (1.0f / m_fireRate ) );
 		m_nBulletCount = DEATH_VOLLEY_MISSILE_COUNT;
 		m_bDying = true;
 	}
@@ -3249,6 +3249,15 @@ private:
 
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CMortarShell)
+	BEGIN_SEND_TABLE(CMortarShell, DT_MortarShell, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flLifespan), -1, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flRadius), -1, SPROP_NOSCALE),
+		SendPropVector(SENDINFO(m_vecSurfaceNormal), 0, SPROP_NORMAL),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( mortarshell, CMortarShell );
@@ -3273,11 +3282,8 @@ BEGIN_DATADESC( CMortarShell )
 	DEFINE_FUNCTION( FadeThink ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CMortarShell, DT_MortarShell )
-	SendPropFloat( SENDINFO( m_flLifespan ), -1, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_flRadius ), -1, SPROP_NOSCALE ),
-	SendPropVector( SENDINFO( m_vecSurfaceNormal ), 0, SPROP_NORMAL ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CMortarShell, DT_MortarShell )
+
 
 #define	MORTAR_TEST_RADIUS	16.0f
 
@@ -3329,7 +3335,7 @@ void CMortarShell::FixUpImpactPoint( const Vector &initialPos, const Vector &ini
 
 CMortarShell *CMortarShell::Create( const Vector &vecStart, const Vector &vecTarget, const Vector &vecShotDir, float flImpactDelay, float flWarnDelay, string_t warnSound )
 {
-	CMortarShell *pShell = (CMortarShell *)CreateEntityByName("mortarshell" );
+	CMortarShell *pShell = (CMortarShell *)engineServer->CreateEntityByName("mortarshell" );
 
 	// Place the mortar shell at the target location so that it can make the sound and explode.
 	trace_t	tr;
@@ -3402,7 +3408,7 @@ CMortarShell *CMortarShell::Create( const Vector &vecStart, const Vector &vecTar
 
 	pShell->m_vecFiredFrom = vecStart;
 	pShell->m_flLifespan = flImpactDelay;
-	pShell->m_flImpactTime = gpGlobals->curtime + flImpactDelay;
+	pShell->m_flImpactTime = gpGlobals->GetCurTime() + flImpactDelay;
 	pShell->m_flWarnTime = pShell->m_flImpactTime - flWarnDelay;
 	pShell->m_flNPCWarnTime = pShell->m_flWarnTime - 0.5;
 	pShell->m_warnSound = warnSound;
@@ -3455,10 +3461,10 @@ void CMortarShell::Spawn()
 	m_vecFlyDir = GetAbsOrigin() - m_vecFiredFrom;
 	VectorNormalize( m_vecFlyDir );
 
-	m_flSpawnedTime = gpGlobals->curtime;
+	m_flSpawnedTime = gpGlobals->GetCurTime();
 
 	SetThink( &CMortarShell::FlyThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	// No model but we still need to force this!
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
@@ -3535,9 +3541,9 @@ void UTIL_VisualizeCurve( int type, int steps, float bias )
 //---------------------------------------------------------
 void CMortarShell::FlyThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.05 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05 );
 
-	if ( gpGlobals->curtime > m_flNPCWarnTime )
+	if ( gpGlobals->GetCurTime() > m_flNPCWarnTime )
 	{
 		// Warn the AI. Make this radius a little larger than the explosion will be, and make the sound last a little longer.
 		CSoundEnt::InsertSound ( SOUND_DANGER | SOUND_CONTEXT_MORTAR, GetAbsOrigin(), MORTAR_BLAST_RADIUS * 1.25, (m_flImpactTime - m_flNPCWarnTime) + 0.15 );
@@ -3546,7 +3552,7 @@ void CMortarShell::FlyThink()
 
 	//UTIL_VisualizeCurve( CURVE_GAIN, 64, curve_bias.GetFloat() );
 
-	float lifePerc = 1.0f - ( ( m_flImpactTime - gpGlobals->curtime ) / ( m_flImpactTime - m_flSpawnedTime ) );
+	float lifePerc = 1.0f - ( ( m_flImpactTime - gpGlobals->GetCurTime() ) / ( m_flImpactTime - m_flSpawnedTime ) );
 
 	lifePerc = clamp( lifePerc, 0.0f, 1.0f );
 	
@@ -3580,12 +3586,12 @@ void CMortarShell::FlyThink()
 
 	// Beam updates END
 		 
-	if( !m_bHasWarned && gpGlobals->curtime > m_flWarnTime )
+	if( !m_bHasWarned && gpGlobals->GetCurTime() > m_flWarnTime )
 	{
 		Warn();
 	}
 
-	if( gpGlobals->curtime > m_flImpactTime )
+	if( gpGlobals->GetCurTime() > m_flImpactTime )
 	{
 		Impact();
 	}
@@ -3606,7 +3612,7 @@ void CMortarShell::Warn( void )
 		ep.m_flVolume = 1.0f;
 		ep.m_SoundLevel = SNDLVL_NONE;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	}
 
 	m_bHasWarned = true;
@@ -3630,7 +3636,7 @@ void CMortarShell::Impact( void )
 	CEffectData	data;
 
 	// Do an extra effect if we struck the world
-	if ( tr.m_pEnt && tr.m_pEnt->IsWorld() )
+	if ( tr.m_pEnt && tr.m_pEnt->NetworkProp()->entindex()==0)
 	{
 		data.m_flRadius = flRadius * 0.5f;
 		data.m_vNormal	= tr.plane.normal;
@@ -3641,7 +3647,7 @@ void CMortarShell::Impact( void )
 
 	//Shockring
 	CBroadcastRecipientFilter filter2;
-	te->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
+	g_pTESystem->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
 		8.0f,	//start radius
 		flRadius * 2,		//end radius
 		m_iSpriteTexture, //texture
@@ -3661,7 +3667,7 @@ void CMortarShell::Impact( void )
 		);
 
 	//Shockring
-	te->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
+	g_pTESystem->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
 		8.0f,	//start radius
 		flRadius,	//end radius
 		m_iSpriteTexture, //texture
@@ -3687,10 +3693,10 @@ void CMortarShell::Impact( void )
 	UTIL_ScreenShake( GetAbsOrigin(), 10, 60, 1.0, 550, SHAKE_START, false );
 
 	//Fade the beams over time!
-	m_flFadeTime = gpGlobals->curtime;
+	m_flFadeTime = gpGlobals->GetCurTime();
 
 	SetThink( &CMortarShell::FadeThink );
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 #define	MORTAR_FADE_LENGTH 1.0f
@@ -3700,9 +3706,9 @@ void CMortarShell::Impact( void )
 //-----------------------------------------------------------------------------
 void CMortarShell::FadeThink( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
-	float lifePerc = 1.0f - ( ( gpGlobals->curtime - m_flFadeTime  ) / MORTAR_FADE_LENGTH );
+	float lifePerc = 1.0f - ( ( gpGlobals->GetCurTime() - m_flFadeTime  ) / MORTAR_FADE_LENGTH );
 
 	lifePerc = clamp( lifePerc, 0.0f, 1.0f );
 	
@@ -3736,7 +3742,7 @@ void CMortarShell::FadeThink( void )
 
 	// Beam updates END
 
-	if ( gpGlobals->curtime > ( m_flFadeTime + MORTAR_FADE_LENGTH ) )
+	if ( gpGlobals->GetCurTime() > ( m_flFadeTime + MORTAR_FADE_LENGTH ) )
 	{
 		UTIL_Remove( m_pBeamEffect[0] );
 		UTIL_Remove( m_pBeamEffect[1] );
@@ -3851,7 +3857,7 @@ void CFuncTankMortar::InputShootGun( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CFuncTankMortar::InputFireAtWill( inputdata_t &inputdata )
 {
-	SetNextAttack( gpGlobals->curtime );
+	SetNextAttack( gpGlobals->GetCurTime() );
 }
 
 //-----------------------------------------------------------------------------
@@ -3870,15 +3876,15 @@ void CFuncTankMortar::ShootGun( void )
 
 void CFuncTankMortar::FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
-	if ( gpGlobals->curtime > GetNextAttack() )
+	if ( gpGlobals->GetCurTime() > GetNextAttack() )
 	{
 		ShootGun();
-		m_fireLast = gpGlobals->curtime;
-		SetNextAttack( gpGlobals->curtime + (1.0 / m_fireRate ) );
+		m_fireLast = gpGlobals->GetCurTime();
+		SetNextAttack( gpGlobals->GetCurTime() + (1.0 / m_fireRate ) );
 	}
 	else
 	{
-		m_fireLast = gpGlobals->curtime;
+		m_fireLast = gpGlobals->GetCurTime();
 	}
 }	
 
@@ -3956,7 +3962,7 @@ void CFuncTankMortar::Fire( int bulletCount, const Vector &barrelEnd, const Vect
 		ep.m_flVolume = 1.0f;
 		ep.m_SoundLevel = SNDLVL_NONE;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	}
 
 	Vector vecFinalDir = tr.endpos - tr.startpos;
@@ -4099,7 +4105,7 @@ void CFuncTankCombineCannon::Precache()
 void CFuncTankCombineCannon::Spawn()
 {
 	BaseClass::Spawn();
-	m_flTimeBeamOn = gpGlobals->curtime;
+	m_flTimeBeamOn = gpGlobals->GetCurTime();
 	CreateBeam();
 
 	m_bShouldHarrass = true;
@@ -4112,11 +4118,11 @@ void CFuncTankCombineCannon::Spawn()
 //---------------------------------------------------------
 void CFuncTankCombineCannon::CreateBeam()
 {
-	if (!m_hBeam && gpGlobals->curtime >= m_flTimeBeamOn )
+	if (!m_hBeam && gpGlobals->GetCurTime() >= m_flTimeBeamOn )
 	{
 		m_hBeam = CBeam::BeamCreate( COMBINE_CANNON_BEAM, 1.0f );
 		m_hBeam->SetColor( 255, 255, 255 );
-		SetContextThink( &CFuncTankCombineCannon::UpdateBeamThink, gpGlobals->curtime, s_pUpdateBeamThinkContext );
+		SetContextThink( &CFuncTankCombineCannon::UpdateBeamThink, gpGlobals->GetCurTime(), s_pUpdateBeamThinkContext );
 	}
 	else
 	{
@@ -4164,7 +4170,7 @@ void CFuncTankCombineCannon::AdjustRateOfFire()
 			// Cheat, and be able to fire RIGHT NOW if the target is a player and the 
 			// last target I fired at was an NPC. This prevents the player from running
 			// for it while the gun is busy dealing with NPCs
-			SetNextAttack( gpGlobals->curtime );
+			SetNextAttack( gpGlobals->GetCurTime() );
 		}
 	}
 */
@@ -4175,7 +4181,7 @@ void CFuncTankCombineCannon::AdjustRateOfFire()
 #define COMBINE_CANNON_BEAM_MAX_DIST	1900.0f
 void CFuncTankCombineCannon::UpdateBeamThink()
 {
-	SetContextThink( &CFuncTankCombineCannon::UpdateBeamThink, gpGlobals->curtime + 0.025, s_pUpdateBeamThinkContext );
+	SetContextThink( &CFuncTankCombineCannon::UpdateBeamThink, gpGlobals->GetCurTime() + 0.025, s_pUpdateBeamThinkContext );
 
 	// Always try to create the beam.
 	CreateBeam();
@@ -4210,7 +4216,7 @@ void CFuncTankCombineCannon::FuncTankPostThink()
 
 	if( m_hTarget.Get() == NULL )
 	{
-		if( gpGlobals->curtime > m_flTimeNextSweep )
+		if( gpGlobals->GetCurTime() > m_flTimeNextSweep )
 		{
 			AddSpawnFlags( SF_TANK_AIM_AT_POS );
 
@@ -4287,17 +4293,17 @@ void CFuncTankCombineCannon::FuncTankPostThink()
 
 			if( bHarass )
 			{
-				m_flTimeNextSweep = gpGlobals->curtime + random->RandomFloat( 0.25f, 0.75f );
+				m_flTimeNextSweep = gpGlobals->GetCurTime() + random->RandomFloat( 0.25f, 0.75f );
 			}
 			else
 			{
-				m_flTimeNextSweep = gpGlobals->curtime + random->RandomFloat( 1, 3 );
+				m_flTimeNextSweep = gpGlobals->GetCurTime() + random->RandomFloat( 1, 3 );
 			}
 		}
 	}
 	else
 	{
-		//Msg("%d engaging: %s\n", entindex(), m_hTarget->GetClassname() );
+		//Msg("%d engaging: %s\n", this->NetworkProp()->entindex(), m_hTarget->GetClassname() );
 		RemoveSpawnFlags( SF_TANK_AIM_AT_POS );
 	}
 }
@@ -4352,9 +4358,9 @@ void CFuncTankCombineCannon::Fire( int bulletCount, const Vector &barrelEnd, con
 	// Turn off the beam and tell it to stay off for a bit. We want it to look like the beam became the
 	// ion cannon 'rail gun' effect.
 	DestroyBeam();
-	m_flTimeBeamOn = gpGlobals->curtime + 0.2f;
+	m_flTimeBeamOn = gpGlobals->GetCurTime() + 0.2f;
 
-	m_flTimeNextSweep = gpGlobals->curtime + random->RandomInt( 1.0f, 2.0f );
+	m_flTimeNextSweep = gpGlobals->GetCurTime() + random->RandomInt( 1.0f, 2.0f );
 }
 
 //---------------------------------------------------------
@@ -4386,7 +4392,7 @@ void CFuncTankCombineCannon::MakeTracer( const Vector &vecTracerSrc, const trace
 void CFuncTankCombineCannon::TankDeactivate()
 {
 	DestroyBeam();
-	m_flTimeBeamOn = gpGlobals->curtime + 1.0f;
+	m_flTimeBeamOn = gpGlobals->GetCurTime() + 1.0f;
 	SetContextThink( NULL, 0, s_pUpdateBeamThinkContext );
 
 	BaseClass::TankDeactivate();

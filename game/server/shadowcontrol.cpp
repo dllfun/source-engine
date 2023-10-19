@@ -43,7 +43,7 @@ private:
 	CNetworkVar( bool, m_bDisableShadows );
 
 	BEGIN_INIT_SEND_TABLE(CShadowControl)
-	BEGIN_SEND_TABLE_NOBASE(CShadowControl, DT_ShadowControl)
+	BEGIN_SEND_TABLE(CShadowControl, DT_ShadowControl, DT_BaseEntity)
 		SendPropVector(SENDINFO(m_shadowDirection), -1, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_shadowColor), 32, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE),

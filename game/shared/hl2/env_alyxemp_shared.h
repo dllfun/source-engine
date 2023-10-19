@@ -57,6 +57,15 @@ private:
 	CNetworkVar( int, m_nState );
 	CNetworkVar( float, m_flDuration );
 	CNetworkVar( float, m_flStartTime );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CAlyxEmpEffect)
+	BEGIN_SEND_TABLE(CAlyxEmpEffect, DT_AlyxEmpEffect, DT_BaseEntity)
+		SendPropInt(SENDINFO(m_nState), 8, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flDuration), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flStartTime), 0, SPROP_NOSCALE),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 

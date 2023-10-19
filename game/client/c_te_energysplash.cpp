@@ -38,7 +38,7 @@ public:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEEnergySplash)
-	BEGIN_RECV_TABLE_NOBASE(C_TEEnergySplash, DT_TEEnergySplash)
+	BEGIN_RECV_TABLE(C_TEEnergySplash, DT_TEEnergySplash, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecPos)),
 		RecvPropVector(RECVINFO(m_vecDir)),
 		RecvPropInt(RECVINFO(m_bExplosive)),

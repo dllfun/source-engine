@@ -42,7 +42,7 @@ private:
 	CNetworkVar( float, m_flCheapWaterEndDistance );
 
 	BEGIN_INIT_SEND_TABLE(CWaterLODControl)
-	BEGIN_SEND_TABLE_NOBASE(CWaterLODControl, DT_WaterLODControl, DT_BaseEntity)
+	BEGIN_SEND_TABLE(CWaterLODControl, DT_WaterLODControl, DT_BaseEntity)
 		SendPropFloat(SENDINFO(m_flCheapWaterStartDistance), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flCheapWaterEndDistance), 0, SPROP_NOSCALE),
 	END_SEND_TABLE(DT_WaterLODControl)

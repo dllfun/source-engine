@@ -162,6 +162,13 @@ protected:
 	bool			m_bHasPoop;
 
 	CNetworkVar( bool, m_bHeadlightIsOn );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CPropJeep)
+	BEGIN_SEND_TABLE(CPropJeep, DT_PropJeep, DT_PropVehicleDriveable)
+		SendPropBool(SENDINFO(m_bHeadlightIsOn)),
+	END_SEND_TABLE();
+	END_INIT_SEND_TABLE()
 };
 
 #endif // VEHICLE_JEEP_H

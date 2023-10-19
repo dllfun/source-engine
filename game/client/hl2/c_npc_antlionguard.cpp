@@ -47,6 +47,18 @@ private:
 #endif
 
 	C_NPC_AntlionGuard( const C_NPC_AntlionGuard & );
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_NPC_AntlionGuard)
+	BEGIN_RECV_TABLE(C_NPC_AntlionGuard, DT_NPC_AntlionGuard, DT_AI_BaseNPC)
+		RecvPropBool(RECVINFO(m_bCavernBreed)),
+		RecvPropBool(RECVINFO(m_bInCavern)),
+
+#if ANTLIONGUARD_BLOOD_EFFECTS
+		RecvPropInt(RECVINFO(m_iBleedingLevel)),
+#endif
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -60,14 +72,8 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT(C_NPC_AntlionGuard, DT_NPC_AntlionGuard, CNPC_AntlionGuard)
-	RecvPropBool( RECVINFO( m_bCavernBreed ) ),
-	RecvPropBool( RECVINFO( m_bInCavern ) ),
+IMPLEMENT_CLIENTCLASS(C_NPC_AntlionGuard, DT_NPC_AntlionGuard, CNPC_AntlionGuard)
 
-#if ANTLIONGUARD_BLOOD_EFFECTS
-	RecvPropInt(  RECVINFO( m_iBleedingLevel ) ),
-#endif
-END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
@@ -154,7 +160,7 @@ void C_NPC_AntlionGuard::ClientThink()
 	}
 
 	m_dlight->origin	= GetAbsOrigin();
-	// dl->die = gpGlobals->curtime + 0.1f;
+	// dl->die = gpGlobals->GetCurTime() + 0.1f;
 
 	BaseClass::ClientThink();
 }

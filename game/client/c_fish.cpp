@@ -74,7 +74,7 @@ private:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_Fish)
-	BEGIN_RECV_TABLE_NOBASE(C_Fish, DT_CFish, CFish)
+	BEGIN_RECV_TABLE(C_Fish, DT_CFish, DT_BaseAnimating)
 
 		RecvPropVector(RECVINFO(m_poolOrigin)),
 

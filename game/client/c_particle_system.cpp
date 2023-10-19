@@ -46,7 +46,7 @@ protected:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_ParticleSystem)
-	BEGIN_RECV_TABLE_NOBASE(C_ParticleSystem, DT_ParticleSystem)
+	BEGIN_RECV_TABLE(C_ParticleSystem, DT_ParticleSystem, DT_BaseEntity)
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropEHandle(RECVINFO(m_hOwnerEntity)),
 		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),

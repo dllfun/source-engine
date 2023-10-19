@@ -28,12 +28,8 @@ CLIENTEFFECT_MATERIAL( "effects/ar2_altfire1" )
 CLIENTEFFECT_MATERIAL( "effects/ar2_altfire1b" )
 CLIENTEFFECT_REGISTER_END()
 
-IMPLEMENT_CLIENTCLASS_DT( C_PropCombineBall, DT_PropCombineBall, CPropCombineBall )
-	RecvPropBool( RECVINFO( m_bEmit ) ),
-	RecvPropFloat( RECVINFO( m_flRadius ) ),
-	RecvPropBool( RECVINFO( m_bHeld ) ),
-	RecvPropBool( RECVINFO( m_bLaunched ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_PropCombineBall, DT_PropCombineBall, CPropCombineBall )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -146,7 +142,7 @@ void C_PropCombineBall::DrawFlicker( void )
 	float rand1 = random->RandomFloat( 0.2f, 0.3f );
 	float rand2 = random->RandomFloat( 1.5f, 2.5f );
 
-	if ( gpGlobals->frametime == 0.0f )
+	if ( gpGlobals->GetFrameTime() == 0.0f )
 	{
 		rand1 = 0.2f;
 		rand2 = 1.5f;
@@ -228,7 +224,7 @@ void DrawHaloOriented( const Vector& source, float scale, float const *color, fl
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_PropCombineBall::DrawModel( int flags )
+int C_PropCombineBall::DrawModel(IVModel* pWorld, int flags )
 {
 	if ( !m_bEmit )
 		return 0;
@@ -259,14 +255,14 @@ int C_PropCombineBall::DrawModel( int flags )
 		// Always orient towards the camera!
 		SetAbsAngles( angles );
 
-		BaseClass::DrawModel( flags );
+		BaseClass::DrawModel(pWorld, flags );
 	}
 	else
 	{
 		float color[3];
 		color[0] = color[1] = color[2] = 1.0f;
 
-		float sinOffs = 1.0f * sin( gpGlobals->curtime * 25 );
+		float sinOffs = 1.0f * sin( gpGlobals->GetCurTime() * 25 );
 
 		float roll = SpawnTime();
 

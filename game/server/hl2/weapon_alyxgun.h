@@ -55,6 +55,11 @@ public:
 
 	DECLARE_ACTTABLE();
 
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponAlyxGun)
+	BEGIN_SEND_TABLE(CWeaponAlyxGun, DT_WeaponAlyxGun, DT_HLSelectFireMachineGun)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif // WEAPON_ALYXGUN_H

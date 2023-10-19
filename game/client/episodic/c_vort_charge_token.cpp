@@ -42,13 +42,19 @@ public:
 
 	bool  m_bIsBlack;    ///< wants to fade to black (networked)
 	float m_flBlackFade; ///< [0.00 .. 1.00] where 1.00 is all black. Locally interpolated.
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_NPC_Vortigaunt)
+	BEGIN_RECV_TABLE(C_NPC_Vortigaunt, DT_NPC_Vortigaunt, DT_AI_BaseNPC)
+		RecvPropTime(RECVINFO(m_flBlueEndFadeTime)),
+		RecvPropBool(RECVINFO(m_bIsBlue)),
+		RecvPropBool(RECVINFO(m_bIsBlack)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_NPC_Vortigaunt, DT_NPC_Vortigaunt, CNPC_Vortigaunt )
-	RecvPropTime( RECVINFO(m_flBlueEndFadeTime ) ),
-	RecvPropBool( RECVINFO(m_bIsBlue) ),
-	RecvPropBool( RECVINFO(m_bIsBlack) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_NPC_Vortigaunt, DT_NPC_Vortigaunt, CNPC_Vortigaunt )
+
 
 
 #define	VORTIGAUNT_BLUE_FADE_TIME			2.25f		// takes this long to fade from green to blue or back
@@ -76,7 +82,7 @@ void C_NPC_Vortigaunt::OnDataChanged( DataUpdateType_t updateType )
 void C_NPC_Vortigaunt::ClientThink( void )
 {
 	// Don't update if our frame hasn't moved forward (paused)
-	if ( gpGlobals->frametime <= 0.0f )
+	if ( gpGlobals->GetFrameTime() <= 0.0f )
 		return;
 
 	if ( m_bIsBlack )
@@ -89,7 +95,7 @@ void C_NPC_Vortigaunt::ClientThink( void )
 		}
 		else // interpolate there
 		{
-			float lerpQuant = gpGlobals->frametime / VORT_BLACK_FADE_TIME;
+			float lerpQuant = gpGlobals->GetFrameTime() / VORT_BLACK_FADE_TIME;
 			m_flBlackFade += lerpQuant;
 			if ( m_flBlackFade > 1.0f )
 			{
@@ -107,7 +113,7 @@ void C_NPC_Vortigaunt::ClientThink( void )
 		}
 		else // interpolate there
 		{
-			float lerpQuant = gpGlobals->frametime / VORT_BLACK_FADE_TIME;
+			float lerpQuant = gpGlobals->GetFrameTime() / VORT_BLACK_FADE_TIME;
 			m_flBlackFade -= lerpQuant;
 			if ( m_flBlackFade < 0.0f )
 			{
@@ -127,7 +133,7 @@ void C_NPC_Vortigaunt::ClientThink( void )
 void C_NPC_Vortigaunt::ReceiveMessage( int classID, bf_read &msg )
 {
 	// Is the message for a sub-class?
-	if ( classID != GetClientClass()->m_ClassID )
+	if ( classID != GetClientClass()->GetClassID() )
 	{
 		BaseClass::ReceiveMessage( classID, msg );
 		return;
@@ -212,6 +218,13 @@ private:
 	bool							m_bFadeOut;
 	CNewParticleEffect				*m_hEffect;
 	dlight_t						*m_pDLight;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_VortigauntChargeToken)
+	BEGIN_RECV_TABLE(C_VortigauntChargeToken, DT_VortigauntChargeToken, DT_BaseEntity)
+		RecvPropBool(RECVINFO(m_bFadeOut)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 void RecvProxy_FadeOutDuration( const CRecvProxyData *pData, void *pStruct, void *pOut )
@@ -219,13 +232,12 @@ void RecvProxy_FadeOutDuration( const CRecvProxyData *pData, void *pStruct, void
 	C_VortigauntChargeToken *pVortToken = (C_VortigauntChargeToken *) pStruct;
 	Assert( pOut == &pVortToken->m_flFadeOutTime );
 
-	pVortToken->m_flFadeOutStart = gpGlobals->curtime;
-	pVortToken->m_flFadeOutTime = ( pData->m_Value.m_Float - gpGlobals->curtime );
+	pVortToken->m_flFadeOutStart = gpGlobals->GetCurTime();
+	pVortToken->m_flFadeOutTime = ( pData->m_Value.m_Float - gpGlobals->GetCurTime() );
 }
 
-IMPLEMENT_CLIENTCLASS_DT( C_VortigauntChargeToken, DT_VortigauntChargeToken, CVortigauntChargeToken )
-	RecvPropBool( RECVINFO( m_bFadeOut ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_VortigauntChargeToken, DT_VortigauntChargeToken, CVortigauntChargeToken )
+
 
 void C_VortigauntChargeToken::UpdateOnRemove( void )
 {
@@ -237,7 +249,7 @@ void C_VortigauntChargeToken::UpdateOnRemove( void )
 
 	if ( m_pDLight != NULL )
 	{
-		m_pDLight->die = gpGlobals->curtime;
+		m_pDLight->die = gpGlobals->GetCurTime();
 	}
 }
 
@@ -326,6 +338,13 @@ private:
 	CNewParticleEffect				*m_hEffect;
 	bool							m_bFadeOut;
 	dlight_t						*m_pDLight;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_VortigauntEffectDispel)
+	BEGIN_RECV_TABLE(C_VortigauntEffectDispel, DT_VortigauntEffectDispel, DT_BaseEntity)
+		RecvPropBool(RECVINFO(m_bFadeOut)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 void RecvProxy_DispelFadeOutDuration( const CRecvProxyData *pData, void *pStruct, void *pOut )
@@ -333,13 +352,12 @@ void RecvProxy_DispelFadeOutDuration( const CRecvProxyData *pData, void *pStruct
 	C_VortigauntEffectDispel *pVortToken = (C_VortigauntEffectDispel *) pStruct;
 	Assert( pOut == &pVortToken->m_flFadeOutTime );
 
-	pVortToken->m_flFadeOutStart = gpGlobals->curtime;
-	pVortToken->m_flFadeOutTime = ( pData->m_Value.m_Float - gpGlobals->curtime );
+	pVortToken->m_flFadeOutStart = gpGlobals->GetCurTime();
+	pVortToken->m_flFadeOutTime = ( pData->m_Value.m_Float - gpGlobals->GetCurTime() );
 }
 
-IMPLEMENT_CLIENTCLASS_DT( C_VortigauntEffectDispel, DT_VortigauntEffectDispel, CVortigauntEffectDispel )
-	RecvPropBool( RECVINFO( m_bFadeOut ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_VortigauntEffectDispel, DT_VortigauntEffectDispel, CVortigauntEffectDispel )
+
 
 void C_VortigauntEffectDispel::UpdateOnRemove( void )
 {
@@ -351,7 +369,7 @@ void C_VortigauntEffectDispel::UpdateOnRemove( void )
 
 	if ( m_pDLight != NULL )
 	{
-		m_pDLight->die = gpGlobals->curtime;
+		m_pDLight->die = gpGlobals->GetCurTime();
 	}
 }
 
@@ -539,10 +557,10 @@ void CVortEmissiveProxy::OnBind( C_BaseEntity *pEnt )
 	if (pVort)
 	{
 		// do we need to crossfade?
-		if (gpGlobals->curtime < pVort->m_flBlueEndFadeTime)
+		if (gpGlobals->GetCurTime() < pVort->m_flBlueEndFadeTime)
 		{
 			// will be 0 when fully faded and 1 when not faded at all:
-			float fadeRatio = (pVort->m_flBlueEndFadeTime - gpGlobals->curtime) / VORTIGAUNT_BLUE_FADE_TIME;
+			float fadeRatio = (pVort->m_flBlueEndFadeTime - gpGlobals->GetCurTime()) / VORTIGAUNT_BLUE_FADE_TIME;
 			if (pVort->m_bIsBlue)
 			{
 				fadeRatio = 1.0f - fadeRatio;
@@ -569,7 +587,7 @@ void CVortEmissiveProxy::OnBind( C_BaseEntity *pEnt )
 
 	/*
 	// !!! Change me !!! I'm using a clamped sin wave for debugging
-	float flBlendValue = sinf( gpGlobals->curtime * 4.0f ) * 0.75f + 0.25f;
+	float flBlendValue = sinf( gpGlobals->GetCurTime() * 4.0f ) * 0.75f + 0.25f;
 
 	// Clamp 0-1
 	flBlendValue = ( flBlendValue < 0.0f ) ? 0.0f : ( flBlendValue > 1.0f ) ? 1.0f : flBlendValue;

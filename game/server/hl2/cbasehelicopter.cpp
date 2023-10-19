@@ -123,9 +123,8 @@ BEGIN_DATADESC( CBaseHelicopter )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CBaseHelicopter, DT_BaseHelicopter )
-	SendPropTime( SENDINFO( m_flStartupTime ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CBaseHelicopter, DT_BaseHelicopter )
+
 
 
 //-----------------------------------------------------------------------------
@@ -202,7 +201,7 @@ void CBaseHelicopter::Spawn( void )
 	if ( !(m_spawnflags & SF_AWAITINPUT) )
 	{
 		Startup();
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	}
 	else
 	{
@@ -295,7 +294,7 @@ void CBaseHelicopter::HelicopterThink( void )
 {
 	CheckPVSCondition();
 
-	SetNextThink( gpGlobals->curtime + HELICOPTER_THINK_INTERVAL );
+	SetNextThink( gpGlobals->GetCurTime() + HELICOPTER_THINK_INTERVAL );
 
 	// Don't keep this around for more than one frame.
 	ClearCondition( COND_ENEMY_DEAD );
@@ -318,7 +317,7 @@ void CBaseHelicopter::HelicopterThink( void )
 	{
 		SetAbsVelocity( vec3_origin );
 		SetLocalAngularVelocity( vec3_angle );
-		SetNextThink( gpGlobals->curtime + HELICOPTER_THINK_INTERVAL );
+		SetNextThink( gpGlobals->GetCurTime() + HELICOPTER_THINK_INTERVAL );
 		return;
 	}
 
@@ -341,11 +340,11 @@ void CBaseHelicopter::RotorWashThink( void )
 	if ( m_lifeState == LIFE_ALIVE || m_lifeState == LIFE_DYING )
 	{
 		DrawRotorWash( BASECHOPPER_WASH_ALTITUDE, GetAbsOrigin() );
-		SetContextThink( &CBaseHelicopter::RotorWashThink, gpGlobals->curtime + HELICOPTER_ROTORWASH_THINK_INTERVAL, s_pRotorWashThinkContext );
+		SetContextThink( &CBaseHelicopter::RotorWashThink, gpGlobals->GetCurTime() + HELICOPTER_ROTORWASH_THINK_INTERVAL, s_pRotorWashThinkContext );
 	}
 	else
 	{
-		SetContextThink( NULL, gpGlobals->curtime, s_pRotorWashThinkContext );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), s_pRotorWashThinkContext );
 	}
 }
 
@@ -366,11 +365,11 @@ void CBaseHelicopter::DrawRotorWash( float flAltitude, const Vector &vecRotorOri
 
 	DoRotorPhysicsPush( vecRotorOrigin, flAltitude );
 
-	if ( m_flRotorWashEntitySearchTime > gpGlobals->curtime )
+	if ( m_flRotorWashEntitySearchTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Only push every half second
-	m_flRotorWashEntitySearchTime = gpGlobals->curtime + 0.5f;
+	m_flRotorWashEntitySearchTime = gpGlobals->GetCurTime() + 0.5f;
 }
 
 
@@ -450,7 +449,7 @@ bool CBaseHelicopter::DoWashPush( washentity_t *pWash, const Vector &vecWashOrig
 	IPhysicsObject *pPhysObject;
 
 	
-	float flPushTime = (gpGlobals->curtime - pWash->flWashStartTime);
+	float flPushTime = (gpGlobals->GetCurTime() - pWash->flWashStartTime);
 	flPushTime = clamp( flPushTime, 0, BASECHOPPER_WASH_RAMP_TIME );
 	float flWashAmount = RemapVal( flPushTime, 0, BASECHOPPER_WASH_RAMP_TIME, BASECHOPPER_WASH_PUSH_MIN, BASECHOPPER_WASH_PUSH_MAX );
 
@@ -504,8 +503,8 @@ bool CBaseHelicopter::DoWashPush( washentity_t *pWash, const Vector &vecWashOrig
 
 		IPhysicsObject *pPhysObject = pEntity->VPhysicsGetObject();
 		Msg("Pushed %s (index %d) (mass %f) with force %f (min %.2f max %.2f) at time %.2f\n", 
-			pEntity->GetClassname(), pEntity->entindex(), pPhysObject->GetMass(), flWashAmount, 
-			BASECHOPPER_WASH_PUSH_MIN * flMass, BASECHOPPER_WASH_PUSH_MAX * flMass, gpGlobals->curtime );
+			pEntity->GetClassname(), pEntity->NetworkProp()->entindex(), pPhysObject->GetMass(), flWashAmount, 
+			BASECHOPPER_WASH_PUSH_MIN * flMass, BASECHOPPER_WASH_PUSH_MAX * flMass, gpGlobals->GetCurTime() );
 	}
 
 	// If we've pushed this thing for some time, remove it to give us a chance to find lighter things nearby
@@ -547,7 +546,7 @@ void CBaseHelicopter::DoRotorPhysicsPush( const Vector &vecRotorOrigin, float fl
 		}
 	}
 
-	if ( m_flRotorWashEntitySearchTime > gpGlobals->curtime )
+	if ( m_flRotorWashEntitySearchTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Any spare slots?
@@ -627,7 +626,7 @@ void CBaseHelicopter::DoRotorPhysicsPush( const Vector &vecRotorOrigin, float fl
 
 			washentity_t Wash;
 			Wash.hEntity = pLightestEntity;
-			Wash.flWashStartTime = gpGlobals->curtime;
+			Wash.flWashStartTime = gpGlobals->GetCurTime();
 			m_hEntitiesPushedByWash.AddToTail( Wash );
 
 			// Can we fit more after adding this one? No? Then we are done.
@@ -693,12 +692,12 @@ void CBaseHelicopter::UpdateEnemy()
 			GatherEnemyConditions( pEnemy );
 			if ( FVisible( pEnemy ) )
 			{
-				if (m_flLastSeen < gpGlobals->curtime - 2)
+				if (m_flLastSeen < gpGlobals->GetCurTime() - 2)
 				{
-					m_flPrevSeen = gpGlobals->curtime;
+					m_flPrevSeen = gpGlobals->GetCurTime();
 				}
 
-				m_flLastSeen = gpGlobals->curtime;
+				m_flLastSeen = gpGlobals->GetCurTime();
 				m_vecTargetPosition = pEnemy->WorldSpaceCenter();
 			}
 		}
@@ -736,7 +735,7 @@ void CBaseHelicopter::UpdateFacingDirection()
 		VectorNormalize( targetDir ); 
 		VectorNormalize( desiredDir ); 
 
-		if ( !IsCrashing() && m_flLastSeen + 5 > gpGlobals->curtime ) //&& DotProduct( targetDir, desiredDir) > 0.25)
+		if ( !IsCrashing() && m_flLastSeen + 5 > gpGlobals->GetCurTime() ) //&& DotProduct( targetDir, desiredDir) > 0.25)
 		{
 			// If we've seen the target recently, face the target.
 			//Msg( "Facing Target \n" );
@@ -764,10 +763,10 @@ void CBaseHelicopter::UpdateFacingDirection()
 //------------------------------------------------------------------------------
 void CBaseHelicopter::FireWeapons()
 {
-	// ALERT( at_console, "%.0f %.0f %.0f\n", gpGlobals->curtime, m_flLastSeen, m_flPrevSeen );
+	// ALERT( at_console, "%.0f %.0f %.0f\n", gpGlobals->GetCurTime(), m_flLastSeen, m_flPrevSeen );
 	if (m_fHelicopterFlags & BITS_HELICOPTER_GUN_ON)
 	{
-		//if ( (m_flLastSeen + 1 > gpGlobals->curtime) && (m_flPrevSeen + 2 < gpGlobals->curtime) )
+		//if ( (m_flLastSeen + 1 > gpGlobals->GetCurTime()) && (m_flPrevSeen + 2 < gpGlobals->GetCurTime()) )
 		{
 			if (FireGun( ))
 			{
@@ -876,10 +875,10 @@ void CBaseHelicopter::UpdatePlayerDopplerShift( )
 void CBaseHelicopter::ComputeActualTargetPosition( float flSpeed, float flTime, float flPerpDist, Vector *pDest, bool bApplyNoise )
 {
 	// This is used to make the helicopter drift around a bit.
-	if ( bApplyNoise && m_flRandomOffsetTime <= gpGlobals->curtime )
+	if ( bApplyNoise && m_flRandomOffsetTime <= gpGlobals->GetCurTime() )
 	{
 		m_vecRandomOffset.Random( -25.0f, 25.0f );
-		m_flRandomOffsetTime = gpGlobals->curtime + 1.0f;
+		m_flRandomOffsetTime = gpGlobals->GetCurTime() + 1.0f;
 	}
 
 	if ( IsLeading() && GetEnemy() && IsOnPathTrack() )
@@ -1113,7 +1112,7 @@ void CBaseHelicopter::InputKill( inputdata_t &inputdata )
 	StopRotorWash();
 
 	m_bSuppressSound = true;
-	SetContextThink( &CBaseHelicopter::DelayedKillThink, gpGlobals->curtime + 3.0f, s_pDelayedKillThinkContext );
+	SetContextThink( &CBaseHelicopter::DelayedKillThink, gpGlobals->GetCurTime() + 3.0f, s_pDelayedKillThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -1219,7 +1218,7 @@ void CBaseHelicopter::CrashTouch( CBaseEntity *pOther )
 	if ( pOther->GetSolid() == SOLID_BSP) 
 	{
 		SetTouch( NULL );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 }
 
@@ -1232,7 +1231,7 @@ void CBaseHelicopter::CrashTouch( CBaseEntity *pOther )
 void CBaseHelicopter::DyingThink( void )
 {
 	StudioFrameAdvance( );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	SetLocalAngularVelocity( GetLocalAngularVelocity() * 1.02 );
 }
@@ -1284,7 +1283,7 @@ void CBaseHelicopter::TraceAttack( const CTakeDamageInfo &info, const Vector &ve
 void CBaseHelicopter::NullThink( void )
 {
 	StudioFrameAdvance( );
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 }
 
 
@@ -1298,15 +1297,15 @@ void CBaseHelicopter::Startup( void )
 	}
 
 	// Fade in the blades
-	m_flStartupTime = gpGlobals->curtime;
+	m_flStartupTime = gpGlobals->GetCurTime();
 
 	m_flGoalSpeed = m_flInitialSpeed;
 	SetThink( &CBaseHelicopter::HelicopterThink );
 	SetTouch( &CBaseHelicopter::FlyTouch );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
-	m_flRotorWashEntitySearchTime = gpGlobals->curtime;
-	SetContextThink( &CBaseHelicopter::RotorWashThink, gpGlobals->curtime, s_pRotorWashThinkContext );
+	m_flRotorWashEntitySearchTime = gpGlobals->GetCurTime();
+	SetContextThink( &CBaseHelicopter::RotorWashThink, gpGlobals->GetCurTime(), s_pRotorWashThinkContext );
 }
 
 void CBaseHelicopter::StopLoopingSounds()
@@ -1334,18 +1333,18 @@ void CBaseHelicopter::Event_Killed( const CTakeDamageInfo &info )
 	SetThink( &CBaseHelicopter::CallDyingThink );
 	SetTouch( &CBaseHelicopter::CrashTouch );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	m_iHealth = 0;
 	m_takedamage = DAMAGE_NO;
 
 /*
 	if (m_spawnflags & SF_NOWRECKAGE)
 	{
-		m_flNextRocket = gpGlobals->curtime + 4.0;
+		m_flNextRocket = gpGlobals->GetCurTime() + 4.0;
 	}
 	else
 	{
-		m_flNextRocket = gpGlobals->curtime + 15.0;
+		m_flNextRocket = gpGlobals->GetCurTime() + 15.0;
 	}
 */	
 	StopRotorWash();
@@ -1519,7 +1518,7 @@ bool CBaseHelicopter::ChooseEnemy( void )
 		{
 			// New enemy! Clear the timers and set conditions.
 			SetEnemy( pNewEnemy );
-			m_flLastSeen = m_flPrevSeen = gpGlobals->curtime;
+			m_flLastSeen = m_flPrevSeen = gpGlobals->GetCurTime();
 		}
 		else
 		{
@@ -1562,7 +1561,7 @@ void CBaseHelicopter::GatherEnemyConditions( CBaseEntity *pEnemy )
 void CBaseHelicopter::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get( this->NetworkProp()->entindex() ) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );

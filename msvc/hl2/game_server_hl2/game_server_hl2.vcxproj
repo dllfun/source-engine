@@ -688,7 +688,10 @@
     <ClCompile Include="..\..\..\game\shared\weapon_proficiency.cpp" />
     <ClCompile Include="..\..\..\public\bone_setup.cpp" />
     <ClCompile Include="..\..\..\public\collisionutils.cpp" />
+    <ClCompile Include="..\..\..\public\dt_encode.cpp" />
+    <ClCompile Include="..\..\..\public\dt_instrumentation_server.cpp" />
     <ClCompile Include="..\..\..\public\dt_send.cpp" />
+    <ClCompile Include="..\..\..\public\dt_stack.cpp" />
     <ClCompile Include="..\..\..\public\dt_utlvector_common.cpp" />
     <ClCompile Include="..\..\..\public\dt_utlvector_send.cpp" />
     <ClCompile Include="..\..\..\public\editor_sendcommand.cpp" />

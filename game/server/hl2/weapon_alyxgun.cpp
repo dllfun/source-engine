@@ -14,8 +14,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponAlyxGun, DT_WeaponAlyxGun)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponAlyxGun, DT_WeaponAlyxGun)
+
 
 LINK_ENTITY_TO_CLASS( weapon_alyxgun, CWeaponAlyxGun );
 PRECACHE_WEAPON_REGISTER(weapon_alyxgun);
@@ -146,10 +146,10 @@ int CWeaponAlyxGun::WeaponRangeAttack1Condition( float flDot, float flDist )
 
 		if( m_flTooCloseTimer == TOOCLOSETIMER_OFF )
 		{
-			m_flTooCloseTimer = gpGlobals->curtime;
+			m_flTooCloseTimer = gpGlobals->GetCurTime();
 		}
 
-		flTime = gpGlobals->curtime - m_flTooCloseTimer;
+		flTime = gpGlobals->GetCurTime() - m_flTooCloseTimer;
 
 		if( flTime > ALYX_TOOCLOSETIMER )
 		{

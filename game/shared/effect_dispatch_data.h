@@ -25,7 +25,7 @@
 
 	#include "dt_send.h"
 	#include "server_class.h"
-
+	#include "coordsize.h"
 	EXTERN_SEND_TABLE( DT_EffectData );
 
 #endif
@@ -40,6 +40,8 @@
 
 #define MAX_EFFECT_DISPATCH_STRING_BITS	10
 #define MAX_EFFECT_DISPATCH_STRINGS		( 1 << MAX_EFFECT_DISPATCH_STRING_BITS )
+
+#define SUBINCH_PRECISION	3
 
 #ifdef CLIENT_DLL
 void RecvProxy_EntIndex(const CRecvProxyData* pData, void* pStruct, void* pOut);

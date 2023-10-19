@@ -341,7 +341,7 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 				// Are we supposed to pause first?
 				if ( m_flReleasePause )
 				{
-					m_flReleaseAt = gpGlobals->curtime + m_flReleasePause;
+					m_flReleaseAt = gpGlobals->GetCurTime() + m_flReleasePause;
 					m_OnPausingBeforeDrop.FireOutput( this, this );
 					return;
 				}
@@ -433,7 +433,7 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 			// Don't check to see if drop's finished until this time is up.
 			// This is necessary because the crane won't start dropping this
 			// frame, and our cranedriver will think it's finished immediately.
-			m_flDropWait = gpGlobals->curtime + 0.5;
+			m_flDropWait = gpGlobals->GetCurTime() + 0.5;
 		}
 		break;
 
@@ -478,7 +478,7 @@ void CNPC_CraneDriver::RunTask( const Task_t *pTask )
 	case TASK_CRANE_DROP_MAGNET:
 		{
 			// Wait for the magnet to get back up
-			if ( m_flDropWait < gpGlobals->curtime && !m_hCrane->IsDropping() )
+			if ( m_flDropWait < gpGlobals->GetCurTime() && !m_hCrane->IsDropping() )
 			{
 				TaskComplete();
 			}
@@ -488,7 +488,7 @@ void CNPC_CraneDriver::RunTask( const Task_t *pTask )
 	case TASK_CRANE_TURN_MAGNET_OFF:
 		{
 			// We're waiting for the pause length before dropping whatever's on our magnet
-			if ( gpGlobals->curtime > m_flReleaseAt )
+			if ( gpGlobals->GetCurTime() > m_flReleaseAt )
 			{
 				if ( m_bForcedDropoff )
 				{

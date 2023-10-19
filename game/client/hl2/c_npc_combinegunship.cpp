@@ -52,7 +52,7 @@ public:
 		maxs -= GetRenderOrigin();
 	}
 
-	virtual int	DrawModel( int flags );
+	virtual int	DrawModel(IVModel* pWorld, int flags );
 
 	C_BaseEntity			*m_pOwner;
 	Vector					m_targetPosition;
@@ -258,7 +258,7 @@ void Gunship_DrawSprite( const Vector &vecOrigin, float size, const color32 &col
 // Purpose: 
 // Input  : int - 
 //-----------------------------------------------------------------------------
-int	C_GunshipFX::DrawModel( int )
+int	C_GunshipFX::DrawModel(IVModel* pWorld, int )
 {
 	static color32 white = {255,255,255,255};
 	Vector params[GUNSHIPFX_PARAMETERS];
@@ -275,7 +275,7 @@ int	C_GunshipFX::DrawModel( int )
 	}
 
 	Vector test;
-	m_t += gpGlobals->frametime;
+	m_t += gpGlobals->GetFrameTime();
 	if ( m_tMax > 0 )
 	{
 		m_t = clamp( m_t, 0, m_tMax );
@@ -328,7 +328,7 @@ int	C_GunshipFX::DrawModel( int )
 		dl->color.b = 255*params[GUNSHIPFX_AFTERGLOW_COLOR].x;
 		dl->color.exponent = 5;
 		dl->radius = 128.0f;
-		dl->die = gpGlobals->curtime + 0.001;
+		dl->die = gpGlobals->GetCurTime() + 0.001;
 	}
 
 	if ( m_t >= 4.0 && !hasAny )
@@ -384,7 +384,7 @@ public:
 	//-----------------------------------------------------------------------------
 	void ReceiveMessage( int classID, bf_read &msg )
 	{
-		if ( classID != GetClientClass()->m_ClassID )
+		if ( classID != GetClientClass()->GetClassID() )
 		{
 			// message is for subclass
 			BaseClass::ReceiveMessage( classID, msg );
@@ -442,11 +442,17 @@ public:
 
 private:
 	C_CombineGunship( const C_CombineGunship & ) {}
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_CombineGunship)
+	BEGIN_RECV_TABLE(C_CombineGunship, DT_CombineGunship, DT_BaseHelicopter)
+		RecvPropVector(RECVINFO(m_vecHitPos)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_CombineGunship, DT_CombineGunship, CNPC_CombineGunship )
-	RecvPropVector(RECVINFO(m_vecHitPos)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_CombineGunship, DT_CombineGunship, CNPC_CombineGunship )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Handle gunship impacts

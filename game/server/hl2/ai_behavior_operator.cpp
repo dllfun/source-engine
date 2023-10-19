@@ -294,7 +294,7 @@ bool CAI_OperatorBehavior::CanSelectSchedule()
 		return false;
 
 	// Don't grab NPCs who have been in combat recently
-	if ( GetOuter()->GetLastEnemyTime() && (gpGlobals->curtime - GetOuter()->GetLastEnemyTime()) < 3.0 )
+	if ( GetOuter()->GetLastEnemyTime() && (gpGlobals->GetCurTime() - GetOuter()->GetLastEnemyTime()) < 3.0)
 		return false;
 
 	if( !CanSeePositionEntity() )

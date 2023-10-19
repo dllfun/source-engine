@@ -262,8 +262,8 @@ void CNPC_CScanner::Spawn(void)
 	// ------------------------------------
 	m_vInspectPos			= vec3_origin;
 	m_fInspectEndTime		= 0;
-	m_fCheckCitizenTime		= gpGlobals->curtime + SCANNER_CIT_INSPECT_DELAY;
-	m_fCheckHintTime		= gpGlobals->curtime + SCANNER_HINT_INSPECT_DELAY;
+	m_fCheckCitizenTime		= gpGlobals->GetCurTime() + SCANNER_CIT_INSPECT_DELAY;
+	m_fCheckHintTime		= gpGlobals->GetCurTime() + SCANNER_HINT_INSPECT_DELAY;
 	m_fNextPhotographTime	= 0;
 
 	m_vSpotlightTargetPos	= vec3_origin;
@@ -326,7 +326,7 @@ int CNPC_CScanner::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	// Turn off my spotlight when shot
 	SpotlightDestroy();
-	m_fNextSpotlightTime = gpGlobals->curtime + 2.0f;
+	m_fNextSpotlightTime = gpGlobals->GetCurTime() + 2.0f;
 
 	return (BaseClass::OnTakeDamage_Alive( info ));
 }
@@ -360,7 +360,7 @@ void CNPC_CScanner::Gib( void )
 	// Add a random chance of spawning a battery...
 	if ( !HasSpawnFlags(SF_NPC_NO_WEAPON_DROP) && random->RandomFloat( 0.0f, 1.0f) < 0.3f )
 	{
-		CItem *pBattery = (CItem*)CreateEntityByName("item_battery");
+		CItem *pBattery = (CItem*)engineServer->CreateEntityByName("item_battery");
 		if ( pBattery )
 		{
 			pBattery->SetAbsOrigin( GetAbsOrigin() );
@@ -515,7 +515,7 @@ void CNPC_CScanner::NPCThink(void)
 	{
 		SetActivity((Activity)ACT_SCANNER_RETRACT_PRONGS);
 		StudioFrameAdvance( );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 	else
 	{
@@ -623,7 +623,7 @@ bool CNPC_CScanner::IsValidInspectTarget(CBaseEntity *pEntity)
 	// If a citizen, make sure he can be inspected again
 	if (pEntity->Classify() == CLASS_CITIZEN_PASSIVE)
 	{
-		if (((CNPC_Citizen*)pEntity)->GetNextScannerInspectTime() > gpGlobals->curtime)
+		if (((CNPC_Citizen*)pEntity)->GetNextScannerInspectTime() > gpGlobals->GetCurTime())
 		{
 			return false;
 		}
@@ -700,7 +700,7 @@ CBaseEntity* CNPC_CScanner::BestInspectTarget(void)
 	if ( m_bNeverInspectPlayers == false )
 	{
 		// Players
-		for ( i = 1; i <= gpGlobals->maxClients; i++ )
+		for ( i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 		{
 			CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 
@@ -767,7 +767,7 @@ void CNPC_CScanner::SetInspectTargetToEnt(CBaseEntity *pEntity, float fInspectDu
 	ClearInspectTarget();
 	SetTarget(pEntity);
 	
-	m_fInspectEndTime = gpGlobals->curtime + fInspectDuration;
+	m_fInspectEndTime = gpGlobals->GetCurTime() + fInspectDuration;
 }
 
 
@@ -809,7 +809,7 @@ void CNPC_CScanner::SetInspectTargetToHint(CAI_Hint *pHint, float fInspectDurati
 		m_vInspectPos = tr.endpos;
 		pHint->Lock( this );
 
-		m_fInspectEndTime = gpGlobals->curtime + fInspectDuration;
+		m_fInspectEndTime = gpGlobals->GetCurTime() + fInspectDuration;
 	}
 }
 
@@ -825,7 +825,7 @@ void CNPC_CScanner::SetInspectTargetToPos(const Vector &vInspectPos, float fInsp
 	ClearInspectTarget();
 	m_vInspectPos		= vInspectPos;
 
-	m_fInspectEndTime	= gpGlobals->curtime + fInspectDuration;
+	m_fInspectEndTime	= gpGlobals->GetCurTime() + fInspectDuration;
 }
 
 
@@ -993,7 +993,7 @@ void CNPC_CScanner::InputEquipMine(inputdata_t &inputdata)
 
 	CBaseEntity *pEnt;
 
-	pEnt = CreateEntityByName( "combine_mine" );
+	pEnt = engineServer->CreateEntityByName( "combine_mine" );
 	bool bPlacedMine = false;
 
 	if( m_bIsClawScanner )
@@ -1125,16 +1125,16 @@ void CNPC_CScanner::GatherConditions( void )
 	// Refresh our timing if we're still moving to our inspection target
 	if ( MovingToInspectTarget() )
 	{
-		m_fInspectEndTime = gpGlobals->curtime + SCANNER_CIT_INSPECT_LENGTH;
+		m_fInspectEndTime = gpGlobals->GetCurTime() + SCANNER_CIT_INSPECT_LENGTH;
 	}
 
 	// Update our follow times
-	if ( HaveInspectTarget() && gpGlobals->curtime > m_fInspectEndTime && m_nFlyMode != SCANNER_FLY_FOLLOW )
+	if ( HaveInspectTarget() && gpGlobals->GetCurTime() > m_fInspectEndTime && m_nFlyMode != SCANNER_FLY_FOLLOW )
 	{
 		SetCondition ( COND_CSCANNER_INSPECT_DONE );
 
-		m_fCheckCitizenTime	= gpGlobals->curtime + SCANNER_CIT_INSPECT_DELAY;
-		m_fCheckHintTime	= gpGlobals->curtime + SCANNER_HINT_INSPECT_DELAY;
+		m_fCheckCitizenTime	= gpGlobals->GetCurTime() + SCANNER_CIT_INSPECT_DELAY;
+		m_fCheckHintTime	= gpGlobals->GetCurTime() + SCANNER_HINT_INSPECT_DELAY;
 		ClearInspectTarget();
 	}
 
@@ -1178,7 +1178,7 @@ void CNPC_CScanner::GatherConditions( void )
 	// ---------------------------------------------------------
 
 	// Check for citizens to inspect
-	if ( gpGlobals->curtime	> m_fCheckCitizenTime && HaveInspectTarget() == false )
+	if ( gpGlobals->GetCurTime()	> m_fCheckCitizenTime && HaveInspectTarget() == false )
 	{
 		CBaseEntity *pBestEntity = BestInspectTarget();
 		
@@ -1191,13 +1191,13 @@ void CNPC_CScanner::GatherConditions( void )
 	}
 
 	// Check for hints to inspect
-	if ( gpGlobals->curtime > m_fCheckHintTime && HaveInspectTarget() == false )
+	if ( gpGlobals->GetCurTime() > m_fCheckHintTime && HaveInspectTarget() == false )
 	{
 		SetHintNode( CAI_HintManager::FindHint( this, HINT_WORLD_WINDOW, 0, SCANNER_CIT_INSPECT_FLY_DIST ) );
 
 		if ( GetHintNode() )
 		{
-			m_fCheckHintTime = gpGlobals->curtime + SCANNER_HINT_INSPECT_DELAY;
+			m_fCheckHintTime = gpGlobals->GetCurTime() + SCANNER_HINT_INSPECT_DELAY;
 
 			m_nFlyMode = (random->RandomInt(0,2)==0) ? SCANNER_FLY_SPOT : SCANNER_FLY_PHOTO;
 
@@ -1249,7 +1249,7 @@ void CNPC_CScanner::GatherConditions( void )
 	if ( m_nFlyMode == SCANNER_FLY_PHOTO )
 	{
 		// Make sure I have something to photograph and I'm ready to photograph and I'm not moving to fast
-		if ( gpGlobals->curtime > m_fNextPhotographTime && HaveInspectTarget() && GetCurrentVelocity().LengthSqr() < (64*64) )
+		if ( gpGlobals->GetCurTime() > m_fNextPhotographTime && HaveInspectTarget() && GetCurrentVelocity().LengthSqr() < (64*64) )
 		{
 			// Check that I'm in the right distance range
 			float  fInspectDist = (InspectTargetPosition() - GetAbsOrigin()).Length2D();
@@ -1325,7 +1325,7 @@ void CNPC_CScanner::RunTask( const Task_t *pTask )
 					m_pEyeFlash->SetBrightness( 0 );
 
 					// I'm done with this target
-					if ( gpGlobals->curtime > m_fInspectEndTime )
+					if ( gpGlobals->GetCurTime() > m_fInspectEndTime )
 					{
 						ClearInspectTarget();
 						TaskComplete();
@@ -1446,7 +1446,7 @@ int CNPC_CScanner::SelectSchedule(void)
 			return SCHED_SCANNER_CHASE_ENEMY;
 		
 		// Attack if it's time
-		if ( gpGlobals->curtime < m_flNextAttack )
+		if ( gpGlobals->GetCurTime() < m_flNextAttack )
 			return SCHED_CSCANNER_SPOTLIGHT_HOVER;
 
 		// Melee attack if possible
@@ -1561,7 +1561,7 @@ void CNPC_CScanner::SpotlightCreate(void)
 		return;
 
 	// Can we create a spotlight yet?
-	if ( gpGlobals->curtime < m_fNextSpotlightTime )
+	if ( gpGlobals->GetCurTime() < m_fNextSpotlightTime )
 		return;
 
 	// If I have an enemy, start spotlight on my enemy
@@ -1590,7 +1590,7 @@ void CNPC_CScanner::SpotlightCreate(void)
 	trace_t tr;
 	AI_TraceLine ( GetAbsOrigin(), GetAbsOrigin() + m_vSpotlightDir * 2024, MASK_OPAQUE, this, COLLISION_GROUP_NONE, &tr );
 
-	m_hSpotlightTarget = (CSpotlightEnd*)CreateEntityByName( "spotlight_end" );
+	m_hSpotlightTarget = (CSpotlightEnd*)engineServer->CreateEntityByName( "spotlight_end" );
 	m_hSpotlightTarget->Spawn();
 	m_hSpotlightTarget->SetLocalOrigin( tr.endpos );
 	m_hSpotlightTarget->SetOwnerEntity( this );
@@ -1672,9 +1672,9 @@ Vector CNPC_CScanner::SpotlightTargetPos(void)
 
 		float noiseScale = 2.5;
 		const Vector &noiseMod = GetNoiseMod();
-		m_vSpotlightTargetPos.x += noiseScale*sin(noiseMod.x * gpGlobals->curtime + noiseMod.x);
-		m_vSpotlightTargetPos.y += noiseScale*cos(noiseMod.y* gpGlobals->curtime + noiseMod.y);
-		m_vSpotlightTargetPos.z -= fabs(noiseScale*cos(noiseMod.z* gpGlobals->curtime + noiseMod.z) );
+		m_vSpotlightTargetPos.x += noiseScale*sin(noiseMod.x * gpGlobals->GetCurTime() + noiseMod.x);
+		m_vSpotlightTargetPos.y += noiseScale*cos(noiseMod.y* gpGlobals->GetCurTime() + noiseMod.y);
+		m_vSpotlightTargetPos.z -= fabs(noiseScale*cos(noiseMod.z* gpGlobals->GetCurTime() + noiseMod.z) );
 		m_vSpotlightTargetPos   = GetLocalOrigin()+m_vSpotlightTargetPos * 2024;
 	}
 
@@ -1793,7 +1793,7 @@ void CNPC_CScanner::SpotlightUpdate(void)
 	if ( dotpr < 0.0 )
 	{
 		// Leave spotlight off for a while
-		m_fNextSpotlightTime = gpGlobals->curtime + 3.0f;
+		m_fNextSpotlightTime = gpGlobals->GetCurTime() + 3.0f;
 
 		SpotlightDestroy();
 		return;
@@ -1932,7 +1932,7 @@ void CNPC_CScanner::AttackFlash(void)
 	{
 		Vector pos = GetEnemyLKP();
 		CBroadcastRecipientFilter filter;
-		te->DynamicLight( filter, 0.0, &pos, 200, 200, 255, 0, 300, 0.2, 50 );
+		g_pTESystem->DynamicLight( filter, 0.0, &pos, 200, 200, 255, 0, 300, 0.2, 50 );
 
 		if (GetEnemy()->IsPlayer())
 		{
@@ -2021,8 +2021,8 @@ void CNPC_CScanner::AttackFlashBlind(void)
 		fAttackDelay *= 0.5;
 	}
 
-	m_flNextAttack	= gpGlobals->curtime + fAttackDelay;
-	m_fNextSpotlightTime = gpGlobals->curtime + 1.0f;
+	m_flNextAttack	= gpGlobals->GetCurTime() + fAttackDelay;
+	m_fNextSpotlightTime = gpGlobals->GetCurTime() + 1.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -2084,7 +2084,7 @@ void CNPC_CScanner::StartTask( const Task_t *pTask )
 			CNPC_Citizen *pCitizen = dynamic_cast<CNPC_Citizen *>( GetTarget() );
 			if ( pCitizen )
 			{
-				pCitizen->SetNextScannerInspectTime( gpGlobals->curtime + 5.0 );
+				pCitizen->SetNextScannerInspectTime( gpGlobals->GetCurTime() + 5.0 );
 			}
 
 			TaskFail("No route to inspection target!\n");
@@ -2109,7 +2109,7 @@ void CNPC_CScanner::StartTask( const Task_t *pTask )
 				pNPC->DispatchInteraction(g_interactionScannerInspectBegin,NULL,this);
 				
 				// Now we need some time to inspect
-				m_fInspectEndTime = gpGlobals->curtime + SCANNER_CIT_INSPECT_LENGTH;
+				m_fInspectEndTime = gpGlobals->GetCurTime() + SCANNER_CIT_INSPECT_LENGTH;
 				TaskComplete();
 			}
 		}
@@ -2157,7 +2157,7 @@ void CNPC_CScanner::StartTask( const Task_t *pTask )
 
 				// Clear target entity and don't inspect again for a while
 				SetTarget( NULL );
-				m_fCheckCitizenTime = gpGlobals->curtime + SCANNER_CIT_INSPECT_DELAY;
+				m_fCheckCitizenTime = gpGlobals->GetCurTime() + SCANNER_CIT_INSPECT_DELAY;
 				TaskComplete();
 			}
 		}
@@ -2184,7 +2184,7 @@ void CNPC_CScanner::StartTask( const Task_t *pTask )
 		m_bPhotoTaken = false;
 
 		// Leave spotlight off for a while
-		m_fNextSpotlightTime = gpGlobals->curtime + 2.0;
+		m_fNextSpotlightTime = gpGlobals->GetCurTime() + 2.0;
 
 		TaskComplete();
 		break;
@@ -2289,7 +2289,7 @@ void CNPC_CScanner::AdjustScannerVelocity( void )
 {
 	if ( m_bIsClawScanner )
 	{
-		m_vCurrentVelocity *= ( 1 + sin( ( gpGlobals->curtime + m_flFlyNoiseBase ) * 2.5f ) * .1 );
+		m_vCurrentVelocity *= ( 1 + sin( ( gpGlobals->GetCurTime() + m_flFlyNoiseBase ) * 2.5f ) * .1 );
 	}
 }
 
@@ -2433,7 +2433,7 @@ bool CNPC_CScanner::OverrideMove( float flInterval )
 void CNPC_CScanner::MoveToTarget( float flInterval, const Vector &vecMoveTarget )
 {
 	// Don't move if stalling
-	if ( m_flEngineStallTime > gpGlobals->curtime )
+	if ( m_flEngineStallTime > gpGlobals->GetCurTime() )
 		return;
 	
 	// Look at our inspection target if we have one
@@ -2554,7 +2554,7 @@ void CNPC_CScanner::MoveToSpotlight( float flInterval )
 	//  unless I'm inspecting
 	// ------------------------------------------------
 	if (m_pSquad &&
-		gpGlobals->curtime > m_fInspectEndTime)
+		gpGlobals->GetCurTime() > m_fInspectEndTime)
 	{
 		CBaseEntity*	pNearest	= m_pSquad->NearestSquadMember(this);
 		if (pNearest)
@@ -2572,7 +2572,7 @@ void CNPC_CScanner::MoveToSpotlight( float flInterval )
 	// ---------------------------------------------------------
 	//  Add evasion if I have taken damage recently
 	// ---------------------------------------------------------
-	if ((m_flLastDamageTime + SCANNER_EVADE_TIME) > gpGlobals->curtime)
+	if ((m_flLastDamageTime + SCANNER_EVADE_TIME) > gpGlobals->GetCurTime())
 	{
 		vFlyDirection = vFlyDirection + VelocityToEvade(GetEnemyCombatCharacterPointer());
 	}
@@ -2635,7 +2635,7 @@ void CNPC_CScanner::MoveToPhotograph(float flInterval)
 	//  unless I'm inspecting
 	// ------------------------------------------------
 	if (m_pSquad &&
-		gpGlobals->curtime > m_fInspectEndTime)
+		gpGlobals->GetCurTime() > m_fInspectEndTime)
 	{
 		CBaseEntity*	pNearest	= m_pSquad->NearestSquadMember(this);
 		if (pNearest)
@@ -2675,7 +2675,7 @@ bool CNPC_CScanner::HandleInteraction(int interactionType, void *data, CBaseComb
 
 			if (fTargetDist < SCANNER_SQUAD_HELP_DIST)
 			{
-				float fInspectTime = (((CNPC_CScanner*)pSourceEnt)->m_fInspectEndTime - gpGlobals->curtime);
+				float fInspectTime = (((CNPC_CScanner*)pSourceEnt)->m_fInspectEndTime - gpGlobals->GetCurTime());
 				SetInspectTargetToEnt(pTarget,fInspectTime);
 
 				if (random->RandomInt(0,2)==0)
@@ -2705,7 +2705,7 @@ bool CNPC_CScanner::HandleInteraction(int interactionType, void *data, CBaseComb
 
 			if (fTargetDist < SCANNER_SQUAD_HELP_DIST)
 			{
-				float fInspectTime = (((CNPC_CScanner*)pSourceEnt)->m_fInspectEndTime - gpGlobals->curtime);
+				float fInspectTime = (((CNPC_CScanner*)pSourceEnt)->m_fInspectEndTime - gpGlobals->GetCurTime());
 				SetInspectTargetToPos(vInspectPos,fInspectTime);
 
 				if (random->RandomInt(0,2)==0)

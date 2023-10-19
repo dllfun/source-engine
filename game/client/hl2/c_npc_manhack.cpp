@@ -41,6 +41,16 @@ private:
 	int				m_nEnginePitch2;
 	float			m_flEnginePitch1Time;
 	float			m_flEnginePitch2Time;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_NPC_Manhack)
+	BEGIN_RECV_TABLE(C_NPC_Manhack, DT_NPC_Manhack, DT_AI_BaseNPC)
+		RecvPropIntWithMinusOneFlag(RECVINFO(m_nEnginePitch1)),
+		RecvPropFloat(RECVINFO(m_flEnginePitch1Time)),
+		RecvPropIntWithMinusOneFlag(RECVINFO(m_nEnginePitch2)),
+		RecvPropFloat(RECVINFO(m_flEnginePitch2Time)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -64,12 +74,8 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT(C_NPC_Manhack, DT_NPC_Manhack, CNPC_Manhack)
-	RecvPropIntWithMinusOneFlag(RECVINFO(m_nEnginePitch1)),
-	RecvPropFloat(RECVINFO(m_flEnginePitch1Time)),
-	RecvPropIntWithMinusOneFlag(RECVINFO(m_nEnginePitch2)),
-	RecvPropFloat(RECVINFO(m_flEnginePitch2Time)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_NPC_Manhack, DT_NPC_Manhack, CNPC_Manhack)
+
 
 
 
@@ -89,9 +95,9 @@ void C_NPC_Manhack::OnDataChanged( DataUpdateType_t type )
 		SoundInit();
 		if ( m_pEngineSound1 && m_pEngineSound2 )
 		{
-			float dt = ( m_flEnginePitch1Time >= gpGlobals->curtime ) ? m_flEnginePitch1Time - gpGlobals->curtime : 0.0f;
+			float dt = ( m_flEnginePitch1Time >= gpGlobals->GetCurTime() ) ? m_flEnginePitch1Time - gpGlobals->GetCurTime() : 0.0f;
 			CSoundEnvelopeController::GetController().SoundChangePitch( m_pEngineSound1, m_nEnginePitch1, dt );
-			dt = ( m_flEnginePitch2Time >= gpGlobals->curtime ) ? m_flEnginePitch2Time - gpGlobals->curtime : 0.0f;
+			dt = ( m_flEnginePitch2Time >= gpGlobals->GetCurTime() ) ? m_flEnginePitch2Time - gpGlobals->GetCurTime() : 0.0f;
 			CSoundEnvelopeController::GetController().SoundChangePitch( m_pEngineSound2, m_nEnginePitch2, dt );
 		}
 	}

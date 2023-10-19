@@ -324,7 +324,7 @@ void CNPC_CeilingTurret::Spawn( void )
 	}
 
 	//Stagger our starting times
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.1f, 0.3f ) );
 
 	// Don't allow us to skip animation setup because our attachments are critical to us!
 	SetBoneCacheFlags( BCF_NO_ANIMATION_SKIP );
@@ -365,7 +365,7 @@ int CNPC_CeilingTurret::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 		m_OnDamaged.FireOutput( info.GetInflictor(), this );
 
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 		return 0;
 	}
@@ -383,7 +383,7 @@ void CNPC_CeilingTurret::Retire( void )
 
 	//Level out the turret
 	m_vecGoalAngles = GetAbsAngles();
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	//Set ourselves to close
 	if ( GetActivity() != ACT_CEILING_TURRET_CLOSE )
@@ -416,7 +416,7 @@ void CNPC_CeilingTurret::Retire( void )
 		if ( m_bAutoStart )
 		{
 			SetThink( &CNPC_CeilingTurret::AutoSearchThink );
-			SetNextThink( gpGlobals->curtime + 0.05f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 		}
 		else
 		{
@@ -437,7 +437,7 @@ void CNPC_CeilingTurret::Deploy( void )
 
 	m_vecGoalAngles = GetAbsAngles();
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	//Show we've seen a target
 	SetEyeState( TURRET_EYE_SEE_TARGET );
@@ -460,7 +460,7 @@ void CNPC_CeilingTurret::Deploy( void )
 
 		SetActivity( (Activity) ACT_CEILING_TURRET_OPEN_IDLE );
 
-		m_flShotTime  = gpGlobals->curtime + 1.0f;
+		m_flShotTime  = gpGlobals->GetCurTime() + 1.0f;
 
 		m_flPlaybackRate = 0;
 		SetThink( &CNPC_CeilingTurret::SearchThink );
@@ -481,7 +481,7 @@ void CNPC_CeilingTurret::SetLastSightTime()
 	}
 	else
 	{
-		m_flLastSight = gpGlobals->curtime + CEILING_TURRET_MAX_WAIT;	
+		m_flLastSight = gpGlobals->GetCurTime() + CEILING_TURRET_MAX_WAIT;	
 	}
 }
 
@@ -591,7 +591,7 @@ void CNPC_CeilingTurret::ActiveThink( void )
 		return;
 
 	//Update our think time
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	//If we've become inactive, go back to searching
 	if ( ( m_bActive == false ) || ( GetEnemy() == NULL ) )
@@ -641,9 +641,9 @@ void CNPC_CeilingTurret::ActiveThink( void )
 	{
 		if ( m_flLastSight )
 		{
-			m_flLastSight = gpGlobals->curtime + 0.5f;
+			m_flLastSight = gpGlobals->GetCurTime() + 0.5f;
 		}
-		else if ( gpGlobals->curtime > m_flLastSight )
+		else if ( gpGlobals->GetCurTime() > m_flLastSight )
 		{
 			// Should we look for a new target?
 			ClearEnemyMemory();
@@ -666,7 +666,7 @@ void CNPC_CeilingTurret::ActiveThink( void )
 	GetAttachment( "eyes", vecMuzzle, vecMuzzleAng );
 	AngleVectors( vecMuzzleAng, &vecMuzzleDir );
 	
-	if ( m_flShotTime < gpGlobals->curtime )
+	if ( m_flShotTime < gpGlobals->GetCurTime() )
 	{
 		//Fire the gun
 		if ( DotProduct( vecDirToEnemy, vecMuzzleDir ) >= 0.9848 ) // 10 degree slop
@@ -709,7 +709,7 @@ void CNPC_CeilingTurret::SearchThink( void )
 	if ( PreThink( TURRET_SEARCHING ) )
 		return;
 
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
 	SetActivity( (Activity) ACT_CEILING_TURRET_OPEN_IDLE );
 
@@ -736,11 +736,11 @@ void CNPC_CeilingTurret::SearchThink( void )
 		//Give players a grace period
 		if ( GetEnemy()->IsPlayer() )
 		{
-			m_flShotTime  = gpGlobals->curtime + 0.5f;
+			m_flShotTime  = gpGlobals->GetCurTime() + 0.5f;
 		}
 		else
 		{
-			m_flShotTime  = gpGlobals->curtime + 0.1f;
+			m_flShotTime  = gpGlobals->GetCurTime() + 0.1f;
 		}
 
 		m_flLastSight = 0;
@@ -753,7 +753,7 @@ void CNPC_CeilingTurret::SearchThink( void )
 	}
 
 	//Are we out of time and need to retract?
- 	if ( gpGlobals->curtime > m_flLastSight )
+ 	if ( gpGlobals->GetCurTime() > m_flLastSight )
 	{
 		//Before we retrace, make sure that we are spun down.
 		m_flLastSight = 0;
@@ -763,7 +763,7 @@ void CNPC_CeilingTurret::SearchThink( void )
 	
 	//Display that we're scanning
 	m_vecGoalAngles.x = 15.0f;
-	m_vecGoalAngles.y = GetAbsAngles().y + ( sin( gpGlobals->curtime * 2.0f ) * 45.0f );
+	m_vecGoalAngles.y = GetAbsAngles().y + ( sin( gpGlobals->GetCurTime() * 2.0f ) * 45.0f );
 
 	//Turn and ping
 	UpdateFacing();
@@ -780,7 +780,7 @@ void CNPC_CeilingTurret::AutoSearchThink( void )
 		return;
 
 	//Spread out our thinking
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.2f, 0.4f ) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.2f, 0.4f ) );
 
 	//If the enemy is dead, find a new one
 	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->IsAlive() == false ) )
@@ -815,11 +815,11 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 
   		if ( RandomFloat( 0, 1 ) > 0.7 )
 		{
-			m_flShotTime = gpGlobals->curtime + random->RandomFloat( 0.5, 1.5 );
+			m_flShotTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5, 1.5 );
 		}
 		else
 		{
-			m_flShotTime = gpGlobals->curtime;
+			m_flShotTime = gpGlobals->GetCurTime();
 		}
 		return;
 	}
@@ -942,7 +942,7 @@ void CNPC_CeilingTurret::SetEyeState( eyeState_t state )
 void CNPC_CeilingTurret::Ping( void )
 {
 	//See if it's time to ping again
-	if ( m_flPingTime > gpGlobals->curtime )
+	if ( m_flPingTime > gpGlobals->GetCurTime() )
 		return;
 
 	//Ping!
@@ -950,7 +950,7 @@ void CNPC_CeilingTurret::Ping( void )
 
 	SetEyeState( TURRET_EYE_SEEKING_TARGET );
 
-	m_flPingTime = gpGlobals->curtime + CEILING_TURRET_PING_TIME;
+	m_flPingTime = gpGlobals->GetCurTime() + CEILING_TURRET_PING_TIME;
 }
 
 //-----------------------------------------------------------------------------
@@ -983,7 +983,7 @@ void CNPC_CeilingTurret::Enable( void )
 	}
 
 	SetThink( &CNPC_CeilingTurret::Deploy );
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 //-----------------------------------------------------------------------------
@@ -996,7 +996,7 @@ void CNPC_CeilingTurret::Disable( void )
 
 	SetEnemy( NULL );
 	SetThink( &CNPC_CeilingTurret::Retire );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -1049,7 +1049,7 @@ void CNPC_CeilingTurret::DeathThink( void )
 
 	//Level out our angles
 	m_vecGoalAngles = GetAbsAngles();
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	if ( m_lifeState != LIFE_DEAD )
 	{
@@ -1066,7 +1066,7 @@ void CNPC_CeilingTurret::DeathThink( void )
 	
 	CBroadcastRecipientFilter filter;
 	
-	te->Smoke( filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10 );
+	g_pTESystem->Smoke( filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10 );
 	
 	g_pEffects->Sparks( pos );
 

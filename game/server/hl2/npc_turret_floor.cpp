@@ -342,7 +342,7 @@ void CNPC_FloorTurret::Spawn( void )
 	}
 
 	//Stagger our starting times
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.1f, 0.3f ) );
 
 	SetUse( &CNPC_FloorTurret::ToggleUse );
 
@@ -400,7 +400,7 @@ void CNPC_FloorTurret::Retire( void )
 
 	//Level out the turret
 	m_vecGoalAngles = GetAbsAngles();
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
 	//Set ourselves to close
 	if ( GetActivity() != ACT_FLOOR_TURRET_CLOSE )
@@ -431,7 +431,7 @@ void CNPC_FloorTurret::Retire( void )
 		if ( m_bAutoStart )
 		{
 			SetThink( &CNPC_FloorTurret::AutoSearchThink );
-			SetNextThink( gpGlobals->curtime + 0.05f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 		}
 		else
 		{
@@ -452,7 +452,7 @@ void CNPC_FloorTurret::Deploy( void )
 
 	m_vecGoalAngles = GetAbsAngles();
 
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
 	//Show we've seen a target
 	SetEyeState( TURRET_EYE_SEE_TARGET );
@@ -473,7 +473,7 @@ void CNPC_FloorTurret::Deploy( void )
 	{
 		SetActivity( (Activity) ACT_FLOOR_TURRET_OPEN_IDLE );
 
-		m_flShotTime  = gpGlobals->curtime + 1.0f;
+		m_flShotTime  = gpGlobals->GetCurTime() + 1.0f;
 
 		m_flPlaybackRate = 0;
 		SetThink( &CNPC_FloorTurret::SearchThink );
@@ -481,7 +481,7 @@ void CNPC_FloorTurret::Deploy( void )
 		EmitSound( "NPC_FloorTurret.Move" );
 	}
 
-	m_flLastSight = gpGlobals->curtime + FLOOR_TURRET_MAX_WAIT;	
+	m_flLastSight = gpGlobals->GetCurTime() + FLOOR_TURRET_MAX_WAIT;	
 }
 
 //-----------------------------------------------------------------------------
@@ -490,7 +490,7 @@ void CNPC_FloorTurret::Deploy( void )
 void CNPC_FloorTurret::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	// Drop our mass a lot so that we can be moved easily with +USE
 	if ( reason != PUNTED_BY_CANNON )
@@ -533,7 +533,7 @@ void CNPC_FloorTurret::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup
 void CNPC_FloorTurret::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 	
 	m_bCarriedByPlayer = false;
 	m_bUseCarryAngles = false;
@@ -542,7 +542,7 @@ void CNPC_FloorTurret::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t R
 	// If this is a friendly turret, remember that it was just dropped
 	if ( IRelationType( pPhysGunUser ) != D_HT )
 	{
-		m_flPlayerDropTime = gpGlobals->curtime + 2.0;
+		m_flPlayerDropTime = gpGlobals->GetCurTime() + 2.0;
 	}
 
 	// Restore our mass to the original value
@@ -598,7 +598,7 @@ bool CNPC_FloorTurret::HandleInteraction(int interactionType, void *data, CBaseC
 		if ( !m_hLastNPCToKickMe )
 		{
 			m_hLastNPCToKickMe = sourceEnt;
-			m_flKnockOverFailedTime = gpGlobals->curtime + 3.0;
+			m_flKnockOverFailedTime = gpGlobals->GetCurTime() + 3.0;
 		}
 
 		// Get knocked away
@@ -631,7 +631,7 @@ float CNPC_FloorTurret::MaxYawSpeed( void )
 //-----------------------------------------------------------------------------
 bool CNPC_FloorTurret::WasJustDroppedByPlayer( void )
 {
-	if ( m_flPlayerDropTime > gpGlobals->curtime )
+	if ( m_flPlayerDropTime > gpGlobals->GetCurTime() )
 		return true;
 
 	return false;
@@ -703,11 +703,11 @@ void CNPC_FloorTurret::DryFire( void )
 
  	if ( RandomFloat( 0, 1 ) > 0.5 )
 	{
-		m_flShotTime = gpGlobals->curtime + random->RandomFloat( 1, 2.5 );
+		m_flShotTime = gpGlobals->GetCurTime() + random->RandomFloat( 1, 2.5 );
 	}
 	else
 	{
-		m_flShotTime = gpGlobals->curtime;
+		m_flShotTime = gpGlobals->GetCurTime();
 	}
 }
 
@@ -721,7 +721,7 @@ void CNPC_FloorTurret::SuppressThink( void )
 		return;
 
 	//Update our think time
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// Look for a new enemy
 	HackFindEnemy();
@@ -734,7 +734,7 @@ void CNPC_FloorTurret::SuppressThink( void )
 	}
 
 	//See if we're done suppressing
-	if ( gpGlobals->curtime > m_flLastSight )
+	if ( gpGlobals->GetCurTime() > m_flLastSight )
 	{
 		// Should we look for a new target?
 		ClearEnemyMemory();
@@ -747,11 +747,11 @@ void CNPC_FloorTurret::SuppressThink( void )
 		if ( m_spawnflags & SF_FLOOR_TURRET_FASTRETIRE )
 		{
 			// Retire quickly in this case. (The case where we saw the player, but he hid again).
-			m_flLastSight = gpGlobals->curtime + FLOOR_TURRET_SHORT_WAIT;
+			m_flLastSight = gpGlobals->GetCurTime() + FLOOR_TURRET_SHORT_WAIT;
 		}
 		else
 		{
-			m_flLastSight = gpGlobals->curtime + FLOOR_TURRET_MAX_WAIT;
+			m_flLastSight = gpGlobals->GetCurTime() + FLOOR_TURRET_MAX_WAIT;
 		}
 
 		return;
@@ -779,7 +779,7 @@ void CNPC_FloorTurret::SuppressThink( void )
 		NDebugOverlay::Line( vecMid, vecMidEnemy, 0, 255, 0, false, 0.05f );
 	}
 
-	if ( m_flShotTime < gpGlobals->curtime && m_vecEnemyLKP != vec3_invalid )
+	if ( m_flShotTime < gpGlobals->GetCurTime() && m_vecEnemyLKP != vec3_invalid )
 	{
 		Vector vecMuzzle, vecMuzzleDir;
 		UpdateMuzzleMatrix();
@@ -830,13 +830,13 @@ void CNPC_FloorTurret::ActiveThink( void )
 	HackFindEnemy();
 	
 	//Update our think time
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	//If we've become inactive, go back to searching
 	if ( ( m_bActive == false ) || ( GetEnemy() == NULL ) )
 	{
 		SetEnemy( NULL );
-		m_flLastSight = gpGlobals->curtime + FLOOR_TURRET_MAX_WAIT;
+		m_flLastSight = gpGlobals->GetCurTime() + FLOOR_TURRET_MAX_WAIT;
 		SetThink( &CNPC_FloorTurret::SearchThink );
 		m_vecGoalAngles = GetAbsAngles();
 		return;
@@ -896,11 +896,11 @@ void CNPC_FloorTurret::ActiveThink( void )
 		if ( m_spawnflags & SF_FLOOR_TURRET_FASTRETIRE )
 		{
 			// Retire quickly in this case. (The case where we saw the player, but he hid again).
-			m_flLastSight = gpGlobals->curtime + FLOOR_TURRET_SHORT_WAIT;
+			m_flLastSight = gpGlobals->GetCurTime() + FLOOR_TURRET_SHORT_WAIT;
 		}
 		else
 		{
-			m_flLastSight = gpGlobals->curtime + FLOOR_TURRET_MAX_WAIT;
+			m_flLastSight = gpGlobals->GetCurTime() + FLOOR_TURRET_MAX_WAIT;
 		}
 
 		SetThink( &CNPC_FloorTurret::SearchThink );
@@ -914,7 +914,7 @@ void CNPC_FloorTurret::ActiveThink( void )
 	//Current enemy is not visible
 	if ( ( bEnemyVisible == false ) || ( flDistToEnemy > FLOOR_TURRET_RANGE ))
 	{
-		m_flLastSight = gpGlobals->curtime + 2.0f;
+		m_flLastSight = gpGlobals->GetCurTime() + 2.0f;
 
 		ClearEnemyMemory();
 		SetEnemy( NULL );
@@ -952,7 +952,7 @@ void CNPC_FloorTurret::ActiveThink( void )
 		}
 	}
 
-	if ( m_flShotTime < gpGlobals->curtime )
+	if ( m_flShotTime < gpGlobals->GetCurTime() )
 	{
 		Vector vecMuzzle, vecMuzzleDir;
 
@@ -1031,7 +1031,7 @@ void CNPC_FloorTurret::SearchThink( void )
 	if ( PreThink( TURRET_SEARCHING ) )
 		return;
 
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
 	SetActivity( (Activity) ACT_FLOOR_TURRET_OPEN_IDLE );
 
@@ -1053,11 +1053,11 @@ void CNPC_FloorTurret::SearchThink( void )
 		//Give players a grace period
 		if ( GetEnemy()->IsPlayer() )
 		{
-			m_flShotTime  = gpGlobals->curtime + 0.5f;
+			m_flShotTime  = gpGlobals->GetCurTime() + 0.5f;
 		}
 		else
 		{
-			m_flShotTime  = gpGlobals->curtime + 0.1f;
+			m_flShotTime  = gpGlobals->GetCurTime() + 0.1f;
 		}
 
 		m_flLastSight = 0;
@@ -1066,16 +1066,16 @@ void CNPC_FloorTurret::SearchThink( void )
 
 		SpinUp();
  
-		if ( gpGlobals->curtime > m_flNextActivateSoundTime )
+		if ( gpGlobals->GetCurTime() > m_flNextActivateSoundTime )
 		{
 			EmitSound( "NPC_FloorTurret.Activate" );
-			m_flNextActivateSoundTime = gpGlobals->curtime + 3.0;
+			m_flNextActivateSoundTime = gpGlobals->GetCurTime() + 3.0;
 		}
 		return;
 	}
 
 	//Are we out of time and need to retract?
- 	if ( gpGlobals->curtime > m_flLastSight )
+ 	if ( gpGlobals->GetCurTime() > m_flLastSight )
 	{
 		//Before we retrace, make sure that we are spun down.
 		m_flLastSight = 0;
@@ -1084,8 +1084,8 @@ void CNPC_FloorTurret::SearchThink( void )
 	}
 	
 	//Display that we're scanning
-	m_vecGoalAngles.x = GetAbsAngles().x + ( sin( gpGlobals->curtime * 1.0f ) * 15.0f );
-	m_vecGoalAngles.y = GetAbsAngles().y + ( sin( gpGlobals->curtime * 2.0f ) * 60.0f );
+	m_vecGoalAngles.x = GetAbsAngles().x + ( sin( gpGlobals->GetCurTime() * 1.0f ) * 15.0f );
+	m_vecGoalAngles.y = GetAbsAngles().y + ( sin( gpGlobals->GetCurTime() * 2.0f ) * 60.0f );
 
 	//Turn and ping
 	UpdateFacing();
@@ -1102,7 +1102,7 @@ void CNPC_FloorTurret::AutoSearchThink( void )
 		return; 
 
 	//Spread out our thinking
-	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.2f, 0.4f ) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.2f, 0.4f ) );
 
 	//If the enemy is dead, find a new one
 	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->IsAlive() == false ) )
@@ -1242,7 +1242,7 @@ void CNPC_FloorTurret::TippedThink( void )
 	//Animate
 	StudioFrameAdvance();
 
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 	SetEnemy( NULL );
 
 	// If we're not on side anymore, stop thrashing
@@ -1253,9 +1253,9 @@ void CNPC_FloorTurret::TippedThink( void )
 	}
 
 	//See if we should continue to thrash
-	if ( gpGlobals->curtime < m_flThrashTime )
+	if ( gpGlobals->GetCurTime() < m_flThrashTime )
 	{
-		if ( m_flShotTime < gpGlobals->curtime )
+		if ( m_flShotTime < gpGlobals->GetCurTime() )
 		{
 			if( m_spawnflags & SF_FLOOR_TURRET_OUT_OF_AMMO )
 			{
@@ -1276,7 +1276,7 @@ void CNPC_FloorTurret::TippedThink( void )
 #endif
 			}
 
-			m_flShotTime = gpGlobals->curtime + 0.05f;
+			m_flShotTime = gpGlobals->GetCurTime() + 0.05f;
 		}
 
 		m_vecGoalAngles.x = GetAbsAngles().x + random->RandomFloat( -60, 60 );
@@ -1333,7 +1333,7 @@ void CNPC_FloorTurret::TippedThink( void )
 
 				// Start thinking slowly to see if we're ever set upright somehow
 				SetThink( &CNPC_FloorTurret::InactiveThink );
-				SetNextThink( gpGlobals->curtime + 1.0f );
+				SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 			}
 		}
 	}
@@ -1368,12 +1368,12 @@ void CNPC_FloorTurret::InactiveThink( void )
 			}
 
 			SetEyeState( TURRET_EYE_ALARM );
-			SetNextThink( gpGlobals->curtime + 0.25f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.25f );
 		}
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	}
 }
 
@@ -1401,7 +1401,7 @@ void CNPC_FloorTurret::ReturnToLife( void )
 //-----------------------------------------------------------------------------
 void CNPC_FloorTurret::DisabledThink( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.5 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5 );
 	if ( OnSide() )
 	{
 		m_OnTipped.FireOutput( this, this );
@@ -1447,7 +1447,7 @@ bool CNPC_FloorTurret::PreThink( turretState_e state )
 	if ( CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI )
 	{
 		// Push our think out into the future
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		return true;
 	}
  
@@ -1466,7 +1466,7 @@ bool CNPC_FloorTurret::PreThink( turretState_e state )
 		if ( OnSide() == false )
 		{
 			// If I still haven't fallen over after an NPC has tried to knock me down, let them know
-			if ( m_hLastNPCToKickMe && m_flKnockOverFailedTime < gpGlobals->curtime )
+			if ( m_hLastNPCToKickMe && m_flKnockOverFailedTime < gpGlobals->GetCurTime() )
 			{
 				m_hLastNPCToKickMe->DispatchInteraction( g_interactionTurretStillStanding, NULL, this );
 				m_hLastNPCToKickMe = NULL;
@@ -1488,8 +1488,8 @@ bool CNPC_FloorTurret::PreThink( turretState_e state )
 			if ( HasSpawnFlags( SF_FLOOR_TURRET_OUT_OF_AMMO ) == false )
 			{
 				//Thrash around for a bit
-				m_flThrashTime = gpGlobals->curtime + random->RandomFloat( 2.0f, 2.5f );
-				SetNextThink( gpGlobals->curtime + 0.05f );
+				m_flThrashTime = gpGlobals->GetCurTime() + random->RandomFloat( 2.0f, 2.5f );
+				SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
 				SetThink( &CNPC_FloorTurret::TippedThink );
 				SetEyeState( TURRET_EYE_SEE_TARGET );
@@ -1656,7 +1656,7 @@ void CNPC_FloorTurret::SetEyeState( eyeState_t state )
 void CNPC_FloorTurret::Ping( void )
 {
 	//See if it's time to ping again
-	if ( m_flPingTime > gpGlobals->curtime )
+	if ( m_flPingTime > gpGlobals->GetCurTime() )
 		return;
 
 	//Ping!
@@ -1664,7 +1664,7 @@ void CNPC_FloorTurret::Ping( void )
 
 	SetEyeState( TURRET_EYE_SEEKING_TARGET );
 
-	m_flPingTime = gpGlobals->curtime + FLOOR_TURRET_PING_TIME;
+	m_flPingTime = gpGlobals->GetCurTime() + FLOOR_TURRET_PING_TIME;
 }
 
 //-----------------------------------------------------------------------------
@@ -1710,7 +1710,7 @@ void CNPC_FloorTurret::Enable( void )
 	}
 
 	SetThink( &CNPC_FloorTurret::Deploy );
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 //-----------------------------------------------------------------------------
@@ -1729,7 +1729,7 @@ void CNPC_FloorTurret::Disable( void )
 
 		SetEnemy( NULL );
 		SetThink( &CNPC_FloorTurret::Retire );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 	else
 		SetThink( &CNPC_FloorTurret::DisabledThink );
@@ -1860,7 +1860,7 @@ int CNPC_FloorTurret::OnTakeDamage( const CTakeDamageInfo &info )
 	VPhysicsTakeDamage( newInfo );
 
 	// Bump up our search time
-	m_flLastSight = gpGlobals->curtime + FLOOR_TURRET_MAX_WAIT;
+	m_flLastSight = gpGlobals->GetCurTime() + FLOOR_TURRET_MAX_WAIT;
 
 	// Start looking around in anger if we were idle
 	if ( IsAlive() && m_bEnabled && m_bAutoStart && GetActivity() == ACT_FLOOR_TURRET_CLOSED_IDLE && m_bSelfDestructing == false )
@@ -1966,7 +1966,7 @@ CBasePlayer *CNPC_FloorTurret::HasPhysicsAttacker( float dt )
 {
 	// If the player is holding me now, or I've been recently thrown
 	// then return a pointer to that player
-	if ( IsHeldByPhyscannon( ) || (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime) )
+	if ( IsHeldByPhyscannon( ) || (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime) )
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -1996,9 +1996,9 @@ int CNPC_FloorTurret::DrawDebugTextOverlays( void )
 
 void CNPC_FloorTurret::UpdateMuzzleMatrix()
 {
-	if ( gpGlobals->tickcount != m_muzzleToWorldTick )
+	if ( gpGlobals->GetTickCount() != m_muzzleToWorldTick )
 	{
-		m_muzzleToWorldTick = gpGlobals->tickcount;
+		m_muzzleToWorldTick = gpGlobals->GetTickCount();
 		GetAttachment( m_iMuzzleAttachment, m_muzzleToWorld );
 	}
 }
@@ -2053,8 +2053,8 @@ void CNPC_FloorTurret::BreakThink( void )
 	for ( int i = 0; i < 4; i++ )
 	{
 		Vector gibVelocity = RandomVector(-100,100);
-		int iModelIndex = modelinfo->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ) );	
-		te->BreakModel( filter, 0.0, vecOrigin, GetAbsAngles(), Vector(40,40,40), gibVelocity, iModelIndex, 150, 4, 2.5, BREAK_METAL );
+		int iModelIndex = engineServer->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ) );	
+		g_pTESystem->BreakModel( filter, 0.0, vecOrigin, GetAbsAngles(), Vector(40,40,40), gibVelocity, iModelIndex, 150, 4, 2.5, BREAK_METAL );
 	}
 
 	// We're done!
@@ -2070,23 +2070,23 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 	PreThink( TURRET_SELF_DESTRUCTING );
 
 	// If we're done, explode
-	if ( ( gpGlobals->curtime - m_flDestructStartTime ) >= SELF_DESTRUCT_DURATION )
+	if ( ( gpGlobals->GetCurTime() - m_flDestructStartTime ) >= SELF_DESTRUCT_DURATION )
 	{
 		SetThink( &CNPC_FloorTurret::BreakThink );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		UTIL_Remove( m_hFizzleEffect );
 		m_hFizzleEffect = NULL;
 		return;
 	}
 
 	// Find out where we are in the cycle of our destruction
-	float flDestructPerc = clamp( ( gpGlobals->curtime - m_flDestructStartTime ) / SELF_DESTRUCT_DURATION, 0.0f, 1.0f );
+	float flDestructPerc = clamp( ( gpGlobals->GetCurTime() - m_flDestructStartTime ) / SELF_DESTRUCT_DURATION, 0.0f, 1.0f );
 
 	// Figure out when our next beep should occur
 	float flBeepTime = SELF_DESTRUCT_BEEP_MAX_DELAY + ( ( SELF_DESTRUCT_BEEP_MIN_DELAY - SELF_DESTRUCT_BEEP_MAX_DELAY ) * flDestructPerc );
 
 	// If it's time to beep again, do so
-	if ( gpGlobals->curtime > ( m_flPingTime + flBeepTime ) )
+	if ( gpGlobals->GetCurTime() > ( m_flPingTime + flBeepTime ) )
 	{
 		// Figure out what our beep pitch will be
 		float flBeepPitch = SELF_DESTRUCT_BEEP_MIN_PITCH + ( ( SELF_DESTRUCT_BEEP_MAX_PITCH - SELF_DESTRUCT_BEEP_MIN_PITCH ) * flDestructPerc );
@@ -2099,13 +2099,13 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 		params.m_pSoundName = "NPC_FloorTurret.AlarmPing";
 		params.m_nPitch = floor( flBeepPitch );
 		params.m_nFlags = SND_CHANGE_PITCH;
-		EmitSound( filter, entindex(), params );
+		EmitSound( filter, this->NetworkProp()->entindex(), params );
 		
 		// Flash our eye
 		SetEyeState( TURRET_EYE_ALARM );
 		
 		// Save this as the last time we pinged
-		m_flPingTime = gpGlobals->curtime;
+		m_flPingTime = gpGlobals->GetCurTime();
 		
 		// Randomly twitch
 		m_vecGoalAngles.x = GetAbsAngles().x + random->RandomFloat( -60*flDestructPerc, 60*flDestructPerc );
@@ -2115,7 +2115,7 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 	UpdateFacing();
 
 	// Think again!
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 //-----------------------------------------------------------------------------
@@ -2124,15 +2124,15 @@ void CNPC_FloorTurret::SelfDestructThink( void )
 void CNPC_FloorTurret::InputSelfDestruct( inputdata_t &inputdata )
 {
 	// Ka-boom!
-	m_flDestructStartTime = gpGlobals->curtime;
-	m_flPingTime = gpGlobals->curtime;
+	m_flDestructStartTime = gpGlobals->GetCurTime();
+	m_flPingTime = gpGlobals->GetCurTime();
 	m_bSelfDestructing = true;
 
 	SetThink( &CNPC_FloorTurret::SelfDestructThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// Create the dust effect in place
-	m_hFizzleEffect = (CParticleSystem *) CreateEntityByName( "info_particle_system" );
+	m_hFizzleEffect = (CParticleSystem *)engineServer->CreateEntityByName( "info_particle_system" );
 	if ( m_hFizzleEffect != NULL )
 	{
 		Vector vecUp;
@@ -2297,7 +2297,7 @@ void CTurretTipController::Enable( bool state )
 //-----------------------------------------------------------------------------
 void CTurretTipController::Suspend( float time )
 {
-	m_flSuspendTime = gpGlobals->curtime + time;
+	m_flSuspendTime = gpGlobals->GetCurTime() + time;
 }
 
 
@@ -2312,7 +2312,7 @@ float CTurretTipController::SuspendedTill( void )
 //-----------------------------------------------------------------------------
 bool CTurretTipController::Enabled( void )
 {
-	if ( m_flSuspendTime > gpGlobals->curtime )
+	if ( m_flSuspendTime > gpGlobals->GetCurTime() )
 		return false;
 
 	return m_bEnabled;

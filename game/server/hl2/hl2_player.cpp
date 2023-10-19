@@ -416,11 +416,11 @@ CHL2_Player::CHL2_Player()
 CSuitPowerDevice SuitDeviceBreather( bits_SUIT_DEVICE_BREATHER, 6.7f );		// 100 units in 15 seconds (plus three padded seconds)
 
 
-IMPLEMENT_SERVERCLASS_ST(CHL2_Player, DT_HL2_Player)
-	SendPropDataTable(SENDINFO_DT(m_HL2Local), &REFERENCE_SEND_TABLE(DT_HL2Local), SendProxy_SendLocalDataTable),
-	SendPropBool( SENDINFO(m_fIsSprinting) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CHL2_Player, DT_HL2_Player)
 
+void CHL2_Player::PostConstructor(const char* szClassname) {
+	BaseClass::PostConstructor(szClassname);
+}
 
 void CHL2_Player::Precache( void )
 {
@@ -543,13 +543,13 @@ void CHL2_Player::HandleSpeedChanges( void )
 //-----------------------------------------------------------------------------
 void CHL2_Player::HandleArmorReduction( void )
 {
-	if ( m_flArmorReductionTime < gpGlobals->curtime )
+	if ( m_flArmorReductionTime < gpGlobals->GetCurTime() )
 		return;
 
 	if ( ArmorValue() <= 0 )
 		return;
 
-	float flPercent = 1.0f - (( m_flArmorReductionTime - gpGlobals->curtime ) / ARMOR_DECAY_TIME );
+	float flPercent = 1.0f - (( m_flArmorReductionTime - gpGlobals->GetCurTime() ) / ARMOR_DECAY_TIME );
 
 	int iArmor = Lerp( flPercent, m_iArmorReductionFrom, 0 );
 
@@ -659,7 +659,7 @@ void CHL2_Player::PreThink(void)
 		// Stop sprinting if the player lets off the stick for a moment.
 		else if( GetStickDist() == 0.0f )
 		{
-			if( gpGlobals->curtime > m_fAutoSprintMinTime )
+			if( gpGlobals->GetCurTime() > m_fAutoSprintMinTime )
 			{
 				StopSprinting();
 			}
@@ -667,7 +667,7 @@ void CHL2_Player::PreThink(void)
 		else
 		{
 			// Stop sprinting one half second after the player stops inputting with the move stick.
-			m_fAutoSprintMinTime = gpGlobals->curtime + 0.5f;
+			m_fAutoSprintMinTime = gpGlobals->GetCurTime() + 0.5f;
 		}
 	}
 	else if ( IsSprinting() )
@@ -919,7 +919,7 @@ void CHL2_Player::StartAdmireGlovesAnimation( void )
 		if ( idealSequence >= 0 )
 		{
 			vm->SendViewModelMatchingSequence( idealSequence );
-			m_flAdmireGlovesAnimTime = gpGlobals->curtime + vm->SequenceDuration( idealSequence ); 
+			m_flAdmireGlovesAnimTime = gpGlobals->GetCurTime() + vm->SequenceDuration( idealSequence ); 
 		}
 	}
 }
@@ -932,12 +932,12 @@ void CHL2_Player::HandleAdmireGlovesAnimation( void )
 	{
 		if ( m_flAdmireGlovesAnimTime != 0.0 )
 		{
-			if ( m_flAdmireGlovesAnimTime > gpGlobals->curtime )
+			if ( m_flAdmireGlovesAnimTime > gpGlobals->GetCurTime() )
 			{
 				pVM->m_flPlaybackRate = 1.0f;
 				pVM->StudioFrameAdvance( );
 			}
-			else if ( m_flAdmireGlovesAnimTime < gpGlobals->curtime )
+			else if ( m_flAdmireGlovesAnimTime < gpGlobals->GetCurTime() )
 			{
 				m_flAdmireGlovesAnimTime = 0.0f;
 				pVM->SetWeaponModel( NULL, NULL );
@@ -960,18 +960,18 @@ void CHL2_Player::Activate( void )
 	// Delay attacks by 1 second after loading a game.
 	if ( GetActiveWeapon() )
 	{
-		float flRemaining = GetActiveWeapon()->m_flNextPrimaryAttack - gpGlobals->curtime;
+		float flRemaining = GetActiveWeapon()->m_flNextPrimaryAttack - gpGlobals->GetCurTime();
 
 		if ( flRemaining < HL2PLAYER_RELOADGAME_ATTACK_DELAY )
 		{
-			GetActiveWeapon()->m_flNextPrimaryAttack = gpGlobals->curtime + HL2PLAYER_RELOADGAME_ATTACK_DELAY;
+			GetActiveWeapon()->m_flNextPrimaryAttack = gpGlobals->GetCurTime() + HL2PLAYER_RELOADGAME_ATTACK_DELAY;
 		}
 
-		flRemaining = GetActiveWeapon()->m_flNextSecondaryAttack - gpGlobals->curtime;
+		flRemaining = GetActiveWeapon()->m_flNextSecondaryAttack - gpGlobals->GetCurTime();
 
 		if ( flRemaining < HL2PLAYER_RELOADGAME_ATTACK_DELAY )
 		{
-			GetActiveWeapon()->m_flNextSecondaryAttack = gpGlobals->curtime + HL2PLAYER_RELOADGAME_ATTACK_DELAY;
+			GetActiveWeapon()->m_flNextSecondaryAttack = gpGlobals->GetCurTime() + HL2PLAYER_RELOADGAME_ATTACK_DELAY;
 		}
 	}
 
@@ -1185,7 +1185,7 @@ void CHL2_Player::StartAutoSprint()
 	{
 		StartSprinting();
 		m_bIsAutoSprinting = true;
-		m_fAutoSprintMinTime = gpGlobals->curtime + 1.5f;
+		m_fAutoSprintMinTime = gpGlobals->GetCurTime() + 1.5f;
 	}
 }
 
@@ -1203,7 +1203,7 @@ void CHL2_Player::StartSprinting( void )
 		{
 			CPASAttenuationFilter filter( this );
 			filter.UsePredictionRules();
-			EmitSound( filter, entindex(), "HL2Player.SprintNoPower" );
+			EmitSound( filter, this->NetworkProp()->entindex(), "HL2Player.SprintNoPower" );
 		}
 		return;
 	}
@@ -1213,7 +1213,7 @@ void CHL2_Player::StartSprinting( void )
 
 	CPASAttenuationFilter filter( this );
 	filter.UsePredictionRules();
-	EmitSound( filter, entindex(), "HL2Player.SprintStart" );
+	EmitSound( filter, this->NetworkProp()->entindex(), "HL2Player.SprintStart" );
 
 	SetMaxSpeed( HL2_SPRINT_SPEED );
 	m_fIsSprinting = true;
@@ -1558,7 +1558,7 @@ void CHL2_Player::CommanderUpdate()
 		m_HL2Local.m_fSquadInFollowMode = true;
 	}
 
-	if ( m_QueuedCommand != CC_NONE && ( m_QueuedCommand == CC_FOLLOW || gpGlobals->realtime - m_RealTimeLastSquadCommand >= player_squad_double_tap_time.GetFloat() ) )
+	if ( m_QueuedCommand != CC_NONE && ( m_QueuedCommand == CC_FOLLOW || gpGlobals->GetRealTime() - m_RealTimeLastSquadCommand >= player_squad_double_tap_time.GetFloat()))
 	{
 		CommanderExecute( m_QueuedCommand );
 		m_QueuedCommand = CC_NONE;
@@ -1684,8 +1684,8 @@ void CHL2_Player::CommanderExecute( CommanderCommand_t command )
 //-----------------------------------------------------------------------------
 void CHL2_Player::CommanderMode()
 {
-	float commandInterval = gpGlobals->realtime - m_RealTimeLastSquadCommand;
-	m_RealTimeLastSquadCommand = gpGlobals->realtime;
+	float commandInterval = gpGlobals->GetRealTime() - m_RealTimeLastSquadCommand;
+	m_RealTimeLastSquadCommand = gpGlobals->GetRealTime();
 	if ( commandInterval < player_squad_double_tap_time.GetFloat() )
 	{
 		m_QueuedCommand = CC_FOLLOW;
@@ -1715,7 +1715,7 @@ void CHL2_Player::CheatImpulseCommands( int iImpulse )
 		// Cheat to create a dynamic resupply item
 		Vector vecForward;
 		AngleVectors( EyeAngles(), &vecForward );
-		CBaseEntity *pItem = (CBaseEntity *)CreateEntityByName( "item_dynamic_resupply" );
+		CBaseEntity *pItem = (CBaseEntity *)engineServer->CreateEntityByName( "item_dynamic_resupply" );
 		if ( pItem )
 		{
 			Vector vecOrigin = GetAbsOrigin() + vecForward * 256 + Vector(0,0,64);
@@ -1786,7 +1786,7 @@ void CHL2_Player::SuitPower_Update( void )
 {
 	if( SuitPower_ShouldRecharge() )
 	{
-		SuitPower_Charge( SUITPOWER_CHARGE_RATE * gpGlobals->frametime );
+		SuitPower_Charge( SUITPOWER_CHARGE_RATE * gpGlobals->GetFrameTime() );
 	}
 	else if( m_HL2Local.m_bitsActiveDevices )
 	{
@@ -1814,7 +1814,7 @@ void CHL2_Player::SuitPower_Update( void )
 			flPowerLoad -= ( SuitDeviceFlashlight.GetDeviceDrainRate() * (1.0f - factor) );
 		}
 
-		if( !SuitPower_Drain( flPowerLoad * gpGlobals->frametime ) )
+		if( !SuitPower_Drain( flPowerLoad * gpGlobals->GetFrameTime() ) )
 		{
 			// TURN OFF ALL DEVICES!!
 			if( IsSprinting() )
@@ -1945,7 +1945,7 @@ bool CHL2_Player::SuitPower_RemoveDevice( const CSuitPowerDevice &device )
 	{
 		// With this device turned off, we can set this timer which tells us when the
 		// suit power system entered a no-load state.
-		m_flTimeAllSuitDevicesOff = gpGlobals->curtime;
+		m_flTimeAllSuitDevicesOff = gpGlobals->GetCurTime();
 	}
 
 	return true;
@@ -1966,7 +1966,7 @@ bool CHL2_Player::SuitPower_ShouldRecharge( void )
 
 	// Has the system been in a no-load state for long enough
 	// to begin recharging?
-	if( gpGlobals->curtime < m_flTimeAllSuitDevicesOff + SUITPOWER_BEGIN_RECHARGE_DELAY )
+	if( gpGlobals->GetCurTime() < m_flTimeAllSuitDevicesOff + SUITPOWER_BEGIN_RECHARGE_DELAY )
 		return false;
 
 	return true;
@@ -1987,7 +1987,7 @@ bool CHL2_Player::ApplyBattery( float powerMultiplier )
 		IncrementArmorValue( sk_battery.GetFloat() * powerMultiplier, MAX_NORMAL_BATTERY );
 
 		CPASAttenuationFilter filter( this, "ItemBattery.Touch" );
-		EmitSound( filter, entindex(), "ItemBattery.Touch" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "ItemBattery.Touch" );
 
 		CSingleUserRecipientFilter user( this );
 		user.MakeReliable();
@@ -2131,9 +2131,9 @@ void CHL2_Player::CheckFlashlight( void )
 	if ( !FlashlightIsOn() )
 		return;
 
-	if ( m_flNextFlashlightCheckTime > gpGlobals->curtime )
+	if ( m_flNextFlashlightCheckTime > gpGlobals->GetCurTime() )
 		return;
-	m_flNextFlashlightCheckTime = gpGlobals->curtime + FLASHLIGHT_NPC_CHECK_INTERVAL;
+	m_flNextFlashlightCheckTime = gpGlobals->GetCurTime() + FLASHLIGHT_NPC_CHECK_INTERVAL;
 
 	// Loop through NPCs looking for illuminated ones
 	for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
@@ -2220,7 +2220,7 @@ void CHL2_Player::InputIgnoreFallDamage( inputdata_t &inputdata )
 	if ( timeToIgnore <= 0.0 )
 		timeToIgnore = TIME_IGNORE_FALL_DAMAGE;
 
-	m_flTimeIgnoreFallDamage = gpGlobals->curtime + timeToIgnore;
+	m_flTimeIgnoreFallDamage = gpGlobals->GetCurTime() + timeToIgnore;
 	m_bIgnoreFallDamageResetAfterImpact = true;
 }
 
@@ -2235,7 +2235,7 @@ void CHL2_Player::InputIgnoreFallDamageWithoutReset( inputdata_t &inputdata )
 	if ( timeToIgnore <= 0.0 )
 		timeToIgnore = TIME_IGNORE_FALL_DAMAGE;
 
-	m_flTimeIgnoreFallDamage = gpGlobals->curtime + timeToIgnore;
+	m_flTimeIgnoreFallDamage = gpGlobals->GetCurTime() + timeToIgnore;
 	m_bIgnoreFallDamageResetAfterImpact = false;
 }
 
@@ -2291,7 +2291,7 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 		return 0;
 
 	// ignore fall damage if instructed to do so by input
-	if ( ( info.GetDamageType() & DMG_FALL ) && m_flTimeIgnoreFallDamage > gpGlobals->curtime )
+	if ( ( info.GetDamageType() & DMG_FALL ) && m_flTimeIgnoreFallDamage > gpGlobals->GetCurTime() )
 	{
 		// usually, we will reset the input flag after the first impact. However there is another input that
 		// prevents this behavior.
@@ -2316,7 +2316,7 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 
 	if ( info.GetDamage() > 0.0f )
 	{
-		m_flLastDamageTime = gpGlobals->curtime;
+		m_flLastDamageTime = gpGlobals->GetCurTime();
 
 		if ( info.GetAttacker() )
 			NotifyFriendsOfDamage( info.GetAttacker() );
@@ -2411,10 +2411,10 @@ void CHL2_Player::OnDamagedByExplosion( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 bool CHL2_Player::ShouldShootMissTarget( CBaseCombatCharacter *pAttacker )
 {
-	if( gpGlobals->curtime > m_flTargetFindTime )
+	if( gpGlobals->GetCurTime() > m_flTargetFindTime )
 	{
 		// Put this off into the future again.
-		m_flTargetFindTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+		m_flTargetFindTime = gpGlobals->GetCurTime() + random->RandomFloat( 3, 5 );
 		return true;
 	}
 
@@ -2770,11 +2770,11 @@ bool CHL2_Player::ClientCommand( const CCommand &args )
 		CSingleUserRecipientFilter filter( this );
 		if ( args.ArgC() > 1 )
 		{
-			EmitSound( filter, entindex(), args[ 1 ] );
+			EmitSound( filter, this->NetworkProp()->entindex(), args[ 1 ] );
 		}
 		else
 		{
-			EmitSound( filter, entindex(), "Test.Sound" );
+			EmitSound( filter, this->NetworkProp()->entindex(), "Test.Sound" );
 		}
 		return true;
 	}
@@ -2828,7 +2828,7 @@ void CHL2_Player::PlayerUse ( void )
 		}
 	}
 
-	if( m_flTimeUseSuspended > gpGlobals->curtime )
+	if( m_flTimeUseSuspended > gpGlobals->GetCurTime() )
 	{
 		// Something has temporarily stopped us being able to USE things.
 		// Obviously, this should be used very carefully.(sjb)
@@ -2974,7 +2974,7 @@ void CHL2_Player::UpdateWeaponPosture( void )
 					}
 
 					//Draw the text
-					NDebugOverlay::EntityText( aimTarget->entindex(), text_offset, tempstr, 0 );
+					NDebugOverlay::EntityText( aimTarget->NetworkProp()->entindex(), text_offset, tempstr, 0 );
 				}
 
 				//See if we hates it
@@ -3216,7 +3216,7 @@ void CHL2_Player::UpdateClientData( void )
 		// the whole screen! -- jdw
 		if ( visibleDamageBits & DMG_POISON )
 		{
-			float flLastPoisonedDelta = gpGlobals->curtime - m_tbdPrev;
+			float flLastPoisonedDelta = gpGlobals->GetCurTime() - m_tbdPrev;
 			if ( flLastPoisonedDelta > 0.1f )
 			{
 				visibleDamageBits &= ~DMG_POISON;
@@ -3249,7 +3249,7 @@ void CHL2_Player::UpdateClientData( void )
 	{
 		if ( FlashlightIsOn() && sv_infinite_aux_power.GetBool() == false )
 		{
-			m_HL2Local.m_flFlashBattery -= FLASH_DRAIN_TIME * gpGlobals->frametime;
+			m_HL2Local.m_flFlashBattery -= FLASH_DRAIN_TIME * gpGlobals->GetFrameTime();
 			if ( m_HL2Local.m_flFlashBattery < 0.0f )
 			{
 				FlashlightTurnOff();
@@ -3258,7 +3258,7 @@ void CHL2_Player::UpdateClientData( void )
 		}
 		else
 		{
-			m_HL2Local.m_flFlashBattery += FLASH_CHARGE_TIME * gpGlobals->frametime;
+			m_HL2Local.m_flFlashBattery += FLASH_CHARGE_TIME * gpGlobals->GetFrameTime();
 			if ( m_HL2Local.m_flFlashBattery > 100.0f )
 			{
 				m_HL2Local.m_flFlashBattery = 100.0f;
@@ -3604,7 +3604,7 @@ void CHL2_Player::StartWaterDeathSounds( void )
 
 	if ( m_sndLeeches == NULL )
 	{
-		m_sndLeeches = (CSoundEnvelopeController::GetController()).SoundCreate( filter, entindex(), CHAN_STATIC, "coast.leech_bites_loop" , ATTN_NORM );
+		m_sndLeeches = (CSoundEnvelopeController::GetController()).SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, "coast.leech_bites_loop" , ATTN_NORM );
 	}
 
 	if ( m_sndLeeches )
@@ -3614,7 +3614,7 @@ void CHL2_Player::StartWaterDeathSounds( void )
 
 	if ( m_sndWaterSplashes == NULL )
 	{
-		m_sndWaterSplashes = (CSoundEnvelopeController::GetController()).SoundCreate( filter, entindex(), CHAN_STATIC, "coast.leech_water_churn_loop" , ATTN_NORM );
+		m_sndWaterSplashes = (CSoundEnvelopeController::GetController()).SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, "coast.leech_water_churn_loop" , ATTN_NORM );
 	}
 
 	if ( m_sndWaterSplashes )
@@ -3655,9 +3655,9 @@ void CHL2_Player::MissedAR2AltFire()
 void CHL2_Player::DisplayLadderHudHint()
 {
 #if !defined( CLIENT_DLL )
-	if( gpGlobals->curtime > m_flTimeNextLadderHint )
+	if( gpGlobals->GetCurTime() > m_flTimeNextLadderHint )
 	{
-		m_flTimeNextLadderHint = gpGlobals->curtime + 60.0f;
+		m_flTimeNextLadderHint = gpGlobals->GetCurTime() + 60.0f;
 
 		CFmtStr hint;
 		hint.sprintf( "#Valve_Hint_Ladder" );

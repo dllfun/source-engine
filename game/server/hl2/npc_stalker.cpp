@@ -202,10 +202,10 @@ Class_T CNPC_Stalker::Classify( void )
 //-----------------------------------------------------------------------------
 void CNPC_Stalker::PrescheduleThink()
 {
-	if (gpGlobals->curtime > m_flNextBreatheSoundTime)
+	if (gpGlobals->GetCurTime() > m_flNextBreatheSoundTime)
 	{
 		EmitSound( "NPC_Stalker.Ambient01" );
-		m_flNextBreatheSoundTime = gpGlobals->curtime + 3.0 + random->RandomFloat( 0.0, 5.0 );
+		m_flNextBreatheSoundTime = gpGlobals->GetCurTime() + 3.0 + random->RandomFloat( 0.0, 5.0 );
 	}
 }
 
@@ -286,7 +286,7 @@ void CNPC_Stalker::Spawn( void )
 	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1);
 
 	m_flNextAttackSoundTime		= 0;
-	m_flNextBreatheSoundTime	= gpGlobals->curtime + random->RandomFloat( 0.0, 10.0 );
+	m_flNextBreatheSoundTime	= gpGlobals->GetCurTime() + random->RandomFloat( 0.0, 10.0 );
 	m_flNextScrambleSoundTime	= 0;
 	m_nextSmokeTime = 0;
 	m_bPlayingHitWall			= false;
@@ -407,9 +407,9 @@ void CNPC_Stalker::DeathSound( const CTakeDamageInfo &info )
 void CNPC_Stalker::PainSound( const CTakeDamageInfo &info )
 { 
 	EmitSound( "NPC_Stalker.Pain" );
-	m_flNextScrambleSoundTime	= gpGlobals->curtime + 1.5;
-	m_flNextBreatheSoundTime	= gpGlobals->curtime + 1.5;
-	m_flNextAttackSoundTime		= gpGlobals->curtime + 1.5;
+	m_flNextScrambleSoundTime	= gpGlobals->GetCurTime() + 1.5;
+	m_flNextBreatheSoundTime	= gpGlobals->GetCurTime() + 1.5;
+	m_flNextAttackSoundTime		= gpGlobals->GetCurTime() + 1.5;
 };
 
 //-----------------------------------------------------------------------------
@@ -440,7 +440,7 @@ void CNPC_Stalker::UpdateAttackBeam( void )
 	// If not burning at a target 
 	if (pEnemy)
 	{
-		if (gpGlobals->curtime > m_fBeamEndTime)
+		if (gpGlobals->GetCurTime() > m_fBeamEndTime)
 		{
 			TaskComplete();
 		}
@@ -496,10 +496,10 @@ void CNPC_Stalker::StartTask( const Task_t *pTask )
 	{
 	case TASK_STALKER_SCREAM:
 	{
-		if( gpGlobals->curtime > m_flNextScreamTime )
+		if( gpGlobals->GetCurTime() > m_flNextScreamTime )
 		{
 			EmitSound( "NPC_Stalker.Scream" );
-			m_flNextScreamTime = gpGlobals->curtime + random->RandomFloat( 10.0, 15.0 );
+			m_flNextScreamTime = gpGlobals->GetCurTime() + random->RandomFloat( 10.0, 15.0 );
 		}
 
 		TaskComplete();
@@ -512,14 +512,14 @@ void CNPC_Stalker::StartTask( const Task_t *pTask )
 		CBaseCombatCharacter *pBCC = GetEnemyCombatCharacterPointer();
 
 		if	(pBCC && (!pBCC->FInViewCone ( this )) &&
-			 (gpGlobals->curtime - m_flLastAttackTime > 1.0) )
+			 (gpGlobals->GetCurTime() - m_flLastAttackTime > 1.0) )
 		{
-				m_flLastAttackTime = gpGlobals->curtime;
+				m_flLastAttackTime = gpGlobals->GetCurTime();
 
 				// Always play this sound
 				EmitSound( "NPC_Stalker.Scream" );
-				m_flNextScrambleSoundTime = gpGlobals->curtime + 2;
-				m_flNextBreatheSoundTime = gpGlobals->curtime + 2;
+				m_flNextScrambleSoundTime = gpGlobals->GetCurTime() + 2;
+				m_flNextBreatheSoundTime = gpGlobals->GetCurTime() + 2;
 
 				// Wait two seconds
 				SetWait( 2.0 );
@@ -849,19 +849,19 @@ void CNPC_Stalker::CalcBeamPosition(void)
 		float m_fNoiseModY		= 5;
 		float m_fNoiseModZ		= 5;
 
-		m_vLaserDir.x += 5*noiseScale*sin(m_fNoiseModX * gpGlobals->curtime + m_fNoiseModX);
-		m_vLaserDir.y += 5*noiseScale*sin(m_fNoiseModY * gpGlobals->curtime + m_fNoiseModY);
-		m_vLaserDir.z += 5*noiseScale*sin(m_fNoiseModZ * gpGlobals->curtime + m_fNoiseModZ);
+		m_vLaserDir.x += 5*noiseScale*sin(m_fNoiseModX * gpGlobals->GetCurTime() + m_fNoiseModX);
+		m_vLaserDir.y += 5*noiseScale*sin(m_fNoiseModY * gpGlobals->GetCurTime() + m_fNoiseModY);
+		m_vLaserDir.z += 5*noiseScale*sin(m_fNoiseModZ * gpGlobals->GetCurTime() + m_fNoiseModZ);
 	}
 }
 
 
 void CNPC_Stalker::StartAttackBeam( void )
 {
-	if ( m_fBeamEndTime > gpGlobals->curtime || m_fBeamRechargeTime > gpGlobals->curtime )
+	if ( m_fBeamEndTime > gpGlobals->GetCurTime() || m_fBeamRechargeTime > gpGlobals->GetCurTime() )
 	{
 		// UNDONE: Debug this and fix!?!?!
-		m_fBeamRechargeTime = gpGlobals->curtime;
+		m_fBeamRechargeTime = gpGlobals->GetCurTime();
 	}
 	// ---------------------------------------------
 	//  If I don't have a beam yet, create one
@@ -928,8 +928,8 @@ void CNPC_Stalker::StartAttackBeam( void )
 	SetThink( &CNPC_Stalker::StalkerThink );
 
 	m_flNextNPCThink = GetNextThink();
-	SetNextThink( gpGlobals->curtime + g_StalkerBeamThinkTime );
-	m_fBeamEndTime = gpGlobals->curtime + STALKER_LASER_DURATION;
+	SetNextThink( gpGlobals->GetCurTime() + g_StalkerBeamThinkTime );
+	m_fBeamEndTime = gpGlobals->GetCurTime() + STALKER_LASER_DURATION;
 }
 
 //------------------------------------------------------------------------------
@@ -941,7 +941,7 @@ void CNPC_Stalker::StartAttackBeam( void )
 void CNPC_Stalker::StalkerThink(void)
 {
 	DrawAttackBeam();
-	if (gpGlobals->curtime >= m_flNextNPCThink)
+	if (gpGlobals->GetCurTime() >= m_flNextNPCThink)
 	{
 		NPCThink();
 		m_flNextNPCThink = GetNextThink();
@@ -949,7 +949,7 @@ void CNPC_Stalker::StalkerThink(void)
 
 	if ( m_pBeam )
 	{
-		SetNextThink( gpGlobals->curtime + g_StalkerBeamThinkTime );
+		SetNextThink( gpGlobals->GetCurTime() + g_StalkerBeamThinkTime );
 		
 		// sanity check?!
 		const Task_t *pTask = GetTask();
@@ -974,9 +974,9 @@ void CNPC_Stalker::NotifyDeadFriend( CBaseEntity *pFriend )
 
 void CNPC_Stalker::DoSmokeEffect( const Vector &position )
 {
-	if ( gpGlobals->curtime > m_nextSmokeTime )
+	if ( gpGlobals->GetCurTime() > m_nextSmokeTime )
 	{
-		m_nextSmokeTime = gpGlobals->curtime + 0.5;
+		m_nextSmokeTime = gpGlobals->GetCurTime() + 0.5;
 		UTIL_Smoke(position, random->RandomInt(5, 10), 10);
 	}
 }
@@ -1021,7 +1021,7 @@ void CNPC_Stalker::DrawAttackBeam(void)
 	CBaseCombatCharacter *pBCC = ToBaseCombatCharacter( tr.m_pEnt );
 	if (pBCC)
 	{
-		if (gpGlobals->curtime > m_fNextDamageTime)
+		if (gpGlobals->GetCurTime() > m_fNextDamageTime)
 		{
 			ClearMultiDamage();
 
@@ -1043,7 +1043,7 @@ void CNPC_Stalker::DrawAttackBeam(void)
 			CalculateMeleeDamageForce( &info, m_vLaserDir, tr.endpos );
 			pBCC->DispatchTraceAttack( info, m_vLaserDir, &tr );
 			ApplyMultiDamage();
-			m_fNextDamageTime = gpGlobals->curtime + 0.1;
+			m_fNextDamageTime = gpGlobals->GetCurTime() + 0.1;
 		}
 		if (pBCC->Classify()!=CLASS_BULLSEYE)
 		{
@@ -1052,12 +1052,12 @@ void CNPC_Stalker::DrawAttackBeam(void)
 				CPASAttenuationFilter filter( m_pBeam,"NPC_Stalker.BurnFlesh" );
 				filter.MakeReliable();
 
-				EmitSound( filter, m_pBeam->entindex(),"NPC_Stalker.BurnFlesh" );
+				EmitSound( filter, m_pBeam->NetworkProp()->entindex(),"NPC_Stalker.BurnFlesh" );
 				m_bPlayingHitFlesh = true;
 			}
 			if (m_bPlayingHitWall)
 			{
-				StopSound( m_pBeam->entindex(), "NPC_Stalker.BurnWall" );
+				StopSound( m_pBeam->NetworkProp()->entindex(), "NPC_Stalker.BurnWall" );
 				m_bPlayingHitWall = false;
 			}
 
@@ -1076,12 +1076,12 @@ void CNPC_Stalker::DrawAttackBeam(void)
 			CPASAttenuationFilter filter( m_pBeam, "NPC_Stalker.BurnWall" );
 			filter.MakeReliable();
 
-			EmitSound( filter, m_pBeam->entindex(), "NPC_Stalker.BurnWall" );
+			EmitSound( filter, m_pBeam->NetworkProp()->entindex(), "NPC_Stalker.BurnWall" );
 			m_bPlayingHitWall = true;
 		}
 		if (m_bPlayingHitFlesh)
 		{
-			StopSound(m_pBeam->entindex(), "NPC_Stalker.BurnFlesh" );
+			StopSound(m_pBeam->NetworkProp()->entindex(), "NPC_Stalker.BurnFlesh" );
 			m_bPlayingHitFlesh = false;
 		}
 
@@ -1117,8 +1117,8 @@ void CNPC_Stalker::KillAttackBeam(void)
 		return;
 
 	// Kill sound
-	StopSound(m_pBeam->entindex(), "NPC_Stalker.BurnWall" );
-	StopSound(m_pBeam->entindex(), "NPC_Stalker.BurnFlesh" );
+	StopSound(m_pBeam->NetworkProp()->entindex(), "NPC_Stalker.BurnWall" );
+	StopSound(m_pBeam->NetworkProp()->entindex(), "NPC_Stalker.BurnFlesh" );
 
 	UTIL_Remove( m_pLightGlow );
 	UTIL_Remove( m_pBeam);
@@ -1127,13 +1127,13 @@ void CNPC_Stalker::KillAttackBeam(void)
 	m_bPlayingHitFlesh = false;
 
 	SetThink(&CNPC_Stalker::CallNPCThink);
-	if ( m_flNextNPCThink > gpGlobals->curtime )
+	if ( m_flNextNPCThink > gpGlobals->GetCurTime() )
 	{
 		SetNextThink( m_flNextNPCThink );
 	}
 
 	// Beam has to recharge
-	m_fBeamRechargeTime = gpGlobals->curtime + STALKER_LASER_RECHARGE;
+	m_fBeamRechargeTime = gpGlobals->GetCurTime() + STALKER_LASER_RECHARGE;
 
 	ClearCondition( COND_CAN_RANGE_ATTACK1 );
 
@@ -1211,7 +1211,7 @@ int CNPC_Stalker::MeleeAttack1Conditions ( float flDot, float flDist )
 //-----------------------------------------------------------------------------
 int CNPC_Stalker::RangeAttack1Conditions( float flDot, float flDist )
 {
-	if (gpGlobals->curtime < m_fBeamRechargeTime )
+	if (gpGlobals->GetCurTime() < m_fBeamRechargeTime )
 	{
 		return COND_NONE;
 	}

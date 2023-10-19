@@ -76,7 +76,7 @@ bool CHealthKit::MyTouch( CBasePlayer *pPlayer )
 		MessageEnd();
 
 		CPASAttenuationFilter filter( pPlayer, "HealthKit.Touch" );
-		EmitSound( filter, pPlayer->entindex(), "HealthKit.Touch" );
+		EmitSound( filter, pPlayer->NetworkProp()->entindex(), "HealthKit.Touch" );
 
 		if ( g_pGameRules->ItemShouldRespawn( this ) )
 		{
@@ -129,7 +129,7 @@ public:
 			MessageEnd();
 
 			CPASAttenuationFilter filter( pPlayer, "HealthVial.Touch" );
-			EmitSound( filter, pPlayer->entindex(), "HealthVial.Touch" );
+			EmitSound( filter, pPlayer->NetworkProp()->entindex(), "HealthVial.Touch" );
 
 			if ( g_pGameRules->ItemShouldRespawn( this ) )
 			{
@@ -321,9 +321,9 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	//if ((m_iJuice <= 0) || (!(pActivator->m_bWearingSuit)))
 	if (m_iJuice <= 0)
 	{
-		if (m_flSoundTime <= gpGlobals->curtime)
+		if (m_flSoundTime <= gpGlobals->GetCurTime())
 		{
-			m_flSoundTime = gpGlobals->curtime + 0.62;
+			m_flSoundTime = gpGlobals->GetCurTime() + 0.62;
 			EmitSound( "WallHealth.Deny" );
 		}
 		return;
@@ -342,12 +342,12 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 		return;
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.25f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.25f );
 	SetThink(&CWallHealth::Off);
 
 	// Time to recharge yet?
 
-	if (m_flNextCharge >= gpGlobals->curtime)
+	if (m_flNextCharge >= gpGlobals->GetCurTime())
 		return;
 
 	// Play the on sound or the looping charging sound
@@ -355,16 +355,16 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	{
 		m_iOn++;
 		EmitSound( "WallHealth.Start" );
-		m_flSoundTime = 0.56 + gpGlobals->curtime;
+		m_flSoundTime = 0.56 + gpGlobals->GetCurTime();
 
 		m_OnPlayerUse.FireOutput( pActivator, this );
 	}
-	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->curtime))
+	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->GetCurTime()))
 	{
 		m_iOn++;
 		CPASAttenuationFilter filter( this, "WallHealth.LoopingContinueCharge" );
 		filter.MakeReliable();
-		EmitSound( filter, entindex(), "WallHealth.LoopingContinueCharge" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "WallHealth.LoopingContinueCharge" );
 	}
 
 	// charge the player
@@ -378,7 +378,7 @@ void CWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 	m_OutRemainingHealth.Set(flRemaining, pActivator, this);
 
 	// govern the rate of charge
-	m_flNextCharge = gpGlobals->curtime + 0.1;
+	m_flNextCharge = gpGlobals->GetCurTime() + 0.1;
 }
 
 
@@ -407,7 +407,7 @@ void CWallHealth::Off(void)
 
 	if ((!m_iJuice) &&  ( ( m_iReactivate = g_pGameRules->FlHealthChargerRechargeTime() ) > 0) )
 	{
-		SetNextThink( gpGlobals->curtime + m_iReactivate );
+		SetNextThink( gpGlobals->GetCurTime() + m_iReactivate );
 		SetThink(&CWallHealth::Recharge);
 	}
 	else
@@ -579,13 +579,13 @@ void CNewWallHealth::StudioFrameAdvance( void )
 
 	if ( !m_flPrevAnimTime )
 	{
-		m_flPrevAnimTime = gpGlobals->curtime;
+		m_flPrevAnimTime = gpGlobals->GetCurTime();
 	}
 
 	// Latch prev
 	m_flPrevAnimTime = m_flAnimTime;
 	// Set current
-	m_flAnimTime = gpGlobals->curtime;
+	m_flAnimTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -631,9 +631,9 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	//if ((m_iJuice <= 0) || (!(pActivator->m_bWearingSuit)))
 	if (m_iJuice <= 0)
 	{
-		if (m_flSoundTime <= gpGlobals->curtime)
+		if (m_flSoundTime <= gpGlobals->GetCurTime())
 		{
-			m_flSoundTime = gpGlobals->curtime + 0.62;
+			m_flSoundTime = gpGlobals->GetCurTime() + 0.62;
 			EmitSound( "WallHealth.Deny" );
 		}
 		return;
@@ -653,12 +653,12 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 		return;
 	}
 
-	SetNextThink( gpGlobals->curtime + CHARGE_RATE );
+	SetNextThink( gpGlobals->GetCurTime() + CHARGE_RATE );
 	SetThink( &CNewWallHealth::Off );
 
 	// Time to recharge yet?
 
-	if (m_flNextCharge >= gpGlobals->curtime)
+	if (m_flNextCharge >= gpGlobals->GetCurTime())
 		return;
 
 	// Play the on sound or the looping charging sound
@@ -666,16 +666,16 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	{
 		m_iOn++;
 		EmitSound( "WallHealth.Start" );
-		m_flSoundTime = 0.56 + gpGlobals->curtime;
+		m_flSoundTime = 0.56 + gpGlobals->GetCurTime();
 
 		m_OnPlayerUse.FireOutput( pActivator, this );
 	}
-	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->curtime))
+	if ((m_iOn == 1) && (m_flSoundTime <= gpGlobals->GetCurTime()))
 	{
 		m_iOn++;
 		CPASAttenuationFilter filter( this, "WallHealth.LoopingContinueCharge" );
 		filter.MakeReliable();
-		EmitSound( filter, entindex(), "WallHealth.LoopingContinueCharge" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "WallHealth.LoopingContinueCharge" );
 	}
 
 	// charge the player
@@ -689,7 +689,7 @@ void CNewWallHealth::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	m_OutRemainingHealth.Set(flRemaining, pActivator, this);
 
 	// govern the rate of charge
-	m_flNextCharge = gpGlobals->curtime + 0.1;
+	m_flNextCharge = gpGlobals->GetCurTime() + 0.1;
 }
 
 
@@ -733,7 +733,7 @@ void CNewWallHealth::Off(void)
 		if ((!m_iJuice) && g_pGameRules->FlHealthChargerRechargeTime() > 0 )
 		{
 			m_iReactivate = g_pGameRules->FlHealthChargerRechargeTime();
-			SetNextThink( gpGlobals->curtime + m_iReactivate );
+			SetNextThink( gpGlobals->GetCurTime() + m_iReactivate );
 			SetThink(&CNewWallHealth::Recharge);
 		}
 		else

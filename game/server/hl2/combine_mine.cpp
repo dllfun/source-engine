@@ -282,7 +282,7 @@ void CBounceBomb::SetMineState( int iState )
 
 			UpdateLight( true, 0, 0, 255, 190 );
 			SetThink( &CBounceBomb::CaptiveThink );
-			SetNextThink( gpGlobals->curtime + 0.1f );
+			SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 			SetTouch( NULL );
 		}
 		break;
@@ -292,13 +292,13 @@ void CBounceBomb::SetMineState( int iState )
 		UpdateLight( true, 0, 0, 255, 190 );
 		SetThink( &CBounceBomb::SettleThink );
 		SetTouch( NULL );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		break;
 
 	case MINE_STATE_ARMED:
 		UpdateLight( false, 0, 0, 0, 0 );
 		SetThink( &CBounceBomb::SearchThink );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		break;
 
 	case MINE_STATE_TRIGGERED:
@@ -340,19 +340,19 @@ void CBounceBomb::SetMineState( int iState )
 			// Since we just nudged the mine, ignore collisions with the world until
 			// the mine is in the air. We only want to explode if the player tries to 
 			// run over the mine before it jumps up.
-			m_flIgnoreWorldTime = gpGlobals->curtime + 1.0;
+			m_flIgnoreWorldTime = gpGlobals->GetCurTime() + 1.0;
 			UpdateLight( true, 255, 0, 0, 190 );
 
 			// use the correct bounce behavior
 			if (m_iModification == MINE_MODIFICATION_CAVERN)
 			{
 				SetThink ( &CBounceBomb::CavernBounceThink );
-				SetNextThink( gpGlobals->curtime + 0.15 );
+				SetNextThink( gpGlobals->GetCurTime() + 0.15 );
 			}
 			else
 			{
 				SetThink( &CBounceBomb::BounceThink );
-				SetNextThink( gpGlobals->curtime + 0.5 );
+				SetNextThink( gpGlobals->GetCurTime() + 0.5 );
 			}
 		}
 		break;
@@ -361,7 +361,7 @@ void CBounceBomb::SetMineState( int iState )
 		{
 			UpdateLight( true, 255, 0, 0, 190 );
 			SetThink( NULL );
-			SetNextThink( gpGlobals->curtime + 0.5 );
+			SetNextThink( gpGlobals->GetCurTime() + 0.5 );
 
 			SetTouch( &CBounceBomb::ExplodeTouch );
 			unsigned int flags = VPhysicsGetObject()->GetCallbackFlags();
@@ -463,7 +463,7 @@ bool CBounceBomb::IsValidLocation()
 //---------------------------------------------------------
 void CBounceBomb::BounceThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 	StudioFrameAdvance();
 
 	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
@@ -525,7 +525,7 @@ void CBounceBomb::BounceThink()
 //---------------------------------------------------------
 void CBounceBomb::CavernBounceThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 	StudioFrameAdvance();
 
 	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
@@ -577,7 +577,7 @@ void CBounceBomb::CavernBounceThink()
 		EmitSound( "NPC_CombineMine.Hop" );
 
 		SetThink( &CBounceBomb::ExplodeThink );
-		SetNextThink( gpGlobals->curtime + 0.33f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.33f );
 	}
 }
 
@@ -585,10 +585,10 @@ void CBounceBomb::CavernBounceThink()
 //---------------------------------------------------------
 void CBounceBomb::CaptiveThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.05 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05 );
 	StudioFrameAdvance();
 
-	float phase = fabs( sin( gpGlobals->curtime * 4.0f ) );
+	float phase = fabs( sin( gpGlobals->GetCurTime() * 4.0f ) );
 	phase *= BOUNCEBOMB_HOOK_RANGE;
 	SetPoseParameter( m_iAllHooks, phase );
 	return;
@@ -598,7 +598,7 @@ void CBounceBomb::CaptiveThink()
 //---------------------------------------------------------
 void CBounceBomb::SettleThink()
 {
-	SetNextThink( gpGlobals->curtime + 0.05 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05 );
 	StudioFrameAdvance();
 
 	if( GetParent() )
@@ -775,7 +775,7 @@ void CBounceBomb::Wake( bool bAwake )
 	
 	if( !m_pWarnSound )
 	{
-		m_pWarnSound = controller.SoundCreate( filter, entindex(), "NPC_CombineMine.ActiveLoop" );
+		m_pWarnSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "NPC_CombineMine.ActiveLoop" );
 		controller.Play( m_pWarnSound, 1.0, PITCH_NORM  );
 	}
 
@@ -953,10 +953,10 @@ bool CBounceBomb::IsFriend( CBaseEntity *pEntity )
 //---------------------------------------------------------
 void CBounceBomb::SearchThink()
 {
-	if( !UTIL_FindClientInPVS(edict()) )
+	if( !UTIL_FindClientInPVS(this->NetworkProp()->GetEdict()) )
 	{
 		// Sleep!
-		SetNextThink( gpGlobals->curtime + 0.5 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5 );
 		return;
 	}
 
@@ -967,14 +967,14 @@ void CBounceBomb::SearchThink()
 			Wake(false);
 		}
 
-		SetNextThink( gpGlobals->curtime + 0.5 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5 );
 		return;
 	}
 
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 	StudioFrameAdvance();
 
-	if( m_pConstraint && gpGlobals->curtime - m_flTimeGrabbed >= 1.0f )
+	if( m_pConstraint && gpGlobals->GetCurTime() - m_flTimeGrabbed >= 1.0f )
 	{
 		m_OnPulledUp.FireOutput( this, this );
 		SetMineState( MINE_STATE_CAPTIVE );
@@ -1010,7 +1010,7 @@ void CBounceBomb::SearchThink()
 		{
 			// Don't pop up in the air, just explode if the NPC gets closer than explode radius.
 			SetThink( &CBounceBomb::ExplodeThink );
-			SetNextThink( gpGlobals->curtime + m_flExplosionDelay );
+			SetNextThink( gpGlobals->GetCurTime() + m_flExplosionDelay );
 		}
 	}
 }
@@ -1047,7 +1047,7 @@ void CBounceBomb::ExplodeTouch( CBaseEntity *pOther )
 
 	// Don't detonate against the world if not allowed. Actually, don't
 	// detonate against anything that's probably not an NPC (such as physics props)
-	if( m_flIgnoreWorldTime > gpGlobals->curtime && !pOther->MyCombatCharacterPointer() )
+	if( m_flIgnoreWorldTime > gpGlobals->GetCurTime() && !pOther->MyCombatCharacterPointer() )
 	{
 		return;
 	}
@@ -1170,7 +1170,7 @@ void CBounceBomb::InputDisarm( inputdata_t &inputdata )
 void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	m_flTimeGrabbed = FLT_MAX;
 
@@ -1200,7 +1200,7 @@ void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason
 //---------------------------------------------------------
 CBasePlayer *CBounceBomb::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime)
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -1212,7 +1212,7 @@ CBasePlayer *CBounceBomb::HasPhysicsAttacker( float dt )
 void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	m_iFlipAttempts = 0;
 
@@ -1222,7 +1222,7 @@ void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t re
 		{
 			// Yanking on a mine that is locked down, trying to rip it loose.
 			UpdateLight( true, 255, 255, 0, 190 );
-			m_flTimeGrabbed = gpGlobals->curtime;
+			m_flTimeGrabbed = gpGlobals->GetCurTime();
 			m_bHeldByPhysgun = true;
 
 			VPhysicsGetObject()->EnableMotion( true );
@@ -1266,12 +1266,12 @@ void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t re
 		m_bPlacedByPlayer = true;
 		SetTouch( NULL );
 		SetThink( &CBounceBomb::SettleThink );
-		SetNextThink( gpGlobals->curtime + 0.1);
+		SetNextThink( gpGlobals->GetCurTime() + 0.1);
 
 		// Since being punted causes the mine to flip, sometimes it 'catches an edge'
 		// and ends up touching the ground from whence it came, exploding instantly. 
 		// This little stunt prevents that by ignoring world collisions for a very short time.
-		m_flIgnoreWorldTime = gpGlobals->curtime + 0.1;
+		m_flIgnoreWorldTime = gpGlobals->GetCurTime() + 0.1;
 	}
 }
 

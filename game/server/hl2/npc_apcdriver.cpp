@@ -181,14 +181,14 @@ bool CNPC_APCDriver::FVisible( CBaseEntity *pTarget, int traceMask, CBaseEntity 
 	bool bVisible = m_hAPC->FVisible( pTarget, traceMask, ppBlocker );
 	if ( bVisible && (pTarget == GetEnemy()) )
 	{
-		m_flTimeLastSeenEnemy = gpGlobals->curtime;
+		m_flTimeLastSeenEnemy = gpGlobals->GetCurTime();
 	}
 
 	if ( pTarget->IsPlayer() || pTarget->Classify() == CLASS_BULLSEYE )
 	{
 		if (!bVisible)
 		{
-			if ( ( gpGlobals->curtime - m_flTimeLastSeenEnemy ) <= NPC_APCDRIVER_REMEMBER_TIME )
+			if ( ( gpGlobals->GetCurTime() - m_flTimeLastSeenEnemy ) <= NPC_APCDRIVER_REMEMBER_TIME )
 				return true;
 		}
 	}
@@ -220,7 +220,7 @@ int CNPC_APCDriver::RangeAttack1Conditions( float flDot, float flDist )
 		return COND_NONE;
 
 	// Vehicle not ready to fire again yet?
-	if ( m_pVehicleInterface->Weapon_PrimaryCanFireAt() > gpGlobals->curtime + 0.1f )
+	if ( m_pVehicleInterface->Weapon_PrimaryCanFireAt() > gpGlobals->GetCurTime() + 0.1f )
 		return COND_NONE;
 
 	float flMinDist, flMaxDist;
@@ -250,7 +250,7 @@ int CNPC_APCDriver::RangeAttack2Conditions( float flDot, float flDist )
 		return COND_NONE;
 
 	// Vehicle not ready to fire again yet?
-	if ( m_pVehicleInterface->Weapon_SecondaryCanFireAt() > gpGlobals->curtime + 0.1f )
+	if ( m_pVehicleInterface->Weapon_SecondaryCanFireAt() > gpGlobals->GetCurTime() + 0.1f )
 		return COND_NONE;
 
 	float flMinDist, flMaxDist;

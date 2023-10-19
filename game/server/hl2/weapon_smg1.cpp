@@ -66,10 +66,16 @@ protected:
 
 	Vector	m_vecTossVelocity;
 	float	m_flNextGrenadeCheck;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponSMG1)
+	BEGIN_SEND_TABLE(CWeaponSMG1, DT_WeaponSMG1, DT_HLSelectFireMachineGun)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponSMG1, DT_WeaponSMG1)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponSMG1, DT_WeaponSMG1)
+
 
 LINK_ENTITY_TO_CLASS( weapon_smg1, CWeaponSMG1 );
 PRECACHE_WEAPON_REGISTER(weapon_smg1);
@@ -181,7 +187,7 @@ void CWeaponSMG1::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector 
 
 	CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
 	pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED,
-		MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2, entindex(), 0 );
+		MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2, this->NetworkProp()->entindex(), 0 );
 
 	pOperator->DoMuzzleFlash();
 	m_iClip1 = m_iClip1 - 1;
@@ -262,11 +268,11 @@ void CWeaponSMG1::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChar
 
 			if( g_pGameRules->IsSkillLevel( SKILL_HARD ) )
 			{
-				m_flNextGrenadeCheck = gpGlobals->curtime + RandomFloat(2, 3);
+				m_flNextGrenadeCheck = gpGlobals->GetCurTime() + RandomFloat(2, 3);
 			}
 			else
 			{
-				m_flNextGrenadeCheck = gpGlobals->curtime + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
+				m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
 			}
 
 			m_iClip2--;
@@ -352,7 +358,7 @@ void CWeaponSMG1::SecondaryAttack( void )
 	{
 		SendWeaponAnim( ACT_VM_DRYFIRE );
 		BaseClass::WeaponSound( EMPTY );
-		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+		m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.5f;
 		return;
 	}
 
@@ -392,13 +398,13 @@ void CWeaponSMG1::SecondaryAttack( void )
 	pPlayer->RemoveAmmo( 1, m_iSecondaryAmmoType );
 
 	// Can shoot again immediately
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5f;
 
 	// Can blow up after a short delay (so have time to release mouse button)
-	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 1.0f;
 
 	// Register a muzzleflash for the AI.
-	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );	
+	pPlayer->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 0.5 );	
 
 	m_iSecondaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, false, GetClassname() );
@@ -422,7 +428,7 @@ int CWeaponSMG1::WeaponRangeAttack2Condition(/* float flDot, float flDist */)
 	// --------------------------------------------------------
 	// Assume things haven't changed too much since last time
 	// --------------------------------------------------------
-	if (gpGlobals->curtime < m_flNextGrenadeCheck )
+	if (gpGlobals->GetCurTime() < m_flNextGrenadeCheck )
 		return m_lastGrenadeCondition;
 */
 
@@ -468,7 +474,7 @@ int CWeaponSMG1::WeaponRangeAttack2Condition(/* float flDot, float flDist */)
 	if ( ( vecTarget - npcOwner->GetLocalOrigin() ).Length2D() <= COMBINE_MIN_GRENADE_CLEAR_DIST )
 	{
 		// crap, I don't want to blow myself up
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
+		m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1; // one full second.
 		return (COND_NONE);
 	}
 
@@ -483,7 +489,7 @@ int CWeaponSMG1::WeaponRangeAttack2Condition(/* float flDot, float flDist */)
 		if ( npcOwner->IRelationType( pTarget ) == D_LI )
 		{
 			// crap, I might blow my own guy up. Don't throw a grenade and don't check again for a while.
-			m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
+			m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1; // one full second.
 			return (COND_WEAPON_BLOCKED_BY_FRIEND);
 		}
 	}
@@ -500,14 +506,14 @@ int CWeaponSMG1::WeaponRangeAttack2Condition(/* float flDot, float flDist */)
 
 		// don't check again for a while.
 		// JAY: HL1 keeps checking - test?
-		//m_flNextGrenadeCheck = gpGlobals->curtime;
-		m_flNextGrenadeCheck = gpGlobals->curtime + 0.3; // 1/3 second.
+		//m_flNextGrenadeCheck = gpGlobals->GetCurTime();
+		m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 0.3; // 1/3 second.
 		return COND_CAN_RANGE_ATTACK2;
 	}
 	else
 	{
 		// don't check again for a while.
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
+		m_flNextGrenadeCheck = gpGlobals->GetCurTime() + 1; // one full second.
 		return COND_WEAPON_SIGHT_OCCLUDED;
 	}
 }

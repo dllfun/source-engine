@@ -19,12 +19,34 @@
 	#define CHalfLife2Proxy C_HalfLife2Proxy
 #endif
 
+#ifdef CLIENT_DLL
+void RecvProxy_HL2GameRules(const RecvProp* pProp, void** pOut, void* pData, int objectID);
+#else
+void* SendProxy_HL2GameRules(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID);
+#endif
 
 class CHalfLife2Proxy : public CGameRulesProxy
 {
 public:
 	DECLARE_CLASS( CHalfLife2Proxy, CGameRulesProxy );
 	DECLARE_NETWORKCLASS();
+
+public:
+#ifdef GAME_DLL
+	BEGIN_INIT_SEND_TABLE(CHalfLife2Proxy)
+	BEGIN_SEND_TABLE(CHalfLife2Proxy, DT_HalfLife2Proxy, DT_GameRulesProxy)
+		SendPropDataTable("hl2_gamerules_data", 0, REFERENCE_SEND_TABLE(DT_HL2GameRules), SendProxy_HL2GameRules)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
+#endif
+
+#ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CHalfLife2Proxy)
+	BEGIN_RECV_TABLE(CHalfLife2Proxy, DT_HalfLife2Proxy, DT_GameRulesProxy)
+		RecvPropDataTable("hl2_gamerules_data", 0, 0, REFERENCE_RECV_TABLE(DT_HL2GameRules), RecvProxy_HL2GameRules)
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
+#endif
 };
 
 
@@ -32,7 +54,11 @@ class CHalfLife2 : public CSingleplayRules
 {
 public:
 	DECLARE_CLASS( CHalfLife2, CSingleplayRules );
-
+#if !defined( CLIENT_DLL )
+	DECLARE_SERVERCLASS()
+#else
+	DECLARE_CLIENTCLASS();
+#endif
 	// Damage Query Overrides.
 	virtual bool			Damage_IsTimeBased( int iDmgType );
 	// TEMP:
@@ -98,6 +124,23 @@ private:
 
 	int						DefaultFOV( void ) { return 75; }
 #endif
+
+public:
+	//BEGIN_NETWORK_TABLE_NOBASE(CHalfLife2, DT_HL2GameRules)
+#ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CHalfLife2)
+	BEGIN_RECV_TABLE_NOBASE(CHalfLife2, DT_HL2GameRules)
+		RecvPropBool(RECVINFO(m_bMegaPhysgun)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
+#else
+	BEGIN_INIT_SEND_TABLE(CHalfLife2)
+	BEGIN_SEND_TABLE_NOBASE(CHalfLife2, DT_HL2GameRules)
+		SendPropBool(SENDINFO(m_bMegaPhysgun)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
+#endif
+	//END_NETWORK_TABLE()
 };
 
 

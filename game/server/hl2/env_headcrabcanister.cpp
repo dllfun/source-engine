@@ -157,6 +157,15 @@ private:
 	float m_flMinRefireTime;
 	float m_flMaxRefireTime;
 	int m_nSkyboxCannisterCount;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CEnvHeadcrabCanister)
+	INIT_REFERENCE_SEND_TABLE(CEnvHeadcrabCanisterShared)
+	BEGIN_SEND_TABLE(CEnvHeadcrabCanister, DT_EnvHeadcrabCanister, DT_BaseAnimating)
+		SendPropDataTable(SENDINFO_DT(m_Shared), REFERENCE_SEND_TABLE(DT_EnvHeadcrabCanisterShared)),
+		SendPropBool(SENDINFO(m_bLanded)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 
@@ -212,10 +221,8 @@ END_DATADESC()
 
 EXTERN_SEND_TABLE(DT_EnvHeadcrabCanisterShared);
 
-IMPLEMENT_SERVERCLASS_ST( CEnvHeadcrabCanister, DT_EnvHeadcrabCanister )
-	SendPropDataTable( SENDINFO_DT( m_Shared ), &REFERENCE_SEND_TABLE(DT_EnvHeadcrabCanisterShared) ),
-	SendPropBool( SENDINFO( m_bLanded ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CEnvHeadcrabCanister, DT_EnvHeadcrabCanister )
+
 
 
 //-----------------------------------------------------------------------------
@@ -392,10 +399,10 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 			GetVectors( &vecForward, NULL, NULL );
 			VectorMultiply( vecForward, -1.0f, vecImpactDirection );
 
-			m_Shared.InitInWorld( gpGlobals->curtime, pLaunchPos->GetAbsOrigin(), GetAbsAngles(), 
+			m_Shared.InitInWorld( gpGlobals->GetCurTime(), pLaunchPos->GetAbsOrigin(), GetAbsAngles(), 
 				vecImpactDirection, m_vecImpactPosition, true );
 			SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterWorldThink );
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 	else if ( DetectInSkybox() )
@@ -409,11 +416,11 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 		GetVectors( &vecForward, NULL, NULL );
 		vecForward *= -1.0f;
 
-		m_Shared.InitInSkybox( gpGlobals->curtime, m_vecImpactPosition, GetAbsAngles(), vecForward, 
+		m_Shared.InitInSkybox( gpGlobals->GetCurTime(), m_vecImpactPosition, GetAbsAngles(), vecForward, 
 			m_vecImpactPosition, pCamera->m_skyboxData.origin, pCamera->m_skyboxData.scale );
 		AddEFlags( EFL_IN_SKYBOX );
 		SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterSkyboxOnlyThink );
-		SetNextThink( gpGlobals->curtime + m_Shared.GetEnterWorldTime() + TICK_INTERVAL );
+		SetNextThink( gpGlobals->GetCurTime() + m_Shared.GetEnterWorldTime() + TICK_INTERVAL );
 	}
 	else
 	{
@@ -425,7 +432,7 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 		pCamera = GetCurrentSkyCamera();
 		if ( pCamera )
 		{
-			m_Shared.InitInSkybox( gpGlobals->curtime, vecStartPosition, vecStartAngles, vecDirection, 
+			m_Shared.InitInSkybox( gpGlobals->GetCurTime(), vecStartPosition, vecStartAngles, vecDirection, 
 				m_vecImpactPosition, pCamera->m_skyboxData.origin, pCamera->m_skyboxData.scale );
 
 			if ( m_Shared.IsInSkybox() )
@@ -434,26 +441,26 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 				SetSolid( SOLID_NONE );
 				AddEFlags( EFL_IN_SKYBOX );
 				SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterSkyboxThink );
-				SetNextThink( gpGlobals->curtime + m_Shared.GetEnterWorldTime() );
+				SetNextThink( gpGlobals->GetCurTime() + m_Shared.GetEnterWorldTime() );
 			}
 			else
 			{
 				SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterWorldThink );
-				SetNextThink( gpGlobals->curtime );
+				SetNextThink( gpGlobals->GetCurTime() );
 			}
 		}
 		else
 		{
-			m_Shared.InitInWorld( gpGlobals->curtime, vecStartPosition, vecStartAngles, 
+			m_Shared.InitInWorld( gpGlobals->GetCurTime(), vecStartPosition, vecStartAngles, 
 				vecDirection, m_vecImpactPosition );
 			SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterWorldThink );
-			SetNextThink( gpGlobals->curtime );
+			SetNextThink( gpGlobals->GetCurTime() );
 		}
 	}
 
 	Vector vecEndPosition;
 	QAngle vecEndAngles;
-	m_Shared.GetPositionAtTime( gpGlobals->curtime, vecEndPosition, vecEndAngles );
+	m_Shared.GetPositionAtTime( gpGlobals->GetCurTime(), vecEndPosition, vecEndAngles );
 	SetAbsOrigin( vecEndPosition );
 	SetAbsAngles( vecEndAngles );
 
@@ -482,7 +489,7 @@ void CEnvHeadcrabCanister::InputFireCanister( inputdata_t &inputdata )
 
 	if ( !HasSpawnFlags( SF_NO_LAUNCH_SOUND ) )
 	{
-		EmitSound( filter, entindex(), "HeadcrabCanister.LaunchSound" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "HeadcrabCanister.LaunchSound" );
 	}
 
 	// Place the canister
@@ -710,7 +717,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink()
 	int nHeadCrabAttachment = LookupAttachment( "headcrab" );
 	if ( GetAttachment( nHeadCrabAttachment, vecSpawnPosition, vecSpawnAngles ) )
 	{
-		CBaseEntity *pEnt = CreateEntityByName( s_pHeadcrabClass[m_nHeadcrabType] );
+		CBaseEntity *pEnt = engineServer->CreateEntityByName( s_pHeadcrabClass[m_nHeadcrabType] );
 		CBaseHeadcrab *pHeadCrab = assert_cast<CBaseHeadcrab*>(pEnt);
 
 		// Necessary to get it to eject properly (don't allow the NPC
@@ -730,11 +737,11 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink()
 	if ( m_nHeadcrabCount != 0 )
 	{
 		float flWaitTime = random->RandomFloat( 1.0f, 2.0f );
-		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->curtime + flWaitTime, s_pHeadcrabThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->GetCurTime() + flWaitTime, s_pHeadcrabThinkContext );
 	}
 	else
 	{
-		SetContextThink( NULL, gpGlobals->curtime, s_pHeadcrabThinkContext );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), s_pHeadcrabThinkContext );
 	}
 }
 
@@ -749,7 +756,7 @@ void CEnvHeadcrabCanister::StartSpawningHeadcrabs( float flDelay )
 
 	if ( m_nHeadcrabCount != 0 )
 	{
-		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->curtime + flDelay, s_pHeadcrabThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->GetCurTime() + flDelay, s_pHeadcrabThinkContext );
 	}
 }
 
@@ -762,7 +769,7 @@ void CEnvHeadcrabCanister::CanisterFinishedOpening( void )
 	ResetSequence( LookupSequence( "idle_open" ) );
 	m_OnOpened.FireOutput( this, this, 0 );
 	m_bOpened = true;
-	SetContextThink( NULL, gpGlobals->curtime, s_pOpenThinkContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pOpenThinkContext );
 
 	if ( !HasSpawnFlags( SF_START_IMPACTED ) )
 	{
@@ -786,7 +793,7 @@ void CEnvHeadcrabCanister::WaitForOpenSequenceThink()
 	}
 	else
 	{
-		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink, gpGlobals->curtime + 0.01f, s_pOpenThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink, gpGlobals->GetCurTime() + 0.01f, s_pOpenThinkContext );
 	}
 }
 
@@ -805,7 +812,7 @@ void CEnvHeadcrabCanister::OpenCanister( void )
 		EmitSound( "HeadcrabCanister.Open" );
 
 		ResetSequence( nOpenSequence );
-		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink, gpGlobals->curtime + 0.01f, s_pOpenThinkContext );
+		SetContextThink( &CEnvHeadcrabCanister::WaitForOpenSequenceThink, gpGlobals->GetCurTime() + 0.01f, s_pOpenThinkContext );
 	}
 	else
 	{
@@ -914,7 +921,7 @@ void CEnvHeadcrabCanister::Detonate( )
 		SetSolidFlags( FSOLID_NOT_SOLID );
 
 		SetThink( &CEnvHeadcrabCanister::SUB_Remove );
-		SetNextThink( gpGlobals->curtime + ENV_HEADCRABCANISTER_TRAIL_TIME );
+		SetNextThink( gpGlobals->GetCurTime() + ENV_HEADCRABCANISTER_TRAIL_TIME );
 
 		return;
 	}
@@ -958,7 +965,7 @@ void CEnvHeadcrabCanister::Detonate( )
 void CEnvHeadcrabCanister::HeadcrabCanisterWorldThink( void )
 {
 	// Get the current time.
-	float flTime = gpGlobals->curtime;
+	float flTime = gpGlobals->GetCurTime();
 
 	Vector vecStartPosition = GetAbsOrigin();
 
@@ -1002,7 +1009,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterWorldThink( void )
 	// Touch triggers along the way
 	PhysicsTouchTriggers( &vecStartPosition );
 
-	SetNextThink( gpGlobals->curtime + 0.2f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.2f );
 	SetAbsAngles( vecEndAngles );
 
 	if ( !m_bHasDetonated )
@@ -1027,7 +1034,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxThink( void )
 
 	Vector vecEndPosition;
 	QAngle vecEndAngles;
-	m_Shared.GetPositionAtTime( gpGlobals->curtime, vecEndPosition, vecEndAngles );
+	m_Shared.GetPositionAtTime( gpGlobals->GetCurTime(), vecEndPosition, vecEndAngles );
 	UTIL_SetOrigin( this, vecEndPosition );
 	SetAbsAngles( vecEndAngles );
 	RemoveEFlags( EFL_IN_SKYBOX );
@@ -1040,7 +1047,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxThink( void )
 
 	// Now we start looking for collisions
 	SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterWorldThink );
-	SetNextThink( gpGlobals->curtime + 0.01f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 }
 
 
@@ -1051,14 +1058,14 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxOnlyThink( void )
 {
 	Vector vecEndPosition;
 	QAngle vecEndAngles;
-	m_Shared.GetPositionAtTime( gpGlobals->curtime, vecEndPosition, vecEndAngles );
+	m_Shared.GetPositionAtTime( gpGlobals->GetCurTime(), vecEndPosition, vecEndAngles );
 	UTIL_SetOrigin( this, vecEndPosition );
 	SetAbsAngles( vecEndAngles );
 
 	if ( !HasSpawnFlags( SF_NO_IMPACT_SOUND ) )
 	{	
 		CPASAttenuationFilter filter( this, ATTN_NONE );
-		EmitSound( filter, entindex(), "HeadcrabCanister.SkyboxExplosion" );
+		EmitSound( filter, this->NetworkProp()->entindex(), "HeadcrabCanister.SkyboxExplosion" );
 	}
 
 	if ( m_nSkyboxCannisterCount != 0 )
@@ -1072,7 +1079,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxOnlyThink( void )
 
 	float flRefireTime = random->RandomFloat( m_flMinRefireTime, m_flMaxRefireTime ) + ENV_HEADCRABCANISTER_TRAIL_TIME;
 	SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterSkyboxRestartThink );
-	SetNextThink( gpGlobals->curtime + flRefireTime );
+	SetNextThink( gpGlobals->GetCurTime() + flRefireTime );
 }
 
 
@@ -1101,7 +1108,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxRestartThink( void )
 void CEnvHeadcrabCanister::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if ( pInfo->m_pTransmitEdict->Get( this->NetworkProp()->entindex() ) )
 		return;
 
 	BaseClass::SetTransmit( pInfo, bAlways );

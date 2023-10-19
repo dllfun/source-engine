@@ -85,6 +85,17 @@ public:
 
 	void		RemoveFromActiveFlares( void );
 	void		AddToActiveFlares( void );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CFlare)
+	BEGIN_SEND_TABLE(CFlare, DT_Flare, DT_BaseCombatCharacter)
+		SendPropFloat(SENDINFO(m_flTimeBurnOut), 0, SPROP_NOSCALE),
+		SendPropFloat(SENDINFO(m_flScale), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_bLight), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bSmoke), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bPropFlare), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 //---------------------

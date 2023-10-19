@@ -206,7 +206,7 @@ private:
 	bool IsHeldByPhyscannon( );
 
 	void StartLoitering( const Vector &vecLoiterPosition );
-	void StopLoitering() { m_vecLoiterPosition = vec3_invalid; m_fTimeNextLoiterPulse = gpGlobals->curtime; }
+	void StopLoitering() { m_vecLoiterPosition = vec3_invalid; m_fTimeNextLoiterPulse = gpGlobals->GetCurTime(); }
 	bool IsLoitering() { return m_vecLoiterPosition != vec3_invalid; }
 	void Loiter();
 
@@ -276,6 +276,15 @@ private:
 	CNetworkVar( int,	m_nEnginePitch2 );
 	CNetworkVar( float,	m_flEnginePitch1Time );
 	CNetworkVar( float,	m_flEnginePitch2Time );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_Manhack)
+	BEGIN_SEND_TABLE(CNPC_Manhack, DT_NPC_Manhack, DT_AI_BaseNPC)
+		SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch1), 8),
+		SendPropFloat(SENDINFO(m_flEnginePitch1Time), 0, SPROP_NOSCALE),
+		SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch2), 8)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif	//NPC_MANHACK_H

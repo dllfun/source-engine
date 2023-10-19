@@ -210,7 +210,7 @@ public:
 	bool	OverrideMove( float flInterval ) { return true; }
 	bool	IsValidEnemy( CBaseEntity *pEnemy );
 	bool	IsPlayerVehicle( CBaseEntity *pEntity );
-	bool	IsShocking() { return gpGlobals->curtime < m_flShockTime ? true : false; }
+	bool	IsShocking() { return gpGlobals->GetCurTime() < m_flShockTime ? true : false; }
 	void	UpdateRollingSound();
 	void	UpdatePingSound();
 	void	StopRollingSound();
@@ -250,7 +250,7 @@ public:
 			return CLASS_NONE;
 
 		//About to blow up after being hacked so do damage to the player.
-		if ( m_bHackedByAlyx && ( m_flPowerDownDetonateTime > 0.0f && m_flPowerDownDetonateTime <= gpGlobals->curtime ) )
+		if ( m_bHackedByAlyx && ( m_flPowerDownDetonateTime > 0.0f && m_flPowerDownDetonateTime <= gpGlobals->GetCurTime() ) )
 			return CLASS_COMBINE;
 
 		return ( m_bHeld || m_bHackedByAlyx ) ? CLASS_HACKED_ROLLERMINE : CLASS_COMBINE; 
@@ -258,7 +258,7 @@ public:
 
 	virtual bool ShouldGoToIdleState() 
 	{ 
-		return gpGlobals->curtime > m_flGoIdleTime ? true : false;
+		return gpGlobals->GetCurTime() > m_flGoIdleTime ? true : false;
 	}
 
 	virtual	void OnStateChange( NPC_STATE OldState, NPC_STATE NewState );
@@ -308,7 +308,7 @@ protected:
 
 	void	ShockTarget( CBaseEntity *pOther );
 
-	bool	IsActive() { return m_flActiveTime > gpGlobals->curtime ? false : true; }
+	bool	IsActive() { return m_flActiveTime > gpGlobals->GetCurTime() ? false : true; }
 
 	// INPCInteractive Functions
 	virtual bool	CanInteractWith( CAI_BaseNPC *pUser ) { return true; }
@@ -354,6 +354,16 @@ protected:
 	float	m_flPowerDownDetonateTime;
 
 	static string_t gm_iszDropshipClassname;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CNPC_RollerMine)
+	BEGIN_SEND_TABLE(CNPC_RollerMine, DT_RollerMine, DT_AI_BaseNPC)
+		SendPropInt(SENDINFO(m_bIsOpen), 1, SPROP_UNSIGNED),
+		SendPropFloat(SENDINFO(m_flActiveTime), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_bHackedByAlyx), 1, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_bPowerDown), 1, SPROP_UNSIGNED),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 string_t CNPC_RollerMine::gm_iszDropshipClassname;
@@ -422,12 +432,8 @@ BEGIN_DATADESC( CNPC_RollerMine )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CNPC_RollerMine, DT_RollerMine )
-	SendPropInt(SENDINFO(m_bIsOpen), 1, SPROP_UNSIGNED ),
-	SendPropFloat(SENDINFO(m_flActiveTime), 0, SPROP_NOSCALE ),
-	SendPropInt(SENDINFO(m_bHackedByAlyx), 1, SPROP_UNSIGNED ),
-	SendPropInt(SENDINFO(m_bPowerDown), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CNPC_RollerMine, DT_RollerMine )
+
 
 bool NPC_Rollermine_IsRollermine( CBaseEntity *pEntity )
 {
@@ -443,12 +449,12 @@ CBaseEntity *NPC_Rollermine_DropFromPoint( const Vector &originStart, CBaseEntit
 	// Use the template, if we have it
 	if ( pszTemplate && pszTemplate[0] )
 	{
-		MapEntity_ParseEntity( pEntity, pszTemplate, NULL );
+		MapEntity_ParseEntity("", pEntity, pszTemplate, NULL);
 		pMine = dynamic_cast<CNPC_RollerMine *>(pEntity);
 	}
 	else
 	{
-		pMine = (CNPC_RollerMine*)CreateEntityByName("npc_rollermine");
+		pMine = (CNPC_RollerMine*)engineServer->CreateEntityByName("npc_rollermine");
 	}
 
 	if ( pMine )
@@ -751,7 +757,7 @@ NPC_STATE CNPC_RollerMine::SelectIdealState( void )
 			{
 				ClearEnemyMemory();
 				SetEnemy( NULL );
-				m_flGoIdleTime = gpGlobals->curtime + 10;
+				m_flGoIdleTime = gpGlobals->GetCurTime() + 10;
 				return NPC_STATE_ALERT;
 			}
 		}
@@ -1138,7 +1144,7 @@ void CNPC_RollerMine::StartTask( const Task_t *pTask )
 			
 			pPhysicsObject->Wake();
 
-			m_flChargeTime = gpGlobals->curtime;
+			m_flChargeTime = gpGlobals->GetCurTime();
 		}
 
 		break;
@@ -1463,7 +1469,7 @@ void CNPC_RollerMine::RunTask( const Task_t *pTask )
 			flDot = DotProduct( vecVelocity, vecToTarget );
 
 			// more torque the longer the roller has been going.
-			flTorqueFactor = 1 + (gpGlobals->curtime - m_flChargeTime) * 2;
+			flTorqueFactor = 1 + (gpGlobals->GetCurTime() - m_flChargeTime) * 2;
 
 			float flMaxTorque = ROLLERMINE_MAX_TORQUE_FACTOR;
 			
@@ -1535,7 +1541,7 @@ void CNPC_RollerMine::RunTask( const Task_t *pTask )
 			{
 				if( vecVelocity.x != 0 && vecVelocity.y != 0 )
 				{
-					if( gpGlobals->curtime - m_flChargeTime > 1.0 && flTorqueFactor > 1 &&  flDot < 0.0 )
+					if( gpGlobals->GetCurTime() - m_flChargeTime > 1.0 && flTorqueFactor > 1 &&  flDot < 0.0 )
 					{
 						if( m_bIsOpen )
 						{
@@ -1589,7 +1595,7 @@ void CNPC_RollerMine::RunTask( const Task_t *pTask )
 			flDot = DotProduct( vecVelocity, vecToTarget );
 
 			// more torque the longer the roller has been going.
-			flTorqueFactor = 1 + (gpGlobals->curtime - m_flChargeTime) * 2;
+			flTorqueFactor = 1 + (gpGlobals->GetCurTime() - m_flChargeTime) * 2;
 
 			float flMaxTorque = ROLLERMINE_MAX_TORQUE_FACTOR * 0.75;
 			if( flTorqueFactor < 1 )
@@ -1621,10 +1627,10 @@ void CNPC_RollerMine::RunTask( const Task_t *pTask )
 
 	case TASK_ROLLERMINE_POWERDOWN:
 		{
-			if ( m_flPowerDownTime <= gpGlobals->curtime )
+			if ( m_flPowerDownTime <= gpGlobals->GetCurTime() )
 			{
-				m_flNextHop = gpGlobals->curtime;
-				m_flPowerDownTime = gpGlobals->curtime + RandomFloat( 0.3, 0.9 );
+				m_flNextHop = gpGlobals->GetCurTime();
+				m_flPowerDownTime = gpGlobals->GetCurTime() + RandomFloat( 0.3, 0.9 );
 				EmitSound( "NPC_RollerMine.Hurt" );
 
 				CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin(), 400, 0.5f, this );
@@ -1639,10 +1645,10 @@ void CNPC_RollerMine::RunTask( const Task_t *pTask )
 				}
 			}
 
-			if ( m_flPowerDownDetonateTime <= gpGlobals->curtime )
+			if ( m_flPowerDownDetonateTime <= gpGlobals->GetCurTime() )
 			{
 				SetThink( &CNPC_RollerMine::PreDetonate );
-				SetNextThink( gpGlobals->curtime + 0.5f );
+				SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 			}
 
 			// No TaskComplete() here, because the task will never complete. The rollermine will explode.
@@ -1808,7 +1814,7 @@ void CNPC_RollerMine::EmbedTouch( CBaseEntity *pOther )
 	m_bEmbedOnGroundImpact = false;
 
 	// Did we hit the world?
-	if ( pOther->entindex() == 0 )
+	if ( pOther->NetworkProp()->entindex() == 0 )
 	{
 		m_bBuried = true;
 		trace_t tr;
@@ -1938,7 +1944,7 @@ void CNPC_RollerMine::ShockTarget( CBaseEntity *pOther )
 	VectorNormalize( shockDir );
 
 	CPVSFilter filter( shockPos );
-	te->GaussExplosion( filter, 0.0f, shockPos, shockDir, 0 );
+	g_pTESystem->GaussExplosion( filter, 0.0f, shockPos, shockDir, 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -1967,7 +1973,7 @@ void CNPC_RollerMine::ShockTouch( CBaseEntity *pOther )
 	if ( pOther->IsSolidFlagSet(FSOLID_TRIGGER | FSOLID_VOLUME_CONTENTS) )
 		return;
 
-	if ( m_bHeld || m_hVehicleStuckTo || gpGlobals->curtime < m_flShockTime )
+	if ( m_bHeld || m_hVehicleStuckTo || gpGlobals->GetCurTime() < m_flShockTime )
 		return;
 
 	// error?
@@ -1990,7 +1996,7 @@ void CNPC_RollerMine::ShockTouch( CBaseEntity *pOther )
 	impulse *= 600;
 
 	// Stun the roller
-	m_flActiveTime = gpGlobals->curtime + GetStunDelay();
+	m_flActiveTime = gpGlobals->GetCurTime() + GetStunDelay();
 
 	// If we're a 'friendly' rollermine, just push the player a bit
 	if ( HasSpawnFlags( SF_ROLLERMINE_FRIENDLY ) )
@@ -2011,7 +2017,7 @@ void CNPC_RollerMine::ShockTouch( CBaseEntity *pOther )
 	// Do a shock effect
 	ShockTarget( pOther );
 
-	m_flShockTime = gpGlobals->curtime + 1.25;
+	m_flShockTime = gpGlobals->GetCurTime() + 1.25;
 
 	// Calculate physics force
 	Vector out;
@@ -2187,7 +2193,7 @@ void CNPC_RollerMine::AnnounceArrivalToOthers( CBaseEntity *pOther )
 	// Stop all rollers on the vehicle falling off due to the force of the arriving one
 	for ( int i = 0; i < iRollers; i++ )
 	{
-		aRollersOnVehicle[i]->PreventUnstickUntil( gpGlobals->curtime + 1 );
+		aRollersOnVehicle[i]->PreventUnstickUntil( gpGlobals->GetCurTime() + 1 );
 	}
 
 	// See if we've got enough rollers on the vehicle to start being mean
@@ -2229,7 +2235,7 @@ void CNPC_RollerMine::AnnounceArrivalToOthers( CBaseEntity *pOther )
 void CNPC_RollerMine::InputConstraintBroken( inputdata_t &inputdata )
 {
 	// Prevent rollermines being dislodged right as they stick
-	if ( m_flPreventUnstickUntil > gpGlobals->curtime )
+	if ( m_flPreventUnstickUntil > gpGlobals->GetCurTime() )
 		return;
 
 	// We can't delete it here safely
@@ -2238,7 +2244,7 @@ void CNPC_RollerMine::InputConstraintBroken( inputdata_t &inputdata )
 
 	// dazed
 	m_RollerController.m_vecAngular.Init();
-	m_flActiveTime = gpGlobals->curtime + GetStunDelay();
+	m_flActiveTime = gpGlobals->GetCurTime() + GetStunDelay();
 }
 
 //-----------------------------------------------------------------------------
@@ -2274,7 +2280,7 @@ void CNPC_RollerMine::InputJoltVehicle( inputdata_t &inputdata )
 	int iRollers = CountRollersOnMyVehicle( &aRollersOnVehicle );
 	for ( int i = 0; i < iRollers; i++ )
 	{
-		aRollersOnVehicle[i]->PreventUnstickUntil( gpGlobals->curtime + 1 );
+		aRollersOnVehicle[i]->PreventUnstickUntil( gpGlobals->GetCurTime() + 1 );
 	}
 
 	// Now smack the vehicle
@@ -2347,7 +2353,7 @@ void CNPC_RollerMine::InputTurnOff( inputdata_t &inputdata )
 void CNPC_RollerMine::InputPowerdown( inputdata_t &inputdata )
 {
 	m_bPowerDown = true;
-	m_flPowerDownTime = gpGlobals->curtime + RandomFloat( 0.1, 0.5 );
+	m_flPowerDownTime = gpGlobals->GetCurTime() + RandomFloat( 0.1, 0.5 );
 	m_flPowerDownDetonateTime = m_flPowerDownTime + RandomFloat( 1.5, 4.0 );
 
 	ClearSchedule( "Received power down input" );
@@ -2391,7 +2397,7 @@ void CNPC_RollerMine::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_
 	if ( reason == PUNTED_BY_CANNON )
 	{
 		// Be stunned
-		m_flActiveTime = gpGlobals->curtime + GetStunDelay();
+		m_flActiveTime = gpGlobals->GetCurTime() + GetStunDelay();
 		return;
 	}
 
@@ -2413,7 +2419,7 @@ void CNPC_RollerMine::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_
 void CNPC_RollerMine::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
 	m_bHeld = false;
-	m_flActiveTime = gpGlobals->curtime + GetStunDelay();
+	m_flActiveTime = gpGlobals->GetCurTime() + GetStunDelay();
 	m_RollerController.On();
 	
 	// explode on contact if launched from the physgun
@@ -2458,13 +2464,13 @@ int CNPC_RollerMine::OnTakeDamage( const CTakeDamageInfo &info )
 		if ( info.GetAttacker() && info.GetAttacker()->m_iClassname != m_iClassname )
 		{
 			SetThink( &CNPC_RollerMine::PreDetonate );
-			SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1f, 0.5f ) );
+			SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.1f, 0.5f ) );
 		}
 		else
 		{
 			// dazed
 			m_RollerController.m_vecAngular.Init();
-			m_flActiveTime = gpGlobals->curtime + GetStunDelay();
+			m_flActiveTime = gpGlobals->GetCurTime() + GetStunDelay();
 			Hop( 300 );
 		}
 	}
@@ -2477,7 +2483,7 @@ int CNPC_RollerMine::OnTakeDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CNPC_RollerMine::Hop( float height )
 {
-	if ( m_flNextHop > gpGlobals->curtime )
+	if ( m_flNextHop > gpGlobals->GetCurTime() )
 		return;
 
 	if ( GetMoveType() == MOVETYPE_VPHYSICS )
@@ -2489,7 +2495,7 @@ void CNPC_RollerMine::Hop( float height )
 		angVel.Random( -400.0f, 400.0f );
 		pPhysObj->AddVelocity( NULL, &angVel );
 
-		m_flNextHop = gpGlobals->curtime + ROLLERMINE_HOP_DELAY;
+		m_flNextHop = gpGlobals->GetCurTime() + ROLLERMINE_HOP_DELAY;
 	}
 }
 
@@ -2502,7 +2508,7 @@ void CNPC_RollerMine::PreDetonate( void )
 
 	SetTouch( NULL );
 	SetThink( &CNPC_RollerMine::Explode );
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 	EmitSound( "NPC_RollerMine.Hurt" );
 }
@@ -2543,7 +2549,7 @@ void CNPC_RollerMine::Explode( void )
 
 	// Remove myself a frame from now to avoid doing it in the middle of running AI
 	SetThink( &CNPC_RollerMine::SUB_Remove );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 const float MAX_ROLLING_SPEED = 720;
@@ -2655,7 +2661,7 @@ void CNPC_RollerMine::UpdateRollingSound()
 			return;
 
 		CPASAttenuationFilter filter( this );
-		m_pRollSound = controller.SoundCreate( filter, entindex(), params.channel, params.soundname, params.soundlevel );
+		m_pRollSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), params.channel, params.soundname, params.soundlevel );
 		controller.Play( m_pRollSound, params.volume, params.pitch );
 		m_rollingSoundState = soundState;
 	}
@@ -2700,7 +2706,7 @@ void CNPC_RollerMine::UpdatePingSound()
 		if ( !m_pPingSound )
 		{
 			CPASAttenuationFilter filter( this );
-			m_pPingSound = controller.SoundCreate( filter, entindex(), params.channel, params.soundname, params.soundlevel );
+			m_pPingSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), params.channel, params.soundname, params.soundlevel );
 			controller.Play( m_pPingSound, params.volume, 101 );
 		}
 

@@ -37,7 +37,7 @@ public:
 	CNetworkVector( m_vecDir );
 
 	BEGIN_INIT_SEND_TABLE(CTEMetalSparks)
-	BEGIN_SEND_TABLE_NOBASE(CTEMetalSparks, DT_TEMetalSparks)
+	BEGIN_SEND_TABLE(CTEMetalSparks, DT_TEMetalSparks, DT_BaseTempEntity)
 		SendPropVector(SENDINFO(m_vecPos), -1, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vecDir), -1, SPROP_COORD),
 	END_SEND_TABLE(DT_TEMetalSparks)

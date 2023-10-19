@@ -290,25 +290,25 @@ void CZombie::Spawn( void )
 
 	BaseClass::Spawn();
 
-	m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 4.0 );
+	m_flNextMoanSound = gpGlobals->GetCurTime() + random->RandomFloat( 1.0, 4.0 );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CZombie::PrescheduleThink( void )
 {
-  	if( gpGlobals->curtime > m_flNextMoanSound )
+  	if( gpGlobals->GetCurTime() > m_flNextMoanSound )
   	{
   		if( CanPlayMoanSound() )
   		{
 			// Classic guy idles instead of moans.
 			IdleSound();
 
-  			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 2.0, 5.0 );
+  			m_flNextMoanSound = gpGlobals->GetCurTime() + random->RandomFloat( 2.0, 5.0 );
   		}
   		else
  		{
-  			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 2.0 );
+  			m_flNextMoanSound = gpGlobals->GetCurTime() + random->RandomFloat( 1.0, 2.0 );
   		}
   	}
 
@@ -811,7 +811,7 @@ void CZombie::Extinguish()
 	{
 		ENVELOPE_CONTROLLER.SoundChangeVolume( m_pMoanSound, 0, 2.0 );
 		ENVELOPE_CONTROLLER.SoundChangePitch( m_pMoanSound, 100, 2.0 );
-		m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 2.0, 4.0 );
+		m_flNextMoanSound = gpGlobals->GetCurTime() + random->RandomFloat( 2.0, 4.0 );
 	}
 
 	BaseClass::Extinguish();

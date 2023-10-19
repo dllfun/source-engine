@@ -46,6 +46,12 @@ protected:
 	int	m_nShotsFired;	// Number of consecutive shots fired
 
 	float	m_flNextSoundTime;	// real-time clock of when to make next sound
+
+public:
+	BEGIN_INIT_SEND_TABLE(CHLMachineGun)
+		BEGIN_SEND_TABLE(CHLMachineGun, DT_HLMachineGun, DT_BaseHLCombatWeapon)
+		END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 //=========================================================
@@ -93,5 +99,11 @@ public:
 protected:
 	int m_iBurstSize;
 	int	m_iFireMode;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CHLSelectFireMachineGun)
+		BEGIN_SEND_TABLE(CHLSelectFireMachineGun, DT_HLSelectFireMachineGun, DT_HLMachineGun)
+		END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 #endif // BASEHLCOMBATWEAPON_H

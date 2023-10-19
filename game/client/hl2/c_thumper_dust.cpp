@@ -116,7 +116,7 @@ void FX_ThumperDust( const CEffectData &data )
 	float flScale = MIN( data.m_flScale, 255 );
 
 	// Setup the color for these particles
-	engineClient->ComputeLighting( data.m_vOrigin, NULL, true, vecColor );
+	engineClient->ComputeLighting(engineClient->GetWorldModel(), data.m_vOrigin, NULL, true, vecColor );
 	VectorLerp( vecColor, vecDustColor, 0.5, vecColor );
 	vecColor *= 255;
 

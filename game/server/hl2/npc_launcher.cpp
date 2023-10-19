@@ -207,7 +207,7 @@ void CNPC_Launcher::Precache( void )
 void CNPC_Launcher::LauncherTurnOn(void)
 {
 	SetThink(&CNPC_Launcher::LauncherThink);
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	m_flNextAttack = 0;
 }
 
@@ -274,7 +274,7 @@ void CNPC_Launcher::LaunchGrenade( CBaseEntity* pEnemy )
 	// If a path following missile, create a path following missile
 	if (m_sPathCornerName != NULL_STRING)
 	{
-		CGrenadePathfollower *pGrenade = CGrenadePathfollower::CreateGrenadePathfollower( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle, edict() );
+		CGrenadePathfollower *pGrenade = CGrenadePathfollower::CreateGrenadePathfollower( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle,this->NetworkProp()->GetEdict() );
 		pGrenade->SetDamage(m_flDamage);
 		pGrenade->SetDamageRadius(m_flDamageRadius);
 		pGrenade->Launch(m_flLaunchSpeed,m_sPathCornerName);
@@ -285,7 +285,7 @@ void CNPC_Launcher::LaunchGrenade( CBaseEntity* pEnemy )
 		AngleVectors( GetAbsAngles(), NULL, NULL, &vUp );
 		Vector vLaunchVelocity = (vUp * m_flLaunchSpeed);
 
-		CGrenadeHomer *pGrenade = CGrenadeHomer::CreateGrenadeHomer( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle, edict() );
+		CGrenadeHomer *pGrenade = CGrenadeHomer::CreateGrenadeHomer( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle, this->NetworkProp()->GetEdict() );
 		pGrenade->Spawn( );
 		pGrenade->SetSpin(m_flSpinMagnitude,m_flSpinSpeed);
 		pGrenade->SetHoming((0.01*m_nHomingStrength),m_flHomingDelay,m_flHomingRampUp,m_flHomingDuration,m_flHomingRampDown);
@@ -301,13 +301,13 @@ void CNPC_Launcher::LaunchGrenade( CBaseEntity* pEnemy )
 	ep.m_pSoundName = STRING(m_sLaunchSound);
 	ep.m_SoundLevel = SNDLVL_NORM;
 
-	EmitSound( filter, entindex(), ep );
+	EmitSound( filter, this->NetworkProp()->entindex(), ep );
 
 	if (m_bSmokeLaunch)
 	{
 		UTIL_Smoke(GetAbsOrigin(), random->RandomInt(20,30), random->RandomInt(10,15));
 	}
-	m_flNextAttack = gpGlobals->curtime + LAUNCHER_REST_TIME;
+	m_flNextAttack = gpGlobals->GetCurTime() + LAUNCHER_REST_TIME;
 
 }
 
@@ -364,14 +364,14 @@ bool CNPC_Launcher::IsValidEnemy( CBaseEntity *pTarget )
 //------------------------------------------------------------------------------
 void CNPC_Launcher::LauncherThink( void )
 {
-	if (gpGlobals->curtime > m_flNextAttack)
+	if (gpGlobals->GetCurTime() > m_flNextAttack)
 	{
 		// If enemy was set, fire at enemy
 		if (GetEnemy())
 		{
 			LaunchGrenade(GetEnemy());
 			m_OnLaunch.FireOutput(GetEnemy(), this);
-			m_flNextAttack = gpGlobals->curtime + m_nLaunchDelay;
+			m_flNextAttack = gpGlobals->GetCurTime() + m_nLaunchDelay;
 		}
 		// Otherwise look for enemy to fire at
 		else
@@ -383,11 +383,11 @@ void CNPC_Launcher::LauncherThink( void )
 			{
 				LaunchGrenade(pBestEnemy);
 				m_OnLaunch.FireOutput(pBestEnemy, this);
-				m_flNextAttack = gpGlobals->curtime + m_nLaunchDelay;
+				m_flNextAttack = gpGlobals->GetCurTime() + m_nLaunchDelay;
 			}
 		}
 	}
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------

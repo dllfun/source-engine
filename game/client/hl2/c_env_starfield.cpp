@@ -40,12 +40,18 @@ private:
 
 private:
 	C_EnvStarfield( const C_EnvStarfield & );
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvStarfield)
+	BEGIN_RECV_TABLE(C_EnvStarfield, DT_EnvStarfield, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_bOn)),
+		RecvPropFloat(RECVINFO(m_flDensity)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_EnvStarfield, DT_EnvStarfield, CEnvStarfield )
-	RecvPropInt( RECVINFO(m_bOn) ),
-	RecvPropFloat( RECVINFO(m_flDensity) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EnvStarfield, DT_EnvStarfield, CEnvStarfield )
+
 
 // ------------------------------------------------------------------------- //
 // C_EnvStarfield

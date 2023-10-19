@@ -18,7 +18,7 @@ public:
 
 						C_Corpse( void );
 
-	virtual int			DrawModel( int flags );
+	virtual int			DrawModel(IVModel* pWorld, int flags );
 
 public:
 	// The player whom we are copying our data from
@@ -26,6 +26,12 @@ public:
 
 private:
 						C_Corpse( const C_Corpse & );
+public:
+	BEGIN_INIT_RECV_TABLE(C_Corpse)
+	BEGIN_RECV_TABLE(C_Corpse, DT_Corpse, DT_BaseAnimating)
+		RecvPropInt(RECVINFO(m_nReferencePlayer))
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 

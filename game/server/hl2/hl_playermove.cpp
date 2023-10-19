@@ -79,7 +79,7 @@ void CHLPlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 
 	pHLMove->m_bIsSprinting = pHLPlayer->IsSprinting();
 
-	if ( gpGlobals->frametime != 0 )
+	if ( gpGlobals->GetFrameTime() != 0 )
 	{
 		IServerVehicle *pVehicle = player->GetVehicle();
 
@@ -109,7 +109,7 @@ void CHLPlayerMove::FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *
 {
 	// Call the default FinishMove code.
 	BaseClass::FinishMove( player, ucmd, move );
-	if ( gpGlobals->frametime != 0 )
+	if ( gpGlobals->GetFrameTime() != 0 )
 	{		
 		float distance = 0.0f;
 		IServerVehicle *pVehicle = player->GetVehicle();

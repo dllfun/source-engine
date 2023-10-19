@@ -15,8 +15,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_SERVERCLASS_ST( CHLMachineGun, DT_HLMachineGun )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CHLMachineGun, DT_HLMachineGun )
+
 
 //=========================================================
 //	>> CHLSelectFireMachineGun
@@ -68,7 +68,7 @@ void CHLMachineGun::PrimaryAttack( void )
 	float fireRate = GetFireRate();
 
 	// MUST call sound before removing a round from the clip of a CHLMachineGun
-	while ( m_flNextPrimaryAttack <= gpGlobals->curtime )
+	while ( m_flNextPrimaryAttack <= gpGlobals->GetCurTime() )
 	{
 		WeaponSound(SINGLE, m_flNextPrimaryAttack);
 		m_flNextPrimaryAttack = m_flNextPrimaryAttack + fireRate;
@@ -112,7 +112,7 @@ void CHLMachineGun::PrimaryAttack( void )
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
 	// Register a muzzleflash for the AI
-	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+	pPlayer->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 0.5 );
 }
 
 //-----------------------------------------------------------------------------
@@ -221,20 +221,20 @@ int CHLMachineGun::WeaponSoundRealtime( WeaponSound_t shoot_type )
 	int numBullets = 0;
 
 	// ran out of time, clamp to current
-	if (m_flNextSoundTime < gpGlobals->curtime)
+	if (m_flNextSoundTime < gpGlobals->GetCurTime())
 	{
-		m_flNextSoundTime = gpGlobals->curtime;
+		m_flNextSoundTime = gpGlobals->GetCurTime();
 	}
 
 	// make enough sound events to fill up the next estimated think interval
 	float dt = clamp( m_flAnimTime - m_flPrevAnimTime, 0, 0.2 );
-	if (m_flNextSoundTime < gpGlobals->curtime + dt)
+	if (m_flNextSoundTime < gpGlobals->GetCurTime() + dt)
 	{
 		WeaponSound( SINGLE_NPC, m_flNextSoundTime );
 		m_flNextSoundTime += GetFireRate();
 		numBullets++;
 	}
-	if (m_flNextSoundTime < gpGlobals->curtime + dt)
+	if (m_flNextSoundTime < gpGlobals->GetCurTime() + dt)
 	{
 		WeaponSound( SINGLE_NPC, m_flNextSoundTime );
 		m_flNextSoundTime += GetFireRate();
@@ -266,8 +266,8 @@ void CHLMachineGun::ItemPostFrame( void )
 	BaseClass::ItemPostFrame();
 }
 
-IMPLEMENT_SERVERCLASS_ST( CHLSelectFireMachineGun, DT_HLSelectFireMachineGun )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CHLSelectFireMachineGun, DT_HLSelectFireMachineGun )
+
 
 //=========================================================
 //	>> CHLSelectFireMachineGun
@@ -336,7 +336,7 @@ void CHLSelectFireMachineGun::PrimaryAttack( void )
 	case FIREMODE_FULLAUTO:
 		BaseClass::PrimaryAttack();
 		// Msg("%.3f\n", m_flNextPrimaryAttack.Get() );
-		SetWeaponIdleTime( gpGlobals->curtime + 3.0f );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() + 3.0f );
 		break;
 
 	case FIREMODE_3RNDBURST:
@@ -345,11 +345,11 @@ void CHLSelectFireMachineGun::PrimaryAttack( void )
 		// Call the think function directly so that the first round gets fired immediately.
 		BurstThink();
 		SetThink( &CHLSelectFireMachineGun::BurstThink );
-		m_flNextPrimaryAttack = gpGlobals->curtime + GetBurstCycleRate();
-		m_flNextSecondaryAttack = gpGlobals->curtime + GetBurstCycleRate();
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + GetBurstCycleRate();
+		m_flNextSecondaryAttack = gpGlobals->GetCurTime() + GetBurstCycleRate();
 
 		// Pick up the rest of the burst through the think function.
-		SetNextThink( gpGlobals->curtime + GetFireRate() );
+		SetNextThink( gpGlobals->GetCurTime() + GetFireRate() );
 		break;
 	}
 
@@ -387,7 +387,7 @@ void CHLSelectFireMachineGun::SecondaryAttack( void )
 	
 	SendWeaponAnim( GetSecondaryAttackActivity() );
 
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.3;
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 	if ( pOwner )
@@ -414,11 +414,11 @@ void CHLSelectFireMachineGun::BurstThink( void )
 		SetThink(NULL);
 
 		// idle immediately to stop the firing animation
-		SetWeaponIdleTime( gpGlobals->curtime );
+		SetWeaponIdleTime( gpGlobals->GetCurTime() );
 		return;
 	}
 
-	SetNextThink( gpGlobals->curtime + GetFireRate() );
+	SetNextThink( gpGlobals->GetCurTime() + GetFireRate() );
 }
 
 //-----------------------------------------------------------------------------

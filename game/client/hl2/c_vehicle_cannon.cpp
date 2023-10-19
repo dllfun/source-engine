@@ -76,15 +76,21 @@ private:
 	Vector					m_vecOldShadowDir;
 
 	ViewSmoothingData_t			m_ViewSmoothingData;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_PropCannon)
+	BEGIN_RECV_TABLE(C_PropCannon, DT_PropCannon, DT_BaseAnimating)
+		RecvPropEHandle(RECVINFO(m_hPlayer)),
+		RecvPropBool(RECVINFO(m_bEnterAnimOn)),
+		RecvPropBool(RECVINFO(m_bExitAnimOn)),
+		RecvPropVector(RECVINFO(m_vecEyeExitEndpoint)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_PropCannon, DT_PropCannon, CPropCannon)
-	RecvPropEHandle( RECVINFO(m_hPlayer) ),
-	RecvPropBool( RECVINFO( m_bEnterAnimOn ) ),
-	RecvPropBool( RECVINFO( m_bExitAnimOn ) ),
-	RecvPropVector( RECVINFO( m_vecEyeExitEndpoint ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_PropCannon, DT_PropCannon, CPropCannon)
+
 
 
 BEGIN_DATADESC( C_PropCannon )

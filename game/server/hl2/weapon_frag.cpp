@@ -70,6 +70,12 @@ private:
 	DECLARE_ACTTABLE();
 
 	DECLARE_DATADESC();
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponFrag)
+	BEGIN_SEND_TABLE(CWeaponFrag, DT_WeaponFrag, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 
@@ -86,8 +92,8 @@ acttable_t	CWeaponFrag::m_acttable[] =
 
 IMPLEMENT_ACTTABLE(CWeaponFrag);
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponFrag, DT_WeaponFrag)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponFrag, DT_WeaponFrag)
+
 
 LINK_ENTITY_TO_CLASS( weapon_frag, CWeaponFrag );
 PRECACHE_WEAPON_REGISTER(weapon_frag);
@@ -179,8 +185,8 @@ void CWeaponFrag::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChar
 #define RETHROW_DELAY	0.5
 	if( fThrewGrenade )
 	{
-		m_flNextPrimaryAttack	= gpGlobals->curtime + RETHROW_DELAY;
-		m_flNextSecondaryAttack	= gpGlobals->curtime + RETHROW_DELAY;
+		m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + RETHROW_DELAY;
+		m_flNextSecondaryAttack	= gpGlobals->GetCurTime() + RETHROW_DELAY;
 		m_flTimeWeaponIdle = FLT_MAX; //NOTE: This is set once the animation has finished up!
 
 		// Make a sound designed to scare snipers back into their holes!
@@ -211,15 +217,15 @@ bool CWeaponFrag::Reload( void )
 	if ( !HasPrimaryAmmo() )
 		return false;
 
-	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) && ( m_flNextSecondaryAttack <= gpGlobals->curtime ) )
+	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->GetCurTime() ) && ( m_flNextSecondaryAttack <= gpGlobals->GetCurTime() ) )
 	{
 		//Redraw the weapon
 		SendWeaponAnim( ACT_VM_DRAW );
 
 		//Update our times
-		m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
-		m_flNextSecondaryAttack	= gpGlobals->curtime + SequenceDuration();
-		m_flTimeWeaponIdle = gpGlobals->curtime + SequenceDuration();
+		m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
+		m_flNextSecondaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
+		m_flTimeWeaponIdle = gpGlobals->GetCurTime() + SequenceDuration();
 
 		//Mark this as done
 		m_bRedraw = false;

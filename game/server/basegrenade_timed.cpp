@@ -44,12 +44,12 @@ void CBaseGrenadeTimed::Spawn( void )
 	// the grenade explodes after the exact amount of time specified in the call to ShootTimed(). 
 
 	SetThink( &CBaseGrenadeTimed::TumbleThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f);
 
 	// if the delay is < 0.1 seconds, don't fly anywhere
-	if ((m_flDetonateTime - gpGlobals->curtime) < 0.1)
+	if ((m_flDetonateTime - gpGlobals->GetCurTime()) < 0.1)
 	{
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 		SetAbsVelocity( vec3_origin );
 	}
 

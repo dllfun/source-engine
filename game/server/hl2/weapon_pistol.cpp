@@ -111,11 +111,17 @@ private:
 	float	m_flLastAttackTime;
 	float	m_flAccuracyPenalty;
 	int		m_nNumShotsFired;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponPistol)
+	BEGIN_SEND_TABLE(CWeaponPistol, DT_WeaponPistol, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponPistol, DT_WeaponPistol)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponPistol, DT_WeaponPistol)
+
 
 LINK_ENTITY_TO_CLASS( weapon_pistol, CWeaponPistol );
 PRECACHE_WEAPON_REGISTER( weapon_pistol );
@@ -155,7 +161,7 @@ IMPLEMENT_ACTTABLE( CWeaponPistol );
 //-----------------------------------------------------------------------------
 CWeaponPistol::CWeaponPistol( void )
 {
-	m_flSoonestPrimaryAttack = gpGlobals->curtime;
+	m_flSoonestPrimaryAttack = gpGlobals->GetCurTime();
 	m_flAccuracyPenalty = 0.0f;
 
 	m_fMinRange1		= 24;
@@ -215,8 +221,8 @@ void CWeaponPistol::DryFire( void )
 	WeaponSound( EMPTY );
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	
-	m_flSoonestPrimaryAttack	= gpGlobals->curtime + PISTOL_FASTEST_DRY_REFIRE_TIME;
-	m_flNextPrimaryAttack		= gpGlobals->curtime + SequenceDuration();
+	m_flSoonestPrimaryAttack	= gpGlobals->GetCurTime() + PISTOL_FASTEST_DRY_REFIRE_TIME;
+	m_flNextPrimaryAttack		= gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -224,7 +230,7 @@ void CWeaponPistol::DryFire( void )
 //-----------------------------------------------------------------------------
 void CWeaponPistol::PrimaryAttack( void )
 {
-	if ( ( gpGlobals->curtime - m_flLastAttackTime ) > 0.5f )
+	if ( ( gpGlobals->GetCurTime() - m_flLastAttackTime ) > 0.5f )
 	{
 		m_nNumShotsFired = 0;
 	}
@@ -233,8 +239,8 @@ void CWeaponPistol::PrimaryAttack( void )
 		m_nNumShotsFired++;
 	}
 
-	m_flLastAttackTime = gpGlobals->curtime;
-	m_flSoonestPrimaryAttack = gpGlobals->curtime + PISTOL_FASTEST_REFIRE_TIME;
+	m_flLastAttackTime = gpGlobals->GetCurTime();
+	m_flSoonestPrimaryAttack = gpGlobals->GetCurTime() + PISTOL_FASTEST_REFIRE_TIME;
 	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, GetOwner() );
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
@@ -268,9 +274,9 @@ void CWeaponPistol::UpdatePenaltyTime( void )
 		return;
 
 	// Check our penalty time decay
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
+	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->GetCurTime() ) )
 	{
-		m_flAccuracyPenalty -= gpGlobals->frametime;
+		m_flAccuracyPenalty -= gpGlobals->GetFrameTime();
 		m_flAccuracyPenalty = clamp( m_flAccuracyPenalty, 0.0f, PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME );
 	}
 }
@@ -311,11 +317,11 @@ void CWeaponPistol::ItemPostFrame( void )
 		return;
 
 	//Allow a refire as fast as the player can click
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
+	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->GetCurTime() ) )
 	{
-		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() - 0.1f;
 	}
-	else if ( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->curtime ) && ( m_iClip1 <= 0 ) )
+	else if ( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->GetCurTime() ) && ( m_iClip1 <= 0 ) )
 	{
 		DryFire();
 	}

@@ -76,7 +76,7 @@ public:
 CReservePlayerSpot *CReservePlayerSpot::ReserveSpot( 
 	CBasePlayer *owner, const Vector& org, const Vector& mins, const Vector& maxs, bool& validspot )
 {
-	CReservePlayerSpot *spot = ( CReservePlayerSpot * )CreateEntityByName( "reserved_spot" );
+	CReservePlayerSpot *spot = ( CReservePlayerSpot * )engineServer->CreateEntityByName( "reserved_spot" );
 	Assert( spot );
 
 	spot->SetAbsOrigin( org );
@@ -203,7 +203,7 @@ void CHL2GameMovement::StartForcedMove( bool mounting, float transit_speed, cons
 	lm->m_bForceLadderMove	= true;
 	lm->m_bForceMount		= mounting;
 
-	lm->m_flStartTime		= gpGlobals->curtime;
+	lm->m_flStartTime		= gpGlobals->GetCurTime();
 	lm->m_flArrivalTime		= lm->m_flStartTime + transit_time;
 
 	lm->m_hForceLadder		= ladder;
@@ -233,7 +233,7 @@ bool CHL2GameMovement::ContinueForcedMove()
 	mv->m_flUpMove = 0.0f;
 
 	// How far along are we
-	float frac = ( gpGlobals->curtime - lm->m_flStartTime ) / ( lm->m_flArrivalTime - lm->m_flStartTime );
+	float frac = ( gpGlobals->GetCurTime() - lm->m_flStartTime ) / ( lm->m_flArrivalTime - lm->m_flStartTime );
 	if ( frac > 1.0f )
 	{
 		lm->m_bForceLadderMove = false;
@@ -609,7 +609,7 @@ void CHL2GameMovement::FullLadderMove()
 
 	float dist = MIN( dist1sqr, dist2sqr );
 	bool neardismountnode = ( dist < 16.0f * 16.0f ) ? true : false;
-	float ladderUnitsPerTick = ( MAX_CLIMB_SPEED * gpGlobals->interval_per_tick );
+	float ladderUnitsPerTick = ( MAX_CLIMB_SPEED * gpGlobals->GetIntervalPerTick() );
 	bool neardismountnode2 = ( dist < ladderUnitsPerTick * ladderUnitsPerTick ) ? true : false;
 
 	// Really close to node, cvar is set, and pressing a key, then simulate a +USE

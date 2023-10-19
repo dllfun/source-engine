@@ -224,6 +224,26 @@ private:
 	COutputEvent		m_playerOff;
 	COutputEvent		m_OnOpen;
 	COutputEvent		m_OnClose;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CPropVehicleChoreoGeneric)
+	BEGIN_SEND_TABLE(CPropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric, DT_DynamicProp)
+		SendPropEHandle(SENDINFO(m_hPlayer)),
+		SendPropBool(SENDINFO(m_bEnterAnimOn)),
+		SendPropBool(SENDINFO(m_bExitAnimOn)),
+		SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
+		SendPropBool(SENDINFO_STRUCTELEM(m_vehicleView.bClampEyeAngles)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flPitchCurveZero)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flPitchCurveLinear)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flRollCurveZero)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flRollCurveLinear)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flFOV)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flYawMin)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flYawMax)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flPitchMin)),
+		SendPropFloat(SENDINFO_STRUCTELEM(m_vehicleView.flPitchMax)),
+	END_SEND_TABLE();
+	END_INIT_SEND_TABLE()
 };
 
 LINK_ENTITY_TO_CLASS( prop_vehicle_choreo_generic, CPropVehicleChoreoGeneric );
@@ -266,22 +286,8 @@ BEGIN_DATADESC( CPropVehicleChoreoGeneric )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CPropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric)
-	SendPropEHandle(SENDINFO(m_hPlayer)),
-	SendPropBool(SENDINFO(m_bEnterAnimOn)),
-	SendPropBool(SENDINFO(m_bExitAnimOn)),
-	SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
-	SendPropBool( SENDINFO_STRUCTELEM( m_vehicleView.bClampEyeAngles ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchCurveZero ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchCurveLinear ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flRollCurveZero ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flRollCurveLinear ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flFOV ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flYawMin ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flYawMax ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchMin ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchMax ) ),
-END_SEND_TABLE();
+IMPLEMENT_SERVERCLASS(CPropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric)
+
 
 
 bool ShouldVehicleIgnoreEntity( CBaseEntity *pVehicle, CBaseEntity *pCollide )
@@ -335,7 +341,7 @@ void CPropVehicleChoreoGeneric::Spawn( void )
 
 	m_takedamage = DAMAGE_EVENTS_ONLY;
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	ParseViewParams( STRING(m_vehicleScript) );
 }
@@ -408,7 +414,7 @@ Vector CPropVehicleChoreoGeneric::BodyTarget( const Vector &posSrc, bool bNoisy 
 //-----------------------------------------------------------------------------
 void CPropVehicleChoreoGeneric::Think(void)
 {
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 	if ( GetDriver() )
 	{
@@ -437,7 +443,7 @@ void CPropVehicleChoreoGeneric::InputOpen( inputdata_t &inputdata )
 	if ( nSequence > ACTIVITY_NOT_AVAILABLE )
 	{
 		SetCycle( 0 );
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		ResetSequence( nSequence );
 		ResetClientsideFrame();
 	}
@@ -464,7 +470,7 @@ void CPropVehicleChoreoGeneric::InputClose( inputdata_t &inputdata )
 	if ( nSequence > ACTIVITY_NOT_AVAILABLE )
 	{
 		SetCycle( 0 );
-		m_flAnimTime = gpGlobals->curtime;
+		m_flAnimTime = gpGlobals->GetCurTime();
 		ResetSequence( nSequence );
 		ResetClientsideFrame();
 	}

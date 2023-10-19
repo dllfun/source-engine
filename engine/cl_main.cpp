@@ -407,7 +407,7 @@ void CL_CheckClientState( void )
 						!demoplayer->IsPlayingBack() &&
 						g_pHost->Host_IsSinglePlayerGame();
 
-	CL_SetupLocalNetworkBackDoor( useBackdoor );
+	CL_SetupLocalNetworkBackDoor( useBackdoor&&false );
 }
 
 

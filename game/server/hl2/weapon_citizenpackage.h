@@ -26,6 +26,12 @@ public:
 
 	void ItemPostFrame( void );
 	void Drop( const Vector &vecVelocity );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponCitizenPackage)
+	BEGIN_SEND_TABLE(CWeaponCitizenPackage, DT_WeaponCitizenPackage, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif // WEAPON_CITIZENPACKAGE_H

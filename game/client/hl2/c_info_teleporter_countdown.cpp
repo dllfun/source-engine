@@ -39,6 +39,16 @@ private:
 	float m_flTimeRemaining;
 
 	friend class CTeleportCountdownScreen;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_InfoTeleporterCountdown)
+	BEGIN_RECV_TABLE(C_InfoTeleporterCountdown, DT_InfoTeleporterCountdown, DT_BaseEntity)
+		RecvPropInt(RECVINFO(m_bCountdownStarted)),
+		RecvPropInt(RECVINFO(m_bDisabled)),
+		RecvPropTime(RECVINFO(m_flStartTime)),
+		RecvPropFloat(RECVINFO(m_flTimeRemaining)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -51,12 +61,8 @@ CUtlFixedLinkedList<C_InfoTeleporterCountdown *> g_InfoTeleporterCountdownList;
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_DT( C_InfoTeleporterCountdown, DT_InfoTeleporterCountdown, CInfoTeleporterCountdown )
-	RecvPropInt( RECVINFO( m_bCountdownStarted ) ),
-	RecvPropInt( RECVINFO( m_bDisabled ) ),
-	RecvPropTime( RECVINFO( m_flStartTime ) ),
-	RecvPropFloat( RECVINFO( m_flTimeRemaining ) ),	
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_InfoTeleporterCountdown, DT_InfoTeleporterCountdown, CInfoTeleporterCountdown )
+
 
 
 //-----------------------------------------------------------------------------
@@ -166,7 +172,7 @@ void CTeleportCountdownScreen::OnTick()
 	m_pTimeRemainingLabel->SetVisible( !bMalfunction );
 
 	// This will make it flash
-	m_pMalfunctionLabel->SetVisible( bMalfunction && (((int)(gpGlobals->curtime) & 0x1) == 0x1) );
+	m_pMalfunctionLabel->SetVisible( bMalfunction && (((int)(gpGlobals->GetCurTime()) & 0x1) == 0x1) );
 
 	// Update the time remaining
 	if ( !bMalfunction )
@@ -174,7 +180,7 @@ void CTeleportCountdownScreen::OnTick()
 		char buf[32];
 		if (m_pTimeRemainingLabel)
 		{
-			float dt = gpGlobals->curtime - pActiveCountdown->m_flStartTime;
+			float dt = gpGlobals->GetCurTime() - pActiveCountdown->m_flStartTime;
 			if ( dt < 0.0f )
 			{
 				dt = 0.0f;

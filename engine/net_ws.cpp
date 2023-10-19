@@ -2621,38 +2621,28 @@ void CNetworkSystem::NET_OpenSockets (void)
 	// Xbox 360 uses VDP protocol to combine encrypted game data with clear voice data
 	const int nProtocol = X360SecureNetwork() ? IPPROTO_VDP : IPPROTO_UDP;
 
-	m_pClientSocket = new CNetSocket("ClientSocket");
-	m_pClientSocket->OpenSocketInternal(clientport.GetInt(), PORT_SERVER, "client", nProtocol, true);
-	net_sockets.AddToTail(m_pClientSocket);
-	m_DefaultSocketCount++;
+	if (m_pClientSocket) {
+		m_pClientSocket->OpenSocketInternal(clientport.GetInt(), PORT_SERVER, "client", nProtocol, true);
+	}
 
-	m_pServerSocket = new CNetSocket("ServerSocket");
-	m_pServerSocket->OpenSocketInternal( hostport.GetInt(), PORT_SERVER, "server", nProtocol, false );
-	net_sockets.AddToTail(m_pServerSocket);
-	m_DefaultSocketCount++;
+	if (m_pServerSocket) {
+		m_pServerSocket->OpenSocketInternal(hostport.GetInt(), PORT_SERVER, "server", nProtocol, false);
+	}
 
-	m_pServerSocket->SetLoopBackSocket(m_pClientSocket);
-	m_pClientSocket->SetLoopBackSocket(m_pServerSocket);
-
-	if ( !net_nohltv )
+	if (m_pHLTVSocket)
 	{
-		m_pHLTVSocket = new CNetSocket("HLTVSocket");
 		m_pHLTVSocket->OpenSocketInternal( hltvport.GetInt(), PORT_HLTV, "hltv", nProtocol, false );
-		net_sockets.AddToTail(m_pHLTVSocket);
-		m_DefaultSocketCount++;
 	}
 
 	if ( IsX360() )
 	{
-		m_pMatchMakingSocket = new CNetSocket("MatchMakingSocket");
-		m_pMatchMakingSocket->OpenSocketInternal( matchmakingport.GetInt(), PORT_MATCHMAKING, "matchmaking", nProtocol, false );
-		net_sockets.AddToTail(m_pMatchMakingSocket);
-		m_DefaultSocketCount++;
+		if (m_pMatchMakingSocket) {
+			m_pMatchMakingSocket->OpenSocketInternal(matchmakingport.GetInt(), PORT_MATCHMAKING, "matchmaking", nProtocol, false);
+		}
 
-		m_pSystemLinkSocket = new CNetSocket("SystemLinkSocket");
-		m_pSystemLinkSocket->OpenSocketInternal( systemlinkport.GetInt(), PORT_SYSTEMLINK, "systemlink", IPPROTO_UDP, false );
-		net_sockets.AddToTail(m_pSystemLinkSocket);
-		m_DefaultSocketCount++;
+		if (m_pSystemLinkSocket) {
+			m_pSystemLinkSocket->OpenSocketInternal(systemlinkport.GetInt(), PORT_SYSTEMLINK, "systemlink", IPPROTO_UDP, false);
+		}
 	}
 
 #ifdef LINUX
@@ -3232,6 +3222,35 @@ void CNetworkSystem::NET_Init( bool bIsDedicated )
 		ipname.SetValue( ip );  // update the cvar right now, this will get overwritten by "stuffcmds" later
 	}
 
+	m_pClientSocket = new CNetSocket("ClientSocket");
+	net_sockets.AddToTail(m_pClientSocket);
+	m_DefaultSocketCount++;
+
+	m_pServerSocket = new CNetSocket("ServerSocket");
+	net_sockets.AddToTail(m_pServerSocket);
+	m_DefaultSocketCount++;
+
+	m_pServerSocket->SetLoopBackSocket(m_pClientSocket);
+	m_pClientSocket->SetLoopBackSocket(m_pServerSocket);
+
+	if (!net_nohltv)
+	{
+		m_pHLTVSocket = new CNetSocket("HLTVSocket");
+		net_sockets.AddToTail(m_pHLTVSocket);
+		m_DefaultSocketCount++;
+	}
+
+	if (IsX360())
+	{
+		m_pMatchMakingSocket = new CNetSocket("MatchMakingSocket");
+		net_sockets.AddToTail(m_pMatchMakingSocket);
+		m_DefaultSocketCount++;
+
+		m_pSystemLinkSocket = new CNetSocket("SystemLinkSocket");
+		net_sockets.AddToTail(m_pSystemLinkSocket);
+		m_DefaultSocketCount++;
+	}
+
 	if ( bIsDedicated )
 	{
 		// set dedicated MP mode
@@ -3266,6 +3285,12 @@ void CNetworkSystem::NET_Shutdown (void)
 
 	NET_ConfigLoopbackBuffers(false);
 	NET_CloseAllSockets();
+
+	m_pClientSocket = NULL;
+	m_pServerSocket = NULL;
+	m_pHLTVSocket = NULL;
+	m_pMatchMakingSocket = NULL;
+	m_pSystemLinkSocket = NULL;
 
 #if defined(_WIN32)
 	if ( !net_noip )

@@ -34,14 +34,14 @@ void CNPCEventResponseSystem::LevelInitPreEntity( void )
 //-----------------------------------------------------------------------------
 void CNPCEventResponseSystem::TriggerEvent( const char *pResponse, bool bForce, bool bCancelScript )
 {
-	m_flNextEventPoll = gpGlobals->curtime;
+	m_flNextEventPoll = gpGlobals->GetCurTime();
 
 	// Find the event by name
 	int iIndex = m_ActiveEvents.Find( pResponse );
 	if ( iIndex == m_ActiveEvents.InvalidIndex() )
 	{
 		storedevent_t newEvent;
-		newEvent.flEventTime = gpGlobals->curtime;
+		newEvent.flEventTime = gpGlobals->GetCurTime();
 		newEvent.flNextResponseTime = 0;
 		newEvent.bForce = bForce;
 		newEvent.bCancelScript = bCancelScript;
@@ -50,19 +50,19 @@ void CNPCEventResponseSystem::TriggerEvent( const char *pResponse, bool bForce, 
 
 		if ( ai_debug_eventresponses.GetBool() ) 
 		{
-			Msg( "NPCEVENTRESPONSE: (%.2f) Trigger fired for event named: %s\n", gpGlobals->curtime, pResponse );
+			Msg( "NPCEVENTRESPONSE: (%.2f) Trigger fired for event named: %s\n", gpGlobals->GetCurTime(), pResponse);
 		}
 	}
 	else 
 	{
 		// Update the trigger time
-		m_ActiveEvents[iIndex].flEventTime = gpGlobals->curtime;
+		m_ActiveEvents[iIndex].flEventTime = gpGlobals->GetCurTime();
 		m_ActiveEvents[iIndex].bForce = bForce;
 		m_ActiveEvents[iIndex].bCancelScript = bCancelScript;
 
 		if ( ai_debug_eventresponses.GetBool() ) 
 		{
-			Msg( "NPCEVENTRESPONSE: (%.2f) Trigger resetting already-active event firing named: %s\n", gpGlobals->curtime, pResponse );
+			Msg( "NPCEVENTRESPONSE: (%.2f) Trigger resetting already-active event firing named: %s\n", gpGlobals->GetCurTime(), pResponse);
 		}
 	}
 }
@@ -75,9 +75,9 @@ void CNPCEventResponseSystem::FrameUpdatePreEntityThink()
  	if ( !m_ActiveEvents.Count() || !AI_IsSinglePlayer() || !UTIL_GetLocalPlayer() )
 		return;
 
-	if ( m_flNextEventPoll > gpGlobals->curtime )
+	if ( m_flNextEventPoll > gpGlobals->GetCurTime() )
 		return;
-	m_flNextEventPoll = gpGlobals->curtime + 0.2;
+	m_flNextEventPoll = gpGlobals->GetCurTime() + 0.2;
 
 	// Move through all events, removing expired ones and finding NPCs for active ones.
 	for ( int i = m_ActiveEvents.First(); i != m_ActiveEvents.InvalidIndex(); )
@@ -89,23 +89,23 @@ void CNPCEventResponseSystem::FrameUpdatePreEntityThink()
 		int iNext = m_ActiveEvents.Next(i); 
 
 		// Should it have expired by now?
-		if ( !m_ActiveEvents[i].bPreventExpiration && (flTime + NPCEVENTRESPONSE_GIVEUP_TIME) < gpGlobals->curtime )
+		if ( !m_ActiveEvents[i].bPreventExpiration && (flTime + NPCEVENTRESPONSE_GIVEUP_TIME) < gpGlobals->GetCurTime() )
 		{
 			if ( ai_debug_eventresponses.GetBool() ) 
 			{
-				Msg( "NPCEVENTRESPONSE: (%.2f) Removing expired event named: %s\n", gpGlobals->curtime, pResponse );
+				Msg( "NPCEVENTRESPONSE: (%.2f) Removing expired event named: %s\n", gpGlobals->GetCurTime(), pResponse);
 			}
 
 			m_ActiveEvents.RemoveAt(i);
 		}
-		else if ( m_ActiveEvents[i].flNextResponseTime < gpGlobals->curtime )
+		else if ( m_ActiveEvents[i].flNextResponseTime < gpGlobals->GetCurTime() )
 		{
 			// If we've fired once, and our current event should expire now, then expire.
-			if ( m_ActiveEvents[i].bPreventExpiration && (flTime + NPCEVENTRESPONSE_GIVEUP_TIME) < gpGlobals->curtime )
+			if ( m_ActiveEvents[i].bPreventExpiration && (flTime + NPCEVENTRESPONSE_GIVEUP_TIME) < gpGlobals->GetCurTime() )
 			{
 				if ( ai_debug_eventresponses.GetBool() ) 
 				{
-					Msg( "NPCEVENTRESPONSE: (%.2f) Removing expired fired event named: %s\n", gpGlobals->curtime, pResponse );
+					Msg( "NPCEVENTRESPONSE: (%.2f) Removing expired fired event named: %s\n", gpGlobals->GetCurTime(), pResponse);
 				}
 
 				m_ActiveEvents.RemoveAt(i);
@@ -139,11 +139,11 @@ void CNPCEventResponseSystem::FrameUpdatePreEntityThink()
 						// Don't remove the response yet. Leave it around until the refire time has expired.
 						// This stops repeated firings of the same concept from spamming the NPCs.
 						m_ActiveEvents[i].bPreventExpiration = true;
-						m_ActiveEvents[i].flNextResponseTime = gpGlobals->curtime + NPCEVENTRESPONSE_REFIRE_TIME;
+						m_ActiveEvents[i].flNextResponseTime = gpGlobals->GetCurTime() + NPCEVENTRESPONSE_REFIRE_TIME;
 
 						if ( ai_debug_eventresponses.GetBool() ) 
 						{
-							Msg( "NPCEVENTRESPONSE: (%.2f) Event '%s' responded to by NPC '%s'. Refire available at: %.2f\n", gpGlobals->curtime, pResponse, pNearestNPC->GetDebugName(), m_ActiveEvents[i].flNextResponseTime );
+							Msg( "NPCEVENTRESPONSE: (%.2f) Event '%s' responded to by NPC '%s'. Refire available at: %.2f\n", gpGlobals->GetCurTime(), pResponse, pNearestNPC->GetDebugName(), m_ActiveEvents[i].flNextResponseTime);
 						}
 
 						// Don't issue multiple responses at once

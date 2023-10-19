@@ -372,7 +372,7 @@ void CNPC_CombineCamera::Spawn()
 	AddEffects( EF_NOSHADOW );
 
 	// Stagger our starting times
-	SetNextThink( gpGlobals->curtime + random->RandomFloat(0.1f, 0.3f) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat(0.1f, 0.3f) );
 
 	// Don't allow us to skip animation setup because our attachments are critical to us!
 	SetBoneCacheFlags( BCF_NO_ANIMATION_SKIP );
@@ -422,7 +422,7 @@ int CNPC_CombineCamera::OnTakeDamage(const CTakeDamageInfo &inputInfo)
 
 		m_OnDamaged.FireOutput(info.GetInflictor(), this);
 
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 		return 0;
 	}
@@ -438,7 +438,7 @@ void CNPC_CombineCamera::Deploy()
 {
 	m_vecGoalAngles = GetAbsAngles();
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	SetEyeState(CAMERA_EYE_IDLE);
 	m_bActive = true;
@@ -505,10 +505,10 @@ bool CNPC_CombineCamera::UpdateFacing()
 		bMoved = true;
 	}
 
-	if (bMoved && (m_flMoveSoundTime < gpGlobals->curtime))
+	if (bMoved && (m_flMoveSoundTime < gpGlobals->GetCurTime()))
 	{
 		EmitSound("NPC_CombineCamera.Move");
-		m_flMoveSoundTime = gpGlobals->curtime + CAMERA_MOVE_INTERVAL;
+		m_flMoveSoundTime = gpGlobals->GetCurTime() + CAMERA_MOVE_INTERVAL;
 	}
 
 	// You're going to make decisions based on this info.  So bump the bone cache after you calculate everything
@@ -627,7 +627,7 @@ void CNPC_CombineCamera::ActiveThink()
 		EmitSound("NPC_CombineCamera.BecomeIdle");
 		SetAngry(false);
 		SetThink(&CNPC_CombineCamera::SearchThink);
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 		return;
 	}
 
@@ -660,7 +660,7 @@ void CNPC_CombineCamera::ActiveThink()
 			else
 			{
 				SetEyeState(CAMERA_EYE_HAPPY);
-				m_flEyeHappyTime = gpGlobals->curtime + 2.0;
+				m_flEyeHappyTime = gpGlobals->GetCurTime() + 2.0;
 
 				// Now forget about this target forever
 				AddEntityRelationship( pTarget, D_NU, 99 );
@@ -681,7 +681,7 @@ void CNPC_CombineCamera::ActiveThink()
 	}
 
 	// Update our think time
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	TrackTarget(pTarget);
 	MaintainEye();
@@ -744,7 +744,7 @@ void CNPC_CombineCamera::MaintainEye()
 	// Angry cameras take a few pictures of their target.
 	if ((m_bAngry) && (m_nClickCount <= 3))
 	{
-		if ((m_flClickTime != 0) && (m_flClickTime < gpGlobals->curtime))
+		if ((m_flClickTime != 0) && (m_flClickTime < gpGlobals->GetCurTime()))
 		{
 			m_pEyeFlash->SetScale(1.0);
 			m_pEyeFlash->SetBrightness(255);
@@ -752,10 +752,10 @@ void CNPC_CombineCamera::MaintainEye()
 
 			EmitSound("NPC_CombineCamera.Click");
 
-			m_flTurnOffEyeFlashTime = gpGlobals->curtime + 0.1;
-			m_flClickTime = gpGlobals->curtime + CAMERA_CLICK_INTERVAL;
+			m_flTurnOffEyeFlashTime = gpGlobals->GetCurTime() + 0.1;
+			m_flClickTime = gpGlobals->GetCurTime() + CAMERA_CLICK_INTERVAL;
 		}
-		else if ((m_flTurnOffEyeFlashTime != 0) && (m_flTurnOffEyeFlashTime < gpGlobals->curtime))
+		else if ((m_flTurnOffEyeFlashTime != 0) && (m_flTurnOffEyeFlashTime < gpGlobals->GetCurTime()))
 		{
 			m_flTurnOffEyeFlashTime = 0;
 			m_pEyeFlash->SetBrightness( 0, 0.25f );
@@ -773,7 +773,7 @@ void CNPC_CombineCamera::SearchThink()
 	if (PreThink(CAMERA_SEARCHING))
 		return;
 
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
 	SetIdealActivity((Activity) ACT_COMBINE_CAMERA_OPEN_IDLE);
 
@@ -789,7 +789,7 @@ void CNPC_CombineCamera::SearchThink()
 
 	// Display that we're scanning
 	m_vecGoalAngles.x = 15.0f;
-	m_vecGoalAngles.y = GetAbsAngles().y + (sin(gpGlobals->curtime * 2.0f) * 45.0f);
+	m_vecGoalAngles.y = GetAbsAngles().y + (sin(gpGlobals->GetCurTime() * 2.0f) * 45.0f);
 
 	// Turn and ping
 	UpdateFacing();
@@ -813,7 +813,7 @@ bool CNPC_CombineCamera::PreThink(cameraState_e state)
 	if ( !m_bEnabled )
 	{
 		SetIdealActivity((Activity) ACT_COMBINE_CAMERA_CLOSED_IDLE);
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		return true;
 	}
 
@@ -841,7 +841,7 @@ void CNPC_CombineCamera::SetEyeState(eyeState_t state)
 	}
 
 	// If we're switching to IDLE, and we're still happy, use happy instead
-	if ( state == CAMERA_EYE_IDLE && m_flEyeHappyTime > gpGlobals->curtime )
+	if ( state == CAMERA_EYE_IDLE && m_flEyeHappyTime > gpGlobals->GetCurTime() )
 	{
 		state = CAMERA_EYE_HAPPY;
 	}
@@ -944,12 +944,12 @@ void CNPC_CombineCamera::SetEyeState(eyeState_t state)
 void CNPC_CombineCamera::Ping()
 {
 	// See if it's time to ping again
-	if (m_flPingTime > gpGlobals->curtime)
+	if (m_flPingTime > gpGlobals->GetCurTime())
 		return;
 
 	// Ping!
 	EmitSound("NPC_CombineCamera.Ping");
-	m_flPingTime = gpGlobals->curtime + COMBINE_CAMERA_PING_TIME;
+	m_flPingTime = gpGlobals->GetCurTime() + COMBINE_CAMERA_PING_TIME;
 }
 
 
@@ -976,7 +976,7 @@ void CNPC_CombineCamera::Enable()
 {
 	m_bEnabled = true;
 	SetThink(&CNPC_CombineCamera::Deploy);
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 
@@ -987,7 +987,7 @@ void CNPC_CombineCamera::Disable()
 {
 	m_bEnabled = false;
 	m_hEnemyTarget = NULL;
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 
@@ -1028,7 +1028,7 @@ void CNPC_CombineCamera::SetAngry(bool bAngry)
 	{
 		m_bAngry = true;
 		m_nClickCount = 0;
-		m_flClickTime = gpGlobals->curtime + 0.4;
+		m_flClickTime = gpGlobals->GetCurTime() + 0.4;
 		EmitSound("NPC_CombineCamera.Angry");
 		SetEyeState(CAMERA_EYE_ANGRY);
 	}
@@ -1070,7 +1070,7 @@ void CNPC_CombineCamera::DeathThink()
 
 	// Level out our angles
 	m_vecGoalAngles = GetAbsAngles();
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	if (m_lifeState != LIFE_DEAD)
 	{
@@ -1084,7 +1084,7 @@ void CNPC_CombineCamera::DeathThink()
 		
 		CBroadcastRecipientFilter filter;
 		
-		te->Smoke(filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10);
+		g_pTESystem->Smoke(filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10);
 		
 		g_pEffects->Sparks(pos);
 

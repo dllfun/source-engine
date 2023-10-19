@@ -222,7 +222,7 @@ void CHudWeaponSelection::OnThink( void )
 	}
 
 	// Time out after awhile of inactivity
-	if ( ( gpGlobals->curtime - m_flSelectionTime ) > flSelectionTimeout )
+	if ( ( gpGlobals->GetCurTime() - m_flSelectionTime ) > flSelectionTimeout )
 	{
 		if (!m_bFadingOut)
 		{
@@ -230,7 +230,7 @@ void CHudWeaponSelection::OnThink( void )
 			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "FadeOutWeaponSelectionMenu" );
 			m_bFadingOut = true;
 		}
-		else if ( gpGlobals->curtime - m_flSelectionTime > flSelectionTimeout + flSelectionFadeoutTime )
+		else if ( gpGlobals->GetCurTime() - m_flSelectionTime > flSelectionTimeout + flSelectionFadeoutTime )
 		{
 			// finished fade, close
 			HideSelection();
@@ -264,7 +264,7 @@ bool CHudWeaponSelection::ShouldDraw()
 		return false;
 
 	// draw weapon selection a little longer if in fastswitch so we can see what we've selected
-	if ( hud_fastswitch.GetBool() && ( gpGlobals->curtime - m_flSelectionTime ) < (FASTSWITCH_DISPLAY_TIMEOUT + FASTSWITCH_FADEOUT_TIME) )
+	if ( hud_fastswitch.GetBool() && ( gpGlobals->GetCurTime() - m_flSelectionTime ) < (FASTSWITCH_DISPLAY_TIMEOUT + FASTSWITCH_FADEOUT_TIME) )
 		return true;
 
 	return ( m_bSelectionVisible ) ? true : false;
@@ -464,7 +464,7 @@ void CHudWeaponSelection::Paint()
 
 	// interpolate the selected box size between the small box size and the large box size
 	// interpolation has been removed since there is no weapon pickup animation anymore, so it's all at the largest size
-	float percentageDone = 1.0f; //min(1.0f, (gpGlobals->curtime - m_flPickupStartTime) / m_flWeaponPickupGrowTime);
+	float percentageDone = 1.0f; //min(1.0f, (gpGlobals->GetCurTime() - m_flPickupStartTime) / m_flWeaponPickupGrowTime);
 	int largeBoxWide = m_flSmallBoxSize + ((m_flLargeBoxWide - m_flSmallBoxSize) * percentageDone);
 	int largeBoxTall = m_flSmallBoxSize + ((m_flLargeBoxTall - m_flSmallBoxSize) * percentageDone);
 	Color selectedColor;

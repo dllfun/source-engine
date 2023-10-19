@@ -82,13 +82,13 @@ public:
 
 	CHL2_Player();
 	~CHL2_Player( void );
-	
+	void PostConstructor(const char* szClassname);
 	static CHL2_Player *CreatePlayer( const char *className, edict_t *edict )
 	{
 		//CHL2_Player::s_PlayerEdict = ed;
 		if (!edict || edict->GetUnknown())
 			Error("CreatePlayer( %s ) - CreateEdict failed.", className);
-		return (CHL2_Player*)engineServer->CreateEntityByName( className, edict->m_EdictIndex );
+		return (CHL2_Player*)engineServer->CreateEntityByName( className, edict->GetIndex() );
 	}
 
 	DECLARE_SERVERCLASS();
@@ -364,6 +364,15 @@ private:
 	float				m_flTimeNextLadderHint;	// Next time we're eligible to display a HUD hint about a ladder.
 	
 	friend class CHL2GameMovement;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CHL2_Player)
+	INIT_REFERENCE_SEND_TABLE(CHL2PlayerLocalData);
+	BEGIN_SEND_TABLE(CHL2_Player, DT_HL2_Player, DT_BasePlayer)
+		SendPropDataTable(SENDINFO_DT(m_HL2Local), REFERENCE_SEND_TABLE(DT_HL2Local), SendProxy_SendLocalDataTable),
+		SendPropBool(SENDINFO(m_fIsSprinting)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 

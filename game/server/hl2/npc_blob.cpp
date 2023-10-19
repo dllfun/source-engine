@@ -251,7 +251,7 @@ void CBlobElement::ModifyVelocityForSurface( float flInterval, float flSpeed )
 
 		m_bOnWall = true;
 
-		if( tr.m_pEnt != NULL && !tr.m_pEnt->IsWorld() )
+		if( tr.m_pEnt != NULL && tr.m_pEnt->NetworkProp()->entindex()!=0)
 		{
 			IPhysicsObject *pPhysics = tr.m_pEnt->VPhysicsGetObject();
 
@@ -658,7 +658,7 @@ void CNPC_Blob::RunAI()
 		}
 	}
 
-	SetNextThink( gpGlobals->curtime + npc_blob_think_interval.GetFloat() );
+	SetNextThink( gpGlobals->GetCurTime() + npc_blob_think_interval.GetFloat() );
 }
 
 //-----------------------------------------------------------------------------
@@ -711,7 +711,7 @@ void CNPC_Blob::ComputeCentroid()
 //-----------------------------------------------------------------------------
 void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 {
-	float flInterval = gpGlobals->curtime - GetLastThink();
+	float flInterval = gpGlobals->GetCurTime() - GetLastThink();
 
 	// Local fields for sin-wave movement variance
 	float flMySine;
@@ -896,7 +896,7 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 		//--
 		if( bDoMovementVariation )
 		{
-			flMySine = sin( gpGlobals->curtime * pThisElement->GetSineFrequency() );
+			flMySine = sin( gpGlobals->GetCurTime() * pThisElement->GetSineFrequency() );
 			flMyAmplitude = flAmplitude * pThisElement->GetSineAmplitude();
 			pThisElement->AddElementVelocity( vecRight * (flMySine * flMyAmplitude), true );
 		}
@@ -1282,7 +1282,7 @@ void CNPC_Blob::AdvanceBatch()
 //-----------------------------------------------------------------------------
 CBlobElement *CNPC_Blob::CreateNewElement()
 {
-	CBlobElement *pElement = static_cast<CBlobElement*>(CreateEntityByName( "blob_element" ));
+	CBlobElement *pElement = static_cast<CBlobElement*>(engineServer->CreateEntityByName( "blob_element" ));
 
 	if( pElement != NULL )
 	{

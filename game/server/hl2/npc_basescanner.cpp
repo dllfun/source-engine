@@ -143,7 +143,7 @@ void CNPC_BaseScanner::Spawn(void)
 
 	m_flFlyNoiseBase = random->RandomFloat( 0, M_PI );
 
-	m_flNextAttack = gpGlobals->curtime;
+	m_flNextAttack = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -246,7 +246,7 @@ int CNPC_BaseScanner::SelectSchedule(void)
 			return SCHED_SCANNER_CHASE_ENEMY;
 
 		// Attack if it's time
-		if ( gpGlobals->curtime >= m_flNextAttack )
+		if ( gpGlobals->GetCurTime() >= m_flNextAttack )
 		{
 			if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 				return SCHED_SCANNER_ATTACK;
@@ -283,7 +283,7 @@ int CNPC_BaseScanner::MeleeAttack1Conditions( float flDot, float flDist )
 	// Check too far to attack with 2D distance
 	float vEnemyDist2D = (GetEnemy()->GetLocalOrigin() - GetLocalOrigin()).Length2D();
 
-	if (m_flNextAttack > gpGlobals->curtime)
+	if (m_flNextAttack > gpGlobals->GetCurTime())
 	{
 		return COND_NONE;
 	}
@@ -556,7 +556,7 @@ void CNPC_BaseScanner::Gib( void )
 
 	// Light
 	CBroadcastRecipientFilter filter;
-	te->DynamicLight( filter, 0.0, &WorldSpaceCenter(), 255, 180, 100, 0, 100, 0.1, 0 );
+	g_pTESystem->DynamicLight( filter, 0.0, &WorldSpaceCenter(), 255, 180, 100, 0, 100, 0.1, 0 );
 
 	// Cover the gib spawn
 	ExplosionCreate( WorldSpaceCenter(), GetAbsAngles(), this, 64, 64, false );
@@ -588,15 +588,15 @@ void CNPC_BaseScanner::Gib( void )
 void CNPC_BaseScanner::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	if ( reason == PUNTED_BY_CANNON )
 	{
 		// There's about to be a massive change in velocity. 
 		// Think immediately to handle changes in m_vCurrentVelocity;
-		SetNextThink( gpGlobals->curtime + 0.01f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 
-		m_flEngineStallTime = gpGlobals->curtime + 2.0f;
+		m_flEngineStallTime = gpGlobals->GetCurTime() + 2.0f;
 		ScannerEmitSound( "DiveBomb" );
 	}
 	else
@@ -614,18 +614,18 @@ void CNPC_BaseScanner::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup
 void CNPC_BaseScanner::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
-	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
+	m_flLastPhysicsInfluenceTime = gpGlobals->GetCurTime();
 
 	ClearCondition( COND_SCANNER_GRABBED_BY_PHYSCANNON );
 	SetCondition( COND_SCANNER_RELEASED_FROM_PHYSCANNON );
 
 	if ( Reason == LAUNCHED_BY_CANNON )
 	{
-		m_flEngineStallTime = gpGlobals->curtime + 2.0f;
+		m_flEngineStallTime = gpGlobals->GetCurTime() + 2.0f;
 
 		// There's about to be a massive change in velocity. 
 		// Think immediately to handle changes in m_vCurrentVelocity;
-		SetNextThink( gpGlobals->curtime + 0.01f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 		ScannerEmitSound( "DiveBomb" );
 	}
 }
@@ -638,7 +638,7 @@ CBasePlayer *CNPC_BaseScanner::HasPhysicsAttacker( float dt )
 {
 	// If the player is holding me now, or I've been recently thrown
 	// then return a pointer to that player
-	if ( IsHeldByPhyscannon( ) || (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime) )
+	if ( IsHeldByPhyscannon( ) || (gpGlobals->GetCurTime() - dt <= m_flLastPhysicsInfluenceTime) )
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -724,7 +724,7 @@ void CNPC_BaseScanner::AttackDivebombCollide(float flInterval)
 		{
 			if ( !pHitEntity->ClassMatches("item_battery") )
 			{
-				if ( !pHitEntity->IsWorld() )
+				if ( pHitEntity->NetworkProp()->entindex()!=0)
 				{
 					CTakeDamageInfo info( this, this, sk_scanner_dmg_dive.GetFloat(), DMG_CLUB );
 					CalculateMeleeDamageForce( &info, (tr.endpos - tr.startpos), tr.endpos );
@@ -779,7 +779,7 @@ void CNPC_BaseScanner::AttackDivebombCollide(float flInterval)
 				g_pEffects->Sparks( tr.endpos );
 
 				CBroadcastRecipientFilter filter;
-				te->DynamicLight( filter, 0.0,
+				g_pTESystem->DynamicLight( filter, 0.0,
 					&GetAbsOrigin(), 255, 180, 100, 0, 50, 0.1, 0 );
 			}
 		}
@@ -802,7 +802,7 @@ void CNPC_BaseScanner::PlayFlySound(void)
 		// Create the sound
 		CPASAttenuationFilter filter( this );
 
-		m_pEngineSound = controller.SoundCreate( filter, entindex(), CHAN_STATIC, GetEngineSound(), ATTN_NORM );
+		m_pEngineSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, GetEngineSound(), ATTN_NORM );
 
 		Assert(m_pEngineSound);
 
@@ -909,7 +909,7 @@ void CNPC_BaseScanner::BlendPhyscannonLaunchSpeed()
 	{
 		Vector vecCurrentVelocity;
 		VPhysicsGetObject()->GetVelocity( &vecCurrentVelocity, NULL );
-		float flLerpFactor = (gpGlobals->curtime - m_flLastPhysicsInfluenceTime) / SCANNER_SMASH_TIME;
+		float flLerpFactor = (gpGlobals->GetCurTime() - m_flLastPhysicsInfluenceTime) / SCANNER_SMASH_TIME;
 		flLerpFactor = clamp( flLerpFactor, 0.0f, 1.0f );
 		flLerpFactor = SimpleSplineRemapVal( flLerpFactor, 0.0f, 1.0f, 0.0f, 1.0f );
 		flLerpFactor *= flLerpFactor;
@@ -1196,7 +1196,7 @@ void CNPC_BaseScanner::MoveToAttack(float flInterval)
 	// ---------------------------------------------------------
 	//  Add evasion if I have taken damage recently
 	// ---------------------------------------------------------
-	if ((m_flLastDamageTime + SCANNER_EVADE_TIME) > gpGlobals->curtime)
+	if ((m_flLastDamageTime + SCANNER_EVADE_TIME) > gpGlobals->GetCurTime())
 	{
 	vFlyDirection = vFlyDirection + VelocityToEvade(GetEnemyCombatCharacterPointer());
 	}
@@ -1211,7 +1211,7 @@ void CNPC_BaseScanner::MoveToAttack(float flInterval)
 void CNPC_BaseScanner::MoveToTarget( float flInterval, const Vector &vecMoveTarget )
 {
 	// Don't move if stalling
-	if ( m_flEngineStallTime > gpGlobals->curtime )
+	if ( m_flEngineStallTime > gpGlobals->GetCurTime() )
 		return;
 
 	// Look at our inspection target if we have one
@@ -1311,13 +1311,13 @@ void CNPC_BaseScanner::DiveBombSoundThink()
 			if ( flDist < 200.0f )
 			{
 				ScannerEmitSound( "DiveBombFlyby" );
-				SetContextThink( &CNPC_BaseScanner::DiveBombSoundThink, gpGlobals->curtime + 0.5f, s_pDiveBombSoundThinkContext );
+				SetContextThink( &CNPC_BaseScanner::DiveBombSoundThink, gpGlobals->GetCurTime() + 0.5f, s_pDiveBombSoundThinkContext );
 				return;
 			}
 		}
 	}
 
-	SetContextThink( &CNPC_BaseScanner::DiveBombSoundThink, gpGlobals->curtime + 2.0f * TICK_INTERVAL, s_pDiveBombSoundThinkContext );
+	SetContextThink( &CNPC_BaseScanner::DiveBombSoundThink, gpGlobals->GetCurTime() + 2.0f * TICK_INTERVAL, s_pDiveBombSoundThinkContext );
 }
 
 

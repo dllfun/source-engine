@@ -44,7 +44,7 @@ protected:
 
 public:
 	BEGIN_INIT_SEND_TABLE(CPlayerResource)
-	BEGIN_SEND_TABLE_NOBASE(CPlayerResource, DT_PlayerResource)
+	BEGIN_SEND_TABLE(CPlayerResource, DT_PlayerResource, DT_BaseEntity)
 		//	SendPropInternalArray( SendPropString( SENDINFO(m_szName[0]) ), SENDARRAYINFO(m_szName) ),
 		SendPropArray3(SENDINFO_ARRAY3(m_iPing), SendPropInt(SENDINFO_ARRAY(m_iPing), 10, SPROP_UNSIGNED)),
 		//	SendPropInternalArray( SendPropInt( SENDINFO_ARRAY(m_iPacketloss), 7, SPROP_UNSIGNED ), m_iPacketloss ),

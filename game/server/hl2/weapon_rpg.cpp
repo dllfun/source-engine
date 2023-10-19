@@ -165,7 +165,7 @@ void CMissile::Spawn( void )
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 	SetThink( &CMissile::IgniteThink );
 	
-	SetNextThink( gpGlobals->curtime + 0.3f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.3f );
 	SetDamage( 200.0f );
 
 	m_takedamage = DAMAGE_YES;
@@ -246,7 +246,7 @@ void CMissile::DumbFire( void )
 //-----------------------------------------------------------------------------
 void CMissile::SetGracePeriod( float flGracePeriod )
 {
-	m_flGracePeriodEndsAt = gpGlobals->curtime + flGracePeriod;
+	m_flGracePeriodEndsAt = gpGlobals->GetCurTime() + flGracePeriod;
 
 	// Go non-solid until the grace period ends
 	AddSolidFlags( FSOLID_NOT_SOLID );
@@ -267,7 +267,7 @@ void CMissile::AccelerateThink( void )
 	SetAbsVelocity( vecForward * RPG_SPEED );
 
 	SetThink( &CMissile::SeekThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 #define AUGER_YDEVIANCE 20.0f
@@ -279,13 +279,13 @@ void CMissile::AccelerateThink( void )
 void CMissile::AugerThink( void )
 {
 	// If we've augered long enough, then just explode
-	if ( m_flAugerTime < gpGlobals->curtime )
+	if ( m_flAugerTime < gpGlobals->GetCurTime() )
 	{
 		Explode();
 		return;
 	}
 
-	if ( m_flMarkDeadTime < gpGlobals->curtime )
+	if ( m_flMarkDeadTime < gpGlobals->GetCurTime() )
 	{
 		m_lifeState = LIFE_DYING;
 	}
@@ -303,7 +303,7 @@ void CMissile::AugerThink( void )
 	
 	SetAbsVelocity( vecForward * 1000.0f );
 
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 }
 
 //-----------------------------------------------------------------------------
@@ -322,9 +322,9 @@ void CMissile::ShotDown( void )
 	}
 
 	SetThink( &CMissile::AugerThink );
-	SetNextThink( gpGlobals->curtime );
-	m_flAugerTime = gpGlobals->curtime + 1.5f;
-	m_flMarkDeadTime = gpGlobals->curtime + 0.75;
+	SetNextThink( gpGlobals->GetCurTime() );
+	m_flAugerTime = gpGlobals->GetCurTime() + 1.5f;
+	m_flMarkDeadTime = gpGlobals->GetCurTime() + 0.75;
 
 	// Let the RPG start reloading immediately
 	if ( m_hOwner != NULL )
@@ -450,7 +450,7 @@ void CMissile::IgniteThink( void )
 	SetAbsVelocity( vecForward * RPG_SPEED );
 
 	SetThink( &CMissile::SeekThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	if ( m_hOwner && m_hOwner->GetOwner() )
 	{
@@ -548,7 +548,7 @@ void CMissile::SeekThink( void )
 	// If we have a grace period, go solid when it ends
 	if ( m_flGracePeriodEndsAt )
 	{
-		if ( m_flGracePeriodEndsAt < gpGlobals->curtime )
+		if ( m_flGracePeriodEndsAt < gpGlobals->GetCurTime() )
 		{
 			RemoveSolidFlags( FSOLID_NOT_SOLID );
 			m_flGracePeriodEndsAt = 0;
@@ -622,7 +622,7 @@ void CMissile::SeekThink( void )
 	if ( pBestDot == NULL )
 	{
 		//Think as soon as possible
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 		return;
 	}
 
@@ -653,7 +653,7 @@ void CMissile::SeekThink( void )
 	Vector	vDir	= GetAbsVelocity();
 	float	flSpeed	= VectorNormalize( vDir );
 	Vector	vNewVelocity = vDir;
-	if ( gpGlobals->frametime > 0.0f )
+	if ( gpGlobals->GetFrameTime() > 0.0f )
 	{
 		if ( flSpeed != 0 )
 		{
@@ -686,7 +686,7 @@ void CMissile::SeekThink( void )
 	}
 
 	// Think as soon as possible
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 #ifdef HL2_EPISODIC
 
@@ -1033,7 +1033,7 @@ void CAPCMissile::APCMissileTouch( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 void CAPCMissile::IgniteDelay( void )
 {
-	m_flIgnitionTime = gpGlobals->curtime + 0.3f;
+	m_flIgnitionTime = gpGlobals->GetCurTime() + 0.3f;
 
 	SetThink( &CAPCMissile::BeginSeekThink );
 	SetNextThink( m_flIgnitionTime );
@@ -1043,9 +1043,9 @@ void CAPCMissile::IgniteDelay( void )
 
 void CAPCMissile::AugerDelay( float flDelay )
 {
-	m_flIgnitionTime = gpGlobals->curtime;
+	m_flIgnitionTime = gpGlobals->GetCurTime();
 	SetThink( &CAPCMissile::AugerStartThink );
-	SetNextThink( gpGlobals->curtime + flDelay );
+	SetNextThink( gpGlobals->GetCurTime() + flDelay );
 	Init();
 	DisableGuiding();
 }
@@ -1056,16 +1056,16 @@ void CAPCMissile::AugerStartThink()
 	{
 		m_hRocketTrail->m_bDamaged = true;
 	}
-	m_flAugerTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 2.0f );
+	m_flAugerTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.0f, 2.0f );
 	SetThink( &CAPCMissile::AugerThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CAPCMissile::ExplodeDelay( float flDelay )
 {
-	m_flIgnitionTime = gpGlobals->curtime;
+	m_flIgnitionTime = gpGlobals->GetCurTime();
 	SetThink( &CAPCMissile::ExplodeThink );
-	SetNextThink( gpGlobals->curtime + flDelay );
+	SetNextThink( gpGlobals->GetCurTime() + flDelay );
 	Init();
 	DisableGuiding();
 }
@@ -1075,7 +1075,7 @@ void CAPCMissile::BeginSeekThink( void )
 {
  	RemoveSolidFlags( FSOLID_NOT_SOLID );
 	SetThink( &CAPCMissile::APCSeekThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 void CAPCMissile::APCSeekThink( void )
@@ -1303,13 +1303,13 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 
 	float flMinHomingDistance = MIN_HOMING_DISTANCE;
 	float flMaxHomingDistance = MAX_HOMING_DISTANCE;
-	float flBlendTime = gpGlobals->curtime - m_flIgnitionTime;
+	float flBlendTime = gpGlobals->GetCurTime() - m_flIgnitionTime;
 	if ( flBlendTime > DOWNWARD_BLEND_TIME_START )
 	{
 		if ( m_flReachedTargetTime != 0.0f )
 		{
 			*pHomingSpeed = APC_HOMING_SPEED;
-			float flDeltaTime = clamp( gpGlobals->curtime - m_flReachedTargetTime, 0.0f, CORRECTION_TIME );
+			float flDeltaTime = clamp( gpGlobals->GetCurTime() - m_flReachedTargetTime, 0.0f, CORRECTION_TIME );
 			*pHomingSpeed = SimpleSplineRemapVal( flDeltaTime, 0.0f, CORRECTION_TIME, 0.2f, *pHomingSpeed );
 			flMinHomingDistance = SimpleSplineRemapVal( flDeltaTime, 0.0f, CORRECTION_TIME, MIN_NEAR_HOMING_DISTANCE, flMinHomingDistance );
 			flMaxHomingDistance = SimpleSplineRemapVal( flDeltaTime, 0.0f, CORRECTION_TIME, MAX_NEAR_HOMING_DISTANCE, flMaxHomingDistance );
@@ -1340,7 +1340,7 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 			}
 			else
 			{
-				m_flReachedTargetTime = gpGlobals->curtime;
+				m_flReachedTargetTime = gpGlobals->GetCurTime();
 			}
 		}
 
@@ -1386,8 +1386,8 @@ BEGIN_DATADESC( CWeaponRPG )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponRPG, DT_WeaponRPG)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponRPG, DT_WeaponRPG)
+
 
 LINK_ENTITY_TO_CLASS( weapon_rpg, CWeaponRPG );
 PRECACHE_WEAPON_REGISTER(weapon_rpg);
@@ -1529,7 +1529,7 @@ void CWeaponRPG::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 
 			VectorAngles( vecShootDir, vecAngles );
 
-			m_hMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->edict() );		
+			m_hMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->NetworkProp()->GetEdict() );		
 			m_hMissile->m_hOwner = this;
 
 			// NPCs always get a grace period
@@ -1595,7 +1595,7 @@ void CWeaponRPG::PrimaryAttack( void )
 	Vector vecOrigin;
 	Vector vecForward;
 
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5f;
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 	
@@ -1610,7 +1610,7 @@ void CWeaponRPG::PrimaryAttack( void )
 
 	QAngle vecAngles;
 	VectorAngles( vForward, vecAngles );
-	m_hMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->edict() );
+	m_hMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->NetworkProp()->GetEdict() );
 
 	m_hMissile->m_hOwner = this;
 
@@ -1626,7 +1626,7 @@ void CWeaponRPG::PrimaryAttack( void )
 	DecrementAmmo( GetOwner() );
 
 	// Register a muzzleflash for the AI
-	pOwner->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+	pOwner->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 0.5 );
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 	WeaponSound( SINGLE );
@@ -2073,7 +2073,7 @@ int CWeaponRPG::WeaponRangeAttack1Condition( float flDot, float flDist )
 	if ( flDist < MIN( m_fMinRange1, m_fMinRange2 ) )
 		return COND_TOO_CLOSE_TO_ATTACK;
 
-	if ( m_flNextPrimaryAttack > gpGlobals->curtime )
+	if ( m_flNextPrimaryAttack > gpGlobals->GetCurTime() )
 		return 0;
 
 	// See if there's anyone in the way!
@@ -2298,7 +2298,7 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 
 	pLaserDot->SetOwnerEntity( pOwner );
 
-	pLaserDot->SetContextThink( &CLaserDot::LaserThink, gpGlobals->curtime + 0.1f, g_pLaserDotThink );
+	pLaserDot->SetContextThink( &CLaserDot::LaserThink, gpGlobals->GetCurTime() + 0.1f, g_pLaserDotThink );
 	pLaserDot->SetSimulatedEveryTick( true );
 
 	if ( !bVisibleDot )
@@ -2314,7 +2314,7 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 //-----------------------------------------------------------------------------
 void CLaserDot::LaserThink( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.05f, g_pLaserDotThink );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f, g_pLaserDotThink );
 
 	if ( GetOwnerEntity() == NULL )
 		return;

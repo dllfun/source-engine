@@ -15,9 +15,11 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-CLIENTEFFECT_REGISTER_BEGIN( PrecacheEffectStunstick )
-CLIENTEFFECT_MATERIAL( "effects/stunstick" )
+CLIENTEFFECT_REGISTER_BEGIN(PrecacheEffectStunstick)
+CLIENTEFFECT_MATERIAL("effects/stunstick")
 CLIENTEFFECT_REGISTER_END()
+
+void RecvProxy_StunActive(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 class C_WeaponStunStick : public C_BaseHLBludgeonWeapon
 {
@@ -26,7 +28,7 @@ public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
-	int DrawModel( int flags )
+	int DrawModel(IVModel* pWorld, int flags )
 	{
 		//FIXME: This sucks, but I can't easily create temp ents...
 
@@ -56,7 +58,7 @@ public:
 			DrawHalo( pMaterial, vEnd, random->RandomFloat( 2.0f, 3.0f ), color );
 		}
 
-		return BaseClass::DrawModel( flags );
+		return BaseClass::DrawModel(pWorld, flags );
 	}
 
 	// Do part of our effect
@@ -64,7 +66,7 @@ public:
 	{
 		// Update our effects
 		if ( m_bActive && 
-			gpGlobals->frametime != 0.0f &&
+			gpGlobals->GetFrameTime() != 0.0f &&
 			( random->RandomInt( 0, 5 ) == 0 ) )
 		{
 			Vector	vecOrigin;
@@ -150,6 +152,13 @@ public:
 
 private:
 	CNetworkVar( bool, m_bActive );
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_WeaponStunStick)
+	BEGIN_RECV_TABLE(C_WeaponStunStick, DT_WeaponStunStick, DT_BaseHLBludgeonWeapon)
+		RecvPropInt(RECVINFO(m_bActive), 0, RecvProxy_StunActive),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
@@ -181,7 +190,6 @@ void RecvProxy_StunActive( const CRecvProxyData *pData, void *pStruct, void *pOu
 
 STUB_WEAPON_CLASS_IMPLEMENT( weapon_stunstick, C_WeaponStunStick );
 
-IMPLEMENT_CLIENTCLASS_DT( C_WeaponStunStick, DT_WeaponStunStick, CWeaponStunStick )
-	RecvPropInt( RECVINFO(m_bActive), 0, RecvProxy_StunActive ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_WeaponStunStick, DT_WeaponStunStick, CWeaponStunStick )
+
 

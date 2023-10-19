@@ -116,7 +116,7 @@ void CNPC_Crow::Spawn( void )
 	m_flFieldOfView = VIEW_FIELD_FULL;
 	SetViewOffset( Vector(6, 0, 11) );		// Position of the eyes relative to NPC's origin.
 
-	m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 0.0f, 5.0f );
+	m_flGroundIdleMoveTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.0f, 5.0f );
 
 	SetBloodColor( BLOOD_COLOR_RED );
 	m_NPCState = NPC_STATE_NONE;
@@ -135,16 +135,16 @@ void CNPC_Crow::Spawn( void )
 
 	m_bSoar = false;
 	m_bOnJeep = false;
-	m_flSoarTime = gpGlobals->curtime;
+	m_flSoarTime = gpGlobals->GetCurTime();
 
 	NPCInit();
 
 	m_iBirdType = BIRDTYPE_CROW;
 
 	m_vLastStoredOrigin = vec3_origin;
-	m_flLastStuckCheck = gpGlobals->curtime;
+	m_flLastStuckCheck = gpGlobals->GetCurTime();
 
-	m_flDangerSoundTime = gpGlobals->curtime;
+	m_flDangerSoundTime = gpGlobals->GetCurTime();
 
 	SetGoalEnt( NULL );
 }
@@ -290,7 +290,7 @@ void CNPC_Crow::HandleAnimEvent( animevent_t *pEvent )
 		SetActivity( ACT_FLY );
 
 		m_bSoar = false;
-		m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+		m_flSoarTime = gpGlobals->GetCurTime() + random->RandomFloat( 3, 5 );
 
 		return;
 	}
@@ -393,7 +393,7 @@ bool CNPC_Crow::OverrideMove( float flInterval )
 	{
 		if ( GetNavigator()->GetPath()->GetCurWaypoint() )
 		{
-			if ( m_flLastStuckCheck <= gpGlobals->curtime )
+			if ( m_flLastStuckCheck <= gpGlobals->GetCurTime() )
 			{
 				if ( m_vLastStoredOrigin == GetAbsOrigin() )
 				{
@@ -417,7 +417,7 @@ bool CNPC_Crow::OverrideMove( float flInterval )
 					m_vLastStoredOrigin = GetAbsOrigin();
 				}
 				
-				m_flLastStuckCheck = gpGlobals->curtime + 1.0f;
+				m_flLastStuckCheck = gpGlobals->GetCurTime() + 1.0f;
 			}
 
 			if (m_bReachedMoveGoal )
@@ -454,18 +454,18 @@ Activity CNPC_Crow::NPC_TranslateActivity( Activity eNewActivity )
 
 	if ( eNewActivity == ACT_FLY )
 	{
-		if ( m_flSoarTime < gpGlobals->curtime )
+		if ( m_flSoarTime < gpGlobals->GetCurTime() )
 		{
 			//Adrian: This should be revisited.
 			if ( random->RandomInt( 0, 100 ) <= 50 && m_bSoar == false && GetAbsVelocity().z < 0 )
 			{
 				m_bSoar = true;
-				m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 1, 4 );
+				m_flSoarTime = gpGlobals->GetCurTime() + random->RandomFloat( 1, 4 );
 			}
 			else
 			{
 				m_bSoar = false;
-				m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 3, 5 );
+				m_flSoarTime = gpGlobals->GetCurTime() + random->RandomFloat( 3, 5 );
 			}
 		}
 
@@ -496,7 +496,7 @@ void CNPC_Crow::MoveCrowFly( float flInterval )
 		flInterval = 1.0;
 	}
 
-	m_flDangerSoundTime = gpGlobals->curtime + 5.0f;
+	m_flDangerSoundTime = gpGlobals->GetCurTime() + 5.0f;
 
 	//
 	// Determine the goal of our movement.
@@ -674,8 +674,8 @@ void CNPC_Crow::SetFlyingState( FlyState_t eState )
 		CapabilitiesAdd( bits_CAP_MOVE_FLY );
 		SetMoveType( MOVETYPE_STEP );
 		m_vLastStoredOrigin = GetAbsOrigin();
-		m_flLastStuckCheck = gpGlobals->curtime + 3.0f;
-		m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 5.0f, 10.0f );
+		m_flLastStuckCheck = gpGlobals->GetCurTime() + 3.0f;
+		m_flGroundIdleMoveTime = gpGlobals->GetCurTime() + random->RandomFloat( 5.0f, 10.0f );
 	}
 	else if ( eState == FlyState_Walking )
 	{
@@ -691,7 +691,7 @@ void CNPC_Crow::SetFlyingState( FlyState_t eState )
 		CapabilitiesAdd( bits_CAP_MOVE_GROUND );
 		SetMoveType( MOVETYPE_STEP );
 		m_vLastStoredOrigin = vec3_origin;
-		m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 5.0f, 10.0f );
+		m_flGroundIdleMoveTime = gpGlobals->GetCurTime() + random->RandomFloat( 5.0f, 10.0f );
 	}
 	else
 	{
@@ -701,7 +701,7 @@ void CNPC_Crow::SetFlyingState( FlyState_t eState )
 		CapabilitiesRemove( bits_CAP_MOVE_FLY );
 		CapabilitiesAdd( bits_CAP_MOVE_GROUND );
 		SetMoveType( MOVETYPE_STEP );
-		m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 5.0f, 10.0f );
+		m_flGroundIdleMoveTime = gpGlobals->GetCurTime() + random->RandomFloat( 5.0f, 10.0f );
 	}
 }
 
@@ -921,7 +921,7 @@ void CNPC_Crow::StartTask( const Task_t *pTask )
 			SetIdealActivity( ACT_FLY );
 
 			m_bSoar = false;
-			m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 2, 5 );
+			m_flSoarTime = gpGlobals->GetCurTime() + random->RandomFloat( 2, 5 );
 
 			break;
 		}
@@ -976,7 +976,7 @@ void CNPC_Crow::RunTask( const Task_t *pTask )
 				SetIdealActivity( ACT_FLY );
 
 				m_bSoar = false;
-				m_flSoarTime = gpGlobals->curtime + random->RandomFloat( 2, 5 );
+				m_flSoarTime = gpGlobals->GetCurTime() + random->RandomFloat( 2, 5 );
 			}
 			
 			break;
@@ -1039,9 +1039,9 @@ void CNPC_Crow::RunTask( const Task_t *pTask )
 
 		case TASK_CROW_WAIT_FOR_BARNACLE_KILL:
 		{
-			if ( m_flNextFlinchTime < gpGlobals->curtime )
+			if ( m_flNextFlinchTime < gpGlobals->GetCurTime() )
 			{
-				m_flNextFlinchTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 2.0f );
+				m_flNextFlinchTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 2.0f );
 				// dvs: TODO: squirm
 				// dvs: TODO: spawn feathers
 				EmitSound( "NPC_Crow.Squawk" );
@@ -1162,7 +1162,7 @@ int CNPC_Crow::SelectSchedule( void )
 	// Maybe we hopped off of something? Don't do this immediately upon
 	// because we may be falling to the ground on spawn.
 	//
-	if ( !( GetFlags() & FL_ONGROUND ) && ( gpGlobals->curtime > 2.0 ) && m_bOnJeep == false )
+	if ( !( GetFlags() & FL_ONGROUND ) && ( gpGlobals->GetCurTime() > 2.0 ) && m_bOnJeep == false )
 	{
 		return SCHED_CROW_FLY_AWAY;
 	}
@@ -1175,11 +1175,11 @@ int CNPC_Crow::SelectSchedule( void )
 		return SCHED_CROW_FLY_AWAY;
 	}
 
-	if ( m_flDangerSoundTime <= gpGlobals->curtime )
+	if ( m_flDangerSoundTime <= gpGlobals->GetCurTime() )
 	{
 		if ( HasCondition( COND_HEAR_DANGER ) || HasCondition( COND_HEAR_COMBAT ) )
 		{
-			m_flDangerSoundTime = gpGlobals->curtime + 10.0f;
+			m_flDangerSoundTime = gpGlobals->GetCurTime() + 10.0f;
 			return SCHED_CROW_FLY_AWAY;
 		}
 	}
@@ -1198,7 +1198,7 @@ int CNPC_Crow::SelectSchedule( void )
 	//
 	// If someone we hate is getting a little too close for comfort, avoid them.
 	//
-	if ( HasCondition( COND_CROW_ENEMY_TOO_CLOSE ) && m_flDangerSoundTime <= gpGlobals->curtime )
+	if ( HasCondition( COND_CROW_ENEMY_TOO_CLOSE ) && m_flDangerSoundTime <= gpGlobals->GetCurTime() )
 	{
 		ClearCondition( COND_CROW_ENEMY_TOO_CLOSE );
 
@@ -1233,9 +1233,9 @@ int CNPC_Crow::SelectSchedule( void )
 				//
 				// If we are hanging out on the ground, see if it is time to pick a new place to walk to.
 				//
-				if ( gpGlobals->curtime > m_flGroundIdleMoveTime )
+				if ( gpGlobals->GetCurTime() > m_flGroundIdleMoveTime )
 				{
-					m_flGroundIdleMoveTime = gpGlobals->curtime + random->RandomFloat( 10.0f, 20.0f );
+					m_flGroundIdleMoveTime = gpGlobals->GetCurTime() + random->RandomFloat( 10.0f, 20.0f );
 					return SCHED_CROW_IDLE_WALK;
 				}
 

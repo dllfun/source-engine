@@ -78,6 +78,37 @@ private:
 
 	int m_iQueuedBlendMode;
 	int m_iQueuedNextBlendMode;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CScriptIntro)
+	BEGIN_SEND_TABLE(CScriptIntro, DT_ScriptIntro, DT_BaseEntity)
+		SendPropVector(SENDINFO(m_vecCameraView), -1, SPROP_COORD),
+		SendPropVector(SENDINFO(m_vecCameraViewAngles), -1, SPROP_COORD),
+		SendPropInt(SENDINFO(m_iBlendMode), 5),
+		SendPropInt(SENDINFO(m_iNextBlendMode), 5),
+		SendPropFloat(SENDINFO(m_flNextBlendTime), 10),
+		SendPropFloat(SENDINFO(m_flBlendStartTime), 10),
+		SendPropBool(SENDINFO(m_bActive)),
+
+
+		// Fov & fov blends
+		SendPropInt(SENDINFO(m_iFOV), 9),
+		SendPropInt(SENDINFO(m_iNextFOV), 9),
+		SendPropInt(SENDINFO(m_iStartFOV), 9),
+		SendPropFloat(SENDINFO(m_flNextFOVBlendTime), 10),
+		SendPropFloat(SENDINFO(m_flFOVBlendStartTime), 10),
+
+		SendPropBool(SENDINFO(m_bAlternateFOV)),
+
+		// Fades
+		SendPropFloat(SENDINFO(m_flFadeAlpha), 10),
+		SendPropArray(
+			SendPropFloat(SENDINFO_ARRAY(m_flFadeColor), 32, SPROP_NOSCALE),
+			m_flFadeColor),
+		SendPropFloat(SENDINFO(m_flFadeDuration), 10, SPROP_ROUNDDOWN, 0.0f, 255.0),
+		SendPropEHandle(SENDINFO(m_hCameraEntity)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 extern CHandle<CScriptIntro> g_hIntroScript;

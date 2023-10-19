@@ -99,7 +99,7 @@ CHudPosture::CHudPosture( const char *pElementName ) : CHudElement( pElementName
 bool CHudPosture::ShouldDraw()
 {
 #ifdef _X360
-	return ( m_duckTimeout >= gpGlobals->curtime &&
+	return ( m_duckTimeout >= gpGlobals->GetCurTime() &&
 		CHudElement::ShouldDraw() );
 #else
 	return false;
@@ -133,7 +133,7 @@ void CHudPosture::OnTick( void )
 
 	if ( PlayerIsDucking(pPlayer) )
 	{
-		m_duckTimeout = gpGlobals->curtime + HUD_POSTURE_FADE_TIME; // kick the timer forward
+		m_duckTimeout = gpGlobals->GetCurTime() + HUD_POSTURE_FADE_TIME; // kick the timer forward
 		if (GetAlpha() < 255)
 		{
 			// if not fully faded in, and not fading in, start fading in.

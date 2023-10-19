@@ -28,10 +28,8 @@ extern ConVar sensitivity;
 ConVar cl_npc_speedmod_intime( "cl_npc_speedmod_intime", "0.25", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 ConVar cl_npc_speedmod_outtime( "cl_npc_speedmod_outtime", "1.5", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 
-IMPLEMENT_CLIENTCLASS_DT(C_BaseHLPlayer, DT_HL2_Player, CHL2_Player)
-	RecvPropDataTable( RECVINFO_DT(m_HL2Local),0, &REFERENCE_RECV_TABLE(DT_HL2Local) ),
-	RecvPropBool( RECVINFO( m_fIsSprinting ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_BaseHLPlayer, DT_HL2_Player, CHL2_Player)
+
 
 BEGIN_PREDICTION_DATA( C_BaseHLPlayer )
 	DEFINE_PRED_TYPEDESCRIPTION( m_HL2Local, C_HL2PlayerLocalData ),
@@ -97,7 +95,7 @@ float C_BaseHLPlayer::GetFOV()
 	float flFOVOffset = BaseClass::GetFOV() + GetZoom();
 
 	// Clamp FOV in MP
-	int min_fov = ( gpGlobals->maxClients == 1 ) ? 5 : default_fov.GetInt();
+	int min_fov = ( gpGlobals->GetMaxClients() == 1) ? 5 : default_fov.GetInt();
 	
 	// Don't let it go too low
 	flFOVOffset = MAX( min_fov, flFOVOffset );
@@ -116,7 +114,7 @@ float C_BaseHLPlayer::GetZoom( void )
 	//See if we need to lerp the values
 	if ( ( m_flZoomStart != m_flZoomEnd ) && ( m_flZoomRate > 0.0f ) )
 	{
-		float deltaTime = (float)( gpGlobals->curtime - m_flZoomStartTime ) / m_flZoomRate;
+		float deltaTime = (float)( gpGlobals->GetCurTime() - m_flZoomStartTime ) / m_flZoomRate;
 
 		if ( deltaTime >= 1.0f )
 		{
@@ -142,7 +140,7 @@ void C_BaseHLPlayer::Zoom( float FOVOffset, float time )
 	m_flZoomStart		= GetZoom();
 	m_flZoomEnd			= FOVOffset;
 	m_flZoomRate		= time;
-	m_flZoomStartTime	= gpGlobals->curtime;
+	m_flZoomStartTime	= gpGlobals->GetCurTime();
 }
 
 
@@ -151,7 +149,7 @@ void C_BaseHLPlayer::Zoom( float FOVOffset, float time )
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_BaseHLPlayer::DrawModel( int flags )
+int C_BaseHLPlayer::DrawModel(IVModel* pWorld, int flags )
 {
 	// Not pitch for player
 	QAngle saveAngles = GetLocalAngles();
@@ -161,7 +159,7 @@ int C_BaseHLPlayer::DrawModel( int flags )
 
 	SetLocalAngles( useAngles );
 
-	int iret = BaseClass::DrawModel( flags );
+	int iret = BaseClass::DrawModel(pWorld, flags );
 
 	SetLocalAngles( saveAngles );
 
@@ -533,7 +531,7 @@ void C_BaseHLPlayer::PerformClientSideNPCSpeedModifiers( float flFrameTime, CUse
 	{
 		if ( m_flSpeedMod != cl_forwardspeed.GetFloat() )
 		{
-			float flDeltaTime = (m_flSpeedModTime - gpGlobals->curtime);
+			float flDeltaTime = (m_flSpeedModTime - gpGlobals->GetCurTime());
 			m_flSpeedMod = RemapValClamped( flDeltaTime, cl_npc_speedmod_outtime.GetFloat(), 0, m_flExitSpeedMod, cl_forwardspeed.GetFloat() );
 		}
 	}
@@ -593,7 +591,7 @@ void C_BaseHLPlayer::PerformClientSideNPCSpeedModifiers( float flFrameTime, CUse
 			if ( !bShouldModSpeed )
 			{
 				m_hClosestNPC = NULL;
-				m_flSpeedModTime = gpGlobals->curtime + cl_npc_speedmod_outtime.GetFloat();
+				m_flSpeedModTime = gpGlobals->GetCurTime() + cl_npc_speedmod_outtime.GetFloat();
 				m_flExitSpeedMod = m_flSpeedMod;
 				return;
 			}
@@ -601,7 +599,7 @@ void C_BaseHLPlayer::PerformClientSideNPCSpeedModifiers( float flFrameTime, CUse
 			{
 				if ( m_flSpeedMod != pNPC->GetSpeedModifySpeed() )
 				{
-					float flDeltaTime = (m_flSpeedModTime - gpGlobals->curtime);
+					float flDeltaTime = (m_flSpeedModTime - gpGlobals->GetCurTime());
 					m_flSpeedMod = RemapValClamped( flDeltaTime, cl_npc_speedmod_intime.GetFloat(), 0, cl_forwardspeed.GetFloat(), pNPC->GetSpeedModifySpeed() );
 				}
 			}

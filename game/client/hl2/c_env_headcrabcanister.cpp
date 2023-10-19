@@ -37,15 +37,22 @@ private:
 
 	CEnvHeadcrabCanisterShared	m_Shared;
 	CNetworkVar( bool, m_bLanded );
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_EnvHeadcrabCanister)
+	INIT_REFERENCE_RECV_TABLE(CEnvHeadcrabCanisterShared);
+	BEGIN_RECV_TABLE(C_EnvHeadcrabCanister, DT_EnvHeadcrabCanister, DT_BaseAnimating)
+		RecvPropDataTable(RECVINFO_DT(m_Shared), 0, REFERENCE_RECV_TABLE(DT_EnvHeadcrabCanisterShared)),
+		RecvPropBool(RECVINFO(m_bLanded)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 
 EXTERN_RECV_TABLE(DT_EnvHeadcrabCanisterShared);
 
-IMPLEMENT_CLIENTCLASS_DT( C_EnvHeadcrabCanister, DT_EnvHeadcrabCanister, CEnvHeadcrabCanister )
-	RecvPropDataTable( RECVINFO_DT( m_Shared ), 0, &REFERENCE_RECV_TABLE(DT_EnvHeadcrabCanisterShared) ),
-	RecvPropBool( RECVINFO( m_bLanded ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_EnvHeadcrabCanister, DT_EnvHeadcrabCanister, CEnvHeadcrabCanister )
+
 
 
 //-----------------------------------------------------------------------------
@@ -90,7 +97,7 @@ void C_EnvHeadcrabCanister::ClientThink()
 {
 	Vector vecEndPosition;
 	QAngle vecEndAngles;
-	m_Shared.GetPositionAtTime( gpGlobals->curtime, vecEndPosition, vecEndAngles );
+	m_Shared.GetPositionAtTime( gpGlobals->GetCurTime(), vecEndPosition, vecEndAngles );
 	SetAbsOrigin( vecEndPosition );
 	SetAbsAngles( vecEndAngles );
 }

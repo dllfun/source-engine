@@ -67,7 +67,7 @@ void CGrenadeAR2::Spawn( void )
 	SetUse( &CGrenadeAR2::DetonateUse );
 	SetTouch( &CGrenadeAR2::GrenadeAR2Touch );
 	SetThink( &CGrenadeAR2::GrenadeAR2Think );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() )
 	{
@@ -89,7 +89,7 @@ void CGrenadeAR2::Spawn( void )
 
 	m_fDangerRadius = 100;
 
-	m_fSpawnTime = gpGlobals->curtime;
+	m_fSpawnTime = gpGlobals->GetCurTime();
 
 	// -------------
 	// Smoke trail.
@@ -126,12 +126,12 @@ void CGrenadeAR2::Spawn( void )
 //-----------------------------------------------------------------------------
 void CGrenadeAR2::GrenadeAR2Think( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.05f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 
 	if (!m_bIsLive)
 	{
 		// Go live after a short delay
-		if (m_fSpawnTime + MAX_AR2_NO_COLLIDE_TIME < gpGlobals->curtime)
+		if (m_fSpawnTime + MAX_AR2_NO_COLLIDE_TIME < gpGlobals->GetCurTime())
 		{
 			m_bIsLive  = true;
 		}
@@ -205,7 +205,7 @@ void CGrenadeAR2::Detonate(void)
 
 	CPASFilter filter( GetAbsOrigin() );
 
-	te->Explosion( filter, 0.0,
+	g_pTESystem->Explosion( filter, 0.0,
 		&GetAbsOrigin(), 
 		g_sModelIndexFireball,
 		2.0, 

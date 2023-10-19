@@ -72,13 +72,8 @@ BEGIN_DATADESC( CFlare )
 END_DATADESC()
 
 //Data-tables
-IMPLEMENT_SERVERCLASS_ST( CFlare, DT_Flare )
-	SendPropFloat( SENDINFO( m_flTimeBurnOut ), 0,	SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO( m_flScale ), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO( m_bLight ), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_bSmoke ), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_bPropFlare ), 1, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CFlare, DT_Flare )
+
 
 CFlare *CFlare::activeFlares = NULL;
 
@@ -110,12 +105,12 @@ void KillFlare( CBaseEntity *pOwnerEntity, CBaseEntity *pEntity, float flKillTim
 
 	if ( pFlare )
 	{
-		float flDieTime = (pFlare->m_flTimeBurnOut - gpGlobals->curtime) - flKillTime;
+		float flDieTime = (pFlare->m_flTimeBurnOut - gpGlobals->GetCurTime()) - flKillTime;
 
 		if ( flDieTime > 1.0f )
 		{
 			pFlare->Die( flDieTime );
-			pOwnerEntity->SetNextThink( gpGlobals->curtime + flDieTime + 3.0f );
+			pOwnerEntity->SetNextThink( gpGlobals->GetCurTime() + flDieTime + 3.0f );
 		}
 	}
 }
@@ -130,7 +125,7 @@ CFlare::CFlare( void )
 	m_bFading		= false;
 	m_bLight		= true;
 	m_bSmoke		= true;
-	m_flNextDamage	= gpGlobals->curtime;
+	m_flNextDamage	= gpGlobals->GetCurTime();
 	m_lifeState		= LIFE_ALIVE;
 	m_iHealth		= 100;
 	m_bPropFlare	= false;
@@ -198,7 +193,7 @@ void CFlare::Spawn( void )
 	SetMoveType( MOVETYPE_NONE );
 	SetFriction( 0.6f );
 	SetGravity( UTIL_ScaleForGravity( 400 ) );
-	m_flTimeBurnOut = gpGlobals->curtime + 30;
+	m_flTimeBurnOut = gpGlobals->GetCurTime() + 30;
 
 	AddEffects( EF_NOSHADOW|EF_NORECEIVESHADOW );
 
@@ -248,7 +243,7 @@ void CFlare::StartBurnSound( void )
 	{
 		CPASAttenuationFilter filter( this );
 		m_pBurnSound = CSoundEnvelopeController::GetController().SoundCreate( 
-			filter, entindex(), CHAN_WEAPON, "Weapon_FlareGun.Burn", 3.0f );
+			filter, this->NetworkProp()->entindex(), CHAN_WEAPON, "Weapon_FlareGun.Burn", 3.0f );
 	}
 }
 
@@ -261,7 +256,7 @@ void CFlare::StartBurnSound( void )
 //-----------------------------------------------------------------------------
 CFlare *CFlare::Create( Vector vecOrigin, QAngle vecAngles, CBaseEntity *pOwner, float lifetime )
 {
-	CFlare *pFlare = (CFlare *) CreateEntityByName( "env_flare" );
+	CFlare *pFlare = (CFlare *)engineServer->CreateEntityByName( "env_flare" );
 
 	if ( pFlare == NULL )
 		return NULL;
@@ -277,10 +272,10 @@ CFlare *CFlare::Create( Vector vecOrigin, QAngle vecAngles, CBaseEntity *pOwner,
 	pFlare->Start( lifetime );
 
 	//Don't start sparking immediately
-	pFlare->SetNextThink( gpGlobals->curtime + 0.5f );
+	pFlare->SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 	//Burn out time
-	pFlare->m_flTimeBurnOut = gpGlobals->curtime + lifetime;
+	pFlare->m_flTimeBurnOut = gpGlobals->GetCurTime() + lifetime;
 
 	pFlare->RemoveSolidFlags( FSOLID_NOT_SOLID );
 	pFlare->AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -306,7 +301,7 @@ unsigned int CFlare::PhysicsSolidMaskForEntity( void ) const
 //-----------------------------------------------------------------------------
 void CFlare::FlareThink( void )
 {
-	float	deltaTime = ( m_flTimeBurnOut - gpGlobals->curtime );
+	float	deltaTime = ( m_flTimeBurnOut - gpGlobals->GetCurTime() );
 
 	if ( !m_bInActiveList && ( ( deltaTime > FLARE_BLIND_TIME ) || ( m_flTimeBurnOut == -1.0f ) ) )
 	{
@@ -330,7 +325,7 @@ void CFlare::FlareThink( void )
 		}
 
 		//Burned out
-		if ( m_flTimeBurnOut < gpGlobals->curtime )
+		if ( m_flTimeBurnOut < gpGlobals->GetCurTime() )
 		{
 			UTIL_Remove( this );
 			return;
@@ -353,7 +348,7 @@ void CFlare::FlareThink( void )
 	}
 
 	//Next update
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -362,10 +357,10 @@ void CFlare::FlareThink( void )
 //-----------------------------------------------------------------------------
 void CFlare::FlareBurnTouch( CBaseEntity *pOther )
 {
-	if ( pOther && pOther->m_takedamage && ( m_flNextDamage < gpGlobals->curtime ) )
+	if ( pOther && pOther->m_takedamage && ( m_flNextDamage < gpGlobals->GetCurTime() ) )
 	{
 		pOther->TakeDamage( CTakeDamageInfo( this, m_pOwner, 1, (DMG_BULLET|DMG_BURN) ) );
-		m_flNextDamage = gpGlobals->curtime + 1.0f;
+		m_flNextDamage = gpGlobals->GetCurTime() + 1.0f;
 	}
 }
 
@@ -402,7 +397,7 @@ void CFlare::FlareTouch( CBaseEntity *pOther )
 
 		//Use m_pOwner, not GetOwnerEntity()
 		pOther->TakeDamage( CTakeDamageInfo( this, m_pOwner, iDamage, (DMG_BULLET|DMG_BURN) ) );
-		m_flNextDamage = gpGlobals->curtime + 1.0f;
+		m_flNextDamage = gpGlobals->GetCurTime() + 1.0f;
 		*/
 
 		CBaseAnimating *pAnim;
@@ -461,11 +456,11 @@ void CFlare::FlareTouch( CBaseEntity *pOther )
 						if ( index >= 0 )
 						{
 							CBroadcastRecipientFilter filter;
-							te->Decal( filter, 0.0, &tr.endpos, &tr.startpos, ENTINDEX( tr.m_pEnt ), tr.hitbox, index );
+							g_pTESystem->Decal( filter, 0.0, &tr.endpos, &tr.startpos, ENTINDEX( tr.m_pEnt ), tr.hitbox, index );
 						}
 						
 						CPASAttenuationFilter filter2( this, "Flare.Touch" );
-						EmitSound( filter2, entindex(), "Flare.Touch" );
+						EmitSound( filter2, this->NetworkProp()->entindex(), "Flare.Touch" );
 
 						return;
 					}
@@ -480,7 +475,7 @@ void CFlare::FlareTouch( CBaseEntity *pOther )
 			if ( index >= 0 )
 			{
 				CBroadcastRecipientFilter filter;
-				te->Decal( filter, 0.0, &tr.endpos, &tr.startpos, ENTINDEX( tr.m_pEnt ), tr.hitbox, index );
+				g_pTESystem->Decal( filter, 0.0, &tr.endpos, &tr.startpos, ENTINDEX( tr.m_pEnt ), tr.hitbox, index );
 			}
 		}
 
@@ -527,7 +522,7 @@ void CFlare::Start( float lifeTime )
 
 	if ( lifeTime > 0 )
 	{
-		m_flTimeBurnOut = gpGlobals->curtime + lifeTime;
+		m_flTimeBurnOut = gpGlobals->GetCurTime() + lifeTime;
 	}
 	else
 	{
@@ -537,7 +532,7 @@ void CFlare::Start( float lifeTime )
 	RemoveEffects( EF_NODRAW );
 
 	SetThink( &CFlare::FlareThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -545,10 +540,10 @@ void CFlare::Start( float lifeTime )
 //-----------------------------------------------------------------------------
 void CFlare::Die( float fadeTime )
 {
-	m_flTimeBurnOut = gpGlobals->curtime + fadeTime;
+	m_flTimeBurnOut = gpGlobals->GetCurTime() + fadeTime;
 
 	SetThink( &CFlare::FlareThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -692,14 +687,14 @@ void CFlaregun::PrimaryAttack( void )
 	if ( m_iClip1 <= 0 )
 	{
 		SendWeaponAnim( ACT_VM_DRYFIRE );
-		pOwner->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+		pOwner->m_flNextAttack = gpGlobals->GetCurTime() + SequenceDuration();
 		return;
 	}
 
 	m_iClip1 = m_iClip1 - 1;
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-	pOwner->m_flNextAttack = gpGlobals->curtime + 1;
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime() + 1;
 
 	CFlare *pFlare = CFlare::Create( pOwner->Weapon_ShootPosition(), pOwner->EyeAngles(), pOwner, FLARE_DURATION );
 
@@ -727,14 +722,14 @@ void CFlaregun::SecondaryAttack( void )
 	if ( m_iClip1 <= 0 )
 	{
 		SendWeaponAnim( ACT_VM_DRYFIRE );
-		pOwner->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+		pOwner->m_flNextAttack = gpGlobals->GetCurTime() + SequenceDuration();
 		return;
 	}
 
 	m_iClip1 = m_iClip1 - 1;
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-	pOwner->m_flNextAttack = gpGlobals->curtime + 1;
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime() + 1;
 
 	CFlare *pFlare = CFlare::Create( pOwner->Weapon_ShootPosition(), pOwner->EyeAngles(), pOwner, FLARE_DURATION );
 

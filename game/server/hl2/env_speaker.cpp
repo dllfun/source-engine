@@ -60,7 +60,7 @@ void CSpeaker::Spawn( void )
 	if ( Q_strlen( soundfile ) < 1 )
 	{
 		Warning( "'speaker' entity with no Level/Sentence! at: %f, %f, %f\n", GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 		SetThink( &CSpeaker::SUB_Remove );
 		return;
 	}
@@ -88,7 +88,7 @@ void CSpeaker::Precache( void )
 	if ( !FBitSet (m_spawnflags, SF_SPEAKER_START_SILENT ) )
 	{
 		// set first announcement time for random n second
-		SetNextThink( gpGlobals->curtime + random->RandomFloat(5.0, 15.0) );
+		SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat(5.0, 15.0) );
 	}
 
 	if ( !m_pInstancedResponseSystem && Q_strlen( STRING(m_iszRuleScriptFile) ) > 0 )
@@ -174,7 +174,7 @@ void CSpeaker::SpeakerThink( void )
 	
 	DispatchResponse( m_iszConcept.ToCStr() );
 
-	SetNextThink( gpGlobals->curtime + random->RandomFloat(m_delayMin, m_delayMax) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat(m_delayMin, m_delayMax) );
 
 	// time delay until it's ok to speak: used so that two NPCs don't talk at once
 	g_AIFriendliesTalkSemaphore.Acquire( 5, this );		
@@ -185,7 +185,7 @@ void CSpeaker::SpeakerThink( void )
 void CSpeaker::InputTurnOn( inputdata_t &inputdata )
 {
 	// turn on announcements
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 }
 
 
@@ -212,6 +212,6 @@ void CSpeaker::InputToggle( inputdata_t &inputdata )
 	else 
 	{
 		// turn on announcements
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	} 
 }

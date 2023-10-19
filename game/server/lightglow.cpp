@@ -46,7 +46,7 @@ public:
 	CNetworkVar( float, m_flHDRColorScale );
 
 	BEGIN_INIT_SEND_TABLE(CLightGlow)
-	BEGIN_SEND_TABLE_NOBASE(CLightGlow, DT_LightGlow)
+	BEGIN_SEND_TABLE(CLightGlow, DT_LightGlow, DT_BaseEntity)
 		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
 		SendPropInt(SENDINFO(m_nHorizontalSize), 16, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nVerticalSize), 16, SPROP_UNSIGNED),

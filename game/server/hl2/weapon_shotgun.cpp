@@ -86,10 +86,16 @@ public:
 	DECLARE_ACTTABLE();
 
 	CWeaponShotgun(void);
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponShotgun)
+	BEGIN_SEND_TABLE(CWeaponShotgun, DT_WeaponShotgun, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponShotgun, DT_WeaponShotgun)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponShotgun, DT_WeaponShotgun)
+
 
 LINK_ENTITY_TO_CLASS( weapon_shotgun, CWeaponShotgun );
 PRECACHE_WEAPON_REGISTER(weapon_shotgun);
@@ -305,8 +311,8 @@ bool CWeaponShotgun::StartReload( void )
 	// Make shotgun shell visible
 	SetBodygroup(1,0);
 
-	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 	m_bInReload = true;
 	return true;
@@ -346,8 +352,8 @@ bool CWeaponShotgun::Reload( void )
 	WeaponSound(RELOAD);
 	SendWeaponAnim( ACT_VM_RELOAD );
 
-	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 	return true;
 }
@@ -372,8 +378,8 @@ void CWeaponShotgun::FinishReload( void )
 	// Finish reload animation
 	SendWeaponAnim( ACT_SHOTGUN_RELOAD_FINISH );
 
-	pOwner->m_flNextAttack = gpGlobals->curtime;
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack = gpGlobals->GetCurTime();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -418,8 +424,8 @@ void CWeaponShotgun::Pump( void )
 	// Finish reload animation
 	SendWeaponAnim( ACT_SHOTGUN_PUMP );
 
-	pOwner->m_flNextAttack	= gpGlobals->curtime + SequenceDuration();
-	m_flNextPrimaryAttack	= gpGlobals->curtime + SequenceDuration();
+	pOwner->m_flNextAttack	= gpGlobals->GetCurTime() + SequenceDuration();
+	m_flNextPrimaryAttack	= gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -432,7 +438,7 @@ void CWeaponShotgun::DryFire( void )
 	WeaponSound(EMPTY);
 	SendWeaponAnim( ACT_VM_DRYFIRE );
 	
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
@@ -461,13 +467,13 @@ void CWeaponShotgun::PrimaryAttack( void )
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 	m_iClip1 -= 1;
 
 	Vector	vecSrc		= pPlayer->Weapon_ShootPosition( );
 	Vector	vecAiming	= pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	
 
-	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 1.0 );
+	pPlayer->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 1.0 );
 	
 	// Fire the bullets, and force the first shot to be perfectly accuracy
 	pPlayer->FireBullets( sk_plr_num_shotgun_pellets.GetInt(), vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, 0, NULL, true, true );
@@ -519,7 +525,7 @@ void CWeaponShotgun::SecondaryAttack( void )
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
 	// Don't fire again until fire animation has completed
-	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 	m_iClip1 -= 2;	// Shotgun uses same clip for primary and secondary attacks
 
 	Vector vecSrc	 = pPlayer->Weapon_ShootPosition();
@@ -529,7 +535,7 @@ void CWeaponShotgun::SecondaryAttack( void )
 	pPlayer->FireBullets( 12, vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0, -1, -1, 0, NULL, false, false );
 	pPlayer->ViewPunch( QAngle(random->RandomFloat( -5, 5 ),0,0) );
 
-	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 1.0 );
+	pPlayer->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 1.0 );
 
 	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_SHOTGUN, 0.2 );
 
@@ -576,7 +582,7 @@ void CWeaponShotgun::ItemPostFrame( void )
 			m_bNeedPump		= false;
 			m_bDelayedFire2 = true;
 		}
-		else if (m_flNextPrimaryAttack <= gpGlobals->curtime)
+		else if (m_flNextPrimaryAttack <= gpGlobals->GetCurTime())
 		{
 			// If out of ammo end reload
 			if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <=0)
@@ -604,14 +610,14 @@ void CWeaponShotgun::ItemPostFrame( void )
 		SetBodygroup(1,1);
 	}
 
-	if ((m_bNeedPump) && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+	if ((m_bNeedPump) && (m_flNextPrimaryAttack <= gpGlobals->GetCurTime()))
 	{
 		Pump();
 		return;
 	}
 	
 	// Shotgun uses same timing and ammo for secondary attack
-	if ((m_bDelayedFire2 || pOwner->m_nButtons & IN_ATTACK2)&&(m_flNextPrimaryAttack <= gpGlobals->curtime))
+	if ((m_bDelayedFire2 || pOwner->m_nButtons & IN_ATTACK2)&&(m_flNextPrimaryAttack <= gpGlobals->GetCurTime()))
 	{
 		m_bDelayedFire2 = false;
 		
@@ -636,7 +642,7 @@ void CWeaponShotgun::ItemPostFrame( void )
 		else if (GetOwner()->GetWaterLevel() == 3 && m_bFiresUnderwater == false)
 		{
 			WeaponSound(EMPTY);
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.2;
 			return;
 		}
 		else
@@ -644,12 +650,12 @@ void CWeaponShotgun::ItemPostFrame( void )
 			// If the firing button was just pressed, reset the firing time
 			if ( pOwner->m_afButtonPressed & IN_ATTACK )
 			{
-				 m_flNextPrimaryAttack = gpGlobals->curtime;
+				 m_flNextPrimaryAttack = gpGlobals->GetCurTime();
 			}
 			SecondaryAttack();
 		}
 	}
-	else if ( (m_bDelayedFire1 || pOwner->m_nButtons & IN_ATTACK) && m_flNextPrimaryAttack <= gpGlobals->curtime)
+	else if ( (m_bDelayedFire1 || pOwner->m_nButtons & IN_ATTACK) && m_flNextPrimaryAttack <= gpGlobals->GetCurTime())
 	{
 		m_bDelayedFire1 = false;
 		if ( (m_iClip1 <= 0 && UsesClipsForAmmo1()) || ( !UsesClipsForAmmo1() && !pOwner->GetAmmoCount(m_iPrimaryAmmoType) ) )
@@ -667,7 +673,7 @@ void CWeaponShotgun::ItemPostFrame( void )
 		else if (pOwner->GetWaterLevel() == 3 && m_bFiresUnderwater == false)
 		{
 			WeaponSound(EMPTY);
-			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
+			m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.2;
 			return;
 		}
 		else
@@ -676,7 +682,7 @@ void CWeaponShotgun::ItemPostFrame( void )
 			CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 			if ( pPlayer && pPlayer->m_afButtonPressed & IN_ATTACK )
 			{
-				 m_flNextPrimaryAttack = gpGlobals->curtime;
+				 m_flNextPrimaryAttack = gpGlobals->GetCurTime();
 			}
 			PrimaryAttack();
 		}
@@ -692,19 +698,19 @@ void CWeaponShotgun::ItemPostFrame( void )
 		// no fire buttons down
 		m_bFireOnEmpty = false;
 
-		if ( !HasAnyAmmo() && m_flNextPrimaryAttack < gpGlobals->curtime ) 
+		if ( !HasAnyAmmo() && m_flNextPrimaryAttack < gpGlobals->GetCurTime() ) 
 		{
 			// weapon isn't useable, switch.
 			if ( !(GetWeaponFlags() & ITEM_FLAG_NOAUTOSWITCHEMPTY) && pOwner->SwitchToNextBestWeapon( this ) )
 			{
-				m_flNextPrimaryAttack = gpGlobals->curtime + 0.3;
+				m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.3;
 				return;
 			}
 		}
 		else
 		{
 			// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
-			if ( m_iClip1 <= 0 && !(GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < gpGlobals->curtime )
+			if ( m_iClip1 <= 0 && !(GetWeaponFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < gpGlobals->GetCurTime() )
 			{
 				if (StartReload())
 				{
@@ -753,10 +759,10 @@ void CWeaponShotgun::ItemHolsterFrame( void )
 		return;
 
 	// If it's been longer than three seconds, reload
-	if ( ( gpGlobals->curtime - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
+	if ( ( gpGlobals->GetCurTime() - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
 	{
 		// Reset the timer
-		m_flHolsterTime = gpGlobals->curtime;
+		m_flHolsterTime = gpGlobals->GetCurTime();
 	
 		if ( GetOwner() == NULL )
 			return;

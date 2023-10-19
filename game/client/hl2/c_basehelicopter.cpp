@@ -14,9 +14,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT( C_BaseHelicopter, DT_BaseHelicopter, CBaseHelicopter )
-	RecvPropTime( RECVINFO( m_flStartupTime ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_BaseHelicopter, DT_BaseHelicopter, CBaseHelicopter )
+
 
 
 C_BaseHelicopter::C_BaseHelicopter()
@@ -63,7 +62,7 @@ void CHeliBladeMaterialProxy::OnBind( C_BaseEntity *pEnt )
 	C_BaseHelicopter *pHeli = dynamic_cast<C_BaseHelicopter*>( pEnt );
 	if ( pHeli )
 	{
-		float dt = gpGlobals->curtime  - pHeli->StartupTime();
+		float dt = gpGlobals->GetCurTime()  - pHeli->StartupTime();
 		dt /= FADE_IN_TIME;
 		dt = clamp( dt, 0.0f, 1.0f );
 		if ( m_bFadeOut ) 

@@ -191,12 +191,8 @@ BEGIN_DATADESC( CNPC_Barnacle )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CNPC_Barnacle, DT_Barnacle )
-	SendPropFloat(  SENDINFO( m_flAltitude ), 0, SPROP_NOSCALE),
-	SendPropVector( SENDINFO( m_vecRoot ), 0, SPROP_COORD ),
-	SendPropVector( SENDINFO( m_vecTip ), 0, SPROP_COORD ), 
-	SendPropVector( SENDINFO( m_vecTipDrawOffset ), 0, SPROP_NOSCALE ), 
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CNPC_Barnacle, DT_Barnacle )
+
 
 
 //=========================================================
@@ -299,7 +295,7 @@ void CNPC_Barnacle::Spawn()
 	SetPlaybackRate( random->RandomFloat( 0.8f, 1.2f ) );
 
 	SetThink ( &CNPC_Barnacle::BarnacleThink );
-	SetNextThink( gpGlobals->curtime + 0.5f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 
 	m_flBarnaclePullSpeed = BARNACLE_PULL_SPEED;
 
@@ -441,7 +437,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 	CBaseEntity *pTouchEnt;
 	float flLength;
 
- 	SetNextThink( gpGlobals->curtime + 0.1f );
+ 	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	UpdateTongue();
 
@@ -472,7 +468,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 		else if ( m_flDigestFinish )
 		{
 			// Still digesting him>
-			if ( m_flDigestFinish > gpGlobals->curtime )
+			if ( m_flDigestFinish > gpGlobals->GetCurTime() )
 			{
 				if ( IsActivityFinished() )
 				{
@@ -517,7 +513,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 		else if ( m_flDigestFinish )
 		{
 			// Still digesting him
-			if ( m_flDigestFinish > gpGlobals->curtime )
+			if ( m_flDigestFinish > gpGlobals->GetCurTime() )
 			{
 				if ( IsActivityFinished() )
 				{
@@ -570,7 +566,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 		CollisionProp()->WorldSpaceSurroundingBounds( &vecSurroundMins, &vecSurroundMaxs );
 		if ( !UTIL_FindClientInPVS( vecSurroundMins, vecSurroundMaxs ) )
 		{
-			SetNextThink( gpGlobals->curtime + random->RandomFloat(1,1.5) );	// Stagger a bit to keep barnacles from thinking on the same frame
+			SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat(1,1.5) );	// Stagger a bit to keep barnacles from thinking on the same frame
 		}
 
 		if ( IsActivityFinished() && GetActivity() != ACT_IDLE )
@@ -596,7 +592,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 		// If there's something under us, lower the tongue down so we can grab it
 		if ( m_flAltitude < flLength )
 		{
-			float dt = gpGlobals->curtime - GetLastThink();
+			float dt = gpGlobals->GetCurTime() - GetLastThink();
 			SetAltitude( m_flAltitude + m_flBarnaclePullSpeed * dt );
 		}
 
@@ -813,7 +809,7 @@ void CNPC_Barnacle::PullEnemyTorwardsMouth( bool bAdjustEnemyOrigin )
 	}
 
 	// Pull the victim towards the mouth
-	float dt = gpGlobals->curtime - GetLastThink();
+	float dt = gpGlobals->GetCurTime() - GetLastThink();
 
 	// Assumes constant frame rate :|
 	m_flLocalTimer += dt;
@@ -1669,7 +1665,7 @@ void CNPC_Barnacle::BitePrey( void )
 		CollisionProp()->NormalizedToWorldSpace( Vector( 0.5f, 0.5f, 0.0f ), &vecBloodPos );
 		UTIL_BloodSpray( vecBloodPos, Vector(0,0,-1), GetEnemy()->BloodColor(), 8, FX_BLOODSPRAY_ALL );
 		
-		m_flDigestFinish = gpGlobals->curtime + 10.0;
+		m_flDigestFinish = gpGlobals->GetCurTime() + 10.0;
 		return;
 	}
 
@@ -1684,7 +1680,7 @@ void CNPC_Barnacle::BitePrey( void )
 		m_flNextBloodTime = 0.0f;
 		SprayBlood();
 
-		m_flDigestFinish = gpGlobals->curtime + 10.0;
+		m_flDigestFinish = gpGlobals->GetCurTime() + 10.0;
 		if (m_hRagdoll)
 		{
 			UTIL_Remove( m_hRagdoll );
@@ -1752,10 +1748,10 @@ void CNPC_Barnacle::BitePrey( void )
 //-----------------------------------------------------------------------------
 void CNPC_Barnacle::SprayBlood()
 {
-	if ( gpGlobals->curtime < m_flNextBloodTime )
+	if ( gpGlobals->GetCurTime() < m_flNextBloodTime )
 		return;
 
-	m_flNextBloodTime = gpGlobals->curtime + 0.2f;
+	m_flNextBloodTime = gpGlobals->GetCurTime() + 0.2f;
 
 	Vector bloodDir = RandomVector( -1.0f, 1.0f );
 	bloodDir.z = -fabs( bloodDir.z );
@@ -1813,9 +1809,9 @@ void CNPC_Barnacle::SwallowPrey( void )
 		// Parentheses were probably intended around the ?: part of the expression, but putting them there now
 		// would change the behavior which is undesirable, so parentheses were placed around the '+' to suppress
 		// compiler warnings.
-		m_flDigestFinish = ( gpGlobals->curtime + m_bSwallowingPoison ) ? 0.48f : 10.0f;
+		m_flDigestFinish = ( gpGlobals->GetCurTime() + m_bSwallowingPoison ) ? 0.48f : 10.0f;
 #else
-		m_flDigestFinish = gpGlobals->curtime + 10.0;
+		m_flDigestFinish = gpGlobals->GetCurTime() + 10.0;
 #endif
 	}
 
@@ -2088,7 +2084,7 @@ void CNPC_Barnacle::Event_Killed( const CTakeDamageInfo &info )
 
 	StudioFrameAdvance();
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	SetThink ( &CNPC_Barnacle::WaitTillDead );
 
 	// we deliberately do not call BaseClass::EventKilled
@@ -2099,7 +2095,7 @@ void CNPC_Barnacle::Event_Killed( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CNPC_Barnacle::WaitTillDead ( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	StudioFrameAdvance();
 	DispatchAnimEvents ( this );
@@ -2141,7 +2137,7 @@ void CNPC_Barnacle::WaitTillDead ( void )
 	if ( fabs(flDist - goalAltitude) > 20.0f )	
 	{
 		float flNewAltitude;
-		float dt = gpGlobals->curtime - GetLastThink();
+		float dt = gpGlobals->GetCurTime() - GetLastThink();
 		if ( m_flAltitude >= goalAltitude )
 		{
 			flNewAltitude = MAX( goalAltitude, m_flAltitude - m_flBarnaclePullSpeed * dt );

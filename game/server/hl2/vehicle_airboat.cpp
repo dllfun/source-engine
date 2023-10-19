@@ -264,15 +264,20 @@ private:
 
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_nWaterLevel );
 
+public:
+	BEGIN_INIT_SEND_TABLE(CPropAirboat)
+	BEGIN_SEND_TABLE(CPropAirboat, DT_PropAirboat, DT_PropVehicleDriveable)
+		SendPropBool(SENDINFO(m_bHeadlightIsOn)),
+		SendPropInt(SENDINFO(m_nAmmoCount), 9),
+		SendPropInt(SENDINFO(m_nExactWaterLevel)),
+		SendPropInt(SENDINFO(m_nWaterLevel)),
+		SendPropVector(SENDINFO(m_vecPhysVelocity)),
+	END_SEND_TABLE();
+	END_INIT_SEND_TABLE()
 };
 
-IMPLEMENT_SERVERCLASS_ST( CPropAirboat, DT_PropAirboat )
-	SendPropBool( SENDINFO( m_bHeadlightIsOn ) ),
-	SendPropInt( SENDINFO( m_nAmmoCount ), 9 ),
-	SendPropInt( SENDINFO( m_nExactWaterLevel ) ),
-	SendPropInt( SENDINFO( m_nWaterLevel ) ),
-	SendPropVector( SENDINFO( m_vecPhysVelocity ) ),
-END_SEND_TABLE();
+IMPLEMENT_SERVERCLASS( CPropAirboat, DT_PropAirboat )
+
 
 LINK_ENTITY_TO_CLASS( prop_vehicle_airboat, CPropAirboat );
 
@@ -387,7 +392,7 @@ void CPropAirboat::Spawn( void )
 	SetAnimatedEveryTick( true );
 
 	// Handbrake data.
-	//m_flHandbrakeTime = gpGlobals->curtime + 0.1;
+	//m_flHandbrakeTime = gpGlobals->GetCurTime() + 0.1;
 	//m_bInitialHandbrake = false;
 	m_VehiclePhysics.SetHasBrakePedal( false );
 
@@ -668,7 +673,7 @@ void CPropAirboat::EnterVehicle( CBaseCombatCharacter *pPlayer )
 	m_VehiclePhysics.TurnOn();
 
 	// Start playing the engine's idle sound as the startup sound finishes.
-	m_flEngineIdleTime = gpGlobals->curtime + flDuration - 0.1;
+	m_flEngineIdleTime = gpGlobals->GetCurTime() + flDuration - 0.1;
 }
 
 
@@ -736,7 +741,7 @@ void CPropAirboat::ExitVehicle( int nRole )
 	ep.m_SoundLevel = SNDLVL_NORM;
 	ep.m_nPitch = controller.SoundGetPitch( m_pEngineSound );
 
-	EmitSound( filter, entindex(), ep );
+	EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	m_VehiclePhysics.TurnOff();
 
 	// Shut off the airboat sounds.
@@ -845,10 +850,10 @@ bool CPropAirboat::ShouldDrawWaterImpacts( void )
 {
 	// The airboat spits out so much crap that we need to do cheaper versions
 	// of the impact effects. Also, we need to do less of them.
-	if ( m_flLastImpactEffectTime >= gpGlobals->curtime )
+	if ( m_flLastImpactEffectTime >= gpGlobals->GetCurTime() )
 		return false;
 
-	m_flLastImpactEffectTime = gpGlobals->curtime + 0.05f;
+	m_flLastImpactEffectTime = gpGlobals->GetCurTime() + 0.05f;
 
 	return true;
 }
@@ -860,14 +865,14 @@ void CPropAirboat::DoImpactEffect( trace_t &tr, int nDamageType )
 {
 	// The airboat spits out so much crap that we need to do cheaper versions
 	// of the impact effects. Also, we need to do less of them.
-	if ( m_flLastImpactEffectTime == gpGlobals->curtime )
+	if ( m_flLastImpactEffectTime == gpGlobals->GetCurTime() )
 		return;
 
 	// Randomly drop out
 	if ( random->RandomInt( 0, 5 ) )
 		return;
 
-	m_flLastImpactEffectTime = gpGlobals->curtime;
+	m_flLastImpactEffectTime = gpGlobals->GetCurTime();
 	UTIL_ImpactTrace( &tr, nDamageType, "AirboatGunImpact" );
 } 
  
@@ -1018,7 +1023,7 @@ void CPropAirboat::RechargeAmmo(void)
 		return;
 
 	float flRechargeRate = sk_airboat_recharge_rate.GetInt();
-	float flChargeAmount = flRechargeRate * gpGlobals->frametime;
+	float flChargeAmount = flRechargeRate * gpGlobals->GetFrameTime();
 	if ( m_flDrainRemainder != 0.0f )
 	{
 		if ( m_flDrainRemainder >= flChargeAmount )
@@ -1084,9 +1089,9 @@ void CPropAirboat::Think(void)
 	BaseClass::Think();
 
 	// set handbrake after physics sim settles down
-//	if ( gpGlobals->curtime < m_flHandbrakeTime )
+//	if ( gpGlobals->GetCurTime() < m_flHandbrakeTime )
 //	{
-//		SetNextThink( gpGlobals->curtime );
+//		SetNextThink( gpGlobals->GetCurTime() );
 //	}
 //	else if ( !m_bInitialHandbrake )	// after initial timer expires, set the handbrake
 //	{
@@ -1163,7 +1168,7 @@ void CPropAirboat::Think(void)
 	{
 		Vector vecAimPoint;
 		ComputeAimPoint( &vecAimPoint );
-		AimGunAt( vecAimPoint, gpGlobals->frametime );
+		AimGunAt( vecAimPoint, gpGlobals->GetFrameTime() );
 	}
 
 	if ( ShouldForceExit() )
@@ -1210,11 +1215,11 @@ void CPropAirboat::UpdatePropeller()
 	{
 		if (flTargetSpinRate > 0)
 		{
-			m_flSpinRate += gpGlobals->frametime * 1.0;
+			m_flSpinRate += gpGlobals->GetFrameTime() * 1.0;
 		}
 		else
 		{
-			m_flSpinRate += gpGlobals->frametime * 0.4;
+			m_flSpinRate += gpGlobals->GetFrameTime() * 0.4;
 		}
 
 		if (m_flSpinRate > flTargetSpinRate)
@@ -1224,7 +1229,7 @@ void CPropAirboat::UpdatePropeller()
 	}
 	else if (m_flSpinRate > flTargetSpinRate)
 	{
-		m_flSpinRate -= gpGlobals->frametime * 0.4;
+		m_flSpinRate -= gpGlobals->GetFrameTime() * 0.4;
 		if (m_flSpinRate < flTargetSpinRate)
 		{
 			m_flSpinRate = flTargetSpinRate;
@@ -1291,37 +1296,37 @@ void CPropAirboat::CreateSounds()
 
 	if (!m_pEngineSound)
 	{
-		m_pEngineSound = controller.SoundCreate( filter, entindex(), "Airboat_engine_idle" );
+		m_pEngineSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "Airboat_engine_idle" );
 		controller.Play( m_pEngineSound, 0, 100 );
 	}
 
 	if (!m_pFanSound)
 	{
-		m_pFanSound = controller.SoundCreate( filter, entindex(), "Airboat_fan_idle" );
+		m_pFanSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "Airboat_fan_idle" );
 		controller.Play( m_pFanSound, 0, 100 );
 	}
 
 	if (!m_pFanMaxSpeedSound)
 	{
-		m_pFanMaxSpeedSound = controller.SoundCreate( filter, entindex(), "Airboat_fan_fullthrottle" );
+		m_pFanMaxSpeedSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "Airboat_fan_fullthrottle" );
 		controller.Play( m_pFanMaxSpeedSound, 0, 100 );
 	}
 
 	if (!m_pWaterStoppedSound)
 	{
-		m_pWaterStoppedSound = controller.SoundCreate( filter, entindex(), "Airboat_water_stopped" );
+		m_pWaterStoppedSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "Airboat_water_stopped" );
 		controller.Play( m_pWaterStoppedSound, 0, 100 );
 	}
 
 	if (!m_pWaterFastSound)
 	{
-		m_pWaterFastSound = controller.SoundCreate( filter, entindex(), "Airboat_water_fast" );
+		m_pWaterFastSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "Airboat_water_fast" );
 		controller.Play( m_pWaterFastSound, 0, 100 );
 	}
 
 	if (!m_pGunFiringSound)
 	{
-		m_pGunFiringSound = controller.SoundCreate( filter, entindex(), "Airboat.FireGunLoop" );
+		m_pGunFiringSound = controller.SoundCreate( filter, this->NetworkProp()->entindex(), "Airboat.FireGunLoop" );
 		controller.Play( m_pGunFiringSound, 0, 100 );
 	}
 }
@@ -1369,7 +1374,7 @@ void CPropAirboat::UpdateEngineSound( CSoundEnvelopeController &controller, floa
 
 	if ( controller.SoundGetVolume(m_pEngineSound ) == 0 )
 	{ 
-		if ( gpGlobals->curtime > m_flEngineIdleTime )
+		if ( gpGlobals->GetCurTime() > m_flEngineIdleTime )
 		{
 			// If we've finished playing the engine start sound, start playing the idle sound.
 			controller.Play( m_pEngineSound, ENGINE_MAX_VOLUME, 100 );
@@ -1379,10 +1384,10 @@ void CPropAirboat::UpdateEngineSound( CSoundEnvelopeController &controller, floa
 			controller.SoundChangePitch( m_pEngineSound, ENGINE_MIN_PITCH, ENGINE_DUCK_TIME );
 
 			// Reduce the volume of the engine idle sound after our ears get 'used' to it.
-			m_flEngineDuckTime = gpGlobals->curtime + ENGINE_DUCK_TIME;
+			m_flEngineDuckTime = gpGlobals->GetCurTime() + ENGINE_DUCK_TIME;
 		}
 	}
-	else if ( gpGlobals->curtime > m_flEngineDuckTime )
+	else if ( gpGlobals->GetCurTime() > m_flEngineDuckTime )
 	{
 		controller.SoundChangeVolume( m_pEngineSound, RemapValClamped(speedRatio, 0, 1.0, ENGINE_MIN_VOLUME, ENGINE_MAX_VOLUME ), 0.0 );
 		controller.SoundChangePitch( m_pEngineSound, RemapValClamped( speedRatio, 0, 1.0, ENGINE_MIN_PITCH, ENGINE_MAX_PITCH ), 0 );
@@ -1463,13 +1468,13 @@ void CPropAirboat::UpdateWaterSound( CSoundEnvelopeController &controller, float
 			{
 				// Fade in the water stopped sound over 2 seconds.
 				controller.SoundChangeVolume(m_pWaterStoppedSound, 1.0, 2.0);
-				m_flWaterStoppedPitchTime = gpGlobals->curtime + random->RandomFloat(1.0, 3.0);
+				m_flWaterStoppedPitchTime = gpGlobals->GetCurTime() + random->RandomFloat(1.0, 3.0);
 			}
-			else if (gpGlobals->curtime > m_flWaterStoppedPitchTime)
+			else if (gpGlobals->GetCurTime() > m_flWaterStoppedPitchTime)
 			{
 				controller.SoundChangeVolume(m_pWaterStoppedSound, random->RandomFloat(0.2, 1.0), random->RandomFloat(1.0, 3.0));
 				controller.SoundChangePitch(m_pWaterStoppedSound, random->RandomFloat(90, 110), random->RandomFloat(1.0, 3.0));
-				m_flWaterStoppedPitchTime = gpGlobals->curtime + random->RandomFloat(2.0, 4.0);
+				m_flWaterStoppedPitchTime = gpGlobals->GetCurTime() + random->RandomFloat(2.0, 4.0);
 			}
 		}
 		else
@@ -1537,7 +1542,7 @@ void CPropAirboat::UpdateSplashEffects( void )
 //-----------------------------------------------------------------------------
 const char *CPropAirboat::GetTracerType( void ) 
 {
-	if ( gpGlobals->curtime >= m_flNextHeavyShotTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextHeavyShotTime )
 		return "AirboatGunHeavyTracer";
 
 	return "AirboatGunTracer"; 
@@ -1550,7 +1555,7 @@ const char *CPropAirboat::GetTracerType( void )
 void CPropAirboat::DoMuzzleFlash( void )
 {
 	CEffectData data;
-	data.m_nEntIndex = entindex();
+	data.m_nEntIndex = this->NetworkProp()->entindex();
 	data.m_nAttachmentIndex = m_nGunBarrelAttachment;
 	data.m_flScale = 1.0f;
 	DispatchEffect( "AirboatMuzzleFlash", data );
@@ -1612,7 +1617,7 @@ void CPropAirboat::FireGun( )
 	info.m_iAmmoType = ammoType;
 	info.m_nFlags = FIRE_BULLETS_TEMPORARY_DANGER_SOUND;
 
-	if ( gpGlobals->curtime >= m_flNextHeavyShotTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextHeavyShotTime )
 	{
 		info.m_iShots = 1;
 		info.m_vecSpread = VECTOR_CONE_PRECALCULATED;
@@ -1640,15 +1645,15 @@ void CPropAirboat::FireGun( )
 	DoMuzzleFlash();
 
 	// NOTE: This must occur after FireBullets
-	if ( gpGlobals->curtime >= m_flNextHeavyShotTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextHeavyShotTime )
 	{
-		m_flNextHeavyShotTime = gpGlobals->curtime + CANNON_HEAVY_SHOT_INTERVAL; 
+		m_flNextHeavyShotTime = gpGlobals->GetCurTime() + CANNON_HEAVY_SHOT_INTERVAL; 
 	}
 
-	if ( gpGlobals->curtime >= m_flNextGunShakeTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextGunShakeTime )
 	{
 		UTIL_ScreenShakeObject( this, WorldSpaceCenter(), 0.2, 250.0, CANNON_SHAKE_INTERVAL, 250, SHAKE_START );
-		m_flNextGunShakeTime = gpGlobals->curtime + 0.5 * CANNON_SHAKE_INTERVAL; 
+		m_flNextGunShakeTime = gpGlobals->GetCurTime() + 0.5 * CANNON_SHAKE_INTERVAL; 
 	}
 
 	// Specifically kill APC missiles in the cone. But we're going to totally cheat
@@ -1811,7 +1816,7 @@ void CPropAirboat::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData )
 {
 	BaseClass::ProcessMovement( pPlayer, pMoveData );
 
-	if ( gpGlobals->frametime != 0 )
+	if ( gpGlobals->GetFrameTime() != 0 )
 	{
 		// Create danger sounds in front of the vehicle.
 		CreateDangerSounds();
@@ -1895,7 +1900,7 @@ void CPropAirboat::CreateDangerSounds( void )
 void CPropAirboat::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles )
 {
 	// Get the frametime. (Check to see if enough time has passed to warrent dampening).
-	float flFrameTime = gpGlobals->frametime;
+	float flFrameTime = gpGlobals->GetFrameTime();
 	if ( flFrameTime < AIRBOAT_FRAMETIME_MIN )
 	{
 		vecVehicleEyePos = m_vecLastEyePos;
@@ -2093,7 +2098,7 @@ void CPropAirboat::ApplyStressDamage( IPhysicsObject *pPhysics )
 	if ( ( damage > 0 ) &&  ( m_hPlayer != NULL ) )
 	{
 		CTakeDamageInfo dmgInfo( GetWorldEntity(), GetWorldEntity(), vec3_origin, vec3_origin, damage, DMG_CRUSH );
-		dmgInfo.SetDamageForce( Vector( 0, 0, -stressOut.receivedStress * GetCurrentGravity() * gpGlobals->frametime ) );
+		dmgInfo.SetDamageForce( Vector( 0, 0, -stressOut.receivedStress * GetCurrentGravity() * gpGlobals->GetFrameTime() ) );
 		dmgInfo.SetDamagePosition( GetAbsOrigin() );
 		m_hPlayer->TakeDamage( dmgInfo );
 	}

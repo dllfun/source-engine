@@ -38,11 +38,8 @@ BEGIN_DATADESC( CAlyxEmpEffect )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CAlyxEmpEffect, DT_AlyxEmpEffect )
-	SendPropInt( SENDINFO(m_nState), 8, SPROP_UNSIGNED),
-	SendPropFloat( SENDINFO(m_flDuration), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flStartTime), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CAlyxEmpEffect, DT_AlyxEmpEffect )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -112,7 +109,7 @@ void CAlyxEmpEffect::ActivateAutomatic( CBaseEntity *pAlyx, CBaseEntity *pTarget
 	m_iState = ALYXEMP_STATE_OFF;
 	SetTargetEntity( pTarget );
 	SetThink( &CAlyxEmpEffect::AutomaticThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	m_bAutomated = true;
 }
@@ -171,11 +168,11 @@ void CAlyxEmpEffect::StartCharge( float flDuration )
 
 	m_nState = (int)ALYXEMP_STATE_CHARGING;
 	m_flDuration = flDuration;
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 
 	if( m_bAutomated )
 	{
-		SetNextThink( gpGlobals->curtime + m_flDuration );
+		SetNextThink( gpGlobals->GetCurTime() + m_flDuration );
 	}
 }
 
@@ -193,7 +190,7 @@ void CAlyxEmpEffect::StartDischarge()
 	EmitSound( "AlyxEmp.Discharge" );
 
 	m_nState = (int)ALYXEMP_STATE_DISCHARGING;
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 
 	// Beam effects on the target entity!
 	if ( !m_hBeam && m_hTargetEnt )
@@ -219,12 +216,12 @@ void CAlyxEmpEffect::StartDischarge()
 		VectorNormalize( shotDir );
 
 		CPVSFilter filter( m_hTargetEnt->GetAbsOrigin() );
-		te->GaussExplosion( filter, 0.0f, m_hTargetEnt->GetAbsOrigin() - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
+		g_pTESystem->GaussExplosion( filter, 0.0f, m_hTargetEnt->GetAbsOrigin() - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
 	}
 
 	if( m_bAutomated )
 	{
-		SetNextThink( gpGlobals->curtime + 0.5f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.5f );
 	}
 }
 
@@ -247,7 +244,7 @@ void CAlyxEmpEffect::Stop( float flDuration )
 
 	m_nState = (int)ALYXEMP_STATE_OFF;
 	m_flDuration = flDuration;
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 
 	if ( m_hBeam != NULL )
 	{
@@ -258,7 +255,7 @@ void CAlyxEmpEffect::Stop( float flDuration )
 	if( m_bAutomated )
 	{
 		SetThink( &CAlyxEmpEffect::SUB_Remove );
-		SetNextThink( gpGlobals->curtime + flDuration + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + flDuration + 1.0f );
 	}
 }
 

@@ -81,7 +81,7 @@ public:
 		BaseClass::EffectShutdown();
 	}
 
-	virtual int	DrawModel( int flags );
+	virtual int	DrawModel(IVModel* pWorld, int flags );
 	virtual void LimitTime( float tmax ) 
 	{ 
 		float dt = tmax - m_t;
@@ -89,7 +89,7 @@ public:
 		{
 			dt = 0;
 		}
-		m_limitHitTime = gpGlobals->curtime + dt;
+		m_limitHitTime = gpGlobals->GetCurTime() + dt;
 		BaseClass::LimitTime( tmax );
 	}
 
@@ -155,17 +155,23 @@ private:
 	Vector		m_vecRenderMaxs;
 
 	float m_flNextRopeCutTime;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_Strider)
+		BEGIN_RECV_TABLE(C_Strider, DT_NPC_Strider, DT_AI_BaseNPC)
+		RecvPropVector(RECVINFO(m_vecHitPos)),
+		RecvPropVector(RECVINFO(m_vecIKTarget[0])),
+		RecvPropVector(RECVINFO(m_vecIKTarget[1])),
+		RecvPropVector(RECVINFO(m_vecIKTarget[2])),
+		RecvPropVector(RECVINFO(m_vecIKTarget[3])),
+		RecvPropVector(RECVINFO(m_vecIKTarget[4])),
+		RecvPropVector(RECVINFO(m_vecIKTarget[5])),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_Strider, DT_NPC_Strider, CNPC_Strider)
-	RecvPropVector(RECVINFO(m_vecHitPos)),
-	RecvPropVector(RECVINFO(m_vecIKTarget[0])),
-	RecvPropVector(RECVINFO(m_vecIKTarget[1])),
-	RecvPropVector(RECVINFO(m_vecIKTarget[2])),
-	RecvPropVector(RECVINFO(m_vecIKTarget[3])),
-	RecvPropVector(RECVINFO(m_vecIKTarget[4])),
-	RecvPropVector(RECVINFO(m_vecIKTarget[5])),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS(C_Strider, DT_NPC_Strider, CNPC_Strider)
+
 
 C_StriderFX::C_StriderFX()
 {
@@ -427,7 +433,7 @@ void Strider_DrawLine( const Vector &start, const Vector &end, float width, IMat
 	FX_DrawLineFade( start, end, width, pMaterial, color, 8.0f );
 }
 
-int	C_StriderFX::DrawModel( int )
+int	C_StriderFX::DrawModel(IVModel* pWorld, int )
 {
 	static color32 white = {255,255,255,255};
 	Vector params[STRIDERFX_PARAMETERS];
@@ -447,7 +453,7 @@ int	C_StriderFX::DrawModel( int )
 	// that way the effect moves on even when culled for visibility
 	if ( m_limitHitTime > 0 && m_tMax > 0 )
 	{
-		float dt = m_limitHitTime - gpGlobals->curtime;
+		float dt = m_limitHitTime - gpGlobals->GetCurTime();
 		if ( dt < 0 )
 		{
 			dt = 0;
@@ -462,7 +468,7 @@ int	C_StriderFX::DrawModel( int )
 	else
 	{
 		// don't have enough info to derive the time, integrate current frame time
-		m_t += gpGlobals->frametime;
+		m_t += gpGlobals->GetFrameTime();
 		if ( m_tMax > 0 )
 		{
 			m_t = clamp( m_t, 0, m_tMax );
@@ -606,7 +612,7 @@ int	C_StriderFX::DrawModel( int )
 		dl->color.b = 255;
 		dl->color.exponent = 5;
 		dl->radius = bright * 128;
-		dl->die = gpGlobals->curtime + 0.001;
+		dl->die = gpGlobals->GetCurTime() + 0.001;
 	}
 
 	if ( m_t >= STRIDERFX_END_ALL_TIME && !hasAny )
@@ -640,7 +646,7 @@ C_Strider::~C_Strider()
 
 void C_Strider::ReceiveMessage( int classID, bf_read &msg )
 {
-	if ( classID != GetClientClass()->m_ClassID )
+	if ( classID != GetClientClass()->GetClassID() )
 	{
 		// message is for subclass
 		BaseClass::ReceiveMessage( classID, msg );
@@ -706,7 +712,7 @@ void C_Strider::ClientThink()
 	// UNDONE: Disabled this until we can get closer to a final map and tune
 #if 0
 	// Cut ropes.
-	if ( gpGlobals->curtime >= m_flNextRopeCutTime )
+	if ( gpGlobals->GetCurTime() >= m_flNextRopeCutTime )
 	{
 		// Blow the bbox out a little.
 		Vector vExtendedMins = vecMins - Vector( 50, 50, 50 );
@@ -732,7 +738,7 @@ void C_Strider::ClientThink()
 			}
 		}
 
-		m_flNextRopeCutTime = gpGlobals->curtime + 0.5;
+		m_flNextRopeCutTime = gpGlobals->GetCurTime() + 0.5;
 	}
 #endif
 
@@ -938,7 +944,7 @@ void MuzzleFlash_Strider( ClientEntityHandle_t hEntity, int attachmentIndex )
 
 		el->radius	= random->RandomInt( 100, 150 );
 		el->decay	= el->radius / 0.05f;
-		el->die		= gpGlobals->curtime + 0.1f;
+		el->die		= gpGlobals->GetCurTime() + 0.1f;
 	}
 }
 

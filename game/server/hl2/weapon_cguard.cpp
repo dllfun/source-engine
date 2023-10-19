@@ -35,14 +35,20 @@ public:
 	CNetworkVar( float, m_flScale );
 	CNetworkVar( int, m_nRadius );
 	CNetworkVar( int, m_nMagnitude );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CTEConcussiveExplosion)
+	BEGIN_SEND_TABLE(CTEConcussiveExplosion, DT_TEConcussiveExplosion, DT_TEParticleSystem)
+		SendPropVector(SENDINFO(m_vecNormal), -1, SPROP_COORD),
+		SendPropFloat(SENDINFO(m_flScale), 0, SPROP_NOSCALE),
+		SendPropInt(SENDINFO(m_nRadius), 32, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO(m_nMagnitude), 32, SPROP_UNSIGNED),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
-IMPLEMENT_SERVERCLASS_ST( CTEConcussiveExplosion, DT_TEConcussiveExplosion )
-	SendPropVector( SENDINFO(m_vecNormal), -1, SPROP_COORD ),
-	SendPropFloat( SENDINFO(m_flScale), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_nRadius), 32, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMagnitude), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CTEConcussiveExplosion, DT_TEConcussiveExplosion )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -130,7 +136,7 @@ public:
 
 		//Shockring
 		CBroadcastRecipientFilter filter2;
-		te->BeamRingPoint( filter2, 0, 
+		g_pTESystem->BeamRingPoint( filter2, 0,
 			GetAbsOrigin(),	//origin
 			16,			//start radius
 			300*magnitude,		//end radius
@@ -253,8 +259,8 @@ IMPLEMENT_ACTTABLE( CWeaponCGuard );
 //-----------------------------------------------------------------------------
 CWeaponCGuard::CWeaponCGuard( void )
 {
-	m_flNextPrimaryAttack	= gpGlobals->curtime;
-	m_flChargeTime			= gpGlobals->curtime;
+	m_flNextPrimaryAttack	= gpGlobals->GetCurTime();
+	m_flChargeTime			= gpGlobals->GetCurTime();
 	m_bFired				= true;
 }
 
@@ -303,7 +309,7 @@ void CWeaponCGuard::AlertTargets( void )
 void CWeaponCGuard::UpdateLasers( void )
 {
 	//Only update the lasers whilst charging
-	if ( ( m_flChargeTime < gpGlobals->curtime ) || ( m_bFired ) )
+	if ( ( m_flChargeTime < gpGlobals->GetCurTime() ) || ( m_bFired ) )
 		return;
 
 	Vector	start, end, v_forward, v_right, v_up;
@@ -322,7 +328,7 @@ void CWeaponCGuard::UpdateLasers( void )
 
 	end = start + ( v_forward * MAX_TRACE_LENGTH );
 
-	float	angleOffset = ( 1.0f - ( m_flChargeTime - gpGlobals->curtime ) ) / 1.0f;
+	float	angleOffset = ( 1.0f - ( m_flChargeTime - gpGlobals->GetCurTime() ) ) / 1.0f;
 	Vector	offset[4];
 
 	offset[0] = Vector( 0.0f,  0.5f, -0.5f );
@@ -365,7 +371,7 @@ void CWeaponCGuard::UpdateLasers( void )
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::PrimaryAttack( void )
 {
-	if ( m_flChargeTime >= gpGlobals->curtime )
+	if ( m_flChargeTime >= gpGlobals->GetCurTime() )
 		return;
 		
 	AlertTargets();
@@ -374,7 +380,7 @@ void CWeaponCGuard::PrimaryAttack( void )
 
 	//UTIL_ScreenShake( GetAbsOrigin(), 10.0f, 100.0f, 2.0f, 128, SHAKE_START, false );
 
-	m_flChargeTime	= gpGlobals->curtime + 1.0f;
+	m_flChargeTime	= gpGlobals->GetCurTime() + 1.0f;
 	m_bFired		= false;
 }
 
@@ -385,7 +391,7 @@ void CWeaponCGuard::ItemPostFrame( void )
 {
 	//FIXME: UpdateLasers();
 
-	if ( ( m_flChargeTime < gpGlobals->curtime ) && ( m_bFired == false ) )
+	if ( ( m_flChargeTime < gpGlobals->GetCurTime() ) && ( m_bFired == false ) )
 	{
 		DelayedFire();
 	}
@@ -399,7 +405,7 @@ void CWeaponCGuard::ItemPostFrame( void )
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::DelayedFire( void )
 {
-	if ( m_flChargeTime >= gpGlobals->curtime )
+	if ( m_flChargeTime >= gpGlobals->GetCurTime() )
 		return;
 
 	if ( m_bFired )
@@ -426,7 +432,7 @@ void CWeaponCGuard::DelayedFire( void )
 	// especially if the weapon we're firing has a really fast rate of fire.
 	if ( GetSequence() != SelectWeightedSequence( ACT_VM_PRIMARYATTACK ) )
 	{
-		m_flNextPrimaryAttack = gpGlobals->curtime;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime();
 	}
 	
 	// Make sure we don't fire more than the amount in the clip, if this weapon uses clips

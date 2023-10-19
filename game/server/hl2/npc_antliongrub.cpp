@@ -252,7 +252,7 @@ int CAntlionGrub::GetNuggetDenomination( void )
 //-----------------------------------------------------------------------------
 void CAntlionGrub::CreateNugget( void )
 {
-	CGrubNugget *pNugget = (CGrubNugget *) CreateEntityByName( "item_grubnugget" );
+	CGrubNugget *pNugget = (CGrubNugget *)engineServer->CreateEntityByName( "item_grubnugget" );
 	if ( pNugget == NULL )
 		return;
 
@@ -309,7 +309,7 @@ void CAntlionGrub::Event_Killed( const CTakeDamageInfo &info )
 
 	// Go away
 	SetThink( &CBaseEntity::SUB_Remove );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// we deliberately do not call BaseClass::EventKilled
 }
@@ -325,10 +325,10 @@ int CAntlionGrub::OnTakeDamage( const CTakeDamageInfo &info )
 	if ( bSquashed == false )
 	{
 		SetSequence( SelectWeightedSequence( ACT_SMALL_FLINCH ) );
-		m_flFlinchTime = gpGlobals->curtime + random->RandomFloat( 0.5f, 1.0f );
+		m_flFlinchTime = gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 1.0f );
 
 		SetThink( &CAntlionGrub::FlinchThink );
-		SetNextThink( gpGlobals->curtime + 0.05f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.05f );
 	}
 
 	return BaseClass::OnTakeDamage( info );
@@ -339,7 +339,7 @@ int CAntlionGrub::OnTakeDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 inline bool CAntlionGrub::InPVS( void )
 {
-	return ( UTIL_FindClientInPVS( edict() ) != NULL ) || (UTIL_ClientPVSIsExpanded() && UTIL_FindClientInVisibilityPVS( edict() ));
+	return ( UTIL_FindClientInPVS(this->NetworkProp()->GetEdict() ) != NULL ) || (UTIL_ClientPVSIsExpanded() && UTIL_FindClientInVisibilityPVS(this->NetworkProp()->GetEdict() ));
 }
 
 //-----------------------------------------------------------------------------
@@ -350,14 +350,14 @@ void CAntlionGrub::SetNextThinkByDistance( void )
 	CBasePlayer *pPlayer = AI_GetSinglePlayer();
 	if ( pPlayer == NULL )
 	{
-		SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.5f, 3.0f ) );
+		SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat( 0.5f, 3.0f ) );
 		return;
 	}
 
 	float flDistToPlayerSqr = ( GetAbsOrigin() - pPlayer->GetAbsOrigin() ).LengthSqr();
 	float scale = RemapValClamped( flDistToPlayerSqr, Square( 400 ), Square( 5000 ), 1.0f, 5.0f );
 	float time = random->RandomFloat( 1.0f, 3.0f );
-	SetNextThink( gpGlobals->curtime + ( time * scale ) );
+	SetNextThink( gpGlobals->GetCurTime() + ( time * scale ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -407,7 +407,7 @@ void CAntlionGrub::Spawn( void )
 
 	// Reset
 	m_flFlinchTime = 0.0f;
-	m_flNextIdleSoundTime = gpGlobals->curtime + random->RandomFloat( 4.0f, 8.0f );
+	m_flNextIdleSoundTime = gpGlobals->GetCurTime() + random->RandomFloat( 4.0f, 8.0f );
 }
 
 //-----------------------------------------------------------------------------
@@ -521,19 +521,19 @@ void CAntlionGrub::MakeIdleSounds( void )
 {
 	if ( m_State == GRUB_STATE_AGITATED )
 	{
-		if ( m_flNextSquealSoundTime < gpGlobals->curtime )
+		if ( m_flNextSquealSoundTime < gpGlobals->GetCurTime() )
 		{
 			EmitSound( "NPC_Antlion_Grub.Stimulated" );
-			m_flNextSquealSoundTime = gpGlobals->curtime + random->RandomFloat( 1.5f, 3.0f );
-			m_flNextIdleSoundTime = gpGlobals->curtime + random->RandomFloat( 4.0f, 8.0f );
+			m_flNextSquealSoundTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.5f, 3.0f );
+			m_flNextIdleSoundTime = gpGlobals->GetCurTime() + random->RandomFloat( 4.0f, 8.0f );
 		}
 	}
 	else
 	{
-		if ( m_flNextIdleSoundTime < gpGlobals->curtime )
+		if ( m_flNextIdleSoundTime < gpGlobals->GetCurTime() )
 		{
 			EmitSound( "NPC_Antlion_Grub.Idle" );
-			m_flNextIdleSoundTime = gpGlobals->curtime + random->RandomFloat( 8.0f, 12.0f );
+			m_flNextIdleSoundTime = gpGlobals->GetCurTime() + random->RandomFloat( 8.0f, 12.0f );
 		}
 	}
 }
@@ -578,7 +578,7 @@ void CAntlionGrub::IdleThink( void )
 	// Stagger our sounds if we've just re-entered the PVS
 	if ( m_bOutsidePVS )
 	{
-		m_flNextIdleSoundTime = gpGlobals->curtime + random->RandomFloat( 1.0f, 4.0f );
+		m_flNextIdleSoundTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.0f, 4.0f );
 		m_bOutsidePVS = false;
 	}
 
@@ -586,7 +586,7 @@ void CAntlionGrub::IdleThink( void )
 	CBasePlayer *pPlayerEnt = AI_GetSinglePlayer();
 	float flDistToPlayerSqr = ( GetAbsOrigin() - pPlayerEnt->GetAbsOrigin() ).LengthSqr();
 
-	bool bFlinching = ( m_flFlinchTime > gpGlobals->curtime );
+	bool bFlinching = ( m_flFlinchTime > gpGlobals->GetCurTime() );
 
 	// If they're far enough away, just wait to think again
 	if ( flDistToPlayerSqr > Square( 40*12 ) && bFlinching == false )
@@ -631,7 +631,7 @@ void CAntlionGrub::IdleThink( void )
 	// Idle normally
 	StudioFrameAdvance();
 	MakeIdleSounds();
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //-----------------------------------------------------------------------------
@@ -640,10 +640,10 @@ void CAntlionGrub::IdleThink( void )
 void CAntlionGrub::FlinchThink( void )
 {
 	StudioFrameAdvance();
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// See if we're done
-	if ( m_flFlinchTime < gpGlobals->curtime )
+	if ( m_flFlinchTime < gpGlobals->GetCurTime() )
 	{
 		SetSequence( SelectWeightedSequence( ACT_IDLE ) );
 		SetThink( &CAntlionGrub::IdleThink );
@@ -824,11 +824,11 @@ void CAntlionGrub::InputAgitate( inputdata_t &inputdata )
 {
 	SetSequence( SelectWeightedSequence( ACT_SMALL_FLINCH ) );
 	m_State = GRUB_STATE_AGITATED;
-	m_flNextSquealSoundTime = gpGlobals->curtime;
+	m_flNextSquealSoundTime = gpGlobals->GetCurTime();
 
-	m_flFlinchTime = gpGlobals->curtime + inputdata.value.Float();
+	m_flFlinchTime = gpGlobals->GetCurTime() + inputdata.value.Float();
 
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 }
 
 // =====================================================================
@@ -923,7 +923,7 @@ bool CGrubNugget::MyTouch( CBasePlayer *pPlayer )
 	MessageEnd();
 
 	CPASAttenuationFilter filter( pPlayer, "GrubNugget.Touch" );
-	EmitSound( filter, pPlayer->entindex(), "GrubNugget.Touch" );
+	EmitSound( filter, pPlayer->NetworkProp()->entindex(), "GrubNugget.Touch" );
 
 	UTIL_Remove( this );	
 

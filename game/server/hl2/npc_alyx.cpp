@@ -182,7 +182,7 @@ void CNPC_Alyx::SetupAlyxWithoutParent( void )
 
 void CNPC_Alyx::CreateEmpTool( void )
 {
-	m_hEmpTool = (CBaseAnimating*)CreateEntityByName( "prop_dynamic" );
+	m_hEmpTool = (CBaseAnimating*)engineServer->CreateEntityByName( "prop_dynamic" );
 	if ( m_hEmpTool )
 	{
 		m_hEmpTool->SetModel( "models/alyx_emptool_prop.mdl" );
@@ -228,7 +228,7 @@ Activity CNPC_Alyx::NPC_TranslateActivity( Activity activity )
 	activity = BaseClass::NPC_TranslateActivity( activity );
 	if ( activity == ACT_IDLE && (m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT) )
 	{
-		if (gpGlobals->curtime - m_flLastAttackTime < 3 || gpGlobals->curtime - GetEnemyLastTimeSeen() < 8)
+		if (gpGlobals->GetCurTime() - m_flLastAttackTime < 3 || gpGlobals->GetCurTime() - GetEnemyLastTimeSeen() < 8)
 		{
 			activity = ACT_IDLE_ANGRY;
 		}

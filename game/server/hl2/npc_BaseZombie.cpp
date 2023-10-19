@@ -359,7 +359,7 @@ bool CNPC_BaseZombie::FindNearestPhysicsObject( int iMaxMass )
 		if( center.z > EyePosition().z )
 			continue;
 
-		vcollide_t *pCollide = modelinfo->GetVCollide( pList[i]->GetModelIndex() );
+		vcollide_t *pCollide = pList[i]->GetModel()->GetVCollide();// pList[i]->GetModelIndex() 
 		
 		Vector objMins, objMaxs;
 		physcollision->CollideGetAABB( &objMins, &objMaxs, pCollide->solids[0], pList[i]->GetAbsOrigin(), pList[i]->GetAbsAngles() );
@@ -1000,9 +1000,9 @@ void CNPC_BaseZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 		const char *pszSound = GetMoanSound( m_iMoanSound );
 		m_flMoanPitch = random->RandomInt( zombie_basemin.GetInt(), zombie_basemax.GetInt() );
 
-		//m_pMoanSound = ENVELOPE_CONTROLLER.SoundCreate( entindex(), CHAN_STATIC, pszSound, ATTN_NORM );
+		//m_pMoanSound = ENVELOPE_CONTROLLER.SoundCreate( this->NetworkProp()->entindex(), CHAN_STATIC, pszSound, ATTN_NORM );
 		CPASAttenuationFilter filter( this );
-		m_pMoanSound = ENVELOPE_CONTROLLER.SoundCreate( filter, entindex(), CHAN_STATIC, pszSound, ATTN_NORM );
+		m_pMoanSound = ENVELOPE_CONTROLLER.SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, pszSound, ATTN_NORM );
 
 		ENVELOPE_CONTROLLER.Play( m_pMoanSound, 1.0, m_flMoanPitch );
 	}
@@ -1021,7 +1021,7 @@ void CNPC_BaseZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 	float flPitch = random->RandomInt( m_flMoanPitch + zombie_changemin.GetInt(), m_flMoanPitch + zombie_changemax.GetInt() );
 	ENVELOPE_CONTROLLER.SoundChangePitch( m_pMoanSound, flPitch, 0.3 );
 
-	m_flNextMoanSound = gpGlobals->curtime + duration + 9999;
+	m_flNextMoanSound = gpGlobals->GetCurTime() + duration + 9999;
 }
 
 //-----------------------------------------------------------------------------
@@ -1189,7 +1189,7 @@ bool CNPC_BaseZombie::ShouldIgnite( const CTakeDamageInfo &info )
 		// second interval, we should catch on fire.
 		//
 		m_flBurnDamage += info.GetDamage();
-		m_flBurnDamageResetTime = gpGlobals->curtime + 5;
+		m_flBurnDamageResetTime = gpGlobals->GetCurTime() + 5;
 
 		if ( m_flBurnDamage >= m_iMaxHealth * 0.1 )
 		{
@@ -1391,7 +1391,7 @@ CBaseEntity *CNPC_BaseZombie::ClawAttack( float flDist, int iDamage, QAngle &qaV
 	if ( pHurt == m_hPhysicsEnt && IsCurSchedule(SCHED_ZOMBIE_ATTACKITEM) )
 	{
 		m_hPhysicsEnt = NULL;
-		m_flNextSwat = gpGlobals->curtime + random->RandomFloat( 2, 4 );
+		m_flNextSwat = gpGlobals->GetCurTime() + random->RandomFloat( 2, 4 );
 	}
 
 	return pHurt;
@@ -1428,7 +1428,7 @@ void CNPC_BaseZombie::PoundSound()
 
 	// Otherwise fall through to the default sound.
 	CPASAttenuationFilter filter( this,"NPC_BaseZombie.PoundDoor" );
-	EmitSound( filter, entindex(),"NPC_BaseZombie.PoundDoor" );
+	EmitSound( filter, this->NetworkProp()->entindex(),"NPC_BaseZombie.PoundDoor" );
 }
 
 //-----------------------------------------------------------------------------
@@ -1485,7 +1485,7 @@ void CNPC_BaseZombie::HandleAnimEvent( animevent_t *pEvent )
 		if( !IsOnFire() )
 		{
 			// If you let this code run while a zombie is burning, it will stop wailing. 
-			m_flNextMoanSound = gpGlobals->curtime;
+			m_flNextMoanSound = gpGlobals->GetCurTime();
 			MoanSound( envDefaultZombieMoanVolumeFast, ARRAYSIZE( envDefaultZombieMoanVolumeFast ) );
 		}
 		return;
@@ -1565,7 +1565,7 @@ void CNPC_BaseZombie::HandleAnimEvent( animevent_t *pEvent )
 			// close enough to it to hit it.
 			m_hPhysicsEnt = NULL;
 
-			m_flNextSwatScan = gpGlobals->curtime + ZOMBIE_SWAT_DELAY;
+			m_flNextSwatScan = gpGlobals->GetCurTime() + ZOMBIE_SWAT_DELAY;
 
 			return;
 		}
@@ -1689,11 +1689,11 @@ void CNPC_BaseZombie::Spawn( void )
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 );
 	CapabilitiesAdd( bits_CAP_SQUAD );
 
-	m_flNextSwat = gpGlobals->curtime;
-	m_flNextSwatScan = gpGlobals->curtime;
+	m_flNextSwat = gpGlobals->GetCurTime();
+	m_flNextSwatScan = gpGlobals->GetCurTime();
 	m_pMoanSound = NULL;
 
-	m_flNextMoanSound = gpGlobals->curtime + 9999;
+	m_flNextMoanSound = gpGlobals->GetCurTime() + 9999;
 
 	SetZombieModel();
 
@@ -1802,7 +1802,7 @@ void CNPC_BaseZombie::BuildScheduleTestBits( void )
 		ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
 	}
 #ifndef HL2_EPISODIC
-	else if ( m_flNextFlinch >= gpGlobals->curtime )
+	else if ( m_flNextFlinch >= gpGlobals->GetCurTime() )
 	{
 		ClearCustomInterruptCondition( COND_LIGHT_DAMAGE );
 		ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
@@ -1826,7 +1826,7 @@ void CNPC_BaseZombie::OnScheduleChange( void )
 	//
 	if ( HasCondition( COND_LIGHT_DAMAGE ) || HasCondition( COND_HEAVY_DAMAGE ))
 	{
-		m_flNextFlinch = gpGlobals->curtime + ZOMBIE_FLINCH_DELAY;
+		m_flNextFlinch = gpGlobals->GetCurTime() + ZOMBIE_FLINCH_DELAY;
 	} 
 
 	BaseClass::OnScheduleChange();
@@ -2025,14 +2025,14 @@ void CNPC_BaseZombie::GatherConditions( void )
 		// This check for !m_pPhysicsEnt prevents a crashing bug, but also
 		// eliminates the zombie picking a better physics object if one happens to fall
 		// between him and the object he's heading for already. 
-		if( gpGlobals->curtime >= m_flNextSwatScan && (m_hPhysicsEnt == NULL) )
+		if( gpGlobals->GetCurTime() >= m_flNextSwatScan && (m_hPhysicsEnt == NULL) )
 		{
 			FindNearestPhysicsObject( ZOMBIE_MAX_PHYSOBJ_MASS );
-			m_flNextSwatScan = gpGlobals->curtime + 2.0;
+			m_flNextSwatScan = gpGlobals->GetCurTime() + 2.0;
 		}
 	}
 
-	if( (m_hPhysicsEnt != NULL) && gpGlobals->curtime >= m_flNextSwat && HasCondition( COND_SEE_ENEMY ) && !HasCondition( COND_ZOMBIE_RELEASECRAB ) )
+	if( (m_hPhysicsEnt != NULL) && gpGlobals->GetCurTime() >= m_flNextSwat && HasCondition( COND_SEE_ENEMY ) && !HasCondition( COND_ZOMBIE_RELEASECRAB ) )
 	{
 		SetCondition( COND_ZOMBIE_CAN_SWAT_ATTACK );
 	}
@@ -2066,7 +2066,7 @@ void CNPC_BaseZombie::PrescheduleThink( void )
 	//
 	// Cool off if we aren't burned for five seconds or so. 
 	//
-	if ( ( m_flBurnDamageResetTime ) && ( gpGlobals->curtime >= m_flBurnDamageResetTime ) )
+	if ( ( m_flBurnDamageResetTime ) && ( gpGlobals->GetCurTime() >= m_flBurnDamageResetTime ) )
 	{
 		m_flBurnDamage = 0;
 	}
@@ -2125,7 +2125,7 @@ void CNPC_BaseZombie::StartTask( const Task_t *pTask )
 		break;
 
 	case TASK_ZOMBIE_DELAY_SWAT:
-		m_flNextSwat = gpGlobals->curtime + pTask->flTaskData;
+		m_flNextSwat = gpGlobals->GetCurTime() + pTask->flTaskData;
 		TaskComplete();
 		break;
 
@@ -2433,7 +2433,7 @@ void CNPC_BaseZombie::ReleaseHeadcrab( const Vector &vecOrigin, const Vector &ve
 	}
 	else
 	{
-		pCrab = (CAI_BaseNPC*)CreateEntityByName( GetHeadcrabClassname() );
+		pCrab = (CAI_BaseNPC*)engineServer->CreateEntityByName( GetHeadcrabClassname() );
 
 		if ( !pCrab )
 		{
@@ -2480,7 +2480,7 @@ void CNPC_BaseZombie::ReleaseHeadcrab( const Vector &vecOrigin, const Vector &ve
 		}
 
 		pCrab->SetActivity( ACT_IDLE );
-		pCrab->SetNextThink( gpGlobals->curtime );
+		pCrab->SetNextThink( gpGlobals->GetCurTime() );
 		pCrab->PhysicsSimulate();
 		pCrab->SetAbsVelocity( vecVelocity );
 
@@ -2488,7 +2488,7 @@ void CNPC_BaseZombie::ReleaseHeadcrab( const Vector &vecOrigin, const Vector &ve
 		CBaseEntity *pEnemy;
 		pEnemy = GetEnemy();
 
-		pCrab->m_flNextAttack = gpGlobals->curtime + 1.0f;
+		pCrab->m_flNextAttack = gpGlobals->GetCurTime() + 1.0f;
 
 		if( pEnemy )
 		{
@@ -2677,7 +2677,7 @@ float CNPC_BaseZombie::GetAutoAimRadius()
 //-----------------------------------------------------------------------------
 bool CNPC_BaseZombie::OnInsufficientStopDist( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult )
 {
-	if ( pMoveGoal->directTrace.fStatus == AIMR_BLOCKED_ENTITY && gpGlobals->curtime >= m_flNextSwat )
+	if ( pMoveGoal->directTrace.fStatus == AIMR_BLOCKED_ENTITY && gpGlobals->GetCurTime() >= m_flNextSwat )
 	{
 		m_hObstructor = pMoveGoal->directTrace.pObstruction;
 	}

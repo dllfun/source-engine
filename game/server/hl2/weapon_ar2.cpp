@@ -46,8 +46,8 @@ BEGIN_DATADESC( CWeaponAR2 )
 
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponAR2, DT_WeaponAR2)
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponAR2, DT_WeaponAR2)
+
 
 LINK_ENTITY_TO_CLASS( weapon_ar2, CWeaponAR2 );
 PRECACHE_WEAPON_REGISTER(weapon_ar2);
@@ -134,7 +134,7 @@ void CWeaponAR2::Precache( void )
 void CWeaponAR2::ItemPostFrame( void )
 {
 	// See if we need to fire off our secondary round
-	if ( m_bShotDelayed && gpGlobals->curtime > m_flDelayedFire )
+	if ( m_bShotDelayed && gpGlobals->GetCurTime() > m_flDelayedFire )
 	{
 		DelayedAttack();
 	}
@@ -210,11 +210,11 @@ void CWeaponAR2::DelayedAttack( void )
 
 	// Deplete the clip completely
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
-	m_flNextSecondaryAttack = pOwner->m_flNextAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextSecondaryAttack = pOwner->m_flNextAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 	// Register a muzzleflash for the AI
 	pOwner->DoMuzzleFlash();
-	pOwner->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+	pOwner->SetMuzzleFlashTime( gpGlobals->GetCurTime() + 0.5 );
 	
 	WeaponSound( WPN_DOUBLE );
 
@@ -255,10 +255,10 @@ void CWeaponAR2::DelayedAttack( void )
 	pOwner->RemoveAmmo( 1, m_iSecondaryAmmoType );
 
 	// Can shoot again immediately
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5f;
 
 	// Can blow up after a short delay (so have time to release mouse button)
-	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 1.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -274,12 +274,12 @@ void CWeaponAR2::SecondaryAttack( void )
 	{
 		SendWeaponAnim( ACT_VM_DRYFIRE );
 		BaseClass::WeaponSound( EMPTY );
-		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+		m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.5f;
 		return;
 	}
 
 	m_bShotDelayed = true;
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = m_flDelayedFire = gpGlobals->curtime + 0.5f;
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = m_flDelayedFire = gpGlobals->GetCurTime() + 0.5f;
 
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 	if( pPlayer )

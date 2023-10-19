@@ -75,6 +75,17 @@ private:
 	Vector					m_vecOldShadowDir;
 
 	ViewSmoothingData_t			m_ViewSmoothingData;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_PropCrane)
+	BEGIN_RECV_TABLE(C_PropCrane, DT_PropCrane, DT_BaseAnimating)
+		RecvPropEHandle(RECVINFO(m_hPlayer)),
+		RecvPropBool(RECVINFO(m_bMagnetOn)),
+		RecvPropBool(RECVINFO(m_bEnterAnimOn)),
+		RecvPropBool(RECVINFO(m_bExitAnimOn)),
+		RecvPropVector(RECVINFO(m_vecEyeExitEndpoint)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 #endif // C_VEHICLE_CRANE_H

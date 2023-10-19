@@ -506,7 +506,7 @@ void CNPC_Citizen::Spawn()
 
 	m_iszOriginalSquad = m_SquadName;
 
-	m_flNextHealthSearchTime = gpGlobals->curtime;
+	m_flNextHealthSearchTime = gpGlobals->GetCurTime();
 
 	CWeaponRPG *pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
 	if ( pRPG )
@@ -536,7 +536,7 @@ void CNPC_Citizen::PostNPCInit()
 {
 	if ( !gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME ) )
 	{
-		CreateEntityByName( COMMAND_POINT_CLASSNAME );
+		engineServer->CreateEntityByName( COMMAND_POINT_CLASSNAME );
 	}
 	
 	if ( IsInPlayerSquad() )
@@ -787,7 +787,7 @@ void CNPC_Citizen::OnRestore()
 
 	if ( !gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME ) )
 	{
-		CreateEntityByName( COMMAND_POINT_CLASSNAME );
+		engineServer->CreateEntityByName( COMMAND_POINT_CLASSNAME );
 	}
 }
 
@@ -923,7 +923,7 @@ void CNPC_Citizen::GatherConditions()
 		else
 			ClearCondition( COND_HEALTH_ITEM_AVAILABLE );
 
-		m_flNextHealthSearchTime = gpGlobals->curtime + 4.0;
+		m_flNextHealthSearchTime = gpGlobals->GetCurTime() + 4.0;
 	}
 
 	// If the player is standing near a medic and can see the medic, 
@@ -947,11 +947,11 @@ void CNPC_Citizen::GatherConditions()
 			if( m_flTimePlayerStare == FLT_MAX )
 			{
 				// Player wasn't looking at me at last think. He started staring now.
-				m_flTimePlayerStare = gpGlobals->curtime;
+				m_flTimePlayerStare = gpGlobals->GetCurTime();
 			}
 
 			// Heal if it's been long enough since last time I healed a staring player.
-			if( gpGlobals->curtime - m_flTimePlayerStare >= sk_citizen_player_stare_time.GetFloat() && gpGlobals->curtime > m_flTimeNextHealStare && !IsCurSchedule( SCHED_CITIZEN_HEAL ) )
+			if( gpGlobals->GetCurTime() - m_flTimePlayerStare >= sk_citizen_player_stare_time.GetFloat() && gpGlobals->GetCurTime() > m_flTimeNextHealStare && !IsCurSchedule( SCHED_CITIZEN_HEAL ) )
 			{
 				if ( ShouldHealTarget( pPlayer, true ) )
 				{
@@ -959,7 +959,7 @@ void CNPC_Citizen::GatherConditions()
 				}
 				else
 				{
-					m_flTimeNextHealStare = gpGlobals->curtime + sk_citizen_stare_heal_time.GetFloat() * .5f;
+					m_flTimeNextHealStare = gpGlobals->GetCurTime() + sk_citizen_stare_heal_time.GetFloat() * .5f;
 					ClearCondition( COND_CIT_PLAYERHEALREQUEST );
 				}
 			}
@@ -1028,7 +1028,7 @@ void CNPC_Citizen::PrescheduleThink()
 		float bMin = 0;
 
 		const float TIME_FADE = 1.0;
-		float timeInSquad = gpGlobals->curtime - m_flTimeJoinedPlayerSquad;
+		float timeInSquad = gpGlobals->GetCurTime() - m_flTimeJoinedPlayerSquad;
 		timeInSquad = MIN( TIME_FADE, MAX( timeInSquad, 0 ) );
 
 		float fade = ( 1.0 - timeInSquad / TIME_FADE );
@@ -1143,7 +1143,7 @@ int CNPC_Citizen::SelectFailSchedule( int failedSchedule, int failedTask, AI_Tas
 		// If failed trying to pick up a weapon, try again in one second. This is because other AI code
 		// has put this off for 10 seconds under the assumption that the citizen would be able to 
 		// pick up the weapon that they found. 
-		m_flNextWeaponSearchTime = gpGlobals->curtime + 1.0f;
+		m_flNextWeaponSearchTime = gpGlobals->GetCurTime() + 1.0f;
 		break;
 
 	case SCHED_ESTABLISH_LINE_OF_FIRE_FALLBACK:
@@ -1336,7 +1336,7 @@ int CNPC_Citizen::SelectScheduleRetrieveItem()
 		CBaseHLCombatWeapon *pWeapon = dynamic_cast<CBaseHLCombatWeapon *>(Weapon_FindUsable( WEAPON_SEARCH_DELTA ));
 		if ( pWeapon )
 		{
-			m_flNextWeaponSearchTime = gpGlobals->curtime + 10.0;
+			m_flNextWeaponSearchTime = gpGlobals->GetCurTime() + 10.0;
 			// Now lock the weapon for several seconds while we go to pick it up.
 			pWeapon->Lock( 10.0, this );
 			SetTarget( pWeapon );
@@ -1797,7 +1797,7 @@ void CNPC_Citizen::RunTask( const Task_t *pTask )
 					return;
 				}
 				// Add imprecision to avoid obvious robotic perfection stationary targets
-				float imprecision = 18*sin(gpGlobals->curtime);
+				float imprecision = 18*sin(gpGlobals->GetCurTime());
 				vecLaserPos.x += imprecision;
 				vecLaserPos.y += imprecision;
 				vecLaserPos.z += imprecision;
@@ -1820,7 +1820,7 @@ void CNPC_Citizen::TaskFail( AI_TaskFailureCode_t code )
 	// If our heal task has failed, push out the heal time
 	if ( IsCurSchedule( SCHED_CITIZEN_HEAL ) )
 	{
-		m_flPlayerHealTime 	= gpGlobals->curtime + sk_citizen_heal_ally_delay.GetFloat();
+		m_flPlayerHealTime 	= gpGlobals->GetCurTime() + sk_citizen_heal_ally_delay.GetFloat();
 	}
 
 	if( code == FAIL_NO_ROUTE_BLOCKED && m_bNotifyNavFailBlocked )
@@ -1884,7 +1884,7 @@ void CNPC_Citizen::HandleAnimEvent( animevent_t *pEvent )
 			Assert(pTarget);
 			if ( pTarget )
 			{
-				m_flPlayerHealTime 	= gpGlobals->curtime + sk_citizen_heal_toss_player_delay.GetFloat();;
+				m_flPlayerHealTime 	= gpGlobals->GetCurTime() + sk_citizen_heal_toss_player_delay.GetFloat();;
 				TossHealthKit( pTarget, Vector(48.0f, 0.0f, 0.0f)  );
 			}
 		}
@@ -2226,11 +2226,11 @@ bool CNPC_Citizen::ShouldLookForBetterWeapon()
 					// the squad has too many.
 					if( random->RandomInt( 0, 1 ) == 0 )
 					{
-						m_flNextWeaponSearchTime = gpGlobals->curtime + SHOTGUN_DEFER_SEARCH_TIME;
+						m_flNextWeaponSearchTime = gpGlobals->GetCurTime() + SHOTGUN_DEFER_SEARCH_TIME;
 					}
 					else
 					{
-						m_flNextWeaponSearchTime = gpGlobals->curtime + SHOTGUN_DEFER_SEARCH_TIME + 10.0f;
+						m_flNextWeaponSearchTime = gpGlobals->GetCurTime() + SHOTGUN_DEFER_SEARCH_TIME + 10.0f;
 					}
 
 					bDefer = true;
@@ -2397,11 +2397,11 @@ bool CNPC_Citizen::ShouldAutoSummon()
 		bool bTestEnemies = true;
 		
 		// Auto summon unconditionally if a significant amount of time has passed
-		if ( gpGlobals->curtime - m_AutoSummonTimer.GetNext() > player_squad_autosummon_time.GetFloat() * 2 )
+		if ( gpGlobals->GetCurTime() - m_AutoSummonTimer.GetNext() > player_squad_autosummon_time.GetFloat() * 2 )
 		{
 			bSetFollow = true;
 			if ( player_squad_autosummon_debug.GetBool() )
-				DevMsg( "Auto summoning squad: long time (%f)\n", ( gpGlobals->curtime - m_AutoSummonTimer.GetNext() ) + player_squad_autosummon_time.GetFloat() );
+				DevMsg( "Auto summoning squad: long time (%f)\n", ( gpGlobals->GetCurTime() - m_AutoSummonTimer.GetNext() ) + player_squad_autosummon_time.GetFloat() );
 		}
 			
 		// Player must move for autosummon
@@ -2454,14 +2454,14 @@ bool CNPC_Citizen::ShouldAutoSummon()
 				
 				if ( pNpc->IsInPlayerSquad() )
 				{
-					if ( gpGlobals->curtime - pNpc->GetLastAttackTime() > timeSinceCombatTolerance || 
-						 gpGlobals->curtime - pNpc->GetLastDamageTime() > timeSinceCombatTolerance )
+					if ( gpGlobals->GetCurTime() - pNpc->GetLastAttackTime() > timeSinceCombatTolerance || 
+						 gpGlobals->GetCurTime() - pNpc->GetLastDamageTime() > timeSinceCombatTolerance )
 						continue;
 				}
 				else if ( pNpc->GetEnemy() )
 				{
 					CBaseEntity *pNpcEnemy = pNpc->GetEnemy();
-					if ( !IsSniper( pNpc ) && ( gpGlobals->curtime - pNpc->GetEnemyLastTimeSeen() ) > timeSinceCombatTolerance )
+					if ( !IsSniper( pNpc ) && ( gpGlobals->GetCurTime() - pNpc->GetEnemyLastTimeSeen() ) > timeSinceCombatTolerance )
 						continue;
 
 					if ( pNpcEnemy == pPlayer )
@@ -2670,7 +2670,7 @@ void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 					CBaseEntity *pRespondant = FindSpeechTarget( AIST_NPCS );
 					if ( pRespondant )
 					{
-						g_EventQueue.AddEvent( pRespondant, "SpeakIdleResponse", ( GetTimeSpeechComplete() - gpGlobals->curtime ) + .2, this, this );
+						g_EventQueue.AddEvent( pRespondant, "SpeakIdleResponse", ( GetTimeSpeechComplete() - gpGlobals->GetCurTime() ) + .2, this, this );
 					}
 				}
 			}
@@ -2793,7 +2793,7 @@ void CNPC_Citizen::UpdatePlayerSquad()
 
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 	if ( ( pPlayer->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D() ).LengthSqr() < Square(20*12) )
-		m_flTimeLastCloseToPlayer = gpGlobals->curtime;
+		m_flTimeLastCloseToPlayer = gpGlobals->GetCurTime();
 
 	if ( !gm_PlayerSquadEvaluateTimer.Expired() )
 		return;
@@ -2818,7 +2818,7 @@ void CNPC_Citizen::UpdatePlayerSquad()
 				 pCitizen->m_FollowBehavior.GetFollowTarget() &&
 				 !pCitizen->m_FollowBehavior.FollowTargetVisible() && 
 				 pCitizen->m_FollowBehavior.GetNumFailedFollowAttempts() > 0 && 
-				 gpGlobals->curtime - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted() > 20 &&
+				 gpGlobals->GetCurTime() - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted() > 20 &&
 				 ( fabsf(( pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().z - pCitizen->GetAbsOrigin().z )) > 196 ||
 				   ( pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D() ).LengthSqr() > Square(50*12) ) )
 			{
@@ -2826,7 +2826,7 @@ void CNPC_Citizen::UpdatePlayerSquad()
 				{
 					DevMsg( "Player follower is lost (%d, %f, %d)\n", 
 						 pCitizen->m_FollowBehavior.GetNumFailedFollowAttempts(), 
-						 gpGlobals->curtime - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted(), 
+						 gpGlobals->GetCurTime() - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted(), 
 						 (int)((pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D() ).Length()) );
 				}
 
@@ -2876,8 +2876,8 @@ void CNPC_Citizen::UpdatePlayerSquad()
 			{
 				float distSq = (vPlayerPos.AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D()).LengthSqr(); 
 				if ( distSq > JOIN_PLAYER_XY_TOLERANCE_SQ && 
-					( pCitizen->m_flTimeJoinedPlayerSquad == 0 || gpGlobals->curtime - pCitizen->m_flTimeJoinedPlayerSquad > 60.0 ) && 
-					( pCitizen->m_flTimeLastCloseToPlayer == 0 || gpGlobals->curtime - pCitizen->m_flTimeLastCloseToPlayer > 15.0 ) )
+					( pCitizen->m_flTimeJoinedPlayerSquad == 0 || gpGlobals->GetCurTime() - pCitizen->m_flTimeJoinedPlayerSquad > 60.0 ) && 
+					( pCitizen->m_flTimeLastCloseToPlayer == 0 || gpGlobals->GetCurTime() - pCitizen->m_flTimeLastCloseToPlayer > 15.0 ) )
 					continue;
 
 				if ( !pCitizen->CanJoinPlayerSquad() )
@@ -3073,7 +3073,7 @@ void CNPC_Citizen::FixupPlayerSquad()
 	if ( !AI_IsSinglePlayer() )
 		return;
 
-	m_flTimeJoinedPlayerSquad = gpGlobals->curtime;
+	m_flTimeJoinedPlayerSquad = gpGlobals->GetCurTime();
 	m_bWasInPlayerSquad = true;
 	if ( m_pSquad->NumMembers() > MAX_PLAYER_SQUAD )
 	{
@@ -3161,7 +3161,7 @@ void CNPC_Citizen::UpdateFollowCommandPoint()
 			if( !pCommandPoint )
 			{
 				DevMsg("**\nVERY BAD THING\nCommand point vanished! Creating a new one\n**\n");
-				pCommandPoint = CreateEntityByName( COMMAND_POINT_CLASSNAME );
+				pCommandPoint = engineServer->CreateEntityByName( COMMAND_POINT_CLASSNAME );
 			}
 
 			if ( pFollowTarget != pCommandPoint )
@@ -3236,9 +3236,9 @@ CAI_BaseNPC *CNPC_Citizen::GetSquadCommandRepresentative()
 		static float lastTime;
 		static AIHANDLE hCurrent;
 
-		if ( gpGlobals->curtime - lastTime > 2.0 || !hCurrent || !hCurrent->IsInPlayerSquad() ) // hCurrent will be NULL after level change
+		if ( gpGlobals->GetCurTime() - lastTime > 2.0 || !hCurrent || !hCurrent->IsInPlayerSquad() ) // hCurrent will be NULL after level change
 		{
-			lastTime = gpGlobals->curtime;
+			lastTime = gpGlobals->GetCurTime();
 			hCurrent = NULL;
 
 			CUtlVectorFixed<SquadMemberInfo_t, MAX_SQUAD_MEMBERS> candidates;
@@ -3311,12 +3311,12 @@ bool CNPC_Citizen::HandleInteraction(int interactionType, void *data, CBaseComba
 	//		  these interruptions to happen from certain schedules
 	if (interactionType ==	g_interactionScannerInspect)
 	{
-		if ( gpGlobals->curtime > m_fNextInspectTime )
+		if ( gpGlobals->GetCurTime() > m_fNextInspectTime )
 		{
 			//SetLookTarget(sourceEnt);
 
 			// Don't let anyone else pick me for a couple seconds
-			SetNextScannerInspectTime( gpGlobals->curtime + 5.0 );
+			SetNextScannerInspectTime( gpGlobals->GetCurTime() + 5.0 );
 			return true;
 		}
 		return false;
@@ -3324,7 +3324,7 @@ bool CNPC_Citizen::HandleInteraction(int interactionType, void *data, CBaseComba
 	else if (interactionType ==	g_interactionScannerInspectBegin)
 	{
 		// Don't inspect me again for a while
-		SetNextScannerInspectTime( gpGlobals->curtime + CIT_INSPECTED_DELAY_TIME );
+		SetNextScannerInspectTime( gpGlobals->GetCurTime() + CIT_INSPECTED_DELAY_TIME );
 		
 		Vector	targetDir = ( sourceEnt->WorldSpaceCenter() - WorldSpaceCenter() );
 		VectorNormalize( targetDir );
@@ -3446,7 +3446,7 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 					float timeFullHeal = m_flPlayerHealTime;
 					float timeRecharge = sk_citizen_heal_player_delay.GetFloat();
 					float maximumHealAmount = sk_citizen_heal_player.GetFloat();
-					float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->curtime ) / timeRecharge ) );
+					float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->GetCurTime() ) / timeRecharge ) );
 					if ( healAmt > pTarget->m_iMaxHealth - pTarget->m_iHealth )
 						healAmt = pTarget->m_iMaxHealth - pTarget->m_iHealth;
 					if ( healAmt < sk_citizen_heal_player_min_forced.GetFloat() )
@@ -3456,8 +3456,8 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 				}
 	 				
 				// Are we ready to heal again?
-				bool bReadyToHeal = ( ( bTargetIsPlayer && m_flPlayerHealTime <= gpGlobals->curtime ) || 
-									  ( !bTargetIsPlayer && m_flAllyHealTime <= gpGlobals->curtime ) );
+				bool bReadyToHeal = ( ( bTargetIsPlayer && m_flPlayerHealTime <= gpGlobals->GetCurTime() ) || 
+									  ( !bTargetIsPlayer && m_flAllyHealTime <= gpGlobals->GetCurTime() ) );
 
 				// Only heal if we're ready
 				if ( bReadyToHeal )
@@ -3479,7 +3479,7 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 	// Only players need ammo
 	if ( IsAmmoResupplier() && bTargetIsPlayer )
 	{
-		if ( m_flPlayerGiveAmmoTime <= gpGlobals->curtime )
+		if ( m_flPlayerGiveAmmoTime <= gpGlobals->GetCurTime() )
 		{
 			int iAmmoType = GetAmmoDef()->Index( STRING(m_iszAmmoSupply) );
 			if ( iAmmoType == -1 )
@@ -3540,7 +3540,7 @@ bool CNPC_Citizen::ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse )
 				float timeFullHeal = m_flPlayerHealTime;
 				float timeRecharge = sk_citizen_heal_player_delay.GetFloat();
 				float maximumHealAmount = sk_citizen_heal_player.GetFloat();
-				float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->curtime ) / timeRecharge ) );
+				float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->GetCurTime() ) / timeRecharge ) );
 				if ( healAmt > pTarget->m_iMaxHealth - pTarget->m_iHealth )
 					healAmt = pTarget->m_iMaxHealth - pTarget->m_iHealth;
 				if ( healAmt < sk_citizen_heal_player_min_forced.GetFloat() )
@@ -3550,8 +3550,8 @@ bool CNPC_Citizen::ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse )
 			}
 
 			// Are we ready to heal again?
-			bool bReadyToHeal = ( ( bTargetIsPlayer && m_flPlayerHealTime <= gpGlobals->curtime ) || 
-				( !bTargetIsPlayer && m_flAllyHealTime <= gpGlobals->curtime ) );
+			bool bReadyToHeal = ( ( bTargetIsPlayer && m_flPlayerHealTime <= gpGlobals->GetCurTime() ) || 
+				( !bTargetIsPlayer && m_flAllyHealTime <= gpGlobals->GetCurTime() ) );
 
 			// Only heal if we're ready
 			if ( bReadyToHeal )
@@ -3588,7 +3588,7 @@ void CNPC_Citizen::Heal()
 		return;
 
 	// Don't heal a player that's staring at you until a few seconds have passed.
-	m_flTimeNextHealStare = gpGlobals->curtime + sk_citizen_stare_heal_time.GetFloat();
+	m_flTimeNextHealStare = gpGlobals->GetCurTime() + sk_citizen_stare_heal_time.GetFloat();
 
 	if ( IsMedic() )
 	{
@@ -3600,17 +3600,17 @@ void CNPC_Citizen::Heal()
 			timeFullHeal 		= m_flPlayerHealTime;
 			timeRecharge 		= sk_citizen_heal_player_delay.GetFloat();
 			maximumHealAmount 	= sk_citizen_heal_player.GetFloat();
-			m_flPlayerHealTime 	= gpGlobals->curtime + timeRecharge;
+			m_flPlayerHealTime 	= gpGlobals->GetCurTime() + timeRecharge;
 		}
 		else
 		{
 			timeFullHeal 		= m_flAllyHealTime;
 			timeRecharge 		= sk_citizen_heal_ally_delay.GetFloat();
 			maximumHealAmount 	= sk_citizen_heal_ally.GetFloat();
-			m_flAllyHealTime 	= gpGlobals->curtime + timeRecharge;
+			m_flAllyHealTime 	= gpGlobals->GetCurTime() + timeRecharge;
 		}
 		
-		float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->curtime ) / timeRecharge ) );
+		float healAmt = ( maximumHealAmount * ( 1.0 - ( timeFullHeal - gpGlobals->GetCurTime() ) / timeRecharge ) );
 		
 		if ( healAmt > maximumHealAmount )
 			healAmt = maximumHealAmount;
@@ -3622,7 +3622,7 @@ void CNPC_Citizen::Heal()
 			if ( pTarget->IsPlayer() && npc_citizen_medic_emit_sound.GetBool() )
 			{
 				CPASAttenuationFilter filter( pTarget, "HealthKit.Touch" );
-				EmitSound( filter, pTarget->entindex(), "HealthKit.Touch" );
+				EmitSound( filter, pTarget->NetworkProp()->entindex(), "HealthKit.Touch" );
 			}
 
 			pTarget->TakeHealth( healAmt, DMG_GENERIC );
@@ -3645,7 +3645,7 @@ void CNPC_Citizen::Heal()
 				((CBasePlayer*)pTarget)->GiveAmmo( m_iAmmoAmount, iAmmoType, false );
 			}
 
-			m_flPlayerGiveAmmoTime = gpGlobals->curtime + sk_citizen_giveammo_player_delay.GetFloat();
+			m_flPlayerGiveAmmoTime = gpGlobals->GetCurTime() + sk_citizen_giveammo_player_delay.GetFloat();
 		}
 	}
 }
@@ -3693,7 +3693,7 @@ void	CNPC_Citizen::TossHealthKit(CBaseCombatCharacter *pThrowAt, const Vector &o
 	}
 
 	// create a healthkit and toss it into the world
-	CBaseEntity *pHealthKit = CreateEntityByName( "item_healthkit" );
+	CBaseEntity *pHealthKit = engineServer->CreateEntityByName( "item_healthkit" );
 	Assert(pHealthKit);
 	if (pHealthKit)
 	{
@@ -3743,7 +3743,7 @@ bool CNPC_Citizen::ShouldLookForHealthItem()
 	if( !IsInPlayerSquad() )
 		return false;
 
-	if( gpGlobals->curtime < m_flNextHealthSearchTime )
+	if( gpGlobals->GetCurTime() < m_flNextHealthSearchTime )
 		return false;
 
 	// I'm fully healthy.
@@ -4116,9 +4116,9 @@ void CCitizenResponseSystem::OnRestore()
 //-----------------------------------------------------------------------------
 void CCitizenResponseSystem::AddResponseTrigger( citizenresponses_t	iTrigger )
 {
-	m_flResponseAddedTime[ iTrigger ] = gpGlobals->curtime;
+	m_flResponseAddedTime[ iTrigger ] = gpGlobals->GetCurTime();
 
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 }
 
 //-----------------------------------------------------------------------------
@@ -4142,11 +4142,11 @@ void CCitizenResponseSystem::ResponseThink()
 			if ( m_flResponseAddedTime[i] )
 			{
 				// Should it have expired by now?
-				if ( (m_flResponseAddedTime[i] + CITIZEN_RESPONSE_GIVEUP_TIME) < gpGlobals->curtime )
+				if ( (m_flResponseAddedTime[i] + CITIZEN_RESPONSE_GIVEUP_TIME) < gpGlobals->GetCurTime() )
 				{
 					m_flResponseAddedTime[i] = 0;
 				}
-				else if ( m_flNextResponseTime < gpGlobals->curtime )
+				else if ( m_flNextResponseTime < gpGlobals->GetCurTime() )
 				{
 					// Try and find the nearest citizen to the player
 					float flNearestDist = (CITIZEN_RESPONSE_DISTANCE * CITIZEN_RESPONSE_DISTANCE);
@@ -4167,7 +4167,7 @@ void CCitizenResponseSystem::ResponseThink()
 					if ( pNearestCitizen && ((CNPC_Citizen*)pNearestCitizen)->RespondedTo( CitizenResponseConcepts[i], false, false ) )
 					{
 						m_flResponseAddedTime[i] = 0;
-						m_flNextResponseTime = gpGlobals->curtime + CITIZEN_RESPONSE_REFIRE_TIME;
+						m_flNextResponseTime = gpGlobals->GetCurTime() + CITIZEN_RESPONSE_REFIRE_TIME;
 
 						// Don't issue multiple responses
 						break;
@@ -4184,13 +4184,13 @@ void CCitizenResponseSystem::ResponseThink()
 	// Do we need to keep thinking?
 	if ( bStayActive )
 	{
-		SetNextThink( gpGlobals->curtime + 0.1 );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 	}
 }
 
 void CNPC_Citizen::AddInsignia()
 {
-	CBaseEntity *pMark = CreateEntityByName( "squadinsignia" );
+	CBaseEntity *pMark = engineServer->CreateEntityByName( "squadinsignia" );
 	pMark->SetOwnerEntity( this );
 	pMark->Spawn();
 }

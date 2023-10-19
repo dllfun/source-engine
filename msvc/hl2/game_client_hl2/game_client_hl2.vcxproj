@@ -649,7 +649,13 @@
     <ClCompile Include="..\..\..\public\client_class.cpp" />
     <ClCompile Include="..\..\..\public\collisionutils.cpp" />
     <ClCompile Include="..\..\..\public\crtmemdebug.cpp" />
+    <ClCompile Include="..\..\..\public\dt_encode.cpp" />
+    <ClCompile Include="..\..\..\public\dt_instrumentation.cpp" />
+    <ClCompile Include="..\..\..\public\dt_instrumentation_server.cpp" />
     <ClCompile Include="..\..\..\public\dt_recv.cpp" />
+    <ClCompile Include="..\..\..\public\dt_recv_decoder.cpp" />
+    <ClCompile Include="..\..\..\public\dt_send.cpp" />
+    <ClCompile Include="..\..\..\public\dt_stack.cpp" />
     <ClCompile Include="..\..\..\public\dt_utlvector_common.cpp" />
     <ClCompile Include="..\..\..\public\dt_utlvector_recv.cpp" />
     <ClCompile Include="..\..\..\public\filesystem_helpers.cpp" />

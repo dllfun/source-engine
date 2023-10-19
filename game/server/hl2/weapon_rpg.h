@@ -251,6 +251,12 @@ protected:
 	CHandle<CMissile>	m_hMissile;
 	CHandle<CSprite>	m_hLaserMuzzleSprite;
 	CHandle<CBeam>		m_hLaserBeam;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponRPG)
+	BEGIN_SEND_TABLE(CWeaponRPG, DT_WeaponRPG, DT_BaseHLCombatWeapon)
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 #endif // WEAPON_RPG_H

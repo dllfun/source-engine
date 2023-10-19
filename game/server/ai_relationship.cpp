@@ -194,7 +194,7 @@ void CAI_Relationship::ApplyRelationship( CBaseEntity *pActivator, CBaseEntity *
 	if ( AI_IsSinglePlayer() && !UTIL_GetLocalPlayer() )
 	{
 		SetThink( &CAI_Relationship::ApplyRelationshipThink );
-		SetNextThink( gpGlobals->curtime );
+		SetNextThink( gpGlobals->GetCurTime() );
 	}
 
 	if ( !m_bIsActive )
@@ -370,7 +370,7 @@ void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CBa
 	float radiusSq = Square( m_flRadius );
 	
 	// Search players first
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for ( int i = 1; i <= gpGlobals->GetMaxClients(); i++ )
 	{
 		if ( subjectList.Count() == MAX_HANDLED || targetList.Count() == MAX_HANDLED )
 		{

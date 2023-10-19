@@ -21,7 +21,7 @@ public:
 
 			C_RollerMine( void ) {}
 
-	int		DrawModel( int flags );
+	int		DrawModel(IVModel* pWrold, int flags );
 
 	RenderGroup_t GetRenderGroup( void ) 
 	{	
@@ -38,14 +38,20 @@ private:
 	float	m_flActiveTime;
 	bool	m_bHackedByAlyx;
 	bool	m_bPowerDown;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_RollerMine)
+	BEGIN_RECV_TABLE(C_RollerMine, DT_RollerMine, DT_AI_BaseNPC)
+		RecvPropInt(RECVINFO(m_bIsOpen)),
+		RecvPropFloat(RECVINFO(m_flActiveTime)),
+		RecvPropInt(RECVINFO(m_bHackedByAlyx)),
+		RecvPropInt(RECVINFO(m_bPowerDown)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_RollerMine, DT_RollerMine, CNPC_RollerMine )
-	RecvPropInt( RECVINFO( m_bIsOpen ) ),
-	RecvPropFloat( RECVINFO( m_flActiveTime ) ),
-	RecvPropInt( RECVINFO( m_bHackedByAlyx ) ),
-	RecvPropInt( RECVINFO( m_bPowerDown ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_RollerMine, DT_RollerMine, CNPC_RollerMine )
+
 
 #define	NUM_ATTACHMENTS	11
 
@@ -54,13 +60,13 @@ END_RECV_TABLE()
 // Input  : flags - 
 // Output : int
 //-----------------------------------------------------------------------------
-int C_RollerMine::DrawModel( int flags )
+int C_RollerMine::DrawModel(IVModel* pWorld, int flags )
 {
-	if ( m_bIsOpen && m_flActiveTime <= gpGlobals->curtime )
+	if ( m_bIsOpen && m_flActiveTime <= gpGlobals->GetCurTime() )
 	{
 		float scale = random->RandomFloat( 4.0f, 6.0f );
 
-		if ( gpGlobals->frametime != 0 )
+		if ( gpGlobals->GetFrameTime() != 0 )
 		{
 			// Inner beams
 			BeamInfo_t beamInfo;
@@ -170,5 +176,5 @@ int C_RollerMine::DrawModel( int flags )
 		}
 	}
 
-	return BaseClass::DrawModel( flags );
+	return BaseClass::DrawModel(pWorld, flags );
 }

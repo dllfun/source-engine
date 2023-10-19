@@ -34,7 +34,7 @@ private:
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TestTraceline)
-	BEGIN_RECV_TABLE_NOBASE(C_TestTraceline, DT_TestTraceline)
+	BEGIN_RECV_TABLE(C_TestTraceline, DT_TestTraceline, DT_BaseEntity)
 		RecvPropInt(RECVINFO(m_clrRender)),
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[0], m_angRotation[0])),

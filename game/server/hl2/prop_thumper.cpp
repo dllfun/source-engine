@@ -107,7 +107,7 @@ void CPropThumper::Spawn( void )
 	m_bEnabled = true;
 
 	SetThink( &CPropThumper::Think );
-	SetNextThink( gpGlobals->curtime + 1.0f );
+	SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 
 	int iSequence = SelectHeaviestSequence ( ACT_IDLE );
 
@@ -122,7 +122,7 @@ void CPropThumper::Spawn( void )
 
 	m_iHammerAttachment = LookupAttachment( "hammer" );
 	
-	CAntlionRepellant *pRepellant = (CAntlionRepellant*)CreateEntityByName( "point_antlion_repellant" );
+	CAntlionRepellant *pRepellant = (CAntlionRepellant*)engineServer->CreateEntityByName( "point_antlion_repellant" );
 
 	if ( pRepellant )
 	{
@@ -159,7 +159,7 @@ void CPropThumper::Precache( void )
 void CPropThumper::InitMotorSound( void )
 {
 	CPASAttenuationFilter filter( this );
-	m_sndMotor = (CSoundEnvelopeController::GetController()).SoundCreate( filter, entindex(), CHAN_STATIC, "coast.thumper_ambient" , ATTN_NORM );
+	m_sndMotor = (CSoundEnvelopeController::GetController()).SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, "coast.thumper_ambient" , ATTN_NORM );
 
 	if ( m_sndMotor )
 	{
@@ -185,7 +185,7 @@ void CPropThumper::Think( void )
 {
 	StudioFrameAdvance();
 	DispatchAnimEvents( this );
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1 );
 
 	if ( m_sndMotor == NULL )
 		 InitMotorSound();
@@ -202,7 +202,7 @@ void CPropThumper::Thump ( void )
 
 		CEffectData	data;
 
-		data.m_nEntIndex = entindex();
+		data.m_nEntIndex = this->NetworkProp()->entindex();
 		data.m_vOrigin = vOrigin;
 		data.m_flScale = m_iDustScale * m_flPlaybackRate;
 		DispatchEffect( "ThumperDust", data );

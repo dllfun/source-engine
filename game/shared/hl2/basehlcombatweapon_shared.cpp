@@ -14,15 +14,15 @@
 
 LINK_ENTITY_TO_CLASS( basehlcombatweapon, CBaseHLCombatWeapon );
 
+#ifdef CLIENT_DLL
+#undef CBaseHLCombatWeapon
+#endif // CLIENT_DLL
+
 IMPLEMENT_NETWORKCLASS_ALIASED( BaseHLCombatWeapon , DT_BaseHLCombatWeapon )
 
-BEGIN_NETWORK_TABLE( CBaseHLCombatWeapon , DT_BaseHLCombatWeapon )
-#if !defined( CLIENT_DLL )
-//	SendPropInt( SENDINFO( m_bReflectViewModelAnimations ), 1, SPROP_UNSIGNED ),
-#else
-//	RecvPropInt( RECVINFO( m_bReflectViewModelAnimations ) ),
-#endif
-END_NETWORK_TABLE()
+#ifdef CLIENT_DLL
+#define CBaseHLCombatWeapon C_BaseHLCombatWeapon
+#endif // CLIENT_DLL
 
 
 #if !defined( CLIENT_DLL )
@@ -65,11 +65,11 @@ void CBaseHLCombatWeapon::ItemHolsterFrame( void )
 		return;
 
 	// If it's been longer than three seconds, reload
-	if ( ( gpGlobals->curtime - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
+	if ( ( gpGlobals->GetCurTime() - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
 	{
 		// Just load the clip with no animations
 		FinishReload();
-		m_flHolsterTime = gpGlobals->curtime;
+		m_flHolsterTime = gpGlobals->GetCurTime();
 	}
 }
 
@@ -107,7 +107,7 @@ bool CBaseHLCombatWeapon::Ready( void )
 		return false;
 
 	m_bLowered = false;	
-	m_flRaiseTime = gpGlobals->curtime + 0.5f;
+	m_flRaiseTime = gpGlobals->GetCurTime() + 0.5f;
 	return true;
 }
 
@@ -131,9 +131,9 @@ bool CBaseHLCombatWeapon::Deploy( void )
 					m_bLowered = true;
 
 					// Stomp the next attack time to fix the fact that the lower idles are long
-					pPlayer->SetNextAttack( gpGlobals->curtime + 1.0 );
-					m_flNextPrimaryAttack = gpGlobals->curtime + 1.0;
-					m_flNextSecondaryAttack	= gpGlobals->curtime + 1.0;
+					pPlayer->SetNextAttack( gpGlobals->GetCurTime() + 1.0 );
+					m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 1.0;
+					m_flNextSecondaryAttack	= gpGlobals->GetCurTime() + 1.0;
 					return true;
 				}
 			}
@@ -152,7 +152,7 @@ bool CBaseHLCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
 	if ( BaseClass::Holster( pSwitchingTo ) )
 	{
-		m_flHolsterTime = gpGlobals->curtime;
+		m_flHolsterTime = gpGlobals->GetCurTime();
 		return true;
 	}
 
@@ -215,7 +215,7 @@ void CBaseHLCombatWeapon::WeaponIdle( void )
 	else
 	{
 		// See if we need to raise immediately
-		if ( m_flRaiseTime < gpGlobals->curtime && GetActivity() == ACT_VM_IDLE_LOWERED ) 
+		if ( m_flRaiseTime < gpGlobals->GetCurTime() && GetActivity() == ACT_VM_IDLE_LOWERED ) 
 		{
 			SendWeaponAnim( ACT_VM_IDLE );
 		}
@@ -264,7 +264,7 @@ float CBaseHLCombatWeapon::CalcViewmodelBob( void )
 
 	//NOTENOTE: For now, let this cycle continue when in the air, because it snaps badly without it
 
-	if ( ( !gpGlobals->frametime ) || ( player == NULL ) )
+	if ( ( !gpGlobals->GetFrameTime() ) || ( player == NULL ) )
 	{
 		//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
 		return 0.0f;// just use old value
@@ -280,8 +280,8 @@ float CBaseHLCombatWeapon::CalcViewmodelBob( void )
 
 	float bob_offset = RemapVal( speed, 0, 320, 0.0f, 1.0f );
 	
-	bobtime += ( gpGlobals->curtime - lastbobtime ) * bob_offset;
-	lastbobtime = gpGlobals->curtime;
+	bobtime += ( gpGlobals->GetCurTime() - lastbobtime ) * bob_offset;
+	lastbobtime = gpGlobals->GetCurTime();
 
 	//Calculate the vertical bob
 	cycle = bobtime - (int)(bobtime/HL2_BOB_CYCLE_MAX)*HL2_BOB_CYCLE_MAX;

@@ -22,7 +22,7 @@ public:
 	virtual RenderGroup_t GetRenderGroup( void );
 
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
-	virtual int		DrawModel( int flags );
+	virtual int		DrawModel(IVModel* pWorld, int flags );
 
 protected:
 
@@ -39,6 +39,16 @@ protected:
 	IMaterial	*m_pFlickerMaterial;
 	IMaterial	*m_pBodyMaterial;
 	IMaterial	*m_pBlurMaterial;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_PropCombineBall)
+	BEGIN_RECV_TABLE(C_PropCombineBall, DT_PropCombineBall, DT_BaseAnimating)
+		RecvPropBool(RECVINFO(m_bEmit)),
+		RecvPropFloat(RECVINFO(m_flRadius)),
+		RecvPropBool(RECVINFO(m_bHeld)),
+		RecvPropBool(RECVINFO(m_bLaunched)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 

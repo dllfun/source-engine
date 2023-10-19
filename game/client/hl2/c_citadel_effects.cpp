@@ -39,15 +39,21 @@ private:
 	
 	CSmartPtr<CSimpleEmitter>		m_pSimpleEmitter;
 	CSmartPtr<CParticleAttractor>	m_pAttractorEmitter;
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_CitadelEnergyCore)
+	BEGIN_RECV_TABLE(C_CitadelEnergyCore, DT_CitadelEnergyCore, DT_BaseEntity)
+		RecvPropFloat(RECVINFO(m_flScale)),
+		RecvPropInt(RECVINFO(m_nState)),
+		RecvPropFloat(RECVINFO(m_flDuration)),
+		RecvPropFloat(RECVINFO(m_flStartTime)),
+		RecvPropInt(RECVINFO(m_spawnflags)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
-IMPLEMENT_CLIENTCLASS_DT( C_CitadelEnergyCore, DT_CitadelEnergyCore, CCitadelEnergyCore )
-	RecvPropFloat( RECVINFO(m_flScale) ),
-	RecvPropInt( RECVINFO(m_nState) ),
-	RecvPropFloat( RECVINFO(m_flDuration) ),
-	RecvPropFloat( RECVINFO(m_flStartTime) ),
-	RecvPropInt( RECVINFO(m_spawnflags) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS( C_CitadelEnergyCore, DT_CitadelEnergyCore, CCitadelEnergyCore )
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -433,7 +439,7 @@ inline float C_CitadelEnergyCore::GetStateDurationPercentage( void )
 	if ( m_flDuration == 0 )
 		return 0.0f;
 
-	return RemapValClamped( ( gpGlobals->curtime - m_flStartTime ), 0, m_flDuration, 0, 1.0f );;
+	return RemapValClamped( ( gpGlobals->GetCurTime() - m_flStartTime ), 0, m_flDuration, 0, 1.0f );;
 }
 
 //-----------------------------------------------------------------------------
@@ -461,7 +467,7 @@ void C_CitadelEnergyCore::NotifyShouldTransmit( ShouldTransmitState_t state )
 //-----------------------------------------------------------------------------
 void C_CitadelEnergyCore::ClientThink( void )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if ( gpGlobals->GetFrameTime() <= 0.0f )
 		return;
 
 	float flDuration = GetStateDurationPercentage();

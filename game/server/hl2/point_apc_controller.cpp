@@ -149,7 +149,7 @@ CAPCController::~CAPCController( void )
 {
 	if ( m_soundLoopRotate != NULL_STRING )
 	{
-		StopSound( entindex(), CHAN_STATIC, STRING(m_soundLoopRotate) );
+		StopSound( this->NetworkProp()->entindex(), CHAN_STATIC, STRING(m_soundLoopRotate) );
 	}
 }
 
@@ -168,7 +168,7 @@ void CAPCController::InputActivate( inputdata_t &inputdata )
 void CAPCController::ActivateRocketGuidance(void)
 {
 	m_spawnflags	|= SF_TANK_ACTIVE; 
-	SetNextThink( gpGlobals->curtime + 0.1f ); 
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f ); 
 }
 
 
@@ -238,7 +238,7 @@ void CAPCController::Spawn( void )
 
 	if ( IsActive() )
 	{
-		SetNextThink( gpGlobals->curtime + 1.0f );
+		SetNextThink( gpGlobals->GetCurTime() + 1.0f );
 	}
 
 	UpdateMatrix();
@@ -332,7 +332,7 @@ void CAPCController::TrackTarget( void )
 
 	if ( IsActive() )
 	{
-		SetNextThink( gpGlobals->curtime + 0.1f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 	else
 	{
@@ -350,7 +350,7 @@ void CAPCController::TrackTarget( void )
 		m_hTarget = FindTarget( m_targetEntityName, NULL );
 		if ( IsActive() )
 		{
-			SetNextThink( gpGlobals->curtime + 2 );	// Wait 2 sec s
+			SetNextThink( gpGlobals->GetCurTime() + 2 );	// Wait 2 sec s
 		}
 
 		return;
@@ -430,10 +430,10 @@ void CAPCController::TrackTarget( void )
 				if ( !m_bFireDelayed )
 				{
 					m_bFireDelayed = true;
-					m_flFiringDelay = gpGlobals->curtime + 1.5;	// setup delay time before we start firing
+					m_flFiringDelay = gpGlobals->GetCurTime() + 1.5;	// setup delay time before we start firing
 					return;
 				}
-				if ( gpGlobals->curtime > m_flFiringDelay )
+				if ( gpGlobals->GetCurTime() > m_flFiringDelay )
 				{
 					m_OnFireAtTarget.Set(forward, this, this);		// tell apc to fire rockets, and what direction
 				}
@@ -459,7 +459,7 @@ void CAPCController::StartRotSound( void )
 		ep.m_SoundLevel = SNDLVL_NORM;
 		ep.m_flVolume = 0.85;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	}
 	
 	if ( m_soundStartRotate != NULL_STRING )
@@ -472,7 +472,7 @@ void CAPCController::StartRotSound( void )
 		ep.m_SoundLevel = SNDLVL_NORM;
 		ep.m_flVolume = 1.0f;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	}
 }
 
@@ -481,7 +481,7 @@ void CAPCController::StopRotSound( void )
 {
 	if ( m_soundLoopRotate != NULL_STRING )
 	{
-		StopSound( entindex(), CHAN_STATIC, (char*)STRING(m_soundLoopRotate) );
+		StopSound( this->NetworkProp()->entindex(), CHAN_STATIC, (char*)STRING(m_soundLoopRotate) );
 	}
 	if ( m_soundStopRotate != NULL_STRING )
 	{
@@ -492,7 +492,7 @@ void CAPCController::StopRotSound( void )
 		ep.m_pSoundName = (char*)STRING(m_soundStopRotate);
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
 	}
 }
 

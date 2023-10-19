@@ -74,7 +74,7 @@ void CLookDoorThinker::LookThink(void)
 	if (m_hLookDoor)
 	{
 		((CLookDoor*)(CBaseEntity*)m_hLookDoor)->MoveThink();
-		SetNextThink( gpGlobals->curtime + 0.01f );
+		SetNextThink( gpGlobals->GetCurTime() + 0.01f );
 	}
 	else
 	{
@@ -128,12 +128,12 @@ void CLookDoor::Spawn(void)
 		Warning( "ERROR: DoorLook (%s) given no target.  Rejecting spawn.\n",GetDebugName());
 		return;
 	}
-	CLookDoorThinker* pLookThinker = (CLookDoorThinker*)CreateEntityByName("lookdoorthinker");
+	CLookDoorThinker* pLookThinker = (CLookDoorThinker*)engineServer->CreateEntityByName("lookdoorthinker");
 	if (pLookThinker)
 	{
 		pLookThinker->SetThink(&CLookDoorThinker::LookThink);
 		pLookThinker->m_hLookDoor = this;
-		pLookThinker->SetNextThink( gpGlobals->curtime + 0.1f );
+		pLookThinker->SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	}
 }
 

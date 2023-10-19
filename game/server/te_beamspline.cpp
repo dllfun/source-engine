@@ -37,7 +37,7 @@ public:
 	CNetworkVar( int, m_nPoints );
 
 	BEGIN_INIT_SEND_TABLE(CTEBeamSpline)
-	BEGIN_SEND_TABLE_NOBASE(CTEBeamSpline, DT_TEBeamSpline)
+	BEGIN_SEND_TABLE(CTEBeamSpline, DT_TEBeamSpline, DT_BaseTempEntity)
 		SendPropInt(SENDINFO(m_nPoints), 5, SPROP_UNSIGNED),
 		SendPropInternalArray(
 			SENDINFO_INTERNALARRAY(m_vecPoints),

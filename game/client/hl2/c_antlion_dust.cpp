@@ -80,16 +80,22 @@ public:
 
 protected:
 	void		GetDustColor( Vector &color );
+
+public:
+	BEGIN_INIT_RECV_TABLE(C_TEAntlionDust)
+	BEGIN_RECV_TABLE(C_TEAntlionDust, DT_TEAntlionDust, DT_TEParticleSystem)
+		RecvPropVector(RECVINFO(m_vecOrigin)),
+		RecvPropVector(RECVINFO(m_vecAngles)),
+		RecvPropBool(RECVINFO(m_bBlockedSpawner)),
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
 };
 
 // Expose to the particle app.
 EXPOSE_PROTOTYPE_EFFECT( AntlionDust, C_TEAntlionDust );
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEAntlionDust, DT_TEAntlionDust, CTEAntlionDust )
-	RecvPropVector(RECVINFO( m_vecOrigin )),
-	RecvPropVector(RECVINFO( m_vecAngles )),
-	RecvPropBool(RECVINFO( m_bBlockedSpawner )),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT( C_TEAntlionDust, DT_TEAntlionDust, CTEAntlionDust )
+
 
 //==================================================
 // C_TEAntlionDust

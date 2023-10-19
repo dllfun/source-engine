@@ -494,7 +494,7 @@ void CNPCSimpleTalker::IdleRespond( void )
 
 bool CNPCSimpleTalker::IsOkToSpeak( void )
 {
-	if ( m_flNextIdleSpeechTime > gpGlobals->curtime )
+	if ( m_flNextIdleSpeechTime > gpGlobals->GetCurTime() )
 		return false;
 
 	return BaseClass::IsOkToSpeak();
@@ -579,7 +579,7 @@ void CNPCSimpleTalker::DeferAllIdleSpeech( float flDelay, CAI_BaseNPC *pIgnore )
 	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
 	CNPCSimpleTalker *pTalker;
 
-	float flTime = gpGlobals->curtime + flDelay;
+	float flTime = gpGlobals->GetCurTime() + flDelay;
 
 	for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
 	{
@@ -703,14 +703,14 @@ int CNPCSimpleTalker::FIdleSpeak( void )
 		else
 		{
 			// We failed to speak. Don't try again for a bit.
-			m_flNextIdleSpeechTime = gpGlobals->curtime + 3;
+			m_flNextIdleSpeechTime = gpGlobals->GetCurTime() + 3;
 		}
 
 		return true;
 	}
 
 	// didn't speak
-	m_flNextIdleSpeechTime = gpGlobals->curtime + 3;
+	m_flNextIdleSpeechTime = gpGlobals->GetCurTime() + 3;
 	return false;
 }
 
@@ -762,7 +762,7 @@ int CNPCSimpleTalker::PlayScriptedSentence( const char *pszSentence, float delay
 	delay += engineServer->SentenceLength( sentenceIndex );
 	if ( delay < 0 )
 		delay = 0;
-	m_useTime = gpGlobals->curtime + delay;
+	m_useTime = gpGlobals->GetCurTime() + delay;
 
 	// Stop all idle speech until after the sentence has completed
 	DeferAllIdleSpeech( delay + random->RandomInt( 3.0f, 5.0f ) );
@@ -901,7 +901,7 @@ void CNPCSimpleTalker::OnStoppingFollow( CBaseEntity *pTarget )
 void CNPCSimpleTalker::FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	// Don't allow use during a scripted_sentence
-	if ( m_useTime > gpGlobals->curtime )
+	if ( m_useTime > gpGlobals->GetCurTime() )
 		return;
 
 	if ( pCaller != NULL && pCaller->IsPlayer() )

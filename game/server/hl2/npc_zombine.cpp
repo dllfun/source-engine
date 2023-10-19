@@ -131,7 +131,7 @@ public:
 
 	void DropGrenade( Vector vDir );
 
-	bool IsSprinting( void ) { return m_flSprintTime > gpGlobals->curtime;	}
+	bool IsSprinting( void ) { return m_flSprintTime > gpGlobals->GetCurTime();	}
 	bool HasGrenade( void ) { return m_hGrenade != NULL; }
 
 	int TranslateSchedule( int scheduleType );
@@ -221,10 +221,10 @@ void CNPC_Zombine::Spawn( void )
 	m_flSprintTime = 0.0f;
 	m_flSprintRestTime = 0.0f;
 
-	m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 4.0 );
+	m_flNextMoanSound = gpGlobals->GetCurTime() + random->RandomFloat( 1.0, 4.0 );
 
-	g_flZombineGrenadeTimes = gpGlobals->curtime;
-	m_flGrenadePullTime = gpGlobals->curtime;
+	g_flZombineGrenadeTimes = gpGlobals->GetCurTime();
+	m_flGrenadePullTime = gpGlobals->GetCurTime();
 
 	m_iGrenadeCount = ZOMBINE_MAX_GRENADES;
 }
@@ -268,18 +268,18 @@ void CNPC_Zombine::PrescheduleThink( void )
 {
 	GatherGrenadeConditions();
 
-	if( gpGlobals->curtime > m_flNextMoanSound )
+	if( gpGlobals->GetCurTime() > m_flNextMoanSound )
 	{
 		if( CanPlayMoanSound() )
 		{
 			// Classic guy idles instead of moans.
 			IdleSound();
 
-			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 10.0, 15.0 );
+			m_flNextMoanSound = gpGlobals->GetCurTime() + random->RandomFloat( 10.0, 15.0 );
 		}
 		else
 		{
-			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 2.5, 5.0 );
+			m_flNextMoanSound = gpGlobals->GetCurTime() + random->RandomFloat( 2.5, 5.0 );
 		}
 	}
 
@@ -303,7 +303,7 @@ void CNPC_Zombine::OnScheduleChange( void )
 {
 	if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) && IsSprinting() == true )
 	{
-		m_flSuperFastAttackTime = gpGlobals->curtime + 1.0f;
+		m_flSuperFastAttackTime = gpGlobals->GetCurTime() + 1.0f;
 	}
 
 	BaseClass::OnScheduleChange();
@@ -342,7 +342,7 @@ Activity CNPC_Zombine::NPC_TranslateActivity( Activity baseAct )
 {
 	if ( baseAct == ACT_MELEE_ATTACK1 )
 	{
-		if ( m_flSuperFastAttackTime > gpGlobals->curtime || HasGrenade() )
+		if ( m_flSuperFastAttackTime > gpGlobals->GetCurTime() || HasGrenade() )
 		{
 			return (Activity)ACT_ZOMBINE_ATTACK_FAST;
 		}
@@ -381,13 +381,13 @@ void CNPC_Zombine::GatherGrenadeConditions( void )
 	if ( m_iGrenadeCount <= 0 )
 		return;
 
-	if ( g_flZombineGrenadeTimes > gpGlobals->curtime )
+	if ( g_flZombineGrenadeTimes > gpGlobals->GetCurTime() )
 		return;
 
-	if ( m_flGrenadePullTime > gpGlobals->curtime )
+	if ( m_flGrenadePullTime > gpGlobals->GetCurTime() )
 		return;
 
-	if ( m_flSuperFastAttackTime >= gpGlobals->curtime )
+	if ( m_flSuperFastAttackTime >= gpGlobals->GetCurTime() )
 		return;
 	
 	if ( HasGrenade() )
@@ -426,11 +426,11 @@ void CNPC_Zombine::GatherGrenadeConditions( void )
 		if ( flLengthToPlayer <= GRENADE_PULL_MAX_DISTANCE && flLengthToEnemy <= GRENADE_PULL_MAX_DISTANCE )
 		{
 			float flPullChance = 1.0f - ( flLengthToEnemy / GRENADE_PULL_MAX_DISTANCE );
-			m_flGrenadePullTime = gpGlobals->curtime + 0.5f;
+			m_flGrenadePullTime = gpGlobals->GetCurTime() + 0.5f;
 
 			if ( flPullChance >= random->RandomFloat( 0.0f, 1.0f ) )
 			{
-				g_flZombineGrenadeTimes = gpGlobals->curtime + 10.0f;
+				g_flZombineGrenadeTimes = gpGlobals->GetCurTime() + 10.0f;
 				SetCondition( COND_ZOMBINE_GRENADE );
 			}
 		}
@@ -640,7 +640,7 @@ bool CNPC_Zombine::AllowedToSprint( void )
 		if ( random->RandomInt( 0, 100 ) > iChance )
 			return false;
 		
-		if ( m_flSprintRestTime > gpGlobals->curtime )
+		if ( m_flSprintRestTime > gpGlobals->GetCurTime() )
 			return false;
 	}
 
@@ -656,7 +656,7 @@ void CNPC_Zombine::StopSprint( void )
 {
 	GetNavigator()->SetMovementActivity( ACT_WALK );
 
-	m_flSprintTime = gpGlobals->curtime;
+	m_flSprintTime = gpGlobals->GetCurTime();
 	m_flSprintRestTime = m_flSprintTime + random->RandomFloat( 2.5f, 5.0f );
 }
 
@@ -676,7 +676,7 @@ void CNPC_Zombine::Sprint( bool bMadSprint )
 		flSprintTime = 9999;
 	}
 
-	m_flSprintTime = gpGlobals->curtime + flSprintTime;
+	m_flSprintTime = gpGlobals->GetCurTime() + flSprintTime;
 
 	//Don't sprint for this long after I'm done with this sprint run.
 	m_flSprintRestTime = m_flSprintTime + random->RandomFloat( 2.5f, 5.0f );
@@ -751,7 +751,7 @@ void CNPC_Zombine::InputStartSprint ( inputdata_t &inputdata )
 
 void CNPC_Zombine::InputPullGrenade ( inputdata_t &inputdata )
 {
-	g_flZombineGrenadeTimes = gpGlobals->curtime + 5.0f;
+	g_flZombineGrenadeTimes = gpGlobals->GetCurTime() + 5.0f;
 	SetCondition( COND_ZOMBINE_GRENADE );
 }
 

@@ -137,7 +137,7 @@ void CHudDeathNotice::Paint()
 
 		// display time has expired
 		// remove the current item from the list
-		if ( rgDeathNoticeList[i].flDisplayTime < gpGlobals->curtime )
+		if ( rgDeathNoticeList[i].flDisplayTime < gpGlobals->GetCurTime() )
 		{ 
 			Q_memmove( &rgDeathNoticeList[i], &rgDeathNoticeList[i+1], sizeof(DeathNoticeItem) * (MAX_DEATHNOTICES - i) );
 			// continue on the next item;  stop the counter getting incremented
@@ -145,7 +145,7 @@ void CHudDeathNotice::Paint()
 			continue;
 		}
 
-		rgDeathNoticeList[i].flDisplayTime = MIN( rgDeathNoticeList[i].flDisplayTime, gpGlobals->curtime + DEATHNOTICE_DISPLAY_TIME );
+		rgDeathNoticeList[i].flDisplayTime = MIN( rgDeathNoticeList[i].flDisplayTime, gpGlobals->GetCurTime() + DEATHNOTICE_DISPLAY_TIME );
 
 		// Draw the death notice
 		y = DEATHNOTICE_TOP + (20 * i) + 100;  //!!!
@@ -250,7 +250,7 @@ void CHudDeathNotice::FireGameEvent( KeyValues * event)
 
 	DEATHNOTICE_DISPLAY_TIME = hud_deathnotice_time.GetFloat();
 
-	rgDeathNoticeList[i].flDisplayTime = gpGlobals->curtime + DEATHNOTICE_DISPLAY_TIME;
+	rgDeathNoticeList[i].flDisplayTime = gpGlobals->GetCurTime() + DEATHNOTICE_DISPLAY_TIME;
 
 	// record the death notice in the console
 	if ( rgDeathNoticeList[i].iSuicide )

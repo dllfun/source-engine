@@ -23,13 +23,8 @@ BEGIN_DATADESC( CCitadelEnergyCore )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "Stop", InputStop ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CCitadelEnergyCore, DT_CitadelEnergyCore )
-	SendPropFloat( SENDINFO(m_flScale), 0, SPROP_NOSCALE),
-	SendPropInt( SENDINFO(m_nState), 8, SPROP_UNSIGNED),
-	SendPropFloat( SENDINFO(m_flDuration), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flStartTime), 0, SPROP_NOSCALE),
-	SendPropInt( SENDINFO(m_spawnflags), 0, SPROP_UNSIGNED),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CCitadelEnergyCore, DT_CitadelEnergyCore )
+
 
 
 //-----------------------------------------------------------------------------
@@ -55,7 +50,7 @@ void CCitadelEnergyCore::Spawn( void )
 	if ( HasSpawnFlags( SF_ENERGYCORE_START_ON ) )
 	{
 		m_nState = (int)ENERGYCORE_STATE_DISCHARGING;
-		m_flStartTime = gpGlobals->curtime;
+		m_flStartTime = gpGlobals->GetCurTime();
 	}
 
 	// No model but we still need to force this!
@@ -70,7 +65,7 @@ void CCitadelEnergyCore::StartCharge( float flWarmUpTime )
 {
 	m_nState = (int)ENERGYCORE_STATE_CHARGING;
 	m_flDuration = flWarmUpTime;
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -79,7 +74,7 @@ void CCitadelEnergyCore::StartCharge( float flWarmUpTime )
 void CCitadelEnergyCore::StartDischarge( void )
 {
 	m_nState = (int)ENERGYCORE_STATE_DISCHARGING;
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -90,7 +85,7 @@ void CCitadelEnergyCore::StopDischarge( float flCoolDownTime )
 {
 	m_nState = (int)ENERGYCORE_STATE_OFF;
 	m_flDuration = flCoolDownTime;
-	m_flStartTime = gpGlobals->curtime;
+	m_flStartTime = gpGlobals->GetCurTime();
 }
 
 //-----------------------------------------------------------------------------

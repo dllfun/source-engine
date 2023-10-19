@@ -68,7 +68,7 @@ public:
 		return &m_Network;
 	}
 	BEGIN_INIT_SEND_TABLE(CTestEnntity)
-	BEGIN_SEND_TABLE_NOBASE(CTestEnntity, DT_TestEnntity)
+	BEGIN_SEND_TABLE(CTestEnntity, DT_TestEnntity, DT_BaseEntity)
 
 	END_SEND_TABLE(DT_TestEnntity)
 	END_INIT_SEND_TABLE()

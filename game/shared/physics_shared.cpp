@@ -404,6 +404,9 @@ IPhysicsObject *PhysModelCreateUnmoveable( CBaseEntity *pEntity, int modelIndex,
 #ifdef GAME_DLL
 	pModel = engineServer->GetModel(modelIndex);
 #endif
+	if (!pModel) {
+		return NULL;
+	}
 	vcollide_t *pCollide = pModel->GetVCollide();
 	if ( !pCollide || !pCollide->solidCount )
 		return NULL;

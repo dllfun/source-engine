@@ -95,7 +95,7 @@ CBaseEntity* FindEntity( edict_t *pEdict, char *classname)
 	// If no name was given set bits based on the picked
 	if (FStrEq(classname,"")) 
 	{
-		return (FindPickerEntityClass( static_cast<CBasePlayer*>(GetContainingEntity(pEdict)), classname ));
+		return (FindPickerEntityClass( static_cast<CBasePlayer*>(CBasePlayer::GetContainingEntity(pEdict)), classname ));
 	}
 	return NULL;
 }

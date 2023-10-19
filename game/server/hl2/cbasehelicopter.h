@@ -240,6 +240,13 @@ protected:
 	void SetStartupTime( float time ) { m_flStartupTime = time; }
 private:
 	CNetworkVar( float, m_flStartupTime );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CBaseHelicopter)
+	BEGIN_SEND_TABLE(CBaseHelicopter, DT_BaseHelicopter, DT_AI_BaseNPC)
+		SendPropTime(SENDINFO(m_flStartupTime)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 //-----------------------------------------------------------------------------

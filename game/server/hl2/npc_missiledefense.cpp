@@ -219,7 +219,7 @@ void CNPC_MissileDefense::FireCannons( void )
 	{
 		// Incite a reload.
 		EmitSound( "NPC_MissileDefense.Reload" );
-		m_flReloadedTime = gpGlobals->curtime + 0.3;
+		m_flReloadedTime = gpGlobals->GetCurTime() + 0.3;
 		return;
 	}
 
@@ -271,7 +271,7 @@ void CNPC_MissileDefense::Spawn( void )
 
 	m_spawnflags |= SF_NPC_LONG_RANGE;
 
-	m_flReloadedTime = gpGlobals->curtime;
+	m_flReloadedTime = gpGlobals->GetCurTime();
 
 	InitBoneControllers();
 
@@ -339,7 +339,7 @@ void CNPC_MissileDefense::Gib(void)
 	// Light
 	CBroadcastRecipientFilter filter;
 
-	te->DynamicLight( filter, 0.0,
+	g_pTESystem->DynamicLight( filter, 0.0,
 			&GetAbsOrigin(), 255, 180, 100, 0, 100, 0.1, 0 );
 
 	// Remove top parts
@@ -377,18 +377,18 @@ void CNPC_MissileDefense::RunAI( void )
 		if (GetEnemy() != NULL)
 		{
 			m_iAmmoLoaded = MD_FULLAMMO;
-			m_flReloadedTime = gpGlobals->curtime;
+			m_flReloadedTime = gpGlobals->GetCurTime();
 		}
 	}
 
-	if( m_iAmmoLoaded < 1 && gpGlobals->curtime > m_flReloadedTime )
+	if( m_iAmmoLoaded < 1 && gpGlobals->GetCurTime() > m_flReloadedTime )
 	{
 		m_iAmmoLoaded = MD_FULLAMMO;
 	}
 
 	AimGun();
 	FireCannons();
-	SetNextThink( gpGlobals->curtime + 0.05 );
+	SetNextThink( gpGlobals->GetCurTime() + 0.05 );
 }
 
 //------------------------------------------------------------------------------

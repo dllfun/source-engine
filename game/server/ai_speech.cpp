@@ -275,7 +275,7 @@ static const int LEN_SPECIFIC_SCENE_MODIFIER = strlen( AI_SPECIFIC_SCENE_MODIFIE
 //-----------------------------------------------------------------------------
 AI_Response *CAI_Expresser::SpeakFindResponse( AIConcept_t concept, const char *modifiers /*= NULL*/ )
 {
-	IResponseSystem *rs = GetOuter()->GetResponseSystem();
+	IResponseSystem *rs = GetOuter()?GetOuter()->GetResponseSystem():NULL;
 	if ( !rs )
 	{
 		Assert( !"No response system installed for CAI_Expresser::GetOuter()!!!" );
@@ -863,7 +863,7 @@ bool CAI_Expresser::IsValidResponse( ResponseType_t type, const char *pszValue )
 //-----------------------------------------------------------------------------
 CAI_TimedSemaphore *CAI_Expresser::GetMySpeechSemaphore( CBaseEntity *pNpc ) 
 {
-	if ( !pNpc->MyNPCPointer() )
+	if (!pNpc|| !pNpc->MyNPCPointer() )
 		return NULL;
 
 	return (pNpc->MyNPCPointer()->IsPlayerAlly() ? &g_AIFriendliesTalkSemaphore : &g_AIFoesTalkSemaphore );

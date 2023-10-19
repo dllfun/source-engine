@@ -164,7 +164,7 @@ void CNPC_Bullseye::Spawn( void )
 	AddEFlags( EFL_NO_DISSOLVE );
 
 	SetThink( &CNPC_Bullseye::BullseyeThink );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -249,7 +249,7 @@ void CNPC_Bullseye::Event_Killed( const CTakeDamageInfo &info )
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	UTIL_SetSize(this, vec3_origin, vec3_origin );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 	SetThink( &CBaseEntity::SUB_Remove );
 }
 
@@ -277,7 +277,7 @@ void CNPC_Bullseye::DecalTrace( trace_t *pOldTrace, char const *decalName )
 	AI_TraceLine(vStartTrace, vEndTrace, MASK_SHOT, this, COLLISION_GROUP_NONE, &pNewTrace);
 
 	CBroadcastRecipientFilter filter;
-	te->Decal( filter, 0.0, &pNewTrace.endpos, &pNewTrace.startpos,
+	g_pTESystem->Decal( filter, 0.0, &pNewTrace.endpos, &pNewTrace.startpos,
 		ENTINDEX( pNewTrace.m_pEnt ), pNewTrace.hitbox, index );
 }
 
@@ -425,7 +425,7 @@ void CNPC_Bullseye::TraceAttack( const CTakeDamageInfo &info, const Vector &vecD
 //-----------------------------------------------------------------------------
 int CNPC_Bullseye::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 
 	//If specified, we must be the enemy of the target
 	if ( m_spawnflags & SF_BULLSEYE_ENEMYDAMAGEONLY )

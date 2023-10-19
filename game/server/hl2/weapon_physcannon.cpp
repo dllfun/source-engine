@@ -105,7 +105,7 @@ public:
 		// FIXME: Move this into the GetModelContents() function in base entity
 
 		// Find the contents based on the model type
-		int nModelType = modelinfo->GetModelType( pEntity->GetModel() );
+		int nModelType = pEntity->GetModel()->GetModelType(  );//pEntity->GetModel()
 		if ( nModelType == mod_studio )
 		{
 			CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating *>(pEntity);
@@ -119,7 +119,7 @@ public:
 		else if ( nModelType == mod_brush )
 		{
 			// Brushes poll their contents differently
-			int contents = modelinfo->GetModelContents( pEntity->GetModelIndex() );
+			int contents = pEntity->GetModel()->GetModelContents(  );//pEntity->GetModelIndex()
 			if ( contents & CONTENTS_GRATE )
 				return true;
 		}
@@ -587,7 +587,7 @@ void CGrabController::SetTargetPosition( const Vector &target, const QAngle &tar
 	m_shadow.targetPosition = target;
 	m_shadow.targetRotation = targetOrientation;
 
-	m_timeToArrive = gpGlobals->frametime;
+	m_timeToArrive = gpGlobals->GetFrameTime();
 
 	CBaseEntity *pAttached = GetAttached();
 	if ( pAttached )
@@ -1383,15 +1383,21 @@ protected:
 	// The physcannon also caches some pose parameters in SetupGlobalModelData().
 	static int m_poseActive;
 	static bool m_sbStaticPoseParamsLoaded;
+
+public:
+	BEGIN_INIT_SEND_TABLE(CWeaponPhysCannon)
+	BEGIN_SEND_TABLE(CWeaponPhysCannon, DT_WeaponPhysCannon, DT_BaseHLCombatWeapon)
+		SendPropBool(SENDINFO(m_bIsCurrentlyUpgrading)),
+		SendPropFloat(SENDINFO(m_flTimeForceView)),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
 bool CWeaponPhysCannon::m_sbStaticPoseParamsLoaded = false;
 int CWeaponPhysCannon::m_poseActive = 0;
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponPhysCannon, DT_WeaponPhysCannon)
-	SendPropBool( SENDINFO( m_bIsCurrentlyUpgrading ) ),
-	SendPropFloat( SENDINFO( m_flTimeForceView ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS(CWeaponPhysCannon, DT_WeaponPhysCannon)
+
 
 LINK_ENTITY_TO_CLASS( weapon_physcannon, CWeaponPhysCannon );
 PRECACHE_WEAPON_REGISTER( weapon_physcannon );
@@ -1590,7 +1596,7 @@ bool CWeaponPhysCannon::Deploy( void )
 		CollisionProp()->UseTriggerBounds( false );
 	}
 
-	m_flTimeNextObjectPurge = gpGlobals->curtime;
+	m_flTimeNextObjectPurge = gpGlobals->GetCurTime();
 
 	return BaseClass::Deploy();
 }
@@ -1775,8 +1781,8 @@ void CWeaponPhysCannon::PuntNonVPhysics( CBaseEntity *pEntity, const Vector &for
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
 	m_nChangeState = ELEMENT_STATE_CLOSED;
-	m_flElementDebounce = gpGlobals->curtime + 0.5f;
-	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
+	m_flElementDebounce = gpGlobals->GetCurTime() + 0.5f;
+	m_flCheckSuppressTime = gpGlobals->GetCurTime() + 0.25f;
 }
 
 
@@ -1924,11 +1930,11 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
 	m_nChangeState = ELEMENT_STATE_CLOSED;
-	m_flElementDebounce = gpGlobals->curtime + 0.5f;
-	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
+	m_flElementDebounce = gpGlobals->GetCurTime() + 0.5f;
+	m_flCheckSuppressTime = gpGlobals->GetCurTime() + 0.25f;
 
 	// Don't allow the gun to regrab a thrown object!!
-	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5f;
 }
 
 //-----------------------------------------------------------------------------
@@ -2042,11 +2048,11 @@ void CWeaponPhysCannon::PuntRagdoll( CBaseEntity *pEntity, const Vector &vecForw
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
 	m_nChangeState = ELEMENT_STATE_CLOSED;
-	m_flElementDebounce = gpGlobals->curtime + 0.5f;
-	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
+	m_flElementDebounce = gpGlobals->GetCurTime() + 0.5f;
+	m_flCheckSuppressTime = gpGlobals->GetCurTime() + 0.25f;
 
 	// Don't allow the gun to regrab a thrown object!!
-	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5f;
 }
 
 
@@ -2107,7 +2113,7 @@ bool CWeaponPhysCannon::EntityAllowsPunts( CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 void CWeaponPhysCannon::PrimaryAttack( void )
 {
-	if( m_flNextPrimaryAttack > gpGlobals->curtime )
+	if( m_flNextPrimaryAttack > gpGlobals->GetCurTime() )
 		return;
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
@@ -2145,7 +2151,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	}
 
 	// If not active, just issue a physics punch in the world.
-	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5f;
 
 	Vector forward;
 	pOwner->EyeVectors( &forward );
@@ -2283,7 +2289,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 //-----------------------------------------------------------------------------
 void CWeaponPhysCannon::SecondaryAttack( void )
 {
-	if ( m_flNextSecondaryAttack > gpGlobals->curtime )
+	if ( m_flNextSecondaryAttack > gpGlobals->GetCurTime() )
 		return;
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
@@ -2295,8 +2301,8 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 	if ( ( m_bActive ) && ( pOwner->m_afButtonPressed & IN_ATTACK2 ) )
 	{
 		// Drop the held object
-		m_flNextPrimaryAttack = gpGlobals->curtime + 0.5;
-		m_flNextSecondaryAttack = gpGlobals->curtime + 0.5;
+		m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5;
+		m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.5;
 
 		DetachObject();
 
@@ -2313,19 +2319,19 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 		case OBJECT_FOUND:
 			WeaponSound( SPECIAL1 );
 			SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-			m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
+			m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.5f;
 
 			// We found an object. Debounce the button
 			m_nAttack2Debounce |= pOwner->m_nButtons;
 			break;
 
 		case OBJECT_NOT_FOUND:
-			m_flNextSecondaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.1f;
 			CloseElements();
 			break;
 
 		case OBJECT_BEING_DETACHED:
-			m_flNextSecondaryAttack = gpGlobals->curtime + 0.01f;
+			m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.01f;
 			break;
 		}
 
@@ -2435,7 +2441,7 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 	}
 
 	// Don't drop again for a slight delay, in case they were pulling objects near them
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.4f;
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + 0.4f;
 
 	DoEffect( EFFECT_HOLDING );
 	OpenElements();
@@ -2459,7 +2465,7 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 		if( flDot < 0.5f )
 		{
 			// The turret is NOT upright, so have the client help us by raising up the player's view.
-			m_flTimeForceView = gpGlobals->curtime + 1.0f;
+			m_flTimeForceView = gpGlobals->GetCurTime() + 1.0f;
 		}
 	}
 #endif
@@ -2509,7 +2515,7 @@ CWeaponPhysCannon::FindObjectResult_t CWeaponPhysCannon::FindObject( void )
 	bool	bPull = false;
 
 	// If we hit something, pick it up or pull it
-	if ( ( tr.fraction != 1.0f ) && ( tr.m_pEnt ) && ( tr.m_pEnt->IsWorld() == false ) )
+	if ( ( tr.fraction != 1.0f ) && ( tr.m_pEnt ) && ( tr.m_pEnt->NetworkProp()->entindex()!=0) )
 	{
 		// Attempt to attach if within range
 		if ( tr.fraction <= 0.25f )
@@ -2948,10 +2954,10 @@ void CWeaponPhysCannon::ItemPreFrame()
 		UpdateObject();
 	}
 
-	if( gpGlobals->curtime >= m_flTimeNextObjectPurge )
+	if( gpGlobals->GetCurTime() >= m_flTimeNextObjectPurge )
 	{
 		PurgeThrownObjects();
-		m_flTimeNextObjectPurge = gpGlobals->curtime + 0.5f;
+		m_flTimeNextObjectPurge = gpGlobals->GetCurTime() + 0.5f;
 	}
 }
 
@@ -2962,7 +2968,7 @@ void CWeaponPhysCannon::ItemPreFrame()
 void CWeaponPhysCannon::CheckForTarget( void )
 {
 	//See if we're suppressing this
-	if ( m_flCheckSuppressTime > gpGlobals->curtime )
+	if ( m_flCheckSuppressTime > gpGlobals->GetCurTime() )
 		return;
 
 	// holstered
@@ -2997,10 +3003,10 @@ void CWeaponPhysCannon::CheckForTarget( void )
 	}
 
 	// Close the elements after a delay to prevent overact state switching
-	if ( ( m_flElementDebounce < gpGlobals->curtime ) && ( m_nChangeState == ELEMENT_STATE_NONE ) )
+	if ( ( m_flElementDebounce < gpGlobals->GetCurTime() ) && ( m_nChangeState == ELEMENT_STATE_NONE ) )
 	{
 		m_nChangeState = ELEMENT_STATE_CLOSED;
-		m_flElementDebounce = gpGlobals->curtime + 0.5f;
+		m_flElementDebounce = gpGlobals->GetCurTime() + 0.5f;
 	}
 }
 
@@ -3021,7 +3027,7 @@ void CWeaponPhysCannon::BeginUpgrade()
 
 	m_bIsCurrentlyUpgrading = true;
 
-	SetContextThink( &CWeaponPhysCannon::WaitForUpgradeThink, gpGlobals->curtime + 6.0f, s_pWaitForUpgradeContext );
+	SetContextThink( &CWeaponPhysCannon::WaitForUpgradeThink, gpGlobals->GetCurTime() + 6.0f, s_pWaitForUpgradeContext );
 
 	EmitSound( "WeaponDissolve.Charge" );
 
@@ -3043,7 +3049,7 @@ void CWeaponPhysCannon::WaitForUpgradeThink()
 	StudioFrameAdvance();
 	if ( !IsActivityFinished() )
 	{
-		SetContextThink( &CWeaponPhysCannon::WaitForUpgradeThink, gpGlobals->curtime + 0.1f, s_pWaitForUpgradeContext );
+		SetContextThink( &CWeaponPhysCannon::WaitForUpgradeThink, gpGlobals->GetCurTime() + 0.1f, s_pWaitForUpgradeContext );
 		return;
 	}
 
@@ -3073,7 +3079,7 @@ void CWeaponPhysCannon::WaitForUpgradeThink()
 	// Re-enable weapon pickup
 	AddSolidFlags( FSOLID_TRIGGER );
 
-	SetContextThink( NULL, gpGlobals->curtime, s_pWaitForUpgradeContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pWaitForUpgradeContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -3115,7 +3121,7 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 			}
 #endif
 
-			CCitadelEnergyCore *pCore = static_cast<CCitadelEnergyCore*>( CreateEntityByName( "env_citadel_energy_core" ) );
+			CCitadelEnergyCore *pCore = static_cast<CCitadelEnergyCore*>(engineServer->CreateEntityByName( "env_citadel_energy_core" ) );
 
 			if ( pCore == NULL )
 				return;
@@ -3147,7 +3153,7 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 				g_EventQueue.AddEvent( pCore, "Stop", variant, 1, pOwner, pOwner );
 
 				pCore->SetThink ( &CCitadelEnergyCore::SUB_Remove );
-				pCore->SetNextThink( gpGlobals->curtime + 10.0f );
+				pCore->SetNextThink( gpGlobals->GetCurTime() + 10.0f );
 
 				m_nSkin = 0;
 			}
@@ -3230,7 +3236,7 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 			{
 				// Turn on the sprite for awhile
 				m_hEndSprites[sprite]->TurnOn();
-				m_flEndSpritesOverride[sprite] = gpGlobals->curtime + lifetime;
+				m_flEndSpritesOverride[sprite] = gpGlobals->GetCurTime() + lifetime;
 				EmitSound( "Weapon_MegaPhysCannon.ChargeZap" );
 			}
 		}
@@ -3292,7 +3298,7 @@ void CWeaponPhysCannon::ItemPostFrame()
 	{
 		CheckForTarget();
 
-		if ( ( m_flElementDebounce < gpGlobals->curtime ) && ( m_nChangeState != ELEMENT_STATE_NONE ) )
+		if ( ( m_flElementDebounce < gpGlobals->GetCurTime() ) && ( m_nChangeState != ELEMENT_STATE_NONE ) )
 		{
 			if ( m_nChangeState == ELEMENT_STATE_OPEN )
 			{
@@ -3344,7 +3350,7 @@ void CWeaponPhysCannon::ItemPostFrame()
 		{
 			if ( !( pOwner->m_nButtons & IN_ATTACK ) )
 			{
-				m_flNextPrimaryAttack = gpGlobals->curtime;
+				m_flNextPrimaryAttack = gpGlobals->GetCurTime();
 			}
 		}
 	}
@@ -3391,7 +3397,7 @@ void CWeaponPhysCannon::LaunchObject( const Vector &vecDir, float flForce )
 		ApplyVelocityBasedForce( pObject, vecDir, tr.endpos, PHYSGUN_FORCE_LAUNCHED );
 
 		// Don't allow the gun to regrab a thrown object!!
-		m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->curtime + 0.5;
+		m_flNextSecondaryAttack = m_flNextPrimaryAttack = gpGlobals->GetCurTime() + 0.5;
 		
 		Vector	center = pObject->WorldSpaceCenter();
 
@@ -3408,8 +3414,8 @@ void CWeaponPhysCannon::LaunchObject( const Vector &vecDir, float flForce )
 
 	//Close the elements and suppress checking for a bit
 	m_nChangeState = ELEMENT_STATE_CLOSED;
-	m_flElementDebounce = gpGlobals->curtime + 0.1f;
-	m_flCheckSuppressTime = gpGlobals->curtime + 0.25f;
+	m_flElementDebounce = gpGlobals->GetCurTime() + 0.1f;
+	m_flCheckSuppressTime = gpGlobals->GetCurTime() + 0.25f;
 }
 
 
@@ -3577,11 +3583,11 @@ CSoundPatch *CWeaponPhysCannon::GetMotorSound( void )
 		
 		if ( IsMegaPhysCannon() )
 		{
-			m_sndMotor = (CSoundEnvelopeController::GetController()).SoundCreate( filter, entindex(), CHAN_STATIC, "Weapon_MegaPhysCannon.HoldSound", ATTN_NORM );
+			m_sndMotor = (CSoundEnvelopeController::GetController()).SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, "Weapon_MegaPhysCannon.HoldSound", ATTN_NORM );
 		}
 		else
 		{
-			m_sndMotor = (CSoundEnvelopeController::GetController()).SoundCreate( filter, entindex(), CHAN_STATIC, "Weapon_PhysCannon.HoldSound", ATTN_NORM );
+			m_sndMotor = (CSoundEnvelopeController::GetController()).SoundCreate( filter, this->NetworkProp()->entindex(), CHAN_STATIC, "Weapon_PhysCannon.HoldSound", ATTN_NORM );
 		}
 	}
 
@@ -4099,7 +4105,7 @@ void CWeaponPhysCannon::DoEffectLaunch( Vector *pos )
 	//End hit
 	//FIXME: Probably too big
 	CPVSFilter filter( endpos );
-	te->GaussExplosion( filter, 0.0f, endpos - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
+	g_pTESystem->GaussExplosion( filter, 0.0f, endpos - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
 	
 	if ( m_hBlastSprite != NULL )
 	{
@@ -4169,7 +4175,7 @@ void CWeaponPhysCannon::DoMegaEffectLaunch( Vector *pos )
 	//End hit
 	//FIXME: Probably too big
 	CPVSFilter filter( endpos );
-	te->GaussExplosion( filter, 0.0f, endpos - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
+	g_pTESystem->GaussExplosion( filter, 0.0f, endpos - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -4237,7 +4243,7 @@ void CWeaponPhysCannon::DoMegaEffectReady( void )
 	{
 		if ( m_hEndSprites[i] != NULL )
 		{
-			if ( m_flEndSpritesOverride[i] < gpGlobals->curtime )
+			if ( m_flEndSpritesOverride[i] < gpGlobals->GetCurTime() )
 			{
 				m_hEndSprites[i]->TurnOff();
 			}
@@ -4401,7 +4407,7 @@ void CWeaponPhysCannon::RecordThrownObject( CBaseEntity *pObject )
 {
 	thrown_objects_t thrown;
 	thrown.hEntity = pObject;
-	thrown.fTimeThrown = gpGlobals->curtime;
+	thrown.fTimeThrown = gpGlobals->GetCurTime();
 
 	// Get rid of stale and dead objects in the list.
 	PurgeThrownObjects();
@@ -4450,7 +4456,7 @@ void CWeaponPhysCannon::PurgeThrownObjects()
 			{
 				bRemove = true;
 			}
-			else if( gpGlobals->curtime > (m_ThrownEntities[i].fTimeThrown + PHYSCANNON_THROWN_LIST_TIMEOUT) )
+			else if( gpGlobals->GetCurTime() > (m_ThrownEntities[i].fTimeThrown + PHYSCANNON_THROWN_LIST_TIMEOUT) )
 			{
 				bRemove = true;
 			}

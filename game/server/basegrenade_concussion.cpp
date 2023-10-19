@@ -49,7 +49,7 @@ void CBaseGrenadeConcussion::FallThink(void)
 	}
 	CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * 0.5, GetAbsVelocity().Length( ), 0.2 );
 
-	SetNextThink( gpGlobals->curtime + random->RandomFloat(0.05, 0.1) );
+	SetNextThink( gpGlobals->GetCurTime() + random->RandomFloat(0.05, 0.1));
 
 	if (GetWaterLevel() != 0)
 	{
@@ -60,7 +60,7 @@ void CBaseGrenadeConcussion::FallThink(void)
 
 	CPVSFilter filter( GetAbsOrigin() );
 
-	te->Sprite( filter, 0.0,
+	g_pTESystem->Sprite( filter, 0.0,
 		&pos,
 		m_nTrailSprite,
 		random->RandomFloat(0.5, 0.8),
@@ -106,7 +106,7 @@ void CBaseGrenadeConcussion::Spawn( void )
 	
 	// make NPCs afaid of it while in the air
 	SetThink( &CBaseGrenadeConcussion::FallThink );
-	SetNextThink( gpGlobals->curtime );
+	SetNextThink( gpGlobals->GetCurTime() );
 	
 	// Tumble in air
 	QAngle vecAngVel( random->RandomFloat ( -100, -500 ), 0, 0 );

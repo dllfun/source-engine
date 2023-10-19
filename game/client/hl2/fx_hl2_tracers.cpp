@@ -423,7 +423,7 @@ void CreateMuzzleflashELight( const Vector &origin, int exponent, int nMinRadius
 
 			el->radius	= random->RandomInt( nMinRadius, nMaxRadius );
 			el->decay	= el->radius / 0.05f;
-			el->die		= gpGlobals->curtime + 0.1f;
+			el->die		= gpGlobals->GetCurTime() + 0.1f;
 		}
 	}
 }
@@ -680,7 +680,7 @@ void MuzzleFlash_Hunter( ClientEntityHandle_t hEntity, int attachmentIndex )
 
 	el->radius = random->RandomInt( 120, 200 );
 	el->decay = el->radius / 0.05f;
-	el->die = gpGlobals->curtime + 0.05f;
+	el->die = gpGlobals->GetCurTime() + 0.05f;
 }
 
 

@@ -25,8 +25,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_SERVERCLASS_ST( CBaseHLBludgeonWeapon, DT_BaseHLBludgeonWeapon )
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CBaseHLBludgeonWeapon, DT_BaseHLBludgeonWeapon )
+
 
 #define BLUDGEON_HULL_DIM		16
 
@@ -93,11 +93,11 @@ void CBaseHLBludgeonWeapon::ItemPostFrame( void )
 	if ( pOwner == NULL )
 		return;
 
-	if ( (pOwner->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->curtime) )
+	if ( (pOwner->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->GetCurTime()) )
 	{
 		PrimaryAttack();
 	} 
-	else if ( (pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime) )
+	else if ( (pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->GetCurTime()) )
 	{
 		SecondaryAttack();
 	}
@@ -376,8 +376,8 @@ void CBaseHLBludgeonWeapon::Swing( int bIsSecondary )
 	SendWeaponAnim( nHitActivity );
 
 	//Setup our next attack times
-	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();
-	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
+	m_flNextPrimaryAttack = gpGlobals->GetCurTime() + GetFireRate();
+	m_flNextSecondaryAttack = gpGlobals->GetCurTime() + SequenceDuration();
 
 	//Play swing sound
 	WeaponSound( SINGLE );

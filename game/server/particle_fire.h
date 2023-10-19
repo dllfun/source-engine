@@ -29,7 +29,7 @@ public:
 	CNetworkVector( m_vDirection );
 
 	BEGIN_INIT_SEND_TABLE(CParticleFire)
-	BEGIN_SEND_TABLE_NOBASE(CParticleFire, DT_ParticleFire)
+	BEGIN_SEND_TABLE(CParticleFire, DT_ParticleFire, DT_BaseParticleEntity)
 		SendPropVector(SENDINFO(m_vOrigin), 0, SPROP_COORD),
 		SendPropVector(SENDINFO(m_vDirection), 0, SPROP_NOSCALE)
 	END_SEND_TABLE(DT_ParticleFire)

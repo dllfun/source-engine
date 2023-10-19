@@ -61,6 +61,32 @@ protected:
 	bool			m_bLowered;			// Whether the viewmodel is raised or lowered
 	float			m_flRaiseTime;		// If lowered, the time we should raise the viewmodel
 	float			m_flHolsterTime;	// When the weapon was holstered
+
+public:
+#ifdef GAME_DLL
+	BEGIN_INIT_SEND_TABLE(CBaseHLCombatWeapon)
+	BEGIN_SEND_TABLE(CBaseHLCombatWeapon, DT_BaseHLCombatWeapon, DT_BaseCombatWeapon)
+#if !defined( CLIENT_DLL )
+		//	SendPropInt( SENDINFO( m_bReflectViewModelAnimations ), 1, SPROP_UNSIGNED ),
+#else
+		//	RecvPropInt( RECVINFO( m_bReflectViewModelAnimations ) ),
+#endif
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
+#endif // GAME_DLL
+
+#ifdef CLIENT_DLL
+	BEGIN_INIT_RECV_TABLE(CBaseHLCombatWeapon)
+	BEGIN_RECV_TABLE(CBaseHLCombatWeapon, DT_BaseHLCombatWeapon, DT_BaseCombatWeapon)
+#if !defined( CLIENT_DLL )
+		//	SendPropInt( SENDINFO( m_bReflectViewModelAnimations ), 1, SPROP_UNSIGNED ),
+#else
+		//	RecvPropInt( RECVINFO( m_bReflectViewModelAnimations ) ),
+#endif
+	END_RECV_TABLE()
+	END_INIT_RECV_TABLE()
+#endif // 
+
 };
 
 #endif // BASEHLCOMBATWEAPON_SHARED_H

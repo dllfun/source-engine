@@ -283,12 +283,12 @@ void CAntlionTemplateMaker::Activate( void )
 		if ( m_bDisabled == false && gpGlobals->eLoadType != MapLoad_LoadGame )
 		{
 			// Start our pool regeneration cycle
-			SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->curtime + m_flPoolRegenTime, s_pPoolThinkContext );
+			SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->GetCurTime() + m_flPoolRegenTime, s_pPoolThinkContext );
 
 			// Start our blocked effects cycle
 			if ( hl2_episodic.GetBool() == true && HasSpawnFlags( SF_ANTLIONMAKER_DO_BLOCKEDEFFECTS ) )
 			{
-				SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->curtime + 1.0f, s_pBlockedEffectsThinkContext );
+				SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->GetCurTime() + 1.0f, s_pBlockedEffectsThinkContext );
 			}
 		}
 	}
@@ -318,7 +318,7 @@ void CAntlionTemplateMaker::ActivateSpore( const char* sporename, Vector vOrigin
 		return;
 	}
 
-	CBaseEntity *pEnt = CreateEntityByName( "env_sporeexplosion" );
+	CBaseEntity *pEnt = engineServer->CreateEntityByName( "env_sporeexplosion" );
 
 	if ( pEnt )
 	{
@@ -549,7 +549,7 @@ void CAntlionTemplateMaker::CreateProxyTarget( const Vector &position )
 	// Create if we don't have one
 	if ( m_hProxyTarget == NULL )
 	{
-		m_hProxyTarget = CreateEntityByName( "info_target" );
+		m_hProxyTarget = engineServer->CreateEntityByName( "info_target" );
 	}
 
 	// Update if we do
@@ -605,12 +605,12 @@ void CAntlionTemplateMaker::Enable( void )
 
 	if ( m_iMaxPool )
 	{
-		SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->curtime + m_flPoolRegenTime, s_pPoolThinkContext );
+		SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->GetCurTime() + m_flPoolRegenTime, s_pPoolThinkContext );
 	}
 
 	if ( hl2_episodic.GetBool() == true && HasSpawnFlags( SF_ANTLIONMAKER_DO_BLOCKEDEFFECTS ) )
 	{
-		SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->curtime + 1.0f, s_pBlockedEffectsThinkContext );
+		SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->GetCurTime() + 1.0f, s_pBlockedEffectsThinkContext );
 	}
 
 	ActivateAllSpores();
@@ -620,8 +620,8 @@ void CAntlionTemplateMaker::Disable( void )
 {
 	BaseClass::Disable();
 
-	SetContextThink( NULL, gpGlobals->curtime, s_pPoolThinkContext );
-	SetContextThink( NULL, gpGlobals->curtime, s_pBlockedEffectsThinkContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pPoolThinkContext );
+	SetContextThink( NULL, gpGlobals->GetCurTime(), s_pBlockedEffectsThinkContext );
 
 	DisableAllSpores();
 }
@@ -701,7 +701,7 @@ void CAntlionTemplateMaker::MakeNPC( void )
 	// Create the entity via a template
 	CAI_BaseNPC	*pent = NULL;
 	CBaseEntity *pEntity = NULL;
-	MapEntity_ParseEntity( pEntity, STRING(m_iszTemplateData), NULL );
+	MapEntity_ParseEntity("", pEntity, STRING(m_iszTemplateData), NULL);
 	
 	if ( pEntity != NULL )
 	{
@@ -1036,7 +1036,7 @@ bool CAntlionTemplateMaker::FindHintSpawnPosition( const Vector &origin, float r
 			if ( ( GetIndexForThinkContext( s_pBlockedCheckContext ) == NO_THINK_CONTEXT ) ||
 				( GetNextThinkTick( s_pBlockedCheckContext ) == TICK_NEVER_THINK ) )
 			{
-				SetContextThink( &CAntlionTemplateMaker::BlockedCheckFunc, gpGlobals->curtime + 2.0f, s_pBlockedCheckContext );
+				SetContextThink( &CAntlionTemplateMaker::BlockedCheckFunc, gpGlobals->GetCurTime() + 2.0f, s_pBlockedCheckContext );
 			}
 
 			return false;
@@ -1075,7 +1075,7 @@ void CAntlionTemplateMaker::DoBlockedEffects( CBaseEntity *pBlocker, Vector vOri
 			pBlocker->EmitSound( "NPC_Antlion.TrappedMetal" );
 
 
-			m_flBlockedBumpTime = gpGlobals->curtime + random->RandomFloat( 1.75, 2.75 );
+			m_flBlockedBumpTime = gpGlobals->GetCurTime() + random->RandomFloat( 1.75, 2.75 );
 		}
 	}
 }
@@ -1170,7 +1170,7 @@ CBaseEntity *CAntlionTemplateMaker::AllHintsFromClusterBlocked( CAI_Hint *pNode,
 
 void CAntlionTemplateMaker::FindNodesCloseToPlayer( void )
 {
-	SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->curtime + random->RandomFloat( 0.75, 1.75 ), s_pBlockedEffectsThinkContext );
+	SetContextThink( &CAntlionTemplateMaker::FindNodesCloseToPlayer, gpGlobals->GetCurTime() + random->RandomFloat( 0.75, 1.75 ), s_pBlockedEffectsThinkContext );
 
 	CBasePlayer *pPlayer = AI_GetSinglePlayer();
 
@@ -1441,7 +1441,7 @@ void CAntlionTemplateMaker::InputSetMaxPool( inputdata_t &inputdata )
 	// Stop regenerating if we're supposed to stop using the pool
 	if ( !m_iMaxPool )
 	{
-		SetContextThink( NULL, gpGlobals->curtime, s_pPoolThinkContext );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), s_pPoolThinkContext );
 	}
 }
 
@@ -1464,11 +1464,11 @@ void CAntlionTemplateMaker::InputSetPoolRegenTime( inputdata_t &inputdata )
 
 	if ( m_flPoolRegenTime != 0.0f )
 	{
-		SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->curtime + m_flPoolRegenTime, s_pPoolThinkContext );
+		SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->GetCurTime() + m_flPoolRegenTime, s_pPoolThinkContext );
 	}
 	else
 	{
-		SetContextThink( NULL, gpGlobals->curtime, s_pPoolThinkContext );
+		SetContextThink( NULL, gpGlobals->GetCurTime(), s_pPoolThinkContext );
 	}
 }
 
@@ -1496,7 +1496,7 @@ void CAntlionTemplateMaker::PoolRegenThink( void )
 		}
 	}
 
-	SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->curtime + m_flPoolRegenTime, s_pPoolThinkContext );
+	SetContextThink( &CAntlionTemplateMaker::PoolRegenThink, gpGlobals->GetCurTime() + m_flPoolRegenTime, s_pPoolThinkContext );
 }
 
 //-----------------------------------------------------------------------------
@@ -1644,7 +1644,7 @@ int CAntlionTemplateMaker::DrawDebugTextOverlays( void )
 			EntityText( text_offset, tempstr, 0 );
 			text_offset++;
 
-			float flTimeRemaining = GetNextThink( s_pPoolThinkContext ) - gpGlobals->curtime;
+			float flTimeRemaining = GetNextThink( s_pPoolThinkContext ) - gpGlobals->GetCurTime();
 
 			if ( flTimeRemaining < 0.0f )
 			{

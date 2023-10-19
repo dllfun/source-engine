@@ -110,7 +110,7 @@ void CGrenadePathfollower::GrenadeTouch( CBaseEntity *pOther )
 //------------------------------------------------------------------------------
 void CGrenadePathfollower::Detonate(void)
 {
-	StopSound(entindex(), CHAN_BODY, STRING(m_sFlySound));
+	StopSound(this->NetworkProp()->entindex(), CHAN_BODY, STRING(m_sFlySound));
 
 	m_takedamage	= DAMAGE_NO;	
 
@@ -122,7 +122,7 @@ void CGrenadePathfollower::Detonate(void)
 
 	CPASFilter filter( GetAbsOrigin() );
 
-	te->Explosion( filter, 0.0,
+	g_pTESystem->Explosion( filter, 0.0,
 		&GetAbsOrigin(), 
 		g_sModelIndexFireball,
 		0.5, 
@@ -143,7 +143,7 @@ void CGrenadePathfollower::Detonate(void)
 
 	RadiusDamage ( CTakeDamageInfo( this, GetThrower(), m_flDamage, DMG_BLAST ), GetAbsOrigin(),  m_DmgRadius, CLASS_NONE, NULL );
 	CPASAttenuationFilter filter2( this, "GrenadePathfollower.StopSounds" );
-	EmitSound( filter2, entindex(), "GrenadePathfollower.StopSounds" );
+	EmitSound( filter2, this->NetworkProp()->entindex(), "GrenadePathfollower.StopSounds" );
 	UTIL_Remove( this );
 }
 
@@ -180,7 +180,7 @@ void CGrenadePathfollower::Launch( float flLaunchSpeed, string_t sPathCornerName
 	SetTouch( &CGrenadePathfollower::GrenadeTouch );
 	SetThink( &CGrenadePathfollower::AimThink );
 
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 
 	// Make the trail
 	m_hRocketTrail = RocketTrail::CreateRocketTrail();
@@ -210,7 +210,7 @@ void CGrenadePathfollower::Launch( float flLaunchSpeed, string_t sPathCornerName
 //-----------------------------------------------------------------------------
 void CGrenadePathfollower::PlayFlySound(void)
 {
-	if (gpGlobals->curtime > m_flNextFlySoundTime)
+	if (gpGlobals->GetCurTime() > m_flNextFlySoundTime)
 	{
 		CPASAttenuationFilter filter( this, 0.8 );
 
@@ -220,8 +220,8 @@ void CGrenadePathfollower::PlayFlySound(void)
 		ep.m_flVolume = 1.0f;
 		ep.m_SoundLevel = SNDLVL_NORM;
 
-		EmitSound( filter, entindex(), ep );
-		m_flNextFlySoundTime	= gpGlobals->curtime + 1.0;
+		EmitSound( filter, this->NetworkProp()->entindex(), ep );
+		m_flNextFlySoundTime	= gpGlobals->GetCurTime() + 1.0;
 	}
 }
 
@@ -261,7 +261,7 @@ void CGrenadePathfollower::AimThink( void )
 		Vector vecNewVelocity = GetAbsVelocity();
 		VectorNormalize(vecNewVelocity);
 
-		float flTimeToUse = gpGlobals->frametime;
+		float flTimeToUse = gpGlobals->GetFrameTime();
 		while (flTimeToUse > 0)
 		{
 			vecNewVelocity += vTargetDir;
@@ -274,7 +274,7 @@ void CGrenadePathfollower::AimThink( void )
 	QAngle angles;
 	VectorAngles( GetAbsVelocity(), angles );
 	SetLocalAngles( angles );
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->GetCurTime() + 0.1f );
 }
 
 //------------------------------------------------------------------------------
@@ -300,7 +300,7 @@ CGrenadePathfollower::CGrenadePathfollower(void)
 //------------------------------------------------------------------------------
 CGrenadePathfollower::~CGrenadePathfollower(void)
 {
-	StopSound(entindex(), CHAN_BODY, STRING(m_sFlySound));
+	StopSound(this->NetworkProp()->entindex(), CHAN_BODY, STRING(m_sFlySound));
 }
 
 ///------------------------------------------------------------------------------
@@ -310,14 +310,14 @@ CGrenadePathfollower::~CGrenadePathfollower(void)
 //------------------------------------------------------------------------------
 CGrenadePathfollower* CGrenadePathfollower::CreateGrenadePathfollower( string_t sModelName, string_t sFlySound, const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner )
 {
-	CGrenadePathfollower *pGrenade = (CGrenadePathfollower*)CreateEntityByName( "grenade_pathfollower" );
+	CGrenadePathfollower *pGrenade = (CGrenadePathfollower*)engineServer->CreateEntityByName( "grenade_pathfollower" );
 	if ( !pGrenade )
 	{
 		Warning( "NULL Ent in CGrenadePathfollower!\n" );
 		return NULL;
 	}
 
-	if ( pGrenade->edict() )
+	if ( pGrenade->NetworkProp()->HasEdict() )
 	{
 		pGrenade->m_sFlySound	= sFlySound;
 		pGrenade->SetOwnerEntity( Instance( pentOwner ) );

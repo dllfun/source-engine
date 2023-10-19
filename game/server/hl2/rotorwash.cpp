@@ -32,11 +32,17 @@ protected:
 
 	CNetworkVar( bool, m_bEmit );
 	CNetworkVar( float, m_flAltitude );
+
+public:
+	BEGIN_INIT_SEND_TABLE(CRotorWashEmitter)
+	BEGIN_SEND_TABLE(CRotorWashEmitter, DT_RotorWashEmitter, DT_BaseEntity)
+		SendPropFloat(SENDINFO(m_flAltitude), -1, SPROP_NOSCALE),
+	END_SEND_TABLE()
+	END_INIT_SEND_TABLE()
 };
 
-IMPLEMENT_SERVERCLASS_ST( CRotorWashEmitter, DT_RotorWashEmitter )
-	SendPropFloat(SENDINFO(m_flAltitude), -1, SPROP_NOSCALE ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS( CRotorWashEmitter, DT_RotorWashEmitter )
+
 
 LINK_ENTITY_TO_CLASS( env_rotorwash_emitter, CRotorWashEmitter );
 
@@ -87,7 +93,7 @@ int CRotorWashEmitter::UpdateTransmitState( void )
 //-----------------------------------------------------------------------------
 CBaseEntity *CreateRotorWashEmitter( const Vector &localOrigin, const QAngle &localAngles, CBaseEntity *pOwner, float flAltitude )
 {
-	CRotorWashEmitter *pEmitter = (CRotorWashEmitter *) CreateEntityByName( "env_rotorwash_emitter" );
+	CRotorWashEmitter *pEmitter = (CRotorWashEmitter *)engineServer->CreateEntityByName( "env_rotorwash_emitter" );
 
 	if ( pEmitter == NULL )
 		return NULL;

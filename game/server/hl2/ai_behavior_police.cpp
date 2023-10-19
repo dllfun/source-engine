@@ -41,7 +41,7 @@ CAI_PolicingBehavior::CAI_PolicingBehavior( void )
 //-----------------------------------------------------------------------------
 bool CAI_PolicingBehavior::TargetIsHostile( void )
 {
-	if ( ( m_flTargetHostileTime < gpGlobals->curtime ) && ( !m_bTargetIsHostile ) )
+	if ( ( m_flTargetHostileTime < gpGlobals->GetCurTime() ) && ( !m_bTargetIsHostile ) )
 		return false;
 
 	return true;
@@ -138,7 +138,7 @@ void CAI_PolicingBehavior::BuildScheduleTestBits( void )
 {
 	if ( IsCurSchedule( SCHED_IDLE_STAND ) || IsCurSchedule( SCHED_ALERT_STAND ) )
 	{
-		if ( m_flNextHarassTime < gpGlobals->curtime )
+		if ( m_flNextHarassTime < gpGlobals->GetCurTime() )
 		{
 			GetOuter()->SetCustomInterruptCondition( GetClassScheduleIdSpace()->ConditionLocalToGlobal( COND_POLICE_TARGET_TOO_CLOSE_HARASS ) );
 		}
@@ -194,7 +194,7 @@ void CAI_PolicingBehavior::GatherConditions( void )
 	}
 
 	// If we're supposed to stop chasing (aggression over), return
-	if ( m_bTargetIsHostile && m_flAggressiveTime < gpGlobals->curtime && IsCurSchedule(SCHED_CHASE_ENEMY) )
+	if ( m_bTargetIsHostile && m_flAggressiveTime < gpGlobals->GetCurTime() && IsCurSchedule(SCHED_CHASE_ENEMY) )
 	{
 		// Force me to re-evaluate my schedule
 		GetOuter()->ClearSchedule( "Stopped chasing, aggression over" );
@@ -292,7 +292,7 @@ CBaseEntity *CAI_PolicingBehavior::GetGoalTarget( void )
 //-----------------------------------------------------------------------------
 void CAI_PolicingBehavior::SetTargetHostileDuration( float time )
 {
-	m_flTargetHostileTime = gpGlobals->curtime + time;
+	m_flTargetHostileTime = gpGlobals->GetCurTime() + time;
 }
 
 //-----------------------------------------------------------------------------
@@ -365,7 +365,7 @@ void CAI_PolicingBehavior::StartTask( const Task_t *pTask )
 			AnnouncePolicing();
 
 			// Randomly say this again in the future
-			m_flNextHarassTime = gpGlobals->curtime + random->RandomInt( 4, 6 );
+			m_flNextHarassTime = gpGlobals->GetCurTime() + random->RandomInt( 4, 6 );
 
 			// Scatter rubber-neckers
 			CSoundEnt::InsertSound( SOUND_MOVE_AWAY, GetAbsOrigin(), 256.0f, 2.0f, GetOuter() );
@@ -474,7 +474,7 @@ int CAI_PolicingBehavior::SelectSuppressSchedule( void )
 {
 	CBaseEntity *pTarget = m_hPoliceGoal->GetTarget();
 
-	m_flAggressiveTime = gpGlobals->curtime + 4.0f;
+	m_flAggressiveTime = gpGlobals->GetCurTime() + 4.0f;
 
 	if ( m_bTargetIsHostile == false )
 	{
@@ -505,7 +505,7 @@ int CAI_PolicingBehavior::SelectSuppressSchedule( void )
 		}
 
 		//FIXME: This needs to be a more aggressive warning to the player
-		if ( m_flNextHarassTime < gpGlobals->curtime )
+		if ( m_flNextHarassTime < gpGlobals->GetCurTime() )
 		{
 			return SCHED_POLICE_WARN_TARGET;
 		}
@@ -526,7 +526,7 @@ int CAI_PolicingBehavior::SelectHarassSchedule( void )
 {
 	CBaseEntity *pTarget = m_hPoliceGoal->GetTarget();
 
-	m_flAggressiveTime = gpGlobals->curtime + 4.0f;
+	m_flAggressiveTime = gpGlobals->GetCurTime() + 4.0f;
 
 	// If we just started to police, make sure we're on our mark
 	if ( MaintainGoalPosition() )
@@ -536,7 +536,7 @@ int CAI_PolicingBehavior::SelectHarassSchedule( void )
 	GetOuter()->AddLookTarget( pTarget, 0.5f, 5.0f );
 
 	// Say something if it's been long enough
-	if ( m_flNextHarassTime < gpGlobals->curtime )
+	if ( m_flNextHarassTime < gpGlobals->GetCurTime() )
 	{
 		// Gesture the player away
 		GetOuter()->SetTarget( pTarget );
@@ -617,7 +617,7 @@ int CAI_PolicingBehavior::SelectSchedule( void )
 	}
 
 	// Attack if we're supposed to
-	if ( ( m_flAggressiveTime >= gpGlobals->curtime ) && HasCondition( COND_CAN_MELEE_ATTACK1 ) )
+	if ( ( m_flAggressiveTime >= gpGlobals->GetCurTime() ) && HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 	{
 		return SCHED_MELEE_ATTACK1;
 	}
@@ -641,7 +641,7 @@ int CAI_PolicingBehavior::SelectSchedule( void )
 		return newSchedule;
 
 	// If our enemy is set, fogeda'bout it!
-	if ( m_flAggressiveTime < gpGlobals->curtime )
+	if ( m_flAggressiveTime < gpGlobals->GetCurTime() )
 	{
 		// Return to your initial spot
 		if ( GetEnemy() )
