@@ -859,8 +859,8 @@ public:
 	virtual int UpdateTransmitState( void );
 	virtual void Spawn( void );
 
-	CNetworkVar( string_t, m_source );
-	CNetworkVar( string_t, m_destination );
+	CNetworkStringT( m_source );//string_t, 
+	CNetworkStringT( m_destination );//string_t, 
 
 	BEGIN_INIT_SEND_TABLE(CFootstepControl)
 	BEGIN_SEND_TABLE(CFootstepControl, DT_FootstepControl, DT_BaseEntity)

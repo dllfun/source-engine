@@ -1109,7 +1109,7 @@ private:
 	bool					m_bGamePaused;
 	float					m_fLastPlayerTalkTime;
 	
-	CNetworkVar( CBaseCombatWeaponHandle, m_hLastWeapon );
+	CNetworkHandle(CBaseCombatWeapon, m_hLastWeapon );//CNetworkVar( CBaseCombatWeaponHandle,
 
 //#if !defined( NO_ENTITY_PREDICTION )
 //	CUtlVector< CHandle< CBaseEntity > > m_SimulatedByThisPlayer;

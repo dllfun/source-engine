@@ -252,6 +252,10 @@ typedef struct color32_s
 	bool operator!=( const struct color32_s &other ) const;
 
 	byte r, g, b, a;
+
+	operator int() {
+		return *((int*)&r);
+	}
 } color32;
 
 inline bool color32::operator!=( const color32 &other ) const

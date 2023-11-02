@@ -124,7 +124,7 @@ private:
 	string_t			m_anglesOverrideString;
 
 	typedef CHandle<CBaseAnimating> CBaseAnimatingHandle;
-	CNetworkVar( CBaseAnimatingHandle, m_hUnragdoll );
+	CNetworkHandle(CBaseAnimating, m_hUnragdoll );//CNetworkVar( CBaseAnimatingHandle
 
 
 	unsigned int		m_lastUpdateTickCount;

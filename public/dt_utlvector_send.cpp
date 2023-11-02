@@ -162,7 +162,7 @@ SendPropUtlVector::SendPropUtlVector(
 	// It has to go in a datatable, otherwise if this array holds datatable properties, it will be received last.
 	SendProp *pLengthProp = new SendProp;
 	Q_snprintf(buf, sizeof(buf), "lengthprop%d", nMaxElements);
-	*pLengthProp = SendPropInt(buf, 0, 0, NumBitsForCount( nMaxElements ), SPROP_UNSIGNED, SendProxy_UtlVectorLength );
+	*pLengthProp = SendPropInt((int*)0, buf, 0, 0, NumBitsForCount( nMaxElements ), SPROP_UNSIGNED, SendProxy_UtlVectorLength );
 	CSendPropExtra_UtlVector* pExtraData2 = new CSendPropExtra_UtlVector;
 	*pExtraData2 = pExtraData;
 	pLengthProp->SetExtraData(pExtraData2);

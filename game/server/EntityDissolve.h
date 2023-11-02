@@ -11,6 +11,9 @@
 #pragma once
 #endif
 
+#include "cbase.h"
+#include "sendproxy.h"
+
 class CEntityDissolve : public CBaseEntity 
 {
 public:
@@ -60,6 +63,7 @@ protected:
 	CNetworkVector( m_vDissolverOrigin );
 	CNetworkVar( int, m_nMagnitude );
 
+public:
 	BEGIN_INIT_SEND_TABLE(CEntityDissolve)
 	BEGIN_SEND_TABLE(CEntityDissolve, DT_EntityDissolve, DT_BaseEntity)
 		SendPropTime(SENDINFO(m_flStartTime)),

@@ -13,6 +13,8 @@
 
 #define TEAMNUM_NUM_BITS	6
 
+#include "cbase.h"
+#include "sendproxy.h"
 #include "entitylist.h"
 #include "entityoutput.h"
 #include "networkvar.h"
@@ -1746,7 +1748,7 @@ private:
 
 protected:
 	// Velocity of the thing we're standing on (world space)
-	CNetworkVarForDerived( Vector, m_vecBaseVelocity );
+	CNetworkVectorForDerived( m_vecBaseVelocity );
 private:
 
 	// Global velocity
@@ -1903,6 +1905,8 @@ public:
 	{
 		return s_bAbsQueriesValid;
 	}
+
+	CIntegerProperty m_networkInt;
 
 	BEGIN_INIT_SEND_TABLE(CBaseEntity)
 	INIT_REFERENCE_SEND_TABLE(CCollisionProperty)

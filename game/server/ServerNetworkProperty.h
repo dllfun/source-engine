@@ -19,7 +19,7 @@
 //
 // Lightweight base class for networkable data on the server.
 //
-class CServerNetworkProperty : public IServerNetworkable, public IEventRegisterCallback
+class CServerNetworkProperty : public IServerNetworkable, public IEventRegisterCallback, public CNonLeafProperty
 {
 public:
 	DECLARE_CLASS_NOBASE( CServerNetworkProperty );
@@ -110,6 +110,9 @@ private:
 	// Marks the networkable that it will should transmit
 	void SetTransmit( CCheckTransmitInfo *pInfo );
 
+	virtual bool IsLeaf() {
+		return false;
+	}
 private:
 	CBaseEntity *m_pOuter;
 	// CBaseTransmitProxy *m_pTransmitProxy;

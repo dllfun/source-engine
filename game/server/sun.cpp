@@ -44,7 +44,7 @@ public:
 	
 	CNetworkVar( int, m_nSize );		// Size of the main core image
 	CNetworkVar( int, m_nOverlaySize ); // Size for the glow overlay
-	CNetworkVar( color32, m_clrOverlay );
+	CNetworkColor32( m_clrOverlay );
 	CNetworkVar( bool, m_bOn );
 	CNetworkVar( int, m_nMaterial );
 	CNetworkVar( int, m_nOverlayMaterial );
@@ -52,8 +52,8 @@ public:
 
 	BEGIN_INIT_SEND_TABLE(CSun)
 	BEGIN_SEND_TABLE(CSun, DT_Sun, DT_BaseEntity)
-		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
-		SendPropInt(SENDINFO(m_clrOverlay), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
+		SendPropColor32(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),//, SendProxy_Color32ToInt
+		SendPropColor32(SENDINFO(m_clrOverlay), 32, SPROP_UNSIGNED),//, SendProxy_Color32ToInt
 		SendPropVector(SENDINFO(m_vDirection), 0, SPROP_NORMAL),
 		SendPropInt(SENDINFO(m_bOn), 1, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nSize), 10, SPROP_UNSIGNED),

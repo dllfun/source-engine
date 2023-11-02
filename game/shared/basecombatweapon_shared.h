@@ -530,7 +530,7 @@ public:
 
 private:
 	typedef CHandle< CBaseCombatCharacter > CBaseCombatCharacterHandle;
-	CNetworkVar( CBaseCombatCharacterHandle, m_hOwner );				// Player carrying this weapon
+	CNetworkHandle(CBaseCombatCharacter, m_hOwner );				// Player carrying this weapon CNetworkVar( CBaseCombatCharacterHandle
 
 protected:
 #if defined ( TF_CLIENT_DLL ) || defined ( TF_DLL )

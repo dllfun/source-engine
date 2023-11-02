@@ -44,7 +44,7 @@ public:
 // FGD properties.
 public:
 
-	CNetworkVar( color32, m_Color );
+	CNetworkColor32( m_Color );
 	CNetworkVar( int, m_SpawnRate );
 	
 	CNetworkVar( float, m_flSizeMin );

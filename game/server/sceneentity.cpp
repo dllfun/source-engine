@@ -634,7 +634,7 @@ public:
 		SendPropUtlVector(
 			(char*)SENDINFO_UTLVECTOR(m_hActorList),
 			MAX_ACTORS_IN_SCENE, // max elements
-			SendPropEHandle(NULL, 0)),
+			SendPropEHandle((CHandle< CBaseFlex >*)0,NULL, 0)),
 	END_SEND_TABLE(DT_SceneEntity)
 	END_INIT_SEND_TABLE()
 };

@@ -128,7 +128,7 @@ private:
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_lifeState );
 	CNetworkVar( bool, m_isRescued );						// true if the hostage has been rescued
 
-	CNetworkVar( EHANDLE, m_leader );						// the player we are following
+	CNetworkHandle(CBaseEntity, m_leader );						// the player we are following CNetworkVar( EHANDLE
 	void UpdateFollowing( float deltaT );					// do following behavior
 
 	int m_lastLeaderID;

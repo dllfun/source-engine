@@ -107,7 +107,7 @@ public:
 			MAX_PLAYERS,
 			0,
 			"player_array",
-			SendPropInt("player_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_PlayerList),
+			SendPropInt((int*)0, "player_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_PlayerList),
 			SendProxyArrayLength_PlayerArray
 			)
 	END_SEND_TABLE(DT_Team)

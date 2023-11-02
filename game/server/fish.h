@@ -65,7 +65,7 @@ private:
 	Vector m_forward;
 	Vector m_perp;
 
-	CNetworkVar( Vector, m_poolOrigin );				///< used to efficiently network our relative position
+	CNetworkVector( m_poolOrigin );				///< used to efficiently network our relative position
 	CNetworkVar( float, m_waterLevel );
 
 	float m_speed;

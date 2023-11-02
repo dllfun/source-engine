@@ -42,7 +42,7 @@ public:
 	
 	// Tesla parameters.
 	string_t m_SourceEntityName;	// Which entity the arcs come from.
-	CNetworkVar( string_t, m_SoundName );			// What sound to play when arcing.
+	CNetworkStringT( m_SoundName );			// What sound to play when arcing.//string_t, 
 
 	color32 m_Color;
 	int m_NumBeams[2];		// Number of beams per spark.
@@ -55,7 +55,7 @@ public:
 
 	bool m_bOn;
 
-	CNetworkVar( string_t, m_iszSpriteName );
+	CNetworkStringT( m_iszSpriteName );//string_t, 
 
 	BEGIN_INIT_SEND_TABLE(CTesla)
 	BEGIN_SEND_TABLE(CTesla, DT_Tesla, DT_BaseEntity)

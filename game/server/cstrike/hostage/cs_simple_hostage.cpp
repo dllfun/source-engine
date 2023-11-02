@@ -978,7 +978,7 @@ void CHostage::Follow( CCSPlayer *leader )
  */
 CCSPlayer *CHostage::GetLeader( void ) const
 {
-	return ToCSPlayer( m_leader.m_Value );
+	return ToCSPlayer( m_leader );//.m_Value
 }
 
 

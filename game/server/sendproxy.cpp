@@ -15,77 +15,29 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-void SendProxy_Color32ToInt( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	color32 *pIn = (color32*)pData;
-	*((unsigned int*)&pOut->m_Int) = ((unsigned int)pIn->r << 24) | ((unsigned int)pIn->g << 16) | ((unsigned int)pIn->b << 8) | ((unsigned int)pIn->a);
-}
 
-void SendProxy_EHandleToInt( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
-{
-	CBaseHandle *pHandle = (CBaseHandle*)pVarData;
 
-	if ( pHandle && pHandle->Get() )
-	{
-		int iSerialNum = pHandle->GetSerialNumber() & (1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS) - 1;
-		pOut->m_Int = pHandle->GetEntryIndex() | (iSerialNum << MAX_EDICT_BITS);
-	}
-	else
-	{
-		pOut->m_Int = INVALID_NETWORKED_EHANDLE_VALUE;
-	}
-}
 
-void SendProxy_IntAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
-{
-	int *pInt = (int *)pVarData;
 
-	pOut->m_Int = (*pInt) + 1;
-}
 
-void SendProxy_ShortAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
-{
-	short *pInt = (short *)pVarData;
 
-	pOut->m_Int = (*pInt) + 1;
-}
 
-SendPropBool::SendPropBool(
-	const char *pVarName,
-	int offset,
-	int sizeofVar )
-	: SendPropInt(pVarName, offset, sizeofVar, 1, SPROP_UNSIGNED)
-{
-	Assert( sizeofVar == sizeof( bool ) );
 
-}
+
 
 SendPropBool& SendPropBool::operator=(const SendPropBool& srcSendProp) {
 	SendProp::operator=(srcSendProp);
 	return *this;
 }
 
-SendPropEHandle::SendPropEHandle(
-	const char *pVarName,
-	int offset,
-	int sizeofVar,
-	int flags,
-	SendVarProxyFn proxyFn )
-	:SendPropInt(pVarName, offset, sizeofVar, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED | flags, proxyFn)
-{
 
-}
 
 SendPropEHandle& SendPropEHandle::operator=(const SendPropEHandle& srcSendProp) {
 	SendProp::operator=(srcSendProp);
 	return *this;
 }
 
-SendPropIntWithMinusOneFlag::SendPropIntWithMinusOneFlag( const char *pVarName, int offset, int sizeofVar, int nBits, SendVarProxyFn proxyFn )
-:SendPropInt(pVarName, offset, sizeofVar, nBits, SPROP_UNSIGNED, proxyFn)
-{
 
-}
 
 SendPropIntWithMinusOneFlag& SendPropIntWithMinusOneFlag::operator=(const SendPropIntWithMinusOneFlag& srcSendProp) {
 	SendProp::operator=(srcSendProp);
@@ -123,19 +75,19 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_OnlyToTeam );
 #define TIME_BITS 24
 
 // This table encodes edict data.
-static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
-{
-	float clock_base = floor( gpGlobals->GetCurTime() );
-	float t = *( float * )pVarData;
-	float dt = t - clock_base;
-	int addt = Floor2Int( 1000.0f * dt + 0.5f );
-	// TIME_BITS bits gives us TIME_BITS-1 bits plus sign bit
-	int maxoffset = 1 << ( TIME_BITS - 1);
-
-	addt = clamp( addt, -maxoffset, maxoffset );
-
-	pOut->m_Int = addt;
-}
+//static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
+//{
+//	float clock_base = floor( gpGlobals->GetCurTime() );
+//	float t = *( float * )pVarData;
+//	float dt = t - clock_base;
+//	int addt = Floor2Int( 1000.0f * dt + 0.5f );
+//	// TIME_BITS bits gives us TIME_BITS-1 bits plus sign bit
+//	int maxoffset = 1 << ( TIME_BITS - 1);
+//
+//	addt = clamp( addt, -maxoffset, maxoffset );
+//
+//	pOut->m_Int = addt;
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -145,16 +97,7 @@ static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const vo
 //			pId - 
 // Output : SendProp
 //-----------------------------------------------------------------------------
-SendPropTime::SendPropTime(
-	const char *pVarName,
-	int offset,
-	int sizeofVar )
-:SendPropFloat(pVarName, offset, sizeofVar, -1, SPROP_NOSCALE)
-{
-//	return SendPropInt( pVarName, offset, sizeofVar, TIME_BITS, 0, SendProxy_Time );
-	// FIXME:  Re-enable above when it doesn't cause lots of deltas
 
-}
 
 SendPropTime& SendPropTime::operator=(const SendPropTime& srcSendProp) {
 	SendProp::operator=(srcSendProp);
@@ -204,22 +147,21 @@ SendPropTime& SendPropTime::operator=(const SendPropTime& srcSendProp) {
 
 //#endif
 
-void SendProxy_StringT_To_String( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
-{
-	string_t &str = *((string_t*)pVarData);
-	pOut->m_pString = (char*)STRING( str );
-}
 
 
-SendPropStringT::SendPropStringT( const char *pVarName, int offset, int sizeofVar )
-:SendPropString(pVarName, offset, DT_MAX_STRING_BUFFERSIZE, 0, SendProxy_StringT_To_String)
-{
-	// Make sure it's the right type.
-	Assert( sizeofVar == sizeof( string_t ) );
 
-}
 
 SendPropStringT& SendPropStringT::operator=(const SendPropStringT& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropColor32& SendPropColor32::operator=(const SendPropColor32& srcSendProp) {
+	SendProp::operator=(srcSendProp);
+	return *this;
+}
+
+SendPropIntWithShortAddOne& SendPropIntWithShortAddOne::operator=(const SendPropIntWithShortAddOne& srcSendProp) {
 	SendProp::operator=(srcSendProp);
 	return *this;
 }

@@ -28,8 +28,8 @@ public:
 	void SetDensity( float density );
 
 private:
-	CNetworkVar( color32, m_Color1 );
-	CNetworkVar( color32, m_Color2 );
+	CNetworkColor32( m_Color1 );
+	CNetworkColor32( m_Color2 );
 	CNetworkString( m_MaterialName, 255 );
 	string_t m_String_tMaterialName;
 	CNetworkVar( float, m_ParticleDrawWidth );
@@ -41,8 +41,8 @@ private:
 
 	BEGIN_INIT_SEND_TABLE(CFuncSmokeVolume)
 	BEGIN_SEND_TABLE(CFuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
-		SendPropInt(SENDINFO(m_Color1), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
-		SendPropInt(SENDINFO(m_Color2), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt),
+		SendPropColor32(SENDINFO(m_Color1), 32, SPROP_UNSIGNED),//, SendProxy_Color32ToInt
+		SendPropColor32(SENDINFO(m_Color2), 32, SPROP_UNSIGNED),//, SendProxy_Color32ToInt
 		SendPropString(SENDINFO(m_MaterialName)),
 		SendPropFloat(SENDINFO(m_ParticleDrawWidth), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_ParticleSpacingDistance), 0, SPROP_NOSCALE),

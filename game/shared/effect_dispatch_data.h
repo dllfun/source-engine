@@ -173,7 +173,7 @@ public:
 		SendPropFloat(SENDINFO_NOCHECK(m_flMagnitude), 12, SPROP_ROUNDDOWN, 0.0f, 1023.0f),
 		SendPropFloat(SENDINFO_NOCHECK(m_flScale), 0, SPROP_NOSCALE),
 		SendPropInt(SENDINFO_NOCHECK(m_nAttachmentIndex), 5, SPROP_UNSIGNED),
-		SendPropIntWithMinusOneFlag(SENDINFO_NOCHECK(m_nSurfaceProp), 8, SendProxy_ShortAddOne),
+		SendPropIntWithShortAddOne(SENDINFO_NOCHECK(m_nSurfaceProp), 8),//, SendProxy_ShortAddOne
 		SendPropInt(SENDINFO_NOCHECK(m_iEffectName), MAX_EFFECT_DISPATCH_STRING_BITS, SPROP_UNSIGNED),
 
 		SendPropInt(SENDINFO_NOCHECK(m_nMaterial), MAX_MODEL_INDEX_BITS, SPROP_UNSIGNED),

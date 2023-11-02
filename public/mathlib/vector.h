@@ -188,7 +188,9 @@ public:
 
 	operator VectorByValue &()				{ return *((VectorByValue *)(this)); }
 	operator const VectorByValue &() const	{ return *((const VectorByValue *)(this)); }
-
+	inline float GetX() const { return x; }
+	inline float GetY() const { return y; }
+	inline float GetZ() const { return z; }
 #ifndef VECTOR_NO_SLOW_OPERATIONS
 	// copy constructors
 //	Vector(const Vector &vOther);
@@ -1822,7 +1824,9 @@ public:
 
 	// No assignment operators either...
 	QAngle& operator=( const QAngle& src );
-
+	inline float GetX() const { return x; }
+	inline float GetY() const { return y; }
+	inline float GetZ() const { return z; }
 #ifndef VECTOR_NO_SLOW_OPERATIONS
 	// copy constructors
 

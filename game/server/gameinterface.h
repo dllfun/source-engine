@@ -200,6 +200,9 @@ public:
 	virtual CBaseEntity* CreateNextEntity( const char *pClassname )
 	{
 		CBaseEntity *pRet = engineServer->CreateEntityByName( pClassname );
+		if (pRet==NULL) {
+			return pRet;
+		}
 		ServerClass* serverClass = pRet->GetServerClass();
 		if (serverClass == NULL) {
 			int aaa = 0;

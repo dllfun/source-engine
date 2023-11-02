@@ -32,12 +32,7 @@
 static CNonModifiedPointerProxy *s_pNonModifiedPointerProxyHead = NULL;
 
 
-void SendProxy_UInt8ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID);
-void SendProxy_UInt16ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID);
-void SendProxy_UInt32ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID);
-#ifdef SUPPORTS_INT64
-void SendProxy_UInt64ToInt64( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID);
-#endif
+
 const char *s_ElementNames[MAX_ARRAY_ELEMENTS] =
 {
 	"000", "001", "002", "003", "004", "005", "006", "007", "008", "009", 
@@ -382,41 +377,13 @@ public:
 	CDeltaBitsWriter m_DeltaBitsWriter;
 };
 
-// ---------------------------------------------------------------------- //
-// Proxies.
-// ---------------------------------------------------------------------- //
-void SendProxy_AngleToFloat( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	float angle;
 
-	angle = *((float*)pData);
-	pOut->m_Float = anglemod( angle );
 
-	Assert( IsFinite( pOut->m_Float ) );
-}
 
-void SendProxy_FloatToFloat( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_Float = *((float*)pData);
-	Assert( IsFinite( pOut->m_Float ) );
-}
 
-void SendProxy_QAngles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	QAngle *v = (QAngle*)pData;
-	pOut->m_Vector[0] = anglemod( v->x );
-	pOut->m_Vector[1] = anglemod( v->y );
-	pOut->m_Vector[2] = anglemod( v->z );
-}
 
-void SendProxy_VectorToVector( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	Vector& v = *(Vector*)pData;
-	Assert( v.IsValid() );
-	pOut->m_Vector[0] = v[0];
-	pOut->m_Vector[1] = v[1];
-	pOut->m_Vector[2] = v[2];
-}
+
+
 
 void SendProxy_VectorXYToVectorXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
 {
@@ -438,53 +405,9 @@ void SendProxy_QuaternionToQuaternion( const SendProp *pProp, const void *pStruc
 }
 #endif
 
-void SendProxy_Int8ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_Int = *((const char*)pData);
-}
 
-void SendProxy_Int16ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_Int = *((short*)pData);
-}
 
-void SendProxy_Int32ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_Int = *((int*)pData);
-}
 
-#ifdef SUPPORTS_INT64
-void SendProxy_Int64ToInt64( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_Int64 = *((int64*)pData);
-}
-#endif
-
-void SendProxy_UInt8ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_Int = *((const unsigned char*)pData);
-}
-
-void SendProxy_UInt16ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_Int = *((unsigned short*)pData);
-}
-
-void SendProxy_UInt32ToInt32( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	memcpy( &pOut->m_Int, pData, sizeof(uint32) );
-}
-#ifdef SUPPORTS_INT64
-void SendProxy_UInt64ToInt64( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	*((int64*)&pOut->m_Int64) = *((uint64*)pData);
-}
-#endif
-
-void SendProxy_StringToString( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	pOut->m_pString = (const char*)pData;
-}
 
 void* SendProxy_DataTableToDataTable( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
 {
@@ -566,101 +489,14 @@ float AssignRangeMultiplier( int nBits, double range )
 	return fHighLowMul;
 }
 
-SendPropFloat::SendPropFloat(
-	const char *pVarName,		
-	// Variable name.
-	int offset,			// Offset into container structure.
-	int sizeofVar,
-	int nBits,			// Number of bits to use when encoding.
-	int flags,
-	float fLowValue,		// For floating point, low and high values.
-	float fHighValue,		// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	SendVarProxyFn varProxy
-	)
-{
-//	SendProp ret;
 
-	if ( varProxy == SendProxy_FloatToFloat )
-	{
-		Assert( sizeofVar == 0 || sizeofVar == 4 );
-	}
-
-	if ( nBits <= 0 || nBits == 32 )
-	{
-		flags |= SPROP_NOSCALE;
-		fLowValue = 0.f;
-		fHighValue = 0.f;
-	}
-	else
-	{
-		if(fHighValue == HIGH_DEFAULT)
-			fHighValue = (1 << nBits);
-
-		if (flags & SPROP_ROUNDDOWN)
-			fHighValue = fHighValue - ((fHighValue - fLowValue) / (1 << nBits));
-		else if (flags & SPROP_ROUNDUP)
-			fLowValue = fLowValue + ((fHighValue - fLowValue) / (1 << nBits));
-	}
-
-	this->m_Type = DPT_Float;
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset( offset );
-	this->m_nBits = nBits;
-	this->SetFlags( flags );
-	this->m_fLowValue = fLowValue;
-	this->m_fHighValue = fHighValue;
-	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
-	this->SetProxyFn( varProxy );
-	if(this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL ) )
-		this->m_nBits = 0;
-
-//	return ret;
-}
 
 SendPropFloat& SendPropFloat::operator=(const SendPropFloat& srcSendProp) {
 	SendProp::operator=(srcSendProp);
 	return *this;
 }
 
-SendPropVector::SendPropVector(
-	const char *pVarName,
-	int offset,
-	int sizeofVar,
-	int nBits,					// Number of bits to use when encoding.
-	int flags,
-	float fLowValue,			// For floating point, low and high values.
-	float fHighValue,			// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	SendVarProxyFn varProxy
-	)
-{
-	//SendProp ret;
 
-	if(varProxy == SendProxy_VectorToVector)
-	{
-		Assert(sizeofVar == sizeof(Vector));
-	}
-
-	if ( nBits == 32 )
-		flags |= SPROP_NOSCALE;
-
-	this->m_Type = DPT_Vector;
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset( offset );
-	this->m_nBits = nBits;
-	this->SetFlags( flags );
-	this->m_fLowValue = fLowValue;
-	this->m_fHighValue = fHighValue;
-	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
-	this->SetProxyFn( varProxy );
-	if(this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL) )
-		this->m_nBits = 0;
-
-	//return ret;
-}
 
 SendPropVector& SendPropVector::operator=(const SendPropVector& srcSendProp) {
 	SendProp::operator=(srcSendProp);
@@ -750,193 +586,28 @@ SendProp SendPropQuaternion(
 }
 #endif
 
-SendPropAngle::SendPropAngle(
-	const char *pVarName,
-	int offset,
-	int sizeofVar,
-	int nBits,
-	int flags,
-	SendVarProxyFn varProxy
-	)
-{
-	//SendProp ret;
 
-	if(varProxy == SendProxy_AngleToFloat)
-	{
-		Assert(sizeofVar == 4);
-	}
-
-	if ( nBits == 32 )
-		flags |= SPROP_NOSCALE;
-
-	this->m_Type = DPT_Float;
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset( offset );
-	this->m_nBits = nBits;
-	this->SetFlags( flags );
-	this->m_fLowValue = 0.0f;
-	this->m_fHighValue = 360.0f;
-	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
-	this->SetProxyFn( varProxy );
-
-	//return ret;
-}
 
 SendPropAngle& SendPropAngle::operator=(const SendPropAngle& srcSendProp) {
 	SendProp::operator=(srcSendProp);
 	return *this;
 }
 
-SendPropQAngles::SendPropQAngles(
-	const char *pVarName,
-	int offset,
-	int sizeofVar,
-	int nBits,
-	int flags,
-	SendVarProxyFn varProxy
-	)
-{
-	//SendProp ret;
 
-	if(varProxy == SendProxy_AngleToFloat)
-	{
-		Assert(sizeofVar == 4);
-	}
-
-	if ( nBits == 32 )
-		flags |= SPROP_NOSCALE;
-
-	this->m_Type = DPT_Vector;
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset( offset );
-	this->m_nBits = nBits;
-	this->SetFlags( flags );
-	this->m_fLowValue = 0.0f;
-	this->m_fHighValue = 360.0f;
-	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
-
-	this->SetProxyFn( varProxy );
-
-	//return ret;
-}
 
 SendPropQAngles& SendPropQAngles::operator=(const SendPropQAngles& srcSendProp) {
 	SendProp::operator=(srcSendProp);
 	return *this;
 }
   
-SendPropInt::SendPropInt(
-	const char *pVarName,
-	int offset,
-	int sizeofVar,
-	int nBits,
-	int flags,
-	SendVarProxyFn varProxy
-	)
-{
-	//SendProp ret;
 
-	if ( !varProxy )
-	{
-		if ( sizeofVar == 1 )
-		{
-			varProxy = SendProxy_Int8ToInt32;
-		}
-		else if ( sizeofVar == 2 )
-		{
-			varProxy = SendProxy_Int16ToInt32;
-		}
-		else if ( sizeofVar == 4 )
-		{
-			varProxy = SendProxy_Int32ToInt32;
-		}
-#ifdef SUPPORTS_INT64
-		else if ( sizeofVar == 8 )
-		{
-			varProxy = SendProxy_Int64ToInt64;
-		}
-#endif
-		else
-		{
-			Assert(!"SendPropInt var has invalid size");
-			varProxy = SendProxy_Int8ToInt32;	// safest one...
-		}
-	}
-
-	// Figure out # of bits if the want us to.
-	if ( nBits <= 0 )
-	{
-		Assert( sizeofVar == 1 || sizeofVar == 2 || sizeofVar == 4 );
-		nBits = sizeofVar * 8;
-	}
-
-#ifdef SUPPORTS_INT64
-	this->m_Type = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
-#else
-	this->m_Type = DPT_Int;
-#endif
-	
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset( offset );
-	this->m_nBits = nBits;
-	this->SetFlags( flags );
-
-	// Use UInt proxies if they want unsigned data. This isn't necessary to encode
-	// the values correctly, but it lets us check the ranges of the data to make sure
-	// they're valid.
-	this->SetProxyFn( varProxy );
-	if(this->GetFlags() & SPROP_UNSIGNED )
-	{
-		if( varProxy == SendProxy_Int8ToInt32 )
-			this->SetProxyFn( SendProxy_UInt8ToInt32 );
-		
-		else if( varProxy == SendProxy_Int16ToInt32 )
-			this->SetProxyFn( SendProxy_UInt16ToInt32 );
-
-		else if( varProxy == SendProxy_Int32ToInt32 )
-			this->SetProxyFn( SendProxy_UInt32ToInt32 );
-			
-#ifdef SUPPORTS_INT64
-		else if( varProxy == SendProxy_Int64ToInt64 )
-			this->SetProxyFn( SendProxy_UInt64ToInt64 );
-#endif
-	}
-
-	//return ret;
-}
 
 SendPropInt& SendPropInt::operator=(const SendPropInt& srcSendProp) {
 	SendProp::operator=(srcSendProp);
 	return *this;
 }
 
-SendPropString::SendPropString(
-	const char *pVarName,
-	int offset,
-	int bufferLen,
-	int flags,
-	SendVarProxyFn varProxy)
-{
-	//SendProp ret;
 
-	Assert( bufferLen <= DT_MAX_STRING_BUFFERSIZE ); // You can only have strings with 8-bits worth of length.
-	
-	this->m_Type = DPT_String;
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset( offset );
-	this->SetFlags( flags );
-	this->SetProxyFn( varProxy );
-
-	//return ret;
-}
 
 SendPropString& SendPropString::operator=(const SendPropString& srcSendProp) {
 	SendProp::operator=(srcSendProp);

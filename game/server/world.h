@@ -65,7 +65,7 @@ private:
 	CNetworkVar( float, m_flMinOccluderArea );
 	CNetworkVar( float, m_flMinPropScreenSpaceWidth );
 	CNetworkVar( float, m_flMaxPropScreenSpaceWidth );
-	CNetworkVar( string_t, m_iszDetailSpriteMaterial );
+	CNetworkStringT( m_iszDetailSpriteMaterial );//string_t, 
 
 	// start flags
 	CNetworkVar( bool, m_bStartDark );

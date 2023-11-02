@@ -107,13 +107,13 @@ public:
 private:
 	string_t	m_iszPreCommands;
 	string_t	m_iszPostCommands;
-	CNetworkVar( string_t, m_iszCommentaryFile );
-	CNetworkVar( string_t, m_iszCommentaryFileNoHDR );
+	CNetworkStringT( m_iszCommentaryFile );//string_t, 
+	CNetworkStringT( m_iszCommentaryFileNoHDR );//string_t,
 	string_t	m_iszViewTarget;
 	EHANDLE		m_hViewTarget;
 	EHANDLE		m_hViewTargetAngles;		// Entity used to blend view angles to look at the target
 	string_t	m_iszViewPosition;
-	CNetworkVar( EHANDLE, m_hViewPosition );
+	CNetworkHandle(CBaseEntity, m_hViewPosition ); //CNetworkVar( EHANDLE, m_hViewPosition );
 	EHANDLE		m_hViewPositionMover;		// Entity used to blend the view to the viewposition entity
 	bool		m_bPreventMovement;
 	bool		m_bUnderCrosshair;
@@ -131,10 +131,11 @@ private:
 
 	CNetworkVar( bool, m_bActive );
 	CNetworkVar( float, m_flStartTime );
-	CNetworkVar( string_t, m_iszSpeakers );
+	CNetworkStringT( m_iszSpeakers );//string_t, 
 	CNetworkVar( int, m_iNodeNumber );
 	CNetworkVar( int, m_iNodeNumberMax );
 
+public:
 	BEGIN_INIT_SEND_TABLE(CPointCommentaryNode)
 	BEGIN_SEND_TABLE(CPointCommentaryNode, DT_PointCommentaryNode, DT_BaseAnimating)
 		SendPropBool(SENDINFO(m_bActive)),

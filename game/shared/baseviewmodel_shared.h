@@ -210,7 +210,7 @@ private:
 
 
 	typedef CHandle< CBaseCombatWeapon > CBaseCombatWeaponHandle;
-	CNetworkVar( CBaseCombatWeaponHandle, m_hWeapon );
+	CNetworkHandle(CBaseCombatWeapon, m_hWeapon );//CNetworkVar( CBaseCombatWeaponHandle
 
 	// Control panel
 	typedef CHandle<CVGuiScreen>	ScreenHandle_t;

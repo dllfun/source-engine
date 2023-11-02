@@ -612,7 +612,7 @@ public:
 
 
 	int				GetNumChildren() const;
-	SendTable*		GetChild(int i) const;
+	SendTable* GetChild(int i) const;
 
 
 	// Returns true if the specified prop is in this node or any of its children.
@@ -636,7 +636,7 @@ public:
 
 	bool					m_bFlatPropInited = false;
 	// Child datatables.
-	CUtlVector<SendTable*>*	m_Children = NULL;
+	CUtlVector<SendTable*>* m_Children = NULL;
 
 	// The datatable property that leads us to this CSendNode.
 	// This indexes the CSendTablePrecalc or CRecvDecoder's m_DatatableProps list.
@@ -699,14 +699,14 @@ public:
 
 	// These are what CSendNodes reference.
 	// These are actual data properties (ints, floats, etc).
-	CUtlVector<const SendProp*>*	m_FlatProps = NULL;
+	CUtlVector<const SendProp*>* m_FlatProps = NULL;
 
 	// Each datatable in a SendTable's tree gets a proxy index, and its properties reference that.
 	CUtlVector<unsigned char>* m_FlatPropProxyIndices = NULL;
 
 	// CSendNode::m_iDatatableProp indexes this.
 	// These are the datatable properties (SendPropDataTable).
-	CUtlVector<const SendProp*>*	m_FlatDatatableProps = NULL;
+	CUtlVector<const SendProp*>* m_FlatDatatableProps = NULL;
 
 	// This is the property hierarchy, with the nodes indexing m_Props.
 	//SendTable*				m_Root;
@@ -1025,54 +1025,166 @@ SendTableManager* GetSendTableManager();
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the
 // legit offsetof from the C headers, so we'll use the old impl here to avoid exposing temptation to others
 #define _hacky_dtsend_offsetof(s,m)	((size_t)&(((s *)0)->m))
+#define _hacky_dtsend_typeof(s,m)	&(((s *)0)->m)
 
 // These can simplify creating the variables.
 // Note: currentSendDTClass::MakeANetworkVar_##varName equates to currentSendDTClass. It's
 // there as a check to make sure all networked variables use the CNetworkXXXX macros in network_var.h.
-#define SENDINFO(varName)					#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
-#define SENDINFO_ARRAY(varName)				#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0])
+#define TYPEINFO(varName)					_hacky_dtsend_typeof(currentSendDTClass, varName)
+#define SENDINFO(varName)					_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
+#define SENDINFO_ARRAY(varName)				_hacky_dtsend_typeof(currentSendDTClass, varName[0]), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_INTERNALARRAY(varName)		sizeof(((currentSendDTClass*)0)->varName)/sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName[0]), #varName
 #define SENDINFO_ARRAY3(varName)			#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName)/sizeof(((currentSendDTClass*)0)->varName[0])
-#define SENDINFO_ARRAYELEM(varName, i)		#varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName[i]), sizeof(((currentSendDTClass*)0)->varName[0])
+#define SENDINFO_ARRAYELEM(varName, i)		_hacky_dtsend_typeof(currentSendDTClass, varName[i]), #varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName[i]), sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_NETWORKARRAYELEM(varName, i)#varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
 
 // NOTE: Be VERY careful to specify any other vector elems for the same vector IN ORDER and 
 // right after each other, otherwise it might miss the Y or Z component in SP.
 //
 // Note: this macro specifies a negative offset so the engine can detect it and setup m_pNext
-#define SENDINFO_VECTORELEM(varName, i)		#varName "[" #i "]", -(int)_hacky_dtsend_offsetof(currentSendDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
+#define SENDINFO_VECTORELEM(varName, i)		_hacky_dtsend_typeof(currentSendDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), #varName "[" #i "]", -(int)_hacky_dtsend_offsetof(currentSendDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
 
-#define SENDINFO_STRUCTELEM(varName)		#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName.m_Value)
-#define SENDINFO_STRUCTARRAYELEM(varName, i)#varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
+#define SENDINFO_STRUCTELEM(varName)		_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName.m_Value)
+#define SENDINFO_STRUCTARRAYELEM(varName, i)_hacky_dtsend_typeof(currentSendDTClass, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
 
 // Use this when you're not using a CNetworkVar to represent the data you're sending.
-#define SENDINFO_NOCHECK(varName)						#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
+#define SENDINFO_NOCHECK(varName)						_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
 #define SENDINFO_STRING_NOCHECK(varName)				#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName)
 #define SENDINFO_DT(varName)							#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName)
 #define SENDINFO_DT_NAME(varName, remoteVarName)		#remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName)
-#define SENDINFO_NAME(varName,remoteVarName)			#remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
+#define SENDINFO_NAME(varName,remoteVarName)			_hacky_dtsend_typeof(currentSendDTClass, varName), #remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
 
 // ------------------------------------------------------------------------ //
 // Built-in proxy types.
 // See the definition of SendVarProxyFn for information about these.
 // ------------------------------------------------------------------------ //
+template<typename T = QAngle>
 void SendProxy_QAngles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T>
+void SendProxy_QAngles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	T* v = (T*)pData;//QAngle
+	pOut->m_Vector[0] = anglemod(v->GetX());
+	pOut->m_Vector[1] = anglemod(v->GetY());
+	pOut->m_Vector[2] = anglemod(v->GetZ());
+}
+template<typename T = float>
 void SendProxy_AngleToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+// ---------------------------------------------------------------------- //
+// Proxies.
+// ---------------------------------------------------------------------- //
+template<typename T>
+void SendProxy_AngleToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	float angle;
+
+	angle = *((T*)pData);//float
+	pOut->m_Float = anglemod(angle);
+
+	Assert(IsFinite(pOut->m_Float));
+}
+template<typename T = float>
 void SendProxy_FloatToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T>
+void SendProxy_FloatToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_Float = *((T*)pData);//float
+	Assert(IsFinite(pOut->m_Float));
+}
+template<typename T = Vector>
 void SendProxy_VectorToVector(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T>
+void SendProxy_VectorToVector(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	T& v = *((T*)pData);//Vector
+	Assert(v.IsValid());
+	pOut->m_Vector[0] = v[0];
+	pOut->m_Vector[1] = v[1];
+	pOut->m_Vector[2] = v[2];
+}
 void SendProxy_VectorXYToVectorXY(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
 void SendProxy_QuaternionToQuaternion(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 #endif
-
+template<typename T = const char>
 void SendProxy_Int8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T = short>
 void SendProxy_Int16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T = int>
 void SendProxy_Int32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 #ifdef SUPPORTS_INT64
+template<typename T = int64>
 void SendProxy_Int64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 #endif
-void SendProxy_StringToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T = const unsigned char>
+void SendProxy_UInt8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T = unsigned short>
+void SendProxy_UInt16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T = uint32>
+void SendProxy_UInt32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+#ifdef SUPPORTS_INT64
+template<typename T = uint64>
+void SendProxy_UInt64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+#endif
 
+template<typename T>
+void SendProxy_Int8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_Int = *((T*)pData);//const char
+}
+
+template<typename T>
+void SendProxy_Int16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_Int = *((T*)pData);//short
+}
+
+template<typename T>
+void SendProxy_Int32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_Int = *((T*)pData);//int
+}
+
+#ifdef SUPPORTS_INT64
+template<typename T>
+void SendProxy_Int64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_Int64 = *((T*)pData);//int64
+}
+#endif
+
+template<typename T>
+void SendProxy_UInt8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_Int = *((T*)pData);//const unsigned char
+}
+
+template<typename T>
+void SendProxy_UInt16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_Int = *((T*)pData);//unsigned short
+}
+
+template<typename T>
+void SendProxy_UInt32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	//memcpy( &pOut->m_Int, pData, sizeof(uint32) );
+	pOut->m_Int = *((T*)pData);//uint32
+}
+#ifdef SUPPORTS_INT64
+template<typename T>
+void SendProxy_UInt64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	*((int64*)&pOut->m_Int64) = *((T*)pData);//uint64
+}
+#endif
+template<typename T = const char>
+void SendProxy_StringToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T>
+void SendProxy_StringToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	pOut->m_pString = *((T*)pData);//const char
+}
 // pData is the address of a data table.
 void* SendProxy_DataTableToDataTable(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID);
 
@@ -1089,7 +1201,10 @@ void* SendProxy_SendLocalDataTable(const SendProp* pProp, const void* pStruct, c
 class SendPropFloat : public SendProp {
 public:
 	SendPropFloat() {}
+
+	template<typename T>
 	SendPropFloat(
+		T* pType,
 		const char* pVarName,		// Variable name.
 		int offset,					// Offset into container structure.
 		int sizeofVar = SIZEOF_IGNORE,
@@ -1097,7 +1212,7 @@ public:
 		int flags = 0,
 		float fLowValue = 0.0f,			// For floating point, low and high values.
 		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-		SendVarProxyFn varProxy = SendProxy_FloatToFloat
+		SendVarProxyFn varProxy = SendProxy_FloatToFloat<T>
 	);
 	virtual ~SendPropFloat() {}
 	SendPropFloat& operator=(const SendPropFloat& srcSendProp);
@@ -1108,10 +1223,70 @@ public:
 	}
 };
 
+float AssignRangeMultiplier(int nBits, double range);
+
+template<typename T>
+SendPropFloat::SendPropFloat(
+	T* pType,
+	const char* pVarName,
+	// Variable name.
+	int offset,			// Offset into container structure.
+	int sizeofVar,
+	int nBits,			// Number of bits to use when encoding.
+	int flags,
+	float fLowValue,		// For floating point, low and high values.
+	float fHighValue,		// High value. If HIGH_DEFAULT, it's (1<<nBits).
+	SendVarProxyFn varProxy
+)
+{
+	//	SendProp ret;
+
+	if (varProxy == SendProxy_FloatToFloat<T>)
+	{
+		Assert(sizeofVar == 0 || sizeofVar == 4);
+	}
+
+	if (nBits <= 0 || nBits == 32)
+	{
+		flags |= SPROP_NOSCALE;
+		fLowValue = 0.f;
+		fHighValue = 0.f;
+	}
+	else
+	{
+		if (fHighValue == HIGH_DEFAULT)
+			fHighValue = (1 << nBits);
+
+		if (flags & SPROP_ROUNDDOWN)
+			fHighValue = fHighValue - ((fHighValue - fLowValue) / (1 << nBits));
+		else if (flags & SPROP_ROUNDUP)
+			fLowValue = fLowValue + ((fHighValue - fLowValue) / (1 << nBits));
+	}
+
+	this->m_Type = DPT_Float;
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_nBits = nBits;
+	this->SetFlags(flags);
+	this->m_fLowValue = fLowValue;
+	this->m_fHighValue = fHighValue;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue);
+	this->SetProxyFn(varProxy);
+	if (this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL))
+		this->m_nBits = 0;
+
+	//	return ret;
+}
+
 class SendPropVector : public SendProp {
 public:
 	SendPropVector() {}
+
+	template<typename T>
 	SendPropVector(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,
@@ -1119,7 +1294,7 @@ public:
 		int flags = SPROP_NOSCALE,
 		float fLowValue = 0.0f,			// For floating point, low and high values.
 		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-		SendVarProxyFn varProxy = SendProxy_VectorToVector
+		SendVarProxyFn varProxy = SendProxy_VectorToVector<T>
 	);
 	virtual ~SendPropVector() {}
 	SendPropVector& operator=(const SendPropVector& srcSendProp);
@@ -1129,6 +1304,46 @@ public:
 		return pSendProp;
 	}
 };
+
+template<typename T>
+SendPropVector::SendPropVector(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,					// Number of bits to use when encoding.
+	int flags,
+	float fLowValue,			// For floating point, low and high values.
+	float fHighValue,			// High value. If HIGH_DEFAULT, it's (1<<nBits).
+	SendVarProxyFn varProxy
+)
+{
+	//SendProp ret;
+
+	if (varProxy == SendProxy_VectorToVector<T>)
+	{
+		Assert(sizeofVar == sizeof(Vector));
+	}
+
+	if (nBits == 32)
+		flags |= SPROP_NOSCALE;
+
+	this->m_Type = DPT_Vector;
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_nBits = nBits;
+	this->SetFlags(flags);
+	this->m_fLowValue = fLowValue;
+	this->m_fHighValue = fHighValue;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue);
+	this->SetProxyFn(varProxy);
+	if (this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL))
+		this->m_nBits = 0;
+
+	//return ret;
+}
 
 class  SendPropVectorXY : public SendProp {
 public:
@@ -1168,13 +1383,15 @@ SendProp SendPropQuaternion(
 class SendPropAngle : public SendProp {
 public:
 	SendPropAngle() {}
+	template<typename T>
 	SendPropAngle(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,
 		int nBits = 32,
 		int flags = 0,
-		SendVarProxyFn varProxy = SendProxy_AngleToFloat
+		SendVarProxyFn varProxy = SendProxy_AngleToFloat<T>
 	);
 	virtual ~SendPropAngle() {}
 	SendPropAngle& operator=(const SendPropAngle& srcSendProp);
@@ -1185,16 +1402,54 @@ public:
 	}
 };
 
+template<typename T>
+SendPropAngle::SendPropAngle(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,
+	int flags,
+	SendVarProxyFn varProxy
+)
+{
+	//SendProp ret;
+
+	if (varProxy == SendProxy_AngleToFloat<T>)
+	{
+		Assert(sizeofVar == 4);
+	}
+
+	if (nBits == 32)
+		flags |= SPROP_NOSCALE;
+
+	this->m_Type = DPT_Float;
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_nBits = nBits;
+	this->SetFlags(flags);
+	this->m_fLowValue = 0.0f;
+	this->m_fHighValue = 360.0f;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue);
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
+
 class SendPropQAngles : public SendProp {
 public:
 	SendPropQAngles() {}
+	template<typename T>
 	SendPropQAngles(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,
 		int nBits = 32,
 		int flags = 0,
-		SendVarProxyFn varProxy = SendProxy_QAngles
+		SendVarProxyFn varProxy = SendProxy_QAngles<T>
 	);
 	virtual ~SendPropQAngles() {}
 	SendPropQAngles& operator=(const SendPropQAngles& srcSendProp);
@@ -1205,10 +1460,50 @@ public:
 	}
 };
 
+template<typename T>
+SendPropQAngles::SendPropQAngles(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,
+	int flags,
+	SendVarProxyFn varProxy
+)
+{
+	//SendProp ret;
+
+	if (varProxy == SendProxy_AngleToFloat<float>)
+	{
+		Assert(sizeofVar == 4);
+	}
+
+	if (nBits == 32)
+		flags |= SPROP_NOSCALE;
+
+	this->m_Type = DPT_Vector;
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_nBits = nBits;
+	this->SetFlags(flags);
+	this->m_fLowValue = 0.0f;
+	this->m_fHighValue = 360.0f;
+	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue);
+
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
+
 class SendPropInt : public SendProp {
 public:
 	SendPropInt() {}
+
+	template<typename T>
 	SendPropInt(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
@@ -1225,13 +1520,99 @@ public:
 	}
 };
 
+template<typename T>
+SendPropInt::SendPropInt(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,
+	int flags,
+	SendVarProxyFn varProxy
+)
+{
+	//SendProp ret;
+
+	if (!varProxy)
+	{
+		if (sizeofVar == 1)
+		{
+			varProxy = SendProxy_Int8ToInt32<T>;
+		}
+		else if (sizeofVar == 2)
+		{
+			varProxy = SendProxy_Int16ToInt32<T>;
+		}
+		else if (sizeofVar == 4)
+		{
+			varProxy = SendProxy_Int32ToInt32<T>;
+		}
+#ifdef SUPPORTS_INT64
+		else if (sizeofVar == 8)
+		{
+			varProxy = SendProxy_Int64ToInt64<T>;
+		}
+#endif
+		else
+		{
+			Assert(!"SendPropInt var has invalid size");
+			varProxy = SendProxy_Int8ToInt32<T>;	// safest one...
+		}
+	}
+
+	// Figure out # of bits if the want us to.
+	if (nBits <= 0)
+	{
+		Assert(sizeofVar == 1 || sizeofVar == 2 || sizeofVar == 4);
+		nBits = sizeofVar * 8;
+	}
+
+#ifdef SUPPORTS_INT64
+	this->m_Type = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
+#else
+	this->m_Type = DPT_Int;
+#endif
+
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_nBits = nBits;
+	this->SetFlags(flags);
+
+	// Use UInt proxies if they want unsigned data. This isn't necessary to encode
+	// the values correctly, but it lets us check the ranges of the data to make sure
+	// they're valid.
+	this->SetProxyFn(varProxy);
+	if (this->GetFlags() & SPROP_UNSIGNED)
+	{
+		if (varProxy == SendProxy_Int8ToInt32<T>)
+			this->SetProxyFn(SendProxy_UInt8ToInt32<T>);
+
+		else if (varProxy == SendProxy_Int16ToInt32<T>)
+			this->SetProxyFn(SendProxy_UInt16ToInt32<T>);
+
+		else if (varProxy == SendProxy_Int32ToInt32<T>)
+			this->SetProxyFn(SendProxy_UInt32ToInt32<T>);
+
+#ifdef SUPPORTS_INT64
+		else if (varProxy == SendProxy_Int64ToInt64<T>)
+			this->SetProxyFn(SendProxy_UInt64ToInt64<T>);
+#endif
+	}
+
+	//return ret;
+}
+
 class SendPropModelIndex : public SendPropInt {
 public:
 	SendPropModelIndex() {}
-	SendPropModelIndex(const char* pVarName, int offset, int sizeofVar = SIZEOF_IGNORE)
-		:SendPropInt(pVarName, offset, sizeofVar, SP_MODEL_INDEX_BITS, 0)
+
+	template<typename T>
+	SendPropModelIndex(T* pType, const char* pVarName, int offset, int sizeofVar = SIZEOF_IGNORE)
+		:SendPropInt(pType, pVarName, offset, sizeofVar, SP_MODEL_INDEX_BITS, 0)
 	{
-		
+
 	}
 	virtual ~SendPropModelIndex() {}
 	SendPropModelIndex& operator=(const SendPropModelIndex& srcSendProp) {
@@ -1248,12 +1629,15 @@ public:
 class SendPropString : public SendProp {
 public:
 	SendPropString() {}
+
+	template<typename T>
 	SendPropString(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int bufferLen,
 		int flags = 0,
-		SendVarProxyFn varProxy = SendProxy_StringToString);
+		SendVarProxyFn varProxy = SendProxy_StringToString<T>);
 	virtual ~SendPropString() {}
 	SendPropString& operator=(const SendPropString& srcSendProp);
 	operator SendProp* () {
@@ -1262,6 +1646,30 @@ public:
 		return pSendProp;
 	}
 };
+
+template<typename T>
+SendPropString::SendPropString(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int bufferLen,
+	int flags,
+	SendVarProxyFn varProxy)
+{
+	//SendProp ret;
+
+	Assert(bufferLen <= DT_MAX_STRING_BUFFERSIZE); // You can only have strings with 8-bits worth of length.
+
+	this->m_Type = DPT_String;
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->SetFlags(flags);
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
 
 class SendPropDataTable : public SendProp {
 public:
