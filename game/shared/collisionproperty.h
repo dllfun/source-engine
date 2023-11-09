@@ -26,6 +26,7 @@ class QAngle;
 class Vector;
 struct Ray_t;
 class IPhysicsObject;
+class CCollisionProperty;
 
 
 //-----------------------------------------------------------------------------
@@ -50,8 +51,92 @@ enum SurroundingBoundsType_t
 	SURROUNDING_TYPE_BIT_COUNT = 3
 };
 
-void SendProxy_Solid(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
-void SendProxy_SolidFlags(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+#ifdef GAME_DLL
+template<typename T>
+void SendProxy_Solid(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropSolidType : public SendPropInt {
+public:
+	SendPropSolidType() {}
+
+	template<typename T>
+	SendPropSolidType(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_Solid<T>
+	);
+	virtual ~SendPropSolidType() {}
+	SendPropSolidType& operator=(const SendPropSolidType& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropSolidType* pSendProp = new SendPropSolidType;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropSolidType::SendPropSolidType(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,	// Handled by SENDINFO macro.
+	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropInt(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
+
+template<typename T>
+void SendProxy_SolidFlags(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropSolidFlags : public SendPropInt {
+public:
+	SendPropSolidFlags() {}
+
+	template<typename T>
+	SendPropSolidFlags(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_SolidFlags<T>
+	);
+	virtual ~SendPropSolidFlags() {}
+	SendPropSolidFlags& operator=(const SendPropSolidFlags& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropSolidFlags* pSendProp = new SendPropSolidFlags;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropSolidFlags::SendPropSolidFlags(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,	// Handled by SENDINFO macro.
+	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropInt(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
+#endif 
+
 
 #ifdef CLIENT_DLL
 void RecvProxy_OBBMinsPreScaled(const CRecvProxyData* pData, void* pStruct, void* pOut);
@@ -296,8 +381,8 @@ private:
 		SendPropVector(SENDINFO(m_vecMaxsPreScaled), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vecMins), 0, SPROP_NOSCALE),
 		SendPropVector(SENDINFO(m_vecMaxs), 0, SPROP_NOSCALE),
-		SendPropInt(SENDINFO(m_nSolidType), 3, SPROP_UNSIGNED, SendProxy_Solid),
-		SendPropInt(SENDINFO(m_usSolidFlags), FSOLID_MAX_BITS, SPROP_UNSIGNED, SendProxy_SolidFlags),
+		SendPropSolidType(SENDINFO(m_nSolidType), 3, SPROP_UNSIGNED),//, SendProxy_Solid
+		SendPropSolidFlags(SENDINFO(m_usSolidFlags), FSOLID_MAX_BITS, SPROP_UNSIGNED),//, SendProxy_SolidFlags
 		SendPropInt(SENDINFO(m_nSurroundType), SURROUNDING_TYPE_BIT_COUNT, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_triggerBloat), 0, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_vecSpecifiedSurroundingMinsPreScaled), 0, SPROP_NOSCALE),
@@ -549,5 +634,18 @@ inline bool CCollisionProperty::DoesRotationInvalidateSurroundingBox( ) const
 	}
 }
 
+#ifdef GAME_DLL
+template<typename T>
+void SendProxy_Solid(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	pOut->m_Int = ((CCollisionProperty*)pStruct)->GetSolid();
+}
+
+template<typename T>
+void SendProxy_SolidFlags(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	pOut->m_Int = ((CCollisionProperty*)pStruct)->GetSolidFlags();
+}
+#endif // GAME_DLL
 
 #endif // COLLISIONPROPERTY_H

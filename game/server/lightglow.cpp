@@ -55,7 +55,7 @@ public:
 		SendPropInt(SENDINFO(m_nOuterMaxDist), LIGHTGLOW_OUTERMAXDIST_BITS, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-		SendPropQAngles(SENDINFO(m_angRotation), 13, 0, SendProxy_Angles),
+		SendPropAngles(SENDINFO(m_angRotation), 13, 0),//, SendProxy_Angles
 		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
 		SendPropFloat(SENDINFO(m_flGlowProxySize), 6, SPROP_ROUNDUP, 0.0f, 64.0f),
 		SendPropFloat(SENDINFO_NAME(m_flHDRColorScale, HDRColorScale), 0, SPROP_NOSCALE, 0.0f, 100.0f),

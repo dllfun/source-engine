@@ -233,8 +233,55 @@ private:
 	CBasePlayer *m_pParent; 
 };
 
-void SendProxy_CropFlagsToPlayerFlagBitsLength(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
+template<typename T= int>
+void SendProxy_CropFlagsToPlayerFlagBitsLength(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa);
+template<typename T>
+void SendProxy_CropFlagsToPlayerFlagBitsLength(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	int mask = (1 << PLAYER_FLAG_BITS) - 1;
+	int data = *(T*)pVarData;//int
 
+	pOut->m_Int = (data & mask);
+}
+class SendPropCropFlagsToPlayerFlagBitsLength : public SendPropInt {
+public:
+	SendPropCropFlagsToPlayerFlagBitsLength() {}
+
+	template<typename T>
+	SendPropCropFlagsToPlayerFlagBitsLength(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_CropFlagsToPlayerFlagBitsLength<T>
+	);
+	virtual ~SendPropCropFlagsToPlayerFlagBitsLength() {}
+	SendPropCropFlagsToPlayerFlagBitsLength& operator=(const SendPropCropFlagsToPlayerFlagBitsLength& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropCropFlagsToPlayerFlagBitsLength* pSendProp = new SendPropCropFlagsToPlayerFlagBitsLength;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropCropFlagsToPlayerFlagBitsLength::SendPropCropFlagsToPlayerFlagBitsLength(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,	// Handled by SENDINFO macro.
+	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropInt(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
 
 class CBasePlayer : public CBaseCombatCharacter
 {
@@ -1286,7 +1333,7 @@ public:
 		SendPropInt(SENDINFO(m_iBonusProgress), 15),
 		SendPropInt(SENDINFO(m_iBonusChallenge), 4),
 		SendPropFloat(SENDINFO(m_flMaxspeed), 12, SPROP_ROUNDDOWN, 0.0f, 2048.0f),  // CL
-		SendPropInt(SENDINFO(m_fFlags), PLAYER_FLAG_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN, SendProxy_CropFlagsToPlayerFlagBitsLength),
+		SendPropCropFlagsToPlayerFlagBitsLength(SENDINFO(m_fFlags), PLAYER_FLAG_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN),//, SendProxy_CropFlagsToPlayerFlagBitsLength
 		SendPropInt(SENDINFO(m_iObserverMode), 3, SPROP_UNSIGNED),
 		SendPropEHandle(SENDINFO(m_hObserverTarget)),
 		SendPropInt(SENDINFO(m_iFOV), 8, SPROP_UNSIGNED),

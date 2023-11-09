@@ -98,50 +98,9 @@ TestStaticInit testStaticInit;
 
 ConVar sv_netvisdist( "sv_netvisdist", "10000", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Test networking visibility distance" );
 
-// This table encodes edict data.
-void SendProxy_AnimTime( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
-{
-	CBaseEntity *pEntity = (CBaseEntity *)pStruct;
 
-#if defined( _DEBUG )
-	CBaseAnimating *pAnimating = pEntity->GetBaseAnimating();
-	Assert( pAnimating );
 
-	if ( pAnimating )
-	{
-		Assert( !pAnimating->IsUsingClientSideAnimation() );
-	}
-#endif
-	
-	int ticknumber = TIME_TO_TICKS( pEntity->m_flAnimTime );
-	// Tickbase is current tick rounded down to closes 100 ticks
-	int tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->NetworkProp()->entindex());
-	int addt = 0;
-	// If it's within the last tick interval through the current one, then we can encode it
-	if ( ticknumber >= ( tickbase - 100 ) )
-	{
-		addt = ( ticknumber - tickbase ) & 0xFF;
-	}
 
-	pOut->m_Int = addt;
-}
-
-// This table encodes edict data.
-void SendProxy_SimulationTime( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
-{
-	CBaseEntity *pEntity = (CBaseEntity *)pStruct;
-
-	int ticknumber = TIME_TO_TICKS( pEntity->m_flSimulationTime );
-	// tickbase is current tick rounded down to closest 100 ticks
-	int tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->NetworkProp()->entindex());
-	int addt = 0;
-	if ( ticknumber >= tickbase )
-	{
-		addt = ( ticknumber - tickbase ) & 0xff;
-	}
-
-	pOut->m_Int = addt;
-}
 
 void* SendProxy_ClientSideAnimation( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
 {
@@ -173,22 +132,7 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_ClientSideAnimation );
 //REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_SendPredictableId );
 //#endif
 
-void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	CBaseEntity *entity = (CBaseEntity*)pStruct;
-	Assert( entity );
 
-	const Vector *v;
-
-	if ( !entity->UseStepSimulationNetworkOrigin( &v ) )
-	{
-		v = &entity->GetLocalOrigin();
-	}
-
-	pOut->m_Vector[ 0 ] = v->x;
-	pOut->m_Vector[ 1 ] = v->y;
-	pOut->m_Vector[ 2 ] = v->z;
-}
 
 //--------------------------------------------------------------------------------------------------------
 // Used when breaking up origin, note we still have to deal with StepSimulation
@@ -228,22 +172,7 @@ void SendProxy_Origin( const SendProp *pProp, const void *pStruct, const void *p
 //}
 
 
-void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	CBaseEntity *entity = (CBaseEntity*)pStruct;
-	Assert( entity );
 
-	const QAngle *a;
-
-	if ( !entity->UseStepSimulationNetworkAngles( &a ) )
-	{
-		a = &entity->GetLocalAngles();
-	}
-
-	pOut->m_Vector[ 0 ] = anglemod( a->x );
-	pOut->m_Vector[ 1 ] = anglemod( a->y );
-	pOut->m_Vector[ 2 ] = anglemod( a->z );
-}
 
 // This table encodes the CBaseEntity data.
 IMPLEMENT_SERVERCLASS(CBaseEntity, DT_BaseEntity)

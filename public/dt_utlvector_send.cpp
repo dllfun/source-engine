@@ -22,7 +22,8 @@ void SendProxy_UtlVectorElement(
 	const void *pData, 
 	DVariant *pOut, 
 	int iElement, 
-	int objectID )
+	int objectID,
+	int aaa)
 {
 	CSendPropExtra_UtlVector *pExtra = (CSendPropExtra_UtlVector*)pProp->GetExtraData();
 	Assert( pExtra );
@@ -41,7 +42,7 @@ void SendProxy_UtlVectorElement(
 	else
 	{
 		// Call through to the proxy they passed in, making pStruct=the CUtlVector and forcing iElement to 0.
-		pExtra->m_ProxyFn( pProp, pData, (char*)pUtlVec->Base() + iElement*pExtra->m_ElementStride, pOut, 0, objectID );
+		pExtra->m_ProxyFn( pProp, pData, (char*)pUtlVec->Base() + iElement*pExtra->m_ElementStride, pOut, 0, objectID ,1);
 	}
 }
 
@@ -76,7 +77,7 @@ void SendProxy_UtlVectorLength(
 	const void *pData, 
 	DVariant *pOut, 
 	int iElement, 
-	int objectID )
+	int objectID ,int aaa)
 {
 	CSendPropExtra_UtlVector *pExtra = (CSendPropExtra_UtlVector*)pProp->GetExtraData();
 	

@@ -13,11 +13,53 @@
 
 #include "shareddefs.h"
 #include "utlvector.h"
+#include "baseentity.h"
 
 class CBasePlayer;
 class CTeamSpawnPoint;
 
-void SendProxy_PlayerList(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T>
+void SendProxy_PlayerList(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropPlayerList : public SendPropInt {
+public:
+	SendPropPlayerList() {}
+
+	template<typename T>
+	SendPropPlayerList(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_PlayerList<T>
+	);
+	virtual ~SendPropPlayerList() {}
+	SendPropPlayerList& operator=(const SendPropPlayerList& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropPlayerList* pSendProp = new SendPropPlayerList;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropPlayerList::SendPropPlayerList(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,	// Handled by SENDINFO macro.
+	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropInt((int*)0, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
+
 int SendProxyArrayLength_PlayerArray(const void* pStruct, int objectID);
 
 class CTeam : public CBaseEntity
@@ -107,7 +149,7 @@ public:
 			MAX_PLAYERS,
 			0,
 			"player_array",
-			SendPropInt((int*)0, "player_array_element", 0, 4, 10, SPROP_UNSIGNED, SendProxy_PlayerList),
+			SendPropPlayerList((CTeam*)0, "player_array_element", 0, 4, 10, SPROP_UNSIGNED),//, SendProxy_PlayerList
 			SendProxyArrayLength_PlayerArray
 			)
 	END_SEND_TABLE(DT_Team)
@@ -117,5 +159,20 @@ public:
 extern CUtlVector< CTeam * > g_Teams;
 extern CTeam *GetGlobalTeam( int iIndex );
 extern int GetNumberOfTeams( void );
+
+//-----------------------------------------------------------------------------
+// Purpose: SendProxy that converts the Team's player UtlVector to entindexes
+//-----------------------------------------------------------------------------
+template<typename T>
+void SendProxy_PlayerList(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	CTeam* pTeam = (T*)pData;//CTeam
+
+	// If this assertion fails, then SendProxyArrayLength_PlayerArray must have failed.
+	Assert(iElement < pTeam->m_aPlayers.Size());
+
+	CBasePlayer* pPlayer = pTeam->m_aPlayers[iElement];
+	pOut->m_Int = pPlayer->NetworkProp()->entindex();
+}
 
 #endif // TEAM_H

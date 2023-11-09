@@ -17,7 +17,67 @@
 
 class CFishPool;
 
-void SendProxy_FishAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+template<typename T>
+void SendProxy_FishAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+// keep angle in normalized range when sending it
+template<typename T>
+void SendProxy_FishAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	float value = *((T*)pData);//float
+
+	while (value > 360.0f)
+		value -= 360.0f;
+
+	while (value < 0.0f)
+		value += 360.0f;
+
+	pOut->m_Float = value;
+}
+
+class SendPropFishAngle : public SendPropFloat {
+public:
+	SendPropFishAngle() {}
+
+	template<typename T>
+	SendPropFishAngle(
+		T* pType,
+		const char* pVarName,		// Variable name.
+		int offset,					// Offset into container structure.
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,				// Number of bits to use when encoding.
+		int flags = 0,
+		float fLowValue = 0.0f,			// For floating point, low and high values.
+		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
+		SendVarProxyFn varProxy = SendProxy_FishAngle<T>
+	);
+	virtual ~SendPropFishAngle() {}
+	SendPropFishAngle& operator=(const SendPropFishAngle& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropFishAngle* pSendProp = new SendPropFishAngle;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropFishAngle::SendPropFishAngle(
+	T* pType,
+	const char* pVarName,
+	// Variable name.
+	int offset,			// Offset into container structure.
+	int sizeofVar,
+	int nBits,			// Number of bits to use when encoding.
+	int flags,
+	float fLowValue,		// For floating point, low and high values.
+	float fHighValue,		// High value. If HIGH_DEFAULT, it's (1<<nBits).
+	SendVarProxyFn varProxy
+):SendPropFloat(pType, pVarName, offset, sizeofVar, nBits, flags, fLowValue, fHighValue, varProxy)
+{
+	
+}
 //----------------------------------------------------------------------------------------------
 /**
  * Simple ambient fish
@@ -91,7 +151,7 @@ private:
 
 		SendPropVector(SENDINFO(m_poolOrigin), -1, SPROP_COORD, 0.0f, HIGH_DEFAULT),	// only sent once
 
-		SendPropFloat(SENDINFO(m_angle), 7, 0 /*SPROP_CHANGES_OFTEN*/, 0.0f, 360.0f, SendProxy_FishAngle),
+		SendPropFishAngle(SENDINFO(m_angle), 7, 0 /*SPROP_CHANGES_OFTEN*/, 0.0f, 360.0f),//, SendProxy_FishAngle
 
 		SendPropFloat(SENDINFO(m_x), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f),
 		SendPropFloat(SENDINFO(m_y), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f),

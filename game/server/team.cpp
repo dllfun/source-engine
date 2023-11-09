@@ -14,19 +14,7 @@
 
 CUtlVector< CTeam * > g_Teams;
 
-//-----------------------------------------------------------------------------
-// Purpose: SendProxy that converts the Team's player UtlVector to entindexes
-//-----------------------------------------------------------------------------
-void SendProxy_PlayerList( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	CTeam *pTeam = (CTeam*)pData;
 
-	// If this assertion fails, then SendProxyArrayLength_PlayerArray must have failed.
-	Assert( iElement < pTeam->m_aPlayers.Size() );
-
-	CBasePlayer *pPlayer = pTeam->m_aPlayers[iElement];
-	pOut->m_Int = pPlayer->NetworkProp()->entindex();
-}
 
 
 int SendProxyArrayLength_PlayerArray( const void *pStruct, int objectID )

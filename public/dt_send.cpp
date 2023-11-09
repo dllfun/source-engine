@@ -385,13 +385,13 @@ public:
 
 
 
-void SendProxy_VectorXYToVectorXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
-{
-	Vector& v = *(Vector*)pData;
-	Assert( v.IsValid() );
-	pOut->m_Vector[0] = v[0];
-	pOut->m_Vector[1] = v[1];
-}
+//void SendProxy_VectorXYToVectorXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
+//{
+//	Vector& v = *(Vector*)pData;
+//	Assert( v.IsValid() );
+//	pOut->m_Vector[0] = v[0];
+//	pOut->m_Vector[1] = v[1];
+//}
 
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
 void SendProxy_QuaternionToQuaternion( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
@@ -419,7 +419,7 @@ void* SendProxy_DataTablePtrToDataTable( const SendProp *pProp, const void *pStr
 	return *((void**)pData);
 }
 
-static void SendProxy_Empty( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
+static void SendProxy_Empty( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID,int aaa)
 {
 }
 
@@ -503,48 +503,48 @@ SendPropVector& SendPropVector::operator=(const SendPropVector& srcSendProp) {
 	return *this;
 }
 
-SendPropVectorXY::SendPropVectorXY(
-	const char *pVarName,
-	int offset,
-	int sizeofVar,
-	int nBits,					// Number of bits to use when encoding.
-	int flags,
-	float fLowValue,			// For floating point, low and high values.
-	float fHighValue,			// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	SendVarProxyFn varProxy
-	)
-{
-	//SendProp ret;
-
-	if(varProxy == SendProxy_VectorXYToVectorXY)
-	{
-		Assert(sizeofVar == sizeof(Vector));
-	}
-
-	if ( nBits == 32 )
-		flags |= SPROP_NOSCALE;
-
-	this->m_Type = DPT_VectorXY;
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset( offset );
-	this->m_nBits = nBits;
-	this->SetFlags( flags );
-	this->m_fLowValue = fLowValue;
-	this->m_fHighValue = fHighValue;
-	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
-	this->SetProxyFn( varProxy );
-	if(this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL) )
-		this->m_nBits = 0;
-
-	//return ret;
-}
-
-SendPropVectorXY& SendPropVectorXY::operator=(const SendPropVectorXY& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
+//SendPropVectorXY::SendPropVectorXY(
+//	const char *pVarName,
+//	int offset,
+//	int sizeofVar,
+//	int nBits,					// Number of bits to use when encoding.
+//	int flags,
+//	float fLowValue,			// For floating point, low and high values.
+//	float fHighValue,			// High value. If HIGH_DEFAULT, it's (1<<nBits).
+//	SendVarProxyFn varProxy
+//	)
+//{
+//	//SendProp ret;
+//
+//	if(varProxy == SendProxy_VectorXYToVectorXY)
+//	{
+//		Assert(sizeofVar == sizeof(Vector));
+//	}
+//
+//	if ( nBits == 32 )
+//		flags |= SPROP_NOSCALE;
+//
+//	this->m_Type = DPT_VectorXY;
+//	if (pVarName) {
+//		this->m_pVarName = COM_StringCopy(pVarName);
+//	}
+//	this->SetOffset( offset );
+//	this->m_nBits = nBits;
+//	this->SetFlags( flags );
+//	this->m_fLowValue = fLowValue;
+//	this->m_fHighValue = fHighValue;
+//	this->m_fHighLowMul = AssignRangeMultiplier(this->m_nBits, this->m_fHighValue - this->m_fLowValue );
+//	this->SetProxyFn( varProxy );
+//	if(this->GetFlags() & (SPROP_COORD | SPROP_NOSCALE | SPROP_NORMAL | SPROP_COORD_MP | SPROP_COORD_MP_LOWPRECISION | SPROP_COORD_MP_INTEGRAL) )
+//		this->m_nBits = 0;
+//
+//	//return ret;
+//}
+//
+//SendPropVectorXY& SendPropVectorXY::operator=(const SendPropVectorXY& srcSendProp) {
+//	SendProp::operator=(srcSendProp);
+//	return *this;
+//}
 
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
 SendProp SendPropQuaternion(
@@ -1567,7 +1567,8 @@ static bool SendTable_IsPropZero(CEncodeInfo* pInfo, unsigned long iProp)
 		pBase + pProp->GetOffset(),
 		&var,
 		0, // iElement
-		pInfo->GetObjectID()
+		pInfo->GetObjectID(),
+		1
 		);
 
 	return g_PropTypeFns[pProp->m_Type].IsZero(pBase, &var, pProp);
@@ -1587,7 +1588,8 @@ static FORCEINLINE void SendTable_EncodeProp(CEncodeInfo* pInfo, unsigned long i
 		pStructBase + pProp->GetOffset(),
 		&var,
 		0, // iElement
-		pInfo->GetObjectID()
+		pInfo->GetObjectID(),
+		1
 		);
 
 	// Write the index.

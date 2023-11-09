@@ -356,15 +356,9 @@ void RecvProxy_IntDirtySurround( const CRecvProxyData *pData, void *pStruct, voi
 
 #else
 
-void SendProxy_Solid( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	pOut->m_Int = ((CCollisionProperty*)pStruct)->GetSolid();
-}
 
-void SendProxy_SolidFlags( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	pOut->m_Int = ((CCollisionProperty*)pStruct)->GetSolidFlags();
-}
+
+
 
 #endif
 

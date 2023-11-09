@@ -356,11 +356,181 @@ class TestStaticInit {
 };
 
 void* SendProxy_ClientSideAnimation(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
-void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
-void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
-void SendProxy_Angles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+
+template<typename T>
+void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropSimulationTime : public SendPropInt {
+public:
+	SendPropSimulationTime() {}
+
+	template<typename T>
+	SendPropSimulationTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_SimulationTime<T>
+	);
+	virtual ~SendPropSimulationTime() {}
+	SendPropSimulationTime& operator=(const SendPropSimulationTime& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropSimulationTime* pSendProp = new SendPropSimulationTime;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropSimulationTime::SendPropSimulationTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,	// Handled by SENDINFO macro.
+	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+	int flags,
+	SendVarProxyFn varProxy)
+	:SendPropInt(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
+
+template<typename T>
+void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropOrigin : public SendPropVector {
+public:
+	SendPropOrigin() {}
+
+	template<typename T>
+	SendPropOrigin(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
+		int flags = SPROP_NOSCALE,
+		float fLowValue = 0.0f,			// For floating point, low and high values.
+		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
+		SendVarProxyFn varProxy = SendProxy_Origin<T>
+	);
+	virtual ~SendPropOrigin() {}
+	SendPropOrigin& operator=(const SendPropOrigin& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropOrigin* pSendProp = new SendPropOrigin;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropOrigin::SendPropOrigin(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,					// Number of bits to use when encoding.
+	int flags,
+	float fLowValue,			// For floating point, low and high values.
+	float fHighValue,			// High value. If HIGH_DEFAULT, it's (1<<nBits).
+	SendVarProxyFn varProxy
+):SendPropVector(pType, pVarName, offset, sizeofVar, nBits, flags, fLowValue, fHighValue, varProxy)
+{
+	
+}
+
+template<typename T>
+void SendProxy_Angles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropAngles : public SendPropQAngles {
+public:
+	SendPropAngles() {}
+
+	template<typename T>
+	SendPropAngles(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_Angles<T>
+	);
+	virtual ~SendPropAngles() {}
+	SendPropAngles& operator=(const SendPropAngles& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropAngles* pSendProp = new SendPropAngles;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropAngles::SendPropAngles(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropQAngles(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
+
 //void* SendProxy_SendPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
-void SendProxy_AnimTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
+template<typename T>
+void SendProxy_AnimTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa);
+
+class SendPropAnimTime : public SendPropInt {
+public:
+	SendPropAnimTime() {}
+
+	template<typename T>
+	SendPropAnimTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_AnimTime<T>
+	);
+	virtual ~SendPropAnimTime() {}
+	SendPropAnimTime& operator=(const SendPropAnimTime& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropAnimTime* pSendProp = new SendPropAnimTime;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropAnimTime::SendPropAnimTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,	// Handled by SENDINFO macro.
+	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropInt(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
+
 //
 // Base Entity.  All entity types derive from this
 //
@@ -1915,7 +2085,7 @@ public:
 		//  proxy on the client that stores off the old values before writing in the new values and
 		//  if it is sent after the new values, then it will only have the new origin and studio model, etc.
 		//  interpolation will be busted
-		SendPropInt(SENDINFO(m_flAnimTime), 8, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_AnimTime),
+		SendPropAnimTime(SENDINFO(m_flAnimTime), 8, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT),//, SendProxy_AnimTime
 	END_SEND_TABLE(DT_AnimTimeMustBeFirst)
 
 //#if !defined( NO_ENTITY_PREDICTION )
@@ -1927,12 +2097,12 @@ public:
 
 	BEGIN_SEND_TABLE_NOBASE(CBaseEntity, DT_BaseEntity)
 		SendPropDataTable("AnimTimeMustBeFirst", 0, REFERENCE_SEND_TABLE(DT_AnimTimeMustBeFirst), SendProxy_ClientSideAnimation),
-		SendPropInt(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_SimulationTime),
+		SendPropSimulationTime(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT),//, SendProxy_SimulationTime
 
 #if PREDICTION_ERROR_CHECK_LEVEL > 1 
 		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
 #else
-		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+		SendPropOrigin(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT),//, SendProxy_Origin
 #endif
 
 		SendPropInt(SENDINFO(m_ubInterpolationFrame), NOINTERP_PARITY_MAX_BITS, SPROP_UNSIGNED),
@@ -1956,7 +2126,7 @@ public:
 #if PREDICTION_ERROR_CHECK_LEVEL > 1 
 		SendPropVector(SENDINFO(m_angRotation), -1, SPROP_NOSCALE | SPROP_CHANGES_OFTEN, 0, HIGH_DEFAULT, SendProxy_Angles),
 #else
-		SendPropQAngles(SENDINFO(m_angRotation), 13, SPROP_CHANGES_OFTEN, SendProxy_Angles),
+		SendPropAngles(SENDINFO(m_angRotation), 13, SPROP_CHANGES_OFTEN),//, SendProxy_Angles
 #endif
 
 		SendPropInt(SENDINFO(m_iTextureFrameIndex), 8, SPROP_UNSIGNED),
@@ -2797,6 +2967,88 @@ inline void CBaseEntity::FireBullets( int cShots, const Vector &vecSrc,
 		(void)(m_pfnMoveDone = static_cast <void (CBaseEntity::*)(void)> (a))
 #endif
 
+template<typename T>
+void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	CBaseEntity* entity = (CBaseEntity*)pStruct;
+	Assert(entity);
+
+	const Vector* v;
+
+	if (!entity->UseStepSimulationNetworkOrigin(&v))
+	{
+		v = &entity->GetLocalOrigin();
+	}
+
+	pOut->m_Vector[0] = v->x;
+	pOut->m_Vector[1] = v->y;
+	pOut->m_Vector[2] = v->z;
+}
+
+template<typename T>
+void SendProxy_Angles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	CBaseEntity* entity = (CBaseEntity*)pStruct;
+	Assert(entity);
+
+	const QAngle* a;
+
+	if (!entity->UseStepSimulationNetworkAngles(&a))
+	{
+		a = &entity->GetLocalAngles();
+	}
+
+	pOut->m_Vector[0] = anglemod(a->x);
+	pOut->m_Vector[1] = anglemod(a->y);
+	pOut->m_Vector[2] = anglemod(a->z);
+}
+
+// This table encodes edict data.
+template<typename T>
+void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	CBaseEntity* pEntity = (CBaseEntity*)pStruct;
+
+	int ticknumber = TIME_TO_TICKS(pEntity->m_flSimulationTime);
+	// tickbase is current tick rounded down to closest 100 ticks
+	int tickbase = gpGlobals->GetNetworkBase(gpGlobals->GetTickCount(), pEntity->NetworkProp()->entindex());
+	int addt = 0;
+	if (ticknumber >= tickbase)
+	{
+		addt = (ticknumber - tickbase) & 0xff;
+	}
+
+	pOut->m_Int = addt;
+}
+
+// This table encodes edict data.
+template<typename T>
+void SendProxy_AnimTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
+{
+	CBaseEntity* pEntity = (CBaseEntity*)pStruct;
+
+#if defined( _DEBUG )
+	CBaseAnimating* pAnimating = pEntity->GetBaseAnimating();
+	Assert(pAnimating);
+
+	if (pAnimating)
+	{
+		Assert(!pAnimating->IsUsingClientSideAnimation());
+	}
+#endif
+
+	int ticknumber = TIME_TO_TICKS(pEntity->m_flAnimTime);
+	// Tickbase is current tick rounded down to closes 100 ticks
+	int tickbase = gpGlobals->GetNetworkBase(gpGlobals->GetTickCount(), pEntity->NetworkProp()->entindex());
+	int addt = 0;
+	// If it's within the last tick interval through the current one, then we can encode it
+	if (ticknumber >= (tickbase - 100))
+	{
+		addt = (ticknumber - tickbase) & 0xFF;
+	}
+
+	pOut->m_Int = addt;
+}
 
 inline bool FClassnameIs(CBaseEntity *pEntity, const char *szClassname)
 { 

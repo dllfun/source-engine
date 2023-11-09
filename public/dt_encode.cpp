@@ -227,7 +227,8 @@ inline void Generic_FastCopy(
 		pSendData + pSendProp->GetOffset(),
 		&recvProxyData.m_Value,
 		0,
-		objectID
+		objectID,
+		1
 		);
 
 	// Fill in the data for the recv proxy.
@@ -957,7 +958,7 @@ void Array_Encode( const unsigned char *pStruct, DVariant *pVar, const SendProp 
 		DVariant var;
 
 		// Call the proxy to get the value, then encode.
-		pArrayProp->GetProxyFn()( pArrayProp, pStruct, pCurStructOffset, &var, iElement, objectID );
+		pArrayProp->GetProxyFn()( pArrayProp, pStruct, pCurStructOffset, &var, iElement, objectID ,1);
 		g_PropTypeFns[pArrayProp->GetType()].Encode( pStruct, &var, pArrayProp, pOut, objectID ); 
 		
 		pCurStructOffset += pProp->GetElementStride();
@@ -1062,7 +1063,7 @@ void Array_FastCopy(
 	for ( recvProxyData.m_iElement=0; recvProxyData.m_iElement < nElements; recvProxyData.m_iElement++ )
 	{
 		// Get this array element out of the sender's data.
-		pArraySendProp->GetProxyFn()( pArraySendProp, pSendData, pCurSendPos, &recvProxyData.m_Value, recvProxyData.m_iElement, objectID );
+		pArraySendProp->GetProxyFn()( pArraySendProp, pSendData, pCurSendPos, &recvProxyData.m_Value, recvProxyData.m_iElement, objectID ,1);
 		pCurSendPos += pSendProp->GetElementStride();
 		
 		// Write it into the receiver.

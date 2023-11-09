@@ -389,11 +389,141 @@ void CFuncIllusionary::Spawn( void )
 	SetModel( STRING( GetModelName() ) );
 }
 
-extern void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
-extern void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
-void SendProxy_FuncRotatingOrigin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
-void SendProxy_FuncRotatingAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
-void SendProxy_FuncRotatingSimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
+template <typename T>
+extern void SendProxy_Origin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+
+template <typename T>
+extern void SendProxy_SimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa);
+
+template <typename T>
+void SendProxy_FuncRotatingOrigin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropFuncRotatingOrigin : public SendPropVector {
+public:
+	SendPropFuncRotatingOrigin() {}
+
+	template<typename T>
+	SendPropFuncRotatingOrigin(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
+		int flags = SPROP_NOSCALE,
+		float fLowValue = 0.0f,			// For floating point, low and high values.
+		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
+		SendVarProxyFn varProxy = SendProxy_FuncRotatingOrigin<T>
+	);
+	virtual ~SendPropFuncRotatingOrigin() {}
+	SendPropFuncRotatingOrigin& operator=(const SendPropFuncRotatingOrigin& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropFuncRotatingOrigin* pSendProp = new SendPropFuncRotatingOrigin;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropFuncRotatingOrigin::SendPropFuncRotatingOrigin(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,					// Number of bits to use when encoding.
+	int flags,
+	float fLowValue,			// For floating point, low and high values.
+	float fHighValue,			// High value. If HIGH_DEFAULT, it's (1<<nBits).
+	SendVarProxyFn varProxy
+):SendPropVector(pType, pVarName, offset, sizeofVar, nBits, flags, fLowValue, fHighValue, varProxy)
+{
+
+}
+
+template<typename T>
+void SendProxy_FuncRotatingAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropFuncRotatingAngle : public SendPropAngle {
+public:
+	SendPropFuncRotatingAngle() {}
+	template<typename T>
+	SendPropFuncRotatingAngle(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		int nBits = 32,
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_FuncRotatingAngle<T>
+	);
+	virtual ~SendPropFuncRotatingAngle() {}
+	SendPropFuncRotatingAngle& operator=(const SendPropFuncRotatingAngle& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropFuncRotatingAngle* pSendProp = new SendPropFuncRotatingAngle;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropFuncRotatingAngle::SendPropFuncRotatingAngle(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropAngle(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+	
+}
+
+template<typename T>
+void SendProxy_FuncRotatingSimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa);
+class SendPropFuncRotatingSimulationTime : public SendPropInt {
+public:
+	SendPropFuncRotatingSimulationTime() {}
+
+	template<typename T>
+	SendPropFuncRotatingSimulationTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by SENDINFO macro.
+		int nBits = -1,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+		int flags = 0,
+		SendVarProxyFn varProxy = SendProxy_FuncRotatingSimulationTime<T>
+	);
+	virtual ~SendPropFuncRotatingSimulationTime() {}
+	SendPropFuncRotatingSimulationTime& operator=(const SendPropFuncRotatingSimulationTime& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator SendProp* () {
+		SendPropFuncRotatingSimulationTime* pSendProp = new SendPropFuncRotatingSimulationTime;
+		*pSendProp = *this;
+		return pSendProp;
+	}
+};
+
+template<typename T>
+SendPropFuncRotatingSimulationTime::SendPropFuncRotatingSimulationTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,	// Handled by SENDINFO macro.
+	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
+	int flags,
+	SendVarProxyFn varProxy
+):SendPropInt(pType, pVarName, offset, sizeofVar, nBits, flags, varProxy)
+{
+
+}
+
 
 
 //-----------------------------------------------------------------------------
@@ -475,12 +605,12 @@ public:
 		SendPropExclude("DT_BaseEntity", "m_vecOrigin"),
 		SendPropExclude("DT_BaseEntity", "m_flSimulationTime"),
 
-		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_FuncRotatingOrigin),
-		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 0), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle),
-		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 1), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle),
-		SendPropAngle(SENDINFO_VECTORELEM(m_angRotation, 2), 13, SPROP_CHANGES_OFTEN, SendProxy_FuncRotatingAngle),
+		SendPropFuncRotatingOrigin(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT),//, SendProxy_FuncRotatingOrigin
+		SendPropFuncRotatingAngle(SENDINFO_VECTORELEM(m_angRotation, 0), 13, SPROP_CHANGES_OFTEN),//, SendProxy_FuncRotatingAngle
+		SendPropFuncRotatingAngle(SENDINFO_VECTORELEM(m_angRotation, 1), 13, SPROP_CHANGES_OFTEN),//, SendProxy_FuncRotatingAngle
+		SendPropFuncRotatingAngle(SENDINFO_VECTORELEM(m_angRotation, 2), 13, SPROP_CHANGES_OFTEN),//, SendProxy_FuncRotatingAngle
 
-		SendPropInt(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT, SendProxy_FuncRotatingSimulationTime),
+		SendPropFuncRotatingSimulationTime(SENDINFO(m_flSimulationTime), SIMULATION_TIME_WINDOW_BITS, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN | SPROP_ENCODED_AGAINST_TICKCOUNT),//, SendProxy_FuncRotatingSimulationTime
 	END_SEND_TABLE(DT_FuncRotating)
 	END_INIT_SEND_TABLE()
 };
@@ -543,7 +673,8 @@ void SendProxy_FuncRotatingAngles( const SendProp *pProp, const void *pStruct, c
 	SendProxy_Angles( pProp, pStruct, pData, pOut, iElement, objectID );
 }
 */
-void SendProxy_FuncRotatingOrigin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+template <typename T>
+void SendProxy_FuncRotatingOrigin(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 #ifdef TF_DLL
 	CFuncRotating* entity = (CFuncRotating*)pStruct;
@@ -559,14 +690,16 @@ void SendProxy_FuncRotatingOrigin(const SendProp* pProp, const void* pStruct, co
 	}
 #endif
 
-	SendProxy_Origin(pProp, pStruct, pData, pOut, iElement, objectID);
+	SendProxy_Origin<T>(pProp, pStruct, pData, pOut, iElement, objectID,aaa);
 }
-void SendProxy_FuncRotatingAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+
+template<typename T>
+void SendProxy_FuncRotatingAngle(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 	CFuncRotating* entity = (CFuncRotating*)pStruct;
 	Assert(entity);
 
-	vec_t const* qa = (vec_t*)pData;
+	vec_t const* qa = (T*)pData;//vec_t
 	vec_t const* ea = entity->GetLocalAngles().Base();
 	NOTE_UNUSED(ea);
 	// Assert its actually an index into m_angRotation if not this won't work
@@ -588,7 +721,8 @@ void SendProxy_FuncRotatingAngle(const SendProp* pProp, const void* pStruct, con
 	Assert(IsFinite(pOut->m_Float));
 }
 
-void SendProxy_FuncRotatingSimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID)
+template<typename T>
+void SendProxy_FuncRotatingSimulationTime(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 #ifdef TF_DLL
 	CFuncRotating* entity = (CFuncRotating*)pStruct;
@@ -601,7 +735,7 @@ void SendProxy_FuncRotatingSimulationTime(const SendProp* pProp, const void* pSt
 	}
 #endif
 
-	SendProxy_SimulationTime(pProp, pStruct, pVarData, pOut, iElement, objectID);
+	SendProxy_SimulationTime<T>(pProp, pStruct, pVarData, pOut, iElement, objectID,aaa);
 }
 
 

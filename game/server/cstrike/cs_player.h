@@ -10,7 +10,7 @@
 #pragma once
 
 
-#include "basemultiplayerplayer.h"
+#include "../basemultiplayerplayer.h"
 #include "server_class.h"
 #include "cs_playeranimstate.h"
 #include "cs_shareddefs.h"
@@ -1057,7 +1057,7 @@ public:
 		SendPropFloat(SENDINFO(m_flVelocityModifier), 8, 0, 0, 1),
 
 		// send a hi-res origin to the local player for use in prediction
-		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+		SendPropOrigin(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT),//, SendProxy_Origin
 
 		//=============================================================================
 		// HPE_BEGIN:
@@ -1075,7 +1075,7 @@ public:
 
 	BEGIN_SEND_TABLE_NOBASE(CCSPlayer, DT_CSNonLocalPlayerExclusive)
 		// send a lo-res origin to other players
-		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+		SendPropOrigin(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT),//, SendProxy_Origin
 	END_SEND_TABLE(DT_CSNonLocalPlayerExclusive)
 
 	BEGIN_SEND_TABLE(CCSPlayer, DT_CSPlayer, DT_BasePlayer)

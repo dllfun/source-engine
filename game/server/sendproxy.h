@@ -15,17 +15,17 @@
 class DVariant;
 
 template<typename T= color32>
-void SendProxy_Color32ToInt( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
+void SendProxy_Color32ToInt( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID ,int aaa);
 template<typename T>
-void SendProxy_Color32ToInt(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_Color32ToInt(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 	T* pIn = (T*)pData;//color32
 	*((unsigned int*)&pOut->m_Int) = ((unsigned int)pIn->GetR() << 24) | ((unsigned int)pIn->GetG() << 16) | ((unsigned int)pIn->GetB() << 8) | ((unsigned int)pIn->GetA());
 }
 template<typename T= CBaseHandle>
-void SendProxy_EHandleToInt( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID );
+void SendProxy_EHandleToInt( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID ,int aaa);
 template<typename T>
-void SendProxy_EHandleToInt(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_EHandleToInt(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 	T* pHandle = (T*)pVarData;//CBaseHandle
 
@@ -40,18 +40,18 @@ void SendProxy_EHandleToInt(const SendProp* pProp, const void* pStruct, const vo
 	}
 }
 template<typename T= int>
-void SendProxy_IntAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID );
+void SendProxy_IntAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID ,int aaa);
 template<typename T>
-void SendProxy_IntAddOne(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_IntAddOne(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 	T* pInt = (T*)pVarData;//int
 
 	pOut->m_Int = (*pInt) + 1;
 }
 template<typename T= short>
-void SendProxy_ShortAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID );
+void SendProxy_ShortAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID ,int aaa);
 template<typename T>
-void SendProxy_ShortAddOne(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_ShortAddOne(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 	T* pInt = (T*)pVarData;//short
 
@@ -194,7 +194,7 @@ public:
 	SendPropStringT() {}
 
 	template<typename T>
-	SendPropStringT(T* pType, const char* pVarName, int offset, int sizeofVar);
+	SendPropStringT(T* pType, const char* pVarName, int offset, int sizeofVar, int flags = 0);
 	virtual ~SendPropStringT() {}
 	SendPropStringT& operator=(const SendPropStringT& srcSendProp);
 	operator SendProp* () {
@@ -205,17 +205,22 @@ public:
 };
 
 template<typename T= string_t>
-void SendProxy_StringT_To_String(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_StringT_To_String(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa);
 template<typename T>
-void SendProxy_StringT_To_String(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_StringT_To_String(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID,int aaa)
 {
 	T& str = *((T*)pVarData);//string_t
 	pOut->m_pString = (char*)STRING(str);
 }
+//void SendProxy_String_tToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+//{
+//	string_t* pString = (string_t*)pData;
+//	pOut->m_pString = (char*)STRING(*pString);
+//}
 
 template<typename T>
-SendPropStringT::SendPropStringT(T* pType, const char* pVarName, int offset, int sizeofVar)
-	:SendPropString(pType, pVarName, offset, DT_MAX_STRING_BUFFERSIZE, 0, SendProxy_StringT_To_String<T>)
+SendPropStringT::SendPropStringT(T* pType, const char* pVarName, int offset, int sizeofVar, int flags)
+	:SendPropString(pType, pVarName, offset, DT_MAX_STRING_BUFFERSIZE, flags, SendProxy_StringT_To_String<T>)
 {
 	// Make sure it's the right type.
 	Assert(sizeofVar == sizeof(string_t));

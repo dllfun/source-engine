@@ -68,19 +68,7 @@ void SendProxy_FishOriginY( const SendProp *pProp, const void *pStruct, const vo
 	pOut->m_Float = v.y - origin.y;
 }
 
-// keep angle in normalized range when sending it
-void SendProxy_FishAngle( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
-{
-	float value = *((float *)pData);
 
-	while( value > 360.0f )
-		value -= 360.0f;
-
-	while (value < 0.0f)
-		value += 360.0f;
-
-	pOut->m_Float = value;
-}
 
 
 /**

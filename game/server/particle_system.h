@@ -59,11 +59,11 @@ protected:
 
 	BEGIN_INIT_SEND_TABLE(CParticleSystem)
 	BEGIN_SEND_TABLE(CParticleSystem, DT_ParticleSystem, DT_BaseEntity)
-		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+		SendPropOrigin(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT),//, SendProxy_Origin
 		SendPropEHandle(SENDINFO(m_hOwnerEntity)),
 		SendPropEHandle(SENDINFO_NAME(m_hMoveParent, moveparent)),
 		SendPropInt(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
-		SendPropQAngles(SENDINFO(m_angRotation), 13, SPROP_CHANGES_OFTEN, SendProxy_Angles),
+		SendPropAngles(SENDINFO(m_angRotation), 13, SPROP_CHANGES_OFTEN),//, SendProxy_Angles
 
 		SendPropInt(SENDINFO(m_iEffectIndex), MAX_PARTICLESYSTEMS_STRING_BITS, SPROP_UNSIGNED),
 		SendPropBool(SENDINFO(m_bActive)),

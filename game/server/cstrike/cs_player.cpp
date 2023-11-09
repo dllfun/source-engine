@@ -224,7 +224,7 @@ public:
 
 	BEGIN_INIT_SEND_TABLE(CCSRagdoll)
 	BEGIN_SEND_TABLE_NOBASE(CCSRagdoll, DT_CSRagdoll)
-		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+		SendPropOrigin(SENDINFO(m_vecOrigin), -1, SPROP_COORD | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT),//, SendProxy_Origin
 		SendPropVector(SENDINFO(m_vecRagdollOrigin), -1, SPROP_COORD),
 		SendPropEHandle(SENDINFO(m_hPlayer)),
 		SendPropModelIndex(SENDINFO(m_nModelIndex)),

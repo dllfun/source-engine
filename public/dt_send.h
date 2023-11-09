@@ -41,7 +41,7 @@
 // Return false if you don't want the engine to register and send a delta to
 // the clients for this property (regardless of whether it actually changed or not).
 // ------------------------------------------------------------------------ //
-typedef void (*SendVarProxyFn)(const SendProp* pProp, const void* pStructBase, const void* pData, DVariant* pOut, int iElement, int objectID);
+typedef void (*SendVarProxyFn)(const SendProp* pProp, const void* pStructBase, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 typedef unsigned int CRC32_t;
 
 // Return the pointer to the data for the datatable.
@@ -1059,9 +1059,9 @@ SendTableManager* GetSendTableManager();
 // See the definition of SendVarProxyFn for information about these.
 // ------------------------------------------------------------------------ //
 template<typename T = QAngle>
-void SendProxy_QAngles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_QAngles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T>
-void SendProxy_QAngles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_QAngles(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	T* v = (T*)pData;//QAngle
 	pOut->m_Vector[0] = anglemod(v->GetX());
@@ -1069,12 +1069,12 @@ void SendProxy_QAngles(const SendProp* pProp, const void* pStruct, const void* p
 	pOut->m_Vector[2] = anglemod(v->GetZ());
 }
 template<typename T = float>
-void SendProxy_AngleToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_AngleToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 // ---------------------------------------------------------------------- //
 // Proxies.
 // ---------------------------------------------------------------------- //
 template<typename T>
-void SendProxy_AngleToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_AngleToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	float angle;
 
@@ -1084,17 +1084,17 @@ void SendProxy_AngleToFloat(const SendProp* pProp, const void* pStruct, const vo
 	Assert(IsFinite(pOut->m_Float));
 }
 template<typename T = float>
-void SendProxy_FloatToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_FloatToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T>
-void SendProxy_FloatToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_FloatToFloat(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_Float = *((T*)pData);//float
 	Assert(IsFinite(pOut->m_Float));
 }
 template<typename T = Vector>
-void SendProxy_VectorToVector(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_VectorToVector(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T>
-void SendProxy_VectorToVector(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_VectorToVector(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	T& v = *((T*)pData);//Vector
 	Assert(v.IsValid());
@@ -1102,86 +1102,86 @@ void SendProxy_VectorToVector(const SendProp* pProp, const void* pStruct, const 
 	pOut->m_Vector[1] = v[1];
 	pOut->m_Vector[2] = v[2];
 }
-void SendProxy_VectorXYToVectorXY(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+//void SendProxy_VectorXYToVectorXY(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
 void SendProxy_QuaternionToQuaternion(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 #endif
 template<typename T = const char>
-void SendProxy_Int8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_Int8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T = short>
-void SendProxy_Int16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_Int16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T = int>
-void SendProxy_Int32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_Int32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 #ifdef SUPPORTS_INT64
 template<typename T = int64>
 void SendProxy_Int64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
 #endif
 template<typename T = const unsigned char>
-void SendProxy_UInt8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_UInt8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T = unsigned short>
-void SendProxy_UInt16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_UInt16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T = uint32>
-void SendProxy_UInt32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_UInt32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 #ifdef SUPPORTS_INT64
 template<typename T = uint64>
-void SendProxy_UInt64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_UInt64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 #endif
 
 template<typename T>
-void SendProxy_Int8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_Int8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_Int = *((T*)pData);//const char
 }
 
 template<typename T>
-void SendProxy_Int16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_Int16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_Int = *((T*)pData);//short
 }
 
 template<typename T>
-void SendProxy_Int32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_Int32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_Int = *((T*)pData);//int
 }
 
 #ifdef SUPPORTS_INT64
 template<typename T>
-void SendProxy_Int64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_Int64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_Int64 = *((T*)pData);//int64
 }
 #endif
 
 template<typename T>
-void SendProxy_UInt8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_UInt8ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_Int = *((T*)pData);//const unsigned char
 }
 
 template<typename T>
-void SendProxy_UInt16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_UInt16ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_Int = *((T*)pData);//unsigned short
 }
 
 template<typename T>
-void SendProxy_UInt32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_UInt32ToInt32(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	//memcpy( &pOut->m_Int, pData, sizeof(uint32) );
 	pOut->m_Int = *((T*)pData);//uint32
 }
 #ifdef SUPPORTS_INT64
 template<typename T>
-void SendProxy_UInt64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_UInt64ToInt64(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	*((int64*)&pOut->m_Int64) = *((T*)pData);//uint64
 }
 #endif
 template<typename T = const char>
-void SendProxy_StringToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID);
+void SendProxy_StringToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa);
 template<typename T>
-void SendProxy_StringToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+void SendProxy_StringToString(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID, int aaa)
 {
 	pOut->m_pString = *((T*)pData);//const char
 }
@@ -1345,27 +1345,27 @@ SendPropVector::SendPropVector(
 	//return ret;
 }
 
-class  SendPropVectorXY : public SendProp {
-public:
-	SendPropVectorXY() {}
-	SendPropVectorXY(
-		const char* pVarName,
-		int offset,
-		int sizeofVar = SIZEOF_IGNORE,
-		int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
-		int flags = SPROP_NOSCALE,
-		float fLowValue = 0.0f,			// For floating point, low and high values.
-		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-		SendVarProxyFn varProxy = SendProxy_VectorXYToVectorXY
-	);
-	virtual ~SendPropVectorXY() {}
-	SendPropVectorXY& operator=(const SendPropVectorXY& srcSendProp);
-	operator SendProp* () {
-		SendPropVectorXY* pSendProp = new SendPropVectorXY;
-		*pSendProp = *this;
-		return pSendProp;
-	}
-};
+//class  SendPropVectorXY : public SendProp {
+//public:
+//	SendPropVectorXY() {}
+//	SendPropVectorXY(
+//		const char* pVarName,
+//		int offset,
+//		int sizeofVar = SIZEOF_IGNORE,
+//		int nBits = 32,					// Number of bits (for each floating-point component) to use when encoding.
+//		int flags = SPROP_NOSCALE,
+//		float fLowValue = 0.0f,			// For floating point, low and high values.
+//		float fHighValue = HIGH_DEFAULT,	// High value. If HIGH_DEFAULT, it's (1<<nBits).
+//		SendVarProxyFn varProxy = SendProxy_VectorXYToVectorXY
+//	);
+//	virtual ~SendPropVectorXY() {}
+//	SendPropVectorXY& operator=(const SendPropVectorXY& srcSendProp);
+//	operator SendProp* () {
+//		SendPropVectorXY* pSendProp = new SendPropVectorXY;
+//		*pSendProp = *this;
+//		return pSendProp;
+//	}
+//};
 
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
 SendProp SendPropQuaternion(

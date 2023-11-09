@@ -77,7 +77,7 @@ private:
 
 	BEGIN_INIT_SEND_TABLE(CColorCorrection)
 	BEGIN_SEND_TABLE(CColorCorrection, DT_ColorCorrection, DT_BaseEntity)
-		SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
+		SendPropOrigin(SENDINFO(m_vecOrigin), -1, SPROP_NOSCALE, 0.0f, HIGH_DEFAULT),//, SendProxy_Origin
 		SendPropFloat(SENDINFO(m_MinFalloff)),
 		SendPropFloat(SENDINFO(m_MaxFalloff)),
 		SendPropFloat(SENDINFO(m_flCurWeight)),
