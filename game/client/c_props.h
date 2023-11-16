@@ -37,7 +37,7 @@ private:
 	CDynamicProp( const CDynamicProp& );
 
 protected:
-	bool	m_bUseHitboxesForRenderBox;
+	CNetworkVar( bool,	m_bUseHitboxesForRenderBox);
 private:
 	int		m_iCachedFrameCount;
 	Vector	m_vecCachedRenderMins;

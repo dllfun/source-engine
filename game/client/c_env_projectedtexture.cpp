@@ -43,21 +43,21 @@ private:
 
 	ClientShadowHandle_t m_LightHandle;
 
-	EHANDLE	m_hTargetEntity;
+	CNetworkHandle(C_BaseEntity,	m_hTargetEntity);
 
-	bool	m_bState;
-	float	m_flLightFOV;
-	bool	m_bEnableShadows;
-	bool	m_bLightOnlyTarget;
-	bool	m_bLightWorld;
-	bool	m_bCameraSpace;
-	Vector	m_LinearFloatLightColor;
-	float	m_flAmbient;
-	float	m_flNearZ;
-	float	m_flFarZ;
-	char	m_SpotlightTextureName[ MAX_PATH ];
-	int		m_nSpotlightTextureFrame;
-	int		m_nShadowQuality;
+	CNetworkVar( bool,	m_bState);
+	CNetworkVar( float,	m_flLightFOV);
+	CNetworkVar( bool,	m_bEnableShadows);
+	CNetworkVar( bool,	m_bLightOnlyTarget);
+	CNetworkVar( bool,	m_bLightWorld);
+	CNetworkVar( bool,	m_bCameraSpace);
+	CNetworkVector(	m_LinearFloatLightColor);
+	CNetworkVar( float,	m_flAmbient);
+	CNetworkVar( float,	m_flNearZ);
+	CNetworkVar( float,	m_flFarZ);
+	CNetworkString(	m_SpotlightTextureName, MAX_PATH );
+	CNetworkVar( int,		m_nSpotlightTextureFrame);
+	CNetworkVar( int,		m_nShadowQuality);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_EnvProjectedTexture)
@@ -189,9 +189,9 @@ void C_EnvProjectedTexture::UpdateLight( bool bForceUpdate )
 	state.m_fQuadraticAtten = 0.0;
 	state.m_fLinearAtten = 100;
 	state.m_fConstantAtten = 0.0f;
-	state.m_Color[0] = m_LinearFloatLightColor.x;
-	state.m_Color[1] = m_LinearFloatLightColor.y;
-	state.m_Color[2] = m_LinearFloatLightColor.z;
+	state.m_Color[0] = m_LinearFloatLightColor.GetX();
+	state.m_Color[1] = m_LinearFloatLightColor.GetY();
+	state.m_Color[2] = m_LinearFloatLightColor.GetZ();
 	state.m_Color[3] = 0.0f; // fixme: need to make ambient work m_flAmbient;
 	state.m_NearZ = m_flNearZ;
 	state.m_FarZ = m_flFarZ;

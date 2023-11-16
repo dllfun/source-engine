@@ -32,10 +32,10 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecOrigin;
-	int				m_nModelIndex;
-	float			m_fScale;
-	int				m_nBrightness;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( float,			m_fScale);
+	CNetworkVar( int,				m_nBrightness);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TESprite)

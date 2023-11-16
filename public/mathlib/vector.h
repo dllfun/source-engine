@@ -191,6 +191,9 @@ public:
 	inline float GetX() const { return x; }
 	inline float GetY() const { return y; }
 	inline float GetZ() const { return z; }
+	inline void SetX(float val) { x = val; }
+	inline void SetY(float val) { y = val; }
+	inline void SetZ(float val) { z = val; }
 #ifndef VECTOR_NO_SLOW_OPERATIONS
 	// copy constructors
 //	Vector(const Vector &vOther);
@@ -1827,6 +1830,9 @@ public:
 	inline float GetX() const { return x; }
 	inline float GetY() const { return y; }
 	inline float GetZ() const { return z; }
+	inline void SetX(float val) { x = val; }
+	inline void SetY(float val) { y = val; }
+	inline void SetZ(float val) { z = val; }
 #ifndef VECTOR_NO_SLOW_OPERATIONS
 	// copy constructors
 

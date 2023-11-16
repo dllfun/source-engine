@@ -29,7 +29,7 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int				m_nPlayer;
+	CNetworkVar( int,				m_nPlayer);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEKillPlayerAttachments)

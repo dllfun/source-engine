@@ -161,24 +161,7 @@ void C_LowViolenceHostageDeathModel::ClientThink( void )
 	}
 }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void C_CHostage::RecvProxy_Rescued( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_CHostage *pHostage= (C_CHostage *) pStruct;
-	
-	bool isRescued = pData->m_Value.m_Int != 0;
 
-	if ( isRescued && !pHostage->m_isRescued )
-	{
-		// hostage was rescued
-		pHostage->m_flDeadOrRescuedTime = gpGlobals->GetCurTime() + 2;
-		pHostage->SetRenderMode( kRenderGlow );
-		pHostage->SetNextClientThink( gpGlobals->GetCurTime() );
-	}
-
-	pHostage->m_isRescued = isRescued;
-}
 
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS(C_CHostage, DT_CHostage, CHostage)

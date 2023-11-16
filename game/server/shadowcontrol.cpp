@@ -45,7 +45,7 @@ private:
 	BEGIN_INIT_SEND_TABLE(CShadowControl)
 	BEGIN_SEND_TABLE(CShadowControl, DT_ShadowControl, DT_BaseEntity)
 		SendPropVector(SENDINFO(m_shadowDirection), -1, SPROP_NOSCALE),
-		SendPropInt(SENDINFO(m_shadowColor), 32, SPROP_UNSIGNED),
+		SendPropColor32(SENDINFO(m_shadowColor), 32, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE),
 		SendPropBool(SENDINFO(m_bDisableShadows)),
 	END_SEND_TABLE(DT_ShadowControl)

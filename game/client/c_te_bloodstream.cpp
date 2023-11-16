@@ -29,9 +29,12 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecDirection;
-	int				r, g, b, a;
-	int				m_nAmount;
+	CNetworkVector(			m_vecDirection);
+	CNetworkVar( int,				r);
+	CNetworkVar( int,				g);
+	CNetworkVar( int,				b);
+	CNetworkVar( int,				a);
+	CNetworkVar( int,				m_nAmount);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBloodStream)
@@ -211,7 +214,7 @@ void TE_BloodStream( IRecipientFilter& filter, float delay,
 void C_TEBloodStream::PostDataUpdate( DataUpdateType_t updateType )
 {
 	CBroadcastRecipientFilter filter;
-	TE_BloodStream( filter, 0.0f, &m_vecOrigin, &m_vecDirection, r, g, b, a, m_nAmount );
+	TE_BloodStream( filter, 0.0f, &m_vecOrigin.m_Value, &m_vecDirection.m_Value, r, g, b, a, m_nAmount );
 }
 
 void TE_BloodStream( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )

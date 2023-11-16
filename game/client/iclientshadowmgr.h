@@ -92,7 +92,7 @@ public:
 	virtual void AdvanceFrame() = 0;
 
 	// Set and clear flashlight target renderable
-	virtual void SetFlashlightTarget( ClientShadowHandle_t shadowHandle, EHANDLE targetEntity ) = 0;
+	virtual void SetFlashlightTarget( ClientShadowHandle_t shadowHandle, CBaseHandle targetEntity ) = 0;
 
 	// Set flashlight light world flag
 	virtual void SetFlashlightLightWorld( ClientShadowHandle_t shadowHandle, bool bLightWorld ) = 0;

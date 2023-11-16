@@ -81,14 +81,14 @@ public:
 	DECLARE_CLASS( C_BreakableSurface, C_BaseEntity );
 	DECLARE_DATADESC();
 
-	int				m_nNumWide;
-	int				m_nNumHigh;
-	float			m_flPanelWidth;
-	float			m_flPanelHeight;
-	Vector			m_vNormal;
-	Vector			m_vCorner;
-	bool			m_bIsBroken;
-	int				m_nSurfaceType;
+	CNetworkVar( int,				m_nNumWide);
+	CNetworkVar( int,				m_nNumHigh);
+	CNetworkVar( float,			m_flPanelWidth);
+	CNetworkVar( float,			m_flPanelHeight);
+	CNetworkVector(	m_vNormal);
+	CNetworkVector(	m_vCorner);
+	CNetworkVar( bool,			m_bIsBroken);
+	CNetworkVar( int,			m_nSurfaceType);
 
 						
 	// This is the texture we're going to use to multiply by the cracked base texture
@@ -187,7 +187,7 @@ public:
 		RecvPropVector(RECVINFO(m_vCorner)),
 		RecvPropInt(RECVINFO(m_bIsBroken)),
 		RecvPropInt(RECVINFO(m_nSurfaceType)),
-		RecvPropArray3(RECVINFO_ARRAY(m_RawPanelBitVec), RecvPropInt(RECVINFO(m_RawPanelBitVec[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_RawPanelBitVec), RecvPropInt(RECVINFO_ARRAY3(m_RawPanelBitVec))),
 
 	END_RECV_TABLE(DT_BreakableSurface)
 	END_INIT_RECV_TABLE()
@@ -986,7 +986,7 @@ void C_BreakableSurface::DrawOneBlock(IBrushSurface* pBrushSurface, IMesh* pMesh
 	pMeshBuilder->TexCoord2f( 0, 0, 1 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
  	pMeshBuilder->AdvanceVertex();
 
 	Vector vNextPos = vCurPos + vWidthStep;
@@ -999,7 +999,7 @@ void C_BreakableSurface::DrawOneBlock(IBrushSurface* pBrushSurface, IMesh* pMesh
 	pMeshBuilder->TexCoord2f( 0, 0, 0 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
- 	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+ 	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->AdvanceVertex();
 
 	vNextPos = vNextPos + vHeightStep;
@@ -1012,7 +1012,7 @@ void C_BreakableSurface::DrawOneBlock(IBrushSurface* pBrushSurface, IMesh* pMesh
 	pMeshBuilder->TexCoord2f( 0, 1, 0 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
  	pMeshBuilder->AdvanceVertex();
 
 	vNextPos = vNextPos - vWidthStep;
@@ -1025,7 +1025,7 @@ void C_BreakableSurface::DrawOneBlock(IBrushSurface* pBrushSurface, IMesh* pMesh
 	pMeshBuilder->TexCoord2f( 0, 1, 1 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
  	pMeshBuilder->AdvanceVertex();
 
 	pMeshBuilder->End();
@@ -1048,7 +1048,7 @@ void C_BreakableSurface::DrawOneEdge( IBrushSurface* pBrushSurface, IMesh* pMesh
 	pBrushSurface->ComputeLightmapCoordinate( vStartPos, lightCoord );
 
 	pMeshBuilder->Position3f( vStartPos.x, vStartPos.y, vStartPos.z);
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4ub( 255, 255, 255, 255 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
@@ -1075,7 +1075,7 @@ void C_BreakableSurface::DrawOneEdge( IBrushSurface* pBrushSurface, IMesh* pMesh
 	pBrushSurface->ComputeLightmapCoordinate( vNextPos, lightCoord );
 
 	pMeshBuilder->Position3f( vNextPos.x , vNextPos.y , vNextPos.z);
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4ub( 255, 255, 255, 255 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
@@ -1102,7 +1102,7 @@ void C_BreakableSurface::DrawOneEdge( IBrushSurface* pBrushSurface, IMesh* pMesh
 	pBrushSurface->ComputeLightmapCoordinate( vNextPos, lightCoord );
 
 	pMeshBuilder->Position3f( vNextPos.x, vNextPos.y, vNextPos.z );
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4ub( 255, 255, 255, 255 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
@@ -1129,7 +1129,7 @@ void C_BreakableSurface::DrawOneEdge( IBrushSurface* pBrushSurface, IMesh* pMesh
 	pBrushSurface->ComputeLightmapCoordinate( vNextPos, lightCoord );
 
 	pMeshBuilder->Position3f( vNextPos.x, vNextPos.y, vNextPos.z );
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4ub( 255, 255, 255, 255 );
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	pMeshBuilder->TexCoord2fv( 2, texCoord.Base() );
@@ -1175,7 +1175,7 @@ void C_BreakableSurface::DrawOneHighlight( IBrushSurface* pBrushSurface, IMesh* 
 	pBrushSurface->ComputeLightmapCoordinate( vStartPos, lightCoord );
 
 	pMeshBuilder->Position3f( vStartPos.x, vStartPos.y, vStartPos.z);
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4f( vColor[0], vColor[1], vColor[2], 1.0);
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	switch (nEdge)
@@ -1201,7 +1201,7 @@ void C_BreakableSurface::DrawOneHighlight( IBrushSurface* pBrushSurface, IMesh* 
 	pBrushSurface->ComputeLightmapCoordinate( vNextPos, lightCoord );
 
 	pMeshBuilder->Position3f( vNextPos.x , vNextPos.y , vNextPos.z);
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4f( vColor[0], vColor[1], vColor[2], 1.0);
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	switch (nEdge)
@@ -1227,7 +1227,7 @@ void C_BreakableSurface::DrawOneHighlight( IBrushSurface* pBrushSurface, IMesh* 
 	pBrushSurface->ComputeLightmapCoordinate( vNextPos, lightCoord );
 
 	pMeshBuilder->Position3f( vNextPos.x, vNextPos.y, vNextPos.z );
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4f( vColor[0], vColor[1], vColor[2], 1.0);
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	switch (nEdge)
@@ -1253,7 +1253,7 @@ void C_BreakableSurface::DrawOneHighlight( IBrushSurface* pBrushSurface, IMesh* 
 	pBrushSurface->ComputeLightmapCoordinate( vNextPos, lightCoord );
 
 	pMeshBuilder->Position3f( vNextPos.x, vNextPos.y, vNextPos.z );
-	pMeshBuilder->Normal3fv( m_vNormal.Base() );
+	pMeshBuilder->Normal3fv( m_vNormal.m_Value.Base() );
 	pMeshBuilder->Color4f( vColor[0], vColor[1], vColor[2], 1.0);
 	pMeshBuilder->TexCoord2fv( 1, lightCoord.Base() );
 	switch (nEdge)

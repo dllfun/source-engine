@@ -44,14 +44,14 @@ public:
 	void	ClientThink( void );
 	void	Release( void );
 
-	unsigned char	m_Flags;
-	unsigned char	m_LightStyle;
+	CNetworkVar( unsigned char,	m_Flags);
+	CNetworkVar( unsigned char,	m_LightStyle);
 
-	float	m_Radius;
-	int		m_Exponent;
-	float	m_InnerAngle;
-	float	m_OuterAngle;
-	float	m_SpotRadius;
+	CNetworkVar( float,	m_Radius);
+	CNetworkVar( int,		m_Exponent);
+	CNetworkVar( float,	m_InnerAngle);
+	CNetworkVar( float,	m_OuterAngle);
+	CNetworkVar( float,	m_SpotRadius);
 
 private:
 	dlight_t*	m_pDynamicLight;

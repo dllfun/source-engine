@@ -19,6 +19,7 @@ class C_PhysicsProp : public C_BreakableProp
 {
 	typedef C_BreakableProp BaseClass;
 public:
+	DECLARE_CLASS(C_PhysicsProp, C_BreakableProp)
 	DECLARE_CLIENTCLASS();
 
 	C_PhysicsProp();
@@ -28,7 +29,7 @@ public:
 
 protected:
 	// Networked vars.
-	bool m_bAwake;
+	CNetworkVar( bool, m_bAwake);
 	bool m_bAwakeLastTime;
 
 public:

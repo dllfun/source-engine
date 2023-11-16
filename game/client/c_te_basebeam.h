@@ -34,18 +34,21 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int				m_nModelIndex;
-	int				m_nHaloIndex;
-	int				m_nStartFrame;
-	int				m_nFrameRate;
-	float			m_fLife;
-	float			m_fWidth;
-	float			m_fEndWidth;
-	int				m_nFadeLength;
-	float			m_fAmplitude;
-	int				r, g, b, a;
-	int				m_nSpeed;
-	int				m_nFlags;
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( int,				m_nHaloIndex);
+	CNetworkVar( int,				m_nStartFrame);
+	CNetworkVar( int,				m_nFrameRate);
+	CNetworkVar( float,			m_fLife);
+	CNetworkVar( float,			m_fWidth);
+	CNetworkVar( float,			m_fEndWidth);
+	CNetworkVar( int,				m_nFadeLength);
+	CNetworkVar( float,			m_fAmplitude);
+	CNetworkVar( int,				r);
+	CNetworkVar( int,				g);
+	CNetworkVar( int,				b);
+	CNetworkVar( int,				a);
+	CNetworkVar( int,				m_nSpeed);
+	CNetworkVar( int,				m_nFlags);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBaseBeam)

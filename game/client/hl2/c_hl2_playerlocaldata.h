@@ -14,7 +14,8 @@
 
 
 #include "dt_recv.h"
-
+#include "recvproxy.h"
+#include "cbase.h"
 #include "hl2/hl_movedata.h"
 
 EXTERN_RECV_TABLE( DT_HL2Local );
@@ -29,25 +30,25 @@ public:
 
 	C_HL2PlayerLocalData();
 
-	float	m_flSuitPower;
-	bool	m_bZooming;
-	int		m_bitsActiveDevices;
-	int		m_iSquadMemberCount;
-	int		m_iSquadMedicCount;
-	bool	m_fSquadInFollowMode;
-	bool	m_bWeaponLowered;
-	EHANDLE m_hAutoAimTarget;
-	Vector	m_vecAutoAimPoint;
-	bool	m_bDisplayReticle;
-	bool	m_bStickyAutoAim;
-	bool	m_bAutoAimTarget;
+	CNetworkVar( float,	m_flSuitPower);
+	CNetworkVar( bool,	m_bZooming);
+	CNetworkVar( int,		m_bitsActiveDevices);
+	CNetworkVar( int,		m_iSquadMemberCount);
+	CNetworkVar( int,		m_iSquadMedicCount);
+	CNetworkVar( bool,	m_fSquadInFollowMode);
+	CNetworkVar( bool,	m_bWeaponLowered);
+	CNetworkHandle(C_BaseEntity, m_hAutoAimTarget);
+	CNetworkVector(	m_vecAutoAimPoint);
+	CNetworkVar( bool,	m_bDisplayReticle);
+	CNetworkVar( bool,	m_bStickyAutoAim);
+	CNetworkVar( bool,	m_bAutoAimTarget);
 #ifdef HL2_EPISODIC
 	float	m_flFlashBattery;
 	Vector	m_vecLocatorOrigin;
 #endif
 
 	// Ladder related data
-	EHANDLE			m_hLadder;
+	CNetworkHandle(C_BaseEntity,			m_hLadder);
 	LadderMove_t	m_LadderMove;
 
 public:

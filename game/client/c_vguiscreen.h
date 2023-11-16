@@ -129,18 +129,18 @@ private:
 private:
 	int m_nPixelWidth; 
 	int m_nPixelHeight;
-	float m_flWidth; 
-	float m_flHeight;
-	int m_nPanelName;	// The name of the panel 
+	CNetworkVar( float, m_flWidth); 
+	CNetworkVar( float, m_flHeight);
+	CNetworkVar( int, m_nPanelName);	// The name of the panel 
 	int	m_nButtonState;
 	int m_nButtonPressed;
 	int m_nButtonReleased;
 	int m_nOldPx;
 	int m_nOldPy;
 	int m_nOldButtonState;
-	int m_nAttachmentIndex;
-	int m_nOverlayMaterial;
-	int m_fScreenFlags;
+	CNetworkVar( int, m_nAttachmentIndex);
+	CNetworkVar( int, m_nOverlayMaterial);
+	CNetworkVar( int, m_fScreenFlags);
 
 	int	m_nOldPanelName;
 	int m_nOldOverlayMaterial;
@@ -156,7 +156,7 @@ private:
 
 	CPanelWrapper m_PanelWrapper;
 
-	CHandle<C_BasePlayer> m_hPlayerOwner;
+	CNetworkHandle( C_BasePlayer, m_hPlayerOwner);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_VGuiScreen)

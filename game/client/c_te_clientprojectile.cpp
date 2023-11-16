@@ -26,11 +26,11 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector m_vecOrigin;
-	Vector m_vecVelocity;
-	int m_nModelIndex;
-	int m_nLifeTime;
-	EHANDLE m_hOwner;
+	CNetworkVector( m_vecOrigin);
+	CNetworkVector( m_vecVelocity);
+	CNetworkVar( int, m_nModelIndex);
+	CNetworkVar( int, m_nLifeTime);
+	CNetworkHandle(C_BaseEntity, m_hOwner);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEClientProjectile)

@@ -31,23 +31,23 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecOrigin;
-	QAngle			m_angRotation;
-	Vector			m_vecSize;
-	Vector			m_vecVelocity;
-	int				m_nRandomization;
-	int				m_nModelIndex;
-	int				m_nCount;
-	float			m_fTime;
-	int				m_nFlags;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkQAngle(			m_angRotation);
+	CNetworkVector(			m_vecSize);
+	CNetworkVector(			m_vecVelocity);
+	CNetworkVar( int,				m_nRandomization);
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( int,				m_nCount);
+	CNetworkVar( float,			m_fTime);
+	CNetworkVar( int,				m_nFlags);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBreakModel)
 	BEGIN_RECV_TABLE(C_TEBreakModel, DT_TEBreakModel, DT_BaseTempEntity)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
-		RecvPropFloat(RECVINFO(m_angRotation[0])),
-		RecvPropFloat(RECVINFO(m_angRotation[1])),
-		RecvPropFloat(RECVINFO(m_angRotation[2])),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_angRotation,0)),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_angRotation,1)),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_angRotation,2)),
 		RecvPropVector(RECVINFO(m_vecSize)),
 		RecvPropVector(RECVINFO(m_vecVelocity)),
 		RecvPropInt(RECVINFO(m_nModelIndex)),

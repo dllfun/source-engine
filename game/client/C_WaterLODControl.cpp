@@ -29,8 +29,8 @@ public:
 	bool ShouldDraw();
 
 private:
-	float m_flCheapWaterStartDistance;
-	float m_flCheapWaterEndDistance;
+	CNetworkVar( float, m_flCheapWaterStartDistance);
+	CNetworkVar( float, m_flCheapWaterEndDistance);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_WaterLODControl)

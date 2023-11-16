@@ -125,8 +125,8 @@
 			Msg( "m_bSendHandle: %d, m_Handle.Get: 0x%p\n", m_bSendHandle, m_Handle.Get() );
 		}
 
-		EHANDLE m_Handle;
-		bool m_bSendHandle;
+		CNetworkHandle(C_BaseEntity, m_Handle);
+		CNetworkVar( bool, m_bSendHandle);
 
 		BEGIN_INIT_RECV_TABLE(C_HandleTest)
 		BEGIN_RECV_TABLE(C_HandleTest, DT_HandleTest, DT_BaseEntity)

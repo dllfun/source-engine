@@ -180,7 +180,47 @@ public:
 };
 
 #ifdef CLIENT_DLL
-void RecvProxy_TeamplayRoundState(const CRecvProxyData* pData, void* pStruct, void* pOut)
+template<typename T= int>
+void RecvProxy_TeamplayRoundState(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropTeamplayRoundState : public RecvPropInt {
+public:
+	RecvPropTeamplayRoundState() {}
+
+	template<typename T = int>
+	RecvPropTeamplayRoundState(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_TeamplayRoundState<T>
+	);
+	virtual	~RecvPropTeamplayRoundState() {}
+	RecvPropTeamplayRoundState& operator=(const RecvPropTeamplayRoundState& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropTeamplayRoundState* pRecvProp = new RecvPropTeamplayRoundState;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropTeamplayRoundState::RecvPropTeamplayRoundState(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
 #endif
 ;
 //-----------------------------------------------------------------------------
@@ -635,7 +675,7 @@ public:
 #ifdef CLIENT_DLL
 	BEGIN_INIT_RECV_TABLE(CTeamplayRoundBasedRules)
 	BEGIN_NETWORK_TABLE_NOBASE(CTeamplayRoundBasedRules, DT_TeamplayRoundBasedRules)
-		RecvPropInt(RECVINFO(m_iRoundState), 0, RecvProxy_TeamplayRoundState),
+		RecvPropTeamplayRoundState(RECVINFO(m_iRoundState), 0),//, RecvProxy_TeamplayRoundState
 		RecvPropBool(RECVINFO(m_bInWaitingForPlayers)),
 		RecvPropInt(RECVINFO(m_iWinningTeam)),
 		RecvPropInt(RECVINFO(m_bInOvertime)),
@@ -644,12 +684,12 @@ public:
 		RecvPropBool(RECVINFO(m_bAwaitingReadyRestart)),
 		RecvPropTime(RECVINFO(m_flRestartRoundTime)),
 		RecvPropTime(RECVINFO(m_flMapResetTime)),
-		RecvPropArray3(RECVINFO_ARRAY(m_flNextRespawnWave), RecvPropTime(RECVINFO(m_flNextRespawnWave[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_TeamRespawnWaveTimes), RecvPropFloat(RECVINFO(m_TeamRespawnWaveTimes[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_bTeamReady), RecvPropBool(RECVINFO(m_bTeamReady[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_flNextRespawnWave), RecvPropTime(RECVINFO_ARRAY3(m_flNextRespawnWave))),
+		RecvPropArray3(RECVINFO_ARRAY(m_TeamRespawnWaveTimes), RecvPropFloat(RECVINFO_ARRAY3(m_TeamRespawnWaveTimes))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bTeamReady), RecvPropBool(RECVINFO_ARRAY3(m_bTeamReady))),
 		RecvPropBool(RECVINFO(m_bStopWatch)),
 		RecvPropBool(RECVINFO(m_bMultipleTrains)),
-		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerReady), RecvPropBool(RECVINFO(m_bPlayerReady[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerReady), RecvPropBool(RECVINFO_ARRAY3(m_bPlayerReady))),
 	END_NETWORK_TABLE(DT_TeamplayRoundBasedRules)
 	END_INIT_RECV_TABLE()
 #endif
@@ -662,5 +702,16 @@ inline CTeamplayRoundBasedRules* TeamplayRoundBasedRules()
 {
 	return static_cast<CTeamplayRoundBasedRules*>(g_pGameRules);
 }
+
+
+#ifdef CLIENT_DLL
+template<typename T>
+void RecvProxy_TeamplayRoundState(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	CTeamplayRoundBasedRules* pGamerules = (CTeamplayRoundBasedRules*)pStruct;
+	int iRoundState = pData->m_Value.m_Int;
+	pGamerules->SetRoundState(iRoundState);
+}
+#endif 
 
 #endif // TEAMPLAYROUNDBASED_GAMERULES_H

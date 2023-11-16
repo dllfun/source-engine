@@ -301,13 +301,150 @@ public:
 	{
 		return &m_Value; 
 	}
+//#ifdef CLIENT_DLL
+//	int noise[100];
+//#endif // CAME_DLL
+
+	Type m_Value;
+
+//#ifdef CLIENT_DLL
+//	int noise2[100];
+//#endif // CAME_DLL
+
+protected:
+	inline void NetworkStateChanged()
+	{
+		Changer::NetworkStateChanged( this );
+	}
+};
+
+template< class Type, class Changer >
+class CNetworkVarBase2
+{
+public:
+	inline CNetworkVarBase2()
+	{
+		NetworkVarConstruct(m_Value);
+	}
+
+	template< class C >
+	const Type& operator=(const C& val)
+	{
+		return Set((const Type)val);
+	}
+
+	template< class C >
+	const Type& operator=(const CNetworkVarBase2< C, Changer >& val)
+	{
+		return Set((const Type)val.m_Value);
+	}
+
+	const Type& Set(const Type& val)
+	{
+		if (memcmp(&m_Value, &val, sizeof(Type)))
+		{
+			NetworkStateChanged();
+			m_Value = val;
+		}
+		return m_Value;
+	}
+
+	Type& GetForModify()
+	{
+		NetworkStateChanged();
+		return m_Value;
+	}
+
+	template< class C >
+	const Type& operator+=(const C& val)
+	{
+		return Set(m_Value + (const Type)val);
+	}
+
+	template< class C >
+	const Type& operator-=(const C& val)
+	{
+		return Set(m_Value - (const Type)val);
+	}
+
+	template< class C >
+	const Type& operator/=(const C& val)
+	{
+		return Set(m_Value / (const Type)val);
+	}
+
+	template< class C >
+	const Type& operator*=(const C& val)
+	{
+		return Set(m_Value * (const Type)val);
+	}
+
+	template< class C >
+	const Type& operator^=(const C& val)
+	{
+		return Set(m_Value ^ (const Type)val);
+	}
+
+	template< class C >
+	const Type& operator|=(const C& val)
+	{
+		return Set(m_Value | (const Type)val);
+	}
+
+	const Type& operator++()
+	{
+		return (*this += 1);
+	}
+
+	Type operator--()
+	{
+		return (*this -= 1);
+	}
+
+	Type operator++(int) // postfix version..
+	{
+		Type val = m_Value;
+		(*this += 1);
+		return val;
+	}
+
+	Type operator--(int) // postfix version..
+	{
+		Type val = m_Value;
+		(*this -= 1);
+		return val;
+	}
+
+	// For some reason the compiler only generates type conversion warnings for this operator when used like 
+	// CNetworkVarBase<unsigned char> = 0x1
+	// (it warns about converting from an int to an unsigned char).
+	template< class C >
+	const Type& operator&=(const C& val)
+	{
+		return Set(m_Value & (const Type)val);
+	}
+
+	operator const Type& () const
+	{
+		return m_Value;
+	}
+
+	const Type& Get() const
+	{
+		return m_Value;
+	}
+
+	const Type* operator->() const
+	{
+		return &m_Value;
+	}
 
 	Type m_Value;
 
 protected:
 	inline void NetworkStateChanged()
 	{
-		Changer::NetworkStateChanged( this );
+		Changer::NetworkStateChanged(this);
 	}
 };
 
@@ -330,19 +467,16 @@ public:
 		SetA( aVal );
 	}
 
-	const Type& operator=( const Type &val ) 
-	{ 
-		return this->Set( val ); 
+	const Type& operator=( const Type &val )
+	{
+		return this->Set( val );
 	}
 
-	const Type& operator=( const CNetworkColor32Base<Type,Changer> &val ) 
-	{ 
+	const Type& operator=( const CNetworkColor32Base<Type,Changer> &val )
+	{
 		return CNetworkVarBase<Type,Changer>::Set( val.m_Value );
 	}
 
-	operator int() {
-		return CNetworkVarBase<Type, Changer>::m_Value;
-	}
 	
 	inline byte GetR() const { return CNetworkVarBase<Type,Changer>::m_Value.r; }
 	inline byte GetG() const { return CNetworkVarBase<Type,Changer>::m_Value.g; }
@@ -605,11 +739,23 @@ public:
 			return static_cast< Type* >(CNetworkVarBase<CBaseHandle,Changer>::m_Value.Get() );
 		}
 
+		int ToInt() {
+			return CNetworkVarBase<CBaseHandle, Changer>::m_Value.ToInt();
+		}
+
 		int GetEntryIndex() const {
 			return CNetworkVarBase<CBaseHandle, Changer>::m_Value.GetEntryIndex();
 		}
 		int GetSerialNumber() const {
 			return CNetworkVarBase<CBaseHandle, Changer>::m_Value.GetSerialNumber();
+		}
+
+		void Init(int iEntity, int iSerialNum) {
+			CNetworkVarBase<CBaseHandle, Changer>::m_Value.Init(iEntity, iSerialNum);
+		}
+
+		void Term() {
+			CNetworkVarBase<CBaseHandle, Changer>::m_Value.Term();
 		}
 
 		Type* operator->() const 
@@ -642,6 +788,11 @@ public:
 #define CNetworkVar( type, name ) \
 	NETWORK_VAR_START( type, name ) \
 	NETWORK_VAR_END( type, name, CNetworkVarBase, NetworkStateChanged )
+
+	// Use this macro to define a network variable.
+#define CNetworkVar2( type, name ) \
+	NETWORK_VAR_START( type, name ) \
+	NETWORK_VAR_END( type, name, CNetworkVarBase2, NetworkStateChanged )
 
 
 // Use this macro when you have a base class with a variable, and it doesn't have that variable in a SendTable,
@@ -711,6 +862,8 @@ public:
 	NETWORK_VAR_END( string_t, name, CNetworkStringTBase, NetworkStateChanged )
 
 
+
+
 #define CNetworkString( name, length ) \
 	class NetworkVar_##name; \
 	friend class NetworkVar_##name; \
@@ -721,6 +874,9 @@ public:
 		NetworkVar_##name() { m_Value[0] = '\0'; } \
 		operator const char*() const { return m_Value; } \
 		const char* Get() const { return m_Value; } \
+		char& operator[](int i){\
+			return m_Value[i];\
+		}\
 		char* GetForModify() \
 		{ \
 			NetworkStateChanged(); \
@@ -731,7 +887,7 @@ public:
 		{ \
 		CHECK_USENETWORKVARS ((ThisClass*)(((char*)this) - MyOffsetOf(ThisClass,name)))->NetworkStateChanged(); \
 		} \
-	private: \
+	public: \
 		char m_Value[length]; \
 	}; \
 	NetworkVar_##name name;
@@ -767,7 +923,15 @@ public:
 			Assert( i >= 0 && i < count ); \
 			return m_Value[i]; \
 		} \
-		\
+		type& operator[]( int i )\
+		{ \
+			return Get( i ); \
+		} \
+		type& Get( int i )\
+		{ \
+			Assert( i >= 0 && i < count ); \
+			return m_Value[i]; \
+		} \
 		type& GetForModify( int i ) \
 		{ \
 			Assert( i >= 0 && i < count ); \

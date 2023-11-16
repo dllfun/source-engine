@@ -30,7 +30,7 @@ public:
 	float GetConveyorSpeed() { return m_flConveyorSpeed; }
 
 private:
-	float m_flConveyorSpeed;
+	CNetworkVar( float, m_flConveyorSpeed);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_FuncConveyor)

@@ -28,16 +28,16 @@ public:
 	bool ShouldDraw();
 
 private:
-	Vector m_shadowDirection;
-	color32 m_shadowColor;
-	float m_flShadowMaxDist;
-	bool m_bDisableShadows;
+	CNetworkVector( m_shadowDirection);
+	CNetworkColor32( m_shadowColor);
+	CNetworkVar( float, m_flShadowMaxDist);
+	CNetworkVar( bool, m_bDisableShadows);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_ShadowControl)
 	BEGIN_RECV_TABLE(C_ShadowControl, DT_ShadowControl, DT_BaseEntity)
 		RecvPropVector(RECVINFO(m_shadowDirection)),
-		RecvPropInt(RECVINFO(m_shadowColor)),
+		RecvPropColor32(RECVINFO(m_shadowColor)),
 		RecvPropFloat(RECVINFO(m_flShadowMaxDist)),
 		RecvPropBool(RECVINFO(m_bDisableShadows)),
 	END_RECV_TABLE(DT_ShadowControl)
@@ -57,7 +57,7 @@ void C_ShadowControl::OnDataChanged(DataUpdateType_t updateType)
 {
 	// Set the color, direction, distance...
 	g_pClientShadowMgr->SetShadowDirection( m_shadowDirection );
-	g_pClientShadowMgr->SetShadowColor( m_shadowColor.r, m_shadowColor.g, m_shadowColor.b );
+	g_pClientShadowMgr->SetShadowColor( m_shadowColor.GetR(), m_shadowColor.GetG(), m_shadowColor.GetB());
 	g_pClientShadowMgr->SetShadowDistance( m_flShadowMaxDist );
 	g_pClientShadowMgr->SetShadowsDisabled( m_bDisableShadows );
 }

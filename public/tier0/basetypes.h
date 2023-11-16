@@ -253,9 +253,14 @@ typedef struct color32_s
 
 	byte r, g, b, a;
 
-	operator int() {
-		return *((int*)&r);
-	}
+	inline byte GetR() const { return r; }
+	inline byte GetG() const { return g; }
+	inline byte GetB() const { return b; }
+	inline byte GetA() const { return a; }
+	inline void SetR(byte val) { r = val; }
+	inline void SetG(byte val) { g = val; }
+	inline void SetB(byte val) { b = val; }
+	inline void SetA(byte val) { a = val; }
 } color32;
 
 inline bool color32::operator!=( const color32 &other ) const

@@ -15,7 +15,9 @@ class C_FuncOccluder : public C_BaseEntity
 public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_CLASS( C_FuncOccluder, C_BaseEntity );
-
+	C_FuncOccluder() {
+		m_bActive = false;
+	}
 // Overrides.
 public:
 	virtual bool	ShouldDraw();
@@ -23,8 +25,8 @@ public:
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
 private:
-	int m_nOccluderIndex;
-	bool m_bActive = false;
+	CNetworkVar( int, m_nOccluderIndex);
+	CNetworkVar(bool, m_bActive); 
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_FuncOccluder)

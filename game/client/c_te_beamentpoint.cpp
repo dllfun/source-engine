@@ -28,10 +28,10 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int				m_nStartEntity;
-	int				m_nEndEntity;
-	Vector			m_vecStartPoint;
-	Vector			m_vecEndPoint;
+	CNetworkVar( int,				m_nStartEntity);
+	CNetworkVar( int,				m_nEndEntity);
+	CNetworkVector(			m_vecStartPoint);
+	CNetworkVector(			m_vecEndPoint);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBeamEntPoint)
@@ -77,7 +77,7 @@ void TE_BeamEntPoint( IRecipientFilter& filter, float delay,
 //-----------------------------------------------------------------------------
 void C_TEBeamEntPoint::PostDataUpdate( DataUpdateType_t updateType )
 {
-	beams->CreateBeamEntPoint( m_nStartEntity, &m_vecStartPoint, m_nEndEntity, &m_vecEndPoint, 
+	beams->CreateBeamEntPoint( m_nStartEntity, &m_vecStartPoint.m_Value, m_nEndEntity, &m_vecEndPoint.m_Value, 
 		m_nModelIndex, m_nHaloIndex, 0.0f,
 		m_fLife,  m_fWidth, m_fEndWidth, m_nFadeLength, m_fAmplitude, a, 0.1 * m_nSpeed, 
 		m_nStartFrame, 0.1 * m_nFrameRate, r, g, b );

@@ -29,8 +29,8 @@ public:
 public:
 	void			CreateFunnel( void );
 
-	int				m_nModelIndex;
-	int				m_nReversed;
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( int,				m_nReversed);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TELargeFunnel)

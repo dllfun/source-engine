@@ -37,8 +37,87 @@ public:
 	Vector	m_vecMoveDir;
 };
 
+template<typename T= float>
 void RecvProxy_PlasmaScale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropPlasmaScale : public RecvPropFloat {
+public:
+	RecvPropPlasmaScale() {}
+
+	template<typename T = float>
+	RecvPropPlasmaScale(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_PlasmaScale<T>
+	);
+	virtual	~RecvPropPlasmaScale() {}
+	RecvPropPlasmaScale& operator=(const RecvPropPlasmaScale& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropPlasmaScale* pRecvProp = new RecvPropPlasmaScale;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropPlasmaScale::RecvPropPlasmaScale(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+template<typename T= float>
 void RecvProxy_PlasmaScaleTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropPlasmaScaleTime : public RecvPropFloat {
+public:
+	RecvPropPlasmaScaleTime() {}
+
+	template<typename T = float>
+	RecvPropPlasmaScaleTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_PlasmaScaleTime<T>
+	);
+	virtual	~RecvPropPlasmaScaleTime() {}
+	RecvPropPlasmaScaleTime& operator=(const RecvPropPlasmaScaleTime& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropPlasmaScaleTime* pRecvProp = new RecvPropPlasmaScaleTime;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropPlasmaScaleTime::RecvPropPlasmaScaleTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
 
 class C_Plasma : public C_BaseEntity
 {
@@ -69,13 +148,13 @@ public:
 
 //From the server
 public:
-	float	m_flStartScale;
-	float	m_flScale;
-	float	m_flScaleTime;
-	int		m_nFlags;
-	int		m_nPlasmaModelIndex;
-	int		m_nPlasmaModelIndex2;
-	int		m_nGlowModelIndex;
+	CNetworkVar( float,	m_flStartScale);
+	CNetworkVar( float,	m_flScale);
+	CNetworkVar( float,	m_flScaleTime);
+	CNetworkVar( int,		m_nFlags);
+	CNetworkVar( int,		m_nPlasmaModelIndex);
+	CNetworkVar( int,		m_nPlasmaModelIndex2);
+	CNetworkVar( int,		m_nGlowModelIndex);
 
 //Client-side only
 public:
@@ -105,8 +184,8 @@ public:
 	BEGIN_INIT_RECV_TABLE(C_Plasma)
 	BEGIN_RECV_TABLE(C_Plasma, DT_Plasma, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flStartScale)),
-		RecvPropFloat(RECVINFO(m_flScale), 0, RecvProxy_PlasmaScale),
-		RecvPropFloat(RECVINFO(m_flScaleTime), 0, RecvProxy_PlasmaScaleTime),
+		RecvPropPlasmaScale(RECVINFO(m_flScale), 0),//, RecvProxy_PlasmaScale
+		RecvPropPlasmaScaleTime(RECVINFO(m_flScaleTime), 0),//, RecvProxy_PlasmaScaleTime
 		RecvPropInt(RECVINFO(m_nFlags)),
 		RecvPropInt(RECVINFO(m_nPlasmaModelIndex)),
 		RecvPropInt(RECVINFO(m_nPlasmaModelIndex2)),
@@ -123,6 +202,7 @@ public:
 //			*pIn - 
 //			objectID - 
 //-----------------------------------------------------------------------------
+template<typename T>
 void RecvProxy_PlasmaScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	C_Plasma	*pPlasmaSmoke	= (C_Plasma	*) pStruct;
@@ -146,6 +226,7 @@ void RecvProxy_PlasmaScale( const CRecvProxyData *pData, void *pStruct, void *pO
 //			*pIn - 
 //			objectID - 
 //-----------------------------------------------------------------------------
+template<typename T>
 void RecvProxy_PlasmaScaleTime( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	C_Plasma	*pPlasmaSmoke	= (C_Plasma	*) pStruct;

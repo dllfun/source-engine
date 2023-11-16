@@ -19,39 +19,9 @@ IMPLEMENT_CLIENTCLASS( C_VoteController, DT_VoteController, CVoteController )
 
 
 
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void C_VoteController::RecvProxy_VoteType( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_VoteController *pMe = (C_VoteController *)pStruct;
-	if( memcmp( &pMe->m_iActiveIssueIndex, &pData->m_Value.m_Int, sizeof(pData->m_Value.m_Int)) == 0 )
-		return;
 
-	memcpy( &pMe->m_iActiveIssueIndex, &pData->m_Value.m_Int, sizeof(pData->m_Value.m_Int) );
-	pMe->m_bTypeDirty = true;
 
-	// Since the contents of a new vote are in three parts, we can't directly send an event to the Hud
-	// because we don't really know if we have all three parts yet.  So we'll mark dirty, and our think
-	// can notice that and send the event.
-}
 
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void C_VoteController::RecvProxy_VoteOption( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	int index = pData->m_pRecvProp->GetOffset() / sizeof(int);
-	
-	size_t offset = offsetof( C_VoteController, m_nVoteOptionCount );
-	C_VoteController *pMe = (C_VoteController *)((byte *)pStruct - offset );
-	if( pMe->m_nVoteOptionCount[index] == pData->m_Value.m_Int )
-		return;
-	
-	pMe->m_nVoteOptionCount[index] = pData->m_Value.m_Int;
-	pMe->m_bVotesDirty = true;
-	pMe->SetNextClientThink( gpGlobals->GetCurTime() + 0.001 );
-}
 
 //-----------------------------------------------------------------------------
 // Purpose:

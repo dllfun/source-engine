@@ -42,9 +42,9 @@ private:
 	void Start( );
 	void AddParticle( float flInitialDeltaTime, const Vector &vecMins, const Vector &vecMaxs, const matrix3x4_t &boxToWorld );
 
-	int		m_iMaterialName;
+	CNetworkVar( int,		m_iMaterialName);
 	EntityParticleTrailInfo_t	m_Info;
-	EHANDLE m_hConstraintEntity;
+	CNetworkHandle(C_BaseEntity, m_hConstraintEntity);
 
 	PMaterialHandle		m_hMaterial;
 	TimedEvent			m_teParticleSpawn;

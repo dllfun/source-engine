@@ -14,8 +14,9 @@
 // For introspection
 #include "tier0/platform.h"
 #include "predictioncopy.h"
+#if defined( CLIENT_DLL )
 #include "shared_classnames.h"
-
+#endif
 #ifndef NO_ENTITY_PREDICTION
 #define UsePrediction() 1
 #else

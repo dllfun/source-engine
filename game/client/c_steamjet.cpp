@@ -71,19 +71,19 @@ public:
 //Stuff from the datatable
 public:
 
-	float			m_SpreadSpeed;
-	float			m_Speed;
-	float			m_StartSize;
-	float			m_EndSize;
-	float			m_Rate;
-	float			m_JetLength;	// Length of the jet. Lifetime is derived from this.
+	CNetworkVar( float,			m_SpreadSpeed);
+	CNetworkVar( float,			m_Speed);
+	CNetworkVar( float,			m_StartSize);
+	CNetworkVar( float,			m_EndSize);
+	CNetworkVar( float,			m_Rate);
+	CNetworkVar( float,			m_JetLength);	// Length of the jet. Lifetime is derived from this.
 
-	int				m_bEmit;		// Emit particles?
-	int				m_nType;		// Type of particles to emit
-	bool			m_bFaceLeft;	// For support of legacy env_steamjet entity, which faced left instead of forward.
+	CNetworkVar( int,				m_bEmit);		// Emit particles?
+	CNetworkVar( int,				m_nType);		// Type of particles to emit
+	CNetworkVar( bool,			m_bFaceLeft);	// For support of legacy env_steamjet entity, which faced left instead of forward.
 
-	int				m_spawnflags;
-	float			m_flRollSpeed;
+	CNetworkVar( int,				m_spawnflags);
+	CNetworkVar( float,			m_flRollSpeed);
 
 private:
 

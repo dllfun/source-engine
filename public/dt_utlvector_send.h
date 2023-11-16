@@ -56,7 +56,10 @@ public:
 		SendTableProxyFn varProxy = SendProxy_DataTableToDataTable	// This can be overridden to control who the array is sent to.
 	);
 	virtual ~SendPropUtlVector() {}
-	SendPropUtlVector& operator=(const SendPropUtlVector& srcSendProp);
+	SendPropUtlVector& operator=(const SendPropUtlVector& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropUtlVector* pSendProp = new SendPropUtlVector;
 		*pSendProp = *this;

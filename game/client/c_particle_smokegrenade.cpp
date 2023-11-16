@@ -42,6 +42,46 @@ static Vector s_FadePlaneDirections[] =
 // This is used to randomize the direction it chooses to move a particle in.
 int g_OffsetLookup[3] = {-1,0,1};
 
+template<typename T= unsigned char>
+void RecvProxy_CurrentStage(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropCurrentStage : public RecvPropInt {
+public:
+	RecvPropCurrentStage() {}
+
+	template<typename T = int>
+	RecvPropCurrentStage(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_CurrentStage<T>
+	);
+	virtual	~RecvPropCurrentStage() {}
+	RecvPropCurrentStage& operator=(const RecvPropCurrentStage& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropCurrentStage* pRecvProp = new RecvPropCurrentStage;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropCurrentStage::RecvPropCurrentStage(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
 
 // ------------------------------------------------------------------------- //
 // Classes
@@ -102,8 +142,8 @@ public:
 // Proxies.
 public:
 
-	static void		RecvProxy_CurrentStage(  const CRecvProxyData *pData, void *pStruct, void *pOut );
-
+	template<typename T>
+	friend void RecvProxy_CurrentStage(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 private:
 
@@ -167,15 +207,15 @@ private:
 // State variables from server.
 public:
 	
-	unsigned char		m_CurrentStage;
+	CNetworkVar( unsigned char,		m_CurrentStage);
 	Vector				m_SmokeBasePos;
 
 	// What time the effect was initially created
-	float				m_flSpawnTime;
+	CNetworkVar( float,				m_flSpawnTime);
 
 	// It will fade out during this time.
-	float				m_FadeStartTime;
-	float				m_FadeEndTime;
+	CNetworkVar( float,				m_FadeStartTime);
+	CNetworkVar( float,				m_FadeEndTime);
 	float				m_FadeAlpha;	// Calculated from the fade start/end times each frame.
 
 	// Used during rendering.. active dlights.
@@ -215,7 +255,7 @@ public:
 		RecvPropTime(RECVINFO(m_flSpawnTime)),
 		RecvPropFloat(RECVINFO(m_FadeStartTime)),
 		RecvPropFloat(RECVINFO(m_FadeEndTime)),
-		RecvPropInt(RECVINFO(m_CurrentStage), 0, &C_ParticleSmokeGrenade::RecvProxy_CurrentStage),
+		RecvPropCurrentStage(RECVINFO(m_CurrentStage), 0),//, &C_ParticleSmokeGrenade::RecvProxy_CurrentStage
 	END_RECV_TABLE(DT_ParticleSmokeGrenade)
 	END_INIT_RECV_TABLE()
 };
@@ -798,8 +838,8 @@ void C_ParticleSmokeGrenade::GetParticlePosition( Particle *pParticle, Vector& w
 	worldpos = pParticle->m_Pos + m_SmokeBasePos;
 }
 
-
-void C_ParticleSmokeGrenade::RecvProxy_CurrentStage(  const CRecvProxyData *pData, void *pStruct, void *pOut )
+template<typename T>
+void RecvProxy_CurrentStage(  const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	C_ParticleSmokeGrenade *pGrenade = (C_ParticleSmokeGrenade*)pStruct;
 	Assert( pOut == &pGrenade->m_CurrentStage );

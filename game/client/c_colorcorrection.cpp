@@ -37,14 +37,14 @@ public:
 	void ClientThink();
 
 private:
-	Vector	m_vecOrigin;
+	CNetworkVector(	m_vecOrigin);
 
-	float	m_minFalloff;
-	float	m_maxFalloff;
-	float	m_flCurWeight;
-	char	m_netLookupFilename[MAX_PATH];
+	CNetworkVar( float,	m_minFalloff);
+	CNetworkVar( float,	m_maxFalloff);
+	CNetworkVar( float,	m_flCurWeight);
+	CNetworkString(	m_netLookupFilename,MAX_PATH);
 
-	bool	m_bEnabled;
+	CNetworkVar( bool,	m_bEnabled);
 
 	ClientCCHandle_t m_CCHandle;
 

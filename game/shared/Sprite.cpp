@@ -129,10 +129,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( Sprite, DT_Sprite );
 
 #if defined( CLIENT_DLL )
 
-void RecvProxy_SpriteScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	((CSprite*)pStruct)->SetSpriteScale( pData->m_Value.m_Float );
-}
+
 
 #endif
 

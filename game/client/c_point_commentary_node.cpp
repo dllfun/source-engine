@@ -51,7 +51,7 @@ public:
 	virtual void LevelInit( void ) { g_CommentaryNodes.Purge(); }
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
-	void StartCommentary( C_PointCommentaryNode *pNode, char *pszSpeakers, int iNode, int iNodeMax, float flStartTime, float flEndTime );
+	void StartCommentary( C_PointCommentaryNode *pNode,const char *pszSpeakers, int iNode, int iNodeMax, float flStartTime, float flEndTime );
 	void StopCommentary( void );
 	bool IsTheActiveNode( C_PointCommentaryNode *pNode ) { return (pNode == m_hActiveNode); }
 
@@ -170,16 +170,16 @@ public:
 
 public:
 	// Data received from the server
-	bool		m_bActive;
+	CNetworkVar( bool,		m_bActive);
 	bool		m_bWasActive;
-	float		m_flStartTime;
-	char		m_iszCommentaryFile[MAX_PATH];
-	char		m_iszCommentaryFileNoHDR[MAX_PATH];
-	char		m_iszSpeakers[MAX_SPEAKER_NAME];
-	int			m_iNodeNumber;
-	int			m_iNodeNumberMax;
+	CNetworkVar( float,		m_flStartTime);
+	CNetworkString(	m_iszCommentaryFile,MAX_PATH);
+	CNetworkString(	m_iszCommentaryFileNoHDR,MAX_PATH);
+	CNetworkString( m_iszSpeakers,MAX_SPEAKER_NAME);
+	CNetworkVar( int,			m_iNodeNumber);
+	CNetworkVar( int,			m_iNodeNumberMax);
 	CSoundPatch *m_sndCommentary;
-	EHANDLE		m_hViewPosition;
+	CNetworkHandle(C_BaseEntity,		m_hViewPosition);
 	bool		m_bRestartAfterRestore;
 
 public:
@@ -236,7 +236,7 @@ void C_PointCommentaryNode::OnDataChanged( DataUpdateType_t updateType )
 	if ( m_bActive && pPlayer )
 	{
 		// Use the HDR / Non-HDR version based on whether we're running HDR or not
-		char *pszCommentaryFile;
+		const char *pszCommentaryFile;
 		if ( g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_NONE && m_iszCommentaryFileNoHDR && m_iszCommentaryFileNoHDR[0] )
 		{
 			pszCommentaryFile = m_iszCommentaryFileNoHDR;
@@ -522,7 +522,7 @@ void CHudCommentary::VidInit( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudCommentary::StartCommentary( C_PointCommentaryNode *pNode, char *pszSpeakers, int iNode, int iNodeMax, float flStartTime, float flEndTime )
+void CHudCommentary::StartCommentary( C_PointCommentaryNode *pNode,const char *pszSpeakers, int iNode, int iNodeMax, float flStartTime, float flEndTime )
 {
 	if ( (flEndTime - flStartTime) <= 0 )
 		return;

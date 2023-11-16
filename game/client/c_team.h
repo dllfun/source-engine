@@ -17,8 +17,49 @@
 
 
 class C_BasePlayer;
+class C_Team;
 
+template<typename T= C_Team>
 void RecvProxy_PlayerList(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropPlayerList : public RecvPropInt {
+public:
+	RecvPropPlayerList() {}
+
+	template<typename T = int>
+	RecvPropPlayerList(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_PlayerList<T>
+	);
+	virtual	~RecvPropPlayerList() {}
+	RecvPropPlayerList& operator=(const RecvPropPlayerList& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropPlayerList* pRecvProp = new RecvPropPlayerList;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropPlayerList::RecvPropPlayerList(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt((int*)0, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
 void RecvProxyArrayLength_PlayerArray(void* pStruct, int objectID, int currentArrayLength);
 
 class C_Team : public C_BaseEntity
@@ -64,15 +105,15 @@ public:
 
 	// Data received from the server
 	CUtlVector< int > m_aPlayers;
-	char	m_szTeamname[ MAX_TEAM_NAME_LENGTH ];
-	int		m_iScore;
-	int		m_iRoundsWon;
+	CNetworkString( 	m_szTeamname, MAX_TEAM_NAME_LENGTH );
+	CNetworkVar( int,		m_iScore);
+	CNetworkVar( int,		m_iRoundsWon);
 
 	// Data for the scoreboard
 	int		m_iDeaths;
 	int		m_iPing;
 	int		m_iPacketloss;
-	int		m_iTeamNum;
+	CNetworkVar( int,		m_iTeamNum);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_Team)
@@ -86,13 +127,23 @@ public:
 			MAX_PLAYERS,
 			0,
 			"player_array",
-			RecvPropInt("player_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_PlayerList),
+			RecvPropPlayerList((C_Team*)0, "player_array_element", 0, SIZEOF_IGNORE, 0),//, RecvProxy_PlayerList
 			RecvProxyArrayLength_PlayerArray
 			)
 	END_RECV_TABLE(DT_Team)
 	END_INIT_RECV_TABLE()
 };
 
+
+//-----------------------------------------------------------------------------
+// Purpose: RecvProxy that converts the Team's player UtlVector to entindexes
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_PlayerList(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	T* pTeam = (T*)pOut;//C_Team
+	pTeam->m_aPlayers[pData->m_iElement] = pData->m_Value.m_Int;
+}
 
 // Global list of client side team entities
 extern CUtlVector< C_Team * > g_Teams;

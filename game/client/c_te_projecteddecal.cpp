@@ -37,10 +37,10 @@ public:
 	virtual void	Precache( void );
 
 public:
-	Vector			m_vecOrigin;
-	QAngle			m_angRotation;
-	float			m_flDistance;
-	int				m_nIndex;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkQAngle(			m_angRotation);
+	CNetworkVar( float,			m_flDistance);
+	CNetworkVar( int,				m_nIndex);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEProjectedDecal)
@@ -163,7 +163,7 @@ void C_TEProjectedDecal::PostDataUpdate( DataUpdateType_t updateType )
 	VPROF( "C_TEProjectedDecal::PostDataUpdate" );
 
 	CBroadcastRecipientFilter filter;
-	TE_ProjectDecal( filter, 0.0f, &m_vecOrigin, &m_angRotation, m_flDistance, m_nIndex );
+	TE_ProjectDecal( filter, 0.0f, &m_vecOrigin.m_Value, &m_angRotation.m_Value, m_flDistance, m_nIndex );
 }
 
 

@@ -65,12 +65,208 @@ public:
 
 bool IsInFreezeCam( void );
 
+template<typename T= float>
 void RecvProxy_LocalVelocityX(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropLocalVelocityX : public RecvPropFloat {
+public:
+	RecvPropLocalVelocityX() {}
+
+	template<typename T = float>
+	RecvPropLocalVelocityX(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_LocalVelocityX<T>
+	);
+	virtual	~RecvPropLocalVelocityX() {}
+	RecvPropLocalVelocityX& operator=(const RecvPropLocalVelocityX& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropLocalVelocityX* pRecvProp = new RecvPropLocalVelocityX;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropLocalVelocityX::RecvPropLocalVelocityX(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+template<typename T= float>
 void RecvProxy_LocalVelocityY(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropLocalVelocityY : public RecvPropFloat {
+public:
+	RecvPropLocalVelocityY() {}
+
+	template<typename T = float>
+	RecvPropLocalVelocityY(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_LocalVelocityY<T>
+	);
+	virtual	~RecvPropLocalVelocityY() {}
+	RecvPropLocalVelocityY& operator=(const RecvPropLocalVelocityY& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropLocalVelocityY* pRecvProp = new RecvPropLocalVelocityY;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropLocalVelocityY::RecvPropLocalVelocityY(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= float>
 void RecvProxy_LocalVelocityZ(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
+class RecvPropLocalVelocityZ : public RecvPropFloat {
+public:
+	RecvPropLocalVelocityZ() {}
+
+	template<typename T = float>
+	RecvPropLocalVelocityZ(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_LocalVelocityZ<T>
+	);
+	virtual	~RecvPropLocalVelocityZ() {}
+	RecvPropLocalVelocityZ& operator=(const RecvPropLocalVelocityZ& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropLocalVelocityZ* pRecvProp = new RecvPropLocalVelocityZ;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropLocalVelocityZ::RecvPropLocalVelocityZ(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= EHANDLE>
 void RecvProxy_ObserverTarget(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropObserverTarget : public RecvPropEHandle {
+public:
+	RecvPropObserverTarget() {}
+
+	template<typename T = int>
+	RecvPropObserverTarget(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		RecvVarProxyFn proxyFn = RecvProxy_ObserverTarget<T>);
+	virtual	~RecvPropObserverTarget() {}
+	RecvPropObserverTarget& operator=(const RecvPropObserverTarget& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropObserverTarget* pRecvProp = new RecvPropObserverTarget;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropObserverTarget::RecvPropObserverTarget(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	RecvVarProxyFn proxyFn)
+	:RecvPropEHandle(pType, pVarName, offset, sizeofVar, proxyFn)
+{
+
+}
+
+template<typename T= int>
 void RecvProxy_ObserverMode(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropObserverMode : public RecvPropInt {
+public:
+	RecvPropObserverMode() {}
+
+	template<typename T = int>
+	RecvPropObserverMode(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_ObserverMode<T>
+	);
+	virtual	~RecvPropObserverMode() {}
+	RecvPropObserverMode& operator=(const RecvPropObserverMode& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropObserverMode* pRecvProp = new RecvPropObserverMode;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropObserverMode::RecvPropObserverMode(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: Base Player class
@@ -423,15 +619,15 @@ public:
 	CPlayerState			pl;
 
 	// Player FOV values
-	int						m_iFOV;				// field of view
-	int						m_iFOVStart;		// starting value of the FOV changing over time (client only)
-	float					m_flFOVTime;		// starting time of the FOV zoom
-	int						m_iDefaultFOV;		// default FOV if no other zooms are occurring
-	EHANDLE					m_hZoomOwner;		// This is a pointer to the entity currently controlling the player's zoom
+	CNetworkVar( int,						m_iFOV);				// field of view
+	CNetworkVar( int,						m_iFOVStart);		// starting value of the FOV changing over time (client only)
+	CNetworkVar( float,					m_flFOVTime);		// starting time of the FOV zoom
+	CNetworkVar( int,						m_iDefaultFOV);		// default FOV if no other zooms are occurring
+	CNetworkHandle(C_BaseEntity,	m_hZoomOwner);		// This is a pointer to the entity currently controlling the player's zoom
 												// Only this entity can change the zoom state once it has ownership
 
 	// For weapon prediction
-	bool			m_fOnTarget;		//Is the crosshair on a target?
+	CNetworkVar( bool,			m_fOnTarget);		//Is the crosshair on a target?
 	
 	char			m_szAnimExtension[32];
 
@@ -444,11 +640,11 @@ public:
 	CUserCmd		*m_pCurrentCommand;
 
 	// Movement constraints
-	EHANDLE			m_hConstraintEntity;
-	Vector			m_vecConstraintCenter;
-	float			m_flConstraintRadius;
-	float			m_flConstraintWidth;
-	float			m_flConstraintSpeedFactor;
+	CNetworkHandle(C_BaseEntity,	m_hConstraintEntity);
+	CNetworkVector( 			m_vecConstraintCenter);
+	CNetworkVar( float,			m_flConstraintRadius);
+	CNetworkVar( float,			m_flConstraintWidth);
+	CNetworkVar( float,			m_flConstraintSpeedFactor);
 
 protected:
 
@@ -483,14 +679,14 @@ protected:
 	bool			JustEnteredVehicle();
 
 // DATA
-	int				m_iObserverMode;	// if in spectator mode != 0
-	EHANDLE			m_hObserverTarget;	// current observer target
+	CNetworkVar( int,				m_iObserverMode);	// if in spectator mode != 0
+	CNetworkHandle(C_BaseEntity, m_hObserverTarget);	// current observer target
 	float			m_flObserverChaseDistance; // last distance to observer traget
 	Vector			m_vecFreezeFrameStart;
 	float			m_flFreezeFrameStartTime;	// Time at which we entered freeze frame observer mode
 	float			m_flFreezeFrameDistance;
 	bool			m_bWasFreezeFraming; 
-	float			m_flDeathTime;		// last time player died
+	CNetworkVar( float,			m_flDeathTime);		// last time player died
 
 	float			m_flStepSoundTime;
 	bool			m_IsFootprintOnLeft;
@@ -501,14 +697,14 @@ private:
 	C_BasePlayer( const C_BasePlayer & ); // not defined, not accessible
 
 	// Vehicle stuff.
-	EHANDLE			m_hVehicle;
-	EHANDLE			m_hOldVehicle;
-	EHANDLE			m_hUseEntity;
+	CNetworkHandle(C_BaseEntity,			m_hVehicle);
+	CNetworkHandle(C_BaseEntity,		m_hOldVehicle);
+	CNetworkHandle(C_BaseEntity,		m_hUseEntity);
 	
-	float			m_flMaxspeed;
+	CNetworkVar( float,			m_flMaxspeed);
 
-	int				m_iBonusProgress;
-	int				m_iBonusChallenge;
+	CNetworkVar( int,				m_iBonusProgress);
+	CNetworkVar( int,				m_iBonusChallenge);
 
 	CInterpolatedVar< Vector >	m_iv_vecViewOffset;
 
@@ -525,7 +721,7 @@ private:
 	bool			m_bWasFrozen;
 	int				m_flPhysics;
 
-	int				m_nTickBase;
+	CNetworkVar( int,				m_nTickBase);
 	int				m_nFinalPredictedTick;
 
 	EHANDLE			m_pCurrentVguiScreen;
@@ -537,14 +733,14 @@ private:
 	CFlashlightEffect *m_pFlashlight;
 
 	typedef CHandle<C_BaseCombatWeapon> CBaseCombatWeaponHandle;
-	CNetworkVar( CBaseCombatWeaponHandle, m_hLastWeapon );
+	CNetworkHandle(C_BaseCombatWeapon, m_hLastWeapon );
 
 //#if !defined( NO_ENTITY_PREDICTION )
 //	CUtlVector< CHandle< C_BaseEntity > > m_SimulatedByThisPlayer;
 //#endif
 
 	// players own view models, left & right hand
-	CHandle< C_BaseViewModel >	m_hViewModel[ MAX_VIEWMODELS ];		
+	CNetworkArray( CHandle< C_BaseViewModel >,	m_hViewModel, MAX_VIEWMODELS );		
 	
 	float					m_flOldPlayerZ;
 	float					m_flOldPlayerViewOffsetZ;
@@ -594,7 +790,7 @@ protected:
 	virtual float GetFallVelocity( void ) { return m_Local.m_flFallVelocity; }
 	void ForceSetupBonesAtTimeFakeInterpolation( matrix3x4_t *pBonesOut, float curtimeOffset );
 
-	float m_flLaggedMovementValue;
+	CNetworkVar( float, m_flLaggedMovementValue);
 
 	// These are used to smooth out prediction corrections. They're most useful when colliding with
 	// vphysics objects. The server will be sending constant prediction corrections, and these can help
@@ -604,7 +800,7 @@ protected:
 	
 	Vector m_vecPreviouslyPredictedOrigin; // Used to determine if non-gamemovement game code has teleported, or tweaked the player's origin
 
-	char m_szLastPlaceName[MAX_PLACE_NAME_LENGTH];	// received from the server
+	CNetworkString( m_szLastPlaceName ,MAX_PLACE_NAME_LENGTH);	// received from the server
 
 	// Texture names and surface data, used by CGameMovement
 	int				m_surfaceProps;
@@ -656,12 +852,12 @@ public:
 
 		RecvPropDataTable(RECVINFO_DT(m_Local), 0, REFERENCE_RECV_TABLE(DT_Local)),
 
-		RecvPropFloat(RECVINFO(m_vecViewOffset[0])),
-		RecvPropFloat(RECVINFO(m_vecViewOffset[1])),
-		RecvPropFloat(RECVINFO(m_vecViewOffset[2])),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_vecViewOffset,0)),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_vecViewOffset,1)),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_vecViewOffset,2)),
 		RecvPropFloat(RECVINFO(m_flFriction)),
 
-		RecvPropArray3(RECVINFO_ARRAY(m_iAmmo), RecvPropInt(RECVINFO(m_iAmmo[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iAmmo), RecvPropInt(RECVINFO_ARRAY3(m_iAmmo))),
 
 		RecvPropInt(RECVINFO(m_fOnTarget)),
 
@@ -671,9 +867,9 @@ public:
 		RecvPropEHandle(RECVINFO(m_hLastWeapon)),
 		RecvPropEHandle(RECVINFO(m_hGroundEntity)),
 
-		RecvPropFloat(RECVINFO(m_vecVelocity[0]), 0, RecvProxy_LocalVelocityX),
-		RecvPropFloat(RECVINFO(m_vecVelocity[1]), 0, RecvProxy_LocalVelocityY),
-		RecvPropFloat(RECVINFO(m_vecVelocity[2]), 0, RecvProxy_LocalVelocityZ),
+		RecvPropLocalVelocityX(RECVINFO_VECTORELEM(m_vecVelocity,0), 0),//, RecvProxy_LocalVelocityX
+		RecvPropLocalVelocityY(RECVINFO_VECTORELEM(m_vecVelocity,1), 0),//, RecvProxy_LocalVelocityY
+		RecvPropLocalVelocityZ(RECVINFO_VECTORELEM(m_vecVelocity,2), 0),//, RecvProxy_LocalVelocityZ
 
 		RecvPropVector(RECVINFO(m_vecBaseVelocity)),
 
@@ -720,9 +916,9 @@ public:
 		RecvPropInt(RECVINFO(m_fFlags)),
 
 
-		RecvPropInt(RECVINFO(m_iObserverMode), 0, RecvProxy_ObserverMode),
-		RecvPropEHandle(RECVINFO(m_hObserverTarget), RecvProxy_ObserverTarget),
-		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_hViewModel), RecvPropEHandle(RECVINFO(m_hViewModel[0]))),
+		RecvPropObserverMode(RECVINFO(m_iObserverMode), 0),//, RecvProxy_ObserverMode
+		RecvPropObserverTarget(RECVINFO(m_hObserverTarget)),//, RecvProxy_ObserverTarget
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_hViewModel), RecvPropEHandle(RECVINFO_ARRAY3(m_hViewModel))),
 
 
 		RecvPropString(RECVINFO(m_szLastPlaceName)),
@@ -790,6 +986,84 @@ inline const CUserCmd *CBasePlayer::GetCurrentUserCommand() const
 {
 	Assert( m_pCurrentCommand );
 	return m_pCurrentCommand;
+}
+
+template<typename T>
+void RecvProxy_LocalVelocityX(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BasePlayer* pPlayer = (C_BasePlayer*)pStruct;
+
+	Assert(pPlayer);
+
+	float flNewVel_x = pData->m_Value.m_Float;
+
+	Vector vecVelocity = pPlayer->GetLocalVelocity();
+
+	if (vecVelocity.x != flNewVel_x)	// Should this use an epsilon check?
+	{
+		vecVelocity.x = flNewVel_x;
+		pPlayer->SetLocalVelocity(vecVelocity);
+	}
+}
+
+template<typename T>
+void RecvProxy_LocalVelocityY(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BasePlayer* pPlayer = (C_BasePlayer*)pStruct;
+
+	Assert(pPlayer);
+
+	float flNewVel_y = pData->m_Value.m_Float;
+
+	Vector vecVelocity = pPlayer->GetLocalVelocity();
+
+	if (vecVelocity.y != flNewVel_y)
+	{
+		vecVelocity.y = flNewVel_y;
+		pPlayer->SetLocalVelocity(vecVelocity);
+	}
+}
+
+template<typename T>
+void RecvProxy_LocalVelocityZ(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BasePlayer* pPlayer = (C_BasePlayer*)pStruct;
+
+	Assert(pPlayer);
+
+	float flNewVel_z = pData->m_Value.m_Float;
+
+	Vector vecVelocity = pPlayer->GetLocalVelocity();
+
+	if (vecVelocity.z != flNewVel_z)
+	{
+		vecVelocity.z = flNewVel_z;
+		pPlayer->SetLocalVelocity(vecVelocity);
+	}
+}
+
+template<typename T>
+void RecvProxy_ObserverTarget(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BasePlayer* pPlayer = (C_BasePlayer*)pStruct;
+
+	Assert(pPlayer);
+
+	EHANDLE hTarget;
+
+	RecvProxy_IntToEHandle<EHANDLE>(pData, pStruct, &hTarget);
+
+	pPlayer->SetObserverTarget(hTarget);
+}
+
+template<typename T>
+void RecvProxy_ObserverMode(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BasePlayer* pPlayer = (C_BasePlayer*)pStruct;
+
+	Assert(pPlayer);
+
+	pPlayer->SetObserverMode(pData->m_Value.m_Int);
 }
 
 #endif // C_BASEPLAYER_H

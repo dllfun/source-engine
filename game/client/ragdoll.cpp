@@ -395,8 +395,8 @@ public:
 	virtual float LastBoneChangedTime();
 
 	// Incoming from network
-	Vector		m_ragPos[RAGDOLL_MAX_ELEMENTS];
-	QAngle		m_ragAngles[RAGDOLL_MAX_ELEMENTS];
+	CNetworkArray( Vector,		m_ragPos,RAGDOLL_MAX_ELEMENTS);
+	CNetworkArray( QAngle,		m_ragAngles,RAGDOLL_MAX_ELEMENTS);
 
 	CInterpolatedVarArray< Vector, RAGDOLL_MAX_ELEMENTS >	m_iv_ragPos;
 	CInterpolatedVarArray< QAngle, RAGDOLL_MAX_ELEMENTS >	m_iv_ragAngles;
@@ -408,7 +408,7 @@ private:
 	C_ServerRagdoll( const C_ServerRagdoll &src );
 
 	typedef CHandle<C_BaseAnimating> CBaseAnimatingHandle;
-	CNetworkVar( CBaseAnimatingHandle, m_hUnragdoll );
+	CNetworkHandle(C_BaseAnimating, m_hUnragdoll );
 	CNetworkVar( float, m_flBlendWeight );
 	float m_flBlendWeightCurrent;
 	CNetworkVar( int, m_nOverlaySequence );
@@ -417,8 +417,8 @@ private:
 public:
 	BEGIN_INIT_RECV_TABLE(C_ServerRagdoll)
 	BEGIN_RECV_TABLE(C_ServerRagdoll, DT_Ragdoll, DT_BaseAnimating)
-		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_ragAngles), RecvPropQAngles(RECVINFO(m_ragAngles[0]))),
-		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_ragPos), RecvPropVector(RECVINFO(m_ragPos[0]))),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_ragAngles), RecvPropQAngles(RECVINFO_ARRAY3(m_ragAngles))),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_ragPos), RecvPropVector(RECVINFO_ARRAY3(m_ragPos))),
 		RecvPropEHandle(RECVINFO(m_hUnragdoll)),
 		RecvPropFloat(RECVINFO(m_flBlendWeight)),
 		RecvPropInt(RECVINFO(m_nOverlaySequence)),
@@ -439,8 +439,8 @@ C_ServerRagdoll::C_ServerRagdoll( void ) :
 	m_elementCount = 0;
 	m_flLastBoneChangeTime = -FLT_MAX;
 
-	AddVar( m_ragPos, &m_iv_ragPos, LATCH_SIMULATION_VAR  );
-	AddVar( m_ragAngles, &m_iv_ragAngles, LATCH_SIMULATION_VAR );
+	AddVar( m_ragPos.m_Value, &m_iv_ragPos, LATCH_SIMULATION_VAR  );
+	AddVar( m_ragAngles.m_Value, &m_iv_ragAngles, LATCH_SIMULATION_VAR );
 
 	m_flBlendWeight = 0.0f;
 	m_flBlendWeightCurrent = 0.0f;
@@ -775,11 +775,11 @@ public:
 	void OnDataChanged( DataUpdateType_t updateType );
 	virtual float LastBoneChangedTime() { return FLT_MAX; }
 
-	Vector		m_attachmentPointBoneSpace;
+	CNetworkVector(		m_attachmentPointBoneSpace);
 	Vector		m_vecOffset;
-	Vector		m_attachmentPointRagdollSpace;
-	int			m_ragdollAttachedObjectIndex;
-	int			m_boneIndexAttached;
+	CNetworkVector(		m_attachmentPointRagdollSpace);
+	CNetworkVar( int,			m_ragdollAttachedObjectIndex);
+	CNetworkVar( int,			m_boneIndexAttached);
 	float		m_parentTime;
 	bool		m_bHasParent;
 private:

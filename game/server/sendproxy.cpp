@@ -15,35 +15,6 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
-
-
-
-
-
-
-
-
-
-SendPropBool& SendPropBool::operator=(const SendPropBool& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
-
-
-SendPropEHandle& SendPropEHandle::operator=(const SendPropEHandle& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
-
-
-SendPropIntWithMinusOneFlag& SendPropIntWithMinusOneFlag::operator=(const SendPropIntWithMinusOneFlag& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: Proxy that only sends data to team members
 // Input  : *pStruct - 
@@ -99,10 +70,7 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_OnlyToTeam );
 //-----------------------------------------------------------------------------
 
 
-SendPropTime& SendPropTime::operator=(const SendPropTime& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
+
 
 //#if !defined( NO_ENTITY_PREDICTION )
 
@@ -146,22 +114,3 @@ SendPropTime& SendPropTime::operator=(const SendPropTime& srcSendProp) {
 //}
 
 //#endif
-
-
-
-
-
-SendPropStringT& SendPropStringT::operator=(const SendPropStringT& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
-SendPropColor32& SendPropColor32::operator=(const SendPropColor32& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
-SendPropIntWithShortAddOne& SendPropIntWithShortAddOne::operator=(const SendPropIntWithShortAddOne& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}

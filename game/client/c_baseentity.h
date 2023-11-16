@@ -20,6 +20,7 @@
 #include "engine/ivmodelinfo.h"
 #include "engine/ivmodelrender.h"
 #include "client_class.h"
+#include "recvproxy.h"
 #include "iclientshadowmgr.h"
 #include "ehandle.h"
 #include "iclientunknown.h"
@@ -65,8 +66,8 @@ typedef unsigned int			AimEntsListHandle_t;
 
 #define		INVALID_AIMENTS_LIST_HANDLE		(AimEntsListHandle_t)~0
 
+template<typename T>
 extern void RecvProxy_IntToColor32( const CRecvProxyData *pData, void *pStruct, void *pOut );
-extern void RecvProxy_LocalVelocity( const CRecvProxyData *pData, void *pStruct, void *pOut );
 
 enum CollideType_t
 {
@@ -168,12 +169,292 @@ struct thinkfunc_t
 #define ENTCLIENTFLAG_DONTUSEIK					0x0002		// Don't use IK on this entity even if its model has IK.
 #define ENTCLIENTFLAG_ALWAYS_INTERPOLATE		0x0004		// Used by view models.
 
+template<typename T = bool>
+void RecvProxy_InterpolationAmountChanged(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
+class RecvPropInterpolationAmountChanged : public RecvPropInt {
+public:
+	RecvPropInterpolationAmountChanged() {}
+
+	template<typename T = int>
+	RecvPropInterpolationAmountChanged(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_InterpolationAmountChanged<T>
+	);
+	virtual	~RecvPropInterpolationAmountChanged() {}
+	RecvPropInterpolationAmountChanged& operator=(const RecvPropInterpolationAmountChanged& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropInterpolationAmountChanged* pRecvProp = new RecvPropInterpolationAmountChanged;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropInterpolationAmountChanged::RecvPropInterpolationAmountChanged(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T = float>
 void RecvProxy_AnimTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropAnimTime : public RecvPropInt {
+public:
+	RecvPropAnimTime() {}
+
+	template<typename T = int>
+	RecvPropAnimTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_AnimTime<T>
+	);
+	virtual	~RecvPropAnimTime() {}
+	RecvPropAnimTime& operator=(const RecvPropAnimTime& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropAnimTime* pRecvProp = new RecvPropAnimTime;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropAnimTime::RecvPropAnimTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= float>
 void RecvProxy_SimulationTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropSimulationTime : public RecvPropInt {
+public:
+	RecvPropSimulationTime() {}
+
+	template<typename T = int>
+	RecvPropSimulationTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_SimulationTime<T>
+	);
+	virtual	~RecvPropSimulationTime() {}
+	RecvPropSimulationTime& operator=(const RecvPropSimulationTime& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropSimulationTime* pRecvProp = new RecvPropSimulationTime;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropSimulationTime::RecvPropSimulationTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= int>
 void RecvProxy_EffectFlags(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropEffectFlags : public RecvPropInt {
+public:
+	RecvPropEffectFlags() {}
+
+	template<typename T = int>
+	RecvPropEffectFlags(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_EffectFlags<T>
+	);
+	virtual	~RecvPropEffectFlags() {}
+	RecvPropEffectFlags& operator=(const RecvPropEffectFlags& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropEffectFlags* pRecvProp = new RecvPropEffectFlags;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropEffectFlags::RecvPropEffectFlags(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= unsigned char>
 void RecvProxy_MoveType(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropMoveType : public RecvPropInt {
+public:
+	RecvPropMoveType() {}
+
+	template<typename T = int>
+	RecvPropMoveType(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_MoveType<T>
+	);
+	virtual	~RecvPropMoveType() {}
+	RecvPropMoveType& operator=(const RecvPropMoveType& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropMoveType* pRecvProp = new RecvPropMoveType;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropMoveType::RecvPropMoveType(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= unsigned char>
 void RecvProxy_MoveCollide(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropMoveCollide : public RecvPropInt {
+public:
+	RecvPropMoveCollide() {}
+
+	template<typename T = int>
+	RecvPropMoveCollide(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_MoveCollide<T>
+	);
+	virtual	~RecvPropMoveCollide() {}
+	RecvPropMoveCollide& operator=(const RecvPropMoveCollide& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropMoveCollide* pRecvProp = new RecvPropMoveCollide;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropMoveCollide::RecvPropMoveCollide(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= Vector>
+void RecvProxy_LocalVelocity(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropLocalVelocity : public RecvPropVector {
+public:
+	RecvPropLocalVelocity() {}
+
+	template<typename T = Vector>
+	RecvPropLocalVelocity(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_LocalVelocity<T>
+	);
+	virtual	~RecvPropLocalVelocity() {}
+	RecvPropLocalVelocity& operator=(const RecvPropLocalVelocity& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropLocalVelocity* pRecvProp = new RecvPropLocalVelocity;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropLocalVelocity::RecvPropLocalVelocity(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropVector(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Base client side entity object
@@ -1276,7 +1557,7 @@ public:
 	int								index;	
 
 	// Render information
-	unsigned char					m_nRenderFX;
+	CNetworkVar( unsigned char,					m_nRenderFX);
 	unsigned char					m_nRenderFXBlend;
 
 	// Entity flags that are only for the client (ENTCLIENTFLAG_ defines).
@@ -1291,23 +1572,23 @@ private:
 
 public:
 	// Time animation sequence or frame was last changed
-	float							m_flAnimTime;
+	CNetworkVar( float,							m_flAnimTime);
 	float							m_flOldAnimTime;
 
-	float							m_flSimulationTime;
+	CNetworkVar( float,							m_flSimulationTime);
 	float							m_flOldSimulationTime;
 	
 	float							m_flCreateTime;
 
-	byte							m_ubInterpolationFrame;
+	CNetworkVar( byte,							m_ubInterpolationFrame);
 	byte							m_ubOldInterpolationFrame;
 
 private:
 protected:
 	// Effects to apply
-	int								m_fEffects;
+	CNetworkVar( int,								m_fEffects);
 protected:
-	unsigned char 					m_nRenderMode;
+	CNetworkVar( unsigned char, 					m_nRenderMode);
 private:
 	unsigned char 					m_nOldRenderMode;
 
@@ -1326,26 +1607,26 @@ public:
 	bool							IsNoInterpolationFrame();
 
 	// 
-	int								m_nNextThinkTick;
+	CNetworkVar( int,							m_nNextThinkTick);
 	int								m_nLastThinkTick;
 
 	// Object model index
-	short							m_nModelIndex;
+	CNetworkVar( short,							m_nModelIndex);
 
 #ifdef TF_CLIENT_DLL
 	int								m_nModelIndexOverrides[MAX_VISION_MODES];
 #endif
 
 	char							m_takedamage;
-	char							m_lifeState;
+	CNetworkVar( char,							m_lifeState);
 
-	int								m_iHealth;
+	CNetworkVar( int,								m_iHealth);
 
 	// was pev->speed
 	float							m_flSpeed;
 
 	// Team Handling
-	int								m_iTeamNum;
+	CNetworkVar( int,								m_iTeamNum);
 
 //#if !defined( NO_ENTITY_PREDICTION )
 //	// Certain entities (projectiles) can be created on the client
@@ -1426,7 +1707,7 @@ protected:
 	int								m_iCurrentThinkContext;
 
 	// Object eye position
-	Vector							m_vecViewOffset;
+	CNetworkVector(							m_vecViewOffset);
 
 #if defined(SIXENSE)
 	Vector							m_vecEyeOffset;
@@ -1509,7 +1790,7 @@ private:
 
 protected:
 	// Object velocity
-	Vector							m_vecVelocity;
+	CNetworkVector(							m_vecVelocity);
 private:
 	CInterpolatedVar< Vector >		m_iv_vecVelocity;
 
@@ -1536,7 +1817,7 @@ private:
 
 protected:
 	// Base velocity
-	Vector							m_vecBaseVelocity;
+	CNetworkVector(					m_vecBaseVelocity);
 private:
 	
 	// Gravity multiplier
@@ -1559,12 +1840,12 @@ private:
 	unsigned char					m_MoveType;
 	unsigned char					m_MoveCollide;
 protected:
-	unsigned char					m_iParentAttachment; // 0 if we're relative to the parent's absorigin and absangles.
+	CNetworkVar( unsigned char,					m_iParentAttachment); // 0 if we're relative to the parent's absorigin and absangles.
 private:
 	unsigned char					m_iOldParentAttachment;
 
 protected:
-	unsigned char					m_nWaterLevel;
+	CNetworkVar( unsigned char,					m_nWaterLevel);
 private:
 	unsigned char					m_nWaterType;
 	// For client/server entities, true if the entity goes outside the PVS.
@@ -1582,7 +1863,7 @@ private:
 
 protected:
 	// The moveparent received from networking data
-	CHandle<C_BaseEntity>			m_hNetworkMoveParent;
+	CNetworkHandle(C_BaseEntity,	m_hNetworkMoveParent);
 private:
 	CHandle<C_BaseEntity>			m_hOldMoveParent;
 
@@ -1594,19 +1875,19 @@ private:
 	CNetworkVarEmbedded( CParticleProperty, m_Particles );
 
 	// Physics state
-	float							m_flElasticity;
+	CNetworkVar( float,							m_flElasticity);
 
-	float							m_flShadowCastDistance;
+	CNetworkVar( float,							m_flShadowCastDistance);
 	EHANDLE							m_ShadowDirUseOtherEntity;
 
 protected:
-	EHANDLE							m_hGroundEntity;
+	CNetworkHandle(C_BaseEntity,	m_hGroundEntity);
 private:
 	float							m_flGroundChangeTime;
 
 protected:
 	// Friction.
-	float							m_flFriction;
+	CNetworkVar( float,							m_flFriction);
 private:
 
 	Vector							m_vecAbsOrigin;
@@ -1627,17 +1908,17 @@ private:
 
 protected:
 	// Last values to come over the wire. Used for interpolation.
-	Vector							m_vecNetworkOrigin;
+	CNetworkVector(					m_vecNetworkOrigin);
 protected:
-	QAngle							m_angNetworkAngles;
+	CNetworkQAngle(					m_angNetworkAngles);
 
 protected:
 	// Behavior flags
-	int								m_fFlags;
+	CNetworkVar( int,								m_fFlags);
 private:
 
 	// used to cull collision tests
-	int								m_CollisionGroup;
+	CNetworkVar( int,								m_CollisionGroup);
 
 #if !defined( NO_ENTITY_PREDICTION )
 	// For storing prediction results and pristine network state
@@ -1655,7 +1936,7 @@ private:
 	CNetworkVar( bool, m_bAlternateSorting );
 
 	//Adrian
-	unsigned char					m_iTextureFrameIndex;
+	CNetworkVar( unsigned char,					m_iTextureFrameIndex);
 
 	// Bbox visualization
 	unsigned char					m_fBBoxVisFlags;
@@ -1670,8 +1951,8 @@ private:
 //#endif
 
 	// The owner!
-	EHANDLE							m_hOwnerEntity;
-	EHANDLE							m_hEffectEntity;
+	CNetworkHandle(C_BaseEntity		,m_hOwnerEntity);
+	CNetworkHandle(C_BaseEntity		,m_hEffectEntity);
 	
 	// This is a random seed used by the networking code to allow client - side prediction code
 	//  randon number generators to spit out the same random numbers on both sides for a particular
@@ -1725,7 +2006,7 @@ public:
 	BEGIN_INIT_RECV_TABLE(C_BaseEntity)
 	INIT_REFERENCE_RECV_TABLE(CCollisionProperty)
 	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_AnimTimeMustBeFirst)
-		RecvPropInt(RECVINFO(m_flAnimTime), 0, RecvProxy_AnimTime),
+		RecvPropAnimTime(RECVINFO(m_flAnimTime), 0),//, RecvProxy_AnimTime
 	END_RECV_TABLE(DT_AnimTimeMustBeFirst)
 
 //#ifndef NO_ENTITY_PREDICTION
@@ -1737,7 +2018,7 @@ public:
 
 	BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
 		RecvPropDataTable("AnimTimeMustBeFirst", 0, 0, REFERENCE_RECV_TABLE(DT_AnimTimeMustBeFirst)),
-		RecvPropInt(RECVINFO(m_flSimulationTime), 0, RecvProxy_SimulationTime),
+		RecvPropSimulationTime(RECVINFO(m_flSimulationTime), 0),//, RecvProxy_SimulationTime
 		RecvPropInt(RECVINFO(m_ubInterpolationFrame)),
 
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
@@ -1753,21 +2034,21 @@ public:
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 #endif
 
-		RecvPropInt(RECVINFO(m_fEffects), 0, RecvProxy_EffectFlags),
+		RecvPropEffectFlags(RECVINFO(m_fEffects), 0),//, RecvProxy_EffectFlags
 		RecvPropInt(RECVINFO(m_nRenderMode)),
 		RecvPropInt(RECVINFO(m_nRenderFX)),
-		RecvPropInt(RECVINFO(m_clrRender)),
+		RecvPropColor32(RECVINFO(m_clrRender)),
 		RecvPropInt(RECVINFO(m_iTeamNum)),
 		RecvPropInt(RECVINFO(m_CollisionGroup)),
 		RecvPropFloat(RECVINFO(m_flElasticity)),
 		RecvPropFloat(RECVINFO(m_flShadowCastDistance)),
 		RecvPropEHandle(RECVINFO(m_hOwnerEntity)),
 		RecvPropEHandle(RECVINFO(m_hEffectEntity)),
-		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropIntToMoveParent(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0),//, RecvProxy_IntToMoveParent
 		RecvPropInt(RECVINFO(m_iParentAttachment)),
 
-		RecvPropInt("movetype", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveType),
-		RecvPropInt("movecollide", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveCollide),
+		RecvPropMoveType((int*)0, "movetype", 0, SIZEOF_IGNORE, 0),//, RecvProxy_MoveType
+		RecvPropMoveCollide((int*)0, "movecollide", 0, SIZEOF_IGNORE, 0),//, RecvProxy_MoveCollide
 		RecvPropDataTable(RECVINFO_DT(m_Collision), 0, REFERENCE_RECV_TABLE(DT_CollisionProperty)),
 
 		RecvPropInt(RECVINFO(m_iTextureFrameIndex)),
@@ -1775,12 +2056,12 @@ public:
 //		RecvPropDataTable("predictable_id", 0, 0, REFERENCE_RECV_TABLE(DT_PredictableId)),
 //#endif
 
-		RecvPropInt(RECVINFO(m_bSimulatedEveryTick), 0, RecvProxy_InterpolationAmountChanged),
-		RecvPropInt(RECVINFO(m_bAnimatedEveryTick), 0, RecvProxy_InterpolationAmountChanged),
+		RecvPropInterpolationAmountChanged(RECVINFO(m_bSimulatedEveryTick), 0),//, RecvProxy_InterpolationAmountChanged
+		RecvPropInterpolationAmountChanged(RECVINFO(m_bAnimatedEveryTick), 0),//, RecvProxy_InterpolationAmountChanged
 		RecvPropBool(RECVINFO(m_bAlternateSorting)),
 
 #ifdef TF_CLIENT_DLL
-		RecvPropArray3(RECVINFO_ARRAY(m_nModelIndexOverrides), RecvPropInt(RECVINFO(m_nModelIndexOverrides[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_nModelIndexOverrides), RecvPropInt(RECVINFO_ARRAY3(m_nModelIndexOverrides))),
 #endif
 
 	END_RECV_TABLE(DT_BaseEntity)
@@ -2131,7 +2412,7 @@ inline void C_BaseEntity::SetRenderColorA( byte a )
 
 inline RenderMode_t CBaseEntity::GetRenderMode() const
 {
-	return (RenderMode_t)m_nRenderMode;
+	return (RenderMode_t)(int)m_nRenderMode;
 }
 
 //-----------------------------------------------------------------------------
@@ -2290,6 +2571,118 @@ inline bool C_BaseEntity::ShouldRecordInTools() const
 #else
 	return true;
 #endif
+}
+
+template<typename T>
+void RecvProxy_InterpolationAmountChanged(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	// m_bSimulatedEveryTick & m_bAnimatedEveryTick are boolean
+	if (*((T*)pOut) != (pData->m_Value.m_Int != 0))//bool
+	{
+		// Have the regular proxy store the data.
+		RecvProxy_Int32ToInt8<T>(pData, pStruct, pOut);
+
+		C_BaseEntity* pEntity = (C_BaseEntity*)pStruct;
+		pEntity->Interp_UpdateInterpolationAmounts(pEntity->GetVarMapping());
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Decodes animtime and notes when it changes
+// Input  : *pStruct - ( C_BaseEntity * ) used to flag animtime is changine
+//			*pVarData - 
+//			*pIn - 
+//			objectID - 
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_AnimTime(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BaseEntity* pEntity = (C_BaseEntity*)pStruct;
+	Assert(pOut == &pEntity->m_flAnimTime);
+
+	int t;
+	int tickbase;
+	int addt;
+
+	// Unpack the data.
+	addt = pData->m_Value.m_Int;
+
+	// Note, this needs to be encoded relative to packet timestamp, not raw client clock
+	tickbase = gpGlobals->GetNetworkBase(gpGlobals->GetTickCount(), pEntity->entindex());
+
+	t = tickbase;
+	//  and then go back to floating point time.
+	t += addt;				// Add in an additional up to 256 100ths from the server
+
+	// center m_flAnimTime around current time.
+	while (t < gpGlobals->GetTickCount() - 127)
+		t += 256;
+	while (t > gpGlobals->GetTickCount() + 127)
+		t -= 256;
+
+	pEntity->m_flAnimTime = (t * TICK_INTERVAL);
+}
+
+template<typename T>
+void RecvProxy_SimulationTime(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BaseEntity* pEntity = (C_BaseEntity*)pStruct;
+	Assert(pOut == &pEntity->m_flSimulationTime);
+
+	int t;
+	int tickbase;
+	int addt;
+
+	// Unpack the data.
+	addt = pData->m_Value.m_Int;
+
+	// Note, this needs to be encoded relative to packet timestamp, not raw client clock
+	tickbase = gpGlobals->GetNetworkBase(gpGlobals->GetTickCount(), pEntity->entindex());
+
+	t = tickbase;
+	//  and then go back to floating point time.
+	t += addt;				// Add in an additional up to 256 100ths from the server
+
+	// center m_flSimulationTime around current time.
+	while (t < gpGlobals->GetTickCount() - 127)
+		t += 256;
+	while (t > gpGlobals->GetTickCount() + 127)
+		t -= 256;
+
+	pEntity->m_flSimulationTime = (t * TICK_INTERVAL);
+}
+
+template<typename T>
+void RecvProxy_EffectFlags(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	((C_BaseEntity*)pStruct)->SetEffects(pData->m_Value.m_Int);
+}
+
+template<typename T>
+void RecvProxy_MoveType(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	((C_BaseEntity*)pStruct)->SetMoveType((MoveType_t)(pData->m_Value.m_Int));
+}
+
+template<typename T>
+void RecvProxy_MoveCollide(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	((C_BaseEntity*)pStruct)->SetMoveCollide((MoveCollide_t)(pData->m_Value.m_Int));
+}
+
+template<typename T>
+void RecvProxy_LocalVelocity(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BaseEntity* pEnt = (C_BaseEntity*)pStruct;
+
+	Vector vecVelocity;
+
+	vecVelocity.x = pData->m_Value.m_Vector[0];
+	vecVelocity.y = pData->m_Value.m_Vector[1];
+	vecVelocity.z = pData->m_Value.m_Vector[2];
+
+	// SetLocalVelocity checks to see if the value has changed
+	pEnt->SetLocalVelocity(vecVelocity);
 }
 
 C_BaseEntity *CreateEntityByName( const char *className );

@@ -24,7 +24,7 @@ public:
 
 public:
 
-	int		m_iCurrentMaxRagdollCount;
+	CNetworkVar( int,		m_iCurrentMaxRagdollCount);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_RagdollManager)

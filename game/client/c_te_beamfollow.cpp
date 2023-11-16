@@ -33,7 +33,7 @@ public:
 	
 public:
 
-	int m_iEntIndex;
+	CNetworkVar( int, m_iEntIndex);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBeamFollow)

@@ -63,8 +63,8 @@ void CDustEffect::RenderParticles( CParticleRenderIterator *pIterator )
 			RenderParticle_Color255Size(
 				pIterator->GetParticleDraw(),
 				tPos,
-				Vector( m_pDust->m_Color.r, m_pDust->m_Color.g, m_pDust->m_Color.b ),
-				flAlpha * m_pDust->m_Color.a,
+				Vector( m_pDust->m_Color.GetR(), m_pDust->m_Color.GetG(), m_pDust->m_Color.GetB()),
+				flAlpha * m_pDust->m_Color.GetA(),
 				flSize
 				);
 		}
@@ -309,9 +309,9 @@ public:
 
 public:
 
-	float		m_flSize;
-	float		m_flSpeed;
-	Vector		m_vecDirection;
+	CNetworkVar( float,		m_flSize);
+	CNetworkVar( float,		m_flSpeed);
+	CNetworkVector(		m_vecDirection);
 
 protected:
 	void		GetDustColor( Vector &color );

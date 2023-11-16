@@ -62,26 +62,26 @@ protected:
 	// Data for each player that's propagated to all clients
 	// Stored in individual arrays so they can be sent down via datatables
 	string_t	m_szName[MAX_PLAYERS+1];
-	int		m_iPing[MAX_PLAYERS+1];
-	int		m_iScore[MAX_PLAYERS+1];
-	int		m_iDeaths[MAX_PLAYERS+1];
-	bool	m_bConnected[MAX_PLAYERS+1];
-	int		m_iTeam[MAX_PLAYERS+1];
-	bool	m_bAlive[MAX_PLAYERS+1];
-	int		m_iHealth[MAX_PLAYERS+1];
+	CNetworkArray( int,		m_iPing,MAX_PLAYERS+1);
+	CNetworkArray(int,		m_iScore,MAX_PLAYERS+1);
+	CNetworkArray(int,		m_iDeaths,MAX_PLAYERS+1);
+	CNetworkArray(bool,	m_bConnected,MAX_PLAYERS+1);
+	CNetworkArray(int,		m_iTeam,MAX_PLAYERS+1);
+	CNetworkArray(bool,	m_bAlive,MAX_PLAYERS+1);
+	CNetworkArray(int,		m_iHealth,MAX_PLAYERS+1);
 	Color	m_Colors[MAX_TEAMS];
 	string_t m_szUnconnectedName;
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_PlayerResource)
 	BEGIN_RECV_TABLE(C_PlayerResource, DT_PlayerResource, DT_BaseEntity)
-		RecvPropArray3(RECVINFO_ARRAY(m_iPing), RecvPropInt(RECVINFO(m_iPing[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iScore), RecvPropInt(RECVINFO(m_iScore[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iDeaths), RecvPropInt(RECVINFO(m_iDeaths[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_bConnected), RecvPropInt(RECVINFO(m_bConnected[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iTeam), RecvPropInt(RECVINFO(m_iTeam[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_bAlive), RecvPropInt(RECVINFO(m_bAlive[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iHealth), RecvPropInt(RECVINFO(m_iHealth[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iPing), RecvPropInt(RECVINFO_ARRAY3(m_iPing))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iScore), RecvPropInt(RECVINFO_ARRAY3(m_iScore))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iDeaths), RecvPropInt(RECVINFO_ARRAY3(m_iDeaths))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bConnected), RecvPropInt(RECVINFO_ARRAY3(m_bConnected))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iTeam), RecvPropInt(RECVINFO_ARRAY3(m_iTeam))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bAlive), RecvPropInt(RECVINFO_ARRAY3(m_bAlive))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iHealth), RecvPropInt(RECVINFO_ARRAY3(m_iHealth))),
 	END_RECV_TABLE(DT_PlayerResource)
 	END_INIT_RECV_TABLE()
 };

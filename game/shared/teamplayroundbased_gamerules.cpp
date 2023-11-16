@@ -64,14 +64,7 @@ extern IReplaySystem *g_pReplay;
 extern ConVar spec_freeze_time;
 extern ConVar spec_freeze_traveltime;
 
-#ifdef CLIENT_DLL
-void RecvProxy_TeamplayRoundState( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	CTeamplayRoundBasedRules *pGamerules = ( CTeamplayRoundBasedRules *)pStruct;
-	int iRoundState = pData->m_Value.m_Int;
-	pGamerules->SetRoundState( iRoundState );
-}
-#endif 
+
 
 
 #if defined( CLIENT_DLL )

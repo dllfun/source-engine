@@ -64,7 +64,7 @@ public:
 		SendPropFloat(SENDINFO(m_FOV), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_Resolution), 0, SPROP_NOSCALE),
 		SendPropInt(SENDINFO(m_bFogEnable), 1, SPROP_UNSIGNED),
-		SendPropInt(SENDINFO_STRUCTELEM(m_FogColor), 32, SPROP_UNSIGNED),
+		SendPropColor32(SENDINFO_STRUCTELEM(m_FogColor), 32, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flFogStart), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flFogEnd), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO(m_flFogMaxDensity), 0, SPROP_NOSCALE),

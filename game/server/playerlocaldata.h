@@ -11,7 +11,7 @@
 #pragma once
 #endif
 
-
+#include "cbase.h"
 #include "playernet_vars.h"
 #include "networkvar.h"
 #include "fogcontroller.h"
@@ -130,8 +130,8 @@ public:
 		SendPropInt(SENDINFO_STRUCTELEM(m_skybox3d.fog.enable), 1, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO_STRUCTELEM(m_skybox3d.fog.blend), 1, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO_STRUCTELEM(m_skybox3d.fog.dirPrimary), -1, SPROP_COORD),
-		SendPropInt(SENDINFO_STRUCTELEM(m_skybox3d.fog.colorPrimary), 32, SPROP_UNSIGNED),
-		SendPropInt(SENDINFO_STRUCTELEM(m_skybox3d.fog.colorSecondary), 32, SPROP_UNSIGNED),
+		SendPropColor32(SENDINFO_STRUCTELEM(m_skybox3d.fog.colorPrimary), 32, SPROP_UNSIGNED),
+		SendPropColor32(SENDINFO_STRUCTELEM(m_skybox3d.fog.colorSecondary), 32, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO_STRUCTELEM(m_skybox3d.fog.start), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO_STRUCTELEM(m_skybox3d.fog.end), 0, SPROP_NOSCALE),
 		SendPropFloat(SENDINFO_STRUCTELEM(m_skybox3d.fog.maxdensity), 0, SPROP_NOSCALE),

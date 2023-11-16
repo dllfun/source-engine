@@ -68,7 +68,10 @@ public:
 		int offset,
 		int sizeofVar);
 	virtual ~SendPropBool() {}
-	SendPropBool& operator=(const SendPropBool& srcSendProp);
+	SendPropBool& operator=(const SendPropBool& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropBool* pSendProp = new SendPropBool;
 		*pSendProp = *this;
@@ -101,7 +104,10 @@ public:
 		int flags = 0,
 		SendVarProxyFn proxyFn = SendProxy_EHandleToInt<T>);
 	virtual ~SendPropEHandle() {}
-	SendPropEHandle& operator=(const SendPropEHandle& srcSendProp);
+	SendPropEHandle& operator=(const SendPropEHandle& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropEHandle* pSendProp = new SendPropEHandle;
 		*pSendProp = *this;
@@ -133,7 +139,10 @@ public:
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE);
 	virtual ~SendPropTime() {}
-	SendPropTime& operator=(const SendPropTime& srcSendProp);
+	SendPropTime& operator=(const SendPropTime& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropTime* pSendProp = new SendPropTime;
 		*pSendProp = *this;
@@ -173,7 +182,10 @@ public:
 		int bits = -1,
 		SendVarProxyFn proxyFn = SendProxy_IntAddOne<T>);
 	virtual ~SendPropIntWithMinusOneFlag() {}
-	SendPropIntWithMinusOneFlag& operator=(const SendPropIntWithMinusOneFlag& srcSendProp);
+	SendPropIntWithMinusOneFlag& operator=(const SendPropIntWithMinusOneFlag& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropIntWithMinusOneFlag* pSendProp = new SendPropIntWithMinusOneFlag;
 		*pSendProp = *this;
@@ -196,7 +208,10 @@ public:
 	template<typename T>
 	SendPropStringT(T* pType, const char* pVarName, int offset, int sizeofVar, int flags = 0);
 	virtual ~SendPropStringT() {}
-	SendPropStringT& operator=(const SendPropStringT& srcSendProp);
+	SendPropStringT& operator=(const SendPropStringT& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropStringT* pSendProp = new SendPropStringT;
 		*pSendProp = *this;
@@ -241,7 +256,10 @@ public:
 		int flags = 0,
 		SendVarProxyFn varProxy = 0);
 	virtual ~SendPropColor32() {}
-	SendPropColor32& operator=(const SendPropColor32& srcSendProp);
+	SendPropColor32& operator=(const SendPropColor32& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropColor32* pSendProp = new SendPropColor32;
 		*pSendProp = *this;
@@ -258,7 +276,7 @@ SendPropColor32::SendPropColor32(
 	int nBits,
 	int flags,
 	SendVarProxyFn varProxy)
-	: SendPropInt(pType, pVarName, offset, sizeofVar, nBits, flags, SendProxy_Color32ToInt<T>)
+	: SendPropInt((int*)0, pVarName, offset, sizeofVar, nBits, flags, SendProxy_Color32ToInt<T>)
 {
 	//Assert(sizeofVar == sizeof(int));
 
@@ -276,7 +294,10 @@ public:
 		int bits = -1,
 		SendVarProxyFn proxyFn = SendProxy_ShortAddOne<T>);
 	virtual ~SendPropIntWithShortAddOne() {}
-	SendPropIntWithShortAddOne& operator=(const SendPropIntWithShortAddOne& srcSendProp);
+	SendPropIntWithShortAddOne& operator=(const SendPropIntWithShortAddOne& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropIntWithShortAddOne* pSendProp = new SendPropIntWithShortAddOne;
 		*pSendProp = *this;

@@ -44,7 +44,47 @@
 #define SUBINCH_PRECISION	3
 
 #ifdef CLIENT_DLL
+template<typename T= int>
 void RecvProxy_EntIndex(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropEntIndex : public RecvPropInt {
+public:
+	RecvPropEntIndex() {}
+
+	template<typename T = int>
+	RecvPropEntIndex(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_EntIndex<T>
+	);
+	virtual	~RecvPropEntIndex() {}
+	RecvPropEntIndex& operator=(const RecvPropEntIndex& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropEntIndex* pRecvProp = new RecvPropEntIndex;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropEntIndex::RecvPropEntIndex(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
 #endif
 
 // This is the class that holds whatever data we're sending down to the client to make the effect.
@@ -180,7 +220,7 @@ public:
 		SendPropInt(SENDINFO_NOCHECK(m_nDamageType), 32, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO_NOCHECK(m_nHitBox), 11, SPROP_UNSIGNED),
 
-		SendPropInt(SENDINFO_NAME(m_nEntIndex, entindex), MAX_EDICT_BITS, SPROP_UNSIGNED),
+		SendPropInt(SENDINFO_NAME_NOCHECK(m_nEntIndex, entindex), MAX_EDICT_BITS, SPROP_UNSIGNED),
 
 		SendPropInt(SENDINFO_NOCHECK(m_nColor), 8, SPROP_UNSIGNED),
 
@@ -205,44 +245,44 @@ public:
 	BEGIN_INIT_RECV_TABLE(CEffectData)
 	BEGIN_RECV_TABLE_NOBASE(CEffectData, DT_EffectData)
 
-		RecvPropFloat(RECVINFO(m_vOrigin[0])),
-		RecvPropFloat(RECVINFO(m_vOrigin[1])),
-		RecvPropFloat(RECVINFO(m_vOrigin[2])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_vOrigin[0])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_vOrigin[1])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_vOrigin[2])),
 
-		RecvPropFloat(RECVINFO(m_vStart[0])),
-		RecvPropFloat(RECVINFO(m_vStart[1])),
-		RecvPropFloat(RECVINFO(m_vStart[2])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_vStart[0])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_vStart[1])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_vStart[2])),
 
-		RecvPropQAngles(RECVINFO(m_vAngles)),
+		RecvPropQAngles(RECVINFO_NOCHECK(m_vAngles)),
 
-		RecvPropVector(RECVINFO(m_vNormal)),
+		RecvPropVector(RECVINFO_NOCHECK(m_vNormal)),
 
-		RecvPropInt(RECVINFO(m_fFlags)),
-		RecvPropFloat(RECVINFO(m_flMagnitude)),
-		RecvPropFloat(RECVINFO(m_flScale)),
-		RecvPropInt(RECVINFO(m_nAttachmentIndex)),
-		RecvPropIntWithMinusOneFlag(RECVINFO(m_nSurfaceProp), RecvProxy_ShortSubOne),
-		RecvPropInt(RECVINFO(m_iEffectName)),
+		RecvPropInt(RECVINFO_NOCHECK(m_fFlags)),
+		RecvPropFloat(RECVINFO_NOCHECK(m_flMagnitude)),
+		RecvPropFloat(RECVINFO_NOCHECK(m_flScale)),
+		RecvPropInt(RECVINFO_NOCHECK(m_nAttachmentIndex)),
+		RecvPropIntWithShortSubOne(RECVINFO_NOCHECK(m_nSurfaceProp)),//, RecvProxy_ShortSubOne
+		RecvPropInt(RECVINFO_NOCHECK(m_iEffectName)),
 
-		RecvPropInt(RECVINFO(m_nMaterial)),
-		RecvPropInt(RECVINFO(m_nDamageType)),
-		RecvPropInt(RECVINFO(m_nHitBox)),
+		RecvPropInt(RECVINFO_NOCHECK(m_nMaterial)),
+		RecvPropInt(RECVINFO_NOCHECK(m_nDamageType)),
+		RecvPropInt(RECVINFO_NOCHECK(m_nHitBox)),
 
-		RecvPropInt("entindex", 0, SIZEOF_IGNORE, 0, RecvProxy_EntIndex),
+		RecvPropEntIndex((int*)0, "entindex", 0, SIZEOF_IGNORE, 0),//, RecvProxy_EntIndex
 
-		RecvPropInt(RECVINFO(m_nColor)),
+		RecvPropInt(RECVINFO_NOCHECK(m_nColor)),
 
-		RecvPropFloat(RECVINFO(m_flRadius)),
+		RecvPropFloat(RECVINFO_NOCHECK(m_flRadius)),
 
-		RecvPropBool(RECVINFO(m_bCustomColors)),
-		RecvPropVector(RECVINFO(m_CustomColors.m_vecColor1)),
-		RecvPropVector(RECVINFO(m_CustomColors.m_vecColor2)),
+		RecvPropBool(RECVINFO_NOCHECK(m_bCustomColors)),
+		RecvPropVector(RECVINFO_NOCHECK(m_CustomColors.m_vecColor1)),
+		RecvPropVector(RECVINFO_NOCHECK(m_CustomColors.m_vecColor2)),
 
-		RecvPropBool(RECVINFO(m_bControlPoint1)),
-		RecvPropInt(RECVINFO(m_ControlPoint1.m_eParticleAttachment)),
-		RecvPropFloat(RECVINFO(m_ControlPoint1.m_vecOffset[0])),
-		RecvPropFloat(RECVINFO(m_ControlPoint1.m_vecOffset[1])),
-		RecvPropFloat(RECVINFO(m_ControlPoint1.m_vecOffset[2])),
+		RecvPropBool(RECVINFO_NOCHECK(m_bControlPoint1)),
+		RecvPropInt(RECVINFO_NOCHECK(m_ControlPoint1.m_eParticleAttachment)),
+		RecvPropFloat(RECVINFO_NOCHECK(m_ControlPoint1.m_vecOffset[0])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_ControlPoint1.m_vecOffset[1])),
+		RecvPropFloat(RECVINFO_NOCHECK(m_ControlPoint1.m_vecOffset[2])),
 
 	END_RECV_TABLE(DT_EffectData)
 	END_INIT_RECV_TABLE()
@@ -250,9 +290,14 @@ public:
 };
 
 
-
-
 #ifdef CLIENT_DLL
+template<typename T>
+void RecvProxy_EntIndex(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	int nEntIndex = pData->m_Value.m_Int;
+	((CEffectData*)pStruct)->m_hEntity = (nEntIndex < 0) ? INVALID_EHANDLE_INDEX : ClientEntityList().EntIndexToHandle(nEntIndex);
+}
+
 bool SuppressingParticleEffects();
 void SuppressParticleEffects( bool bSuppress );
 #endif

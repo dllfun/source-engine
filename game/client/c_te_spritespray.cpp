@@ -30,12 +30,12 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecOrigin;
-	Vector			m_vecDirection;
-	int				m_nModelIndex;
-	int				m_nSpeed;
-	float			m_fNoise;
-	int				m_nCount;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVector(			m_vecDirection);
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( int,				m_nSpeed);
+	CNetworkVar( float,			m_fNoise);
+	CNetworkVar( int,				m_nCount);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TESpriteSpray)

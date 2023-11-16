@@ -17,10 +17,18 @@
 #ifdef CLIENT_DLL
 	#include "c_baseplayer.h"
 	#include "engine/ivdebugoverlay.h"
+	#include "animationlayer.h"
 
 	ConVar cl_showanimstate( "cl_showanimstate", "-1", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Show the (client) animation state for the specified entity (-1 for none)." );
 	ConVar showanimstate_log( "cl_showanimstate_log", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "1 to output cl_showanimstate to Msg(). 2 to store in AnimStateClient.log. 3 for both." );
 #else
+
+	typedef int SequenceType;
+	typedef float PrevCycleType;
+	typedef float WeightType;
+
+	typedef float CycleType;
+
 	#include "player.h"
 	ConVar sv_showanimstate( "sv_showanimstate", "-1", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Show the (server) animation state for the specified entity (-1 for none)." );
 	ConVar showanimstate_log( "sv_showanimstate_log", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "1 to output sv_showanimstate to Msg(). 2 to store in AnimStateServer.log. 3 for both." );
@@ -350,7 +358,7 @@ void CBasePlayerAnimState::UpdateAimSequenceLayers(
 		*pDest0 = *pSource0;
 		*pDest1 = *pSource1;
 		Assert( pDest0->m_flWeight >= 0.0f && pDest0->m_flWeight <= 1.0f );
-		pDest1->m_flWeight = 1 - pDest0->m_flWeight;	// This layer just mirrors the other layer's weight (one fades in while the other fades out).
+		pDest1->m_flWeight = 1 - (WeightType)pDest0->m_flWeight;	// This layer just mirrors the other layer's weight (one fades in while the other fades out).
 
 		pDest0->m_nOrder = iFirstLayer;
 		pDest1->m_nOrder = iFirstLayer+1;
@@ -362,10 +370,10 @@ void CBasePlayerAnimState::UpdateAimSequenceLayers(
 	}
 	
 	pDest0->m_flWeight *= flWeightScale * flAimSequenceWeight;
-	pDest0->m_flWeight = clamp( (float)pDest0->m_flWeight, 0.0f, 1.0f );
+	pDest0->m_flWeight = clamp( (float)(WeightType)pDest0->m_flWeight, 0.0f, 1.0f );
 
 	pDest1->m_flWeight *= flWeightScale * flAimSequenceWeight;
-	pDest1->m_flWeight = clamp( (float)pDest1->m_flWeight, 0.0f, 1.0f );
+	pDest1->m_flWeight = clamp( (float)(WeightType)pDest1->m_flWeight, 0.0f, 1.0f );
 
 	pDest0->m_flCycle = pDest1->m_flCycle = flCycle;
 }
@@ -380,18 +388,18 @@ void CBasePlayerAnimState::OptimizeLayerWeights( int iFirstLayer, int nLayers )
 	for ( i=1; i < nLayers; i++ )
 	{
 		CAnimationLayer *pLayer = m_pOuter->GetAnimOverlay( iFirstLayer+i );
-		if ( pLayer->IsActive() && pLayer->m_flWeight > 0.0f )
+		if ( pLayer->IsActive() && (WeightType)pLayer->m_flWeight > 0.0f )
 		{
-			totalWeight += pLayer->m_flWeight;
+			totalWeight += (WeightType)pLayer->m_flWeight;
 		}
 	}
 
 	// Set the idle layer's weight to be 1 minus the sum of other layer weights
 	CAnimationLayer *pLayer = m_pOuter->GetAnimOverlay( iFirstLayer );
-	if ( pLayer->IsActive() && pLayer->m_flWeight > 0.0f )
+	if ( pLayer->IsActive() && (WeightType)pLayer->m_flWeight > 0.0f )
 	{
 		pLayer->m_flWeight = 1.0f - totalWeight;
-		pLayer->m_flWeight = MAX( (float)pLayer->m_flWeight, 0.0f);
+		pLayer->m_flWeight = MAX( (float)(WeightType)pLayer->m_flWeight, 0.0f);
 	}
 
 	// This part is just an optimization. Since we have the walk/run animations weighted on top of 
@@ -403,7 +411,7 @@ void CBasePlayerAnimState::OptimizeLayerWeights( int iFirstLayer, int nLayers )
 	for ( i=0; i < nLayers; i++ )
 	{
 		CAnimationLayer *pLayer = m_pOuter->GetAnimOverlay( iFirstLayer+i );
-		if ( pLayer->IsActive() && pLayer->m_flWeight > 0.99 )
+		if ( pLayer->IsActive() && (WeightType)pLayer->m_flWeight > 0.99 )
 			iLastOne = i;
 	}
 
@@ -687,7 +695,7 @@ void CBasePlayerAnimState::ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr )
 			{
 				// Whenever this layer stops blending, we can choose a new idle sequence to blend to, so he 
 				// doesn't always use the same idle.
-				if ( pLayer->m_flWeight < 0.02f || m_iCurrent8WayIdleSequence == -1 )
+				if ((WeightType)pLayer->m_flWeight < 0.02f || m_iCurrent8WayIdleSequence == -1 )
 				{
 					m_iCurrent8WayIdleSequence = m_pOuter->SelectWeightedSequence( ACT_IDLE );
 					m_iCurrent8WayCrouchIdleSequence = m_pOuter->SelectWeightedSequence( ACT_CROUCHIDLE );
@@ -700,8 +708,8 @@ void CBasePlayerAnimState::ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr )
 			}
 			
 			pLayer->m_flPlaybackRate = 1;
-			pLayer->m_flCycle += m_pOuter->GetSequenceCycleRate( pStudioHdr, pLayer->m_nSequence ) * gpGlobals->GetFrameTime();
-			pLayer->m_flCycle = fmod( pLayer->m_flCycle, 1 );
+			pLayer->m_flCycle += m_pOuter->GetSequenceCycleRate( pStudioHdr, (SequenceType)pLayer->m_nSequence ) * gpGlobals->GetFrameTime();
+			pLayer->m_flCycle = fmod((CycleType)pLayer->m_flCycle, 1 );
 			pLayer->m_nOrder = MAIN_IDLE_SEQUENCE_LAYER;
 #endif
 		}
@@ -1005,8 +1013,8 @@ void CBasePlayerAnimState::DebugShowAnimState( int iStartLine )
 		CAnimationLayer *pLayer = m_pOuter->GetAnimOverlay( MAIN_IDLE_SEQUENCE_LAYER );
 
 		AnimStatePrintf( iLine++, "idle: %s, weight: %.2f\n",
-			GetSequenceName( m_pOuter->GetModelPtr(), pLayer->m_nSequence ), 
-			(float)pLayer->m_flWeight );
+			GetSequenceName( m_pOuter->GetModelPtr(), (SequenceType)pLayer->m_nSequence ),
+			(float)(WeightType)pLayer->m_flWeight );
 	}
 
 	for ( int i=0; i < m_pOuter->GetNumAnimOverlays()-1; i++ )
@@ -1014,10 +1022,10 @@ void CBasePlayerAnimState::DebugShowAnimState( int iStartLine )
 		CAnimationLayer *pLayer = m_pOuter->GetAnimOverlay( AIMSEQUENCE_LAYER + i );
 #ifdef CLIENT_DLL
 		AnimStatePrintf( iLine++, "%s(%d), weight: %.2f, cycle: %.2f, order (%d), aim (%d)", 
-			!pLayer->IsActive() ? "-- ": (pLayer->m_nSequence == 0 ? "-- " : GetSequenceName( m_pOuter->GetModelPtr(), pLayer->m_nSequence ) ), 
-			!pLayer->IsActive() ? 0 : (int)pLayer->m_nSequence, 
-			!pLayer->IsActive() ? 0 : (float)pLayer->m_flWeight, 
-			!pLayer->IsActive() ? 0 : (float)pLayer->m_flCycle, 
+			!pLayer->IsActive() ? "-- ": ((SequenceType)pLayer->m_nSequence == 0 ? "-- " : GetSequenceName( m_pOuter->GetModelPtr(), (SequenceType)pLayer->m_nSequence ) ),
+			!pLayer->IsActive() ? 0 : (int)(SequenceType)pLayer->m_nSequence,
+			!pLayer->IsActive() ? 0 : (float)(WeightType)pLayer->m_flWeight,
+			!pLayer->IsActive() ? 0 : (float)(CycleType)pLayer->m_flCycle,
 			!pLayer->IsActive() ? 0 : (int)pLayer->m_nOrder,
 			i
 			);

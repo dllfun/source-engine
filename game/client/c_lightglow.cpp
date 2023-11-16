@@ -89,7 +89,46 @@ protected:
 	bool	m_bModulateByDot;
 };
 
+template<typename T= float>
 void RecvProxy_HDRColorScale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropHDRColorScale : public RecvPropFloat {
+public:
+	RecvPropHDRColorScale() {}
+
+	template<typename T = float>
+	RecvPropHDRColorScale(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_HDRColorScale<T>
+	);
+	virtual	~RecvPropHDRColorScale() {}
+	RecvPropHDRColorScale& operator=(const RecvPropHDRColorScale& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropHDRColorScale* pRecvProp = new RecvPropHDRColorScale;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropHDRColorScale::RecvPropHDRColorScale(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -111,20 +150,20 @@ public:
 
 public:
 	
-	int					m_nHorizontalSize;
-	int					m_nVerticalSize;
-	int					m_nMinDist;
-	int					m_nMaxDist;
-	int					m_nOuterMaxDist;
-	int					m_spawnflags;
+	CNetworkVar( int,					m_nHorizontalSize);
+	CNetworkVar( int,					m_nVerticalSize);
+	CNetworkVar( int,					m_nMinDist);
+	CNetworkVar( int,					m_nMaxDist);
+	CNetworkVar( int,					m_nOuterMaxDist);
+	CNetworkVar( int,					m_spawnflags);
 	C_LightGlowOverlay	m_Glow;
 
-	float				m_flGlowProxySize;
+	CNetworkVar( float,				m_flGlowProxySize);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_LightGlow)
 	BEGIN_RECV_TABLE(C_LightGlow, DT_LightGlow, DT_BaseEntity)
-		RecvPropInt(RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32),
+		RecvPropColor32(RECVINFO(m_clrRender), 0),//, RecvProxy_IntToColor32
 		RecvPropInt(RECVINFO(m_nHorizontalSize)),
 		RecvPropInt(RECVINFO(m_nVerticalSize)),
 		RecvPropInt(RECVINFO(m_nMinDist)),
@@ -133,13 +172,14 @@ public:
 		RecvPropInt(RECVINFO(m_spawnflags)),
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropQAngles(RECVINFO_NAME(m_angNetworkAngles, m_angRotation)),
-		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropIntToMoveParent(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0),//, RecvProxy_IntToMoveParent
 		RecvPropFloat(RECVINFO(m_flGlowProxySize)),
-		RecvPropFloat("HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_HDRColorScale),
+		RecvPropHDRColorScale((float*)0, "HDRColorScale", 0, SIZEOF_IGNORE, 0),//, RecvProxy_HDRColorScale
 	END_RECV_TABLE(DT_LightGlow)
 	END_INIT_RECV_TABLE()
 };
 
+template<typename T>
 void RecvProxy_HDRColorScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	C_LightGlow *pLightGlow = ( C_LightGlow * )pStruct;
@@ -153,9 +193,13 @@ IMPLEMENT_CLIENTCLASS( C_LightGlow, DT_LightGlow, CLightGlow )
 //-----------------------------------------------------------------------------
 // Constructor 
 //-----------------------------------------------------------------------------
-C_LightGlow::C_LightGlow() :
-m_nHorizontalSize( 0 ), m_nVerticalSize( 0 ), m_nMinDist( 0 ), m_nMaxDist( 0 )
+C_LightGlow::C_LightGlow() 
+//:m_nHorizontalSize( 0 ), m_nVerticalSize( 0 ), m_nMinDist( 0 ), m_nMaxDist( 0 )
 {
+	m_nHorizontalSize = 0;
+	m_nVerticalSize = 0;
+	m_nMinDist = 0;
+	m_nMaxDist = 0;
 	m_Glow.m_bDirectional = false;
 	m_Glow.m_bInSky = false;
 }

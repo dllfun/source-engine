@@ -72,15 +72,15 @@ public:
 
 	CParticleSphereRenderer	m_Renderer;
 
-	float			m_SpreadSpeed;
-	float			m_Speed;
-	float			m_StartSize;
-	float			m_EndSize;
-	float			m_Rate;
-	float			m_JetLength;	// Length of the jet. Lifetime is derived from this.
+	CNetworkVar( float,			m_SpreadSpeed);
+	CNetworkVar( float,			m_Speed);
+	CNetworkVar( float,			m_StartSize);
+	CNetworkVar( float,			m_EndSize);
+	CNetworkVar( float,			m_Rate);
+	CNetworkVar( float,			m_JetLength);	// Length of the jet. Lifetime is derived from this.
 
-	int				m_bEmit;		// Emit particles?
-	float			m_flBaseSpread;
+	CNetworkVar( int,				m_bEmit);		// Emit particles?
+	CNetworkVar( float,			m_flBaseSpread);
 
 	class CLightInfo
 	{
@@ -101,9 +101,9 @@ public:
 
 	Vector			m_vBaseColor;
 	
-	Vector			m_vWind;
-	float			m_flTwist;
-	int				m_iMaterialModel;
+	CNetworkVector(			m_vWind);
+	CNetworkVar( float,			m_flTwist);
+	CNetworkVar( int,				m_iMaterialModel);
 
 private:
 	C_SmokeStack( const C_SmokeStack & );
@@ -119,7 +119,7 @@ private:
 	TimedEvent		m_ParticleSpawn;
 	int				m_iMaxFrames;
 	bool			m_bInView;
-	float			m_flRollSpeed;
+	CNetworkVar( float,			m_flRollSpeed);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_SmokeStack)

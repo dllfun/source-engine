@@ -29,13 +29,13 @@ public:
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
 private:
-	bool m_bUseCustomAutoExposureMin;
-	bool m_bUseCustomAutoExposureMax;
-	bool m_bUseCustomBloomScale;
-	float m_flCustomAutoExposureMin;
-	float m_flCustomAutoExposureMax;
-	float m_flCustomBloomScale;
-	float m_flCustomBloomScaleMinimum;
+	CNetworkVar( bool, m_bUseCustomAutoExposureMin);
+	CNetworkVar( bool, m_bUseCustomAutoExposureMax);
+	CNetworkVar( bool, m_bUseCustomBloomScale);
+	CNetworkVar( float, m_flCustomAutoExposureMin);
+	CNetworkVar( float, m_flCustomAutoExposureMax);
+	CNetworkVar( float, m_flCustomBloomScale);
+	CNetworkVar( float, m_flCustomBloomScaleMinimum);
 private:
 	C_EnvTonemapController( const C_EnvTonemapController & );
 

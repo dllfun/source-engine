@@ -29,7 +29,7 @@ public:
 	virtual ShadowType_t ShadowCastType();
 	
 public:
-	float			m_mass;	// TEST..
+	CNetworkVar( float,			m_mass);	// TEST..
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_PhysBox)

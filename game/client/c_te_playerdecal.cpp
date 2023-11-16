@@ -122,9 +122,9 @@ public:
 	virtual void	Precache( void );
 
 public:
-	int				m_nPlayer;
-	Vector			m_vecOrigin;
-	int				m_nEntity;
+	CNetworkVar( int,				m_nPlayer);
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVar( int,				m_nEntity);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEPlayerDecal)
@@ -274,7 +274,7 @@ void C_TEPlayerDecal::PostDataUpdate( DataUpdateType_t updateType )
 		return;
 
 	CLocalPlayerFilter filter;
-	TE_PlayerDecal(  filter, 0.0f, &m_vecOrigin, m_nPlayer, m_nEntity );
+	TE_PlayerDecal(  filter, 0.0f, &m_vecOrigin.m_Value, m_nPlayer, m_nEntity );
 #endif
 }
 

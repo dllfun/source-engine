@@ -10,9 +10,9 @@
 #ifdef _WIN32
 #pragma once
 #endif
-
+#if defined( CLIENT_DLL )
 #include "shared_classnames.h"
-
+#endif
 #define NUM_AUDIO_LOCAL_SOUNDS	8
 
 // These structs are contained in each player's local data and shared by the client & server

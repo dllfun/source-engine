@@ -107,14 +107,14 @@ private:
 public:
 	void			AffectRagdolls( void );
 
-	int				m_nModelIndex;
-	float			m_fScale;
-	int				m_nFrameRate;
-	int				m_nFlags;
-	Vector			m_vecNormal;
-	char			m_chMaterialType;
-	int				m_nRadius;
-	int				m_nMagnitude;
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( float,			m_fScale);
+	CNetworkVar( int,				m_nFrameRate);
+	CNetworkVar( int,				m_nFlags);
+	CNetworkVector(			m_vecNormal);
+	CNetworkVar( char,			m_chMaterialType);
+	CNetworkVar( int,				m_nRadius);
+	CNetworkVar( int,				m_nMagnitude);
 
 	//CParticleCollision	m_ParticleCollision;
 	CParticleMgr		*m_pParticleMgr;
@@ -229,12 +229,12 @@ void C_TEExplosion::RecordExplosion( )
  		msg->SetInt( "te", TE_EXPLOSION );
  		msg->SetString( "name", "TE_Explosion" );
 		msg->SetFloat( "time", gpGlobals->GetCurTime() );
-		msg->SetFloat( "originx", m_vecOrigin.x );
-		msg->SetFloat( "originy", m_vecOrigin.y );
-		msg->SetFloat( "originz", m_vecOrigin.z );
-		msg->SetFloat( "directionx", m_vecNormal.x );
-		msg->SetFloat( "directiony", m_vecNormal.y );
-		msg->SetFloat( "directionz", m_vecNormal.z );
+		msg->SetFloat( "originx", m_vecOrigin.GetX() );
+		msg->SetFloat( "originy", m_vecOrigin.GetY() );
+		msg->SetFloat( "originz", m_vecOrigin.GetZ() );
+		msg->SetFloat( "directionx", m_vecNormal.GetX() );
+		msg->SetFloat( "directiony", m_vecNormal.GetY() );
+		msg->SetFloat( "directionz", m_vecNormal.GetZ() );
   		msg->SetString( "model", pModelName );
 		msg->SetFloat( "scale", m_fScale );
 		msg->SetInt( "framerate", m_nFrameRate );

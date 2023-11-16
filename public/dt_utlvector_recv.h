@@ -59,7 +59,10 @@ public:
 		// You can leave all of its parameters at 0 (name, offset, size, etc).
 	);
 	virtual	~RecvPropUtlVector() {}
-	RecvPropUtlVector& operator=(const RecvPropUtlVector& srcSendProp);
+	RecvPropUtlVector& operator=(const RecvPropUtlVector& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropUtlVector* pRecvProp = new RecvPropUtlVector;
 		*pRecvProp = *this;

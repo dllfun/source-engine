@@ -83,6 +83,11 @@ public:
 		return m_Val;
 	}
 
+	inline operator T& ()
+	{
+		return m_Val;
+	}
+
 	inline CRangeCheckedVar<T, minValue, maxValue, startValue>& operator=( const T &value )
 	{
 		RangeCheck( value, minValue, maxValue );

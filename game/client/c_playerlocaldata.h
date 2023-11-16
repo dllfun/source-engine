@@ -35,22 +35,22 @@ public:
 		m_flFOVRate = 0;
 	}
 
-	unsigned char			m_chAreaBits[MAX_AREA_STATE_BYTES];				// Area visibility flags.
-	unsigned char			m_chAreaPortalBits[MAX_AREA_PORTAL_STATE_BYTES];// Area portal visibility flags.
+	CNetworkArray( unsigned char,			m_chAreaBits,MAX_AREA_STATE_BYTES);				// Area visibility flags.
+	CNetworkArray( unsigned char,			m_chAreaPortalBits,MAX_AREA_PORTAL_STATE_BYTES);// Area portal visibility flags.
 
-	int						m_iHideHUD;			// bitfields containing sections of the HUD to hide
+	CNetworkVar( int,						m_iHideHUD);			// bitfields containing sections of the HUD to hide
 	
-	float					m_flFOVRate;		// rate at which the FOV changes
+	CNetworkVar( float,					m_flFOVRate);		// rate at which the FOV changes
 	
 
-	bool					m_bDucked;
-	bool					m_bDucking;
-	bool					m_bInDuckJump;
-	float					m_flDucktime;
-	float					m_flDuckJumpTime;
-	float					m_flJumpTime;
+	CNetworkVar( bool,					m_bDucked);
+	CNetworkVar( bool,					m_bDucking);
+	CNetworkVar( bool,					m_bInDuckJump);
+	CNetworkVar( float,					m_flDucktime);
+	CNetworkVar( float,					m_flDuckJumpTime);
+	CNetworkVar( float,					m_flJumpTime);
 	int						m_nStepside;
-	float					m_flFallVelocity;
+	CNetworkVar( float,					m_flFallVelocity);
 	int						m_nOldButtons;
 	// Base velocity that was passed in to server physics so 
 	//  client can predict conveyors correctly.  Server zeroes it, so we need to store here, too.
@@ -60,11 +60,11 @@ public:
 
 	CNetworkQAngle( m_vecPunchAngleVel );		// velocity of auto-decaying view angle adjustment
 	CInterpolatedVar< QAngle >	m_iv_vecPunchAngleVel;
-	bool					m_bDrawViewmodel;
-	bool					m_bWearingSuit;
-	bool					m_bPoisoned;
-	float					m_flStepSize;
-	bool					m_bAllowAutoMovement;
+	CNetworkVar( bool,					m_bDrawViewmodel);
+	CNetworkVar( bool,					m_bWearingSuit);
+	CNetworkVar( bool,					m_bPoisoned);
+	CNetworkVar( float,					m_flStepSize);
+	CNetworkVar( bool,					m_bAllowAutoMovement);
 
 	// 3d skybox
 	sky3dparams_t			m_skybox3d;
@@ -78,8 +78,8 @@ public:
 public:
 	BEGIN_INIT_RECV_TABLE(CPlayerLocalData)
 	BEGIN_RECV_TABLE_NOBASE(CPlayerLocalData, DT_Local)
-		RecvPropArray3(RECVINFO_ARRAY(m_chAreaBits), RecvPropInt(RECVINFO(m_chAreaBits[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_chAreaPortalBits), RecvPropInt(RECVINFO(m_chAreaPortalBits[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_chAreaBits), RecvPropInt(RECVINFO_ARRAY3(m_chAreaBits))),
+		RecvPropArray3(RECVINFO_ARRAY(m_chAreaPortalBits), RecvPropInt(RECVINFO_ARRAY3(m_chAreaPortalBits))),
 		RecvPropInt(RECVINFO(m_iHideHUD)),
 
 		// View
@@ -121,8 +121,8 @@ public:
 		RecvPropInt(RECVINFO(m_skybox3d.fog.enable)),
 		RecvPropInt(RECVINFO(m_skybox3d.fog.blend)),
 		RecvPropVector(RECVINFO(m_skybox3d.fog.dirPrimary)),
-		RecvPropInt(RECVINFO(m_skybox3d.fog.colorPrimary)),
-		RecvPropInt(RECVINFO(m_skybox3d.fog.colorSecondary)),
+		RecvPropColor32(RECVINFO(m_skybox3d.fog.colorPrimary)),
+		RecvPropColor32(RECVINFO(m_skybox3d.fog.colorSecondary)),
 		RecvPropFloat(RECVINFO(m_skybox3d.fog.start)),
 		RecvPropFloat(RECVINFO(m_skybox3d.fog.end)),
 		RecvPropFloat(RECVINFO(m_skybox3d.fog.maxdensity)),
@@ -131,14 +131,14 @@ public:
 		RecvPropEHandle(RECVINFO(m_PlayerFog.m_hCtrl)),
 
 		// audio data
-		RecvPropVector(RECVINFO(m_audio.localSound[0])),
-		RecvPropVector(RECVINFO(m_audio.localSound[1])),
-		RecvPropVector(RECVINFO(m_audio.localSound[2])),
-		RecvPropVector(RECVINFO(m_audio.localSound[3])),
-		RecvPropVector(RECVINFO(m_audio.localSound[4])),
-		RecvPropVector(RECVINFO(m_audio.localSound[5])),
-		RecvPropVector(RECVINFO(m_audio.localSound[6])),
-		RecvPropVector(RECVINFO(m_audio.localSound[7])),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,0)),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,1)),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,2)),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,3)),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,4)),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,5)),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,6)),
+		RecvPropVector(RECVINFO_STRUCTARRAYELEM(m_audio.localSound,7)),
 		RecvPropInt(RECVINFO(m_audio.soundscapeIndex)),
 		RecvPropInt(RECVINFO(m_audio.localBits)),
 		RecvPropEHandle(RECVINFO(m_audio.ent)),

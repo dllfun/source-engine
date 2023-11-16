@@ -41,15 +41,15 @@ public:
 	virtual void	GetToolRecordingState( KeyValues *msg );
 
 private:
-	float m_FOV;
-	float m_Resolution;
-	bool m_bFogEnable;
-	color32 m_FogColor;
-	float m_flFogStart;
-	float m_flFogEnd;
-	float m_flFogMaxDensity;
-	bool m_bActive;
-	bool m_bUseScreenAspectRatio;
+	CNetworkVar( float, m_FOV);
+	CNetworkVar( float, m_Resolution);
+	CNetworkVar( bool, m_bFogEnable);
+	CNetworkColor32( m_FogColor);
+	CNetworkVar( float, m_flFogStart);
+	CNetworkVar( float, m_flFogEnd);
+	CNetworkVar( float, m_flFogMaxDensity);
+	CNetworkVar( bool, m_bActive);
+	CNetworkVar( bool, m_bUseScreenAspectRatio);
 
 public:
 	C_PointCamera	*m_pNext;
@@ -60,7 +60,7 @@ public:
 		RecvPropFloat(RECVINFO(m_FOV)),
 		RecvPropFloat(RECVINFO(m_Resolution)),
 		RecvPropInt(RECVINFO(m_bFogEnable)),
-		RecvPropInt(RECVINFO(m_FogColor)),
+		RecvPropColor32(RECVINFO(m_FogColor)),
 		RecvPropFloat(RECVINFO(m_flFogStart)),
 		RecvPropFloat(RECVINFO(m_flFogEnd)),
 		RecvPropFloat(RECVINFO(m_flFogMaxDensity)),

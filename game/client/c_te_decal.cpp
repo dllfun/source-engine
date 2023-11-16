@@ -34,11 +34,11 @@ public:
 	virtual void	Precache( void );
 
 public:
-	Vector			m_vecOrigin;
-	Vector			m_vecStart;
-	int				m_nEntity;
-	int				m_nHitbox;
-	int				m_nIndex;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVector(			m_vecStart);
+	CNetworkVar( int,				m_nEntity);
+	CNetworkVar( int,				m_nHitbox);
+	CNetworkVar( int,				m_nIndex);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEDecal)
@@ -162,7 +162,7 @@ void C_TEDecal::PostDataUpdate( DataUpdateType_t updateType )
 	VPROF( "C_TEDecal::PostDataUpdate" );
 
 	CBroadcastRecipientFilter filter;
-	TE_Decal( filter, 0.0f, &m_vecOrigin, &m_vecStart, m_nEntity, m_nHitbox, m_nIndex );
+	TE_Decal( filter, 0.0f, &m_vecOrigin.m_Value, &m_vecStart.m_Value, m_nEntity, m_nHitbox, m_nIndex );
 }
 
 

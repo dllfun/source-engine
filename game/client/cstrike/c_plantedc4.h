@@ -45,8 +45,8 @@ public:
 	float m_flNextGlow;
 	float m_flNextBeep;
 
-	float m_flC4Blow;
-	float m_flTimerLength;
+	CNetworkVar( float, m_flC4Blow);
+	CNetworkVar( float, m_flTimerLength);
 
 	CNetworkVar( float, m_flDefuseLength );	
 	CNetworkVar( float, m_flDefuseCountDown ); 

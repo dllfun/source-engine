@@ -32,8 +32,8 @@ public:
 public:
 
 	CUtlLinkedList<CTeslaInfo,int> m_QueuedCommands;
-	char m_SoundName[64];
-	char m_iszSpriteName[256];
+	CNetworkString( m_SoundName,64);
+	CNetworkString( m_iszSpriteName,256);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_Tesla)

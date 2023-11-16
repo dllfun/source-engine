@@ -1384,8 +1384,8 @@ public:
 
 public:
 
-	int			m_nType;
-	Vector		m_vecDirection;
+	CNetworkVar( int,			m_nType);
+	CNetworkVector(		m_vecDirection);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEGaussExplosion)

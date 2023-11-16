@@ -169,12 +169,12 @@ inline void CParticleSphereRenderer::RenderParticle(
 #endif
 
 	Vector vColor = m_vBaseColor;
-	AddLightColor( &vOriginalPos, &m_AmbientLight.m_vPos, &m_AmbientLight.m_vColor, m_AmbientLight.m_flIntensity, &vColor );
+	AddLightColor( &vOriginalPos, &m_AmbientLight.m_vPos.m_Value, &m_AmbientLight.m_vColor.m_Value, m_AmbientLight.m_flIntensity, &vColor );
 	
 	// If the DX8 shader isn't going to handle the directional light color, then add its contribution here.
 	if( !m_bUsingPixelShaders )
 	{
-		AddLightColor( &vOriginalPos, &m_DirectionalLight.m_vPos, &m_DirectionalLight.m_vColor, m_DirectionalLight.m_flIntensity, &vColor );
+		AddLightColor( &vOriginalPos, &m_DirectionalLight.m_vPos.m_Value, &m_DirectionalLight.m_vColor.m_Value, m_DirectionalLight.m_flIntensity, &vColor );
 	}
 	
 	ClampColor( vColor );
@@ -207,12 +207,12 @@ inline void CParticleSphereRenderer::RenderParticle_AddColor(
 #endif
 
 	Vector vColor = m_vBaseColor + vToAdd0to1;
-	AddLightColor( &vOriginalPos, &m_AmbientLight.m_vPos, &m_AmbientLight.m_vColor, m_AmbientLight.m_flIntensity, &vColor );
+	AddLightColor( &vOriginalPos, &m_AmbientLight.m_vPos.m_Value, &m_AmbientLight.m_vColor.m_Value, m_AmbientLight.m_flIntensity, &vColor );
 	
 	// If the DX8 shader isn't going to handle the directional light color, then add its contribution here.
 	if( !m_bUsingPixelShaders )
 	{
-		AddLightColor( &vOriginalPos, &m_DirectionalLight.m_vPos, &m_DirectionalLight.m_vColor, m_DirectionalLight.m_flIntensity, &vColor );
+		AddLightColor( &vOriginalPos, &m_DirectionalLight.m_vPos.m_Value, &m_DirectionalLight.m_vColor.m_Value, m_DirectionalLight.m_flIntensity, &vColor );
 	}
 	
 	ClampColor( vColor );

@@ -29,14 +29,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-void RecvProxy_RecomputeSprings( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	// Have the regular proxy store the data.
-	RecvProxy_Int32ToInt32( pData, pStruct, pOut );
 
-	C_RopeKeyframe *pRope = (C_RopeKeyframe*)pStruct;
-	pRope->RecomputeSprings();
-}
 
 
 IMPLEMENT_CLIENTCLASS( C_RopeKeyframe, DT_RopeKeyframe, CRopeKeyframe )

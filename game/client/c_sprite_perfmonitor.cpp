@@ -24,8 +24,8 @@ public:
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
 private:
-	bool m_bDisplayPerf;
-	bool m_bMeasurePerf;
+	CNetworkVar( bool, m_bDisplayPerf);
+	CNetworkVar( bool, m_bMeasurePerf);
 private:
 	C_ParticlePerformanceMonitor( const C_ParticlePerformanceMonitor & );
 

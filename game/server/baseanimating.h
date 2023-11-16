@@ -16,6 +16,10 @@
 #include "datacache/idatacache.h"
 #include "tier0/threadtools.h"
 
+#ifdef CLIENT_DLL
+#undef CBaseEntity
+#undef CBaseAnimating
+#endif // CLIENT_DLL
 
 struct animevent_t;
 struct matrix3x4_t;

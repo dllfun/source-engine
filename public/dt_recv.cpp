@@ -144,105 +144,6 @@ CRenamedRecvTableInfo* g_pRenamedRecvTableInfoHead = 0;
 // Prop setup functions (for building tables).
 // ---------------------------------------------------------------------- //
 
-RecvPropFloat::RecvPropFloat(
-	const char* pVarName,
-	int offset,
-	int sizeofVar,
-	int flags,
-	RecvVarProxyFn varProxy
-)
-{
-	//RecvProp ret;
-
-#ifdef _DEBUG
-	if (varProxy == RecvProxy_FloatToFloat)
-	{
-		Assert(sizeofVar == 0 || sizeofVar == 4);
-	}
-#endif
-
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset(offset);
-	this->m_RecvType = DPT_Float;
-	this->m_Flags = flags;
-	this->SetProxyFn(varProxy);
-
-	//return ret;
-}
-
-RecvPropFloat& RecvPropFloat::operator=(const RecvPropFloat& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}
-
-RecvPropVector::RecvPropVector(
-	const char* pVarName,
-	int offset,
-	int sizeofVar,
-	int flags,
-	RecvVarProxyFn varProxy
-)
-{
-	//RecvProp ret;
-
-#ifdef _DEBUG
-	if (varProxy == RecvProxy_VectorToVector)
-	{
-		Assert(sizeofVar == sizeof(Vector));
-	}
-#endif
-
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset(offset);
-	this->m_RecvType = DPT_Vector;
-	this->m_Flags = flags;
-	this->SetProxyFn(varProxy);
-
-	//return ret;
-}
-
-RecvPropVector& RecvPropVector::operator=(const RecvPropVector& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}
-
-RecvPropVectorXY::RecvPropVectorXY(
-	const char* pVarName,
-	int offset,
-	int sizeofVar,
-	int flags,
-	RecvVarProxyFn varProxy
-)
-{
-	//RecvProp ret;
-
-#ifdef _DEBUG
-	if (varProxy == RecvProxy_VectorToVector)
-	{
-		Assert(sizeofVar == sizeof(Vector));
-	}
-#endif
-
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset(offset);
-	this->m_RecvType = DPT_VectorXY;
-	this->m_Flags = flags;
-	this->SetProxyFn(varProxy);
-
-	//return ret;
-}
-
-RecvPropVectorXY& RecvPropVectorXY::operator=(const RecvPropVectorXY& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}
-
 #if 0 // We can't ship this since it changes the size of DTVariant to be 20 bytes instead of 16 and that breaks MODs!!!
 
 RecvProp RecvPropQuaternion(
@@ -274,91 +175,6 @@ RecvProp RecvPropQuaternion(
 }
 #endif
 
-RecvPropInt::RecvPropInt(
-	const char* pVarName,
-	int offset,
-	int sizeofVar,
-	int flags,
-	RecvVarProxyFn varProxy
-)
-{
-	//RecvProp ret;
-
-	// If they didn't specify a proxy, then figure out what type we're writing to.
-	if (varProxy == NULL)
-	{
-		if (sizeofVar == 1)
-		{
-			varProxy = RecvProxy_Int32ToInt8;
-		}
-		else if (sizeofVar == 2)
-		{
-			varProxy = RecvProxy_Int32ToInt16;
-		}
-		else if (sizeofVar == 4)
-		{
-			varProxy = RecvProxy_Int32ToInt32;
-		}
-#ifdef SUPPORTS_INT64		
-		else if (sizeofVar == 8)
-		{
-			varProxy = RecvProxy_Int64ToInt64;
-		}
-#endif
-		else
-		{
-			Assert(!"RecvPropInt var has invalid size");
-			varProxy = RecvProxy_Int32ToInt8;	// safest one...
-		}
-	}
-
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset(offset);
-#ifdef SUPPORTS_INT64
-	this->m_RecvType = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
-#else
-	this->m_RecvType = DPT_Int;
-#endif
-	this->m_Flags = flags;
-	this->SetProxyFn(varProxy);
-
-	//return ret;
-}
-
-RecvPropInt& RecvPropInt::operator=(const RecvPropInt& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}
-
-RecvPropString::RecvPropString(
-	const char* pVarName,
-	int offset,
-	int bufferSize,
-	int flags,
-	RecvVarProxyFn varProxy
-)
-{
-	//RecvProp ret;
-
-	if (pVarName) {
-		this->m_pVarName = COM_StringCopy(pVarName);
-	}
-	this->SetOffset(offset);
-	this->m_RecvType = DPT_String;
-	this->m_Flags = flags;
-	this->m_StringBufferSize = bufferSize;
-	this->SetProxyFn(varProxy);
-
-	//return ret;
-}
-
-RecvPropString& RecvPropString::operator=(const RecvPropString& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}
-
 RecvPropDataTable::RecvPropDataTable(
 	const char* pVarName,
 	int offset,
@@ -382,11 +198,6 @@ RecvPropDataTable::RecvPropDataTable(
 	}
 
 	//return ret;
-}
-
-RecvPropDataTable& RecvPropDataTable::operator=(const RecvPropDataTable& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
 }
 
 RecvPropArray3::RecvPropArray3(
@@ -437,11 +248,6 @@ RecvPropArray3::RecvPropArray3(
 	//return ret;
 }
 
-RecvPropArray3& RecvPropArray3::operator=(const RecvPropArray3& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}
-
 RecvPropInternalArray::RecvPropInternalArray(
 	const int elementCount,
 	const int elementStride,
@@ -462,39 +268,17 @@ RecvPropInternalArray::RecvPropInternalArray(
 	//return ret;
 }
 
-RecvPropInternalArray& RecvPropInternalArray::operator=(const RecvPropInternalArray& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}
+
 
 // ---------------------------------------------------------------------- //
 // Proxies.
 // ---------------------------------------------------------------------- //
 
-void RecvProxy_FloatToFloat(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	Assert(IsFinite(pData->m_Value.m_Float));
-	*((float*)pOut) = pData->m_Value.m_Float;
-}
 
-void RecvProxy_VectorToVector(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	const float* v = pData->m_Value.m_Vector;
 
-	Assert(IsFinite(v[0]) && IsFinite(v[1]) && IsFinite(v[2]));
-	((float*)pOut)[0] = v[0];
-	((float*)pOut)[1] = v[1];
-	((float*)pOut)[2] = v[2];
-}
 
-void RecvProxy_VectorXYToVectorXY(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	const float* v = pData->m_Value.m_Vector;
 
-	Assert(IsFinite(v[0]) && IsFinite(v[1]));
-	((float*)pOut)[0] = v[0];
-	((float*)pOut)[1] = v[1];
-}
+
 
 void RecvProxy_QuaternionToQuaternion(const CRecvProxyData* pData, void* pStruct, void* pOut)
 {
@@ -507,45 +291,9 @@ void RecvProxy_QuaternionToQuaternion(const CRecvProxyData* pData, void* pStruct
 	((float*)pOut)[3] = v[3];
 }
 
-void RecvProxy_Int32ToInt8(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	*((unsigned char*)pOut) = (unsigned char)pData->m_Value.m_Int;
-}
 
-void RecvProxy_Int32ToInt16(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	*((unsigned short*)pOut) = (unsigned short)pData->m_Value.m_Int;
-}
 
-void RecvProxy_Int32ToInt32(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	*((uint32*)pOut) = (uint32)pData->m_Value.m_Int;
-}
 
-#ifdef SUPPORTS_INT64
-void RecvProxy_Int64ToInt64(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	*((int64*)pOut) = (int64)pData->m_Value.m_Int64;
-}
-#endif
-
-void RecvProxy_StringToString(const CRecvProxyData* pData, void* pStruct, void* pOut)
-{
-	char* pStrOut = (char*)pOut;
-	if (pData->m_pRecvProp->m_StringBufferSize <= 0)
-	{
-		return;
-	}
-
-	for (int i = 0; i < pData->m_pRecvProp->m_StringBufferSize; i++)
-	{
-		pStrOut[i] = pData->m_Value.m_pString[i];
-		if (pStrOut[i] == 0)
-			break;
-	}
-
-	pStrOut[pData->m_pRecvProp->m_StringBufferSize - 1] = 0;
-}
 
 void DataTableRecvProxy_StaticDataTable(const RecvProp* pProp, void** pOut, void* pData, int objectID)
 {

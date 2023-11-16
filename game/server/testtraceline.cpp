@@ -32,7 +32,7 @@ private:
 public:
 	BEGIN_INIT_SEND_TABLE(CTestTraceline)
 	BEGIN_SEND_TABLE(CTestTraceline, DT_TestTraceline, DT_PointEntity)
-		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),
+		SendPropColor32(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),
 		SendPropVector(SENDINFO(m_vecOrigin), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
 		SendPropFloat(SENDINFO_VECTORELEM(m_angRotation, 0), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),
 		SendPropFloat(SENDINFO_VECTORELEM(m_angRotation, 1), 19, 0, MIN_COORD_INTEGER, MAX_COORD_INTEGER),

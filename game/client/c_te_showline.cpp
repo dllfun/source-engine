@@ -31,7 +31,7 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecEnd;
+	CNetworkVector(			m_vecEnd);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEShowLine)

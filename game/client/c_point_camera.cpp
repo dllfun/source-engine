@@ -61,9 +61,9 @@ bool C_PointCamera::IsFogEnabled()
 
 void C_PointCamera::GetFogColor( unsigned char &r, unsigned char &g, unsigned char &b )
 {
-	r = m_FogColor.r;
-	g = m_FogColor.g;
-	b = m_FogColor.b;
+	r = m_FogColor.GetR();
+	g = m_FogColor.GetG();
+	b = m_FogColor.GetB();
 }
 
 float C_PointCamera::GetFogStart()

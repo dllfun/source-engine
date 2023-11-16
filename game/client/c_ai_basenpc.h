@@ -43,18 +43,18 @@ public:
 
 private:
 	C_AI_BaseNPC( const C_AI_BaseNPC & ); // not defined, not accessible
-	float m_flTimePingEffect;
-	int  m_iDeathPose;
-	int	 m_iDeathFrame;
+	CNetworkVar( float, m_flTimePingEffect);
+	CNetworkVar( int,  m_iDeathPose);
+	CNetworkVar( int,	 m_iDeathFrame);
 
-	int m_iSpeedModRadius;
-	int m_iSpeedModSpeed;
+	CNetworkVar( int, m_iSpeedModRadius);
+	CNetworkVar( int, m_iSpeedModSpeed);
 
-	bool m_bPerformAvoidance;
-	bool m_bIsMoving;
-	bool m_bFadeCorpse;
-	bool m_bSpeedModActive;
-	bool m_bImportanRagdoll;
+	CNetworkVar( bool, m_bPerformAvoidance);
+	CNetworkVar( bool, m_bIsMoving);
+	CNetworkVar( bool, m_bFadeCorpse);
+	CNetworkVar( bool, m_bSpeedModActive);
+	CNetworkVar( bool, m_bImportanRagdoll);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_AI_BaseNPC)

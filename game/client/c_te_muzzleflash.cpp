@@ -31,10 +31,10 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector		m_vecOrigin;
-	QAngle		m_vecAngles;
-	float		m_flScale;
-	int			m_nType;
+	CNetworkVector(		m_vecOrigin);
+	CNetworkQAngle(		m_vecAngles);
+	CNetworkVar( float,		m_flScale);
+	CNetworkVar( int,			m_nType);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEMuzzleFlash)

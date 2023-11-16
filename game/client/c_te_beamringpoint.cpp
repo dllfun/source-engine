@@ -32,9 +32,9 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecCenter;
-	float			m_flStartRadius;
-	float			m_flEndRadius;
+	CNetworkVector(			m_vecCenter);
+	CNetworkVar( float,			m_flStartRadius);
+	CNetworkVar( float,			m_flEndRadius);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBeamRingPoint)

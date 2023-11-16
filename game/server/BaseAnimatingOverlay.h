@@ -8,6 +8,7 @@
 
 // #include "BaseAnimating.h"
 #include "dt_utlvector_send.h"
+#include "baseanimating.h"
 
 #ifndef BASE_ANIMATING_OVERLAY_H
 #define BASE_ANIMATING_OVERLAY_H
@@ -55,10 +56,10 @@ public:
 	bool	m_bSequenceFinished;
 	bool	m_bLooping;
 	
-	CNetworkVar( int, m_nSequence );
-	CNetworkVar( float, m_flCycle );
-	CNetworkVar( float, m_flPrevCycle );
-	CNetworkVar( float, m_flWeight );
+	CNetworkVar(int, m_nSequence );
+	CNetworkVar(float, m_flCycle );
+	CNetworkVar(float, m_flPrevCycle );
+	CNetworkVar(float, m_flWeight );
 	
 	float	m_flPlaybackRate;
 

@@ -27,7 +27,7 @@ public:
 
 private:
 
-	int		m_iOverlayID;
+	CNetworkVar( int,		m_iOverlayID);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_InfoOverlayAccessor)

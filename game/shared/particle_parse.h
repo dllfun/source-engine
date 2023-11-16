@@ -45,7 +45,7 @@ struct te_tf_particle_effects_colors_t
 
 struct te_tf_particle_effects_control_point_t
 {
-	ParticleAttachment_t m_eParticleAttachment;
+	int m_eParticleAttachment;//ParticleAttachment_t
 	Vector m_vecOffset;
 };
 

@@ -49,24 +49,24 @@ private:
 
 private:
 
-	bool	m_bEnabled;
+	CNetworkVar( bool,	m_bEnabled);
 
-	char	m_szDisplayText[ 128 ];
+	CNetworkString(	m_szDisplayText ,128);
 
-	char	m_szSlideshowDirectory[ 128 ];
+	CNetworkString( m_szSlideshowDirectory, 128 );
 
 	CUtlVector<SlideMaterialList_t*>	m_SlideMaterialLists;
-	unsigned char						m_chCurrentSlideLists[ 16 ];
+	CNetworkArray( unsigned char,		m_chCurrentSlideLists, 16 );
 	int									m_iCurrentMaterialIndex;
 	int									m_iCurrentSlideIndex;
 
-	float	m_fMinSlideTime;
-	float	m_fMaxSlideTime;
+	CNetworkVar( float,	m_fMinSlideTime);
+	CNetworkVar( float,	m_fMaxSlideTime);
 
 	float	m_NextSlideTime;
 
-	int		m_iCycleType;
-	bool	m_bNoListRepeats;
+	CNetworkVar( int,		m_iCycleType);
+	CNetworkVar( bool,	m_bNoListRepeats);
 	int		m_iCurrentSlideList;
 	int		m_iCurrentSlide;
 
@@ -76,7 +76,7 @@ public:
 		RecvPropBool(RECVINFO(m_bEnabled)),
 		RecvPropString(RECVINFO(m_szDisplayText)),
 		RecvPropString(RECVINFO(m_szSlideshowDirectory)),
-		RecvPropArray3(RECVINFO_ARRAY(m_chCurrentSlideLists), RecvPropInt(RECVINFO(m_chCurrentSlideLists[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_chCurrentSlideLists), RecvPropInt(RECVINFO_ARRAY3(m_chCurrentSlideLists))),
 		RecvPropFloat(RECVINFO(m_fMinSlideTime)),
 		RecvPropFloat(RECVINFO(m_fMaxSlideTime)),
 		RecvPropInt(RECVINFO(m_iCycleType)),

@@ -47,19 +47,19 @@ public:
 		MAX_DETAIL_SPRITE_MATERIAL_NAME_LENGTH = 256,
 	};
 
-	float	m_flWaveHeight;
-	Vector	m_WorldMins;
-	Vector	m_WorldMaxs;
-	bool	m_bStartDark;
-	float	m_flMaxOccludeeArea;
-	float	m_flMinOccluderArea;
-	float	m_flMinPropScreenSpaceWidth;
-	float	m_flMaxPropScreenSpaceWidth;
-	bool	m_bColdWorld;
+	CNetworkVar( float,	m_flWaveHeight);
+	CNetworkVector(	m_WorldMins);
+	CNetworkVector(	m_WorldMaxs);
+	CNetworkVar( bool,	m_bStartDark);
+	CNetworkVar( float,	m_flMaxOccludeeArea);
+	CNetworkVar( float,	m_flMinOccluderArea);
+	CNetworkVar( float,	m_flMinPropScreenSpaceWidth);
+	CNetworkVar( float,	m_flMaxPropScreenSpaceWidth);
+	CNetworkVar( bool,	m_bColdWorld);
 
 private:
 	void	RegisterSharedActivities( void );
-	char	m_iszDetailSpriteMaterial[MAX_DETAIL_SPRITE_MATERIAL_NAME_LENGTH];
+	CNetworkString( 	m_iszDetailSpriteMaterial,MAX_DETAIL_SPRITE_MATERIAL_NAME_LENGTH);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_World)

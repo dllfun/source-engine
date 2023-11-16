@@ -60,7 +60,7 @@ private:
 
 	float		m_flJeepFOV;
 	CHeadlightEffect *m_pHeadlight;
-	bool		m_bHeadlightIsOn;
+	CNetworkVar( bool,		m_bHeadlightIsOn);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_PropJeep)

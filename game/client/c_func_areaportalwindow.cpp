@@ -54,13 +54,13 @@ private:
 
 
 public:
-	float			m_flFadeStartDist;	// Distance at which it starts fading (when <= this, alpha=m_flTranslucencyLimit).
-	float			m_flFadeDist;		// Distance at which it becomes solid.
+	CNetworkVar( float,			m_flFadeStartDist);	// Distance at which it starts fading (when <= this, alpha=m_flTranslucencyLimit).
+	CNetworkVar( float,			m_flFadeDist);		// Distance at which it becomes solid.
 
 	// 0-1 value - minimum translucency it's allowed to get to.
-	float			m_flTranslucencyLimit;
+	CNetworkVar( float,			m_flTranslucencyLimit);
 
-	int				m_iBackgroundModelIndex;
+	CNetworkVar( int,				m_iBackgroundModelIndex);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_FuncAreaPortalWindow)

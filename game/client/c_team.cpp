@@ -10,14 +10,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-//-----------------------------------------------------------------------------
-// Purpose: RecvProxy that converts the Team's player UtlVector to entindexes
-//-----------------------------------------------------------------------------
-void RecvProxy_PlayerList(  const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_Team *pTeam = (C_Team*)pOut;
-	pTeam->m_aPlayers[pData->m_iElement] = pData->m_Value.m_Int;
-}
+
 
 
 void RecvProxyArrayLength_PlayerArray( void *pStruct, int objectID, int currentArrayLength )
@@ -55,7 +48,7 @@ C_Team::C_Team()
 {
 	m_iScore = 0;
 	m_iRoundsWon = 0;
-	memset( m_szTeamname, 0, sizeof(m_szTeamname) );
+	memset( m_szTeamname.m_Value, 0, sizeof(m_szTeamname) );
 
 	m_iDeaths = 0;
 	m_iPing = 0;
@@ -107,7 +100,7 @@ int C_Team::GetTeamNumber() const
 //-----------------------------------------------------------------------------
 char *C_Team::Get_Name( void )
 {
-	return m_szTeamname;
+	return m_szTeamname.m_Value;
 }
 
 //-----------------------------------------------------------------------------

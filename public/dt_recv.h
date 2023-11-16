@@ -477,7 +477,7 @@ int TestRevFunction();
 				typedef className currentRecvDTClass;\
 				const char *pTableName = #tableName; \
 				RecvProp* pRecvProps[] = { \
-					RecvPropInt("should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
+					RecvPropInt((int*)0, "should_never_see_this", 0, sizeof(int)),		// It adds a dummy property at the start so you can define "empty" SendTables.
 
 #define END_RECV_TABLE(tableName) \
 										};\
@@ -502,29 +502,119 @@ int TestRevFunction();
 // Normal offset of is invalid on non-array-types, this is dubious as hell. The rest of the codebase converted to the
 // legit offsetof from the C headers, so we'll use the old impl here to avoid exposing temptation to others
 #define _hacky_dtrecv_offsetof(s,m)	((size_t)&(((s *)0)->m))
+#define _hacky_dtrecv_typeof(s,m)	&(((s *)0)->m)
 
-#define RECVINFO(varName)						#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName)
-#define RECVINFO_NAME(varName, remoteVarName)	#remoteVarName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName)
-#define RECVINFO_STRING(varName)				#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), STRINGBUFSIZE(currentRecvDTClass, varName)
+#define RECVINFO(varName)						_hacky_dtrecv_typeof(currentRecvDTClass, varName), #varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName.m_Value)//
+#define RECVINFO_NAME(varName, remoteVarName)	_hacky_dtrecv_typeof(currentRecvDTClass, varName), #remoteVarName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName.m_Value)//
+#define RECVINFO_STRING(varName)				_hacky_dtrecv_typeof(currentRecvDTClass, varName), #varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), STRINGBUFSIZE(currentRecvDTClass, varName)
 #define RECVINFO_BASECLASS(tableName)			RecvPropDataTable("this", 0, 0, &REFERENCE_RECV_TABLE(tableName))
-#define RECVINFO_INTERNALARRAY(varName)			sizeof(((currentRecvDTClass*)0)->varName)/sizeof(((currentRecvDTClass*)0)->varName[0]), sizeof(((currentRecvDTClass*)0)->varName[0]), #varName
-#define RECVINFO_ARRAY(varName)					#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName[0]), sizeof(((currentRecvDTClass*)0)->varName)/sizeof(((currentRecvDTClass*)0)->varName[0])
+#define RECVINFO_INTERNALARRAY(varName)			sizeof(((currentRecvDTClass*)0)->varName.m_Value)/sizeof(((currentRecvDTClass*)0)->varName[0]), sizeof(((currentRecvDTClass*)0)->varName[0]), #varName //
+#define RECVINFO_ARRAY(varName)					#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName[0]), sizeof(((currentRecvDTClass*)0)->varName.m_Value)/sizeof(((currentRecvDTClass*)0)->varName[0])//
+#define RECVINFO_ARRAY3(varName)				_hacky_dtrecv_typeof(currentRecvDTClass, varName[0]), #varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName[0])
+
+#define RECVINFO_VECTORELEM(varName, i)		_hacky_dtrecv_typeof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtrecv_offsetof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])
+#define RECVINFO_VECTORELEM_NAME(varName, i, remoteVarName)		_hacky_dtrecv_typeof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), #remoteVarName, _hacky_dtrecv_offsetof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])
+
+#define RECVINFO_STRUCTELEM(varName)		_hacky_dtrecv_typeof(currentRecvDTClass, varName), #varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName.m_Value)
+#define RECVINFO_STRUCTARRAYELEM(varName, i)_hacky_dtrecv_typeof(currentRecvDTClass, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtrecv_offsetof(currentRecvDTClass, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])
 
 // Just specify the name and offset. Used for strings and data tables.
+#define RECVINFO_NOCHECK(varName)				_hacky_dtrecv_typeof(currentRecvDTClass, varName), #varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName)// .m_Value
 #define RECVINFO_NOSIZE(varName)				#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName)
 #define RECVINFO_DT(varName)					RECVINFO_NOSIZE(varName)
 #define RECVINFO_DTNAME(varName,remoteVarName)	#remoteVarName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName)
 
+template<typename T= float>
 void RecvProxy_FloatToFloat  ( const CRecvProxyData *pData, void *pStruct, void *pOut );
+template<typename T>
+void RecvProxy_FloatToFloat(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	Assert(IsFinite(pData->m_Value.m_Float));
+	*((T*)pOut) = pData->m_Value.m_Float;//float
+}
+
+template<typename T= Vector>
 void RecvProxy_VectorToVector( const CRecvProxyData *pData, void *pStruct, void *pOut );
+template<typename T>
+void RecvProxy_VectorToVector(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	const float* v = pData->m_Value.m_Vector;
+
+	Assert(IsFinite(v[0]) && IsFinite(v[1]) && IsFinite(v[2]));
+	((T*)pOut)->SetX(v[0]);//float
+	((T*)pOut)->SetY(v[1]);
+	((T*)pOut)->SetZ(v[2]);
+}
+
+template<typename T= float>
 void RecvProxy_VectorXYToVectorXY( const CRecvProxyData *pData, void *pStruct, void *pOut );
+template<typename T>
+void RecvProxy_VectorXYToVectorXY(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	const float* v = pData->m_Value.m_Vector;
+
+	Assert(IsFinite(v[0]) && IsFinite(v[1]));
+	((T*)pOut)[0] = v[0];//float
+	((T*)pOut)[1] = v[1];
+}
+
 void RecvProxy_QuaternionToQuaternion( const CRecvProxyData *pData, void *pStruct, void *pOut );
+
+template<typename T= unsigned char>
 void RecvProxy_Int32ToInt8   ( const CRecvProxyData *pData, void *pStruct, void *pOut );
+template<typename T= unsigned short>
 void RecvProxy_Int32ToInt16  ( const CRecvProxyData *pData, void *pStruct, void *pOut );
+template<typename T= char>
 void RecvProxy_StringToString( const CRecvProxyData *pData, void *pStruct, void *pOut );
+template<typename T>
+void RecvProxy_StringToString(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	T& pStrOut = *(T*)pOut;//char
+	if (pData->m_pRecvProp->m_StringBufferSize <= 0)
+	{
+		return;
+}
+
+	for (int i = 0; i < pData->m_pRecvProp->m_StringBufferSize; i++)
+	{
+		pStrOut[i] = pData->m_Value.m_pString[i];
+		if (pStrOut[i] == 0)
+			break;
+	}
+
+	pStrOut[pData->m_pRecvProp->m_StringBufferSize - 1] = 0;
+}
+template<typename T= uint32>
 void RecvProxy_Int32ToInt32  ( const CRecvProxyData *pData, void *pStruct, void *pOut );
 #ifdef SUPPORTS_INT64
+template<typename T= int64>
 void RecvProxy_Int64ToInt64  ( const CRecvProxyData *pData, void *pStruct, void *pOut );
+#endif
+
+template<typename T>
+void RecvProxy_Int32ToInt8(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	*((T*)pOut) = pData->m_Value.m_Int;//unsigned char(unsigned char)
+}
+
+template<typename T>
+void RecvProxy_Int32ToInt16(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	*((T*)pOut) = pData->m_Value.m_Int;//unsigned short(unsigned short)
+}
+
+template<typename T>
+void RecvProxy_Int32ToInt32(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	*((T*)pOut) = pData->m_Value.m_Int;//uint32(uint32)
+}
+
+#ifdef SUPPORTS_INT64
+template<typename T>
+void RecvProxy_Int64ToInt64(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	*((T*)pOut) = (int64)pData->m_Value.m_Int64;//int64
+}
 #endif
 
 // StaticDataTable does *pOut = pData.
@@ -536,15 +626,21 @@ void DataTableRecvProxy_PointerDataTable(const RecvProp *pProp, void **pOut, voi
 class RecvPropFloat : public RecvProp {
 public:
 	RecvPropFloat() {}
+
+	template<typename T=float>
 	RecvPropFloat(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
 		int flags = 0,
-		RecvVarProxyFn varProxy = RecvProxy_FloatToFloat
+		RecvVarProxyFn varProxy = RecvProxy_FloatToFloat<T>
 	);
 	virtual	~RecvPropFloat() {}
-	RecvPropFloat& operator=(const RecvPropFloat& srcSendProp);
+	RecvPropFloat& operator=(const RecvPropFloat& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropFloat* pRecvProp = new RecvPropFloat;
 		*pRecvProp = *this;
@@ -552,18 +648,54 @@ public:
 	}
 };
 
+template<typename T>
+RecvPropFloat::RecvPropFloat(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+)
+{
+	//RecvProp ret;
+
+#ifdef _DEBUG
+	if (varProxy == RecvProxy_FloatToFloat)
+	{
+		Assert(sizeofVar == 0 || sizeofVar == 4);
+	}
+#endif
+
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_Float;
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
+
 class RecvPropVector : public RecvProp {
 public:
 	RecvPropVector() {}
+
+	template<typename T = Vector>
 	RecvPropVector(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
 		int flags = 0,
-		RecvVarProxyFn varProxy = RecvProxy_VectorToVector
+		RecvVarProxyFn varProxy = RecvProxy_VectorToVector<T>
 	);
 	virtual	~RecvPropVector() {}
-	RecvPropVector& operator=(const RecvPropVector& srcSendProp);
+	RecvPropVector& operator=(const RecvPropVector& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropVector* pRecvProp = new RecvPropVector;
 		*pRecvProp = *this;
@@ -571,24 +703,90 @@ public:
 	}
 };
 
+template<typename T>
+RecvPropVector::RecvPropVector(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+)
+{
+	//RecvProp ret;
+
+#ifdef _DEBUG
+	if (varProxy == RecvProxy_VectorToVector)
+	{
+		Assert(sizeofVar == sizeof(Vector));
+	}
+#endif
+
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_Vector;
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
+
 class RecvPropVectorXY : public RecvProp {
 public:
 	RecvPropVectorXY() {}
+
+	template<typename T= Vector>
 	RecvPropVectorXY(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
 		int flags = 0,
-		RecvVarProxyFn varProxy = RecvProxy_VectorXYToVectorXY
+		RecvVarProxyFn varProxy = RecvProxy_VectorXYToVectorXY<T>
 	);
 	virtual	~RecvPropVectorXY() {}
-	RecvPropVectorXY& operator=(const RecvPropVectorXY& srcSendProp);
+	RecvPropVectorXY& operator=(const RecvPropVectorXY& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropVectorXY* pRecvProp = new RecvPropVectorXY;
 		*pRecvProp = *this;
 		return pRecvProp;
 	}
 };
+
+template<typename T>
+RecvPropVectorXY::RecvPropVectorXY(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+)
+{
+	//RecvProp ret;
+
+#ifdef _DEBUG
+	if (varProxy == RecvProxy_VectorToVector)
+	{
+		Assert(sizeofVar == sizeof(Vector));
+	}
+#endif
+
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_VectorXY;
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
 
 // This is here so the RecvTable can look more like the SendTable.
 #define RecvPropQAngles RecvPropVector
@@ -607,7 +805,10 @@ RecvProp RecvPropQuaternion(
 class RecvPropInt : public RecvProp {
 public:
 	RecvPropInt() {}
+
+	template<typename T = int>
 	RecvPropInt(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
@@ -615,7 +816,10 @@ public:
 		RecvVarProxyFn varProxy = 0
 	);
 	virtual	~RecvPropInt() {}
-	RecvPropInt& operator=(const RecvPropInt& srcSendProp);
+	RecvPropInt& operator=(const RecvPropInt& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropInt* pRecvProp = new RecvPropInt;
 		*pRecvProp = *this;
@@ -623,24 +827,109 @@ public:
 	}
 };
 
+template<typename T>
+RecvPropInt::RecvPropInt(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+)
+{
+	//RecvProp ret;
+
+	// If they didn't specify a proxy, then figure out what type we're writing to.
+	if (varProxy == NULL)
+	{
+		if (sizeofVar == 1)
+		{
+			varProxy = RecvProxy_Int32ToInt8<T>;
+		}
+		else if (sizeofVar == 2)
+		{
+			varProxy = RecvProxy_Int32ToInt16<T>;
+		}
+		else if (sizeofVar == 4)
+		{
+			varProxy = RecvProxy_Int32ToInt32<T>;
+		}
+#ifdef SUPPORTS_INT64		
+		else if (sizeofVar == 8)
+		{
+			varProxy = RecvProxy_Int64ToInt64<T>;
+		}
+#endif
+		else
+		{
+			Assert(!"RecvPropInt var has invalid size");
+			varProxy = RecvProxy_Int32ToInt8<T>;	// safest one...
+		}
+	}
+
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+#ifdef SUPPORTS_INT64
+	this->m_RecvType = (sizeofVar == 8) ? DPT_Int64 : DPT_Int;
+#else
+	this->m_RecvType = DPT_Int;
+#endif
+	this->m_Flags = flags;
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
+
 class RecvPropString : public RecvProp {
 public:
 	RecvPropString(){}
+
+	template<typename T = char*>
 	RecvPropString(
+		T* pType,
 		const char* pVarName,
 		int offset,
 		int bufferSize,
 		int flags = 0,
-		RecvVarProxyFn varProxy = RecvProxy_StringToString
+		RecvVarProxyFn varProxy = RecvProxy_StringToString<T>
 	);
 	virtual	~RecvPropString() {}
-	RecvPropString& operator=(const RecvPropString& srcSendProp);
+	RecvPropString& operator=(const RecvPropString& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropString* pRecvProp = new RecvPropString;
 		*pRecvProp = *this;
 		return pRecvProp;
 	}
 };
+
+template<typename T>
+RecvPropString::RecvPropString(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int bufferSize,
+	int flags,
+	RecvVarProxyFn varProxy
+)
+{
+	//RecvProp ret;
+
+	if (pVarName) {
+		this->m_pVarName = COM_StringCopy(pVarName);
+	}
+	this->SetOffset(offset);
+	this->m_RecvType = DPT_String;
+	this->m_Flags = flags;
+	this->m_StringBufferSize = bufferSize;
+	this->SetProxyFn(varProxy);
+
+	//return ret;
+}
 
 class RecvPropDataTable : public RecvProp {
 public:
@@ -653,7 +942,10 @@ public:
 		DataTableRecvVarProxyFn varProxy = DataTableRecvProxy_StaticDataTable
 	);
 	virtual	~RecvPropDataTable() {}
-	RecvPropDataTable& operator=(const RecvPropDataTable& srcSendProp);
+	RecvPropDataTable& operator=(const RecvPropDataTable& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropDataTable* pRecvProp = new RecvPropDataTable;
 		*pRecvProp = *this;
@@ -673,7 +965,10 @@ public:
 		DataTableRecvVarProxyFn varProxy = DataTableRecvProxy_StaticDataTable
 	);
 	virtual	~RecvPropArray3() {}
-	RecvPropArray3& operator=(const RecvPropArray3& srcSendProp);
+	RecvPropArray3& operator=(const RecvPropArray3& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropArray3* pRecvProp = new RecvPropArray3;
 		*pRecvProp = *this;
@@ -695,7 +990,10 @@ public:
 		ArrayLengthRecvProxyFn proxy = 0
 	);
 	virtual	~RecvPropInternalArray() {}
-	RecvPropInternalArray& operator=(const RecvPropInternalArray& srcSendProp);
+	RecvPropInternalArray& operator=(const RecvPropInternalArray& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator RecvProp* () {
 		RecvPropInternalArray* pRecvProp = new RecvPropInternalArray;
 		*pRecvProp = *this;

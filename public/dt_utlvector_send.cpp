@@ -225,7 +225,4 @@ SendPropUtlVector::SendPropUtlVector(
 	//return ret;
 }
 
-SendPropUtlVector& SendPropUtlVector::operator=(const SendPropUtlVector& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
+

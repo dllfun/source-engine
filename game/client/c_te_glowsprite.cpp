@@ -32,11 +32,11 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecOrigin;
-	int				m_nModelIndex;
-	float			m_fScale;
-	float			m_fLife;
-	int				m_nBrightness;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( float,			m_fScale);
+	CNetworkVar( float,			m_fLife);
+	CNetworkVar( int,				m_nBrightness);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEGlowSprite)

@@ -20,6 +20,20 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+struct OverlayNames {
+public:
+	OverlayNames() {}
+	char buf[255];
+	const char* ToCStr() {
+		return buf;
+	}
+	char& operator[](int i) {
+		return buf[i]; 
+	}
+};
+
+inline void NetworkVarConstruct(OverlayNames& x) {  }
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -39,11 +53,12 @@ public:
 	void	ClientThink( void );
 
 protected:
-	char	m_iszOverlayNames[ MAX_SCREEN_OVERLAYS ][255];
-	float	m_flOverlayTimes[ MAX_SCREEN_OVERLAYS ];
-	float	m_flStartTime;
-	int     m_iDesiredOverlay;
-	bool	m_bIsActive;
+	CNetworkArray(OverlayNames, m_iszOverlayNames, MAX_SCREEN_OVERLAYS);
+	//char	m_iszOverlayNames[ MAX_SCREEN_OVERLAYS ][255];
+	CNetworkArray( float,	m_flOverlayTimes, MAX_SCREEN_OVERLAYS );
+	CNetworkVar( float,	m_flStartTime);
+	CNetworkVar( int,     m_iDesiredOverlay);
+	CNetworkVar( bool,	m_bIsActive);
 	bool	m_bWasActive;
 	int		m_iCachedDesiredOverlay;
 	int		m_iCurrentOverlay;
@@ -52,8 +67,8 @@ protected:
 public:
 	BEGIN_INIT_RECV_TABLE(C_EnvScreenOverlay)
 	BEGIN_RECV_TABLE(C_EnvScreenOverlay, DT_EnvScreenOverlay, DT_BaseEntity)
-		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_iszOverlayNames), RecvPropString(RECVINFO(m_iszOverlayNames[0]))),
-		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_flOverlayTimes), RecvPropFloat(RECVINFO(m_flOverlayTimes[0]))),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_iszOverlayNames), RecvPropString(RECVINFO_ARRAY3(m_iszOverlayNames))),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_flOverlayTimes), RecvPropFloat(RECVINFO_ARRAY3(m_flOverlayTimes))),
 		RecvPropFloat(RECVINFO(m_flStartTime)),
 		RecvPropInt(RECVINFO(m_iDesiredOverlay)),
 		RecvPropBool(RECVINFO(m_bIsActive)),
@@ -100,9 +115,9 @@ void C_EnvScreenOverlay::PostDataUpdate( DataUpdateType_t updateType )
 	{
 		for ( int i = 0; i < MAX_SCREEN_OVERLAYS; ++i )
 		{
-			if ( m_iszOverlayNames[ i ] && m_iszOverlayNames[ i ][ 0 ] )
+			if (STRING(m_iszOverlayNames[ i ]) && STRING(m_iszOverlayNames[ i ])[ 0 ] )
 			{
-				materials->FindMaterial( m_iszOverlayNames[ i ], TEXTURE_GROUP_CLIENT_EFFECTS, false );
+				materials->FindMaterial( STRING( m_iszOverlayNames[ i ]), TEXTURE_GROUP_CLIENT_EFFECTS, false );
 			}
 		}
 	}
@@ -152,7 +167,7 @@ void C_EnvScreenOverlay::HandleOverlaySwitch( void )
 //-----------------------------------------------------------------------------
 void C_EnvScreenOverlay::StartCurrentOverlay( void )
 {
-	if ( m_iCurrentOverlay == MAX_SCREEN_OVERLAYS || !m_iszOverlayNames[m_iCurrentOverlay] || !m_iszOverlayNames[m_iCurrentOverlay][0] )
+	if ( m_iCurrentOverlay == MAX_SCREEN_OVERLAYS || !STRING(m_iszOverlayNames[m_iCurrentOverlay]) || !STRING(m_iszOverlayNames[m_iCurrentOverlay])[0] )
 	{
 		// Hit the end of our overlays, so stop.
 		m_flStartTime = 0;
@@ -166,7 +181,7 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 		 m_flCurrentOverlayTime = gpGlobals->GetCurTime() + m_flOverlayTimes[m_iCurrentOverlay];
 
 	// Bring up the current overlay
-	IMaterial *pMaterial = materials->FindMaterial( m_iszOverlayNames[m_iCurrentOverlay], TEXTURE_GROUP_CLIENT_EFFECTS, false );
+	IMaterial *pMaterial = materials->FindMaterial(STRING(m_iszOverlayNames[m_iCurrentOverlay]), TEXTURE_GROUP_CLIENT_EFFECTS, false );
 	if ( !IsErrorMaterial( pMaterial ) )
 	{
 		g_pView->SetScreenOverlayMaterial( pMaterial );
@@ -212,8 +227,8 @@ public:
 	virtual void ReceiveMessage( int classID, bf_read &msg );
 
 private:
-	float	m_flDuration;
-	int		m_nType;
+	CNetworkVar( float,	m_flDuration);
+	CNetworkVar( int,		m_nType);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_EnvScreenEffect)

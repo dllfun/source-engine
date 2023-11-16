@@ -39,8 +39,8 @@ public:
 	void ClientThink();
 
 private:
-	float	m_Weight;
-	char	m_lookupFilename[MAX_PATH];
+	CNetworkVar( float,	m_Weight);
+	CNetworkString(	m_lookupFilename,MAX_PATH);
 
 	ClientCCHandle_t m_CCHandle;
 

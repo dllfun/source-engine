@@ -14,6 +14,20 @@
 #include "cs_shareddefs.h"
 #include "c_playerresource.h"
 
+struct Clan {
+public:
+	Clan() {}
+	char buf[MAX_CLAN_TAG_LENGTH];
+	const char* ToCStr() {
+		return buf;
+	}
+	char& operator[](int i) {
+		return buf[i];
+	}
+};
+
+inline void NetworkVarConstruct(Clan& x) {  }
+
 class C_CS_PlayerResource : public C_PlayerResource
 {
 	DECLARE_CLASS( C_CS_PlayerResource, C_PlayerResource );
@@ -45,31 +59,31 @@ public:
 
 protected:
 
-	int		m_iPlayerC4;	// entity index of C4 carrier or 0
-	int		m_iPlayerVIP;	// entity index of VIP player or 0
-	Vector	m_vecC4;		// position of C4
-	Vector	m_bombsiteCenterA;	
-	Vector	m_bombsiteCenterB;	
+	CNetworkVar( int,		m_iPlayerC4);	// entity index of C4 carrier or 0
+	CNetworkVar( int,		m_iPlayerVIP);	// entity index of VIP player or 0
+	CNetworkVector(	m_vecC4);		// position of C4
+	CNetworkVector(	m_bombsiteCenterA);	
+	CNetworkVector(	m_bombsiteCenterB);	
 
-	bool	m_bHostageAlive[MAX_HOSTAGES];
-	bool	m_isHostageFollowingSomeone[MAX_HOSTAGES];
-	int		m_iHostageEntityIDs[MAX_HOSTAGES];
-	int		m_iHostageX[MAX_HOSTAGES];
-	int		m_iHostageY[MAX_HOSTAGES];
-	int		m_iHostageZ[MAX_HOSTAGES];
+	CNetworkArray( bool,	m_bHostageAlive,MAX_HOSTAGES);
+	CNetworkArray( bool,	m_isHostageFollowingSomeone,MAX_HOSTAGES);
+	CNetworkArray( int,		m_iHostageEntityIDs,MAX_HOSTAGES);
+	CNetworkArray( int,		m_iHostageX,MAX_HOSTAGES);
+	CNetworkArray( int,		m_iHostageY,MAX_HOSTAGES);
+	CNetworkArray( int,		m_iHostageZ,MAX_HOSTAGES);
 
-	int		m_hostageRescueX[MAX_HOSTAGE_RESCUES];
-	int		m_hostageRescueY[MAX_HOSTAGE_RESCUES];
-	int		m_hostageRescueZ[MAX_HOSTAGE_RESCUES];
+	CNetworkArray( int,		m_hostageRescueX,MAX_HOSTAGE_RESCUES);
+	CNetworkArray( int,		m_hostageRescueY,MAX_HOSTAGE_RESCUES);
+	CNetworkArray( int,		m_hostageRescueZ,MAX_HOSTAGE_RESCUES);
 
-	bool	m_bBombSpotted;
-	bool	m_bPlayerSpotted[ MAX_PLAYERS + 1 ];
+	CNetworkVar( bool,	m_bBombSpotted);
+	CNetworkArray( bool,	m_bPlayerSpotted, MAX_PLAYERS + 1 );
 	int		m_iPlayerClasses[ MAX_PLAYERS + 1 ];
 
-	char	m_szClan[MAX_PLAYERS+1][MAX_CLAN_TAG_LENGTH];
+	CNetworkArray(Clan,	m_szClan,MAX_PLAYERS+1);
 
-	int		m_iMVPs[ MAX_PLAYERS + 1 ];	 
-	bool	m_bHasDefuser[ MAX_PLAYERS + 1 ];
+	CNetworkArray( int,		m_iMVPs, MAX_PLAYERS + 1 );	 
+	CNetworkArray( bool,	m_bHasDefuser, MAX_PLAYERS + 1 );
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_CS_PlayerResource)
@@ -77,22 +91,22 @@ public:
 		RecvPropInt(RECVINFO(m_iPlayerC4)),
 		RecvPropInt(RECVINFO(m_iPlayerVIP)),
 		RecvPropVector(RECVINFO(m_vecC4)),
-		RecvPropArray3(RECVINFO_ARRAY(m_bHostageAlive), RecvPropInt(RECVINFO(m_bHostageAlive[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_isHostageFollowingSomeone), RecvPropInt(RECVINFO(m_isHostageFollowingSomeone[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iHostageEntityIDs), RecvPropInt(RECVINFO(m_iHostageEntityIDs[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iHostageX), RecvPropInt(RECVINFO(m_iHostageX[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iHostageY), RecvPropInt(RECVINFO(m_iHostageY[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iHostageZ), RecvPropInt(RECVINFO(m_iHostageZ[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bHostageAlive), RecvPropInt(RECVINFO_ARRAY3(m_bHostageAlive))),
+		RecvPropArray3(RECVINFO_ARRAY(m_isHostageFollowingSomeone), RecvPropInt(RECVINFO_ARRAY3(m_isHostageFollowingSomeone))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iHostageEntityIDs), RecvPropInt(RECVINFO_ARRAY3(m_iHostageEntityIDs))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iHostageX), RecvPropInt(RECVINFO_ARRAY3(m_iHostageX))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iHostageY), RecvPropInt(RECVINFO_ARRAY3(m_iHostageY))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iHostageZ), RecvPropInt(RECVINFO_ARRAY3(m_iHostageZ))),
 		RecvPropVector(RECVINFO(m_bombsiteCenterA)),
 		RecvPropVector(RECVINFO(m_bombsiteCenterB)),
-		RecvPropArray3(RECVINFO_ARRAY(m_hostageRescueX), RecvPropInt(RECVINFO(m_hostageRescueX[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_hostageRescueY), RecvPropInt(RECVINFO(m_hostageRescueY[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_hostageRescueZ), RecvPropInt(RECVINFO(m_hostageRescueZ[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_hostageRescueX), RecvPropInt(RECVINFO_ARRAY3(m_hostageRescueX))),
+		RecvPropArray3(RECVINFO_ARRAY(m_hostageRescueY), RecvPropInt(RECVINFO_ARRAY3(m_hostageRescueY))),
+		RecvPropArray3(RECVINFO_ARRAY(m_hostageRescueZ), RecvPropInt(RECVINFO_ARRAY3(m_hostageRescueZ))),
 		RecvPropInt(RECVINFO(m_bBombSpotted)),
-		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerSpotted), RecvPropInt(RECVINFO(m_bPlayerSpotted[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iMVPs), RecvPropInt(RECVINFO(m_iMVPs[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_bHasDefuser), RecvPropInt(RECVINFO(m_bHasDefuser[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_szClan), RecvPropString(RECVINFO(m_szClan[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerSpotted), RecvPropInt(RECVINFO_ARRAY3(m_bPlayerSpotted))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iMVPs), RecvPropInt(RECVINFO_ARRAY3(m_iMVPs))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bHasDefuser), RecvPropInt(RECVINFO_ARRAY3(m_bHasDefuser))),
+		RecvPropArray3(RECVINFO_ARRAY(m_szClan), RecvPropString(RECVINFO_ARRAY3(m_szClan))),
 	END_RECV_TABLE(DT_CSPlayerResource)
 	END_INIT_RECV_TABLE()
 };

@@ -14,7 +14,9 @@
 #include "predictable_entity.h"
 #include "utlvector.h"
 #include "baseplayer_shared.h"
+#if defined( CLIENT_DLL )
 #include "shared_classnames.h"
+#endif
 #include "econ/ihasowner.h"
 
 class CBaseCombatWeapon;
@@ -32,9 +34,89 @@ class CVGuiScreen;
 // Stub to keep networking consistent for DEM files
 //-----------------------------------------------------------------------------
 #if defined( CLIENT_DLL )
+template<typename T>
 extern void RecvProxy_EffectFlags(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+template<typename T= int>
 void RecvProxy_SequenceNum(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropSequenceNum : public RecvPropInt {
+public:
+	RecvPropSequenceNum() {}
+
+	template<typename T = int>
+	RecvPropSequenceNum(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_SequenceNum<T>
+	);
+	virtual	~RecvPropSequenceNum() {}
+	RecvPropSequenceNum& operator=(const RecvPropSequenceNum& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropSequenceNum* pRecvProp = new RecvPropSequenceNum;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropSequenceNum::RecvPropSequenceNum(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+template<typename T= CBaseHandle>
 void RecvProxy_Weapon(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropWeapon : public RecvPropEHandle {
+public:
+	RecvPropWeapon() {}
+
+	template<typename T = int>
+	RecvPropWeapon(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,
+		RecvVarProxyFn proxyFn = RecvProxy_Weapon<T>
+	);
+	virtual	~RecvPropWeapon() {}
+	RecvPropWeapon& operator=(const RecvPropWeapon& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropWeapon* pRecvProp = new RecvPropWeapon;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropWeapon::RecvPropWeapon(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	RecvVarProxyFn proxyFn
+):RecvPropEHandle(pType, pVarName, offset, sizeofVar, proxyFn)
+{
+
+}
+
 #endif
 
 class CBaseViewModel : public CBaseAnimating, public IHasOwner
@@ -248,12 +330,12 @@ private:
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropInt(RECVINFO(m_nSkin)),
 		RecvPropInt(RECVINFO(m_nBody)),
-		RecvPropInt(RECVINFO(m_nSequence), 0, RecvProxy_SequenceNum),
+		RecvPropSequenceNum(RECVINFO(m_nSequence), 0),//, RecvProxy_SequenceNum
 		RecvPropInt(RECVINFO(m_nViewModelIndex)),
 		RecvPropFloat(RECVINFO(m_flPlaybackRate)),
-		RecvPropInt(RECVINFO(m_fEffects), 0, RecvProxy_EffectFlags),
+		RecvPropEffectFlags(RECVINFO(m_fEffects), 0),//, RecvProxy_EffectFlags
 		RecvPropInt(RECVINFO(m_nAnimationParity)),
-		RecvPropEHandle(RECVINFO(m_hWeapon), RecvProxy_Weapon),
+		RecvPropWeapon(RECVINFO(m_hWeapon)),//, RecvProxy_Weapon
 		RecvPropEHandle(RECVINFO(m_hOwner)),
 
 		RecvPropInt(RECVINFO(m_nNewSequenceParity)),
@@ -261,11 +343,52 @@ private:
 		RecvPropInt(RECVINFO(m_nMuzzleFlashParity)),
 
 #if !defined( INVASION_DLL ) && !defined( INVASION_CLIENT_DLL )
-		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO(m_flPoseParameter[0]))),
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO_ARRAY3(m_flPoseParameter))),
 #endif
 	END_NETWORK_TABLE(DT_BaseViewModel)
 	END_INIT_RECV_TABLE()
 #endif
 };
+
+
+#ifdef CLIENT_DLL
+
+template<typename T>
+void RecvProxy_SequenceNum(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	CBaseViewModel* model = (CBaseViewModel*)pStruct;
+	if (pData->m_Value.m_Int != model->GetSequence())
+	{
+		MDLCACHE_CRITICAL_SECTION();
+
+		model->SetSequence(pData->m_Value.m_Int);
+		model->m_flAnimTime = gpGlobals->GetCurTime();
+		model->SetCycle(0);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Resets anim cycle when the server changes the weapon on us
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_Weapon(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	CBaseViewModel* pViewModel = ((CBaseViewModel*)pStruct);
+	CBaseCombatWeapon* pOldWeapon = pViewModel->GetOwningWeapon();
+
+	// Chain through to the default recieve proxy ...
+	RecvProxy_IntToEHandle<T>(pData, pStruct, pOut);
+
+	// ... and reset our cycle index if the server is switching weapons on us
+	CBaseCombatWeapon* pNewWeapon = pViewModel->GetOwningWeapon();
+	if (pNewWeapon != pOldWeapon)
+	{
+		// Restart animation at frame 0
+		pViewModel->SetCycle(0);
+		pViewModel->m_flAnimTime = gpGlobals->GetCurTime();
+	}
+}
+#endif // CLIENT_DLL
+
 
 #endif // BASEVIEWMODEL_SHARED_H

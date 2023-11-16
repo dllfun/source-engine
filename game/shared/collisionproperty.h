@@ -139,12 +139,252 @@ SendPropSolidFlags::SendPropSolidFlags(
 
 
 #ifdef CLIENT_DLL
+template<typename T= Vector>
 void RecvProxy_OBBMinsPreScaled(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropOBBMinsPreScaled : public RecvPropVector {
+public:
+	RecvPropOBBMinsPreScaled() {}
+
+	template<typename T = Vector>
+	RecvPropOBBMinsPreScaled(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_OBBMinsPreScaled<T>
+	);
+	virtual	~RecvPropOBBMinsPreScaled() {}
+	RecvPropOBBMinsPreScaled& operator=(const RecvPropOBBMinsPreScaled& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropOBBMinsPreScaled* pRecvProp = new RecvPropOBBMinsPreScaled;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropOBBMinsPreScaled::RecvPropOBBMinsPreScaled(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropVector(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+template<typename T= SolidType_t>
 void RecvProxy_Solid(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropSolid : public RecvPropInt {
+public:
+	RecvPropSolid() {}
+
+	template<typename T = int>
+	RecvPropSolid(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_Solid<T>
+	);
+	virtual	~RecvPropSolid() {}
+	RecvPropSolid& operator=(const RecvPropSolid& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropSolid* pRecvProp = new RecvPropSolid;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropSolid::RecvPropSolid(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= int>
 void RecvProxy_SolidFlags(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropSolidFlags : public RecvPropInt {
+public:
+	RecvPropSolidFlags() {}
+
+	template<typename T = int>
+	RecvPropSolidFlags(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_SolidFlags<T>
+	);
+	virtual	~RecvPropSolidFlags() {}
+	RecvPropSolidFlags& operator=(const RecvPropSolidFlags& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropSolidFlags* pRecvProp = new RecvPropSolidFlags;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropSolidFlags::RecvPropSolidFlags(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= Vector>
 void RecvProxy_OBBMaxsPreScaled(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropOBBMaxsPreScaled : public RecvPropVector {
+public:
+	RecvPropOBBMaxsPreScaled() {}
+
+	template<typename T = Vector>
+	RecvPropOBBMaxsPreScaled(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_OBBMaxsPreScaled<T>
+	);
+	virtual	~RecvPropOBBMaxsPreScaled() {}
+	RecvPropOBBMaxsPreScaled& operator=(const RecvPropOBBMaxsPreScaled& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropOBBMaxsPreScaled* pRecvProp = new RecvPropOBBMaxsPreScaled;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropOBBMaxsPreScaled::RecvPropOBBMaxsPreScaled(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropVector(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= Vector>
 void RecvProxy_VectorDirtySurround(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropVectorDirtySurround : public RecvPropVector {
+public:
+	RecvPropVectorDirtySurround() {}
+
+	template<typename T = Vector>
+	RecvPropVectorDirtySurround(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_VectorDirtySurround<T>
+	);
+	virtual	~RecvPropVectorDirtySurround() {}
+	RecvPropVectorDirtySurround& operator=(const RecvPropVectorDirtySurround& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropVectorDirtySurround* pRecvProp = new RecvPropVectorDirtySurround;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropVectorDirtySurround::RecvPropVectorDirtySurround(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropVector(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= unsigned char>
 void RecvProxy_IntDirtySurround(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropIntDirtySurround : public RecvPropInt {
+public:
+	RecvPropIntDirtySurround() {}
+
+	template<typename T = int>
+	RecvPropIntDirtySurround(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_IntDirtySurround<T>
+	);
+	virtual	~RecvPropIntDirtySurround() {}
+	RecvPropIntDirtySurround& operator=(const RecvPropIntDirtySurround& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropIntDirtySurround* pRecvProp = new RecvPropIntDirtySurround;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropIntDirtySurround::RecvPropIntDirtySurround(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
 #endif
 
 //-----------------------------------------------------------------------------
@@ -396,18 +636,18 @@ private:
 #ifdef CLIENT_DLL
 	BEGIN_INIT_RECV_TABLE(CCollisionProperty)
 	BEGIN_NETWORK_TABLE_NOBASE(CCollisionProperty, DT_CollisionProperty)
-		RecvPropVector(RECVINFO(m_vecMinsPreScaled), 0, RecvProxy_OBBMinsPreScaled),
-		RecvPropVector(RECVINFO(m_vecMaxsPreScaled), 0, RecvProxy_OBBMaxsPreScaled),
+		RecvPropOBBMinsPreScaled(RECVINFO(m_vecMinsPreScaled), 0),//, RecvProxy_OBBMinsPreScaled
+		RecvPropOBBMaxsPreScaled(RECVINFO(m_vecMaxsPreScaled), 0),//, RecvProxy_OBBMaxsPreScaled
 		RecvPropVector(RECVINFO(m_vecMins), 0),
 		RecvPropVector(RECVINFO(m_vecMaxs), 0),
-		RecvPropInt(RECVINFO(m_nSolidType), 0, RecvProxy_Solid),
-		RecvPropInt(RECVINFO(m_usSolidFlags), 0, RecvProxy_SolidFlags),
-		RecvPropInt(RECVINFO(m_nSurroundType), 0, RecvProxy_IntDirtySurround),
-		RecvPropInt(RECVINFO(m_triggerBloat), 0, RecvProxy_IntDirtySurround),
-		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMinsPreScaled), 0, RecvProxy_VectorDirtySurround),
-		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0, RecvProxy_VectorDirtySurround),
-		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMins), 0, RecvProxy_VectorDirtySurround),
-		RecvPropVector(RECVINFO(m_vecSpecifiedSurroundingMaxs), 0, RecvProxy_VectorDirtySurround),
+		RecvPropSolid(RECVINFO(m_nSolidType), 0),//, RecvProxy_Solid
+		RecvPropSolidFlags(RECVINFO(m_usSolidFlags), 0),//, RecvProxy_SolidFlags
+		RecvPropIntDirtySurround(RECVINFO(m_nSurroundType), 0),//, RecvProxy_IntDirtySurround
+		RecvPropIntDirtySurround(RECVINFO(m_triggerBloat), 0),//, RecvProxy_IntDirtySurround
+		RecvPropVectorDirtySurround(RECVINFO(m_vecSpecifiedSurroundingMinsPreScaled), 0),//, RecvProxy_VectorDirtySurround
+		RecvPropVectorDirtySurround(RECVINFO(m_vecSpecifiedSurroundingMaxsPreScaled), 0),//, RecvProxy_VectorDirtySurround
+		RecvPropVectorDirtySurround(RECVINFO(m_vecSpecifiedSurroundingMins), 0),//, RecvProxy_VectorDirtySurround
+		RecvPropVectorDirtySurround(RECVINFO(m_vecSpecifiedSurroundingMaxs), 0),//, RecvProxy_VectorDirtySurround
 	END_NETWORK_TABLE(DT_CollisionProperty)
 	END_INIT_RECV_TABLE()
 #endif
@@ -647,5 +887,60 @@ void SendProxy_SolidFlags(const SendProp* pProp, const void* pStruct, const void
 	pOut->m_Int = ((CCollisionProperty*)pStruct)->GetSolidFlags();
 }
 #endif // GAME_DLL
+
+#ifdef CLIENT_DLL
+template<typename T>
+void RecvProxy_OBBMinsPreScaled(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	CCollisionProperty* pProp = ((CCollisionProperty*)pStruct);
+	Vector& vecMins = *((Vector*)pData->m_Value.m_Vector);
+	pProp->SetCollisionBounds(vecMins, pProp->OBBMaxsPreScaled());
+}
+
+template<typename T>
+void RecvProxy_Solid(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	((CCollisionProperty*)pStruct)->SetSolid((SolidType_t)pData->m_Value.m_Int);
+}
+
+template<typename T>
+void RecvProxy_SolidFlags(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	((CCollisionProperty*)pStruct)->SetSolidFlags(pData->m_Value.m_Int);
+}
+
+
+template<typename T>
+void RecvProxy_OBBMaxsPreScaled(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	CCollisionProperty* pProp = ((CCollisionProperty*)pStruct);
+	Vector& vecMaxs = *((Vector*)pData->m_Value.m_Vector);
+	pProp->SetCollisionBounds(pProp->OBBMinsPreScaled(), vecMaxs);
+}
+
+template<typename T>
+void RecvProxy_VectorDirtySurround(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	T& vecold = *((T*)pOut);//Vector
+	Vector vecnew(pData->m_Value.m_Vector[0], pData->m_Value.m_Vector[1], pData->m_Value.m_Vector[2]);
+
+	if (vecold != vecnew)
+	{
+		vecold = vecnew;
+		((CCollisionProperty*)pStruct)->MarkSurroundingBoundsDirty();
+	}
+}
+
+template<typename T>
+void RecvProxy_IntDirtySurround(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	if (*((T*)pOut) != pData->m_Value.m_Int)//unsigned char
+	{
+		*((T*)pOut) = pData->m_Value.m_Int;
+		((CCollisionProperty*)pStruct)->MarkSurroundingBoundsDirty();
+	}
+}
+#endif // CLIENT_DLL
+
 
 #endif // COLLISIONPROPERTY_H

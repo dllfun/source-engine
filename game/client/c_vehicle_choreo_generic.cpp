@@ -79,12 +79,12 @@ public:
 
 private:
 
-	CHandle<C_BasePlayer>	m_hPlayer;
+	CNetworkHandle( C_BasePlayer,	m_hPlayer);
 	CHandle<C_BasePlayer>	m_hPrevPlayer;
 
-	bool					m_bEnterAnimOn;
-	bool					m_bExitAnimOn;
-	Vector					m_vecEyeExitEndpoint;
+	CNetworkVar( bool,					m_bEnterAnimOn);
+	CNetworkVar( bool,					m_bExitAnimOn);
+	CNetworkVector(					m_vecEyeExitEndpoint);
 	float					m_flFOV;				// The current FOV (changes during entry/exit anims).
 
 	ViewSmoothingData_t		m_ViewSmoothingData;

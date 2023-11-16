@@ -36,8 +36,8 @@ public:
 
 //	Vector	m_vSpotlightOrg;
 //	Vector	m_vSpotlightDir;
-	float	m_flLightScale;
-	float	m_Radius;
+	CNetworkVar( float,	m_flLightScale);
+	CNetworkVar( float,	m_Radius);
 
 private:
 	dlight_t*	m_pDynamicLight;

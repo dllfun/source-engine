@@ -33,8 +33,8 @@ public:
 	virtual void	Precache( void );
 
 public:
-	Vector			m_vecOrigin;
-	int				m_nIndex;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVar( int,				m_nIndex);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEWorldDecal)
@@ -131,7 +131,7 @@ void C_TEWorldDecal::PostDataUpdate( DataUpdateType_t updateType )
 			}
 		}
 	}
-	RecordWorldDecal( &m_vecOrigin, m_nIndex );
+	RecordWorldDecal( &m_vecOrigin.m_Value, m_nIndex );
 }
 
 

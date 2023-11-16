@@ -40,20 +40,20 @@ public:
 
 	void			SetServerLinkState( bool state ) { m_bLinkedToServerEnt = state; }
 
-	float	m_flStartTime;
-	float	m_flFadeOutStart;
-	float	m_flFadeOutLength;
-	float	m_flFadeOutModelStart;
-	float	m_flFadeOutModelLength;
-	float	m_flFadeInStart;
-	float	m_flFadeInLength;
-	int		m_nDissolveType;
+	CNetworkVar( float,	m_flStartTime);
+	CNetworkVar(float,	m_flFadeOutStart);
+	CNetworkVar(float,	m_flFadeOutLength);
+	CNetworkVar(float,	m_flFadeOutModelStart);
+	CNetworkVar(float,	m_flFadeOutModelLength);
+	CNetworkVar(float,	m_flFadeInStart);
+	CNetworkVar(float,	m_flFadeInLength);
+	CNetworkVar(int,		m_nDissolveType);
 	float   m_flNextSparkTime;
 
 	Vector	m_vEffectColor;
 
-	Vector	m_vDissolverOrigin;
-	int		m_nMagnitude;
+	CNetworkVector(	m_vDissolverOrigin);
+	CNetworkVar( int,		m_nMagnitude);
 
 	bool	m_bCoreExplode;
 

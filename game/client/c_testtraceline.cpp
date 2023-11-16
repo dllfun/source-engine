@@ -35,12 +35,12 @@ private:
 public:
 	BEGIN_INIT_RECV_TABLE(C_TestTraceline)
 	BEGIN_RECV_TABLE(C_TestTraceline, DT_TestTraceline, DT_BaseEntity)
-		RecvPropInt(RECVINFO(m_clrRender)),
+		RecvPropColor32(RECVINFO(m_clrRender)),
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
-		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[0], m_angRotation[0])),
-		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[1], m_angRotation[1])),
-		RecvPropFloat(RECVINFO_NAME(m_angNetworkAngles[2], m_angRotation[2])),
-		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropFloat(RECVINFO_VECTORELEM_NAME(m_angNetworkAngles,0, m_angRotation[0])),
+		RecvPropFloat(RECVINFO_VECTORELEM_NAME(m_angNetworkAngles,1, m_angRotation[1])),
+		RecvPropFloat(RECVINFO_VECTORELEM_NAME(m_angNetworkAngles,2, m_angRotation[2])),
+		RecvPropIntToMoveParent(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0),//, RecvProxy_IntToMoveParent
 	END_RECV_TABLE(DT_TestTraceline)
 	END_INIT_RECV_TABLE()
 };

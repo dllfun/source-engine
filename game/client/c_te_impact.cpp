@@ -31,10 +31,10 @@ public:
 	virtual void	PlayImpactSound( trace_t &tr );
 	virtual void	PerformCustomEffects( trace_t &tr, Vector &shotDir );
 public:
-	Vector			m_vecOrigin;
-	Vector			m_vecNormal;
-	int				m_iType;
-	byte			m_ucFlags;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVector(			m_vecNormal);
+	CNetworkVar( int,				m_iType);
+	CNetworkVar( byte,			m_ucFlags);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEImpact)

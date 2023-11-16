@@ -91,14 +91,14 @@ protected:
 
 protected:
 
-	CHandle<C_BasePlayer>		m_hPlayer;
-	int							m_nSpeed;
-	int							m_nRPM;
-	float						m_flThrottle;
-	int							m_nBoostTimeLeft;
-	int							m_nHasBoost;
-	int							m_nScannerDisabledWeapons;
-	int							m_nScannerDisabledVehicle;
+	CNetworkHandle( C_BasePlayer,		m_hPlayer);
+	CNetworkVar( int,					m_nSpeed);
+	CNetworkVar( int,					m_nRPM);
+	CNetworkVar( float,					m_flThrottle);
+	CNetworkVar( int,					m_nBoostTimeLeft);
+	CNetworkVar( int,					m_nHasBoost);
+	CNetworkVar( int,					m_nScannerDisabledWeapons);
+	CNetworkVar( int,					m_nScannerDisabledVehicle);
 
 	// timers/flags for flashing icons on hud
 	int							m_iFlashTimer;
@@ -114,15 +114,15 @@ protected:
 	bool						m_bScannerVehicleIcon;
 
 	float						m_flSequenceChangeTime;
-	bool						m_bEnterAnimOn;
-	bool						m_bExitAnimOn;
+	CNetworkVar( bool,						m_bEnterAnimOn);
+	CNetworkVar( bool,						m_bExitAnimOn);
 	float						m_flFOV;
 
-	Vector						m_vecGunCrosshair;
+	CNetworkVector(						m_vecGunCrosshair);
 	CInterpolatedVar<Vector>	m_iv_vecGunCrosshair;
-	Vector						m_vecEyeExitEndpoint;
-	bool						m_bHasGun;
-	bool						m_bUnableToFire;
+	CNetworkVector(				m_vecEyeExitEndpoint);
+	CNetworkVar( bool,						m_bHasGun);
+	CNetworkVar( bool,						m_bUnableToFire);
 
 	// Used to smooth view entry
 	CHandle<C_BasePlayer>		m_hPrevPlayer;

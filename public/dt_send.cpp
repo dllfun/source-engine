@@ -377,14 +377,6 @@ public:
 	CDeltaBitsWriter m_DeltaBitsWriter;
 };
 
-
-
-
-
-
-
-
-
 //void SendProxy_VectorXYToVectorXY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID)
 //{
 //	Vector& v = *(Vector*)pData;
@@ -404,10 +396,6 @@ void SendProxy_QuaternionToQuaternion( const SendProp *pProp, const void *pStruc
 	pOut->m_Vector[3] = q[3];
 }
 #endif
-
-
-
-
 
 void* SendProxy_DataTableToDataTable( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
 {
@@ -437,10 +425,6 @@ void* SendProxy_SendLocalDataTable( const SendProp *pProp, const void *pStruct, 
 	pRecipients->SetOnly( objectID - 1 );
 	return ( void * )pVarData;
 }
-
-
-
-
 
 // ---------------------------------------------------------------------- //
 // Prop setup functions (for building tables).
@@ -487,20 +471,6 @@ float AssignRangeMultiplier( int nBits, double range )
 	}
 
 	return fHighLowMul;
-}
-
-
-
-SendPropFloat& SendPropFloat::operator=(const SendPropFloat& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
-
-
-SendPropVector& SendPropVector::operator=(const SendPropVector& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
 }
 
 //SendPropVectorXY::SendPropVectorXY(
@@ -586,34 +556,6 @@ SendProp SendPropQuaternion(
 }
 #endif
 
-
-
-SendPropAngle& SendPropAngle::operator=(const SendPropAngle& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
-
-
-SendPropQAngles& SendPropQAngles::operator=(const SendPropQAngles& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-  
-
-
-SendPropInt& SendPropInt::operator=(const SendPropInt& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
-
-
-SendPropString& SendPropString::operator=(const SendPropString& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
 SendPropDataTable::SendPropDataTable(
 	const char* pVarName,
 	int offset,
@@ -646,11 +588,6 @@ SendPropDataTable::SendPropDataTable(
 	}
 
 	//return ret;
-}
-
-SendPropDataTable& SendPropDataTable::operator=(const SendPropDataTable& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
 }
 
 SendPropArray3::SendPropArray3(
@@ -709,11 +646,6 @@ SendPropArray3::SendPropArray3(
 	//return ret;
 }
 
-SendPropArray3& SendPropArray3::operator=(const SendPropArray3& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
 SendPropInternalArray::SendPropInternalArray(
 	const int elementCount,
 	const int elementStride,
@@ -738,11 +670,6 @@ SendPropInternalArray::SendPropInternalArray(
 	//return ret;
 }
 
-SendPropInternalArray& SendPropInternalArray::operator=(const SendPropInternalArray& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
-
 SendPropExclude::SendPropExclude(
 	const char *pDataTableName,	// Data table name (given to BEGIN_SEND_TABLE and BEGIN_RECV_TABLE).
 	const char *pPropName		// Name of the property to exclude.
@@ -761,10 +688,7 @@ SendPropExclude::SendPropExclude(
 	//return ret;
 }
 
-SendPropExclude& SendPropExclude::operator=(const SendPropExclude& srcSendProp) {
-	SendProp::operator=(srcSendProp);
-	return *this;
-}
+
 
 // ---------------------------------------------------------------------- //
 // SendProp

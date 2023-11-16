@@ -25,7 +25,46 @@ struct RopeSegData_t;
 #define MAX_ROPE_SUBDIVS		8
 #define MAX_ROPE_SEGMENTS		(ROPE_MAX_SEGMENTS+(ROPE_MAX_SEGMENTS-1)*MAX_ROPE_SUBDIVS)
 
+template<typename T= int32>
 void RecvProxy_RecomputeSprings(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropRecomputeSprings : public RecvPropInt {
+public:
+	RecvPropRecomputeSprings() {}
+
+	template<typename T = int>
+	RecvPropRecomputeSprings(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_RecomputeSprings<T>
+	);
+	virtual	~RecvPropRecomputeSprings() {}
+	RecvPropRecomputeSprings& operator=(const RecvPropRecomputeSprings& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropRecomputeSprings* pRecvProp = new RecvPropRecomputeSprings;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropRecomputeSprings::RecvPropRecomputeSprings(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
 
 //=============================================================================
 class C_RopeKeyframe : public C_BaseEntity
@@ -176,30 +215,30 @@ private:
 	Vector			m_vPrevEndPointPos[2];
 
 	float			m_flCurScroll;		// for scrolling texture.
-	float			m_flScrollSpeed;
+	CNetworkVar( float,			m_flScrollSpeed);
 
-	int				m_RopeFlags;			// Combo of ROPE_ flags.
-	int				m_iRopeMaterialModelIndex;	// Index of sprite model with the rope's material.
+	CNetworkVar( int,				m_RopeFlags);			// Combo of ROPE_ flags.
+	CNetworkVar( int,				m_iRopeMaterialModelIndex);	// Index of sprite model with the rope's material.
 		
 	CRopePhysics<ROPE_MAX_SEGMENTS>	m_RopePhysics;
 	Vector			m_LightValues[ROPE_MAX_SEGMENTS]; // light info when the rope is created.
 
-	int				m_nSegments;		// Number of segments.
+	CNetworkVar( int,				m_nSegments);		// Number of segments.
 	
-	EHANDLE			m_hStartPoint;		// StartPoint/EndPoint are entities
-	EHANDLE			m_hEndPoint;
-	short			m_iStartAttachment;	// StartAttachment/EndAttachment are attachment points.
-	short			m_iEndAttachment;
+	CNetworkHandle(C_BaseEntity,			m_hStartPoint);		// StartPoint/EndPoint are entities
+	CNetworkHandle(C_BaseEntity,			m_hEndPoint);
+	CNetworkVar( short,			m_iStartAttachment);	// StartAttachment/EndAttachment are attachment points.
+	CNetworkVar( short,			m_iEndAttachment);
 
-	unsigned char	m_Subdiv;			// Number of subdivions in between segments.
+	CNetworkVar( unsigned char,	m_Subdiv);			// Number of subdivions in between segments.
 
-	int				m_RopeLength;		// Length of the rope, used for tension.
-	int				m_Slack;			// Extra length the rope is given.
-	float			m_TextureScale;		// pixels per inch
+	CNetworkVar( int,				m_RopeLength);		// Length of the rope, used for tension.
+	CNetworkVar( int,				m_Slack);			// Extra length the rope is given.
+	CNetworkVar( float,			m_TextureScale);		// pixels per inch
 	
-	int				m_fLockedPoints;	// Which points are locked down.
+	CNetworkVar( int,				m_fLockedPoints);	// Which points are locked down.
 
-	float				m_Width;
+	CNetworkVar( float,				m_Width);
 
 	CPhysicsDelegate	m_PhysicsDelegate;
 
@@ -225,7 +264,7 @@ private:
 	QAngle			m_vCachedEndPointAttachmentAngle[2];
 
 	// In network table, can't bit-compress
-	bool			m_bConstrainBetweenEndpoints;	// Simulated segment points won't stretch beyond the endpoints
+	CNetworkVar( bool,			m_bConstrainBetweenEndpoints);	// Simulated segment points won't stretch beyond the endpoints
 
 	bool			m_bEndPointAttachmentPositionsDirty : 1;
 	bool			m_bEndPointAttachmentAnglesDirty : 1;
@@ -245,8 +284,8 @@ public:
 		RecvPropInt(RECVINFO(m_iEndAttachment)),
 
 		RecvPropInt(RECVINFO(m_fLockedPoints)),
-		RecvPropInt(RECVINFO(m_Slack), 0, RecvProxy_RecomputeSprings),
-		RecvPropInt(RECVINFO(m_RopeLength), 0, RecvProxy_RecomputeSprings),
+		RecvPropRecomputeSprings(RECVINFO(m_Slack), 0),//, RecvProxy_RecomputeSprings
+		RecvPropRecomputeSprings(RECVINFO(m_RopeLength), 0),//, RecvProxy_RecomputeSprings
 		RecvPropInt(RECVINFO(m_RopeFlags)),
 		RecvPropFloat(RECVINFO(m_TextureScale)),
 		RecvPropInt(RECVINFO(m_nSegments)),
@@ -256,13 +295,22 @@ public:
 		RecvPropFloat(RECVINFO(m_Width)),
 		RecvPropFloat(RECVINFO(m_flScrollSpeed)),
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
-		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropIntToMoveParent(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0),//, RecvProxy_IntToMoveParent
 
 		RecvPropInt(RECVINFO(m_iParentAttachment)),
 	END_RECV_TABLE(DT_RopeKeyframe)
 	END_INIT_RECV_TABLE()
 };
 
+template<typename T>
+void RecvProxy_RecomputeSprings(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	// Have the regular proxy store the data.
+	RecvProxy_Int32ToInt32<T>(pData, pStruct, pOut);
+
+	C_RopeKeyframe* pRope = (C_RopeKeyframe*)pStruct;
+	pRope->RecomputeSprings();
+}
 
 // Profiling info.
 void Rope_ResetCounters();

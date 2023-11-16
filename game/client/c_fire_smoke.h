@@ -112,8 +112,87 @@ class C_FireFromAboveSprite : public C_Sprite
 
 #define	OVERLAY_MAX_VISIBLE_RANGE	512.0f
 
+template<typename T= float>
 void RecvProxy_Scale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropScale : public RecvPropFloat {
+public:
+	RecvPropScale() {}
+
+	template<typename T = float>
+	RecvPropScale(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_Scale<T>
+	);
+	virtual	~RecvPropScale() {}
+	RecvPropScale& operator=(const RecvPropScale& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropScale* pRecvProp = new RecvPropScale;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropScale::RecvPropScale(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+template<typename T= float>
 void RecvProxy_ScaleTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropScaleTime : public RecvPropFloat {
+public:
+	RecvPropScaleTime() {}
+
+	template<typename T = float>
+	RecvPropScaleTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_ScaleTime<T>
+	);
+	virtual	~RecvPropScaleTime() {}
+	RecvPropScaleTime& operator=(const RecvPropScaleTime& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropScaleTime* pRecvProp = new RecvPropScaleTime;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropScaleTime::RecvPropScaleTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
 
 class C_FireSmoke : public C_BaseEntity
 {
@@ -149,12 +228,12 @@ public:
 	
 //From the server
 public:
-	float	m_flStartScale;
-	float	m_flScale;
-	float	m_flScaleTime;
-	int		m_nFlags;
-	int		m_nFlameModelIndex;
-	int		m_nFlameFromAboveModelIndex;
+	CNetworkVar( float,	m_flStartScale);
+	CNetworkVar( float,	m_flScale);
+	CNetworkVar( float,	m_flScaleTime);
+	CNetworkVar( int,		m_nFlags);
+	CNetworkVar( int,		m_nFlameModelIndex);
+	CNetworkVar( int,		m_nFlameFromAboveModelIndex);
 
 //Client-side only
 public:
@@ -195,8 +274,8 @@ public:
 	BEGIN_INIT_RECV_TABLE(C_FireSmoke)
 	BEGIN_RECV_TABLE(C_FireSmoke, DT_FireSmoke, DT_BaseEntity)
 		RecvPropFloat(RECVINFO(m_flStartScale)),
-		RecvPropFloat(RECVINFO(m_flScale), 0, RecvProxy_Scale),
-		RecvPropFloat(RECVINFO(m_flScaleTime), 0, RecvProxy_ScaleTime),
+		RecvPropScale(RECVINFO(m_flScale), 0),//, RecvProxy_Scale
+		RecvPropScaleTime(RECVINFO(m_flScaleTime), 0),//, RecvProxy_ScaleTime
 		RecvPropInt(RECVINFO(m_nFlags)),
 		RecvPropInt(RECVINFO(m_nFlameModelIndex)),
 		RecvPropInt(RECVINFO(m_nFlameFromAboveModelIndex)),
@@ -305,7 +384,7 @@ public:
 	virtual void	ClientThink( void );
 
 	CNewParticleEffect *m_hEffect;
-	EHANDLE				m_hEntAttached;		// The entity that we are burning (attached to).
+	CNetworkHandle(C_BaseEntity			,m_hEntAttached);		// The entity that we are burning (attached to).
 	EHANDLE				m_hOldAttached;
 
 protected:
@@ -320,5 +399,63 @@ public:
 	END_RECV_TABLE(DT_EntityFlame)
 	END_INIT_RECV_TABLE()
 };
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pRecvProp - 
+//			*pStruct - 
+//			*pVarData - 
+//			*pIn - 
+//			objectID - 
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_Scale(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_FireSmoke* pFireSmoke = (C_FireSmoke*)pStruct;
+	float scale = pData->m_Value.m_Float;
+
+	//If changed, update our internal information
+	if ((pFireSmoke->m_flScale != scale) && (pFireSmoke->m_flScaleEnd != scale))
+	{
+		pFireSmoke->m_flScaleStart = pFireSmoke->m_flScaleRegister;
+		pFireSmoke->m_flScaleEnd = scale;
+	}
+
+	pFireSmoke->m_flScale = scale;
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pRecvProp - 
+//			*pStruct - 
+//			*pVarData - 
+//			*pIn - 
+//			objectID - 
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_ScaleTime(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_FireSmoke* pFireSmoke = (C_FireSmoke*)pStruct;
+	float time = pData->m_Value.m_Float;
+
+	//If changed, update our internal information
+	//if ( pFireSmoke->m_flScaleTime != time )
+	{
+		if (time == -1.0f)
+		{
+			pFireSmoke->m_flScaleTimeStart = Helper_GetTime() - 1.0f;
+			pFireSmoke->m_flScaleTimeEnd = pFireSmoke->m_flScaleTimeStart;
+		}
+		else
+		{
+			pFireSmoke->m_flScaleTimeStart = Helper_GetTime();
+			pFireSmoke->m_flScaleTimeEnd = Helper_GetTime() + time;
+		}
+	}
+
+	pFireSmoke->m_flScaleTime = time;
+}
 
 #endif //C_FIRE_SMOKE_H

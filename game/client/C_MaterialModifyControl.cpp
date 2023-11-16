@@ -92,33 +92,33 @@ public:
 
 	MaterialModifyMode_t GetModifyMode( void ) const
 	{
-		return ( MaterialModifyMode_t)m_nModifyMode;
+		return ( MaterialModifyMode_t)(int)m_nModifyMode;
 	}
 private:
 
-	char m_szMaterialName[MATERIAL_MODIFY_STRING_SIZE];
-	char m_szMaterialVar[MATERIAL_MODIFY_STRING_SIZE];
-	char m_szMaterialVarValue[MATERIAL_MODIFY_STRING_SIZE];
+	CNetworkString( m_szMaterialName, MATERIAL_MODIFY_STRING_SIZE);
+	CNetworkString( m_szMaterialVar, MATERIAL_MODIFY_STRING_SIZE);
+	CNetworkString( m_szMaterialVarValue, MATERIAL_MODIFY_STRING_SIZE);
 	IMaterial		*m_pMaterial;
 
 	bool	m_bHasNewAnimationCommands;
 
 	// Animation commands from the server
-	int		m_iFrameStart;
-	int		m_iFrameEnd;
-	bool	m_bWrap;
-	float	m_flFramerate;
-	bool	m_bNewAnimCommandsSemaphore;
+	CNetworkVar( int,		m_iFrameStart);
+	CNetworkVar( int,		m_iFrameEnd);
+	CNetworkVar( bool,	m_bWrap);
+	CNetworkVar( float,	m_flFramerate);
+	CNetworkVar( bool,	m_bNewAnimCommandsSemaphore);
 	bool	m_bOldAnimCommandsSemaphore;
 
 	// Float lerp commands from the server
-	float	m_flFloatLerpStartValue;
-	float	m_flFloatLerpEndValue;
-	float	m_flFloatLerpTransitionTime;
-	bool	m_bFloatLerpWrap;
+	CNetworkVar( float,	m_flFloatLerpStartValue);
+	CNetworkVar( float,	m_flFloatLerpEndValue);
+	CNetworkVar( float,	m_flFloatLerpTransitionTime);
+	CNetworkVar( bool,	m_bFloatLerpWrap);
 	float	m_flAnimationStartTime;
 
-	int		m_nModifyMode;
+	CNetworkVar( int,		m_nModifyMode);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_MaterialModifyControl)

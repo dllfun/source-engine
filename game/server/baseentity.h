@@ -34,6 +34,11 @@ class IEntitySaveUtils;
 class CRecipientFilter;
 class CStudioHdr;
 
+#ifdef CLIENT_DLL
+#undef CBaseEntity
+#endif // CLIENT_DLL
+
+
 // Matching the high level concept is significantly better than other criteria
 // FIXME:  Could do this in the script file by making it required and bumping up weighting there instead...
 #define CONCEPT_WEIGHT 5.0f
@@ -2111,7 +2116,7 @@ public:
 		SendPropInt(SENDINFO(m_nRenderFX), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_nRenderMode), 8, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_fEffects), EF_MAX_BITS, SPROP_UNSIGNED),
-		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),
+		SendPropColor32(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED),
 		SendPropInt(SENDINFO(m_iTeamNum), TEAMNUM_NUM_BITS, 0),
 		SendPropInt(SENDINFO(m_CollisionGroup), 5, SPROP_UNSIGNED),
 		SendPropFloat(SENDINFO(m_flElasticity), 0, SPROP_COORD),

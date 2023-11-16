@@ -27,8 +27,8 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int				m_nStartEntity;
-	int				m_nEndEntity;
+	CNetworkVar( int,				m_nStartEntity);
+	CNetworkVar( int,				m_nEndEntity);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBeamLaser)

@@ -432,9 +432,9 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg )
 
 		KeyValues *pColor = pInitializers->FindKey( "DmeRandomValueColorInitializer", true );
 		Color c(
-			FastFToC( clamp( m_StartColor.x, 0.f, 1.f ) ),
-			FastFToC( clamp( m_StartColor.y, 0.f, 1.f ) ),
-			FastFToC( clamp( m_StartColor.z, 0.f, 1.f ) ),
+			FastFToC( clamp( m_StartColor.GetX(), 0.f, 1.f)),
+			FastFToC( clamp( m_StartColor.GetY(), 0.f, 1.f)),
+			FastFToC( clamp( m_StartColor.GetZ(), 0.f, 1.f)),
 			255 );
 		pColor->SetColor( "startColor", c );
 		pColor->SetFloat( "minStartValueDelta", -0.2f );
@@ -1126,17 +1126,17 @@ public:
 	virtual void	StartRender( VMatrix &effectMatrix );
 
 public:
-	Vector	m_vecEndColor;
+	CNetworkVector(	m_vecEndColor);
 
-	float	m_flSpawnRate;
-	float	m_flParticleLifetime;
-	float	m_flStartSize;
-	float	m_flEndSize;
-	float	m_flSpawnRadius;
+	CNetworkVar( float,	m_flSpawnRate);
+	CNetworkVar( float,	m_flParticleLifetime);
+	CNetworkVar( float,	m_flStartSize);
+	CNetworkVar( float,	m_flEndSize);
+	CNetworkVar( float,	m_flSpawnRadius);
 
 	Vector	m_vecVelocityOffset;
 
-	bool	m_bEmit;
+	CNetworkVar( bool,	m_bEmit);
 
 private:
 	C_SporeTrail( const C_SporeTrail & );
@@ -1916,9 +1916,9 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg )
 
 		KeyValues *pColor = pInitializers->FindKey( "DmeRandomValueColorInitializer", true );
 		Color c( 
-			FastFToC( clamp( m_Color.x, 0.f, 1.f ) ),
-			FastFToC( clamp( m_Color.y, 0.f, 1.f ) ),
-			FastFToC( clamp( m_Color.z, 0.f, 1.f ) ),
+			FastFToC( clamp( m_Color.GetX(), 0.f, 1.f)),
+			FastFToC( clamp( m_Color.GetY(), 0.f, 1.f)),
+			FastFToC( clamp( m_Color.GetZ(), 0.f, 1.f)),
 			255 );
 		pColor->SetColor( "startColor", c );
 		pColor->SetFloat( "minStartValueDelta", 0.0f );

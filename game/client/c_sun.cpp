@@ -10,13 +10,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-void RecvProxy_SunHDRColorScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_Sun *pSun = ( C_Sun * )pStruct;
 
-	pSun->m_Overlay.m_flHDRColorScale = pData->m_Value.m_Float;
-	pSun->m_GlowOverlay.m_flHDRColorScale = pData->m_Value.m_Float;
-}
 
 IMPLEMENT_CLIENTCLASS( C_Sun, DT_Sun, CSun )
 
@@ -65,12 +59,12 @@ void C_Sun::OnDataChanged( DataUpdateType_t updateType )
 	}
 	
 	// If we're non-zero, use the value (otherwise use the value we calculated above)
-	if ( m_clrOverlay.r != 0 || m_clrOverlay.g != 0 || m_clrOverlay.b != 0 )
+	if ( m_clrOverlay.GetR() != 0 || m_clrOverlay.GetG() != 0 || m_clrOverlay.GetB() != 0 )
 	{
 		// Get our overlay color
-		vOverlayColor.x = m_clrOverlay.r / 255.0f;
-		vOverlayColor.y = m_clrOverlay.g / 255.0f;
-		vOverlayColor.z = m_clrOverlay.b / 255.0f;
+		vOverlayColor.x = m_clrOverlay.GetR() / 255.0f;
+		vOverlayColor.y = m_clrOverlay.GetG() / 255.0f;
+		vOverlayColor.z = m_clrOverlay.GetB() / 255.0f;
 	}
 	else
 	{

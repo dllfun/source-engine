@@ -28,8 +28,8 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecStartPoint;
-	Vector			m_vecEndPoint;
+	CNetworkVector(			m_vecStartPoint);
+	CNetworkVector(			m_vecEndPoint);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBeamPoints)
@@ -72,7 +72,7 @@ void TE_BeamPoints( IRecipientFilter& filter, float delay,
 //-----------------------------------------------------------------------------
 void C_TEBeamPoints::PostDataUpdate( DataUpdateType_t updateType )
 {
-	beams->CreateBeamPoints( m_vecStartPoint, m_vecEndPoint, m_nModelIndex, m_nHaloIndex, 0.0f, 
+	beams->CreateBeamPoints( m_vecStartPoint.m_Value, m_vecEndPoint.m_Value, m_nModelIndex, m_nHaloIndex, 0.0f, 
 		m_fLife, m_fWidth,  m_fEndWidth, m_nFadeLength, m_fAmplitude, a, 0.1 * m_nSpeed, 
 		m_nStartFrame, 0.1 * m_nFrameRate, r, g, b );
 }

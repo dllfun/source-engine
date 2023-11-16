@@ -20,21 +20,21 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int		m_iPlayer;
-	Vector	m_vecOrigin;
-	QAngle	m_vecAngles;
-	int		m_iWeaponID;
-	int		m_iMode;
-	int		m_iSeed;
-	float	m_fInaccuracy;
-	float	m_fSpread;
+	CNetworkVar( int,		m_iPlayer);
+	CNetworkVector(	m_vecOrigin);
+	CNetworkQAngle(	m_vecAngles);
+	CNetworkVar( int,		m_iWeaponID);
+	CNetworkVar( int,		m_iMode);
+	CNetworkVar( int,		m_iSeed);
+	CNetworkVar( float,	m_fInaccuracy);
+	CNetworkVar( float,	m_fSpread);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEFireBullets)
 	BEGIN_RECV_TABLE_NOBASE(C_TEFireBullets, DT_TEFireBullets)
 		RecvPropVector(RECVINFO(m_vecOrigin)),
-		RecvPropFloat(RECVINFO(m_vecAngles[0])),
-		RecvPropFloat(RECVINFO(m_vecAngles[1])),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_vecAngles,0)),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_vecAngles,1)),
 		RecvPropInt(RECVINFO(m_iWeaponID)),
 		RecvPropInt(RECVINFO(m_iMode)),
 		RecvPropInt(RECVINFO(m_iSeed)),
@@ -50,7 +50,7 @@ void C_TEFireBullets::PostDataUpdate( DataUpdateType_t updateType )
 {
 	// Create the effect.
 	
-	m_vecAngles.z = 0;
+	m_vecAngles.SetZ(0);
 	
 	FX_FireBullets( 
 		m_iPlayer+1,
@@ -80,9 +80,9 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int		m_iPlayer;
-	Vector	m_vecOrigin;
-	PlantBombOption_t	m_option;
+	CNetworkVar( int,		m_iPlayer);
+	CNetworkVector(	m_vecOrigin);
+	CNetworkVar( int,	m_option);//PlantBombOption_t
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEPlantBomb)
@@ -98,7 +98,7 @@ public:
 void C_TEPlantBomb::PostDataUpdate( DataUpdateType_t updateType )
 {
 	// Create the effect.
-	FX_PlantBomb( m_iPlayer+1, m_vecOrigin, m_option );
+	FX_PlantBomb( m_iPlayer+1, m_vecOrigin, (PlantBombOption_t)(int)m_option );
 }
 
 

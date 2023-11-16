@@ -23,19 +23,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-//-----------------------------------------------------------------------------
-// Purpose: Decodes animtime and notes when it changes
-// Input  : *pStruct - ( C_BaseEntity * ) used to flag animtime is changine
-//			*pVarData - 
-//			*pIn - 
-//			objectID - 
-//-----------------------------------------------------------------------------
-void RecvProxy_ForcedClientTime( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_SceneEntity *pScene = reinterpret_cast< C_SceneEntity * >( pStruct );
-	*(float *)pOut = pData->m_Value.m_Float;
-	pScene->OnResetClientTime();
-}
+
 
 #if defined( CSceneEntity )
 #undef CSceneEntity

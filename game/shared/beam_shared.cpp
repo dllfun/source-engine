@@ -80,20 +80,7 @@ bool IsStaticPointEntity( CBaseEntity *pEnt )
 #if defined( CLIENT_DLL )
 extern bool ComputeBeamEntPosition( CBaseEntity *pEnt, int nAttachment, bool bInterpretAttachmentIndexAsHitboxIndex, Vector& pt );
 
-void RecvProxy_Beam_ScrollSpeed( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_Beam *beam;
-	float	val;
 
-	// Unpack the data.
-	val	= pData->m_Value.m_Float;
-	val *= 0.1;
-
-	beam = ( C_Beam * )pStruct;
-	Assert( pOut == &beam->m_fSpeed );
-
-	beam->m_fSpeed = val;
-}
 #else
 //#if !defined( NO_ENTITY_PREDICTION )
 //void* SendProxy_SendBeamPredictableId( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )

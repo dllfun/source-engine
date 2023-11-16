@@ -10,6 +10,20 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef CLIENT_DLL
+#include "animationlayer.h"
+
+#else
+
+typedef int SequenceType;
+typedef float PrevCycleType;
+typedef float WeightType;
+
+typedef float CycleType;
+
+
+#endif
+
 // -----------------------------------------------------------------------------
 // CSequenceTransitioner implementation.
 // -----------------------------------------------------------------------------
@@ -36,7 +50,7 @@ void CSequenceTransitioner::CheckForSequenceChange(
 	CAnimationLayer *currentblend = &m_animationQueue[m_animationQueue.Count()-1];
 
 	if (currentblend->m_flLayerAnimtime && 
-		(currentblend->m_nSequence != nCurSequence || bForceNewSequence ))
+		((SequenceType)currentblend->m_nSequence != nCurSequence || bForceNewSequence ))
 	{
 		mstudioseqdesc_t &seqdesc = hdr->pSeqdesc( nCurSequence );
 		// sequence changed
@@ -47,7 +61,7 @@ void CSequenceTransitioner::CheckForSequenceChange(
 		}
 		else
 		{
-			mstudioseqdesc_t &prevseqdesc = hdr->pSeqdesc( currentblend->m_nSequence );
+			mstudioseqdesc_t &prevseqdesc = hdr->pSeqdesc( (SequenceType)currentblend->m_nSequence );
 			currentblend->m_flLayerFadeOuttime = MIN( prevseqdesc.fadeouttime, seqdesc.fadeintime );
 			/*
 			// clip blends to time remaining

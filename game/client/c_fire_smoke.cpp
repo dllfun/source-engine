@@ -39,59 +39,9 @@ CLIENTEFFECT_REGISTER_BEGIN( SmokeStackMaterials )
 CLIENTEFFECT_REGISTER_END()
 
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pRecvProp - 
-//			*pStruct - 
-//			*pVarData - 
-//			*pIn - 
-//			objectID - 
-//-----------------------------------------------------------------------------
-void RecvProxy_Scale( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_FireSmoke	*pFireSmoke	= (C_FireSmoke	*) pStruct;
-	float scale				= pData->m_Value.m_Float;
 
-	//If changed, update our internal information
-	if ( ( pFireSmoke->m_flScale != scale ) && ( pFireSmoke->m_flScaleEnd != scale ) )
-	{
-		pFireSmoke->m_flScaleStart		= pFireSmoke->m_flScaleRegister;
-		pFireSmoke->m_flScaleEnd		= scale;			
-	}
 
-	pFireSmoke->m_flScale = scale;
-}
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pRecvProp - 
-//			*pStruct - 
-//			*pVarData - 
-//			*pIn - 
-//			objectID - 
-//-----------------------------------------------------------------------------
-void RecvProxy_ScaleTime( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_FireSmoke	*pFireSmoke	= (C_FireSmoke	*) pStruct;
-	float time				= pData->m_Value.m_Float;
-
-	//If changed, update our internal information
-	//if ( pFireSmoke->m_flScaleTime != time )
-	{
-		if ( time == -1.0f )
-		{
-			pFireSmoke->m_flScaleTimeStart	= Helper_GetTime()-1.0f;
-			pFireSmoke->m_flScaleTimeEnd	= pFireSmoke->m_flScaleTimeStart;
-		}
-		else
-		{
-			pFireSmoke->m_flScaleTimeStart	= Helper_GetTime();
-			pFireSmoke->m_flScaleTimeEnd	= Helper_GetTime() + time;
-		}
-	}
-
-	pFireSmoke->m_flScaleTime = time;
-}
 
 //Receive datatable
 IMPLEMENT_CLIENTCLASS( C_FireSmoke, DT_FireSmoke, CFireSmoke )
@@ -373,7 +323,7 @@ void C_EntityFlame::OnDataChanged( DataUpdateType_t updateType )
 	if ( updateType == DATA_UPDATE_DATATABLE_CHANGED )
 	{
 		// If our owner changed, then recreate the effect
-		if ( m_hEntAttached != m_hOldAttached )
+		if ( m_hEntAttached.ToInt() != m_hOldAttached.ToInt() )
 		{
 			CreateEffect();
 		}

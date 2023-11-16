@@ -52,17 +52,17 @@ private:
 	void RecordShatterSurface( );
 
 public:
-	Vector					m_vecOrigin;
-	QAngle					m_vecAngles;
-	Vector					m_vecForce;
-	Vector					m_vecForcePos;
-	float					m_flWidth;
-	float					m_flHeight;
-	float					m_flShardSize;
+	CNetworkVector(					m_vecOrigin);
+	CNetworkQAngle(					m_vecAngles);
+	CNetworkVector(					m_vecForce);
+	CNetworkVector(					m_vecForcePos);
+	CNetworkVar( float,					m_flWidth);
+	CNetworkVar( float,					m_flHeight);
+	CNetworkVar( float,					m_flShardSize);
 	PMaterialHandle			m_pMaterialHandle;
-	int						m_nSurfaceType;
-	byte					m_uchFrontColor[3];
-	byte					m_uchBackColor[3];
+	CNetworkVar( int,						m_nSurfaceType);
+	CNetworkArray( byte,					m_uchFrontColor,3);
+	CNetworkArray( byte,					m_uchBackColor,3);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEShatterSurface)
@@ -75,12 +75,12 @@ public:
 		RecvPropFloat(RECVINFO(m_flHeight)),
 		RecvPropFloat(RECVINFO(m_flShardSize)),
 		RecvPropInt(RECVINFO(m_nSurfaceType)),
-		RecvPropInt(RECVINFO(m_uchFrontColor[0])),
-		RecvPropInt(RECVINFO(m_uchFrontColor[1])),
-		RecvPropInt(RECVINFO(m_uchFrontColor[2])),
-		RecvPropInt(RECVINFO(m_uchBackColor[0])),
-		RecvPropInt(RECVINFO(m_uchBackColor[1])),
-		RecvPropInt(RECVINFO(m_uchBackColor[2])),
+		RecvPropInt(RECVINFO_VECTORELEM(m_uchFrontColor,0)),
+		RecvPropInt(RECVINFO_VECTORELEM(m_uchFrontColor,1)),
+		RecvPropInt(RECVINFO_VECTORELEM(m_uchFrontColor,2)),
+		RecvPropInt(RECVINFO_VECTORELEM(m_uchBackColor,0)),
+		RecvPropInt(RECVINFO_VECTORELEM(m_uchBackColor,1)),
+		RecvPropInt(RECVINFO_VECTORELEM(m_uchBackColor,2)),
 	END_RECV_TABLE(DT_TEShatterSurface)
 	END_INIT_RECV_TABLE()
 };
@@ -137,18 +137,18 @@ void C_TEShatterSurface::RecordShatterSurface( )
  		msg->SetInt( "te", TE_SHATTER_SURFACE );
  		msg->SetString( "name", "TE_ShatterSurface" );
 		msg->SetFloat( "time", gpGlobals->GetCurTime() );
-		msg->SetFloat( "originx", m_vecOrigin.x );
-		msg->SetFloat( "originy", m_vecOrigin.y );
-		msg->SetFloat( "originz", m_vecOrigin.z );
-		msg->SetFloat( "anglesx", m_vecAngles.x );
-		msg->SetFloat( "anglesy", m_vecAngles.y );
-		msg->SetFloat( "anglesz", m_vecAngles.z );
-		msg->SetFloat( "forcex", m_vecForce.x );
-		msg->SetFloat( "forcey", m_vecForce.y );
-		msg->SetFloat( "forcez", m_vecForce.z );
-		msg->SetFloat( "forceposx", m_vecForcePos.x );
-		msg->SetFloat( "forceposy", m_vecForcePos.y );
-		msg->SetFloat( "forceposz", m_vecForcePos.z );
+		msg->SetFloat( "originx", m_vecOrigin.GetX() );
+		msg->SetFloat( "originy", m_vecOrigin.GetY() );
+		msg->SetFloat( "originz", m_vecOrigin.GetZ() );
+		msg->SetFloat( "anglesx", m_vecAngles.GetX() );
+		msg->SetFloat( "anglesy", m_vecAngles.GetY() );
+		msg->SetFloat( "anglesz", m_vecAngles.GetZ() );
+		msg->SetFloat( "forcex", m_vecForce.GetX() );
+		msg->SetFloat( "forcey", m_vecForce.GetY() );
+		msg->SetFloat( "forcez", m_vecForce.GetZ() );
+		msg->SetFloat( "forceposx", m_vecForcePos.GetX() );
+		msg->SetFloat( "forceposy", m_vecForcePos.GetY() );
+		msg->SetFloat( "forceposz", m_vecForcePos.GetZ() );
 		msg->SetColor( "frontcolor", front );
 		msg->SetColor( "backcolor", back );
 		msg->SetFloat( "width", m_flWidth );

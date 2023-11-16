@@ -1000,7 +1000,7 @@ SendTableManager* GetSendTableManager();
 				typedef className currentSendDTClass;\
 				const char *pTableName = #tableName; \
 				SendProp* pSendProps[] = { \
-								SendPropInt("should_never_see_this", 0, sizeof(int)),
+								SendPropInt((int*)0, "should_never_see_this", 0, sizeof(int)),
 
 #define END_SEND_TABLE(tableName) \
 										};\
@@ -1031,10 +1031,11 @@ SendTableManager* GetSendTableManager();
 // Note: currentSendDTClass::MakeANetworkVar_##varName equates to currentSendDTClass. It's
 // there as a check to make sure all networked variables use the CNetworkXXXX macros in network_var.h.
 #define TYPEINFO(varName)					_hacky_dtsend_typeof(currentSendDTClass, varName)
-#define SENDINFO(varName)					_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
+#define SENDINFO(varName)					_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName.m_Value)
+#define SENDINFO_NAME(varName,remoteVarName)			_hacky_dtsend_typeof(currentSendDTClass, varName), #remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName.m_Value)
 #define SENDINFO_ARRAY(varName)				_hacky_dtsend_typeof(currentSendDTClass, varName[0]), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0])
-#define SENDINFO_INTERNALARRAY(varName)		sizeof(((currentSendDTClass*)0)->varName)/sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName[0]), #varName
-#define SENDINFO_ARRAY3(varName)			#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName)/sizeof(((currentSendDTClass*)0)->varName[0])
+#define SENDINFO_INTERNALARRAY(varName)		sizeof(((currentSendDTClass*)0)->varName.m_Value)/sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName[0]), #varName
+#define SENDINFO_ARRAY3(varName)			#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName.m_Value)/sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_ARRAYELEM(varName, i)		_hacky_dtsend_typeof(currentSendDTClass, varName[i]), #varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName[i]), sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_NETWORKARRAYELEM(varName, i)#varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
 
@@ -1048,11 +1049,11 @@ SendTableManager* GetSendTableManager();
 #define SENDINFO_STRUCTARRAYELEM(varName, i)_hacky_dtsend_typeof(currentSendDTClass, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
 
 // Use this when you're not using a CNetworkVar to represent the data you're sending.
-#define SENDINFO_NOCHECK(varName)						_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
+#define SENDINFO_NOCHECK(varName)						_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)//.m_Value 
+#define SENDINFO_NAME_NOCHECK(varName,remoteVarName)			_hacky_dtsend_typeof(currentSendDTClass, varName), #remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
 #define SENDINFO_STRING_NOCHECK(varName)				#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName)
 #define SENDINFO_DT(varName)							#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName)
 #define SENDINFO_DT_NAME(varName, remoteVarName)		#remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName)
-#define SENDINFO_NAME(varName,remoteVarName)			_hacky_dtsend_typeof(currentSendDTClass, varName), #remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName)
 
 // ------------------------------------------------------------------------ //
 // Built-in proxy types.
@@ -1215,7 +1216,10 @@ public:
 		SendVarProxyFn varProxy = SendProxy_FloatToFloat<T>
 	);
 	virtual ~SendPropFloat() {}
-	SendPropFloat& operator=(const SendPropFloat& srcSendProp);
+	SendPropFloat& operator=(const SendPropFloat& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropFloat* pSendProp = new SendPropFloat;
 		*pSendProp = *this;
@@ -1297,7 +1301,10 @@ public:
 		SendVarProxyFn varProxy = SendProxy_VectorToVector<T>
 	);
 	virtual ~SendPropVector() {}
-	SendPropVector& operator=(const SendPropVector& srcSendProp);
+	SendPropVector& operator=(const SendPropVector& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropVector* pSendProp = new SendPropVector;
 		*pSendProp = *this;
@@ -1394,7 +1401,10 @@ public:
 		SendVarProxyFn varProxy = SendProxy_AngleToFloat<T>
 	);
 	virtual ~SendPropAngle() {}
-	SendPropAngle& operator=(const SendPropAngle& srcSendProp);
+	SendPropAngle& operator=(const SendPropAngle& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropAngle* pSendProp = new SendPropAngle;
 		*pSendProp = *this;
@@ -1452,7 +1462,10 @@ public:
 		SendVarProxyFn varProxy = SendProxy_QAngles<T>
 	);
 	virtual ~SendPropQAngles() {}
-	SendPropQAngles& operator=(const SendPropQAngles& srcSendProp);
+	SendPropQAngles& operator=(const SendPropQAngles& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropQAngles* pSendProp = new SendPropQAngles;
 		*pSendProp = *this;
@@ -1512,7 +1525,10 @@ public:
 		SendVarProxyFn varProxy = 0
 	);
 	virtual ~SendPropInt() {}
-	SendPropInt& operator=(const SendPropInt& srcSendProp);
+	SendPropInt& operator=(const SendPropInt& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropInt* pSendProp = new SendPropInt;
 		*pSendProp = *this;
@@ -1639,7 +1655,10 @@ public:
 		int flags = 0,
 		SendVarProxyFn varProxy = SendProxy_StringToString<T>);
 	virtual ~SendPropString() {}
-	SendPropString& operator=(const SendPropString& srcSendProp);
+	SendPropString& operator=(const SendPropString& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropString* pSendProp = new SendPropString;
 		*pSendProp = *this;
@@ -1682,7 +1701,10 @@ public:
 		SendTableProxyFn varProxy = SendProxy_DataTableToDataTable
 	);
 	virtual ~SendPropDataTable() {}
-	SendPropDataTable& operator=(const SendPropDataTable& srcSendProp);
+	SendPropDataTable& operator=(const SendPropDataTable& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropDataTable* pSendProp = new SendPropDataTable;
 		*pSendProp = *this;
@@ -1702,7 +1724,10 @@ public:
 		SendTableProxyFn varProxy = SendProxy_DataTableToDataTable
 	);
 	virtual ~SendPropArray3() {}
-	SendPropArray3& operator=(const SendPropArray3& srcSendProp);
+	SendPropArray3& operator=(const SendPropArray3& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropArray3* pSendProp = new SendPropArray3;
 		*pSendProp = *this;
@@ -1724,7 +1749,10 @@ public:
 		ArrayLengthSendProxyFn proxy = 0
 	);
 	virtual ~SendPropInternalArray() {}
-	SendPropInternalArray& operator=(const SendPropInternalArray& srcSendProp);
+	SendPropInternalArray& operator=(const SendPropInternalArray& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropInternalArray* pSendProp = new SendPropInternalArray;
 		*pSendProp = *this;
@@ -1782,7 +1810,10 @@ public:
 		const char* pPropName		// Name of the property to exclude.
 	);
 	virtual ~SendPropExclude() {}
-	SendPropExclude& operator=(const SendPropExclude& srcSendProp);
+	SendPropExclude& operator=(const SendPropExclude& srcSendProp) {
+		SendProp::operator=(srcSendProp);
+		return *this;
+	}
 	operator SendProp* () {
 		SendPropExclude* pSendProp = new SendPropExclude;
 		*pSendProp = *this;

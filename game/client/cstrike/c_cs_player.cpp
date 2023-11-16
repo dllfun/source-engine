@@ -233,7 +233,7 @@ private:
 
 private:
 
-	EHANDLE	m_hPlayer;
+	CNetworkHandle(C_BaseEntity,	m_hPlayer);
 	CNetworkVector( m_vecRagdollVelocity );
 	CNetworkVector( m_vecRagdollOrigin );
 	CNetworkVar(int, m_iDeathPose );
@@ -608,107 +608,13 @@ IRagdoll* C_CSRagdoll::GetIRagdoll() const
 	return m_pRagdoll;
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Called when the player toggles nightvision
-// Input  : *pData - the int value of the nightvision state
-//			*pStruct - the player
-//			*pOut -
-//-----------------------------------------------------------------------------
-void RecvProxy_NightVision( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_CSPlayer *pPlayerData = (C_CSPlayer *) pStruct;
 
-	bool bNightVisionOn = ( pData->m_Value.m_Int > 0 );
 
-	if ( pPlayerData->m_bNightVisionOn != bNightVisionOn )
-	{
-		if ( bNightVisionOn )
-			 pPlayerData->m_flNightVisionAlpha = 1;
-	}
 
-	pPlayerData->m_bNightVisionOn = bNightVisionOn;
-}
 
-void RecvProxy_FlashTime( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_CSPlayer *pPlayerData = (C_CSPlayer *) pStruct;
 
-	if( pPlayerData != C_BasePlayer::GetLocalPlayer() )
-		return;
 
-	if ( (pPlayerData->m_flFlashDuration != pData->m_Value.m_Float) && pData->m_Value.m_Float > 0 )
-	{
-		pPlayerData->m_flFlashAlpha = 1;
-	}
 
-	pPlayerData->m_flFlashDuration = pData->m_Value.m_Float;
-	pPlayerData->m_flFlashBangTime = gpGlobals->GetCurTime() + pPlayerData->m_flFlashDuration;
-}
-
-void RecvProxy_HasDefuser( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_CSPlayer *pPlayerData = (C_CSPlayer *)pStruct;
-
-	if (pPlayerData == NULL)
-	{
-		return;
-	}
-
-	bool drawIcon = false;
-
-	if (pData->m_Value.m_Int == 0)
-	{
-		pPlayerData->RemoveDefuser();
-	}
-	else
-	{
-		if (pPlayerData->HasDefuser() == false)
-		{
-			drawIcon = true;
-		}
-		pPlayerData->GiveDefuser();
-	}
-
-	if (pPlayerData->IsLocalPlayer() && drawIcon)
-	{
-		// add to pickup history
-		CHudHistoryResource *pHudHR = GET_HUDELEMENT( CHudHistoryResource );
-
-		if ( pHudHR )
-		{
-			pHudHR->AddToHistory(HISTSLOT_ITEM, "defuser_pickup");
-		}
-	}
-}
-
-void C_CSPlayer::RecvProxy_CycleLatch( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	// This receive proxy looks to see if the server's value is close enough to what we think it should
-	// be.  We've been running the same code; this is an error correction for changes we didn't simulate
-	// while they were out of PVS.
-	C_CSPlayer *pPlayer = (C_CSPlayer *)pStruct;
-	if( pPlayer->IsLocalPlayer() )
-		return; // Don't need to fixup ourselves.
-
-	float incomingCycle = (float)(pData->m_Value.m_Int) / 16; // Came in as 4 bit fixed point
-	float currentCycle = pPlayer->GetCycle();
-	bool closeEnough = fabs(currentCycle - incomingCycle) < CycleLatchTolerance;
-	if( fabs(currentCycle - incomingCycle) > (1 - CycleLatchTolerance) )
-	{
-		closeEnough = true;// Handle wrapping around 1->0
-	}
-
-	if( !closeEnough )
-	{
-		// Server disagrees too greatly.  Correct our value.
-		if ( pPlayer && pPlayer->GetTeam() )
-		{
-			DevMsg( 2, "%s %s(%d): Cycle latch wants to correct %.2f in to %.2f.\n",
-				pPlayer->GetTeam()->Get_Name(), pPlayer->GetPlayerName(), pPlayer->entindex(), currentCycle, incomingCycle );
-		}
-		pPlayer->SetServerIntendedCycle( incomingCycle );
-	}
-}
 
 void __MsgFunc_ReloadEffect( bf_read &msg )
 {

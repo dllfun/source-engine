@@ -23,7 +23,7 @@
 class CBaseTempEntity : public CBaseEntity
 {
 public:
-	DECLARE_CLASS_NOBASE( CBaseTempEntity );
+	DECLARE_CLASS( CBaseTempEntity, CBaseEntity);
 	DECLARE_SERVERCLASS();
 						CBaseTempEntity() {};
 						CBaseTempEntity( const char *name );

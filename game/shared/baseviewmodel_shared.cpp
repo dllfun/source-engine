@@ -521,28 +521,7 @@ void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& o
 
 
 
-//-----------------------------------------------------------------------------
-// Purpose: Resets anim cycle when the server changes the weapon on us
-//-----------------------------------------------------------------------------
-#if defined( CLIENT_DLL )
-void RecvProxy_Weapon( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	CBaseViewModel *pViewModel = ((CBaseViewModel*)pStruct);
-	CBaseCombatWeapon *pOldWeapon = pViewModel->GetOwningWeapon();
 
-	// Chain through to the default recieve proxy ...
-	RecvProxy_IntToEHandle( pData, pStruct, pOut );
-
-	// ... and reset our cycle index if the server is switching weapons on us
-	CBaseCombatWeapon *pNewWeapon = pViewModel->GetOwningWeapon();
-	if ( pNewWeapon != pOldWeapon )
-	{
-		// Restart animation at frame 0
-		pViewModel->SetCycle( 0 );
-		pViewModel->m_flAnimTime = gpGlobals->GetCurTime();
-	}
-}
-#endif
 
 
 LINK_ENTITY_TO_CLASS( viewmodel, CBaseViewModel );
@@ -581,18 +560,7 @@ BEGIN_PREDICTION_DATA( CBaseViewModel )
 
 END_PREDICTION_DATA()
 
-void RecvProxy_SequenceNum( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	CBaseViewModel *model = (CBaseViewModel *)pStruct;
-	if (pData->m_Value.m_Int != model->GetSequence())
-	{
-		MDLCACHE_CRITICAL_SECTION();
 
-		model->SetSequence(pData->m_Value.m_Int);
-		model->m_flAnimTime = gpGlobals->GetCurTime();
-		model->SetCycle(0);
-	}
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

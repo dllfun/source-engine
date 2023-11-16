@@ -303,82 +303,7 @@ int CRecordingList::Count()
 // Should these be somewhere else?
 #define PITCH 0
 
-//-----------------------------------------------------------------------------
-// Purpose: Decodes animtime and notes when it changes
-// Input  : *pStruct - ( C_BaseEntity * ) used to flag animtime is changine
-//			*pVarData - 
-//			*pIn - 
-//			objectID - 
-//-----------------------------------------------------------------------------
-void RecvProxy_AnimTime( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BaseEntity *pEntity = ( C_BaseEntity * )pStruct;
-	Assert( pOut == &pEntity->m_flAnimTime );
 
-	int t;
-	int tickbase;
-	int addt;
-
-	// Unpack the data.
-	addt	= pData->m_Value.m_Int;
-
-	// Note, this needs to be encoded relative to packet timestamp, not raw client clock
-	tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->entindex() );
-
-	t = tickbase;
-											//  and then go back to floating point time.
-	t += addt;				// Add in an additional up to 256 100ths from the server
-
-	// center m_flAnimTime around current time.
-	while (t < gpGlobals->GetTickCount() - 127)
-		t += 256;
-	while (t > gpGlobals->GetTickCount() + 127)
-		t -= 256;
-	
-	pEntity->m_flAnimTime = ( t * TICK_INTERVAL );
-}
-
-void RecvProxy_SimulationTime( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BaseEntity *pEntity = ( C_BaseEntity * )pStruct;
-	Assert( pOut == &pEntity->m_flSimulationTime );
-
-	int t;
-	int tickbase;
-	int addt;
-
-	// Unpack the data.
-	addt	= pData->m_Value.m_Int;
-
-	// Note, this needs to be encoded relative to packet timestamp, not raw client clock
-	tickbase = gpGlobals->GetNetworkBase( gpGlobals->GetTickCount(), pEntity->entindex() );
-
-	t = tickbase;
-											//  and then go back to floating point time.
-	t += addt;				// Add in an additional up to 256 100ths from the server
-
-	// center m_flSimulationTime around current time.
-	while (t < gpGlobals->GetTickCount() - 127)
-		t += 256;
-	while (t > gpGlobals->GetTickCount() + 127)
-		t -= 256;
-	
-	pEntity->m_flSimulationTime = ( t * TICK_INTERVAL );
-}
-
-void RecvProxy_LocalVelocity( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BaseEntity *pEnt = (C_BaseEntity *)pStruct;
-
-	Vector vecVelocity;
-	
-	vecVelocity.x = pData->m_Value.m_Vector[0];
-	vecVelocity.y = pData->m_Value.m_Vector[1];
-	vecVelocity.z = pData->m_Value.m_Vector[2];
-
-	// SetLocalVelocity checks to see if the value has changed
-	pEnt->SetLocalVelocity( vecVelocity );
-}
 void RecvProxy_ToolRecording( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	if ( !ToolsEnabled() )
@@ -391,15 +316,6 @@ void RecvProxy_ToolRecording( const CRecvProxyData *pData, void *pStruct, void *
 // Expose it to the engine.
 IMPLEMENT_CLIENTCLASS(C_BaseEntity, DT_BaseEntity, CBaseEntity);
 
-void RecvProxy_MoveType( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	((C_BaseEntity*)pStruct)->SetMoveType( (MoveType_t)(pData->m_Value.m_Int) );
-}
-
-void RecvProxy_MoveCollide( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	((C_BaseEntity*)pStruct)->SetMoveCollide( (MoveCollide_t)(pData->m_Value.m_Int) );
-}
 
 //static void RecvProxy_Solid( const CRecvProxyData *pData, void *pStruct, void *pOut )
 //{
@@ -411,19 +327,6 @@ void RecvProxy_MoveCollide( const CRecvProxyData *pData, void *pStruct, void *pO
 //{
 //	((C_BaseEntity*)pStruct)->SetSolidFlags( pData->m_Value.m_Int );
 //}
-
-void RecvProxy_EffectFlags( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	((C_BaseEntity*)pStruct)->SetEffects( pData->m_Value.m_Int );
-}
-
-
-
-
-
-
-
-
 
 
 const float coordTolerance = 2.0f / (float)( 1 << COORD_FRACTIONAL_BITS );
@@ -2495,7 +2398,7 @@ void C_BaseEntity::PostDataUpdate( DataUpdateType_t updateType )
 
 	if ( m_nOldRenderMode != m_nRenderMode )
 	{
-		SetRenderMode( (RenderMode_t)m_nRenderMode, true );
+		SetRenderMode( (RenderMode_t)(int)m_nRenderMode, true );
 	}
 
 	bool animTimeChanged = ( m_flAnimTime != m_flOldAnimTime ) ? true : false;
@@ -4062,7 +3965,7 @@ void C_BaseEntity::SetAbsVelocity( const Vector &vecAbsVelocity )
 	VectorSubtract( vecAbsVelocity, pMoveParent->GetAbsVelocity(), relVelocity );
 
 	// Transform velocity into parent space
-	VectorIRotate( relVelocity, pMoveParent->EntityToWorldTransform(), m_vecVelocity );
+	VectorIRotate( relVelocity, pMoveParent->EntityToWorldTransform(), m_vecVelocity.GetForModify() );
 }
 
 /*

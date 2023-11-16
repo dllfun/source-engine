@@ -26,7 +26,7 @@ class C_BaseTempEntity : public C_BaseEntity
 
 {
 public:
-	DECLARE_CLASS_NOBASE( C_BaseTempEntity );
+	DECLARE_CLASS( C_BaseTempEntity , C_BaseEntity);
 	DECLARE_CLIENTCLASS();
 	
 									C_BaseTempEntity( void );

@@ -20,6 +20,7 @@
 class C_TEEnergySplash : public C_BaseTempEntity
 {
 public:
+	DECLARE_CLASS(C_TEEnergySplash, C_BaseTempEntity)
 	DECLARE_CLIENTCLASS();
 
 					C_TEEnergySplash( void );
@@ -30,9 +31,9 @@ public:
 	virtual void	Precache( void );
 
 public:
-	Vector			m_vecPos;
-	Vector			m_vecDir;
-	bool			m_bExplosive;
+	CNetworkVector(			m_vecPos);
+	CNetworkVector(			m_vecDir);
+	CNetworkVar( bool,			m_bExplosive);
 
 	const class IVModel *m_pModel;
 

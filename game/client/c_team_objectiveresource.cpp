@@ -18,35 +18,11 @@
 extern ConVar mp_capstyle;
 extern ConVar mp_capdeteriorate_time;
 
-//-----------------------------------------------------------------------------
-// Purpose: Owner recv proxy
-//-----------------------------------------------------------------------------
-void RecvProxy_Owner( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	// hacks? Not sure how else to get the index of the integer that is 
-	// being transmitted.
-	int index = pData->m_pRecvProp->GetOffset() / sizeof(int);
 
-	ObjectiveResource()->SetOwningTeam( index, pData->m_Value.m_Int );
-}
 
-//-----------------------------------------------------------------------------
-// Purpose: capper recv proxy
-//-----------------------------------------------------------------------------
-void RecvProxy_CappingTeam( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	int index = pData->m_pRecvProp->GetOffset() / sizeof(int);
 
-	ObjectiveResource()->SetCappingTeam( index, pData->m_Value.m_Int );
-}
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void RecvProxy_CapLayout( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	ObjectiveResource()->SetCapLayout( pData->m_Value.m_pString );
-}
+
 
 IMPLEMENT_CLIENTCLASS(C_BaseTeamObjectiveResource, DT_BaseTeamObjectiveResource, CBaseTeamObjectiveResource)
 
@@ -140,9 +116,9 @@ void C_BaseTeamObjectiveResource::OnPreDataChanged( DataUpdateType_t updateType 
 	m_flOldCustomPositionX = m_flCustomPositionX;
 	m_flOldCustomPositionY = m_flCustomPositionY;
 
-	memcpy( m_flOldLazyCapPerc, m_flLazyCapPerc, sizeof(float)*m_iNumControlPoints );
-	memcpy( m_flOldUnlockTimes, m_flUnlockTimes, sizeof(float)*m_iNumControlPoints );
-	memcpy( m_flOldCPTimerTimes, m_flCPTimerTimes, sizeof(float)*m_iNumControlPoints );
+	memcpy( m_flOldLazyCapPerc, m_flLazyCapPerc.m_Value, sizeof(float)*m_iNumControlPoints );
+	memcpy( m_flOldUnlockTimes, m_flUnlockTimes.m_Value, sizeof(float)*m_iNumControlPoints );
+	memcpy( m_flOldCPTimerTimes, m_flCPTimerTimes.m_Value, sizeof(float)*m_iNumControlPoints );
 }
 
 //-----------------------------------------------------------------------------
@@ -303,7 +279,7 @@ void C_BaseTeamObjectiveResource::SetCappingTeam( int index, int team )
 //-----------------------------------------------------------------------------
 void C_BaseTeamObjectiveResource::SetCapLayout( const char *pszLayout )
 {
-	Q_strncpy( m_pszCapLayoutInHUD, pszLayout, MAX_CAPLAYOUT_LENGTH );
+	Q_strncpy( m_pszCapLayoutInHUD.m_Value, pszLayout, MAX_CAPLAYOUT_LENGTH );
 
 	UpdateControlPoint( "controlpoint_updatelayout" );
 }

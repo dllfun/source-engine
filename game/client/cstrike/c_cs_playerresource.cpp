@@ -27,8 +27,8 @@ C_CS_PlayerResource::C_CS_PlayerResource()
 {
 	m_Colors[TEAM_TERRORIST] = COLOR_RED;
 	m_Colors[TEAM_CT] = COLOR_BLUE;
-	memset( m_iMVPs, 0, sizeof( m_iMVPs ) );
-	memset( m_bHasDefuser, 0, sizeof( m_bHasDefuser ) );
+	memset( m_iMVPs.m_Value, 0, sizeof( m_iMVPs ) );
+	memset( m_bHasDefuser.m_Value, 0, sizeof( m_bHasDefuser ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -165,7 +165,7 @@ const char *C_CS_PlayerResource::GetClanTag( int iIndex )
 	if ( !IsConnected( iIndex ) )
 		return "";
 
-	return m_szClan[iIndex];
+	return STRING( m_szClan[iIndex]);
 }
 
 //-----------------------------------------------------------------------------

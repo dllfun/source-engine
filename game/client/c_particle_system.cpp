@@ -30,26 +30,26 @@ public:
 	void ClientThink( void );
 
 protected:
-	int			m_iEffectIndex;
-	bool		m_bActive;
+	CNetworkVar( int,			m_iEffectIndex);
+	CNetworkVar( bool,		m_bActive);
 	bool		m_bOldActive;
-	float		m_flStartTime;	// Time at which the effect started
+	CNetworkVar( float,		m_flStartTime);	// Time at which the effect started
 
 	enum { kMAXCONTROLPOINTS = 63 }; ///< actually one less than the total number of cpoints since 0 is assumed to be me
 
 	
-	EHANDLE		m_hControlPointEnts[kMAXCONTROLPOINTS];
+	CNetworkArray( EHANDLE,		m_hControlPointEnts,kMAXCONTROLPOINTS);
 	//	SendPropArray3( SENDINFO_ARRAY3(m_iControlPointParents), SendPropInt( SENDINFO_ARRAY(m_iControlPointParents), 3, SPROP_UNSIGNED ) ),
-	unsigned char m_iControlPointParents[kMAXCONTROLPOINTS];
+	CNetworkArray( unsigned char, m_iControlPointParents,kMAXCONTROLPOINTS);
 
-	bool		m_bWeatherEffect;
+	CNetworkVar( bool,		m_bWeatherEffect);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_ParticleSystem)
 	BEGIN_RECV_TABLE(C_ParticleSystem, DT_ParticleSystem, DT_BaseEntity)
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
 		RecvPropEHandle(RECVINFO(m_hOwnerEntity)),
-		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropIntToMoveParent(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0),//, RecvProxy_IntToMoveParent
 		RecvPropInt(RECVINFO(m_iParentAttachment)),
 		RecvPropQAngles(RECVINFO_NAME(m_angNetworkAngles, m_angRotation)),
 
@@ -57,8 +57,8 @@ public:
 		RecvPropBool(RECVINFO(m_bActive)),
 		RecvPropFloat(RECVINFO(m_flStartTime)),
 
-		RecvPropArray3(RECVINFO_ARRAY(m_hControlPointEnts), RecvPropEHandle(RECVINFO(m_hControlPointEnts[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_iControlPointParents), RecvPropInt(RECVINFO(m_iControlPointParents[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_hControlPointEnts), RecvPropEHandle(RECVINFO_ARRAY3(m_hControlPointEnts))),
+		RecvPropArray3(RECVINFO_ARRAY(m_iControlPointParents), RecvPropInt(RECVINFO_ARRAY3(m_iControlPointParents))),
 		RecvPropBool(RECVINFO(m_bWeatherEffect)),
 	END_RECV_TABLE(DT_ParticleSystem)
 	END_INIT_RECV_TABLE()

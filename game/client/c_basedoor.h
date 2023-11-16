@@ -26,7 +26,7 @@ public:
 	~C_BaseDoor( void );
 
 public:
-	float		m_flWaveHeight;
+	CNetworkVar( float,		m_flWaveHeight);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_BaseDoor)

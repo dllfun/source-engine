@@ -101,7 +101,7 @@ public:
 
 public:
 
-	float			m_flNextAttack;
+	CNetworkVar( float,			m_flNextAttack);
 
 protected:
 
@@ -119,8 +119,8 @@ protected:
 	CNetworkArray( int, m_iAmmo, MAX_AMMO_TYPES );
 private:
 
-	CHandle<C_BaseCombatWeapon>		m_hMyWeapons[MAX_WEAPONS];
-	CHandle< C_BaseCombatWeapon > m_hActiveWeapon;
+	CNetworkArray( CHandle<C_BaseCombatWeapon>,		m_hMyWeapons,MAX_WEAPONS);
+	CNetworkHandle(C_BaseCombatWeapon, m_hActiveWeapon);
 
 #ifdef GLOWS_ENABLE
 	bool				m_bGlowEnabled;
@@ -169,7 +169,7 @@ public:
 	BEGIN_RECV_TABLE(C_BaseCombatCharacter, DT_BaseCombatCharacter, DT_BaseFlex)
 		RecvPropDataTable("bcc_localdata", 0, 0, REFERENCE_RECV_TABLE(DT_BCCLocalPlayerExclusive)),
 		RecvPropEHandle(RECVINFO(m_hActiveWeapon)),
-		RecvPropArray3(RECVINFO_ARRAY(m_hMyWeapons), RecvPropEHandle(RECVINFO(m_hMyWeapons[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_hMyWeapons), RecvPropEHandle(RECVINFO_ARRAY3(m_hMyWeapons))),
 #ifdef GLOWS_ENABLE
 		RecvPropBool(RECVINFO(m_bGlowEnabled)),
 #endif // GLOWS_ENABLE

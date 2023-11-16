@@ -59,7 +59,48 @@ enum
 //void* SendProxy_SendBeamPredictableId(const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID);
 #endif
 #ifdef CLIENT_DLL
+
+template<typename T= float>
 void RecvProxy_Beam_ScrollSpeed(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropBeam_ScrollSpeed : public RecvPropFloat {
+public:
+	RecvPropBeam_ScrollSpeed() {}
+
+	template<typename T = float>
+	RecvPropBeam_ScrollSpeed(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_Beam_ScrollSpeed<T>
+	);
+	virtual	~RecvPropBeam_ScrollSpeed() {}
+	RecvPropBeam_ScrollSpeed& operator=(const RecvPropBeam_ScrollSpeed& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropBeam_ScrollSpeed* pRecvProp = new RecvPropBeam_ScrollSpeed;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropBeam_ScrollSpeed::RecvPropBeam_ScrollSpeed(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
 #endif
 
 class CBeam : public CBaseEntity
@@ -298,7 +339,7 @@ public:
 		SendPropFloat(SENDINFO(m_flFrameRate), 10, SPROP_ROUNDUP, -25.0f, 25.0f),
 		SendPropFloat(SENDINFO(m_flHDRColorScale), 0, SPROP_NOSCALE, 0.0f, 100.0f),
 		SendPropFloat(SENDINFO(m_flFrame), 20, SPROP_ROUNDDOWN | SPROP_CHANGES_OFTEN, 0.0f, 256.0f),
-		SendPropInt(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN),
+		SendPropColor32(SENDINFO(m_clrRender), 32, SPROP_UNSIGNED | SPROP_CHANGES_OFTEN),
 		SendPropVector(SENDINFO(m_vecEndPos), -1, SPROP_COORD),
 #ifdef PORTAL
 		SendPropBool(SENDINFO(m_bDrawInMainRender)),
@@ -334,12 +375,12 @@ public:
 		RecvPropArray3
 		(
 			RECVINFO_ARRAY(m_hAttachEntity),
-			RecvPropEHandle(RECVINFO(m_hAttachEntity[0]))
+			RecvPropEHandle(RECVINFO_ARRAY3(m_hAttachEntity))
 		),
 		RecvPropArray3
 		(
 			RECVINFO_ARRAY(m_nAttachIndex),
-			RecvPropInt(RECVINFO(m_nAttachIndex[0]))
+			RecvPropInt(RECVINFO_ARRAY3(m_nAttachIndex))
 		),
 		RecvPropInt(RECVINFO(m_nHaloIndex)),
 		RecvPropFloat(RECVINFO(m_fHaloScale)),
@@ -348,10 +389,10 @@ public:
 		RecvPropFloat(RECVINFO(m_fFadeLength)),
 		RecvPropFloat(RECVINFO(m_fAmplitude)),
 		RecvPropFloat(RECVINFO(m_fStartFrame)),
-		RecvPropFloat(RECVINFO(m_fSpeed), 0, RecvProxy_Beam_ScrollSpeed),
+		RecvPropBeam_ScrollSpeed(RECVINFO(m_fSpeed), 0),//, RecvProxy_Beam_ScrollSpeed
 		RecvPropFloat(RECVINFO(m_flFrameRate)),
 		RecvPropFloat(RECVINFO(m_flHDRColorScale)),
-		RecvPropInt(RECVINFO(m_clrRender)),
+		RecvPropColor32(RECVINFO(m_clrRender)),
 		RecvPropInt(RECVINFO(m_nRenderFX)),
 		RecvPropInt(RECVINFO(m_nRenderMode)),
 		RecvPropFloat(RECVINFO(m_flFrame)),
@@ -364,7 +405,7 @@ public:
 		RecvPropInt(RECVINFO(m_nMinDXLevel)),
 
 		RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)),
-		RecvPropInt(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent),
+		RecvPropIntToMoveParent(RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0),//, RecvProxy_IntToMoveParent
 //#if !defined( NO_ENTITY_PREDICTION )
 //		RecvPropDataTable("beampredictable_id", 0, 0, REFERENCE_RECV_TABLE(DT_BeamPredictableId)),
 //#endif
@@ -575,6 +616,26 @@ inline void	CBeam::BeamDamageInstant( trace_t *ptr, float damage )
 	m_flFireTime = gpGlobals->GetCurTime() - 1;
 	BeamDamage(ptr); 
 }
+
+
+#ifdef CLIENT_DLL
+template<typename T>
+void RecvProxy_Beam_ScrollSpeed(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_Beam* beam;
+	float	val;
+
+	// Unpack the data.
+	val = pData->m_Value.m_Float;
+	val *= 0.1;
+
+	beam = (C_Beam*)pStruct;
+	Assert(pOut == &beam->m_fSpeed);
+
+	beam->m_fSpeed = val;
+}
+#endif // CLIENT_DLL
+
 
 bool IsStaticPointEntity( CBaseEntity *pEnt );
 

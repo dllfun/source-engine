@@ -15,7 +15,46 @@
 #include "choreoscene.h"
 #include "c_baseentity.h"
 
+template<typename T= float>
 void RecvProxy_ForcedClientTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropForcedClientTime : public RecvPropFloat {
+public:
+	RecvPropForcedClientTime() {}
+
+	template<typename T = float>
+	RecvPropForcedClientTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_ForcedClientTime<T>
+	);
+	virtual	~RecvPropForcedClientTime() {}
+	RecvPropForcedClientTime& operator=(const RecvPropForcedClientTime& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropForcedClientTime* pRecvProp = new RecvPropForcedClientTime;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropForcedClientTime::RecvPropForcedClientTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
 
 class C_SceneEntity : public C_BaseEntity, public IChoreoEventCallback
 {
@@ -91,12 +130,12 @@ private:
 	void					WipeQueuedEvents();
 	void					QueueStartEvent( float starttime, CChoreoScene *scene, CChoreoEvent *event );
 
-	bool		m_bIsPlayingBack;
-	bool		m_bPaused;
-	bool		m_bMultiplayer;
+	CNetworkVar( bool,		m_bIsPlayingBack);
+	CNetworkVar( bool,		m_bPaused);
+	CNetworkVar( bool,		m_bMultiplayer);
 	float		m_flCurrentTime;
-	float		m_flForceClientTime;
-	int			m_nSceneStringIndex;
+	CNetworkVar( float,		m_flForceClientTime);
+	CNetworkVar( int,			m_nSceneStringIndex);
 	bool		m_bClientOnly;
 
 	CHandle< C_BaseFlex >	m_hOwner; // if set, this overrides the m_hActorList in FindNamedActor()
@@ -124,14 +163,29 @@ public:
 		RecvPropBool(RECVINFO(m_bIsPlayingBack)),
 		RecvPropBool(RECVINFO(m_bPaused)),
 		RecvPropBool(RECVINFO(m_bMultiplayer)),
-		RecvPropFloat(RECVINFO(m_flForceClientTime), 0, RecvProxy_ForcedClientTime),
+		RecvPropForcedClientTime(RECVINFO(m_flForceClientTime), 0),//, RecvProxy_ForcedClientTime
 		RecvPropUtlVector(
 			RECVINFO_UTLVECTOR(m_hActorList),
 			MAX_ACTORS_IN_SCENE,
-			RecvPropEHandle(NULL, 0, 0)),
+			RecvPropEHandle((CHandle< C_BaseFlex >*)0, NULL, 0, 0)),
 	END_RECV_TABLE(DT_SceneEntity)
 	END_INIT_RECV_TABLE()
 };
+
+//-----------------------------------------------------------------------------
+// Purpose: Decodes animtime and notes when it changes
+// Input  : *pStruct - ( C_BaseEntity * ) used to flag animtime is changine
+//			*pVarData - 
+//			*pIn - 
+//			objectID - 
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_ForcedClientTime(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_SceneEntity* pScene = reinterpret_cast<C_SceneEntity*>(pStruct);
+	*(T*)pOut = pData->m_Value.m_Float;//float
+	pScene->OnResetClientTime();
+}
 
 //-----------------------------------------------------------------------------
 // Binary compiled VCDs get their strings from a pool

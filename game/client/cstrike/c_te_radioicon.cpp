@@ -33,7 +33,7 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int m_iAttachToClient;
+	CNetworkVar( int, m_iAttachToClient);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TERadioIcon)

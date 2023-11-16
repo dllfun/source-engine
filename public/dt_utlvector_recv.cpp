@@ -110,7 +110,7 @@ RecvPropUtlVector::RecvPropUtlVector(
 	// It has to go in a datatable, otherwise if this array holds datatable properties, it will be received last.
 	RecvProp *pLengthProp = new RecvProp;
 	Q_snprintf(buf, sizeof(buf), "lengthprop%d", nMaxElements);
-	*pLengthProp = RecvPropInt( buf, 0, 0, 0, RecvProxy_UtlVectorLength );
+	*pLengthProp = RecvPropInt((int*)0, buf, 0, 0, 0, RecvProxy_UtlVectorLength );
 	CRecvPropExtra_UtlVector* pExtraData2 = new CRecvPropExtra_UtlVector;
 	*pExtraData2 = pExtraData;
 	pLengthProp->SetExtraData(pExtraData2);
@@ -164,7 +164,3 @@ RecvPropUtlVector::RecvPropUtlVector(
 	//return ret;
 }
 
-RecvPropUtlVector& RecvPropUtlVector::operator=(const RecvPropUtlVector& srcSendProp) {
-	RecvProp::operator=(srcSendProp);
-	return *this;
-}

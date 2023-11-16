@@ -168,7 +168,7 @@ void C_BaseEntity::PhysicsCustom()
 	{	
 		// entity is trapped in another solid
 		// UNDONE: does this entity needs to be removed?
-		VectorCopy (vec3_origin, m_vecVelocity);
+		VectorCopy (vec3_origin, m_vecVelocity.m_Value);
 		VectorCopy (vec3_angle, m_vecAngVelocity);
 		return;
 	}

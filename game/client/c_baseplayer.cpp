@@ -820,7 +820,7 @@ void C_BasePlayer::OnDataChanged( DataUpdateType_t updateType )
 	if ( IsLocalPlayer() )
 	{
 		// Reset engine areabits pointer
-		render->SetAreaState( m_Local.m_chAreaBits, m_Local.m_chAreaPortalBits );
+		render->SetAreaState( m_Local.m_chAreaBits.m_Value, m_Local.m_chAreaPortalBits.m_Value );
 
 		// Check for Ammo pickups.
 		for ( int i = 0; i < MAX_AMMO_TYPES; i++ )
@@ -860,7 +860,7 @@ bool C_BasePlayer::JustEnteredVehicle()
 	if ( !IsInAVehicle() )
 		return false;
 
-	return ( m_hOldVehicle == m_hVehicle );
+	return ( m_hOldVehicle.ToInt() == m_hVehicle.ToInt());
 }
 
 //-----------------------------------------------------------------------------
@@ -2283,78 +2283,15 @@ float C_BasePlayer::GetFOV( void )
 	return fFOV;
 }
 
-void RecvProxy_LocalVelocityX( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BasePlayer *pPlayer = (C_BasePlayer *) pStruct;
 
-	Assert( pPlayer );
 
-	float flNewVel_x = pData->m_Value.m_Float;
 
-	Vector vecVelocity = pPlayer->GetLocalVelocity();
 
-	if( vecVelocity.x != flNewVel_x )	// Should this use an epsilon check?
-	{
-		vecVelocity.x = flNewVel_x;
-		pPlayer->SetLocalVelocity( vecVelocity );
-	}
-}
 
-void RecvProxy_LocalVelocityY( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BasePlayer *pPlayer = (C_BasePlayer *) pStruct;
 
-	Assert( pPlayer );
 
-	float flNewVel_y = pData->m_Value.m_Float;
 
-	Vector vecVelocity = pPlayer->GetLocalVelocity();
 
-	if( vecVelocity.y != flNewVel_y )
-	{
-		vecVelocity.y = flNewVel_y;
-		pPlayer->SetLocalVelocity( vecVelocity );
-	}
-}
-
-void RecvProxy_LocalVelocityZ( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BasePlayer *pPlayer = (C_BasePlayer *) pStruct;
-	
-	Assert( pPlayer );
-
-	float flNewVel_z = pData->m_Value.m_Float;
-
-	Vector vecVelocity = pPlayer->GetLocalVelocity();
-
-	if( vecVelocity.z != flNewVel_z )
-	{
-		vecVelocity.z = flNewVel_z;
-		pPlayer->SetLocalVelocity( vecVelocity );
-	}
-}
-
-void RecvProxy_ObserverTarget( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BasePlayer *pPlayer = (C_BasePlayer *) pStruct;
-
-	Assert( pPlayer );
-
-	EHANDLE hTarget;
-
-	RecvProxy_IntToEHandle( pData, pStruct, &hTarget );
-
-	pPlayer->SetObserverTarget( hTarget );
-}
-
-void RecvProxy_ObserverMode( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	C_BasePlayer *pPlayer = (C_BasePlayer *) pStruct;
-
-	Assert( pPlayer );
-
-	pPlayer->SetObserverMode ( pData->m_Value.m_Int );
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: Remove this player from a vehicle

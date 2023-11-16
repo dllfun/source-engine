@@ -173,13 +173,13 @@ public:
 	LocalFlexController_t				FindFlexController( const char *szName );
 
 public:
-	Vector			m_viewtarget;
+	CNetworkVector(			m_viewtarget);
 	CInterpolatedVar< Vector >	m_iv_viewtarget;
 	// indexed by model local flexcontroller
-	float			m_flexWeight[MAXSTUDIOFLEXCTRL];
+	CNetworkArray( float,		m_flexWeight,MAXSTUDIOFLEXCTRL);
 	CInterpolatedVarArray< float, MAXSTUDIOFLEXCTRL >	m_iv_flexWeight;
 
-	int				m_blinktoggle;
+	CNetworkVar( int,				m_blinktoggle);
 
 	static int		AddGlobalFlexController( const char *szName );
 	static char const *GetGlobalFlexControllerName( int idx );
@@ -297,7 +297,7 @@ public:
 public:
 	BEGIN_INIT_RECV_TABLE(C_BaseFlex)
 	BEGIN_RECV_TABLE(C_BaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
-		RecvPropArray3(RECVINFO_ARRAY(m_flexWeight), RecvPropFloat(RECVINFO(m_flexWeight[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_flexWeight), RecvPropFloat(RECVINFO_ARRAY3(m_flexWeight))),
 		RecvPropInt(RECVINFO(m_blinktoggle)),
 		RecvPropVector(RECVINFO(m_viewtarget)),
 

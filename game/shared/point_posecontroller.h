@@ -148,17 +148,17 @@ private:
 
 
 	// Networked variables
-	EHANDLE						m_hProps[MAX_POSE_CONTROLLED_PROPS];
-	unsigned char				m_chPoseIndex[MAX_POSE_CONTROLLED_PROPS];
-	bool						m_bPoseValueParity;
-	float						m_fPoseValue;
-	float						m_fInterpolationTime;
-	bool						m_bInterpolationWrap;
-	float						m_fCycleFrequency;
-	PoseController_FModType_t	m_nFModType;
-	float						m_fFModTimeOffset;
-	float						m_fFModRate;
-	float						m_fFModAmplitude;
+	CNetworkArray( EHANDLE,						m_hProps,MAX_POSE_CONTROLLED_PROPS);
+	CNetworkArray( unsigned char,				m_chPoseIndex,MAX_POSE_CONTROLLED_PROPS);
+	CNetworkVar( bool,						m_bPoseValueParity);
+	CNetworkVar( float,						m_fPoseValue);
+	CNetworkVar( float,						m_fInterpolationTime);
+	CNetworkVar( bool,						m_bInterpolationWrap);
+	CNetworkVar( float,						m_fCycleFrequency);
+	CNetworkVar( int,							m_nFModType);//PoseController_FModType_t
+	CNetworkVar( float,						m_fFModTimeOffset);
+	CNetworkVar( float,						m_fFModRate);
+	CNetworkVar( float,						m_fFModAmplitude);
 	bool	m_bOldPoseValueParity;
 
 	float	m_fCurrentPoseValue;	// Actual pose value cycled by the frequency and modulation
@@ -169,8 +169,8 @@ private:
 public:
 	BEGIN_INIT_RECV_TABLE(C_PoseController)
 	BEGIN_RECV_TABLE(C_PoseController, DT_PoseController, DT_BaseEntity)
-		RecvPropArray3(RECVINFO_ARRAY(m_hProps), RecvPropEHandle(RECVINFO(m_hProps[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_chPoseIndex), RecvPropInt(RECVINFO(m_chPoseIndex[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_hProps), RecvPropEHandle(RECVINFO_ARRAY3(m_hProps))),
+		RecvPropArray3(RECVINFO_ARRAY(m_chPoseIndex), RecvPropInt(RECVINFO_ARRAY3(m_chPoseIndex))),
 		RecvPropBool(RECVINFO(m_bPoseValueParity)),
 		RecvPropFloat(RECVINFO(m_fPoseValue)),
 		RecvPropFloat(RECVINFO(m_fInterpolationTime)),

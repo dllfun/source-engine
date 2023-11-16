@@ -17,11 +17,14 @@
 #include "weapon_csbase.h"
 #include "baseparticleentity.h"
 #include "beamdraw.h"
+#include "history_resource.h"
+#include "c_team.h"
 
 
 class C_PhysicsProp;
 
 extern ConVar cl_disablefreezecam;
+extern const float CycleLatchTolerance;
 
 class CAddonModel
 {
@@ -31,9 +34,171 @@ public:
 	int m_iAttachmentPoint;				// Which attachment point on the player model this guy is on.
 };
 
+template<typename T= bool>
 void RecvProxy_HasDefuser(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropHasDefuser : public RecvPropInt {
+public:
+	RecvPropHasDefuser() {}
+
+	template<typename T = int>
+	RecvPropHasDefuser(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_HasDefuser<T>
+	);
+	virtual	~RecvPropHasDefuser() {}
+	RecvPropHasDefuser& operator=(const RecvPropHasDefuser& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropHasDefuser* pRecvProp = new RecvPropHasDefuser;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropHasDefuser::RecvPropHasDefuser(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+template<typename T= bool>
 void RecvProxy_NightVision(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropNightVision : public RecvPropInt {
+public:
+	RecvPropNightVision() {}
+
+	template<typename T = int>
+	RecvPropNightVision(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_NightVision<T>
+	);
+	virtual	~RecvPropNightVision() {}
+	RecvPropNightVision& operator=(const RecvPropNightVision& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropNightVision* pRecvProp = new RecvPropNightVision;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropNightVision::RecvPropNightVision(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
+template<typename T= float>
 void RecvProxy_FlashTime(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropFlashTime : public RecvPropFloat {
+public:
+	RecvPropFlashTime() {}
+
+	template<typename T = float>
+	RecvPropFlashTime(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_FlashTime<T>
+	);
+	virtual	~RecvPropFlashTime() {}
+	RecvPropFlashTime& operator=(const RecvPropFlashTime& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropFlashTime* pRecvProp = new RecvPropFlashTime;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropFlashTime::RecvPropFlashTime(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+// Having the RecvProxy in the player allows us to keep the var private
+template<typename T= float>
+void RecvProxy_CycleLatch(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropCycleLatch : public RecvPropInt {
+public:
+	RecvPropCycleLatch() {}
+
+	template<typename T = int>
+	RecvPropCycleLatch(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_CycleLatch<T>
+	);
+	virtual	~RecvPropCycleLatch() {}
+	RecvPropCycleLatch& operator=(const RecvPropCycleLatch& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropCycleLatch* pRecvProp = new RecvPropCycleLatch;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropCycleLatch::RecvPropCycleLatch(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
 
 class C_CSPlayer : public C_BasePlayer, public ICSPlayerAnimStateHelpers
 {
@@ -275,7 +440,7 @@ public:
 
 	bool		m_bDetected;
 
-	EHANDLE	m_hRagdoll;
+	CNetworkHandle(C_BaseEntity,	m_hRagdoll);
 
 	CWeaponCSBase* GetActiveCSWeapon() const;
 	CWeaponCSBase* GetCSWeapon( CSWeaponID id ) const;
@@ -299,8 +464,7 @@ public:
 	CNetworkVar( float, m_flFlashMaxAlpha );
 	CNetworkVar( float, m_flFlashDuration );
 
-	// Having the RecvProxy in the player allows us to keep the var private
-	static void RecvProxy_CycleLatch( const CRecvProxyData *pData, void *pStruct, void *pOut );
+	
 
 	// Bots and hostages auto-duck during jumps
 	bool m_duckUntilOnGround;
@@ -330,13 +494,13 @@ private:
 
 	void PushawayThink();
 
-	int		m_iAccount;
-	bool	m_bHasHelmet;
-	int		m_iClass;
-	int		m_ArmorValue;
-	QAngle	m_angEyeAngles;
-	bool	m_bHasDefuser;
-	bool	m_bInHostageRescueZone;
+	CNetworkVar( int,		m_iAccount);
+	CNetworkVar( bool,	m_bHasHelmet);
+	CNetworkVar( int,		m_iClass);
+	CNetworkVar( int,		m_ArmorValue);
+	CNetworkQAngle(	m_angEyeAngles);
+	CNetworkVar( bool,	m_bHasDefuser);
+	CNetworkVar( bool,	m_bInHostageRescueZone);
 	float	m_fNextThinkPushAway;
 
     bool    m_bPlayingFreezeCamSound;
@@ -346,7 +510,7 @@ private:
 	bool	m_bShieldDrawn;
 #endif
 
-	Vector m_vecRagdollVelocity;
+	CNetworkVector( m_vecRagdollVelocity);
 
 	CInterpolatedVar< QAngle >	m_iv_angEyeAngles;
 
@@ -376,7 +540,7 @@ private:
 	int m_iLastPrimaryAddon;
 	int m_iLastSecondaryAddon;
 
-	int m_cycleLatch;				// server periodically updates this to fix up our anims, here it is a 4 bit fixed point
+	CNetworkVar( int, m_cycleLatch);				// server periodically updates this to fix up our anims, here it is a 4 bit fixed point
 	float m_serverIntendedCycle;	// server periodically updates this to fix up our anims, here it is the float we want, or -1 for no override
 
 
@@ -412,8 +576,8 @@ public:
 		// [tj]Set up the receive table for per-client domination data
 		//=============================================================================
 
-		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerDominated), RecvPropBool(RECVINFO(m_bPlayerDominated[0]))),
-		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerDominatingMe), RecvPropBool(RECVINFO(m_bPlayerDominatingMe[0])))
+		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerDominated), RecvPropBool(RECVINFO_ARRAY3(m_bPlayerDominated))),
+		RecvPropArray3(RECVINFO_ARRAY(m_bPlayerDominatingMe), RecvPropBool(RECVINFO_ARRAY3(m_bPlayerDominatingMe)))
 
 		//=============================================================================
 		// HPE_END
@@ -438,11 +602,11 @@ public:
 		RecvPropInt(RECVINFO(m_bInBuyZone)),
 		RecvPropInt(RECVINFO(m_iClass)),
 		RecvPropInt(RECVINFO(m_ArmorValue)),
-		RecvPropFloat(RECVINFO(m_angEyeAngles[0])),
-		RecvPropFloat(RECVINFO(m_angEyeAngles[1])),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_angEyeAngles,0)),
+		RecvPropFloat(RECVINFO_VECTORELEM(m_angEyeAngles,1)),
 		RecvPropFloat(RECVINFO(m_flStamina)),
-		RecvPropInt(RECVINFO(m_bHasDefuser), 0, RecvProxy_HasDefuser),
-		RecvPropInt(RECVINFO(m_bNightVisionOn), 0, RecvProxy_NightVision),
+		RecvPropHasDefuser(RECVINFO(m_bHasDefuser), 0),//, RecvProxy_HasDefuser
+		RecvPropNightVision(RECVINFO(m_bNightVisionOn), 0),//, RecvProxy_NightVision
 		RecvPropBool(RECVINFO(m_bHasNightVision)),
 
 
@@ -470,12 +634,12 @@ public:
 #endif
 		RecvPropInt(RECVINFO(m_bHasHelmet)),
 		RecvPropVector(RECVINFO(m_vecRagdollVelocity)),
-		RecvPropFloat(RECVINFO(m_flFlashDuration), 0, RecvProxy_FlashTime),
+		RecvPropFlashTime(RECVINFO(m_flFlashDuration), 0),//, RecvProxy_FlashTime
 		RecvPropFloat(RECVINFO(m_flFlashMaxAlpha)),
 		RecvPropInt(RECVINFO(m_iProgressBarDuration)),
 		RecvPropFloat(RECVINFO(m_flProgressBarStartTime)),
 		RecvPropEHandle(RECVINFO(m_hRagdoll)),
-		RecvPropInt(RECVINFO(m_cycleLatch), 0, &C_CSPlayer::RecvProxy_CycleLatch),
+		RecvPropCycleLatch(RECVINFO(m_cycleLatch), 0),//, RecvProxy_CycleLatch
 
 	END_RECV_TABLE(DT_CSPlayer)
 	END_INIT_RECV_TABLE()
@@ -498,7 +662,111 @@ namespace vgui
 
 vgui::IImage* GetDefaultAvatarImage( C_BasePlayer *pPlayer );
 
+template<typename T>
+void RecvProxy_HasDefuser(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_CSPlayer* pPlayerData = (C_CSPlayer*)pStruct;
+
+	if (pPlayerData == NULL)
+	{
+		return;
+	}
+
+	bool drawIcon = false;
+
+	if (pData->m_Value.m_Int == 0)
+	{
+		pPlayerData->RemoveDefuser();
+	}
+	else
+	{
+		if (pPlayerData->HasDefuser() == false)
+		{
+			drawIcon = true;
+		}
+		pPlayerData->GiveDefuser();
+	}
+
+	if (pPlayerData->IsLocalPlayer() && drawIcon)
+	{
+		// add to pickup history
+		CHudHistoryResource* pHudHR = GET_HUDELEMENT(CHudHistoryResource);
+
+		if (pHudHR)
+		{
+			pHudHR->AddToHistory(HISTSLOT_ITEM, "defuser_pickup");
+		}
+	}
+}
 
 
+//-----------------------------------------------------------------------------
+// Purpose: Called when the player toggles nightvision
+// Input  : *pData - the int value of the nightvision state
+//			*pStruct - the player
+//			*pOut -
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_NightVision(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_CSPlayer* pPlayerData = (C_CSPlayer*)pStruct;
+
+	bool bNightVisionOn = (pData->m_Value.m_Int > 0);
+
+	if (pPlayerData->m_bNightVisionOn != bNightVisionOn)
+	{
+		if (bNightVisionOn)
+			pPlayerData->m_flNightVisionAlpha = 1;
+	}
+
+	pPlayerData->m_bNightVisionOn = bNightVisionOn;
+}
+
+template<typename>
+void RecvProxy_FlashTime(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_CSPlayer* pPlayerData = (C_CSPlayer*)pStruct;
+
+	if (pPlayerData != C_BasePlayer::GetLocalPlayer())
+		return;
+
+	if ((pPlayerData->m_flFlashDuration != pData->m_Value.m_Float) && pData->m_Value.m_Float > 0)
+	{
+		pPlayerData->m_flFlashAlpha = 1;
+	}
+
+	pPlayerData->m_flFlashDuration = pData->m_Value.m_Float;
+	pPlayerData->m_flFlashBangTime = gpGlobals->GetCurTime() + pPlayerData->m_flFlashDuration;
+}
+
+template<typename T>
+void RecvProxy_CycleLatch(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	// This receive proxy looks to see if the server's value is close enough to what we think it should
+	// be.  We've been running the same code; this is an error correction for changes we didn't simulate
+	// while they were out of PVS.
+	C_CSPlayer* pPlayer = (C_CSPlayer*)pStruct;
+	if (pPlayer->IsLocalPlayer())
+		return; // Don't need to fixup ourselves.
+
+	float incomingCycle = (float)(pData->m_Value.m_Int) / 16; // Came in as 4 bit fixed point
+	float currentCycle = pPlayer->GetCycle();
+	bool closeEnough = fabs(currentCycle - incomingCycle) < CycleLatchTolerance;
+	if (fabs(currentCycle - incomingCycle) > (1 - CycleLatchTolerance))
+	{
+		closeEnough = true;// Handle wrapping around 1->0
+	}
+
+	if (!closeEnough)
+	{
+		// Server disagrees too greatly.  Correct our value.
+		if (pPlayer && pPlayer->GetTeam())
+		{
+			DevMsg(2, "%s %s(%d): Cycle latch wants to correct %.2f in to %.2f.\n",
+				pPlayer->GetTeam()->Get_Name(), pPlayer->GetPlayerName(), pPlayer->entindex(), currentCycle, incomingCycle);
+		}
+		pPlayer->SetServerIntendedCycle(incomingCycle);
+	}
+}
 
 #endif // C_CS_PLAYER_H

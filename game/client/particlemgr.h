@@ -592,10 +592,13 @@ private:
 
 class CParticleLightInfo
 {
+	DECLARE_CLASS_NOBASE(CParticleLightInfo)
+	void	NetworkStateChanged() { }
+	void	NetworkStateChanged(void* pVar) { }
 public:
-	Vector	m_vPos;
-	Vector	m_vColor;	// 0-1
-	float	m_flIntensity;
+	CNetworkVector(	m_vPos);
+	CNetworkVector(	m_vColor);	// 0-1
+	CNetworkVar( float,	m_flIntensity);
 };
 
 typedef IParticleEffect* (*CreateParticleEffectFN)();

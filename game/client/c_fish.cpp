@@ -21,9 +21,87 @@ extern float UTIL_WaterLevel( const Vector &position, float minz, float maxz );
 
 ConVar FishDebug( "fish_debug", "0", FCVAR_CHEAT, "Show debug info for fish" );
 
-
+template<typename T= float>
 void RecvProxy_FishOriginX(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropFishOriginX : public RecvPropFloat {
+public:
+	RecvPropFishOriginX() {}
+
+	template<typename T = float>
+	RecvPropFishOriginX(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_FishOriginX<T>
+	);
+	virtual	~RecvPropFishOriginX() {}
+	RecvPropFishOriginX& operator=(const RecvPropFishOriginX& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropFishOriginX* pRecvProp = new RecvPropFishOriginX;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropFishOriginX::RecvPropFishOriginX(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
+
+template<typename T= float>
 void RecvProxy_FishOriginY(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropFishOriginY : public RecvPropFloat {
+public:
+	RecvPropFishOriginY() {}
+
+	template<typename T = float>
+	RecvPropFishOriginY(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_FishOriginY<T>
+	);
+	virtual	~RecvPropFishOriginY() {}
+	RecvPropFishOriginY& operator=(const RecvPropFishOriginY& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropFishOriginY* pRecvProp = new RecvPropFishOriginY;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropFishOriginY::RecvPropFishOriginY(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+) :RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
 
 //-----------------------------------------------------------------------------
 /**
@@ -41,7 +119,9 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t type );
 
 private:
+	template<typename T>
 	friend void RecvProxy_FishOriginX( const CRecvProxyData *pData, void *pStruct, void *pOut );
+	template<typename T>
 	friend void RecvProxy_FishOriginY( const CRecvProxyData *pData, void *pStruct, void *pOut );
 
 	Vector m_pos;						///< local position
@@ -58,11 +138,11 @@ private:
 	float m_wigglePhase;				///< where in the wiggle sinusoid we are
 	float m_wiggleRate;					///< the speed of our wiggling
 
-	Vector m_actualPos;					///< position from server
-	QAngle m_actualAngles;				///< angles from server
+	CNetworkVector( m_actualPos);					///< position from server
+	CNetworkQAngle( m_actualAngles);				///< angles from server
 
-	Vector m_poolOrigin;
-	float m_waterLevel;					///< Z coordinate of water surface
+	CNetworkVector( m_poolOrigin);
+	CNetworkVar( float, m_waterLevel);					///< Z coordinate of water surface
 
 	bool m_gotUpdate;					///< true after we have received a network update
 
@@ -78,11 +158,11 @@ public:
 
 		RecvPropVector(RECVINFO(m_poolOrigin)),
 
-		RecvPropFloat(RECVINFO_NAME(m_actualPos.x, m_x), 0, RecvProxy_FishOriginX),
-		RecvPropFloat(RECVINFO_NAME(m_actualPos.y, m_y), 0, RecvProxy_FishOriginY),
-		RecvPropFloat(RECVINFO_NAME(m_actualPos.z, m_z)),
+		RecvPropFishOriginX(RECVINFO_VECTORELEM_NAME(m_actualPos,0, m_x), 0),//, RecvProxy_FishOriginX
+		RecvPropFishOriginY(RECVINFO_VECTORELEM_NAME(m_actualPos,1, m_y), 0),//, RecvProxy_FishOriginY
+		RecvPropFloat(RECVINFO_VECTORELEM_NAME(m_actualPos,2, m_z)),
 
-		RecvPropFloat(RECVINFO_NAME(m_actualAngles.y, m_angle)),
+		RecvPropFloat(RECVINFO_VECTORELEM_NAME(m_actualAngles,1, m_angle)),
 
 		RecvPropInt(RECVINFO(m_nModelIndex)),
 		RecvPropInt(RECVINFO(m_lifeState)),
@@ -95,20 +175,22 @@ public:
 
 
 //-----------------------------------------------------------------------------
+template<typename T>
 void RecvProxy_FishOriginX( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	C_Fish *fish = (C_Fish *)pStruct;
-	float *out = (float *)pOut;
+	T *out = (T *)pOut;//float
 
-	*out = pData->m_Value.m_Float + fish->m_poolOrigin.x;
+	*out = pData->m_Value.m_Float + fish->m_poolOrigin.GetX();
 }
 
+template<typename T>
 void RecvProxy_FishOriginY( const CRecvProxyData *pData, void *pStruct, void *pOut )
 {
 	C_Fish *fish = (C_Fish *)pStruct;
-	float *out = (float *)pOut;
+	T *out = (T *)pOut;//float
 
-	*out = pData->m_Value.m_Float + fish->m_poolOrigin.y;
+	*out = pData->m_Value.m_Float + fish->m_poolOrigin.GetY();
 }
 
 
@@ -237,7 +319,7 @@ void C_Fish::ClientThink()
 		case LIFE_ALIVE:
 		{
 			// use server-side Z coordinate directly
-			m_pos.z = m_actualPos.z;
+			m_pos.z = m_actualPos.GetZ();
 
 			// use server-side angles
 			m_angles = m_actualAngles;

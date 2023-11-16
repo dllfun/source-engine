@@ -172,7 +172,7 @@ private:
 	float			m_Speed;		// Precip speed
 	float			m_Width;		// Tracer width
 	float			m_Remainder;	// particles we should render next time
-	PrecipitationType_t	m_nPrecipType;			// Precip type
+	CNetworkVar( int,				m_nPrecipType);			// Precip type PrecipitationType_t
 	float			m_flHalfScreenWidth;	// Precalculated each frame.
 
 	float			m_flDensity;
@@ -1327,10 +1327,10 @@ public:
 	virtual void	AddEntity( void );
 
 	//Server-side
-	int		m_nDensity;
-	int		m_nLifetime;
-	int		m_nSpeed;
-	bool	m_bEmit;
+	CNetworkVar( int,		m_nDensity);
+	CNetworkVar( int,		m_nLifetime);
+	CNetworkVar( int,		m_nSpeed);
+	CNetworkVar( bool,	m_bEmit);
 
 protected:
 
@@ -1493,10 +1493,10 @@ public:
 
 protected:
 
-	Vector		m_targetPosition;
-	Vector		m_controlPosition;
-	float		m_scrollRate;
-	float		m_flWidth;
+	CNetworkVector(		m_targetPosition);
+	CNetworkVector(		m_controlPosition);
+	CNetworkVar( float,		m_scrollRate);
+	CNetworkVar( float,		m_flWidth);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_QuadraticBeam)

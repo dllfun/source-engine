@@ -34,7 +34,7 @@ public:
 				g_pTestObj = 0;
 			}
 
-	int		m_WithProxy;
+	CNetworkVar( int,		m_WithProxy);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_Test_ProxyToggle_Networkable)

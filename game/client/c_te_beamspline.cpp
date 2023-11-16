@@ -33,14 +33,14 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecPoints[ MAX_SPLINE_POINTS ];
-	int				m_nPoints;
+	CNetworkArray( Vector,			m_vecPoints, MAX_SPLINE_POINTS );
+	CNetworkVar( int,				m_nPoints);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBeamSpline)
 	BEGIN_RECV_TABLE(C_TEBeamSpline, DT_TEBeamSpline, DT_BaseTempEntity)
 		RecvPropInt(RECVINFO(m_nPoints)),
-		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_vecPoints), RecvPropVector(RECVINFO(m_vecPoints[0])))
+		RecvPropInternalArray(RECVINFO_INTERNALARRAY(m_vecPoints), RecvPropVector(RECVINFO_ARRAY3(m_vecPoints)))
 	END_RECV_TABLE(DT_TEBeamSpline)
 	END_INIT_RECV_TABLE()
 };

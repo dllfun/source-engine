@@ -65,7 +65,7 @@ private:
 	CParticleEffectBinding	m_ParticleEffect;
 	float m_flMaxParticleSize;
 	int m_nOldSequence;
-	float m_flSequenceScale;
+	CNetworkVar( float, m_flSequenceScale);
 	bool m_bSimulate;
 
 public:

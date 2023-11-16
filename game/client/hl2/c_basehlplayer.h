@@ -57,7 +57,7 @@ public:
 	C_HL2PlayerLocalData		m_HL2Local;
 	EHANDLE				m_hClosestNPC;
 	float				m_flSpeedModTime;
-	bool				m_fIsSprinting;
+	CNetworkVar( bool,				m_fIsSprinting);
 
 private:
 	C_BaseHLPlayer( const C_BaseHLPlayer & ); // not defined, not accessible

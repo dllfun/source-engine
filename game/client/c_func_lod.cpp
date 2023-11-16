@@ -29,7 +29,7 @@ public:
 // Replicated vars from the server.
 // These are documented in the server-side entity.
 public:
-	float			m_fDisappearDist;
+	CNetworkVar( float,			m_fDisappearDist);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_Func_LOD)

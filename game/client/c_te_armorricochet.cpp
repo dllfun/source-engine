@@ -22,6 +22,7 @@
 class C_TEMetalSparks : public C_BaseTempEntity
 {
 public:
+	DECLARE_CLASS(C_TEMetalSparks, C_BaseTempEntity)
 	DECLARE_CLIENTCLASS();
 
 					C_TEMetalSparks( void );
@@ -32,8 +33,8 @@ public:
 	virtual void	Precache( void );
 
 public:
-	Vector			m_vecPos;
-	Vector			m_vecDir;
+	CNetworkVector(			m_vecPos);
+	CNetworkVector(			m_vecDir);
 
 	const class IVModel *m_pModel;
 

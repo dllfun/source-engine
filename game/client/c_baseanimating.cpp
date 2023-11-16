@@ -105,7 +105,7 @@ public:
 	void GetLightingOffset( matrix3x4_t &offset );
 
 private:
-	EHANDLE			m_hLightingLandmark;
+	CNetworkHandle(C_BaseEntity,		m_hLightingLandmark);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_InfoLightingRelative)
@@ -155,21 +155,7 @@ static CUtlVector< clientanimating_t >	g_ClientSideAnimationList;
 
 
 
-void RecvProxy_Sequence( const CRecvProxyData *pData, void *pStruct, void *pOut )
-{
-	// Have the regular proxy store the data.
-	RecvProxy_Int32ToInt32( pData, pStruct, pOut );
 
-	C_BaseAnimating *pAnimating = (C_BaseAnimating *)pStruct;
-
-	if ( !pAnimating )
-		return;
-
-	pAnimating->SetReceivedSequence();
-
-	// render bounds may have changed
-	pAnimating->UpdateVisibility();
-}
 
 IMPLEMENT_CLIENTCLASS(C_BaseAnimating, DT_BaseAnimating, CBaseAnimating)
 
@@ -654,7 +640,7 @@ C_BaseAnimating::C_BaseAnimating() :
 	m_nHitboxSet = 0;
 
 	int i;
-	for ( i = 0; i < ARRAYSIZE( m_flEncodedController ); i++ )
+	for ( i = 0; i < ARRAYSIZE( m_flEncodedController.m_Value ); i++ )
 	{
 		m_flEncodedController[ i ] = 0.0f;
 	}
@@ -846,8 +832,8 @@ void C_BaseAnimating::UpdateRelevantInterpolatedVars()
 
 void C_BaseAnimating::AddBaseAnimatingInterpolatedVars()
 {
-	AddVar( m_flEncodedController, &m_iv_flEncodedController, LATCH_ANIMATION_VAR, true );
-	AddVar( m_flPoseParameter, &m_iv_flPoseParameter, LATCH_ANIMATION_VAR, true );
+	AddVar( m_flEncodedController.m_Value, &m_iv_flEncodedController, LATCH_ANIMATION_VAR, true );
+	AddVar( m_flPoseParameter.m_Value, &m_iv_flPoseParameter, LATCH_ANIMATION_VAR, true );
 	
 	int flags = LATCH_ANIMATION_VAR;
 	if ( m_bClientSideAnimation )
@@ -858,8 +844,8 @@ void C_BaseAnimating::AddBaseAnimatingInterpolatedVars()
 
 void C_BaseAnimating::RemoveBaseAnimatingInterpolatedVars()
 {
-	RemoveVar( m_flEncodedController, false );
-	RemoveVar( m_flPoseParameter, false );
+	RemoveVar( m_flEncodedController.m_Value, false);
+	RemoveVar( m_flPoseParameter.m_Value, false);
 
 #ifdef HL2MP
 	// HACK:  Don't want to remove interpolation for predictables in hl2dm, though
@@ -1083,7 +1069,7 @@ CStudioHdr *C_BaseAnimating::OnNewModel()
 		}
 	}
 
-	int boneControllerCount = MIN( hdr->numbonecontrollers(), ARRAYSIZE( m_flEncodedController ) );
+	int boneControllerCount = MIN( hdr->numbonecontrollers(), ARRAYSIZE( m_flEncodedController.m_Value ) );
 
 	m_iv_flEncodedController.SetMaxCount( boneControllerCount );
 
@@ -1774,17 +1760,17 @@ void C_BaseAnimating::MaintainSequenceTransitions( IBoneSetup &boneSetup, float 
 		C_AnimationLayer *blend = &m_SequenceTransitioner.m_animationQueue[i];
 
 		float dt = (gpGlobals->GetCurTime() - blend->m_flLayerAnimtime);
-		flCycle = blend->m_flCycle + dt * blend->m_flPlaybackRate * GetSequenceCycleRate( boneSetup.GetStudioHdr(), blend->m_nSequence );
-		flCycle = ClampCycle( flCycle, IsSequenceLooping( boneSetup.GetStudioHdr(), blend->m_nSequence ) );
+		flCycle = (float)(CycleType)blend->m_flCycle + dt * blend->m_flPlaybackRate * GetSequenceCycleRate( boneSetup.GetStudioHdr(), (SequenceType)blend->m_nSequence );
+		flCycle = ClampCycle( flCycle, IsSequenceLooping( boneSetup.GetStudioHdr(), (SequenceType)blend->m_nSequence ) );
 
 #if 1 // _DEBUG
 		if (/*Q_stristr( hdr->pszName(), r_sequence_debug.GetString()) != NULL || */ r_sequence_debug.GetInt() == entindex())
 		{
-			DevMsgRT( "%8.4f : %30s : %5.3f : %4.2f  +\n", gpGlobals->GetCurTime(), boneSetup.GetStudioHdr()->pSeqdesc( blend->m_nSequence ).pszLabel(), flCycle, (float)blend->m_flWeight );
+			DevMsgRT( "%8.4f : %30s : %5.3f : %4.2f  +\n", gpGlobals->GetCurTime(), boneSetup.GetStudioHdr()->pSeqdesc((SequenceType)blend->m_nSequence ).pszLabel(), flCycle, (float)(WeightType)blend->m_flWeight );
 		}
 #endif
 
-		boneSetup.AccumulatePose( pos, q, blend->m_nSequence, flCycle, blend->m_flWeight, gpGlobals->GetCurTime(), m_pIk );
+		boneSetup.AccumulatePose( pos, q, (SequenceType)blend->m_nSequence, flCycle, (WeightType)blend->m_flWeight, gpGlobals->GetCurTime(), m_pIk );
 	}
 }
 
@@ -4974,7 +4960,7 @@ float C_BaseAnimating::GetSequenceCycleRate( CStudioHdr *pStudioHdr, int iSequen
 	if ( !pStudioHdr )
 		return 0.0f;
 
-	return Studio_CPS( pStudioHdr, pStudioHdr->pSeqdesc(iSequence), iSequence, m_flPoseParameter );
+	return Studio_CPS( pStudioHdr, pStudioHdr->pSeqdesc(iSequence), iSequence, m_flPoseParameter.Base() );
 }
 
 float C_BaseAnimating::GetAnimTimeInterval( void ) const
@@ -5124,7 +5110,7 @@ float C_BaseAnimating::GetSequenceMoveDist( CStudioHdr *pStudioHdr, int iSequenc
 {
 	Vector				vecReturn;
 	
-	::GetSequenceLinearMotion( pStudioHdr, iSequence, m_flPoseParameter, &vecReturn );
+	::GetSequenceLinearMotion( pStudioHdr, iSequence, m_flPoseParameter.Base(), &vecReturn);
 
 	return vecReturn.Length();
 }
@@ -5139,7 +5125,7 @@ float C_BaseAnimating::GetSequenceMoveDist( CStudioHdr *pStudioHdr, int iSequenc
 //-----------------------------------------------------------------------------
 void C_BaseAnimating::GetSequenceLinearMotion( int iSequence, Vector *pVec )
 {
-	::GetSequenceLinearMotion( GetModelPtr(), iSequence, m_flPoseParameter, pVec );
+	::GetSequenceLinearMotion( GetModelPtr(), iSequence, m_flPoseParameter.Base(), pVec);
 }
 
 void C_BaseAnimating::GetBlendedLinearVelocity( Vector *pVec )
@@ -5157,8 +5143,8 @@ void C_BaseAnimating::GetBlendedLinearVelocity( Vector *pVec )
 	{
 		C_AnimationLayer *blend = &m_SequenceTransitioner.m_animationQueue[i];
 	
-		GetSequenceLinearMotion( blend->m_nSequence, &vecDist );
-		flDuration = SequenceDuration( blend->m_nSequence );
+		GetSequenceLinearMotion((SequenceType)blend->m_nSequence, &vecDist );
+		flDuration = SequenceDuration( (SequenceType)blend->m_nSequence );
 
 		VectorScale( vecDist, 1.0 / flDuration, tmp );
 
@@ -5309,7 +5295,7 @@ float C_BaseAnimating::SequenceDuration( CStudioHdr *pStudioHdr, int iSequence )
 		return 0.1;
 	}
 
-	return Studio_Duration( pStudioHdr, iSequence, m_flPoseParameter );
+	return Studio_Duration( pStudioHdr, iSequence, m_flPoseParameter.Base() );
 
 }
 
@@ -5340,7 +5326,7 @@ void C_BaseAnimating::SetBodygroup( int iGroup, int iValue )
 	// SetBodygroup is not supported on pending dynamic models. Wait for it to load!
 	// XXX TODO we could buffer up the group and value if we really needed to. -henryg
 	Assert( GetModelPtr() );
-	::SetBodygroup( GetModelPtr( ), m_nBody, iGroup, iValue );
+	::SetBodygroup( GetModelPtr( ), m_nBody.GetForModify(), iGroup, iValue);
 }
 
 int C_BaseAnimating::GetBodygroup( int iGroup )
@@ -5906,8 +5892,8 @@ public:
 	bool	TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
 
 private:
-	int m_modelIndex;
-	int m_solidIndex;
+	CNetworkVar( int, m_modelIndex);
+	CNetworkVar( int, m_solidIndex);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_BoneFollower)

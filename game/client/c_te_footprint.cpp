@@ -34,12 +34,12 @@ public:
 	virtual void	Precache( void );
 
 public:
-	Vector			m_vecOrigin;
-	Vector			m_vecDirection;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVector(			m_vecDirection);
 	Vector			m_vecStart;
-	int				m_nEntity;
-	int				m_nIndex;
-	char			m_chMaterialType;
+	CNetworkVar( int,				m_nEntity);
+	CNetworkVar( int,				m_nIndex);
+	CNetworkVar( char,			m_chMaterialType);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEFootprintDecal)
@@ -97,7 +97,7 @@ void C_TEFootprintDecal::PostDataUpdate( DataUpdateType_t updateType )
 		if ( ent )
 		{
 			effects->DecalShoot( m_nIndex, 
-				m_nEntity, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), m_vecOrigin, &m_vecDirection, 0 );
+				m_nEntity, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), m_vecOrigin, &m_vecDirection.m_Value, 0 );
 		}
 	}
 }

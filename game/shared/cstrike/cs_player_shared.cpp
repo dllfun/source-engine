@@ -904,8 +904,8 @@ public:
 	C_FootstepControl( void );
 	~C_FootstepControl();
 
-	char m_source[MATERIAL_NAME_LENGTH];
-	char m_destination[MATERIAL_NAME_LENGTH];
+	CNetworkString( m_source,MATERIAL_NAME_LENGTH);
+	CNetworkString( m_destination,MATERIAL_NAME_LENGTH);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_FootstepControl)

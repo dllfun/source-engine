@@ -123,8 +123,8 @@ public:
 	PMaterialHandle	m_MaterialHandle;
 
 	// Controls where the initial fire goes.
-	Vector			m_vOrigin;
-	Vector			m_vDirection;
+	CNetworkVector(			m_vOrigin);
+	CNetworkVector(			m_vDirection);
 
 	TimedEvent		m_EmitterSpawn;
 	FireEmitter		m_Emitters[MAX_FIRE_EMITTERS];

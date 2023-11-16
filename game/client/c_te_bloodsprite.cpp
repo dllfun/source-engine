@@ -35,12 +35,15 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecOrigin;
-	Vector			m_vecDirection;
-	int				r, g, b, a;
-	int				m_nDropModel;
-	int				m_nSprayModel;
-	int				m_nSize;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVector(			m_vecDirection);
+	CNetworkVar( int,				r);
+	CNetworkVar( int,				g);
+	CNetworkVar( int,				b);
+	CNetworkVar( int,				a);
+	CNetworkVar( int,				m_nDropModel);
+	CNetworkVar( int,				m_nSprayModel);
+	CNetworkVar( int,				m_nSize);
 
 	//-----------------------------------------------------------------------------
 // Networking
@@ -155,7 +158,7 @@ void C_TEBloodSprite::PostDataUpdate( DataUpdateType_t updateType )
 	Vector	offset = m_vecOrigin + ( m_vecDirection * 4.0f );
 
 	tempents->BloodSprite( offset, r, g, b, a, m_nSprayModel, m_nDropModel, m_nSize );	
-	FX_Blood( offset, m_vecDirection, r, g, b, a );
+	FX_Blood( offset, m_vecDirection.m_Value, r, g, b, a );
 	RecordBloodSprite( m_vecOrigin, m_vecDirection, r, g, b, a, m_nSprayModel, m_nDropModel, m_nSize );
 }
 

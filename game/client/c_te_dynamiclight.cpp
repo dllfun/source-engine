@@ -32,14 +32,14 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecOrigin;
-	float			m_fRadius;
-	int				r;
-	int				g;
-	int				b;
-	int				exponent;
-	float			m_fTime;
-	float			m_fDecay;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVar( float,			m_fRadius);
+	CNetworkVar( int,				r);
+	CNetworkVar( int,				g);
+	CNetworkVar( int,				b);
+	CNetworkVar( int,				exponent);
+	CNetworkVar( float,			m_fTime);
+	CNetworkVar( float,			m_fDecay);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEDynamicLight)
@@ -136,7 +136,7 @@ void C_TEDynamicLight::PostDataUpdate( DataUpdateType_t updateType )
 	VPROF( "C_TEDynamicLight::PostDataUpdate" );
 
 	CBroadcastRecipientFilter filter;
-	TE_DynamicLight( filter, 0.0f, &m_vecOrigin, r, g, b, exponent, m_fRadius, m_fTime, m_fDecay, LIGHT_INDEX_TE_DYNAMIC );
+	TE_DynamicLight( filter, 0.0f, &m_vecOrigin.m_Value, r, g, b, exponent, m_fRadius, m_fTime, m_fDecay, LIGHT_INDEX_TE_DYNAMIC );
 }
 
 void TE_DynamicLight( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )

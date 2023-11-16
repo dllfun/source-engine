@@ -35,9 +35,9 @@ public:
 	virtual void	Precache( void );
 
 public:
-	Vector			m_vecOrigin;
-	int				m_nEntity;
-	int				m_nIndex;
+	CNetworkVector(			m_vecOrigin);
+	CNetworkVar( int,				m_nEntity);
+	CNetworkVar( int,				m_nIndex);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBSPDecal)

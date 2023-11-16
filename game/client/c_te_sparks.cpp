@@ -28,9 +28,9 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 	virtual void	Precache( void );
 
-	int m_nMagnitude;
-	int m_nTrailLength;
-	Vector m_vecDir;
+	CNetworkVar( int, m_nMagnitude);
+	CNetworkVar( int, m_nTrailLength);
+	CNetworkVector( m_vecDir);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TESparks)
@@ -96,7 +96,7 @@ static inline void RecordSparks( const Vector &start, int nMagnitude, int nTrail
 //-----------------------------------------------------------------------------
 void C_TESparks::PostDataUpdate( DataUpdateType_t updateType )
 {
-	g_pEffects->Sparks( m_vecOrigin, m_nMagnitude, m_nTrailLength, &m_vecDir );
+	g_pEffects->Sparks( m_vecOrigin, m_nMagnitude, m_nTrailLength, &m_vecDir.m_Value );
 	RecordSparks( m_vecOrigin, m_nMagnitude, m_nTrailLength, m_vecDir );
 }
 

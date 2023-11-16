@@ -37,8 +37,8 @@ public:
 
 	virtual void	Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs );
 
-	int				m_nAttachment;
-	float			m_flLifetime;			// How long this effect will last
+	CNetworkVar( int,				m_nAttachment);
+	CNetworkVar( float,			m_flLifetime);			// How long this effect will last
 
 private:
 

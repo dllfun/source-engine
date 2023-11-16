@@ -87,7 +87,47 @@ typedef unsigned int			ClientSideAnimationListHandle_t;
 
 #define		INVALID_CLIENTSIDEANIMATION_LIST_HANDLE	(ClientSideAnimationListHandle_t)~0
 
+template<typename T=int32>
 void RecvProxy_Sequence(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropSequence : public RecvPropInt {
+public:
+	RecvPropSequence() {}
+
+	template<typename T = int>
+	RecvPropSequence(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_Sequence<T>
+	);
+	virtual	~RecvPropSequence() {}
+	RecvPropSequence& operator=(const RecvPropSequence& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropSequence* pRecvProp = new RecvPropSequence;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropSequence::RecvPropSequence(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
 
 class C_BaseAnimating : public C_BaseEntity , private IModelLoadCallback
 {
@@ -483,13 +523,13 @@ public:
 	CRagdoll						*m_pRagdoll;
 
 	// Texture group to use
-	int								m_nSkin;
+	CNetworkVar( int,								m_nSkin);
 
 	// Object bodygroup
-	int								m_nBody;
+	CNetworkVar( int,								m_nBody);
 
 	// Hitbox set to use (default 0)
-	int								m_nHitboxSet;
+	CNetworkVar( int,								m_nHitboxSet);
 
 	CSequenceTransitioner			m_SequenceTransitioner;
 
@@ -499,13 +539,13 @@ protected:
 	int								m_iEyeAttachment;
 
 	// Animation playback framerate
-	float							m_flPlaybackRate;
+	CNetworkVar( float,							m_flPlaybackRate);
 
 	// Decomposed ragdoll info
 	bool							m_bStoreRagdollInfo;
 	RagdollInfo_t					*m_pRagdollInfo;
-	Vector							m_vecForce;
-	int								m_nForceBone;
+	CNetworkVector(					m_vecForce);
+	CNetworkVar( int,								m_nForceBone);
 
 	// Is bone cache valid
 	// bone transformation matrix
@@ -520,7 +560,7 @@ protected:
 	ClientSideAnimationListHandle_t	m_ClientSideAnimationListHandle;
 
 	// Client-side animation
-	bool							m_bClientSideFrameReset;
+	CNetworkVar( bool,							m_bClientSideFrameReset);
 
 	// Bone attachments. Used for attaching one BaseAnimating to another's bones.
 	// Client side only.
@@ -532,9 +572,9 @@ protected:
 
 protected:
 
-	float							m_fadeMinDist;
-	float							m_fadeMaxDist;
-	float							m_flFadeScale;
+	CNetworkVar( float,							m_fadeMinDist);
+	CNetworkVar( float,							m_fadeMaxDist);
+	CNetworkVar( float,							m_flFadeScale);
 
 private:
 
@@ -549,7 +589,7 @@ private:
 	CNetworkVar( float, m_flModelScale );
 
 	// Animation blending factors
-	float							m_flPoseParameter[MAXSTUDIOPOSEPARAM];
+	CNetworkArray( float,							m_flPoseParameter,MAXSTUDIOPOSEPARAM);
 	CInterpolatedVarArray< float, MAXSTUDIOPOSEPARAM >		m_iv_flPoseParameter;
 	float							m_flOldPoseParameters[MAXSTUDIOPOSEPARAM];
 
@@ -563,16 +603,16 @@ private:
 	float							m_flPrevEventCycle;
 	int								m_nEventSequence;
 
-	float							m_flEncodedController[MAXSTUDIOBONECTRLS];	
+	CNetworkArray( float,			m_flEncodedController,MAXSTUDIOBONECTRLS);	
 	CInterpolatedVarArray< float, MAXSTUDIOBONECTRLS >		m_iv_flEncodedController;
 	float							m_flOldEncodedController[MAXSTUDIOBONECTRLS];
 
 	// Clientside animation
-	bool							m_bClientSideAnimation;
+	CNetworkVar( bool,							m_bClientSideAnimation);
 	bool							m_bLastClientSideFrameReset;
 
-	int								m_nNewSequenceParity;
-	int								m_nResetEventsParity;
+	CNetworkVar( int,								m_nNewSequenceParity);
+	CNetworkVar( int,								m_nResetEventsParity);
 
 	int								m_nPrevNewSequenceParity;
 	int								m_nPrevResetEventsParity;
@@ -582,12 +622,12 @@ private:
 	Vector							m_vecPreRagdollMaxs;
 
 	// Current animation sequence
-	int								m_nSequence;
+	CNetworkVar( int,								m_nSequence);
 	bool							m_bReceivedSequence;
 
 	// Current cycle location from server
 protected:
-	float							m_flCycle;
+	CNetworkVar( float,							m_flCycle);
 	CInterpolatedVar< float >		m_iv_flCycle;
 	float							m_flOldCycle;
 	bool							m_bNoModelParticles;
@@ -608,8 +648,8 @@ private:
 
 	void							SetupBones_AttachmentHelper( CStudioHdr *pStudioHdr );
 
-	EHANDLE							m_hLightingOrigin;
-	EHANDLE							m_hLightingOriginRelative;
+	CNetworkHandle(C_BaseEntity,	m_hLightingOrigin);
+	CNetworkHandle(C_BaseEntity,	m_hLightingOriginRelative);
 
 	// These are compared against each other to determine if the entity should muzzle flash.
 	CNetworkVar( unsigned char, m_nMuzzleFlashParity );
@@ -642,7 +682,7 @@ public:
 	END_RECV_TABLE(DT_ServerAnimationData)
 
 	BEGIN_RECV_TABLE(C_BaseAnimating, DT_BaseAnimating, DT_BaseEntity)
-		RecvPropInt(RECVINFO(m_nSequence), 0, RecvProxy_Sequence),
+		RecvPropSequence(RECVINFO(m_nSequence), 0),//, RecvProxy_Sequence
 		RecvPropInt(RECVINFO(m_nForceBone)),
 		RecvPropVector(RECVINFO(m_vecForce)),
 		RecvPropInt(RECVINFO(m_nSkin)),
@@ -653,11 +693,11 @@ public:
 		RecvPropFloat(RECVINFO_NAME(m_flModelScale, m_flModelWidthScale)), // for demo compatibility only
 
 		//	RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0])), m_flPoseParameter),
-		RecvPropArray3(RECVINFO_ARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO(m_flPoseParameter[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO_ARRAY3(m_flPoseParameter))),
 
 		RecvPropFloat(RECVINFO(m_flPlaybackRate)),
 
-		RecvPropArray3(RECVINFO_ARRAY(m_flEncodedController), RecvPropFloat(RECVINFO(m_flEncodedController[0]))),
+		RecvPropArray3(RECVINFO_ARRAY(m_flEncodedController), RecvPropFloat(RECVINFO_ARRAY3(m_flEncodedController))),
 
 		RecvPropInt(RECVINFO(m_bClientSideAnimation)),
 		RecvPropInt(RECVINFO(m_bClientSideFrameReset)),
@@ -849,6 +889,22 @@ inline CMouthInfo& C_BaseAnimating::MouthInfo()
 	return m_mouth; 
 }
 
+template<typename T>
+void RecvProxy_Sequence(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	// Have the regular proxy store the data.
+	RecvProxy_Int32ToInt32<T>(pData, pStruct, pOut);
+
+	C_BaseAnimating* pAnimating = (C_BaseAnimating*)pStruct;
+
+	if (!pAnimating)
+		return;
+
+	pAnimating->SetReceivedSequence();
+
+	// render bounds may have changed
+	pAnimating->UpdateVisibility();
+}
 
 // FIXME: move these to somewhere that makes sense
 void GetColumn( matrix3x4_t& src, int column, Vector &dest );

@@ -64,31 +64,31 @@ public:
 
 public:
 	// Effect parameters. These will assume default values but you can change them.
-	float			m_SpawnRate;			// How many particles per second.
+	CNetworkVar( float,			m_SpawnRate);			// How many particles per second.
 
-	Vector			m_StartColor;			// Fade between these colors.
-	Vector			m_EndColor;
-	float			m_Opacity;
+	CNetworkVector(			m_StartColor);			// Fade between these colors.
+	CNetworkVector(			m_EndColor);
+	CNetworkVar( float,			m_Opacity);
 
-	float			m_ParticleLifetime;		// How long do the particles live?
-	float			m_StopEmitTime;			// When do I stop emitting particles? (-1 = never)
+	CNetworkVar( float,			m_ParticleLifetime);		// How long do the particles live?
+	CNetworkVar( float,			m_StopEmitTime);			// When do I stop emitting particles? (-1 = never)
 	
-	float			m_MinSpeed;				// Speed range.
-	float			m_MaxSpeed;
+	CNetworkVar( float,			m_MinSpeed);				// Speed range.
+	CNetworkVar( float,			m_MaxSpeed);
 	
-	float			m_MinDirectedSpeed;		// Directed speed range.
-	float			m_MaxDirectedSpeed;
+	CNetworkVar( float,			m_MinDirectedSpeed);		// Directed speed range.
+	CNetworkVar( float,			m_MaxDirectedSpeed);
 
-	float			m_StartSize;			// Size ramp.
-	float			m_EndSize;
+	CNetworkVar( float,			m_StartSize);			// Size ramp.
+	CNetworkVar( float,			m_EndSize);
 
-	float			m_SpawnRadius;
+	CNetworkVar( float,			m_SpawnRadius);
 
 	Vector			m_VelocityOffset;		// Emit the particles in a certain direction.
 
-	bool			m_bEmit;				// Keep emitting particles?
+	CNetworkVar( bool,			m_bEmit);				// Keep emitting particles?
 
-	int				m_nAttachment;
+	CNetworkVar( int,				m_nAttachment);
 
 private:
 	C_SmokeTrail( const C_SmokeTrail & );
@@ -163,32 +163,32 @@ public:
 
 public:
 	// Effect parameters. These will assume default values but you can change them.
-	float			m_SpawnRate;			// How many particles per second.
+	CNetworkVar( float,			m_SpawnRate);			// How many particles per second.
 
-	Vector			m_StartColor;			// Fade between these colors.
-	Vector			m_EndColor;
-	float			m_Opacity;
+	CNetworkVector(			m_StartColor);			// Fade between these colors.
+	CNetworkVector(			m_EndColor);
+	CNetworkVar( float,			m_Opacity);
 
-	float			m_ParticleLifetime;		// How long do the particles live?
-	float			m_StopEmitTime;			// When do I stop emitting particles? (-1 = never)
+	CNetworkVar( float,			m_ParticleLifetime);		// How long do the particles live?
+	CNetworkVar( float,			m_StopEmitTime);			// When do I stop emitting particles? (-1 = never)
 	
-	float			m_MinSpeed;				// Speed range.
-	float			m_MaxSpeed;
+	CNetworkVar( float,			m_MinSpeed);				// Speed range.
+	CNetworkVar( float,			m_MaxSpeed);
 	
-	float			m_StartSize;			// Size ramp.
-	float			m_EndSize;
+	CNetworkVar( float,			m_StartSize);			// Size ramp.
+	CNetworkVar( float,			m_EndSize);
 
-	float			m_SpawnRadius;
+	CNetworkVar( float,			m_SpawnRadius);
 
 	Vector			m_VelocityOffset;		// Emit the particles in a certain direction.
 
-	bool			m_bEmit;				// Keep emitting particles?
-	bool			m_bDamaged;				// Has been shot down (should be on fire, etc)
+	CNetworkVar( bool,			m_bEmit);				// Keep emitting particles?
+	CNetworkVar( bool,			m_bDamaged);				// Has been shot down (should be on fire, etc)
 
-	int				m_nAttachment;
+	CNetworkVar( int,				m_nAttachment);
 
 	Vector			m_vecLastPosition;		// Last known position of the rocket
-	float			m_flFlareScale;			// Size of the flare
+	CNetworkVar( float,			m_flFlareScale);			// Size of the flare
 
 private:
 	C_RocketTrail( const C_RocketTrail & );
@@ -273,15 +273,15 @@ public:
 
 
 public:
-	float	m_flSpawnRate;
-	float	m_flParticleLifetime;
-	float	m_flStartSize;
-	float	m_flEndSize;
-	float	m_flSpawnRadius;
+	CNetworkVar( float,	m_flSpawnRate);
+	CNetworkVar( float,	m_flParticleLifetime);
+	CNetworkVar( float,	m_flStartSize);
+	CNetworkVar( float,	m_flEndSize);
+	CNetworkVar( float,	m_flSpawnRadius);
 	float	m_flPreviousSpawnRate;
 
-	bool	m_bEmit;
-	bool	m_bDontRemove;
+	CNetworkVar( bool,	m_bEmit);
+	CNetworkVar( bool,	m_bDontRemove);
 
 private:
 	C_SporeExplosion( const C_SporeExplosion & );
@@ -415,29 +415,29 @@ public:
 
 public:
 	// Effect parameters. These will assume default values but you can change them.
-	float			m_SpawnRate;			// How many particles per second.
+	CNetworkVar( float,			m_SpawnRate);			// How many particles per second.
 
-	Vector			m_Color;
-	float			m_Opacity;
+	CNetworkVector(		m_Color);
+	CNetworkVar( float,			m_Opacity);
 
-	float			m_ParticleLifetime;		// How long do the particles live?
+	CNetworkVar( float,			m_ParticleLifetime);		// How long do the particles live?
 	float			m_StartEmitTime;		// When did I start emitting particles?
-	float			m_StopEmitTime;			// When do I stop emitting particles? (-1 = never)
+	CNetworkVar( float,			m_StopEmitTime);			// When do I stop emitting particles? (-1 = never)
 	
-	float			m_MinSpeed;				// Speed range.
-	float			m_MaxSpeed;
+	CNetworkVar( float,			m_MinSpeed);				// Speed range.
+	CNetworkVar( float,			m_MaxSpeed);
 	
-	float			m_MinDirectedSpeed;		// Directed speed range.
-	float			m_MaxDirectedSpeed;
+	CNetworkVar( float,			m_MinDirectedSpeed);		// Directed speed range.
+	CNetworkVar( float,			m_MaxDirectedSpeed);
 
-	float			m_StartSize;			// Size ramp.
-	float			m_EndSize;
+	CNetworkVar( float,			m_StartSize);			// Size ramp.
+	CNetworkVar( float,			m_EndSize);
 
-	float			m_SpawnRadius;
+	CNetworkVar( float,			m_SpawnRadius);
 
 	Vector			m_VelocityOffset;		// Emit the particles in a certain direction.
 
-	bool			m_bEmit;				// Keep emitting particles?
+	CNetworkVar( bool,			m_bEmit);				// Keep emitting particles?
 
 private:
 	C_DustTrail( const C_DustTrail & );

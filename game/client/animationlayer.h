@@ -19,10 +19,17 @@
 #define CAnimationLayer C_AnimationLayer
 #endif
 
+typedef CRangeCheckedVar<int, -1, 65535, 0> SequenceType;
+typedef CRangeCheckedVar<float, -2, 2, 0> PrevCycleType;
+typedef CRangeCheckedVar<float, -5, 5, 0> WeightType;
+
+typedef CRangeCheckedVar<float, -2, 2, 0> CycleType;
+
+
 class C_AnimationLayer
 {
 public:
-
+	DECLARE_CLASS_NOBASE(C_AnimationLayer);
 	// This allows the datatables to access private members.
 	ALLOW_DATATABLES_PRIVATE_ACCESS();
 
@@ -35,14 +42,14 @@ public:
 
 	bool IsActive( void );
 
-	CRangeCheckedVar<int, -1, 65535, 0>	m_nSequence;
-	CRangeCheckedVar<float, -2, 2, 0>	m_flPrevCycle;
-	CRangeCheckedVar<float, -5, 5, 0>	m_flWeight;
-	int		m_nOrder;
+	CNetworkVar(SequenceType,	m_nSequence);
+	CNetworkVar(PrevCycleType,	m_flPrevCycle);
+	CNetworkVar(WeightType,		m_flWeight);
+	CNetworkVar( int,		m_nOrder);
 
 	// used for automatic crossfades between sequence changes
-	CRangeCheckedVar<float, -50, 50, 1>		m_flPlaybackRate;
-	CRangeCheckedVar<float, -2, 2, 0>		m_flCycle;
+	CRangeCheckedVar<float, -50, 50, 1>	m_flPlaybackRate;
+	CNetworkVar(CycleType,				m_flCycle);
 
 	float GetFadeout( float flCurTime );
 
@@ -56,6 +63,10 @@ public:
 
 	bool    m_bClientBlend;
 
+
+	// For CNetworkVars.
+	void NetworkStateChanged() {}
+	void NetworkStateChanged(void* pVar) {}
 public:
 	BEGIN_INIT_RECV_TABLE(CAnimationLayer)
 	BEGIN_RECV_TABLE_NOBASE(CAnimationLayer, DT_Animationlayer)
@@ -126,9 +137,9 @@ inline C_AnimationLayer LoopingLerp( float flPercent, C_AnimationLayer& from, C_
 	C_AnimationLayer output;
 
 	output.m_nSequence = to.m_nSequence;
-	output.m_flCycle = LoopingLerp( flPercent, (float)from.m_flCycle, (float)to.m_flCycle );
+	output.m_flCycle = LoopingLerp( flPercent, (float)(CycleType)from.m_flCycle, (float)(CycleType)to.m_flCycle );
 	output.m_flPrevCycle = to.m_flPrevCycle;
-	output.m_flWeight = Lerp( flPercent, from.m_flWeight, to.m_flWeight );
+	output.m_flWeight = Lerp( flPercent, (WeightType)from.m_flWeight, (WeightType)to.m_flWeight );
 	output.m_nOrder = to.m_nOrder;
 
 	output.m_flLayerAnimtime = to.m_flLayerAnimtime;
@@ -141,9 +152,9 @@ inline C_AnimationLayer Lerp( float flPercent, const C_AnimationLayer& from, con
 	C_AnimationLayer output;
 
 	output.m_nSequence = to.m_nSequence;
-	output.m_flCycle = Lerp( flPercent, from.m_flCycle, to.m_flCycle );
+	output.m_flCycle = Lerp( flPercent, (float)(CycleType)from.m_flCycle, (float)(CycleType)to.m_flCycle );
 	output.m_flPrevCycle = to.m_flPrevCycle;
-	output.m_flWeight = Lerp( flPercent, from.m_flWeight, to.m_flWeight );
+	output.m_flWeight = Lerp( flPercent, (WeightType)from.m_flWeight, (WeightType)to.m_flWeight );
 	output.m_nOrder = to.m_nOrder;
 
 	output.m_flLayerAnimtime = to.m_flLayerAnimtime;
@@ -156,9 +167,9 @@ inline C_AnimationLayer LoopingLerp_Hermite( float flPercent, C_AnimationLayer& 
 	C_AnimationLayer output;
 
 	output.m_nSequence = to.m_nSequence;
-	output.m_flCycle = LoopingLerp_Hermite( flPercent, (float)prev.m_flCycle, (float)from.m_flCycle, (float)to.m_flCycle );
+	output.m_flCycle = LoopingLerp_Hermite( flPercent, (float)(CycleType)prev.m_flCycle, (float)(CycleType)from.m_flCycle, (float)(CycleType)to.m_flCycle );
 	output.m_flPrevCycle = to.m_flPrevCycle;
-	output.m_flWeight = Lerp( flPercent, from.m_flWeight, to.m_flWeight );
+	output.m_flWeight = Lerp( flPercent, (WeightType)from.m_flWeight, (WeightType)to.m_flWeight );
 	output.m_nOrder = to.m_nOrder;
 
 	output.m_flLayerAnimtime = to.m_flLayerAnimtime;
@@ -172,9 +183,9 @@ inline C_AnimationLayer Lerp_Hermite( float flPercent, const C_AnimationLayer& p
 	C_AnimationLayer output;
 
 	output.m_nSequence = to.m_nSequence;
-	output.m_flCycle = Lerp_Hermite( flPercent, prev.m_flCycle, from.m_flCycle, to.m_flCycle );
+	output.m_flCycle = Lerp_Hermite( flPercent, (float)(CycleType)prev.m_flCycle, (float)(CycleType)from.m_flCycle, (float)(CycleType)to.m_flCycle );
 	output.m_flPrevCycle = to.m_flPrevCycle;
-	output.m_flWeight = Lerp( flPercent, from.m_flWeight, to.m_flWeight );
+	output.m_flWeight = Lerp( flPercent, (WeightType)from.m_flWeight, (WeightType)to.m_flWeight );
 	output.m_nOrder = to.m_nOrder;
 
 	output.m_flLayerAnimtime = to.m_flLayerAnimtime;
@@ -184,10 +195,10 @@ inline C_AnimationLayer Lerp_Hermite( float flPercent, const C_AnimationLayer& p
 
 inline void Lerp_Clamp( C_AnimationLayer &val )
 {
-	Lerp_Clamp( val.m_nSequence );
-	Lerp_Clamp( val.m_flCycle );
-	Lerp_Clamp( val.m_flPrevCycle );
-	Lerp_Clamp( val.m_flWeight );
+	Lerp_Clamp( (SequenceType)val.m_nSequence );
+	Lerp_Clamp((CycleType)val.m_flCycle );
+	Lerp_Clamp( (PrevCycleType)val.m_flPrevCycle );
+	Lerp_Clamp( (WeightType)val.m_flWeight );
 	Lerp_Clamp( val.m_nOrder );
 	Lerp_Clamp( val.m_flLayerAnimtime );
 	Lerp_Clamp( val.m_flLayerFadeOuttime );
@@ -203,23 +214,23 @@ inline void C_AnimationLayer::BlendWeight()
 	// blend in?
 	if ( m_flBlendIn != 0.0f )
 	{
-		if (m_flCycle < m_flBlendIn)
+		if ((CycleType)m_flCycle < m_flBlendIn)
 		{
-			m_flWeight = m_flCycle / m_flBlendIn;
+			m_flWeight = (CycleType)m_flCycle / m_flBlendIn;
 		}
 	}
 
 	// blend out?
 	if ( m_flBlendOut != 0.0f )
 	{
-		if (m_flCycle > 1.0 - m_flBlendOut)
+		if ((CycleType)m_flCycle > 1.0 - m_flBlendOut)
 		{
-			m_flWeight = (1.0 - m_flCycle) / m_flBlendOut;
+			m_flWeight = (1.0 - (CycleType)m_flCycle) / m_flBlendOut;
 		}
 	}
 
-	m_flWeight = 3.0 * m_flWeight * m_flWeight - 2.0 * m_flWeight * m_flWeight * m_flWeight;
-	if (m_nSequence == 0)
+	m_flWeight = 3.0 * (WeightType)m_flWeight * (WeightType)m_flWeight - 2.0 * (WeightType)m_flWeight * (WeightType)m_flWeight * (WeightType)m_flWeight;
+	if ((SequenceType)m_nSequence == 0)
 		m_flWeight = 0;
 }
 

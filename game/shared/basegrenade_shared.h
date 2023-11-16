@@ -162,7 +162,7 @@ private:
 		RecvPropEHandle(RECVINFO(m_hThrower)),
 
 		// Need velocity from grenades to make animation system work correctly when running
-		RecvPropVector(RECVINFO(m_vecVelocity), 0, RecvProxy_LocalVelocity),
+		RecvPropLocalVelocity(RECVINFO(m_vecVelocity), 0),//, RecvProxy_LocalVelocity
 
 		RecvPropInt(RECVINFO(m_fFlags)),
 	END_NETWORK_TABLE(DT_BaseGrenade)

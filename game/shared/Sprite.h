@@ -84,7 +84,47 @@ const float MAX_SPRITE_SCALE = 64.0f;
 const float MAX_GLOW_PROXY_SIZE = 64.0f;
 
 #ifdef CLIENT_DLL
+template<typename T= float>
 void RecvProxy_SpriteScale(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropSpriteScale : public RecvPropFloat {
+public:
+	RecvPropSpriteScale() {}
+
+	template<typename T = float>
+	RecvPropSpriteScale(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_SpriteScale<T>
+	);
+	virtual	~RecvPropSpriteScale() {}
+	RecvPropSpriteScale& operator=(const RecvPropSpriteScale& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropSpriteScale* pRecvProp = new RecvPropSpriteScale;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropSpriteScale::RecvPropSpriteScale(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropFloat(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+
+}
+
 #endif
 
 class CSprite : public CBaseEntity
@@ -321,7 +361,7 @@ private:
 		RecvPropEHandle(RECVINFO(m_hAttachedToEntity)),
 		RecvPropInt(RECVINFO(m_nAttachment)),
 		RecvPropFloat(RECVINFO(m_flScaleTime)),
-		RecvPropFloat(RECVINFO(m_flSpriteScale), 0, RecvProxy_SpriteScale),
+		RecvPropSpriteScale(RECVINFO(m_flSpriteScale), 0),//, RecvProxy_SpriteScale
 		RecvPropFloat(RECVINFO(m_flSpriteFramerate)),
 		RecvPropFloat(RECVINFO(m_flGlowProxySize)),
 
@@ -371,6 +411,14 @@ public:
 #endif
 };
 
+
+#ifdef CLIENT_DLL
+template<typename T>
+void RecvProxy_SpriteScale(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	((CSprite*)pStruct)->SetSpriteScale(pData->m_Value.m_Float);
+}
+#endif // CLIENT_DLL
 
 
 // Macro to wrap creation

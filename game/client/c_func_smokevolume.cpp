@@ -130,16 +130,16 @@ private:
 
 private:
 // State variables from server.
-	color32 m_Color1;
-	color32 m_Color2;
-	char m_MaterialName[255];
-	float m_ParticleDrawWidth;
-	float m_ParticleSpacingDistance;
-	float m_DensityRampSpeed;
-	float m_RotationSpeed;
-	float m_MovementSpeed;
-	float m_Density;
-	int	  m_spawnflags;
+	CNetworkColor32( m_Color1);
+	CNetworkColor32( m_Color2);
+	CNetworkString( m_MaterialName,255);
+	CNetworkVar( float, m_ParticleDrawWidth);
+	CNetworkVar( float, m_ParticleSpacingDistance);
+	CNetworkVar( float, m_DensityRampSpeed);
+	CNetworkVar( float, m_RotationSpeed);
+	CNetworkVar( float, m_MovementSpeed);
+	CNetworkVar( float, m_Density);
+	CNetworkVar( int,	  m_spawnflags);
 
 private:
 	C_FuncSmokeVolume( const C_FuncSmokeVolume & );
@@ -164,8 +164,8 @@ private:
 public:
 	BEGIN_INIT_RECV_TABLE(C_FuncSmokeVolume)
 	BEGIN_RECV_TABLE(C_FuncSmokeVolume, DT_FuncSmokeVolume, DT_BaseParticleEntity)
-		RecvPropInt(RECVINFO(m_Color1), 0, RecvProxy_IntToColor32),
-		RecvPropInt(RECVINFO(m_Color2), 0, RecvProxy_IntToColor32),
+		RecvPropColor32(RECVINFO(m_Color1), 0),//, RecvProxy_IntToColor32
+		RecvPropColor32(RECVINFO(m_Color2), 0),//, RecvProxy_IntToColor32
 		RecvPropString(RECVINFO(m_MaterialName)),
 		RecvPropFloat(RECVINFO(m_ParticleDrawWidth)),
 		RecvPropFloat(RECVINFO(m_ParticleSpacingDistance)),
@@ -275,13 +275,13 @@ static ConVar mat_reduceparticles( "mat_reduceparticles", "0" );
 
 void C_FuncSmokeVolume::OnDataChanged( DataUpdateType_t updateType )
 {		
-	m_MinColor[0] = ( 1.0f / 255.0f ) * m_Color1.r;
-	m_MinColor[1] = ( 1.0f / 255.0f ) * m_Color1.g;
-	m_MinColor[2] = ( 1.0f / 255.0f ) * m_Color1.b;
+	m_MinColor[0] = ( 1.0f / 255.0f ) * m_Color1.GetR();
+	m_MinColor[1] = ( 1.0f / 255.0f ) * m_Color1.GetG();
+	m_MinColor[2] = ( 1.0f / 255.0f ) * m_Color1.GetB();
 
-	m_MaxColor[0] = ( 1.0f / 255.0f ) * m_Color2.r;
-	m_MaxColor[1] = ( 1.0f / 255.0f ) * m_Color2.g;
-	m_MaxColor[2] = ( 1.0f / 255.0f ) * m_Color2.b;
+	m_MaxColor[0] = ( 1.0f / 255.0f ) * m_Color2.GetR();
+	m_MaxColor[1] = ( 1.0f / 255.0f ) * m_Color2.GetG();
+	m_MaxColor[2] = ( 1.0f / 255.0f ) * m_Color2.GetB();
 
 	if ( mat_reduceparticles.GetBool() )
 	{

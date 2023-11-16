@@ -76,25 +76,25 @@ private:
 // Vars from server.
 public:
 
-	color32			m_Color;
-	int				m_SpawnRate;
+	CNetworkColor32(			m_Color);
+	CNetworkVar( int,				m_SpawnRate);
 	
-	float			m_flSizeMin;
-	float			m_flSizeMax;
+	CNetworkVar( float,			m_flSizeMin);
+	CNetworkVar( float,			m_flSizeMax);
 
-	int				m_SpeedMax;
+	CNetworkVar( int,				m_SpeedMax);
 
-	int				m_LifetimeMin;
-	int				m_LifetimeMax;
+	CNetworkVar( int,				m_LifetimeMin);
+	CNetworkVar( int,				m_LifetimeMax);
 
-	int				m_DistMax;
+	CNetworkVar( int,				m_DistMax);
 
-	float			m_FallSpeed;	// extra 'gravity'
+	CNetworkVar( float,			m_FallSpeed);	// extra 'gravity'
 
 
 public:
 
-	int				m_DustFlags;	// Combination of DUSTFLAGS_
+	CNetworkVar( int,				m_DustFlags);	// Combination of DUSTFLAGS_
 
 
 
@@ -111,7 +111,7 @@ public:
 	INIT_REFERENCE_RECV_TABLE(CCollisionProperty)
 	BEGIN_RECV_TABLE(C_Func_Dust, DT_Func_Dust, DT_BaseEntity)
 
-		RecvPropInt(RECVINFO(m_Color)),
+		RecvPropColor32(RECVINFO(m_Color)),
 		RecvPropInt(RECVINFO(m_SpawnRate)),
 		RecvPropFloat(RECVINFO(m_flSizeMin)),
 		RecvPropFloat(RECVINFO(m_flSizeMax)),

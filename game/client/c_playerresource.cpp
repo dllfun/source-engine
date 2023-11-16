@@ -43,14 +43,14 @@ IGameResources * GameResources( void ) { return g_PR; }
 //-----------------------------------------------------------------------------
 C_PlayerResource::C_PlayerResource()
 {
-	memset( m_iPing, 0, sizeof( m_iPing ) );
+	memset( m_iPing.m_Value, 0, sizeof( m_iPing ) );
 //	memset( m_iPacketloss, 0, sizeof( m_iPacketloss ) );
-	memset( m_iScore, 0, sizeof( m_iScore ) );
-	memset( m_iDeaths, 0, sizeof( m_iDeaths ) );
-	memset( m_bConnected, 0, sizeof( m_bConnected ) );
-	memset( m_iTeam, 0, sizeof( m_iTeam ) );
-	memset( m_bAlive, 0, sizeof( m_bAlive ) );
-	memset( m_iHealth, 0, sizeof( m_iHealth ) );
+	memset( m_iScore.m_Value, 0, sizeof( m_iScore ) );
+	memset( m_iDeaths.m_Value, 0, sizeof( m_iDeaths ) );
+	memset( m_bConnected.m_Value, 0, sizeof( m_bConnected ) );
+	memset( m_iTeam.m_Value, 0, sizeof( m_iTeam ) );
+	memset( m_bAlive.m_Value, 0, sizeof( m_bAlive ) );
+	memset( m_iHealth.m_Value, 0, sizeof( m_iHealth ) );
 	m_szUnconnectedName = {  };
 	
 	for ( int i=0; i<MAX_TEAMS; i++ )

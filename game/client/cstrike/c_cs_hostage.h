@@ -21,6 +21,46 @@
 // for shared code
 #define CHostage C_CHostage
 
+template<typename T= bool>
+void RecvProxy_Rescued(const CRecvProxyData* pData, void* pStruct, void* pOut);
+
+class RecvPropRescued : public RecvPropInt {
+public:
+	RecvPropRescued() {}
+
+	template<typename T = int>
+	RecvPropRescued(
+		T* pType,
+		const char* pVarName,
+		int offset,
+		int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+		int flags = 0,
+		RecvVarProxyFn varProxy = RecvProxy_Rescued<T>
+	);
+	virtual	~RecvPropRescued() {}
+	RecvPropRescued& operator=(const RecvPropRescued& srcSendProp) {
+		RecvProp::operator=(srcSendProp);
+		return *this;
+	}
+	operator RecvProp* () {
+		RecvPropRescued* pRecvProp = new RecvPropRescued;
+		*pRecvProp = *this;
+		return pRecvProp;
+	}
+};
+
+template<typename T>
+RecvPropRescued::RecvPropRescued(
+	T* pType,
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+):RecvPropInt(pType, pVarName, offset, sizeofVar, flags, varProxy)
+{
+	
+}
 
 //----------------------------------------------------------------------------------------------
 /**
@@ -63,15 +103,14 @@ public:
 	void ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName );
 private:
 	int  m_OldLifestate;
-	int  m_iMaxHealth;
+	CNetworkVar( int,  m_iMaxHealth);
 
 	ICSPlayerAnimState *m_PlayerAnimState;
 
-	CNetworkVar( EHANDLE, m_leader );				// who we are following, or NULL
+	CNetworkHandle(C_BaseEntity, m_leader );				// who we are following, or NULL EHANDLE
 
 	CNetworkVar( bool, m_isRescued );
 	float m_flDeadOrRescuedTime;
-	static void RecvProxy_Rescued( const CRecvProxyData *pData, void *pStruct, void *pOut );
 
 	CountdownTimer m_blinkTimer;
 
@@ -112,7 +151,7 @@ public:
 	BEGIN_INIT_RECV_TABLE(C_CHostage)
 	BEGIN_RECV_TABLE(C_CHostage, DT_CHostage, DT_BaseCombatCharacter)
 
-		RecvPropInt(RECVINFO(m_isRescued), 0, C_CHostage::RecvProxy_Rescued),
+		RecvPropRescued(RECVINFO(m_isRescued), 0),//, RecvProxy_Rescued
 		RecvPropInt(RECVINFO(m_iHealth)),
 		RecvPropInt(RECVINFO(m_iMaxHealth)),
 		RecvPropInt(RECVINFO(m_lifeState)),
@@ -126,9 +165,28 @@ public:
 
 inline C_CSPlayer *C_CHostage::GetLeader( void ) const
 {
-	return ToCSPlayer( m_leader.m_Value );
+	return ToCSPlayer( m_leader );//.m_Value
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+template<typename T>
+void RecvProxy_Rescued(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_CHostage* pHostage = (C_CHostage*)pStruct;
+
+	bool isRescued = pData->m_Value.m_Int != 0;
+
+	if (isRescued && !pHostage->m_isRescued)
+	{
+		// hostage was rescued
+		pHostage->m_flDeadOrRescuedTime = gpGlobals->GetCurTime() + 2;
+		pHostage->SetRenderMode(kRenderGlow);
+		pHostage->SetNextClientThink(gpGlobals->GetCurTime());
+	}
+
+	pHostage->m_isRescued = isRescued;
+}
 
 extern CUtlVector< C_CHostage* > g_Hostages;
 extern CUtlVector< EHANDLE > g_HostageRagdolls;

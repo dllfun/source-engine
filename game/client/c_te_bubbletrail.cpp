@@ -29,12 +29,12 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	Vector			m_vecMins;
-	Vector			m_vecMaxs;
-	float			m_flWaterZ;
-	int				m_nModelIndex;
-	int				m_nCount;
-	float			m_fSpeed;
+	CNetworkVector(			m_vecMins);
+	CNetworkVector(			m_vecMaxs);
+	CNetworkVar( float,			m_flWaterZ);
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( int,				m_nCount);
+	CNetworkVar( float,			m_fSpeed);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEBubbleTrail)

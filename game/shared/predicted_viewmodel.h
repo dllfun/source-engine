@@ -14,8 +14,9 @@
 #include "predictable_entity.h"
 #include "utlvector.h"
 #include "baseplayer_shared.h"
+#if defined( CLIENT_DLL )
 #include "shared_classnames.h"
-
+#endif
 #if defined( CLIENT_DLL )
 #define CPredictedViewModel C_PredictedViewModel
 #endif

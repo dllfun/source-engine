@@ -33,10 +33,10 @@ public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
 
 public:
-	int				m_nEntity;
-	int				m_nModelIndex;
-	int				m_nDensity;
-	int				m_nCurrent;
+	CNetworkVar( int,				m_nEntity);
+	CNetworkVar( int,				m_nModelIndex);
+	CNetworkVar( int,				m_nDensity);
+	CNetworkVar( int,				m_nCurrent);
 
 public:
 	BEGIN_INIT_RECV_TABLE(C_TEFizz)
