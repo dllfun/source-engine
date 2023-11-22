@@ -377,7 +377,7 @@ BEGIN_DATADESC( CBasePlayer )
 	
 	DEFINE_FIELD( m_iPlayerLocked, FIELD_INTEGER ),
 
-	DEFINE_AUTO_ARRAY( m_hViewModel, FIELD_EHANDLE ),
+	DEFINE_AUTO_ARRAY( m_hViewModel.m_Value, FIELD_EHANDLE ),
 	
 	DEFINE_FIELD( m_flMaxspeed, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flWaterJumpTime, FIELD_TIME ),

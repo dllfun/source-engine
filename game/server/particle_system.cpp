@@ -99,7 +99,7 @@ BEGIN_DATADESC( CParticleSystem )
 	DEFINE_KEYFIELD( m_iControlPointParents[5], FIELD_CHARACTER, "cpoint6_parent" ),
 	DEFINE_KEYFIELD( m_iControlPointParents[6], FIELD_CHARACTER, "cpoint7_parent" ),
 	
-	DEFINE_AUTO_ARRAY( m_hControlPointEnts, FIELD_EHANDLE ),
+	DEFINE_AUTO_ARRAY( m_hControlPointEnts.m_Value, FIELD_EHANDLE ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "Start", InputStart ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Stop", InputStop ),

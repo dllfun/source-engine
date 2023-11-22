@@ -68,8 +68,8 @@ IMPLEMENT_SERVERCLASS(CRagdollProp, DT_Ragdoll, DT_BaseAnimating)
 BEGIN_DATADESC(CRagdollProp)
 //					m_ragdoll (custom handling)
 	DEFINE_AUTO_ARRAY	( m_ragdoll.boneIndex,	FIELD_INTEGER	),
-	DEFINE_AUTO_ARRAY	( m_ragPos,		FIELD_POSITION_VECTOR	),
-	DEFINE_AUTO_ARRAY	( m_ragAngles,	FIELD_VECTOR	),
+	DEFINE_AUTO_ARRAY	( m_ragPos.m_Value,		FIELD_POSITION_VECTOR	),
+	DEFINE_AUTO_ARRAY	( m_ragAngles.m_Value,	FIELD_VECTOR	),
 	DEFINE_KEYFIELD(m_anglesOverrideString,	FIELD_STRING, "angleOverride" ),
 	DEFINE_FIELD( m_lastUpdateTickCount, FIELD_INTEGER ),
 	DEFINE_FIELD( m_allAsleep, FIELD_BOOLEAN ),

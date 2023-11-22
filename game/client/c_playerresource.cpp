@@ -24,13 +24,13 @@ IMPLEMENT_CLIENTCLASS(C_PlayerResource, DT_PlayerResource, CPlayerResource)
 BEGIN_PREDICTION_DATA( C_PlayerResource )
 
 	DEFINE_PRED_ARRAY( m_szName, FIELD_STRING, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
-	DEFINE_PRED_ARRAY( m_iPing, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
-	DEFINE_PRED_ARRAY( m_iScore, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
-	DEFINE_PRED_ARRAY( m_iDeaths, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
-	DEFINE_PRED_ARRAY( m_bConnected, FIELD_BOOLEAN, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
-	DEFINE_PRED_ARRAY( m_iTeam, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
-	DEFINE_PRED_ARRAY( m_bAlive, FIELD_BOOLEAN, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
-	DEFINE_PRED_ARRAY( m_iHealth, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_iPing.m_Value, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_iScore.m_Value, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_iDeaths.m_Value, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_bConnected.m_Value, FIELD_BOOLEAN, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_iTeam.m_Value, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_bAlive.m_Value, FIELD_BOOLEAN, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
+	DEFINE_PRED_ARRAY( m_iHealth.m_Value, FIELD_INTEGER, MAX_PLAYERS+1, FTYPEDESC_PRIVATE ),
 
 END_PREDICTION_DATA()	
 
@@ -43,14 +43,14 @@ IGameResources * GameResources( void ) { return g_PR; }
 //-----------------------------------------------------------------------------
 C_PlayerResource::C_PlayerResource()
 {
-	memset( m_iPing.m_Value, 0, sizeof( m_iPing ) );
+	memset( m_iPing.m_Value, 0, sizeof( m_iPing.m_Value) );
 //	memset( m_iPacketloss, 0, sizeof( m_iPacketloss ) );
-	memset( m_iScore.m_Value, 0, sizeof( m_iScore ) );
-	memset( m_iDeaths.m_Value, 0, sizeof( m_iDeaths ) );
-	memset( m_bConnected.m_Value, 0, sizeof( m_bConnected ) );
-	memset( m_iTeam.m_Value, 0, sizeof( m_iTeam ) );
-	memset( m_bAlive.m_Value, 0, sizeof( m_bAlive ) );
-	memset( m_iHealth.m_Value, 0, sizeof( m_iHealth ) );
+	memset( m_iScore.m_Value, 0, sizeof( m_iScore.m_Value) );
+	memset( m_iDeaths.m_Value, 0, sizeof( m_iDeaths.m_Value) );
+	memset( m_bConnected.m_Value, 0, sizeof( m_bConnected.m_Value) );
+	memset( m_iTeam.m_Value, 0, sizeof( m_iTeam.m_Value) );
+	memset( m_bAlive.m_Value, 0, sizeof( m_bAlive.m_Value) );
+	memset( m_iHealth.m_Value, 0, sizeof( m_iHealth.m_Value) );
 	m_szUnconnectedName = {  };
 	
 	for ( int i=0; i<MAX_TEAMS; i++ )

@@ -55,7 +55,7 @@ int GetNumberOfTeams( void )
 //-----------------------------------------------------------------------------
 CTeam::CTeam( void )
 {
-	memset( m_szTeamname.GetForModify(), 0, sizeof(m_szTeamname) );
+	memset( m_szTeamname.GetForModify(), 0, sizeof(m_szTeamname.m_Value) );
 }
 
 //-----------------------------------------------------------------------------

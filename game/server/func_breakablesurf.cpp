@@ -176,7 +176,7 @@ BEGIN_DATADESC( CBreakableSurface )
 	//		   the client about the state of the window upon load...
 	//			We should use client-side save/load to fix this problem.
 	DEFINE_AUTO_ARRAY2D( m_flSupport,	FIELD_FLOAT),	
-	DEFINE_ARRAY( m_RawPanelBitVec, FIELD_BOOLEAN, MAX_NUM_PANELS*MAX_NUM_PANELS ),
+	DEFINE_ARRAY( m_RawPanelBitVec.m_Value, FIELD_BOOLEAN, MAX_NUM_PANELS*MAX_NUM_PANELS ),
 
 	// Function Pointers
 	DEFINE_THINKFUNC( BreakThink ),

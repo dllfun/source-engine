@@ -193,6 +193,33 @@ class CMapLoadEntityFilter : public IMapEntityFilter
 public:
 	virtual bool ShouldCreateEntity( const char *pClassname )
 	{
+		if (0
+		//	!Q_strcmp("move_rope", pClassname)
+		//	|| !Q_strcmp("env_sprite", pClassname) 
+		//	|| !Q_strcmp("func_brush", pClassname)
+		//	|| !Q_strcmp("infodecal", pClassname)
+		//	|| !Q_strcmp("prop_physics_multiplayer", pClassname)
+		//	|| !Q_strcmp("info_target", pClassname)
+		//	|| !Q_strcmp("light_spot", pClassname)
+		//	|| !Q_strcmp("light", pClassname)
+		//	|| !Q_strcmp("light_environment", pClassname)
+		//	|| !Q_strcmp("env_fog_controller", pClassname)
+		//	|| !Q_strcmp("env_sun", pClassname)
+		//	|| !Q_strcmp("shadow_control", pClassname)
+		//	|| !Q_strcmp("point_viewcontrol", pClassname)
+		//	//|| !Q_strcmp("sky_camera", pClassname)
+		//	|| !Q_strcmp("env_explosion", pClassname)
+		//	|| !Q_strcmp("env_fire", pClassname)
+		//	|| !Q_strcmp("func_dustmotes", pClassname)
+		//	//|| !Q_strcmp("func_areaportal", pClassname)
+		//	|| !Q_strcmp("env_soundscape_triggerable", pClassname)
+		//	|| !Q_strcmp("env_tonemap_controller", pClassname)
+		//	|| !Q_strcmp("trigger_soundscape", pClassname)
+		//	|| !Q_strcmp("ambient_generic", pClassname)
+		//	|| !Q_strcmp("logic_auto", pClassname)
+			) {
+			return false;
+		}
 		// During map load, create all the entities.
 		return true;
 	}

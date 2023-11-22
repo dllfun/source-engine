@@ -1033,9 +1033,9 @@ SendTableManager* GetSendTableManager();
 #define TYPEINFO(varName)					_hacky_dtsend_typeof(currentSendDTClass, varName)
 #define SENDINFO(varName)					_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName.m_Value)
 #define SENDINFO_NAME(varName,remoteVarName)			_hacky_dtsend_typeof(currentSendDTClass, varName), #remoteVarName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName.m_Value)
-#define SENDINFO_ARRAY(varName)				_hacky_dtsend_typeof(currentSendDTClass, varName[0]), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0])
+#define SENDINFO_ARRAY(varName)				_hacky_dtsend_typeof(currentSendDTClass, varName[0]), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value), sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_INTERNALARRAY(varName)		sizeof(((currentSendDTClass*)0)->varName.m_Value)/sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName[0]), #varName
-#define SENDINFO_ARRAY3(varName)			#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName.m_Value)/sizeof(((currentSendDTClass*)0)->varName[0])
+#define SENDINFO_ARRAY3(varName)			#varName, _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value), sizeof(((currentSendDTClass*)0)->varName[0]), sizeof(((currentSendDTClass*)0)->varName.m_Value)/sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_ARRAYELEM(varName, i)		_hacky_dtsend_typeof(currentSendDTClass, varName[i]), #varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName[i]), sizeof(((currentSendDTClass*)0)->varName[0])
 #define SENDINFO_NETWORKARRAYELEM(varName, i)#varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
 

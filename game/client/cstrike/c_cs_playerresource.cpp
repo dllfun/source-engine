@@ -27,8 +27,8 @@ C_CS_PlayerResource::C_CS_PlayerResource()
 {
 	m_Colors[TEAM_TERRORIST] = COLOR_RED;
 	m_Colors[TEAM_CT] = COLOR_BLUE;
-	memset( m_iMVPs.m_Value, 0, sizeof( m_iMVPs ) );
-	memset( m_bHasDefuser.m_Value, 0, sizeof( m_bHasDefuser ) );
+	memset( m_iMVPs.m_Value, 0, sizeof( m_iMVPs.m_Value) );
+	memset( m_bHasDefuser.m_Value, 0, sizeof( m_bHasDefuser.m_Value) );
 }
 
 //-----------------------------------------------------------------------------

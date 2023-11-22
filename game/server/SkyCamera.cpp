@@ -36,7 +36,7 @@ LINK_ENTITY_TO_CLASS( sky_camera, CSkyCamera );
 
 BEGIN_DATADESC( CSkyCamera )
 
-	DEFINE_KEYFIELD( m_skyboxData.scale, FIELD_INTEGER, "scale" ),
+	DEFINE_KEYFIELD( m_skyboxData.scale.m_Value, FIELD_INTEGER, "scale" ),
 	DEFINE_FIELD( m_skyboxData.origin, FIELD_VECTOR ),
 	DEFINE_FIELD( m_skyboxData.area, FIELD_INTEGER ),
 

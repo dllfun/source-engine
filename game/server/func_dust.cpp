@@ -108,18 +108,18 @@ IMPLEMENT_SERVERCLASS( CFunc_Dust, DT_Func_Dust )
 
 BEGIN_DATADESC( CFunc_Dust )
 
-	DEFINE_FIELD( m_DustFlags,FIELD_INTEGER ),
+	DEFINE_FIELD( m_DustFlags.m_Value,FIELD_INTEGER ),
 
-	DEFINE_KEYFIELD( m_Color,		FIELD_COLOR32,	"Color" ),
-	DEFINE_KEYFIELD( m_SpawnRate,	FIELD_INTEGER,	"SpawnRate" ),
-	DEFINE_KEYFIELD( m_flSizeMin,	FIELD_FLOAT,	"SizeMin" ),
-	DEFINE_KEYFIELD( m_flSizeMax,	FIELD_FLOAT,	"SizeMax" ),
-	DEFINE_KEYFIELD( m_SpeedMax,		FIELD_INTEGER,	"SpeedMax" ),
-	DEFINE_KEYFIELD( m_LifetimeMin,	FIELD_INTEGER,	"LifetimeMin" ),
-	DEFINE_KEYFIELD( m_LifetimeMax,	FIELD_INTEGER,	"LifetimeMax" ),
-	DEFINE_KEYFIELD( m_DistMax,		FIELD_INTEGER,	"DistMax" ),
+	DEFINE_KEYFIELD( m_Color.m_Value,		FIELD_COLOR32,	"Color" ),
+	DEFINE_KEYFIELD( m_SpawnRate.m_Value,	FIELD_INTEGER,	"SpawnRate" ),
+	DEFINE_KEYFIELD( m_flSizeMin.m_Value,	FIELD_FLOAT,	"SizeMin" ),
+	DEFINE_KEYFIELD( m_flSizeMax.m_Value,	FIELD_FLOAT,	"SizeMax" ),
+	DEFINE_KEYFIELD( m_SpeedMax.m_Value,		FIELD_INTEGER,	"SpeedMax" ),
+	DEFINE_KEYFIELD( m_LifetimeMin.m_Value,	FIELD_INTEGER,	"LifetimeMin" ),
+	DEFINE_KEYFIELD( m_LifetimeMax.m_Value,	FIELD_INTEGER,	"LifetimeMax" ),
+	DEFINE_KEYFIELD( m_DistMax.m_Value,		FIELD_INTEGER,	"DistMax" ),
 	DEFINE_FIELD( m_iAlpha,			FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_FallSpeed,	FIELD_FLOAT,	"FallSpeed" ),
+	DEFINE_KEYFIELD( m_FallSpeed.m_Value,	FIELD_FLOAT,	"FallSpeed" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn",  InputTurnOn ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff )
@@ -169,7 +169,7 @@ void CFunc_Dust::Spawn()
 
 	//Since keyvalues can arrive in any order, and UTIL_StringToColor32 stomps alpha,
 	//install the alpha value here.
-	color32 clr = { m_Color.m_Value.r, m_Color.m_Value.g, m_Color.m_Value.b, (uint8)m_iAlpha };
+	color32 clr = { m_Color.GetR(), m_Color.GetG(), m_Color.GetB(), (uint8)m_iAlpha};
 	m_Color.Set( clr );
 
 	BaseClass::Spawn();

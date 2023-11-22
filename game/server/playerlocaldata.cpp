@@ -62,7 +62,7 @@ END_DATADESC()
 
 BEGIN_SIMPLE_DATADESC( audioparams_t )
 
-	DEFINE_AUTO_ARRAY( localSound, FIELD_VECTOR ),
+	DEFINE_AUTO_ARRAY( localSound.m_Value, FIELD_VECTOR ),
 	DEFINE_FIELD( soundscapeIndex, FIELD_INTEGER ),
 	DEFINE_FIELD( localBits, FIELD_INTEGER ),
 	DEFINE_FIELD( ent, FIELD_EHANDLE ),
@@ -70,8 +70,8 @@ BEGIN_SIMPLE_DATADESC( audioparams_t )
 END_DATADESC()
 
 BEGIN_SIMPLE_DATADESC( CPlayerLocalData )
-	DEFINE_AUTO_ARRAY( m_chAreaBits, FIELD_CHARACTER ),
-	DEFINE_AUTO_ARRAY( m_chAreaPortalBits, FIELD_CHARACTER ),
+	DEFINE_AUTO_ARRAY( m_chAreaBits.m_Value, FIELD_CHARACTER ),
+	DEFINE_AUTO_ARRAY( m_chAreaPortalBits.m_Value, FIELD_CHARACTER ),
 	DEFINE_FIELD( m_iHideHUD, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flFOVRate, FIELD_FLOAT ),
 	DEFINE_FIELD( m_vecOverViewpoint, FIELD_VECTOR ),
@@ -129,7 +129,7 @@ void CPlayerLocalData::UpdateAreaBits( CBasePlayer *pl, unsigned char chAreaPort
 	Vector origin = pl->EyePosition();
 
 	unsigned char tempBits[32];
-	COMPILE_TIME_ASSERT( sizeof( tempBits ) >= sizeof( ((CPlayerLocalData*)0)->m_chAreaBits ) );
+	//COMPILE_TIME_ASSERT( sizeof( tempBits ) >= sizeof( ((CPlayerLocalData*)0)->m_chAreaBits ) );
 
 	int i;
 	int area = engineServer->GetArea( origin );

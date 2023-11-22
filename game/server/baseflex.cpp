@@ -63,7 +63,7 @@ IMPLEMENT_SERVERCLASS(CBaseFlex, DT_BaseFlex, DT_BaseAnimatingOverlay)
 BEGIN_DATADESC( CBaseFlex )
 
 	//						m_blinktoggle
-	DEFINE_ARRAY( m_flexWeight, FIELD_FLOAT, MAXSTUDIOFLEXCTRL ),
+	DEFINE_ARRAY( m_flexWeight.m_Value, FIELD_FLOAT, MAXSTUDIOFLEXCTRL ),
 	DEFINE_FIELD( m_viewtarget, FIELD_POSITION_VECTOR ),
 	//						m_SceneEvents
 	//						m_FileList

@@ -25,8 +25,8 @@ LINK_ENTITY_TO_CLASS( point_posecontroller, CPoseController );
 
 
 BEGIN_DATADESC( CPoseController )
-	DEFINE_AUTO_ARRAY( m_hProps, FIELD_EHANDLE ),
-	DEFINE_AUTO_ARRAY( m_chPoseIndex, FIELD_CHARACTER ),
+	DEFINE_AUTO_ARRAY( m_hProps.m_Value, FIELD_EHANDLE ),
+	DEFINE_AUTO_ARRAY( m_chPoseIndex.m_Value, FIELD_CHARACTER ),
 	DEFINE_FIELD( m_bDisablePropLookup, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bPoseValueParity, FIELD_BOOLEAN ),
 	// Keys

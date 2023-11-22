@@ -1727,7 +1727,7 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 
 	DEFINE_KEYFIELD( m_flSpeed, FIELD_FLOAT, "speed" ),
 	DEFINE_KEYFIELD( m_nRenderFX, FIELD_CHARACTER, "renderfx" ),
-	DEFINE_KEYFIELD( m_nRenderMode, FIELD_CHARACTER, "rendermode" ),
+	DEFINE_KEYFIELD( m_nRenderMode.m_Value, FIELD_CHARACTER, "rendermode" ),
 
 	// Consider moving to CBaseAnimating?
 	DEFINE_FIELD( m_flPrevAnimTime, FIELD_TIME ),

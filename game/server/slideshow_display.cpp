@@ -122,7 +122,7 @@ BEGIN_DATADESC( CSlideshowDisplay )
 	DEFINE_KEYFIELD( m_String_tSlideshowDirectory, FIELD_STRING, "directory" ),
 
 	// DEFINE_FIELD( m_SlideKeywordList, CUtlVector < SlideKeywordList_t* > ),
-	DEFINE_AUTO_ARRAY( m_chCurrentSlideLists, FIELD_CHARACTER ),
+	DEFINE_AUTO_ARRAY( m_chCurrentSlideLists.m_Value, FIELD_CHARACTER ),
 
 	DEFINE_KEYFIELD( m_fMinSlideTime, FIELD_FLOAT, "minslidetime" ),
 	DEFINE_KEYFIELD( m_fMaxSlideTime, FIELD_FLOAT, "maxslidetime" ),
