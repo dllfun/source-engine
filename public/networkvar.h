@@ -870,6 +870,10 @@ public:
 			return static_cast< Type* >(CNetworkVarBase<CBaseHandle,Changer>::m_Value.Get() );
 		}
 
+		bool IsValid() const {
+			return CNetworkVarBase<CBaseHandle, Changer>::m_Value.IsValid();
+		}
+
 		int ToInt() {
 			return CNetworkVarBase<CBaseHandle, Changer>::m_Value.ToInt();
 		}
@@ -1141,7 +1145,6 @@ public:
 //		return m_Value[0]; \
 //}\
 
-#ifdef GAME_DLL
 // Use this to define networked arrays.
 // You can access elements for reading with operator[], and you can set elements with the Set() function.
 #define CNetworkArrayInternal( type, name, count, stateChangedFn ) \
@@ -1275,149 +1278,9 @@ public:
 		type m_Value[count]; \
 	}; \
 	NetworkVar_##name name;
-#endif
-#ifdef CLIENT_DLL
-// Use this to define networked arrays.
-// You can access elements for reading with operator[], and you can set elements with the Set() function.
-#define CNetworkArrayInternal( type, name, count, stateChangedFn ) \
-	class NetworkVar_##name; \
-	friend class NetworkVar_##name; \
-	typedef ThisClass MakeANetworkVar_##name; \
-	class NetworkVar_##name \
-	{ \
-	public: \
-		inline NetworkVar_##name() \
-		{ \
-			for ( int i = 0 ; i < count ; ++i ) \
-				NetworkVarConstruct( m_Value[i] ); \
-		} \
-		template <typename T> friend int ServerClassInit(T *);	\
-		const type& operator[]( int i ) const \
-		{ \
-			return Get( i ); \
-		} \
-		\
-		const type& Get( int i ) const \
-		{ \
-			Assert( i >= 0 && i < count ); \
-			return m_Value[i]; \
-		} \
-		type& operator[]( int i )\
-		{ \
-			return Get( i ); \
-		} \
-		type& Get( int i )\
-		{ \
-			Assert( i >= 0 && i < count ); \
-			return m_Value[i]; \
-		} \
-		type& GetForModify( int i ) \
-		{ \
-			Assert( i >= 0 && i < count ); \
-			NetworkStateChanged( i ); \
-			return m_Value[i]; \
-		} \
-		\
-		void Set( int i, const type &val ) \
-		{ \
-			Assert( i >= 0 && i < count ); \
-			if( memcmp( &m_Value[i], &val, sizeof(type) ) ) \
-			{ \
-				NetworkStateChanged( i ); \
-			       	m_Value[i] = val; \
-			} \
-		} \
-		const type* Base() const { return m_Value; } \
-		int Count() const { return count; } \
-	private:\
-		NetworkVar_##name* operator&() {\
-			return this;\
-		}\
-	protected: \
-		inline void NetworkStateChanged( int net_change_index ) \
-		{ \
-			CHECK_USENETWORKVARS ((ThisClass*)(((char*)this) - MyOffsetOf(ThisClass,name)))->stateChangedFn( &m_Value[net_change_index] ); \
-		} \
-	public:\
-		int noise[100];\
-		type m_Value[count]; \
-		int noise2[100];\
-	}; \
-	NetworkVar_##name name;
 
-// Use this to define networked arrays.
-// You can access elements for reading with operator[], and you can set elements with the Set() function.
-#define CNetworkArrayInternal2( type, name, count, stateChangedFn ) \
-	class NetworkVar_##name; \
-	friend class NetworkVar_##name; \
-	typedef ThisClass MakeANetworkVar_##name; \
-	class NetworkVar_##name \
-	{ \
-	public: \
-		inline NetworkVar_##name() \
-		{ \
-			for ( int i = 0 ; i < count ; ++i ) \
-				NetworkVarConstruct( m_Value[i] ); \
-		} \
-		template <typename T> friend int ServerClassInit(T *);	\
-		const type& operator[]( int i ) const \
-		{ \
-			return Get( i ); \
-		} \
-		\
-		const type& Get( int i ) const \
-		{ \
-			Assert( i >= 0 && i < count ); \
-			return m_Value[i]; \
-		} \
-		type& operator[]( int i )\
-		{ \
-			return Get( i ); \
-		} \
-		type& Get( int i )\
-		{ \
-			Assert( i >= 0 && i < count ); \
-			return m_Value[i]; \
-		} \
-		type& GetForModify( int i ) \
-		{ \
-			Assert( i >= 0 && i < count ); \
-			NetworkStateChanged( i ); \
-			return m_Value[i]; \
-		} \
-		\
-		void Set( int i, const type &val ) \
-		{ \
-			Assert( i >= 0 && i < count ); \
-			if( memcmp( &m_Value[i], &val, sizeof(type) ) ) \
-			{ \
-				NetworkStateChanged( i ); \
-			       	m_Value[i] = val; \
-			} \
-		} \
-		const type* Base() const { return m_Value; } \
-		int Count() const { return count; } \
-	private:\
-		NetworkVar_##name* operator&() {\
-			return this;\
-		}\
-	protected: \
-		inline void NetworkStateChanged( int net_change_index ) \
-		{ \
-			CHECK_USENETWORKVARS ((ThisClass*)(((char*)this) - MyOffsetOf(ThisClass,name)))->stateChangedFn( &m_Value[net_change_index] ); \
-		} \
-	public:\
-		type m_Value[count]; \
-	}; \
-	NetworkVar_##name name;
-#endif
 
-#ifdef GAME_DLL
 #define CNetworkArray( type, name, count )  CNetworkArrayInternal( type, name, count, NetworkStateChanged )
-#endif 
-#ifdef CLIENT_DLL
-#define CNetworkArray( type, name, count )  CNetworkArrayInternal( type, name, count, NetworkStateChanged )
-#endif 
 
 #define CNetworkArray2( type, name, count )  CNetworkArrayInternal2( type, name, count, NetworkStateChanged )
 
