@@ -1043,7 +1043,7 @@ SendTableManager* GetSendTableManager();
 // right after each other, otherwise it might miss the Y or Z component in SP.
 //
 // Note: this macro specifies a negative offset so the engine can detect it and setup m_pNext
-#define SENDINFO_VECTORELEM(varName, i)		_hacky_dtsend_typeof(currentSendDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), #varName "[" #i "]", -(int)_hacky_dtsend_offsetof(currentSendDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
+#define SENDINFO_VECTORELEM(varName, i)		_hacky_dtsend_typeof(currentSendDTClass, varName.m_Value[i]), #varName "[" #i "]", -(int)_hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])
 
 #define SENDINFO_STRUCTELEM(varName)		_hacky_dtsend_typeof(currentSendDTClass, varName), #varName, _hacky_dtsend_offsetof(currentSendDTClass, varName), sizeof(((currentSendDTClass*)0)->varName.m_Value)
 #define SENDINFO_STRUCTARRAYELEM(varName, i)_hacky_dtsend_typeof(currentSendDTClass, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtsend_offsetof(currentSendDTClass, varName.m_Value[i]), sizeof(((currentSendDTClass*)0)->varName.m_Value[0])

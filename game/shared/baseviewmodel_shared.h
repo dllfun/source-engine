@@ -132,8 +132,8 @@ public:
 	DECLARE_SEND_TABLE_ACCESS(DT_BaseViewModel);
 #endif
 
-							CBaseViewModel( void );
-							~CBaseViewModel( void );
+	CBaseViewModel( void );
+	~CBaseViewModel( void );
 
 
 	bool IsViewable(void) { return false; }

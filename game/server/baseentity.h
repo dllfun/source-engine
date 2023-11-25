@@ -2081,7 +2081,7 @@ public:
 		return s_bAbsQueriesValid;
 	}
 
-	CIntegerProperty m_networkInt;
+	//CIntegerProperty m_networkInt;
 
 	BEGIN_INIT_SEND_TABLE(CBaseEntity)
 	INIT_REFERENCE_SEND_TABLE(CCollisionProperty)

@@ -1552,9 +1552,9 @@ public:
 
 private:
 //#ifdef POSIX
-	CEnvWindShared m_EnvWindShared; // FIXME - fails to compile as networked var due to operator= problem
+//	CEnvWindShared m_EnvWindShared; // FIXME - fails to compile as networked var due to operator= problem
 //#else
-//	CNetworkVarEmbedded( CEnvWindShared, m_EnvWindShared );
+	CNetworkVarEmbedded( CEnvWindShared, m_EnvWindShared );
 //#endif
 
 public:

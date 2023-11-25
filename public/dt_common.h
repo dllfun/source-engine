@@ -222,207 +222,207 @@ inline int NumBitsForCount( int nMaxElements )
 	return nBits;
 }
 
-class CProperty;
-
-class CPropertyListener {
-public:
-	virtual void OnChange(CProperty* pNetworkProperty) = 0;
-};
-
-abstract_class CProperty : public CPropertyListener{
-public:
-
-	virtual bool IsLeaf() = 0;
-	virtual CUtlVector<CProperty*>& GetChildren() = 0;
-	virtual void AddListener(CPropertyListener* pPropertyListener) {
-		m_linteners.AddToTail(pPropertyListener);
-	}
-	static inline void NetworkStateChanged(void* ptr) {
-
-	}
-protected:
-	virtual void OnChange(CProperty* pProperty) {
-		if (m_linteners.Count() > 0) {
-			for (int i = 0; i < m_linteners.Count(); i++) {
-				m_linteners[i]->OnChange(this);
-			}
-		}
-	}
-	virtual void AddChildren(CProperty* child) = 0;
-
-private:
-	CUtlVector<CPropertyListener*> m_linteners;
-};
-
-class CLeafProperty : public CProperty {
-	virtual bool IsLeaf() {
-		return true;
-	}
-
-	virtual CUtlVector<CProperty*>& GetChildren() {
-		Error("leaf Property Can not GetChildren");
-	};
-
-	virtual void AddChildren(CProperty* child) {
-		Error("leaf Property Can not Add Child");
-	};
-};
-
-class CNonLeafProperty : public CProperty {
-	virtual bool IsLeaf() {
-		return false;
-	}
-
-	virtual CUtlVector<CProperty*>& GetChildren() {
-		return m_children;
-	};
-
-	virtual void AddChildren(CProperty* child) {
-		if (this->IsLeaf()) {
-			Error("leaf Property Can not Add Child");
-		}
-		child->AddListener(this);
-		m_children.AddToTail(child);
-	};
-
-	CUtlVector<CProperty*> m_children;
-};
-
-class CIntegerProperty : CNetworkVarBase<int, CProperty>, public CLeafProperty {
-	
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CBoolProperty : CNetworkVarBase<bool, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CUnsignedCharProperty : CNetworkVarBase<unsigned char, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CUnsignedShortProperty : CNetworkVarBase<unsigned short, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CShortProperty : CNetworkVarBase<short, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CFloatProperty : CNetworkVarBase<float, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CColor32Porperty : CNetworkColor32Base<color32, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CVectorPorperty : CNetworkVectorBase<Vector, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CQAnglePorperty : CNetworkVectorBase<QAngle, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-class CStringTPorperty : CNetworkVarBase<string_t, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-template <class T>
-class CEnumPorperty : CNetworkVarBase<T, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-
-template <class T>
-class CHandleProperty : CNetworkVarBase<T, CProperty>, public CLeafProperty {
-
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-};
-
-template<int length>
-class CStringProperty : public CProperty {
-public:
-	CStringProperty() {
-		m_Value[0] = '\0';
-	}
-	operator const char* () const {
-		return m_Value;
-	}
-	const char* Get() const {
-		return m_Value;
-	}
-	char* GetForModify() {
-		NetworkStateChanged();
-		return m_Value;
-	}
-private:
-	void NetworkStateChanged()
-	{
-		OnChange(this);
-	}
-private:
-	char m_Value[length];
-};
+//class CProperty;
+//
+//class CPropertyListener {
+//public:
+//	virtual void OnChange(CProperty* pNetworkProperty) = 0;
+//};
+//
+//abstract_class CProperty : public CPropertyListener{
+//public:
+//
+//	virtual bool IsLeaf() = 0;
+//	virtual CUtlVector<CProperty*>& GetChildren() = 0;
+//	virtual void AddListener(CPropertyListener* pPropertyListener) {
+//		m_linteners.AddToTail(pPropertyListener);
+//	}
+//	static inline void NetworkStateChanged(void* ptr) {
+//
+//	}
+//protected:
+//	virtual void OnChange(CProperty* pProperty) {
+//		if (m_linteners.Count() > 0) {
+//			for (int i = 0; i < m_linteners.Count(); i++) {
+//				m_linteners[i]->OnChange(this);
+//			}
+//		}
+//	}
+//	virtual void AddChildren(CProperty* child) = 0;
+//
+//private:
+//	CUtlVector<CPropertyListener*> m_linteners;
+//};
+//
+//class CLeafProperty : public CProperty {
+//	virtual bool IsLeaf() {
+//		return true;
+//	}
+//
+//	virtual CUtlVector<CProperty*>& GetChildren() {
+//		Error("leaf Property Can not GetChildren");
+//	};
+//
+//	virtual void AddChildren(CProperty* child) {
+//		Error("leaf Property Can not Add Child");
+//	};
+//};
+//
+//class CNonLeafProperty : public CProperty {
+//	virtual bool IsLeaf() {
+//		return false;
+//	}
+//
+//	virtual CUtlVector<CProperty*>& GetChildren() {
+//		return m_children;
+//	};
+//
+//	virtual void AddChildren(CProperty* child) {
+//		if (this->IsLeaf()) {
+//			Error("leaf Property Can not Add Child");
+//		}
+//		child->AddListener(this);
+//		m_children.AddToTail(child);
+//	};
+//
+//	CUtlVector<CProperty*> m_children;
+//};
+//
+//class CIntegerProperty : CNetworkVarBase<int, CProperty>, public CLeafProperty {
+//	
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CBoolProperty : CNetworkVarBase<bool, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CUnsignedCharProperty : CNetworkVarBase<unsigned char, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CUnsignedShortProperty : CNetworkVarBase<unsigned short, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CShortProperty : CNetworkVarBase<short, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CFloatProperty : CNetworkVarBase<float, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CColor32Porperty : CNetworkColor32Base<color32, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CVectorPorperty : CNetworkVectorBase<Vector, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CQAnglePorperty : CNetworkVectorBase<QAngle, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//class CStringTPorperty : CNetworkVarBase<string_t, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//template <class T>
+//class CEnumPorperty : CNetworkVarBase<T, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//
+//template <class T>
+//class CHandleProperty : CNetworkVarBase<T, CProperty>, public CLeafProperty {
+//
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//};
+//
+//template<int length>
+//class CStringProperty : public CProperty {
+//public:
+//	CStringProperty() {
+//		m_Value[0] = '\0';
+//	}
+//	operator const char* () const {
+//		return m_Value;
+//	}
+//	const char* Get() const {
+//		return m_Value;
+//	}
+//	char* GetForModify() {
+//		NetworkStateChanged();
+//		return m_Value;
+//	}
+//private:
+//	void NetworkStateChanged()
+//	{
+//		OnChange(this);
+//	}
+//private:
+//	char m_Value[length];
+//};
 
 
 

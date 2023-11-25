@@ -512,8 +512,8 @@ int TestRevFunction();
 #define RECVINFO_ARRAY(varName)					#varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName.m_Value), sizeof(((currentRecvDTClass*)0)->varName[0]), sizeof(((currentRecvDTClass*)0)->varName.m_Value)/sizeof(((currentRecvDTClass*)0)->varName[0])//
 #define RECVINFO_ARRAY3(varName)				_hacky_dtrecv_typeof(currentRecvDTClass, varName[0]), #varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName.m_Value), sizeof(((currentRecvDTClass*)0)->varName[0])
 
-#define RECVINFO_VECTORELEM(varName, i)		_hacky_dtrecv_typeof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtrecv_offsetof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])
-#define RECVINFO_VECTORELEM_NAME(varName, i, remoteVarName)		_hacky_dtrecv_typeof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), #remoteVarName, _hacky_dtrecv_offsetof(currentRecvDTClass::MakeANetworkVar_##varName, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])
+#define RECVINFO_VECTORELEM(varName, i)		_hacky_dtrecv_typeof(currentRecvDTClass, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtrecv_offsetof(currentRecvDTClass, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])
+#define RECVINFO_VECTORELEM_NAME(varName, i, remoteVarName)		_hacky_dtrecv_typeof(currentRecvDTClass, varName.m_Value[i]), #remoteVarName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])
 
 #define RECVINFO_STRUCTELEM(varName)		_hacky_dtrecv_typeof(currentRecvDTClass, varName), #varName, _hacky_dtrecv_offsetof(currentRecvDTClass, varName), sizeof(((currentRecvDTClass*)0)->varName.m_Value)
 #define RECVINFO_STRUCTARRAYELEM(varName, i)_hacky_dtrecv_typeof(currentRecvDTClass, varName.m_Value[i]), #varName "[" #i "]", _hacky_dtrecv_offsetof(currentRecvDTClass, varName.m_Value[i]), sizeof(((currentRecvDTClass*)0)->varName.m_Value[0])

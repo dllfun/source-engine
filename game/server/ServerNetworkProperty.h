@@ -19,7 +19,7 @@
 //
 // Lightweight base class for networkable data on the server.
 //
-class CServerNetworkProperty : public IServerNetworkable, public IEventRegisterCallback, public CNonLeafProperty
+class CServerNetworkProperty : public IServerNetworkable, public IEventRegisterCallback//, public CNonLeafProperty
 {
 public:
 	DECLARE_CLASS_NOBASE( CServerNetworkProperty );

@@ -73,8 +73,8 @@ CSmokeStack::CSmokeStack()
 	memset( &m_AmbientLight, 0, sizeof(m_AmbientLight) ); 
 	memset( &m_DirLight, 0, sizeof(m_DirLight) ); 
 
-	IMPLEMENT_NETWORKVAR_CHAIN( &m_AmbientLight );
-	IMPLEMENT_NETWORKVAR_CHAIN( &m_DirLight );
+	//IMPLEMENT_NETWORKVAR_CHAIN( &m_AmbientLight );
+	//IMPLEMENT_NETWORKVAR_CHAIN( &m_DirLight );
 
 	m_flTwist = 0;
 	SetRenderColor( 0, 0, 0, 255 );
